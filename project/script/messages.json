@@ -1,0 +1,229 @@
+  {
+  "output": {
+    "header": "../_source/include/_generated/messages/",
+    "source": "../_source/source/_generated/messages/",
+    "include": "_generated/messages/"
+  },
+  "static_types": [
+    "std::string", "irr::core::vector3df"
+  ],
+  "messageids": [
+    [ "ObjectMoved"   ,  "0" ],
+    [ "MarbleMoved"   ,  "1" ],
+    [ "StepMsg"       ,  "2" ],
+    [ "Trigger"       ,  "3" ],
+    [ "Controller"    ,  "4" ],
+    [ "PlayerRespawn" ,  "5" ],
+    [ "PlayerStunned" ,  "6" ],
+    [ "Checkpoint"    ,  "7" ],
+    [ "PlayerFinished",  "8" ],
+    [ "RaceFinished"  ,  "9" ],
+    [ "Countdown"     , "10" ]
+  ],
+  "messages": {
+    "ObjectMoved": {
+      "comment": "This message is sent when a non-marble object has moved",
+      "fields": [
+        { "name": "ObjectId"       , "type": "irr::s32"            , "comment": "The ID of the object" },
+        { "name": "Position"       , "type": "irr::core::vector3df", "comment": "The current position" },
+        { "name": "Rotation"       , "type": "irr::core::vector3df", "comment": "The current rotation (Euler angles)" },
+        { "name": "LinearVelocity" , "type": "irr::core::vector3df", "comment": "The linear velocity" },
+        { "name": "AngularVelocity", "type": "irr::core::vector3df", "comment": "The angualar (rotation) velocity" }
+      ]
+    },
+    "MarbleMoved": {
+      "comment": "This message is sent when a marble is moved and contains additional information",
+      "fields": [
+        { "name": "ObjectId"       , "type": "irr::s32"            , "comment": "The ID of the object" },
+        { "name": "Position"       , "type": "irr::core::vector3df", "comment": "The current position" },
+        { "name": "Rotation"       , "type": "irr::core::vector3df", "comment": "The current rotation (Euler angles)" },
+        { "name": "LinearVelocity" , "type": "irr::core::vector3df", "comment": "The linear velocity" },
+        { "name": "AngularVelocity", "type": "irr::core::vector3df", "comment": "The angualar (rotation) velocity" },
+        { "name": "Contact"        , "type": "irr::u8"             , "comment": "A Flag indicating whether or not the marble is in contact with another object" },
+        { "name": "ContactPoint"   , "type": "irr::core::vector3df", "comment": "The point of contact if the marble is in contact with another object" },
+        { "name": "ControlX"       , "type": "irr::s8"             , "comment": "The marble's current controller state in X-Direction" },
+        { "name": "ControlY"       , "type": "irr::s8"             , "comment": "The marble's current controller state in Y-Direction" },
+        { "name": "ControlBrake"   , "type": "irr::u8"             , "comment": "Flag indicating whether or not the marble's brake is active" },
+        { "name": "ControlRearView", "type": "irr::u8"             , "comment": "Flag indicating whether or not the marble's player looks behind" },
+        { "name": "Distance"       , "type": "irr::f32"            , "comment": "The distance the marble has travelled in the current lap" }
+      ]
+    },
+    "StepMsg": {
+      "comment": "Message sent for every step (60 per second)",
+      "fields": [
+        { "name": "StepNo", "type": "irr::u32", "comment": "The current step number" }
+      ]
+    },
+    "Trigger": {
+      "comment": "Message indicating then a marble has triggered a checkpoint",
+      "fields": [
+        { "name": "TriggerId", "type": "irr::s32", "comment": "ID of the trigger" },
+        { "name": "ObjectId" , "type": "irr::s32", "comment": "ID of the marble that caused the trigger" }
+      ]
+    },
+    "Controller": {
+      "comment": "Message sent from the control thread to the physics thread for controlling a marble",
+      "fields": [
+        { "name": "MarbleId" , "type": "irr::s32"            , "comment": "The ID of the marble" },
+        { "name": "Direction", "type": "irr::core::vector3df", "comment": "The control direction "},
+        { "name": "CtrlX"    , "type": "irr::f32"            , "comment": "X-Control [-1..1]" },
+        { "name": "CtrlY"    , "type": "irr::f32"            , "comment": "Y-Control [-1..1]" },
+        { "name": "RearView" , "type": "irr::u8"             , "comment": "RearView flag" }
+      ]
+    },
+    "PlayerRespawn": {
+      "comment": "This message indicates that the respawn state of a player has changed",
+      "fields": [
+        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" },
+        { "name": "State"   , "type": "irr::u8" , "comment": "New respawn state (1 == Respawn Start, 2 == Respawn Camera, 3 == Respawn Done)" }
+      ]
+    },
+    "PlayerStunned": {
+      "comment": "This message indicates that the stunned state of a player has changed",
+      "fields": [
+        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" },
+        { "name": "State"   , "type": "irr::u8" , "comment": "New stunned state (1 == Player stunned, 2 == Player recovered)" }
+      ]
+    },
+    "Checkpoint": {
+      "comment": "A player has passed a checkpoint",
+      "fields": [
+        { "name": "MarbleId"  , "type": "irr::s32", "comment": "ID of the marble" },
+        { "name": "Checkpoint", "type": "irr::u16", "comment": "The checkpoint ID the player has passed" }
+      ]
+    },
+    "PlayerFinished": {
+      "comment": "A player has finished the race",
+      "fields": [
+        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the finished marble" },
+        { "name": "RaceTime", "type": "irr::u32", "comment": "Racetime of the finished player in simulation steps" },
+        { "name": "Laps"    , "type": "irr::s32", "comment": "The number of laps the player has done" }
+      ]
+    },
+    "RaceFinished": {
+      "comment": "The race has ended",
+      "fields": [
+        { "name": "Cancelled", "type": "irr::u8", "comment": "A flag indicating whether or not the race was cancelled by a player" }
+      ]
+    },
+    "Countdown": {
+      "comment": "Countdown message before the start of the race",
+      "fields": [
+        { "name": "Tick", "type": "irr::u8", "comment": "The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)" }
+      ]
+    }
+  },
+  "interfaces": [
+    {
+      "name": "ControlThread",
+      "send": [ "Controller", "SetPaused" ],
+      "receive": [ 
+        "ObjectMoved", 
+        "StepMsg", 
+        "RespawnStart", 
+        "RespawnCamera", 
+        "RespawnDone", 
+        "Checkpoint",
+        "PlayerFinished",
+        "RaceFinished",
+        "PlayerStunned",
+        "Countdown",
+        "LapTime",
+        "AutoFinishPending",
+        "PauseStateChanged",
+        "AiDebugLine"
+      ]
+    },
+    {
+      "name": "DynamicsThread",
+      "send": [ "ObjectMoved", "StepMsg", "PlayerStunned", "PauseStateChanged", "AiDebugLine" ],
+      "receive": [ "Controller", "ManualRespawn", "SetPaused" ]
+    },
+    {
+      "name": "ReplayThread",
+      "send": [ "ObjectMoved", "StepMsg", "PlayerStunned", "PauseStateChanged" ],
+      "receive": [ "SetPaused" ]
+    },
+    {
+      "name": "GameLogic",
+      "send": [ 
+        "RespawnStart", 
+        "RespawnCamera", 
+        "RespawnDone", 
+        "Checkpoint", 
+        "PlayerFinished", 
+        "RaceFinished", 
+        "PlayerStunned", 
+        "Countdown", 
+        "LapTime",
+        "StepMsg", 
+        "AutoFinishPending"
+      ],
+      "receive": [ ]
+    },
+    {
+      "name": "RaceTimeDisplay",
+      "send": [ ],
+      "receive": [
+        "LapTime",
+        "PlayerFinished",
+        "RaceFinished"
+      ]
+    },
+    {
+      "name": "LogHandler",
+      "send": [ ],
+      "receive": [ 
+        "Checkpoint",
+        "LapTime",
+        "RespawnStart",
+        "RespawnDone",
+        "PlayerStunned",
+        "PlayerFinished",
+        "RaceFinished",
+        "PlayerPosition"
+      ]
+    },
+    {
+      "name": "AiDebug",
+      "send": [ 
+        "ManualRespawn"
+      ],
+      "receive": [
+        "AiPathDebug",
+        "AiDebugLine"
+      ]
+    },
+    {
+      "name": "AiThread",
+      "send": [
+        "Controller",
+        "AiPathDebug",
+        "AiDebugLine"
+      ],
+      "receive": [ 
+        "ObjectMoved", 
+        "StepMsg", 
+        "RespawnStart", 
+        "RespawnCamera", 
+        "RespawnDone",
+        "PlayerStunned"
+      ]
+    },
+    {
+      "name": "LuaMessageSender", 
+      "send": [ "LuaMessage" ], 
+      "receive": [ ]
+    },
+    {
+      "name": "LuaMessageReceiver", 
+      "send": [ ], 
+      "receive": [ "LuaMessage" ]
+    },
+    {
+      "name": "MarbleController",
+      "send": [ "Controller", "ManualRespawn" ],
+      "receive": [ "StepMsg", "ObjectMoved" ]
+    }
+  ]
+}

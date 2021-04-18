@@ -1,0 +1,44 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
+#pragma once
+
+#include <irrlicht/irrlicht.h>
+#include <string>
+
+namespace dustbin {
+  namespace scenenodes {
+    /**
+     * @class CSkyBoxFix
+     * @author Christian Keimel
+     * @brief This class fixes an issue with the skyboxes (border lines visible) and must be created before the scene is loaded. After loading the scene call "hideOriginalSkybox"
+     */
+    class CSkyBoxFix {
+      private:
+        enum enSkyboxState {
+          enSbNoSkyBox,
+          enSbSkyBox,
+          enSbMaterial,
+          enSbAttributes,
+          enSbTexture1,
+          enSbDone
+        };
+
+        bool m_bSkyBoxCreated;
+
+        irr::scene::ISceneNode *m_pSkyBox;
+
+      public:
+        /**
+         * Constructor
+         * @param a_pDevice the active Irrlicht device
+         * @param a_sIrrFile the irrlicht scene file to load
+         */
+        CSkyBoxFix(irr::IrrlichtDevice *a_pDevice, const std::string &l_sIrrFile);
+
+        /**
+         * Hide the skybox loaded by the Irrlicht scene manager
+         * @param a_pInput call this with the root scene node
+         */
+        void hideOriginalSkybox(irr::scene::ISceneNode *a_pInput);
+    };
+  }
+}

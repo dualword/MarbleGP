@@ -1,0 +1,217 @@
+{
+  "datatypes": [
+    { "name": "irr::scene::ISceneNode", "include": "irrlicht/irrlicht.h" }
+  ],
+  "baseclasses": {
+  },
+  "basetypes": {
+    "std::string": {
+      "prefix" : "const ",
+      "postfix": "&"
+    },
+    "irr::core::vector3df": {
+      "prefix" : "const ",
+      "postfix": "&"
+    },
+    "irr::core::recti": {
+      "prefix" : "const ",
+      "postfix": "&"
+    }
+  },
+  "tables": {
+    "SVector3d": {
+      "comment": "3d vector",
+      "fields": [
+        { "name": "x", "type": "float" },
+        { "name": "y", "type": "float" },
+        { "name": "z", "type": "float" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SColor": {
+      "comment": "RGBA color information",
+      "fields": [
+        { "name": "r", "type": "int" },
+        { "name": "g", "type": "int" },
+        { "name": "b", "type": "int" },
+        { "name": "a", "type": "int" }
+      ]
+    }
+  },
+  "enumerations": {
+  },
+  "classes": {
+    "LuaSceneObject": {
+      "comment": "LUA object for mesh objects in 3d scenes",
+      "members": [
+        { "name": "node", "type": "irr::scene::ISceneNode *", "comment": "Pointer to the Irrlicht scene node" }
+      ],
+      "methods": {
+        "lua_from": {
+          "initialize": {
+            "comment": "Initialize the object with a node from the scene",
+            "arguments": [
+              { "name": "nodename", "type": "std::string", "comment": "Name of the node in the scene" }
+            ]
+          },
+          "initclone": {
+            "comment": "Initialize the object by cloning the passed node",
+            "arguments": [
+              { "name": "object", "type": "LuaSceneObject", "comment": "The scene object to clone" }
+            ]
+          },
+          "initchild": {
+            "comment": "Initialize the object with a child of the passed scene object",
+            "arguments": [
+              { "name": "object", "type": "LuaSceneObject", "comment": "The parent object which has a named child that is used for initialization" },
+              { "name": "child" , "type": "std::string"   , "comment": "Name of the child to use for initialization of the object" }
+            ]
+          },
+          "setrotation": {
+            "comment": "Set the rotation of the scene object in Euler angles",
+            "arguments": [
+              { "name": "rotation", "type": "SVector3d", "comment": "The new rotation." }
+            ]
+          },
+          "setscale": {
+            "comment": "Set the scale of the scene object",
+            "arguments": [
+              { "name": "scale", "type": "SVector3d", "comment": "The new scale" }
+            ]
+          },
+          "setposition": {
+            "comment": "Set the position of the scene object",
+            "arguments": [
+              { "name": "position", "type": "SVector3d", "comment": "The new position" }
+            ]
+          },
+          "getposition": {
+            "comment": "Retrieve the position of the scene node",
+            "return": { "type": "SVector3d" }
+          },
+          "setvisible": {
+            "comment": "Set the visibility of the scene node",
+            "arguments": [
+              { "name": "visible", "type": "bool", "comment": "The new visibility flag" }
+            ]
+          },
+          "isvisible": {
+            "comment": "Find out whether or not the object is currently visible",
+            "return": { "type": "bool" }
+          },
+          "settexttexture": {
+            "comment": "Replace a texture of the scene node by a texture containing some text",
+            "arguments": [
+              { "name": "material"  , "type": "int"        , "comment": "The material of which the texture is replaced"    },
+              { "name": "text"      , "type": "std::string", "comment": "The text to be used for the text texture"         },
+              { "name": "width"     , "type": "int"        , "comment": "Width of the generated texture"                   },
+              { "name": "height"    , "type": "int"        , "comment": "Height of the generated texture"                  },
+              { "name": "alpha"     , "type": "bool"       , "comment": "Generate the texture with transparent background" , "default": "false"      },
+              { "name": "center"    , "type": "bool"       , "comment": "Center the text horizontally?"                    , "default": "false"      },
+              { "name": "textcolor" , "type": "SColor"     , "comment": "Color of the text to render"                      , "default": "dustbin::lua::colorStringToLua(\"000000\")" },
+              { "name": "background", "type": "SColor"     , "comment": "Background color of the texture"                  , "default": "dustbin::lua::colorStringToLua(\"FFFFFF\")" }
+            ]
+          },
+          "setimagetexture": {
+            "comment": "Replace a texture of the scene node by an image",
+            "arguments": [
+              { "name": "material", "type": "int"        , "comment": "The material of which the texture is replaced" },
+              { "name": "image"   , "type": "std::string", "comment": "The image to be used for the texture"          }
+            ]
+          }
+        },
+        "lua_none": {
+          "getNode": {
+            "comment": "Get the Irrlicht scene node attached to the LUA scene node instance",
+            "return": { "type": "irr::scene::ISceneNode *" }
+          },
+          "findChild": {
+            "comment": "Search for a child of this scene node",
+            "arguments": [
+              { "name": "parent", "type": "irr::scene::ISceneNode *", "comment": "The parent node to search for the child in" },
+              { "name": "name"  , "type": "std::string"             , "comment": "The name of the requested child node" }
+            ],
+            "return": { "type": "irr::scene::ISceneNode *" }
+          }
+        }
+      }
+    },
+    "LuaCameraObject": {
+      "comment": "A LUA camera object for controlling a 3d camera from LUA",
+      "members": [
+        { "name": "camera", "type": "irr::scene::ICameraSceneNode *", "comment": "The Irrlicht camera instance", "default": "nullptr" }
+      ],
+      "methods": {
+        "lua_from": {
+          "initialize": {
+            "comment": "Adds a new camera to the scene"
+          },
+          "setposition": {
+            "comment": "Set the position of the camera",
+            "arguments": [
+              { "name": "position", "type": "SVector3d", "comment": "The new camera position" }
+            ]
+          },
+          "settarget": {
+            "comment": "Set the target of the camera",
+            "arguments": [
+              { "name": "target", "type": "SVector3d", "comment": "The new camera target" }
+            ]
+          },
+          "setupvector": {
+            "comment": "Set the up-vector of the camera",
+            "arguments": [
+              { "name": "upvector", "type": "SVector3d", "comment": "The new camera up-vector" }
+            ]
+          },
+          "activate": {
+            "comment": "Make this camera the scene manager's active camera"
+          }
+        }
+      }
+    }
+  },
+  "singletons": {
+    "dialog": {
+      "globalidentifier": "dialog3d_cinstance",
+      "comment": "Singleton to handle a 3d dialog",
+      "methods": {
+        "lua_from": {
+          "loadscene": {
+            "comment": "Load an Irrlicht scene file",
+            "arguments": [
+              { "name": "filename", "type": "std::string", "comment": "Name of the 3d Irrlicht scene" }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "dialog": {
+      "comment": "LUA script to handle 3d dialog",
+      "globalidentifier": "dialog_cinstance",
+      "enums": [
+      ],
+      "exports": [
+        "LuaSceneObject",
+        "LuaCameraObject"
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "dialog"
+      ],
+      "prefix": [
+      ],
+      "methods": {
+        "lua_to": {
+          "initialize": {
+            "comment": "This function is called when the script starts, should be used for initialization and such"
+          }
+        }
+      }
+    }
+  }
+}

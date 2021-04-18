@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\state">
+      <UniqueIdentifier>{5d98a9e5-cff6-451d-94aa-8e30bd435512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\platform">
+      <UniqueIdentifier>{62f66556-a3d9-4a18-bf42-23800a4b2482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\platform">
+      <UniqueIdentifier>{67f27871-09cc-4ed2-ae8c-446b68fb0b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated">
+      <UniqueIdentifier>{15f0474b-f1d3-4c7e-88b2-1ff1c6270990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated\lua">
+      <UniqueIdentifier>{9832fda2-12bf-4399-9b77-f0728737d9ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated">
+      <UniqueIdentifier>{fa0f44f8-d6c2-478c-be93-d21c77de76a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated\lua">
+      <UniqueIdentifier>{665ca599-dd23-4fd2-b965-5ef51e6dd400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\lua">
+      <UniqueIdentifier>{1aaafb64-d7f5-49cd-8766-a66198585d3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\lua">
+      <UniqueIdentifier>{680145dd-a1a4-4d23-87d2-3dd75be0d7e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\messages">
+      <UniqueIdentifier>{5d6bd0d3-13d8-4a1b-8233-02e88da57b93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\messages">
+      <UniqueIdentifier>{3100aa93-7c43-4c1a-aad5-8f15b8c35e71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\state">
+      <UniqueIdentifier>{fde98c10-ad50-4942-9734-bbad906b25d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\scenenodes">
+      <UniqueIdentifier>{ea7b8877-fe95-4989-84ee-e13557d8bb83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\scenenodes">
+      <UniqueIdentifier>{e5c651bd-3eb6-4298-a1d5-3400553482a4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\_source\source\MarbleGP.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\CGlobal.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\CMainClass.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\platform\CPlatformWindows.cpp">
+      <Filter>Quelldateien\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\ILuaClass.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\LuaScript.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\luawrap.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaTypeHelpers.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSceneObject.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaCameraObject.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp">
+      <Filter>Quelldateien\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSingletonDialog.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\state\CLuaState.cpp">
+      <Filter>Quelldateien\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\_source\include\CMainClass.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\CGlobal.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\state\IState.h">
+      <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\platform\CPlatform.h">
+      <Filter>Headerdateien\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaCameraObject.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaSceneObject.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_dialog.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_dialog.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\lua_enums.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\luawrap.hpp">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\LuaScript.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\ILuaClass.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaTypeHelpers.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\messages\CMessageHelpers.h">
+      <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\state\CLuaState.h">
+      <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

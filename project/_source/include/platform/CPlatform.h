@@ -1,0 +1,28 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel#pragma once
+
+#include <irrlicht/irrlicht.h>
+#include <vector>
+#include <string>
+
+namespace dustbin {
+  namespace platform {
+    void portableItoa(int a_iValue, char *a_sBuffer, int a_iLen);
+    void portableDateStr(long a_iTime, char *a_sBuffer, int a_iLen);
+    void portableOpenUrl(const std::wstring &a_sUrl);
+    void portableFocusWindow(irr::video::IVideoDriver *a_pDrv);
+    void portableGetDataPath(std::wstring &a_sRoot);
+    void preventScreenSaver();
+    void portableGetImagePath(std::wstring &a_sPath);
+    void portableCopyFile(const std::wstring &a_sSource, const std::wstring &a_sTarget);
+    void portableCreateFolder(const std::string &a_sFolder);
+    bool portableIsFolder(const std::string &a_sPath);
+    const std::wstring portableOpenFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
+    const std::wstring portableSaveFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
+
+    irr::u64 portableGetFileDate(const std::wstring &a_sFile);
+
+    unsigned long long int portableGetLastModification(const std::wstring &a_sFile);
+
+    std::vector<std::string> getDrives();
+  }
+}
