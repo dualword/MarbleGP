@@ -437,7 +437,7 @@ def CreateHeader(a_FilePath, a_Name, a_Class, a_Type, a_Json):
   l_Includes = [ ]
   FillHeaders(a_Class, a_Json, l_Includes)
   l_Includes.append("luawrap.hpp")
-  l_Includes.append("LUA/ILuaClass.h")
+  l_Includes.append("lua/ILuaClass.h")
   l_Includes.append("irrlicht/irrlicht.h")
   
   for l_Include in l_Includes:

@@ -71,6 +71,9 @@ namespace dustbin {
                 }
                 break;
               }
+
+              default:
+                break;
             }
           }
           else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
@@ -95,6 +98,9 @@ namespace dustbin {
                 }
                 break;
               }
+
+              default:
+                break;
             }
           }
         }

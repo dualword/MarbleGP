@@ -4,7 +4,7 @@
 #include <irrlicht/irrlicht.h>
 #include <_generated/lua/lua_tables.h>
 #include <luawrap.hpp>
-#include <LUA/ILuaClass.h>
+#include <lua/ILuaClass.h>
 #include <irrlicht/irrlicht.h>
 
 /**

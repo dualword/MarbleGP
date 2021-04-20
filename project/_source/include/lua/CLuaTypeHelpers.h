@@ -46,7 +46,7 @@ namespace dustbin {
      * @param a_cInput the lua color to encode
      * @return the color encoded as a string
      */
-    std::string luaColorToString(const SColor a_cInput);
+    std::string luaColorToString(const SColor &a_cInput);
 
     /**
      * Load a LUA script from the file system and return the content as string

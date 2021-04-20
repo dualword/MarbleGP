@@ -2,7 +2,7 @@
 #pragma once
 
 #include <luawrap.hpp>
-#include <LUA/ILuaClass.h>
+#include <lua/ILuaClass.h>
 #include <irrlicht/irrlicht.h>
 
 /**

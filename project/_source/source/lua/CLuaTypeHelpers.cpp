@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <lua/CLuaTypeHelpers.h>
 #include <CGlobal.h>
+#include <string>
 
 namespace dustbin {
   namespace lua {
@@ -71,12 +72,16 @@ namespace dustbin {
     * @param a_cInput the lua color to encode
     * @return the color encoded as a string
     */
-    std::string luaColorToString(const SColor a_cInput) {
+    std::string luaColorToString(const SColor &a_cInput) {
       std::string l_sRet = "";
 
       auto encodeMember = [&](int a_iMember) {
         char s[0xFF];
+#ifdef _LINUX
+        sprintf(s, "%2X", a_iMember);
+#else
         sprintf_s(s, 0xFF, "%2X", a_iMember);
+#endif
         std::string l_sAdd = s;
         while (l_sAdd.size() < 2) l_sAdd = "0" + l_sAdd;
         l_sRet += l_sAdd;
@@ -103,7 +108,11 @@ namespace dustbin {
         if (l_pLUA != nullptr) {
           char *l_sData = new char[l_pLUA->getSize() + 1];
 
+#ifdef _LINUX
+          memset(l_sData, 0, l_pLUA->getSize() + 1);
+#else
           std::memset(l_sData, 0, l_pLUA->getSize() + 1);
+#endif
           l_pLUA->read(l_sData, l_pLUA->getSize());
           std::string l_sScript = l_sData;
           l_pLUA->drop();
@@ -112,7 +121,8 @@ namespace dustbin {
           return l_sScript;
         }
       }
-      else return "";
+
+      return "";
     }
   }
 }

@@ -41,3 +41,9 @@
 /project/MarbleGP/Debug/vcpkg.applocal.log
 /project/MarbleGP/vcpkg
 /project/MarbleGP/x64
+/project/MarbleGP_Raspberry/obj
+/project/MarbleGP_Raspberry/bin
+/project/MarbleGP/.vs
+/project/MarbleGP/ARM
+/project/MarbleGP/Debug
+/project/readme

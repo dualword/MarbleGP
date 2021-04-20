@@ -2,7 +2,7 @@
 #pragma once
 
 #include <luawrap.hpp>
-#include <LUA/ILuaClass.h>
+#include <lua/ILuaClass.h>
 #include <irrlicht/irrlicht.h>
 #include <_generated/lua/CLuaSingleton_dialog.h>
 

@@ -5,7 +5,7 @@ function initialize()
   
   g_Camera = LuaCameraObject:new()
   g_Camera:initialize()
-  g_Camera:setposition({ x = 0, y = 0, z = 10 })
+  g_Camera:setposition({ x = 0, y = 0, z = -20 })
   g_Camera:settarget({ x = 0, y = 0, z = 0 })
   g_Camera:setupvector({ x = 0, y = 1, z = 0 })
 end
