@@ -34,9 +34,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 
 extern "C" {
+#ifdef _LINUX_INCLUDE_PATH
+#include <lua5.3/lua.h>
+#include <lua5.3/lualib.h>
+#include <lua5.3/lauxlib.h>
+#else
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#endif
 }
 
 /***************************************

@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarbleGP_Raspberry", "MarbleGP_Raspberry.vcxproj", "{E46E2EBB-66AB-4E32-A629-5CB5199F1619}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Debug|ARM.ActiveCfg = Debug|ARM
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Debug|ARM.Build.0 = Debug|ARM
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Debug|ARM.Deploy.0 = Debug|ARM
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Debug|ARM64.Build.0 = Debug|ARM64
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Release|ARM.ActiveCfg = Release|ARM
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Release|ARM.Build.0 = Release|ARM
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Release|ARM.Deploy.0 = Release|ARM
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Release|ARM64.ActiveCfg = Release|ARM64
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Release|ARM64.Build.0 = Release|ARM64
+		{E46E2EBB-66AB-4E32-A629-5CB5199F1619}.Release|ARM64.Deploy.0 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B5680F7-9D05-4403-B165-7092E3FA89A6}
+	EndGlobalSection
+EndGlobal

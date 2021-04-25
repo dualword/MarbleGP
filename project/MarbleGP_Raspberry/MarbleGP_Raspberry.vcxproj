@@ -47,14 +47,16 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>../_source/include/lua;../_source/include</IncludePath>
+    <IncludePath>../_source/include/lua;../_source/include;/home/pi/libs/irrlicht/include</IncludePath>
     <ProjectPublicIncludePath>/usr/include/lua5.3;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
-    <LibraryPath>/usr/lib/arm-linux-gnueabihf</LibraryPath>
+    <LibraryPath>/usr/lib/arm-linux-gnueabihf;/home/pi/libs/irrlicht/lib/Linux</LibraryPath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>../_source/include/lua;../_source/include</IncludePath>
+    <IncludePath>../_source/include/lua;../_source/include;/home/pi/libs/irrlicht/include</IncludePath>
     <ProjectPublicIncludePath>/usr/include/lua5.3;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
-    <LibraryPath>/usr/lib/arm-linux-gnueabihf</LibraryPath>
+    <LibraryPath>/usr/lib/arm-linux-gnueabihf;/home/pi/libs/irrlicht/lib/Linux</LibraryPath>
+    <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <IncludePath>../_source/include/lua;../_source/include</IncludePath>
@@ -68,7 +70,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <LibraryDependencies>lua5.3;Irrlicht;wiringPi</LibraryDependencies>
+      <LibraryDependencies>GL;GLU;EGL;GLESv2;X11;Xxf86vm;lua5.3;Irrlicht;wiringPi</LibraryDependencies>
     </Link>
     <RemotePostBuildEvent>
       <Command>gpio export 17 out</Command>
@@ -77,14 +79,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <LibraryDependencies>lua5.3;Irrlicht;wiringPi</LibraryDependencies>
+      <LibraryDependencies>GL;GLU;EGL;GLESv2;X11;Xxf86vm;lua5.3;Irrlicht;wiringPi</LibraryDependencies>
     </Link>
     <RemotePostBuildEvent>
       <Command>gpio export 17 out</Command>
       <Message>Exportieren Sie Pin 17 mit dem GPIO-Hilfsprogramm, damit das Blink-Programm ohne "sudo" ausgeführt werden kann.</Message>
     </RemotePostBuildEvent>
     <ClCompile>
-      <PreprocessorDefinitions>_LINUX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_OPENGL_ES;_LINUX;_LINUX_INCLUDE_PATH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -127,7 +129,7 @@
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LINUX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_OPENGL_ES;_LINUX;_LINUX_INCLUDE_PATH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">

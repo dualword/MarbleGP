@@ -1,5 +1,10 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#ifdef _LINUX_INCLUDE_PATH
+#include <irrlicht.h>
+#else
 #include <irrlicht/irrlicht.h>
+#endif
+
 #include <state/CLuaState.h>
 #include <CMainClass.h>
 #include <chrono>
@@ -10,7 +15,14 @@ namespace dustbin {
   CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr) {
     CGlobal::m_pInstance = this;
 
-    m_pDevice = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2du(1028, 768), 32, false, false, false, this);
+// #ifdef _OPENGL_ES
+//     irr::video::E_DRIVER_TYPE l_eDriver = irr::video::EDT_OGLES2;
+// #else
+    irr::video::E_DRIVER_TYPE l_eDriver = irr::video::EDT_OPENGL;
+    // #endif
+
+
+    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(1028, 768), 32, false, false, false, this);
 
     if (m_pDevice != nullptr) {
       m_pDevice->setResizable(true);

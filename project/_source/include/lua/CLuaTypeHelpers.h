@@ -2,7 +2,12 @@
 #pragma once
 
 #include <_generated/lua/lua_tables.h>
+
+#ifdef _LINUX_INCLUDE_PATH
+#include <irrlicht.h>
+#else
 #include <irrlicht/irrlicht.h>
+#endif
 
 namespace dustbin {
   namespace lua {

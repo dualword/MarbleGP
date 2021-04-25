@@ -1,4 +1,10 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
+#ifdef _LINUX_INCLUDE_PATH
+#include <irrlicht.h>
+#else
 #include <irrlicht/irrlicht.h>
+#endif
+
 #include <CMainClass.h>
 #include <string>
 

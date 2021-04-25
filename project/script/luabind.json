@@ -1,6 +1,5 @@
 {
   "datatypes": [
-    { "name": "irr::scene::ISceneNode", "include": "irrlicht/irrlicht.h" }
   ],
   "baseclasses": {
   },
