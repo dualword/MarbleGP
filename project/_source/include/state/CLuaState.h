@@ -14,6 +14,10 @@ class CLuaScript_dialog;
 namespace dustbin {
   class CGlobal;
 
+  namespace scenenodes {
+    class CGui3dRoot;
+  }
+
   namespace state {
     /**
     * @class CLuaState
@@ -27,10 +31,17 @@ namespace dustbin {
         irr::scene::ISceneManager *m_pSmgr;
         irr::gui::IGUIEnvironment *m_pGui;
 
-        CLuaScript_dialog *m_pScript;
-        CGlobal           *m_pGlobal;
+        CLuaScript_dialog      *m_pScript;
+        CGlobal                *m_pGlobal;
+        scenenodes::CGui3dRoot *m_pGuiRoot;
 
-      public:
+        /**
+         * Initialize the 3d GUI Root node
+         * @param a_pParent the children of this scenenode will be iterated to find the root of the 3d GUI
+         */
+        void initGuiRoot(irr::scene::ISceneNode *a_pParent);
+
+    public:
         CLuaState();
         
         virtual ~CLuaState();

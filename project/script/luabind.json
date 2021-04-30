@@ -182,6 +182,20 @@
             "arguments": [
               { "name": "filename", "type": "std::string", "comment": "Name of the 3d Irrlicht scene" }
             ]
+          },
+          "init3dgui": {
+            "comment": "Initialize the 3d UI",
+            "arguments": [ ]
+          }
+        },
+        "lua_none": {
+          "findscenenode": {
+            "comment": "find the first scene node of a specific type",
+            "arguments": [
+              { "name": "parent", "type": "irr::scene::ISceneNode *"    , "comment": "The parent node" },
+              { "name": "type"  , "type": "irr::scene::ESCENE_NODE_TYPE", "comment": "The type of scenenode to search for" }
+            ],
+            "return": { "type": "irr::scene::ISceneNode *" }
           }
         }
       }
@@ -208,6 +222,12 @@
         "lua_to": {
           "initialize": {
             "comment": "This function is called when the script starts, should be used for initialization and such"
+          },
+          "step": {
+            "comment": "This function is called every time a frame is drawn"
+          },
+          "windowresized": {
+            "comment": "This function is called every time the window is resized"
           }
         }
       }

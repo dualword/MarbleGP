@@ -1,4 +1,6 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
 #include <_generated/lua/CLuaScript_dialog.h>
+#include <scenenodes/CGui3dSceneNodes.h>
 #include <lua/CLuaTypeHelpers.h>
 #include <state/CLuaState.h>
 #include <CGlobal.h>
@@ -7,17 +9,26 @@
 namespace dustbin {
   namespace state {
     CLuaState::CLuaState() : 
-      m_pDevice(CGlobal::getInstance()->getIrrlichtDevice()), 
-      m_pSmgr  (CGlobal::getInstance()->getSceneManager  ()), 
-      m_pDrv   (CGlobal::getInstance()->getVideoDriver   ()), 
-      m_pGui   (CGlobal::getInstance()->getGuiEnvironment()),
-      m_pGlobal(CGlobal::getInstance()),
-      m_pScript(nullptr) {
+      m_pDevice (CGlobal::getInstance()->getIrrlichtDevice()), 
+      m_pSmgr   (CGlobal::getInstance()->getSceneManager  ()), 
+      m_pDrv    (CGlobal::getInstance()->getVideoDriver   ()), 
+      m_pGui    (CGlobal::getInstance()->getGuiEnvironment()),
+      m_pGlobal (CGlobal::getInstance()),
+      m_pScript (nullptr),
+      m_pGuiRoot(nullptr) {
 
     }
 
     CLuaState::~CLuaState() {
       deactivate();
+    }
+
+    void CLuaState::initGuiRoot(irr::scene::ISceneNode* a_pParent) {
+      if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_i3dGuiRootID)
+        m_pGuiRoot = reinterpret_cast<scenenodes::CGui3dRoot *>(a_pParent);
+      else
+        for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++)
+          initGuiRoot(*it);
     }
 
     /**
@@ -31,6 +42,7 @@ namespace dustbin {
 
       if (m_pScript != nullptr) {
         m_pScript->initialize();
+        initGuiRoot(m_pSmgr->getRootSceneNode());
       }
     }
 
@@ -42,6 +54,8 @@ namespace dustbin {
         delete m_pScript;
         m_pScript = nullptr;
       }
+
+      m_pGuiRoot = nullptr;
     }
 
     /**
@@ -59,9 +73,11 @@ namespace dustbin {
       irr::scene::ICameraSceneNode *l_pCam = m_pSmgr->getActiveCamera();
       if (l_pCam != nullptr) {
         irr::f32 l_fRatio = (irr::f32)a_cDim.Width / (irr::f32)a_cDim.Height;
-        printf("--> %.2f\n", l_fRatio);
         l_pCam->setAspectRatio(l_fRatio);
       }
+
+      if (m_pScript != nullptr)
+        m_pScript->windowresized();
     }
 
     /**
@@ -87,6 +103,12 @@ namespace dustbin {
       m_pSmgr->drawAll();
       m_pGui->drawAll();
       m_pDrv->endScene();
+
+      if (m_pScript != nullptr)
+        m_pScript->step();
+
+      if (m_pGuiRoot != nullptr)
+        m_pGuiRoot->step();
 
       return l_eRet;
     }
