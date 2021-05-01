@@ -1,4 +1,4 @@
-#include <scenenodes/CMarbleGPSceneNodeFactory.h>
+#include <scenenodes/CMarbleGPSceneNodeFactoryEditor.h>
 
 #include <irrlicht.h>
 #include <irredit.h>
@@ -19,7 +19,7 @@ __declspec(dllexport) irr::irredit::IIrrEditPlugin* __stdcall createPlugin(irr::
 
 	irr::scene::ISceneManager *l_pSmgr = services->getDevice()->getSceneManager();
 
-	dustbin::scenenodes::CMarbleGPSceneNodeFactory *l_pFactory = new dustbin::scenenodes::CMarbleGPSceneNodeFactory(l_pSmgr);
+	dustbin::scenenodes::CMarbleGPSceneNodeFactoryEditor *l_pFactory = new dustbin::scenenodes::CMarbleGPSceneNodeFactoryEditor(l_pSmgr);
 	l_pSmgr->registerSceneNodeFactory(l_pFactory);
 	l_pFactory->drop();
 	// CMarbles3SceneNodeFactory* factory = new CMarbles3SceneNodeFactory(mgr);

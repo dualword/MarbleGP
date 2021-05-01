@@ -156,14 +156,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\scenenodes\CGui3dSceneNodes.h" />
-    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\scenenodes\CGui3dSceneNodes.cpp" />
-    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

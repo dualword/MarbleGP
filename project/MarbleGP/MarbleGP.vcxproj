@@ -200,8 +200,11 @@
     <ClCompile Include="..\_source\source\MarbleGP.cpp" />
     <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\_source\source\platform\CPlatformWindows.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CGui3dItem.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CGui3dRoot.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CGui3dSceneNodes.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\_source\source\state\CLuaState.cpp" />
@@ -218,8 +221,11 @@
     <ClInclude Include="..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h" />
     <ClInclude Include="..\_source\include\platform\CPlatform.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CGui3dItem.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CGui3dRoot.h" />
     <ClInclude Include="..\_source\include\scenenodes\CGui3dSceneNodes.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h" />
     <ClInclude Include="..\_source\include\state\CLuaState.h" />

@@ -1,6 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <_generated/lua/CLuaScript_dialog.h>
-#include <scenenodes/CGui3dSceneNodes.h>
+#include <scenenodes/CGui3dRoot.h>
 #include <lua/CLuaTypeHelpers.h>
 #include <state/CLuaState.h>
 #include <CGlobal.h>

@@ -1,6 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <_generated/lua/CLuaSingleton_dialog.h>
-#include <scenenodes/CGui3dSceneNodes.h>
+#include <scenenodes/CGui3dRoot.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <CGlobal.h>
 

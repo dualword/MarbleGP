@@ -30,24 +30,15 @@ namespace dustbin {
       0
     };
 
-    static std::string g_sTextureName     = "Texture",
-                       g_sTextName        = "Text",
-                       g_sAlignmentName   = "Alignment",
-                       g_sTextColorName   = "Textcolor",
-                       g_sBackgroundName  = "Backgroundcolor",
-                       g_sHoverColorName  = "HoverColor",
-                       g_sTextureWidthName    = "TextureWidth",
-                       g_sTextureHeightName   = "TextureHeight";
-
-    static std::map<std::string, CGui3dItem::enGui3dType> g_mTypeMap = {
-      { g_aUiElementNames[0], CGui3dItem::enGui3dType::None },
-      { g_aUiElementNames[1], CGui3dItem::enGui3dType::Decoration },
-      { g_aUiElementNames[2], CGui3dItem::enGui3dType::Label },
-      { g_aUiElementNames[3], CGui3dItem::enGui3dType::Button },
-      { g_aUiElementNames[4], CGui3dItem::enGui3dType::IconButton }
+    static std::map<std::string, CGui3dItemBase::enGui3dType> g_mTypeMap = {
+      { g_aUiElementNames[0], CGui3dItemBase::enGui3dType::None },
+      { g_aUiElementNames[1], CGui3dItemBase::enGui3dType::Decoration },
+      { g_aUiElementNames[2], CGui3dItemBase::enGui3dType::Label },
+      { g_aUiElementNames[3], CGui3dItemBase::enGui3dType::Button },
+      { g_aUiElementNames[4], CGui3dItemBase::enGui3dType::IconButton }
     };
 
-    CGui3dItem::CGui3dItem(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
+    CGui3dItemBase::CGui3dItemBase(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
       m_pSmgr      (a_pSmgr), 
       m_eType      (enGui3dType ::Decoration),
       m_eAlign     (enGui3dAlign::Left      ),
@@ -55,8 +46,7 @@ namespace dustbin {
       m_pFont      (nullptr),
       m_cBackground(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)),
       m_cHoverColor(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)),
-      m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
-      m_bHovered   (false)
+      m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0))
     {
       if (getID() == -1)
         setID(getNextSceneNodeId());
@@ -101,18 +91,18 @@ namespace dustbin {
       };
     }
 
-    CGui3dItem::~CGui3dItem() {
+    CGui3dItemBase::~CGui3dItemBase() {
     }
 
-    std::string CGui3dItem::typeToString(enGui3dType a_eType) {
+    std::string CGui3dItemBase::typeToString(enGui3dType a_eType) {
       return g_aUiElementNames[(int)a_eType];
     }
 
-    std::string CGui3dItem::alignToString(enGui3dAlign a_eAlign) {
+    std::string CGui3dItemBase::alignToString(enGui3dAlign a_eAlign) {
       return g_aUiElementNames[(int)a_eAlign];
     }
 
-    CGui3dItem::enGui3dAlign CGui3dItem::stringToAlign(const std::string& a_sAlign) {
+    CGui3dItemBase::enGui3dAlign CGui3dItemBase::stringToAlign(const std::string& a_sAlign) {
       for (int i = 0; g_aTextAlignment[i] != 0; i++) {
         if (a_sAlign == g_aTextAlignment[i])
           return (enGui3dAlign)i;
@@ -120,32 +110,32 @@ namespace dustbin {
       return (enGui3dAlign)0;
     }
 
-    void CGui3dItem::OnRegisterSceneNode() {
+    void CGui3dItemBase::OnRegisterSceneNode() {
 
     }
 
-    void CGui3dItem::render() {
+    void CGui3dItemBase::render() {
 
     }
 
-    const irr::core::aabbox3d<irr::f32>& CGui3dItem::getBoundingBox() const {
+    const irr::core::aabbox3d<irr::f32>& CGui3dItemBase::getBoundingBox() const {
       return m_cBox;
     }
 
-    irr::u32 CGui3dItem::getMaterialCount() {
+    irr::u32 CGui3dItemBase::getMaterialCount() {
       return 0;
     }
 
-    irr::video::SMaterial& CGui3dItem::getMaterial(irr::u32 i) {
+    irr::video::SMaterial& CGui3dItemBase::getMaterial(irr::u32 i) {
       return m_cMaterial;
     }
 
-    irr::scene::ESCENE_NODE_TYPE CGui3dItem::getType() const {
+    irr::scene::ESCENE_NODE_TYPE CGui3dItemBase::getType() const {
       return (irr::scene::ESCENE_NODE_TYPE)g_i3dGuiItemID;
     }
 
-    irr::scene::ISceneNode* CGui3dItem::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewSmgr) {
-      CGui3dItem *l_pRet = new CGui3dItem(a_pNewParent != nullptr ? a_pNewParent : getParent(), a_pNewSmgr != nullptr ? a_pNewSmgr : m_pSmgr, -1);
+    irr::scene::ISceneNode* CGui3dItemBase::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewSmgr) {
+      CGui3dItemBase *l_pRet = new CGui3dItemBase(a_pNewParent != nullptr ? a_pNewParent : getParent(), a_pNewSmgr != nullptr ? a_pNewSmgr : m_pSmgr, -1);
 
       l_pRet->m_cBackground = m_cBackground;
       l_pRet->m_cHoverColor = m_cHoverColor;
@@ -159,15 +149,13 @@ namespace dustbin {
       return l_pRet;
     }
 
-    void CGui3dItem::updateRttText() {
+    void CGui3dItemBase::updateRttText(const irr::video::SColor &a_cBackgroundColor, const irr::video::SColor &a_cTextColor) {
       if (m_pRttTexture == nullptr)
         updateRttTexture();
 
-      bool l_bDrawHovered = m_bHovered && (m_mSerializerMap.find(m_eType) != m_mSerializerMap.end() && std::find(m_mSerializerMap[m_eType].begin(), m_mSerializerMap[m_eType].end(), g_sHoverColorName) != m_mSerializerMap[m_eType].end());
-
       irr::video::IVideoDriver *l_pDrv = m_pSmgr->getVideoDriver();
       l_pDrv->setRenderTarget(m_pRttTexture);
-      l_pDrv->draw2DRectangle(m_bHovered ? m_cHoverColor : m_cBackground, irr::core::rect<irr::s32>(irr::core::position2di(0,0), m_pRttTexture->getSize()));
+      l_pDrv->draw2DRectangle(a_cBackgroundColor, irr::core::rect<irr::s32>(irr::core::position2di(0,0), m_pRttTexture->getSize()));
 
       irr::core::rect<irr::s32> l_cRect = m_cRect;
       bool l_bCenterH = false;
@@ -192,12 +180,12 @@ namespace dustbin {
       }
       }
 
-      m_pFont->draw(m_sText.c_str(), l_cRect, m_cTextColor, l_bCenterH, true);
+      m_pFont->draw(m_sText.c_str(), l_cRect, a_cTextColor, l_bCenterH, true);
 
       l_pDrv->setRenderTarget(nullptr);
     }
 
-    void CGui3dItem::updateRttTexture() {
+    void CGui3dItemBase::updateRttTexture() {
       if (getParent() != nullptr && getParent()->getType() == irr::scene::ESNT_MESH) {
         std::string l_sTextureName = std::string("Rtt_") + getParent()->getName() + "_" + std::to_string(getParent()->getID()) + ".png";
 #ifdef _IRREDIT_PLUGIN
@@ -233,11 +221,11 @@ namespace dustbin {
         }
 
         if (m_pRttTexture != nullptr)
-          updateRttText();
+          updateRttText(m_cBackground, m_cTextColor);
       }
     }
 
-    void CGui3dItem::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
+    void CGui3dItemBase::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       irr::scene::ISceneNode::serializeAttributes(a_pOut, a_pOptions);
 
       a_pOut->addEnum("Type", (irr::s32)m_eType, g_aUiElementNames);
@@ -258,7 +246,7 @@ namespace dustbin {
       }
     }
 
-    void CGui3dItem::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
+    void CGui3dItemBase::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       irr::scene::ISceneNode::deserializeAttributes(a_pIn, a_pOptions);
 
       enGui3dType l_eType = enGui3dType::None;
@@ -348,35 +336,21 @@ namespace dustbin {
         updateRttTexture();
       }
       else if (l_bUpdateRttText) {
-        updateRttText();
+        updateRttText(m_cBackground, m_cTextColor);
       }
     }
 
-    const std::string& CGui3dItem::getNodeTypeName() {
+    const std::string& CGui3dItemBase::getNodeTypeName() {
       return m_sNodeTypeName;
     }
 
-    const irr::scene::ESCENE_NODE_TYPE CGui3dItem::getNodeType() {
+    const irr::scene::ESCENE_NODE_TYPE CGui3dItemBase::getNodeType() {
       return (irr::scene::ESCENE_NODE_TYPE)g_i3dGuiItemID;
     }
 
-    void CGui3dItem::itemEntered() {
-      m_bHovered = true;
-      updateRttText();
-    }
-
-    void CGui3dItem::itemLeft() {
-      m_bHovered = false;
-      updateRttText();
-    }
-
-    CGui3dRoot::CGui3dRoot(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
+    CGui3dRootBase::CGui3dRootBase(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
       m_pSmgr    (a_pSmgr), 
-      m_pColMgr  (nullptr),
-      m_pCursor  (nullptr),
-      m_bLeftDown(false  ),
-      m_pSelector(nullptr),
-      m_pHover   (nullptr)
+      m_pColMgr  (nullptr)
     {
       if (a_iId == -1)
         setID(getNextSceneNodeId());
@@ -392,125 +366,65 @@ namespace dustbin {
       setPosition(irr::core::vector3df(0.0f, 0.0f, 0.0f));
     }
 
-    CGui3dRoot::~CGui3dRoot() {
-      if (m_pSelector != nullptr)
-        m_pSelector->drop();
+    CGui3dRootBase::~CGui3dRootBase() {
     }
 
-    void CGui3dRoot::OnRegisterSceneNode() {
+    void CGui3dRootBase::OnRegisterSceneNode() {
       if (IsVisible)
         m_pSmgr->registerNodeForRendering(this);
 
       ISceneNode::OnRegisterSceneNode();
     }
 
-    void CGui3dRoot::render() {
+    void CGui3dRootBase::render() {
     }
 
-    const irr::core::aabbox3d<irr::f32>& CGui3dRoot::getBoundingBox() const {
+    const irr::core::aabbox3d<irr::f32>& CGui3dRootBase::getBoundingBox() const {
       return m_cBox;
     }
 
-    irr::u32 CGui3dRoot::getMaterialCount() {
+    irr::u32 CGui3dRootBase::getMaterialCount() {
       return 0;
     }
 
-    irr::video::SMaterial& CGui3dRoot::getMaterial(irr::u32 i) {
+    irr::video::SMaterial& CGui3dRootBase::getMaterial(irr::u32 i) {
       return m_cMaterial;
     }
 
-    irr::scene::ESCENE_NODE_TYPE CGui3dRoot::getType() const {
+    irr::scene::ESCENE_NODE_TYPE CGui3dRootBase::getType() const {
       return (irr::scene::ESCENE_NODE_TYPE)g_i3dGuiRootID;
     }
 
-    irr::scene::ISceneNode* CGui3dRoot::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewSmgr) {
+    irr::scene::ISceneNode* CGui3dRootBase::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewSmgr) {
       return nullptr;
     }
 
-    void CGui3dRoot::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
+    void CGui3dRootBase::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       ISceneNode::serializeAttributes(a_pOut, a_pOptions);
     }
 
-    void CGui3dRoot::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
+    void CGui3dRootBase::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       ISceneNode::deserializeAttributes(a_pIn, a_pOptions);
     }
 
-    const std::string &CGui3dRoot::getNodeTypeName() {
+    const std::string &CGui3dRootBase::getNodeTypeName() {
       return m_sNodeTypeName;
     }
 
-    const irr::scene::ESCENE_NODE_TYPE CGui3dRoot::getNodeType() {
+    const irr::scene::ESCENE_NODE_TYPE CGui3dRootBase::getNodeType() {
       return (irr::scene::ESCENE_NODE_TYPE)g_i3dGuiRootID;
     }
 
-    void CGui3dRoot::getGuiItems(irr::scene::ISceneNode* a_pParent, std::vector<dustbin::scenenodes::CGui3dItem *>& a_vItems) {
-      if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)g_i3dGuiItemID)
-        a_vItems.push_back(reinterpret_cast<dustbin::scenenodes::CGui3dItem *>(a_pParent));
+    std::string CGui3dRootBase::m_sNodeTypeName = "Gui3dRoot";
+    std::string CGui3dItemBase::m_sNodeTypeName = "Gui3dItem";
 
-      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++) {
-        getGuiItems(*it, a_vItems);
-      }
-    }
-
-    void CGui3dRoot::initGui3d() {
-      std::vector<dustbin::scenenodes::CGui3dItem *> l_vItems;
-      getGuiItems(this, l_vItems);
-
-      m_pColMgr   = m_pSmgr->getSceneCollisionManager();
-      m_pSelector = m_pSmgr->createMetaTriangleSelector();
-
-      for (std::vector<dustbin::scenenodes::CGui3dItem*>::iterator it = l_vItems.begin(); it != l_vItems.end(); it++) {
-        irr::scene::ISceneNode *l_pNode = (*it)->getParent();
-        if (l_pNode->getType() == irr::scene::ESNT_MESH) {
-          irr::scene::IMeshSceneNode *l_pMesh = reinterpret_cast<irr::scene::IMeshSceneNode *>(l_pNode);
-          irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(l_pMesh->getMesh(), l_pMesh);
-          l_pMesh->setTriangleSelector(l_pSelector);
-          m_pSelector->addTriangleSelector(l_pSelector);
-
-          m_mItemScenenodeMap[(*it)->getParent()] = *it;
-        }
-      }
-
-      m_pSmgr->drawAll();
-    }
-
-    void CGui3dRoot::setCursorControl(irr::gui::ICursorControl* a_pCursor) {
-      m_pCursor = a_pCursor;
-    }
-
-    void CGui3dRoot::step() {
-#ifndef _IRREDIT_PLUGIN
-      if (m_pCursor != nullptr && m_pColMgr != nullptr) {
-        irr::core::line3df l_cLine = m_pColMgr->getRayFromScreenCoordinates(m_pCursor->getPosition(), m_pSmgr->getActiveCamera());
-
-        irr::core::vector3df    l_cPoint;
-        irr::core::triangle3df  l_cTriangle;
-        irr::scene::ISceneNode *l_pNode = m_pColMgr->getSceneNodeAndCollisionPointFromRay(l_cLine, l_cPoint, l_cTriangle);
-
-        CGui3dItem *l_pHover = nullptr;
-
-        if (l_pNode != nullptr) {
-
-          if (m_mItemScenenodeMap.find(l_pNode) != m_mItemScenenodeMap.end()) {
-            l_pHover = m_mItemScenenodeMap[l_pNode];
-
-          }
-        }
-
-        if (l_pHover != m_pHover) {
-          if (m_pHover != nullptr)
-            m_pHover->itemLeft();
-
-          m_pHover = l_pHover;
-
-          if (m_pHover != nullptr)
-            m_pHover->itemEntered();
-        }
-      }
-#endif
-    }
-
-    std::string CGui3dRoot::m_sNodeTypeName = "Gui3dRoot";
-    std::string CGui3dItem::m_sNodeTypeName = "Gui3dItem";
+    std::string CGui3dItemBase::g_sTextureName       = "Texture";
+    std::string CGui3dItemBase::g_sTextName          = "Text";
+    std::string CGui3dItemBase::g_sAlignmentName     = "Alignment";
+    std::string CGui3dItemBase::g_sTextColorName     = "Textcolor";
+    std::string CGui3dItemBase::g_sBackgroundName    = "Backgroundcolor";
+    std::string CGui3dItemBase::g_sHoverColorName    = "HoverColor";
+    std::string CGui3dItemBase::g_sTextureWidthName  = "TextureWidth";
+    std::string CGui3dItemBase::g_sTextureHeightName = "TextureHeight";
   }
 }

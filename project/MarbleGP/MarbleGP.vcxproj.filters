@@ -117,6 +117,15 @@
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CGui3dRoot.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CGui3dItem.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -177,6 +186,15 @@
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CGui3dSceneNodes.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CGui3dRoot.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CGui3dItem.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>

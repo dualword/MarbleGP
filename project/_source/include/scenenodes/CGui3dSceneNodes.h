@@ -18,11 +18,12 @@ namespace dustbin {
     const int g_i3dGuiItemID = MAKE_IRR_ID('3', 'e', 'l', 'm');  /**< The type id of the 3d UI element node */
 
     /**
-     * @class CGui3dItem
+     * @class CGui3dItemBase
      * @author Christian Keimel
-     * @brief This node turns it's parent (which must be a mesh scene node) into a 3d UI element
+     * @brief This is the base node for turning the parent (of type IMeshSceneNode) into a 3d GUI item. The actual functionality is added in the derived class used in the application
+     * @see CGui3dItem
      */
-    class CGui3dItem : public irr::scene::ISceneNode, public CSceneNodeBase {
+    class CGui3dItemBase : public irr::scene::ISceneNode, public CSceneNodeBase {
       public:
         enum class enGui3dType {
           None = 0,
@@ -38,7 +39,16 @@ namespace dustbin {
           Right = 2
         };
 
-      private:
+        static std::string g_sTextureName,
+                           g_sTextName,
+                           g_sAlignmentName,
+                           g_sTextColorName,
+                           g_sBackgroundName,
+                           g_sHoverColorName,
+                           g_sTextureWidthName,
+                           g_sTextureHeightName;
+
+    protected:
         irr::core::aabbox3df       m_cBox;          /**< The bounding  */
         irr::video::SMaterial      m_cMaterial;     /**< The material  */
         irr::scene::ISceneManager *m_pSmgr;         /**< The scene manager */
@@ -48,8 +58,6 @@ namespace dustbin {
         irr::video::SColor         m_cBackground,   /**< The background color */
                                    m_cHoverColor,   /**< The "mouse over" color */
                                    m_cTextColor;    /**< The text color */
-
-        bool m_bHovered;  /**< Is the cursor currently hovering this item? */
 
         int m_iRttTexture;  /**< The texture number of the parent that will be modified */
 
@@ -69,12 +77,12 @@ namespace dustbin {
 
         enGui3dAlign stringToAlign(const std::string &a_sAlign);
         
-        void updateRttText();
+        virtual void updateRttText(const irr::video::SColor &a_cBackgroundColor, const irr::video::SColor &a_cTextColor);
         void updateRttTexture();
 
       public:
-        CGui3dItem(irr::scene::ISceneNode *a_pParent, irr::scene::ISceneManager *a_pSmgr, irr::s32 a_iId);
-        virtual ~CGui3dItem();
+        CGui3dItemBase(irr::scene::ISceneNode *a_pParent, irr::scene::ISceneManager *a_pSmgr, irr::s32 a_iId);
+        virtual ~CGui3dItemBase();
 
         virtual void OnRegisterSceneNode();
         virtual void render();
@@ -89,44 +97,32 @@ namespace dustbin {
 
         static const std::string &getNodeTypeName();
         static const irr::scene::ESCENE_NODE_TYPE getNodeType();
-
-        void itemEntered(); /**< The cursor has entered the item */
-        void itemLeft();    /**< The cursor has left the item */
     };
 
     /**
-     * @class C3dGuiRoot
+     * @class C3dGuiRootBase
      * @author Christian Keimel
-     * @brief This is the 3d GUI root class that converts it's children to a 3d UI
+     * @brief This is the base class for the 3d GUI that converts it's CGui3dItem children to 3d GUI elements.
+     * @see CGui3dItem
+     * @see CGui3dRoot
+     * 
+     * CGui3dRootBase is on one hand the class that is instantiated for the editor and on the other hand the base
+     * class for CGui3dRoot which holds functions to handle user interaction
      */
-    class CGui3dRoot : public irr::scene::ISceneNode, public CSceneNodeBase {
-      private:
+    class CGui3dRootBase : public irr::scene::ISceneNode, public CSceneNodeBase {
+      protected:
         irr::core::aabbox3df                m_cBox;       /**< The bounding  */
         irr::video::SMaterial               m_cMaterial;  /**< The material  */
         irr::scene::ISceneManager          *m_pSmgr;      /**< The scene manager */
-        irr::gui::ICursorControl           *m_pCursor;    /**< The cursor control to handle events */
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The scene collision manager necessary to detect hovers and such */
-        irr::scene::IMetaTriangleSelector  *m_pSelector;  /**< A meta triangle selector that combines all triangle selectors of the menu */
-
-        CGui3dItem *m_pHover;        /**< The hovered node */
 
         static std::string m_sNodeTypeName;  /**< The node type name */
 
-        bool m_bLeftDown; /**< Is the left mouse button down? */
-
-        std::map<irr::scene::ISceneNode *, CGui3dItem *> m_mItemScenenodeMap; /**< This map is used to connect scenenodes with the 3d Gui items */
-
-
-        /**
-         * Get all children of type "CGui3dItem"
-         * @param a_pParent the parent node to iterate the children
-         * @param a_pItems a vector which will be filles
-         */
-        void getGuiItems(irr::scene::ISceneNode *a_pParent, std::vector<dustbin::scenenodes::CGui3dItem *> &a_vItems);
+        std::map<irr::scene::ISceneNode *, CGui3dItemBase *> m_mItemScenenodeMap; /**< This map is used to connect scenenodes with the 3d Gui items */
 
       public:
-        CGui3dRoot(irr::scene::ISceneNode *a_pParent, irr::scene::ISceneManager *a_pSmgr, irr::s32 a_iId);
-        virtual ~CGui3dRoot();
+        CGui3dRootBase(irr::scene::ISceneNode *a_pParent, irr::scene::ISceneManager *a_pSmgr, irr::s32 a_iId);
+        virtual ~CGui3dRootBase();
 
         virtual void OnRegisterSceneNode();
         virtual void render();
@@ -141,23 +137,6 @@ namespace dustbin {
 
         static const std::string &getNodeTypeName();
         static const irr::scene::ESCENE_NODE_TYPE getNodeType();
-
-        /**
-         * Initialize the 3d GUI members for handling events
-         * @param a_pCursor the Irrlicht cursor control
-         */
-        void initGui3d();
-
-        /**
-         * Call this function to react to user input
-         */
-        void step();
-
-        /**
-         * Set the Irrlicht Cursor Control instance
-         * @param a_pCursor the Irrlicht Cursor Control instance
-         */
-        void setCursorControl(irr::gui::ICursorControl *a_pCursor);
     };
   }
 }
