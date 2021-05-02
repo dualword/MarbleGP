@@ -7,6 +7,10 @@
 class CLuaScript_dialog;
 
 namespace dustbin {
+  namespace state {
+    class IState;
+  }
+
   namespace scenenodes {
     /**
      * @class CGui3dRoot
@@ -20,6 +24,8 @@ namespace dustbin {
                    *m_pClick,   /**< The clicked item. Will remain clicked until the left mouse button is released */
                    *m_pSelect;  /**< The selected item. Is updated when an item is clicked and will remain until another item is selected */
 
+        bool m_bLeftButtonDown; /**< Is the left mouse button down at the moment? */
+
         irr::gui::ICursorControl *m_pCursor;    /**< The cursor control to handle events */
 
         irr::scene::IMetaTriangleSelector *m_pSelector;  /**< A meta triangle selector that combines all triangle selectors of the menu */
@@ -27,6 +33,8 @@ namespace dustbin {
         std::map<irr::scene::ISceneNode *, CGui3dItemBase *> m_mItemScenenodeMap; /**< This map is used to connect scenenodes with the 3d Gui items */
 
         CLuaScript_dialog *m_pLuaScript;  /**< The LUA script that handles user input */
+
+        state::IState *m_pState; /**< The active state */
 
         /**
          * Get all children which are CGui3dItem instances

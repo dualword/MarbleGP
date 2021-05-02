@@ -163,6 +163,12 @@ namespace dustbin {
       */
       virtual std::string peekScript();
 
+      /**
+       * Get the currently active state
+       * @ return the currently active state
+       */
+      virtual state::IState *getActiveState();
+
       // Method inherited from irr::IEventReceiver
       virtual bool OnEvent(const irr::SEvent &a_cEvent);
   };

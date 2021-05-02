@@ -208,11 +208,13 @@
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\_source\source\state\CLuaState.cpp" />
+    <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
+    <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CGlobal.h" />
@@ -222,6 +224,8 @@
     <ClInclude Include="..\_source\include\lua\LuaScript.h" />
     <ClInclude Include="..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h" />
+    <ClInclude Include="..\_source\include\messages\IMessage.h" />
+    <ClInclude Include="..\_source\include\messages\ISerializer.h" />
     <ClInclude Include="..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\_source\include\scenenodes\CGui3dItem.h" />
     <ClInclude Include="..\_source\include\scenenodes\CGui3dRoot.h" />
@@ -232,6 +236,8 @@
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h" />
     <ClInclude Include="..\_source\include\state\CLuaState.h" />
     <ClInclude Include="..\_source\include\state\IState.h" />
+    <ClInclude Include="..\_source\include\threads\CMessageQueue.h" />
+    <ClInclude Include="..\_source\include\threads\IQueue.h" />
     <ClInclude Include="..\_source\include\_generated\lua\CLuaCameraObject.h" />
     <ClInclude Include="..\_source\include\_generated\lua\CLuaSceneObject.h" />
     <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_dialog.h" />
@@ -241,6 +247,7 @@
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessages.h" />
+    <ClInclude Include="..\_source\include\_generated\messages\IUiState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

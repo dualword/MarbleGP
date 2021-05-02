@@ -11,6 +11,10 @@
 
 namespace dustbin {
 
+  namespace state {
+    class IState;
+  }
+
   enum class enFileType {
     ImageFile,
     LuaFile,
@@ -149,6 +153,12 @@ namespace dustbin {
        * @return true if the file exists, false otherwise
        */
       virtual bool existsFile(enFileSearch a_eSeach, enFileType a_eType, const std::string &a_sName) = 0;
+
+      /**
+       * Get the currently active state
+       * @ return the currently active state
+       */
+      virtual state::IState *getActiveState() = 0;
 
       /**
        * Get a setting as boolean

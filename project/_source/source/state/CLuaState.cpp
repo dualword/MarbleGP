@@ -15,8 +15,10 @@ namespace dustbin {
       m_pGui    (CGlobal::getInstance()->getGuiEnvironment()),
       m_pGlobal (CGlobal::getInstance()),
       m_pScript (nullptr),
-      m_pGuiRoot(nullptr) {
-
+      m_pGuiRoot(nullptr)
+    {
+      for (int i = 0; i < 3; i++)
+        m_bButtons[i] = false;
     }
 
     CLuaState::~CLuaState() {
@@ -86,6 +88,12 @@ namespace dustbin {
     bool CLuaState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
+      if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        m_bButtons[0] = a_cEvent.MouseInput.isLeftPressed  ();
+        m_bButtons[1] = a_cEvent.MouseInput.isMiddlePressed();
+        m_bButtons[2] = a_cEvent.MouseInput.isRightPressed ();
+      }
+
       return l_bRet;
     }
 
@@ -111,6 +119,26 @@ namespace dustbin {
         m_pGuiRoot->step();
 
       return l_eRet;
+    }
+
+    void CLuaState::onUievent(const std::string& a_type, irr::s32 a_id, const std::string& a_name, const std::string& a_data) {
+      if (m_pScript != nullptr) {
+        if (a_type == "uielementhovered")
+          m_pScript->uielementhovered(a_id, a_name);
+        else if (a_type == "uielementleft")
+          m_pScript->uielementleft(a_id, a_name);
+        else if (a_type == "uibuttonclicked")
+          m_pScript->uibuttonclicked(a_id, a_name);
+      }
+    }
+
+    bool CLuaState::isMouseDown(enMouseButton a_eButton) {
+      switch (a_eButton) {
+        case enMouseButton::Left  : return m_bButtons[0];
+        case enMouseButton::Middle: return m_bButtons[1];
+        case enMouseButton::RIght : return m_bButtons[2];
+        default: return false;
+      }
     }
   }
 }

@@ -1,14 +1,18 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CGui3dRoot.h>
+#include <state/IState.h>
+#include <CGlobal.h>
 
 namespace dustbin {
   namespace scenenodes {
     CGui3dRoot::CGui3dRoot(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : CGui3dRootBase(a_pParent, a_pSmgr, a_iId),
-      m_pClick    (nullptr),
-      m_pHover    (nullptr),
-      m_pSelect   (nullptr),
-      m_pCursor   (nullptr),
-      m_pLuaScript(nullptr)
+      m_pClick         (nullptr),
+      m_pHover         (nullptr),
+      m_pSelect        (nullptr),
+      m_pCursor        (nullptr),
+      m_pLuaScript     (nullptr),
+      m_bLeftButtonDown(false),
+      m_pState         (CGlobal::getInstance()->getActiveState())
     {
     }
 
@@ -57,10 +61,8 @@ namespace dustbin {
         CGui3dItem *l_pHover = nullptr;
 
         if (l_pNode != nullptr) {
-
           if (m_mItemScenenodeMap.find(l_pNode) != m_mItemScenenodeMap.end()) {
             l_pHover = reinterpret_cast<CGui3dItem *>(m_mItemScenenodeMap[l_pNode]);
-
           }
         }
 
@@ -70,9 +72,26 @@ namespace dustbin {
 
           m_pHover = l_pHover;
 
-          if (m_pHover != nullptr)
+          if (m_pHover != nullptr) {
             m_pHover->itemEntered();
+          }
         }
+
+        if (m_pHover != nullptr && m_pState != nullptr) {
+          if (!m_bLeftButtonDown) {
+            if (m_pState->isMouseDown(state::IState::enMouseButton::Left)) {
+              m_pHover->itemLeftButtonDown();
+            }
+          }
+          else {
+            if (!m_pState->isMouseDown(state::IState::enMouseButton::Left)) {
+              m_pHover->itemLeftButtonUp();
+              m_pSelect = m_pHover;
+            }
+          }
+        }
+
+        m_bLeftButtonDown = m_pState->isMouseDown(state::IState::enMouseButton::Left);
       }
     }
 

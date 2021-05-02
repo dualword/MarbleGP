@@ -4,6 +4,10 @@
 #include <scenenodes/CGui3dSceneNodes.h>
 
 namespace dustbin {
+  namespace state {
+    class IState;
+  }
+
   namespace scenenodes {
     /**
      * @class CGui3dItem
@@ -13,7 +17,10 @@ namespace dustbin {
      */
     class CGui3dItem : public CGui3dItemBase {
       protected:
-        bool m_bHovered;  /**< Is the element hovered? */
+        state::IState *m_pState;  /**< The current avtive state. Event messages are posted to this state */
+
+        bool m_bHovered,  /**< Is the element hovered? */
+             m_bSelected; /**< Is the element selected? */
 
       public:
         CGui3dItem(irr::scene::ISceneNode *a_pParent, irr::scene::ISceneManager *a_pSmgr, irr::s32 a_iId);
@@ -28,6 +35,21 @@ namespace dustbin {
          * A callback to notify the element that the mouse no longer hovers the item
          */
         void itemLeft();
+
+        /**
+         * A callback to notify the element that the left mouse button is down while it is hovered
+         */
+        void itemLeftButtonDown();
+
+        /**
+         * This callback is called when the left mouse button was released while the element is hovered
+         */
+        void itemLeftButtonUp();
+
+        /**
+         * This callback is used to notify the element that is was clicked
+         */
+        void itemClicked();
 
         /**
          * Update the text of the 3d UI item

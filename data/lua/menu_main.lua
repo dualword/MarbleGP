@@ -17,5 +17,14 @@ end
 function step()
 end
 
-function windowresized()
+function uielementhovered(a_Id, a_Name)
+  io.write("uielementhovered: " .. tostring(a_Id) .. ", " .. tostring(a_Name) .. "\n")
+end
+
+function uielementleft(a_Id, a_Name)
+  io.write("uielementleft: " .. tostring(a_Id) .. ", " .. tostring(a_Name) .. "\n")
+end
+
+function uibuttonclicked(a_Id, a_Name)
+  io.write("uibuttonclicked: " .. tostring(a_Id) .. ", " .. tostring(a_Name) .. "\n")
 end

@@ -7,6 +7,8 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <_generated/messages/IUiState.h>
+
 namespace dustbin {
   namespace state {
     /**
@@ -23,8 +25,14 @@ namespace dustbin {
      * @author Christian Keimel
      * @brief The interface for all states
      */
-    class IState {
+    class IState : public dustbin::messages::IUiState {
       public:
+        enum enMouseButton {
+          Left,
+          Middle,
+          RIght
+        };
+
         virtual ~IState() { }
 
         /**
@@ -47,6 +55,13 @@ namespace dustbin {
          * Return the state's ID
          */
         virtual enState getId() = 0;
+
+        /**
+         * Get the state of the mouse buttons. As the cursor control Irrlicht Object does not
+         * report the state of the button I decided to hack it this way
+         * @param a_iButton The mouse button
+         */
+        virtual bool isMouseDown(enMouseButton a_iButton) = 0;
 
         /**
          * Event handling method. The main class passes all Irrlicht events to this method

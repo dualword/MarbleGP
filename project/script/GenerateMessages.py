@@ -82,6 +82,7 @@ def CreateMessages(a_Data, a_Static):
     
     l_Header.write("    /**\n")
     l_Header.write("     * @class C" + l_MessageName + "\n")
+    l_Header.write("     * @author Dustbin::Games Message Generator Python Script\n")
     if "comment" in l_Message:
       l_Header.write("     * @brief " + l_Message["comment"] + "\n")
     
@@ -95,6 +96,16 @@ def CreateMessages(a_Data, a_Static):
     l_Header.write("\n")
     l_Header.write("      public:\n")
     
+    l_Header.write("        /**\n")
+    l_Header.write("         * The constructor with parameters for all fields\n")
+    
+    for l_Field in l_Message["fields"]:
+      l_Header.write("         * @param a_" + l_Field["name"])
+      if "comment" in l_Field:
+        l_Header.write(" " + l_Field["comment"])
+      l_Header.write("\n")
+    
+    l_Header.write("         */\n")
     l_Header.write("        C" + l_MessageName + "(");
     
     l_First = True
@@ -116,7 +127,12 @@ def CreateMessages(a_Data, a_Static):
     l_Header.write("        // Getters\n")
     
     for l_Field in l_Message["fields"]:
-      l_Header.write("        " + CreateParameter(l_Field, a_Static) + "get" + l_Field["name"] + "();\n")
+      l_Header.write("        " + CreateParameter(l_Field, a_Static) + "get" + l_Field["name"] + "();")
+      
+      if "comment" in l_Field:
+        l_Header.write("  /**< Get the m_" + l_Field["name"] + " field of the message */")
+      
+      l_Header.write("\n")
     
     l_Header.write("\n")
     l_Header.write("        // Methods inherited from dustbin::messages::IMessage\n")
@@ -248,7 +264,135 @@ def CreateFactory(a_Data):
   
   EndNamepsaces(l_Header)
   EndNamepsaces(l_Source)
+  
+  l_Header.close()
+  l_Source.close()
 
+def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
+  global g_HeaderFolder
+  global g_SourceFolder
+  global g_Include
+  
+  for l_Interface in a_Interfaces:
+    print "Creating I" + l_Interface + "...\n"
+    
+    l_Header = open(g_HeaderFolder + "/I" + l_Interface + ".h"  , "w")
+    l_Source = open(g_SourceFolder + "/I" + l_Interface + ".cpp", "w")
+    
+    WriteFileHeader(l_Header)
+    WriteFileHeader(l_Source)
+    
+    l_Header.write("#ifdef _LINUX_INCLUDE_PATH\n")
+    l_Header.write("#include <irrlicht.h>\n")
+    l_Header.write("#else\n")
+    l_Header.write("#include <irrlicht/irrlicht.h>\n")
+    l_Header.write("#endif\n")
+    
+    l_Header.write("#include <messages/IMessage.h>\n")
+    l_Header.write("#include <string>\n\n")
+    
+    l_Source.write("#include <" + g_Include + "I" + l_Interface + ".h>\n")
+    l_Source.write("#include <" + g_Include + "CMessageEnums.h>\n")
+    l_Source.write("#include <" + g_Include + "CMessages.h>\n")
+    
+    l_Source.write("\n")
+    
+    StartNamespace(l_Header)
+    StartNamespace(l_Source)
+    
+    l_Header.write("    /**\n     * @interface I" + l_Interface + "\n     * @author Dustbin::Games Message Generator Python Script\n")
+    
+    if "comment" in a_Interfaces[l_Interface]:
+      l_Header.write("     * @brief " + a_Interfaces[l_Interface]["comment"] + "\n")
+    
+    l_Header.write("     */\n")
+    
+    l_Header.write("    class I" + l_Interface + " {\n")
+    l_Header.write("      protected:\n")
+    
+    for l_Receive in a_Interfaces[l_Interface]["receive"]:
+      l_Message = a_Messages[l_Receive]
+      if "comment" in l_Message:
+        l_Header.write("        /**\n         * This function receives messages of type \"" + l_Receive + "\"\n")
+        
+        for l_Field in l_Message["fields"]:
+          l_Header.write("         * @param a_" + l_Field["name"])
+          
+          if "comment" in l_Field:
+            l_Header.write(" " + l_Field["comment"])
+          
+          l_Header.write("\n")
+      
+      l_Header.write("         */\n")
+      l_Header.write("        virtual void on" + l_Receive.capitalize() + "(")
+      
+      l_First = True
+      for l_Field in l_Message["fields"]:
+        if l_First:
+          l_First = False
+        else:
+          l_Header.write(", ")
+          
+        l_Header.write(CreateParameter(l_Field, a_Static) + "a_" + l_Field["name"])
+        
+      l_Header.write(") = 0;\n")
+    
+    l_Header.write("\n")
+    l_Header.write("      public:\n")
+    l_Header.write("        I" + l_Interface + "();\n")
+    l_Header.write("        virtual ~I" + l_Interface + "();\n\n")
+    l_Header.write("        /**\n")
+    l_Header.write("         * This function handles any message\n")
+    l_Header.write("         * @param a_pMessage The message to handle\n")
+    l_Header.write("         * @param a_bDelete Should this message be deleted?\n")
+    l_Header.write("         * @return \"true\" if the message was handled, \"false\" otherwise\n")
+    l_Header.write("         */\n")
+    l_Header.write("        bool handleMessage(dustbin::messages::IMessage *a_pMessage, bool a_bDelete = true);\n")
+    
+    l_Header.write("    };\n\n")
+    
+    l_Source.write("      I" + l_Interface + "::I" + l_Interface + "() {\n      }\n\n")
+    l_Source.write("      I" + l_Interface + "::~I" + l_Interface + "() {\n      }\n\n")
+    l_Source.write("      bool I" + l_Interface + "::handleMessage(dustbin::messages::IMessage *a_pMessage, bool a_bDelete) {\n")
+    l_Source.write("        bool l_bRet = false;\n")
+    l_Source.write("        if (a_pMessage != nullptr) {\n")
+    l_Source.write("          dustbin::messages::enMessageIDs l_eMsgId = a_pMessage->getMessageId();\n\n")
+    l_Source.write("          switch (l_eMsgId) {\n")
+    
+    for l_Receive in a_Interfaces[l_Interface]["receive"]:
+      l_Source.write("            case dustbin::messages::enMessageIDs::" + l_Receive + ": {\n")
+      l_Source.write("              dustbin::messages::C" + l_Receive + " *p = reinterpret_cast<dustbin::messages::C" + l_Receive + " *>(a_pMessage);\n")
+      l_Source.write("              on" + l_Receive.capitalize() + "(")
+      
+      l_Message = a_Messages[l_Receive]
+      
+      l_First = True
+      for l_Field in l_Message["fields"]:
+        if l_First:
+          l_First = False
+        else:
+          l_Source.write(", ")
+          
+        l_Source.write("p->get" + l_Field["name"] + "()")
+        
+      
+      l_Source.write(");\n")
+      l_Source.write("              break;\n")
+      l_Source.write("            }\n")
+    
+    
+    l_Source.write("          }\n\n")
+    l_Source.write("          if (a_bDelete)\n")
+    l_Source.write("            delete a_pMessage;\n")
+    l_Source.write("        }\n")
+    l_Source.write("        return l_bRet;\n") 
+    l_Source.write("      }\n\n")
+    
+    EndNamepsaces(l_Header)
+    EndNamepsaces(l_Source)
+    
+    l_Header.close()
+    l_Source.close()
 
 print ""
 print "Generating messages ..."
@@ -276,7 +420,7 @@ else:
 CreateEnums(l_Json["messageids"])
 CreateMessages(l_Json["messages"], l_Json["static_types"])
 CreateFactory(l_Json["messages"])
-#CreateInterfaces(l_Json["interfaces"], l_Json["messages"])
+CreateInterfaces(l_Json["interfaces"], l_Json["messages"], l_Json["static_types"])
 
 print ""
 print "Ready."

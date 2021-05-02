@@ -271,4 +271,8 @@ namespace dustbin {
     }
     else return "";
   }
+
+  state::IState* CMainClass::getActiveState() {
+    return m_pActiveState;
+  }
 }

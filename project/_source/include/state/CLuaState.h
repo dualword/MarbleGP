@@ -35,13 +35,18 @@ namespace dustbin {
         CGlobal                *m_pGlobal;
         scenenodes::CGui3dRoot *m_pGuiRoot;
 
+        bool m_bButtons[3];   /**< The mouse button states */
+
         /**
          * Initialize the 3d GUI Root node
          * @param a_pParent the children of this scenenode will be iterated to find the root of the 3d GUI
          */
         void initGuiRoot(irr::scene::ISceneNode *a_pParent);
 
-    public:
+      protected:
+        virtual void onUievent(const std::string &a_type, irr::s32 a_id, const std::string &a_name, const std::string &a_data);
+
+      public:
         CLuaState();
         
         virtual ~CLuaState();
@@ -66,6 +71,13 @@ namespace dustbin {
         * @param a_cDim the new dimension of the window
         */
         virtual void onResize(const irr::core::dimension2du &a_cDim);
+
+        /**
+         * Get the state of the mouse buttons. As the cursor control Irrlicht Object does not
+         * report the state of the button I decided to hack it this way
+         * @param a_iButton The mouse button
+         */
+        virtual bool isMouseDown(enMouseButton a_eButton);
 
         /**
         * Event handling method. The main class passes all Irrlicht events to this method

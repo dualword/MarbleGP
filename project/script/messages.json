@@ -18,7 +18,9 @@
     [ "Checkpoint"    ,  "7" ],
     [ "PlayerFinished",  "8" ],
     [ "RaceFinished"  ,  "9" ],
-    [ "Countdown"     , "10" ]
+    [ "Countdown"     , "10" ],
+    
+    [ "UiEvent"       , "100" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -111,119 +113,24 @@
       "fields": [
         { "name": "Tick", "type": "irr::u8", "comment": "The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)" }
       ]
+    },
+    "UiEvent": {
+      "comment": "Messages of this type are sent from the 3d UI to the state handling the events",
+      "fields": [
+        { "name": "type", "type": "std::string", "comment": "Type of the message" },
+        { "name": "id"  , "type": "irr::s32"   , "comment": "ID of the 3d GUI item sending the message" },
+        { "name": "name", "type": "std::string", "comment": "Name of the 3d GUI item sending the message" },
+        { "name": "data", "type": "std::string", "comment": "Some optional custom data for the event" }
+      ]
     }
   },
-  "interfaces": [
-    {
-      "name": "ControlThread",
-      "send": [ "Controller", "SetPaused" ],
-      "receive": [ 
-        "ObjectMoved", 
-        "StepMsg", 
-        "RespawnStart", 
-        "RespawnCamera", 
-        "RespawnDone", 
-        "Checkpoint",
-        "PlayerFinished",
-        "RaceFinished",
-        "PlayerStunned",
-        "Countdown",
-        "LapTime",
-        "AutoFinishPending",
-        "PauseStateChanged",
-        "AiDebugLine"
-      ]
-    },
-    {
-      "name": "DynamicsThread",
-      "send": [ "ObjectMoved", "StepMsg", "PlayerStunned", "PauseStateChanged", "AiDebugLine" ],
-      "receive": [ "Controller", "ManualRespawn", "SetPaused" ]
-    },
-    {
-      "name": "ReplayThread",
-      "send": [ "ObjectMoved", "StepMsg", "PlayerStunned", "PauseStateChanged" ],
-      "receive": [ "SetPaused" ]
-    },
-    {
-      "name": "GameLogic",
-      "send": [ 
-        "RespawnStart", 
-        "RespawnCamera", 
-        "RespawnDone", 
-        "Checkpoint", 
-        "PlayerFinished", 
-        "RaceFinished", 
-        "PlayerStunned", 
-        "Countdown", 
-        "LapTime",
-        "StepMsg", 
-        "AutoFinishPending"
-      ],
-      "receive": [ ]
-    },
-    {
-      "name": "RaceTimeDisplay",
+  "interfaces": {
+    "UiState": {
+      "comment": "Interface receiving UI Events",
       "send": [ ],
       "receive": [
-        "LapTime",
-        "PlayerFinished",
-        "RaceFinished"
+        "UiEvent"
       ]
-    },
-    {
-      "name": "LogHandler",
-      "send": [ ],
-      "receive": [ 
-        "Checkpoint",
-        "LapTime",
-        "RespawnStart",
-        "RespawnDone",
-        "PlayerStunned",
-        "PlayerFinished",
-        "RaceFinished",
-        "PlayerPosition"
-      ]
-    },
-    {
-      "name": "AiDebug",
-      "send": [ 
-        "ManualRespawn"
-      ],
-      "receive": [
-        "AiPathDebug",
-        "AiDebugLine"
-      ]
-    },
-    {
-      "name": "AiThread",
-      "send": [
-        "Controller",
-        "AiPathDebug",
-        "AiDebugLine"
-      ],
-      "receive": [ 
-        "ObjectMoved", 
-        "StepMsg", 
-        "RespawnStart", 
-        "RespawnCamera", 
-        "RespawnDone",
-        "PlayerStunned"
-      ]
-    },
-    {
-      "name": "LuaMessageSender", 
-      "send": [ "LuaMessage" ], 
-      "receive": [ ]
-    },
-    {
-      "name": "LuaMessageReceiver", 
-      "send": [ ], 
-      "receive": [ "LuaMessage" ]
-    },
-    {
-      "name": "MarbleController",
-      "send": [ "Controller", "ManualRespawn" ],
-      "receive": [ "StepMsg", "ObjectMoved" ]
     }
-  ]
+  }
 }

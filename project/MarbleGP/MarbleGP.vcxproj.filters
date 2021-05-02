@@ -61,6 +61,12 @@
     <Filter Include="Quelldateien\_generated\messages">
       <UniqueIdentifier>{031fa09a-8655-49bf-b7f1-e9d127c26de0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\threads">
+      <UniqueIdentifier>{21881818-f92b-4943-a2a1-0a8488c2bcb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\threads">
+      <UniqueIdentifier>{1f30cc15-f9bd-4d62-8828-1f1f5e9bf70b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -136,6 +142,12 @@
       <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp">
+      <Filter>Quelldateien\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp">
       <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
   </ItemGroup>
@@ -217,6 +229,21 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\_generated\messages\CMessages.h">
       <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\threads\CMessageQueue.h">
+      <Filter>Headerdateien\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\threads\IQueue.h">
+      <Filter>Headerdateien\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\messages\IUiState.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\messages\IMessage.h">
+      <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\messages\ISerializer.h">
+      <Filter>Headerdateien\messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
