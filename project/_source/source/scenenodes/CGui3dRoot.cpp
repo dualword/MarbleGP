@@ -4,10 +4,11 @@
 namespace dustbin {
   namespace scenenodes {
     CGui3dRoot::CGui3dRoot(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : CGui3dRootBase(a_pParent, a_pSmgr, a_iId),
-      m_pClick (nullptr),
-      m_pHover (nullptr),
-      m_pSelect(nullptr),
-      m_pCursor(nullptr)
+      m_pClick    (nullptr),
+      m_pHover    (nullptr),
+      m_pSelect   (nullptr),
+      m_pCursor   (nullptr),
+      m_pLuaScript(nullptr)
     {
     }
 

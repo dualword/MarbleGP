@@ -37,7 +37,7 @@ def CreateEnums(a_Data):
       
     l_File.write("      " + l_MessageId[0] + " = " + l_MessageId[1])
   
-  l_File.write("\n    }\n")
+  l_File.write("\n    };\n")
   
   EndNamepsaces(l_File)
   
@@ -63,10 +63,15 @@ def CreateMessages(a_Data, a_Static):
   l_Header.write("#pragma once\n\n")
   l_Header.write("#include <" + g_Include  + "CMessageEnums.h>\n")
   l_Header.write("#include <messages/IMessage.h>\n\n")
+  l_Header.write("#ifdef _LINUX_INCLUDE_PATH\n")
   l_Header.write("#include <irrlicht.h>\n")
+  l_Header.write("#else\n")
+  l_Header.write("#include <irrlicht/irrlicht.h>\n")
+  l_Header.write("#endif\n")
   l_Header.write("#include <string>\n\n")
   
-  l_Source.write("#include <" + g_Include + "CMessages.h>\n\n")
+  l_Source.write("#include <" + g_Include + "CMessages.h>\n")
+  l_Source.write("#include <messages/ISerializer.h>\n\n")
   
   StartNamespace(l_Source)
   StartNamespace(l_Header)
@@ -164,12 +169,14 @@ def CreateMessages(a_Data, a_Static):
     
     l_Source.write("    }\n\n")
     
+    l_Source.write("    C" + l_MessageName + "::~C" + l_MessageName + "() {\n    }\n\n")
+    
     for l_Field in l_Message["fields"]:
       l_Source.write("    " + CreateParameter(l_Field, a_Static) + "C" + l_MessageName + "::get" + l_Field["name"] + "() {\n")
       l_Source.write("      return m_" + l_Field["name"] + ";\n")
       l_Source.write("    }\n\n")
       
-    l_Source.write("    C" + l_MessageName + "::serialize(ISerializer *a_pSerializer) {\n")
+    l_Source.write("    void C" + l_MessageName + "::serialize(ISerializer *a_pSerializer) {\n")
     l_Source.write("      a_pSerializer->addU16((irr::u16)enMessageIDs::" + l_MessageName + ");\n\n")
       
     for l_Field in l_Message["fields"]:
@@ -215,7 +222,8 @@ def CreateFactory(a_Data):
   l_Header.write("#include <" + g_Include + "CMessages.h>\n")
   l_Header.write("\n")
   
-  l_Source.write("#include <" + g_Include + "CMessageFactory.h>\n\n")
+  l_Source.write("#include <" + g_Include + "CMessageFactory.h>\n")
+  l_Source.write("#include <messages/ISerializer.h>\n\n")
   
   StartNamespace(l_Header)
   StartNamespace(l_Source)

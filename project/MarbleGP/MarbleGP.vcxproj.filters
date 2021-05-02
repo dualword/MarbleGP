@@ -55,6 +55,12 @@
     <Filter Include="Quelldateien\scenenodes">
       <UniqueIdentifier>{e5c651bd-3eb6-4298-a1d5-3400553482a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\_generated\messages">
+      <UniqueIdentifier>{125906d5-1c3b-49b5-b983-6a95239a4d80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated\messages">
+      <UniqueIdentifier>{031fa09a-8655-49bf-b7f1-e9d127c26de0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -126,6 +132,12 @@
     <ClCompile Include="..\_source\source\scenenodes\CGui3dItem.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -196,6 +208,15 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CGui3dItem.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\messages\CMessages.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

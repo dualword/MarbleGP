@@ -46,7 +46,8 @@ namespace dustbin {
                            g_sBackgroundName,
                            g_sHoverColorName,
                            g_sTextureWidthName,
-                           g_sTextureHeightName;
+                           g_sTextureHeightName,
+                           g_sClickColorName;
 
     protected:
         irr::core::aabbox3df       m_cBox;          /**< The bounding  */
@@ -57,7 +58,8 @@ namespace dustbin {
         irr::core::rect<irr::s32>  m_cRect;         /**< The rectangle to draw text to */
         irr::video::SColor         m_cBackground,   /**< The background color */
                                    m_cHoverColor,   /**< The "mouse over" color */
-                                   m_cTextColor;    /**< The text color */
+                                   m_cTextColor,    /**< The text color */
+                                   m_cClickColor;   /**< The color of a button when clicked */
 
         int m_iRttTexture;  /**< The texture number of the parent that will be modified */
 
@@ -117,8 +119,6 @@ namespace dustbin {
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The scene collision manager necessary to detect hovers and such */
 
         static std::string m_sNodeTypeName;  /**< The node type name */
-
-        std::map<irr::scene::ISceneNode *, CGui3dItemBase *> m_mItemScenenodeMap; /**< This map is used to connect scenenodes with the 3d Gui items */
 
       public:
         CGui3dRootBase(irr::scene::ISceneNode *a_pParent, irr::scene::ISceneManager *a_pSmgr, irr::s32 a_iId);

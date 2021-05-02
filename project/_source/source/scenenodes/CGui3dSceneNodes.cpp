@@ -44,8 +44,9 @@ namespace dustbin {
       m_eAlign     (enGui3dAlign::Left      ),
       m_pRttTexture(nullptr),
       m_pFont      (nullptr),
-      m_cBackground(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)),
-      m_cHoverColor(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)),
+      m_cBackground(irr::video::SColor(0xFF, 255, 255, 255)),
+      m_cHoverColor(irr::video::SColor(0xFF, 255, 128, 128)),
+      m_cClickColor(irr::video::SColor(0xFF, 255,   0,   0)),
       m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0))
     {
       if (getID() == -1)
@@ -78,14 +79,16 @@ namespace dustbin {
             g_sAlignmentName,
             g_sTextColorName,
             g_sBackgroundName,
-            g_sHoverColorName
+            g_sHoverColorName,
+            g_sClickColorName
           }
         },
         {
           enGui3dType::IconButton, {
             g_sTextureName,
             g_sBackgroundName,
-            g_sHoverColorName
+            g_sHoverColorName,
+            g_sClickColorName
           }
         }
       };
@@ -145,6 +148,7 @@ namespace dustbin {
       l_pRet->m_eType       = m_eType;
       l_pRet->m_iRttTexture = m_iRttTexture;
       l_pRet->m_sText       = m_sText;
+      l_pRet->m_cClickColor = m_cClickColor;
 
       return l_pRet;
     }
@@ -157,67 +161,81 @@ namespace dustbin {
       l_pDrv->setRenderTarget(m_pRttTexture);
       l_pDrv->draw2DRectangle(a_cBackgroundColor, irr::core::rect<irr::s32>(irr::core::position2di(0,0), m_pRttTexture->getSize()));
 
-      irr::core::rect<irr::s32> l_cRect = m_cRect;
-      bool l_bCenterH = false;
+      // Only render text for the items that display text
+      if (m_eType == enGui3dType::Button || m_eType == enGui3dType::Label) {
+        irr::core::rect<irr::s32> l_cRect = m_cRect;
+        bool l_bCenterH = false;
 
-      switch (m_eAlign) {
-      case enGui3dAlign::Left:
-        break;
+        switch (m_eAlign) {
+        case enGui3dAlign::Left:
+          break;
 
-      case enGui3dAlign::Center:
-        l_bCenterH = true;
-        break;
+        case enGui3dAlign::Center:
+          l_bCenterH = true;
+          break;
 
-      case enGui3dAlign::Right: {
-#ifdef _IRREDIT_PLUGIN
-        irr::core::dimension2di l_cText = m_pFont->getDimension(m_sText.c_str());
-        l_cRect.UpperLeftCorner.X = l_cRect.LowerRightCorner.X - l_cText.Width;
-#else
-        irr::core::dimension2du l_cText = m_pFont->getDimension(m_sText.c_str());
-        l_cRect.UpperLeftCorner.X = l_cRect.LowerRightCorner.X - l_cText.Width;
-#endif
-        break;
+        case enGui3dAlign::Right: {
+  #ifdef _IRREDIT_PLUGIN
+          irr::core::dimension2di l_cText = m_pFont->getDimension(m_sText.c_str());
+          l_cRect.UpperLeftCorner.X = l_cRect.LowerRightCorner.X - l_cText.Width;
+  #else
+          irr::core::dimension2du l_cText = m_pFont->getDimension(m_sText.c_str());
+          l_cRect.UpperLeftCorner.X = l_cRect.LowerRightCorner.X - l_cText.Width;
+  #endif
+          break;
+        }
+        }
+
+        m_pFont->draw(m_sText.c_str(), l_cRect, a_cTextColor, l_bCenterH, true);
       }
-      }
-
-      m_pFont->draw(m_sText.c_str(), l_cRect, a_cTextColor, l_bCenterH, true);
 
       l_pDrv->setRenderTarget(nullptr);
     }
 
     void CGui3dItemBase::updateRttTexture() {
       if (getParent() != nullptr && getParent()->getType() == irr::scene::ESNT_MESH) {
-        std::string l_sTextureName = std::string("Rtt_") + getParent()->getName() + "_" + std::to_string(getParent()->getID()) + ".png";
+        std::string l_sTextureName = std::string("Rtt_") + getParent()->getName() + "_" + std::to_string(getID()) + ".png";
 #ifdef _IRREDIT_PLUGIN
         irr::core::dimension2d<irr::s32> l_cRttSize;
 #else
         irr::core::dimension2du l_cRttSize;
 #endif
 
-        l_cRttSize.Width  = 5 * m_cRttSize.Width  / 4;
-        l_cRttSize.Height = 5 * m_cRttSize.Height / 4;
+        if (m_eType == enGui3dType::IconButton) {
+          // Use small texture for the icon buttons which do not render anything
+          l_cRttSize.Width  = 16;
+          l_cRttSize.Height = 16;
+        }
+        else {
+          l_cRttSize.Width  = 5 * m_cRttSize.Width  / 4;
+          l_cRttSize.Height = 5 * m_cRttSize.Height / 4;
+        }
 
         m_pRttTexture = m_pSmgr->getVideoDriver()->addRenderTargetTexture(l_cRttSize, l_sTextureName.c_str());
 
         switch (m_eType) {
-        case enGui3dType::Label:
-        case enGui3dType::Button: {
-          irr::s32 l_iLeft = (l_cRttSize.Width  - m_cRttSize.Width ) / 2,
-            l_iTop  = (l_cRttSize.Height - m_cRttSize.Height) / 2;
+          case enGui3dType::Label:
+          case enGui3dType::Button: {
+            irr::s32 l_iLeft = (l_cRttSize.Width  - m_cRttSize.Width ) / 2,
+              l_iTop  = (l_cRttSize.Height - m_cRttSize.Height) / 2;
 
-          m_cRect = irr::core::rect<irr::s32>(l_iLeft, l_iTop, l_iLeft + m_cRttSize.Width, l_iTop + m_cRttSize.Height);
-          break;
-        }
+            m_cRect = irr::core::rect<irr::s32>(l_iLeft, l_iTop, l_iLeft + m_cRttSize.Width, l_iTop + m_cRttSize.Height);
+            break;
+          }
 
-        default:
-          // No element necessary
-          break;
+          case enGui3dType::IconButton:
+            m_cRect = irr::core::rect<irr::s32>(0, 0, 16, 16);
+            break;
+
+          default:
+            // No element necessary
+            break;
         }
 
         irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(getParent());
 
         if (l_pNode->getMaterialCount() >= (irr::u32)m_iRttTexture) {
-          l_pNode->getMaterial(m_iRttTexture).setTexture(m_iRttTexture, m_pRttTexture);
+          l_pNode->getMaterial(m_iRttTexture).setTexture(0, m_pRttTexture);
         }
 
         if (m_pRttTexture != nullptr)
@@ -242,6 +260,7 @@ namespace dustbin {
           else if ((*it) == g_sHoverColorName   ) a_pOut->addColor     ((*it).c_str(), m_cHoverColor);
           else if ((*it) == g_sTextureWidthName ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Width);
           else if ((*it) == g_sTextureHeightName) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Height);
+          else if ((*it) == g_sClickColorName   ) a_pOut->addColor     ((*it).c_str(), m_cClickColor);
         }
       }
     }
@@ -324,11 +343,11 @@ namespace dustbin {
       }
 
       if (a_pIn->existsAttribute(g_sHoverColorName.c_str())) {
-        irr::video::SColor l_cColor = a_pIn->getAttributeAsColor(g_sHoverColorName.c_str());
-        if (l_cColor != m_cHoverColor) {
-          m_cHoverColor = l_cColor;
-          l_bUpdateRttText = true;
-        }
+        m_cHoverColor = a_pIn->getAttributeAsColor(g_sHoverColorName.c_str());
+      }
+
+      if (a_pIn->existsAttribute(g_sClickColorName.c_str())) {
+        m_cClickColor = a_pIn->getAttributeAsColor(g_sClickColorName.c_str());
       }
 
       // If the texture is updated the text will also be updated
@@ -426,5 +445,6 @@ namespace dustbin {
     std::string CGui3dItemBase::g_sHoverColorName    = "HoverColor";
     std::string CGui3dItemBase::g_sTextureWidthName  = "TextureWidth";
     std::string CGui3dItemBase::g_sTextureHeightName = "TextureHeight";
+    std::string CGui3dItemBase::g_sClickColorName    = "ClickedColor";
   }
 }

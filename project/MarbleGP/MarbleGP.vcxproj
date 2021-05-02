@@ -211,6 +211,8 @@
     <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
+    <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
+    <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CGlobal.h" />
@@ -236,6 +238,9 @@
     <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_dialog.h" />
     <ClInclude Include="..\_source\include\_generated\lua\lua_enums.h" />
     <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h" />
+    <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
+    <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />
+    <ClInclude Include="..\_source\include\_generated\messages\CMessages.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

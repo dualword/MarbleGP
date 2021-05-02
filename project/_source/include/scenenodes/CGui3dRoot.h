@@ -4,6 +4,8 @@
 #include <scenenodes/CGui3dSceneNodes.h>
 #include <scenenodes/CGui3dItem.h>
 
+class CLuaScript_dialog;
+
 namespace dustbin {
   namespace scenenodes {
     /**
@@ -21,6 +23,10 @@ namespace dustbin {
         irr::gui::ICursorControl *m_pCursor;    /**< The cursor control to handle events */
 
         irr::scene::IMetaTriangleSelector *m_pSelector;  /**< A meta triangle selector that combines all triangle selectors of the menu */
+
+        std::map<irr::scene::ISceneNode *, CGui3dItemBase *> m_mItemScenenodeMap; /**< This map is used to connect scenenodes with the 3d Gui items */
+
+        CLuaScript_dialog *m_pLuaScript;  /**< The LUA script that handles user input */
 
         /**
          * Get all children which are CGui3dItem instances

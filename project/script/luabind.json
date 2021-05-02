@@ -184,8 +184,7 @@
             ]
           },
           "init3dgui": {
-            "comment": "Initialize the 3d UI",
-            "arguments": [ ]
+            "comment": "Initialize the 3d UI" 
           }
         },
         "lua_none": {
@@ -228,6 +227,27 @@
           },
           "windowresized": {
             "comment": "This function is called every time the window is resized"
+          },
+          "uielementhovered": {
+            "comment": "Callback to notify that the mouse curser has entered a 3d UI element",
+            "arguments": [
+              { "name": "id"  , "type": "int"        , "comment": "The ID of the element, i.e. the ID of the 3d gui item node" },
+              { "name": "name", "type": "std::string", "comment": "The name of the element, i.e. the name of the parent of the 3d gui item node" }
+            ]
+          },
+          "uielementleft": {
+            "comment": "Callback to notify that the mouse curser has left a 3d UI element",
+            "arguments": [
+              { "name": "id"  , "type": "int"        , "comment": "The ID of the element, i.e. the ID of the 3d gui item node" },
+              { "name": "name", "type": "std::string", "comment": "The name of the element, i.e. the name of the parent of the 3d gui item node" }
+            ]
+          },
+          "uibuttonclicked": {
+            "comment": "This callback notifies the LUA script that a button or icon button has been clicked",
+            "arguments": [
+              { "name": "id"  , "type": "int"        , "comment": "The ID of the element, i.e. the ID of the 3d gui item node" },
+              { "name": "name", "type": "std::string", "comment": "The name of the element, i.e. the name of the parent of the 3d gui item node" }
+            ]
           }
         }
       }
