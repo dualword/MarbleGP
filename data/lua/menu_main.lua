@@ -1,8 +1,8 @@
 
 function initialize()
   io.write("Main Menu script started.\n")
-  dialog:loadscene("data/menu3d/menu_main.xml")
-  -- dialog:loadscene("data/menu3d/menu_trackselect.xml")
+  -- dialog:loadscene("data/menu3d/menu_main.xml")
+  dialog:loadscene("data/menu3d/menu_trackselect.xml")
   
   g_Camera = LuaCameraObject:new()
   g_Camera:initialize()
