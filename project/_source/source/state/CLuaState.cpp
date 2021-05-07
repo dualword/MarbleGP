@@ -15,10 +15,13 @@ namespace dustbin {
       m_pGui    (CGlobal::getInstance()->getGuiEnvironment()),
       m_pGlobal (CGlobal::getInstance()),
       m_pScript (nullptr),
-      m_pGuiRoot(nullptr)
+      m_pGuiRoot(nullptr),
+      m_pTimer  (nullptr)
     {
       for (int i = 0; i < 3; i++)
         m_bButtons[i] = false;
+
+      m_pTimer = m_pDevice->getTimer();
     }
 
     CLuaState::~CLuaState() {
@@ -113,7 +116,7 @@ namespace dustbin {
       m_pDrv->endScene();
 
       if (m_pScript != nullptr)
-        m_pScript->step();
+        m_pScript->step(m_pTimer->getTime());
 
       if (m_pGuiRoot != nullptr)
         m_pGuiRoot->step();

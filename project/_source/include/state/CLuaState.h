@@ -34,6 +34,7 @@ namespace dustbin {
         CLuaScript_dialog      *m_pScript;
         CGlobal                *m_pGlobal;
         scenenodes::CGui3dRoot *m_pGuiRoot;
+        irr::ITimer            *m_pTimer;
 
         bool m_bButtons[3];   /**< The mouse button states */
 

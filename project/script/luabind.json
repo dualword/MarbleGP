@@ -223,7 +223,10 @@
             "comment": "This function is called when the script starts, should be used for initialization and such"
           },
           "step": {
-            "comment": "This function is called every time a frame is drawn"
+            "comment": "This function is called every time a frame is drawn",
+            "arguments": [
+              { "name": "time", "type": "int", "comment": "The current run-time of the application in milliseconds" }
+            ]
           },
           "windowresized": {
             "comment": "This function is called every time the window is resized"

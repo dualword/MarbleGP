@@ -14,19 +14,39 @@
 namespace dustbin {
   namespace scenenodes {
 
+    /**
+     * The text values of the enGui3dType enumeration
+     * @see enGui3dType
+     */
     const irr::c8* const g_aUiElementNames[] = {
       "None",
       "Decoration",
       "Label",
       "Button",
       "IconButton",
+      "Image",
       0
     };
 
+    /**
+     * The text values of the enGui3dAlign enumeration
+     * @see enGui3dAlign
+     */
     const irr::c8* const g_aTextAlignment[] = {
       "Left",
       "Center",
       "Right",
+      0
+    };
+
+    /**
+     * The text values for the enGui3dVerticalAlign enumeration
+     * @see enGui3dVerticalAlign
+     */
+    const irr::c8* const g_aVerticalAlignment[] = {
+      "Top",
+      "Middle",
+      "Bottom",
       0
     };
 
@@ -35,19 +55,26 @@ namespace dustbin {
       { g_aUiElementNames[1], CGui3dItemBase::enGui3dType::Decoration },
       { g_aUiElementNames[2], CGui3dItemBase::enGui3dType::Label },
       { g_aUiElementNames[3], CGui3dItemBase::enGui3dType::Button },
-      { g_aUiElementNames[4], CGui3dItemBase::enGui3dType::IconButton }
+      { g_aUiElementNames[4], CGui3dItemBase::enGui3dType::IconButton },
+      { g_aUiElementNames[5], CGui3dItemBase::enGui3dType::Image }
     };
 
     CGui3dItemBase::CGui3dItemBase(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
-      m_pSmgr      (a_pSmgr), 
-      m_eType      (enGui3dType ::Decoration),
-      m_eAlign     (enGui3dAlign::Left      ),
-      m_pRttTexture(nullptr),
-      m_pFont      (nullptr),
-      m_cBackground(irr::video::SColor(0xFF, 255, 255, 255)),
-      m_cHoverColor(irr::video::SColor(0xFF, 255, 128, 128)),
-      m_cClickColor(irr::video::SColor(0xFF, 255,   0,   0)),
-      m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0))
+      m_pSmgr         (a_pSmgr), 
+      m_eType         (enGui3dType ::Decoration),
+      m_eAlign        (enGui3dAlign::Left      ),
+      m_pRttTexture   (nullptr),
+      m_pFont         (nullptr),
+      m_cBackground   (irr::video::SColor(0xFF, 255, 255, 255)),
+      m_cHoverColor   (irr::video::SColor(0xFF, 255, 128, 128)),
+      m_cClickColor   (irr::video::SColor(0xFF, 255,   0,   0)),
+      m_cTextColor    (irr::video::SColor(0xFF, 0, 0, 0)),
+      m_cTextBackColor(irr::video::SColor(0xFF, 192, 192, 192)),
+      m_bMultiLine    (false),
+      m_eVerticalAlign(enGui3dVerticalAlign::Middle),
+      m_sImage        (""),
+      m_bShowText     (false),
+      m_iTextBackAlpha(128)
     {
       if (getID() == -1)
         setID(getNextSceneNodeId());
@@ -67,7 +94,9 @@ namespace dustbin {
             g_sTextureHeightName,
             g_sAlignmentName,
             g_sTextColorName,
-            g_sBackgroundName
+            g_sBackgroundName,
+            g_sMultilineName,
+            g_sVertAlignName
           }
         },
         {
@@ -80,7 +109,9 @@ namespace dustbin {
             g_sTextColorName,
             g_sBackgroundName,
             g_sHoverColorName,
-            g_sClickColorName
+            g_sClickColorName,
+            g_sMultilineName,
+            g_sVertAlignName
           }
         },
         {
@@ -89,6 +120,23 @@ namespace dustbin {
             g_sBackgroundName,
             g_sHoverColorName,
             g_sClickColorName
+          }
+        },
+        {
+          enGui3dType::Image, {
+            g_sTextureName,
+            g_sTextName,
+            g_sTextureWidthName,
+            g_sTextureHeightName,
+            g_sAlignmentName,
+            g_sTextColorName,
+            g_sBackgroundName,
+            g_sMultilineName,
+            g_sVertAlignName,
+            g_sImageFileName,
+            g_sOverlayTextName,
+            g_sTextBackgroundName,
+            g_sTextBackAlphaName
           }
         }
       };
@@ -111,6 +159,14 @@ namespace dustbin {
           return (enGui3dAlign)i;
       }
       return (enGui3dAlign)0;
+    }
+
+    CGui3dItemBase::enGui3dVerticalAlign CGui3dItemBase::stringToVerticalAlign(const std::string& a_sAlign) {
+      for (int i = 0; g_aVerticalAlignment[i] != 0; i++) {
+        if (a_sAlign == g_aVerticalAlignment[i])
+          return (enGui3dVerticalAlign)i;
+      }
+      return (enGui3dVerticalAlign)0;
     }
 
     void CGui3dItemBase::OnRegisterSceneNode() {
@@ -161,32 +217,165 @@ namespace dustbin {
       l_pDrv->setRenderTarget(m_pRttTexture);
       l_pDrv->draw2DRectangle(a_cBackgroundColor, irr::core::rect<irr::s32>(irr::core::position2di(0,0), m_pRttTexture->getSize()));
 
-      // Only render text for the items that display text
-      if (m_eType == enGui3dType::Button || m_eType == enGui3dType::Label) {
+      if (m_eType == enGui3dType::Image) {
+        if (m_pSmgr->getGUIEnvironment()->getFileSystem()->existFile(m_sImage.c_str())) {
+          irr::video::ITexture *l_pTexture = l_pDrv->getTexture(m_sImage.c_str());
+          if (l_pTexture != nullptr) {
+            l_pDrv->draw2DImage(l_pTexture, irr::core::rect<irr::s32>(irr::core::position2di(0, 0), m_cRttSize), irr::core::rect<irr::s32>(irr::core::position2di(0, 0), l_pTexture->getSize()));
+          }
+        }
+        
+        if (m_iTextBackAlpha > 0 && m_bShowText) {
+          l_pDrv->draw2DRectangle(irr::video::SColor(m_iTextBackAlpha, m_cTextBackColor.getRed(), m_cTextBackColor.getGreen(), m_cTextBackColor.getBlue()), irr::core::rect<irr::s32>(irr::core::position2di(0, 0), m_pRttTexture->getSize()));
+        }
+      }
+
+      // Only render text for the items that display text. For the image it's optional
+      if (m_eType == enGui3dType::Button || m_eType == enGui3dType::Label || (m_eType == enGui3dType::Image && m_bShowText)) {
         irr::core::rect<irr::s32> l_cRect = m_cRect;
-        bool l_bCenterH = false;
+        
+        std::wstring l_sLine = L"";
+        irr::core::position2di l_cPos = irr::core::position2di(0, 0);
+#ifdef _IRREDIT_PLUGIN
+        irr::core::dimension2di l_cTotalDim = m_pFont->getDimension(m_sText.c_str()),
+                                l_cSpaceDim = m_pFont->getDimension(L" ");
+#else
+        irr::core::dimension2du l_cTotalDim = m_pFont->getDimension(m_sText.c_str()),
+                                l_cSpaceDim = m_pFont->getDimension(L" ");
+#endif
 
-        switch (m_eAlign) {
-        case enGui3dAlign::Left:
-          break;
+        std::vector<std::wstring> l_vWords;
 
-        case enGui3dAlign::Center:
-          l_bCenterH = true;
-          break;
+        size_t l_cSpace = m_sText.find(L" "),
+               l_cInit  = 0;
 
-        case enGui3dAlign::Right: {
-  #ifdef _IRREDIT_PLUGIN
-          irr::core::dimension2di l_cText = m_pFont->getDimension(m_sText.c_str());
-          l_cRect.UpperLeftCorner.X = l_cRect.LowerRightCorner.X - l_cText.Width;
-  #else
-          irr::core::dimension2du l_cText = m_pFont->getDimension(m_sText.c_str());
-          l_cRect.UpperLeftCorner.X = l_cRect.LowerRightCorner.X - l_cText.Width;
-  #endif
-          break;
+        // First off we split the text into words
+        while (l_cSpace != std::wstring::npos) {
+          l_vWords.push_back(m_sText.substr(l_cInit, l_cSpace - l_cInit));
+          l_cInit  = l_cSpace + 1;
+          l_cSpace = m_sText.find(L" ", l_cInit);
         }
+
+        l_vWords.push_back(m_sText.substr(l_cInit));
+
+        /**
+         * @struct SWordRect
+         * @author Christian Keimel
+         * A little helper data structure for the layout of text
+         */
+        struct SWordRect {
+          std::wstring m_sText;
+          irr::core::rect<irr::s32> m_cRect;
+          irr::gui::IGUIFont *m_pFont;
+#ifdef _IRREDIT_PLUGIN
+          irr::core::dimension2di m_cDim;
+#else
+          irr::core::dimension2du m_cDim;
+#endif
+          SWordRect(const std::wstring& a_sText, irr::gui::IGUIFont* a_pFont, irr::core::position2di a_cPos) {
+            m_sText = a_sText;
+            m_cDim  = a_pFont->getDimension(m_sText.c_str());
+            m_cRect = irr::core::rect<irr::s32>(a_cPos, m_cDim);
+            m_pFont = a_pFont;
+          }
+
+          void draw(const irr::video::SColor &a_cColor, const irr::core::rect<irr::s32> &a_cClip) {
+            m_pFont->draw(m_sText.c_str(), m_cRect, a_cColor, true, true, &a_cClip);
+          }
+        };
+
+        std::vector<SWordRect> l_vLayout;
+        l_cPos = m_cRect.UpperLeftCorner;
+
+        // Then we distribute the words in the texture. If the text is too long we cut it and end the text with "..."
+        for (std::vector<std::wstring>::iterator it = l_vWords.begin(); it != l_vWords.end(); it++) {
+#ifdef _IRREDIT_PLUGIN
+          irr::core::dimension2di l_cDim = m_pFont->getDimension((*it).c_str());
+#else
+          irr::core::dimension2du l_cDim = m_pFont->getDimension((*it).c_str());
+#endif
+          if ((irr::s32)(l_cPos.X + l_cDim.Width) > (irr::s32)m_cRect.LowerRightCorner.X) {
+            irr::core::position2di l_cOld = l_cPos;
+
+            l_cPos.X = m_cRect.UpperLeftCorner.X;
+            l_cPos.Y += l_cDim.Height;
+
+            if (l_cPos.Y > m_cRect.LowerRightCorner.Y) {
+#ifdef _IRREDIT_PLUGIN
+              irr::core::dimension2di l_cDots = m_pFont->getDimension(L"...");
+#else
+              irr::core::dimension2du l_cDots = m_pFont->getDimension(L"...");
+#endif
+              l_vLayout.push_back(SWordRect(L"...", m_pFont, l_cOld));
+              break;
+            }
+          }
+
+          l_vLayout.push_back(SWordRect((*it), m_pFont, l_cPos));
+          l_cPos.X += l_cDim.Width + l_cSpaceDim.Width;
         }
 
-        m_pFont->draw(m_sText.c_str(), l_cRect, a_cTextColor, l_bCenterH, true);
+        if (l_vLayout.size() > 0) {
+          std::vector<std::vector<SWordRect> > l_vLines;
+          irr::s32 l_iPosY = (*l_vLayout.begin()).m_cRect.UpperLeftCorner.Y;
+
+          std::vector<SWordRect> l_cLine;
+
+          irr::core::rect<irr::s32> l_cTotalRect = irr::core::rect<irr::s32>((*l_vLayout.begin()).m_cRect);
+
+          for (std::vector<SWordRect>::iterator it = l_vLayout.begin(); it != l_vLayout.end(); it++) {
+            l_cTotalRect.addInternalPoint((*it).m_cRect.UpperLeftCorner );
+            l_cTotalRect.addInternalPoint((*it).m_cRect.LowerRightCorner);
+
+            if ((*it).m_cRect.UpperLeftCorner.Y != l_iPosY) {
+              l_vLines.push_back(l_cLine);
+              l_cLine = std::vector<SWordRect>();
+              l_iPosY = (*it).m_cRect.UpperLeftCorner.Y;
+            }
+            l_cLine.push_back(*it);
+          }
+
+          if (l_cLine.size() > 0)
+            l_vLines.push_back(l_cLine);
+
+          int l_iOffsetY = 0;
+
+          if (m_eVerticalAlign == enGui3dVerticalAlign::Middle) {
+            l_iOffsetY = m_cRect.getCenter().Y - (l_cTotalRect.getHeight() / 2);
+          }
+          else if (m_eVerticalAlign == enGui3dVerticalAlign::Bottom) {
+            l_iOffsetY = m_cRect.getHeight() - (l_cTotalRect.getHeight());
+          }
+
+          for (std::vector<std::vector<SWordRect> >::iterator it = l_vLines.begin(); it != l_vLines.end(); it++) {
+            if ((*it).size() > 0) {
+              irr::core::rect<irr::s32> l_cTotal = irr::core::rect<irr::s32>((*(*it).begin()).m_cRect.UpperLeftCorner, (*(*it).begin()).m_cRect.LowerRightCorner);
+
+              for (std::vector<SWordRect>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++) {
+                l_cTotal.addInternalPoint((*it2).m_cRect.UpperLeftCorner );
+                l_cTotal.addInternalPoint((*it2).m_cRect.LowerRightCorner);
+              }
+
+              int l_iOffsetX = 0;
+
+              if (m_eAlign == enGui3dAlign::Right) {
+                l_iOffsetX = m_cRect.LowerRightCorner.X - l_cTotal.getWidth();
+              }
+              else if (m_eAlign == enGui3dAlign::Center) {
+                l_iOffsetX = m_cRect.getCenter().X - (l_cTotal.getWidth() / 2);
+              }
+
+              for (std::vector<SWordRect>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++) {
+                (*it2).m_cRect.UpperLeftCorner .X += l_iOffsetX;
+                (*it2).m_cRect.LowerRightCorner.X += l_iOffsetX;
+                (*it2).m_cRect.UpperLeftCorner .Y += l_iOffsetY;
+                (*it2).m_cRect.LowerRightCorner.Y += l_iOffsetY;
+
+                (*it2).draw(m_cTextColor, m_cRect);
+              }
+            }
+          }
+        }
       }
 
       l_pDrv->setRenderTarget(nullptr);
@@ -195,31 +384,20 @@ namespace dustbin {
     void CGui3dItemBase::updateRttTexture() {
       if (getParent() != nullptr && getParent()->getType() == irr::scene::ESNT_MESH) {
         std::string l_sTextureName = std::string("Rtt_") + getParent()->getName() + "_" + std::to_string(getID()) + ".png";
-#ifdef _IRREDIT_PLUGIN
-        irr::core::dimension2d<irr::s32> l_cRttSize;
-#else
-        irr::core::dimension2du l_cRttSize;
-#endif
 
         if (m_eType == enGui3dType::IconButton) {
           // Use small texture for the icon buttons which do not render anything
-          l_cRttSize.Width  = 16;
-          l_cRttSize.Height = 16;
-        }
-        else {
-          l_cRttSize.Width  = 5 * m_cRttSize.Width  / 4;
-          l_cRttSize.Height = 5 * m_cRttSize.Height / 4;
+          m_cRttSize.Width  = 16;
+          m_cRttSize.Height = 16;
         }
 
-        m_pRttTexture = m_pSmgr->getVideoDriver()->addRenderTargetTexture(l_cRttSize, l_sTextureName.c_str());
+        m_pRttTexture = m_pSmgr->getVideoDriver()->addRenderTargetTexture(m_cRttSize, l_sTextureName.c_str());
 
         switch (m_eType) {
           case enGui3dType::Label:
-          case enGui3dType::Button: {
-            irr::s32 l_iLeft = (l_cRttSize.Width  - m_cRttSize.Width ) / 2,
-              l_iTop  = (l_cRttSize.Height - m_cRttSize.Height) / 2;
-
-            m_cRect = irr::core::rect<irr::s32>(l_iLeft, l_iTop, l_iLeft + m_cRttSize.Width, l_iTop + m_cRttSize.Height);
+          case enGui3dType::Button:
+          case enGui3dType::Image: {
+            m_cRect = irr::core::rect<irr::s32>(0, 0, m_cRttSize.Width, m_cRttSize.Height);
             break;
           }
 
@@ -252,15 +430,21 @@ namespace dustbin {
 
       if (l_itMap != m_mSerializerMap.end()) {
         for (std::vector<std::string>::const_iterator it = l_itMap->second.begin(); it != l_itMap->second.end(); it++) {
-               if ((*it) == g_sTextureName      ) a_pOut->addInt       ((*it).c_str(), m_iRttTexture);
-          else if ((*it) == g_sTextName         ) a_pOut->addString    ((*it).c_str(), m_sText.c_str());
-          else if ((*it) == g_sAlignmentName    ) a_pOut->addEnum      ((*it).c_str(), (int)m_eAlign, g_aTextAlignment);
-          else if ((*it) == g_sTextColorName    ) a_pOut->addColor     ((*it).c_str(), m_cTextColor);
-          else if ((*it) == g_sBackgroundName   ) a_pOut->addColor     ((*it).c_str(), m_cBackground);
-          else if ((*it) == g_sHoverColorName   ) a_pOut->addColor     ((*it).c_str(), m_cHoverColor);
-          else if ((*it) == g_sTextureWidthName ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Width);
-          else if ((*it) == g_sTextureHeightName) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Height);
-          else if ((*it) == g_sClickColorName   ) a_pOut->addColor     ((*it).c_str(), m_cClickColor);
+               if ((*it) == g_sTextureName       ) a_pOut->addInt       ((*it).c_str(), m_iRttTexture);
+          else if ((*it) == g_sTextName          ) a_pOut->addString    ((*it).c_str(), m_sText.c_str());
+          else if ((*it) == g_sAlignmentName     ) a_pOut->addEnum      ((*it).c_str(), (int)m_eAlign        , g_aTextAlignment);
+          else if ((*it) == g_sVertAlignName     ) a_pOut->addEnum      ((*it).c_str(), (int)m_eVerticalAlign, g_aVerticalAlignment);
+          else if ((*it) == g_sTextColorName     ) a_pOut->addColor     ((*it).c_str(), m_cTextColor);
+          else if ((*it) == g_sBackgroundName    ) a_pOut->addColor     ((*it).c_str(), m_cBackground);
+          else if ((*it) == g_sHoverColorName    ) a_pOut->addColor     ((*it).c_str(), m_cHoverColor);
+          else if ((*it) == g_sTextureWidthName  ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Width);
+          else if ((*it) == g_sTextureHeightName ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Height);
+          else if ((*it) == g_sClickColorName    ) a_pOut->addColor     ((*it).c_str(), m_cClickColor);
+          else if ((*it) == g_sMultilineName     ) a_pOut->addBool      ((*it).c_str(), m_bMultiLine);
+          else if ((*it) == g_sImageFileName     ) a_pOut->addString    ((*it).c_str(), m_sImage.c_str());
+          else if ((*it) == g_sOverlayTextName   ) a_pOut->addBool      ((*it).c_str(), m_bShowText);
+          else if ((*it) == g_sTextBackgroundName) a_pOut->addColor     ((*it).c_str(), m_cTextBackColor);
+          else if ((*it) == g_sTextBackAlphaName ) a_pOut->addInt       ((*it).c_str(), m_iTextBackAlpha);
         }
       }
     }
@@ -326,6 +510,16 @@ namespace dustbin {
         }
       }
 
+      if (a_pIn->existsAttribute(g_sVertAlignName.c_str())) {
+        std::string l_sAlign = a_pIn->getAttributeAsEnumeration(g_sVertAlignName.c_str());
+        enGui3dVerticalAlign l_eAlign = stringToVerticalAlign(l_sAlign);
+
+        if (l_eAlign != m_eVerticalAlign) {
+          m_eVerticalAlign = l_eAlign;
+          l_bUpdateRttText = true;
+        }
+      }
+
       if (a_pIn->existsAttribute(g_sTextColorName.c_str())) {
         irr::video::SColor l_cColor = a_pIn->getAttributeAsColor(g_sTextColorName.c_str());
         if (l_cColor != m_cTextColor) {
@@ -338,6 +532,50 @@ namespace dustbin {
         irr::video::SColor l_cColor = a_pIn->getAttributeAsColor(g_sBackgroundName.c_str());
         if (l_cColor != m_cBackground) {
           m_cBackground = l_cColor;
+          l_bUpdateRttText = true;
+        }
+      }
+
+      if (a_pIn->existsAttribute(g_sMultilineName.c_str())) {
+        bool l_bMultiline = a_pIn->getAttributeAsBool(g_sMultilineName.c_str());
+        if (l_bMultiline != m_bMultiLine) {
+          m_bMultiLine = l_bMultiline;
+          l_bUpdateRttText = true;
+        }
+      }
+
+      if (a_pIn->existsAttribute(g_sImageFileName.c_str())) {
+        std::string l_sImage = a_pIn->getAttributeAsString(g_sImageFileName.c_str()).c_str();
+        if (l_sImage != m_sImage) {
+          m_sImage = l_sImage;
+          l_bUpdateRttText = true;
+        }
+      }
+
+      if (a_pIn->existsAttribute(g_sOverlayTextName.c_str())) {
+        bool l_bShowText = a_pIn->getAttributeAsBool(g_sOverlayTextName.c_str());
+        if (l_bShowText != m_bShowText) {
+          m_bShowText = l_bShowText;
+          l_bUpdateRttText = true;
+        }
+      }
+
+      if (a_pIn->existsAttribute(g_sTextBackgroundName.c_str())) {
+        irr::video::SColor l_cColor = a_pIn->getAttributeAsColor(g_sTextBackgroundName.c_str());
+        if (l_cColor != m_cTextBackColor) {
+          m_cTextBackColor = l_cColor;
+          l_bUpdateRttText = true;
+        }
+      }
+
+      if (a_pIn->existsAttribute(g_sTextBackAlphaName.c_str())) {
+        irr::s32 l_iAlpha32 = a_pIn->getAttributeAsInt(g_sTextBackAlphaName.c_str());
+        if (l_iAlpha32 < 0  ) l_iAlpha32 = 0;
+        if (l_iAlpha32 > 255) l_iAlpha32 = 255;
+        irr::u8 l_iAlpha = (irr::u8)l_iAlpha32;
+
+        if (l_iAlpha != m_iTextBackAlpha) {
+          m_iTextBackAlpha = l_iAlpha;
           l_bUpdateRttText = true;
         }
       }
@@ -437,14 +675,20 @@ namespace dustbin {
     std::string CGui3dRootBase::m_sNodeTypeName = "Gui3dRoot";
     std::string CGui3dItemBase::m_sNodeTypeName = "Gui3dItem";
 
-    std::string CGui3dItemBase::g_sTextureName       = "Texture";
-    std::string CGui3dItemBase::g_sTextName          = "Text";
-    std::string CGui3dItemBase::g_sAlignmentName     = "Alignment";
-    std::string CGui3dItemBase::g_sTextColorName     = "Textcolor";
-    std::string CGui3dItemBase::g_sBackgroundName    = "Backgroundcolor";
-    std::string CGui3dItemBase::g_sHoverColorName    = "HoverColor";
-    std::string CGui3dItemBase::g_sTextureWidthName  = "TextureWidth";
-    std::string CGui3dItemBase::g_sTextureHeightName = "TextureHeight";
-    std::string CGui3dItemBase::g_sClickColorName    = "ClickedColor";
+    std::string CGui3dItemBase::g_sTextureName        = "Texture";
+    std::string CGui3dItemBase::g_sTextName           = "Text";
+    std::string CGui3dItemBase::g_sAlignmentName      = "Alignment";
+    std::string CGui3dItemBase::g_sTextColorName      = "Textcolor";
+    std::string CGui3dItemBase::g_sBackgroundName     = "Backgroundcolor";
+    std::string CGui3dItemBase::g_sHoverColorName     = "HoverColor";
+    std::string CGui3dItemBase::g_sTextureWidthName   = "TextureWidth";
+    std::string CGui3dItemBase::g_sTextureHeightName  = "TextureHeight";
+    std::string CGui3dItemBase::g_sClickColorName     = "ClickedColor";
+    std::string CGui3dItemBase::g_sMultilineName      = "Multiline";
+    std::string CGui3dItemBase::g_sVertAlignName      = "VerticalAlign";
+    std::string CGui3dItemBase::g_sImageFileName      = "Image";
+    std::string CGui3dItemBase::g_sOverlayTextName    = "ShowText";
+    std::string CGui3dItemBase::g_sTextBackgroundName = "OverlayBackground";
+    std::string CGui3dItemBase::g_sTextBackAlphaName  = "OverlayAlpha";
   }
 }

@@ -32,6 +32,8 @@ namespace dustbin {
       scenenodes::CMarbleGPSceneNodeFactory *l_pMGPFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pDevice->getSceneManager());
       m_pDevice->getSceneManager()->registerSceneNodeFactory(l_pMGPFactory);
       l_pMGPFactory->drop();
+
+      m_pDevice->getTimer()->start();
     }
   }
 
@@ -257,7 +259,8 @@ namespace dustbin {
       printf("Pop LUA script: \"%s\"\n", m_sTemp.c_str());
       return m_sTemp;
     }
-    else return "data/lua/menu_main.lua";
+    else return "data/lua/menu_setupgame.lua";
+    // else return "data/lua/menu_main.lua";
   }
 
   /**
