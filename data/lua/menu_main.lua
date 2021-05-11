@@ -2,18 +2,16 @@ g_Time = 0  -- The time of the last "step" message
 
 function initialize()
   io.write("Main Menu script started.\n")
-  -- dialog:loadscene("data/menu3d/menu_main.xml")
-  -- dialog:loadscene("data/menu3d/menu_trackselect.xml")
-  dialog:loadscene("data/menu3d/menu_setupgame.xml")
   
-  g_Camera = LuaCameraObject:new()
-  g_Camera:initialize()
-  g_Camera:setposition({ x = 0, y = 0, z = 0 })
-  g_Camera:settarget({ x = 0, y = 0, z = 35 })
-  g_Camera:setupvector({ x = 0, y = 1, z = 0 })
+  g_Smgr = dialog:getscenemanager()
+  g_Smgr:loadscene("data/menu3d/menu_main.xml")
+  
+  g_Camera = g_Smgr:addcamera();
+
+  g_Camera:setposition(0.0, 0.0,  0.0)
+  g_Camera:setupvector(0.0, 1.0,  0.0)
+  g_Camera:settarget  (0.0, 0.0, 35.0)
   g_Camera:activate()
-  
-  dialog:init3dgui()
 end
 
 function step(a_Time)

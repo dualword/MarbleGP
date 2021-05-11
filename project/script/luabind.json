@@ -169,6 +169,20 @@
           }
         }
       }
+    },
+    "LuaSceneManager": {
+      "comment": "LUA scene manager",
+      "members": [
+        { "name": "smgr", "type": "irr::scene::ISceneManager *", "comment": "The Irrlicht scene manager instance", "default": "nullptr" }
+      ],
+      "methods": {
+        "lua_from": {
+          "addcamera": {
+            "comment": "Add a camera scene node",
+            "return": { "type": "LuaCameraObject *" }
+          }
+        }
+      }
     }
   },
   "singletons": {
@@ -208,7 +222,8 @@
       ],
       "exports": [
         "LuaSceneObject",
-        "LuaCameraObject"
+        "LuaCameraObject",
+        "LuaSceneManager"
       ],
       "members": [
       ],

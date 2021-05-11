@@ -37,12 +37,17 @@ g_Buttons = {
   button_randomize  = { key = "randomizefirst", type = "toggle" }
 }
 
+g_Smgr = nil  -- The Scene Manager LUA object
+
 function initialize()
   io.write("Setup Game Menu script started.\n")
   dialog:loadscene("data/menu3d/menu_setupgame.xml")
   
-  g_Camera = LuaCameraObject:new()
-  g_Camera:initialize()
+  g_Smgr = LuaSceneManager:new()
+  
+  io.write("Smgr: " .. tostring(g_Smgr) .. "\n")
+  
+  g_Camera = g_Smgr:addcamera()
   g_Camera:setposition({ x = 0, y = 0, z = 0 })
   g_Camera:settarget({ x = 0, y = 0, z = 35 })
   g_Camera:setupvector({ x = 0, y = 1, z = 0 })

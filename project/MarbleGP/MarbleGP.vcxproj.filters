@@ -25,14 +25,8 @@
     <Filter Include="Headerdateien\_generated">
       <UniqueIdentifier>{15f0474b-f1d3-4c7e-88b2-1ff1c6270990}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\_generated\lua">
-      <UniqueIdentifier>{9832fda2-12bf-4399-9b77-f0728737d9ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\_generated">
       <UniqueIdentifier>{fa0f44f8-d6c2-478c-be93-d21c77de76a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\_generated\lua">
-      <UniqueIdentifier>{665ca599-dd23-4fd2-b965-5ef51e6dd400}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headerdateien\lua">
       <UniqueIdentifier>{1aaafb64-d7f5-49cd-8766-a66198585d3a}</UniqueIdentifier>
@@ -81,38 +75,8 @@
     <ClCompile Include="..\_source\source\platform\CPlatformWindows.cpp">
       <Filter>Quelldateien\platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp">
-      <Filter>Quelldateien\_generated\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp">
-      <Filter>Quelldateien\_generated\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp">
-      <Filter>Quelldateien\_generated\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\ILuaClass.cpp">
-      <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\LuaScript.cpp">
-      <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\luawrap.cpp">
-      <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\CLuaTypeHelpers.cpp">
-      <Filter>Quelldateien\_generated\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\CLuaSceneObject.cpp">
-      <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\CLuaCameraObject.cpp">
-      <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
     <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp">
       <Filter>Quelldateien\messages</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\lua\CLuaSingletonDialog.cpp">
-      <Filter>Quelldateien\lua</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\state\CLuaState.cpp">
       <Filter>Quelldateien\state</Filter>
@@ -150,6 +114,15 @@
     <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp">
       <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -163,36 +136,6 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\platform\CPlatform.h">
       <Filter>Headerdateien\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaCameraObject.h">
-      <Filter>Headerdateien\_generated\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaSceneObject.h">
-      <Filter>Headerdateien\_generated\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_dialog.h">
-      <Filter>Headerdateien\_generated\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_dialog.h">
-      <Filter>Headerdateien\_generated\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\lua\lua_enums.h">
-      <Filter>Headerdateien\_generated\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h">
-      <Filter>Headerdateien\_generated\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\lua\luawrap.hpp">
-      <Filter>Headerdateien\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\lua\LuaScript.h">
-      <Filter>Headerdateien\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\lua\ILuaClass.h">
-      <Filter>Headerdateien\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\lua\CLuaTypeHelpers.h">
-      <Filter>Headerdateien\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h">
       <Filter>Headerdateien\messages</Filter>
@@ -244,6 +187,21 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\messages\ISerializer.h">
       <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaHelpers.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaScript_dialog.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaCamera.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\ILuaObject.h">
+      <Filter>Headerdateien\lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

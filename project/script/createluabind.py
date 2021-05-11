@@ -23,7 +23,21 @@ def TypeWithPrefix(a_Type, a_Json):
         return "C" + a_Type
       
   return a_Type
+
+def StripReturnType(a_Type):
+  l_Type = a_Type.strip(" *")
+  return l_Type
     
+def IsClass(a_Type, a_Json):
+  l_Type = a_Type.strip(" *")
+  return l_Type in a_Json["classes"]
+  
+def AddReturnType(a_Type, a_File, a_Json):
+  if IsClass(a_Type, a_Json):
+    a_File.write("C")
+    
+  a_File.write(a_Type)
+  
 def CreatePush(a_Name, a_Type, a_Json, a_StatePrefix):
   if a_Type == "int":
     return "lua_pushinteger(" + a_StatePrefix + "pState, " + a_Name + ");\n"
@@ -64,7 +78,10 @@ def CreatePush(a_Name, a_Type, a_Json, a_StatePrefix):
     
     return l_Ret
   else:
-    return a_Name + ".pushToStack(" + a_StatePrefix + "pState);\n"
+    if IsClass(a_Type, a_Json):
+      return a_Name + "->pushToStack(" + a_StatePrefix + "pState);\n"
+    else:
+      return a_Name + ".pushToStack(" + a_StatePrefix + "pState);\n"
     
 def CreateTypeCheck(a_Name, a_Type, a_Json, a_ReturnValue, a_AllowNil, a_StatePrefix, a_Default):
   l_Ret = ""
@@ -455,7 +472,13 @@ def CreateHeader(a_FilePath, a_Name, a_Class, a_Type, a_Json):
     
   l_Header.write("\n")
   
-  l_Header.write("/**\n")
+  for l_Direction in a_Class["methods"]:
+    for l_Method in a_Class["methods"][l_Direction]:
+      if "return" in a_Class["methods"][l_Direction][l_Method]:
+        if IsClass(a_Class["methods"][l_Direction][l_Method]["return"]["type"], a_Json):
+          l_Header.write("#include <_generated/lua/C" + StripReturnType(a_Class["methods"][l_Direction][l_Method]["return"]["type"]) + ".h>\n")
+  
+  l_Header.write("\n/**\n")
   l_Header.write(" * @class C" + a_Name + "\n")
   l_Header.write(" * @author Dustbin::Games LuaBind Python Script\n")
   
@@ -507,6 +530,8 @@ def CreateHeader(a_FilePath, a_Name, a_Class, a_Type, a_Json):
     l_Header.write("();\n")
     
   l_Header.write("    virtual ~" + a_Name + "();\n\n")
+  l_Header.write("    // Push the class instance to the LUA stack\n")
+  l_Header.write("    void pushToStack(lua_State *a_pState);\n\n")
   
   if "methods" in a_Class:
     for l_Type in a_Class["methods"]:
@@ -532,7 +557,7 @@ def CreateHeader(a_FilePath, a_Name, a_Class, a_Type, a_Json):
           l_Header.write(l_Method["type"] + " ")
           
         if "return" in l_Method:
-          l_Header.write(l_Method["return"]["type"])
+          AddReturnType(l_Method["return"]["type"], l_Header, a_Json)
         else:
           l_Header.write("void")
           
@@ -707,7 +732,10 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
         a_Source.write("\n  try {\n    ")
         if "return" in l_Method:
           l_Return = l_Method["return"]["type"]
-          a_Source.write(l_Method["return"]["type"] + " l_Ret = ")
+          a_Source.write("// Create instance\n    ")
+          
+          AddReturnType(l_Method["return"]["type"], a_Source, a_Json)
+          a_Source.write(" l_Ret = ")
           
         a_Source.write("l_pObject->" + l_Name + "(")
         
@@ -763,6 +791,11 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
       if a_Type == "class":
         a_Source.write("void " + a_Name + "::registerMethods(lua_State *a_pState) {\n")
         a_Source.write("  LuaWrap::register_class<" + a_Name + ">(a_pState, \"" + a_Name[1:] + "\", S" + a_Name + "Methods, NULL, LuaWrap::InternalLua::default_new<" + a_Name + ">, LuaWrap::InternalLua::default_gc<" + a_Name + ">);\n")
+        a_Source.write("}\n\n")
+        
+        a_Source.write("// Method to push instance of C" + a_Name + " to LUA stack\n")
+        a_Source.write("void " + a_Name + "::pushToStack(lua_State *a_pState) {\n")
+        
         a_Source.write("}\n\n")
       
     if "lua_to" in a_Class["methods"]:

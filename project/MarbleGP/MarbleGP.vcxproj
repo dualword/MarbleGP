@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>false</VcpkgEnableManifest>
@@ -190,13 +190,9 @@
   <ItemGroup>
     <ClCompile Include="..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\_source\source\CMainClass.cpp" />
-    <ClCompile Include="..\_source\source\lua\CLuaCameraObject.cpp" />
-    <ClCompile Include="..\_source\source\lua\CLuaSceneObject.cpp" />
-    <ClCompile Include="..\_source\source\lua\CLuaSingletonDialog.cpp" />
-    <ClCompile Include="..\_source\source\lua\CLuaTypeHelpers.cpp" />
-    <ClCompile Include="..\_source\source\lua\ILuaClass.cpp" />
-    <ClCompile Include="..\_source\source\lua\LuaScript.cpp" />
-    <ClCompile Include="..\_source\source\lua\luawrap.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp" />
     <ClCompile Include="..\_source\source\MarbleGP.cpp" />
     <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\_source\source\platform\CPlatformWindows.cpp" />
@@ -209,9 +205,6 @@
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\_source\source\state\CLuaState.cpp" />
     <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp" />
-    <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp" />
-    <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp" />
-    <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp" />
@@ -219,10 +212,11 @@
   <ItemGroup>
     <ClInclude Include="..\_source\include\CGlobal.h" />
     <ClInclude Include="..\_source\include\CMainClass.h" />
-    <ClInclude Include="..\_source\include\lua\CLuaTypeHelpers.h" />
-    <ClInclude Include="..\_source\include\lua\ILuaClass.h" />
-    <ClInclude Include="..\_source\include\lua\LuaScript.h" />
-    <ClInclude Include="..\_source\include\lua\luawrap.hpp" />
+    <ClInclude Include="..\_source\include\lua\CLuaCamera.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaHelpers.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaScript_dialog.h" />
+    <ClInclude Include="..\_source\include\lua\ILuaObject.h" />
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h" />
     <ClInclude Include="..\_source\include\messages\IMessage.h" />
     <ClInclude Include="..\_source\include\messages\ISerializer.h" />
@@ -238,12 +232,6 @@
     <ClInclude Include="..\_source\include\state\IState.h" />
     <ClInclude Include="..\_source\include\threads\CMessageQueue.h" />
     <ClInclude Include="..\_source\include\threads\IQueue.h" />
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaCameraObject.h" />
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaSceneObject.h" />
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_dialog.h" />
-    <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_dialog.h" />
-    <ClInclude Include="..\_source\include\_generated\lua\lua_enums.h" />
-    <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessages.h" />

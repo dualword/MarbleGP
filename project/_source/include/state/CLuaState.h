@@ -9,13 +9,15 @@
 
 #include <state/IState.h>
 
-class CLuaScript_dialog;
-
 namespace dustbin {
   class CGlobal;
 
   namespace scenenodes {
     class CGui3dRoot;
+  }
+
+  namespace lua {
+    class CLuaScript_dialog;
   }
 
   namespace state {
@@ -31,7 +33,7 @@ namespace dustbin {
         irr::scene::ISceneManager *m_pSmgr;
         irr::gui::IGUIEnvironment *m_pGui;
 
-        CLuaScript_dialog      *m_pScript;
+        lua::CLuaScript_dialog *m_pScript;
         CGlobal                *m_pGlobal;
         scenenodes::CGui3dRoot *m_pGuiRoot;
         irr::ITimer            *m_pTimer;

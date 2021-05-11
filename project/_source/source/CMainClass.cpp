@@ -39,6 +39,9 @@ namespace dustbin {
 
   CMainClass::~CMainClass() {
     CGlobal::m_pInstance = nullptr;
+
+    for (std::map<dustbin::state::enState, dustbin::state::IState *>::iterator it = m_mStates.begin(); it != m_mStates.end(); it++)
+      delete it->second;
   }
 
   /**
@@ -259,7 +262,7 @@ namespace dustbin {
       printf("Pop LUA script: \"%s\"\n", m_sTemp.c_str());
       return m_sTemp;
     }
-    else return "data/lua/menu_setupgame.lua";
+    else return "data/lua/menu_main.lua";
     // else return "data/lua/menu_main.lua";
   }
 

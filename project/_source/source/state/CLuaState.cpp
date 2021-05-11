@@ -1,7 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
-#include <_generated/lua/CLuaScript_dialog.h>
 #include <scenenodes/CGui3dRoot.h>
-#include <lua/CLuaTypeHelpers.h>
+#include <lua/CLuaScript_dialog.h>
+#include <lua/CLuaHelpers.h>
 #include <state/CLuaState.h>
 #include <CGlobal.h>
 #include <string>
@@ -43,12 +43,8 @@ namespace dustbin {
       std::string l_sScriptName = m_pGlobal->popScript(),
                   l_sScript = lua::loadLuaScript(l_sScriptName);
 
-      m_pScript = new CLuaScript_dialog(l_sScript);
-
-      if (m_pScript != nullptr) {
-        m_pScript->initialize();
-        initGuiRoot(m_pSmgr->getRootSceneNode());
-      }
+      m_pScript = new lua::CLuaScript_dialog(l_sScript);
+      m_pScript->initialize();
     }
 
     /**
@@ -81,8 +77,8 @@ namespace dustbin {
         l_pCam->setAspectRatio(l_fRatio);
       }
 
-      if (m_pScript != nullptr)
-        m_pScript->windowresized();
+      // if (m_pScript != nullptr)
+      //   m_pScript->windowresized();
     }
 
     /**
@@ -125,14 +121,14 @@ namespace dustbin {
     }
 
     void CLuaState::onUievent(const std::string& a_type, irr::s32 a_id, const std::string& a_name, const std::string& a_data) {
-      if (m_pScript != nullptr) {
+      /*if (m_pScript != nullptr) {
         if (a_type == "uielementhovered")
           m_pScript->uielementhovered(a_id, a_name);
         else if (a_type == "uielementleft")
           m_pScript->uielementleft(a_id, a_name);
         else if (a_type == "uibuttonclicked")
           m_pScript->uibuttonclicked(a_id, a_name);
-      }
+      }*/
     }
 
     bool CLuaState::isMouseDown(enMouseButton a_eButton) {
