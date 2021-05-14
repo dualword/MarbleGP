@@ -8,11 +8,12 @@
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <state/CLuaState.h>
 #include <CMainClass.h>
+#include <algorithm>
 #include <chrono>
 #include <thread>
 
 namespace dustbin {
-  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr) {
+  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr), m_eStateChange(state::enState::None) {
     CGlobal::m_pInstance = this;
 
 #ifdef _OPENGL_ES
@@ -42,6 +43,8 @@ namespace dustbin {
 
     for (std::map<dustbin::state::enState, dustbin::state::IState *>::iterator it = m_mStates.begin(); it != m_mStates.end(); it++)
       delete it->second;
+
+    m_pDevice->drop();
   }
 
   /**
@@ -61,13 +64,33 @@ namespace dustbin {
       if (m_pActiveState != nullptr) {
         m_pActiveState->activate();
 
-        std::chrono::high_resolution_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
+        std::chrono::steady_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
 
         irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
 
         m_pDevice->setWindowCaption(L"MarbleGP - Dustbin::Games");
 
         while (m_pDevice->run() && m_pActiveState != nullptr) {
+          int l_iFps = m_pDrv->getFPS();
+          m_pDevice->setWindowCaption(std::wstring(L"Dustbin::Games - MarbleGP [" + std::to_wstring(l_iFps) + L" FPS]").c_str());
+
+          m_pDrv->beginScene();
+          m_pSmgr->drawAll();
+
+          for (std::vector<irr::scene::ISceneManager*>::iterator it = m_vBeforeGui.begin(); it != m_vBeforeGui.end(); it++) {
+            m_pDrv->clearZBuffer();
+            (*it)->drawAll();
+          }
+
+          m_pGui->drawAll();
+
+          for (std::vector<irr::scene::ISceneManager*>::iterator it = m_vAfterGui.begin(); it != m_vAfterGui.end(); it++) {
+            m_pDrv->clearZBuffer();
+            (*it)->drawAll();
+          }
+
+          m_pDrv->endScene();
+
           state::enState l_eState = m_pActiveState->run();
 
           irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
@@ -90,8 +113,6 @@ namespace dustbin {
           std::this_thread::sleep_until(l_cNextStep);
         }
       }
-
-      m_pDevice->drop();
     }
   }
 
@@ -276,6 +297,51 @@ namespace dustbin {
       return m_sTemp;
     }
     else return "";
+  }
+
+
+  /**
+  * Register a new scene manager for drawing
+  * @param a_pSmgr the new scene manager
+  * @param a_iRenderPosition the position to render the new scene manager. "0" is the render index of the GUI environment, negative position renders the new scene manager before the gui
+  */
+  void CMainClass::registerSceneManager(irr::scene::ISceneManager* a_pSmgr, int a_iRenderPosition) {
+    if (a_iRenderPosition < 0)
+      m_vBeforeGui.push_back(a_pSmgr);
+    else
+      m_vAfterGui.push_back(a_pSmgr);
+  }
+
+  /**
+  * Remove a scene manager from the rendering pipeline
+  * @param a_pSmgr the scene manager to remove
+  */
+  void CMainClass::removeSceneManager(irr::scene::ISceneManager* a_pSmgr) {
+    std::vector<irr::scene::ISceneManager *>::iterator it = std::find(m_vBeforeGui.begin(), m_vBeforeGui.end(), a_pSmgr);
+    if (it != m_vBeforeGui.end())
+      m_vBeforeGui.erase(it);
+
+    it = std::find(m_vAfterGui.begin(), m_vAfterGui.end(), a_pSmgr);
+    if (it != m_vAfterGui.end())
+      m_vAfterGui.erase(it);
+  }
+
+  /**
+  * This function requests a state change. The change will be applied with the next "IState::run" call
+  * @param a_eState the new state
+  */
+  void CMainClass::stateChange(dustbin::state::enState a_eNewState) {
+    m_eStateChange = a_eNewState;
+  }
+
+  /**
+  * Get a requested state change. This function also sets the corresponding member back to "None"
+  * @return the state change
+  */
+  dustbin::state::enState CMainClass::getStateChange() {
+    state::enState l_eRet = m_eStateChange;
+    m_eStateChange = state::enState::None;
+    return l_eRet;
   }
 
   state::IState* CMainClass::getActiveState() {

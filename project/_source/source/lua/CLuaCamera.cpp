@@ -7,8 +7,10 @@ namespace dustbin {
     CLuaCamera::CLuaCamera(irr::scene::ICameraSceneNode* a_pCamera) : m_pCamera(a_pCamera) {
     }
 
+    CLuaCamera::CLuaCamera(const CLuaCamera& a_cOther) : m_pCamera(a_cOther.m_pCamera) {
+    }
+
     CLuaCamera::~CLuaCamera() {
-      printf("Delete LUA camera\n");
     }
 
     void CLuaCamera::activate() {

@@ -23,6 +23,8 @@ namespace dustbin {
 
       public:
         CLuaCamera(irr::scene::ICameraSceneNode *a_pCamera);
+        CLuaCamera(const CLuaCamera &a_cOther);
+
         virtual ~CLuaCamera();
 
         void activate();

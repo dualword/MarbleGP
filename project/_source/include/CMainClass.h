@@ -35,7 +35,12 @@ namespace dustbin {
 
       std::vector<std::string> m_vScriptStack;  /**< The stack of LUA scripts */
 
+      std::vector<irr::scene::ISceneManager *> m_vBeforeGui,
+                                               m_vAfterGui;
+
       std::map<state::enState, state::IState *> m_mStates; /**< The game states */
+
+      state::enState m_eStateChange;  /**< Global for requested state change */
 
     public:
       CMainClass();
@@ -168,6 +173,32 @@ namespace dustbin {
        * @ return the currently active state
        */
       virtual state::IState *getActiveState();
+
+
+      /**
+      * Register a new scene manager for drawing
+      * @param a_pSmgr the new scene manager
+      * @param a_iRenderPosition the position to render the new scene manager. "0" is the render index of the GUI environment, negative position renders the new scene manager before the gui
+      */
+      virtual void registerSceneManager(irr::scene::ISceneManager *a_pSmgr, int a_iRenderPosition);
+
+      /**
+      * Remove a scene manager from the rendering pipeline
+      * @param a_pSmgr the scene manager to remove
+      */
+      virtual void removeSceneManager(irr::scene::ISceneManager *a_pSmgr);
+
+      /**
+      * This function requests a state change. The change will be applied with the next "IState::run" call
+      * @param a_eState the new state
+      */
+      virtual void stateChange(dustbin::state::enState a_eNewState);
+
+      /**
+      * Get a requested state change. This function also sets the corresponding member back to "None"
+      * @return the state change
+      */
+      virtual dustbin::state::enState getStateChange();
 
       // Method inherited from irr::IEventReceiver
       virtual bool OnEvent(const irr::SEvent &a_cEvent);

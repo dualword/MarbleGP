@@ -7,6 +7,7 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <state/IState.h>
 #include <string>
 
 namespace dustbin {
@@ -161,6 +162,19 @@ namespace dustbin {
       virtual state::IState *getActiveState() = 0;
 
       /**
+       * Register a new scene manager for drawing
+       * @param a_pSmgr the new scene manager
+       * @param a_iRenderPosition the position to render the new scene manager. "0" is the render index of the GUI environment, negative position renders the new scene manager before the gui
+       */
+      virtual void registerSceneManager(irr::scene::ISceneManager *a_pSmgr, int a_iRenderPosition) = 0;
+
+      /**
+      * Remove a scene manager from the rendering pipeline
+      * @param a_pSmgr the scene manager to remove
+      */
+      virtual void removeSceneManager(irr::scene::ISceneManager *a_pSmgr) = 0;
+
+      /**
        * Get a setting as boolean
        * @param a_sKey the key of the setting
        * @return the value, false if the key is not stored
@@ -249,5 +263,17 @@ namespace dustbin {
        * @return the singleton instance of CGlobal
        */
       static CGlobal *getInstance();
+
+      /**
+      * This function requests a state change. The change will be applied with the next "IState::run" call
+      * @param a_eState the new state
+      */
+      virtual void stateChange(dustbin::state::enState a_eNewState) = 0;
+
+      /**
+      * Get a requested state change. This function also sets the corresponding member back to "None"
+      * @return the state change
+      */
+      virtual dustbin::state::enState getStateChange() = 0;
   };
 }

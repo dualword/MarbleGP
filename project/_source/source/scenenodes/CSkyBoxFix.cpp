@@ -6,15 +6,11 @@ This file is licensed under the terms of the ZLib license - https://www.zlib.net
 
 namespace dustbin {
   namespace scenenodes {
-    CSkyBoxFix::CSkyBoxFix(irr::IrrlichtDevice *a_pDevice, const std::string &l_sIrrFile) {
+    CSkyBoxFix::CSkyBoxFix(irr::video::IVideoDriver *a_pDrv, irr::scene::ISceneManager *a_pSmgr, irr::io::IFileSystem *a_pFs, const std::string &l_sIrrFile) {
       m_bSkyBoxCreated = false;
       m_pSkyBox        = nullptr;
 
-      irr::scene::ISceneManager *l_pSmgr = a_pDevice->getSceneManager();
-      irr::video::IVideoDriver  *l_pDrv  = a_pDevice->getVideoDriver ();
-      irr::io::IFileSystem      *l_pFs   = a_pDevice->getFileSystem  ();
-
-      irr::io::IXMLReaderUTF8 *l_pXml = l_pFs->createXMLReaderUTF8(l_sIrrFile.c_str());
+      irr::io::IXMLReaderUTF8 *l_pXml = a_pFs->createXMLReaderUTF8(l_sIrrFile.c_str());
 
       enSkyboxState l_eState = enSbNoSkyBox;
 
@@ -108,21 +104,21 @@ namespace dustbin {
       }
 
       if (l_aSkyboxTextures.size() == 6) {
-        l_pDrv->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
+        a_pDrv->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
 
         m_bSkyBoxCreated = true;
 
-        m_pSkyBox = l_pSmgr->addSkyBoxSceneNode(
-          l_pDrv->getTexture(l_aSkyboxTextures[4].c_str()),
-          l_pDrv->getTexture(l_aSkyboxTextures[5].c_str()),
-          l_pDrv->getTexture(l_aSkyboxTextures[1].c_str()),
-          l_pDrv->getTexture(l_aSkyboxTextures[3].c_str()),
-          l_pDrv->getTexture(l_aSkyboxTextures[0].c_str()),
-          l_pDrv->getTexture(l_aSkyboxTextures[2].c_str()),
+        m_pSkyBox = a_pSmgr->addSkyBoxSceneNode(
+          a_pDrv->getTexture(l_aSkyboxTextures[4].c_str()),
+          a_pDrv->getTexture(l_aSkyboxTextures[5].c_str()),
+          a_pDrv->getTexture(l_aSkyboxTextures[1].c_str()),
+          a_pDrv->getTexture(l_aSkyboxTextures[3].c_str()),
+          a_pDrv->getTexture(l_aSkyboxTextures[0].c_str()),
+          a_pDrv->getTexture(l_aSkyboxTextures[2].c_str()),
           nullptr, -46
         );
 
-        l_pDrv->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+        a_pDrv->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
       }
     }
 

@@ -123,6 +123,15 @@
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSingleton_system.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaGui3dItem.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -201,6 +210,15 @@
       <Filter>Headerdateien\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\lua\ILuaObject.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaSingleton_system.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaSceneNode.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLua3dGuiItem.h">
       <Filter>Headerdateien\lua</Filter>
     </ClInclude>
   </ItemGroup>

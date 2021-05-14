@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <lua/CLuaSingleton_system.h>
 #include <lua/CLuaScript_dialog.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
@@ -6,51 +7,95 @@
 
 namespace dustbin {
   namespace lua {
-    CLuaScript_dialog::CLuaScript_dialog(const std::string& a_sScript) : m_pState(nullptr), m_pLuaSmgr(nullptr) {
+    CLuaScript_dialog::CLuaScript_dialog(const std::string& a_sScript) : m_pState(nullptr), m_pSystem(nullptr) {
       m_pState = luaL_newstate();
-
 
       luaL_openlibs(m_pState);
 
       CLuaSceneManager::registerClass(m_pState);
 
-      luabridge::getGlobalNamespace(m_pState)
-        .beginClass<CLuaScript_dialog>("LuaDialog")
-          .addFunction("getscenemanager", &CLuaScript_dialog::getSceneManager)
-        .endClass();
+      luabridge::enableExceptions(m_pState);
 
-      std::error_code l_cError;
-      luabridge::push(m_pState, this, l_cError);
-      lua_setglobal(m_pState, "dialog");
+      m_pSystem = new CLuaSingleton_system(m_pState);
 
-      luaL_dostring(m_pState, a_sScript.c_str());
-
-      m_pLuaSmgr = new CLuaSceneManager(CGlobal::getInstance()->getSceneManager());
+      try {
+        luaL_dostring(m_pState, a_sScript.c_str());
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
     }
 
     CLuaScript_dialog::~CLuaScript_dialog() {
       if (m_pState != nullptr) {
         lua_close(m_pState);
       }
-
-      if (m_pLuaSmgr != nullptr)
-        delete m_pLuaSmgr;
     }
 
     void CLuaScript_dialog::initialize() {
-      luabridge::LuaRef l_cInitialize = luabridge::getGlobal(m_pState, "initialize");
-      if (l_cInitialize.isCallable())
-        l_cInitialize();
+      try {
+        luabridge::LuaRef l_cInitialize = luabridge::getGlobal(m_pState, "initialize");
+        if (l_cInitialize.isCallable())
+          l_cInitialize();
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
+    }
+
+    void CLuaScript_dialog::cleanup() {
+      try {
+        luabridge::LuaRef l_cCleanup = luabridge::getGlobal(m_pState, "cleanup");
+        if (l_cCleanup.isCallable())
+          l_cCleanup();
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
     }
 
     void CLuaScript_dialog::step(int a_iTime) {
-      luabridge::LuaRef l_cStep = luabridge::getGlobal(m_pState, "step");
-      if (l_cStep.isCallable())
-        l_cStep(a_iTime);
+      try {
+        luabridge::LuaRef l_cStep = luabridge::getGlobal(m_pState, "step");
+        if (l_cStep.isCallable())
+          l_cStep(a_iTime);
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
     }
 
-    CLuaSceneManager* CLuaScript_dialog::getSceneManager() {
-      return m_pLuaSmgr;
+    void CLuaScript_dialog::uiElementHovered(int a_iId, const std::string& a_sName) {
+      try {
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uielementhovered");
+        if (l_cCallback.isCallable())
+          l_cCallback(a_iId, a_sName);
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
+    }
+
+    void CLuaScript_dialog::uiElementLeft(int a_iId, const std::string& a_sName) {
+      try {
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uielementleft");
+        if (l_cCallback.isCallable())
+          l_cCallback(a_iId, a_sName);
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
+    }
+
+    void CLuaScript_dialog::uiButtonClicked(int a_iId, const std::string& a_sName) {
+      try {
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uibuttonclicked");
+        if (l_cCallback.isCallable())
+          l_cCallback(a_iId, a_sName);
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
     }
   }
 }

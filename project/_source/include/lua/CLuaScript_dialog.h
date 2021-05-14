@@ -6,7 +6,7 @@
 
 namespace dustbin {
   namespace lua {
-    class CLuaSceneManager;
+    class CLuaSingleton_system;
 
     /**
      * @class CLuaScript_dialog
@@ -15,7 +15,7 @@ namespace dustbin {
      */
     class CLuaScript_dialog {
       protected:
-        CLuaSceneManager *m_pLuaSmgr;
+        CLuaSingleton_system *m_pSystem;
 
         lua_State *m_pState;
 
@@ -24,9 +24,12 @@ namespace dustbin {
         virtual ~CLuaScript_dialog();
 
         void initialize();
+        void cleanup();
         void step(int a_iTime);
 
-        CLuaSceneManager *getSceneManager();
+        void uiElementHovered(int a_iId, const std::string &a_sName);
+        void uiElementLeft(int a_iId, const std::string &a_sName);
+        void uiButtonClicked(int a_iId, const std::string &a_sName);
     };
   }
 }

@@ -61,6 +61,24 @@ namespace dustbin {
     }
 
     /**
+    * Change the text of the item
+    * @param a_sText the new text
+    */
+    void CGui3dItem::setText(const std::wstring& a_sText) {
+      m_sText = a_sText;
+      updateRttText(m_cBackground, m_cTextColor);
+    }
+
+    /**
+    * Change the background color of the item
+    * @param a_cColor the new background color
+    */
+    void CGui3dItem::setBackgroundColor(const irr::video::SColor& a_cColor) {
+      m_cBackground = a_cColor;
+      updateRttText(m_cBackground, m_cTextColor);
+    }
+
+    /**
     * Update the text of the 3d UI item
     * @param a_cBackgroundColor the background color to use
     * @param a_cTextColor the text color to use

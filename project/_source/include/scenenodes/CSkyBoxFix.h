@@ -37,7 +37,7 @@ namespace dustbin {
          * @param a_pDevice the active Irrlicht device
          * @param a_sIrrFile the irrlicht scene file to load
          */
-        CSkyBoxFix(irr::IrrlichtDevice *a_pDevice, const std::string &l_sIrrFile);
+        CSkyBoxFix(irr::video::IVideoDriver *a_pDrv, irr::scene::ISceneManager *a_pSmgr, irr::io::IFileSystem *a_pFs, const std::string &l_sIrrFile);
 
         /**
          * Hide the skybox loaded by the Irrlicht scene manager

@@ -14,46 +14,72 @@ g_GridPositions = {
 }
 
 g_Options = {
-  gameclass = { value = 1, options = g_GameClasses  , label = "label_class" },
-  aiclass   = { value = 1, options = g_GameClasses  , label = "label_ai"    },
-  grid      = { value = 1, options = g_GridPositions, label = "label_grid"  },
+  gameclass = { value = 1, options = g_GameClasses  , label = "label_class_ui", node = nil },
+  aiclass   = { value = 1, options = g_GameClasses  , label = "label_ai_ui"   , node = nil },
+  grid      = { value = 1, options = g_GridPositions, label = "label_grid_ui" , node = nil },
   
-  gridreverse    = { value = true },
-  autoend        = { value = true },
-  fillgrid       = { value = true },
-  randomizefirst = { value = true }
+  gridreverse    = { value = false },
+  autoend        = { value = false },
+  fillgrid       = { value = true  },
+  randomizefirst = { value = true  }
 }
 
 g_Buttons = {
-  button_class_prev = { key = "gameclass"     , type = "minus"  },
-  button_class_next = { key = "gameclass"     , type = "plus"   },
-  button_ai_prev    = { key = "aiclass"       , type = "minus"  },
-  button_ai_next    = { key = "aiclass"       , type = "plus"   },
-  button_grid_prev  = { key = "grid"          , type = "minus"  },
-  button_grid_next  = { key = "grid"          , type = "plus"   },
-  button_reverse    = { key = "gridreverse"   , type = "toggle" },
-  button_autoend    = { key = "autoend"       , type = "toggle" },
-  button_fillgrid   = { key = "fillgrid"      , type = "toggle" },
-  button_randomize  = { key = "randomizefirst", type = "toggle" }
+  button_class_prev = { key = "gameclass"     , type = "minus" , node = nil },
+  button_class_next = { key = "gameclass"     , type = "plus"  , node = nil },
+  button_ai_prev    = { key = "aiclass"       , type = "minus" , node = nil },
+  button_ai_next    = { key = "aiclass"       , type = "plus"  , node = nil },
+  button_grid_prev  = { key = "grid"          , type = "minus" , node = nil },
+  button_grid_next  = { key = "grid"          , type = "plus"  , node = nil },
+  button_reverse    = { key = "gridreverse"   , type = "toggle", node = nil },
+  button_autoend    = { key = "autoend"       , type = "toggle", node = nil },
+  button_fillgrid   = { key = "fillgrid"      , type = "toggle", node = nil },
+  button_randomize  = { key = "randomizefirst", type = "toggle", node = nil }
 }
 
 g_Smgr = nil  -- The Scene Manager LUA object
 
 function initialize()
   io.write("Setup Game Menu script started.\n")
-  dialog:loadscene("data/menu3d/menu_setupgame.xml")
   
-  g_Smgr = LuaSceneManager:new()
-  
-  io.write("Smgr: " .. tostring(g_Smgr) .. "\n")
+  g_Smgr = system:getscenemanager()
+  g_Smgr:loadscene("data/menu3d/menu_setupgame.xml")
   
   g_Camera = g_Smgr:addcamera()
-  g_Camera:setposition({ x = 0, y = 0, z = 0 })
-  g_Camera:settarget({ x = 0, y = 0, z = 35 })
-  g_Camera:setupvector({ x = 0, y = 1, z = 0 })
+  g_Camera:setposition(0, 0, 0)
+  g_Camera:settarget(0, 0, 35)
+  g_Camera:setupvector(0, 1, 0)
   g_Camera:activate()
   
-  dialog:init3dgui()
+  for k,v in pairs(g_Buttons) do
+    v["node"] = g_Smgr:getscenenodefromname(k)
+  end
+  
+  for k,v in pairs(g_Options) do
+    if v["label"] ~= nil then
+      v["node"] = g_Smgr:getguiitemfromname(v["label"])
+    end
+  end
+  
+  for k,v in pairs(g_Options) do
+    if v["node"] ~= nil then
+      v["node"]:settext(v["options"][v["value"]])
+    else
+      for k2, v2 in pairs(g_Buttons) do
+        if v2["key"] == k and v2["node"] ~= nil then
+          if v["value"] then
+            v2["node"]:setrotation(0, 0, 0)
+          else
+            v2["node"]:setrotation(0, 180, 0)
+          end
+        end
+      end
+    end
+  end
+end
+
+function cleanup()
+  g_Smgr:clear()
 end
 
 function step(a_Time)
@@ -73,21 +99,31 @@ function uibuttonclicked(a_Id, a_Name)
   if g_Buttons[a_Name] ~= nil then
     local l_Key  = g_Buttons[a_Name]["key" ]
     local l_Type = g_Buttons[a_Name]["type"]
-    
+
     if g_Options[l_Key] ~= nil then
-      if l_Type == "plus" then
-        if g_Options[l_Key]["value"] < #g_Options[l_Key]["options"] then
-          g_Options[l_Key]["value"] = g_Options[l_Key]["value"] + 1
+      if l_Type == "plus" or l_Type == "minus" then
+        if l_Type == "plus" then
+          if g_Options[l_Key]["value"] < #g_Options[l_Key]["options"] then
+            g_Options[l_Key]["value"] = g_Options[l_Key]["value"] + 1
+          end
+        else
+          if g_Options[l_Key]["value"] > 1 then
+            g_Options[l_Key]["value"] = g_Options[l_Key]["value"] - 1
+          end
         end
-        io.write(l_Key .. ": " .. tostring(g_Options[l_Key]["value"]) .. " (" .. g_Options[l_Key]["options"][g_Options[l_Key]["value"]] .. ")\n")
-      elseif l_Type == "minus" then
-        if g_Options[l_Key]["value"] > 1 then
-          g_Options[l_Key]["value"] = g_Options[l_Key]["value"] - 1
+        
+        if g_Options[l_Key]["node"] ~= nil then
+          g_Options[l_Key]["node"]:settext(g_Options[l_Key]["options"][g_Options[l_Key]["value"]])
         end
-        io.write(l_Key .. ": " .. tostring(g_Options[l_Key]["value"]) .. " (" .. g_Options[l_Key]["options"][g_Options[l_Key]["value"]] .. ")\n")
       elseif l_Type == "toggle" then
         g_Options[l_Key]["value"] = not g_Options[l_Key]["value"]
-        io.write(l_Key .. ": " .. tostring(g_Options[l_Key]["value"]) .. "\n")
+        if g_Buttons[a_Name]["node"] ~= nil then
+          if g_Options[l_Key]["value"] then
+            g_Buttons[a_Name]["node"]:setrotation(0, 0, 0)
+          else
+            g_Buttons[a_Name]["node"]:setrotation(0, 180, 0)
+          end
+        end
       else
         io.write("Unknown button type \"" .. tostring(l_Type) .. "\"\n")
       end
@@ -95,6 +131,12 @@ function uibuttonclicked(a_Id, a_Name)
       io.write("Unknown option \"" .. tostring(l_Key) .. "\"\n")
     end
   else
-    io.write("Unknown button \"" .. tostring(a_Name) .. "\"\n")
+    if a_Name == "button_ok" then
+    elseif a_Name == "button_cancel" then
+      system:pushscript("data/lua/menu_main.lua")
+      system:statechange(1)
+    else
+      io.write("Unknown button \"" .. tostring(a_Name) .. "\"\n")
+    end
   end
 end

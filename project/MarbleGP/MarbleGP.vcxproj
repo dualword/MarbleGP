@@ -191,8 +191,11 @@
     <ClCompile Include="..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaGui3dItem.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaSingleton_system.cpp" />
     <ClCompile Include="..\_source\source\MarbleGP.cpp" />
     <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\_source\source\platform\CPlatformWindows.cpp" />
@@ -215,7 +218,10 @@
     <ClInclude Include="..\_source\include\lua\CLuaCamera.h" />
     <ClInclude Include="..\_source\include\lua\CLuaHelpers.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaSceneNode.h" />
     <ClInclude Include="..\_source\include\lua\CLuaScript_dialog.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaSingleton_system.h" />
+    <ClInclude Include="..\_source\include\lua\CLua3dGuiItem.h" />
     <ClInclude Include="..\_source\include\lua\ILuaObject.h" />
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h" />
     <ClInclude Include="..\_source\include\messages\IMessage.h" />

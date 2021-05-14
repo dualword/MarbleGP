@@ -52,6 +52,18 @@ namespace dustbin {
         void itemClicked();
 
         /**
+        * Change the text of the item
+        * @param a_sText the new text
+        */
+        void setText(const std::wstring &a_sText);
+
+        /**
+        * Change the background color of the item
+        * @param a_cColor the new background color
+        */
+        void setBackgroundColor(const irr::video::SColor &a_cColor);
+
+        /**
          * Update the text of the 3d UI item
          * @param a_cBackgroundColor the background color to use
          * @param a_cTextColor the text color to use

@@ -25,12 +25,14 @@ namespace dustbin {
     }
 
     CLuaState::~CLuaState() {
-      deactivate();
     }
 
     void CLuaState::initGuiRoot(irr::scene::ISceneNode* a_pParent) {
-      if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_i3dGuiRootID)
+      if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_i3dGuiRootID) {
         m_pGuiRoot = reinterpret_cast<scenenodes::CGui3dRoot *>(a_pParent);
+        m_pGuiRoot->initGui3d();
+        m_pGuiRoot->setCursorControl(m_pDevice->getCursorControl());
+      }
       else
         for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++)
           initGuiRoot(*it);
@@ -45,6 +47,7 @@ namespace dustbin {
 
       m_pScript = new lua::CLuaScript_dialog(l_sScript);
       m_pScript->initialize();
+      initGuiRoot(m_pSmgr->getRootSceneNode());
     }
 
     /**
@@ -52,6 +55,7 @@ namespace dustbin {
     */
     void CLuaState::deactivate() {
       if (m_pScript != nullptr) {
+        m_pScript->cleanup();
         delete m_pScript;
         m_pScript = nullptr;
       }
@@ -101,34 +105,24 @@ namespace dustbin {
     * @return enState::None for running without state change, any other value will switch to the state
     */
     enState CLuaState::run() {
-      enState l_eRet = enState::None;
-
-      int l_iFps = m_pDrv->getFPS();
-      m_pDevice->setWindowCaption(std::wstring(L"Dustbin::Games - MarbleGP [" + std::to_wstring(l_iFps) + L" FPS]").c_str());
-
-      m_pDrv->beginScene();
-      m_pSmgr->drawAll();
-      m_pGui->drawAll();
-      m_pDrv->endScene();
-
       if (m_pScript != nullptr)
         m_pScript->step(m_pTimer->getTime());
 
       if (m_pGuiRoot != nullptr)
         m_pGuiRoot->step();
 
-      return l_eRet;
+      return m_pGlobal->getStateChange();
     }
 
     void CLuaState::onUievent(const std::string& a_type, irr::s32 a_id, const std::string& a_name, const std::string& a_data) {
-      /*if (m_pScript != nullptr) {
+      if (m_pScript != nullptr) {
         if (a_type == "uielementhovered")
-          m_pScript->uielementhovered(a_id, a_name);
+          m_pScript->uiElementHovered(a_id, a_name);
         else if (a_type == "uielementleft")
-          m_pScript->uielementleft(a_id, a_name);
+          m_pScript->uiElementLeft(a_id, a_name);
         else if (a_type == "uibuttonclicked")
-          m_pScript->uibuttonclicked(a_id, a_name);
-      }*/
+          m_pScript->uiButtonClicked(a_id, a_name);
+      }
     }
 
     bool CLuaState::isMouseDown(enMouseButton a_eButton) {
