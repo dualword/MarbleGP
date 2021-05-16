@@ -26,9 +26,9 @@ namespace dustbin {
         CLuaSceneNode(const CLuaSceneNode &a_cOther);
         virtual ~CLuaSceneNode();
 
-        void setPosition(float a_fX, float a_fY, float a_fZ);
-        void setRotation(float a_fX, float a_fY, float a_fZ);
-        void setScale(float a_fX, float a_fY, float a_fZ);
+        int setPosition(lua_State *a_pState);
+        int setRotation(lua_State *a_pState);
+        int setScale(lua_State *a_pState);
 
         void setVisible(bool a_bVisible);
 

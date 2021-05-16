@@ -1,6 +1,8 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <lua/CLuaSceneNode.h>
 #include <LuaBridge/LuaBridge.h>
+#include <_generated/lua/lua_tables.h>
+#include <lua/CLuaHelpers.h>
 
 namespace dustbin {
   namespace lua {
@@ -17,19 +19,43 @@ namespace dustbin {
       return m_pNode;
     }
 
-    void CLuaSceneNode::setPosition(float a_fX, float a_fY, float a_fZ) {
-      if (m_pNode != nullptr)
-        m_pNode->setPosition(irr::core::vector3df(a_fX, a_fY, a_fZ));
+    int CLuaSceneNode::setPosition(lua_State *a_pState) {
+      if (m_pNode != nullptr) {
+        int l_iArgC = lua_gettop(a_pState);
+        if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"setposition\". 1 argument required."); return 0; }
+
+        SVector3d l_vPos;
+        l_vPos.loadFromStack(a_pState); lua_pop(a_pState, 1);
+
+        m_pNode->setPosition(convertVectorToIrr(l_vPos));
+      }
+      return 0;
     }
 
-    void CLuaSceneNode::setRotation(float a_fX, float a_fY, float a_fZ) {
-      if (m_pNode != nullptr)
-        m_pNode->setRotation(irr::core::vector3df(a_fX, a_fY, a_fZ));
+    int CLuaSceneNode::setRotation(lua_State *a_pState) {
+      if (m_pNode != nullptr) {
+        int l_iArgC = lua_gettop(a_pState);
+        if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"setrotation\". 1 argument required."); return 0; }
+
+        SVector3d l_vRotation;
+        l_vRotation.loadFromStack(a_pState); lua_pop(a_pState, 1);
+
+        m_pNode->setRotation(convertVectorToIrr(l_vRotation));
+      }
+      return 0;
     }
 
-    void CLuaSceneNode::setScale(float a_fX, float a_fY, float a_fZ) {
-      if (m_pNode != nullptr)
-        m_pNode->setScale(irr::core::vector3df(a_fX, a_fY, a_fZ));
+    int CLuaSceneNode::setScale(lua_State *a_pState) {
+      if (m_pNode != nullptr) {
+        int l_iArgC = lua_gettop(a_pState);
+        if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"setscale\". 1 argument required."); return 0; }
+
+        SVector3d l_vScale;
+        l_vScale.loadFromStack(a_pState); lua_pop(a_pState, 1);
+
+        m_pNode->setScale(convertVectorToIrr(l_vScale));
+      }
+      return 0;
     }
 
 

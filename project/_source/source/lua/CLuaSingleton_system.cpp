@@ -1,12 +1,13 @@
 #include <lua/CLuaSingleton_system.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
+#include <lua/CLuaHelpers.h>
 #include <algorithm>
 #include <CGlobal.h>
 
 namespace dustbin {
   namespace lua {
-    CLuaSingleton_system::CLuaSingleton_system(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pResolutionList(nullptr) {
+    CLuaSingleton_system::CLuaSingleton_system(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pResolutionList(nullptr), m_pState(a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaSingleton_system>("LuaDialog")
           .addFunction("getscenemanager"  , &CLuaSingleton_system::getSceneManager)
@@ -17,6 +18,8 @@ namespace dustbin {
           .addFunction("pushscript"       , &CLuaSingleton_system::pushScript)
           .addFunction("statechange"      , &CLuaSingleton_system::stateChange)
           .addFunction("getresolutionlist", &CLuaSingleton_system::getResolutionList)
+          .addFunction("executeluascript" , &CLuaSingleton_system::executeLuaScript)
+          .addFunction("executeluastring" , &CLuaSingleton_system::executeLuaString)
         .endClass();
 
       std::error_code l_cError;
@@ -102,6 +105,26 @@ namespace dustbin {
     */
     CLuaResolutionList *CLuaSingleton_system::getResolutionList() {
       return m_pResolutionList;
+    }
+
+    /**
+    * Execute a lua script from a file
+    */
+    void CLuaSingleton_system::executeLuaScript(const std::string& a_sFile) {
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+      if (l_pFs->existFile(a_sFile.c_str())) {
+        std::string l_sScript = loadLuaScript(a_sFile);
+      }
+    }
+
+    /**
+    * Execute a lua script from a string
+    * @param a_sScript script as std::string
+    */
+    void CLuaSingleton_system::executeLuaString(const std::string& a_sScript) {
+      if (a_sScript != "")
+        luaL_dostring(m_pState, a_sScript.c_str());
     }
 
 

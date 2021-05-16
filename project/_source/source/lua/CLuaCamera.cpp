@@ -1,6 +1,8 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <lua/CLuaCamera.h>
+#include <_generated/lua/lua_tables.h>
 #include <LuaBridge/LuaBridge.h>
+#include <lua/CLuaHelpers.h>
 
 namespace dustbin {
   namespace lua {
@@ -17,15 +19,37 @@ namespace dustbin {
       m_pCamera->getSceneManager()->setActiveCamera(m_pCamera);
     }
 
-    void CLuaCamera::setPosition(float a_fX, float a_fY, float a_fZ) {
-      m_pCamera->setPosition(irr::core::vector3df(a_fX, a_fY, a_fZ));
+    int CLuaCamera::setPosition(lua_State *a_pState) {
+      int l_iArgC = lua_gettop(a_pState);
+      if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"setposition\". 1 argument required."); return 0; }
+
+      SVector3d l_position;
+      l_position.loadFromStack(a_pState); lua_pop(a_pState, 1);
+
+      m_pCamera->setPosition(convertVectorToIrr(l_position));
+      return 0;
     }
 
-    void CLuaCamera::setUpVector(float a_fX, float a_fY, float a_fZ) {
-      m_pCamera->setUpVector(irr::core::vector3df(a_fX, a_fY, a_fZ));
+    int CLuaCamera::setUpVector(lua_State *a_pState) {
+      int l_iArgC = lua_gettop(a_pState);
+      if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"setupvector\". 1 argument required."); return 0; }
+
+      SVector3d l_up;
+      l_up.loadFromStack(a_pState); lua_pop(a_pState, 1);
+
+      m_pCamera->setUpVector(convertVectorToIrr(l_up));
+      return 0;
     }
-    void CLuaCamera::setTarget(float a_fX, float a_fY, float a_fZ) {
-      m_pCamera->setTarget(irr::core::vector3df(a_fX, a_fY, a_fZ));
+
+    int CLuaCamera::setTarget(lua_State *a_pState) {
+      int l_iArgC = lua_gettop(a_pState);
+      if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"settarget\". 1 argument required."); return 0; }
+
+      SVector3d l_target;
+      l_target.loadFromStack(a_pState); lua_pop(a_pState, 1);
+
+      m_pCamera->setTarget(convertVectorToIrr(l_target));
+      return 0;
     }
 
     void CLuaCamera::registerClass(lua_State* a_pState) {

@@ -61,6 +61,12 @@
     <Filter Include="Quelldateien\threads">
       <UniqueIdentifier>{1f30cc15-f9bd-4d62-8828-1f1f5e9bf70b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\_generated\lua">
+      <UniqueIdentifier>{10f893db-0c92-4434-a9a3-54b651be9660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated\lua">
+      <UniqueIdentifier>{ce579f79-47e7-42c3-9e57-8ba4652f29ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -131,6 +137,12 @@
     </ClCompile>
     <ClCompile Include="..\_source\source\lua\CLuaGui3dItem.cpp">
       <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\lua\CLua3dGuiItem.h">
       <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

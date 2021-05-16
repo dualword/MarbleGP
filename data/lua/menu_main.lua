@@ -1,5 +1,8 @@
 g_Time = 0  -- The time of the last "step" message
 
+g_Movement = {
+}
+
 function initialize()
   io.write("Main Menu script started.\n")
   
@@ -8,10 +11,14 @@ function initialize()
   
   g_Camera = g_Smgr:addcamera()
 
-  g_Camera:setposition(0.0, 0.0,  0.0)
-  g_Camera:setupvector(0.0, 1.0,  0.0)
-  g_Camera:settarget  (0.0, 0.0, 35.0)
+  g_Camera:setposition({ x = 0.0, y = 0.0, z =  0.0 })
+  g_Camera:setupvector({ x = 0.0, y = 1.0, z =  0.0 })
+  g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 35.0 })
   g_Camera:activate()
+  
+  local l_Old = system:getglobal("oldroot")
+  
+  system:setglobal("oldroot", "root_menumain")
 end
 
 function cleanup()

@@ -192,6 +192,7 @@
     <ClCompile Include="..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaGui3dItem.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\_source\source\state\CLuaState.cpp" />
     <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp" />
+    <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp" />
@@ -238,6 +240,7 @@
     <ClInclude Include="..\_source\include\state\IState.h" />
     <ClInclude Include="..\_source\include\threads\CMessageQueue.h" />
     <ClInclude Include="..\_source\include\threads\IQueue.h" />
+    <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessages.h" />

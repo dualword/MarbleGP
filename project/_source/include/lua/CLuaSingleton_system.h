@@ -63,6 +63,7 @@ namespace dustbin {
       private:
         CLuaResolutionList *m_pResolutionList;
         CGlobal *m_pGlobal;
+        lua_State *m_pState;
 
       public:
         CLuaSingleton_system(lua_State *a_pState);
@@ -118,6 +119,18 @@ namespace dustbin {
         * Get a list with the supported screen resolutions
         */
         CLuaResolutionList *getResolutionList();
+
+        /**
+        * Execute a lua script from a file
+        * @param a_sFile filename of the script
+        */
+        void executeLuaScript(const std::string &a_sFile);
+
+        /**
+        * Execute a lua script from a string
+        * @param a_sScript script as std::string
+        */
+        void executeLuaString(const std::string &a_sScript);
     };
   }
 }

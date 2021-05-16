@@ -2,8 +2,10 @@
 #include <lua.hpp>
 
 #include <scenenodes/CGui3dItem.h>
+#include <_generated/lua/lua_tables.h>
 #include <LuaBridge/LuaBridge.h>
 #include <lua/CLua3dGuiItem.h>
+#include <lua/CLuaHelpers.h>
 
 namespace dustbin {
   namespace lua {
@@ -21,18 +23,17 @@ namespace dustbin {
         m_pItem->setText(std::wstring(a_sText.begin(), a_sText.end()));
     }
 
-    irr::video::SColor CLua3dGuiItem::fixColor(int &a_iAlpha, int &a_iRed, int &a_iGreen, int &a_iBlue) {
-      if (a_iAlpha < 0) a_iAlpha = 0; if (a_iAlpha > 255) a_iAlpha = 255;
-      if (a_iRed   < 0) a_iRed   = 0; if (a_iRed   > 255) a_iRed   = 255;
-      if (a_iGreen < 0) a_iGreen = 0; if (a_iGreen > 255) a_iGreen = 255;
-      if (a_iBlue  < 0) a_iBlue  = 0; if (a_iBlue  > 255) a_iBlue  = 255;
+    int CLua3dGuiItem::setBackgroundColor(lua_State *a_pState) {
+      if (m_pItem != nullptr) {
+        int l_iArgC = lua_gettop(a_pState);
+        if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"setbackrgoundcolor\". 1 argument required."); return 0; }
 
-      return irr::video::SColor(a_iAlpha, a_iRed, a_iGreen, a_iBlue);
-    }
+        SColor l_cColor;
+        l_cColor.loadFromStack(a_pState); lua_pop(a_pState, 1);
 
-    void CLua3dGuiItem::setBackgroundColor(int a_iAlpha, int a_iRed, int a_iGreen, int a_iBlue) {
-      if (m_pItem != nullptr)
-        m_pItem->setBackgroundColor(fixColor(a_iAlpha, a_iRed, a_iGreen, a_iBlue));
+        m_pItem->setBackgroundColor(convertColorToIrr(l_cColor));
+      }
+      return 0;
     }
 
     void CLua3dGuiItem::registerClass(lua_State* a_pState) {

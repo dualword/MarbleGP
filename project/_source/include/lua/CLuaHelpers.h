@@ -7,6 +7,7 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <_generated/lua/lua_tables.h>
 #include <CGlobal.h>
 #include <string>
 
@@ -17,29 +18,34 @@ namespace dustbin {
     * @param a_sFileName filename of the LUA script
     * @return the content of the script file
     */
-    std::string loadLuaScript(const std::string& a_sFileName) {
-      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+    std::string loadLuaScript(const std::string& a_sFileName);
 
-      if (l_pFs->existFile(a_sFileName.c_str())) {
-        irr::io::IReadFile *l_pLUA = l_pFs->createAndOpenFile(a_sFileName.c_str());
-        if (l_pLUA != nullptr) {
-          char *l_sData = new char[l_pLUA->getSize() + 1];
+    /**
+    * Convert a SVector3 lua structure to an irrlicht vector
+    * @param a_cIn the lua table
+    * @return the Irrlicht vector
+    */
+    irr::core::vector3df convertVectorToIrr(const SVector3d &a_cIn);
 
-    #ifdef _LINUX
-          memset(l_sData, 0, l_pLUA->getSize() + 1);
-    #else
-          std::memset(l_sData, 0, l_pLUA->getSize() + 1);
-    #endif
-          l_pLUA->read(l_sData, l_pLUA->getSize());
-          std::string l_sScript = l_sData;
-          l_pLUA->drop();
-          delete []l_sData;
+    /**
+    * Convert an Irrlicht vector to a lua SVector3
+    * @param a_cIn the Irrlicht vector
+    * @return the lua table
+    */
+    SVector3d convertVectorToLua(const irr::core::vector3df &a_cIn);
 
-          return l_sScript;
-        }
-      }
+    /**
+    * Convert a SColor lua structor to an irrlicht color object
+    * @param a_cIn the lua table
+    * @return the irrlicht color
+    */
+    irr::video::SColor convertColorToIrr(const SColor &a_cIn);
 
-      return "";
-    }
+    /**
+    * Convert an Irrlicht color to a lua SColor
+    * @param a_cIn the irrlicht color
+    * @return a SColor lua structure
+    */
+    SColor convertColorToLua(const irr::video::SColor &a_cIn);
   }
 }

@@ -28,9 +28,9 @@ namespace dustbin {
         virtual ~CLuaCamera();
 
         void activate();
-        void setPosition(float a_fX, float a_fY, float a_fZ);
-        void setUpVector(float a_fX, float a_fY, float a_fZ);
-        void setTarget(float a_fX, float a_fY, float a_fZ);
+        int setPosition(lua_State *a_pState);
+        int setUpVector(lua_State *a_pState);
+        int setTarget  (lua_State *a_pState);
 
         static void registerClass(lua_State *a_pState);
     };

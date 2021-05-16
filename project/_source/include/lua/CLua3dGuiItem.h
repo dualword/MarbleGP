@@ -21,8 +21,6 @@ namespace dustbin {
       private:
         scenenodes::CGui3dItem *m_pItem;
 
-        irr::video::SColor fixColor(int &a_iAlpha, int &a_iRed, int &a_iGreen, int &a_iBlue);
-
       public:
         CLua3dGuiItem(scenenodes::CGui3dItem *a_pItem);
         CLua3dGuiItem(const CLua3dGuiItem &a_cOther);
@@ -30,7 +28,7 @@ namespace dustbin {
         virtual ~CLua3dGuiItem();
 
         void setText(const std::string &a_sText);
-        void setBackgroundColor(int a_iAlpha, int a_iRed, int a_iGreen, int a_iBlue);
+        int setBackgroundColor(lua_State *a_pState);
 
         static void registerClass(lua_State *a_pState);
     };

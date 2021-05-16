@@ -46,9 +46,9 @@ function initialize()
   g_Smgr:loadscene("data/menu3d/menu_setupgame.xml")
   
   g_Camera = g_Smgr:addcamera()
-  g_Camera:setposition(0, 0, 0)
-  g_Camera:settarget(0, 0, 35)
-  g_Camera:setupvector(0, 1, 0)
+  g_Camera:setposition({ x = 0.0, y = 0.0, z =  0.0 })
+  g_Camera:setupvector({ x = 0.0, y = 1.0, z =  0.0 })
+  g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 35.0 })
   g_Camera:activate()
   
   for k,v in pairs(g_Buttons) do
@@ -68,9 +68,9 @@ function initialize()
       for k2, v2 in pairs(g_Buttons) do
         if v2["key"] == k and v2["node"] ~= nil then
           if v["value"] then
-            v2["node"]:setrotation(0, 0, 0)
+            v2["node"]:setrotation({ x = 0, y = 0, z = 0 })
           else
-            v2["node"]:setrotation(0, 180, 0)
+            v2["node"]:setrotation({ x = 0, y = 180, z = 0 })
           end
         end
       end
@@ -119,9 +119,9 @@ function uibuttonclicked(a_Id, a_Name)
         g_Options[l_Key]["value"] = not g_Options[l_Key]["value"]
         if g_Buttons[a_Name]["node"] ~= nil then
           if g_Options[l_Key]["value"] then
-            g_Buttons[a_Name]["node"]:setrotation(0, 0, 0)
+            g_Buttons[a_Name]["node"]:setrotation({ x = 0, y = 0, z = 0 })
           else
-            g_Buttons[a_Name]["node"]:setrotation(0, 180, 0)
+            g_Buttons[a_Name]["node"]:setrotation({ x = 0, y = 180, z = 0 })
           end
         end
       else
