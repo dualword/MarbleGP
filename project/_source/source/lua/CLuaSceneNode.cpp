@@ -58,12 +58,23 @@ namespace dustbin {
       return 0;
     }
 
+    int CLuaSceneNode::getPosition(lua_State* a_pState) {
+      if (m_pNode != nullptr) {
+        SVector3d l_cPos = convertVectorToLua(m_pNode->getPosition());
+        l_cPos.pushToStack(a_pState);
+        return 1;
+      }
+      else return 0;
+    }
 
     void CLuaSceneNode::setVisible(bool a_bVisible) {
       if (m_pNode != nullptr)
         m_pNode->setVisible(a_bVisible);
     }
 
+    bool CLuaSceneNode::isVisible() {
+      return m_pNode != nullptr && m_pNode->isVisible();
+    }
 
     void CLuaSceneNode::registerClass(lua_State* a_pState) {
       luabridge::getGlobalNamespace(a_pState)
@@ -72,6 +83,8 @@ namespace dustbin {
           .addFunction("setrotation", &CLuaSceneNode::setRotation)
           .addFunction("setscale"   , &CLuaSceneNode::setScale)
           .addFunction("setvisible" , &CLuaSceneNode::setVisible)
+          .addFunction("getposition", &CLuaSceneNode::getPosition)
+          .addFunction("isvisible"  , &CLuaSceneNode::isVisible)
         .endClass();
     }
   }

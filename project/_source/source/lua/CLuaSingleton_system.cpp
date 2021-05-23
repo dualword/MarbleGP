@@ -115,6 +115,7 @@ namespace dustbin {
 
       if (l_pFs->existFile(a_sFile.c_str())) {
         std::string l_sScript = loadLuaScript(a_sFile);
+        executeLuaString(l_sScript);
       }
     }
 

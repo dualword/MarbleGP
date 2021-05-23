@@ -1,3 +1,5 @@
+system:executeluascript("data/lua/helpers_main.lua")
+
 g_Time = 0  -- The time of the last "step" message
 
 g_Movement = {
@@ -16,9 +18,8 @@ function initialize()
   g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 35.0 })
   g_Camera:activate()
   
-  local l_Old = system:getglobal("oldroot")
-  
-  system:setglobal("oldroot", "root_menumain")
+  g_Root = g_Smgr:getscenenodefromname("root_menumain")
+  startFadeIn(g_Root)
 end
 
 function cleanup()
@@ -28,6 +29,7 @@ end
 function step(a_Time)
   local l_Time = a_Time - g_Time
   g_Time = a_Time
+  processanimation()
 end
 
 function uielementhovered(a_Id, a_Name)
@@ -41,12 +43,13 @@ end
 function uibuttonclicked(a_Id, a_Name)
   if a_Name == "BtnSingleRace" then
     system:pushscript("data/lua/menu_setupgame.lua")
-    system:statechange(1)
+    startFadeOut(g_Root, g_Time, 1)
   elseif a_Name == "BtnSettings" then
     system:pushscript("data/lua/menu_settings.lua")
-    system:statechange(1)
+    startFadeOut(g_Root, g_Time, 1)
   elseif a_Name == "BtnExit" then
-    system:statechange(255)
+    system:pushscript("data/lua/menu_goodbye.lua")
+    startFadeOut(g_Root, g_Time, 1)
   else
     io.write("uibuttonclicked: " .. tostring(a_Id) .. ", " .. tostring(a_Name) .. "\n")
   end

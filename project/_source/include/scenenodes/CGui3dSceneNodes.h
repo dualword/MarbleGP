@@ -34,7 +34,8 @@ namespace dustbin {
           Label = 2,      /**< A text label */
           Button = 3,     /**< A text button */
           IconButton = 4, /**< An icon button, i.e. the 3d model of the mesh represents the icon */
-          Image = 5       /**< An image, can also have text overlaying */
+          Image = 5,      /**< An image, can also have text overlaying */
+          Slider = 6      /**< A slider */
         };
 
         /**
@@ -55,21 +56,37 @@ namespace dustbin {
           Bottom = 2  /**< Bottom text alignment */
         };
 
-        static std::string g_sTextureName,        /**< The serialization name of the texture attribute */
-                           g_sTextName,           /**< The serialization name of the text attribute */
-                           g_sAlignmentName,      /**< The serialization name of the alignment attribute */
-                           g_sTextColorName,      /**< The serialization name of the text color attribute */
-                           g_sBackgroundName,     /**< The serialization name of the background color attribute */
-                           g_sHoverColorName,     /**< The serialization name of the hover color attribute */
-                           g_sTextureWidthName,   /**< The serialization name of the texture width attribute */
-                           g_sTextureHeightName,  /**< The serialization name of the texture height attribute */
-                           g_sClickColorName,     /**< The serialization name of the click color attribute */
-                           g_sMultilineName,      /**< The serialization name of the multiline attribute */
-                           g_sVertAlignName,      /**< The serialization name of the vertical align attribute */
-                           g_sOverlayTextName,    /**< The serialization name of the overlay text for images */
-                           g_sImageFileName,      /**< The serialization name of the image file */
-                           g_sTextBackgroundName, /**< The serialization name of the text background for image overlay text */
-                           g_sTextBackAlphaName;  /**< The serialization name of the alpha channel for image text background */
+        /**
+        * Enumeration for the axis (e.g. slider normal)
+        */
+        enum class enGui3dAxis {
+          AxisX = 0,
+          AxisY = 1,
+          AxisZ = 2
+        };
+
+        static std::string g_sTextureName,            /**< The serialization name of the texture attribute */
+                           g_sTextName,               /**< The serialization name of the text attribute */
+                           g_sAlignmentName,          /**< The serialization name of the alignment attribute */
+                           g_sTextColorName,          /**< The serialization name of the text color attribute */
+                           g_sBackgroundName,         /**< The serialization name of the background color attribute */
+                           g_sHoverColorName,         /**< The serialization name of the hover color attribute */
+                           g_sTextureWidthName,       /**< The serialization name of the texture width attribute */
+                           g_sTextureHeightName,      /**< The serialization name of the texture height attribute */
+                           g_sClickColorName,         /**< The serialization name of the click color attribute */
+                           g_sMultilineName,          /**< The serialization name of the multiline attribute */
+                           g_sVertAlignName,          /**< The serialization name of the vertical align attribute */
+                           g_sOverlayTextName,        /**< The serialization name of the overlay text for images */
+                           g_sImageFileName,          /**< The serialization name of the image file */
+                           g_sTextBackgroundName,     /**< The serialization name of the text background for image overlay text */
+                           g_sTextBackAlphaName,      /**< The serialization name of the alpha channel for image text background */
+                           g_sMinValueName,           /**< The serialization name of the minimum value */
+                           g_sMaxValueName,           /**< The serialization name of the maximum value */
+                           g_sValueName,              /**< The serialization name of the current value */
+                           g_sSliderDirectionName,    /**< The serialization name of the slider direction */
+                           g_sSliderNormalName,       /**< The serialization name of the slider normal */
+                           g_sSliderMinOffsetName,    /**< The serialization name of the slider minimum offset */
+                           g_sSliderMaxOffsetName;    /**< The serialization name of the slider maximum offset */
   
       protected:
         irr::core::aabbox3df       m_cBox;            /**< The bounding  */
@@ -83,6 +100,12 @@ namespace dustbin {
                                    m_cTextColor,      /**< The text color */
                                    m_cClickColor,     /**< The color of a button when clicked */
                                    m_cTextBackColor;  /**< The text background color used if the Image element has an overlay text */
+
+        float m_fMinValue,      /**< The minimum value */
+              m_fMaxValue,      /**< The maximum value */
+              m_fValue,         /**< The value */
+              m_fMinOffset,     /**< The mimimum offset */
+              m_fMaxOffset;     /**< The maximum offset */
 
         int m_iRttTexture;  /**< The texture number of the parent that will be modified */
 
@@ -107,12 +130,15 @@ namespace dustbin {
         enGui3dType          m_eType;
         enGui3dAlign         m_eAlign;
         enGui3dVerticalAlign m_eVerticalAlign;
+        enGui3dAxis          m_eDirection,
+                             m_eNormal;
 
         std::string typeToString(enGui3dType a_eType);
         std::string alignToString(enGui3dAlign a_eAlign);
 
-        enGui3dAlign stringToAlign(const std::string &a_sAlign);
+        enGui3dAlign         stringToAlign        (const std::string &a_sAlign);
         enGui3dVerticalAlign stringToVerticalAlign(const std::string &a_sAlign);
+        enGui3dAxis          stringToAxis         (const std::string &a_sAxis );
         
         virtual void updateRttText(const irr::video::SColor &a_cBackgroundColor, const irr::video::SColor &a_cTextColor);
         void updateRttTexture();

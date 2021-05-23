@@ -6,6 +6,8 @@
 #include <LuaBridge/LuaBridge.h>
 #include <lua/CLua3dGuiItem.h>
 #include <lua/CLuaHelpers.h>
+#include <codecvt>
+#include <locale>
 
 namespace dustbin {
   namespace lua {
@@ -23,6 +25,16 @@ namespace dustbin {
         m_pItem->setText(std::wstring(a_sText.begin(), a_sText.end()));
     }
 
+    std::string CLua3dGuiItem::getText() {
+      if (m_pItem != nullptr) {
+        std::wstring l_sText = m_pItem->getText();
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> l_cConverter;
+        std::string l_sRet = l_cConverter.to_bytes(l_sText);
+        return l_sRet;
+      }
+      else return "";
+    }
+
     int CLua3dGuiItem::setBackgroundColor(lua_State *a_pState) {
       if (m_pItem != nullptr) {
         int l_iArgC = lua_gettop(a_pState);
@@ -36,11 +48,26 @@ namespace dustbin {
       return 0;
     }
 
+    float CLua3dGuiItem::getValue() {
+      if (m_pItem != nullptr)
+        return m_pItem->getValue();
+      else
+        return 0.0f;
+    }
+
+    void CLua3dGuiItem::setValue(float a_fValue) {
+      if (m_pItem != nullptr)
+        m_pItem->setValue(a_fValue);
+    }
+
     void CLua3dGuiItem::registerClass(lua_State* a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLua3dGuiItem>("GuiItem3d")
           .addFunction("settext"           , &CLua3dGuiItem::setText)
+          .addFunction("gettext"           , &CLua3dGuiItem::getText)
           .addFunction("setbackgroundcolor", &CLua3dGuiItem::setBackgroundColor)
+          .addFunction("getvalue"          , &CLua3dGuiItem::getValue)
+          .addFunction("setvalue"          , &CLua3dGuiItem::setValue)
         .endClass();
     }
   }

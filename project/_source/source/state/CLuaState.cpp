@@ -15,7 +15,6 @@ namespace dustbin {
       m_pGui    (CGlobal::getInstance()->getGuiEnvironment()),
       m_pGlobal (CGlobal::getInstance()),
       m_pScript (nullptr),
-      m_pGuiRoot(nullptr),
       m_pTimer  (nullptr)
     {
       for (int i = 0; i < 3; i++)
@@ -29,9 +28,11 @@ namespace dustbin {
 
     void CLuaState::initGuiRoot(irr::scene::ISceneNode* a_pParent) {
       if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_i3dGuiRootID) {
-        m_pGuiRoot = reinterpret_cast<scenenodes::CGui3dRoot *>(a_pParent);
-        m_pGuiRoot->initGui3d();
-        m_pGuiRoot->setCursorControl(m_pDevice->getCursorControl());
+        scenenodes::CGui3dRoot *p = reinterpret_cast<scenenodes::CGui3dRoot *>(a_pParent);
+        p->initGui3d();
+        p->setCursorControl(m_pDevice->getCursorControl());
+
+        m_vGuiRoot.push_back(p);
       }
       else
         for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++)
@@ -60,7 +61,7 @@ namespace dustbin {
         m_pScript = nullptr;
       }
 
-      m_pGuiRoot = nullptr;
+      m_vGuiRoot.clear();
     }
 
     /**
@@ -108,8 +109,8 @@ namespace dustbin {
       if (m_pScript != nullptr)
         m_pScript->step(m_pTimer->getTime());
 
-      if (m_pGuiRoot != nullptr)
-        m_pGuiRoot->step();
+      for (std::vector<scenenodes::CGui3dRoot *>::iterator it = m_vGuiRoot.begin(); it != m_vGuiRoot.end(); it++)
+        (*it)->step();
 
       return m_pGlobal->getStateChange();
     }
@@ -122,6 +123,8 @@ namespace dustbin {
           m_pScript->uiElementLeft(a_id, a_name);
         else if (a_type == "uibuttonclicked")
           m_pScript->uiButtonClicked(a_id, a_name);
+        else if (a_type == "uivaluechanged")
+          m_pScript->uiValueChanged(a_id, a_name, (float)std::atof(a_data.c_str()));
       }
     }
 

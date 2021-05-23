@@ -22,7 +22,8 @@ namespace dustbin {
       protected:
         CGui3dItem *m_pHover,   /**< The item hovered by the cursor */
                    *m_pClick,   /**< The clicked item. Will remain clicked until the left mouse button is released */
-                   *m_pSelect;  /**< The selected item. Is updated when an item is clicked and will remain until another item is selected */
+                   *m_pSelect,  /**< The selected item. Is updated when an item is clicked and will remain until another item is selected */
+                   *m_pDrag;    /**< This member stores an item that is dragged */
 
         bool m_bLeftButtonDown; /**< Is the left mouse button down at the moment? */
 

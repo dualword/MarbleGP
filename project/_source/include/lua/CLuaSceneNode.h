@@ -31,6 +31,9 @@ namespace dustbin {
         int setScale(lua_State *a_pState);
 
         void setVisible(bool a_bVisible);
+        bool isVisible();
+
+        int getPosition(lua_State *a_pState);
 
         irr::scene::ISceneNode *getNode();
 

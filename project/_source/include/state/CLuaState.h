@@ -8,6 +8,7 @@
 #endif
 
 #include <state/IState.h>
+#include <vector>
 
 namespace dustbin {
   class CGlobal;
@@ -35,8 +36,9 @@ namespace dustbin {
 
         lua::CLuaScript_dialog *m_pScript;
         CGlobal                *m_pGlobal;
-        scenenodes::CGui3dRoot *m_pGuiRoot;
         irr::ITimer            *m_pTimer;
+
+        std::vector<scenenodes::CGui3dRoot *> m_vGuiRoot;
 
         bool m_bButtons[3];   /**< The mouse button states */
 

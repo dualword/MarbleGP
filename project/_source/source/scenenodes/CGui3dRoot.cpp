@@ -11,6 +11,7 @@ namespace dustbin {
       m_pSelect        (nullptr),
       m_pCursor        (nullptr),
       m_pLuaScript     (nullptr),
+      m_pDrag          (nullptr),
       m_bLeftButtonDown(false),
       m_pState         (CGlobal::getInstance()->getActiveState())
     {
@@ -60,6 +61,20 @@ namespace dustbin {
 
         CGui3dItem *l_pHover = nullptr;
 
+        if (m_pDrag != nullptr) {
+          if (m_pState->isMouseDown(state::IState::enMouseButton::Left)) {
+            m_pDrag->drag(l_cLine);
+            l_pHover = m_pDrag;
+            l_pNode = nullptr;
+          }
+          else {
+            m_pDrag->stopDragging();
+            m_pDrag = nullptr;
+            step();
+            return;
+          }
+        }
+
         if (l_pNode != nullptr) {
           if (m_mItemScenenodeMap.find(l_pNode) != m_mItemScenenodeMap.end()) {
             l_pHover = reinterpret_cast<CGui3dItem *>(m_mItemScenenodeMap[l_pNode]);
@@ -81,12 +96,17 @@ namespace dustbin {
           if (!m_bLeftButtonDown) {
             if (m_pState->isMouseDown(state::IState::enMouseButton::Left)) {
               m_pHover->itemLeftButtonDown();
+              if (m_pHover->canBeDragged()) {
+                m_pDrag = m_pHover;
+                m_pDrag->startDragging(l_cLine);
+              }
             }
           }
           else {
             if (!m_pState->isMouseDown(state::IState::enMouseButton::Left)) {
               m_pHover->itemLeftButtonUp();
               m_pSelect = m_pHover;
+              m_pDrag   = nullptr;
             }
           }
         }

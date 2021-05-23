@@ -97,5 +97,16 @@ namespace dustbin {
         printf("Exception: %s\n", e.what());
       }
     }
+
+    void CLuaScript_dialog::uiValueChanged(int a_iId, const std::string& a_sName, float a_fValue) {
+      try {
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uivaluechanged");
+        if (l_cCallback.isCallable())
+          l_cCallback(a_iId, a_sName, a_fValue);
+      }
+      catch (luabridge::LuaException e) {
+        printf("Exception: %s\n", e.what());
+      }
+    }
   }
 }

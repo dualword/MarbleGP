@@ -1,11 +1,6 @@
-g_Time = 0  -- The time of the last "step" message
+system:executeluascript("data/lua/helpers_main.lua")
 
--- Rotate the menu
-g_Rotation = {
-  start = 0,
-  target = 0,
-  starttime = -1
-}
+g_Time = 0  -- The time of the last "step" message
 
 -- UI Items
 g_ResolutionList = { }
@@ -54,7 +49,25 @@ g_SpinBoxes = {
   }
 }
 
+g_Sliders = {
+  SfxSlider = {
+    item = nil,
+    label = nil,
+    value = 75,
+    key = "LabelSfx"
+  },
+  MusicSlider = {
+    item = nil,
+    label = nil,
+    value = 25,
+    key = "LabelSTrack"
+  }
+}
+
 g_ResolutionStart = 1
+
+g_FinishTime = -1
+g_StartTime  = -1
 
 function initialize()
   io.write("Setup script started.\n")
@@ -116,6 +129,20 @@ function initialize()
       end
     end
   end
+  
+  for k,v in pairs(g_Sliders) do
+    v["label"] = g_Smgr:getguiitemfromname(v["key"])
+    v["item" ] = g_Smgr:getguiitemfromname(k .. "Item")
+    
+    if v["item"] ~= nil then
+      v["item"]:setvalue(v["value"])
+      if v["label"] ~= nil then
+        v["label"]:settext(string.format("%.1f %%", v["value"]))
+      end
+    end
+  end
+  
+  startFadeIn(g_Root)
 end
 
 function cleanup()
@@ -126,17 +153,11 @@ function step(a_Time)
   local l_Time = a_Time - g_Time
   g_Time = a_Time
   
-  if g_Rotation["starttime"] ~= -1 then
-    local l_Diff = (g_Time - g_Rotation["starttime"]) / 500.0
-    
-    if l_Diff >= 1 then
-      g_Rotation["starttime"] = -1
-      g_Root:setrotation({ x = 0, y = g_Rotation["target"], z = 0 })
-    else
-      local l_New = g_Rotation["target"] - (g_Rotation["target"] - g_Rotation["start"]) * math.cos(90.0 * l_Diff * math.pi / 180.0)
-      g_Root:setrotation({ x = 0, y = l_New, z = 0 })
-    end
+  if g_StartTime == -1 then
+    g_StartTime = g_Time
   end
+    
+  processanimation()
 end
 
 function fillResolution(a_Start)
@@ -153,9 +174,7 @@ function fillResolution(a_Start)
 end
 
 function showResolutionSelector()
-  g_Rotation["start"    ] = 0
-  g_Rotation["target"   ] = 90
-  g_Rotation["starttime"] = g_Time
+  startRotation(g_Root, g_Time, 0, 90)
   
   g_ResolutionStart = 6 * math.floor(g_Settings["resolution"] / 6)
   
@@ -177,21 +196,16 @@ end
 
 function uibuttonclicked(a_Id, a_Name)
   if a_Name == "button_cancel" then
-    system:statechange(1)
+    g_FinishTime = g_Time
+    startFadeOut(g_Root, g_Time, 1)
   elseif a_Name == "button_sound" then
-    g_Rotation["start"    ] = 0
-    g_Rotation["target"   ] = -90
-    g_Rotation["starttime"] = g_Time
+    startRotation(g_Root, g_Time, 0, -90)
   elseif a_Name == "button_gfx" then
-    g_Rotation["start"    ] = -90
-    g_Rotation["target"   ] = 0
-    g_Rotation["starttime"] = g_Time
+    startRotation(g_Root, g_Time, -90, 0)
   elseif a_Name == "button_res_select" then
     showResolutionSelector()
   elseif a_Name == "button_res_cancel" then
-    g_Rotation["start"    ] = 90
-    g_Rotation["target"   ] = 0
-    g_Rotation["starttime"] = g_Time
+    startRotation(g_Root, g_Time, 90, 0)
   elseif a_Name == "button_res_up" then
     g_ResolutionStart = g_ResolutionStart - 6
     if g_ResolutionStart < 0 then
@@ -241,14 +255,21 @@ function uibuttonclicked(a_Id, a_Name)
         g_Settings["resolution"] = g_ResolutionStart + i
         g_Items["label_resolution"]:settext(g_ResolutionList[g_Settings["resolution"]])
         
-        g_Rotation["start"    ] = 90
-        g_Rotation["target"   ] = 0
-        g_Rotation["starttime"] = g_Time
+        startRotation(g_Root, g_Time, 90, 0)
         
         return
       end
     end
     
     io.write("Button Clicked: \"" .. a_Name .. "\"\n")
+  end
+end
+
+function uivaluechanged(a_Id, a_Name, a_Value)
+  if g_Sliders[a_Name] ~= nil then
+    g_Sliders[a_Name]["value"] = tonumber(a_Value)
+    if g_Sliders[a_Name]["label"] ~= nil then
+      g_Sliders[a_Name]["label"]:settext(string.format("%.1f %%", tonumber(a_Value)))
+    end
   end
 end

@@ -28,7 +28,11 @@ namespace dustbin {
         virtual ~CLua3dGuiItem();
 
         void setText(const std::string &a_sText);
+        std::string getText();
         int setBackgroundColor(lua_State *a_pState);
+
+        float getValue();
+        void setValue(float a_fValue);
 
         static void registerClass(lua_State *a_pState);
     };

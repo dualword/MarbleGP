@@ -25,6 +25,7 @@ namespace dustbin {
       "Button",
       "IconButton",
       "Image",
+      "Slider",
       0
     };
 
@@ -50,19 +51,32 @@ namespace dustbin {
       0
     };
 
+    /**
+    * The text values for axis (e.g. slider direction and normal
+    */
+    const irr::c8* const g_aAxisNames[] = {
+      "X",
+      "Y",
+      "Z",
+      0
+    };
+
     static std::map<std::string, CGui3dItemBase::enGui3dType> g_mTypeMap = {
       { g_aUiElementNames[0], CGui3dItemBase::enGui3dType::None },
       { g_aUiElementNames[1], CGui3dItemBase::enGui3dType::Decoration },
       { g_aUiElementNames[2], CGui3dItemBase::enGui3dType::Label },
       { g_aUiElementNames[3], CGui3dItemBase::enGui3dType::Button },
       { g_aUiElementNames[4], CGui3dItemBase::enGui3dType::IconButton },
-      { g_aUiElementNames[5], CGui3dItemBase::enGui3dType::Image }
+      { g_aUiElementNames[5], CGui3dItemBase::enGui3dType::Image },
+      { g_aUiElementNames[6], CGui3dItemBase::enGui3dType::Slider }
     };
 
     CGui3dItemBase::CGui3dItemBase(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
       m_pSmgr         (a_pSmgr), 
       m_eType         (enGui3dType ::Decoration),
       m_eAlign        (enGui3dAlign::Left      ),
+      m_eDirection    (enGui3dAxis ::AxisX     ),
+      m_eNormal       (enGui3dAxis ::AxisZ     ),
       m_pRttTexture   (nullptr),
       m_pFont         (nullptr),
       m_cBackground   (irr::video::SColor(0xFF, 255, 255, 255)),
@@ -74,7 +88,10 @@ namespace dustbin {
       m_eVerticalAlign(enGui3dVerticalAlign::Middle),
       m_sImage        (""),
       m_bShowText     (false),
-      m_iTextBackAlpha(128)
+      m_iTextBackAlpha(128),
+      m_fMinValue     (0.0f),
+      m_fMaxValue     (100.0f),
+      m_fValue        (50.0f)
     {
       if (getID() == -1)
         setID(getNextSceneNodeId());
@@ -138,6 +155,21 @@ namespace dustbin {
             g_sTextBackgroundName,
             g_sTextBackAlphaName
           }
+        },
+        {
+          enGui3dType::Slider, {
+            g_sBackgroundName,
+            g_sTextureName,
+            g_sHoverColorName,
+            g_sClickColorName,
+            g_sValueName,
+            g_sMinValueName,
+            g_sMaxValueName,
+            g_sSliderDirectionName,
+            g_sSliderNormalName,
+            g_sSliderMinOffsetName,
+            g_sSliderMaxOffsetName
+          }
         }
       };
     }
@@ -169,8 +201,16 @@ namespace dustbin {
       return (enGui3dVerticalAlign)0;
     }
 
-    void CGui3dItemBase::OnRegisterSceneNode() {
+    CGui3dItemBase::enGui3dAxis CGui3dItemBase::stringToAxis(const std::string &a_sAxis) {
+      for (int i = 0; g_aAxisNames[i] != 0; i++) {
+        if (a_sAxis == g_aAxisNames[i])
+          return (enGui3dAxis)i;
+      }
+      return (enGui3dAxis)0;
+    }
 
+    void CGui3dItemBase::OnRegisterSceneNode() {
+      
     }
 
     void CGui3dItemBase::render() {
@@ -205,6 +245,13 @@ namespace dustbin {
       l_pRet->m_iRttTexture = m_iRttTexture;
       l_pRet->m_sText       = m_sText;
       l_pRet->m_cClickColor = m_cClickColor;
+      l_pRet->m_eDirection  = m_eDirection;
+      l_pRet->m_eNormal     = m_eNormal;
+      l_pRet->m_fMinOffset  = m_fMinOffset;
+      l_pRet->m_fMaxOffset  = m_fMaxOffset;
+      l_pRet->m_fMinValue   = m_fMinValue;
+      l_pRet->m_fMaxValue   = m_fMaxValue;
+      l_pRet->m_fValue      = m_fValue;
 
       return l_pRet;
     }
@@ -212,6 +259,9 @@ namespace dustbin {
     void CGui3dItemBase::updateRttText(const irr::video::SColor &a_cBackgroundColor, const irr::video::SColor &a_cTextColor) {
       if (m_pRttTexture == nullptr)
         updateRttTexture();
+
+      if (m_pRttTexture == nullptr)
+        return;
 
       irr::video::IVideoDriver *l_pDrv = m_pSmgr->getVideoDriver();
       l_pDrv->setRenderTarget(m_pRttTexture);
@@ -430,21 +480,28 @@ namespace dustbin {
 
       if (l_itMap != m_mSerializerMap.end()) {
         for (std::vector<std::string>::const_iterator it = l_itMap->second.begin(); it != l_itMap->second.end(); it++) {
-               if ((*it) == g_sTextureName       ) a_pOut->addInt       ((*it).c_str(), m_iRttTexture);
-          else if ((*it) == g_sTextName          ) a_pOut->addString    ((*it).c_str(), m_sText.c_str());
-          else if ((*it) == g_sAlignmentName     ) a_pOut->addEnum      ((*it).c_str(), (int)m_eAlign        , g_aTextAlignment);
-          else if ((*it) == g_sVertAlignName     ) a_pOut->addEnum      ((*it).c_str(), (int)m_eVerticalAlign, g_aVerticalAlignment);
-          else if ((*it) == g_sTextColorName     ) a_pOut->addColor     ((*it).c_str(), m_cTextColor);
-          else if ((*it) == g_sBackgroundName    ) a_pOut->addColor     ((*it).c_str(), m_cBackground);
-          else if ((*it) == g_sHoverColorName    ) a_pOut->addColor     ((*it).c_str(), m_cHoverColor);
-          else if ((*it) == g_sTextureWidthName  ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Width);
-          else if ((*it) == g_sTextureHeightName ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Height);
-          else if ((*it) == g_sClickColorName    ) a_pOut->addColor     ((*it).c_str(), m_cClickColor);
-          else if ((*it) == g_sMultilineName     ) a_pOut->addBool      ((*it).c_str(), m_bMultiLine);
-          else if ((*it) == g_sImageFileName     ) a_pOut->addString    ((*it).c_str(), m_sImage.c_str());
-          else if ((*it) == g_sOverlayTextName   ) a_pOut->addBool      ((*it).c_str(), m_bShowText);
-          else if ((*it) == g_sTextBackgroundName) a_pOut->addColor     ((*it).c_str(), m_cTextBackColor);
-          else if ((*it) == g_sTextBackAlphaName ) a_pOut->addInt       ((*it).c_str(), m_iTextBackAlpha);
+               if ((*it) == g_sTextureName        ) a_pOut->addInt       ((*it).c_str(), m_iRttTexture);
+          else if ((*it) == g_sTextName           ) a_pOut->addString    ((*it).c_str(), m_sText.c_str());
+          else if ((*it) == g_sAlignmentName      ) a_pOut->addEnum      ((*it).c_str(), (int)m_eAlign        , g_aTextAlignment);
+          else if ((*it) == g_sVertAlignName      ) a_pOut->addEnum      ((*it).c_str(), (int)m_eVerticalAlign, g_aVerticalAlignment);
+          else if ((*it) == g_sTextColorName      ) a_pOut->addColor     ((*it).c_str(), m_cTextColor);
+          else if ((*it) == g_sBackgroundName     ) a_pOut->addColor     ((*it).c_str(), m_cBackground);
+          else if ((*it) == g_sHoverColorName     ) a_pOut->addColor     ((*it).c_str(), m_cHoverColor);
+          else if ((*it) == g_sTextureWidthName   ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Width);
+          else if ((*it) == g_sTextureHeightName  ) a_pOut->addInt       ((*it).c_str(), m_cRttSize.Height);
+          else if ((*it) == g_sClickColorName     ) a_pOut->addColor     ((*it).c_str(), m_cClickColor);
+          else if ((*it) == g_sMultilineName      ) a_pOut->addBool      ((*it).c_str(), m_bMultiLine);
+          else if ((*it) == g_sImageFileName      ) a_pOut->addString    ((*it).c_str(), m_sImage.c_str());
+          else if ((*it) == g_sOverlayTextName    ) a_pOut->addBool      ((*it).c_str(), m_bShowText);
+          else if ((*it) == g_sTextBackgroundName ) a_pOut->addColor     ((*it).c_str(), m_cTextBackColor);
+          else if ((*it) == g_sTextBackAlphaName  ) a_pOut->addInt       ((*it).c_str(), m_iTextBackAlpha);
+          else if ((*it) == g_sMinValueName       ) a_pOut->addFloat     ((*it).c_str(), m_fMinValue);
+          else if ((*it) == g_sMaxValueName       ) a_pOut->addFloat     ((*it).c_str(), m_fMaxValue);
+          else if ((*it) == g_sValueName          ) a_pOut->addFloat     ((*it).c_str(), m_fValue);
+          else if ((*it) == g_sSliderDirectionName) a_pOut->addEnum      ((*it).c_str(), (int)m_eDirection, g_aAxisNames);
+          else if ((*it) == g_sSliderNormalName   ) a_pOut->addEnum      ((*it).c_str(), (int)m_eNormal   , g_aAxisNames);
+          else if ((*it) == g_sSliderMinOffsetName) a_pOut->addFloat     ((*it).c_str(), m_fMinOffset);
+          else if ((*it) == g_sSliderMaxOffsetName) a_pOut->addFloat     ((*it).c_str(), m_fMaxOffset);
         }
       }
     }
@@ -508,6 +565,14 @@ namespace dustbin {
           m_eAlign = l_eAlign;
           l_bUpdateRttText = true;
         }
+      }
+
+      if (a_pIn->existsAttribute(g_sSliderDirectionName.c_str())) {
+        m_eDirection = stringToAxis(a_pIn->getAttributeAsEnumeration(g_sSliderDirectionName.c_str()));
+      }
+
+      if (a_pIn->existsAttribute(g_sSliderNormalName.c_str())) {
+        m_eNormal = stringToAxis(a_pIn->getAttributeAsEnumeration(g_sSliderNormalName.c_str()));
       }
 
       if (a_pIn->existsAttribute(g_sVertAlignName.c_str())) {
@@ -580,8 +645,28 @@ namespace dustbin {
         }
       }
 
+      if (a_pIn->existsAttribute(g_sMinValueName.c_str())) {
+        m_fMinValue = a_pIn->getAttributeAsFloat(g_sMinValueName.c_str());
+      }
+
+      if (a_pIn->existsAttribute(g_sMaxValueName.c_str())) {
+        m_fMaxValue = a_pIn->getAttributeAsFloat(g_sMaxValueName.c_str());
+      }
+
+      if (a_pIn->existsAttribute(g_sValueName.c_str())) {
+        m_fValue = a_pIn->getAttributeAsFloat(g_sValueName.c_str());
+      }
+
       if (a_pIn->existsAttribute(g_sHoverColorName.c_str())) {
         m_cHoverColor = a_pIn->getAttributeAsColor(g_sHoverColorName.c_str());
+      }
+
+      if (a_pIn->existsAttribute(g_sSliderMinOffsetName.c_str())) {
+        m_fMinOffset = a_pIn->getAttributeAsFloat(g_sSliderMinOffsetName.c_str());
+      }
+
+      if (a_pIn->existsAttribute(g_sSliderMaxOffsetName.c_str())) {
+        m_fMaxOffset = a_pIn->getAttributeAsFloat(g_sSliderMaxOffsetName.c_str());
       }
 
       if (a_pIn->existsAttribute(g_sClickColorName.c_str())) {
@@ -627,8 +712,12 @@ namespace dustbin {
     }
 
     void CGui3dRootBase::OnRegisterSceneNode() {
-      if (IsVisible)
+      if (IsVisible) {
         m_pSmgr->registerNodeForRendering(this);
+
+        for (irr::core::list<irr::scene::ISceneNode *>::Iterator it = Children.begin(); it != Children.end(); it++)
+          (*it)->OnRegisterSceneNode();
+      }
 
       ISceneNode::OnRegisterSceneNode();
     }
@@ -675,20 +764,27 @@ namespace dustbin {
     std::string CGui3dRootBase::m_sNodeTypeName = "Gui3dRoot";
     std::string CGui3dItemBase::m_sNodeTypeName = "Gui3dItem";
 
-    std::string CGui3dItemBase::g_sTextureName        = "Texture";
-    std::string CGui3dItemBase::g_sTextName           = "Text";
-    std::string CGui3dItemBase::g_sAlignmentName      = "Alignment";
-    std::string CGui3dItemBase::g_sTextColorName      = "Textcolor";
-    std::string CGui3dItemBase::g_sBackgroundName     = "Backgroundcolor";
-    std::string CGui3dItemBase::g_sHoverColorName     = "HoverColor";
-    std::string CGui3dItemBase::g_sTextureWidthName   = "TextureWidth";
-    std::string CGui3dItemBase::g_sTextureHeightName  = "TextureHeight";
-    std::string CGui3dItemBase::g_sClickColorName     = "ClickedColor";
-    std::string CGui3dItemBase::g_sMultilineName      = "Multiline";
-    std::string CGui3dItemBase::g_sVertAlignName      = "VerticalAlign";
-    std::string CGui3dItemBase::g_sImageFileName      = "Image";
-    std::string CGui3dItemBase::g_sOverlayTextName    = "ShowText";
-    std::string CGui3dItemBase::g_sTextBackgroundName = "OverlayBackground";
-    std::string CGui3dItemBase::g_sTextBackAlphaName  = "OverlayAlpha";
+    std::string CGui3dItemBase::g_sTextureName         = "Texture";
+    std::string CGui3dItemBase::g_sTextName            = "Text";
+    std::string CGui3dItemBase::g_sAlignmentName       = "Alignment";
+    std::string CGui3dItemBase::g_sTextColorName       = "Textcolor";
+    std::string CGui3dItemBase::g_sBackgroundName      = "Backgroundcolor";
+    std::string CGui3dItemBase::g_sHoverColorName      = "HoverColor";
+    std::string CGui3dItemBase::g_sTextureWidthName    = "TextureWidth";
+    std::string CGui3dItemBase::g_sTextureHeightName   = "TextureHeight";
+    std::string CGui3dItemBase::g_sClickColorName      = "ClickedColor";
+    std::string CGui3dItemBase::g_sMultilineName       = "Multiline";
+    std::string CGui3dItemBase::g_sVertAlignName       = "VerticalAlign";
+    std::string CGui3dItemBase::g_sImageFileName       = "Image";
+    std::string CGui3dItemBase::g_sOverlayTextName     = "ShowText";
+    std::string CGui3dItemBase::g_sTextBackgroundName  = "OverlayBackground";
+    std::string CGui3dItemBase::g_sTextBackAlphaName   = "OverlayAlpha";
+    std::string CGui3dItemBase::g_sMinValueName        = "MinValue";
+    std::string CGui3dItemBase::g_sMaxValueName        = "MaxValue";
+    std::string CGui3dItemBase::g_sValueName           = "Value";
+    std::string CGui3dItemBase::g_sSliderDirectionName = "Direction";
+    std::string CGui3dItemBase::g_sSliderNormalName    = "Normal";
+    std::string CGui3dItemBase::g_sSliderMinOffsetName = "MinOffset";
+    std::string CGui3dItemBase::g_sSliderMaxOffsetName = "MaxOffset";
   }
 }
