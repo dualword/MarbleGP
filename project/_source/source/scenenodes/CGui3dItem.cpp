@@ -75,6 +75,25 @@ namespace dustbin {
       return m_eType == enGui3dType::Slider;
     }
 
+    /**
+    * Set the "show text" flag useful for images
+    * @param b the new value
+    */
+    void CGui3dItem::setShowText(bool b) {
+      if (b != m_bShowText) {
+        m_bShowText = b;
+        updateRttText(m_cBackground, m_cTextColor);
+      }
+    }
+
+    /**
+    * Get the "show text" flag
+    * @return the value of the "show text" flag
+    */
+    bool CGui3dItem::doesShowText() {
+      return m_bShowText;
+    }
+
     void CGui3dItem::stopDragging() {
       m_bDragging = false;
     }

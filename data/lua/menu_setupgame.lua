@@ -194,8 +194,9 @@ function uibuttonclicked(a_Id, a_Name)
     startRotation(g_Plrs, g_Time,   0, 90)
   else
     if a_Name == "button_ok" then
+      system:pushscript("data/lua/menu_trackselect.lua")
+      startFadeOut(g_Root, g_Time, 1)
     elseif a_Name == "button_cancel" then
-      system:pushscript("data/lua/menu_main.lua")
       startFadeOut(g_Root, g_Time, 1)
     else
       local l_Unknown = true

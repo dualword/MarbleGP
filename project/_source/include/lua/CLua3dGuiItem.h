@@ -34,6 +34,9 @@ namespace dustbin {
         float getValue();
         void setValue(float a_fValue);
 
+        void showText(bool b);
+        bool doesShowText();
+
         static void registerClass(lua_State *a_pState);
     };
   }

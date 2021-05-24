@@ -121,14 +121,7 @@ function initialize()
     g_Items["checkbox_fullscreen"]:setrotation({ x = 0, y = 180, z = 0 })
   end
   
-  for k,v in pairs(g_SpinBoxes) do
-    if v["label"] ~= nil then
-      v["label"]["node"] = g_Smgr:getguiitemfromname(v["label"]["name"])
-      if v["label"]["node"] ~= nil and v["options"][g_Settings[v["key"]]] ~= nil then
-        v["label"]["node"]:settext(v["options"][g_Settings[v["key"]]])
-      end
-    end
-  end
+  initSpinBox(g_SpinBoxes, g_Settings)
   
   for k,v in pairs(g_Sliders) do
     v["label"] = g_Smgr:getguiitemfromname(v["key"])
@@ -226,30 +219,10 @@ function uibuttonclicked(a_Id, a_Name)
       g_Items["checkbox_fullscreen"]:setrotation({ x = 0, y = 180, z = 0 })
     end
   else
-    for k,v in pairs(g_SpinBoxes) do
-      local l_Value = g_Settings[v["key"]]
-      io.write("Value: " .. tostring(l_Value) .. "\n")
-      
-      if a_Name == v["plus"] then
-        if l_Value < #v["options"] then
-          l_Value = l_Value + 1
-        end
-      elseif a_Name == v["minus"] then
-        if l_Value > 1 then
-          l_Value = l_Value - 1
-        end
-      end
-      
-      if l_Value ~= g_Settings[v["key"]] then
-        g_Settings[v["key"]] = l_Value
-        if v["label"]["node"] ~= nil then
-          v["label"]["node"]:settext(v["options"][l_Value])
-        end
-        
-        return
-      end
+    if processSpinBoxes(a_Name, g_SpinBoxes, g_Settings) then
+      return
     end
-    
+        
     for i = 1,6 do
       if a_Name == "res_" .. tostring(i) then
         g_Settings["resolution"] = g_ResolutionStart + i

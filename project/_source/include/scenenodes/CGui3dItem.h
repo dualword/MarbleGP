@@ -94,6 +94,18 @@ namespace dustbin {
         bool canBeDragged();
 
         /**
+        * Set the "show text" flag useful for images
+        * @param b the new value
+        */
+        void setShowText(bool b);
+
+        /**
+        * Get the "show text" flag
+        * @return the value of the "show text" flag
+        */
+        bool doesShowText();
+
+        /**
         * Initialize internal data for dragging
         */
         void startDragging(const irr::core::line3df &a_cRay);

@@ -60,6 +60,15 @@ namespace dustbin {
         m_pItem->setValue(a_fValue);
     }
 
+    void CLua3dGuiItem::showText(bool b) {
+      if (m_pItem != nullptr)
+        m_pItem->setShowText(b);
+    }
+
+    bool CLua3dGuiItem::doesShowText() {
+      return m_pItem != nullptr && m_pItem->doesShowText();
+    }
+
     void CLua3dGuiItem::registerClass(lua_State* a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLua3dGuiItem>("GuiItem3d")
@@ -68,6 +77,8 @@ namespace dustbin {
           .addFunction("setbackgroundcolor", &CLua3dGuiItem::setBackgroundColor)
           .addFunction("getvalue"          , &CLua3dGuiItem::getValue)
           .addFunction("setvalue"          , &CLua3dGuiItem::setValue)
+          .addFunction("showtext"          , &CLua3dGuiItem::showText)
+          .addFunction("doesshowtext"      , &CLua3dGuiItem::doesShowText)
         .endClass();
     }
   }

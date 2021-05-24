@@ -73,3 +73,40 @@ function processanimation()
     end
   end
 end
+
+function initSpinBox(a_Data, a_Settings)
+  for k,v in pairs(a_Data) do
+    if v["label"] ~= nil then
+      v["label"]["node"] = g_Smgr:getguiitemfromname(v["label"]["name"])
+      if v["label"]["node"] ~= nil and v["options"][a_Settings[v["key"]]] ~= nil then
+        v["label"]["node"]:settext(v["options"][a_Settings[v["key"]]])
+      end
+    end
+  end
+end
+
+function processSpinBoxes(a_Name, a_Data, a_Settings)
+  for k,v in pairs(a_Data) do
+    local l_Value = a_Settings[v["key"]]
+    io.write("Value: " .. tostring(l_Value) .. "\n")
+    
+    if a_Name == v["plus"] then
+      if l_Value < #v["options"] then
+        l_Value = l_Value + 1
+      end
+    elseif a_Name == v["minus"] then
+      if l_Value > 1 then
+        l_Value = l_Value - 1
+      end
+    end
+    
+    if l_Value ~= a_Settings[v["key"]] then
+      g_Settings[v["key"]] = l_Value
+      if v["label"]["node"] ~= nil then
+        v["label"]["node"]:settext(v["options"][l_Value])
+      end
+      
+      return
+    end
+  end
+end
