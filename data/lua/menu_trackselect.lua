@@ -27,12 +27,11 @@ g_SpinBoxes = {
 
 g_Settings = {
   lapcount = 3,
-  track = "eight_crossing"
+  track = "jump_long"
 }
 
-g_TrackNo    = -1
-g_TrackStart = -1
-g_TrackEnd   = -1
+g_TrackNo    = 1
+g_TrackStart = 0
 
 g_Tracks = {
   [1] = {
@@ -228,31 +227,67 @@ function initialize()
   g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 70.0 })
   g_Camera:activate()
   
+  g_LabelName = g_Smgr:getguiitemfromname("trackname_ui")
+  
   for i = 1, #g_Tracks do
     if g_Tracks[i]["folder"] == g_Settings["track"] then
       g_TrackNo = i
+      g_TrackStart = g_TrackNo - 3
+      if g_TrackStart < 0 then
+        g_TrackStart = 0
+      end
+      selectTrack()
       break
     end
   end
-  
-  io.write("Trackno: " .. tostring(g_TrackNo) .. "\n")
-  g_TrackStart = g_TrackNo - 2
-  g_TrackEnd   = g_TrackNo + 2
   
   for i = 1, 5 do
     local l_Item = g_Smgr:getguiitemfromname("trackname_" .. tostring(i))
     table.insert(g_TrackNames, l_Item)
   end
   
-  local l_Item = 1
-  for i = g_TrackStart, g_TrackEnd do
-    g_TrackNames[l_Item]:settext(g_Tracks[i]["name"])
-    l_Item = l_Item + 1
-  end
-
+  fillTrackList()
   initSpinBox(g_SpinBoxes, g_Settings)
   
   startFadeIn(g_Root)
+end
+
+function fillTrackList()
+  io.write("g_TrackStart: " .. tostring(g_TrackStart) .. "\n")
+  if g_TrackStart < 0 then
+    g_TrackStart = 0
+  end
+  
+  if #g_Tracks > 5 and g_TrackStart > #g_Tracks - 5 then
+    g_TrackStart = #g_Tracks - 5
+  end
+  
+  for i = 1, 5 do
+    local l_Index = i + g_TrackStart
+    if l_Index > #g_Tracks then
+      g_TrackNames[i]:settext("---")
+      g_TrackNames[i]:setbackgroundcolor({ a = 255, r = 192, g = 192, b = 192 })
+    else
+      g_TrackNames[i]:settext(g_Tracks[l_Index]["name"])
+      if l_Index == g_TrackNo then
+        g_TrackNames[i]:setbackgroundcolor({ a = 255, r = 192, g = 255, b = 192 })
+      else
+        g_TrackNames[i]:setbackgroundcolor({ a = 255, r = 192, g = 192, b = 192 })
+      end
+    end
+  end
+end
+
+function selectTrack()
+  if g_Tracks[g_TrackNo]["info"] ~= nil then
+    g_Thumbnail:settext(g_Tracks[g_TrackNo]["info"])
+  end
+  
+  if g_Tracks[g_TrackNo]["name"] ~= nil then
+    g_LabelName:settext(g_Tracks[g_TrackNo]["name"])
+  else
+    g_LabelName:settext("----")
+  end
 end
 
 function step(a_Time)
@@ -273,9 +308,27 @@ function uibuttonclicked(a_Id, a_Name)
   if a_Name == "button_cancel" then
     system:pushscript("data/lua/menu_setupgame.lua")
     startFadeOut(g_Root, g_Time, 1)
+  elseif a_Name == "button_up" then
+    g_TrackStart = g_TrackStart - 1
+    fillTrackList()
+  elseif a_Name == "button_down" then
+    g_TrackStart = g_TrackStart + 1
+    fillTrackList()
   else
     if processSpinBoxes(a_Name, g_SpinBoxes, g_Settings) then
       return
+    end
+    
+    for i = 1, 5 do
+      if a_Name == "track_" .. tostring(i) then
+        local l_Index = g_TrackStart + i
+        if l_Index <= #g_Tracks then
+          g_TrackNo = l_Index
+          fillTrackList()
+          selectTrack()
+        end
+        return
+      end
     end
     
     io.write("Button clicked: " .. tostring(a_Name) .. "\n")

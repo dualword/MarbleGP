@@ -20,6 +20,8 @@ function initialize()
   
   g_Root = g_Smgr:getscenenodefromname("root_menumain")
   startFadeIn(g_Root)
+  
+  audio:startsoundtrack(0)
 end
 
 function cleanup()

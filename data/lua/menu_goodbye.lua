@@ -20,6 +20,7 @@ function initialize()
   
   g_Root = g_Smgr:getscenenodefromname("goodbye")
   startFadeIn(g_Root)
+  audio:startsoundtrack(2)
 end
 
 function step(a_Time)
@@ -33,5 +34,8 @@ function step(a_Time)
   if g_Time - g_Start > 2500 then
     io.write("Exit!\n")
     system:statechange(255)
+  elseif g_Time - g_Start > 1500 then
+    local a_Fade = 1.0 - (g_Time - g_Start - 1500) / 1000
+    audio:setsoundtrackfade(a_Fade)
   end
 end

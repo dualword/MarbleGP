@@ -196,6 +196,7 @@
     <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaSingleton_audio.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_system.cpp" />
     <ClCompile Include="..\_source\source\MarbleGP.cpp" />
     <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp" />
@@ -207,6 +208,9 @@
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
+    <ClCompile Include="..\_source\source\sound\CSoundData.cpp" />
+    <ClCompile Include="..\_source\source\sound\CSoundInterface.cpp" />
+    <ClCompile Include="..\_source\source\sound\OggHelpers.cpp" />
     <ClCompile Include="..\_source\source\state\CLuaState.cpp" />
     <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
@@ -224,6 +228,7 @@
     <ClInclude Include="..\_source\include\lua\CLuaScript_dialog.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSingleton_system.h" />
     <ClInclude Include="..\_source\include\lua\CLua3dGuiItem.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaSingleton_audio.h" />
     <ClInclude Include="..\_source\include\lua\ILuaObject.h" />
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h" />
     <ClInclude Include="..\_source\include\messages\IMessage.h" />
@@ -236,6 +241,10 @@
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h" />
+    <ClInclude Include="..\_source\include\sound\CSoundData.h" />
+    <ClInclude Include="..\_source\include\sound\CSoundEnums.h" />
+    <ClInclude Include="..\_source\include\sound\CSoundInterface.h" />
+    <ClInclude Include="..\_source\include\sound\OggHelpers.h" />
     <ClInclude Include="..\_source\include\state\CLuaState.h" />
     <ClInclude Include="..\_source\include\state\IState.h" />
     <ClInclude Include="..\_source\include\threads\CMessageQueue.h" />

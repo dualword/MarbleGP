@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <lua/CLuaSingleton_system.h>
+#include <lua/CLuaSingleton_audio.h>
 #include <lua/CLuaScript_dialog.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
@@ -17,6 +18,7 @@ namespace dustbin {
       luabridge::enableExceptions(m_pState);
 
       m_pSystem = new CLuaSingleton_system(m_pState);
+      m_pAudio  = new CLuaSingleton_audio (m_pState);
 
       try {
         luaL_dostring(m_pState, a_sScript.c_str());

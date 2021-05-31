@@ -42,6 +42,8 @@ namespace dustbin {
 
       state::enState m_eStateChange;  /**< Global for requested state change */
 
+      dustbin::audio::CSoundInterface *m_pSoundInterface; /**< The sound interface */
+
     public:
       CMainClass();
       virtual ~CMainClass();
@@ -199,6 +201,12 @@ namespace dustbin {
       * @return the state change
       */
       virtual dustbin::state::enState getStateChange();
+
+      /**
+      * Get access to the sound interface singleton
+      * @return the sound interface singleton
+      */
+      virtual audio::CSoundInterface *getSoundInterface();
 
       // Method inherited from irr::IEventReceiver
       virtual bool OnEvent(const irr::SEvent &a_cEvent);

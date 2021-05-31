@@ -16,6 +16,10 @@ namespace dustbin {
     class IState;
   }
 
+  namespace audio {
+    class CSoundInterface;
+  }
+
   enum class enFileType {
     ImageFile,
     LuaFile,
@@ -275,5 +279,11 @@ namespace dustbin {
       * @return the state change
       */
       virtual dustbin::state::enState getStateChange() = 0;
+
+      /**
+      * Get access to the sound interface singleton
+      * @return the sound interface singleton
+      */
+      virtual audio::CSoundInterface *getSoundInterface() = 0;
   };
 }

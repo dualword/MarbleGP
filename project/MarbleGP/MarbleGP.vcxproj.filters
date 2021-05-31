@@ -67,6 +67,12 @@
     <Filter Include="Quelldateien\_generated\lua">
       <UniqueIdentifier>{ce579f79-47e7-42c3-9e57-8ba4652f29ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\sound">
+      <UniqueIdentifier>{8581cd10-a358-425e-ae59-9e5101c37763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\sound">
+      <UniqueIdentifier>{d5104d8c-7d71-4673-aba4-8631ae65bc44}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -143,6 +149,18 @@
     </ClCompile>
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp">
       <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\sound\CSoundData.cpp">
+      <Filter>Quelldateien\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\sound\CSoundInterface.cpp">
+      <Filter>Quelldateien\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\sound\OggHelpers.cpp">
+      <Filter>Quelldateien\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSingleton_audio.cpp">
+      <Filter>Quelldateien\lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +253,21 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h">
       <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\sound\CSoundData.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\sound\CSoundEnums.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\sound\CSoundInterface.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\sound\OggHelpers.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaSingleton_audio.h">
+      <Filter>Headerdateien\lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

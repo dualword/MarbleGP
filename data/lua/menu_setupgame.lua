@@ -9,6 +9,14 @@ g_GameClasses = {
   [4] = "MarbleGP"
 }
 
+g_AiClasses = {
+  [1] = "Rookies",
+  [2] = "Marble3",
+  [3] = "Marble2",
+  [4] = "MarbleGP",
+  [5] = "All"
+}
+
 g_GridPositions = {
   [1] = "Last Race",
   [2] = "Championship",
@@ -17,7 +25,7 @@ g_GridPositions = {
 
 g_Options = {
   gameclass = { value = 1, options = g_GameClasses  , label = "label_class_ui", node = nil },
-  aiclass   = { value = 1, options = g_GameClasses  , label = "label_ai_ui"   , node = nil },
+  aiclass   = { value = 1, options = g_AiClasses  , label = "label_ai_ui"   , node = nil },
   grid      = { value = 1, options = g_GridPositions, label = "label_grid_ui" , node = nil },
   
   gridreverse    = { value = false },

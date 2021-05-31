@@ -7,6 +7,7 @@
 namespace dustbin {
   namespace lua {
     class CLuaSingleton_system;
+    class CLuaSingleton_audio;
 
     /**
      * @class CLuaScript_dialog
@@ -16,6 +17,7 @@ namespace dustbin {
     class CLuaScript_dialog {
       protected:
         CLuaSingleton_system *m_pSystem;
+        CLuaSingleton_audio  *m_pAudio;
 
         lua_State *m_pState;
 

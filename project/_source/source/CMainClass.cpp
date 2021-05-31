@@ -6,6 +6,7 @@
 #endif
 
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
+#include <sound/CSoundInterface.h>
 #include <state/CLuaState.h>
 #include <CMainClass.h>
 #include <algorithm>
@@ -13,7 +14,7 @@
 #include <thread>
 
 namespace dustbin {
-  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr), m_eStateChange(state::enState::None) {
+  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr), m_eStateChange(state::enState::None), m_pSoundInterface(nullptr) {
     CGlobal::m_pInstance = this;
 
 #ifdef _OPENGL_ES
@@ -347,4 +348,25 @@ namespace dustbin {
   state::IState* CMainClass::getActiveState() {
     return m_pActiveState;
   }
+
+  dustbin::audio::CSoundInterface* CMainClass::getSoundInterface() {
+    if (m_pSoundInterface == nullptr) {
+      m_pSoundInterface = new audio::CSoundInterface(m_pFs);
+
+      m_pSoundInterface->preloadSound(L"data/sounds/theme_menu.ogg");
+      m_pSoundInterface->preloadSound(L"data/sounds/theme_race.ogg");
+      m_pSoundInterface->preloadSound(L"data/sounds/theme_result.ogg");
+
+      m_pSoundInterface->assignSoundtracks(
+        {
+          { enSoundTrack::enStMenu  , L"data/sounds/theme_menu.ogg" },
+          { enSoundTrack::enStRace  , L"data/sounds/theme_race.ogg" },
+          { enSoundTrack::enStFinish, L"data/sounds/theme_result.ogg" }
+        }
+      );
+    }
+
+    return m_pSoundInterface;
+  }
 }
+
