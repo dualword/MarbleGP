@@ -53,13 +53,15 @@ g_Sliders = {
   SfxSlider = {
     item = nil,
     label = nil,
-    value = 75,
+    value = 100 * audio:getsfxvolume(),
+    oldvalue = 100 * audio:getsfxvolume(),
     key = "LabelSfx"
   },
   MusicSlider = {
     item = nil,
     label = nil,
-    value = 25,
+    value = 100 * audio:getsoundtrackvolume(),
+    oldvalue = 100 * audio:getsoundtrackvolume(),
     key = "LabelSTrack"
   }
 }
@@ -93,8 +95,6 @@ function initialize()
   
   g_ResolutionWindow = g_Smgr:getscenenodefromname("resolution")
   
-  io.write("==> " .. g_ResolutionList[1] .. "\n")
-  
   g_Items["resolution"] = { }
   
   for i = 1,6 do
@@ -110,6 +110,19 @@ function initialize()
   
   g_Items["label_resolution"   ] = g_Smgr:getguiitemfromname  ("label_resolution")
   g_Items["checkbox_fullscreen"] = g_Smgr:getscenenodefromname("checkbox_fullscreen")
+  
+  local l_Resolution = system:getsetting("resolution")
+  
+  for i = 1, #g_ResolutionList do
+    if g_ResolutionList[i] == l_Resolution then
+      g_Settings["resolution"] = i
+      break
+    end
+  end
+  
+  if system:getsetting("fullscreen") == "1" then
+    g_Settings["fullscreen"] = true
+  end
   
   if g_Settings["resolution"] >= 1 and g_Settings["resolution"] <= #g_ResolutionList then
     g_Items["label_resolution"]:settext(g_ResolutionList[g_Settings["resolution"]])
@@ -188,7 +201,39 @@ function uielementleft(a_Id, a_Name)
 end
 
 function uibuttonclicked(a_Id, a_Name)
-  if a_Name == "button_cancel" then
+  if a_Name == "button_ok" then
+    system:setsetting("sfxvolume"       , audio:getsfxvolume       ())
+    system:setsetting("soundtrackvolume", audio:getsoundtrackvolume())
+    
+    local l_Resolution = g_Items["label_resolution"]:gettext()
+    local l_Old = system:getsetting("resolution")
+    
+    io.write("Resolution: " .. tostring(l_Resolution) .. ", old: " .. tostring(l_Old) .. "\n")
+    
+    if l_Resolution ~= l_Old then
+      system:setsetting("resolution", l_Resolution)
+    end
+    
+    local l_Fullscreen = system:getsetting("fullscreen")
+    
+    if g_Settings["fullscreen"] ~= l_Fullscreen then
+      l_Fullscreen = g_Settings["fullscreen"]
+      io.write("Fullscreen: ")
+      if l_Fullscreen then
+        io.write("True\n")
+        system:setsetting("fullscreen", "1")
+      else
+        io.write("False\n")
+        system:setsetting("fullscreen", "0")
+      end
+    end
+
+    g_FinishTime = g_Time
+    startFadeOut(g_Root, g_Time, 1)
+  elseif a_Name == "button_cancel" then
+    audio:setsfxvolume       (g_Sliders["SfxSlider"  ]["oldvalue"] / 100.0)
+    audio:setsoundtrackvolume(g_Sliders["MusicSlider"]["oldvalue"] / 100.0)
+    
     g_FinishTime = g_Time
     startFadeOut(g_Root, g_Time, 1)
   elseif a_Name == "button_sound" then
@@ -243,6 +288,11 @@ function uivaluechanged(a_Id, a_Name, a_Value)
     g_Sliders[a_Name]["value"] = tonumber(a_Value)
     if g_Sliders[a_Name]["label"] ~= nil then
       g_Sliders[a_Name]["label"]:settext(string.format("%.1f %%", tonumber(a_Value)))
+      if g_Sliders[a_Name]["key"] == "LabelSTrack" then
+        audio:setsoundtrackvolume(a_Value / 100.0)
+      elseif g_Sliders[a_Name]["key"] == "LabelSfx" then
+        audio:setsfxvolume(a_Value / 100.0)
+      end
     end
   end
 end

@@ -13,7 +13,7 @@ function startFadeIn(a_Object)
   g_Fadein["position"] = a_Object:getposition()
   
   g_Fadein["object"]:setposition({ x = g_Fadein["position"]["x"], y = g_Fadein["position"]["x"] + 100, z = g_Fadein["position"]["z"] })
-  end
+end
 
 function startFadeOut(a_Object, a_Time, a_NextState)
   g_Fadeout = { }

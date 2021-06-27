@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<!--
+
+Factory 0 element 0 : "button"
+Factory 0 element 1 : "checkBox"
+Factory 0 element 2 : "comboBox"
+Factory 0 element 3 : "contextMenu"
+Factory 0 element 4 : "menu"
+Factory 0 element 5 : "editBox"
+Factory 0 element 6 : "fileOpenDialog"
+Factory 0 element 7 : "colorSelectDialog"
+Factory 0 element 8 : "inOutFader"
+Factory 0 element 9 : "image"
+Factory 0 element 10: "listBox"
+Factory 0 element 11: "meshViewer"
+Factory 0 element 12: "messageBox"
+Factory 0 element 13: "modalScreen"
+Factory 0 element 14: "scrollBar"
+Factory 0 element 15: "spinBox"
+Factory 0 element 16: "staticText"
+Factory 0 element 17: "tab"
+Factory 0 element 18: "tabControl"
+Factory 0 element 19: "table"
+Factory 0 element 20: "toolBar"
+Factory 0 element 21: "treeview"
+Factory 0 element 22: "window"
+Factory 0 element 23: "element"
+Factory 0 element 24: "root"
+
+Unniversal Attributes:
+
+Attribute Name:
+Attribute Id: -1
+Attribute Caption:
+Attribute Rect: 0, 0, 100, 100
+Attribute MinSize: 1, 1
+Attribute MaxSize: 0, 0
+Attribute LeftAlign: upperLeft
+Attribute RightAlign: upperLeft
+Attribute TopAlign: upperLeft
+Attribute BottomAlign: upperLeft
+Attribute Visible: true
+Attribute Enabled: true
+Attribute TabStop: false
+Attribute TabGroup: false
+Attribute TabOrder: -1
+Attribute NoClip: false
+
+Attributes "Button":
+
+Attribute PushButton: false
+Attribute Image: 0
+Attribute ImageRect: 0, 0, 0, 0
+Attribute PressedImage: 0
+Attribute PressedImageRect: 0, 0, 0, 0
+Attribute UseAlphaChannel: false
+Attribute Border: true
+Attribute ScaleImage: false
+
+Attributes "StaticText":
+
+Attribute Border: false
+Attribute OverrideColorEnabled: false
+Attribute OverrideBGColorEnabled: false
+Attribute WordWrap: true
+Attribute Background: false
+Attribute RightToLeft: false
+Attribute RestrainTextInside: true
+Attribute OverrideColor: 255, 255, 255, 101
+Attribute BGColor: 210, 210, 210, 101
+Attribute HTextAlign: upperLeft
+Attribute VTextAlign: upperLeft
+-->
+<dialog>
+  <element type="button" rect="center: -20, -12, -3, -8" font="huge">
+    <attributes>
+      <attribute key="Name" value="single_race" />
+      <attribute key="Id" value="23001" />
+      <attribute key="Caption" value="Single Race" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: 4, -12, 21, -8" font="huge">
+    <attributes>
+      <attribute key="Name" value="cup" />
+      <attribute key="Id" value="23002" />
+      <attribute key="Caption" value="MarbleGP Cup" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: -20, -6, -3, -2" font="huge">
+    <attributes>
+      <attribute key="Name" value="profiles" />
+      <attribute key="Id" value="23003" />
+      <attribute key="Caption" value="Profiles" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: 4, -6, 21, -2" font="huge">
+    <attributes>
+      <attribute key="Name" value="settings" />
+      <attribute key="Id" value="23004" />
+      <attribute key="Caption" value="Settings" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: -20, 0, -3, 5" font="huge">
+    <attributes>
+      <attribute key="Name" value="race_replay" />
+      <attribute key="Id" value="23005" />
+      <attribute key="Caption" value="Race Replay" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: 4, 0, 21, 5" font="huge">
+    <attributes>
+      <attribute key="Name" value="view_track" />
+      <attribute key="Id" value="23006" />
+      <attribute key="Caption" value="View Track" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: -20, 7, -3, 11" font="huge">
+    <attributes>
+      <attribute key="Name" value="credits" />
+      <attribute key="Id" value="23007" />
+      <attribute key="Caption" value="Credits" />
+    </attributes>
+  </element>
+  <element type="button" rect="center: 4, 7, 21, 11" font="huge">
+    <attributes>
+      <attribute key="Name" value="exit" />
+      <attribute key="Id" value="23008" />
+      <attribute key="Caption" value="Exit" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: -29, 13, -6, 15">
+    <attributes>
+      <attribute key="Name" value="dustbin" />
+      <attribute key="Id" value="23008" />
+      <attribute key="Caption" value="(w) 2016-2021 by Dustbin::Games" />
+      <attribute key="HTextAlign" value="lowerRight" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: 7, 13, 29, 15">
+    <attributes>
+      <attribute key="Name" value="toshi" />
+      <attribute key="Id" value="23009" />
+      <attribute key="Caption" value="Music and some sound effects by Toshi Clinch" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: -29, 15, -6, 17">
+    <attributes>
+      <attribute key="Name" value="dustbin" />
+      <attribute key="Id" value="23008" />
+      <attribute key="Caption" value="https://www.dustbin-online.de" />
+      <attribute key="HTextAlign" value="lowerRight" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: 7, 15, 29, 17">
+    <attributes>
+      <attribute key="Name" value="toshi" />
+      <attribute key="Id" value="23009" />
+      <attribute key="Caption" value="https://www.toshiclinchmusic.com/" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+</dialog>

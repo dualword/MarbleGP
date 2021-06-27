@@ -33,6 +33,26 @@ namespace dustbin {
     Both
   };
 
+  enum class enLayout {
+    UpperLeft,
+    UpperMiddle,
+    UpperRight,
+    Left,
+    Center,
+    Right,
+    LowerLeft,
+    LowerMiddle,
+    LowerRight
+  };
+
+  enum class enFont {
+    Tiny,
+    Small,
+    Regular,
+    Big,
+    Huge
+  };
+
   /**
    * @class CGlobal
    * @author Christian Keimel
@@ -275,15 +295,48 @@ namespace dustbin {
       virtual void stateChange(dustbin::state::enState a_eNewState) = 0;
 
       /**
+       * Get the raster size for the UI layout
+       * @return the raster size
+       */
+      virtual int getRasterSize() = 0;
+
+      /**
+       * Get a rectangle on the screen for GUI layout
+       * @param a_iLeft Left position
+       * @param a_iTop Top position
+       * @param a_iRight Right position
+       * @param a_iBottom bottom position
+       * @param a_ePosition the layout position of the rectangle
+       * @param a_pParent an optional parent element
+       */
+      virtual irr::core::recti getRect(int a_iLeft, int a_iTop, int a_iRight, int a_iBottom, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr) = 0;
+
+      /**
+       * Get a rectangle on the screen for GUI layout
+       * @param a_cRect Irrlicht rectangle with the coordinates to be converted
+       * @param a_ePosition the layout position of the rectangle
+       * @param a_pParent an optional paraent element
+       */
+      virtual irr::core::recti getRect(const irr::core::recti& a_cRect, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr) = 0;
+
+      /**
       * Get a requested state change. This function also sets the corresponding member back to "None"
       * @return the state change
       */
-      virtual dustbin::state::enState getStateChange() = 0;
+      virtual state::enState getStateChange() = 0;
 
       /**
       * Get access to the sound interface singleton
       * @return the sound interface singleton
       */
       virtual audio::CSoundInterface *getSoundInterface() = 0;
+
+      /**
+      * Get a font for a specific viewport size
+      * @param a_eFont the type of font
+      * @param a_cViewport the viewport size
+      * @see dustbin::enFont
+      */
+      virtual irr::gui::IGUIFont* getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport) = 0;
   };
 }

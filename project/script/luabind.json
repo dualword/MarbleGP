@@ -1,4 +1,8 @@
 {
+  "includes": {
+    "irr::gui::IGUIElement *"   : "irrlicht.h",
+    "irr::gui::IGUIStaticText *": "irrlicht.h"
+  },
   "tables": {
     "SVector3d": {
       "comment": "3d vector",
@@ -19,5 +23,79 @@
         { "name": "a", "type": "int" }
       ]
     }
+  },
+  "objects": {
+    "GuiElement": {
+      "comment": "Base class for the LUA binding of the Irrlicht GUI elements",
+      "members": [
+        { "name": "element", "type": "irr::gui::IGUIElement *", "comment": "The Irrlicht GUI element" }
+      ],
+      "lua_from": {
+        "isvisible": {
+          "comment": "Returns true if the element is visible, false otherwise",
+          "return": { "type": "bool", "comment": "Flag indicating the visiblility" }
+        },
+        "setvisible": {
+          "comment": "Change the visiblility of the UI element",
+          "arguments": [
+            { "name": "visible", "type": "bool", "comment": "Visibility flag for the UI element" }
+          ]
+        },
+        "getid": {
+          "comment": "Query the ID of the UI element",
+          "return": { "type": "int", "comment": "The ID of the UI element" }
+        },
+        "setid": {
+          "comment": "Change the ID of the UI element",
+          "arguments": { "name": "id", "type": "int", "comment": "The new ID of the element" }
+        },
+        "getname": {
+          "comment": "Query the name of the UI element",
+          "return": { "type": "std::string", "comment": "The name of the UI element" }
+        },
+        "setname": {
+          "comment": "Change the name of the UI element",
+          "arguments": { "name": "name", "type": "std::string", "comment": "The new name of the UI element" }
+        }
+      }
+    },
+    "GuiStaticText": {
+      "comment": "LUA binding for the Irrlicht static text GUI element",
+      "inherits": "GuiElement",
+      "members": [
+        { "name": "label", "type": "irr::gui::IGUIStaticText *", "comment": "The Irrlicht static text" }
+      ],
+      "lua_from": {
+        "settext": {
+          "comment": "Change the text of the static text",
+          "arguments": [
+            { "name": "text", "type": "std::string", "comment": "The new text of the UI element" }
+          ]
+        },
+        "gettext": {
+          "comment": "Get the text of the UI element",
+          "return": { "type": "std::string", "comment": "The text of the UI element" }
+        },
+        "setbackgroundcolor": {
+          "comment": "Change the background color of the static text",
+          "arguments": { "name": "color", "type": "SColor", "comment": "The new color" }
+        },
+        "getbackgroundcolor": {
+          "comment": "Get the background color of the static text",
+          "return": { "type": "SColor", "comment": "The background color of the static text" }
+        },
+        "settextcolor": {
+          "comment": "Change the text color of the static text",
+          "arguments": { "name": "color", "type": "SColor", "comment": "The new color" }
+        },
+        "gettextcolor": {
+          "comment": "Get the text color of the static text",
+          "return": { "type": "SColor", "comment": "The text color of the static text" }
+        }
+      }
+    }
+  },
+  "singletons": {
+    
   }
 }

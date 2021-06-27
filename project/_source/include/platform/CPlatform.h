@@ -15,14 +15,15 @@ namespace dustbin {
     void portableDateStr(long a_iTime, char *a_sBuffer, int a_iLen);
     void portableOpenUrl(const std::wstring &a_sUrl);
     void portableFocusWindow(irr::video::IVideoDriver *a_pDrv);
-    void portableGetDataPath(std::wstring &a_sRoot);
     void preventScreenSaver();
     void portableGetImagePath(std::wstring &a_sPath);
     void portableCopyFile(const std::wstring &a_sSource, const std::wstring &a_sTarget);
-    void portableCreateFolder(const std::string &a_sFolder);
+    void portableCreateFolder(const std::wstring &a_sFolder);
     bool portableIsFolder(const std::string &a_sPath);
     const std::wstring portableOpenFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
     const std::wstring portableSaveFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
+
+    const std::wstring portableGetDataPath();
 
     irr::u64 portableGetFileDate(const std::wstring &a_sFile);
 

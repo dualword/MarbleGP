@@ -35,7 +35,8 @@ namespace dustbin {
           Button = 3,     /**< A text button */
           IconButton = 4, /**< An icon button, i.e. the 3d model of the mesh represents the icon */
           Image = 5,      /**< An image, can also have text overlaying */
-          Slider = 6      /**< A slider */
+          Slider = 6,     /**< A slider */
+          TextInput = 7      /**< A text edit field */
         };
 
         /**

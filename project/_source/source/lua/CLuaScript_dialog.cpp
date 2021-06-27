@@ -32,6 +32,9 @@ namespace dustbin {
       if (m_pState != nullptr) {
         lua_close(m_pState);
       }
+
+      delete m_pSystem;
+      delete m_pAudio;
     }
 
     void CLuaScript_dialog::initialize() {

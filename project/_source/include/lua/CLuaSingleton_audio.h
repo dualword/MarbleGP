@@ -31,6 +31,9 @@ namespace dustbin {
 
         void startSoundTrack(int a_iSoundTrack);
         void setSoundtrackFade(float a_fValue);
+
+        float getSoundtrackVolume();
+        float getSfxVolume();
     };
   }
 }

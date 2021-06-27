@@ -70,7 +70,7 @@ namespace dustbin {
         a_sPath += '/';
     }
 
-    void portableGetDataPath(std::wstring &a_sRoot) {
+    const std::wstring portableGetDataPath() {
       TCHAR l_sPath   [MAX_PATH],
         l_sGhost  [MAX_PATH],
         l_sReplay [MAX_PATH],
@@ -86,11 +86,11 @@ namespace dustbin {
 
         if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
 
-        PathAppend(l_sPath, L"\\MarblesGP\\");
+        PathAppend(l_sPath, L"\\MarbleGP\\");
 
         if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
 
-        _tcscpy_s(l_sReplay, MAX_PATH, l_sPath);
+        /*_tcscpy_s(l_sReplay, MAX_PATH, l_sPath);
         PathAppend(l_sReplay, L"\\Replay\\");
 
         if (!PathFileExists(l_sReplay)) CreateDirectory(l_sReplay, NULL);
@@ -115,16 +115,11 @@ namespace dustbin {
 
         _tcscpy_s(l_sTracks, MAX_PATH, l_sPath);
 
-        PathAppend(l_sTracks, L"\\tracks_edit\\");
-        if (!PathFileExists(l_sTracks)) CreateDirectory(l_sTracks, NULL);
-
-        _tcscpy_s(l_sImport, MAX_PATH, l_sPath);
-
         PathAppend(l_sImport, L"\\imported_tracks\\");
-        if (!PathFileExists(l_sImport)) CreateDirectory(l_sImport, NULL);
-
-        a_sRoot = l_sPath;
+        if (!PathFileExists(l_sImport)) CreateDirectory(l_sImport, NULL);*/
       }
+
+      return l_sPath;
     }
 
     unsigned long long int portableGetLastModification(const std::wstring &a_sFile) {

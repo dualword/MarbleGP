@@ -80,11 +80,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>false</VcpkgEnableManifest>
@@ -190,6 +190,8 @@
   <ItemGroup>
     <ClCompile Include="..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\_source\source\CMainClass.cpp" />
+    <ClCompile Include="..\_source\source\extensions\gui_freetype_font.cpp" />
+    <ClCompile Include="..\_source\source\gui\CDialog.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaGui3dItem.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp" />
@@ -221,6 +223,8 @@
   <ItemGroup>
     <ClInclude Include="..\_source\include\CGlobal.h" />
     <ClInclude Include="..\_source\include\CMainClass.h" />
+    <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h" />
+    <ClInclude Include="..\_source\include\gui\CDialog.h" />
     <ClInclude Include="..\_source\include\lua\CLuaCamera.h" />
     <ClInclude Include="..\_source\include\lua\CLuaHelpers.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h" />

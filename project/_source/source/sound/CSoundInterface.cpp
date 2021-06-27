@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <sound/CSoundInterface.h>
 #include <sound/CSoundData.h>
+#include <CGlobal.h>
 #include <iostream>
 #include <AL/alc.h>
 #include <fstream>
@@ -65,8 +66,13 @@ namespace dustbin {
       m_pSoundTrack  = nullptr;
       m_bMuteSfx     = false;
 
-      m_fSoundtrackVolume = 1.0f;
-      m_fSoundFXVolume    = 1.0f;
+      dustbin::CGlobal *l_pGlobal = CGlobal::getInstance();
+
+      irr::f32 l_fSTrack = l_pGlobal->getSetting("soundtrackvolume") != "" ? (irr::f32)l_pGlobal->getSettingDouble("soundtrackvolume") : 1.0f,
+               l_fSfx    = l_pGlobal->getSetting("sfxvolume"       ) != "" ? (irr::f32)l_pGlobal->getSettingDouble("sfxvolume"       ) : 1.0f;
+
+      m_fSoundtrackVolume = l_fSTrack;
+      m_fSoundFXVolume    = l_fSfx;
 
       if (a_pFs->existFile("data/marblesounds.xml")) {
         irr::io::IXMLReader *l_pReader = a_pFs->createXMLReader("data/marblesounds.xml");
@@ -171,6 +177,10 @@ namespace dustbin {
 
     irr::f32 CSoundInterface::getSoundtrackVolume() {
       return m_fSoundtrackVolume;
+    }
+
+    irr::f32 CSoundInterface::getSfxVolume() {
+      return m_fSoundFXVolume;
     }
 
     void CSoundInterface::startSoundtrack(enSoundTrack a_eSoundTrack) {

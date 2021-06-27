@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <_generated/messages/CMessages.h>
+#include <sound/CSoundInterface.h>
 #include <scenenodes/CGui3dItem.h>
 #include <state/IState.h>
 #include <CGlobal.h>
@@ -11,7 +12,7 @@ namespace dustbin {
       m_bSelected    (false), 
       m_bDragging    (false),
       m_bInitialized (false),
-      m_pState       (CGlobal::getInstance()->getActiveState()),
+      m_pState       (dustbin::CGlobal::getInstance()->getActiveState()),
       m_cStart       (irr::core::vector3df(0.0f)),
       m_cMin         (irr::core::vector3df(0.0f)),
       m_cMax         (irr::core::vector3df(0.0f)),
@@ -30,7 +31,10 @@ namespace dustbin {
     void CGui3dItem::itemEntered() {
       m_bHovered = true;
       updateRttText((m_eType == enGui3dType::Button || m_eType == enGui3dType::IconButton || m_eType == enGui3dType::Slider) ? m_cHoverColor : m_cBackground, m_cTextColor);
-        
+      
+      if ((m_eType == enGui3dType::Button || m_eType == enGui3dType::IconButton || m_eType == enGui3dType::Slider) && dustbin::CGlobal::getInstance()->getSoundInterface() != nullptr)
+        dustbin::CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
+
       if (m_pState != nullptr) {
         m_pState->handleMessage(new messages::CUiEvent("uielementhovered", getID(), getParent() != nullptr ? getParent()->getName() : "", ""));
       }
@@ -49,6 +53,7 @@ namespace dustbin {
         updateRttText(m_cHoverColor, m_cTextColor);
 
         if (m_pState != nullptr && m_eType != enGui3dType::Slider) {
+          CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
           m_pState->handleMessage(new messages::CUiEvent("uibuttonclicked", getID(), getParent() != nullptr ? getParent()->getName() : "", ""));
         }
       }

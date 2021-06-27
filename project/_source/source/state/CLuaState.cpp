@@ -1,8 +1,10 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CGui3dRoot.h>
 #include <lua/CLuaScript_dialog.h>
+#include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
 #include <state/CLuaState.h>
+#include <gui/CDialog.h>
 #include <CGlobal.h>
 #include <string>
 
@@ -49,6 +51,9 @@ namespace dustbin {
       m_pScript = new lua::CLuaScript_dialog(l_sScript);
       m_pScript->initialize();
       initGuiRoot(m_pSmgr->getRootSceneNode());
+
+      irr::core::dimension2du l_cDim = m_pDrv->getScreenSize();
+      onResize(l_cDim);
     }
 
     /**
@@ -84,6 +89,104 @@ namespace dustbin {
 
       // if (m_pScript != nullptr)
       //   m_pScript->windowresized();
+      printf("==> %i, %i\n", a_cDim.Width, a_cDim.Height);
+
+      CGUITTFace* l_pFace = new CGUITTFace();
+      l_pFace->load("data/fonts/adventpro-regular.ttf");
+
+      CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
+      l_pFont->AntiAlias = true;
+
+      l_pFont->attach(l_pFace, a_cDim.Height / 100);  // Tiny: Height / 100,  Small: Height / 80, Regular: Height / 60, Big = Height / 45, Huge = Height / 30
+
+      m_pGui->clear();
+
+      /*for (int y = -20; y <= 20; y++) {
+        for (int x = -30; x <= 30; x++) {
+          std::wstring s = L"";
+
+          if (x == 0) {
+            s = std::to_wstring(y);
+          }
+          else if (y == 0) {
+            s = std::to_wstring(x);
+          }
+          else if (x == 0 && y == 0) {
+            s = L"X";
+          }
+
+          for (int i = 0; i < 9; i++) {
+            bool l_bAdd = false;
+            irr::core::recti l_cRect;
+
+            if (i == 0) {
+              l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::Center);
+              l_bAdd = true;
+            }
+            else if (i == 1) {
+              if (x >= 0 && x < 5 && y >= 0 && y < 5) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::UpperLeft);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 2) {
+              if (x >= -20 && x <= 20 && y >= 0 && y < 5) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::UpperMiddle);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 3) {
+              if (x > -5 && x <= 0 && y >= 0 && y < 5) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::UpperRight);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 4) {
+              if (x >= 0 && x < 5 && y >= -10 && y <= 10) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::Left);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 5) {
+              if (x > -5 && x <= 0 && y >= -10 && y <= 10) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::Right);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 6) {
+              if (x >= 0 && x < 5 && y > -5 && y <= 0) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::LowerLeft);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 7) {
+              if (x >= -10 && x <= 10 && y > -5 && y <= 0) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::LowerMiddle);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 8) {
+              if (x > -5 && x <= 0 && y > -5 && y <= 0) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::LowerRight);
+                l_bAdd = true;
+              }
+            }
+
+            if (l_bAdd) {
+              irr::gui::IGUIStaticText* p = m_pGui->addStaticText(s.c_str(), l_cRect, true, true, nullptr, -1, true);
+              p->setOverrideFont(l_pFont);
+              p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+            }
+          }
+        }
+      }*/
+
+      l_pFont->drop();
+      l_pFace->drop();
+
+      gui::CDialog* l_pDialog = new gui::CDialog();
+      l_pDialog->loadDialog("data/menu/menu_main.xml");
+      l_pDialog->createUi();
     }
 
     /**
@@ -101,6 +204,7 @@ namespace dustbin {
       return l_bRet;
     }
 
+
     /**
     * This method is always called. Here the state has to perform it's actual work
     * @return enState::None for running without state change, any other value will switch to the state
@@ -108,9 +212,6 @@ namespace dustbin {
     enState CLuaState::run() {
       if (m_pScript != nullptr)
         m_pScript->step(m_pTimer->getTime());
-
-      for (std::vector<scenenodes::CGui3dRoot *>::iterator it = m_vGuiRoot.begin(); it != m_vGuiRoot.end(); it++)
-        (*it)->step();
 
       return m_pGlobal->getStateChange();
     }

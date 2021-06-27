@@ -58,6 +58,7 @@ namespace dustbin {
         void unmuteAudio();
         void muteSoundFX(bool a_bMute);
         irr::f32 getSoundtrackVolume();
+        irr::f32 getSfxVolume();
 
         void startSoundtrack(enSoundTrack a_eSoundTrack);
         void setSoundtrackFade(irr::f32 a_fValue);

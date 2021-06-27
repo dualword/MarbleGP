@@ -1,2 +1,2 @@
-%PYTHON27%\python.exe createluabind.py
+python.exe createluabind.py
 @pause

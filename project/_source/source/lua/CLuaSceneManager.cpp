@@ -50,8 +50,6 @@ namespace dustbin {
     CLuaSceneNode CLuaSceneManager::getSceneNodeFromName(const std::string& a_sName) {
       irr::scene::ISceneNode *l_pNode = getNodeFromName(a_sName, m_pSmgr->getRootSceneNode());
 
-      CLuaSceneNode *l_pRet = nullptr;
-
       return CLuaSceneNode(l_pNode);
     }
 
@@ -59,7 +57,8 @@ namespace dustbin {
 
     void CLuaSceneManager::loadScene(const std::string& a_sFile) {
       scenenodes::CSkyBoxFix *l_pFix = new scenenodes::CSkyBoxFix(m_pSmgr->getVideoDriver(), m_pSmgr, m_pSmgr->getFileSystem(), a_sFile);
-      m_pSmgr->loadScene(a_sFile.c_str());
+      if (!m_pSmgr->loadScene(a_sFile.c_str()))
+        printf("**** Load scene \"%s\" failed.\n", a_sFile.c_str());
       l_pFix->hideOriginalSkybox(m_pSmgr->getRootSceneNode());
       delete l_pFix;
     }

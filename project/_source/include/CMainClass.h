@@ -13,6 +13,8 @@
 #include <vector>
 #include <map>
 
+class CGUITTFace;
+
 namespace dustbin {
 
   /**
@@ -22,11 +24,15 @@ namespace dustbin {
    */
   class CMainClass : public irr::IEventReceiver, public CGlobal {
     private:
+      int m_iRasterSize;
+
       irr::IrrlichtDevice       *m_pDevice; /**< The Irrlicht Device Instance */
       irr::video::IVideoDriver  *m_pDrv;    /**< The Irrlicht Video Driver Instance */
       irr::gui::IGUIEnvironment *m_pGui;    /**< The Irrlicht Gui Environment Instance */
       irr::scene::ISceneManager *m_pSmgr;   /**< The Irrlicht Scene Manager Instance */
       irr::io::IFileSystem      *m_pFs;     /**< The Irrlicht File System Instance */
+
+      CGUITTFace* m_pFontFace;  /**< The Truetype font to use */
 
       state::IState *m_pActiveState;  /**< The currently active state */
 
@@ -43,6 +49,8 @@ namespace dustbin {
       state::enState m_eStateChange;  /**< Global for requested state change */
 
       dustbin::audio::CSoundInterface *m_pSoundInterface; /**< The sound interface */
+
+      std::map<int, irr::gui::IGUIFont*> m_mFonts;  /**< A map for the fonts */
 
     public:
       CMainClass();
@@ -197,6 +205,31 @@ namespace dustbin {
       virtual void stateChange(dustbin::state::enState a_eNewState);
 
       /**
+       * Get the raster size for the UI layout
+       * @return the raster size
+       */
+      virtual int getRasterSize();
+
+      /**
+       * Get a rectangle on the screen for GUI layout
+       * @param a_iLeft Left position
+       * @param a_iTop Top position
+       * @param a_iRight Right position
+       * @param a_iBottom bottom position
+       * @param a_ePosition the layout position of the rectangle
+       * @param a_pParent an optional parent element
+       */
+      virtual irr::core::recti getRect(int a_iLeft, int a_iTop, int a_iRight, int a_iBottom, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr);
+
+      /**
+       * Get a rectangle on the screen for GUI layout
+       * @param a_cRect Irrlicht rectangle with the coordinates to be converted
+       * @param a_ePosition the layout position of the rectangle
+       * @param a_pParent an optional paraent element
+       */
+      virtual irr::core::recti getRect(const irr::core::recti& a_cRect, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr);
+
+      /**
       * Get a requested state change. This function also sets the corresponding member back to "None"
       * @return the state change
       */
@@ -207,6 +240,14 @@ namespace dustbin {
       * @return the sound interface singleton
       */
       virtual audio::CSoundInterface *getSoundInterface();
+
+      /**
+      * Get a font for a specific viewport size
+      * @param a_eFont the type of font
+      * @param a_cViewport the viewport size
+      * @see dustbin::enFont
+      */
+      virtual irr::gui::IGUIFont* getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport);
 
       // Method inherited from irr::IEventReceiver
       virtual bool OnEvent(const irr::SEvent &a_cEvent);

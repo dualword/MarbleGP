@@ -18,6 +18,8 @@ namespace dustbin {
           .addFunction("mutesfx"            , &CLuaSingleton_audio::muteSfx)
           .addFunction("startsoundtrack"    , &CLuaSingleton_audio::startSoundTrack)
           .addFunction("setsoundtrackfade"  , &CLuaSingleton_audio::setSoundtrackFade)
+          .addFunction("getsoundtrackvolume", &CLuaSingleton_audio::getSoundtrackVolume)
+          .addFunction("getsfxvolume"       , &CLuaSingleton_audio::getSfxVolume)
         .endClass();
 
       std::error_code l_cError;
@@ -26,7 +28,6 @@ namespace dustbin {
     }
 
     CLuaSingleton_audio::~CLuaSingleton_audio() {
-      delete m_pInterface;
     }
 
     void CLuaSingleton_audio::setSfxVolume(float a_fVolume) {
@@ -54,6 +55,14 @@ namespace dustbin {
 
     void CLuaSingleton_audio::setSoundtrackFade(float a_fValue) {
       m_pInterface->setSoundtrackFade((irr::f32)a_fValue);
+    }
+
+    float CLuaSingleton_audio::getSoundtrackVolume() {
+      return m_pInterface->getSoundtrackVolume();
+    }
+
+    float CLuaSingleton_audio::getSfxVolume() {
+      return m_pInterface->getSfxVolume();
     }
   }
 }

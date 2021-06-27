@@ -26,6 +26,7 @@ namespace dustbin {
       "IconButton",
       "Image",
       "Slider",
+      "TextInput",
       0
     };
 
@@ -68,7 +69,8 @@ namespace dustbin {
       { g_aUiElementNames[3], CGui3dItemBase::enGui3dType::Button },
       { g_aUiElementNames[4], CGui3dItemBase::enGui3dType::IconButton },
       { g_aUiElementNames[5], CGui3dItemBase::enGui3dType::Image },
-      { g_aUiElementNames[6], CGui3dItemBase::enGui3dType::Slider }
+      { g_aUiElementNames[6], CGui3dItemBase::enGui3dType::Slider },
+      { g_aUiElementNames[7], CGui3dItemBase::enGui3dType::TextInput }
     };
 
     CGui3dItemBase::CGui3dItemBase(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pSmgr, irr::s32 a_iId) : irr::scene::ISceneNode(a_pParent != nullptr ? a_pParent : a_pSmgr->getRootSceneNode(), a_pSmgr, a_iId), 
@@ -169,6 +171,17 @@ namespace dustbin {
             g_sSliderNormalName,
             g_sSliderMinOffsetName,
             g_sSliderMaxOffsetName
+          }
+        },
+        {
+          enGui3dType::TextInput, {
+            g_sTextureName,
+            g_sTextName,
+            g_sTextureWidthName,
+            g_sTextureHeightName,
+            g_sAlignmentName,
+            g_sTextColorName,
+            g_sBackgroundName
           }
         }
       };
@@ -281,7 +294,7 @@ namespace dustbin {
       }
 
       // Only render text for the items that display text. For the image it's optional
-      if (m_eType == enGui3dType::Button || m_eType == enGui3dType::Label || (m_eType == enGui3dType::Image && m_bShowText)) {
+      if (m_eType == enGui3dType::Button || m_eType == enGui3dType::Label || (m_eType == enGui3dType::Image && m_bShowText) || m_eType == enGui3dType::TextInput) {
         irr::core::rect<irr::s32> l_cRect = m_cRect;
         
         std::wstring l_sLine = L"";
@@ -446,7 +459,8 @@ namespace dustbin {
         switch (m_eType) {
           case enGui3dType::Label:
           case enGui3dType::Button:
-          case enGui3dType::Image: {
+          case enGui3dType::Image: 
+          case enGui3dType::TextInput: {
             m_cRect = irr::core::rect<irr::s32>(0, 0, m_cRttSize.Width, m_cRttSize.Height);
             break;
           }
