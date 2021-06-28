@@ -31,7 +31,7 @@ namespace dustbin {
       m_cPosition = std::make_tuple(a_ePosition, a_cRect);
     }
 
-    CDialog::SDialogElement::SDialogElement(irr::io::IXMLReaderUTF8* a_pXml, enParseState &a_eState) {
+    void CDialog::SDialogElement::parse(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState) {
       // Before we continue to read the XML file we need to get the attributes of the "element" node
       if (a_eState == enParseState::element && std::string(a_pXml->getNodeName()) == "element") {
         // First discover the type of the element
@@ -73,10 +73,10 @@ namespace dustbin {
 
             if (s != "") {
               switch (l_iIndex) {
-                case 0: l_cRect.UpperLeftCorner .X = std::atoi(s.c_str()); l_iIndex++; break;
-                case 1: l_cRect.UpperLeftCorner .Y = std::atoi(s.c_str()); l_iIndex++; break;
-                case 2: l_cRect.LowerRightCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
-                case 3: l_cRect.LowerRightCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
+              case 0: l_cRect.UpperLeftCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
+              case 1: l_cRect.UpperLeftCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
+              case 2: l_cRect.LowerRightCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
+              case 3: l_cRect.LowerRightCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
               }
             }
           }
@@ -110,56 +110,72 @@ namespace dustbin {
         std::string l_sName = a_pXml->getNodeName();
 
         switch (a_eState) {
-          case enParseState::dialog:
-            if (l_sName == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              a_eState = enParseState::element;
-              m_vChildren.push_back(new SDialogElement(a_pXml, a_eState));
-              a_eState = enParseState::dialog;
-            }
-            else if (l_sName == "dialog" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-              a_eState = enParseState::root;
-              return;
-            }
-            break;
+        case enParseState::dialog:
+          if (l_sName == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            a_eState = enParseState::element;
+            m_vChildren.push_back(new SDialogElement(a_pXml, a_eState));
+            a_eState = enParseState::dialog;
+          }
+          else if (l_sName == "dialog" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            a_eState = enParseState::root;
+            return;
+          }
+          break;
 
-          case enParseState::element:
-            // Attributes found
-            if (l_sName == "attributes" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              a_eState = enParseState::attributes;
-            }
-            // Children found
-            else if (l_sName == "children" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              a_eState = enParseState::children;
-            }
-            // End of the element found
-            else if (l_sName == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-              return;
-            }
-            break;
+        case enParseState::element:
+          // Attributes found
+          if (l_sName == "attributes" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            a_eState = enParseState::attributes;
+          }
+          // Custom attributes found
+          else if (l_sName == "custom" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            a_eState = enParseState::custom;
+          }
+          // Children found
+          else if (l_sName == "children" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            a_eState = enParseState::children;
+          }
+          // End of the element found
+          else if (l_sName == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            return;
+          }
+          break;
 
-          case enParseState::attributes:
-            if (l_sName == "attribute" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              std::string l_sKey = a_pXml->getAttributeValueSafe("key");
-              if (l_sKey != "")
+        case enParseState::custom:
+        case enParseState::attributes:
+          if (l_sName == "attribute" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            std::string l_sKey = a_pXml->getAttributeValueSafe("key");
+            if (l_sKey != "") {
+              if (a_eState == enParseState::attributes)
                 m_mAttributes[l_sKey] = a_pXml->getAttributeValueSafe("value");
+              else if (a_eState == enParseState::custom)
+                m_mCustom[l_sKey] = a_pXml->getAttributeValueSafe("value");
             }
-            else if (l_sName == "attributes" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-              a_eState = enParseState::element;
-            }
-            break;
+          }
+          else if (l_sName == "attributes" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END && a_eState == enParseState::attributes) {
+            a_eState = enParseState::element;
+          }
+          else if (l_sName == "custom" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END && a_eState == enParseState::custom) {
+            a_eState = enParseState::element;
+          }
+          break;
 
-          case enParseState::children:
-            if (l_sName == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              a_eState = enParseState::element;
-              m_vChildren.push_back(new SDialogElement(a_pXml, a_eState));
-              a_eState = enParseState::children;
-            }
-            else if (l_sName == "children" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-              a_eState = enParseState::element;
-            }
-            break;
+        case enParseState::children:
+          if (l_sName == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            a_eState = enParseState::element;
+            m_vChildren.push_back(new SDialogElement(a_pXml, a_eState));
+            a_eState = enParseState::children;
+          }
+          else if (l_sName == "children" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            a_eState = enParseState::element;
+          }
+          break;
         }
       }
+    }
+
+    CDialog::SDialogElement::SDialogElement(irr::io::IXMLReaderUTF8* a_pXml, enParseState &a_eState) {
+      parse(a_pXml, a_eState);
     }
 
     CDialog::SDialogElement::~SDialogElement() {
@@ -180,6 +196,11 @@ namespace dustbin {
 
           l_pRet->serializeAttributes(l_pAttr);
 
+          if (l_pRet->getType() == irr::gui::EGUIET_IMAGE) {
+            for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
+              printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
+          }
+
           for (std::map<std::string, std::string>::iterator it = m_mAttributes.begin(); it != m_mAttributes.end(); it++) {
             switch (l_pAttr->getAttributeType(it->first.c_str())) {
               case irr::io::EAT_COLOR: {
@@ -195,6 +216,10 @@ namespace dustbin {
                 break;
               }
 
+              case irr::io::EAT_BOOL:
+                l_pAttr->setAttribute(it->first.c_str(), it->second == "true" ? true : false);
+                break;
+
               default:
                 l_pAttr->setAttribute(it->first.c_str(), it->second.c_str());
                 break;
@@ -208,6 +233,12 @@ namespace dustbin {
 
           l_pAttr->clear();
           l_pAttr->drop();
+
+          if (l_pRet->getType() == irr::gui::EGUIET_IMAGE) {
+            if (m_mCustom.find("src") != m_mCustom.end()) {
+              reinterpret_cast<irr::gui::IGUIImage*>(l_pRet)->setImage(CGlobal::getInstance()->createTexture(m_mCustom["src"]));
+            }
+          }
 
           switch (l_pRet->getType()) {
             case irr::gui::EGUIET_BUTTON:

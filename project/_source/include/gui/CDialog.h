@@ -29,11 +29,13 @@ namespace dustbin {
           dialog,
           element,
           attributes,
+          custom,
           children
         };
 
         struct SDialogElement {
-          std::map<std::string, std::string> m_mAttributes;   /**< The override attributes */
+          std::map<std::string, std::string> m_mAttributes,   /**< The override attributes */
+                                             m_mCustom;       /**< Custom attributes that are not handled by Irrlicht directly */
           std::string m_sFontSize,                            /**< The font size (tiny, small, regular, big, huge) */
                       m_sType;                                /**< The type of the element */
 
@@ -45,6 +47,8 @@ namespace dustbin {
           SDialogElement(irr::io::IXMLReaderUTF8* a_pXml, enParseState &a_eState);
           SDialogElement(std::string a_sType, std::string a_sFontSize, dustbin::enLayout a_ePosition, const irr::core::recti& a_cRect);
           ~SDialogElement();
+
+          void parse(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState);
 
           irr::gui::IGUIElement* createGuiElement(CGlobal* a_pGlobal, irr::gui::IGUIElement *a_pParent);
         };

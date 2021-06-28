@@ -560,15 +560,15 @@ namespace dustbin {
   * @see dustbin::enFont
   */
   irr::gui::IGUIFont* CMainClass::getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport) {
-    // Tiny: Height / 100,  Small: Height / 80, Regular: Height / 60, Big = Height / 45, Huge = Height / 30
-    int l_iSize = a_cViewport.Width > a_cViewport.Height ? a_cViewport.Height : a_cViewport.Width;
+    // Tiny: 0.5 * RasterSize, Small: 0.75 * RasterSize, Regular: RasterSize, Big: 1.5 * RasterSize, Huge: 2 * RasterSize
+    int l_iSize = getRasterSize();
 
     switch (a_eFont) {
-      case enFont::Tiny   : l_iSize /= 100; break;
-      case enFont::Small  : l_iSize /=  80; break;
-      case enFont::Regular: l_iSize /=  60; break;
-      case enFont::Big    : l_iSize /=  45; break;
-      case enFont::Huge   : l_iSize /=  25; break;
+      case enFont::Tiny   : l_iSize =     l_iSize / 3; break;
+      case enFont::Small  : l_iSize = 3 * l_iSize / 4; break;
+      case enFont::Regular: l_iSize =     l_iSize    ; break;
+      case enFont::Big    : l_iSize = 3 * l_iSize / 2; break;
+      case enFont::Huge   : l_iSize = 2 * l_iSize    ; break;
     }
 
     if (m_mFonts.find(l_iSize) == m_mFonts.end()) {
@@ -579,6 +579,30 @@ namespace dustbin {
     }
 
     return m_mFonts[l_iSize];
+  }
+
+  /**
+  * Get an image from a string. The following prefixes are possible:
+  * - file://: load a file from a subfolder
+  * - generate://: generate a marble texture
+  * @param a_sInput the URI of the file
+  * @return an Irrlicht texture object with the requested image or nullptr
+  */
+  irr::video::ITexture* CMainClass::createTexture(const std::string& a_sUri) {
+    irr::video::ITexture* l_pRet = nullptr;
+
+    size_t l_iPos = a_sUri.find("://");
+
+    if (l_iPos != std::string::npos) {
+      std::string l_sPrefix  = a_sUri.substr(0, l_iPos ),
+                  l_sPostFix = a_sUri.substr(l_iPos + 3);
+
+      if (l_sPrefix == "file") {
+        l_pRet = m_pDrv->getTexture(l_sPostFix.c_str());
+      }
+    }
+
+    return l_pRet;
   }
 }
 

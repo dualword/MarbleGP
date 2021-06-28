@@ -249,6 +249,15 @@ namespace dustbin {
       */
       virtual irr::gui::IGUIFont* getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport);
 
+      /**
+      * Get an image from a string. The following prefixes are possible:
+      * - file://: load a file from a subfolder
+      * - generate://: generate a marble texture
+      * @param a_sInput the URI of the file
+      * @return an Irrlicht texture object with the requested image or nullptr
+      */
+      virtual irr::video::ITexture* createTexture(const std::string& a_sUri);
+
       // Method inherited from irr::IEventReceiver
       virtual bool OnEvent(const irr::SEvent &a_cEvent);
   };
