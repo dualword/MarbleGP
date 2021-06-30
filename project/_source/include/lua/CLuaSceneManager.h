@@ -37,7 +37,6 @@ namespace dustbin {
 
         CLuaCamera addCamera();
         CLuaSceneNode getSceneNodeFromName(const std::string &a_sName);
-        CLua3dGuiItem getGuiItemFromName(const std::string &a_sName);
 
         void loadScene(const std::string &a_sFile);
         void clear();

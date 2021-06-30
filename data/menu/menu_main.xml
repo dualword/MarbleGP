@@ -26,6 +26,8 @@ Factory 0 element 21: "treeview"
 Factory 0 element 22: "window"
 Factory 0 element 23: "element"
 Factory 0 element 24: "root"
+Factory 1 element 0 : "MenuButton"
+Factory 1 element 1 : "MenuBackground"
 
 Unniversal Attributes:
 
@@ -88,11 +90,7 @@ Attribute ScaleImage: false
 
 -->
 <dialog>
-  <element type="tab" rect="center: -40, -25, 40, 25">
-    <attributes>
-      <attribute key="DrawBackground" value="true" />
-      <attribute key="BackColor" value="192, 96, 96, 96" />
-    </attributes>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
   </element>
   
   <element type="image" rect="center: -30, -24, 31, -18">
@@ -105,56 +103,56 @@ Attribute ScaleImage: false
     </custom>
   </element>
   
-  <element type="button" rect="center: -20, -12, -3, -8" font="huge">
+  <element type="MenuButton" rect="center: -20, -12, -3, -8" font="huge">
     <attributes>
       <attribute key="Name" value="single_race" />
       <attribute key="Id" value="23001" />
       <attribute key="Caption" value="Single Race" />
     </attributes>
   </element>
-  <element type="button" rect="center: 4, -12, 21, -8" font="huge">
+  <element type="MenuButton" rect="center: 4, -12, 21, -8" font="huge">
     <attributes>
       <attribute key="Name" value="cup" />
       <attribute key="Id" value="23002" />
       <attribute key="Caption" value="MarbleGP Cup" />
     </attributes>
   </element>
-  <element type="button" rect="center: -20, -6, -3, -2" font="huge">
+  <element type="MenuButton" rect="center: -20, -6, -3, -2" font="huge">
     <attributes>
       <attribute key="Name" value="profiles" />
       <attribute key="Id" value="23003" />
       <attribute key="Caption" value="Profiles" />
     </attributes>
   </element>
-  <element type="button" rect="center: 4, -6, 21, -2" font="huge">
+  <element type="MenuButton" rect="center: 4, -6, 21, -2" font="huge">
     <attributes>
       <attribute key="Name" value="settings" />
       <attribute key="Id" value="23004" />
       <attribute key="Caption" value="Settings" />
     </attributes>
   </element>
-  <element type="button" rect="center: -20, 0, -3, 5" font="huge">
+  <element type="MenuButton" rect="center: -20, 0, -3, 4" font="huge">
     <attributes>
       <attribute key="Name" value="race_replay" />
       <attribute key="Id" value="23005" />
       <attribute key="Caption" value="Race Replay" />
     </attributes>
   </element>
-  <element type="button" rect="center: 4, 0, 21, 5" font="huge">
+  <element type="MenuButton" rect="center: 4, 0, 21, 4" font="huge">
     <attributes>
       <attribute key="Name" value="view_track" />
       <attribute key="Id" value="23006" />
       <attribute key="Caption" value="View Track" />
     </attributes>
   </element>
-  <element type="button" rect="center: -20, 7, -3, 11" font="huge">
+  <element type="MenuButton" rect="center: -20, 6, -3, 10" font="huge">
     <attributes>
       <attribute key="Name" value="credits" />
       <attribute key="Id" value="23007" />
       <attribute key="Caption" value="Credits" />
     </attributes>
   </element>
-  <element type="button" rect="center: 4, 7, 21, 11" font="huge">
+  <element type="MenuButton" rect="center: 4, 6, 21, 10" font="huge">
     <attributes>
       <attribute key="Name" value="exit" />
       <attribute key="Id" value="23008" />

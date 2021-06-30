@@ -22,7 +22,7 @@ namespace dustbin {
    * @author Christian Keimel
    * @brief This is the main class. It forwards events to all states and it takes care of handling settings and globals
    */
-  class CMainClass : public irr::IEventReceiver, public CGlobal {
+  class CMainClass : public CGlobal {
     private:
       int m_iRasterSize;
 

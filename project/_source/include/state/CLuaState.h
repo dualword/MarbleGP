@@ -13,12 +13,12 @@
 namespace dustbin {
   class CGlobal;
 
-  namespace scenenodes {
-    class CGui3dRoot;
-  }
-
   namespace lua {
     class CLuaScript_dialog;
+  }
+
+  namespace gui {
+    class CDialog;
   }
 
   namespace state {
@@ -37,16 +37,9 @@ namespace dustbin {
         lua::CLuaScript_dialog *m_pScript;
         CGlobal                *m_pGlobal;
         irr::ITimer            *m_pTimer;
-
-        std::vector<scenenodes::CGui3dRoot *> m_vGuiRoot;
+        gui::CDialog           *m_pDialog;
 
         bool m_bButtons[3];   /**< The mouse button states */
-
-        /**
-         * Initialize the 3d GUI Root node
-         * @param a_pParent the children of this scenenode will be iterated to find the root of the 3d GUI
-         */
-        void initGuiRoot(irr::scene::ISceneNode *a_pParent);
 
       protected:
         virtual void onUievent(const std::string &a_type, irr::s32 a_id, const std::string &a_name, const std::string &a_data);

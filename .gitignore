@@ -107,3 +107,5 @@
 /project/MarbleGP_Plugin/.vs
 /project/MarbleGP_Plugin/Debug
 /*.dll
+/project/libs/Irrlicht-1.9/lib/Win64-Debug/Irrlicht.lib
+/project/libs/Irrlicht-1.9/lib/Win64-Release/Irrlicht.lib

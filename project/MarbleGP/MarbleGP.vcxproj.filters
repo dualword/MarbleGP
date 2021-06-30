@@ -108,22 +108,7 @@
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CGui3dSceneNodes.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CGui3dRoot.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CGui3dItem.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp">
@@ -153,9 +138,6 @@
     <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\lua\CLuaGui3dItem.cpp">
-      <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
     <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
@@ -180,6 +162,18 @@
     <ClCompile Include="..\_source\source\gui\CDialog.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CMenuButton.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CGuiItemFactory.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CMenuBackground.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -203,22 +197,7 @@
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodes.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CGui3dSceneNodes.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CGui3dRoot.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CGui3dItem.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h">
@@ -266,9 +245,6 @@
     <ClInclude Include="..\_source\include\lua\CLuaSceneNode.h">
       <Filter>Headerdateien\lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\_source\include\lua\CLua3dGuiItem.h">
-      <Filter>Headerdateien\lua</Filter>
-    </ClInclude>
     <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h">
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
@@ -291,6 +267,15 @@
       <Filter>Headerdateien\extensions</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CDialog.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CMenuButton.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CGuiItemFactory.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CMenuBackground.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>

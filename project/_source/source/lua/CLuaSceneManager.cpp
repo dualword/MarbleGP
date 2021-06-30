@@ -1,9 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
-#include <scenenodes/CGui3dSceneNodes.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
-#include <lua/CLua3dGuiItem.h>
 #include <lua/CLuaSceneNode.h>
 #include <lua/CLuaCamera.h>
 #include <CGlobal.h>
@@ -34,17 +32,6 @@ namespace dustbin {
 
     CLuaCamera CLuaSceneManager::addCamera() {
       return CLuaCamera(m_pSmgr->addCameraSceneNode());
-    }
-
-    CLua3dGuiItem CLuaSceneManager::getGuiItemFromName(const std::string& a_sName) {
-      irr::scene::ISceneNode *l_pNode = getNodeFromName(a_sName, m_pSmgr->getRootSceneNode());
-
-      CLua3dGuiItem *l_pRet = nullptr;
-
-      if (l_pNode != nullptr && l_pNode->getType() == scenenodes::g_i3dGuiItemID)
-        return CLua3dGuiItem(reinterpret_cast<scenenodes::CGui3dItem *>(l_pNode));
-      else
-        return CLua3dGuiItem(nullptr);
     }
 
     CLuaSceneNode CLuaSceneManager::getSceneNodeFromName(const std::string& a_sName) {
@@ -83,7 +70,6 @@ namespace dustbin {
     void CLuaSceneManager::registerClass(lua_State *a_pState) {
       CLuaCamera   ::registerClass(a_pState);
       CLuaSceneNode::registerClass(a_pState);
-      CLua3dGuiItem::registerClass(a_pState);
 
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaSceneManager>("LuaSceneManager")
@@ -92,7 +78,6 @@ namespace dustbin {
           .addFunction("clear"               , &CLuaSceneManager::clear)
           .addFunction("drop"                , &CLuaSceneManager::drop)
           .addFunction("getscenenodefromname", &CLuaSceneManager::getSceneNodeFromName)
-          .addFunction("getguiitemfromname"  , &CLuaSceneManager::getGuiItemFromName)
         .endClass();
     }
   }

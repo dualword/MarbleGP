@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<dialog>
+  <element type="MenuButton" rect="lowermiddle: -5, -4, -1 , 0">
+    <attributes>
+      <attribute key="Name" value="ok" />
+      <attribute key="Id" value="20000" />
+      <attribute key="ImagePath" value="data/images/btn_ok.png" />
+    </attributes>
+  </element>
+</dialog>

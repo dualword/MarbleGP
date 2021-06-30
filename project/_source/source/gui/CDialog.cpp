@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <gui/CMenuButton.h>
 #include <gui/CDialog.h>
 
 namespace dustbin {
@@ -243,7 +244,8 @@ namespace dustbin {
           switch (l_pRet->getType()) {
             case irr::gui::EGUIET_BUTTON:
             case irr::gui::EGUIET_STATIC_TEXT:
-            case irr::gui::EGUIET_EDIT_BOX: {
+            case irr::gui::EGUIET_EDIT_BOX: 
+            case gui::g_MenuButtonId: {
               enFont l_eFont = enFont::Regular;
 
               if (m_sFontSize == "tiny")
@@ -264,6 +266,9 @@ namespace dustbin {
               }
               else if (l_pRet->getType() == irr::gui::EGUIET_EDIT_BOX) {
                 reinterpret_cast<irr::gui::IGUIEditBox*>(l_pRet)->setOverrideFont(l_pFont);
+              }
+              else if (l_pRet->getType() == gui::g_MenuButtonId) {
+                reinterpret_cast<gui::CMenuButton*>(l_pRet)->setOverrideFont(l_pFont);
               }
               break;
             }
@@ -305,7 +310,10 @@ namespace dustbin {
               case enParseState::root:
                 if (l_sName == "dialog" && l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
                   l_eState = enParseState::dialog; 
-                  m_pRoot = new SDialogElement(l_pXml, l_eState);
+                  if (m_pRoot == nullptr)
+                    m_pRoot = new SDialogElement(l_pXml, l_eState);
+                  else
+                    m_pRoot->parse(l_pXml, l_eState);
                 }
                 break;
             }

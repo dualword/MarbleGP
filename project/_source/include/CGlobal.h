@@ -58,7 +58,7 @@ namespace dustbin {
    * @author Christian Keimel
    * @brief This interface is used to store data that should be available globally
    */
-  class CGlobal {
+  class CGlobal : public irr::IEventReceiver {
     protected:
       static CGlobal *m_pInstance;
 
@@ -347,5 +347,7 @@ namespace dustbin {
       * @return an Irrlicht texture object with the requested image or nullptr
       */
       virtual irr::video::ITexture* createTexture(const std::string& a_sUri) = 0;
+
+      virtual bool OnEvent(const irr::SEvent& a_cEvent) = 0;
   };
 }

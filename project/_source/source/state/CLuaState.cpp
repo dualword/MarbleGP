@@ -1,5 +1,4 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
-#include <scenenodes/CGui3dRoot.h>
 #include <lua/CLuaScript_dialog.h>
 #include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
@@ -17,7 +16,8 @@ namespace dustbin {
       m_pGui    (CGlobal::getInstance()->getGuiEnvironment()),
       m_pGlobal (CGlobal::getInstance()),
       m_pScript (nullptr),
-      m_pTimer  (nullptr)
+      m_pTimer  (nullptr),
+      m_pDialog (nullptr)
     {
       for (int i = 0; i < 3; i++)
         m_bButtons[i] = false;
@@ -26,19 +26,6 @@ namespace dustbin {
     }
 
     CLuaState::~CLuaState() {
-    }
-
-    void CLuaState::initGuiRoot(irr::scene::ISceneNode* a_pParent) {
-      if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_i3dGuiRootID) {
-        scenenodes::CGui3dRoot *p = reinterpret_cast<scenenodes::CGui3dRoot *>(a_pParent);
-        p->initGui3d();
-        p->setCursorControl(m_pDevice->getCursorControl());
-
-        m_vGuiRoot.push_back(p);
-      }
-      else
-        for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++)
-          initGuiRoot(*it);
     }
 
     /**
@@ -50,7 +37,11 @@ namespace dustbin {
 
       m_pScript = new lua::CLuaScript_dialog(l_sScript);
       m_pScript->initialize();
-      initGuiRoot(m_pSmgr->getRootSceneNode());
+
+      m_pDialog = new gui::CDialog();
+      m_pDialog->loadDialog("data/menu/menu_main.xml");
+      m_pDialog->loadDialog("data/menu/button_ok.xml");
+      m_pDialog->loadDialog("data/menu/button_cancel.xml");
 
       irr::core::dimension2du l_cDim = m_pDrv->getScreenSize();
       onResize(l_cDim);
@@ -66,7 +57,8 @@ namespace dustbin {
         m_pScript = nullptr;
       }
 
-      m_vGuiRoot.clear();
+      delete m_pDialog;
+      m_pDialog = nullptr;
     }
 
     /**
@@ -184,9 +176,8 @@ namespace dustbin {
       l_pFont->drop();
       l_pFace->drop();
 
-      gui::CDialog* l_pDialog = new gui::CDialog();
-      l_pDialog->loadDialog("data/menu/menu_main.xml");
-      l_pDialog->createUi();
+      if (m_pDialog != nullptr)
+        m_pDialog->createUi();
     }
 
     /**

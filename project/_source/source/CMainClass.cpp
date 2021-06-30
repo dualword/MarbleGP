@@ -5,9 +5,13 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <messages/CMessageHelpers.h>
 #include <sound/CSoundInterface.h>
+#include <gui/CGuiItemFactory.h>
 #include <platform/CPlatform.h>
 #include <gui_freetype_font.h>
 #include <state/CLuaState.h>
@@ -93,6 +97,10 @@ namespace dustbin {
       m_pDrv  = m_pDevice->getVideoDriver();
       m_pFs   = m_pDevice->getFileSystem();
 
+      gui::CGuiItemFactory* l_pGuiFactory = new gui::CGuiItemFactory(m_pGui);
+      m_pGui->registerGUIElementFactory(l_pGuiFactory);
+      l_pGuiFactory->drop();
+
       for (unsigned i = 0; i < m_pGui->getRegisteredGUIElementFactoryCount(); i++) {
         irr::gui::IGUIElementFactory* l_pFactory = m_pGui->getGUIElementFactory(i);
 
@@ -103,6 +111,8 @@ namespace dustbin {
 
       m_pFontFace = new CGUITTFace();
       m_pFontFace->load("data/fonts/adventpro-regular.ttf");
+
+      m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
     }
   }
 
@@ -182,14 +192,6 @@ namespace dustbin {
 
           state::enState l_eState = m_pActiveState->run();
 
-          irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
-          if (l_cThisSize != l_cSize) {
-            l_cSize = l_cThisSize;
-            m_iRasterSize = -1;
-            printf("Rescaled: %i, %i\n", l_cSize.Width, l_cSize.Height);
-            m_pActiveState->onResize(l_cSize);
-          }
-
           if (l_eState != state::enState::None) {
             m_pActiveState->deactivate();
             m_pActiveState = m_mStates.find(l_eState) != m_mStates.end() ? m_mStates[l_eState] : nullptr;
@@ -197,6 +199,15 @@ namespace dustbin {
             if (m_pActiveState != nullptr) {
               m_pActiveState->activate();
             }
+          }
+
+          irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
+          if (l_cThisSize != l_cSize) {
+            l_cSize = l_cThisSize;
+            m_iRasterSize = -1;
+            printf("Rescaled: %i, %i\n", l_cSize.Width, l_cSize.Height);
+            m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
+            m_pActiveState->onResize(l_cSize);
           }
 
           l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(10);
@@ -347,6 +358,9 @@ namespace dustbin {
 
     if (!l_bRet) {
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+          printf("Button \"%s\" (%i) clicked.\n", a_cEvent.GUIEvent.Caller->getName(), a_cEvent.GUIEvent.Caller->getID());
+        }
       }
     }
 
@@ -599,6 +613,72 @@ namespace dustbin {
 
       if (l_sPrefix == "file") {
         l_pRet = m_pDrv->getTexture(l_sPostFix.c_str());
+      }
+      else if (l_sPrefix == "button") {
+        size_t l_iType = l_sPostFix.find("_");
+
+        std::string l_sType = l_sPostFix.substr(0, l_iType), l_sName = l_sPostFix;
+
+        l_sPostFix = l_sPostFix.substr(l_iType + 1);
+
+        if (l_iType != std::string::npos) {
+          size_t l_iX = l_sPostFix.find("x");
+          if (l_iX != std::string::npos) {
+            l_pRet = m_pDrv->getTexture(l_sName.c_str());
+
+            if (l_pRet == nullptr) {
+              int l_iWidth  = std::atoi(l_sPostFix.substr(0, l_iX) .c_str()),
+                  l_iHeight = std::atoi(l_sPostFix.substr(l_iX + 1).c_str());
+
+              l_pRet = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(l_iWidth, l_iHeight), l_sName.c_str());
+              m_pDrv->setRenderTarget(l_pRet, true, true, irr::video::SColor(0, 0, 0, 0));
+
+              int l_iRaster = getRasterSize(),
+                  l_iBorder = l_iRaster / 3;
+
+              if (l_iBorder < 2)
+                l_iBorder = 2;
+
+              for (int l_iLine = 0; l_iLine < l_iHeight; l_iLine++) {
+                int l_iOffset = 0;
+
+                if (l_iLine < l_iRaster) {
+                  l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
+                }
+                else if (l_iLine >= l_iHeight - l_iRaster) {
+                  l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iLine - l_iHeight + l_iRaster) * (l_iLine - l_iHeight + l_iRaster)));
+                }
+                else {
+
+                }
+
+                m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine), irr::core::vector2di(l_iWidth - l_iOffset, l_iLine), irr::video::SColor(0xFF, 0, 0, 0));
+              }
+
+              int l_iInnerHeight = l_iHeight - l_iBorder,
+                  l_iRadius      = l_iRaster - l_iBorder;
+
+              for (int l_iLine = l_iBorder; l_iLine < l_iHeight - l_iBorder; l_iLine++) {
+                int l_iOffset = 0;
+
+                if (l_iLine < l_iRaster) {
+                  l_iOffset = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
+                }
+                else if (l_iLine >= l_iHeight - l_iRaster) {
+                  l_iOffset = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iLine - l_iHeight + l_iRaster) * (l_iLine - l_iHeight + l_iRaster)));
+                }
+                else {
+                  l_iOffset = l_iBorder;
+                }
+
+                irr::video::SColor l_cCol = l_sType == "hover" ? irr::video::SColor(0xFF, 0x33, 0x67, 0xb8) : l_sType == "click" ? irr::video::SColor(0xFF, 0xec, 0xf1, 0x63) : l_sType == "background" ? irr::video::SColor(0x80, 0xe0, 0xe0, 0xf0) : irr::video::SColor(0xFF, 0xb8, 0xc8, 0xff);
+                m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine), irr::core::vector2di(l_iWidth - l_iOffset, l_iLine), l_cCol);
+              }
+
+              m_pDrv->setRenderTarget(nullptr);
+            }
+          }
+        }
       }
     }
 

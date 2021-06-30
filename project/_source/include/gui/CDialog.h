@@ -69,6 +69,10 @@ namespace dustbin {
         CDialog();
         ~CDialog();
 
+        /**
+        * Load a dialog defined in a XML file
+        * @param a_sFileName the dialog to load
+        */
         void loadDialog(const std::string& a_sFileName);
 
         void createUi();
