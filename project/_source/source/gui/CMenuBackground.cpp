@@ -17,7 +17,7 @@ namespace dustbin {
 
     void CMenuBackground::draw() {
       if (m_pTexture == nullptr) {
-        std::string l_sUri = "button://background_" + std::to_string(getAbsoluteClippingRect().getWidth()) + "x" + std::to_string(getAbsoluteClippingRect().getHeight());
+        std::string l_sUri = "button://c0efefff_" + std::to_string(getAbsoluteClippingRect().getWidth()) + "x" + std::to_string(getAbsoluteClippingRect().getHeight());
         m_pTexture = CGlobal::getInstance()->createTexture(l_sUri);
       }
 

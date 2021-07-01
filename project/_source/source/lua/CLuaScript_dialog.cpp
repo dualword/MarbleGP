@@ -4,6 +4,7 @@
 #include <lua/CLuaScript_dialog.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
+#include <gui/CDialog.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -15,13 +16,17 @@ namespace dustbin {
 
       CLuaSceneManager::registerClass(m_pState);
 
-      luabridge::enableExceptions(m_pState);
+      // luabridge::enableExceptions(m_pState);
 
       m_pSystem = new CLuaSingleton_system(m_pState);
       m_pAudio  = new CLuaSingleton_audio (m_pState);
 
+      m_pDialog = new gui::CDialog(m_pState);
+
       try {
-        luaL_dostring(m_pState, a_sScript.c_str());
+        if (luaL_dostring(m_pState, a_sScript.c_str()) != LUA_OK) {
+          printf("Error while running script: \"%s\"\n", lua_tostring(m_pState, -1));
+        }
       }
       catch (luabridge::LuaException e) {
         printf("Exception: %s\n", e.what());
@@ -35,13 +40,19 @@ namespace dustbin {
 
       delete m_pSystem;
       delete m_pAudio;
+
+      if (m_pDialog != nullptr)
+        delete m_pDialog;
     }
 
     void CLuaScript_dialog::initialize() {
       try {
         luabridge::LuaRef l_cInitialize = luabridge::getGlobal(m_pState, "initialize");
-        if (l_cInitialize.isCallable())
-          l_cInitialize();
+        if (l_cInitialize.isCallable()) {
+          luabridge::LuaResult l_cResult = l_cInitialize();
+          if (l_cResult.hasFailed())
+            printf("==> %s\n", l_cResult.errorMessage().c_str());
+        }
       }
       catch (luabridge::LuaException e) {
         printf("Exception: %s\n", e.what());

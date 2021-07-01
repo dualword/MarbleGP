@@ -57,6 +57,7 @@ namespace dustbin {
     }
 
     l_pDevice->closeDevice();
+    l_pDevice->run();
     l_pDevice->drop();
 
     irr::u32 l_iWidth  = 1024,
@@ -148,6 +149,10 @@ namespace dustbin {
     for (std::map<dustbin::state::enState, dustbin::state::IState *>::iterator it = m_mStates.begin(); it != m_mStates.end(); it++)
       delete it->second;
 
+    m_pDrv->removeAllTextures();
+
+    m_pDevice->closeDevice();
+    m_pDevice->run();
     m_pDevice->drop();
   }
 
@@ -357,11 +362,6 @@ namespace dustbin {
     bool l_bRet = m_pActiveState != nullptr ? m_pActiveState->OnEvent(a_cEvent) : false;
 
     if (!l_bRet) {
-      if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-          printf("Button \"%s\" (%i) clicked.\n", a_cEvent.GUIEvent.Caller->getName(), a_cEvent.GUIEvent.Caller->getID());
-        }
-      }
     }
 
     return l_bRet;
@@ -617,7 +617,7 @@ namespace dustbin {
       else if (l_sPrefix == "button") {
         size_t l_iType = l_sPostFix.find("_");
 
-        std::string l_sType = l_sPostFix.substr(0, l_iType), l_sName = l_sPostFix;
+        std::string l_sColor = l_sPostFix.substr(0, l_iType), l_sName = l_sPostFix;
 
         l_sPostFix = l_sPostFix.substr(l_iType + 1);
 
@@ -671,7 +671,17 @@ namespace dustbin {
                   l_iOffset = l_iBorder;
                 }
 
-                irr::video::SColor l_cCol = l_sType == "hover" ? irr::video::SColor(0xFF, 0x33, 0x67, 0xb8) : l_sType == "click" ? irr::video::SColor(0xFF, 0xec, 0xf1, 0x63) : l_sType == "background" ? irr::video::SColor(0x80, 0xe0, 0xe0, 0xf0) : irr::video::SColor(0xFF, 0xb8, 0xc8, 0xff);
+                while (l_sColor.size() < 8)
+                  l_sColor += "0";
+
+                char* p = nullptr;
+
+                irr::u32 a = std::strtoul(l_sColor.substr(0, 2).c_str(), &p, 16),
+                         r = std::strtoul(l_sColor.substr(2, 2).c_str(), &p, 16),
+                         g = std::strtoul(l_sColor.substr(4, 2).c_str(), &p, 16),
+                         b = std::strtoul(l_sColor.substr(6, 2).c_str(), &p, 16);
+
+                irr::video::SColor l_cCol = irr::video::SColor(a, r, g, b);
                 m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine), irr::core::vector2di(l_iWidth - l_iOffset, l_iLine), l_cCol);
               }
 

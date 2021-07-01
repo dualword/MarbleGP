@@ -2,6 +2,8 @@
 #include <gui/CMenuButton.h>
 #include <gui/CDialog.h>
 
+#include <LuaBridge/LuaBridge.h>
+
 namespace dustbin {
   namespace gui {
     std::vector<std::string> splitString(const std::string a_sInput, const char a_sDelimiter) {
@@ -40,6 +42,7 @@ namespace dustbin {
 
         // Next get the fond size (if not defined we use "regular")
         m_sFontSize = a_pXml->getAttributeValueSafe("font");
+        m_sToolTip  = a_pXml->getAttributeValueSafe("tooltip");
 
         if (m_sFontSize == "")
           m_sFontSize = "regular";
@@ -197,11 +200,6 @@ namespace dustbin {
 
           l_pRet->serializeAttributes(l_pAttr);
 
-          if (l_pRet->getType() == irr::gui::EGUIET_IMAGE) {
-            for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
-              printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
-          }
-
           for (std::map<std::string, std::string>::iterator it = m_mAttributes.begin(); it != m_mAttributes.end(); it++) {
             switch (l_pAttr->getAttributeType(it->first.c_str())) {
               case irr::io::EAT_COLOR: {
@@ -227,6 +225,11 @@ namespace dustbin {
             }
           }
 
+          if (l_pRet->getType() == irr::gui::EGUIET_COMBO_BOX) {
+            for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
+              printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
+          }
+
           irr::core::recti l_cRect = a_pGlobal->getRect(std::get<1>(m_cPosition), std::get<0>(m_cPosition), a_pParent);
 
           l_pRet->deserializeAttributes(l_pAttr);
@@ -235,9 +238,48 @@ namespace dustbin {
           l_pAttr->clear();
           l_pAttr->drop();
 
+          l_pRet->setToolTipText(std::wstring(m_sToolTip.begin(), m_sToolTip.end()).c_str());
+
           if (l_pRet->getType() == irr::gui::EGUIET_IMAGE) {
             if (m_mCustom.find("src") != m_mCustom.end()) {
               reinterpret_cast<irr::gui::IGUIImage*>(l_pRet)->setImage(CGlobal::getInstance()->createTexture(m_mCustom["src"]));
+            }
+          }
+
+          if (l_pRet->getType() == irr::gui::EGUIET_COMBO_BOX) {
+            if (m_mCustom.find("options") != m_mCustom.end()) {
+              std::vector<std::string> l_vOptions = splitString(m_mCustom["options"], ';');
+              for (std::vector<std::string>::iterator it = l_vOptions.begin(); it != l_vOptions.end(); it++) {
+                reinterpret_cast<irr::gui::IGUIComboBox*>(l_pRet)->addItem(std::wstring((*it).begin(), (*it).end()).c_str());
+              }
+            }
+
+            if (m_mCustom.find("selected") != m_mCustom.end()) {
+              reinterpret_cast<irr::gui::IGUIComboBox*>(l_pRet)->setSelected(std::atoi(m_mCustom["selected"].c_str()));
+            }
+          }
+
+          if (l_pRet->getType() == irr::gui::EGUIET_SPIN_BOX) {
+            if (m_mCustom.find("textAlignment") != m_mCustom.end() || m_mCustom.find("vertialAlignment") != m_mCustom.end()) {
+              irr::gui::EGUI_ALIGNMENT l_eAlign = irr::gui::EGUIA_UPPERLEFT,
+                                       l_eVert  = irr::gui::EGUIA_CENTER;
+
+              if (m_mCustom.find("textAlignment") != m_mCustom.end()) {
+                if (m_mCustom["textAlignment"] == "right")
+                  l_eAlign = irr::gui::EGUIA_LOWERRIGHT;
+                else if (m_mCustom["textAlignment"] == "center")
+                  l_eAlign = irr::gui::EGUIA_CENTER;
+              }
+
+              if (m_mCustom.find("verticalAlignment") != m_mCustom.end()) {
+                if (m_mCustom["vertialAlignment"] == "top")
+                  l_eVert = irr::gui::EGUIA_UPPERLEFT;
+                else if (m_mCustom["verticalAlignment"] == "bottom")
+                  l_eVert = irr::gui::EGUIA_LOWERRIGHT;
+              }
+
+              if (reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox() != nullptr)
+                reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox()->setTextAlignment(l_eAlign, l_eVert);
             }
           }
 
@@ -245,6 +287,7 @@ namespace dustbin {
             case irr::gui::EGUIET_BUTTON:
             case irr::gui::EGUIET_STATIC_TEXT:
             case irr::gui::EGUIET_EDIT_BOX: 
+            case irr::gui::EGUIET_SPIN_BOX:
             case gui::g_MenuButtonId: {
               enFont l_eFont = enFont::Regular;
 
@@ -267,6 +310,8 @@ namespace dustbin {
               else if (l_pRet->getType() == irr::gui::EGUIET_EDIT_BOX) {
                 reinterpret_cast<irr::gui::IGUIEditBox*>(l_pRet)->setOverrideFont(l_pFont);
               }
+              else if (l_pRet->getType() == irr::gui::EGUIET_SPIN_BOX && reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox() != nullptr)
+                reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox()->setOverrideFont(l_pFont);
               else if (l_pRet->getType() == gui::g_MenuButtonId) {
                 reinterpret_cast<gui::CMenuButton*>(l_pRet)->setOverrideFont(l_pFont);
               }
@@ -287,12 +332,25 @@ namespace dustbin {
     }
 
 
-    CDialog::CDialog() : m_pGlobal(CGlobal::getInstance()), m_pGui(nullptr), m_pFs(nullptr) {
+    CDialog::CDialog(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pGui(nullptr), m_pFs(nullptr) {
       m_pGui = m_pGlobal->getGuiEnvironment();
       m_pFs = m_pGlobal->getFileSystem();
       m_pDrv = m_pGlobal->getVideoDriver();
 
       m_pRoot = nullptr;
+
+      if (a_pState != nullptr) {
+        luabridge::getGlobalNamespace(a_pState)
+          .beginClass<CDialog>("LuaDialog")
+            .addFunction("loaddialog"     , &CDialog::loadDialog)
+            .addFunction("createui"       , &CDialog::createUi)
+            .addFunction("addlayoutraster", &CDialog::addLayoutRaster)
+          .endClass();
+
+        std::error_code l_cError;
+        luabridge::push(a_pState, this, l_cError);
+        lua_setglobal(a_pState, "dialog");
+      }
     }
 
     void CDialog::loadDialog(const std::string& a_sFileName)  {
@@ -333,6 +391,92 @@ namespace dustbin {
     void CDialog::createUi() {
       if (m_pRoot != nullptr)
         m_pRoot->createGuiElement(CGlobal::getInstance(), nullptr);
+    }
+
+    void CDialog::clear() {
+      m_pGui->clear();
+    }
+
+    void CDialog::addLayoutRaster() {
+      for (int y = -20; y <= 20; y++) {
+        for (int x = -30; x <= 30; x++) {
+          std::wstring s = L"";
+
+          if (x == 0) {
+            s = std::to_wstring(y);
+          }
+          else if (y == 0) {
+            s = std::to_wstring(x);
+          }
+          else if (x == 0 && y == 0) {
+            s = L"X";
+          }
+
+          for (int i = 0; i < 9; i++) {
+            bool l_bAdd = false;
+            irr::core::recti l_cRect;
+
+            if (i == 0) {
+              l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::Center);
+              l_bAdd = true;
+            }
+            else if (i == 1) {
+              if (x >= 0 && x < 5 && y >= 0 && y < 5) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::UpperLeft);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 2) {
+              if (x >= -20 && x <= 20 && y >= 0 && y < 5) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::UpperMiddle);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 3) {
+              if (x > -5 && x <= 0 && y >= 0 && y < 5) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::UpperRight);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 4) {
+              if (x >= 0 && x < 5 && y >= -10 && y <= 10) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::Left);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 5) {
+              if (x > -5 && x <= 0 && y >= -10 && y <= 10) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::Right);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 6) {
+              if (x >= 0 && x < 5 && y > -5 && y <= 0) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::LowerLeft);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 7) {
+              if (x >= -10 && x <= 10 && y > -5 && y <= 0) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::LowerMiddle);
+                l_bAdd = true;
+              }
+            }
+            else if (i == 8) {
+              if (x > -5 && x <= 0 && y > -5 && y <= 0) {
+                l_cRect = m_pGlobal->getRect(x, y, x + 1, y + 1, enLayout::LowerRight);
+                l_bAdd = true;
+              }
+            }
+
+            if (l_bAdd) {
+              irr::gui::IGUIStaticText* p = m_pGui->addStaticText(s.c_str(), l_cRect, true, true, nullptr, -1, true);
+              p->setOverrideFont(m_pGlobal->getFont(enFont::Tiny, m_pDrv->getScreenSize()));
+              p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+            }
+          }
+        }
+      }
     }
   }
 }

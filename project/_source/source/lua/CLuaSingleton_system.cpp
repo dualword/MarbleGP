@@ -9,7 +9,7 @@ namespace dustbin {
   namespace lua {
     CLuaSingleton_system::CLuaSingleton_system(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pResolutionList(nullptr), m_pState(a_pState) {
       luabridge::getGlobalNamespace(a_pState)
-        .beginClass<CLuaSingleton_system>("LuaDialog")
+        .beginClass<CLuaSingleton_system>("LuaSystem")
           .addFunction("getscenemanager"  , &CLuaSingleton_system::getSceneManager)
           .addFunction("setsetting"       , &CLuaSingleton_system::setSetting)
           .addFunction("getsetting"       , &CLuaSingleton_system::getSetting)

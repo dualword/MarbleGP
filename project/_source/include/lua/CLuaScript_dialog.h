@@ -5,6 +5,10 @@
 #include <string>
 
 namespace dustbin {
+  namespace gui {
+    class CDialog;
+  }
+
   namespace lua {
     class CLuaSingleton_system;
     class CLuaSingleton_audio;
@@ -18,6 +22,8 @@ namespace dustbin {
       protected:
         CLuaSingleton_system *m_pSystem;
         CLuaSingleton_audio  *m_pAudio;
+
+        gui::CDialog *m_pDialog;
 
         lua_State *m_pState;
 

@@ -37,7 +37,6 @@ namespace dustbin {
         lua::CLuaScript_dialog *m_pScript;
         CGlobal                *m_pGlobal;
         irr::ITimer            *m_pTimer;
-        gui::CDialog           *m_pDialog;
 
         bool m_bButtons[3];   /**< The mouse button states */
 

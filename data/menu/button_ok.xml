@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dialog>
-  <element type="MenuButton" rect="lowermiddle: -5, -4, -1 , 0">
+  <element type="MenuButton" rect="lowermiddle: -5, -4, -1 , 0" tooltip="OK">
     <attributes>
       <attribute key="Name" value="ok" />
       <attribute key="Id" value="20000" />

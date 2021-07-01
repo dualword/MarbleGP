@@ -13,9 +13,19 @@ function initialize()
   g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 35.0 })
   g_Camera:activate()
   
+  -- dialog:addlayoutraster()
+  dialog:loaddialog("data/menu/menu_main.xml")
+  
+  dialog:createui();
+  
   audio:startsoundtrack(0)
 end
 
 function cleanup()
   g_Smgr:clear()
+  dialog:clear()
+end
+
+function uibuttonclicked(a_Id, a_Name)
+  io.write("Lua: Button clicked: " .. a_Name .. " (" .. tostring(a_Id) .. ")\n")
 end

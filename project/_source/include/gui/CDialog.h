@@ -7,6 +7,8 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <lua.hpp>
+
 #include <CGlobal.h>
 #include <string>
 #include <vector>
@@ -37,6 +39,7 @@ namespace dustbin {
           std::map<std::string, std::string> m_mAttributes,   /**< The override attributes */
                                              m_mCustom;       /**< Custom attributes that are not handled by Irrlicht directly */
           std::string m_sFontSize,                            /**< The font size (tiny, small, regular, big, huge) */
+                      m_sToolTip,                             /**< The tooltip of the gui item */
                       m_sType;                                /**< The type of the element */
 
           std::tuple<dustbin::enLayout, irr::core::recti> m_cPosition;  /**< A tuple for the rect of the element */
@@ -66,7 +69,7 @@ namespace dustbin {
         * The constructor
         * @param a_sFileName the name of the XML file to load the data from
         */
-        CDialog();
+        CDialog(lua_State *a_pState);
         ~CDialog();
 
         /**
@@ -76,6 +79,8 @@ namespace dustbin {
         void loadDialog(const std::string& a_sFileName);
 
         void createUi();
+        void clear();
+        void addLayoutRaster();
     };
   }
 }

@@ -52,6 +52,8 @@ namespace dustbin {
 
       std::map<int, irr::gui::IGUIFont*> m_mFonts;  /**< A map for the fonts */
 
+      std::vector<irr::video::ITexture*> m_pRtts; /**< Render target textures */
+
     public:
       CMainClass();
       virtual ~CMainClass();

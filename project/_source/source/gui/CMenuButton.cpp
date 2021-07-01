@@ -23,17 +23,17 @@ namespace dustbin {
       irr::core::recti l_cRect = getAbsoluteClippingRect();
 
       if (m_pBackgrounds[0] == nullptr) {
-        std::string l_sUri = "button://off_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
+        std::string l_sUri = "button://ffb8c8ff_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
         m_pBackgrounds[0] = CGlobal::getInstance()->createTexture(l_sUri);
       }
 
       if (m_pBackgrounds[1] == nullptr) {
-        std::string l_sUri = "button://hover_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
+        std::string l_sUri = "button://ff3367b8_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
         m_pBackgrounds[1] = CGlobal::getInstance()->createTexture(l_sUri);
       }
 
       if (m_pBackgrounds[2] == nullptr) {
-        std::string l_sUri = "button://click_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
+        std::string l_sUri = "button://ffecf163_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
         m_pBackgrounds[2] = CGlobal::getInstance()->createTexture(l_sUri);
       }
 
