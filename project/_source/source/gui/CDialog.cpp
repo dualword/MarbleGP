@@ -189,16 +189,31 @@ namespace dustbin {
       m_vChildren.clear();
     }
 
+    void CDialog::SDialogElement::findDefaultCancelButtons(irr::gui::IGUIElement** a_pDefault, irr::gui::IGUIElement** a_pCancel) {
+      if (m_pElement != nullptr) {
+        if (m_pElement->getType() == g_MenuButtonId) {
+          if (m_mCustom.find("Default") != m_mCustom.end() && m_mCustom["Default"] == "true")
+            *a_pDefault = m_pElement;
+
+          if (m_mCustom.find("Cancel") != m_mCustom.end() && m_mCustom["Cancel"] == "true")
+            *a_pCancel = m_pElement;
+        }
+      }
+
+      for (std::vector<SDialogElement*>::iterator it = m_vChildren.begin(); it != m_vChildren.end(); it++)
+        (*it)->findDefaultCancelButtons(a_pDefault, a_pCancel);
+    }
+
     irr::gui::IGUIElement* CDialog::SDialogElement::createGuiElement(CGlobal* a_pGlobal, irr::gui::IGUIElement* a_pParent) {
-      irr::gui::IGUIElement* l_pRet = nullptr;
+      m_pElement = nullptr;
 
       if (m_sType != "") {
-        l_pRet = a_pGlobal->getGuiEnvironment()->addGUIElement(m_sType.c_str(), a_pParent != nullptr ? a_pParent : a_pGlobal->getGuiEnvironment()->getRootGUIElement());
+        m_pElement = a_pGlobal->getGuiEnvironment()->addGUIElement(m_sType.c_str(), a_pParent != nullptr ? a_pParent : a_pGlobal->getGuiEnvironment()->getRootGUIElement());
 
-        if (l_pRet != nullptr) {
+        if (m_pElement != nullptr) {
           irr::io::IAttributes* l_pAttr = a_pGlobal->getFileSystem()->createEmptyAttributes(a_pGlobal->getVideoDriver());
 
-          l_pRet->serializeAttributes(l_pAttr);
+          m_pElement->serializeAttributes(l_pAttr);
 
           for (std::map<std::string, std::string>::iterator it = m_mAttributes.begin(); it != m_mAttributes.end(); it++) {
             switch (l_pAttr->getAttributeType(it->first.c_str())) {
@@ -225,41 +240,41 @@ namespace dustbin {
             }
           }
 
-          if (l_pRet->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          if (m_pElement->getType() == irr::gui::EGUIET_SCROLL_BAR) {
             for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
               printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
           }
 
           irr::core::recti l_cRect = a_pGlobal->getRect(std::get<1>(m_cPosition), std::get<0>(m_cPosition), a_pParent);
 
-          l_pRet->deserializeAttributes(l_pAttr);
-          l_pRet->setRelativePosition(l_cRect);
+          m_pElement->deserializeAttributes(l_pAttr);
+          m_pElement->setRelativePosition(l_cRect);
 
           l_pAttr->clear();
           l_pAttr->drop();
 
-          l_pRet->setToolTipText(std::wstring(m_sToolTip.begin(), m_sToolTip.end()).c_str());
+          // m_pElement->setToolTipText(std::wstring(m_sToolTip.begin(), m_sToolTip.end()).c_str());
 
-          if (l_pRet->getType() == irr::gui::EGUIET_IMAGE) {
+          if (m_pElement->getType() == irr::gui::EGUIET_IMAGE) {
             if (m_mCustom.find("src") != m_mCustom.end()) {
-              reinterpret_cast<irr::gui::IGUIImage*>(l_pRet)->setImage(CGlobal::getInstance()->createTexture(m_mCustom["src"]));
+              reinterpret_cast<irr::gui::IGUIImage*>(m_pElement)->setImage(CGlobal::getInstance()->createTexture(m_mCustom["src"]));
             }
           }
 
-          if (l_pRet->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
             if (m_mCustom.find("options") != m_mCustom.end()) {
               std::vector<std::string> l_vOptions = splitString(m_mCustom["options"], ';');
               for (std::vector<std::string>::iterator it = l_vOptions.begin(); it != l_vOptions.end(); it++) {
-                reinterpret_cast<irr::gui::IGUIComboBox*>(l_pRet)->addItem(std::wstring((*it).begin(), (*it).end()).c_str());
+                reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(std::wstring((*it).begin(), (*it).end()).c_str());
               }
             }
 
             if (m_mCustom.find("selected") != m_mCustom.end()) {
-              reinterpret_cast<irr::gui::IGUIComboBox*>(l_pRet)->setSelected(std::atoi(m_mCustom["selected"].c_str()));
+              reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setSelected(std::atoi(m_mCustom["selected"].c_str()));
             }
           }
 
-          if (l_pRet->getType() == irr::gui::EGUIET_SPIN_BOX) {
+          if (m_pElement->getType() == irr::gui::EGUIET_SPIN_BOX) {
             if (m_mCustom.find("textAlignment") != m_mCustom.end() || m_mCustom.find("vertialAlignment") != m_mCustom.end()) {
               irr::gui::EGUI_ALIGNMENT l_eAlign = irr::gui::EGUIA_UPPERLEFT,
                                        l_eVert  = irr::gui::EGUIA_CENTER;
@@ -278,12 +293,12 @@ namespace dustbin {
                   l_eVert = irr::gui::EGUIA_LOWERRIGHT;
               }
 
-              if (reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox() != nullptr)
-                reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox()->setTextAlignment(l_eAlign, l_eVert);
+              if (reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox() != nullptr)
+                reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox()->setTextAlignment(l_eAlign, l_eVert);
             }
           }
 
-          switch (l_pRet->getType()) {
+          switch (m_pElement->getType()) {
             case irr::gui::EGUIET_BUTTON:
             case irr::gui::EGUIET_STATIC_TEXT:
             case irr::gui::EGUIET_EDIT_BOX: 
@@ -301,19 +316,20 @@ namespace dustbin {
                 l_eFont = enFont::Huge;
                 
               irr::gui::IGUIFont* l_pFont = a_pGlobal->getFont(l_eFont, a_pGlobal->getVideoDriver()->getScreenSize());
-              if (l_pRet->getType() == irr::gui::EGUIET_BUTTON) {
-                reinterpret_cast<irr::gui::IGUIButton*>(l_pRet)->setOverrideFont(l_pFont);
+              if (m_pElement->getType() == irr::gui::EGUIET_BUTTON) {
+                reinterpret_cast<irr::gui::IGUIButton*>(m_pElement)->setOverrideFont(l_pFont);
               }
-              else if (l_pRet->getType() == irr::gui::EGUIET_STATIC_TEXT) {
-                reinterpret_cast<irr::gui::IGUIStaticText*>(l_pRet)->setOverrideFont(l_pFont);
+              else if (m_pElement->getType() == irr::gui::EGUIET_STATIC_TEXT) {
+                reinterpret_cast<irr::gui::IGUIStaticText*>(m_pElement)->setOverrideFont(l_pFont);
               }
-              else if (l_pRet->getType() == irr::gui::EGUIET_EDIT_BOX) {
-                reinterpret_cast<irr::gui::IGUIEditBox*>(l_pRet)->setOverrideFont(l_pFont);
+              else if (m_pElement->getType() == irr::gui::EGUIET_EDIT_BOX) {
+                reinterpret_cast<irr::gui::IGUIEditBox*>(m_pElement)->setOverrideFont(l_pFont);
               }
-              else if (l_pRet->getType() == irr::gui::EGUIET_SPIN_BOX && reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox() != nullptr)
-                reinterpret_cast<irr::gui::IGUISpinBox*>(l_pRet)->getEditBox()->setOverrideFont(l_pFont);
-              else if (l_pRet->getType() == gui::g_MenuButtonId) {
-                reinterpret_cast<gui::CMenuButton*>(l_pRet)->setOverrideFont(l_pFont);
+              else if (m_pElement->getType() == irr::gui::EGUIET_SPIN_BOX && reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox() != nullptr) {
+                reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox()->setOverrideFont(l_pFont);
+              }
+              else if (m_pElement->getType() == gui::g_MenuButtonId) {
+                reinterpret_cast<gui::CMenuButton*>(m_pElement)->setOverrideFont(l_pFont);
               }
               break;
             }
@@ -326,13 +342,13 @@ namespace dustbin {
       }
 
       for (std::vector<SDialogElement*>::iterator it = m_vChildren.begin(); it != m_vChildren.end(); it++)
-        (*it)->createGuiElement(a_pGlobal, l_pRet);
+        (*it)->createGuiElement(a_pGlobal, m_pElement);
       
-      return l_pRet;
+      return m_pElement;
     }
 
 
-    CDialog::CDialog(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pGui(nullptr), m_pFs(nullptr) {
+    CDialog::CDialog(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pGui(nullptr), m_pFs(nullptr), m_pDefault(nullptr), m_pCancel(nullptr) {
       m_pGui = m_pGlobal->getGuiEnvironment();
       m_pFs = m_pGlobal->getFileSystem();
       m_pDrv = m_pGlobal->getVideoDriver();
@@ -345,6 +361,7 @@ namespace dustbin {
             .addFunction("loaddialog"     , &CDialog::loadDialog)
             .addFunction("createui"       , &CDialog::createUi)
             .addFunction("addlayoutraster", &CDialog::addLayoutRaster)
+            .addFunction("clear"          , &CDialog::clear)
           .endClass();
 
         std::error_code l_cError;
@@ -389,8 +406,10 @@ namespace dustbin {
     }
 
     void CDialog::createUi() {
-      if (m_pRoot != nullptr)
+      if (m_pRoot != nullptr) {
         m_pRoot->createGuiElement(CGlobal::getInstance(), nullptr);
+        m_pRoot->findDefaultCancelButtons(&m_pDefault, &m_pCancel);
+      }
     }
 
     void CDialog::clear() {
@@ -478,5 +497,22 @@ namespace dustbin {
         }
       }
     }
+
+    /**
+    * This is a callback that is envoked when "Enter" was pressed.
+    * @return the "Default" UI element, nullptr if none was defined
+    */
+    irr::gui::IGUIElement* CDialog::defaultClicked() {
+      return m_pDefault;
+    }
+
+    /**
+    * This is a callback that is envoked when "ESC" was pressed.
+    * @return the "Cancel" UI element, nullptr if none was defined
+    */
+    irr::gui::IGUIElement* CDialog::cancelClicked() {
+      return m_pCancel;
+    }
+
   }
 }

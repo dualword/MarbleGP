@@ -42,6 +42,8 @@ namespace dustbin {
                       m_sToolTip,                             /**< The tooltip of the gui item */
                       m_sType;                                /**< The type of the element */
 
+          irr::gui::IGUIElement* m_pElement;                  /**< The created UI element */
+
           std::tuple<dustbin::enLayout, irr::core::recti> m_cPosition;  /**< A tuple for the rect of the element */
 
           std::vector<SDialogElement *> m_vChildren;          /**< The children of the object */
@@ -54,6 +56,8 @@ namespace dustbin {
           void parse(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState);
 
           irr::gui::IGUIElement* createGuiElement(CGlobal* a_pGlobal, irr::gui::IGUIElement *a_pParent);
+
+          void findDefaultCancelButtons(irr::gui::IGUIElement** a_pDefault, irr::gui::IGUIElement** a_pCancel);
         };
 
         SDialogElement *m_pRoot;
@@ -64,7 +68,10 @@ namespace dustbin {
         irr::gui::IGUIEnvironment* m_pGui;  /**< The Irrlicht GUI environment */
         irr::video::IVideoDriver * m_pDrv;  /**< The Irrlicht video driver */
 
-      public:
+        irr::gui::IGUIElement* m_pDefault,                  /**< The "default" button activated with the "Enter" key */
+                             * m_pCancel;                   /**< The "cancel" button activated with the "ESC" key */
+
+    public:
         /**
         * The constructor
         * @param a_sFileName the name of the XML file to load the data from
@@ -81,6 +88,18 @@ namespace dustbin {
         void createUi();
         void clear();
         void addLayoutRaster();
+
+        /**
+        * This is a callback that is envoked when "Enter" was pressed. 
+        * @return the "Default" UI element, nullptr if none was defined
+        */
+        irr::gui::IGUIElement *defaultClicked();
+
+        /**
+        * This is a callback that is envoked when "ESC" was pressed.
+        * @return the "Cancel" UI element, nullptr if none was defined
+        */
+        irr::gui::IGUIElement* cancelClicked();
     };
   }
 }

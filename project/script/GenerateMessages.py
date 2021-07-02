@@ -78,7 +78,7 @@ def CreateMessages(a_Data, a_Static):
   
   for l_MessageName in a_Data:
     l_Message = a_Data[l_MessageName]
-    print "Generating interface for \"" + l_MessageName + "\"..."
+    print("Generating interface for \"" + l_MessageName + "\"...")
     
     l_Header.write("    /**\n")
     l_Header.write("     * @class C" + l_MessageName + "\n")
@@ -274,7 +274,7 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
   global g_Include
   
   for l_Interface in a_Interfaces:
-    print "Creating I" + l_Interface + "...\n"
+    print("Creating I" + l_Interface + "...\n")
     
     l_Header = open(g_HeaderFolder + "/I" + l_Interface + ".h"  , "w")
     l_Source = open(g_SourceFolder + "/I" + l_Interface + ".cpp", "w")
@@ -394,11 +394,11 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
     l_Header.close()
     l_Source.close()
 
-print ""
-print "Generating messages ..."
-print ""
+print("")
+print("Generating messages ...")
+print("")
 
-print "Load message definitions ..."
+print("Load message definitions ...")
 l_Json = json.load(open("messages.json"))
 
 g_HeaderFolder = l_Json["output"]["header"]
@@ -406,21 +406,21 @@ g_SourceFolder = l_Json["output"]["source"]
 g_Include      = l_Json["output"]["include"]
 
 if not os.path.exists(g_HeaderFolder):
-  print "Creating folder \"" + g_HeaderFolder + "\""
+  print("Creating folder \"" + g_HeaderFolder + "\"")
   os.makedirs(g_HeaderFolder)
 else:
-  print "Path \"" + g_HeaderFolder + "\" exists"
+  print("Path \"" + g_HeaderFolder + "\" exists")
 
 if not os.path.exists(g_SourceFolder):
-  print "Creating folder \"" + g_SourceFolder + "\""
+  print("Creating folder \"" + g_SourceFolder + "\"")
   os.makedirs(g_SourceFolder)
 else:
-  print "Path \"" + g_SourceFolder + "\" exists"
+  print("Path \"" + g_SourceFolder + "\" exists")
   
 CreateEnums(l_Json["messageids"])
 CreateMessages(l_Json["messages"], l_Json["static_types"])
 CreateFactory(l_Json["messages"])
 CreateInterfaces(l_Json["interfaces"], l_Json["messages"], l_Json["static_types"])
 
-print ""
-print "Ready."
+print("")
+print("Ready.")

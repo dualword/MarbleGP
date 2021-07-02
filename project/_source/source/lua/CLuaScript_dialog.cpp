@@ -81,6 +81,13 @@ namespace dustbin {
       }
     }
 
+    void CLuaScript_dialog::windowresized() {
+      if (m_pDialog != nullptr) {
+        m_pDialog->clear();
+        m_pDialog->createUi();
+      }
+    }
+
     void CLuaScript_dialog::uiElementHovered(int a_iId, const std::string& a_sName) {
       try {
         luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uielementhovered");
@@ -123,6 +130,22 @@ namespace dustbin {
       catch (luabridge::LuaException e) {
         printf("Exception: %s\n", e.what());
       }
+    }
+
+    /**
+    * Query one of two elements that might be defined as default (Default OK and Cancel)
+    * @param a_bCancel do you want the "Cancel" default? Pass false to get the "OK" default
+    * @return a pointer to the element, "nullptr" if the element was not defined
+    */
+    irr::gui::IGUIElement* CLuaScript_dialog::getDefaultElement(bool a_bCancel) {
+      if (m_pDialog != nullptr) {
+        if (a_bCancel)
+          return m_pDialog->cancelClicked();
+        else
+          return m_pDialog->defaultClicked();
+      }
+
+      return nullptr;
     }
   }
 }

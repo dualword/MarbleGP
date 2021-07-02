@@ -16,6 +16,8 @@ namespace dustbin {
       private:
         irr::video::IVideoDriver* m_pDrv;
         irr::video::ITexture    * m_pTexture;
+        irr::video::SColor        m_cOverrideColor;
+        bool                      m_bOverrideColor;
 
       public:
         CMenuBackground(irr::gui::IGUIElement *a_pParent);
@@ -24,6 +26,9 @@ namespace dustbin {
         virtual void draw();
 
         virtual irr::gui::EGUI_ELEMENT_TYPE getType();
+
+        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const;
+        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions);
     };
   }
 }

@@ -3,7 +3,6 @@
 #include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
 #include <state/CLuaState.h>
-#include <gui/CDialog.h>
 #include <CGlobal.h>
 #include <string>
 
@@ -39,6 +38,9 @@ namespace dustbin {
 
       irr::core::dimension2du l_cDim = m_pDrv->getScreenSize();
       onResize(l_cDim);
+
+      m_bDefCanc[0] = false;
+      m_bDefCanc[1] = false;
     }
 
     /**
@@ -70,8 +72,8 @@ namespace dustbin {
         l_pCam->setAspectRatio(l_fRatio);
       }
 
-      // if (m_pScript != nullptr)
-      //   m_pScript->windowresized();
+      if (m_pScript != nullptr)
+        m_pScript->windowresized();
       printf("==> %i, %i\n", a_cDim.Width, a_cDim.Height);
     }
 
@@ -84,6 +86,34 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
           m_pScript->uiButtonClicked(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName());
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
+          m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<irr::gui::IGUIScrollBar*>(a_cEvent.GUIEvent.Caller)->getPos());
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        // If a key event was passed we need to handle "Return" and "Escape" for default OK and cancel buttons
+        if (a_cEvent.KeyInput.PressedDown) {
+          if (a_cEvent.KeyInput.Key == irr::KEY_RETURN) m_bDefCanc[0] = true;
+          if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) m_bDefCanc[1] = true;
+        }
+        else {
+          if (a_cEvent.KeyInput.Key == irr::KEY_RETURN && m_bDefCanc[0]) {  
+            if (m_pScript != nullptr) {
+              irr::gui::IGUIElement* p = m_pScript->getDefaultElement(false);
+              if (p != nullptr)
+                m_pScript->uiButtonClicked(p->getID(), p->getName());
+            }
+          }
+          else if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE && m_bDefCanc[1]) {
+            if (m_pScript != nullptr) {
+              irr::gui::IGUIElement* p = m_pScript->getDefaultElement(true);
+              if (p != nullptr)
+                m_pScript->uiButtonClicked(p->getID(), p->getName());
+            }
+          }
+          m_bDefCanc[0] = false;
+          m_bDefCanc[1] = false;
         }
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {

@@ -114,6 +114,20 @@ namespace dustbin {
       m_pFontFace->load("data/fonts/adventpro-regular.ttf");
 
       m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
+
+      irr::video::SColor l_cColor = m_pGui->getSkin()->getColor(irr::gui::EGDC_HIGH_LIGHT);
+      l_cColor.setAlpha(232);
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_HIGH_LIGHT, l_cColor);
+
+      l_cColor = m_pGui->getSkin()->getColor(irr::gui::EGDC_3D_HIGH_LIGHT);
+      l_cColor.setAlpha(232);
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_HIGH_LIGHT, l_cColor);
+
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_HIGH_LIGHT, irr::video::SColor(0xFF, 0, 0, 0));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_FACE, irr::video::SColor(0xFF, 232, 232, 232));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_HIGH_LIGHT, irr::video::SColor(0xFF, 232, 232, 232));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_LIGHT, irr::video::SColor(0xFF, 232, 232, 232));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW, irr::video::SColor(0xFF, 128, 128, 128));
     }
   }
 
@@ -518,7 +532,14 @@ namespace dustbin {
 
     irr::core::position2di l_cPos = l_cAnchor + irr::core::position2di(a_iLeft * l_iRaster, a_iTop * l_iRaster);
 
-    return irr::core::recti(l_cPos, irr::core::dimension2du((a_iRight - a_iLeft) * l_iRaster, (a_iBottom - a_iTop) * l_iRaster));
+    irr::core::recti l_cRet = irr::core::recti(l_cPos, irr::core::dimension2du((a_iRight - a_iLeft) * l_iRaster, (a_iBottom - a_iTop) * l_iRaster));
+
+    if (a_pParent != nullptr) {
+      l_cRet.UpperLeftCorner  -= a_pParent->getAbsoluteClippingRect().UpperLeftCorner;
+      l_cRet.LowerRightCorner -= a_pParent->getAbsoluteClippingRect().UpperLeftCorner;
+    }
+
+    return l_cRet;
   }
 
   /**
@@ -578,11 +599,11 @@ namespace dustbin {
     int l_iSize = getRasterSize();
 
     switch (a_eFont) {
-      case enFont::Tiny   : l_iSize =     l_iSize / 3; break;
-      case enFont::Small  : l_iSize = 3 * l_iSize / 4; break;
-      case enFont::Regular: l_iSize =     l_iSize    ; break;
-      case enFont::Big    : l_iSize = 3 * l_iSize / 2; break;
-      case enFont::Huge   : l_iSize = 2 * l_iSize    ; break;
+      case enFont::Tiny   : l_iSize = 3 * l_iSize / 4; break;
+      case enFont::Small  : l_iSize =     l_iSize    ; break;
+      case enFont::Regular: l_iSize = 3 * l_iSize / 2; break;
+      case enFont::Big    : l_iSize = 2 * l_iSize    ; break;
+      case enFont::Huge   : l_iSize = 5 * l_iSize / 2; break;
     }
 
     if (m_mFonts.find(l_iSize) == m_mFonts.end()) {

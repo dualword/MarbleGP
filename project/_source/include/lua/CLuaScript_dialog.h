@@ -1,6 +1,12 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#ifdef _LINUX_INCLUDE_PATH
+#include <irrlicht.h>
+#else
+#include <irrlicht/irrlicht.h>
+#endif
+
 #include <lua.hpp>
 #include <string>
 
@@ -35,10 +41,19 @@ namespace dustbin {
         void cleanup();
         void step(int a_iTime);
 
+        void windowresized();
+
         void uiElementHovered(int a_iId, const std::string &a_sName);
         void uiElementLeft(int a_iId, const std::string &a_sName);
         void uiButtonClicked(int a_iId, const std::string &a_sName);
         void uiValueChanged(int a_iId, const std::string &a_sName, float a_fValue);
+
+        /**
+        * Query one of two elements that might be defined as default (Default OK and Cancel)
+        * @param a_bCancel do you want the "Cancel" default? Pass false to get the "OK" default
+        * @return a pointer to the element, "nullptr" if the element was not defined
+        */
+        irr::gui::IGUIElement* getDefaultElement(bool a_bCancel);
     };
   }
 }

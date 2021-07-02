@@ -27,5 +27,10 @@ function cleanup()
 end
 
 function uibuttonclicked(a_Id, a_Name)
-  io.write("Lua: Button clicked: " .. a_Name .. " (" .. tostring(a_Id) .. ")\n")
+  if a_Name == "settings" then
+    system:pushscript("data/lua/menu_settings.lua")
+    system:statechange(1)
+  else
+    io.write("Lua: Button clicked: " .. a_Name .. " (" .. tostring(a_Id) .. ")\n")
+  end
 end

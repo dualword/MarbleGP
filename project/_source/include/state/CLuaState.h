@@ -39,6 +39,7 @@ namespace dustbin {
         irr::ITimer            *m_pTimer;
 
         bool m_bButtons[3];   /**< The mouse button states */
+        bool m_bDefCanc[2];   /**< Flags to detect when the "Enter" or "ESC" button was released for handling default actions */
 
       protected:
         virtual void onUievent(const std::string &a_type, irr::s32 a_id, const std::string &a_name, const std::string &a_data);

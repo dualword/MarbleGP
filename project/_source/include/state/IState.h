@@ -7,8 +7,6 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
-#include <_generated/messages/IUiState.h>
-
 namespace dustbin {
   namespace state {
     /**
@@ -25,7 +23,7 @@ namespace dustbin {
      * @author Christian Keimel
      * @brief The interface for all states
      */
-    class IState : public dustbin::messages::IUiState {
+    class IState {
       public:
         enum enMouseButton {
           Left,

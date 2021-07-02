@@ -120,9 +120,6 @@
     <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp">
       <Filter>Quelldateien\threads</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp">
-      <Filter>Quelldateien\_generated\messages</Filter>
-    </ClCompile>
     <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
@@ -214,9 +211,6 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\threads\IQueue.h">
       <Filter>Headerdateien\threads</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\_generated\messages\IUiState.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\messages\IMessage.h">
       <Filter>Headerdateien\messages</Filter>

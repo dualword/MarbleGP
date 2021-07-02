@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <dialog>
-  <element type="MenuButton" rect="lowermiddle: 1, -4, 5, 0" tooltip="Cancel">
+  <element type="MenuButton" rect="lowermiddle: -4, -4, 0 , 0" tooltip="Cancel">
     <attributes>
       <attribute key="Name" value="cancel" />
       <attribute key="Id" value="20001" />
       <attribute key="ImagePath" value="data/images/btn_cancel.png" />
     </attributes>
+    <custom>
+      <attribute key="Cancel" value="true" />
+    </custom>
   </element>
 </dialog>

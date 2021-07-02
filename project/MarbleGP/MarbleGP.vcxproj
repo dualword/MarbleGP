@@ -218,7 +218,6 @@
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
-    <ClCompile Include="..\_source\source\_generated\messages\IUiState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CGlobal.h" />
@@ -254,7 +253,6 @@
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessages.h" />
-    <ClInclude Include="..\_source\include\_generated\messages\IUiState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
