@@ -1,133 +1,4 @@
 <?xml version="1.0"?>
-<!--
-
-Factory 0 element 0 : "button"
-Factory 0 element 1 : "checkBox"
-Factory 0 element 2 : "comboBox"
-Factory 0 element 3 : "contextMenu"
-Factory 0 element 4 : "menu"
-Factory 0 element 5 : "editBox"
-Factory 0 element 6 : "fileOpenDialog"
-Factory 0 element 7 : "colorSelectDialog"
-Factory 0 element 8 : "inOutFader"
-Factory 0 element 9 : "image"
-Factory 0 element 10: "listBox"
-Factory 0 element 11: "meshViewer"
-Factory 0 element 12: "messageBox"
-Factory 0 element 13: "modalScreen"
-Factory 0 element 14: "scrollBar"
-Factory 0 element 15: "spinBox"
-Factory 0 element 16: "staticText"
-Factory 0 element 17: "tab"
-Factory 0 element 18: "tabControl"
-Factory 0 element 19: "table"
-Factory 0 element 20: "toolBar"
-Factory 0 element 21: "treeview"
-Factory 0 element 22: "window"
-Factory 0 element 23: "element"
-Factory 0 element 24: "root"
-Factory 1 element 0 : "MenuButton"
-Factory 1 element 1 : "MenuBackground"
-
-Unniversal Attributes:
-
-Attribute Name:
-Attribute Id: -1
-Attribute Caption:
-Attribute Rect: 0, 0, 100, 100
-Attribute MinSize: 1, 1
-Attribute MaxSize: 0, 0
-Attribute LeftAlign: upperLeft
-Attribute RightAlign: upperLeft
-Attribute TopAlign: upperLeft
-Attribute BottomAlign: upperLeft
-Attribute Visible: true
-Attribute Enabled: true
-Attribute TabStop: false
-Attribute TabGroup: false
-Attribute TabOrder: -1
-Attribute NoClip: false
-
-Attributes "Button":
-
-Attribute PushButton: false
-Attribute Image: 0
-Attribute ImageRect: 0, 0, 0, 0
-Attribute PressedImage: 0
-Attribute PressedImageRect: 0, 0, 0, 0
-Attribute UseAlphaChannel: false
-Attribute Border: true
-Attribute ScaleImage: false
-
-Attributes "StaticText":
-
-Attribute Border: false
-Attribute OverrideColorEnabled: false
-Attribute OverrideBGColorEnabled: false
-Attribute WordWrap: true
-Attribute Background: false
-Attribute RightToLeft: false
-Attribute RestrainTextInside: true
-Attribute OverrideColor: 255, 255, 255, 101
-Attribute BGColor: 210, 210, 210, 101
-Attribute HTextAlign: upperLeft
-Attribute VTextAlign: upperLeft
-
-Attributes of "tab":
-
-Attribute TabNumber: -1
-Attribute DrawBackground: false
-Attribute BackColor: 0, 0, 0, 0
-Attribute OverrideTextColorEnabled: false
-Attribute TextColor: 10, 10, 10, 240
-
-Attributes of "image":
-
-Attribute Texture: 0
-Attribute UseAlphaChannel: true
-Attribute Color: 255, 255, 255, 255
-Attribute ScaleImage: false
-
-Attributes of "comboBox"
-
-Attribute HTextAlign: upperLeft
-Attribute VTextAlign: center
-Attribute MaxSelectionRows: 5
-Attribute Selected: -1
-Attribute ItemCount: 0
-
-Attributes of "spinBox"
-
-Attribute Min: -340282346638528859811704183484516925440.000000
-Attribute Max: 340282346638528859811704183484516925440.000000
-Attribute Step: 1.000000
-Attribute DecimalPlaces: -1
-
-Attributes of "editBox"
-
-Attribute Border: true
-Attribute Background: true
-Attribute OverrideColorEnabled: false
-Attribute OverrideColor: 255, 255, 255, 101
-Attribute MaxChars: 0
-Attribute WordWrap: false
-Attribute MultiLine: false
-Attribute AutoScroll: true
-Attribute PasswordBox: false
-Attribute PasswordChar: *
-Attribute HTextAlign: upperLeft
-Attribute VTextAlign: center
-
-Attributes of "scrollBar"
-
-Attribute Horizontal: false
-Attribute Value: 0
-Attribute Min: 0
-Attribute Max: 100
-Attribute SmallStep: 10
-Attribute LargeStep: 50
-
--->
 <dialog>
   <element type="MenuBackground" rect="center: -40, -25, 40, 25">
   </element>
@@ -151,7 +22,7 @@ Attribute LargeStep: 50
   
   <element type="MenuButton" rect="center: -9, -19, 9, -16" font="big" tooltip="Sound Settings">
     <attributes>
-      <attribute key="Name" value="sound" />
+      <attribute key="Name" value="sfx" />
       <attribute key="Id" value="23002" />
       <attribute key="Caption" value="Sound" />
     </attributes>
@@ -159,7 +30,7 @@ Attribute LargeStep: 50
   
   <element type="MenuButton" rect="center: 10, -19, 28, -16" font="big" tooltip="More Settings">
     <attributes>
-      <attribute key="Name" value="others" />
+      <attribute key="Name" value="misc" />
       <attribute key="Id" value="23003" />
       <attribute key="Caption" value="Others" />
     </attributes>
@@ -177,6 +48,7 @@ Attribute LargeStep: 50
   
   <element type="MenuBackground" rect="center: -35, -11, 0, 22">
     <attributes>
+      <attribute key="Name" value="gfx_general" />
       <attribute key="UseOverrideColor" value="true" />
       <attribute key="OverrideColor" value="192, 255, 192, 192" />
       <attribute key="Visible" value="true" />
@@ -260,6 +132,7 @@ Attribute LargeStep: 50
   
   <element type="MenuBackground" rect="center: 1, -11, 35, 22">
     <attributes>
+      <attribute key="Name" value="gfx_ingame" />
       <attribute key="UseOverrideColor" value="true" />
       <attribute key="OverrideColor" value="192, 255, 192, 192" />
       <attribute key="Visible" value="true" />
@@ -309,7 +182,7 @@ Attribute LargeStep: 50
   
   <element type="staticText" rect="center: -35, -15, 35, -12" font="big">
     <attributes>
-      <attribute key="Name" value="headline_sfx" />
+      <attribute key="Name" value="sfx_headline" />
       <attribute key="Caption" value="Sound Settings" />
       <attribute key="HTextAlign" value="center" />
       <attribute key="VTextAlign" value="center" />
@@ -319,6 +192,7 @@ Attribute LargeStep: 50
   
   <element type="MenuBackground" rect="center: -35, -11, 35, 22">
     <attributes>
+      <attribute key="Name" value="sfx_general" />
       <attribute key="UseOverrideColor" value="true" />
       <attribute key="OverrideColor" value="192, 192, 192, 255" />
       <attribute key="Visible" value="false" />
@@ -365,7 +239,7 @@ Attribute LargeStep: 50
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23020" />
-          <attribute key="Name" value="sfx_sountrack" />
+          <attribute key="Name" value="sfx_soundtrack" />
           <attribute key="Max" value="1000" />
         </attributes>
       </element>
@@ -437,7 +311,7 @@ Attribute LargeStep: 50
   
   <element type="staticText" rect="center: -35, -15, 35, -12" font="big">
     <attributes>
-      <attribute key="Name" value="headline_misc" />
+      <attribute key="Name" value="misc_headline" />
       <attribute key="Caption" value="Other Settings" />
       <attribute key="HTextAlign" value="center" />
       <attribute key="VTextAlign" value="center" />
@@ -447,6 +321,7 @@ Attribute LargeStep: 50
   
   <element type="MenuBackground" rect="center: -35, -11, 35, 22">
     <attributes>
+      <attribute key="Name" value="misc_general" />
       <attribute key="UseOverrideColor" value="true" />
       <attribute key="OverrideColor" value="192, 192, 255, 192" />
       <attribute key="Visible" value="false" />

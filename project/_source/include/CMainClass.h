@@ -44,6 +44,8 @@ namespace dustbin {
       std::vector<irr::scene::ISceneManager *> m_vBeforeGui,
                                                m_vAfterGui;
 
+      std::vector<irr::video::ITexture*> m_vRemoveOnResize; /**< A vector that stores the textures that will be removed on resize (type "button://") */
+
       std::map<state::enState, state::IState *> m_mStates; /**< The game states */
 
       state::enState m_eStateChange;  /**< Global for requested state change */

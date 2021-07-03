@@ -171,6 +171,9 @@
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaGuiItem.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CMenuBackground.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaGuiItem.h">
+      <Filter>Headerdateien\lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

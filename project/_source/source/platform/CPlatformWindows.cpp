@@ -14,6 +14,7 @@ This file is licensed under the terms of the ZLib license - https://www.zlib.net
 #include <stdlib.h>
 #include "shlobj.h"
 #include <cstring>
+#include <codecvt>
 #include <tchar.h>
 #include <time.h>
 #include <string>
@@ -68,6 +69,12 @@ namespace dustbin {
       a_sPath = l_sPath;
       if (a_sPath.back() != '/' && a_sPath.back() != '\\')
         a_sPath += '/';
+    }
+
+    const std::string portableGetFontPath() {
+      char l_sPath[MAX_PATH] = "";
+      SHGetFolderPathA(NULL, CSIDL_FONTS, NULL, 0, l_sPath);
+      return l_sPath;
     }
 
     const std::wstring portableGetDataPath() {
@@ -300,6 +307,18 @@ namespace dustbin {
         else
           return L"";
       }
+    }
+
+    std::wstring s2ws(const std::string& str) {
+      using convert_typeX = std::codecvt_utf8<wchar_t>;
+      std::wstring_convert<convert_typeX, wchar_t> converterX;
+      return converterX.from_bytes(str);
+    }
+
+    std::string ws2s(const std::wstring& wstr) {
+      using convert_typeX = std::codecvt_utf8<wchar_t>;
+      std::wstring_convert<convert_typeX, wchar_t> converterX;
+      return converterX.to_bytes(wstr);
     }
   }
 }

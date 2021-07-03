@@ -1,4 +1,8 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#ifdef _DEBUG
+#include <vld.h>
+#endif
+
 #ifdef _LINUX_INCLUDE_PATH
 #include <irrlicht.h>
 #else

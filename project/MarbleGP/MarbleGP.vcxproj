@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -160,7 +160,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -198,6 +198,7 @@
     <ClCompile Include="..\_source\source\gui\CMenuBackground.cpp" />
     <ClCompile Include="..\_source\source\gui\CMenuButton.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaGuiItem.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="..\_source\include\gui\CMenuBackground.h" />
     <ClInclude Include="..\_source\include\gui\CMenuButton.h" />
     <ClInclude Include="..\_source\include\lua\CLuaCamera.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaGuiItem.h" />
     <ClInclude Include="..\_source\include\lua\CLuaHelpers.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneNode.h" />

@@ -9,6 +9,7 @@
 
 #include <lua.hpp>
 
+#include <lua/CLuaGuiItem.h>
 #include <CGlobal.h>
 #include <string>
 #include <vector>
@@ -69,8 +70,16 @@ namespace dustbin {
         irr::video::IVideoDriver * m_pDrv;  /**< The Irrlicht video driver */
 
         irr::gui::IGUIElement* m_pDefault,                  /**< The "default" button activated with the "Enter" key */
-                             * m_pCancel;                   /**< The "cancel" button activated with the "ESC" key */
+                             * m_pCancel;                   /**< The "cancel" button activated with the "ESC" key */        
 
+        /**
+        * Find a GUI element from it's name or id
+        * @param a_sName the name of the queried element (empty string means that the ID is used)
+        * @param a_iId the id of the queried element (-1 means the name is used)
+        * @param a_pParent the current element
+        * @return the element
+        */
+        irr::gui::IGUIElement* findElement(const std::string a_sName, int a_iId, irr::gui::IGUIElement *a_pParent);
     public:
         /**
         * The constructor
@@ -100,6 +109,18 @@ namespace dustbin {
         * @return the "Cancel" UI element, nullptr if none was defined
         */
         irr::gui::IGUIElement* cancelClicked();
+
+        /**
+        * Get a GUI item from it's name
+        * @param a_sName the name of the item
+        */
+        lua::CLuaGuiItem getItemFromName(const std::string& a_sName);
+
+        /**
+        * Get a GUI item from it's id
+        * @param a_iId the id of the item
+        */
+        lua::CLuaGuiItem getItemFromId(int a_iId);
     };
   }
 }

@@ -27,10 +27,16 @@ namespace dustbin {
 		irr::gui::IGUIElement* CGuiItemFactory::addGUIElement(const irr::c8* a_sTypeName, irr::gui::IGUIElement* a_pParent) {
 			std::string l_sTypeName = std::string(a_sTypeName);
 
-			if (l_sTypeName == g_MenuButtonName)
-				return new CMenuButton(a_pParent);
-			else if (l_sTypeName == g_MenuBackgroundName)
-				return new CMenuBackground(a_pParent);
+			if (l_sTypeName == g_MenuButtonName) {
+				irr::gui::IGUIElement* p = new CMenuButton(a_pParent);
+				p->drop();
+				return p;
+			}
+			else if (l_sTypeName == g_MenuBackgroundName) {
+				irr::gui::IGUIElement* p = new CMenuBackground(a_pParent);
+				p->drop();
+				return p;
+			}
 			else
 				return nullptr;
 		}

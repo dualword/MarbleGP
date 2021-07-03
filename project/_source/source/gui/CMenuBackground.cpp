@@ -29,7 +29,6 @@ namespace dustbin {
             l_sColor = s;
           }
 
-
           std::string l_sUri = "button://" + l_sColor + "_" + std::to_string(getAbsoluteClippingRect().getWidth()) + "x" + std::to_string(getAbsoluteClippingRect().getHeight());
           m_pTexture = CGlobal::getInstance()->createTexture(l_sUri);
         }

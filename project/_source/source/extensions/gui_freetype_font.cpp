@@ -363,9 +363,9 @@ void CGUIFreetypeFont::clearGlyphs()
     {
     	if ( Glyphs[i] )
     	{
-			Glyphs[i]->drop();
-		}
-        Glyphs[i] = 0;
+		 		Glyphs[i]->drop();
+		  }
+      Glyphs[i] = 0;
     }
 }
 

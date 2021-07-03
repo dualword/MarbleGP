@@ -13,6 +13,7 @@
 #include <sound/CSoundInterface.h>
 #include <gui/CGuiItemFactory.h>
 #include <platform/CPlatform.h>
+#include <platform/CPlatform.h>
 #include <gui_freetype_font.h>
 #include <state/CLuaState.h>
 #include <CMainClass.h>
@@ -110,8 +111,30 @@ namespace dustbin {
         }
       }
 
+      std::string l_sFontPath = platform::portableGetFontPath();
+
+      if (l_sFontPath != "") {
+        printf("Font path: \"%s\"\n", l_sFontPath.c_str());
+
+        std::vector<std::string> l_vSearchFonts = {
+          "Arial.ttf",
+          "Arialbd.ttf"
+        };
+
+        for (std::vector<std::string>::iterator it = l_vSearchFonts.begin(); it != l_vSearchFonts.end(); it++) {
+          if (m_pFs->existFile(std::string(l_sFontPath + "/" + *it).c_str())) {
+            l_sFontPath += "/" + *it;
+            break;
+          }
+        }
+      }
+
       m_pFontFace = new CGUITTFace();
-      m_pFontFace->load("data/fonts/adventpro-regular.ttf");
+
+      if (m_pFs->existFile(l_sFontPath.c_str()))
+        m_pFontFace->load(l_sFontPath.c_str());
+      else
+        m_pFontFace->load("data/fonts/adventpro-regular.ttf");
 
       m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
@@ -160,9 +183,25 @@ namespace dustbin {
       l_pXml->drop();
     }
 
+    if (m_pActiveState)
+      m_pActiveState->deactivate();
+
     for (std::map<dustbin::state::enState, dustbin::state::IState *>::iterator it = m_mStates.begin(); it != m_mStates.end(); it++)
       delete it->second;
 
+    m_mStates.clear();
+
+    while (m_mFonts.size() > 0) {
+      m_mFonts.begin()->second->drop();
+      m_mFonts.erase(m_mFonts.begin());
+    }
+
+    m_mFonts.clear();
+
+    delete m_pSoundInterface;
+    m_pFontFace->drop();
+
+    m_pGui->clear();
     m_pDrv->removeAllTextures();
 
     m_pDevice->closeDevice();
@@ -222,6 +261,10 @@ namespace dustbin {
 
           irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
           if (l_cThisSize != l_cSize) {
+            for (std::vector<irr::video::ITexture*>::iterator it = m_vRemoveOnResize.begin(); it != m_vRemoveOnResize.end(); it++) {
+              m_pDrv->removeTexture(*it);
+            }
+
             l_cSize = l_cThisSize;
             m_iRasterSize = -1;
             printf("Rescaled: %i, %i\n", l_cSize.Width, l_cSize.Height);
@@ -707,6 +750,7 @@ namespace dustbin {
               }
 
               m_pDrv->setRenderTarget(nullptr);
+              m_vRemoveOnResize.push_back(l_pRet);
             }
           }
         }

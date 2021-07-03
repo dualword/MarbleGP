@@ -3,6 +3,7 @@
 #include <gui/CDialog.h>
 
 #include <LuaBridge/LuaBridge.h>
+#include <platform/CPlatform.h>
 
 namespace dustbin {
   namespace gui {
@@ -265,12 +266,33 @@ namespace dustbin {
             if (m_mCustom.find("options") != m_mCustom.end()) {
               std::vector<std::string> l_vOptions = splitString(m_mCustom["options"], ';');
               for (std::vector<std::string>::iterator it = l_vOptions.begin(); it != l_vOptions.end(); it++) {
-                reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(std::wstring((*it).begin(), (*it).end()).c_str());
+                reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(platform::s2ws(*it).c_str());
               }
             }
 
             if (m_mCustom.find("selected") != m_mCustom.end()) {
               reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setSelected(std::atoi(m_mCustom["selected"].c_str()));
+            }
+
+            if (m_mCustom.find("textAlignment") != m_mCustom.end() || m_mCustom.find("vertialAlignment") != m_mCustom.end()) {
+              irr::gui::EGUI_ALIGNMENT l_eAlign = irr::gui::EGUIA_UPPERLEFT,
+                l_eVert = irr::gui::EGUIA_CENTER;
+
+              if (m_mCustom.find("textAlignment") != m_mCustom.end()) {
+                if (m_mCustom["textAlignment"] == "right")
+                  l_eAlign = irr::gui::EGUIA_LOWERRIGHT;
+                else if (m_mCustom["textAlignment"] == "center")
+                  l_eAlign = irr::gui::EGUIA_CENTER;
+              }
+
+              if (m_mCustom.find("verticalAlignment") != m_mCustom.end()) {
+                if (m_mCustom["vertialAlignment"] == "top")
+                  l_eVert = irr::gui::EGUIA_UPPERLEFT;
+                else if (m_mCustom["verticalAlignment"] == "bottom")
+                  l_eVert = irr::gui::EGUIA_LOWERRIGHT;
+              }
+
+              reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setTextAlignment(l_eAlign, l_eVert);
             }
           }
 
@@ -315,21 +337,23 @@ namespace dustbin {
               else if (m_sFontSize == "huge")
                 l_eFont = enFont::Huge;
                 
-              irr::gui::IGUIFont* l_pFont = a_pGlobal->getFont(l_eFont, a_pGlobal->getVideoDriver()->getScreenSize());
-              if (m_pElement->getType() == irr::gui::EGUIET_BUTTON) {
-                reinterpret_cast<irr::gui::IGUIButton*>(m_pElement)->setOverrideFont(l_pFont);
-              }
-              else if (m_pElement->getType() == irr::gui::EGUIET_STATIC_TEXT) {
-                reinterpret_cast<irr::gui::IGUIStaticText*>(m_pElement)->setOverrideFont(l_pFont);
-              }
-              else if (m_pElement->getType() == irr::gui::EGUIET_EDIT_BOX) {
-                reinterpret_cast<irr::gui::IGUIEditBox*>(m_pElement)->setOverrideFont(l_pFont);
-              }
-              else if (m_pElement->getType() == irr::gui::EGUIET_SPIN_BOX && reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox() != nullptr) {
-                reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox()->setOverrideFont(l_pFont);
-              }
-              else if (m_pElement->getType() == gui::g_MenuButtonId) {
-                reinterpret_cast<gui::CMenuButton*>(m_pElement)->setOverrideFont(l_pFont);
+              if (l_eFont != enFont::Regular) {
+                irr::gui::IGUIFont* l_pFont = a_pGlobal->getFont(l_eFont, a_pGlobal->getVideoDriver()->getScreenSize());
+                if (m_pElement->getType() == irr::gui::EGUIET_BUTTON) {
+                  reinterpret_cast<irr::gui::IGUIButton*>(m_pElement)->setOverrideFont(l_pFont);
+                }
+                else if (m_pElement->getType() == irr::gui::EGUIET_STATIC_TEXT) {
+                  reinterpret_cast<irr::gui::IGUIStaticText*>(m_pElement)->setOverrideFont(l_pFont);
+                }
+                else if (m_pElement->getType() == irr::gui::EGUIET_EDIT_BOX) {
+                  reinterpret_cast<irr::gui::IGUIEditBox*>(m_pElement)->setOverrideFont(l_pFont);
+                }
+                else if (m_pElement->getType() == irr::gui::EGUIET_SPIN_BOX && reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox() != nullptr) {
+                  reinterpret_cast<irr::gui::IGUISpinBox*>(m_pElement)->getEditBox()->setOverrideFont(l_pFont);
+                }
+                else if (m_pElement->getType() == gui::g_MenuButtonId) {
+                  reinterpret_cast<gui::CMenuButton*>(m_pElement)->setOverrideFont(l_pFont);
+                }
               }
               break;
             }
@@ -347,7 +371,6 @@ namespace dustbin {
       return m_pElement;
     }
 
-
     CDialog::CDialog(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pGui(nullptr), m_pFs(nullptr), m_pDefault(nullptr), m_pCancel(nullptr) {
       m_pGui = m_pGlobal->getGuiEnvironment();
       m_pFs = m_pGlobal->getFileSystem();
@@ -362,6 +385,8 @@ namespace dustbin {
             .addFunction("createui"       , &CDialog::createUi)
             .addFunction("addlayoutraster", &CDialog::addLayoutRaster)
             .addFunction("clear"          , &CDialog::clear)
+            .addFunction("getitemfromname", &CDialog::getItemFromName)
+            .addFunction("getitemfromid  ", &CDialog::getItemFromId)
           .endClass();
 
         std::error_code l_cError;
@@ -514,5 +539,50 @@ namespace dustbin {
       return m_pCancel;
     }
 
+
+    /**
+    * Find a GUI element from it's name or id
+    * @param a_sName the name of the queried element (empty string means that the ID is used)
+    * @param a_iId the id of the queried element (-1 means the name is used)
+    * @param a_pParent the current element
+    * @return the element
+    */
+    irr::gui::IGUIElement* CDialog::findElement(const std::string a_sName, int a_iId, irr::gui::IGUIElement* a_pParent) {
+      if (a_sName != "") {
+        if (a_sName == a_pParent->getName())
+          return a_pParent;
+      }
+      else if (a_iId != -1) {
+        if (a_iId == a_pParent->getID())
+          return a_pParent;
+      }
+      else return nullptr;
+
+      for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++) {
+        irr::gui::IGUIElement* p = findElement(a_sName, a_iId, *it);
+        if (p != nullptr)
+          return p;
+      }
+
+      return nullptr;
+    }
+
+    /**
+    * Get a GUI item from it's name
+    * @param a_sName the name of the item
+    */
+    lua::CLuaGuiItem CDialog::getItemFromName(const std::string& a_sName) {
+      irr::gui::IGUIElement* p = findElement(a_sName, -1, m_pGui->getRootGUIElement());
+      return lua::CLuaGuiItem(p);
+    }
+
+    /**
+    * Get a GUI item from it's id
+    * @param a_iId the id of the item
+    */
+    lua::CLuaGuiItem CDialog::getItemFromId(int a_iId) {
+      irr::gui::IGUIElement* p = findElement("", a_iId, m_pGui->getRootGUIElement());
+      return lua::CLuaGuiItem(p);
+    }
   }
 }

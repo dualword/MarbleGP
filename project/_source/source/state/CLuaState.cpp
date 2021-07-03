@@ -33,11 +33,11 @@ namespace dustbin {
       std::string l_sScriptName = m_pGlobal->popScript(),
                   l_sScript = lua::loadLuaScript(l_sScriptName);
 
-      m_pScript = new lua::CLuaScript_dialog(l_sScript);
-      m_pScript->initialize();
-
       irr::core::dimension2du l_cDim = m_pDrv->getScreenSize();
       onResize(l_cDim);
+
+      m_pScript = new lua::CLuaScript_dialog(l_sScript);
+      m_pScript->initialize();
 
       m_bDefCanc[0] = false;
       m_bDefCanc[1] = false;

@@ -4,6 +4,7 @@
 #include <lua/CLuaScript_dialog.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
+#include <lua/CLuaGuiItem.h>
 #include <gui/CDialog.h>
 #include <CGlobal.h>
 
@@ -15,6 +16,7 @@ namespace dustbin {
       luaL_openlibs(m_pState);
 
       CLuaSceneManager::registerClass(m_pState);
+      CLuaGuiItem     ::registerClass(m_pState);
 
       // luabridge::enableExceptions(m_pState);
 
@@ -85,6 +87,10 @@ namespace dustbin {
       if (m_pDialog != nullptr) {
         m_pDialog->clear();
         m_pDialog->createUi();
+
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "windowresized");
+        if (l_cCallback.isCallable())
+          l_cCallback();
       }
     }
 

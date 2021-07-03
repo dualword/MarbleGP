@@ -24,11 +24,15 @@ namespace dustbin {
     const std::wstring portableSaveFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
 
     const std::wstring portableGetDataPath();
+    const std::string  portableGetFontPath();
 
     irr::u64 portableGetFileDate(const std::wstring &a_sFile);
 
     unsigned long long int portableGetLastModification(const std::wstring &a_sFile);
 
     std::vector<std::string> getDrives();
+
+    std::wstring s2ws(const std::string& str);
+    std::string ws2s(const std::wstring& wstr);
   }
 }

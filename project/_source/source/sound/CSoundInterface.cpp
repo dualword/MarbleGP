@@ -123,13 +123,18 @@ namespace dustbin {
       clear3dSounds();
 
       for (std::map<std::wstring, ISound *>::iterator it = m_m2dSounds.begin(); it != m_m2dSounds.end(); it++) {
+        it->second->stop();
         delete it->second;
       }
+
+      m_m2dSounds.clear();
 
       for (std::map<enSoundTrack, ISound*>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
         it->second->stop();
         delete it->second;
       }
+
+      m_mSoundTracks.clear();
 
       m_mSoundParameters.clear();
       delete m_pDevice;
