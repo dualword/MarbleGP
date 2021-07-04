@@ -21,6 +21,7 @@ namespace dustbin {
       private:
         CGlobal                 * m_pGlobal;
         irr::video::IVideoDriver* m_pDrv;
+        
       public:
         CButtonRenderer();
         virtual ~CButtonRenderer();
