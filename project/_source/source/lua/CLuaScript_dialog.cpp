@@ -6,6 +6,7 @@
 #include <LuaBridge/LuaBridge.h>
 #include <lua/CLuaGuiItem.h>
 #include <gui/CDialog.h>
+#include <exception>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -18,7 +19,7 @@ namespace dustbin {
       CLuaSceneManager::registerClass(m_pState);
       CLuaGuiItem     ::registerClass(m_pState);
 
-      // luabridge::enableExceptions(m_pState);
+      luabridge::enableExceptions(m_pState);
 
       m_pSystem = new CLuaSingleton_system(m_pState);
       m_pAudio  = new CLuaSingleton_audio (m_pState);
@@ -27,7 +28,9 @@ namespace dustbin {
 
       try {
         if (luaL_dostring(m_pState, a_sScript.c_str()) != LUA_OK) {
-          printf("Error while running script: \"%s\"\n", lua_tostring(m_pState, -1));
+          CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+          CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA script");
+          throw std::exception();
         }
       }
       catch (luabridge::LuaException e) {
@@ -51,13 +54,13 @@ namespace dustbin {
       try {
         luabridge::LuaRef l_cInitialize = luabridge::getGlobal(m_pState, "initialize");
         if (l_cInitialize.isCallable()) {
-          luabridge::LuaResult l_cResult = l_cInitialize();
-          if (l_cResult.hasFailed())
-            printf("==> %s\n", l_cResult.errorMessage().c_str());
+          l_cInitialize();
         }
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"initialize\"");
+        throw std::exception();
       }
     }
 
@@ -68,7 +71,9 @@ namespace dustbin {
           l_cCleanup();
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"cleanup\"");
+        throw std::exception();
       }
     }
 
@@ -79,7 +84,9 @@ namespace dustbin {
           l_cStep(a_iTime);
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"step\"");
+        throw std::exception();
       }
     }
 
@@ -88,9 +95,16 @@ namespace dustbin {
         m_pDialog->clear();
         m_pDialog->createUi();
 
-        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "windowresized");
-        if (l_cCallback.isCallable())
-          l_cCallback();
+        try {
+          luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "windowresized");
+          if (l_cCallback.isCallable())
+            l_cCallback();
+        }
+        catch (luabridge::LuaException e) {
+          CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+          CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"windowresized\"");
+          throw std::exception();
+        }
       }
     }
 
@@ -101,7 +115,9 @@ namespace dustbin {
           l_cCallback(a_iId, a_sName);
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uielementhovered\"");
+        throw std::exception();
       }
     }
 
@@ -112,7 +128,9 @@ namespace dustbin {
           l_cCallback(a_iId, a_sName);
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uielementleft\"");
+        throw std::exception();
       }
     }
 
@@ -123,7 +141,9 @@ namespace dustbin {
           l_cCallback(a_iId, a_sName);
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uibuttonclicked\"");
+        throw std::exception();
       }
     }
 
@@ -134,7 +154,9 @@ namespace dustbin {
           l_cCallback(a_iId, a_sName, a_fValue);
       }
       catch (luabridge::LuaException e) {
-        printf("Exception: %s\n", e.what());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+        throw std::exception();
       }
     }
 

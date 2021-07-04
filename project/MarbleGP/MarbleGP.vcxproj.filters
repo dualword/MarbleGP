@@ -177,6 +177,9 @@
     <ClCompile Include="..\_source\source\gui\CButtonRenderer.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\state\CErrorState.cpp">
+      <Filter>Quelldateien\state</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -283,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CButtonRenderer.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\state\CErrorState.h">
+      <Filter>Headerdateien\state</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

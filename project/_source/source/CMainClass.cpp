@@ -14,6 +14,7 @@
 #include <gui/CGuiItemFactory.h>
 #include <platform/CPlatform.h>
 #include <platform/CPlatform.h>
+#include <state/CErrorState.h>
 #include <gui_freetype_font.h>
 #include <state/CLuaState.h>
 #include <CMainClass.h>
@@ -151,12 +152,13 @@ namespace dustbin {
       m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_HIGH_LIGHT, irr::video::SColor(0xFF, 232, 232, 232));
       m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_LIGHT, irr::video::SColor(0xFF, 232, 232, 232));
       m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW, irr::video::SColor(0xFF, 128, 128, 128));
+
+      m_mStates[state::enState::LuaState] = new state::CLuaState();
+      m_mStates[state::enState::ErrorState] = new state::CErrorState();
     }
   }
 
   CMainClass::~CMainClass() {
-    CGlobal::m_pInstance = nullptr;
-
     std::wstring l_sPath = platform::portableGetDataPath() + L"/setup.xml";
 
     irr::io::IXMLWriter *l_pXml = m_pFs->createXMLWriter(l_sPath.c_str());
@@ -204,6 +206,8 @@ namespace dustbin {
     m_pGui->clear();
     m_pDrv->removeAllTextures();
 
+    CGlobal::m_pInstance = nullptr;
+
     m_pDevice->closeDevice();
     m_pDevice->run();
     m_pDevice->drop();
@@ -215,19 +219,15 @@ namespace dustbin {
   void CMainClass::run() {
 
     if (m_pDevice != nullptr) {
-      m_mStates[state::enState::LuaState] = new state::CLuaState();
-      m_pActiveState = m_mStates.begin()->second;
-      
-      if (m_pActiveState != nullptr) {
-        m_pActiveState->activate();
 
-        std::chrono::steady_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
+      std::chrono::steady_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
 
-        irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
+      irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
 
-        m_pDevice->setWindowCaption(L"MarbleGP - Dustbin::Games");
+      m_pDevice->setWindowCaption(L"MarbleGP - Dustbin::Games");
 
-        while (m_pDevice->run() && m_pActiveState != nullptr) {
+      while (m_pDevice->run()) {
+        try {
           int l_iFps = m_pDrv->getFPS();
           m_pDevice->setWindowCaption(std::wstring(L"Dustbin::Games - MarbleGP [" + std::to_wstring(l_iFps) + L" FPS]").c_str());
 
@@ -248,21 +248,36 @@ namespace dustbin {
 
           m_pDrv->endScene();
 
-          state::enState l_eState = m_pActiveState->run();
+          state::enState l_eState = state::enState::None;
+
+          if (m_pActiveState != nullptr)
+            l_eState = m_pActiveState->run();
+          else
+            l_eState = state::enState::LuaState;
 
           if (l_eState != state::enState::None) {
-            m_pActiveState->deactivate();
+            if (m_pActiveState != nullptr)
+              m_pActiveState->deactivate();
+
             m_pActiveState = m_mStates.find(l_eState) != m_mStates.end() ? m_mStates[l_eState] : nullptr;
 
             if (m_pActiveState != nullptr) {
               m_pActiveState->activate();
             }
+            else break;
           }
 
           irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
           if (l_cThisSize != l_cSize) {
             for (std::vector<irr::video::ITexture*>::iterator it = m_vRemoveOnResize.begin(); it != m_vRemoveOnResize.end(); it++) {
               m_pDrv->removeTexture(*it);
+            }
+
+            m_pGui->clear();
+
+            while (m_mFonts.size() > 0) {
+              m_mFonts.begin()->second->drop();
+              m_mFonts.erase(m_mFonts.begin());
             }
 
             l_cSize = l_cThisSize;
@@ -274,6 +289,10 @@ namespace dustbin {
 
           l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(10);
           std::this_thread::sleep_until(l_cNextStep);
+        }
+        catch (std::exception e) {
+          m_pActiveState = m_mStates[state::enState::ErrorState];
+          m_pActiveState->activate();
         }
       }
     }

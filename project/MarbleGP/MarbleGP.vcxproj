@@ -215,6 +215,7 @@
     <ClCompile Include="..\_source\source\sound\CSoundData.cpp" />
     <ClCompile Include="..\_source\source\sound\CSoundInterface.cpp" />
     <ClCompile Include="..\_source\source\sound\OggHelpers.cpp" />
+    <ClCompile Include="..\_source\source\state\CErrorState.cpp" />
     <ClCompile Include="..\_source\source\state\CLuaState.cpp" />
     <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="..\_source\include\sound\CSoundEnums.h" />
     <ClInclude Include="..\_source\include\sound\CSoundInterface.h" />
     <ClInclude Include="..\_source\include\sound\OggHelpers.h" />
+    <ClInclude Include="..\_source\include\state\CErrorState.h" />
     <ClInclude Include="..\_source\include\state\CLuaState.h" />
     <ClInclude Include="..\_source\include\state\IState.h" />
     <ClInclude Include="..\_source\include\threads\CMessageQueue.h" />
