@@ -9,8 +9,7 @@ namespace dustbin {
       irr::gui::IGUIElement((irr::gui::EGUI_ELEMENT_TYPE)g_MenuBackgroundId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_cOverrideColor(irr::video::SColor(0xc0, 0xef, 0xef, 0xff)),
-      m_bOverrideColor(false),
-      m_pTexture(nullptr)
+      m_bOverrideColor(false)
     {
     }
 
@@ -19,21 +18,7 @@ namespace dustbin {
 
     void CMenuBackground::draw() {
       if (IsVisible) {
-        if (m_pTexture == nullptr) {
-          std::string l_sColor = "c0efefff";
-
-          if (m_bOverrideColor) {
-            char s[0xFF];
-            sprintf_s(s, "%02x%02x%02x%02x", m_cOverrideColor.getAlpha(), m_cOverrideColor.getRed(), m_cOverrideColor.getGreen(), m_cOverrideColor.getBlue());
-            printf("==> %s\n", s);
-            l_sColor = s;
-          }
-
-          std::string l_sUri = "button://" + l_sColor + "_" + std::to_string(getAbsoluteClippingRect().getWidth()) + "x" + std::to_string(getAbsoluteClippingRect().getHeight());
-          m_pTexture = CGlobal::getInstance()->createTexture(l_sUri);
-        }
-
-        m_pDrv->draw2DImage(m_pTexture, getAbsoluteClippingRect(), irr::core::recti(irr::core::position2di(0, 0), m_pTexture->getSize()), nullptr, nullptr, true);
+        renderBackground(getAbsoluteClippingRect(), m_bOverrideColor ? m_cOverrideColor : irr::video::SColor(0xc0, 0xef, 0xef, 0xff));
 
         IGUIElement::draw();
       }

@@ -11,9 +11,6 @@ namespace dustbin {
       m_sImage(""),
       m_bHovered(false)
     {
-      m_pBackgrounds[0] = nullptr;
-      m_pBackgrounds[1] = nullptr;
-      m_pBackgrounds[2] = nullptr;
     }
 
     CMenuButton::~CMenuButton() {
@@ -22,22 +19,7 @@ namespace dustbin {
     void CMenuButton::draw() {
       irr::core::recti l_cRect = getAbsoluteClippingRect();
 
-      if (m_pBackgrounds[0] == nullptr) {
-        std::string l_sUri = "button://ffb8c8ff_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
-        m_pBackgrounds[0] = CGlobal::getInstance()->createTexture(l_sUri);
-      }
-
-      if (m_pBackgrounds[1] == nullptr) {
-        std::string l_sUri = "button://ff3367b8_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
-        m_pBackgrounds[1] = CGlobal::getInstance()->createTexture(l_sUri);
-      }
-
-      if (m_pBackgrounds[2] == nullptr) {
-        std::string l_sUri = "button://ffecf163_" + std::to_string(l_cRect.getWidth()) + "x" + std::to_string(l_cRect.getHeight());
-        m_pBackgrounds[2] = CGlobal::getInstance()->createTexture(l_sUri);
-      }
-
-      m_pDrv->draw2DImage(m_bHovered ? m_bLDown ? m_pBackgrounds[2] : m_pBackgrounds[1] : m_pBackgrounds[0], l_cRect, irr::core::recti(irr::core::position2di(0, 0), m_pBackgrounds[0]->getSize()), nullptr, nullptr, true);
+      renderBackground(getAbsoluteClippingRect(), m_bHovered ? m_bLDown ? irr::video::SColor(0xff, 0xec, 0xf1, 0x63) : irr::video::SColor(0xff, 0x33, 0x67, 0xb8) : irr::video::SColor(0xff, 0xb8, 0xc8, 0xff));
 
       if (m_pImage != nullptr)
         m_pDrv->draw2DImage(m_pImage, l_cRect, irr::core::recti(irr::core::position2di(0, 0), m_pImage->getSize()), nullptr, nullptr, true);

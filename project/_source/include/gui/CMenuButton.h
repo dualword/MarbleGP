@@ -7,6 +7,7 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <gui/CButtonRenderer.h>
 #include <string>
 
 namespace dustbin {
@@ -19,7 +20,7 @@ namespace dustbin {
     * @author Christian Keimel
     * This is the button used most of the time in MarbleGP
     */
-    class CMenuButton : public irr::gui::IGUIElement {
+    class CMenuButton : public irr::gui::IGUIElement, public CButtonRenderer {
       private:
         irr::gui::IGUIEnvironment* m_pGui;
         irr::video::IVideoDriver * m_pDrv;
@@ -30,8 +31,7 @@ namespace dustbin {
         bool m_bHovered,  /**< Is the element hovered? */
              m_bLDown;    /**< Is the left mouse button pressed? */
 
-        irr::video::ITexture* m_pBackgrounds[3],  /*< The background textures (0 == off, 1 == hover, 2 == click) */
-                            * m_pImage;           /*< The optional image to be rendered */
+        irr::video::ITexture* m_pImage;           /*< The optional image to be rendered */
 
       public:
         CMenuButton(irr::gui::IGUIElement* a_pParent);

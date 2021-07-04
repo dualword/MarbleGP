@@ -32,8 +32,6 @@ function fillItems()
   g_Items["misc"]["headline" ] = dialog:getitemfromname("misc_headline")
   g_Items["misc"]["settarget"] = dialog:getitemfromname("misc_general" )
   
-  g_Items["gfx"]["headline"]:settext("Hello World")
-  
   g_Controls = { }
   
   g_Controls["sfx_master"] = { }

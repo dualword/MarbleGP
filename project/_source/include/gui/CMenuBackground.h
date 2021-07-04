@@ -7,15 +7,16 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <gui/CButtonRenderer.h>
+
 namespace dustbin {
   namespace gui {
     const int g_MenuBackgroundId = MAKE_IRR_ID('d', 'g', 'b', 'a');
     const irr::c8 g_MenuBackgroundName[] = "MenuBackground";
 
-    class CMenuBackground : public irr::gui::IGUIElement {
+    class CMenuBackground : public irr::gui::IGUIElement, public CButtonRenderer {
       private:
         irr::video::IVideoDriver* m_pDrv;
-        irr::video::ITexture    * m_pTexture;
         irr::video::SColor        m_cOverrideColor;
         bool                      m_bOverrideColor;
 
