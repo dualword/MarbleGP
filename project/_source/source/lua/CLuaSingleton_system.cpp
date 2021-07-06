@@ -1,3 +1,4 @@
+#include <_generated/lua/lua_tables.h>
 #include <lua/CLuaSingleton_system.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
@@ -20,6 +21,8 @@ namespace dustbin {
           .addFunction("getresolutionlist", &CLuaSingleton_system::getResolutionList)
           .addFunction("executeluascript" , &CLuaSingleton_system::executeLuaScript)
           .addFunction("executeluastring" , &CLuaSingleton_system::executeLuaString)
+          .addFunction("getsettings"      , &CLuaSingleton_system::getSettings)
+          .addFunction("setsettings"      , &CLuaSingleton_system::setSettings)
         .endClass();
 
       std::error_code l_cError;
@@ -104,6 +107,7 @@ namespace dustbin {
     * Get a list with the supported screen resolutions
     */
     CLuaResolutionList *CLuaSingleton_system::getResolutionList() {
+      m_pResolutionList->refresh();
       return m_pResolutionList;
     }
 
@@ -128,16 +132,42 @@ namespace dustbin {
         luaL_dostring(m_pState, a_sScript.c_str());
     }
 
+    /**
+    * Get the application settings from a LUA script
+    */
+    int CLuaSingleton_system::getSettings(lua_State* a_pState) {
+      CGlobal::getInstance()->getSettings().pushToStack(a_pState);
+      return 1;
+    }
+
+    /**
+    * Update the settings from a LUA script
+    */
+    int CLuaSingleton_system::setSettings(lua_State* a_pState) {
+      SSettings l_cSettings;
+      l_cSettings.loadFromStack(a_pState);
+      CGlobal::getInstance()->setSettings(l_cSettings);
+      return 0;
+    }
 
 
-    CLuaResolutionList::CLuaResolutionList(lua_State *a_pState) {
+    CLuaResolutionList::CLuaResolutionList(lua_State* a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaResolutionList>("LuaResolutionList")
           .addFunction("count", &CLuaResolutionList::getCount)
-          .addFunction("get"  , &CLuaResolutionList::getResolutionString)
+          .addFunction("get", &CLuaResolutionList::getResolutionString)
         .endClass();
 
+      refresh();
+    }
+
+    void CLuaResolutionList::refresh() {
+      m_vList.clear();
+
       irr::video::IVideoModeList *l_pList = CGlobal::getInstance()->getIrrlichtDevice()->getVideoModeList();
+
+      irr::core::dimension2du l_cSize = CGlobal::getInstance()->getVideoDriver()->getScreenSize();
+      bool l_bFound = false;
 
       for (irr::s32 i = 0; i < l_pList->getVideoModeCount(); i++) {
         irr::core::dimension2du l_cDim = l_pList->getVideoModeResolution(i);
@@ -151,8 +181,14 @@ namespace dustbin {
 
         if (l_bAdd) {
           m_vList.push_back(irr::core::dimension2du(l_cDim));
+
+          if (l_cDim == l_cSize)
+            l_bFound = true;
         }
       }
+
+      if (!l_bFound)
+        m_vList.push_back(l_cSize);
 
       std::sort(m_vList.begin(), m_vList.end(), [](const irr::core::dimension2du &a_cDim1, const irr::core::dimension2du &a_cDim2) {
           if (a_cDim1.Width != a_cDim2.Height) {

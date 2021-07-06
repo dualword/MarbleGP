@@ -7,6 +7,7 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <_generated/lua/lua_tables.h>
 #include <state/IState.h>
 #include <string>
 
@@ -347,6 +348,18 @@ namespace dustbin {
       * @return an Irrlicht texture object with the requested image or nullptr
       */
       virtual irr::video::ITexture* createTexture(const std::string& a_sUri) = 0;
+
+      /**
+      * Get the settings struct
+      * @return the settings struct
+      */
+      virtual const SSettings& getSettings() = 0;
+
+      /**
+      * Update the game settings
+      * @param a_cSettings the settings
+      */
+      virtual void setSettings(const SSettings& a_cSettings) = 0;
 
       virtual bool OnEvent(const irr::SEvent& a_cEvent) = 0;
   };

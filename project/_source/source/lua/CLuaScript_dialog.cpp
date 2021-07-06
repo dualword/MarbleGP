@@ -141,7 +141,9 @@ namespace dustbin {
           l_cCallback(a_iId, a_sName);
       }
       catch (luabridge::LuaException e) {
-        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        std::string l_sError = lua_tostring(m_pState, -1);
+        printf("Error: \"%s\"\n", l_sError.c_str());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", l_sError);
         CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uibuttonclicked\"");
         throw std::exception();
       }

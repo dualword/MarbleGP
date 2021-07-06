@@ -52,6 +52,11 @@ namespace dustbin {
         * @return true if the resolution was found, false otherwise
         */
         bool getResolution(int a_iIndex, irr::core::dimension2du &a_cResolution);
+
+        /**
+        * Refresh the list. If the window was resized manually the list might not be up to date
+        */
+        void refresh();
     };
 
     /**
@@ -131,6 +136,16 @@ namespace dustbin {
         * @param a_sScript script as std::string
         */
         void executeLuaString(const std::string &a_sScript);
+
+        /**
+        * Get the application settings from a LUA script
+        */
+        int getSettings(lua_State* a_pState);
+
+        /**
+        * Update the settings from a LUA script
+        */
+        int setSettings(lua_State* a_pState);
     };
   }
 }

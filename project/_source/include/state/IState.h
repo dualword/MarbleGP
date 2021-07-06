@@ -16,7 +16,8 @@ namespace dustbin {
       None = 0,       /**< No state, if the method IState::run returns this no state change is performed */
       LuaState = 1,   /**< The LUA state implementing all menues */
       GameState = 2,  /**< The center of all. The actual game */
-      ErrorState = 3  /**< The error state */
+      ErrorState = 3, /**< The error state */
+      Quit = 255      /**< Application exit */
     };
 
     /**

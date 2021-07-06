@@ -8,9 +8,10 @@ def FileComment(a_File):
   a_File.write("// This file was created by the Dustbin::Games LuaBridge Python Script .. (w) 2021 by Christian Keimel\n")
 
 def IsEnum(a_Type, a_Json):
-  for l_Value in a_Json["enumerations"]:
-    if l_Value == a_Type:
-      return True
+  if "enumerations" in a_Json:
+    for l_Value in a_Json["enumerations"]:
+      if l_Value == a_Type:
+        return True
       
   return False
 
@@ -368,4 +369,4 @@ g_Definitions = json.load(open("luabind.json"))
 
 CreateTables (g_Definitions)
 CreateEnums  (g_Definitions)
-CreateObjects(g_Definitions)
+# CreateObjects(g_Definitions)

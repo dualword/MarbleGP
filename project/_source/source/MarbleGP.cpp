@@ -10,6 +10,8 @@
 #endif
 
 #include <CMainClass.h>
+#include <thread>
+#include <chrono>
 #include <string>
 
 #ifdef _WIN32
@@ -23,9 +25,21 @@ int main(int argc, char *argv[]) {
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *sCmdLine, int nShowCmd) {
 #endif
 
-  dustbin::CMainClass l_cMainClass;
+  bool l_bRestart = false;
 
-  l_cMainClass.run();
+  dustbin::enAppState l_eState = dustbin::enAppState::Continue;
+
+  do {
+    dustbin::CMainClass l_cMainClass;
+    std::chrono::steady_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
+    do {
+      l_eState = l_cMainClass.run();
+      l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(10);
+      std::this_thread::sleep_until(l_cNextStep);
+    }
+    while (l_eState == dustbin::enAppState::Continue);
+  } 
+  while (l_eState == dustbin::enAppState::Restart);
 
   return 0;
 }

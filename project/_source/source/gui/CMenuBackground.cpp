@@ -18,7 +18,7 @@ namespace dustbin {
 
     void CMenuBackground::draw() {
       if (IsVisible) {
-        renderBackground(getAbsoluteClippingRect(), m_bOverrideColor ? m_cOverrideColor : irr::video::SColor(0xc0, 0xef, 0xef, 0xff));
+        renderBackground(getAbsoluteClippingRect(), m_bOverrideColor ? m_cOverrideColor : irr::video::SColor(0x80, 0xef, 0xef, 0xff));
 
         IGUIElement::draw();
       }

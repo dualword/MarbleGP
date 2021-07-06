@@ -23,12 +23,16 @@ namespace dustbin {
     class CSoundInterface : public IAudioBuffer::IDeletionListener {
       private:
         irr::f32              m_fSoundtrackVolume,
-                              m_fSoundFXVolume;
+                              m_fSoundFXVolumeMenu,
+                              m_fSoundFXVolumeGame,
+                              m_fMasterVolume;
         enSoundTrack          m_eSoundTrack;
         irr::core::vector3df  m_vVelListener;
         CAudioDevice         *m_pDevice;
         ISound               *m_pSoundTrack;
-        bool                  m_bMuteSfx;
+        bool                  m_bMuteSfx,
+                              m_bMenu;    /**< Are we currently in the menu or game? */
+
 
         /*
         Sound Parameters.
@@ -52,13 +56,17 @@ namespace dustbin {
 
         void createSoundFileFactory(irr::io::IFileArchive *a_pArchive);
 
-        void setSfxVolume(irr::f32 a_fVolume);
+        void setMasterVolume(irr::f32 a_fVolume);
+        void setSfxVolumeGame(irr::f32 a_fVolume);
+        void setSfxVolumeMenu(irr::f32 a_fVolume);
         void setSoundtrackVolume(irr::f32 a_fVolume);
         void muteAudio();
         void unmuteAudio();
         void muteSoundFX(bool a_bMute);
+        irr::f32 getMasterColume();
+        irr::f32 getSfxVolumeGame();
+        irr::f32 getSfxVolumeMenu();
         irr::f32 getSoundtrackVolume();
-        irr::f32 getSfxVolume();
 
         void startSoundtrack(enSoundTrack a_eSoundTrack);
         void setSoundtrackFade(irr::f32 a_fValue);
@@ -77,6 +85,8 @@ namespace dustbin {
         void assignFixed (const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, const irr::core::vector3df &a_vPos);
 
         void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks);
+        
+        void setMenuFlag(bool a_bMenu);
 
         virtual void bufferDeleted(IAudioBuffer* a_pBuffer);
       };

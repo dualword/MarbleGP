@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<dialog>
+  <element type="staticText" rect="lowerright: -8, 0, 1 , 1" tooltip="MarbleGP Version" font="tiny">
+    <attributes>
+      <attribute key="Caption" value="Version 0.7 build 195" />
+      <attribute key="HTextAlign" value="center" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+</dialog>

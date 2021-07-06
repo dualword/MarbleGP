@@ -8,22 +8,25 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <lua.hpp>
+#include <LuaBridge/LuaBridge.h>
+
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <messages/CMessageHelpers.h>
+#include <lua/CLuaSingleton_system.h>
 #include <sound/CSoundInterface.h>
 #include <gui/CGuiItemFactory.h>
 #include <platform/CPlatform.h>
 #include <platform/CPlatform.h>
 #include <state/CErrorState.h>
 #include <gui_freetype_font.h>
+#include <gui/CMenuButton.h>
 #include <state/CLuaState.h>
 #include <CMainClass.h>
 #include <algorithm>
-#include <chrono>
-#include <thread>
 
 namespace dustbin {
-  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr), m_eStateChange(state::enState::None), m_pSoundInterface(nullptr), m_iRasterSize(-1) {
+  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr), m_eStateChange(state::enState::None), m_pSoundInterface(nullptr), m_iRasterSize(-1), m_eState(enAppState::Continue) {
     CGlobal::m_pInstance = this;
 
 #ifdef _OPENGL_ES
@@ -62,29 +65,59 @@ namespace dustbin {
     l_pDevice->run();
     l_pDevice->drop();
 
-    irr::u32 l_iWidth  = 1024,
-             l_iHeight = 768;
+    std::string l_sSettings = getSetting("settings");
+    bool l_bSettingsLoaded = false;
 
-    if (getSetting("resolution") != "") {
-      std::string s = getSetting("resolution");
+    if (l_sSettings != "") {
+      lua_State* l_pState = luaL_newstate();
+      luaL_openlibs(l_pState);
+      luabridge::enableExceptions(l_pState);
+      
+      std::string l_sScript = std::string("function getSettings()\n  return ") + l_sSettings + "\nend\n";
 
-      size_t l_iPos = s.find('x');
+      printf("%s\n", l_sScript.c_str());
 
-      if (l_iPos != std::string::npos) {
-        std::string l_sWidth  = s.substr(0, l_iPos),
-                    l_sHeight = s.substr(l_iPos + 1);
+      luaL_dostring(l_pState, l_sScript.c_str());
 
-        printf("Resolution: %s, %s\n", l_sWidth.c_str(), l_sHeight.c_str());
-
-        l_iWidth  = std::atoi(l_sWidth .c_str());
-        l_iHeight = std::atoi(l_sHeight.c_str());
+      try {
+        lua_getglobal(l_pState, "getSettings");
+        if (!lua_isnil(l_pState, -1)) {
+          if (lua_pcall(l_pState, 0, 1, 0) == 0) {
+            m_cSettings.loadFromStack(l_pState);
+            l_bSettingsLoaded = true;
+          }
+          else {
+            std::string l_sMessage = std::string("ERROR: function \"scrollbar_changed\" failed: \"") + std::string(lua_tostring(l_pState, -1)) + std::string("\"");
+            printf("Error: \"%s\"\n", l_sMessage.c_str());
+          }
+        }
       }
+      catch (luabridge::LuaException e) {
+        printf("*** Settings not loaded.\n");
+      }
+
+      lua_close(l_pState);
     }
-    else setSetting("resolution", "1024x768");
 
-    l_bFullScreen = getSetting("fullscreen") == "1";
+    if (!l_bSettingsLoaded) {
+      m_cSettings.m_gfx_resolution_w = 1280;
+      m_cSettings.m_gfx_resolution_h = 768;
+      m_cSettings.m_gfx_fullscreen = false;
+      m_cSettings.m_gfx_shadows = 1;
+      m_cSettings.m_gfx_ambientlight = 2;
+      m_cSettings.m_sfx_master = 1000;
+      m_cSettings.m_sfx_soundtrack = 750;
+      m_cSettings.m_sfx_menu = 500;
+      m_cSettings.m_sfx_game = 500;
+      m_cSettings.m_ingame_racetime = true;
+      m_cSettings.m_ingame_laptimes = false;
+      m_cSettings.m_ingame_ranking = true;
+      m_cSettings.m_ingame_rearview = false;
+      m_cSettings.m_misc_menuctrl = "";
+      m_cSettings.m_misc_usemenuctrl = false;
+    }
 
-    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(l_iWidth, l_iHeight), 32, l_bFullScreen, false, false, this);
+    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(m_cSettings.m_gfx_resolution_w, m_cSettings.m_gfx_resolution_h), 32, l_bFullScreen, false, false, this);
 
     if (m_pDevice != nullptr) {
       m_pDevice->setResizable(true);
@@ -155,6 +188,8 @@ namespace dustbin {
 
       m_mStates[state::enState::LuaState] = new state::CLuaState();
       m_mStates[state::enState::ErrorState] = new state::CErrorState();
+
+      m_cScreenSize = m_pDrv->getScreenSize();
     }
   }
 
@@ -216,17 +251,9 @@ namespace dustbin {
   /**
   * This method does everything. On return the application ends
   */
-  void CMainClass::run() {
-
+  enAppState CMainClass::run() {
     if (m_pDevice != nullptr) {
-
-      std::chrono::steady_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
-
-      irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
-
-      m_pDevice->setWindowCaption(L"MarbleGP - Dustbin::Games");
-
-      while (m_pDevice->run()) {
+      if (m_pDevice->run()) {
         try {
           int l_iFps = m_pDrv->getFPS();
           m_pDevice->setWindowCaption(std::wstring(L"Dustbin::Games - MarbleGP [" + std::to_wstring(l_iFps) + L" FPS]").c_str());
@@ -264,11 +291,10 @@ namespace dustbin {
             if (m_pActiveState != nullptr) {
               m_pActiveState->activate();
             }
-            else break;
           }
 
           irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
-          if (l_cThisSize != l_cSize) {
+          if (l_cThisSize != m_cScreenSize) {
             for (std::vector<irr::video::ITexture*>::iterator it = m_vRemoveOnResize.begin(); it != m_vRemoveOnResize.end(); it++) {
               m_pDrv->removeTexture(*it);
             }
@@ -280,22 +306,25 @@ namespace dustbin {
               m_mFonts.erase(m_mFonts.begin());
             }
 
-            l_cSize = l_cThisSize;
+            m_cScreenSize = l_cThisSize;
             m_iRasterSize = -1;
-            printf("Rescaled: %i, %i\n", l_cSize.Width, l_cSize.Height);
-            m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
-            m_pActiveState->onResize(l_cSize);
-          }
 
-          l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(10);
-          std::this_thread::sleep_until(l_cNextStep);
+            m_cSettings.m_gfx_resolution_w = m_cScreenSize.Width;
+            m_cSettings.m_gfx_resolution_h = m_cScreenSize.Height;
+
+            m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
+            m_pActiveState->onResize(m_cScreenSize);
+          }
         }
         catch (std::exception e) {
           m_pActiveState = m_mStates[state::enState::ErrorState];
           m_pActiveState->activate();
         }
       }
+      else m_eState = enAppState::Quit;
     }
+
+    return m_eState;
   }
 
   // Methods inherited from CGlobal
@@ -438,6 +467,29 @@ namespace dustbin {
     bool l_bRet = m_pActiveState != nullptr ? m_pActiveState->OnEvent(a_cEvent) : false;
 
     if (!l_bRet) {
+      if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+          switch (a_cEvent.GUIEvent.Caller->getType()) {
+            case gui::g_MenuButtonId:
+            case irr::gui::EGUIET_BUTTON:
+            case irr::gui::EGUIET_CHECK_BOX:
+            case irr::gui::EGUIET_COMBO_BOX:
+            case irr::gui::EGUIET_SPIN_BOX:
+            case irr::gui::EGUIET_SCROLL_BAR:
+              getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
+              break;
+
+            default:
+              // Play no sound
+              break;
+          }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ||
+          a_cEvent.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED ||
+          a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+          getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+        }
+      }
     }
 
     return l_bRet;
@@ -512,6 +564,8 @@ namespace dustbin {
   */
   void CMainClass::stateChange(dustbin::state::enState a_eNewState) {
     m_eStateChange = a_eNewState;
+    if (m_eStateChange == state::enState::Quit)
+      m_eState = enAppState::Quit;
   }
 
   /**
@@ -679,6 +733,69 @@ namespace dustbin {
   }
 
   /**
+  * Get the settings struct
+  * @return the settings struct
+  */
+  const SSettings& CMainClass::getSettings() {
+    return m_cSettings;
+  }
+
+  /**
+  * Update the game settings
+  * @param a_cSettings the settings
+  */
+  void CMainClass::setSettings(const SSettings& a_cSettings) {
+    int l_iOldWidth  = m_cSettings.m_gfx_resolution_w,
+        l_iOldHeight = m_cSettings.m_gfx_resolution_h;
+
+    bool l_bOldFullscreen = m_cSettings.m_gfx_fullscreen;
+
+    m_cSettings.copyFrom(a_cSettings);
+
+    if (m_cSettings.m_gfx_resolution_w != l_iOldWidth || m_cSettings.m_gfx_resolution_h != l_iOldHeight || m_cSettings.m_gfx_fullscreen != l_bOldFullscreen) {
+      m_eState = enAppState::Restart;
+    }
+
+    lua_State* l_pState = luaL_newstate();
+    luaL_openlibs(l_pState);
+    luabridge::enableExceptions(l_pState);
+
+    lua::CLuaSingleton_system *l_pSystem = new lua::CLuaSingleton_system(l_pState);
+
+    std::string l_sScript = "system:executeluascript(\"data/lua/serializer.lua\")\n";
+    if (luaL_dostring(l_pState, l_sScript.c_str()) == LUA_OK) {
+      try {
+        try {
+          lua_getglobal(l_pState, "serializeTable");
+          if (!lua_isnil(l_pState, -1)) {
+            m_cSettings.pushToStack(l_pState);
+            lua_pushinteger(l_pState, 2);
+            if (lua_pcall(l_pState, 2, 1, 0) != 0) {
+              std::string l_sMessage = std::string("ERROR: function \"serializeTable\" failed: \"") + std::string(lua_tostring(l_pState, -1)) + std::string("\"");
+              printf("Error: \"%s\"\n", l_sMessage.c_str());
+            }
+            else {
+              std::string s = lua_tostring(l_pState, lua_gettop(l_pState));
+              setSetting("settings", s);
+            }
+          }
+        }
+        catch (luabridge::LuaException e) {
+          printf("*** Settings serialization failed: \"%s\".\n", lua_tostring(l_pState, -1));
+        }
+      }
+      catch (luabridge::LuaException e) {
+        printf("*** Settings not loaded.\n");
+      }
+    }
+    else printf("Error while saving settings: \"%s\".\n", lua_tostring(l_pState, -1));
+
+    delete l_pSystem;
+
+    lua_close(l_pState);
+  }
+
+  /**
   * Get an image from a string. The following prefixes are possible:
   * - file://: load a file from a subfolder
   * - generate://: generate a marble texture
@@ -695,84 +812,7 @@ namespace dustbin {
                   l_sPostFix = a_sUri.substr(l_iPos + 3);
 
       if (l_sPrefix == "file") {
-        l_pRet = m_pDrv->getTexture(l_sPostFix.c_str());
-      }
-      else if (l_sPrefix == "button") {
-        size_t l_iType = l_sPostFix.find("_");
-
-        std::string l_sColor = l_sPostFix.substr(0, l_iType), l_sName = l_sPostFix;
-
-        l_sPostFix = l_sPostFix.substr(l_iType + 1);
-
-        if (l_iType != std::string::npos) {
-          size_t l_iX = l_sPostFix.find("x");
-          if (l_iX != std::string::npos) {
-            l_pRet = m_pDrv->getTexture(l_sName.c_str());
-
-            if (l_pRet == nullptr) {
-              int l_iWidth  = std::atoi(l_sPostFix.substr(0, l_iX) .c_str()),
-                  l_iHeight = std::atoi(l_sPostFix.substr(l_iX + 1).c_str());
-
-              l_pRet = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(l_iWidth, l_iHeight), l_sName.c_str());
-              m_pDrv->setRenderTarget(l_pRet, true, true, irr::video::SColor(0, 0, 0, 0));
-
-              int l_iRaster = getRasterSize(),
-                  l_iBorder = l_iRaster / 3;
-
-              if (l_iBorder < 2)
-                l_iBorder = 2;
-
-              for (int l_iLine = 0; l_iLine < l_iHeight; l_iLine++) {
-                int l_iOffset = 0;
-
-                if (l_iLine < l_iRaster) {
-                  l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
-                }
-                else if (l_iLine >= l_iHeight - l_iRaster) {
-                  l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iLine - l_iHeight + l_iRaster) * (l_iLine - l_iHeight + l_iRaster)));
-                }
-                else {
-
-                }
-
-                m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine), irr::core::vector2di(l_iWidth - l_iOffset, l_iLine), irr::video::SColor(0xFF, 0, 0, 0));
-              }
-
-              int l_iInnerHeight = l_iHeight - l_iBorder,
-                  l_iRadius      = l_iRaster - l_iBorder;
-
-              for (int l_iLine = l_iBorder; l_iLine < l_iHeight - l_iBorder; l_iLine++) {
-                int l_iOffset = 0;
-
-                if (l_iLine < l_iRaster) {
-                  l_iOffset = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
-                }
-                else if (l_iLine >= l_iHeight - l_iRaster) {
-                  l_iOffset = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iLine - l_iHeight + l_iRaster) * (l_iLine - l_iHeight + l_iRaster)));
-                }
-                else {
-                  l_iOffset = l_iBorder;
-                }
-
-                while (l_sColor.size() < 8)
-                  l_sColor += "0";
-
-                char* p = nullptr;
-
-                irr::u32 a = std::strtoul(l_sColor.substr(0, 2).c_str(), &p, 16),
-                         r = std::strtoul(l_sColor.substr(2, 2).c_str(), &p, 16),
-                         g = std::strtoul(l_sColor.substr(4, 2).c_str(), &p, 16),
-                         b = std::strtoul(l_sColor.substr(6, 2).c_str(), &p, 16);
-
-                irr::video::SColor l_cCol = irr::video::SColor(a, r, g, b);
-                m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine), irr::core::vector2di(l_iWidth - l_iOffset, l_iLine), l_cCol);
-              }
-
-              m_pDrv->setRenderTarget(nullptr);
-              m_vRemoveOnResize.push_back(l_pRet);
-            }
-          }
-        }
+        l_pRet = m_pDrv->getTexture(l_sPostFix.c_str());  
       }
     }
 

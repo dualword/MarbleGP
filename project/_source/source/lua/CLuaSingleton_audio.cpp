@@ -12,7 +12,9 @@ namespace dustbin {
 
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaSingleton_audio>("LuaAudio")
-          .addFunction("setsfxvolume"       , &CLuaSingleton_audio::setSfxVolume)
+          .addFunction("setmastervolume"    , &CLuaSingleton_audio::setMasterVolume)
+          .addFunction("setsfxvolumemenu"   , &CLuaSingleton_audio::setSfxVolumeMenu)
+          .addFunction("setsfxvolumegame"   , &CLuaSingleton_audio::setSfxVolumeGame)
           .addFunction("setsoundtrackvolume", &CLuaSingleton_audio::setSoundtrackVolume)
           .addFunction("muteaudio"          , &CLuaSingleton_audio::muteAudio)
           .addFunction("mutesfx"            , &CLuaSingleton_audio::muteSfx)
@@ -30,8 +32,16 @@ namespace dustbin {
     CLuaSingleton_audio::~CLuaSingleton_audio() {
     }
 
-    void CLuaSingleton_audio::setSfxVolume(float a_fVolume) {
-      m_pInterface->setSfxVolume((irr::f32)a_fVolume);
+    void CLuaSingleton_audio::setMasterVolume(float a_fVolume) {
+      m_pInterface->setMasterVolume((irr::f32)a_fVolume);
+    }
+
+    void CLuaSingleton_audio::setSfxVolumeGame(float a_fVolume) {
+      m_pInterface->setSfxVolumeGame(a_fVolume);
+    }
+
+    void CLuaSingleton_audio::setSfxVolumeMenu(float a_fVolume) {
+      m_pInterface->setSfxVolumeMenu((irr::f32)a_fVolume);
     }
 
     void CLuaSingleton_audio::setSoundtrackVolume(float a_fVolume) {
@@ -62,7 +72,7 @@ namespace dustbin {
     }
 
     float CLuaSingleton_audio::getSfxVolume() {
-      return m_pInterface->getSfxVolume();
+      return m_pInterface->getSfxVolumeMenu();
     }
   }
 }

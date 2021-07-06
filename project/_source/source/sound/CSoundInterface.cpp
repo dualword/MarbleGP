@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <_generated/lua/lua_tables.h>
 #include <sound/CSoundInterface.h>
 #include <sound/CSoundData.h>
 #include <CGlobal.h>
@@ -60,7 +61,7 @@ namespace dustbin {
       }
     }
 
-    CSoundInterface::CSoundInterface(irr::io::IFileSystem *a_pFs) {
+    CSoundInterface::CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true) {
       m_vVelListener = irr::core::vector3df(0.0f, 0.0f, 0.0f);
       m_eSoundTrack  = enSoundTrack::enStNone;
       m_pSoundTrack  = nullptr;
@@ -68,11 +69,15 @@ namespace dustbin {
 
       dustbin::CGlobal *l_pGlobal = CGlobal::getInstance();
 
+      SSettings l_cSettings = l_pGlobal->getSettings();
+
       irr::f32 l_fSTrack = l_pGlobal->getSetting("soundtrackvolume") != "" ? (irr::f32)l_pGlobal->getSettingDouble("soundtrackvolume") : 1.0f,
                l_fSfx    = l_pGlobal->getSetting("sfxvolume"       ) != "" ? (irr::f32)l_pGlobal->getSettingDouble("sfxvolume"       ) : 1.0f;
 
-      m_fSoundtrackVolume = l_fSTrack;
-      m_fSoundFXVolume    = l_fSfx;
+      m_fMasterVolume      = (irr::f32)(l_cSettings.m_sfx_master     / 1000.0);
+      m_fSoundtrackVolume  = (irr::f32)(l_cSettings.m_sfx_soundtrack / 1000.0);
+      m_fSoundFXVolumeGame = (irr::f32)(l_cSettings.m_sfx_game       / 1000.0);
+      m_fSoundFXVolumeMenu = (irr::f32)(l_cSettings.m_sfx_menu       / 1000.0);
 
       if (a_pFs->existFile("data/marblesounds.xml")) {
         irr::io::IXMLReader *l_pReader = a_pFs->createXMLReader("data/marblesounds.xml");
@@ -145,17 +150,31 @@ namespace dustbin {
       m_mAudioBuffer.clear();
     }
 
+    void CSoundInterface::setMenuFlag(bool a_bMenu) {
+      m_bMenu = a_bMenu;
+    }
+
     void CSoundInterface::createSoundFileFactory(irr::io::IFileArchive *a_pArchive) {
     }
 
-    void CSoundInterface::setSfxVolume(irr::f32 a_fVolume) {
-      m_fSoundFXVolume = a_fVolume;
+    void CSoundInterface::setMasterVolume(irr::f32 a_fVolume) {
+      m_fMasterVolume = a_fVolume;
+      if (m_pSoundTrack != nullptr)
+        m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
+    }
+
+    void CSoundInterface::setSfxVolumeGame(irr::f32 a_fVolume) {
+      m_fSoundFXVolumeGame = a_fVolume;
+    }
+
+    void CSoundInterface::setSfxVolumeMenu(irr::f32 a_fVolume) {
+      m_fSoundFXVolumeMenu = a_fVolume;
     }
 
     void CSoundInterface::setSoundtrackVolume(irr::f32 a_fVolume) {
       m_fSoundtrackVolume = a_fVolume;
       if (m_pSoundTrack != nullptr)
-        m_pSoundTrack->setVolume(m_fSoundtrackVolume);
+        m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
     }
 
     void CSoundInterface::muteAudio() {
@@ -184,8 +203,16 @@ namespace dustbin {
       return m_fSoundtrackVolume;
     }
 
-    irr::f32 CSoundInterface::getSfxVolume() {
-      return m_fSoundFXVolume;
+    irr::f32 CSoundInterface::getMasterColume() {
+      return m_fMasterVolume;
+    }
+
+    irr::f32 CSoundInterface::getSfxVolumeGame() {
+      return m_fSoundFXVolumeGame;
+    }
+
+    irr::f32 CSoundInterface::getSfxVolumeMenu() {
+      return m_fSoundFXVolumeMenu;
     }
 
     void CSoundInterface::startSoundtrack(enSoundTrack a_eSoundTrack) {
@@ -202,7 +229,7 @@ namespace dustbin {
 
 
         if (m_pSoundTrack != nullptr) {
-          m_pSoundTrack->setVolume(m_fSoundtrackVolume);
+          m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
           m_pSoundTrack->play();
         }
       }
@@ -210,7 +237,7 @@ namespace dustbin {
 
     void CSoundInterface::setSoundtrackFade(irr::f32 a_fValue) {
       if (m_pSoundTrack != nullptr) {
-        m_pSoundTrack->setVolume(a_fValue * m_fSoundtrackVolume);
+        m_pSoundTrack->setVolume(a_fValue * m_fMasterVolume * m_fSoundtrackVolume);
       }
     }
 
@@ -219,7 +246,7 @@ namespace dustbin {
         ISound *p = m_m3dSounds[a_iId][a_sName];
         p->setPosition(a_vPosition);
         p->setVelocity(a_vVelocity);
-        p->setVolume  (m_bMuteSfx ? 0.0f : m_fSoundFXVolume * a_fVolume);
+        p->setVolume  (m_bMuteSfx ? 0.0f : m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
         p->play();
       }
     }
@@ -229,7 +256,7 @@ namespace dustbin {
         ISound *p = m_m3dSounds[a_iId][a_sName];
         p->setPosition(a_vPosition);
         p->setVelocity(m_vVelListener);
-        p->setVolume  (m_bMuteSfx ? 0.0f : m_fSoundFXVolume * a_fVolume);
+        p->setVolume  (m_bMuteSfx ? 0.0f : m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
         p->play();
       }
     }
@@ -243,7 +270,7 @@ namespace dustbin {
       }
 
       if (m_m2dSounds.find(a_sName) != m_m2dSounds.end()) {
-        m_m2dSounds[a_sName]->setVolume(m_bMuteSfx ? 0.0f : m_fSoundFXVolume * a_fVolume);
+        m_m2dSounds[a_sName]->setVolume(m_bMuteSfx ? 0.0f : m_fMasterVolume * (m_bMenu ? m_fSoundFXVolumeMenu : m_fSoundFXVolumeGame) * a_fVolume);
         m_m2dSounds[a_sName]->setPosition(irr::core::vector3df(0.0f, a_fPan, 0.0f));
         m_m2dSounds[a_sName]->play();
       }

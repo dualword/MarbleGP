@@ -72,21 +72,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;C:\Program Files (x86)\Visual Leak Detector\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\libs\Irrlicht-1.9\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\libs\Irrlicht-1.9\lib\Win64-Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>false</VcpkgEnableManifest>
@@ -109,7 +109,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -151,7 +151,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -172,7 +172,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

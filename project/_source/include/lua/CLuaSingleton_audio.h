@@ -24,7 +24,9 @@ namespace dustbin {
         CLuaSingleton_audio(lua_State *a_pState);
         virtual ~CLuaSingleton_audio();
 
-        void setSfxVolume(float a_fVolume);
+        void setMasterVolume(float a_fVolume);
+        void setSfxVolumeGame(float a_fVolume);
+        void setSfxVolumeMenu(float a_fVolume);
         void setSoundtrackVolume(float a_fVolume);
         void muteAudio(bool a_bMute);
         void muteSfx(bool a_bMute);

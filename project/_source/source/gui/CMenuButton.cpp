@@ -64,6 +64,12 @@ namespace dustbin {
         if (a_cEvent.GUIEvent.Caller == this) {
           if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
             m_bHovered = true;
+
+            irr::SEvent l_cEvent;
+            l_cEvent.EventType          = irr::EET_GUI_EVENT;
+            l_cEvent.GUIEvent.EventType = irr::gui::EGET_ELEMENT_HOVERED;
+            l_cEvent.GUIEvent.Caller    = this;
+            CGlobal::getInstance()->OnEvent(l_cEvent);
           }
           else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
             m_bHovered = false;

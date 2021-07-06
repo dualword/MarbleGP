@@ -418,9 +418,12 @@ namespace dustbin {
                 break;
             }
           }
+          l_pXml->drop();
         }
         else {
-          printf("Could not open file \"%s\"\n", a_sFileName.c_str());
+          CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Could not open file \"%s\"\n") + a_sFileName);
+          CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while loading dialog XML");
+          throw std::exception();
         }
       }
     }

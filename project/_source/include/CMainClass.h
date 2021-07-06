@@ -17,6 +17,12 @@ class CGUITTFace;
 
 namespace dustbin {
 
+  enum class enAppState {
+    Continue,
+    Restart,
+    Quit
+  };
+
   /**
    * @class CMainClass
    * @author Christian Keimel
@@ -31,6 +37,12 @@ namespace dustbin {
       irr::gui::IGUIEnvironment *m_pGui;    /**< The Irrlicht Gui Environment Instance */
       irr::scene::ISceneManager *m_pSmgr;   /**< The Irrlicht Scene Manager Instance */
       irr::io::IFileSystem      *m_pFs;     /**< The Irrlicht File System Instance */
+
+      enAppState m_eState;  /**< The current state that is returned by the "run" method */
+
+      irr::core::dimension2du m_cScreenSize;  /**< The current size of the window (or screen if fullscreen) */
+
+      SSettings m_cSettings;  /**< The game settings */
 
       CGUITTFace* m_pFontFace;  /**< The Truetype font to use */
 
@@ -63,7 +75,7 @@ namespace dustbin {
       /**
        * This method does everything. On return the application ends
        */
-      void run();
+      enAppState run();
 
       // Methods inherited from CGlobal
 
@@ -261,6 +273,18 @@ namespace dustbin {
       * @return an Irrlicht texture object with the requested image or nullptr
       */
       virtual irr::video::ITexture* createTexture(const std::string& a_sUri);
+
+      /**
+      * Get the settings struct
+      * @return the settings struct
+      */
+      virtual const SSettings& getSettings();
+
+      /**
+      * Update the game settings
+      * @param a_cSettings the settings
+      */
+      virtual void setSettings(const SSettings& a_cSettings);
 
       // Method inherited from irr::IEventReceiver
       virtual bool OnEvent(const irr::SEvent &a_cEvent);

@@ -15,6 +15,7 @@ function initialize()
   
   -- dialog:addlayoutraster()
   dialog:loaddialog("data/menu/menu_main.xml")
+  dialog:loaddialog("data/menu/version.xml")
   
   dialog:createui();
   
@@ -30,6 +31,8 @@ function uibuttonclicked(a_Id, a_Name)
   if a_Name == "settings" then
     system:pushscript("data/lua/menu_settings.lua")
     system:statechange(1)
+  elseif a_Name == "exit" then
+    system:statechange(255)
   else
     io.write("Lua: Button clicked: " .. a_Name .. " (" .. tostring(a_Id) .. ")\n")
   end
