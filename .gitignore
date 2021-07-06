@@ -109,3 +109,7 @@
 /*.dll
 /project/libs/Irrlicht-1.9/lib/Win64-Debug/Irrlicht.lib
 /project/libs/Irrlicht-1.9/lib/Win64-Release/Irrlicht.lib
+/project/libs/irrlicht/lib/debug/Irrlicht.pdb
+/project/libs/irrlicht/lib/debug/irrlicht.lib
+/project/libs/irrlicht/lib/release/Irrlicht.lib
+/project/libs/irrlicht/lib/release/Irrlicht.pdb
