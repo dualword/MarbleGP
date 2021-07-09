@@ -146,6 +146,12 @@ namespace dustbin {
         * Update the settings from a LUA script
         */
         int setSettings(lua_State* a_pState);
+
+        /**
+        * Create a XML string with the default configuration for the menu controller
+        * @return a XML string
+        */
+        std::string getControllerXml_Menu();
     };
   }
 }

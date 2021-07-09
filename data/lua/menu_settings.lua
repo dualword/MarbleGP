@@ -128,6 +128,18 @@ function fillItems()
   g_Controls["misc_use"] = dialog:getitemfromname("misc_use")
   g_Controls["misc_use"]:setchecked(g_Settings["misc_usemenuctrl"])
   
+  g_Ctrl = dialog:getitemfromname("controller_ui")
+  
+  local l_Data = g_Settings["misc_menuctrl"]
+
+  if l_Data == "" then
+    l_Data = system:getcontrollerxml_menu()
+  end
+  
+  io.write(tostring(g_Ctrl))
+  
+  g_Ctrl:settext(l_Data)
+  
   showHideUi()
 end
 

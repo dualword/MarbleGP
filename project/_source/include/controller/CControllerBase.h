@@ -1,0 +1,96 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
+#pragma once
+
+#ifdef _LINUX_INCLUDE_PATH
+#include <irrlicht.h>
+#else
+#include <irrlicht/irrlicht.h>
+#endif
+
+#include <string>
+#include <vector>
+
+namespace dustbin {
+  namespace controller {
+
+    /**
+    * @class CControllerBase
+    * @author Christian Keimel
+    * This is the base class for the controllers. It holds all of the functionality, the
+    * subclasses just need to add control items
+    */
+    class CControllerBase {
+      public:
+        /**
+        * An enumeration for the type of controllers, in this case
+        * only "key" and "joystick" are defined
+        */
+        enum class enInputType {
+          Key,
+          JoyAxis,
+          JoyButton,
+          JoyPov
+        };
+
+        /**
+        * This struct holds all data necessary to handle input
+        */
+        struct SCtrlInput {
+          std::string    m_sName,       /**< The name of this control */
+                         m_sJoystick;   /**< Name of the joystick (if this is a joystick control) */
+          enInputType    m_eType;       /**< The type of this input */
+          irr::EKEY_CODE m_eKey;        /**< The key to use (necessary for enCtrlType::Key input) */
+          irr::u8        m_iJoystick;   /**< The joystick to use for any type of enCtrlType::Joy* input type */
+          irr::u32       m_iButton;     /**< The button used for enCtrlType::JoyButton inputs */
+          irr::s16       m_iAxis,       /**< The axis used for enCtrlType::JoyAxis inputs */
+                         m_iPov;        /**< The POV direction used */
+          irr::s8        m_iDirection;  /**< The direction of the axis to use for enCtrlType::JoyAxis inputs */
+          irr::f32       m_fValue;      /**< The value of the input (0 .. -1) */
+
+          SCtrlInput();
+          SCtrlInput(enInputType a_eType, const std::string& a_sName);
+          SCtrlInput(irr::io::IXMLReaderUTF8* a_pXml);
+          SCtrlInput(const SCtrlInput& a_cOther);
+
+          ~SCtrlInput();
+
+          /**
+          * Event handler for this input
+          * @param a_cEvent the event to handle
+          */
+          void update(const irr::SEvent& a_cEvent);
+
+          void serialize(irr::io::IXMLWriterUTF8* a_pXml) const;
+        };
+
+      protected:
+        std::vector<SCtrlInput> m_vControls;
+
+      public:
+        CControllerBase();
+        virtual ~CControllerBase();
+
+        /**
+        * The event will be passed on to all registered controls
+        * @param a_cEvent the event to handle
+        */
+        void update(const irr::SEvent& a_cEvent);
+
+        std::vector<SCtrlInput>& getInputs();
+
+        /**
+        * Serialize the settings
+        * @param a_pXml an Irrlicht XML writer to save the data to
+        */
+        void serialize(irr::io::IXMLWriterUTF8 *a_pXml);
+
+        /**
+        * Fill the controller from an XML file. If the vector of controllers is empty
+        * it will be filled, otherwise the corresponding items will be updated
+        * @param a_pXml the XML file
+        */
+        void deserialize(irr::io::IXMLReaderUTF8* a_pXml);
+     };
+
+  } // namespace controller 
+} // namespace dustbin

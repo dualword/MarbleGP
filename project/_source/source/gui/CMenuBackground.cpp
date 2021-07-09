@@ -5,8 +5,8 @@
 
 namespace dustbin {
   namespace gui {
-    CMenuBackground::CMenuBackground(irr::gui::IGUIElement* a_pParent) :
-      irr::gui::IGUIElement((irr::gui::EGUI_ELEMENT_TYPE)g_MenuBackgroundId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
+    CMenuBackground::CMenuBackground(irr::gui::IGUIElement* a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType) :
+      irr::gui::IGUIElement(a_eType, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_cOverrideColor(irr::video::SColor(0xc0, 0xef, 0xef, 0xff)),
       m_bOverrideColor(false)

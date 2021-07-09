@@ -21,7 +21,7 @@ namespace dustbin {
         bool                      m_bOverrideColor;
 
       public:
-        CMenuBackground(irr::gui::IGUIElement *a_pParent);
+        CMenuBackground(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType = (irr::gui::EGUI_ELEMENT_TYPE)g_MenuBackgroundId);
         virtual ~CMenuBackground();
 
         virtual void draw();

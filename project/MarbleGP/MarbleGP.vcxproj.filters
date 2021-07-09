@@ -85,6 +85,12 @@
     <Filter Include="Quelldateien\gui">
       <UniqueIdentifier>{b508adcf-3eb1-4f78-a883-5a6598644754}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\controller">
+      <UniqueIdentifier>{b12d56c0-0acd-49bf-b467-2b66f5a424a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\controller">
+      <UniqueIdentifier>{da810d51-2bdb-48fd-a179-9cdbc42d0741}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -179,6 +185,15 @@
     </ClCompile>
     <ClCompile Include="..\_source\source\state\CErrorState.cpp">
       <Filter>Quelldateien\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\controller\CControllerBase.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\controller\CControllerMenu.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CControllerUi.cpp">
+      <Filter>Quelldateien\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +304,15 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\state\CErrorState.h">
       <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\controller\CControllerBase.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\controller\CControllerMenu.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CControllerUi.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

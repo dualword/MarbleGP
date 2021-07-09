@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
+#include <gui/CControllerUi.h>
 #include <string>
 
 namespace dustbin {
@@ -37,13 +38,18 @@ namespace dustbin {
 				p->drop();
 				return p;
 			}
-			else
-				return nullptr;
+			else if (l_sTypeName == g_ControllerUiName) {
+				irr::gui::IGUIElement* p = new gui::CControllerUi(a_pParent);
+				p->drop();
+				return p;
+			}
+
+			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-			return 2;
+			return 3;
 		}
 
 		//! Get type of a createable element type
@@ -57,6 +63,10 @@ namespace dustbin {
 
 				case 1:
 					return (irr::gui::EGUI_ELEMENT_TYPE)g_MenuBackgroundId;
+					break;
+
+				case 2:
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId;
 					break;
 
 				default:
@@ -78,6 +88,10 @@ namespace dustbin {
 					return g_MenuBackgroundName;
 					break;
 
+				case 2:
+					return g_ControllerUiName;
+					break;
+
 				default:
 					return nullptr;
 					break;
@@ -95,6 +109,10 @@ namespace dustbin {
 
 				case g_MenuBackgroundId:
 					return g_MenuBackgroundName;
+					break;
+
+				case g_ControllerUiId:
+					return g_ControllerUiName;
 					break;
 
 				default:

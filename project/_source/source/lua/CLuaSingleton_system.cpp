@@ -1,3 +1,4 @@
+#include <controller/CControllerMenu.h>
 #include <_generated/lua/lua_tables.h>
 #include <lua/CLuaSingleton_system.h>
 #include <lua/CLuaSceneManager.h>
@@ -11,18 +12,19 @@ namespace dustbin {
     CLuaSingleton_system::CLuaSingleton_system(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pResolutionList(nullptr), m_pState(a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaSingleton_system>("LuaSystem")
-          .addFunction("getscenemanager"  , &CLuaSingleton_system::getSceneManager)
-          .addFunction("setsetting"       , &CLuaSingleton_system::setSetting)
-          .addFunction("getsetting"       , &CLuaSingleton_system::getSetting)
-          .addFunction("setglobal"        , &CLuaSingleton_system::setGlobal)
-          .addFunction("getglobal"        , &CLuaSingleton_system::getGlobal)
-          .addFunction("pushscript"       , &CLuaSingleton_system::pushScript)
-          .addFunction("statechange"      , &CLuaSingleton_system::stateChange)
-          .addFunction("getresolutionlist", &CLuaSingleton_system::getResolutionList)
-          .addFunction("executeluascript" , &CLuaSingleton_system::executeLuaScript)
-          .addFunction("executeluastring" , &CLuaSingleton_system::executeLuaString)
-          .addFunction("getsettings"      , &CLuaSingleton_system::getSettings)
-          .addFunction("setsettings"      , &CLuaSingleton_system::setSettings)
+          .addFunction("getscenemanager"      , &CLuaSingleton_system::getSceneManager)
+          .addFunction("setsetting"           , &CLuaSingleton_system::setSetting)
+          .addFunction("getsetting"           , &CLuaSingleton_system::getSetting)
+          .addFunction("setglobal"            , &CLuaSingleton_system::setGlobal)
+          .addFunction("getglobal"            , &CLuaSingleton_system::getGlobal)
+          .addFunction("pushscript"           , &CLuaSingleton_system::pushScript)
+          .addFunction("statechange"          , &CLuaSingleton_system::stateChange)
+          .addFunction("getresolutionlist"    , &CLuaSingleton_system::getResolutionList)
+          .addFunction("executeluascript"     , &CLuaSingleton_system::executeLuaScript)
+          .addFunction("executeluastring"     , &CLuaSingleton_system::executeLuaString)
+          .addFunction("getsettings"          , &CLuaSingleton_system::getSettings)
+          .addFunction("setsettings"          , &CLuaSingleton_system::setSettings)
+          .addFunction("getcontrollerxml_menu", &CLuaSingleton_system::getControllerXml_Menu)
         .endClass();
 
       std::error_code l_cError;
@@ -148,6 +150,31 @@ namespace dustbin {
       l_cSettings.loadFromStack(a_pState);
       CGlobal::getInstance()->setSettings(l_cSettings);
       return 0;
+    }
+
+    /**
+    * Create a XML string with the default configuration for the menu controller
+    * @return a XML string
+    */
+    std::string CLuaSingleton_system::getControllerXml_Menu() {
+      std::string l_sRet = "";
+      char s[1000000];
+      memset(s, 0, 1000000);
+
+      irr::io::IWriteFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
+      if (l_pFile) {
+        irr::io::IXMLWriterUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLWriterUTF8(l_pFile);
+        if (l_pXml) {
+          controller::CControllerMenu* p = new controller::CControllerMenu();
+          p->serialize(l_pXml);
+          delete p;
+          l_sRet = s;
+          l_pXml->drop();
+        }
+        l_pFile->drop();
+      }
+
+      return l_sRet;
     }
 
 

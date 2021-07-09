@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <gui/CControllerUi.h>
 #include <gui/CMenuButton.h>
 #include <gui/CDialog.h>
 
@@ -325,6 +326,7 @@ namespace dustbin {
             case irr::gui::EGUIET_STATIC_TEXT:
             case irr::gui::EGUIET_EDIT_BOX: 
             case irr::gui::EGUIET_SPIN_BOX:
+            case gui::g_ControllerUiId:
             case gui::g_MenuButtonId: {
               enFont l_eFont = enFont::Regular;
 
@@ -353,6 +355,9 @@ namespace dustbin {
                 }
                 else if (m_pElement->getType() == gui::g_MenuButtonId) {
                   reinterpret_cast<gui::CMenuButton*>(m_pElement)->setOverrideFont(l_pFont);
+                }
+                else if (m_pElement->getType() == gui::g_ControllerUiId) {
+                  reinterpret_cast<gui::CControllerUi*>(m_pElement)->setFont(l_pFont);
                 }
               }
               break;

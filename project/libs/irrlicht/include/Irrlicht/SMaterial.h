@@ -676,6 +676,8 @@ namespace video
 					PolygonOffsetDirection = EPO_BACK;
 					PolygonOffsetSlopeScale = value?1.f:0.f;
 					PolygonOffsetDepthBias = value?1.f:0.f;
+					break;
+
 				default:
 					break;
 			}
