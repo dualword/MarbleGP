@@ -340,12 +340,11 @@ bool CGUIFreetypeFont::attach(CGUITTFace *Face,u32 size)
 	Glyphs.set_used(TrueTypeFace->face->num_glyphs);
 	for (int i = 0;i < TrueTypeFace->face->num_glyphs;i++)
 	{
-        CGUITTGlyph * glyph = new CGUITTGlyph();
-
-		glyph->size = size;
+      CGUITTGlyph * glyph = new CGUITTGlyph();
+		  glyph->size = size;
 //		glyph->cache((wchar_t)i + 1);
-
-        Glyphs[i] = glyph;
+			
+			Glyphs[i] = glyph;
 	}
 
 	// TODO: this is a workaround to get a probably ok height for getDimensions. So we check a few extreme characters which usually make trouble.
@@ -372,8 +371,16 @@ void CGUIFreetypeFont::clearGlyphs()
 u32 CGUIFreetypeFont::getGlyphByChar(wchar_t c) const
 {
 	u32 idx = FT_Get_Char_Index( TrueTypeFace->face, c );
-	if ( idx && !Glyphs[idx - 1]->cached )
-        Glyphs[idx - 1]->cache(idx, this);
+	if (idx) {
+		if (Glyphs[idx - 1] == nullptr) {
+
+		}
+
+		if (!Glyphs[idx - 1]->cached) {
+			printf("*");
+			Glyphs[idx - 1]->cache(idx, this);
+		}
+	}
 	return	idx;
 }
 
