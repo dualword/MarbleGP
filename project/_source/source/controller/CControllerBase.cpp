@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
 #include <controller/CControllerBase.h>
+#include <CGlobal.h>
 
 namespace dustbin {
   namespace controller {
@@ -28,8 +29,17 @@ namespace dustbin {
         if (l_sName == "attribute") {
           std::string l_sKey = a_pXml->getAttributeValueSafe("key");
 
-          if (l_sKey == "type")
-            m_eType = (enInputType)a_pXml->getAttributeValueAsInt("value");
+          if (l_sKey == "type") {
+            std::string s = a_pXml->getAttributeValueSafe("value");
+            if (s == "JoyAxis")
+              m_eType = enInputType::JoyAxis;
+            else if (s == "JoyButton")
+              m_eType = enInputType::JoyButton;
+            else if (s == "JoyPov")
+              m_eType = enInputType::JoyPov;
+            else
+              m_eType = enInputType::Key;
+          }
           else if (l_sKey == "name")
             m_sName = a_pXml->getAttributeValueSafe("value");
           else if (l_sKey == "joy_name")
@@ -69,6 +79,7 @@ namespace dustbin {
       m_iDirection = a_cOther.m_iDirection;
       m_fValue     = a_cOther.m_fValue;
       m_iPov       = a_cOther.m_iPov;
+      m_sJoystick  = a_cOther.m_sJoystick;
     }
 
     /**
@@ -151,7 +162,7 @@ namespace dustbin {
 
 
     CControllerBase::CControllerBase() {
-
+      CGlobal::getInstance()->getIrrlichtDevice()->activateJoysticks(m_aJoysticks);
     }
 
     CControllerBase::~CControllerBase() {

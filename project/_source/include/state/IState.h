@@ -7,6 +7,9 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <algorithm>
+#include <vector>
+
 namespace dustbin {
   namespace state {
     /**
@@ -21,6 +24,17 @@ namespace dustbin {
     };
 
     /**
+    * @class IJoystickEventHandler
+    * @author Christian Keimel
+    * This class is used to pass joystick events to CControllerUi instances as Irrlicht
+    * does not pass joystick events to UI elements
+    */
+    class IJoystickEventHandler {
+      public:
+        virtual void OnJoystickEvent(const irr::SEvent& a_cEvent) = 0;
+    };
+
+    /**
      * @class IState
      * @author Christian Keimel
      * @brief The interface for all states
@@ -28,6 +42,9 @@ namespace dustbin {
     class IState {
       private:
         bool m_bDefaultEnabled;
+
+      protected:
+        std::vector<IJoystickEventHandler*> m_vJoystickHandlers;
 
       public:
         enum enMouseButton {
@@ -99,6 +116,26 @@ namespace dustbin {
         */
         bool isDefaultEnabled() {
           return m_bDefaultEnabled;
+        }
+
+        /**
+        * Register a joystick handler
+        * @param a_pHandler the handler to register
+        */
+        void registerJoystickHandler(IJoystickEventHandler* a_pHandler) {
+          if (std::find(m_vJoystickHandlers.begin(), m_vJoystickHandlers.end(), a_pHandler) == m_vJoystickHandlers.end()) {
+            m_vJoystickHandlers.push_back(a_pHandler);
+          }
+        }
+
+        /**
+        * Unregister a joystick handler
+        * @param a_pHandler the handler to remove from the list
+        */
+        void unregisterJoystickHandler(IJoystickEventHandler* a_pHandler) {
+          if (std::find(m_vJoystickHandlers.begin(), m_vJoystickHandlers.end(), a_pHandler) != m_vJoystickHandlers.end()) {
+            m_vJoystickHandlers.erase(std::find(m_vJoystickHandlers.begin(), m_vJoystickHandlers.end(), a_pHandler));
+          }
         }
     };
   }

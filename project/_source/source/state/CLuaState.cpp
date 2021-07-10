@@ -129,6 +129,10 @@ namespace dustbin {
         m_bButtons[1] = a_cEvent.MouseInput.isMiddlePressed();
         m_bButtons[2] = a_cEvent.MouseInput.isRightPressed ();
       }
+      else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+        for (std::vector<state::IJoystickEventHandler*>::iterator it = m_vJoystickHandlers.begin(); it != m_vJoystickHandlers.end(); it++)
+          (*it)->OnJoystickEvent(a_cEvent);
+      }
 
       return l_bRet;
     }

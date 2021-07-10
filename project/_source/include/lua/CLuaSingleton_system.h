@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+// (w) 2021 by Dustbin::Games / Christian Keimel
 #pragma once
 
 #ifdef _LINUX_INCLUDE_PATH
@@ -152,6 +153,20 @@ namespace dustbin {
         * @return a XML string
         */
         std::string getControllerXml_Menu();
+
+        /**
+        * Url-Encode a string
+        * @param a_sInput the un-encoded string
+        * @return the encoded string
+        */
+        std::string urlEncode(const std::string a_sInput);
+
+        /**
+        * Url-Decode a string
+        * @param a_sInput the encoded string
+        * @return the decoded string
+        */
+        std::string urlDecode(const std::string a_sInput);
     };
   }
 }

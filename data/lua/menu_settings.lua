@@ -1,8 +1,6 @@
 system:executeluascript("data/lua/splitstring.lua")
 system:executeluascript("data/lua/serializer.lua")
 
-io.write("**** SETTINGS\n")
-
 g_Time = 0  -- The time of the last "step" message
 
 -- UI Items
@@ -47,6 +45,7 @@ function updateSettings()
   
   -- Update misc settings
   g_Settings["misc_usemenuctrl"] = g_Controls["misc_use"]:ischecked()
+  g_Settings["misc_menuctrl"   ] = system:urlencode(g_Ctrl:gettext())
 end
 
 function fillItems()
@@ -132,18 +131,13 @@ function fillItems()
   
   g_Ctrl = dialog:getitemfromname("controller_ui")
   
-  io.write("\n***********************\n")
-  io.write(g_CtrlSettings)
-  io.write("\n***********************\n")
   if g_CtrlSettings == "" then
-    g_CtrlSettings = g_Settings["misc_menuctrl"]
+    g_CtrlSettings = system:urldecode(g_Settings["misc_menuctrl"])
 
     if g_CtrlSettings == "" then
       g_CtrlSettings = system:getcontrollerxml_menu()
     end
   end
-  io.write(g_CtrlSettings)
-  io.write("\n***********************\n")
   
   g_Ctrl:settext(g_CtrlSettings)
   
@@ -167,7 +161,7 @@ function initialize()
   dialog:loaddialog("data/menu/button_cancel.xml")
   dialog:loaddialog("data/menu/button_ok.xml")
   
-  dialog:createui();
+    dialog:createui();
   audio:startsoundtrack(0)
   
   g_Settings = system:getsettings()
@@ -239,8 +233,4 @@ function beforeresize()
   -- changed and need to be restored when the
   -- UI is rebuilt due to window resize
   g_CtrlSettings = g_Ctrl:gettext()
-  
-  io.write("\n***** beforeresize *****\n")
-  io.write(g_CtrlSettings)
-  io.write("\n***** beforeresize *****\n")
 end

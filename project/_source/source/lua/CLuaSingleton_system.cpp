@@ -1,6 +1,7 @@
 #include <controller/CControllerMenu.h>
 #include <_generated/lua/lua_tables.h>
 #include <lua/CLuaSingleton_system.h>
+#include <messages/CMessageHelpers.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
 #include <lua/CLuaHelpers.h>
@@ -25,6 +26,8 @@ namespace dustbin {
           .addFunction("getsettings"          , &CLuaSingleton_system::getSettings)
           .addFunction("setsettings"          , &CLuaSingleton_system::setSettings)
           .addFunction("getcontrollerxml_menu", &CLuaSingleton_system::getControllerXml_Menu)
+          .addFunction("urlencode"            , &CLuaSingleton_system::urlEncode)
+          .addFunction("urldecode"            , &CLuaSingleton_system::urlDecode)
         .endClass();
 
       std::error_code l_cError;
@@ -150,6 +153,24 @@ namespace dustbin {
       l_cSettings.loadFromStack(a_pState);
       CGlobal::getInstance()->setSettings(l_cSettings);
       return 0;
+    }
+
+    /**
+    * Url-Encode a string
+    * @param a_sInput the un-encoded string
+    * @return the encoded string
+    */
+    std::string CLuaSingleton_system::urlEncode(const std::string a_sInput) {
+      return messages::urlEncode(a_sInput);
+    }
+
+    /**
+    * Url-Decode a string
+    * @param a_sInput the encoded string
+    * @return the decoded string
+    */
+    std::string CLuaSingleton_system::urlDecode(const std::string a_sInput) {
+      return messages::urlDecode(a_sInput);
     }
 
     /**

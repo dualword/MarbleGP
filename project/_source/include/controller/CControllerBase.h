@@ -67,6 +67,7 @@ namespace dustbin {
 
       protected:
         std::vector<SCtrlInput> m_vControls;
+        irr::core::array<irr::SJoystickInfo> m_aJoysticks;
 
       public:
         CControllerBase();

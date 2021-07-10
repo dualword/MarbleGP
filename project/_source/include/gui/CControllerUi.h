@@ -9,6 +9,7 @@
 
 #include <controller/CControllerBase.h>
 #include <gui/CMenuBackground.h>
+#include <state/IState.h>
 #include <string>
 #include <map>
 
@@ -22,8 +23,21 @@ namespace dustbin {
     * @author Christian Keimel
     * This class provides a UI interface to configure controls
     */
-    class CControllerUi : public gui::CMenuBackground, public controller::CControllerBase {
+    class CControllerUi : public gui::CMenuBackground, public controller::CControllerBase, public state::IJoystickEventHandler {
       private:
+        struct SJoystickState {
+          std::string m_sName;  /**< Name of the joystick */
+
+          int m_iIndex,   /**< The index in the "m_aJoysticks" array */
+              m_iAxes,    /**< The number of axes*/
+              m_iButtons; /**< The number of buttons */
+
+          bool m_bInitialized,  /**< Set to "true" after the joystick got it's first update */
+               m_bHasPov;       /**< Is a POV present? */
+
+          std::vector<float> m_vAxes; /**< The values of the axes */
+        };
+
         irr::gui::IGUIEnvironment  * m_pGui;
         irr::gui::IGUIElement      * m_pParent;
         irr::gui::ICursorControl   * m_pCursor;
@@ -54,7 +68,10 @@ namespace dustbin {
         std::vector<controller::CControllerBase::SCtrlInput>::iterator m_itHovered,   /**< The hovered control */
                                                                        m_itSelected;  /**< The selected control */
 
+        std::vector<SJoystickState> m_vJoyStates;
+
         void elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter);
+        void resetSelected();
 
         void updateConfigXml();
 
@@ -88,6 +105,8 @@ namespace dustbin {
         * Change the font for the configuration dialog
         */
         void setFont(irr::gui::IGUIFont* a_pFont);
+
+        virtual void OnJoystickEvent(const irr::SEvent& a_cEvent);
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions);

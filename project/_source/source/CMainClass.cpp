@@ -120,6 +120,9 @@ namespace dustbin {
     m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(m_cSettings.m_gfx_resolution_w, m_cSettings.m_gfx_resolution_h), 32, l_bFullScreen, false, false, this);
 
     if (m_pDevice != nullptr) {
+      irr::core::array<irr::SJoystickInfo> l_cList;
+      m_pDevice->activateJoysticks(l_cList);
+
       m_pDevice->setResizable(true);
 
       scenenodes::CMarbleGPSceneNodeFactory *l_pMGPFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pDevice->getSceneManager());
