@@ -62,6 +62,15 @@ namespace dustbin {
     }
 
     /**
+    * This method is called before the UI is cleared on window resize. It can be
+    * used to save all necessary data to re-build the UI
+    */
+    void CLuaState::beforeResize() {
+      if (m_pScript != nullptr)
+        m_pScript->beforeResize();
+    }
+
+    /**
     * This is a callback method that gets invoked when the window is resized
     * @param a_cDim the new dimension of the window
     */
@@ -74,7 +83,6 @@ namespace dustbin {
 
       if (m_pScript != nullptr)
         m_pScript->windowresized();
-      printf("==> %i, %i\n", a_cDim.Width, a_cDim.Height);
     }
 
     /**
@@ -99,14 +107,14 @@ namespace dustbin {
         }
         else {
           if (a_cEvent.KeyInput.Key == irr::KEY_RETURN && m_bDefCanc[0]) {  
-            if (m_pScript != nullptr) {
+            if (m_pScript != nullptr && isDefaultEnabled()) {
               irr::gui::IGUIElement* p = m_pScript->getDefaultElement(false);
               if (p != nullptr)
                 m_pScript->uiButtonClicked(p->getID(), p->getName());
             }
           }
           else if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE && m_bDefCanc[1]) {
-            if (m_pScript != nullptr) {
+            if (m_pScript != nullptr && isDefaultEnabled()) {
               irr::gui::IGUIElement* p = m_pScript->getDefaultElement(true);
               if (p != nullptr)
                 m_pScript->uiButtonClicked(p->getID(), p->getName());

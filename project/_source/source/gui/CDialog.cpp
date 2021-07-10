@@ -242,10 +242,10 @@ namespace dustbin {
             }
           }
 
-          if (m_pElement->getType() == irr::gui::EGUIET_SCROLL_BAR) {
+          /*if (m_pElement->getType() == irr::gui::EGUIET_SCROLL_BAR) {
             for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
               printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
-          }
+          }*/
 
           irr::core::recti l_cRect = a_pGlobal->getRect(std::get<1>(m_cPosition), std::get<0>(m_cPosition), a_pParent);
 

@@ -295,6 +295,8 @@ namespace dustbin {
 
           irr::core::dimension2du l_cThisSize = m_pDrv->getScreenSize();
           if (l_cThisSize != m_cScreenSize) {
+            m_pActiveState->beforeResize();
+
             for (std::vector<irr::video::ITexture*>::iterator it = m_vRemoveOnResize.begin(); it != m_vRemoveOnResize.end(); it++) {
               m_pDrv->removeTexture(*it);
             }

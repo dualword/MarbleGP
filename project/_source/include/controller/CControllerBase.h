@@ -61,6 +61,8 @@ namespace dustbin {
           void update(const irr::SEvent& a_cEvent);
 
           void serialize(irr::io::IXMLWriterUTF8* a_pXml) const;
+
+          void copyFrom(const SCtrlInput& a_cOther);
         };
 
       protected:
@@ -90,6 +92,13 @@ namespace dustbin {
         * @param a_pXml the XML file
         */
         void deserialize(irr::io::IXMLReaderUTF8* a_pXml);
+
+        /**
+        * Update a control item with the values of the parameter. The name of the
+        * item is used to identify which of the items needs to be updated
+        * @param a_cItem the new values for the item.
+        */
+        void setControlItem(const CControllerBase::SCtrlInput& a_cItem);
      };
 
   } // namespace controller 

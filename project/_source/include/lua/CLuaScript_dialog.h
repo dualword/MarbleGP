@@ -47,6 +47,7 @@ namespace dustbin {
         void uiElementLeft(int a_iId, const std::string &a_sName);
         void uiButtonClicked(int a_iId, const std::string &a_sName);
         void uiValueChanged(int a_iId, const std::string &a_sName, float a_fValue);
+        void beforeResize();
 
         /**
         * Query one of two elements that might be defined as default (Default OK and Cancel)

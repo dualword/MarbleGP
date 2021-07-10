@@ -71,6 +71,12 @@ namespace dustbin {
         virtual void onResize(const irr::core::dimension2du &a_cDim);
 
         /**
+        * This method is called before the UI is cleared on window resize. It can be
+        * used to save all necessary data to re-build the UI
+        */
+        virtual void beforeResize();
+
+        /**
          * Get the state of the mouse buttons. As the cursor control Irrlicht Object does not
          * report the state of the button I decided to hack it this way
          * @param a_iButton The mouse button

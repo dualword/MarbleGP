@@ -53,6 +53,13 @@ namespace dustbin {
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) {
+      copyFrom(a_cOther);
+    }
+
+    CControllerBase::SCtrlInput::~SCtrlInput() {
+    }
+
+    void CControllerBase::SCtrlInput::copyFrom(const SCtrlInput& a_cOther) {
       m_sName      = a_cOther.m_sName;
       m_eType      = a_cOther.m_eType;
       m_eKey       = a_cOther.m_eKey;
@@ -62,9 +69,6 @@ namespace dustbin {
       m_iDirection = a_cOther.m_iDirection;
       m_fValue     = a_cOther.m_fValue;
       m_iPov       = a_cOther.m_iPov;
-    }
-
-    CControllerBase::SCtrlInput::~SCtrlInput() {
     }
 
     /**
@@ -204,6 +208,20 @@ namespace dustbin {
                 (*it) = l_cCtrl;
             }
           }
+        }
+      }
+    }
+
+    /**
+    * Update a control item with the values of the parameter. The name of the
+    * item is used to identify which of the items needs to be updated
+    * @param a_pItem the new values for the item.
+    */
+    void CControllerBase::setControlItem(const CControllerBase::SCtrlInput& a_cItem) {
+      for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+        if ((*it).m_sName == a_cItem.m_sName) {
+          (*it).copyFrom(a_cItem);
+          break;
         }
       }
     }

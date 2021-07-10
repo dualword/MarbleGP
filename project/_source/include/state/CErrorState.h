@@ -46,6 +46,12 @@ namespace dustbin {
         virtual void onResize(const irr::core::dimension2du& a_cDim);
 
         /**
+        * This method is called before the UI is cleared on window resize. It can be
+        * used to save all necessary data to re-build the UI
+        */
+        virtual void beforeResize();
+
+        /**
          * Return the state's ID
          */
         virtual enState getId();

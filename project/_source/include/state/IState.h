@@ -26,12 +26,17 @@ namespace dustbin {
      * @brief The interface for all states
      */
     class IState {
+      private:
+        bool m_bDefaultEnabled;
+
       public:
         enum enMouseButton {
           Left,
           Middle,
           RIght
         };
+
+        IState() : m_bDefaultEnabled(true) { }
 
         virtual ~IState() { }
 
@@ -50,6 +55,12 @@ namespace dustbin {
          * @param a_cDim the new dimension of the window
          */
         virtual void onResize(const irr::core::dimension2du &a_cDim) = 0;
+
+        /**
+        * This method is called before the UI is cleared on window resize. It can be
+        * used to save all necessary data to re-build the UI
+        */
+        virtual void beforeResize() = 0;
 
         /**
          * Return the state's ID
@@ -73,6 +84,22 @@ namespace dustbin {
         * @return enState::None for running without state change, any other value will switch to the state
         */
         virtual enState run() = 0;
+
+        /**
+        * With this method you can block or enable handling "ok" and "cancel" by "Enter" or "Esc" key
+        * @param a_bEnable enable the default handling
+        */
+        void enableDefault(bool a_bEnabled) {
+          m_bDefaultEnabled = a_bEnabled;
+        }
+
+        /**
+        * Is the default handling of "enter" and "cancel" enabled?
+        * @return true or false
+        */
+        bool isDefaultEnabled() {
+          return m_bDefaultEnabled;
+        }
     };
   }
 }

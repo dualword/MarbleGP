@@ -170,11 +170,9 @@ namespace dustbin {
       m_pHoveredTwo(nullptr),
       m_bMouseDown(false)
     {
-      m_pController = new controller::CControllerBase();
     }
 
     CControllerUi::~CControllerUi() {
-      delete m_pController;
     }
 
     /**
@@ -188,15 +186,13 @@ namespace dustbin {
         if (m_pFont == nullptr)
           m_pFont = l_pGlobal->getGuiEnvironment()->getSkin()->getFont();
 
-        std::vector<controller::CControllerBase::SCtrlInput> l_vItems = m_pController->getInputs();
-
         irr::u32 l_iHeight = getAbsoluteClippingRect().getHeight(),
                  l_iWidth  = getAbsoluteClippingRect().getWidth(),
-                 l_iCount  = (irr::u32)l_vItems.size() + 1;
+                 l_iCount  = (irr::u32)m_vControls.size() + 1;
 
         irr::core::dimension2du l_cDim = irr::core::dimension2du(0, 0);
 
-        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = l_vItems.begin(); it != l_vItems.end(); it++) {
+        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
           std::wstring s = platform::s2ws((*it).m_sName);
           irr::core::dimension2du d = m_pFont->getDimension(s.c_str());
 
@@ -223,7 +219,7 @@ namespace dustbin {
 
         int l_iLine = 3 * l_cDim.Height / 2;
         
-        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = l_vItems.begin(); it != l_vItems.end(); it++) {
+        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
           l_cPos .Y += l_iLine;
           l_cPos2.Y += l_iLine;
 
@@ -244,6 +240,8 @@ namespace dustbin {
 
           m_mTextControls[p1] = it;
           m_mTextControls[p2] = it;
+
+          m_mControlText[it] = p2;
         }
       }
     }
@@ -252,7 +250,7 @@ namespace dustbin {
       if (m_mTextPairs.find(a_pElement) != m_mTextPairs.end()) {
         irr::gui::IGUIElement* l_pOther = m_mTextPairs[a_pElement];
 
-        if (a_pElement != m_pSelectedOne && a_pElement != m_pSelectedTwo && l_pOther != m_pSelectedOne && l_pOther != m_pSelectedTwo) {
+        if (a_pElement != m_pSelectedOne && a_pElement != m_pSelectedTwo && l_pOther != m_pSelectedOne && l_pOther != m_pSelectedTwo && m_mTextControls.find(a_pElement) != m_mTextControls.end()) {
           if (a_pElement->getType() == irr::gui::EGUIET_STATIC_TEXT && l_pOther->getType() == irr::gui::EGUIET_STATIC_TEXT) {
             irr::gui::IGUIStaticText *p1 = reinterpret_cast<irr::gui::IGUIStaticText*>(a_pElement),
                                      *p2 = reinterpret_cast<irr::gui::IGUIStaticText*>(l_pOther);
@@ -266,6 +264,8 @@ namespace dustbin {
             if (a_bEnter) {
               m_pHoveredOne = a_pElement;
               m_pHoveredTwo = l_pOther;
+
+              m_itHovered = m_mTextControls[a_pElement];
             }
             else {
               m_pHoveredOne = nullptr;
@@ -299,14 +299,52 @@ namespace dustbin {
             m_pSelectedOne = m_pHoveredOne;
             m_pSelectedTwo = m_pHoveredTwo;
 
+            m_itSelected = m_itHovered;
+
             reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedOne)->setBackgroundColor(irr::video::SColor(192, 255, 128, 128));
             reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedTwo)->setBackgroundColor(irr::video::SColor(192, 255, 128, 128));
 
             m_pHoveredOne = nullptr;
             m_pHoveredTwo = nullptr;
+
+            CGlobal::getInstance()->getActiveState()->enableDefault(false);
           }
         }
       }
+
+      if (m_pSelectedOne != nullptr && m_pSelectedTwo != nullptr/* && m_mControlText.find(&m_cSelected) != m_mControlText.end()*/) {
+        if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+          if (!a_cEvent.KeyInput.PressedDown) {
+            (*m_itSelected).m_eType = controller::CControllerBase::enInputType::Key;
+            (*m_itSelected).m_eKey  = a_cEvent.KeyInput.Key;
+
+            m_mControlText[m_itSelected]->setText(keyCodeToString(a_cEvent.KeyInput.Key).c_str());
+
+            if (m_pSelectedOne != nullptr) {
+              reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedOne)->setDrawBackground(false);
+              m_pSelectedOne = nullptr;
+            }
+
+            if (m_pSelectedTwo != nullptr) {
+              reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedTwo)->setDrawBackground(false);
+              m_pSelectedTwo = nullptr;
+            }
+
+            for (std::map<irr::gui::IGUIElement*, irr::gui::IGUIElement*>::iterator it = m_mTextPairs.begin(); it != m_mTextPairs.end(); it++) {
+              if (it->first->getAbsoluteClippingRect().isPointInside(m_pCursor->getPosition())) {
+                elementEvent(it->first, true);
+                break;
+              }
+            }
+
+            CGlobal::getInstance()->getActiveState()->enableDefault(true);
+            updateConfigXml();
+
+            return true;
+          }
+        }
+      }
+
       return false;
     }
 
@@ -339,9 +377,11 @@ namespace dustbin {
         if (l_pFile) {
           irr::io::IXMLReaderUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLReaderUTF8(l_pFile);
           if (l_pXml) {
-            m_pController->deserialize(l_pXml);
+            deserialize(l_pXml);
             buildUi(m_pParent);
             l_pXml->drop();
+
+            CGlobal::getInstance()->getActiveState()->enableDefault(true);
           }
           l_pFile->drop();
         }
@@ -356,6 +396,26 @@ namespace dustbin {
       m_pFont = a_pFont;
     }
 
+    void CControllerUi::updateConfigXml() {
+      char *s = new char[1000000];
+      memset(s, 0, 1000000);
+
+      irr::io::IWriteFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
+
+      if (l_pFile) {
+        irr::io::IXMLWriterUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLWriterUTF8(l_pFile);
+        if (l_pXml) {
+          serialize(l_pXml);
+          l_pXml->drop();
+        }
+        l_pFile->drop();
+      }
+
+      m_sConfigXml = std::string(s);
+      delete []s;
+      irr::gui::IGUIElement::setText(platform::s2ws(m_sConfigXml).c_str());
+    }
+
     void CControllerUi::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       gui::CMenuBackground::serializeAttributes(a_pOut, a_pOptions);
 
@@ -367,9 +427,9 @@ namespace dustbin {
 
       m_sHeadline = a_pIn->getAttributeAsString("headline").c_str();
 
-      std::wstring s = getText();
-      setText(L"");
-      setText(s.c_str());
+      // std::wstring s = getText();
+      // setText(L"");
+      // setText(s.c_str());
     }
   } // namespace controller 
 } // namespace dustbin

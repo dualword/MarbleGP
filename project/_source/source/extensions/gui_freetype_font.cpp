@@ -377,7 +377,6 @@ u32 CGUIFreetypeFont::getGlyphByChar(wchar_t c) const
 		}
 
 		if (!Glyphs[idx - 1]->cached) {
-			printf("*");
 			Glyphs[idx - 1]->cache(idx, this);
 		}
 	}

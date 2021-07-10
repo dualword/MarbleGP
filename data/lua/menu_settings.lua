@@ -19,6 +19,8 @@ g_ActiveTab = "gfx"
 g_Items    = { }
 g_Controls = { }
 
+g_CtrlSettings = ""
+
 function updateSettings()
   -- Update graphics settings
   g_Settings["gfx_shadows"     ] = g_Controls["Shadows"   ]:getselected()
@@ -130,15 +132,20 @@ function fillItems()
   
   g_Ctrl = dialog:getitemfromname("controller_ui")
   
-  local l_Data = g_Settings["misc_menuctrl"]
+  io.write("\n***********************\n")
+  io.write(g_CtrlSettings)
+  io.write("\n***********************\n")
+  if g_CtrlSettings == "" then
+    g_CtrlSettings = g_Settings["misc_menuctrl"]
 
-  if l_Data == "" then
-    l_Data = system:getcontrollerxml_menu()
+    if g_CtrlSettings == "" then
+      g_CtrlSettings = system:getcontrollerxml_menu()
+    end
   end
+  io.write(g_CtrlSettings)
+  io.write("\n***********************\n")
   
-  io.write(tostring(g_Ctrl))
-  
-  g_Ctrl:settext(l_Data)
+  g_Ctrl:settext(g_CtrlSettings)
   
   showHideUi()
 end
@@ -225,4 +232,15 @@ end
 
 function windowresized()
   fillItems()
+end
+
+function beforeresize()
+  -- Save the controller settings, they might have
+  -- changed and need to be restored when the
+  -- UI is rebuilt due to window resize
+  g_CtrlSettings = g_Ctrl:gettext()
+  
+  io.write("\n***** beforeresize *****\n")
+  io.write(g_CtrlSettings)
+  io.write("\n***** beforeresize *****\n")
 end

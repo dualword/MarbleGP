@@ -42,6 +42,14 @@ namespace dustbin {
     }
 
     /**
+    * This method is called before the UI is cleared on window resize. It can be
+    * used to save all necessary data to re-build the UI
+    */
+    void CErrorState::beforeResize() {
+      // Nothing to do here
+    }
+
+    /**
       * Return the state's ID
       */
     enState CErrorState::getId() {

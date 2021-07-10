@@ -149,6 +149,19 @@ namespace dustbin {
       }
     }
 
+    void CLuaScript_dialog::beforeResize() {
+      try {
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "beforeresize");
+        if (l_cCallback.isCallable())
+          l_cCallback();
+      }
+      catch (luabridge::LuaException e) {
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"beforeresize\"");
+        throw std::exception();
+      }
+    }
+
     void CLuaScript_dialog::uiValueChanged(int a_iId, const std::string& a_sName, float a_fValue) {
       try {
         luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uivaluechanged");
