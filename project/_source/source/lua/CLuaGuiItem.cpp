@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <lua/CLuaGuiItem.h>
 
+#include <gui/CDustbinCheckbox.h>
 #include <LuaBridge/LuaBridge.h>
 #include <platform/CPlatform.h>
 #include <CGlobal.h>
@@ -238,6 +239,9 @@ namespace dustbin {
       if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_CHECK_BOX) {
         return reinterpret_cast<irr::gui::IGUICheckBox*>(m_pElement)->isChecked();
       }
+      else if (m_pElement != nullptr && m_pElement->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId) {
+        return reinterpret_cast<gui::CDustbinCheckbox*>(m_pElement)->isChecked();
+      }
       else return false;
     }
 
@@ -249,6 +253,10 @@ namespace dustbin {
     bool CLuaGuiItem::setChecked(bool a_bChecked) {
       if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_CHECK_BOX) {
         reinterpret_cast<irr::gui::IGUICheckBox*>(m_pElement)->setChecked(a_bChecked);
+        return true;
+      }
+      else if (m_pElement != nullptr && m_pElement->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId) {
+        reinterpret_cast<gui::CDustbinCheckbox*>(m_pElement)->setChecked(a_bChecked);
         return true;
       }
       else return false;

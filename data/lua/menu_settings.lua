@@ -45,6 +45,7 @@ function updateSettings()
   
   -- Update misc settings
   g_Settings["misc_usemenuctrl"] = g_Controls["misc_use"]:ischecked()
+  -- The controller settings *MUST* be stored URL-encoded, otherwise it will break the settings
   g_Settings["misc_menuctrl"   ] = system:urlencode(g_Ctrl:gettext())
 end
 
@@ -132,6 +133,7 @@ function fillItems()
   g_Ctrl = dialog:getitemfromname("controller_ui")
   
   if g_CtrlSettings == "" then
+    -- The controller settings *MUST* be stored URL-encoded, otherwise it will break the settings
     g_CtrlSettings = system:urldecode(g_Settings["misc_menuctrl"])
 
     if g_CtrlSettings == "" then

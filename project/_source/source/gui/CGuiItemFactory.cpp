@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
 #include <gui/CControllerUi.h>
@@ -43,13 +44,18 @@ namespace dustbin {
 				p->drop();
 				return p;
 			}
+			else if (l_sTypeName == g_DustbinCheckboxName) {
+				irr::gui::IGUIElement* p = new gui::CDustbinCheckbox(a_pParent);
+				p->drop();
+				return p;
+			}
 
 			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-			return 3;
+			return 4;
 		}
 
 		//! Get type of a createable element type
@@ -67,6 +73,10 @@ namespace dustbin {
 
 				case 2:
 					return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId;
+					break;
+
+				case 3:
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_DustbinCheckboxId;
 					break;
 
 				default:
@@ -92,6 +102,10 @@ namespace dustbin {
 					return g_ControllerUiName;
 					break;
 
+				case 3:
+					return g_DustbinCheckboxName;
+					break;
+
 				default:
 					return nullptr;
 					break;
@@ -113,6 +127,10 @@ namespace dustbin {
 
 				case g_ControllerUiId:
 					return g_ControllerUiName;
+					break;
+
+				case g_DustbinCheckboxId:
+					return g_DustbinCheckboxName;
 					break;
 
 				default:

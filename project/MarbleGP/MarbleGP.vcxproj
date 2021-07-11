@@ -197,6 +197,7 @@
     <ClCompile Include="..\_source\source\extensions\gui_freetype_font.cpp" />
     <ClCompile Include="..\_source\source\gui\CButtonRenderer.cpp" />
     <ClCompile Include="..\_source\source\gui\CControllerUi.cpp" />
+    <ClCompile Include="..\_source\source\gui\CDhstbinCheckbox.cpp" />
     <ClCompile Include="..\_source\source\gui\CDialog.cpp" />
     <ClCompile Include="..\_source\source\gui\CGuiItemFactory.cpp" />
     <ClCompile Include="..\_source\source\gui\CMenuBackground.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="..\_source\include\gui\CButtonRenderer.h" />
     <ClInclude Include="..\_source\include\gui\CControllerUi.h" />
     <ClInclude Include="..\_source\include\gui\CDialog.h" />
+    <ClInclude Include="..\_source\include\gui\CDustbinCheckbox.h" />
     <ClInclude Include="..\_source\include\gui\CGuiItemFactory.h" />
     <ClInclude Include="..\_source\include\gui\CMenuBackground.h" />
     <ClInclude Include="..\_source\include\gui\CMenuButton.h" />

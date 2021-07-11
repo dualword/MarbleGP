@@ -29,6 +29,7 @@ Factory 0 element 24: "root"
 Factory 1 element 0 : "MenuButton"
 Factory 1 element 1 : "MenuBackground"
 Factory 1 element 2 : "ControllerUi"
+Factory 1 element 3 : "DustbinCheckbox"
 
 Unniversal Attributes:
 
@@ -118,6 +119,10 @@ Attribute PasswordBox: false
 Attribute PasswordChar: *
 Attribute HTextAlign: upperLeft
 Attribute VTextAlign: center
+
+Attributes of "DustbinCheckbox"
+
+Attribute Checked: false
 
 Attributes of "checkBox"
 
