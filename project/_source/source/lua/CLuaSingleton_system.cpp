@@ -179,7 +179,8 @@ namespace dustbin {
     */
     std::string CLuaSingleton_system::getControllerXml_Menu() {
       std::string l_sRet = "";
-      char s[1000000];
+      char *s;
+      s = new char[1000000];
       memset(s, 0, 1000000);
 
       irr::io::IWriteFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
@@ -189,12 +190,13 @@ namespace dustbin {
           controller::CControllerMenu* p = new controller::CControllerMenu();
           p->serialize(l_pXml);
           delete p;
-          l_sRet = s;
+          l_sRet = std::string(s);
           l_pXml->drop();
         }
         l_pFile->drop();
       }
 
+      delete[]s;
       return l_sRet;
     }
 

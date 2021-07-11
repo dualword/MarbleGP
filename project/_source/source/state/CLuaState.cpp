@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <controller/CControllerMenu.h>
 #include <lua/CLuaScript_dialog.h>
 #include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
@@ -9,13 +10,14 @@
 namespace dustbin {
   namespace state {
     CLuaState::CLuaState() : 
-      m_pDevice (CGlobal::getInstance()->getIrrlichtDevice()), 
-      m_pSmgr   (CGlobal::getInstance()->getSceneManager  ()), 
-      m_pDrv    (CGlobal::getInstance()->getVideoDriver   ()), 
-      m_pGui    (CGlobal::getInstance()->getGuiEnvironment()),
-      m_pGlobal (CGlobal::getInstance()),
-      m_pScript (nullptr),
-      m_pTimer  (nullptr)
+      m_pDevice  (CGlobal::getInstance()->getIrrlichtDevice()), 
+      m_pSmgr    (CGlobal::getInstance()->getSceneManager  ()), 
+      m_pDrv     (CGlobal::getInstance()->getVideoDriver   ()), 
+      m_pGui     (CGlobal::getInstance()->getGuiEnvironment()),
+      m_pGlobal  (CGlobal::getInstance()),
+      m_pMenuCtrl(nullptr),
+      m_pScript  (nullptr),
+      m_pTimer   (nullptr)
     {
       for (int i = 0; i < 3; i++)
         m_bButtons[i] = false;
@@ -39,6 +41,8 @@ namespace dustbin {
       m_pScript = new lua::CLuaScript_dialog(l_sScript);
       m_pScript->initialize();
 
+      m_pMenuCtrl = new controller::CControllerMenu();
+
       m_bDefCanc[0] = false;
       m_bDefCanc[1] = false;
     }
@@ -51,6 +55,11 @@ namespace dustbin {
         m_pScript->cleanup();
         delete m_pScript;
         m_pScript = nullptr;
+      }
+
+      if (m_pMenuCtrl != nullptr) {
+        delete m_pMenuCtrl;
+        m_pMenuCtrl = nullptr;
       }
     }
 
@@ -90,6 +99,9 @@ namespace dustbin {
     */
     bool CLuaState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
+
+      if (m_pMenuCtrl != nullptr)
+        m_pMenuCtrl->update(a_cEvent);
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <controller/CControllerBase.h>
+#include <vector>
 
 namespace dustbin {
   namespace controller {
@@ -12,48 +13,48 @@ namespace dustbin {
     */
     class CControllerMenu : public CControllerBase {
       private:
-        bool m_aCtrlReady[6];
+        enum class enDirection {
+          Up,
+          Down,
+          Left,
+          Right
+        };
 
-        bool wasButtonPressed(unsigned a_iIndex);
+        bool m_bEnterReady,
+             m_bEventPosted;
+
+        irr::gui::IGUIEnvironment* m_pGui;
+        irr::gui::ICursorControl * m_pCursor;
+
+        irr::ITimer* m_pTimer;
+
+        irr::u32 m_iLastMove;
+
+        int m_iRaster;
+
+        std::vector<irr::gui::IGUIElement *> m_vElements;  /**< all relevant UI elements */
+
+        irr::gui::IGUIElement* m_pHovered;
+
+        void moveMouse(enDirection a_eDirection);
+
+        bool isVisible(irr::gui::IGUIElement* a_pItem);
+
+        /**
+        * Fill the "m_vElements" vector
+        * @param a_pParent the item to add, the children will be iterated and added as well
+        */
+        void fillItemList(irr::gui::IGUIElement* a_pParent);
 
       public:
         CControllerMenu();
         ~CControllerMenu();
 
         /**
-        * Is a "move up" requested?
-        * @return a boolean
+        * Event handler for this input
+        * @param a_cEvent the event to handle
         */
-        bool moveUp();
-
-        /**
-        * Is a "move down" requested?
-        * @return a boolean
-        */
-        bool moveDown();
-
-        /**
-        * Is a "move left" requested?
-        * @return a boolean
-        */
-        bool moveLeft();
-
-        /**
-        * Is a "move right" requested?
-        * @return a boolean
-        */
-        bool moveRight();
-
-        /**
-        * Was the "OK / Enter" button pressed?
-        * @return a boolean
-        */
-        bool enterPressed();
-
-        /**
-        * Was the "Cancel" button pressed?
-        */
-        bool cancelPressed();
+        virtual void update(const irr::SEvent& a_cEvent);
     };
 
   } // namespace controller

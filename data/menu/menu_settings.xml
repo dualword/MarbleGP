@@ -355,7 +355,7 @@
     <children>
       <element type="staticText" rect="center: -34, -9, 34, -6">
         <attributes>
-          <attribute key="Caption" value="You can use this dialog to define a controller that allows you navigating through all menues." />
+          <attribute key="Caption" value="You can use this dialog to define a controller that allows you navigating through all menus." />
         </attributes>
       </element>
       

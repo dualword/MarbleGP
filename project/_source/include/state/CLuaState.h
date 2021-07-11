@@ -21,6 +21,10 @@ namespace dustbin {
     class CDialog;
   }
 
+  namespace controller {
+    class CControllerMenu;
+  }
+
   namespace state {
     /**
     * @class CLuaState
@@ -37,6 +41,8 @@ namespace dustbin {
         lua::CLuaScript_dialog *m_pScript;
         CGlobal                *m_pGlobal;
         irr::ITimer            *m_pTimer;
+
+        controller::CControllerMenu* m_pMenuCtrl;
 
         bool m_bButtons[3];   /**< The mouse button states */
         bool m_bDefCanc[2];   /**< Flags to detect when the "Enter" or "ESC" button was released for handling default actions */

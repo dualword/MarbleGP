@@ -131,7 +131,7 @@ namespace dustbin {
               else {
                 irr::u16 l_iPov = a_cEvent.JoystickEvent.POV;
 
-                if (l_iPov >= m_iPov - 900 || l_iPov <= m_iPov + 900)
+                if (l_iPov == m_iPov)
                   m_fValue = 1.0f;
                 else
                   m_fValue = 0.0f;
@@ -144,20 +144,18 @@ namespace dustbin {
 
     void CControllerBase::SCtrlInput::serialize(irr::io::IXMLWriterUTF8* a_pXml) const {
       a_pXml->writeElement("control", false);
-      a_pXml->writeLineBreak();
 
-      a_pXml->writeElement("attribute", true, "key", "type", "value", m_eType == enInputType::JoyAxis ? "JoyAxis" : m_eType == enInputType::JoyButton ? "JoyButton" : m_eType == enInputType::JoyPov ? "JoyPov" : "Key"); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "name"      , "value",                 m_sName     .c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "joy_name"  , "value",                 m_sJoystick .c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "key"       , "value", std::to_string(m_eKey      ).c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "joy_index" , "value", std::to_string(m_iJoystick ).c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "joy_button", "value", std::to_string(m_iButton   ).c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "joy_axis"  , "value", std::to_string(m_iAxis     ).c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "pov"       , "value", std::to_string(m_iPov      ).c_str()                                                                                                       ); a_pXml->writeLineBreak();
-      a_pXml->writeElement("attribute", true, "key", "direction" , "value", std::to_string(m_iDirection).c_str()                                                                                                       ); a_pXml->writeLineBreak();
+      a_pXml->writeElement("attribute", true, "key", "type", "value", m_eType == enInputType::JoyAxis ? "JoyAxis" : m_eType == enInputType::JoyButton ? "JoyButton" : m_eType == enInputType::JoyPov ? "JoyPov" : "Key");
+      a_pXml->writeElement("attribute", true, "key", "name"      , "value",                 m_sName     .c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "joy_name"  , "value",                 m_sJoystick .c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "key"       , "value", std::to_string(m_eKey      ).c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "joy_index" , "value", std::to_string(m_iJoystick ).c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "joy_button", "value", std::to_string(m_iButton   ).c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "joy_axis"  , "value", std::to_string(m_iAxis     ).c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "pov"       , "value", std::to_string(m_iPov      ).c_str()                                                                                                       );
+      a_pXml->writeElement("attribute", true, "key", "direction" , "value", std::to_string(m_iDirection).c_str()                                                                                                       );
       
       a_pXml->writeClosingTag("control");
-      a_pXml->writeLineBreak();
     }
 
 
@@ -187,13 +185,11 @@ namespace dustbin {
       a_pXml->writeXMLHeader();
 
       a_pXml->writeElement("controller", false);
-      a_pXml->writeLineBreak();
 
       for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++)
         (*it).serialize(a_pXml);
 
       a_pXml->writeClosingTag("controller");
-      a_pXml->writeLineBreak();
     }
 
     /**

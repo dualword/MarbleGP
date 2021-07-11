@@ -58,7 +58,7 @@ namespace dustbin {
           * Event handler for this input
           * @param a_cEvent the event to handle
           */
-          void update(const irr::SEvent& a_cEvent);
+          virtual void update(const irr::SEvent& a_cEvent);
 
           void serialize(irr::io::IXMLWriterUTF8* a_pXml) const;
 
