@@ -31,10 +31,8 @@ namespace dustbin {
 
 #ifdef _OPENGL_ES
     irr::video::E_DRIVER_TYPE l_eDriver = irr::video::EDT_OGLES2;
-    bool l_bFullScreen = true;
 #else
     irr::video::E_DRIVER_TYPE l_eDriver = irr::video::EDT_OPENGL;
-    bool l_bFullScreen = false;
 #endif
 
     irr::IrrlichtDevice *l_pDevice = irr::createDevice(irr::video::EDT_NULL);
@@ -59,6 +57,16 @@ namespace dustbin {
         }
       }
       l_pXml->drop();
+    }
+
+    irr::video::IVideoModeList* l_pList = l_pDevice->getVideoModeList();
+
+    irr::core::dimension2du l_cScreenSize = irr::core::dimension2du(0, 0);
+
+    for (int i = 0; i < l_pList->getVideoModeCount(); i++) {
+      irr::core::dimension2du l_cDim = l_pList->getDesktopResolution();
+      if (l_cDim.Width > l_cScreenSize.Width && l_cDim.Height > l_cScreenSize.Height)
+        l_cScreenSize = l_cDim;
     }
 
     l_pDevice->closeDevice();
@@ -100,9 +108,9 @@ namespace dustbin {
     }
 
     if (!l_bSettingsLoaded) {
-      m_cSettings.m_gfx_resolution_w = 1280;
-      m_cSettings.m_gfx_resolution_h = 768;
-      m_cSettings.m_gfx_fullscreen = false;
+      m_cSettings.m_gfx_resolution_w = l_cScreenSize.Width;
+      m_cSettings.m_gfx_resolution_h = l_cScreenSize.Height;
+      m_cSettings.m_gfx_fullscreen = true;
       m_cSettings.m_gfx_shadows = 1;
       m_cSettings.m_gfx_ambientlight = 2;
       m_cSettings.m_sfx_master = 1000;
@@ -117,7 +125,7 @@ namespace dustbin {
       m_cSettings.m_misc_usemenuctrl = false;
     }
 
-    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(m_cSettings.m_gfx_resolution_w, m_cSettings.m_gfx_resolution_h), 32, l_bFullScreen, false, false, this);
+    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(m_cSettings.m_gfx_resolution_w, m_cSettings.m_gfx_resolution_h), 32, m_cSettings.m_gfx_fullscreen, false, false, this);
 
     if (m_pDevice != nullptr) {
       irr::core::array<irr::SJoystickInfo> l_cList;

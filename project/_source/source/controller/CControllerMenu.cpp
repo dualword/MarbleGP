@@ -15,7 +15,6 @@ namespace dustbin {
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_LEFT ; l_cInput.m_sName = "Left"  ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_RIGHT; l_cInput.m_sName = "Right" ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_SPACE; l_cInput.m_sName = "Enter" ; m_vControls.push_back(l_cInput);
-      l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_TAB  ; l_cInput.m_sName = "Cancel"; m_vControls.push_back(l_cInput);
     }
 
     CControllerMenu::~CControllerMenu() {
