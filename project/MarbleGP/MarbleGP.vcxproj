@@ -202,6 +202,7 @@
     <ClCompile Include="..\_source\source\gui\CGuiItemFactory.cpp" />
     <ClCompile Include="..\_source\source\gui\CMenuBackground.cpp" />
     <ClCompile Include="..\_source\source\gui\CMenuButton.cpp" />
+    <ClCompile Include="..\_source\source\gui\CSelector.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaGuiItem.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="..\_source\include\gui\CGuiItemFactory.h" />
     <ClInclude Include="..\_source\include\gui\CMenuBackground.h" />
     <ClInclude Include="..\_source\include\gui\CMenuButton.h" />
+    <ClInclude Include="..\_source\include\gui\CSelector.h" />
     <ClInclude Include="..\_source\include\lua\CLuaCamera.h" />
     <ClInclude Include="..\_source\include\lua\CLuaGuiItem.h" />
     <ClInclude Include="..\_source\include\lua\CLuaHelpers.h" />

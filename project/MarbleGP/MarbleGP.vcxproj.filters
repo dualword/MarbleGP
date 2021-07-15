@@ -198,6 +198,9 @@
     <ClCompile Include="..\_source\source\gui\CDhstbinCheckbox.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CSelector.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -318,6 +321,9 @@
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CDustbinCheckbox.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CSelector.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>

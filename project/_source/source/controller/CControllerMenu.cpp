@@ -2,13 +2,22 @@
 #include <controller/CControllerMenu.h>
 #include <_generated/lua/lua_tables.h>
 #include <messages/CMessageHelpers.h>
+#include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuButton.h>
+#include <gui/CSelector.h>
 #include <CGlobal.h>
 
 namespace dustbin {
   namespace controller {
 
-    CControllerMenu::CControllerMenu() : m_pGui(CGlobal::getInstance()->getGuiEnvironment()), m_pCursor(CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()), m_iRaster(CGlobal::getInstance()->getRasterSize()), m_pHovered(nullptr), m_bEnterReady(true), m_bEventPosted(false) {
+    CControllerMenu::CControllerMenu() : 
+      m_pGui(CGlobal::getInstance()->getGuiEnvironment()), m_pCursor(CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()), 
+      m_iRaster(CGlobal::getInstance()->getRasterSize()), 
+      m_pSelected(nullptr),
+      m_bButtonDown(true),
+      m_pHovered(nullptr),
+      m_bMoved(false)
+    {
       SCtrlInput l_cInput;
 
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_UP   ; l_cInput.m_sName = "Up"    ; m_vControls.push_back(l_cInput);
@@ -40,7 +49,6 @@ namespace dustbin {
       }
 
       m_pTimer = CGlobal::getInstance()->getIrrlichtDevice()->getTimer();
-      m_iLastMove = m_pTimer->getTime();
     }
 
     CControllerMenu::~CControllerMenu() {
@@ -54,11 +62,14 @@ namespace dustbin {
       irr::gui::EGUI_ELEMENT_TYPE l_eType = a_pParent->getType();
 
       switch (l_eType) {
-        case irr::gui::EGUIET_BUTTON:
         case irr::gui::EGUIET_EDIT_BOX:
         case irr::gui::EGUIET_CHECK_BOX:
         case irr::gui::EGUIET_COMBO_BOX:
+        case irr::gui::EGUIET_SCROLL_BAR:
+        case dustbin::gui::g_DustbinCheckboxId:
+        case dustbin::gui::g_SelectorId:
         case dustbin::gui::g_MenuButtonId:
+          printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
           m_vElements.push_back(a_pParent);
           break;
 
@@ -76,75 +87,111 @@ namespace dustbin {
     * @param a_cEvent the event to handle
     */
     void CControllerMenu::update(const irr::SEvent& a_cEvent) {
-      if (m_bEventPosted) return;
-
       CControllerBase::update(a_cEvent);
 
-      if (m_vControls[0].m_fValue > 0.5f) {
-        moveMouse(enDirection::Up);
+      if (m_pSelected == nullptr) {
+        if (m_vControls[0].m_fValue > 0.5f) {
+          moveMouse(enDirection::Up);
+        }
+        else if (m_vControls[1].m_fValue > 0.5f) {
+          moveMouse(enDirection::Down);
+        }
+        else if (m_vControls[2].m_fValue > 0.5f) {
+          moveMouse(enDirection::Left);
+        }
+        else if (m_vControls[3].m_fValue > 0.5f) {
+          moveMouse(enDirection::Right);
+        }
+        else m_bMoved = false;
+      }
+      else {
+        if (m_pSelected->getType() == gui::g_SelectorId) {
+          if (m_vControls[2].m_fValue > 0.5f) {
+            if (!m_bMoved) {
+              reinterpret_cast<gui::CSelector*>(m_pSelected)->setSelected(reinterpret_cast<gui::CSelector*>(m_pSelected)->getSelected() - 1);
+              m_bMoved = true;
+            }
+          }
+          else if (m_vControls[3].m_fValue > 0.5f) {
+            if (!m_bMoved) {
+              reinterpret_cast<gui::CSelector*>(m_pSelected)->setSelected(reinterpret_cast<gui::CSelector*>(m_pSelected)->getSelected() + 1);
+              m_bMoved = true;
+            }
+          }
+          else if (m_vControls[0].m_fValue < 0.5f && m_vControls[1].m_fValue < 0.5f) {
+            m_bMoved = false;
+          }
+        }
       }
 
-      if (m_vControls[1].m_fValue > 0.5f) {
-        moveMouse(enDirection::Down);
-      }
-
-      if (m_vControls[2].m_fValue > 0.5f) {
-        moveMouse(enDirection::Left);
-      }
-
-      if (m_vControls[3].m_fValue > 0.5f) {
-        moveMouse(enDirection::Right);
-      }
-
-      if (m_bEnterReady) {
-        if (m_vControls[4].m_fValue > 0.5f) {
-          irr::SEvent l_cEvent;
-          l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-          l_cEvent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
-          l_cEvent.MouseInput.Control = false;
-          l_cEvent.MouseInput.Shift = false;
-          l_cEvent.MouseInput.Wheel = 0;
-          l_cEvent.MouseInput.X = m_pCursor->getPosition().X;
-          l_cEvent.MouseInput.Y = m_pCursor->getPosition().Y;
-          l_cEvent.MouseInput.ButtonStates = 1;
-          m_bEnterReady = false;
-
+      if (m_bButtonDown) {
+        if (m_vControls[4].m_fValue < 0.5f) {
+          m_bButtonDown = false;
           if (m_pHovered != nullptr) {
-            m_bEventPosted = true;
-            m_pGui->postEventFromUser(l_cEvent);
-            m_pHovered->OnEvent(l_cEvent);
-            m_bEventPosted = false;
+            bool l_bPost = true;
+
+            switch (m_pHovered->getType()) {
+              case gui::g_DustbinCheckboxId:
+                break;
+
+              case gui::g_SelectorId:
+                if (m_pSelected != nullptr)
+                  reinterpret_cast<gui::CSelector*>(m_pSelected)->setItemSelected(false);
+
+                m_pSelected = m_pHovered == m_pSelected ? nullptr : m_pHovered;
+
+                if (m_pSelected != nullptr)
+                  reinterpret_cast<gui::CSelector*>(m_pSelected)->setItemSelected(true);
+
+                break;
+            }
+
+            if (l_bPost) {
+              irr::SEvent l_cEvent;
+
+              l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
+              l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_LEFT_UP;
+              l_cEvent.MouseInput.Control      = false;
+              l_cEvent.MouseInput.ButtonStates = 1;
+              l_cEvent.MouseInput.Shift        = false;
+              l_cEvent.MouseInput.Wheel        = 0;
+              l_cEvent.MouseInput.X            = m_pCursor->getPosition().X;
+              l_cEvent.MouseInput.Y            = m_pCursor->getPosition().Y;
+
+              m_pHovered->OnEvent(l_cEvent);
+            }
           }
         }
       }
       else {
-        if (m_vControls[4].m_fValue < 0.5f) {
-          irr::SEvent l_cEvent;
-          l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-          l_cEvent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
-          l_cEvent.MouseInput.Control = false;
-          l_cEvent.MouseInput.Shift = false;
-          l_cEvent.MouseInput.Wheel = 0;
-          l_cEvent.MouseInput.X = m_pCursor->getPosition().X;
-          l_cEvent.MouseInput.Y = m_pCursor->getPosition().Y;
-          l_cEvent.MouseInput.ButtonStates = 0;
-          m_bEnterReady = true;
+        if (m_vControls[4].m_fValue > 0.5f) {
+          m_bButtonDown = true;
 
-          /*if (m_pHovered != nullptr) {
-            m_bEventPosted = true;
-            m_pGui->postEventFromUser(l_cEvent);
+          if (m_pHovered != nullptr && m_pHovered->getType() != gui::g_DustbinCheckboxId) {
+            irr::SEvent l_cEvent;
+
+            l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
+            l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_PRESSED_DOWN;
+            l_cEvent.MouseInput.Control      = false;
+            l_cEvent.MouseInput.ButtonStates = 1;
+            l_cEvent.MouseInput.Shift        = false;
+            l_cEvent.MouseInput.Wheel        = 0;
+            l_cEvent.MouseInput.X            = m_pCursor->getPosition().X;
+            l_cEvent.MouseInput.Y            = m_pCursor->getPosition().Y;
+
             m_pHovered->OnEvent(l_cEvent);
-            m_bEventPosted = false;
-          }*/
+          }
         }
       }
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
-          m_pHovered = a_cEvent.GUIEvent.Caller;
+          m_pHovered  = a_cEvent.GUIEvent.Caller;
+          m_pSelected = nullptr;
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
-          m_pHovered = nullptr;
+          m_pHovered  = nullptr;
+          m_pSelected = nullptr;
         }
       }
     }
@@ -159,20 +206,85 @@ namespace dustbin {
         return isVisible(a_pItem->getParent());
     }
 
-    void CControllerMenu::moveMouse(CControllerMenu::enDirection a_eDirection) {
-      if (m_pTimer != nullptr && m_pTimer->getTime() > m_iLastMove + 50) {
-        irr::core::vector2di l_cPos = m_pCursor->getPosition();
+    irr::gui::IGUIElement* CControllerMenu::findElement(int a_iStep, enDirection a_eDirection) {
+      if (m_pHovered == nullptr)
+        if (m_vElements.size() > 0)
+          return *m_vElements.begin();
+        else
+          return nullptr;
+
+      irr::core::recti l_cRect = m_pHovered->getAbsoluteClippingRect();
+
+      if (a_iStep == 0) {
+        switch (a_eDirection) {
+          case enDirection::Up   : l_cRect = irr::core::recti(l_cRect.UpperLeftCorner .X       , l_cRect.UpperLeftCorner .Y - 5000, l_cRect.LowerRightCorner.X       , l_cRect.UpperLeftCorner .Y       ); break;
+          case enDirection::Down : l_cRect = irr::core::recti(l_cRect.UpperLeftCorner .X       , l_cRect.LowerRightCorner.Y       , l_cRect.LowerRightCorner.X       , l_cRect.LowerRightCorner.Y + 5000); break;
+          case enDirection::Left : l_cRect = irr::core::recti(l_cRect.UpperLeftCorner .X - 5000, l_cRect.UpperLeftCorner .Y       , l_cRect.UpperLeftCorner .X       , l_cRect.LowerRightCorner.Y       ); break;
+          case enDirection::Right: l_cRect = irr::core::recti(l_cRect.LowerRightCorner.X       , l_cRect.UpperLeftCorner .Y       , l_cRect.LowerRightCorner.X + 5000, l_cRect.LowerRightCorner.Y       ); break;
+        }
+      }
+      else {
+        irr::core::dimension2du l_cScreen = CGlobal::getInstance()->getVideoDriver()->getScreenSize();
 
         switch (a_eDirection) {
-          case enDirection::Up   : l_cPos.Y -= m_iRaster; break;
-          case enDirection::Down : l_cPos.Y += m_iRaster; break;
-          case enDirection::Left : l_cPos.X -= m_iRaster; break;
-          case enDirection::Right: l_cPos.X += m_iRaster; break;
+          case enDirection::Up   : l_cRect = irr::core::recti(                         0,                          0, l_cScreen.Width            , l_cRect.UpperLeftCorner.Y); break;
+          case enDirection::Down : l_cRect = irr::core::recti(                         0, l_cRect.LowerRightCorner.Y, l_cScreen.Width            , l_cScreen.Height         ); break;
+          case enDirection::Left : l_cRect = irr::core::recti(                         0,                          0, l_cRect  .UpperLeftCorner.X, l_cScreen.Height         ); break;
+          case enDirection::Right: l_cRect = irr::core::recti(l_cRect.LowerRightCorner.X,                          0, l_cScreen.Width            , l_cScreen.Height         ); break;
         }
-
-        m_pCursor->setPosition(l_cPos);
-        m_iLastMove = m_pTimer->getTime();
       }
+
+      irr::core::recti l_cHoverRect = m_pHovered->getAbsoluteClippingRect();
+      irr::gui::IGUIElement* l_pNew = nullptr;
+
+      int i = 0;
+      irr::core::vector2di l_cDist = irr::core::vector2di(-1, -1);
+
+      for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
+        if (*it != m_pHovered) {
+          if (isVisible(*it)) {
+            if (l_cRect.isRectCollided((*it)->getAbsoluteClippingRect())) {
+              irr::core::recti l_cOtherRect = (*it)->getAbsoluteClippingRect();
+
+              irr::core::vector2di l_cNewDist = irr::core::vector2di(-1, -1);
+
+              switch (a_eDirection) {
+                case enDirection::Up   : l_cNewDist.X = l_cHoverRect.getCenter().Y - l_cOtherRect.getCenter().Y; l_cNewDist.Y = abs(l_cHoverRect.getCenter().X - l_cOtherRect.getCenter().X); break;
+                case enDirection::Down : l_cNewDist.X = l_cOtherRect.getCenter().Y - l_cHoverRect.getCenter().Y; l_cNewDist.Y = abs(l_cOtherRect.getCenter().X - l_cHoverRect.getCenter().X); break;
+                case enDirection::Left : l_cNewDist.X = l_cHoverRect.getCenter().X - l_cOtherRect.getCenter().X; l_cNewDist.Y = abs(l_cHoverRect.getCenter().Y - l_cOtherRect.getCenter().Y); break;
+                case enDirection::Right: l_cNewDist.X = l_cOtherRect.getCenter().X - l_cHoverRect.getCenter().X; l_cNewDist.Y = abs(l_cOtherRect.getCenter().Y - l_cHoverRect.getCenter().Y); break;
+              }
+
+              if (l_pNew == nullptr || l_cNewDist.X < l_cDist.X || (l_cNewDist.X == l_cDist.X && l_cNewDist.Y < l_cDist.Y)) {
+                l_pNew  = *it;
+                l_cDist = l_cNewDist;
+              }
+            }
+          }
+        }
+        i++;
+      }
+
+      m_bMoved = true;
+
+      if (l_pNew != nullptr) {
+        m_pCursor->setPosition(l_pNew->getAbsoluteClippingRect().getCenter());
+      }
+
+      return l_pNew;
+    }
+
+    void CControllerMenu::moveMouse(CControllerMenu::enDirection a_eDirection) {
+      if (m_bMoved)
+        return;
+
+      irr::gui::IGUIElement *l_pNew = findElement(0, a_eDirection);
+
+      if (l_pNew == nullptr)
+        l_pNew = findElement(1, a_eDirection);
+
+      if (l_pNew != nullptr)
+        m_pHovered = l_pNew;
     }
   } // namespace controller
 } // namespace dustbin

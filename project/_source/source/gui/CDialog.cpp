@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <gui/CControllerUi.h>
 #include <gui/CMenuButton.h>
+#include <gui/CSelector.h>
 #include <gui/CDialog.h>
 
 #include <LuaBridge/LuaBridge.h>
@@ -294,6 +295,15 @@ namespace dustbin {
               }
 
               reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setTextAlignment(l_eAlign, l_eVert);
+            }
+          }
+
+          if (m_pElement->getType() == gui::g_SelectorId) {
+            if (m_mCustom.find("options") != m_mCustom.end()) {
+              std::vector<std::string> l_vOptions = splitString(m_mCustom["options"], ';');
+              for (std::vector<std::string>::iterator it = l_vOptions.begin(); it != l_vOptions.end(); it++) {
+                reinterpret_cast<gui::CSelector*>(m_pElement)->addItem(platform::s2ws(*it).c_str());
+              }
             }
           }
 

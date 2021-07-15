@@ -31,6 +31,7 @@ function updateSettings()
   
   local l_Screen = g_Controls["Resolution"]:gettext()
   
+  io.write("Screen: " .. tostring(l_Screen) .. "\n")
   local l_Resolution = split(l_Screen, "x")
   
   g_Settings["gfx_resolution_w"] = tonumber(l_Resolution[1])
@@ -89,7 +90,7 @@ function fillItems()
   
   g_Controls["Resolution"] = dialog:getitemfromname("Resolution")
   
-  local l_Resolution = g_Settings["gfx_resolution_w"] .. "x" .. g_Settings["gfx_resolution_h"]
+  local l_Resolution = tostring(g_Settings["gfx_resolution_w"]) .. "x" .. tostring(g_Settings["gfx_resolution_h"])
   
   if g_Controls["Resolution"] ~= nil then
     g_Controls["Resolution"]:clearitems()
@@ -194,6 +195,7 @@ end
 function uibuttonclicked(a_Id, a_Name)
   if a_Name == "ok" then
     updateSettings()
+    io.write(serializeTable(g_Settings, 2))
     system:setsettings(g_Settings)
     system:statechange(1)
   elseif a_Name == "cancel" then

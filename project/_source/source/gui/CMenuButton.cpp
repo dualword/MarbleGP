@@ -78,9 +78,13 @@ namespace dustbin {
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         bool l_bWasDown = m_bLDown;
-
-        m_bLDown = a_cEvent.MouseInput.isLeftPressed();
-
+        if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          m_bLDown = true;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          m_bLDown = false;
+        }
+        
         if (l_bWasDown && !m_bLDown && m_bHovered) {
           irr::SEvent l_cEvent;
           l_cEvent.EventType = irr::EET_GUI_EVENT;

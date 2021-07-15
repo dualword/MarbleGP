@@ -3,6 +3,7 @@
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
 #include <gui/CControllerUi.h>
+#include <gui/CSelector.h>
 #include <string>
 
 namespace dustbin {
@@ -49,13 +50,18 @@ namespace dustbin {
 				p->drop();
 				return p;
 			}
+			else if (l_sTypeName == g_SelectorName) {
+				irr::gui::IGUIElement* p = new gui::CSelector(a_pParent);
+				p->drop();
+				return p;
+			}
 
 			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-			return 4;
+			return 5;
 		}
 
 		//! Get type of a createable element type
@@ -77,6 +83,10 @@ namespace dustbin {
 
 				case 3:
 					return (irr::gui::EGUI_ELEMENT_TYPE)g_DustbinCheckboxId;
+					break;
+
+				case 4:
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_SelectorId;
 					break;
 
 				default:
@@ -106,6 +116,10 @@ namespace dustbin {
 					return g_DustbinCheckboxName;
 					break;
 
+				case 4:
+					return g_SelectorName;
+					break;
+
 				default:
 					return nullptr;
 					break;
@@ -131,6 +145,10 @@ namespace dustbin {
 
 				case g_DustbinCheckboxId:
 					return g_DustbinCheckboxName;
+					break;
+
+				case g_SelectorId:
+					return g_SelectorName;
 					break;
 
 				default:

@@ -4,6 +4,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <LuaBridge/LuaBridge.h>
 #include <platform/CPlatform.h>
+#include <gui/CSelector.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -176,6 +177,10 @@ namespace dustbin {
         reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->clear();
         return true;
       }
+      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
+        reinterpret_cast<gui::CSelector*>(m_pElement)->clear();
+        return true;
+      }
       else return false;
     }
 
@@ -186,6 +191,10 @@ namespace dustbin {
     bool CLuaGuiItem::addItem(const std::string& a_sItem) {
       if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
         reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
+        return true;
+      }
+      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
+        reinterpret_cast<gui::CSelector*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
         return true;
       }
       else return false;
@@ -204,6 +213,9 @@ namespace dustbin {
         }
         else return "";
       }
+      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
+        return platform::ws2s(reinterpret_cast<gui::CSelector*>(m_pElement)->getItem(a_iIndex));
+      }
       else return "";
     }
 
@@ -214,6 +226,9 @@ namespace dustbin {
     int CLuaGuiItem::getSelected() {
       if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
         return reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->getSelected();
+      }
+      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
+        return reinterpret_cast<gui::CSelector*>(m_pElement)->getSelected();
       }
       else return false;
     }
@@ -226,6 +241,10 @@ namespace dustbin {
     bool CLuaGuiItem::setSelected(int a_iIndex) {
       if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
         reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setSelected(a_iIndex);
+        return true;
+      }
+      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
+        reinterpret_cast<gui::CSelector*>(m_pElement)->setSelected(a_iIndex);
         return true;
       }
       else return false;

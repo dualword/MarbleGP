@@ -242,13 +242,13 @@ namespace dustbin {
 
       std::sort(m_vList.begin(), m_vList.end(), [](const irr::core::dimension2du &a_cDim1, const irr::core::dimension2du &a_cDim2) {
           if (a_cDim1.Width != a_cDim2.Height) {
-            if (a_cDim1.Width > a_cDim2.Width)
+            if (a_cDim1.Width < a_cDim2.Width)
               return true;
             else
               return false;
           }
           else {
-            if (a_cDim1.Height > a_cDim2.Height)
+            if (a_cDim1.Height < a_cDim2.Height)
               return true;
             else
               return false;

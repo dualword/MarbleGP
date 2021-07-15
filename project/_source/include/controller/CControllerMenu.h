@@ -20,21 +20,20 @@ namespace dustbin {
           Right
         };
 
-        bool m_bEnterReady,
-             m_bEventPosted;
+        bool m_bButtonDown,
+             m_bMoved;
 
         irr::gui::IGUIEnvironment* m_pGui;
         irr::gui::ICursorControl * m_pCursor;
 
         irr::ITimer* m_pTimer;
 
-        irr::u32 m_iLastMove;
-
         int m_iRaster;
 
         std::vector<irr::gui::IGUIElement *> m_vElements;  /**< all relevant UI elements */
 
-        irr::gui::IGUIElement* m_pHovered;
+        irr::gui::IGUIElement* m_pHovered,
+                             * m_pSelected;
 
         void moveMouse(enDirection a_eDirection);
 
@@ -45,6 +44,8 @@ namespace dustbin {
         * @param a_pParent the item to add, the children will be iterated and added as well
         */
         void fillItemList(irr::gui::IGUIElement* a_pParent);
+
+        irr::gui::IGUIElement* findElement(int a_iStep, enDirection a_eDirection);
 
       public:
         CControllerMenu();

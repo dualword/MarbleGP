@@ -30,6 +30,7 @@ Factory 1 element 0 : "MenuButton"
 Factory 1 element 1 : "MenuBackground"
 Factory 1 element 2 : "ControllerUi"
 Factory 1 element 3 : "DustbinCheckbox"
+Factory 1 element 4 : "Selector"
 
 Unniversal Attributes:
 
@@ -123,10 +124,24 @@ Attribute VTextAlign: center
 Attributes of "DustbinCheckbox"
 
 Attribute Checked: false
+Attribute BackgroundColor: 255, 255, 255, 255
+Attribute DisabledColor: 255, 160, 160, 160
+Attribute HoverColor: 255, 51, 103, 184
+Attribute ClickColor: 255, 236, 241 , 99
 
 Attributes of "checkBox"
 
 Attribute Checked: false
+
+Attributes of "Selector"
+
+Attribute CenterH: false
+Attribute CenterV: true
+Attribute Selected: -1
+Attribute BackgroundColor: 255, 255, 255, 255
+Attribute DisabledColor: 255, 160, 160, 160
+Attribute HoverColor: 255, 51, 103, 184
+Attribute ClickColor: 255, 236, 241 , 99
 
 -->
 <dialog>
