@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <controller/CControllerMenu.h>
 #include <gui/CMenuBackground.h>
 #include <platform/CPlatform.h>
 #include <state/CErrorState.h>
@@ -9,7 +10,7 @@
 
 namespace dustbin {
   namespace state {
-    CErrorState::CErrorState() : m_bBackToLua(false) {
+    CErrorState::CErrorState() : m_bBackToLua(false), m_pCtrlMenu(nullptr) {
 
     }
 
@@ -23,6 +24,10 @@ namespace dustbin {
     void CErrorState::activate() {
       createUi();
       m_bBackToLua = false;
+
+      if (CGlobal::getInstance()->getSettings().m_misc_usemenuctrl) {
+        m_pCtrlMenu = new controller::CControllerMenu();
+      }
     }
 
     /**
@@ -31,6 +36,11 @@ namespace dustbin {
     void CErrorState::deactivate() {
       CGlobal::getInstance()->getGuiEnvironment()->clear();
       CGlobal::getInstance()->getSceneManager()->clear();
+
+      if (m_pCtrlMenu != nullptr) {
+        delete m_pCtrlMenu;
+        m_pCtrlMenu = nullptr;
+      }
     }
 
     /**
@@ -83,6 +93,9 @@ namespace dustbin {
           m_bBackToLua = true;
         }
       }
+
+      if (m_pCtrlMenu != nullptr)
+        m_pCtrlMenu->update(a_cEvent);
 
       return l_bRet;
     }

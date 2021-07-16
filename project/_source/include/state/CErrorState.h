@@ -10,6 +10,10 @@
 #include <state/IState.h>
 
 namespace dustbin {
+  namespace controller {
+    class CControllerMenu;
+  }
+
   namespace state {
     /**
     * @class CErrorState
@@ -24,6 +28,8 @@ namespace dustbin {
         * This function creates the UI, it is called from "activate" and "onResize"
         */
         void createUi();
+
+        controller::CControllerMenu* m_pCtrlMenu;
 
       public:
         CErrorState();
