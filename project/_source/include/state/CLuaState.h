@@ -71,6 +71,12 @@ namespace dustbin {
         virtual enState getId();
 
         /**
+        * Change the Z-Layer for the Menu Controller
+        * @param a_iZLayer the new Z-Layer
+        */
+        virtual void setZLayer(int a_iZLayer) override;
+
+        /**
         * This is a callback method that gets invoked when the window is resized
         * @param a_cDim the new dimension of the window
         */

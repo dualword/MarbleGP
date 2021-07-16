@@ -81,6 +81,15 @@ namespace dustbin {
     }
 
     /**
+    * Change the Z-Layer for the Menu Controller
+    * @param a_iZLayer the new Z-Layer
+    */
+    void CLuaState::setZLayer(int a_iZLayer) {
+      if (m_pMenuCtrl != nullptr)
+        m_pMenuCtrl->setZLayer(a_iZLayer);
+    }
+
+    /**
     * This is a callback method that gets invoked when the window is resized
     * @param a_cDim the new dimension of the window
     */
@@ -179,7 +188,7 @@ namespace dustbin {
       switch (a_eButton) {
         case enMouseButton::Left  : return m_bButtons[0];
         case enMouseButton::Middle: return m_bButtons[1];
-        case enMouseButton::RIght : return m_bButtons[2];
+        case enMouseButton::Right : return m_bButtons[2];
         default: return false;
       }
     }

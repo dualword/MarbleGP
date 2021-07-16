@@ -602,5 +602,13 @@ namespace dustbin {
       irr::gui::IGUIElement* p = findElement("", a_iId, m_pGui->getRootGUIElement());
       return lua::CLuaGuiItem(p);
     }
+
+    /**
+    * Change the Z-Layer of the dialog for the menu controller
+    * @param a_iZLayer the new Z-Value
+    */
+    void CDialog::setZLayer(int a_iZLayer) {
+      // m_pGlobal->st
+    }
   }
 }

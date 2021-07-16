@@ -19,12 +19,18 @@ namespace dustbin {
         irr::video::IVideoDriver* m_pDrv;
         irr::video::SColor        m_cOverrideColor;
         bool                      m_bOverrideColor;
+        int                       m_iZLayer;        /**< The Z-Layer of all the children. Useful for the menu controller */
 
       public:
         CMenuBackground(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType = (irr::gui::EGUI_ELEMENT_TYPE)g_MenuBackgroundId);
         virtual ~CMenuBackground();
 
         virtual void draw();
+
+        /**
+        * Return the Z-Layer of the element
+        */
+        int getZLayer();
 
         virtual irr::gui::EGUI_ELEMENT_TYPE getType();
 

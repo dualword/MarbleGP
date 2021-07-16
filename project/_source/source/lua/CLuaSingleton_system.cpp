@@ -28,6 +28,7 @@ namespace dustbin {
           .addFunction("getcontrollerxml_menu", &CLuaSingleton_system::getControllerXml_Menu)
           .addFunction("urlencode"            , &CLuaSingleton_system::urlEncode)
           .addFunction("urldecode"            , &CLuaSingleton_system::urlDecode)
+          .addFunction("setzlayer"            , &CLuaSingleton_system::setZLayer)
         .endClass();
 
       std::error_code l_cError;
@@ -199,6 +200,16 @@ namespace dustbin {
       delete[]s;
       return l_sRet;
     }
+
+
+    /**
+    * Change the Z-Layer for the menu controller
+    * @param m_iZLayer the new Z-Layer
+    */
+    void CLuaSingleton_system::setZLayer(int a_iZLayer) {
+      CGlobal::getInstance()->getActiveState()->setZLayer(a_iZLayer);
+    }
+
 
 
     CLuaResolutionList::CLuaResolutionList(lua_State* a_pState) {

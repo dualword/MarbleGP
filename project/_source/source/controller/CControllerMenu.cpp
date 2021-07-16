@@ -3,6 +3,7 @@
 #include <_generated/lua/lua_tables.h>
 #include <messages/CMessageHelpers.h>
 #include <gui/CDustbinCheckbox.h>
+#include <gui/CMenuBackground.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
@@ -12,11 +13,11 @@ namespace dustbin {
 
     CControllerMenu::CControllerMenu() : 
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()), m_pCursor(CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()), 
-      m_iRaster(CGlobal::getInstance()->getRasterSize()), 
       m_pSelected(nullptr),
       m_bButtonDown(true),
       m_pHovered(nullptr),
-      m_bMoved(false)
+      m_bMoved(false),
+      m_iZLayer(-1)
     {
       SCtrlInput l_cInput;
 
@@ -26,12 +27,7 @@ namespace dustbin {
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_RIGHT; l_cInput.m_sName = "Right" ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_SPACE; l_cInput.m_sName = "Enter" ; m_vControls.push_back(l_cInput);
 
-      fillItemList(m_pGui->getRootGUIElement());
-
-      if (m_vElements.size() > 0)
-        m_pCursor->setPosition((*m_vElements.begin())->getAbsoluteClippingRect().getCenter());
-
-      moveMouse(enDirection::Up);
+      setZLayer(0);
 
       SSettings l_cSettings = CGlobal::getInstance()->getSettings();
       std::string l_sConfig = messages::urlDecode(l_cSettings.m_misc_menuctrl);
@@ -58,27 +54,29 @@ namespace dustbin {
     * Fill the "m_vElements" vector
     * @param a_pParent the item to add, the children will be iterated and added as well
     */
-    void CControllerMenu::fillItemList(irr::gui::IGUIElement* a_pParent) {
+    void CControllerMenu::fillItemList(irr::gui::IGUIElement* a_pParent, int a_iZLayer) {
       irr::gui::EGUI_ELEMENT_TYPE l_eType = a_pParent->getType();
 
-      switch (l_eType) {
-        case irr::gui::EGUIET_EDIT_BOX:
-        case irr::gui::EGUIET_CHECK_BOX:
-        case irr::gui::EGUIET_COMBO_BOX:
-        case irr::gui::EGUIET_SCROLL_BAR:
-        case dustbin::gui::g_DustbinCheckboxId:
-        case dustbin::gui::g_SelectorId:
-        case dustbin::gui::g_MenuButtonId:
-          printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
-          m_vElements.push_back(a_pParent);
-          break;
+      if (getElementZLayer(a_pParent) == a_iZLayer) {
+        switch (l_eType) {
+          case irr::gui::EGUIET_EDIT_BOX:
+          case irr::gui::EGUIET_CHECK_BOX:
+          case irr::gui::EGUIET_COMBO_BOX:
+          case irr::gui::EGUIET_SCROLL_BAR:
+          case dustbin::gui::g_DustbinCheckboxId:
+          case dustbin::gui::g_SelectorId:
+          case dustbin::gui::g_MenuButtonId:
+            printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
+            m_vElements.push_back(a_pParent);
+            break;
 
-        default:
-          break;
+          default:
+            break;
+        }
       }
 
       for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++) {
-        fillItemList(*it);
+        fillItemList(*it, a_iZLayer);
       }
     }
 
@@ -285,6 +283,45 @@ namespace dustbin {
 
       if (l_pNew != nullptr)
         m_pHovered = l_pNew;
+    }
+
+    /**
+    * Get the Z-Layer of an item. Iterates through all ancestors until either a "MenuBackground" element or the root element
+    * is found. If a "MenuBackground" is found it's "Z-Layer" property is returned, for the root element "0" is returned
+    * @param a_pItem the item to get the Z-Layer
+    * @return the Z-Layer of the item
+    */
+    int CControllerMenu::getElementZLayer(irr::gui::IGUIElement* a_pItem) {
+      if (a_pItem->getType() == gui::g_MenuBackgroundId)
+        return reinterpret_cast<gui::CMenuBackground*>(a_pItem)->getZLayer();
+      else if (a_pItem == m_pGui->getRootGUIElement())
+        return 0;
+      else
+        return getElementZLayer(a_pItem->getParent());
+    }
+
+    /**
+    * Change the Z-Layer the controller controls
+    * @param a_iZLayer the new Z-Layer
+    */
+    void CControllerMenu::setZLayer(int a_iZLayer) {
+      if (m_iZLayer >= 0 && m_pHovered != nullptr)
+        m_mFocused[m_iZLayer] = m_pHovered;
+
+      m_iZLayer = a_iZLayer;
+      m_vElements.clear();
+      fillItemList(m_pGui->getRootGUIElement(), m_iZLayer);
+
+      if (m_mFocused.find(m_iZLayer) != m_mFocused.end()) {
+        m_pHovered = m_mFocused[m_iZLayer];
+        m_pCursor->setPosition(m_pHovered->getAbsoluteClippingRect().getCenter());
+      }
+      else {
+        if (m_vElements.size() > 0)
+          m_pCursor->setPosition((*m_vElements.begin())->getAbsoluteClippingRect().getCenter());
+
+        moveMouse(enDirection::Up);
+      }
     }
   } // namespace controller
 } // namespace dustbin

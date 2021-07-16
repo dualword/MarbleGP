@@ -121,6 +121,12 @@ namespace dustbin {
         * @param a_iId the id of the item
         */
         lua::CLuaGuiItem getItemFromId(int a_iId);
+
+        /**
+        * Change the Z-Layer of the dialog for the menu controller
+        * @param a_iZLayer the new Z-Value
+        */
+        void setZLayer(int a_iZLayer);
     };
   }
 }

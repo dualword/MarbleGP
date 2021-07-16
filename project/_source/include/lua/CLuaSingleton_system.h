@@ -167,6 +167,12 @@ namespace dustbin {
         * @return the decoded string
         */
         std::string urlDecode(const std::string a_sInput);
+
+        /**
+        * Change the Z-Layer for the menu controller
+        * @param m_iZLayer the new Z-Layer
+        */
+        void setZLayer(int a_iZLayer);
     };
   }
 }

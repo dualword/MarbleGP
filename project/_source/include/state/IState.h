@@ -50,7 +50,7 @@ namespace dustbin {
         enum enMouseButton {
           Left,
           Middle,
-          RIght
+          Right
         };
 
         IState() : m_bDefaultEnabled(true) { }
@@ -72,6 +72,12 @@ namespace dustbin {
          * @param a_cDim the new dimension of the window
          */
         virtual void onResize(const irr::core::dimension2du &a_cDim) = 0;
+
+        /**
+        * Change the Z-Layer for the Menu Controller
+        * @param a_iZLayer the new Z-Layer
+        */
+        virtual void setZLayer(int a_iZLayer) = 0;
 
         /**
         * This method is called before the UI is cleared on window resize. It can be

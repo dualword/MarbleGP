@@ -143,6 +143,12 @@ Attribute DisabledColor: 255, 160, 160, 160
 Attribute HoverColor: 255, 51, 103, 184
 Attribute ClickColor: 255, 236, 241 , 99
 
+Attributes of "MenuBackground"
+
+Attribute UseOverrideColor: false
+Attribute OverrideColor: 192, 239, 239, 255
+Attribute ZLayer: 0
+
 -->
 <dialog>
   <element type="MenuBackground" rect="center: -40, -25, 40, 25">
