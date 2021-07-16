@@ -41,7 +41,8 @@ namespace dustbin {
       m_pScript = new lua::CLuaScript_dialog(l_sScript);
       m_pScript->initialize();
 
-      m_pMenuCtrl = new controller::CControllerMenu();
+      if (m_pGlobal->getSettings().m_misc_usemenuctrl)
+        m_pMenuCtrl = new controller::CControllerMenu();
 
       m_bDefCanc[0] = false;
       m_bDefCanc[1] = false;
