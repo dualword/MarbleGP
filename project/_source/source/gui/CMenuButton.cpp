@@ -17,19 +17,21 @@ namespace dustbin {
     }
 
     void CMenuButton::draw() {
-      irr::core::recti l_cRect = getAbsoluteClippingRect();
+      if (IsVisible) {
+        irr::core::recti l_cRect = getAbsoluteClippingRect();
 
-      renderBackground(getAbsoluteClippingRect(), m_bHovered ? m_bLDown ? irr::video::SColor(0xff, 0xec, 0xf1, 0x63) : irr::video::SColor(0xff, 0x33, 0x67, 0xb8) : irr::video::SColor(0xff, 0xb8, 0xc8, 0xff));
+        renderBackground(getAbsoluteClippingRect(), m_bHovered ? m_bLDown ? irr::video::SColor(0xff, 0xec, 0xf1, 0x63) : irr::video::SColor(0xff, 0x33, 0x67, 0xb8) : irr::video::SColor(0xff, 0xb8, 0xc8, 0xff));
 
-      if (m_pImage != nullptr)
-        m_pDrv->draw2DImage(m_pImage, l_cRect, irr::core::recti(irr::core::position2di(0, 0), m_pImage->getSize()), nullptr, nullptr, true);
+        if (m_pImage != nullptr)
+          m_pDrv->draw2DImage(m_pImage, l_cRect, irr::core::recti(irr::core::position2di(0, 0), m_pImage->getSize()), nullptr, nullptr, true);
 
-      irr::gui::IGUIFont* l_pFont = m_pFont;
+        irr::gui::IGUIFont* l_pFont = m_pFont;
 
-      if (l_pFont == nullptr)
-        l_pFont = m_pGui->getSkin()->getFont();
+        if (l_pFont == nullptr)
+          l_pFont = m_pGui->getSkin()->getFont();
 
-      l_pFont->draw(getText(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+        l_pFont->draw(getText(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+      }
     }
 
     void CMenuButton::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {

@@ -106,21 +106,6 @@ Attribute Max: 340282346638528859811704183484516925440.000000
 Attribute Step: 1.000000
 Attribute DecimalPlaces: -1
 
-Attributes of "editBox"
-
-Attribute Border: true
-Attribute Background: true
-Attribute OverrideColorEnabled: false
-Attribute OverrideColor: 255, 255, 255, 101
-Attribute MaxChars: 0
-Attribute WordWrap: false
-Attribute MultiLine: false
-Attribute AutoScroll: true
-Attribute PasswordBox: false
-Attribute PasswordChar: *
-Attribute HTextAlign: upperLeft
-Attribute VTextAlign: center
-
 Attributes of "DustbinCheckbox"
 
 Attribute Checked: false
@@ -148,6 +133,23 @@ Attributes of "MenuBackground"
 Attribute UseOverrideColor: false
 Attribute OverrideColor: 192, 239, 239, 255
 Attribute ZLayer: 0
+
+Attributes of "editBox"
+
+Attribute Border: true
+Attribute Background: true
+Attribute OverrideColorEnabled: false
+Attribute OverrideColor: 65ffffff
+Attribute MaxChars: 0
+Attribute WordWrap: false
+Attribute MultiLine: false
+Attribute AutoScroll: true
+Attribute PasswordBox: false
+Attribute PasswordChar: *
+Attribute HTextAlign: upperLeft
+Attribute VTextAlign: center
+Attribute ToolTip:
+
 
 -->
 <dialog>
@@ -254,24 +256,6 @@ Attribute ZLayer: 0
       <attribute key="VTextAlign" value="center" />
     </attributes>
   </element>
-  <!-- <element type="image" rect="center: -39, 13, -29, 23">
-    <attributes>
-      <attribute key="UseAlphaChannel" value="false" />
-      <attribute key="ScaleImage" value="true" />
-    </attributes>
-    <custom>
-      <attribute key="src" value="file://data/images/qr_dustbin.png" />
-    </custom>
-  </element>
-  <element type="image" rect="center: 29, 13, 39, 23">
-    <attributes>
-      <attribute key="UseAlphaChannel" value="false" />
-      <attribute key="ScaleImage" value="true" />
-    </attributes>
-    <custom>
-      <attribute key="src" value="file://data/images/qr_toshi.png" />
-    </custom>
-  </element>-->
   <element type="image" rect="center: -5, 13, 5, 23">
     <attributes>
       <attribute key="UseAlphaChannel" value="true" />
@@ -281,15 +265,6 @@ Attribute ZLayer: 0
       <attribute key="src" value="file://data/images/dustbin.png" />
     </custom>
   </element>
-  <!-- <element type="comboBox" rect="center: -23, 18, 3, 20">
-    <attributes>
-      <attribute key="Name" value="ComboBox" />
-    </attributes>
-    <custom>
-      <attribute key="options" value="MarbleGP;Marble2;Marble3" />
-      <attribute key="selected" value="1" />
-    </custom>
-  </element> -->
   <!-- <element type="spinBox" rect="center: -26, 16, -20, 18" font="regular">
     <attributes>
       <attribute key="Min" value="1" />
@@ -299,10 +274,5 @@ Attribute ZLayer: 0
     <custom>
       <attribute key="textAlignment" value="right" />
     </custom>
-  </element> -->
-  <!-- <element type="editBox" rect="center: -26, 16, -20, 18">
-    <attributes>
-      <attribute key="Caption" value="Hello World" />
-    </attributes>
   </element> -->
 </dialog>

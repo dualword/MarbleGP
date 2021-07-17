@@ -30,6 +30,35 @@ namespace dustbin {
       return l_vRet;
     }
 
+    void CDialog::SDialogElement::parseInclude(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState) {
+      enParseState l_eState = enParseState::root;
+
+      while (a_pXml->read()) {
+        std::string l_sNode = a_pXml->getNodeName();
+
+        if (l_eState == enParseState::root) {
+          if (l_sNode == "dialog" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            l_eState = enParseState::dialog;
+          }
+        }
+        else if (l_eState == enParseState::dialog) {
+          if (l_sNode == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            l_eState = enParseState::element;
+            m_vChildren.push_back(new SDialogElement(a_pXml, l_eState));
+            l_eState = enParseState::dialog;
+          }
+          else if (l_sNode == "dialog" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            l_eState = enParseState::root;
+          }
+        }
+        else if (l_eState == enParseState::element) {
+          if (l_sNode == "element" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            l_eState = enParseState::dialog;
+          }
+        }
+      }
+    }
+
     CDialog::SDialogElement::SDialogElement(std::string a_sType, std::string a_sFontSize, dustbin::enLayout a_ePosition, const irr::core::recti& a_cRect) {
       m_sType     = a_sType;
       m_sFontSize = a_sFontSize;
@@ -108,6 +137,8 @@ namespace dustbin {
             l_eLayout = enLayout::LowerMiddle;
           else if (l_sAnchor == "lowerright")
             l_eLayout = enLayout::LowerRight;
+          else if (l_sAnchor == "relative")
+            l_eLayout = enLayout::Relative;
 
           m_cPosition = std::make_tuple(l_eLayout, l_cRect);
         }
@@ -176,6 +207,17 @@ namespace dustbin {
           else if (l_sName == "children" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
             a_eState = enParseState::element;
           }
+          else if (l_sName == "include" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            std::string l_sFile = a_pXml->getAttributeValueSafe("file");
+
+            if (l_sFile != "") {
+              irr::io::IXMLReaderUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLReaderUTF8(l_sFile.c_str());
+              if (l_pXml != nullptr) {
+                parseInclude(l_pXml, a_eState);
+                l_pXml->drop();
+              }
+            }
+          }
           break;
         }
       }
@@ -243,7 +285,7 @@ namespace dustbin {
             }
           }
 
-          /*if (m_pElement->getType() == irr::gui::EGUIET_SCROLL_BAR) {
+          /*if (m_pElement->getType() == irr::gui::EGUIET_EDIT_BOX) {
             for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
               printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
           }*/
@@ -256,7 +298,7 @@ namespace dustbin {
           l_pAttr->clear();
           l_pAttr->drop();
 
-          // m_pElement->setToolTipText(std::wstring(m_sToolTip.begin(), m_sToolTip.end()).c_str());
+          m_pElement->setToolTipText(std::wstring(m_sToolTip.begin(), m_sToolTip.end()).c_str());
 
           if (m_pElement->getType() == irr::gui::EGUIET_IMAGE) {
             if (m_mCustom.find("src") != m_mCustom.end()) {

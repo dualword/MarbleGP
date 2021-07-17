@@ -31,6 +31,9 @@ function uibuttonclicked(a_Id, a_Name)
   if a_Name == "settings" then
     system:pushscript("data/lua/menu_settings.lua")
     system:statechange(1)
+  elseif a_Name == "profiles" then
+    system:pushscript("data/lua/menu_profiles.lua")
+    system:statechange(1)
   elseif a_Name == "exit" then
     system:statechange(255)
   else

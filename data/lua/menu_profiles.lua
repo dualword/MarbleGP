@@ -1,73 +1,87 @@
-system:executeluascript("data/lua/helpers_main.lua")
+system:executeluascript("data/lua/splitstring.lua")
+system:executeluascript("data/lua/serializer.lua")
 
 g_Time = 0  -- The time of the last "step" message
 
-g_FinishTime = -1
-g_StartTime  = -1
+-- UI Items
+g_ResolutionList = { }
+g_Settings = {
+  resolution   = 9,
+  fullscreen   = false,
+  shadows      = 2,
+  ambientlight = 3
+}
+
+g_ActiveTab = "gfx"
+
+g_Items    = { }
+g_Controls = { }
+
+g_CtrlSettings = ""
+
+function fillItems()
+  g_Items = { }
+  
+  showHideUi()
+end
 
 function initialize()
-  io.write("Edit Profiles script started.\n")
+  io.write("Setup script started.\n")
   
   g_Smgr = system:getscenemanager()
-  g_Smgr:loadscene("data/menu3d/menu_editprofile.xml")
-  
-  g_Root = g_Smgr:getscenenodefromname("root_editprofile")
-  
-  g_Smgr:loadscene("data/menu3d/dialog_players.xml")
-  
-  g_Plrs = g_Smgr:getscenenodefromname("root_players")
-  
-  g_Root:setrotation({ x = 0, y = 90, z = 0 })
+  g_Smgr:loadscene("data/menu3d/skybox.xml")
   
   g_Camera = g_Smgr:addcamera()
-  
+
   g_Camera:setposition({ x = 0.0, y = 0.0, z = 30.0 })
   g_Camera:setupvector({ x = 0.0, y = 1.0, z =  0.0 })
   g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 70.0 })
   g_Camera:activate()
   
-  startFadeIn(g_Root)
-  startFadeIn(g_Plrs)
+  dialog:loaddialog("data/menu/menu_profiles.xml")
+  dialog:loaddialog("data/menu/button_cancel.xml")
+  dialog:loaddialog("data/menu/button_ok.xml")
+  
+  dialog:createui();
+  audio:startsoundtrack(0)
+  
+  g_Settings = system:getsettings()
+  
+  fillItems()
 end
 
 function cleanup()
   g_Smgr:clear()
+  dialog:clear()  
 end
 
-function step(a_Time)
-  local l_Time = a_Time - g_Time
-  g_Time = a_Time
-  
-  if g_StartTime == -1 then
-    g_StartTime = g_Time
+function fillResolution(a_Start)
+end
+
+function showHideUi()
+  for k,v in pairs(g_Items) do
+    for k2, v2 in pairs(v) do
+      if k == g_ActiveTab then
+        v2:setvisible(true)
+      else
+        v2:setvisible(false)
+      end
+    end
   end
-    
-  processanimation()
-end
-
-function uielementhovered(a_Id, a_Name)
-end
-
-function uielementleft(a_Id, a_Name)
 end
 
 function uibuttonclicked(a_Id, a_Name)
-  if a_Name == "button_ok" then
-    g_FinishTime = g_Time
-    startFadeOut(g_Root, g_Time, 1)
+  if a_Name == "ok" then
+    system:statechange(1)
+  elseif a_Name == "cancel" then
+    system:statechange(1)
+    io.write("Button clicked: \"" .. a_Name .. "\" (" .. tostring(a_Id) .. ")\n")
   end
 end
 
 function uivaluechanged(a_Id, a_Name, a_Value)
-  if g_Sliders[a_Name] ~= nil then
-    g_Sliders[a_Name]["value"] = tonumber(a_Value)
-    if g_Sliders[a_Name]["label"] ~= nil then
-      g_Sliders[a_Name]["label"]:settext(string.format("%.1f %%", tonumber(a_Value)))
-      if g_Sliders[a_Name]["key"] == "LabelSTrack" then
-        audio:setsoundtrackvolume(a_Value / 100.0)
-      elseif g_Sliders[a_Name]["key"] == "LabelSfx" then
-        audio:setsfxvolume(a_Value / 100.0)
-      end
-    end
-  end
+end
+
+function windowresized()
+  fillItems()
 end

@@ -613,7 +613,8 @@ namespace dustbin {
     irr::core::dimension2du l_cSize   = m_pDrv->getScreenSize();
 
     switch (a_ePosition) {
-      case enLayout::UpperLeft: {
+      case enLayout::UpperLeft:
+      case enLayout::Relative: {
         l_cAnchor = irr::core::position2di(0, 0);
         break;
       }
@@ -663,7 +664,7 @@ namespace dustbin {
 
     irr::core::recti l_cRet = irr::core::recti(l_cPos, irr::core::dimension2du((a_iRight - a_iLeft) * l_iRaster, (a_iBottom - a_iTop) * l_iRaster));
 
-    if (a_pParent != nullptr) {
+    if (a_pParent != nullptr && a_ePosition != enLayout::Relative) {
       l_cRet.UpperLeftCorner  -= a_pParent->getAbsoluteClippingRect().UpperLeftCorner;
       l_cRet.LowerRightCorner -= a_pParent->getAbsoluteClippingRect().UpperLeftCorner;
     }

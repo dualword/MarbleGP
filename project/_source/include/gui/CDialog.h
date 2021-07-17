@@ -55,6 +55,7 @@ namespace dustbin {
           ~SDialogElement();
 
           void parse(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState);
+          void parseInclude(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState);
 
           irr::gui::IGUIElement* createGuiElement(CGlobal* a_pGlobal, irr::gui::IGUIElement *a_pParent);
 
