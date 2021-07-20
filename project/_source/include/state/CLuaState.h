@@ -42,6 +42,8 @@ namespace dustbin {
         CGlobal                *m_pGlobal;
         irr::ITimer            *m_pTimer;
 
+        int m_iZLayer; /**< The Z-Layer for the menu controller. This variable is necessary as the initialize LUA function is called before the controller is created */
+
         controller::CControllerMenu* m_pMenuCtrl;
 
         bool m_bButtons[3];   /**< The mouse button states */

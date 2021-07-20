@@ -26,7 +26,7 @@ namespace dustbin {
       m_bBackToLua = false;
 
       if (CGlobal::getInstance()->getSettings().m_misc_usemenuctrl) {
-        m_pCtrlMenu = new controller::CControllerMenu();
+        m_pCtrlMenu = new controller::CControllerMenu(-1);
       }
     }
 

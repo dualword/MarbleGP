@@ -89,7 +89,11 @@ namespace dustbin {
 
           if (l_sRect.find(":") != std::string::npos) {
             l_sAnchor = l_sRect.substr(0, l_sRect.find(":"));
-            l_sRect = l_sRect.substr(l_sRect.find(":") + 1);
+            l_sRect   = l_sRect.substr(l_sRect.find(":") + 1);
+          }
+          else {
+            l_sAnchor = l_sRect;
+            l_sRect   = "";
           }
 
           int l_iIndex = 0;
@@ -139,6 +143,8 @@ namespace dustbin {
             l_eLayout = enLayout::LowerRight;
           else if (l_sAnchor == "relative")
             l_eLayout = enLayout::Relative;
+          else if (l_sAnchor == "fillwindow")
+            l_eLayout = enLayout::FillWindow;
 
           m_cPosition = std::make_tuple(l_eLayout, l_cRect);
         }

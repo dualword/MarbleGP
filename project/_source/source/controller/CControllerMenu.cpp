@@ -11,13 +11,13 @@
 namespace dustbin {
   namespace controller {
 
-    CControllerMenu::CControllerMenu() : 
+    CControllerMenu::CControllerMenu(int a_iZLayer) :
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()), m_pCursor(CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()), 
       m_pSelected(nullptr),
       m_bButtonDown(true),
       m_pHovered(nullptr),
       m_bMoved(false),
-      m_iZLayer(-1)
+      m_iZLayer(a_iZLayer)
     {
       SCtrlInput l_cInput;
 
@@ -27,7 +27,7 @@ namespace dustbin {
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_RIGHT; l_cInput.m_sName = "Right" ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_SPACE; l_cInput.m_sName = "Enter" ; m_vControls.push_back(l_cInput);
 
-      setZLayer(0);
+      setZLayer(m_iZLayer > 0 ? m_iZLayer : 0);
 
       SSettings l_cSettings = CGlobal::getInstance()->getSettings();
       std::string l_sConfig = messages::urlDecode(l_cSettings.m_misc_menuctrl);

@@ -180,6 +180,32 @@ namespace dustbin {
         bool setImage(const std::string a_sImage);
 
         /**
+        * Get the number of children of this item
+        * @return the number of children of this item
+        */
+        int getChildCount();
+
+        /**
+        * Get a child of this item
+        * @param a_iIndex index of the child (LUA-Style: counting starts at "1" and ends at "childcount")
+        * @return a child of this item
+        */
+        CLuaGuiItem getChild(int a_iIndex);
+
+        /**
+        * Set the background color of an item
+        * @param a_pState the LUA state. The LUA table "SColor" is pulled from the stack
+        * @return "0" as no return values are expected
+        */
+        int setBackgroundColor(lua_State* a_pState);
+
+        /**
+        * Set the tooltip of an icon
+        * @param a_sTooltip the new tolltip text
+        */
+        void setTooltip(const std::string& a_sToolTip);
+
+        /**
         * Register the class to a LUA state
         */
         static void registerClass(lua_State* a_pState);

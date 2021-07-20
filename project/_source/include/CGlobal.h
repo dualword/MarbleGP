@@ -44,7 +44,8 @@ namespace dustbin {
     LowerLeft,
     LowerMiddle,
     LowerRight,
-    Relative
+    Relative,
+    FillWindow
   };
 
   enum class enFont {

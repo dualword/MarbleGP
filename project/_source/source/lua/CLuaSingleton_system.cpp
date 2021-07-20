@@ -188,7 +188,7 @@ namespace dustbin {
       if (l_pFile) {
         irr::io::IXMLWriterUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLWriterUTF8(l_pFile);
         if (l_pXml) {
-          controller::CControllerMenu* p = new controller::CControllerMenu();
+          controller::CControllerMenu* p = new controller::CControllerMenu(-1);
           p->serialize(l_pXml);
           delete p;
           l_sRet = std::string(s);

@@ -658,6 +658,10 @@ namespace dustbin {
         l_cAnchor = irr::core::position2di(l_cSize.Width - l_iRaster, l_cSize.Height - l_iRaster);
         break;
       }
+
+      case enLayout::FillWindow: {
+        return irr::core::recti(0, 0, l_cSize.Width, l_cSize.Height);
+      }
     }
 
     irr::core::position2di l_cPos = l_cAnchor + irr::core::position2di(a_iLeft * l_iRaster, a_iTop * l_iRaster);

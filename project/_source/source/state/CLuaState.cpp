@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerMenu.h>
 #include <lua/CLuaScript_dialog.h>
+#include <platform/CPlatform.h>
 #include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
 #include <state/CLuaState.h>
@@ -17,7 +18,8 @@ namespace dustbin {
       m_pGlobal  (CGlobal::getInstance()),
       m_pMenuCtrl(nullptr),
       m_pScript  (nullptr),
-      m_pTimer   (nullptr)
+      m_pTimer   (nullptr),
+      m_iZLayer  (-1)
     {
       for (int i = 0; i < 3; i++)
         m_bButtons[i] = false;
@@ -32,6 +34,8 @@ namespace dustbin {
     * This method is called when the state is activated
     */
     void CLuaState::activate() {
+      m_iZLayer = -1;
+
       std::string l_sScriptName = m_pGlobal->popScript(),
                   l_sScript = lua::loadLuaScript(l_sScriptName);
 
@@ -42,7 +46,7 @@ namespace dustbin {
       m_pScript->initialize();
 
       if (m_pGlobal->getSettings().m_misc_usemenuctrl)
-        m_pMenuCtrl = new controller::CControllerMenu();
+        m_pMenuCtrl = new controller::CControllerMenu(m_iZLayer);
 
       m_bDefCanc[0] = false;
       m_bDefCanc[1] = false;
@@ -85,6 +89,7 @@ namespace dustbin {
     * @param a_iZLayer the new Z-Layer
     */
     void CLuaState::setZLayer(int a_iZLayer) {
+      m_iZLayer = a_iZLayer;
       if (m_pMenuCtrl != nullptr)
         m_pMenuCtrl->setZLayer(a_iZLayer);
     }
@@ -119,6 +124,9 @@ namespace dustbin {
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
           m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<irr::gui::IGUIScrollBar*>(a_cEvent.GUIEvent.Caller)->getPos());
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
+          m_pScript->uiTextChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), platform::ws2s(a_cEvent.GUIEvent.Caller->getText()));
         }
       }
       else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {

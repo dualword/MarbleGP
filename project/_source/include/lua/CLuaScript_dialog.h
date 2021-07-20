@@ -47,6 +47,7 @@ namespace dustbin {
         void uiElementLeft(int a_iId, const std::string &a_sName);
         void uiButtonClicked(int a_iId, const std::string &a_sName);
         void uiValueChanged(int a_iId, const std::string &a_sName, float a_fValue);
+        void uiTextChanged(int a_iId, const std::string& a_sName, const std::string& a_sNewValue);
         void beforeResize();
 
         /**

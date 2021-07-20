@@ -73,7 +73,7 @@ namespace dustbin {
         int getElementZLayer(irr::gui::IGUIElement* a_pItem);
 
       public:
-        CControllerMenu();
+        CControllerMenu(int a_iZLayer);
         ~CControllerMenu();
 
         /**

@@ -150,7 +150,7 @@ namespace dustbin {
     */
     void CLuaGuiItem::setText(const std::string& a_sText) {
       if (m_pElement != nullptr)
-        m_pElement->setText(std::wstring(a_sText.begin(), a_sText.end()).c_str());
+        m_pElement->setText(platform::s2ws(a_sText).c_str());
     }
 
     /**
@@ -390,6 +390,61 @@ namespace dustbin {
     }
 
     /**
+    * Get the number of children of this item
+    * @return the number of children of this item
+    */
+    int CLuaGuiItem::getChildCount() {
+      return m_pElement != nullptr ? m_pElement->getChildren().size() : 0;
+    }
+
+    /**
+    * Get a child of this item
+    * @param a_iIndex index of the child (LUA-Style: counting starts at "1" and ends at "childcount")
+    * @return a child of this item
+    */
+    CLuaGuiItem CLuaGuiItem::getChild(int a_iIndex) {
+      irr::gui::IGUIElement* p = nullptr;
+
+      if (m_pElement != nullptr && a_iIndex > 0 && a_iIndex <= (int)m_pElement->getChildren().size()) {
+        for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = m_pElement->getChildren().begin(); it != m_pElement->getChildren().end(); it++) {
+          a_iIndex--;
+          if (a_iIndex == 0) {
+            p = *it;
+            break;
+          }
+        }
+      }
+
+      return CLuaGuiItem(p);
+    }
+
+    /**
+    * Set the tooltip of an icon
+    * @param a_sTooltip the new tolltip text
+    */
+    void CLuaGuiItem::setTooltip(const std::string& a_sToolTip) {
+      if (m_pElement != nullptr)
+        m_pElement->setToolTipText(platform::s2ws(a_sToolTip).c_str());
+    }
+
+    /**
+    * Set the background color of an item
+    * @param a_pState the LUA state. The LUA table "SColor" is pulled from the stack
+    * @return "0" as no return values are expected
+    */
+    int CLuaGuiItem::setBackgroundColor(lua_State* a_pState) {
+      SColor l_cColor;
+      l_cColor.loadFromStack(a_pState);
+
+      if (m_pElement != nullptr) {
+        if (m_pElement->getType() == irr::gui::EGUIET_EDIT_BOX) {
+          // reinterpret_cast<irr::gui::IGUIEditBox*>(m_pElement)->color
+        }
+      }
+      return 0;
+    }
+
+    /**
     * Register the class to a LUA state
     */
     void CLuaGuiItem::registerClass(lua_State* a_pState) {
@@ -418,6 +473,9 @@ namespace dustbin {
           .addFunction("setvalue"     , &CLuaGuiItem::setValue)
           .addFunction("setvalueint"  , &CLuaGuiItem::setValueInt)
           .addFunction("setimage"     , &CLuaGuiItem::setImage)
+          .addFunction("getchildcount", &CLuaGuiItem::getChildCount)
+          .addFunction("getchild"     , &CLuaGuiItem::getChild)
+          .addFunction("settooltip"   , &CLuaGuiItem::setTooltip)
         .endClass();
     }
   }
