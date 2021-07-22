@@ -74,7 +74,7 @@ namespace dustbin {
 
       public:
         CControllerMenu(int a_iZLayer);
-        ~CControllerMenu();
+        virtual ~CControllerMenu();
 
         /**
         * Event handler for this input

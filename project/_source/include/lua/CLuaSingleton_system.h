@@ -155,6 +155,19 @@ namespace dustbin {
         std::string getControllerXml_Menu();
 
         /**
+        * Create a XML string with the default configuration for the game controller
+        * @return a XML string
+        */
+        std::string getControllerXml_Game();
+
+        /**
+        * Get the first controller from the configuration
+        * @param a_sConfig the configuration as XML-string
+        * @return the first controller
+        */
+        std::string getFirstController(const std::string& a_sConfig);
+
+        /**
         * Url-Encode a string
         * @param a_sInput the un-encoded string
         * @return the encoded string

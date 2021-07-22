@@ -1,4 +1,5 @@
 #include <controller/CControllerMenu.h>
+#include <controller/CControllerGame.h>
 #include <_generated/lua/lua_tables.h>
 #include <lua/CLuaSingleton_system.h>
 #include <messages/CMessageHelpers.h>
@@ -26,9 +27,11 @@ namespace dustbin {
           .addFunction("getsettings"          , &CLuaSingleton_system::getSettings)
           .addFunction("setsettings"          , &CLuaSingleton_system::setSettings)
           .addFunction("getcontrollerxml_menu", &CLuaSingleton_system::getControllerXml_Menu)
+          .addFunction("getcontrollerxml_game", &CLuaSingleton_system::getControllerXml_Game)
           .addFunction("urlencode"            , &CLuaSingleton_system::urlEncode)
           .addFunction("urldecode"            , &CLuaSingleton_system::urlDecode)
           .addFunction("setzlayer"            , &CLuaSingleton_system::setZLayer)
+          .addFunction("getfirstcontroller"   , &CLuaSingleton_system::getFirstController)
         .endClass();
 
       std::error_code l_cError;
@@ -121,7 +124,7 @@ namespace dustbin {
     * Execute a lua script from a file
     */
     void CLuaSingleton_system::executeLuaScript(const std::string& a_sFile) {
-      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+      irr::io::IFileSystem *l_pFs = m_pGlobal->getFileSystem();
 
       if (l_pFs->existFile(a_sFile.c_str())) {
         std::string l_sScript = loadLuaScript(a_sFile);
@@ -142,7 +145,7 @@ namespace dustbin {
     * Get the application settings from a LUA script
     */
     int CLuaSingleton_system::getSettings(lua_State* a_pState) {
-      CGlobal::getInstance()->getSettings().pushToStack(a_pState);
+      m_pGlobal->getSettings().pushToStack(a_pState);
       return 1;
     }
 
@@ -152,7 +155,7 @@ namespace dustbin {
     int CLuaSingleton_system::setSettings(lua_State* a_pState) {
       SSettings l_cSettings;
       l_cSettings.loadFromStack(a_pState);
-      CGlobal::getInstance()->setSettings(l_cSettings);
+      m_pGlobal->setSettings(l_cSettings);
       return 0;
     }
 
@@ -175,6 +178,68 @@ namespace dustbin {
     }
 
     /**
+    * Create a XML string with the default configuration for the game controller
+    * @return a XML string
+    */
+    std::string CLuaSingleton_system::getControllerXml_Game() {
+      std::string l_sRet = "";
+      char* s;
+      s = new char[1000000];
+      memset(s, 0, 1000000);
+
+      irr::io::IWriteFile* l_pFile = m_pGlobal->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
+      if (l_pFile) {
+        irr::io::IXMLWriterUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLWriterUTF8(l_pFile);
+        if (l_pXml) {
+          controller::CControllerGame* p = new controller::CControllerGame();
+          p->serialize(l_pXml);
+          delete p;
+          l_sRet = std::string(s);
+          l_pXml->drop();
+        }
+        l_pFile->drop();
+      }
+
+      delete[]s;
+      return l_sRet;
+    }
+
+    /**
+    * Get the first controller from the configuration
+    * @param a_sConfig the configuration as XML-string
+    * @return the first controller
+    */
+    std::string CLuaSingleton_system::getFirstController(const std::string& a_sConfig) {
+        std::string l_sRet = "Unkown";
+
+      irr::io::IReadFile* l_pFile = m_pGlobal->getFileSystem()->createMemoryReadFile(a_sConfig.c_str(), (irr::s32)a_sConfig.size(), "__controller_xml_data");
+
+      if (l_pFile) {
+        irr::io::IXMLReaderUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLReaderUTF8(l_pFile);
+        if (l_pXml) {
+          controller::CControllerBase* p = new controller::CControllerBase();
+          p->deserialize(l_pXml);
+
+          std::vector<controller::CControllerBase::SCtrlInput> l_vInputs = p->getInputs();
+
+          if (l_vInputs.size() > 0) {
+            if (l_vInputs[0].m_eType == controller::CControllerBase::enInputType::Key) {
+              l_sRet = "Keyboard";
+            }
+            else {
+              l_sRet = l_vInputs[0].m_sJoystick;
+            }
+          }
+
+          l_pXml->drop();
+        }
+        l_pFile->drop();
+      }
+
+      return l_sRet;
+    }
+
+    /**
     * Create a XML string with the default configuration for the menu controller
     * @return a XML string
     */
@@ -184,9 +249,9 @@ namespace dustbin {
       s = new char[1000000];
       memset(s, 0, 1000000);
 
-      irr::io::IWriteFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
+      irr::io::IWriteFile* l_pFile = m_pGlobal->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
       if (l_pFile) {
-        irr::io::IXMLWriterUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLWriterUTF8(l_pFile);
+        irr::io::IXMLWriterUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLWriterUTF8(l_pFile);
         if (l_pXml) {
           controller::CControllerMenu* p = new controller::CControllerMenu(-1);
           p->serialize(l_pXml);
@@ -207,7 +272,7 @@ namespace dustbin {
     * @param m_iZLayer the new Z-Layer
     */
     void CLuaSingleton_system::setZLayer(int a_iZLayer) {
-      CGlobal::getInstance()->getActiveState()->setZLayer(a_iZLayer);
+      m_pGlobal->getActiveState()->setZLayer(a_iZLayer);
     }
 
 

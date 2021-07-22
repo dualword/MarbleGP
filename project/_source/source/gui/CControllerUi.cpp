@@ -182,92 +182,96 @@ namespace dustbin {
     * @param a_pParent the parent element.
     */
     void CControllerUi::buildUi(irr::gui::IGUIElement* a_pParent) {
-      if (m_mElements.size() == 0) {
-        CGlobal* l_pGlobal = CGlobal::getInstance();
+      CGlobal* l_pGlobal = CGlobal::getInstance();
 
-        if (m_pFont == nullptr)
-          m_pFont = l_pGlobal->getGuiEnvironment()->getSkin()->getFont();
+      if (m_pFont == nullptr)
+        m_pFont = l_pGlobal->getGuiEnvironment()->getSkin()->getFont();
 
-        irr::u32 l_iHeight = getAbsoluteClippingRect().getHeight(),
-                 l_iWidth  = getAbsoluteClippingRect().getWidth(),
-                 l_iCount  = (irr::u32)m_vControls.size() + 1;
+      irr::u32 l_iHeight = getAbsoluteClippingRect().getHeight(),
+                l_iWidth  = getAbsoluteClippingRect().getWidth(),
+                l_iCount  = (irr::u32)m_vControls.size() + 1;
 
-        irr::core::dimension2du l_cDim = irr::core::dimension2du(0, 0);
+      irr::core::dimension2du l_cDim = irr::core::dimension2du(0, 0);
 
-        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-          std::wstring s = platform::s2ws((*it).m_sName);
-          irr::core::dimension2du d = m_pFont->getDimension(s.c_str());
+      for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+        std::wstring s = platform::s2ws((*it).m_sName);
+        irr::core::dimension2du d = m_pFont->getDimension(s.c_str());
 
-          if (d.Width  > l_cDim.Width ) l_cDim.Width  = d.Width;
-          if (d.Height > l_cDim.Height) l_cDim.Height = d.Height;
-        }
+        if (d.Width  > l_cDim.Width ) l_cDim.Width  = d.Width;
+        if (d.Height > l_cDim.Height) l_cDim.Height = d.Height;
+      }
 
-        l_cDim.Height = 3 * l_cDim.Height / 2;
-        l_cDim.Width  = 3 * l_cDim.Width  / 2;
+      l_cDim.Height = 3 * l_cDim.Height / 2;
+      l_cDim.Width  = 3 * l_cDim.Width  / 2;
 
-        irr::core::position2di l_cPos = irr::core::position2di(0, l_cDim.Height / 8);
+      irr::core::position2di l_cPos = irr::core::position2di(0, l_cDim.Height / 8);
 
-        irr::gui::IGUIStaticText* p = l_pGlobal->getGuiEnvironment()->addStaticText(platform::s2ws(m_sHeadline).c_str(), irr::core::recti(l_cPos, irr::core::dimension2du(l_iWidth, l_cDim.Height)), false, true, this);
-        p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        p->setOverrideFont(m_pFont);
+      irr::gui::IGUIStaticText* p = l_pGlobal->getGuiEnvironment()->addStaticText(platform::s2ws(m_sHeadline).c_str(), irr::core::recti(l_cPos, irr::core::dimension2du(l_iWidth, l_cDim.Height)), false, true, this);
+      p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER); 
+      p->setOverrideFont(m_pFont);
 
-        l_cPos.X = l_cDim.Height;
+      m_vElements.push_back(p);
 
-        irr::core::dimension2du l_cDim2 = l_cDim;
-        l_cDim2.Width = l_iWidth - 3 * l_cDim.Height - l_cDim.Width;
+      l_cPos.X = l_cDim.Height;
 
-        irr::core::position2di l_cPos2 = l_cPos;
-        l_cPos2.X += l_cDim.Height / 2 + l_cDim.Width;
+      irr::core::dimension2du l_cDim2 = l_cDim;
+      l_cDim2.Width = l_iWidth - 3 * l_cDim.Height - l_cDim.Width;
 
-        int l_iLine = 3 * l_cDim.Height / 2;
+      irr::core::position2di l_cPos2 = l_cPos;
+      l_cPos2.X += l_cDim.Height / 2 + l_cDim.Width;
+
+      int l_iLine = 3 * l_cDim.Height / 2;
         
-        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-          l_cPos .Y += l_iLine;
-          l_cPos2.Y += l_iLine;
+      for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+        l_cPos .Y += l_iLine;
+        l_cPos2.Y += l_iLine;
 
-          irr::gui::IGUIStaticText* p1 = l_pGlobal->getGuiEnvironment()->addStaticText(platform::s2ws((*it).m_sName).c_str(), irr::core::recti(l_cPos, l_cDim), true, true, this);
-          p1->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-          p1->setOverrideFont(m_pFont);
+        irr::gui::IGUIStaticText* p1 = l_pGlobal->getGuiEnvironment()->addStaticText(platform::s2ws((*it).m_sName).c_str(), irr::core::recti(l_cPos, l_cDim), true, true, this);
+        p1->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        p1->setOverrideFont(m_pFont);
 
-          irr::gui::IGUIStaticText* p2 = l_pGlobal->getGuiEnvironment()->addStaticText(L"Controller", irr::core::recti(l_cPos2, l_cDim2), true, true, this);
-          p2->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
-          p2->setOverrideFont(m_pFont);
+        m_vElements.push_back(p1);
 
-          if ((*it).m_eType == controller::CControllerBase::enInputType::Key) {
-            p2->setText(keyCodeToString((*it).m_eKey).c_str());
-          }
-          else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyButton) {
-            std::string s = (*it).m_sJoystick + " Button " + std::to_string((*it).m_iButton);
-            p2->setText(platform::s2ws(s).c_str());
-          }
-          else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyPov) {
-            std::string l_sPov = "";
+        irr::gui::IGUIStaticText* p2 = l_pGlobal->getGuiEnvironment()->addStaticText(L"Controller", irr::core::recti(l_cPos2, l_cDim2), true, true, this);
+        p2->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
+        p2->setOverrideFont(m_pFont);
 
-            if ((*it).m_iPov == 0)
-              l_sPov = "Up";
-            else if ((*it).m_iPov == 9000)
-              l_sPov = "Right";
-            else if ((*it).m_iPov == 18000)
-              l_sPov = "Down";
-            else if ((*it).m_iPov == 27000)
-              l_sPov = "Left";
+        m_vElements.push_back(p2);
 
-            std::string s = (*it).m_sJoystick + " POV " + l_sPov;
-            p2->setText(platform::s2ws(s).c_str());
-          }
-          else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyAxis) {
-            std::string s = (*it).m_sJoystick + "Axis " + std::to_string((*it).m_iAxis) + ((*it).m_iDirection > 0 ? " +" : " -");
-            p2->setText(platform::s2ws(s).c_str());
-          }
-
-          m_mTextPairs[p1] = p2;
-          m_mTextPairs[p2] = p1;
-
-          m_mTextControls[p1] = it;
-          m_mTextControls[p2] = it;
-
-          m_mControlText[it] = p2;
+        if ((*it).m_eType == controller::CControllerBase::enInputType::Key) {
+          p2->setText(keyCodeToString((*it).m_eKey).c_str());
         }
+        else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyButton) {
+          std::string s = (*it).m_sJoystick + " Button " + std::to_string((*it).m_iButton);
+          p2->setText(platform::s2ws(s).c_str());
+        }
+        else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyPov) {
+          std::string l_sPov = "";
+
+          if ((*it).m_iPov == 0)
+            l_sPov = "Up";
+          else if ((*it).m_iPov == 9000)
+            l_sPov = "Right";
+          else if ((*it).m_iPov == 18000)
+            l_sPov = "Down";
+          else if ((*it).m_iPov == 27000)
+            l_sPov = "Left";
+
+          std::string s = (*it).m_sJoystick + " POV " + l_sPov;
+          p2->setText(platform::s2ws(s).c_str());
+        }
+        else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyAxis) {
+          std::string s = (*it).m_sJoystick + " Axis " + std::to_string((*it).m_iAxis) + ((*it).m_iDirection > 0 ? " +" : " -");
+          p2->setText(platform::s2ws(s).c_str());
+        }
+
+        m_mTextPairs[p1] = p2;
+        m_mTextPairs[p2] = p1;
+
+        m_mTextControls[p1] = it;
+        m_mTextControls[p2] = it;
+
+        m_mControlText[it] = p2;
       }
     }
 
@@ -419,6 +423,16 @@ namespace dustbin {
       std::string s = platform::ws2s(ws);
 
       if (s != m_sConfigXml) {
+        for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
+          (*it)->setVisible(false);
+          (*it)->remove();
+        }
+
+        m_vElements    .clear();
+        m_mTextPairs   .clear();
+        m_mTextControls.clear();
+        m_mControlText .clear();
+
         m_sConfigXml = s;
 
         irr::io::IReadFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryReadFile(m_sConfigXml.c_str(), (irr::s32)m_sConfigXml.size(), "__controller__xml");
@@ -505,7 +519,7 @@ namespace dustbin {
                   (*m_itSelected).m_iAxis      = i;
                   (*m_itSelected).m_iDirection = f > 0.0f ? 1 : -1;
 
-                  std::string s = (*it).m_sName + "Axis " + std::to_string(i) + ((*m_itSelected).m_iDirection > 0 ? " +" : " -");
+                  std::string s = (*it).m_sName + " Axis " + std::to_string(i) + ((*m_itSelected).m_iDirection > 0 ? " +" : " -");
                   m_mControlText[m_itSelected]->setText(platform::s2ws(s).c_str());
 
                   resetSelected();

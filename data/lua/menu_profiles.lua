@@ -10,6 +10,8 @@ g_Items   = { }
 g_Buttons = { }
 g_Players = { }
 g_Edits   = { }
+g_Control = nil
+g_CtrlGui = nil
 
 function fillItems()
   g_Items   = { }
@@ -28,8 +30,6 @@ function fillItems()
     
     for j = 1, l_Item:getchildcount() do
       local l_Child = l_Item:getchild(j)
-      
-      io.write("==> " .. l_Child:getname() .. "\n")
       
       if l_Child:getname() == "tab" then
         l_MyGui["tab"] = l_Child
@@ -64,6 +64,10 @@ function fillItems()
             l_NewId = l_NewId + 1
             l_MyGui["edit_name"] = l_GrandChild
           elseif l_GrandChild:getname() == "label_controls" then
+            io.write("==> " .. serializeTable(g_Players, 2) .. "\n")
+            if g_Players[i] ~= nil and g_Players[i]["controls"] ~= nil then
+              l_GrandChild:settext(system:getfirstcontroller(system:urldecode(g_Players[i]["controls"])))
+            end
             l_MyGui["label_controls"] = l_GrandChild
           elseif l_GrandChild:getname() == "label_texture" then
             l_MyGui["label_texture"] = l_GrandChild
@@ -89,7 +93,9 @@ function fillItems()
     g_Items[i] = l_MyGui
   end
   
-  io.write("****\n" .. serializeTable(g_Items, 2) .. "\n****\n")
+  g_Control = dialog:getitemfromname("controllerDialog")
+  g_CtrlGui = dialog:getitemfromname("controller_ui")
+  
   showHideUi()
 end
 
@@ -110,6 +116,7 @@ function initialize()
   dialog:loaddialog("data/menu/button_cancel.xml")
   dialog:loaddialog("data/menu/button_ok.xml")
   dialog:loaddialog("data/menu/dialog_confirm.xml")
+  dialog:loaddialog("data/menu/dialog_controls.xml")
   
   dialog:createui();
   audio:startsoundtrack(0)
@@ -158,6 +165,11 @@ function uibuttonclicked(a_Id, a_Name)
   confirmDialog_handleButton(a_Id, a_Name)
   
   if a_Name == "ok" then
+    if g_Control:isvisible() then
+      uibuttonclicked(-1, "btn_ctrl_ok")
+      return
+    end
+    
     local l_Alright = true
     local l_Message = ""
     
@@ -187,7 +199,15 @@ function uibuttonclicked(a_Id, a_Name)
       showConfirmDialog(l_Message)
     end
   elseif a_Name == "cancel" then
-    system:statechange(1)
+    if g_Control:isvisible() then
+      uibuttonclicked(-1, "btn_ctrl_cancel")
+    elseif g_ConfirmDialog ~= nil and g_ConfirmDialog:isvisible() then
+      if confirmDialog_handleButton(-1, "btn_ohisee") then
+        return
+      end
+    else
+      system:statechange(1)
+    end
   else
     if g_Buttons[a_Id] ~= nil then
       if g_Buttons[a_Id]["action"] == "add" then
@@ -211,9 +231,46 @@ function uibuttonclicked(a_Id, a_Name)
       elseif g_Buttons[a_Id]["action"] == "delete" then
         table.remove(g_Players, g_Buttons[a_Id]["index"])
         showHideUi()
+      elseif g_Buttons[a_Id]["action"] == "controls" then
+        g_CtrlPlr = g_Buttons[a_Id]["index"]
+        
+        if g_CtrlPlr > 0 and g_CtrlPlr <= #g_Players then
+          io.write("Modify controls of player \"" .. tostring(g_Players[g_CtrlPlr]["name"]) .. "\" (#" .. tostring(g_CtrlPlr) .. ")\n")
+          g_Control:setvisible(true)
+          system:setzlayer(23)
+          
+          g_CtrlGui:setproperty("headline", "Game controls player \"" .. g_Players[g_CtrlPlr]["name"] .. "\"")
+          
+          if g_Players[g_CtrlPlr]["controls"] ~= "" then
+            -- The controller settings *MUST* be stored URL-encoded, otherwise it will break the settings
+            g_CtrlGui:settext(system:urldecode(g_Players[g_CtrlPlr]["controls"]))
+          else
+            g_CtrlGui:settext(system:getcontrollerxml_game())
+          end
+        end
+        
       else
         io.write("Button with action \"" .. g_Buttons[a_Id]["action"] .. "\" for player #" .. tostring(g_Buttons[a_Id]["index"]) .. " clicked.\n")
       end
+    elseif a_Name == "btn_ctrl_ok" then
+      io.write("Saving controls for player #" .. tostring(g_CtrlPlr) .. " (" .. g_Players[g_CtrlPlr]["name"] .. ")\n")
+      if g_CtrlPlr > 0 and g_CtrlPlr <= #g_Players then
+        g_Players[g_CtrlPlr]["controls"] = system:urlencode(g_CtrlGui:gettext())
+      end
+      
+      if g_Items[g_CtrlPlr] ~= nil and g_Items[g_CtrlPlr]["label_controls"] ~= nil then
+        g_Items[g_CtrlPlr]["label_controls"]:settext(system:getfirstcontroller(g_CtrlGui:gettext()))
+      else
+        io.write("**** Player UI not found\n")
+      end
+      
+      g_Control:setvisible(false)
+      system:setzlayer(0)
+    elseif a_Name == "btn_ctrl_cancel" then
+      g_Control:setvisible(false)
+      system:setzlayer(0)
+    else
+      io.write("Button clicked: \"" .. a_Name .. "\" (" .. tostring(a_Id) .. ")\n")
     end
   end
 end

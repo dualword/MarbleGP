@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Name" value="controllerDialog" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -20, -18, 20, 16">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="23" />
+        </attributes>
+        
+        <children>
+          <element type="ControllerUi" rect="center: -18, -17, 18, 7" font="small">
+            <attributes>
+              <attribute key="Name" value="controller_ui" />
+              <attribute key="UseOverrideColor" value="true" />
+              <attribute key="OverrideColor" value="128, 232, 232, 232" />
+              <attribute key="headline" value="Game Controller Setup" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: 12, 12, 15, 15" tooltip="Save controller changes">
+            <attributes>
+              <attribute key="Name" value="btn_ctrl_ok" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_ok.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: 16, 12, 19, 15" tooltip="Discard controller changes">
+            <attributes>
+              <attribute key="Name" value="btn_ctrl_cancel" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="center: -18, 8, -12, 10">
+            <attributes>
+              <attribute key="Caption" value="AI Help:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="center: -11, 8, 7, 10" tooltip="Let the AI help you">
+            <attributes>
+              <attribute key="Name" value="ai_help" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="0% - Off;10% - Low;20%;30%;40%;50% - Medium;60%;70%;80%;90% - High;100% - AI Bot" />
+            </custom>
+          </element>
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

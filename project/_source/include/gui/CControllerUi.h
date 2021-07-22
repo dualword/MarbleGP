@@ -55,15 +55,13 @@ namespace dustbin {
 
         std::map<irr::gui::IGUIElement*, irr::gui::IGUIElement*> m_mTextPairs;  /**< A map that links the first and second control static texts */
 
-        
+        std::vector<irr::gui::IGUIElement*> m_vElements;  /**< A vector that contains all elements of the UI */
 
         std::map<irr::gui::IGUIElement*, std::vector<controller::CControllerBase::SCtrlInput>::iterator> m_mTextControls; /**< A map that links static texts to control items */
 
         std::map<std::vector<controller::CControllerBase::SCtrlInput>::iterator, irr::gui::IGUIStaticText*> m_mControlText; /**< The label for the controllers */
 
         irr::gui::IGUIFont* m_pFont;
-
-        std::map<irr::gui::IGUIStaticText*, controller::CControllerBase::SCtrlInput*> m_mElements;
 
         std::vector<controller::CControllerBase::SCtrlInput>::iterator m_itHovered,   /**< The hovered control */
                                                                        m_itSelected;  /**< The selected control */
