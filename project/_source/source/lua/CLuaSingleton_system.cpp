@@ -230,6 +230,7 @@ namespace dustbin {
               l_sRet = l_vInputs[0].m_sJoystick;
             }
           }
+          delete p;
 
           l_pXml->drop();
         }
