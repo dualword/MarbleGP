@@ -101,6 +101,6 @@
     <children>
       <include file="data/menu/menu_playerprofiles.xml" />
     </children>
-  </element>  
-  
+  </element>
+    
 </dialog>

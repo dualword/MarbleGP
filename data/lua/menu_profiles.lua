@@ -12,6 +12,7 @@ g_Players = { }
 g_Edits   = { }
 g_Control = nil
 g_CtrlGui = nil
+g_Texture = { }
 
 function fillItems()
   g_Items   = { }
@@ -64,7 +65,6 @@ function fillItems()
             l_NewId = l_NewId + 1
             l_MyGui["edit_name"] = l_GrandChild
           elseif l_GrandChild:getname() == "label_controls" then
-            io.write("==> " .. serializeTable(g_Players, 2) .. "\n")
             if g_Players[i] ~= nil and g_Players[i]["controls"] ~= nil then
               l_GrandChild:settext(system:getfirstcontroller(system:urldecode(g_Players[i]["controls"])))
             end
@@ -96,6 +96,17 @@ function fillItems()
   g_Control = dialog:getitemfromname("controllerDialog")
   g_CtrlGui = dialog:getitemfromname("controller_ui")
   
+  g_Texture = { }
+  
+  g_Texture["tab_generate"] = dialog:getitemfromname("texture_generated"         )
+  g_Texture["tab_imported"] = dialog:getitemfromname("texture_imported"          )
+  g_Texture["pattern"     ] = dialog:getitemfromname("texture_pattern"           )
+  g_Texture["fg_top"      ] = dialog:getitemfromname("texture_foreground_top"    )
+  g_Texture["bg_top"      ] = dialog:getitemfromname("texture_background_top"    )
+  g_Texture["fg_pattern"  ] = dialog:getitemfromname("texture_foreground_pattern")
+  g_Texture["bg_pattern"  ] = dialog:getitemfromname("texture_background_pattern")
+  g_Texture["texture"     ] = dialog:getitemfromname("imported_texture"          )
+  
   showHideUi()
 end
 
@@ -117,6 +128,7 @@ function initialize()
   dialog:loaddialog("data/menu/button_ok.xml")
   dialog:loaddialog("data/menu/dialog_confirm.xml")
   dialog:loaddialog("data/menu/dialog_controls.xml")
+  dialog:loaddialog("data/menu/dialog_texture.xml")
   
   dialog:createui();
   audio:startsoundtrack(0)
@@ -313,6 +325,20 @@ function uitextchanged(a_Id, a_Name, a_NewValue)
 end
 
 function uivaluechanged(a_Id, a_Name, a_Value)
+  if a_Name == "texture_mode" then
+    if a_Value == 0 then
+      g_Texture["tab_generate"]:setvisible(false)
+      g_Texture["tab_imported"]:setvisible(false)
+    elseif a_Value == 1 then
+      g_Texture["tab_generate"]:setvisible(true )
+      g_Texture["tab_imported"]:setvisible(false)
+    elseif a_Value == 2 then
+      g_Texture["tab_generate"]:setvisible(false)
+      g_Texture["tab_imported"]:setvisible(true )
+    end
+  else
+    io.write("Value Changed: " .. tostring(a_Name) .. " (" .. tostring(a_Id) .. ") = " .. tostring(a_Value) .. "\n")
+  end
 end
 
 function windowresized()

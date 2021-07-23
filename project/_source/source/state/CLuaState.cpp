@@ -5,6 +5,7 @@
 #include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
 #include <state/CLuaState.h>
+#include <gui/CSelector.h>
 #include <CGlobal.h>
 #include <string>
 
@@ -123,7 +124,12 @@ namespace dustbin {
           m_pScript->uiButtonClicked(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName());
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
-          m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<irr::gui::IGUIScrollBar*>(a_cEvent.GUIEvent.Caller)->getPos());
+          if (a_cEvent.GUIEvent.Caller->getType() == gui::g_SelectorId) {
+            m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<gui::CSelector*>(a_cEvent.GUIEvent.Caller)->getSelected());
+          }
+          else {
+            m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<irr::gui::IGUIScrollBar*>(a_cEvent.GUIEvent.Caller)->getPos());
+          }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
           m_pScript->uiTextChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), platform::ws2s(a_cEvent.GUIEvent.Caller->getText()));

@@ -150,6 +150,12 @@ Attribute HTextAlign: upperLeft
 Attribute VTextAlign: center
 Attribute ToolTip:
 
+Attributes of "listBox"
+
+Attribute DrawBack: false
+Attribute MoveOverSelect: false
+Attribute AutoScroll: true
+Attribute ItemCount: 0
 
 -->
 <dialog>

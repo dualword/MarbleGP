@@ -122,6 +122,12 @@ namespace dustbin {
 
               if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
                 setText(m_vItems[m_iSelected].c_str());
+
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_GUI_EVENT;
+              l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
+              l_cEvent.GUIEvent.Caller = this;
+              CGlobal::getInstance()->getActiveState()->OnEvent(l_cEvent);
             }
           }
           else if (m_cBoxR.isPointInside(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y))) {
@@ -130,6 +136,12 @@ namespace dustbin {
 
               if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
                 setText(m_vItems[m_iSelected].c_str());
+
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_GUI_EVENT;
+              l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
+              l_cEvent.GUIEvent.Caller = this;
+              CGlobal::getInstance()->getActiveState()->OnEvent(l_cEvent);
             }
           }
         }
