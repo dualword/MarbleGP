@@ -44,6 +44,7 @@
           <element type="image" rect="center: -32, -10, -7, 14">
             <attributes>
               <attribute key="ScaleImage" value="true" />
+              <attribute key="Name" value="texture_image" />
             </attributes>
             <custom>
               <attribute key="src" value="file://data/textures/texture_marblemann.png" />
@@ -100,7 +101,7 @@
               <element type="editBox" rect="relative: 19, 5, 32, 7">
                 <attributes>
                   <attribute key="Name" value="texture_foreground_nb" />
-                  <attribute key="Caption" value="#000000" />
+                  <attribute key="Caption" value="000000" />
                 </attributes>
               </element>
               
@@ -122,7 +123,7 @@
               <element type="editBox" rect="relative: 19, 8, 32, 10">
                 <attributes>
                   <attribute key="Name" value="texture_background_nb" />
-                  <attribute key="Caption" value="#FFFFFF" />
+                  <attribute key="Caption" value="FFFFFF" />
                 </attributes>
               </element>
               
@@ -143,8 +144,8 @@
               
               <element type="editBox" rect="relative: 19, 11, 32, 13">
                 <attributes>
-                  <attribute key="Name" value="texture_foreground_pattern" />
-                  <attribute key="Caption" value="#000000" />
+                  <attribute key="Name" value="texture_nr" />
+                  <attribute key="Caption" value="000000" />
                 </attributes>
               </element>
               
@@ -166,7 +167,7 @@
               <element type="editBox" rect="relative: 19, 14, 32, 16">
                 <attributes>
                   <attribute key="Name" value="texture_nf" />
-                  <attribute key="Caption" value="#FFFFFF" />
+                  <attribute key="Caption" value="FFFFFF" />
                 </attributes>
               </element>
               
@@ -188,7 +189,7 @@
               <element type="editBox" rect="relative: 19, 17, 32, 19">
                 <attributes>
                   <attribute key="Name" value="texture_foreground_pattern" />
-                  <attribute key="Caption" value="#000000" />
+                  <attribute key="Caption" value="000000" />
                 </attributes>
               </element>
               
@@ -210,7 +211,7 @@
               <element type="editBox" rect="relative: 19, 20, 32, 22">
                 <attributes>
                   <attribute key="Name" value="texture_background_pattern" />
-                  <attribute key="Caption" value="#FFFFFF" />
+                  <attribute key="Caption" value="FFFFFF" />
                 </attributes>
               </element>
               
@@ -238,7 +239,7 @@
                 </attributes>
               </element>
               
-              <element type="listBox" rect="relative: 1, 5, 38, 25">
+              <element type="listBox" rect="relative: 1, 5, 38, 24">
                 <attributes>
                   <attribute key="DrawBack" value="true" />
                   <attribute key="Name" value="imported_texture" />

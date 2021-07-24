@@ -182,6 +182,13 @@ namespace dustbin {
         std::string urlDecode(const std::string a_sInput);
 
         /**
+        * Get a list of the available texture patterns
+        * @param a_pState the LUA state
+        * @return "1", as only the list of patterns is returned
+        */
+        int getTexturePatterns(lua_State* a_pState);
+
+        /**
         * Change the Z-Layer for the menu controller
         * @param m_iZLayer the new Z-Layer
         */

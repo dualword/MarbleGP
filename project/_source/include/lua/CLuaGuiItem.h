@@ -175,6 +175,7 @@ namespace dustbin {
         /**
         * Set the image
         * @param a_sImage the new image as a string
+        * @param a_sTextureName the file name to use for the texture internally. If present the old texture is removed.
         * @return "true" if the image could be set
         */
         bool setImage(const std::string a_sImage);

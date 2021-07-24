@@ -32,6 +32,7 @@ namespace dustbin {
           .addFunction("urldecode"            , &CLuaSingleton_system::urlDecode)
           .addFunction("setzlayer"            , &CLuaSingleton_system::setZLayer)
           .addFunction("getfirstcontroller"   , &CLuaSingleton_system::getFirstController)
+          .addFunction("gettexturepatterns"   , &CLuaSingleton_system::getTexturePatterns)
         .endClass();
 
       std::error_code l_cError;
@@ -175,6 +176,37 @@ namespace dustbin {
     */
     std::string CLuaSingleton_system::urlDecode(const std::string a_sInput) {
       return messages::urlDecode(a_sInput);
+    }
+
+    /**
+    * Get a list of the available texture patterns
+    * @param a_pState the LUA state
+    * @return "1", as only the list of patterns is returned
+    */
+    int CLuaSingleton_system::getTexturePatterns(lua_State* a_pState) {
+      SPatternList l_cList;
+
+      irr::io::IReadFile* l_pFile = m_pGlobal->getFileSystem()->createAndOpenFile("data/texture_patterns.xml");
+      if (l_pFile) {
+        irr::io::IXMLReaderUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLReaderUTF8(l_pFile);
+        if (l_pXml) {
+          while (l_pXml->read()) {
+            std::string l_sNode = l_pXml->getNodeName();
+
+            if (l_sNode == "pattern" && l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+              std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
+              if (l_sPattern != "")
+                l_cList.m_patterns.push_back(l_sPattern);
+            }
+          }
+
+          l_pXml->drop();
+        }
+        l_pFile->drop();
+      }
+
+      l_cList.pushToStack(a_pState);
+      return 1;
     }
 
     /**

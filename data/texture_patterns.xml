@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<patterns>
+  <pattern file="ant" />
+  <pattern file="arrow" />
+  <pattern file="atomic" />
+  <pattern file="bass" />
+  <pattern file="bomb" />
+  <pattern file="bowling" />
+  <pattern file="circle" />
+  <pattern file="diamond" />
+  <pattern file="dustbin" />
+  <pattern file="explosion" />
+  <pattern file="franconia" />
+  <pattern file="gun" />
+  <pattern file="hammer" />
+  <pattern file="hearts" />
+  <pattern file="hexagon" />
+  <pattern file="hippo" />
+  <pattern file="jollyroger" />
+  <pattern file="lion" />
+  <pattern file="marblegp" />
+  <pattern file="marbles2" />
+  <pattern file="marbles3" />
+  <pattern file="nuclear" />
+  <pattern file="plane" />
+  <pattern file="pommesgabel" />
+  <pattern file="rect" />
+  <pattern file="rgbg" />
+  <pattern file="rollin" />
+  <pattern file="rookie" />
+  <pattern file="samurai" />
+  <pattern file="skull" />
+  <pattern file="stars" />
+  <pattern file="stethoscope" />
+  <pattern file="vulture" />
+</patterns>

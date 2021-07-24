@@ -98,14 +98,26 @@ function fillItems()
   
   g_Texture = { }
   
-  g_Texture["tab_generate"] = dialog:getitemfromname("texture_generated"         )
-  g_Texture["tab_imported"] = dialog:getitemfromname("texture_imported"          )
-  g_Texture["pattern"     ] = dialog:getitemfromname("texture_pattern"           )
-  g_Texture["fg_top"      ] = dialog:getitemfromname("texture_foreground_top"    )
-  g_Texture["bg_top"      ] = dialog:getitemfromname("texture_background_top"    )
-  g_Texture["fg_pattern"  ] = dialog:getitemfromname("texture_foreground_pattern")
-  g_Texture["bg_pattern"  ] = dialog:getitemfromname("texture_background_pattern")
-  g_Texture["texture"     ] = dialog:getitemfromname("imported_texture"          )
+  g_Texture["tab_generate" ] = dialog:getitemfromname("texture_generated"         )
+  g_Texture["tab_imported" ] = dialog:getitemfromname("texture_imported"          )
+  g_Texture["pattern"      ] = dialog:getitemfromname("texture_pattern"           )
+  g_Texture["nb_foreground"] = dialog:getitemfromname("texture_foreground_nb"     )
+  g_Texture["nb_background"] = dialog:getitemfromname("texture_background_nb"     )
+  g_Texture["pt_foreground"] = dialog:getitemfromname("texture_foreground_pattern")
+  g_Texture["pt_background"] = dialog:getitemfromname("texture_background_pattern")
+  g_Texture["number_frame" ] = dialog:getitemfromname("texture_nf"                )
+  g_Texture["number_ring"  ] = dialog:getitemfromname("texture_nr"                )
+  g_Texture["texture"      ] = dialog:getitemfromname("imported_texture"          )
+  g_Texture["texture_image"] = dialog:getitemfromname("texture_image"             )
+  
+  g_Patterns = system:gettexturepatterns()
+  
+  if g_Patterns["patterns"] ~= nil then
+    for k,v in pairs(g_Patterns["patterns"]) do
+      g_Texture["pattern"]:additem(v)
+    end
+    g_Texture["pattern"]:setselected(0)
+  end
   
   showHideUi()
 end
@@ -336,6 +348,26 @@ function uivaluechanged(a_Id, a_Name, a_Value)
       g_Texture["tab_generate"]:setvisible(false)
       g_Texture["tab_imported"]:setvisible(true )
     end
+  elseif a_Name == "texture_pattern" then
+    io.write("New Pattern: \"" .. tostring(g_Patterns["patterns"][math.floor(a_Value) + 1]) .. "\"\n")
+    
+    io.write("--> " .. tostring(g_Texture["nb_foreground"]:gettext()) .. "\n")
+    io.write("--> " .. tostring(g_Texture["nb_background"]:gettext()) .. "\n")
+    io.write("--> " .. tostring(g_Texture["pt_foreground"]:gettext()) .. "\n")
+    io.write("--> " .. tostring(g_Texture["pt_background"]:gettext()) .. "\n")
+    io.write("--> " .. tostring(g_Texture["number_frame" ]:gettext()) .. "\n")
+    io.write("--> " .. tostring(g_Texture["number_ring"  ]:gettext()) .. "\n")
+    
+    local l_Generate = "generate://pattern=" .. tostring(g_Patterns["patterns"][math.floor(a_Value) + 1]) .. 
+                       "&numbercolor="  .. tostring(g_Texture["nb_foreground"]:gettext()) ..
+                       "&numberback="   .. tostring(g_Texture["nb_background"]:gettext()) ..
+                       "&numberborder=" .. tostring(g_Texture["number_frame" ]:gettext()) ..
+                       "&ringcolor="    .. tostring(g_Texture["number_ring"  ]:gettext()) ..
+                       "&patterncolor=" .. tostring(g_Texture["pt_foreground"]:gettext()) ..
+                       "&patternback="  .. tostring(g_Texture["pt_background"]:gettext()) ..
+                       "&number="       .. "1"
+    
+    g_Texture["texture_image"]:setimage(l_Generate) 
   else
     io.write("Value Changed: " .. tostring(a_Name) .. " (" .. tostring(a_Id) .. ") = " .. tostring(a_Value) .. "\n")
   end

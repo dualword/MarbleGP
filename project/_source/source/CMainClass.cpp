@@ -813,6 +813,51 @@ namespace dustbin {
     lua_close(l_pState);
   }
 
+  irr::video::ITexture* CMainClass::adjustTextureForMarble(const std::string& a_sFile, const irr::video::SColor& a_cColor) {
+    irr::video::IImage* l_pImage = m_pDrv->createImageFromFile(a_sFile.c_str());
+
+    irr::video::SColor l_cCol = a_cColor;
+    for (unsigned x = 0; x < l_pImage->getDimension().Width; x++) {
+      for (unsigned y = 0; y < l_pImage->getDimension().Height; y++) {
+        l_cCol.setAlpha(l_pImage->getPixel(x, y).getAlpha());
+        l_pImage->setPixel(x, y, l_cCol);
+      }
+    }
+
+    irr::video::ITexture* l_pRet = m_pDrv->addTexture("dummy", l_pImage);
+    l_pImage->drop();
+
+    return l_pRet;
+  }
+
+  /**
+  * Convert a string to an Irrlicht color
+  * @param a_cColor the color that will be changed
+  * @param a_sColor the input string
+  */
+  void CMainClass::fillColorFromString(irr::video::SColor& a_cColor, const std::string& a_sColor) {
+    char* l_pEnd = nullptr;
+
+    a_cColor.setAlpha(0xFF);
+    a_cColor.setRed(strtol(a_sColor.substr(0, 2).c_str(), &l_pEnd, 16));
+    a_cColor.setGreen(strtol(a_sColor.substr(2, 2).c_str(), &l_pEnd, 16));
+    a_cColor.setBlue(strtol(a_sColor.substr(4, 2).c_str(), &l_pEnd, 16));
+  }
+
+  /**
+  * Find a parameter in the map of texture parameters
+  * @param a_mParameters the parameter map
+  * @param a_sKey the key of the parameter
+  * @return the parameter, empty string if the key was not found
+  */
+  std::string CMainClass::findTextureParameter(std::map<std::string, std::string>& a_mParameters, const std::string a_sKey) {
+    if (a_mParameters.find(a_sKey) != a_mParameters.end()) {
+      return a_mParameters[a_sKey];
+    }
+
+    return "";
+  }
+
   /**
   * Get an image from a string. The following prefixes are possible:
   * - file://: load a file from a subfolder
@@ -831,6 +876,123 @@ namespace dustbin {
 
       if (l_sPrefix == "file") {
         l_pRet = m_pDrv->getTexture(l_sPostFix.c_str());  
+      }
+      else if (l_sPrefix == "generate") {
+        irr::core::recti l_aDestRect[2] = {
+          irr::core::recti(0,   0, 511, 255),
+          irr::core::recti(0, 255, 511, 511)
+        };
+
+        irr::video::ITexture* l_pTexture = m_pDrv->findTexture(l_sPostFix.c_str());
+
+        printf("Texture: %s\n", l_sPostFix.c_str());
+        if (l_pTexture == nullptr) {
+          std::string l_sTexture = l_sPostFix;
+          std::map<std::string, std::string> l_mParamters;
+
+          size_t l_iPosAmp = std::string::npos;
+
+          do {
+            l_iPosAmp = l_sTexture.find('&');
+            std::string l_sPart;
+
+            if (l_iPosAmp != std::string::npos) {
+              l_sPart = l_sTexture.substr(0, l_iPosAmp);
+              l_sTexture = l_sTexture.substr(l_iPosAmp + 1);
+            }
+            else l_sPart = l_sTexture;
+
+            size_t l_iPosEq = l_sPart.find('=');
+
+            if (l_iPosEq != std::string::npos) {
+              std::string l_sKey   = l_sPart.substr(0, l_iPosEq),
+                          l_sValue = l_sPart.substr(l_iPosEq + 1);
+
+              l_mParamters[l_sKey] = l_sValue;
+            }
+            else {
+              std::string s = std::string("Invalid texture string \"") + l_sPostFix + "\" (" + l_sPart + ")";
+              CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
+              CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+              throw std::exception();
+            }
+          } 
+          while (l_iPosAmp != std::string::npos);
+
+          if (l_mParamters.find("pattern") == l_mParamters.end()) {
+            std::string s = std::string("No pattern specified for texture (") + l_sPostFix + ")";
+            CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
+            CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+            throw std::exception();
+          }
+
+          bool l_bNumberBorder = l_mParamters.find("border") != l_mParamters.end() && l_mParamters["border"] == "1" ? true : false;
+
+          std::string l_sColorNumber       = findTextureParameter(l_mParamters, "numbercolor" ),
+                      l_sColorNumberBack   = findTextureParameter(l_mParamters, "numberback"  ),
+                      l_sColorNumberBorder = findTextureParameter(l_mParamters, "numberborder"),
+                      l_sColorRing         = findTextureParameter(l_mParamters, "ringcolor"   ),
+                      l_sColorPattern      = findTextureParameter(l_mParamters, "patterncolor"),
+                      l_sColorPatternBack  = findTextureParameter(l_mParamters, "patternback" ),
+                      l_sNumber            = findTextureParameter(l_mParamters, "number"      ),
+                      l_sPattern           = l_mParamters["pattern"];
+
+          if (l_sNumber == "")
+            l_sNumber = "1";
+
+          irr::video::SColor l_cColorNumber,
+            l_cColorNumberBack,
+            l_cColorNumberBorder,
+            l_cColorRing,
+            l_cColorPattern,
+            l_cColorPatternBack;
+
+          fillColorFromString(l_cColorNumber, l_sColorNumber);
+          fillColorFromString(l_cColorNumberBack, l_sColorNumberBack);
+          fillColorFromString(l_cColorNumberBorder, l_sColorNumberBorder);
+          fillColorFromString(l_cColorRing, l_sColorRing);
+          fillColorFromString(l_cColorPattern, l_sColorPattern);
+          fillColorFromString(l_cColorPatternBack, l_sColorPatternBack);
+
+          // Render Texture
+
+          std::string l_sFilePattern = std::string("data/patterns/texture_") + l_sPattern + ".png",
+                      l_sFileTop     = std::string("data/textures/texture_top.png");
+
+          if (!m_pFs->existFile(l_sFilePattern.c_str())) {
+            CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture pattern \"") + l_sPattern + "\".");
+            CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+            throw std::exception();
+          }
+
+          if (!m_pFs->existFile(l_sFileTop.c_str())) {
+            CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture part \"texture_top.png\"."));
+            CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+            throw std::exception();
+          }
+
+          l_pTexture = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), l_sPostFix.c_str());
+          m_pDrv->setRenderTarget(l_pTexture, true, true, l_cColorNumberBack);
+          m_pDrv->draw2DRectangle(l_cColorPatternBack, irr::core::recti(0, 255, 511, 511));
+
+          CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
+          l_pFont->AntiAlias = true;
+          l_pFont->attach(m_pFontFace, 180);
+
+          l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(  0, 0, 255, 255), l_cColorNumber, true, true);
+          l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(256, 0, 511, 255), l_cColorNumber, true, true);
+
+          l_pFont->drop();
+
+          irr::video::ITexture* l_pTop = adjustTextureForMarble(l_sFileTop, l_cColorRing);
+          m_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 512, 256), nullptr, nullptr, true);
+          irr::video::ITexture*l_pPattern = adjustTextureForMarble(l_sFilePattern, l_cColorPattern);
+          m_pDrv->draw2DImage(l_pPattern, l_aDestRect[1], irr::core::recti(0, 0, 512, 256), nullptr, nullptr, true);
+
+          m_pDrv->setRenderTarget(0, false, false);
+        }
+
+        return l_pTexture;
       }
     }
 

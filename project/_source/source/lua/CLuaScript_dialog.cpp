@@ -184,7 +184,8 @@ namespace dustbin {
           l_cCallback(a_iId, a_sName, a_fValue);
       }
       catch (luabridge::LuaException e) {
-        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        std::string l_sError = lua_tostring(m_pState, -1);
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", l_sError);
         CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
         throw std::exception();
       }

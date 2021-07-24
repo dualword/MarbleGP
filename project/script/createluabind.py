@@ -4,6 +4,11 @@ g_IncludeOutput = "../_source/include/_generated/lua"
 g_SourceOutput  = "../_source/source/_generated/lua"
 g_IncludePath   = "_generated/lua"
 
+def extract(raw_string, start_marker, end_marker):
+  start = raw_string.index(start_marker) + len(start_marker)
+  end = raw_string.index(end_marker, start)
+  return raw_string[start:end]
+
 def FileComment(a_File):
   a_File.write("// This file was created by the Dustbin::Games LuaBridge Python Script .. (w) 2021 by Christian Keimel\n")
 
@@ -27,7 +32,7 @@ def CreatePush(a_Name, a_Type, a_Json, a_StatePrefix):
   elif IsEnum(a_Type, a_Json):
     return "lua_pushinteger(" + a_StatePrefix + "pState, (int)" + a_Name + ");\n"
   elif a_Type.startswith("std::vector"):
-    l_Ret =  "lua_newtable(" + a_StatePrefix + "pState);\n\n    int l_iCount = 1;\n    for (" + a_Type + "::iterator it = " + a_Name + ".begin(); it != " + a_Name + ".end(); it++) {\n      lua_pushinteger(" + a_StatePrefix + "pState, l_iCount);\n"
+    l_Ret =  "lua_newtable(" + a_StatePrefix + "pState);\n\n    int l_iCount = 1;\n    for (" + a_Type + "::const_iterator it = " + a_Name + ".begin(); it != " + a_Name + ".end(); it++) {\n      lua_pushinteger(" + a_StatePrefix + "pState, l_iCount);\n"
     
     l_Type = extract(a_Type, "<", ">")
     
@@ -47,7 +52,7 @@ def CreatePush(a_Name, a_Type, a_Json, a_StatePrefix):
       l_Key   = l_TypeArray[0].strip()
       l_Value = l_TypeArray[1].strip()
       
-    l_Ret = l_Ret + "    for (" + a_Type + "::iterator it = " + a_Name + ".begin(); it != " + a_Name + ".end(); it++) {\n"
+    l_Ret = l_Ret + "    for (" + a_Type + "::const_iterator it = " + a_Name + ".begin(); it != " + a_Name + ".end(); it++) {\n"
     l_Ret = l_Ret + "      " + CreatePush("it->first" , l_Key  , a_Json, a_StatePrefix)
     l_Ret = l_Ret + "      " + CreatePush("it->second", l_Value, a_Json, a_StatePrefix)
     l_Ret = l_Ret + "      lua_settable(" + a_StatePrefix + "pState, -3);\n"
@@ -100,6 +105,8 @@ def CreatePull(a_Name, a_Type, a_Json, a_Default, a_StatePrefix):
     l_Ret = l_Ret + a_Name + " = lua_toboolean(" + a_StatePrefix + "pState, lua_gettop(" + a_StatePrefix + "pState)); lua_pop(" + a_StatePrefix + "pState, 1);"
   elif IsEnum(a_Type, a_Json):
     l_Ret = l_Ret + a_Name + " = (" + a_Type + ")lua_tointeger(" + a_StatePrefix + "pState, lua_gettop(" + a_StatePrefix + "pState)); lua_pop(" + a_StatePrefix + "pState, 1);"
+  elif a_Type.startswith("std::vector"):
+    print("**** Returning a vector from LUA to C++ is not yet supported!!!!")
   else:
     l_Found = False
     
@@ -243,7 +250,7 @@ def CreateTables(a_Json):
         l_Source.write("  lua_rawset(a_pState, -3);\n")
       elif l_Field["type"] == "std::vector":
         l_Source.write("  int l_iIndex = 1;\n")
-        l_Source.write("  for (std::vector<" + l_Field["element"] + ">::iterator it = m_" + l_Field["name"] + ".begin(); it != m_" + l_Field["name"] + ".end(); it++) {\n")
+        l_Source.write("  for (std::vector<" + l_Field["element"] + ">::const_iterator it = m_" + l_Field["name"] + ".begin(); it != m_" + l_Field["name"] + ".end(); it++) {\n")
         l_Source.write("    lua_newtable(a_pState);\n")
         l_Source.write("    lua_pushinteger(a_pState, l_iIndex);\n")
         l_Source.write("    " + CreatePush("(*it)", l_Field["element"], a_Json, "a_"))
@@ -251,7 +258,7 @@ def CreateTables(a_Json):
         l_Source.write("    l_iIndex++;\n")
         l_Source.write("  }\n")
       elif l_Field["type"] == "std::map":
-        l_Source.write("  for (std::map<" + l_Field["key"] + ", " + l_Field["element"] + ">::iterator it = m_" + l_Field["name"] + ".begin(); it != m_" + l_Field["name"] + ".end(); it++) {\n")
+        l_Source.write("  for (std::map<" + l_Field["key"] + ", " + l_Field["element"] + ">::const_iterator it = m_" + l_Field["name"] + ".begin(); it != m_" + l_Field["name"] + ".end(); it++) {\n")
         l_Source.write("    lua_newtable(a_pState);\n")
         l_Source.write("    " + CreatePush("it->first" , l_Field["key"    ], a_Json, "a_"))
         l_Source.write("    " + CreatePush("it->second", l_Field["element"], a_Json, "a_"))

@@ -68,6 +68,28 @@ namespace dustbin {
 
       std::vector<irr::video::ITexture*> m_pRtts; /**< Render target textures */
 
+      /**
+      * This function loads the pattern texture and adjusts the marble
+      * @param a_sFile the filename of the pattern texture
+      * @param a_cColor the color for the pattern
+      */
+      irr::video::ITexture* adjustTextureForMarble(const std::string& a_sFile, const irr::video::SColor& a_cColor);
+
+      /**
+      * Convert a string to an Irrlicht color
+      * @param a_cColor the color that will be changed
+      * @param a_sColor the input string
+      */
+      void fillColorFromString(irr::video::SColor& a_cColor, const std::string& a_sColor);
+
+      /**
+      * Find a parameter in the map of texture parameters
+      * @param a_mParameters the parameter map
+      * @param a_sKey the key of the parameter
+      * @return the parameter, empty string if the key was not found
+      */
+      std::string findTextureParameter(std::map<std::string, std::string>& a_mParameters, const std::string a_sKey);
+
     public:
       CMainClass();
       virtual ~CMainClass();

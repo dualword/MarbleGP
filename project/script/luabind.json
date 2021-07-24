@@ -1,8 +1,10 @@
 {
   "includes": {
     "irr::gui::IGUIElement *"   : "irrlicht.h",
-    "irr::gui::IGUIStaticText *": "irrlicht.h"
+    "irr::gui::IGUIStaticText *": "irrlicht.h",
+    "std::vector"               : "vector"
   },
+  "classes": { },
   "tables": {
     "SVector3d": {
       "comment": "3d vector",
@@ -41,6 +43,12 @@
         { "name": "sfx_game"        , "type": "float"        },
         { "name": "misc_usemenuctrl", "type": "bool"         },
         { "name": "misc_menuctrl"   , "type": "std::string"  }
+      ]
+    },
+    "SPatternList": {
+      "comment": "A list of texture patterns",
+      "fields": [
+        { "name": "patterns", "type": "std::vector<std::string>" }
       ]
     }
   }

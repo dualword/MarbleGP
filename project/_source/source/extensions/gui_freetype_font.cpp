@@ -443,10 +443,10 @@ void CGUIFreetypeFont::draw(const irr::core::stringw& textstring, const irr::cor
 		textDimension = getDimension(text);
 
 		if (hcenter)
-			offset.X = ((position.getWidth() - textDimension.Width)>>1) + offset.X;
+			offset.X = ((position.getWidth()  - textDimension.Width) / 2) + offset.X;
 
 		if (vcenter)
-			offset.Y = ((position.getHeight() - textDimension.Height)>>1) + offset.Y;
+			offset.Y = ((position.getHeight() - textDimension.Height) / 2) + offset.Y;
 	}
 
 	u32 n;
@@ -468,7 +468,7 @@ void CGUIFreetypeFont::draw(const irr::core::stringw& textstring, const irr::cor
 				{
 					if (!Transparency)
 						color.color |= 0xff000000;
-					Driver->draw2DImage(Glyphs[n-1]->tex,core::position2d<s32>(offset.X+offx,offset.Y+offy),core::rect<s32>(0,0,texw,texh),clip,color,true);
+					Driver->draw2DImage(Glyphs[n-1]->tex,core::position2d<s32>(offset.X + (hcenter ? 0 : offx),offset.Y+offy),core::rect<s32>(0,0,texw,texh),clip,color,true);
 				}
 				else
 				{
