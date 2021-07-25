@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Name" value="color_dialog" />
+      <!-- <attribute key="Visible" value="false" /> -->
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -20, -15, 20, 15">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="10" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 40, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Color Selection" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="tab" rect="relative: 0, 5, 50, 7">
+            <children>
+              <element type="staticText" rect="relative: 1, 0, 6, 2">
+                <attributes>
+                  <attribute key="Caption" value="Red:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="scrollBar" rect="relative: 7, 0, 32, 2">
+                <attributes>
+                  <attribute key="Horizontal" value="true" />
+                  <attribute key="Name" value="scrollbar_red" />
+                  <attribute key="Max" value="255" />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 33, 0, 40, 2">
+                <attributes>
+                  <attribute key="Name" value="value_red" />
+                  <attribute key="Caption" value="255" />
+                  <attribute key="HTextAlign" value="center" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+            </children>
+          </element>
+          
+          <element type="tab" rect="relative: 0, 8, 50, 10">
+            <children>
+              <element type="staticText" rect="relative: 1, 0, 6, 2">
+                <attributes>
+                  <attribute key="Caption" value="Green:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="scrollBar" rect="relative: 7, 0, 32, 2">
+                <attributes>
+                  <attribute key="Horizontal" value="true" />
+                  <attribute key="Name" value="scrollbar_green" />
+                  <attribute key="Max" value="255" />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 33, 0, 40, 2">
+                <attributes>
+                  <attribute key="Name" value="value_green" />
+                  <attribute key="Caption" value="255" />
+                  <attribute key="HTextAlign" value="center" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+            </children>
+          </element>
+          
+          <element type="tab" rect="relative: 0, 11, 50, 13">
+            <children>
+              <element type="staticText" rect="relative: 1, 0, 6, 2">
+                <attributes>
+                  <attribute key="Caption" value="Blue:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="scrollBar" rect="relative: 7, 0, 32, 2">
+                <attributes>
+                  <attribute key="Horizontal" value="true" />
+                  <attribute key="Name" value="scrollbar_blue" />
+                  <attribute key="Max" value="255" />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 33, 0, 40, 2">
+                <attributes>
+                  <attribute key="Name" value="value_blue" />
+                  <attribute key="Caption" value="255" />
+                  <attribute key="HTextAlign" value="center" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+            </children>
+          </element>
+          
+          <element type="tab" rect="relative: 1, 14, 39, 18">
+            <attributes>
+              <attribute key="Name" value="color_display" />
+              <attribute key="DrawBackground" value="true" />
+              <attribute key="BackColor" value="255, 0, 0, 0" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

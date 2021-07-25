@@ -84,9 +84,17 @@
                 </attributes>
               </element>
               
-              <element type="Selector" rect="relative: 19, 2, 37, 4">
+              <element type="editBox" rect="relative: 19, 2, 32, 4">
                 <attributes>
                   <attribute key="Name" value="texture_pattern" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 2, 37, 4">
+                <attributes>
+                  <attribute key="Name" value="btn_select_pattern" />
+                  <attribute key="Caption" value="..." />
                 </attributes>
               </element>
               
@@ -102,6 +110,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_foreground_nb" />
                   <attribute key="Caption" value="000000" />
+                  <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
@@ -124,6 +133,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_background_nb" />
                   <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
@@ -146,6 +156,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_nr" />
                   <attribute key="Caption" value="000000" />
+                  <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
@@ -168,6 +179,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_nf" />
                   <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
@@ -190,6 +202,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_foreground_pattern" />
                   <attribute key="Caption" value="000000" />
+                  <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
@@ -212,6 +225,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_background_pattern" />
                   <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               

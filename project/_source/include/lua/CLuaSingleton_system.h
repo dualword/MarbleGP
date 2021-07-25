@@ -193,6 +193,13 @@ namespace dustbin {
         * @param m_iZLayer the new Z-Layer
         */
         void setZLayer(int a_iZLayer);
+
+        /**
+        * Remove a texture from the Irrlicht texture cache. Use this function with caution as it will
+        * most likely cause crashes if you remove a still needed texture!
+        * @param a_sTexture (file)name of the texture to remove
+        */
+        void removeTexture(const std::string& a_sTexture);
     };
   }
 }

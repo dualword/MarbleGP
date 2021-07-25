@@ -14,6 +14,8 @@ g_Control = nil
 g_CtrlGui = nil
 g_Texture = { }
 
+g_PatternStart = 0
+
 function fillItems()
   g_Items   = { }
   g_Buttons = { }
@@ -96,19 +98,34 @@ function fillItems()
   g_Control = dialog:getitemfromname("controllerDialog")
   g_CtrlGui = dialog:getitemfromname("controller_ui")
   
+  g_Color = { }
+  
+  g_Color["dialog"] = dialog:getitemfromname("color_dialog" )
+  g_Color["red"   ] = dialog:getitemfromname("value_red"    )
+  g_Color["green" ] = dialog:getitemfromname("value_green"  )
+  g_Color["blue"  ] = dialog:getitemfromname("value_blue"   )
+  g_Color["show"  ] = dialog:getitemfromname("color_display")
+  
   g_Texture = { }
   
-  g_Texture["tab_generate" ] = dialog:getitemfromname("texture_generated"         )
-  g_Texture["tab_imported" ] = dialog:getitemfromname("texture_imported"          )
-  g_Texture["pattern"      ] = dialog:getitemfromname("texture_pattern"           )
-  g_Texture["nb_foreground"] = dialog:getitemfromname("texture_foreground_nb"     )
-  g_Texture["nb_background"] = dialog:getitemfromname("texture_background_nb"     )
-  g_Texture["pt_foreground"] = dialog:getitemfromname("texture_foreground_pattern")
-  g_Texture["pt_background"] = dialog:getitemfromname("texture_background_pattern")
-  g_Texture["number_frame" ] = dialog:getitemfromname("texture_nf"                )
-  g_Texture["number_ring"  ] = dialog:getitemfromname("texture_nr"                )
-  g_Texture["texture"      ] = dialog:getitemfromname("imported_texture"          )
-  g_Texture["texture_image"] = dialog:getitemfromname("texture_image"             )
+  g_Texture["tab_generate"  ] = dialog:getitemfromname("texture_generated"         )
+  g_Texture["tab_imported"  ] = dialog:getitemfromname("texture_imported"          )
+  g_Texture["pattern"       ] = dialog:getitemfromname("texture_pattern"           )
+  g_Texture["nb_foreground" ] = dialog:getitemfromname("texture_foreground_nb"     )
+  g_Texture["nb_background" ] = dialog:getitemfromname("texture_background_nb"     )
+  g_Texture["pt_foreground" ] = dialog:getitemfromname("texture_foreground_pattern")
+  g_Texture["pt_background" ] = dialog:getitemfromname("texture_background_pattern")
+  g_Texture["number_frame"  ] = dialog:getitemfromname("texture_nf"                )
+  g_Texture["number_ring"   ] = dialog:getitemfromname("texture_nr"                )
+  g_Texture["texture"       ] = dialog:getitemfromname("imported_texture"          )
+  g_Texture["texture_image" ] = dialog:getitemfromname("texture_image"             )
+  g_Texture["pattern_dialog"] = dialog:getitemfromname("pattern_dialog"            )
+  g_Texture["patterns"      ] = { }
+  
+  for i = 1, 9 do
+    local l_Item = dialog:getitemfromnameandid("texture_pattern_image", i)
+    g_Texture["patterns"][i] = l_Item
+  end
   
   g_Patterns = system:gettexturepatterns()
   
@@ -118,6 +135,8 @@ function fillItems()
     end
     g_Texture["pattern"]:setselected(0)
   end
+  
+  fillPatterns()
   
   showHideUi()
 end
@@ -135,12 +154,14 @@ function initialize()
   g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 70.0 })
   g_Camera:activate()
   
-  dialog:loaddialog("data/menu/menu_profiles.xml")
-  dialog:loaddialog("data/menu/button_cancel.xml")
-  dialog:loaddialog("data/menu/button_ok.xml")
-  dialog:loaddialog("data/menu/dialog_confirm.xml")
-  dialog:loaddialog("data/menu/dialog_controls.xml")
-  dialog:loaddialog("data/menu/dialog_texture.xml")
+  dialog:loaddialog("data/menu/menu_profiles.xml"        )  -- The main dialog for adding, editing and removing profiles
+  dialog:loaddialog("data/menu/button_cancel.xml"        )  -- The "Cancel" button
+  dialog:loaddialog("data/menu/button_ok.xml"            )  -- The "OK" button
+  dialog:loaddialog("data/menu/dialog_confirm.xml"       )  -- The "confirm" dialog used for error messages
+  dialog:loaddialog("data/menu/dialog_controls.xml"      )  -- The dialog to edit a player's controls
+  dialog:loaddialog("data/menu/dialog_texture.xml"       )  -- The dialog to edit a player's custom texture
+  dialog:loaddialog("data/menu/dialog_select_pattern.xml")  -- The dialog to select a pattern for a player's custom texture
+  dialog:loaddialog("data/menu/dialog_color.xml"         )  -- The "Select Color" dialog
   
   dialog:createui();
   audio:startsoundtrack(0)
@@ -163,6 +184,36 @@ function cleanup()
 end
 
 function fillResolution(a_Start)
+end
+
+function fillPatterns()
+  for i = 1, 9 do
+    if i + g_PatternStart <= #g_Patterns["patterns"] then
+      io.write(tostring(i) .. ": " .. tostring(g_Patterns["patterns"][i + g_PatternStart]) .. "\n")
+      g_Texture["patterns"][i]:setvisible(true)
+      g_Texture["patterns"][i]:settext(g_Patterns["patterns"][i + g_PatternStart])
+      g_Texture["patterns"][i]:setimage("file://data/patterns/" .. g_Patterns["patterns"][i + g_PatternStart])
+    else
+      g_Texture["patterns"][i]:setvisible(false)
+    end
+  end
+end
+
+function patternSwitchRight()
+  if g_PatternStart < #g_Patterns["patterns"] - 6 then
+    g_PatternStart = g_PatternStart + 3
+    fillPatterns()
+  end
+  io.write("patternSwitchRight: " .. tostring(g_PatternStart) .. " (" .. tostring(#g_Patterns["patterns"]) .. ")\n")
+end
+
+function patternSwitchLeft()
+  g_PatternStart = g_PatternStart - 3
+  if g_PatternStart < 0 then
+    g_PatternStart = 0
+  end
+  fillPatterns()
+  io.write("patternSwitchLeft: " .. tostring(g_PatternStart) .. " (" .. tostring(#g_Patterns["patterns"]) .. ")\n")
 end
 
 function showHideUi()
@@ -232,6 +283,18 @@ function uibuttonclicked(a_Id, a_Name)
     else
       system:statechange(1)
     end
+  elseif a_Name == "btn_select_pattern" then
+    g_Texture["pattern_dialog"]:setvisible(true)
+  elseif a_Name == "btn_pattern_close" then
+    g_Texture["pattern_dialog"]:setvisible(false)
+  elseif a_Name == "btn_pattern_right" then
+    patternSwitchRight()
+  elseif a_Name == "btn_pattern_left" then
+    patternSwitchLeft()
+  elseif a_Name == "texture_pattern_image" then
+    g_Texture["pattern"]:settext(g_Texture["patterns"][a_Id]:gettext())
+    g_Texture["pattern_dialog"]:setvisible(false)
+    updateTexture()
   else
     if g_Buttons[a_Id] ~= nil then
       if g_Buttons[a_Id]["action"] == "add" then
@@ -333,7 +396,28 @@ function uitextchanged(a_Id, a_Name, a_NewValue)
       
       g_Players[l_Player]["name"] = a_NewValue
     end
+  else
+    io.write("Text changed: \"" .. tostring(a_Name) .. "\" = \"" .. tostring(a_NewValue) .. "\"\n")
   end
+end
+
+function updateTexture()
+  local l_Generate = "generate://pattern=" .. tostring(g_Texture["pattern"]:gettext()) .. 
+                     "&numbercolor="  .. tostring(g_Texture["nb_foreground"]:gettext()) ..
+                     "&numberback="   .. tostring(g_Texture["nb_background"]:gettext()) ..
+                     "&numberborder=" .. tostring(g_Texture["number_frame" ]:gettext()) ..
+                     "&ringcolor="    .. tostring(g_Texture["number_ring"  ]:gettext()) ..
+                     "&patterncolor=" .. tostring(g_Texture["pt_foreground"]:gettext()) ..
+                     "&patternback="  .. tostring(g_Texture["pt_background"]:gettext()) ..
+                     "&number="       .. "1"
+  
+  io.write("Generate: " .. l_Generate .. "\n")
+  g_Texture["texture_image"]:setimage(l_Generate) 
+  
+  if g_OldTexture ~= nil then
+    system:removetexture(g_OldTexture)
+  end
+  g_OldTexture = l_Generate
 end
 
 function uivaluechanged(a_Id, a_Name, a_Value)
@@ -349,25 +433,20 @@ function uivaluechanged(a_Id, a_Name, a_Value)
       g_Texture["tab_imported"]:setvisible(true )
     end
   elseif a_Name == "texture_pattern" then
-    io.write("New Pattern: \"" .. tostring(g_Patterns["patterns"][math.floor(a_Value) + 1]) .. "\"\n")
+    updateTexture()
+  elseif a_Name == "scrollbar_red" or a_Name == "scrollbar_green" or a_Name == "scrollbar_blue" then
+    if a_Name == "scrollbar_red" then
+      g_Color["red"]:settext(string.format("%.0f", a_Value))
+    elseif a_Name == "scrollbar_green" then
+      g_Color["green"]:settext(string.format("%.0f", a_Value))
+    elseif a_Name == "scrollbar_blue" then
+      g_Color["blue"]:settext(string.format("%.0f", a_Value))
+    end
     
-    io.write("--> " .. tostring(g_Texture["nb_foreground"]:gettext()) .. "\n")
-    io.write("--> " .. tostring(g_Texture["nb_background"]:gettext()) .. "\n")
-    io.write("--> " .. tostring(g_Texture["pt_foreground"]:gettext()) .. "\n")
-    io.write("--> " .. tostring(g_Texture["pt_background"]:gettext()) .. "\n")
-    io.write("--> " .. tostring(g_Texture["number_frame" ]:gettext()) .. "\n")
-    io.write("--> " .. tostring(g_Texture["number_ring"  ]:gettext()) .. "\n")
+    local l_Color = "255, " .. g_Color["red"  ]:gettext() .. ", " .. g_Color["green"]:gettext() .. ", " .. g_Color["blue" ]:gettext()
     
-    local l_Generate = "generate://pattern=" .. tostring(g_Patterns["patterns"][math.floor(a_Value) + 1]) .. 
-                       "&numbercolor="  .. tostring(g_Texture["nb_foreground"]:gettext()) ..
-                       "&numberback="   .. tostring(g_Texture["nb_background"]:gettext()) ..
-                       "&numberborder=" .. tostring(g_Texture["number_frame" ]:gettext()) ..
-                       "&ringcolor="    .. tostring(g_Texture["number_ring"  ]:gettext()) ..
-                       "&patterncolor=" .. tostring(g_Texture["pt_foreground"]:gettext()) ..
-                       "&patternback="  .. tostring(g_Texture["pt_background"]:gettext()) ..
-                       "&number="       .. "1"
-    
-    g_Texture["texture_image"]:setimage(l_Generate) 
+    io.write("Color:" .. l_Color .. "\n")
+    g_Color["show"]:setproperty("BackColor", l_Color)
   else
     io.write("Value Changed: " .. tostring(a_Name) .. " (" .. tostring(a_Id) .. ") = " .. tostring(a_Value) .. "\n")
   end

@@ -191,11 +191,13 @@ namespace dustbin {
       l_cColor.setAlpha(232);
       m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_HIGH_LIGHT, l_cColor);
 
-      m_pGui->getSkin()->setColor(irr::gui::EGDC_HIGH_LIGHT, irr::video::SColor(0xFF, 0, 0, 0));
-      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_FACE, irr::video::SColor(0xFF, 232, 232, 232));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_HIGH_LIGHT   , irr::video::SColor(0xFF,   0,   0,   0));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_FACE      , irr::video::SColor(0xFF, 232, 232, 232));
       m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_HIGH_LIGHT, irr::video::SColor(0xFF, 232, 232, 232));
-      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_LIGHT, irr::video::SColor(0xFF, 232, 232, 232));
-      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW, irr::video::SColor(0xFF, 128, 128, 128));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_LIGHT     , irr::video::SColor(0xFF, 232, 232, 232));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW    , irr::video::SColor(0xFF, 128, 128, 128));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_GRAY_EDITABLE, irr::video::SColor(0xFF, 230, 230, 230));
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_GRAY_TEXT    , irr::video::SColor(0xFF,   0,   0,   0));
 
       m_mStates[state::enState::LuaState] = new state::CLuaState();
       m_mStates[state::enState::ErrorState] = new state::CErrorState();
@@ -956,7 +958,7 @@ namespace dustbin {
 
           // Render Texture
 
-          std::string l_sFilePattern = std::string("data/patterns/texture_") + l_sPattern + ".png",
+          std::string l_sFilePattern = std::string("data/patterns/") + l_sPattern,
                       l_sFileTop     = std::string("data/textures/texture_top.png");
 
           if (!m_pFs->existFile(l_sFilePattern.c_str())) {

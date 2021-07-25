@@ -4,6 +4,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <LuaBridge/LuaBridge.h>
 #include <platform/CPlatform.h>
+#include <gui/CClipImage.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
 
@@ -58,8 +59,28 @@ namespace dustbin {
 
         m_pElement->serializeAttributes(l_pAttr);
 
-        // ToDo: respect attribute types
-        l_pAttr->setAttribute(a_sName.c_str(), a_sValue.c_str());
+        switch (l_pAttr->getAttributeType(a_sName.c_str())) {
+          case irr::io::EAT_COLOR: {
+            std::vector<std::string> v = platform::splitString(a_sValue, ',');
+
+            irr::u32 a = v.size() > 0 ? std::atoi(v[0].c_str()) : 255,
+              r = v.size() > 1 ? std::atoi(v[1].c_str()) : 255,
+              g = v.size() > 2 ? std::atoi(v[2].c_str()) : 255,
+              b = v.size() > 3 ? std::atoi(v[3].c_str()) : 255;
+
+            irr::video::SColor l_cColor = irr::video::SColor(a, r, g, b);
+            l_pAttr->setAttribute(a_sName.c_str(), l_cColor);
+            break;
+          }
+
+          case irr::io::EAT_BOOL:
+            l_pAttr->setAttribute(a_sName.c_str(), a_sValue == "true" ? true : false);
+            break;
+
+          default:
+            l_pAttr->setAttribute(a_sName.c_str(), a_sValue.c_str());
+            break;
+        }
 
         m_pElement->deserializeAttributes(l_pAttr);
 
@@ -384,6 +405,10 @@ namespace dustbin {
     bool CLuaGuiItem::setImage(const std::string a_sImage) {
       if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_IMAGE) {
         reinterpret_cast<irr::gui::IGUIImage*>(m_pElement)->setImage(m_pGlobal->createTexture(a_sImage));
+        return true;
+      }
+      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_ClipImageId) {
+        reinterpret_cast<gui::CClipImage*>(m_pElement)->setImage(m_pGlobal->createTexture(a_sImage));
         return true;
       }
       else return false;

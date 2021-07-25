@@ -1,6 +1,8 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <gui/CReactiveLabel.h>
 #include <gui/CControllerUi.h>
 #include <gui/CMenuButton.h>
+#include <gui/CClipImage.h>
 #include <gui/CSelector.h>
 #include <gui/CDialog.h>
 
@@ -9,27 +11,6 @@
 
 namespace dustbin {
   namespace gui {
-    std::vector<std::string> splitString(const std::string a_sInput, const char a_sDelimiter) {
-      std::vector<std::string> l_vRet;
-
-      std::string l_sInput = a_sInput;
-
-      while (l_sInput.size() > 0) {
-        size_t l_iPos = l_sInput.find_first_of(a_sDelimiter);
-
-        if (l_iPos != std::string::npos) {
-          l_vRet.push_back(l_sInput.substr(0, l_iPos));
-          l_sInput = l_sInput.substr(l_iPos + 1);
-        }
-        else {
-          l_vRet.push_back(l_sInput);
-          l_sInput = "";
-        }
-      }
-
-      return l_vRet;
-    }
-
     void CDialog::SDialogElement::parseInclude(irr::io::IXMLReaderUTF8* a_pXml, enParseState& a_eState) {
       enParseState l_eState = enParseState::root;
 
@@ -269,7 +250,7 @@ namespace dustbin {
           for (std::map<std::string, std::string>::iterator it = m_mAttributes.begin(); it != m_mAttributes.end(); it++) {
             switch (l_pAttr->getAttributeType(it->first.c_str())) {
               case irr::io::EAT_COLOR: {
-                std::vector<std::string> v = splitString(it->second, ',');
+                std::vector<std::string> v = platform::splitString(it->second, ',');
 
                 irr::u32 a = v.size() > 0 ? std::atoi(v[0].c_str()) : 255, 
                          r = v.size() > 1 ? std::atoi(v[1].c_str()) : 255,
@@ -291,10 +272,14 @@ namespace dustbin {
             }
           }
 
-          /*if (m_pElement->getType() == irr::gui::EGUIET_EDIT_BOX) {
+          /*if (m_pElement->getType() == gui::g_ClipImageId) {
+            printf("************************\n");
             for (unsigned i = 0; i < l_pAttr->getAttributeCount(); i++)
               printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
           }*/
+
+          if (m_sType == "ClipImage")
+            printf("ClipImage\n");
 
           irr::core::recti l_cRect = a_pGlobal->getRect(std::get<1>(m_cPosition), std::get<0>(m_cPosition), a_pParent);
 
@@ -312,9 +297,15 @@ namespace dustbin {
             }
           }
 
+          if (m_pElement->getType() == gui::g_ClipImageId) {
+            if (m_mCustom.find("src") != m_mCustom.end()) {
+              reinterpret_cast<gui::CClipImage*>(m_pElement)->setImage(CGlobal::getInstance()->createTexture(m_mCustom["src"]));
+            }
+          }
+
           if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
             if (m_mCustom.find("options") != m_mCustom.end()) {
-              std::vector<std::string> l_vOptions = splitString(m_mCustom["options"], ';');
+              std::vector<std::string> l_vOptions = platform::splitString(m_mCustom["options"], ';');
               for (std::vector<std::string>::iterator it = l_vOptions.begin(); it != l_vOptions.end(); it++) {
                 reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(platform::s2ws(*it).c_str());
               }
@@ -348,7 +339,7 @@ namespace dustbin {
 
           if (m_pElement->getType() == gui::g_SelectorId) {
             if (m_mCustom.find("options") != m_mCustom.end()) {
-              std::vector<std::string> l_vOptions = splitString(m_mCustom["options"], ';');
+              std::vector<std::string> l_vOptions = platform::splitString(m_mCustom["options"], ';');
               for (std::vector<std::string>::iterator it = l_vOptions.begin(); it != l_vOptions.end(); it++) {
                 reinterpret_cast<gui::CSelector*>(m_pElement)->addItem(platform::s2ws(*it).c_str());
               }
@@ -385,7 +376,8 @@ namespace dustbin {
             case irr::gui::EGUIET_EDIT_BOX: 
             case irr::gui::EGUIET_SPIN_BOX:
             case gui::g_ControllerUiId:
-            case gui::g_MenuButtonId: {
+            case gui::g_MenuButtonId: 
+            case gui::g_ReactiveLabelId: {
               enFont l_eFont = enFont::Regular;
 
               if (m_sFontSize == "tiny")
@@ -417,6 +409,9 @@ namespace dustbin {
                 else if (m_pElement->getType() == gui::g_ControllerUiId) {
                   reinterpret_cast<gui::CControllerUi*>(m_pElement)->setFont(l_pFont);
                 }
+                else if (m_pElement->getType() == gui::g_ReactiveLabelId) {
+                  reinterpret_cast<gui::CReactiveLabel*>(m_pElement)->setOverrideFont(l_pFont);
+                }
               }
               break;
             }
@@ -444,12 +439,13 @@ namespace dustbin {
       if (a_pState != nullptr) {
         luabridge::getGlobalNamespace(a_pState)
           .beginClass<CDialog>("LuaDialog")
-            .addFunction("loaddialog"     , &CDialog::loadDialog)
-            .addFunction("createui"       , &CDialog::createUi)
-            .addFunction("addlayoutraster", &CDialog::addLayoutRaster)
-            .addFunction("clear"          , &CDialog::clear)
-            .addFunction("getitemfromname", &CDialog::getItemFromName)
-            .addFunction("getitemfromid  ", &CDialog::getItemFromId)
+            .addFunction("loaddialog"          , &CDialog::loadDialog)
+            .addFunction("createui"            , &CDialog::createUi)
+            .addFunction("addlayoutraster"     , &CDialog::addLayoutRaster)
+            .addFunction("clear"               , &CDialog::clear)
+            .addFunction("getitemfromname"     , &CDialog::getItemFromName)
+            .addFunction("getitemfromnameandid", &CDialog::getItemFromNameAndId)
+            .addFunction("getitemfromid"       , &CDialog::getItemFromId)
           .endClass();
 
         std::error_code l_cError;
@@ -614,15 +610,18 @@ namespace dustbin {
     * @return the element
     */
     irr::gui::IGUIElement* CDialog::findElement(const std::string a_sName, int a_iId, irr::gui::IGUIElement* a_pParent) {
-      if (a_sName != "") {
+      if (a_sName != "" && a_iId == -1) {
         if (a_sName == a_pParent->getName())
           return a_pParent;
       }
-      else if (a_iId != -1) {
+      else if (a_iId != -1 && a_sName == "") {
         if (a_iId == a_pParent->getID())
           return a_pParent;
       }
-      else return nullptr;
+      else {
+        if (a_sName == a_pParent->getName() && a_iId == a_pParent->getID())
+          return a_pParent;
+      }
 
       for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++) {
         irr::gui::IGUIElement* p = findElement(a_sName, a_iId, *it);
@@ -639,6 +638,16 @@ namespace dustbin {
     */
     lua::CLuaGuiItem CDialog::getItemFromName(const std::string& a_sName) {
       irr::gui::IGUIElement* p = findElement(a_sName, -1, m_pGui->getRootGUIElement());
+      return lua::CLuaGuiItem(p);
+    }
+
+    /**
+    * Get a gui item from name and id
+    * @param a_sName the name of the item
+    * @param a_iId the id of the item
+    */
+    lua::CLuaGuiItem CDialog::getItemFromNameAndId(const std::string& a_sName, int a_iId) {
+      irr::gui::IGUIElement* p = findElement(a_sName, a_iId, m_pGui->getRootGUIElement());
       return lua::CLuaGuiItem(p);
     }
 

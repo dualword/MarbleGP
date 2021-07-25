@@ -33,6 +33,7 @@ namespace dustbin {
           .addFunction("setzlayer"            , &CLuaSingleton_system::setZLayer)
           .addFunction("getfirstcontroller"   , &CLuaSingleton_system::getFirstController)
           .addFunction("gettexturepatterns"   , &CLuaSingleton_system::getTexturePatterns)
+          .addFunction("removetexture"        , &CLuaSingleton_system::removeTexture)
         .endClass();
 
       std::error_code l_cError;
@@ -306,6 +307,24 @@ namespace dustbin {
     */
     void CLuaSingleton_system::setZLayer(int a_iZLayer) {
       m_pGlobal->getActiveState()->setZLayer(a_iZLayer);
+    }
+
+    /**
+    * Remove a texture from the Irrlicht texture cache. Use this function with caution as it will
+    * most likely cause crashes if you remove a still needed texture!
+    * @param a_sTexture (file)name of the texture to remove
+    */
+    void CLuaSingleton_system::removeTexture(const std::string& a_sTexture) {
+      std::string l_sTexture = a_sTexture;
+      size_t l_iPos = l_sTexture.find("://");
+
+      if (l_iPos != std::string::npos)
+        l_sTexture = l_sTexture.substr(l_iPos + 3);
+
+      irr::video::ITexture* p = m_pGlobal->getVideoDriver()->findTexture(l_sTexture.c_str());
+      if (p != nullptr) {
+        m_pGlobal->getVideoDriver()->removeTexture(p);
+      }
     }
 
 

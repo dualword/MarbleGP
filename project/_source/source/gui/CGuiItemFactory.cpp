@@ -2,7 +2,9 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
+#include <gui/CReactiveLabel.h>
 #include <gui/CControllerUi.h>
+#include <gui/CClipImage.h>
 #include <gui/CSelector.h>
 #include <string>
 
@@ -55,13 +57,23 @@ namespace dustbin {
 				p->drop();
 				return p;
 			}
+			else if (l_sTypeName == g_ReactiveLabelName) {
+				irr::gui::IGUIElement* p = new gui::CReactiveLabel(a_pParent);
+				p->drop();
+				return p;
+			}
+			else if (l_sTypeName == g_ClipImageName) {
+				irr::gui::IGUIElement* p = new gui::CClipImage(a_pParent);
+				p->drop();
+				return p;
+			}
 
 			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-			return 5;
+			return 7;
 		}
 
 		//! Get type of a createable element type
@@ -87,6 +99,14 @@ namespace dustbin {
 
 				case 4:
 					return (irr::gui::EGUI_ELEMENT_TYPE)g_SelectorId;
+					break;
+
+				case 5:
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_ReactiveLabelId;
+					break;
+
+				case 6:
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_ClipImageId;
 					break;
 
 				default:
@@ -120,6 +140,14 @@ namespace dustbin {
 					return g_SelectorName;
 					break;
 
+				case 5:
+					return g_ReactiveLabelName;
+					break;
+
+				case 6:
+					return g_ClipImageName;
+					break;
+
 				default:
 					return nullptr;
 					break;
@@ -149,6 +177,14 @@ namespace dustbin {
 
 				case g_SelectorId:
 					return g_SelectorName;
+					break;
+
+				case g_ReactiveLabelId:
+					return g_ReactiveLabelName;
+					break;
+
+				case g_ClipImageId:
+					return g_ClipImageName;
 					break;
 
 				default:

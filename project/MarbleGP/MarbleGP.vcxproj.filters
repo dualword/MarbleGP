@@ -204,6 +204,12 @@
     <ClCompile Include="..\_source\source\controller\CControllerGame.cpp">
       <Filter>Quelldateien\controller</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CReactiveLabel.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\gui\CClipImage.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -331,6 +337,12 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\controller\CControllerGame.h">
       <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CReactiveLabel.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gui\CClipImage.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

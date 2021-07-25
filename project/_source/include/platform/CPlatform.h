@@ -35,5 +35,7 @@ namespace dustbin {
 
     std::wstring s2ws(const std::string& str);
     std::string ws2s(const std::wstring& wstr);
+
+    std::vector<std::string> splitString(const std::string a_sInput, const char a_sDelimiter);
   }
 }

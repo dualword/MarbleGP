@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Name" value="pattern_dialog" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -20, -15, 20, 15">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="10" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 40, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Choose your texture pattern" />
+              <attribute key="Name" value="texture_headline" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <!-- Row One -->
+          <element type="ClipImage" rect="relative: 4, 5, 11, 12">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="1" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_ant.png" />
+            </custom>
+          </element>
+          
+          <element type="ClipImage" rect="relative: 16, 5, 23, 12">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="4" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_arrow.png" />
+            </custom>
+          </element>
+          
+          <element type="ClipImage" rect="relative: 28, 5, 35, 12">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="7" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_atomic.png" />
+            </custom>
+          </element>
+          
+          <!-- Row Two -->
+          <element type="ClipImage" rect="relative: 4, 13, 11, 20">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="2" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_bomb.png" />
+            </custom>
+          </element>
+          
+          <element type="ClipImage" rect="relative: 16, 13, 23, 20">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="5" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_bowling.png" />
+            </custom>
+          </element>
+          
+          <element type="ClipImage" rect="relative: 28, 13, 35, 20">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="8" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_circle.png" />
+            </custom>
+          </element>
+          
+          <!-- Row Three -->
+          <element type="ClipImage" rect="relative: 4, 21, 11, 28">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="3" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_dustbin.png" />
+            </custom>
+          </element>
+          
+          <element type="ClipImage" rect="relative: 16, 21, 23, 28">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="6" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_explosion.png" />
+            </custom>
+          </element>
+          
+          <element type="ClipImage" rect="relative: 28, 21, 35, 28">
+            <attributes>
+              <attribute key="Left" value="0" />
+              <attribute key="Top" value="0" />
+              <attribute key="Right" value="128" />
+              <attribute key="Bottom" value="128" />
+              <attribute key="Name" value="texture_pattern_image" />
+              <attribute key="Id" value="9" />
+            </attributes>
+            
+            <custom>
+              <attribute key="src" value="file://data/patterns/texture_franconia.png" />
+            </custom>
+          </element>
+        </children>
+      </element>
+      
+      <element type="MenuButton" rect="center: -22, -2, -18, 2">
+        <attributes>
+          <attribute key="Name" value="btn_pattern_left" />
+          <attribute key="ImagePath" value="data/images/arrow_left.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: 18, -2, 22, 2">
+        <attributes>
+          <attribute key="Name" value="btn_pattern_right" />
+          <attribute key="ImagePath" value="data/images/arrow_right.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -1, 13, 2, 16" tooltip="Close Dialog">
+        <attributes>
+          <attribute key="Name" value="btn_pattern_close" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>

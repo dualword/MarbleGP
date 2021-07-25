@@ -118,6 +118,13 @@ namespace dustbin {
         lua::CLuaGuiItem getItemFromName(const std::string& a_sName);
 
         /**
+        * Get a gui item from name and id
+        * @param a_sName the name of the item
+        * @param a_iId the id of the item
+        */
+        lua::CLuaGuiItem getItemFromNameAndId(const std::string& a_sName, int a_iId);
+
+        /**
         * Get a GUI item from it's id
         * @param a_iId the id of the item
         */
