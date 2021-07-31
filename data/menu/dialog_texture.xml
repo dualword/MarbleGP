@@ -5,7 +5,7 @@
       <attribute key="DrawBackground" value="true" />
       <attribute key="BackColor" value="96, 200, 200, 200" />
       <attribute key="Name" value="texture_dialog" />
-      <!-- <attribute key="Visible" value="false" /> -->
+      <attribute key="Visible" value="false" />
     </attributes>
     
     <children>
@@ -88,6 +88,7 @@
                 <attributes>
                   <attribute key="Name" value="texture_pattern" />
                   <attribute key="Enabled" value="false" />
+                  <attribute key="Caption" value="texture_marbles2.png" />
                 </attributes>
               </element>
               
@@ -108,7 +109,7 @@
               
               <element type="editBox" rect="relative: 19, 5, 32, 7">
                 <attributes>
-                  <attribute key="Name" value="texture_foreground_nb" />
+                  <attribute key="Name" value="texture_fg_nb" />
                   <attribute key="Caption" value="000000" />
                   <attribute key="Enabled" value="false" />
                 </attributes>
@@ -131,8 +132,8 @@
               
               <element type="editBox" rect="relative: 19, 8, 32, 10">
                 <attributes>
-                  <attribute key="Name" value="texture_background_nb" />
-                  <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Name" value="texture_bg_nb" />
+                  <attribute key="Caption" value="4b64f9" />
                   <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
@@ -178,14 +179,14 @@
               <element type="editBox" rect="relative: 19, 14, 32, 16">
                 <attributes>
                   <attribute key="Name" value="texture_nf" />
-                  <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Caption" value="4b64f9" />
                   <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
               <element type="MenuButton" rect="relative: 33, 14, 37, 16">
                 <attributes>
-                  <attribute key="Name" value="btn_select_bg_pattern" />
+                  <attribute key="Name" value="btn_select_nf" />
                   <attribute key="Caption" value="..." />
                 </attributes>
               </element>
@@ -200,7 +201,7 @@
               
               <element type="editBox" rect="relative: 19, 17, 32, 19">
                 <attributes>
-                  <attribute key="Name" value="texture_foreground_pattern" />
+                  <attribute key="Name" value="texture_fg_pt" />
                   <attribute key="Caption" value="000000" />
                   <attribute key="Enabled" value="false" />
                 </attributes>
@@ -208,7 +209,7 @@
               
               <element type="MenuButton" rect="relative: 33, 17, 37, 19">
                 <attributes>
-                  <attribute key="Name" value="btn_select_fg_pattern" />
+                  <attribute key="Name" value="btn_select_fg_pt" />
                   <attribute key="Caption" value="..." />
                 </attributes>
               </element>
@@ -223,15 +224,15 @@
               
               <element type="editBox" rect="relative: 19, 20, 32, 22">
                 <attributes>
-                  <attribute key="Name" value="texture_background_pattern" />
-                  <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Name" value="texture_bg_pt" />
+                  <attribute key="Caption" value="4b64f9" />
                   <attribute key="Enabled" value="false" />
                 </attributes>
               </element>
               
               <element type="MenuButton" rect="relative: 33, 20, 37, 22">
                 <attributes>
-                  <attribute key="Name" value="btn_select_bg_pattern" />
+                  <attribute key="Name" value="btn_select_bg_pt" />
                   <attribute key="Caption" value="..." />
                 </attributes>
               </element>
@@ -263,21 +264,22 @@
           </element>
         </children>
       </element>
-    </children>
-  </element>
-  <element type="MenuButton" rect="center: 1, 17, 5, 21" tooltip="Save texture changes">
-    <attributes>
-      <attribute key="Name" value="btn_texture_ok" />
-      <attribute key="Id" value="12345" />
-      <attribute key="ImagePath" value="data/images/btn_ok.png" />
-    </attributes>
-  </element>
   
-  <element type="MenuButton" rect="center: -4, 17, 0, 21" tooltip="Discard texture changes">
-    <attributes>
-      <attribute key="Name" value="btn_texture_cancel" />
-      <attribute key="Id" value="12345" />
-      <attribute key="ImagePath" value="data/images/btn_cancel.png" />
-    </attributes>
+      <element type="MenuButton" rect="center: 1, 17, 5, 21" tooltip="Save texture changes">
+        <attributes>
+          <attribute key="Name" value="btn_texture_ok" />
+          <attribute key="Id" value="12345" />
+          <attribute key="ImagePath" value="data/images/btn_ok.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -4, 17, 0, 21" tooltip="Discard texture changes">
+        <attributes>
+          <attribute key="Name" value="btn_texture_cancel" />
+          <attribute key="Id" value="12345" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
+      </element>
+    </children>
   </element>
 </dialog>

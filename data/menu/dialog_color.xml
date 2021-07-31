@@ -5,11 +5,11 @@
       <attribute key="DrawBackground" value="true" />
       <attribute key="BackColor" value="96, 200, 200, 200" />
       <attribute key="Name" value="color_dialog" />
-      <!-- <attribute key="Visible" value="false" /> -->
+      <attribute key="Visible" value="false" />
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -20, -15, 20, 15">
+      <element type="MenuBackground" rect="center: -21, -14, 21, 14">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="232, 239, 239, 255" />
@@ -35,7 +35,7 @@
                 </attributes>
               </element>
               
-              <element type="scrollBar" rect="relative: 7, 0, 32, 2">
+              <element type="scrollBar" rect="relative: 7, 0, 34, 2">
                 <attributes>
                   <attribute key="Horizontal" value="true" />
                   <attribute key="Name" value="scrollbar_red" />
@@ -43,7 +43,7 @@
                 </attributes>
               </element>
               
-              <element type="staticText" rect="relative: 33, 0, 40, 2">
+              <element type="staticText" rect="relative: 35, 0, 42, 2">
                 <attributes>
                   <attribute key="Name" value="value_red" />
                   <attribute key="Caption" value="255" />
@@ -64,7 +64,7 @@
                 </attributes>
               </element>
               
-              <element type="scrollBar" rect="relative: 7, 0, 32, 2">
+              <element type="scrollBar" rect="relative: 7, 0, 34, 2">
                 <attributes>
                   <attribute key="Horizontal" value="true" />
                   <attribute key="Name" value="scrollbar_green" />
@@ -72,7 +72,7 @@
                 </attributes>
               </element>
               
-              <element type="staticText" rect="relative: 33, 0, 40, 2">
+              <element type="staticText" rect="relative: 35, 0, 42, 2">
                 <attributes>
                   <attribute key="Name" value="value_green" />
                   <attribute key="Caption" value="255" />
@@ -93,7 +93,7 @@
                 </attributes>
               </element>
               
-              <element type="scrollBar" rect="relative: 7, 0, 32, 2">
+              <element type="scrollBar" rect="relative: 7, 0, 34, 2">
                 <attributes>
                   <attribute key="Horizontal" value="true" />
                   <attribute key="Name" value="scrollbar_blue" />
@@ -101,7 +101,7 @@
                 </attributes>
               </element>
               
-              <element type="staticText" rect="relative: 33, 0, 40, 2">
+              <element type="staticText" rect="relative: 35, 0, 42, 2">
                 <attributes>
                   <attribute key="Name" value="value_blue" />
                   <attribute key="Caption" value="255" />
@@ -112,14 +112,141 @@
             </children>
           </element>
           
-          <element type="tab" rect="relative: 1, 14, 39, 18">
+          <element type="tab" rect="relative: 1, 14, 41, 18">
             <attributes>
               <attribute key="Name" value="color_display" />
               <attribute key="DrawBackground" value="true" />
               <attribute key="BackColor" value="255, 0, 0, 0" />
             </attributes>
           </element>
+          
+          <element type="tab" rect="relative: 1, 19, 41, 24">
+            <children>
+              <element type="ReactiveLabel" rect="relative: 0, 0, 5, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 255, 255, 255" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="FFFFFF" />
+                  <attribute key="Id" value="16777215" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 5, 0, 10, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 255, 0, 0" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="FF0000" />
+                  <attribute key="Id" value="16711680" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 10, 0, 15, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 0, 255, 0" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="00FF00" />
+                  <attribute key="Id" value="65280" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 15, 0, 20, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 0, 0, 255" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="0000FF" />
+                  <attribute key="TextColor" value="255, 255, 255, 255" />
+                  <attribute key="Id" value="255" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 20, 0, 25, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 255, 255, 0" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="FFFF00" />
+                  <attribute key="Id" value="16776960" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 25, 0, 30, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 0, 255, 255" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="00FFFF" />
+                  <attribute key="Id" value="65535" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 30, 0, 35, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 255, 0, 255" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="FF00FF" />
+                  <attribute key="Id" value="16711935" />
+                </attributes>
+              </element>
+              
+              <element type="ReactiveLabel" rect="relative: 35, 0, 40, 5" font="tiny">
+                <attributes>
+                  <attribute key="Name" value="pick_color" />
+                  <attribute key="CenterH" value="true" />
+                  <attribute key="CenterV" value="true" />
+                  <attribute key="DrawBackground" value="true" />
+                  <attribute key="BackgroundColor" value="255, 0, 0, 0" />
+                  <attribute key="DrawBorder" value="true" />
+                  <attribute key="Caption" value="000000" />
+                  <attribute key="TextColor" value="255, 255, 255, 255" />
+                  <attribute key="Id" value="0" />
+                </attributes>
+              </element>
+            </children>
+          </element>
+          
         </children>
+      </element>
+      
+      <element type="MenuButton" rect="center: 1, 12, 5, 16" tooltip="Save Color">
+        <attributes>
+          <attribute key="Name" value="btn_color_ok" />
+          <attribute key="Id" value="12345" />
+          <attribute key="ImagePath" value="data/images/btn_ok.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -4, 12, 0, 16" tooltip="Discard Color changes">
+        <attributes>
+          <attribute key="Name" value="btn_color_cancel" />
+          <attribute key="Id" value="12345" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
       </element>
     </children>
   </element>

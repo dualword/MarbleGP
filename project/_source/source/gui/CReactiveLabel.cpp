@@ -97,6 +97,27 @@ namespace dustbin {
     bool CReactiveLabel::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
+      if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        if (a_cEvent.MouseInput.isLeftPressed()) {
+          m_bLDown = true;
+        }
+        else if (!a_cEvent.MouseInput.isLeftPressed()) {
+          if (m_bLDown) {
+            m_bLDown = false;
+            irr::core::vector2di l_cPos = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
+            if (getAbsoluteClippingRect().isPointInside(l_cPos)) {
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_GUI_EVENT;
+              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+              l_cEvent.GUIEvent.Caller    = this;
+              l_cEvent.GUIEvent.Element   = this;
+
+              CGlobal::getInstance()->getActiveState()->OnEvent(l_cEvent);
+            }
+          }
+        }
+      }
+
       return l_bRet;
     }
   } // namespace gui
