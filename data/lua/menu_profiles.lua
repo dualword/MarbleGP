@@ -273,6 +273,16 @@ function uibuttonclicked(a_Id, a_Name)
       return
     end
     
+    if g_Texture["dialog"]:isvisible() then
+      if g_ColorEditor ~= nil then
+        uibuttonclicked(-1, "btn_color_ok")
+        return
+      else
+        uibuttonclicked(-1, "btn_texture_ok")
+        return
+      end
+    end
+    
     local l_Alright = true
     local l_Message = ""
     
@@ -302,6 +312,16 @@ function uibuttonclicked(a_Id, a_Name)
       showConfirmDialog(l_Message)
     end
   elseif a_Name == "cancel" then
+    if g_Texture["dialog"]:isvisible() then
+      if g_ColorEditor ~= nil then
+        uibuttonclicked(-1, "btn_color_cancel")
+        return
+      else
+        uibuttonclicked(-1, "btn_texture_cancel")
+        return
+      end
+    end
+    
     if g_Control:isvisible() then
       uibuttonclicked(-1, "btn_ctrl_cancel")
     elseif g_ConfirmDialog ~= nil and g_ConfirmDialog:isvisible() then
@@ -324,7 +344,6 @@ function uibuttonclicked(a_Id, a_Name)
     g_Texture["pattern_dialog"]:setvisible(false)
     updateTexture()
   elseif a_Name == "pick_color" then
-    io.write("*** " .. tostring(a_Id) .. ", " .. tostring(a_Name) .. "\n")
     local l_Color = string.format("%x", a_Id)
     
     while #l_Color < 6 do
