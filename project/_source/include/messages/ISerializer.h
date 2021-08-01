@@ -31,7 +31,7 @@ namespace dustbin {
         virtual irr::f64 getF64() = 0;    /**< Read a 64 bit float from the current message position */
 
         virtual const irr::core::vector3df getVector3df() = 0;  /**< Read 3d vector of 32 bit unsigned floats from the current message position */
-        virtual const std::string &getString() = 0;                 /**< Read string from the current message position */
+        virtual std::string getString() = 0;                 /**< Read string from the current message position */
 
         virtual void addU8(irr::u8 a_iInput) = 0;     /**< Append an 8 bit unsigned integer to the message */
         virtual void addS8(irr::s8 a_iInput) = 0;     /**< Append an 8 bit signed integer to the message */

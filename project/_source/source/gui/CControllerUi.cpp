@@ -159,7 +159,7 @@ namespace dustbin {
 
     CControllerUi::CControllerUi(irr::gui::IGUIElement* a_pParent) :
       CMenuBackground(a_pParent, (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId),
-      m_sConfigXml(""),
+      m_sConfigData(""),
       m_pParent(a_pParent),
       m_sHeadline("Controller Setup"),
       m_pFont(nullptr),
@@ -297,7 +297,7 @@ namespace dustbin {
         }
       }
       CGlobal::getInstance()->getActiveState()->enableDefault(true);
-      updateConfigXml();
+      updateConfigData();
     }
 
     void CControllerUi::elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter) {
@@ -401,7 +401,7 @@ namespace dustbin {
     }
 
     /**
-    * Get the configuration of the controller as XML string
+    * Get the configuration of the controller as serialized string
     * @return the configuration of the controller
     */
     std::string CControllerUi::getControllerString() {
@@ -413,8 +413,8 @@ namespace dustbin {
     }
 
     /**
-    * The "setText" method is abused to pass the configuration XML string to the UI
-    * @param a_pText the new XML string
+    * The "setText" method is abused to pass the configuration serialized string to the UI
+    * @param a_pText the new serialized string
     */
     void CControllerUi::setText(const wchar_t* a_pText) {
       irr::gui::IGUIElement::setText(a_pText);
@@ -422,7 +422,7 @@ namespace dustbin {
       std::wstring ws = a_pText;
       std::string s = platform::ws2s(ws);
 
-      if (s != m_sConfigXml) {
+      if (s != m_sConfigData) {
         for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
           (*it)->setVisible(false);
           (*it)->remove();
@@ -433,20 +433,10 @@ namespace dustbin {
         m_mTextControls.clear();
         m_mControlText .clear();
 
-        m_sConfigXml = s;
+        m_sConfigData = s;
 
-        irr::io::IReadFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryReadFile(m_sConfigXml.c_str(), (irr::s32)m_sConfigXml.size(), "__controller__xml");
-        if (l_pFile) {
-          irr::io::IXMLReaderUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLReaderUTF8(l_pFile);
-          if (l_pXml) {
-            deserialize(l_pXml);
-            buildUi(m_pParent);
-            l_pXml->drop();
-
-            CGlobal::getInstance()->getActiveState()->enableDefault(true);
-          }
-          l_pFile->drop();
-        }
+        deserialize(m_sConfigData);
+        buildUi(m_pParent);
       }
     }
 
@@ -539,24 +529,9 @@ namespace dustbin {
       m_pFont = a_pFont;
     }
 
-    void CControllerUi::updateConfigXml() {
-      char *s = new char[1000000];
-      memset(s, 0, 1000000);
-
-      irr::io::IWriteFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
-
-      if (l_pFile) {
-        irr::io::IXMLWriterUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLWriterUTF8(l_pFile);
-        if (l_pXml) {
-          serialize(l_pXml);
-          l_pXml->drop();
-        }
-        l_pFile->drop();
-      }
-
-      m_sConfigXml = std::string(s);
-      delete []s;
-      irr::gui::IGUIElement::setText(platform::s2ws(m_sConfigXml).c_str());
+    void CControllerUi::updateConfigData() {
+      m_sConfigData = serialize();
+      irr::gui::IGUIElement::setText(platform::s2ws(m_sConfigData).c_str());
     }
 
     void CControllerUi::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {

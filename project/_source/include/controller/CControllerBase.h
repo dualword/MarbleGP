@@ -11,6 +11,10 @@
 #include <vector>
 
 namespace dustbin {
+  namespace messages {
+    class CSerializer64;
+  }
+
   namespace controller {
 
     /**
@@ -49,7 +53,7 @@ namespace dustbin {
 
           SCtrlInput();
           SCtrlInput(enInputType a_eType, const std::string& a_sName);
-          SCtrlInput(irr::io::IXMLReaderUTF8* a_pXml);
+          SCtrlInput(messages::CSerializer64 *a_pSerializer);
           SCtrlInput(const SCtrlInput& a_cOther);
 
           ~SCtrlInput();
@@ -60,7 +64,7 @@ namespace dustbin {
           */
           virtual void update(const irr::SEvent& a_cEvent);
 
-          void serialize(irr::io::IXMLWriterUTF8* a_pXml) const;
+          void serialize(messages::CSerializer64 *a_pSerializer) const;
 
           void copyFrom(const SCtrlInput& a_cOther);
         };
@@ -83,16 +87,16 @@ namespace dustbin {
 
         /**
         * Serialize the settings
-        * @param a_pXml an Irrlicht XML writer to save the data to
+        * @return a serialized string with the controller settings
         */
-        void serialize(irr::io::IXMLWriterUTF8 *a_pXml);
+        std::string serialize();
 
         /**
-        * Fill the controller from an XML file. If the vector of controllers is empty
+        * Fill the controller from a serialized string. If the vector of controllers is empty
         * it will be filled, otherwise the corresponding items will be updated
-        * @param a_pXml the XML file
+        * @param a_sData the serialized string to load the data from
         */
-        void deserialize(irr::io::IXMLReaderUTF8* a_pXml);
+        void deserialize(const std::string a_sData);
 
         /**
         * Update a control item with the values of the parameter. The name of the

@@ -32,18 +32,7 @@ namespace dustbin {
       SSettings l_cSettings = CGlobal::getInstance()->getSettings();
       std::string l_sConfig = messages::urlDecode(l_cSettings.m_misc_menuctrl);
 
-      if (l_sConfig != "") {
-        irr::io::IReadFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createMemoryReadFile(l_sConfig.c_str(), (irr::u32)l_sConfig.size(), "__controller_xml");
-        if (l_pFile) {
-          irr::io::IXMLReaderUTF8* l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLReaderUTF8(l_pFile);
-          if (l_pXml) {
-            deserialize(l_pXml);
-            l_pXml->drop();
-          }
-          l_pFile->drop();
-        }
-      }
-
+      deserialize(l_sConfig);
       m_pTimer = CGlobal::getInstance()->getIrrlichtDevice()->getTimer();
     }
 

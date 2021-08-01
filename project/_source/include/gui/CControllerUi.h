@@ -42,7 +42,7 @@ namespace dustbin {
         irr::gui::IGUIElement      * m_pParent;
         irr::gui::ICursorControl   * m_pCursor;
 
-        std::string m_sConfigXml;
+        std::string m_sConfigData;
         std::string m_sHeadline;
         std::wstring m_sReturn;
 
@@ -71,7 +71,7 @@ namespace dustbin {
         void elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter);
         void resetSelected();
 
-        void updateConfigXml();
+        void updateConfigData();
 
       public:
         CControllerUi(irr::gui::IGUIElement *a_pParent);

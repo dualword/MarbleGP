@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
 #include <controller/CControllerBase.h>
+#include <messages/CSerializer64.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -22,44 +23,19 @@ namespace dustbin {
       m_sName = a_sName;
     }
 
-    CControllerBase::SCtrlInput::SCtrlInput(irr::io::IXMLReaderUTF8* a_pXml) {
-      while (a_pXml->read()) {
-        std::string l_sName = a_pXml->getNodeName();
+    CControllerBase::SCtrlInput::SCtrlInput(messages::CSerializer64* a_pSerializer) {
+      std::string l_sType = a_pSerializer->getString();
 
-        if (l_sName == "attribute") {
-          std::string l_sKey = a_pXml->getAttributeValueSafe("key");
+      m_eType = l_sType == "JoyAxis" ? enInputType::JoyAxis : l_sType == "JoyButton" ? enInputType::JoyButton : l_sType == "JoyPov" ? enInputType::JoyPov : enInputType::Key;
 
-          if (l_sKey == "type") {
-            std::string s = a_pXml->getAttributeValueSafe("value");
-            if (s == "JoyAxis")
-              m_eType = enInputType::JoyAxis;
-            else if (s == "JoyButton")
-              m_eType = enInputType::JoyButton;
-            else if (s == "JoyPov")
-              m_eType = enInputType::JoyPov;
-            else
-              m_eType = enInputType::Key;
-          }
-          else if (l_sKey == "name")
-            m_sName = a_pXml->getAttributeValueSafe("value");
-          else if (l_sKey == "joy_name")
-            m_sJoystick = a_pXml->getAttributeValueSafe("value");
-          else if (l_sKey == "key")
-            m_eKey = (irr::EKEY_CODE)a_pXml->getAttributeValueAsInt("value");
-          else if (l_sKey == "joy_index")
-            m_iJoystick = a_pXml->getAttributeValueAsInt("value");
-          else if (l_sKey == "joy_button")
-            m_iButton = a_pXml->getAttributeValueAsInt("value");
-          else if (l_sKey == "joy_axis")
-            m_iAxis = a_pXml->getAttributeValueAsInt("value");
-          else if (l_sKey == "pov")
-            m_iPov = a_pXml->getAttributeValueAsInt("value");
-          else if (l_sKey == "direction")
-            m_iDirection = a_pXml->getAttributeValueAsInt("value");
-        }
-        else if (l_sName == "control" && a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END)
-          break;
-      }
+      m_sName      =                 a_pSerializer->getString();
+      m_sJoystick  =                 a_pSerializer->getString();
+      m_eKey       = (irr::EKEY_CODE)a_pSerializer->getS32();
+      m_iJoystick  =                 a_pSerializer->getS32();
+      m_iButton    =                 a_pSerializer->getS32();
+      m_iAxis      =                 a_pSerializer->getS32();
+      m_iPov       =                 a_pSerializer->getS32();
+      m_iDirection =                 a_pSerializer->getS32();
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) {
@@ -142,20 +118,17 @@ namespace dustbin {
       }
     }
 
-    void CControllerBase::SCtrlInput::serialize(irr::io::IXMLWriterUTF8* a_pXml) const {
-      a_pXml->writeElement("control", false);
-
-      a_pXml->writeElement("attribute", true, "key", "type", "value", m_eType == enInputType::JoyAxis ? "JoyAxis" : m_eType == enInputType::JoyButton ? "JoyButton" : m_eType == enInputType::JoyPov ? "JoyPov" : "Key");
-      a_pXml->writeElement("attribute", true, "key", "name"      , "value",                 m_sName     .c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "joy_name"  , "value",                 m_sJoystick .c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "key"       , "value", std::to_string(m_eKey      ).c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "joy_index" , "value", std::to_string(m_iJoystick ).c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "joy_button", "value", std::to_string(m_iButton   ).c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "joy_axis"  , "value", std::to_string(m_iAxis     ).c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "pov"       , "value", std::to_string(m_iPov      ).c_str()                                                                                                       );
-      a_pXml->writeElement("attribute", true, "key", "direction" , "value", std::to_string(m_iDirection).c_str()                                                                                                       );
-      
-      a_pXml->writeClosingTag("control");
+    void CControllerBase::SCtrlInput::serialize(messages::CSerializer64* a_pSerializer) const {
+      a_pSerializer->addString("control");
+      a_pSerializer->addString(m_eType == enInputType::JoyAxis ? "JoyAxis" : m_eType == enInputType::JoyButton ? "JoyButton" : m_eType == enInputType::JoyPov ? "JoyPov" : "Key");
+      a_pSerializer->addString(m_sName);
+      a_pSerializer->addString(m_sJoystick);
+      a_pSerializer->addS32((irr::s32)m_eKey);
+      a_pSerializer->addS32(m_iJoystick);
+      a_pSerializer->addS32(m_iButton);
+      a_pSerializer->addS32(m_iAxis);
+      a_pSerializer->addS32(m_iPov);
+      a_pSerializer->addS32(m_iDirection);
     }
 
 
@@ -179,42 +152,54 @@ namespace dustbin {
 
     /**
     * Serialize the settings
-    * @param a_pXml an Irrlicht XML writer to save the data to
+    * @return a serialized string with the controller settings
     */
-    void CControllerBase::serialize(irr::io::IXMLWriterUTF8* a_pXml) {
-      a_pXml->writeXMLHeader();
+    std::string CControllerBase::serialize() {
+      std::string l_sRet = "";
+      messages::CSerializer64 l_cSerializer;
+      l_cSerializer.addString("DustbinController");
 
-      a_pXml->writeElement("controller", false);
-
-      for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++)
-        (*it).serialize(a_pXml);
-
-      a_pXml->writeClosingTag("controller");
+      for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+        (*it).serialize(&l_cSerializer);
+      }
+      
+      l_sRet = std::string((char*)l_cSerializer.getBuffer());
+      return l_sRet;
     }
 
     /**
-    * Fill the controller from an XML file. If the vector of controllers is empty
+    * Fill the controller from a serialized string. If the vector of controllers is empty
     * it will be filled, otherwise the corresponding items will be updated
-    * @param a_pXml the XML file
+    * @param a_sData the serialized string to load the data from
     */
-    void CControllerBase::deserialize(irr::io::IXMLReaderUTF8* a_pXml) {
-      bool l_bFillVector = m_vControls.size() == 0;
+    void CControllerBase::deserialize(const std::string a_sData) {
+      if (a_sData != "") {
+        bool l_bFillVector = m_vControls.size() == 0;
 
-      while (a_pXml->read()) {
-        std::string l_sName = a_pXml->getNodeName();
+        messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
-        if (l_sName == "control") {
-          SCtrlInput l_cCtrl = SCtrlInput(a_pXml);
+        std::string l_sHead = l_cSerializer.getString();
 
-          if (l_bFillVector) {
-            m_vControls.push_back(l_cCtrl);
-          }
-          else {
-            for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-              if ((*it).m_sName == l_cCtrl.m_sName)
-                (*it) = l_cCtrl;
+        if (l_sHead == "DustbinController") {
+          while (l_cSerializer.getString() == "control") {
+            SCtrlInput l_cCtrl(&l_cSerializer);
+
+            if (l_bFillVector) {
+              m_vControls.push_back(l_cCtrl);
+            }
+            else {
+              for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+                if ((*it).m_sName == l_cCtrl.m_sName)
+                  (*it) = l_cCtrl;
+              }
             }
           }
+        }
+        else {
+          std::string s = std::string("Invalid controller id \"") + l_sHead + "\"";
+          CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
+          CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while loading controller");
+          throw std::exception();
         }
       }
     }

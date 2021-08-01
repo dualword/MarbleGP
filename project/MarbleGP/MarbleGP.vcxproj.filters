@@ -210,6 +210,9 @@
     <ClCompile Include="..\_source\source\gui\CClipImage.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\messages\CSerializer64.cpp">
+      <Filter>Quelldateien\messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CClipImage.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\messages\CSerializer64.h">
+      <Filter>Headerdateien\messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -152,7 +152,7 @@ namespace dustbin {
         * Create a XML string with the default configuration for the menu controller
         * @return a XML string
         */
-        std::string getControllerXml_Menu();
+        std::string getControllerData_Menu();
 
         /**
         * Create a XML string with the default configuration for the game controller

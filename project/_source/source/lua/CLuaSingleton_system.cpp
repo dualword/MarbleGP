@@ -14,26 +14,26 @@ namespace dustbin {
     CLuaSingleton_system::CLuaSingleton_system(lua_State* a_pState) : m_pGlobal(CGlobal::getInstance()), m_pResolutionList(nullptr), m_pState(a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaSingleton_system>("LuaSystem")
-          .addFunction("getscenemanager"      , &CLuaSingleton_system::getSceneManager)
-          .addFunction("setsetting"           , &CLuaSingleton_system::setSetting)
-          .addFunction("getsetting"           , &CLuaSingleton_system::getSetting)
-          .addFunction("setglobal"            , &CLuaSingleton_system::setGlobal)
-          .addFunction("getglobal"            , &CLuaSingleton_system::getGlobal)
-          .addFunction("pushscript"           , &CLuaSingleton_system::pushScript)
-          .addFunction("statechange"          , &CLuaSingleton_system::stateChange)
-          .addFunction("getresolutionlist"    , &CLuaSingleton_system::getResolutionList)
-          .addFunction("executeluascript"     , &CLuaSingleton_system::executeLuaScript)
-          .addFunction("executeluastring"     , &CLuaSingleton_system::executeLuaString)
-          .addFunction("getsettings"          , &CLuaSingleton_system::getSettings)
-          .addFunction("setsettings"          , &CLuaSingleton_system::setSettings)
-          .addFunction("getcontrollerxml_menu", &CLuaSingleton_system::getControllerXml_Menu)
-          .addFunction("getcontrollerxml_game", &CLuaSingleton_system::getControllerXml_Game)
-          .addFunction("urlencode"            , &CLuaSingleton_system::urlEncode)
-          .addFunction("urldecode"            , &CLuaSingleton_system::urlDecode)
-          .addFunction("setzlayer"            , &CLuaSingleton_system::setZLayer)
-          .addFunction("getfirstcontroller"   , &CLuaSingleton_system::getFirstController)
-          .addFunction("gettexturepatterns"   , &CLuaSingleton_system::getTexturePatterns)
-          .addFunction("removetexture"        , &CLuaSingleton_system::removeTexture)
+          .addFunction("getscenemanager"       , &CLuaSingleton_system::getSceneManager)
+          .addFunction("setsetting"            , &CLuaSingleton_system::setSetting)
+          .addFunction("getsetting"            , &CLuaSingleton_system::getSetting)
+          .addFunction("setglobal"             , &CLuaSingleton_system::setGlobal)
+          .addFunction("getglobal"             , &CLuaSingleton_system::getGlobal)
+          .addFunction("pushscript"            , &CLuaSingleton_system::pushScript)
+          .addFunction("statechange"           , &CLuaSingleton_system::stateChange)
+          .addFunction("getresolutionlist"     , &CLuaSingleton_system::getResolutionList)
+          .addFunction("executeluascript"      , &CLuaSingleton_system::executeLuaScript)
+          .addFunction("executeluastring"      , &CLuaSingleton_system::executeLuaString)
+          .addFunction("getsettings"           , &CLuaSingleton_system::getSettings)
+          .addFunction("setsettings"           , &CLuaSingleton_system::setSettings)
+          .addFunction("getcontrollerdata_menu", &CLuaSingleton_system::getControllerData_Menu)
+          .addFunction("getcontrollerdata_game", &CLuaSingleton_system::getControllerXml_Game)
+          .addFunction("urlencode"             , &CLuaSingleton_system::urlEncode)
+          .addFunction("urldecode"             , &CLuaSingleton_system::urlDecode)
+          .addFunction("setzlayer"             , &CLuaSingleton_system::setZLayer)
+          .addFunction("getfirstcontroller"    , &CLuaSingleton_system::getFirstController)
+          .addFunction("gettexturepatterns"    , &CLuaSingleton_system::getTexturePatterns)
+          .addFunction("removetexture"         , &CLuaSingleton_system::removeTexture)
         .endClass();
 
       std::error_code l_cError;
@@ -215,25 +215,9 @@ namespace dustbin {
     * @return a XML string
     */
     std::string CLuaSingleton_system::getControllerXml_Game() {
-      std::string l_sRet = "";
-      char* s;
-      s = new char[1000000];
-      memset(s, 0, 1000000);
-
-      irr::io::IWriteFile* l_pFile = m_pGlobal->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
-      if (l_pFile) {
-        irr::io::IXMLWriterUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLWriterUTF8(l_pFile);
-        if (l_pXml) {
-          controller::CControllerGame* p = new controller::CControllerGame();
-          p->serialize(l_pXml);
-          delete p;
-          l_sRet = std::string(s);
-          l_pXml->drop();
-        }
-        l_pFile->drop();
-      }
-
-      delete[]s;
+      controller::CControllerGame* p = new controller::CControllerGame();
+      std::string l_sRet = p->serialize();
+      delete p;
       return l_sRet;
     }
 
@@ -243,32 +227,22 @@ namespace dustbin {
     * @return the first controller
     */
     std::string CLuaSingleton_system::getFirstController(const std::string& a_sConfig) {
-        std::string l_sRet = "Unkown";
+      std::string l_sRet = "Unkown";
 
-      irr::io::IReadFile* l_pFile = m_pGlobal->getFileSystem()->createMemoryReadFile(a_sConfig.c_str(), (irr::s32)a_sConfig.size(), "__controller_xml_data");
+      controller::CControllerBase* p = new controller::CControllerBase();
+      p->deserialize(a_sConfig);
 
-      if (l_pFile) {
-        irr::io::IXMLReaderUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLReaderUTF8(l_pFile);
-        if (l_pXml) {
-          controller::CControllerBase* p = new controller::CControllerBase();
-          p->deserialize(l_pXml);
+      std::vector<controller::CControllerBase::SCtrlInput> l_vInputs = p->getInputs();
 
-          std::vector<controller::CControllerBase::SCtrlInput> l_vInputs = p->getInputs();
-
-          if (l_vInputs.size() > 0) {
-            if (l_vInputs[0].m_eType == controller::CControllerBase::enInputType::Key) {
-              l_sRet = "Keyboard";
-            }
-            else {
-              l_sRet = l_vInputs[0].m_sJoystick;
-            }
-          }
-          delete p;
-
-          l_pXml->drop();
+      if (l_vInputs.size() > 0) {
+        if (l_vInputs[0].m_eType == controller::CControllerBase::enInputType::Key) {
+          l_sRet = "Keyboard";
         }
-        l_pFile->drop();
+        else {
+          l_sRet = l_vInputs[0].m_sJoystick;
+        }
       }
+      delete p;
 
       return l_sRet;
     }
@@ -277,26 +251,10 @@ namespace dustbin {
     * Create a XML string with the default configuration for the menu controller
     * @return a XML string
     */
-    std::string CLuaSingleton_system::getControllerXml_Menu() {
-      std::string l_sRet = "";
-      char *s;
-      s = new char[1000000];
-      memset(s, 0, 1000000);
-
-      irr::io::IWriteFile* l_pFile = m_pGlobal->getFileSystem()->createMemoryWriteFile(s, 1000000, "__controller_xml");
-      if (l_pFile) {
-        irr::io::IXMLWriterUTF8* l_pXml = m_pGlobal->getFileSystem()->createXMLWriterUTF8(l_pFile);
-        if (l_pXml) {
-          controller::CControllerMenu* p = new controller::CControllerMenu(-1);
-          p->serialize(l_pXml);
-          delete p;
-          l_sRet = std::string(s);
-          l_pXml->drop();
-        }
-        l_pFile->drop();
-      }
-
-      delete[]s;
+    std::string CLuaSingleton_system::getControllerData_Menu() {
+      controller::CControllerMenu* p = new controller::CControllerMenu(-1);
+      std::string l_sRet = p->serialize();
+      delete p;
       return l_sRet;
     }
 

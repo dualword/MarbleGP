@@ -69,7 +69,7 @@ function fillItems()
             l_MyGui["edit_name"] = l_GrandChild
           elseif l_GrandChild:getname() == "label_controls" then
             if g_Players[i] ~= nil and g_Players[i]["controls"] ~= nil then
-              l_GrandChild:settext(system:getfirstcontroller(system:urldecode(g_Players[i]["controls"])))
+              l_GrandChild:settext(system:getfirstcontroller(g_Players[i]["controls"]))
             end
             l_MyGui["label_controls"] = l_GrandChild
           elseif l_GrandChild:getname() == "label_texture" then
@@ -297,7 +297,6 @@ function uibuttonclicked(a_Id, a_Name)
         end
       end
       
-      io.write(g_Players[i]["name"] .. " --> " .. tostring(#g_Players[i]["name"]) .. "\n")
       if #g_Players[i]["name"] < 4 then
         l_Message = "The name \"" .. g_Players[i]["name"] .. "\" is too short (minimum is 4 character)."
         l_Alright = false
@@ -432,10 +431,9 @@ function uibuttonclicked(a_Id, a_Name)
           g_CtrlGui:setproperty("headline", "Game controls player \"" .. g_Players[g_CtrlPlr]["name"] .. "\"")
           
           if g_Players[g_CtrlPlr]["controls"] ~= "" then
-            -- The controller settings *MUST* be stored URL-encoded, otherwise it will break the settings
-            g_CtrlGui:settext(system:urldecode(g_Players[g_CtrlPlr]["controls"]))
+            g_CtrlGui:settext(g_Players[g_CtrlPlr]["controls"])
           else
-            g_CtrlGui:settext(system:getcontrollerxml_game())
+            g_CtrlGui:settext(system:getcontrollerdata_game())
           end
         end
       elseif g_Buttons[a_Id]["action"] == "texture" then
@@ -488,7 +486,7 @@ function uibuttonclicked(a_Id, a_Name)
     elseif a_Name == "btn_ctrl_ok" then
       io.write("Saving controls for player #" .. tostring(g_CtrlPlr) .. " (" .. g_Players[g_CtrlPlr]["name"] .. ")\n")
       if g_CtrlPlr > 0 and g_CtrlPlr <= #g_Players then
-        g_Players[g_CtrlPlr]["controls"] = system:urlencode(g_CtrlGui:gettext())
+        g_Players[g_CtrlPlr]["controls"] = g_CtrlGui:gettext()
       end
       
       if g_Items[g_CtrlPlr] ~= nil and g_Items[g_CtrlPlr]["label_controls"] ~= nil then
@@ -607,7 +605,6 @@ function uivaluechanged(a_Id, a_Name, a_Value)
     
     local l_Color = "255, " .. g_Color["red"  ]:gettext() .. ", " .. g_Color["green"]:gettext() .. ", " .. g_Color["blue" ]:gettext()
     
-    io.write("Color:" .. l_Color .. "\n")
     g_Color["show"]:setproperty("BackColor", l_Color)
   else
     io.write("Value Changed: " .. tostring(a_Name) .. " (" .. tostring(a_Id) .. ") = " .. tostring(a_Value) .. "\n")
