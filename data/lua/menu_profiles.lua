@@ -112,29 +112,33 @@ function fillItems()
   
   g_Texture = { }
   
-  g_Texture["dialog"        ] = dialog:getitemfromname("texture_dialog"    )
-  g_Texture["tab_generate"  ] = dialog:getitemfromname("texture_generated" )
-  g_Texture["tab_imported"  ] = dialog:getitemfromname("texture_imported"  )
-  g_Texture["pattern"       ] = dialog:getitemfromname("texture_pattern"   )
-  g_Texture["nb_foreground" ] = dialog:getitemfromname("texture_fg_nb"     )
-  g_Texture["nb_background" ] = dialog:getitemfromname("texture_bg_nb"     )
-  g_Texture["pt_foreground" ] = dialog:getitemfromname("texture_fg_pt"     )
-  g_Texture["pt_background" ] = dialog:getitemfromname("texture_bg_pt"     )
-  g_Texture["number_frame"  ] = dialog:getitemfromname("texture_nf"        )
-  g_Texture["number_ring"   ] = dialog:getitemfromname("texture_nr"        )
-  g_Texture["texture"       ] = dialog:getitemfromname("imported_texture"  )
-  g_Texture["texture_image" ] = dialog:getitemfromname("texture_image"     )
-  g_Texture["pattern_dialog"] = dialog:getitemfromname("pattern_dialog"    )
-  g_Texture["texture_mode"  ] = dialog:getitemfromname("texture_mode"      )
+  g_Texture["dialog"        ] = dialog:getitemfromname("texture_dialog"     )
+  g_Texture["tab_generate"  ] = dialog:getitemfromname("texture_generated"  )
+  g_Texture["tab_imported"  ] = dialog:getitemfromname("texture_imported"   )
+  g_Texture["pattern"       ] = dialog:getitemfromname("texture_pattern"    )
+  g_Texture["nb_foreground" ] = dialog:getitemfromname("texture_fg_nb"      )
+  g_Texture["nb_background" ] = dialog:getitemfromname("texture_bg_nb"      )
+  g_Texture["pt_foreground" ] = dialog:getitemfromname("texture_fg_pt"      )
+  g_Texture["pt_background" ] = dialog:getitemfromname("texture_bg_pt"      )
+  g_Texture["number_frame"  ] = dialog:getitemfromname("texture_nf"         )
+  g_Texture["number_ring"   ] = dialog:getitemfromname("texture_nr"         )
+  g_Texture["texture"       ] = dialog:getitemfromname("imported_texture"   )
+  g_Texture["texture_image" ] = dialog:getitemfromname("texture_image"      )
+  g_Texture["pattern_dialog"] = dialog:getitemfromname("pattern_dialog"     )
+  g_Texture["texture_mode"  ] = dialog:getitemfromname("texture_mode"       )
+  g_Texture["imported_back" ] = dialog:getitemfromname("imported_name_back" )
+  g_Texture["imported_name" ] = dialog:getitemfromname("imported_name_color")
   g_Texture["patterns"      ] = { }
   
   g_TextureColors = { }
-  g_TextureColors["btn_select_fg_nb"] = dialog:getitemfromname("texture_fg_nb")
-  g_TextureColors["btn_select_bg_nb"] = dialog:getitemfromname("texture_bg_nb")
-  g_TextureColors["btn_select_nr"   ] = dialog:getitemfromname("texture_nr"   )
-  g_TextureColors["btn_select_nf"   ] = dialog:getitemfromname("texture_nf"   )
-  g_TextureColors["btn_select_fg_pt"] = dialog:getitemfromname("texture_fg_pt")
-  g_TextureColors["btn_select_bg_pt"] = dialog:getitemfromname("texture_bg_pt")
+  g_TextureColors["btn_select_fg_nb"     ] = dialog:getitemfromname("texture_fg_nb"      )
+  g_TextureColors["btn_select_bg_nb"     ] = dialog:getitemfromname("texture_bg_nb"      )
+  g_TextureColors["btn_select_nr"        ] = dialog:getitemfromname("texture_nr"         )
+  g_TextureColors["btn_select_nf"        ] = dialog:getitemfromname("texture_nf"         )
+  g_TextureColors["btn_select_fg_pt"     ] = dialog:getitemfromname("texture_fg_pt"      )
+  g_TextureColors["btn_select_bg_pt"     ] = dialog:getitemfromname("texture_bg_pt"      )
+  g_TextureColors["btn_select_name_color"] = dialog:getitemfromname("imported_name_color")
+  g_TextureColors["btn_select_name_back" ] = dialog:getitemfromname("imported_name_back" )
   
   for i = 1, 9 do
     local l_Item = dialog:getitemfromnameandid("texture_pattern_image", i)
@@ -347,8 +351,17 @@ function uibuttonclicked(a_Id, a_Name)
     g_ColorEditor = nil
   elseif a_Name == "btn_color_ok" then
     if g_ColorEditor ~= nil then
+      local l_UpdateNf = false
+      if g_ColorEditor == g_TextureColors["btn_select_bg_nb"] then
+        l_UpdateNf = g_TextureColors["btn_select_nf"]:gettext() == g_TextureColors["btn_select_bg_nb"]:gettext()
+      end
+      
       local l_Color = string.format("%02x%02x%02x", tonumber(g_Color["red"]:gettext()), tonumber(g_Color["green"]:gettext()), tonumber(g_Color["blue"]:gettext()))
       g_ColorEditor:settext(l_Color)
+      
+      if l_UpdateNf then
+        g_TextureColors["btn_select_nf"]:settext(l_Color)
+      end
     end
     g_Color["dialog"]:setvisible(false)
     g_ColorEditor = nil
@@ -434,6 +447,10 @@ function uibuttonclicked(a_Id, a_Name)
                 g_Texture["pt_foreground"]:settext(l_Param[2])
               elseif l_Param[1] == "patternback" then
                 g_Texture["pt_background"]:settext(l_Param[2])
+              elseif l_Param[1] == "color" then
+                g_Texture["imported_name"]:settext(l_Param[2])
+              elseif l_Param[1] == "background" then
+                g_Texture["imported_back"]:settext(l_Param[2])
               end
             end
             
@@ -522,7 +539,7 @@ function getTextureString()
            "&patternback="  .. tostring(g_Texture["pt_background"]:gettext()) ..
            "&number="       .. "1"
   elseif g_Texture["texture_mode"]:gettext() == "Imported" then
-    return "file://data/textures/texture_marblemann.png"
+    return "imported://file=data/textures/texture_marblemann.png&color=" .. tostring(g_Texture["imported_name"]) .. "&background=" .. tostring(g_Texture["imported_back"])
   else
     return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&number=1"
   end
@@ -542,16 +559,21 @@ end
 
 function uivaluechanged(a_Id, a_Name, a_Value)
   if a_Name == "texture_mode" then
-    io.write("**** " .. tostring(a_Name) .. " / " .. tostring(a_Value) .. "\n")
     if a_Value == 0 then
       g_Texture["tab_generate"]:setvisible(false)
       g_Texture["tab_imported"]:setvisible(false)
+      
+      updateTexture()
     elseif a_Value == 1 then
       g_Texture["tab_generate"]:setvisible(true )
       g_Texture["tab_imported"]:setvisible(false)
+      
+      updateTexture()
     elseif a_Value == 2 then
       g_Texture["tab_generate"]:setvisible(false)
       g_Texture["tab_imported"]:setvisible(true )
+      
+      updateTexture()
     end
   elseif a_Name == "texture_pattern" then
     updateTexture()

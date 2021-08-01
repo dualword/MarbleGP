@@ -90,6 +90,22 @@ namespace dustbin {
       */
       std::string findTextureParameter(std::map<std::string, std::string>& a_mParameters, const std::string a_sKey);
 
+      /**
+      * Parse texture parameters
+      * @param a_sInput the input as string
+      * @return a string/string map with all parameters
+      */
+      std::map<std::string, std::string> parseParameters(const std::string& a_sInput);
+
+      /**
+      * Add a fading border to the starting numbers
+      * @param a_sNumber the number
+      * @param a_cNumberColor the color of the number
+      * @param a_cBorderColor the color of the frame
+      * @return a texture with the fading border
+      */
+      irr::video::ITexture *createFadingBorder(const std::string a_sNumber, const irr::video::SColor &a_cNumberColor, const irr::video::SColor &a_cBorderColor);
+
     public:
       CMainClass();
       virtual ~CMainClass();

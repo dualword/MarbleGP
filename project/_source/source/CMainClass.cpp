@@ -826,7 +826,7 @@ namespace dustbin {
       }
     }
 
-    irr::video::ITexture* l_pRet = m_pDrv->addTexture("dummy", l_pImage);
+    irr::video::ITexture* l_pRet = m_pDrv->addTexture("adjustTextureForMarble_dummy", l_pImage);
     l_pImage->drop();
 
     return l_pRet;
@@ -861,6 +861,105 @@ namespace dustbin {
   }
 
   /**
+  * Parse texture parameters
+  * @param a_sInput the input as string
+  * @return a string/string map with all parameters
+  */
+  std::map<std::string, std::string> CMainClass::parseParameters(const std::string& a_sInput) {
+    std::map<std::string, std::string> l_mParameters;
+    std::string l_sInput = a_sInput;
+    size_t l_iPosAmp = std::string::npos;
+
+    do {
+      l_iPosAmp = l_sInput.find('&');
+      std::string l_sPart;
+
+      if (l_iPosAmp != std::string::npos) {
+        l_sPart = l_sInput.substr(0, l_iPosAmp);
+        l_sInput = l_sInput.substr(l_iPosAmp + 1);
+      }
+      else l_sPart = l_sInput;
+
+      size_t l_iPosEq = l_sPart.find('=');
+
+      if (l_iPosEq != std::string::npos) {
+        std::string l_sKey = l_sPart.substr(0, l_iPosEq),
+          l_sValue = l_sPart.substr(l_iPosEq + 1);
+
+        l_mParameters[l_sKey] = l_sValue;
+      }
+      else {
+        std::string s = std::string("Invalid texture string \"") + a_sInput + "\" (" + l_sPart + ")";
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+        throw std::exception();
+      }
+    } 
+    while (l_iPosAmp != std::string::npos);
+
+    return l_mParameters;
+  }
+
+  /**
+  * Add a fading border to the starting numbers
+  * @param a_sNumber the number
+  * @param a_cNumberColor the color of the number
+  * @param a_cFrameColor the color of the frame
+  * @return a texture with the fading border
+  */
+  irr::video::ITexture* CMainClass::createFadingBorder(const std::string a_sNumber, const irr::video::SColor& a_cNumberColor, const irr::video::SColor& a_cBorderColor) {
+    irr::video::ITexture* l_pTexture = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(256, 256), "FadingBorder_dummy", irr::video::ECF_A8R8G8B8);
+    m_pDrv->setRenderTarget(l_pTexture, true, true, irr::video::SColor(0, a_cBorderColor.getRed(), a_cBorderColor.getGreen(), a_cBorderColor.getBlue()));
+
+    CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
+    l_pFont->AntiAlias = true;
+    l_pFont->attach(m_pFontFace, 180);
+
+    l_pFont->draw(platform::s2ws(a_sNumber).c_str(), irr::core::recti(0, 0, 255, 255), a_cNumberColor, true, true);
+    l_pFont->drop();
+
+    irr::video::IImage* l_pImage = m_pDrv->createImage(l_pTexture, irr::core::position2di(0, 0), irr::core::dimension2du(256, 256));
+
+    std::vector<irr::core::position2di> l_cStepPixels;
+
+    for (int l_iStep = 0; l_iStep < 5; l_iStep++) {
+      for (int y = 0; y < 256; y++) {
+        for (int x = 0; x < 256; x++) {
+          irr::video::SColor c = l_pImage->getPixel(x, y);
+          if (c.getAlpha() > 0) {
+            l_cStepPixels.push_back(irr::core::position2di(x, y));
+          }
+        }
+      }
+
+      for (std::vector<irr::core::position2di>::iterator it = l_cStepPixels.begin(); it != l_cStepPixels.end(); it++) {
+        for (int y = (*it).Y - 1; y <= (*it).Y + 1; y++) {
+          for (int x = (*it).X - 1; x <= (*it).X + 1; x++) {
+            if (x >= 0 && x <= 255 && y >= 0 && y <= 255) {
+              irr::video::SColor l_cColor = l_pImage->getPixel(x, y);
+              irr::u32 l_iAlpha = l_cColor.getAlpha();
+              l_iAlpha += 8;
+              if (l_iAlpha > 255) l_iAlpha = 255;
+              l_cColor.setAlpha(l_iAlpha);
+              l_pImage->setPixel(x, y, l_cColor);
+            }
+          }
+        }
+      }
+
+      l_cStepPixels.clear();
+    }
+
+    m_pDrv->setRenderTarget(nullptr, false, false);
+
+    irr::video::ITexture* l_pRet = m_pDrv->addTexture("FadingBorder_dummy2", l_pImage);
+    m_pDrv->removeTexture(l_pTexture);
+    l_pImage->drop();
+
+    return l_pRet;
+  }
+
+  /**
   * Get an image from a string. The following prefixes are possible:
   * - file://: load a file from a subfolder
   * - generate://: generate a marble texture
@@ -879,6 +978,27 @@ namespace dustbin {
       if (l_sPrefix == "file") {
         l_pRet = m_pDrv->getTexture(l_sPostFix.c_str());  
       }
+      else if (l_sPrefix == "imported") {
+        std::map<std::string, std::string> l_mParameters = parseParameters(l_sPostFix);
+
+        if (l_mParameters.find("file") != l_mParameters.end()) {
+          std::string l_sFile = l_mParameters["file"];
+
+          if (m_pFs->existFile(l_sFile.c_str())) {
+            l_pRet = m_pDrv->getTexture(l_sFile.c_str());
+          }
+          else {
+            CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture \"") + l_sFile + "\".");
+            CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+            throw std::exception();
+          }
+        }
+        else {
+          CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "No file defined for imported texture.");
+          CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+          throw std::exception();
+        }
+      }
       else if (l_sPrefix == "generate") {
         irr::core::recti l_aDestRect[2] = {
           irr::core::recti(0,   0, 511, 255),
@@ -889,72 +1009,42 @@ namespace dustbin {
 
         printf("Texture: %s\n", l_sPostFix.c_str());
         if (l_pTexture == nullptr) {
-          std::string l_sTexture = l_sPostFix;
-          std::map<std::string, std::string> l_mParamters;
+          std::map<std::string, std::string> l_mParameters = parseParameters(l_sPostFix);
 
-          size_t l_iPosAmp = std::string::npos;
-
-          do {
-            l_iPosAmp = l_sTexture.find('&');
-            std::string l_sPart;
-
-            if (l_iPosAmp != std::string::npos) {
-              l_sPart = l_sTexture.substr(0, l_iPosAmp);
-              l_sTexture = l_sTexture.substr(l_iPosAmp + 1);
-            }
-            else l_sPart = l_sTexture;
-
-            size_t l_iPosEq = l_sPart.find('=');
-
-            if (l_iPosEq != std::string::npos) {
-              std::string l_sKey   = l_sPart.substr(0, l_iPosEq),
-                          l_sValue = l_sPart.substr(l_iPosEq + 1);
-
-              l_mParamters[l_sKey] = l_sValue;
-            }
-            else {
-              std::string s = std::string("Invalid texture string \"") + l_sPostFix + "\" (" + l_sPart + ")";
-              CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
-              CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
-              throw std::exception();
-            }
-          } 
-          while (l_iPosAmp != std::string::npos);
-
-          if (l_mParamters.find("pattern") == l_mParamters.end()) {
+          if (l_mParameters.find("pattern") == l_mParameters.end()) {
             std::string s = std::string("No pattern specified for texture (") + l_sPostFix + ")";
             CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
             CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
             throw std::exception();
           }
 
-          bool l_bNumberBorder = l_mParamters.find("border") != l_mParamters.end() && l_mParamters["border"] == "1" ? true : false;
+          bool l_bNumberBorder = l_mParameters.find("border") != l_mParameters.end() && l_mParameters["border"] == "1" ? true : false;
 
-          std::string l_sColorNumber       = findTextureParameter(l_mParamters, "numbercolor" ),
-                      l_sColorNumberBack   = findTextureParameter(l_mParamters, "numberback"  ),
-                      l_sColorNumberBorder = findTextureParameter(l_mParamters, "numberborder"),
-                      l_sColorRing         = findTextureParameter(l_mParamters, "ringcolor"   ),
-                      l_sColorPattern      = findTextureParameter(l_mParamters, "patterncolor"),
-                      l_sColorPatternBack  = findTextureParameter(l_mParamters, "patternback" ),
-                      l_sNumber            = findTextureParameter(l_mParamters, "number"      ),
-                      l_sPattern           = l_mParamters["pattern"];
+          std::string l_sColorNumber       = findTextureParameter(l_mParameters, "numbercolor" ),
+                      l_sColorNumberBack   = findTextureParameter(l_mParameters, "numberback"  ),
+                      l_sColorNumberBorder = findTextureParameter(l_mParameters, "numberborder"),
+                      l_sColorRing         = findTextureParameter(l_mParameters, "ringcolor"   ),
+                      l_sColorPattern      = findTextureParameter(l_mParameters, "patterncolor"),
+                      l_sColorPatternBack  = findTextureParameter(l_mParameters, "patternback" ),
+                      l_sNumber            = findTextureParameter(l_mParameters, "number"      ),
+                      l_sPattern           = l_mParameters["pattern"];
 
           if (l_sNumber == "")
             l_sNumber = "1";
 
           irr::video::SColor l_cColorNumber,
-            l_cColorNumberBack,
-            l_cColorNumberBorder,
-            l_cColorRing,
-            l_cColorPattern,
-            l_cColorPatternBack;
+                             l_cColorNumberBack,
+                             l_cColorNumberBorder,
+                             l_cColorRing,
+                             l_cColorPattern,
+                             l_cColorPatternBack;
 
-          fillColorFromString(l_cColorNumber, l_sColorNumber);
-          fillColorFromString(l_cColorNumberBack, l_sColorNumberBack);
+          fillColorFromString(l_cColorNumber      , l_sColorNumber      );
+          fillColorFromString(l_cColorNumberBack  , l_sColorNumberBack  );
           fillColorFromString(l_cColorNumberBorder, l_sColorNumberBorder);
-          fillColorFromString(l_cColorRing, l_sColorRing);
-          fillColorFromString(l_cColorPattern, l_sColorPattern);
-          fillColorFromString(l_cColorPatternBack, l_sColorPatternBack);
+          fillColorFromString(l_cColorRing        , l_sColorRing        );
+          fillColorFromString(l_cColorPattern     , l_sColorPattern     );
+          fillColorFromString(l_cColorPatternBack , l_sColorPatternBack );
 
           // Render Texture
 
@@ -973,21 +1063,34 @@ namespace dustbin {
             throw std::exception();
           }
 
+          irr::video::ITexture* l_pNumber = nullptr;
+
+          if (l_sColorNumberBack != l_sColorNumberBorder) {
+            l_pNumber = createFadingBorder(l_sNumber, l_cColorNumber, l_cColorNumberBorder);
+          }
+
           l_pTexture = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), l_sPostFix.c_str());
           m_pDrv->setRenderTarget(l_pTexture, true, true, l_cColorNumberBack);
           m_pDrv->draw2DRectangle(l_cColorPatternBack, irr::core::recti(0, 255, 511, 511));
+
+          if (l_pNumber != nullptr) {
+            m_pDrv->draw2DImage(l_pNumber, irr::core::vector2di(0, 0), true);
+            m_pDrv->draw2DImage(l_pNumber, irr::core::vector2di(256, 0), true);
+
+            m_pDrv->removeTexture(l_pNumber);
+          }
 
           CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
           l_pFont->AntiAlias = true;
           l_pFont->attach(m_pFontFace, 180);
 
           l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(  0, 0, 255, 255), l_cColorNumber, true, true);
-          l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(256, 0, 511, 255), l_cColorNumber, true, true);
+          l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(256, 0, 512, 255), l_cColorNumber, true, true);
 
           l_pFont->drop();
 
           irr::video::ITexture* l_pTop = adjustTextureForMarble(l_sFileTop, l_cColorRing);
-          m_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 512, 256), nullptr, nullptr, true);
+          m_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 511, 255), nullptr, nullptr, true);
           irr::video::ITexture*l_pPattern = adjustTextureForMarble(l_sFilePattern, l_cColorPattern);
           m_pDrv->draw2DImage(l_pPattern, l_aDestRect[1], irr::core::recti(0, 0, 512, 256), nullptr, nullptr, true);
 
