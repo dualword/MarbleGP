@@ -15,6 +15,7 @@
 namespace dustbin {
   namespace lua {
     class CLuaCamera;
+    class CLuaGuiItem;
     class CLua3dGuiItem;
     class CLuaSceneNode;
 
@@ -26,6 +27,7 @@ namespace dustbin {
     class CLuaSceneManager : public ILuaObject {
       private:
         irr::scene::ISceneManager *m_pSmgr;
+        irr::video::ITexture      *m_pRtt;
 
         irr::scene::ISceneNode *getNodeFromName(const std::string &a_sName, irr::scene::ISceneNode *a_pNode);
 
@@ -41,6 +43,9 @@ namespace dustbin {
         void loadScene(const std::string &a_sFile);
         void clear();
         void drop();
+
+        void render();
+        void setRenderTarget(CLuaGuiItem* a_pRenderTarget, const std::string &a_sRttName);
 
         CLuaSceneManager createNewSceneManager(int a_iRenderPosition);
 

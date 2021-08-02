@@ -2,8 +2,6 @@ system:executeluascript("data/lua/splitstring.lua")
 system:executeluascript("data/lua/serializer.lua")
 system:executeluascript("data/lua/dialog_confirm.lua")
 
-g_Time = 0  -- The time of the last "step" message
-
 -- UI Items
 
 g_Items   = { }
@@ -154,6 +152,8 @@ function fillItems()
     g_Texture["pattern"]:setselected(0)
   end
   
+  g_TextureSmgr:setrendertarget(g_Texture["texture_image"], "texture_image")
+  
   fillPatterns()
   showHideUi()
 end
@@ -170,6 +170,14 @@ function initialize()
   g_Camera:setupvector({ x = 0.0, y = 1.0, z =  0.0 })
   g_Camera:settarget  ({ x = 0.0, y = 0.0, z = 70.0 })
   g_Camera:activate()
+  
+  g_TextureSmgr = g_Smgr:createnewscenemanager(0)
+  g_TextureSmgr:loadscene("data/menu3d/texture_scene.xml")
+  
+  local l_Camera = g_TextureSmgr:addcamera()
+  l_Camera:setposition({ x = -5.0, y = 2.0, z = -5.0 })
+  l_Camera:setupvector({ x =  0.0, y = 1.0, z =  0.0 })
+  l_Camera:settarget  ({ x =  0.0, y = 0.0, z =  0.0 })
   
   dialog:loaddialog("data/menu/menu_profiles.xml"        )  -- The main dialog for adding, editing and removing profiles
   dialog:loaddialog("data/menu/button_cancel.xml"        )  -- The "Cancel" button
@@ -580,7 +588,7 @@ function updateTexture()
   local l_Generate = getTextureString()
   
   io.write("Generate: " .. l_Generate .. "\n")
-  g_Texture["texture_image"]:setimage(l_Generate) 
+  -- g_Texture["texture_image"]:setimage(l_Generate) 
   
   if g_OldTexture ~= nil then
     system:removetexture(g_OldTexture)
@@ -627,4 +635,8 @@ end
 
 function windowresized()
   fillItems()
+end
+
+function step(a_Time)
+  g_TextureSmgr:render()
 end

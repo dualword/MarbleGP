@@ -550,12 +550,12 @@ namespace dustbin {
   /**
   * Register a new scene manager for drawing
   * @param a_pSmgr the new scene manager
-  * @param a_iRenderPosition the position to render the new scene manager. "0" is the render index of the GUI environment, negative position renders the new scene manager before the gui
+  * @param a_iRenderPosition the position to render the new scene manager. "0" does not add the scene manager to the render pipline, negative position renders the new scene manager before, positive values after the gui
   */
   void CMainClass::registerSceneManager(irr::scene::ISceneManager* a_pSmgr, int a_iRenderPosition) {
     if (a_iRenderPosition < 0)
       m_vBeforeGui.push_back(a_pSmgr);
-    else
+    else if (a_iRenderPosition > 0)
       m_vAfterGui.push_back(a_pSmgr);
   }
 

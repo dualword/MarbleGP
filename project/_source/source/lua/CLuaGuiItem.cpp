@@ -453,6 +453,14 @@ namespace dustbin {
     }
 
     /**
+    * Get the Irrlicht UI element of the instance
+    * @return the Irrlicht UI element of the instance
+    */
+    irr::gui::IGUIElement* CLuaGuiItem::getElement() {
+      return m_pElement;
+    }
+
+    /**
     * Set the background color of an item
     * @param a_pState the LUA state. The LUA table "SColor" is pulled from the stack
     * @return "0" as no return values are expected

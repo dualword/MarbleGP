@@ -207,6 +207,12 @@ namespace dustbin {
         void setTooltip(const std::string& a_sToolTip);
 
         /**
+        * Get the Irrlicht UI element of the instance
+        * @return the Irrlicht UI element of the instance
+        */
+        irr::gui::IGUIElement* getElement();
+
+        /**
         * Register the class to a LUA state
         */
         static void registerClass(lua_State* a_pState);
