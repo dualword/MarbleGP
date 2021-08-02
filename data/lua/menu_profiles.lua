@@ -311,6 +311,11 @@ function uibuttonclicked(a_Id, a_Name)
       showConfirmDialog(l_Message)
     end
   elseif a_Name == "cancel" then
+    if g_Texture["pattern_dialog"]:isvisible() then
+      uibuttonclicked(-1, "btn_pattern_close")
+      return
+    end
+    
     if g_Texture["dialog"]:isvisible() then
       if g_ColorEditor ~= nil then
         uibuttonclicked(-1, "btn_color_cancel")
@@ -332,8 +337,10 @@ function uibuttonclicked(a_Id, a_Name)
     end
   elseif a_Name == "btn_select_pattern" then
     g_Texture["pattern_dialog"]:setvisible(true)
+    system:setzlayer(46)
   elseif a_Name == "btn_pattern_close" then
     g_Texture["pattern_dialog"]:setvisible(false)
+    system:setzlayer(10)
   elseif a_Name == "btn_pattern_right" then
     patternSwitchRight()
   elseif a_Name == "btn_pattern_left" then
@@ -341,6 +348,7 @@ function uibuttonclicked(a_Id, a_Name)
   elseif a_Name == "texture_pattern_image" then
     g_Texture["pattern"]:settext(g_Texture["patterns"][a_Id]:gettext())
     g_Texture["pattern_dialog"]:setvisible(false)
+    system:setzlayer(10)
     updateTexture()
   elseif a_Name == "pick_color" then
     local l_Color = string.format("%x", a_Id)
@@ -364,8 +372,10 @@ function uibuttonclicked(a_Id, a_Name)
     uibuttonclicked(tonumber(g_TextureColors[a_Name]:gettext(), 16), "pick_color")
     g_ColorEditor = g_TextureColors[a_Name]
     g_Color["dialog"]:setvisible(true)
+    system:setzlayer(23)
   elseif a_Name == "btn_color_cancel" then
     g_Color["dialog"]:setvisible(false)
+    system:setzlayer(10)
     g_ColorEditor = nil
   elseif a_Name == "btn_color_ok" then
     if g_ColorEditor ~= nil then
@@ -382,10 +392,12 @@ function uibuttonclicked(a_Id, a_Name)
       end
     end
     g_Color["dialog"]:setvisible(false)
+    system:setzlayer(10)
     g_ColorEditor = nil
     updateTexture()
   elseif a_Name == "btn_texture_cancel" then
     g_Texture["dialog"]:setvisible(false)
+    system:setzlayer(0)
   elseif a_Name == "btn_texture_ok" then
     io.write("Mode: " .. g_Texture["texture_mode"]:gettext() .. "\n")
     
@@ -397,6 +409,7 @@ function uibuttonclicked(a_Id, a_Name)
     
     g_Items[g_TexturePlr]["label_texture"]:settext(g_Texture["texture_mode"]:gettext())
     g_Texture["dialog"]:setvisible(false)
+    system:setzlayer(0)
   else
     if g_Buttons[a_Id] ~= nil then
       if g_Buttons[a_Id]["action"] == "add" then
@@ -479,6 +492,7 @@ function uibuttonclicked(a_Id, a_Name)
           
           updateTexture()
           g_Texture["dialog"]:setvisible(true)
+          system:setzlayer(10)
         end
       else
         io.write("Button with action \"" .. g_Buttons[a_Id]["action"] .. "\" for player #" .. tostring(g_Buttons[a_Id]["index"]) .. " clicked.\n")

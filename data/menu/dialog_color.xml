@@ -9,11 +9,11 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -21, -14, 21, 14">
+      <element type="MenuBackground" rect="center: -21, -14, 23, 16">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="232, 239, 239, 255" />
-          <attribute key="ZLayer" value="10" />
+          <attribute key="ZLayer" value="23" />
         </attributes>
         
         <children>
@@ -230,23 +230,23 @@
             </children>
           </element>
           
+      
+          <element type="MenuButton" rect="center: 1, 11, 5, 15" tooltip="Save Color">
+            <attributes>
+              <attribute key="Name" value="btn_color_ok" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_ok.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: -4, 11, 0, 15" tooltip="Discard Color changes">
+            <attributes>
+              <attribute key="Name" value="btn_color_cancel" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
         </children>
-      </element>
-      
-      <element type="MenuButton" rect="center: 1, 12, 5, 16" tooltip="Save Color">
-        <attributes>
-          <attribute key="Name" value="btn_color_ok" />
-          <attribute key="Id" value="12345" />
-          <attribute key="ImagePath" value="data/images/btn_ok.png" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="center: -4, 12, 0, 16" tooltip="Discard Color changes">
-        <attributes>
-          <attribute key="Name" value="btn_color_cancel" />
-          <attribute key="Id" value="12345" />
-          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
-        </attributes>
       </element>
     </children>
   </element>

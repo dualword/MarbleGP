@@ -4,6 +4,8 @@
 #include <messages/CMessageHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
+#include <gui/CReactiveLabel.h>
+#include <gui/CClipImage.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
@@ -49,12 +51,20 @@ namespace dustbin {
       if (getElementZLayer(a_pParent) == a_iZLayer) {
         switch (l_eType) {
           case irr::gui::EGUIET_EDIT_BOX:
+            if (reinterpret_cast<irr::gui::IGUIEditBox*>(a_pParent)->isEnabled()) {
+              printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
+              m_vElements.push_back(a_pParent);
+            }
+            break;
+
           case irr::gui::EGUIET_CHECK_BOX:
           case irr::gui::EGUIET_COMBO_BOX:
           case irr::gui::EGUIET_SCROLL_BAR:
+          case dustbin::gui::g_ReactiveLabelId:
           case dustbin::gui::g_DustbinCheckboxId:
           case dustbin::gui::g_SelectorId:
           case dustbin::gui::g_MenuButtonId:
+          case dustbin::gui::g_ClipImageId:
             printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
             m_vElements.push_back(a_pParent);
             break;

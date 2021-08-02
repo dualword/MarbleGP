@@ -308,23 +308,23 @@
               </element>
             </children>
           </element>
+              
+          <element type="MenuButton" rect="center: 1, 15, 5, 19" tooltip="Save texture changes">
+            <attributes>
+              <attribute key="Name" value="btn_texture_ok" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_ok.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: -4, 15, 0, 19" tooltip="Discard texture changes">
+            <attributes>
+              <attribute key="Name" value="btn_texture_cancel" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
         </children>
-      </element>
-  
-      <element type="MenuButton" rect="center: 1, 17, 5, 21" tooltip="Save texture changes">
-        <attributes>
-          <attribute key="Name" value="btn_texture_ok" />
-          <attribute key="Id" value="12345" />
-          <attribute key="ImagePath" value="data/images/btn_ok.png" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="center: -4, 17, 0, 21" tooltip="Discard texture changes">
-        <attributes>
-          <attribute key="Name" value="btn_texture_cancel" />
-          <attribute key="Id" value="12345" />
-          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
-        </attributes>
       </element>
     </children>
   </element>
