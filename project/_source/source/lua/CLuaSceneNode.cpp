@@ -76,6 +76,16 @@ namespace dustbin {
       return m_pNode != nullptr && m_pNode->isVisible();
     }
 
+    void CLuaSceneNode::setTexture(int a_iMaterial, const std::string& a_sTexture) {
+      if (m_pNode != nullptr) {
+        if (a_iMaterial >= 0 && a_iMaterial < (int)m_pNode->getMaterialCount()) {
+          irr::video::ITexture* l_pTexture = CGlobal::getInstance()->createTexture(a_sTexture);
+          if (l_pTexture != nullptr)
+            m_pNode->getMaterial(a_iMaterial).setTexture(0, l_pTexture);
+        }
+      }
+    }
+
     void CLuaSceneNode::registerClass(lua_State* a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaSceneNode>("scenenode")
@@ -85,6 +95,7 @@ namespace dustbin {
           .addFunction("setvisible" , &CLuaSceneNode::setVisible)
           .addFunction("getposition", &CLuaSceneNode::getPosition)
           .addFunction("isvisible"  , &CLuaSceneNode::isVisible)
+          .addFunction("settexture" , &CLuaSceneNode::setTexture)
         .endClass();
     }
   }

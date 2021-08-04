@@ -9,7 +9,7 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -35, -20, 35, 20">
+      <element type="MenuBackground" rect="center: -35, -20, 35, 22">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="232, 239, 239, 255" />
@@ -309,7 +309,7 @@
             </children>
           </element>
               
-          <element type="MenuButton" rect="center: 1, 15, 5, 19" tooltip="Save texture changes">
+          <element type="MenuButton" rect="center: 1, 17, 5, 21" tooltip="Save texture changes">
             <attributes>
               <attribute key="Name" value="btn_texture_ok" />
               <attribute key="Id" value="12345" />
@@ -317,7 +317,7 @@
             </attributes>
           </element>
           
-          <element type="MenuButton" rect="center: -4, 15, 0, 19" tooltip="Discard texture changes">
+          <element type="MenuButton" rect="center: -4, 17, 0, 21" tooltip="Discard texture changes">
             <attributes>
               <attribute key="Name" value="btn_texture_cancel" />
               <attribute key="Id" value="12345" />

@@ -174,8 +174,10 @@ function initialize()
   g_TextureSmgr = g_Smgr:createnewscenemanager(0)
   g_TextureSmgr:loadscene("data/menu3d/texture_scene.xml")
   
+  g_Marble3d = g_TextureSmgr:getscenenodefromname("marble")
+  
   local l_Camera = g_TextureSmgr:addcamera()
-  l_Camera:setposition({ x = -5.0, y = 2.0, z = -5.0 })
+  l_Camera:setposition({ x = -2.0, y = 2.0, z = -5.0 })
   l_Camera:setupvector({ x =  0.0, y = 1.0, z =  0.0 })
   l_Camera:settarget  ({ x =  0.0, y = 0.0, z =  0.0 })
   
@@ -201,7 +203,6 @@ function initialize()
   end
   
   fillItems()
-  updateTexture()
   
   for i = 1, #g_Players do
     if #g_Players[i]["texture"] < 12 then
@@ -462,7 +463,9 @@ function uibuttonclicked(a_Id, a_Name)
         if g_TexturePlr >= 1 and g_TexturePlr <= #g_Players then
           if #g_Players[g_TexturePlr]["texture"] < 12 then
             g_Texture["texture_mode"]:setselected(0)
-            uivaluechanged(0, "texture_mode", 0)
+
+            g_Texture["tab_generate"]:setvisible(false)
+            g_Texture["tab_imported"]:setvisible(false)
           elseif string.sub(g_Players[g_TexturePlr]["texture"], 1, 11) == "generate://" then
             g_Texture["texture_mode"]:setselected(1)
             
@@ -492,10 +495,13 @@ function uibuttonclicked(a_Id, a_Name)
               end
             end
             
-            uivaluechanged(0, "texture_mode", 1)
+            g_Texture["tab_generate"]:setvisible(true )
+            g_Texture["tab_imported"]:setvisible(false)
           elseif string.sub(g_Players[g_TexturePlr]["texture"], 1, 11) == "imported://" then
             g_Texture["texture_mode"]:setselected(2)
-            uivaluechanged(0, "texture_mode", 2)
+
+            g_Texture["tab_generate"]:setvisible(false)
+            g_Texture["tab_imported"]:setvisible(true )
           end
           
           updateTexture()
@@ -588,7 +594,7 @@ function updateTexture()
   local l_Generate = getTextureString()
   
   io.write("Generate: " .. l_Generate .. "\n")
-  -- g_Texture["texture_image"]:setimage(l_Generate) 
+  g_Marble3d:settexture(0, l_Generate)
   
   if g_OldTexture ~= nil then
     system:removetexture(g_OldTexture)

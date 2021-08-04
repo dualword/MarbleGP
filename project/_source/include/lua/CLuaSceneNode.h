@@ -9,6 +9,7 @@
 
 #include <lua/ILuaObject.h>
 #include <lua.hpp>
+#include <string>
 
 namespace dustbin {
   namespace lua {
@@ -32,6 +33,8 @@ namespace dustbin {
 
         void setVisible(bool a_bVisible);
         bool isVisible();
+
+        void setTexture(int a_iMaterial, const std::string& a_sTexture);
 
         int getPosition(lua_State *a_pState);
 
