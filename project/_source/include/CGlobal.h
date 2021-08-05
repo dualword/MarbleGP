@@ -155,8 +155,14 @@ namespace dustbin {
 
       /**
        * Get the topmost script from the lua script stack without removing it
+       * @return the topmost script from the lus script stack
        */
       virtual std::string peekScript() = 0;
+
+      /**
+      * Clear the script stack
+      */
+      virtual void clearScriptStack() = 0;
 
       /**
        * Open a file for reading. The folder is defined by the file type, and the function searches

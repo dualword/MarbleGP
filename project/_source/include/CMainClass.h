@@ -233,6 +233,11 @@ namespace dustbin {
       virtual std::string peekScript();
 
       /**
+      * Clear the script stack
+      */
+      virtual void clearScriptStack();
+
+      /**
        * Get the currently active state
        * @ return the currently active state
        */

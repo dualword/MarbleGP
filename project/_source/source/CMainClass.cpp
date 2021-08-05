@@ -548,6 +548,13 @@ namespace dustbin {
     else return "";
   }
 
+  /**
+  * Clear the script stack
+  */
+  void CMainClass::clearScriptStack() {
+    m_vScriptStack.clear();
+  }
+
 
   /**
   * Register a new scene manager for drawing

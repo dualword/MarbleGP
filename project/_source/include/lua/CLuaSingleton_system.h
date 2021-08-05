@@ -116,6 +116,23 @@ namespace dustbin {
         void pushScript(const std::string &a_sScript);
 
         /**
+        * Remove the uppermost lua script from the script stack
+        * @return the uppermost script from the stack
+        */
+        std::string popScript();
+
+        /**
+        * Get the uppermost script from the script stack without removing it
+        * @return the uppermost script from the stack
+        */
+        std::string peekScript();
+
+        /**
+        * Clear the LUA script stack
+        */
+        void clearScriptStack();
+
+        /**
         * Request a state change
         * @param a_iNewState integer version of the new state
         */

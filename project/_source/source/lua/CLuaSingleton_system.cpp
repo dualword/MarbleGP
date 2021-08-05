@@ -21,6 +21,9 @@ namespace dustbin {
           .addFunction("setglobal"             , &CLuaSingleton_system::setGlobal)
           .addFunction("getglobal"             , &CLuaSingleton_system::getGlobal)
           .addFunction("pushscript"            , &CLuaSingleton_system::pushScript)
+          .addFunction("popscript"             , &CLuaSingleton_system::popScript)
+          .addFunction("peekscript"            , &CLuaSingleton_system::peekScript)
+          .addFunction("clearscriptstack"      , &CLuaSingleton_system::clearScriptStack)
           .addFunction("statechange"           , &CLuaSingleton_system::stateChange)
           .addFunction("getresolutionlist"     , &CLuaSingleton_system::getResolutionList)
           .addFunction("executeluascript"      , &CLuaSingleton_system::executeLuaScript)
@@ -106,6 +109,29 @@ namespace dustbin {
     */
     void CLuaSingleton_system::pushScript(const std::string& a_sScript) {
       m_pGlobal->pushScript(a_sScript);
+    }
+
+    /**
+    * Remove the uppermost lua script from the script stack
+    * @return the uppermost script from the stack
+    */
+    std::string CLuaSingleton_system::popScript() {
+      return m_pGlobal->popScript();
+    }
+
+    /**
+    * Get the uppermost script from the script stack without removing it
+    * @return the uppermost script from the stack
+    */
+    std::string CLuaSingleton_system::peekScript() {
+      return m_pGlobal->peekScript();
+    }
+
+    /**
+    * Clear the LUA script stack
+    */
+    void CLuaSingleton_system::clearScriptStack() {
+      m_pGlobal->clearScriptStack();
     }
 
     /**

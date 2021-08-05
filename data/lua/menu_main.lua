@@ -34,6 +34,12 @@ function uibuttonclicked(a_Id, a_Name)
   elseif a_Name == "profiles" then
     system:pushscript("data/lua/menu_profiles.lua")
     system:statechange(1)
+  elseif a_Name == "single_race" then
+    system:pushscript("data/lua/menu_setupgame.lua")
+    system:statechange(1)
+  elseif a_Name == "cup" then
+    system:pushscript("data/lua/menu_setupgame.lua")
+    system:statechange(1)
   elseif a_Name == "exit" then
     system:statechange(255)
   else
