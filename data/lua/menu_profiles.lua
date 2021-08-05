@@ -168,7 +168,7 @@ function initialize()
   io.write("Setup script started.\n")
   
   g_Smgr = system:getscenemanager()
-  g_Smgr:loadscene("data/menu3d/skybox.xml")
+  g_Smgr:loadscene("data/scenes/skybox.xml")
   
   g_Camera = g_Smgr:addcamera()
 
@@ -178,7 +178,7 @@ function initialize()
   g_Camera:activate()
   
   g_TextureSmgr = g_Smgr:createnewscenemanager(0)
-  g_TextureSmgr:loadscene("data/menu3d/texture_scene.xml")
+  g_TextureSmgr:loadscene("data/scenes/texture_scene.xml")
   
   g_Marble3d = g_TextureSmgr:getscenenodefromname("marble")
   

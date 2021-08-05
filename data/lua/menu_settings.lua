@@ -149,7 +149,7 @@ function initialize()
   io.write("Setup script started.\n")
   
   g_Smgr = system:getscenemanager()
-  g_Smgr:loadscene("data/menu3d/skybox.xml")
+  g_Smgr:loadscene("data/scenes/skybox.xml")
   
   g_Camera = g_Smgr:addcamera()
 
