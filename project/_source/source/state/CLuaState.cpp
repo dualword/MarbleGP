@@ -134,6 +134,9 @@ namespace dustbin {
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
           m_pScript->uiTextChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), platform::ws2s(a_cEvent.GUIEvent.Caller->getText()));
         }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_CHANGED || a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN) {
+          m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<irr::gui::IGUIListBox*>(a_cEvent.GUIEvent.Caller)->getSelected());
+        }
       }
       else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
         // If a key event was passed we need to handle "Return" and "Escape" for default OK and cancel buttons

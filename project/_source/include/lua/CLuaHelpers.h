@@ -47,5 +47,12 @@ namespace dustbin {
     * @return a SColor lua structure
     */
     SColor convertColorToLua(const irr::video::SColor &a_cIn);
+
+    /**
+    * Push a std::vector<std::string> to the LUA stack
+    * @param a_vInput the vector
+    * @param a_pState the LUA state
+    */
+    void pushToStack(const std::vector<std::string>& a_vInput, lua_State* a_pState);
   }
 }

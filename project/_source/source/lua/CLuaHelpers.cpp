@@ -77,5 +77,22 @@ namespace dustbin {
       l_cRet.m_b = a_cIn.getBlue ();
       return l_cRet;
     }
+
+    /**
+    * Push a std::vector<std::string> to the LUA stack
+    * @param a_vInput the vector
+    * @param a_pState the LUA state
+    */
+    void pushToStack(const std::vector<std::string>& a_vInput, lua_State* a_pState) {
+      lua_newtable(a_pState);
+      int l_iCount = 1;
+
+      for (std::vector<std::string>::const_iterator it = a_vInput.begin(); it != a_vInput.end(); it++) {
+        lua_pushinteger(a_pState, l_iCount);
+        lua_pushstring(a_pState, (*it).c_str());
+        lua_settable(a_pState, -3);
+        l_iCount++;
+      }
+    }
   }
 }

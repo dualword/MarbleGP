@@ -24,8 +24,9 @@ namespace dustbin {
     const std::wstring portableOpenFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
     const std::wstring portableSaveFileDialog(const std::wstring &a_sFilter, const std::wstring &a_sInitialDir, const std::wstring &a_sTitle);
 
-    const std::wstring portableGetDataPath();
-    const std::string  portableGetFontPath();
+    const std::wstring portableGetDataPath   ();
+    const std::string  portableGetFontPath   ();
+    const std::wstring portableGetTexturePath();
 
     irr::u64 portableGetFileDate(const std::wstring &a_sFile);
 

@@ -145,14 +145,20 @@ function fillItems()
   
   g_Patterns = system:gettexturepatterns()
   
-  if g_Patterns["patterns"] ~= nil then
-    for k,v in pairs(g_Patterns["patterns"]) do
+  if g_Patterns ~= nil then
+    for k,v in pairs(g_Patterns) do
       g_Texture["pattern"]:additem(v)
     end
     g_Texture["pattern"]:setselected(0)
   end
   
   g_TextureSmgr:setrendertarget(g_Texture["texture_image"], "texture_image")
+  
+  g_Imported = system:getimportedtextures()
+  
+  for i = 1, #g_Imported do
+    g_Texture["texture"]:additem(g_Imported[i])
+  end
   
   fillPatterns()
   showHideUi()
@@ -225,11 +231,11 @@ end
 
 function fillPatterns()
   for i = 1, 9 do
-    if i + g_PatternStart <= #g_Patterns["patterns"] then
-      io.write(tostring(i) .. ": " .. tostring(g_Patterns["patterns"][i + g_PatternStart]) .. "\n")
+    if i + g_PatternStart <= #g_Patterns then
+      io.write(tostring(i) .. ": " .. tostring(g_Patterns[i + g_PatternStart]) .. "\n")
       g_Texture["patterns"][i]:setvisible(true)
-      g_Texture["patterns"][i]:settext(g_Patterns["patterns"][i + g_PatternStart])
-      g_Texture["patterns"][i]:setimage("file://data/patterns/" .. g_Patterns["patterns"][i + g_PatternStart])
+      g_Texture["patterns"][i]:settext(g_Patterns[i + g_PatternStart])
+      g_Texture["patterns"][i]:setimage("file://data/patterns/" .. g_Patterns[i + g_PatternStart])
     else
       g_Texture["patterns"][i]:setvisible(false)
     end
@@ -237,11 +243,11 @@ function fillPatterns()
 end
 
 function patternSwitchRight()
-  if g_PatternStart < #g_Patterns["patterns"] - 6 then
+  if g_PatternStart < #g_Patterns - 6 then
     g_PatternStart = g_PatternStart + 3
     fillPatterns()
   end
-  io.write("patternSwitchRight: " .. tostring(g_PatternStart) .. " (" .. tostring(#g_Patterns["patterns"]) .. ")\n")
+  io.write("patternSwitchRight: " .. tostring(g_PatternStart) .. " (" .. tostring(#g_Patterns) .. ")\n")
 end
 
 function patternSwitchLeft()
@@ -250,7 +256,7 @@ function patternSwitchLeft()
     g_PatternStart = 0
   end
   fillPatterns()
-  io.write("patternSwitchLeft: " .. tostring(g_PatternStart) .. " (" .. tostring(#g_Patterns["patterns"]) .. ")\n")
+  io.write("patternSwitchLeft: " .. tostring(g_PatternStart) .. " (" .. tostring(#g_Patterns) .. ")\n")
 end
 
 function showHideUi()
@@ -498,6 +504,28 @@ function uibuttonclicked(a_Id, a_Name)
             g_Texture["tab_generate"]:setvisible(true )
             g_Texture["tab_imported"]:setvisible(false)
           elseif string.sub(g_Players[g_TexturePlr]["texture"], 1, 11) == "imported://" then
+            local l_Params = split(string.sub(g_Players[g_TexturePlr]["texture"], 12), "&")
+            
+            for i = 1, #l_Params do
+              local l_Param = split(l_Params[i], "=")
+              
+              if l_Param[1] == "file" then
+                local l_Index = l_Param[2]:match'^.*()/'
+                local l_File = string.sub(l_Param[2], l_Index + 1)
+                
+                for i = 1, #g_Imported do
+                  if g_Imported[i] == l_File then
+                    -- Remember: C++ starts index count at "0" whereas LUA starts at "1"!
+                    g_Texture["texture"]:setselected(i - 1)
+                  end
+                end
+              elseif l_Param[1] == "color" then
+                g_Texture["imported_name"]:settext(l_Param[2])
+              elseif l_Param[1] == "background" then
+                g_Texture["imported_back"]:settext(l_Param[2])
+              end
+            end
+            
             g_Texture["texture_mode"]:setselected(2)
 
             g_Texture["tab_generate"]:setvisible(false)
@@ -584,7 +612,11 @@ function getTextureString()
            "&patternback="  .. tostring(g_Texture["pt_background"]:gettext()) ..
            "&number="       .. "1"
   elseif g_Texture["texture_mode"]:gettext() == "Imported" then
-    return "imported://file=data/textures/texture_marblemann.png&color=" .. tostring(g_Texture["imported_name"]) .. "&background=" .. tostring(g_Texture["imported_back"])
+    if g_Texture["texture"]:gettext() ~= "" then
+      return "imported://file=data/textures/" .. g_Texture["texture"]:gettext() .. "&color=" .. tostring(g_Texture["imported_name"]) .. "&background=" .. tostring(g_Texture["imported_back"])
+    else
+      return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&number=1"
+    end
   else
     return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&number=1"
   end
@@ -634,6 +666,8 @@ function uivaluechanged(a_Id, a_Name, a_Value)
     local l_Color = "255, " .. g_Color["red"  ]:gettext() .. ", " .. g_Color["green"]:gettext() .. ", " .. g_Color["blue" ]:gettext()
     
     g_Color["show"]:setproperty("BackColor", l_Color)
+  elseif a_Name == "imported_texture" then
+    updateTexture()
   else
     io.write("Value Changed: " .. tostring(a_Name) .. " (" .. tostring(a_Id) .. ") = " .. tostring(a_Value) .. "\n")
   end

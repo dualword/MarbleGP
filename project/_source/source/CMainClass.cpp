@@ -203,6 +203,8 @@ namespace dustbin {
       m_mStates[state::enState::ErrorState] = new state::CErrorState();
 
       m_cScreenSize = m_pDrv->getScreenSize();
+
+      m_pFs->addFileArchive(platform::ws2s(platform::portableGetDataPath()).c_str(), true, false, irr::io::EFAT_FOLDER);
     }
   }
 

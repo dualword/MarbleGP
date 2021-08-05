@@ -78,14 +78,9 @@ namespace dustbin {
     }
 
     const std::wstring portableGetDataPath() {
-      TCHAR l_sPath   [MAX_PATH],
-        l_sGhost  [MAX_PATH],
-        l_sReplay [MAX_PATH],
-        l_sLua    [MAX_PATH],
-        l_sData   [MAX_PATH],
-        l_sTexture[MAX_PATH],
-        l_sTracks [MAX_PATH],
-        l_sImport [MAX_PATH];
+      TCHAR l_sPath       [MAX_PATH],
+            l_sDataPath   [MAX_PATH],
+            l_sTexturePath[MAX_PATH];
 
       if (SUCCEEDED(SHGetFolderPath( NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
         PathAppend(l_sPath, L"\\DustbinGames\\");
@@ -96,6 +91,16 @@ namespace dustbin {
         PathAppend(l_sPath, L"\\MarbleGP\\");
 
         if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
+
+        _tcscpy_s(l_sDataPath, MAX_PATH, l_sPath);
+        PathAppend(l_sDataPath, L"\\data\\");
+
+        if (!PathFileExists(l_sDataPath)) CreateDirectory(l_sDataPath, NULL);
+
+        _tcscpy_s(l_sTexturePath, MAX_PATH, l_sDataPath);
+        PathAppend(l_sTexturePath, L"\\textures\\");
+
+        if (!PathFileExists(l_sTexturePath)) CreateDirectory(l_sTexturePath, NULL);
 
         /*_tcscpy_s(l_sReplay, MAX_PATH, l_sPath);
         PathAppend(l_sReplay, L"\\Replay\\");
@@ -125,6 +130,15 @@ namespace dustbin {
         PathAppend(l_sImport, L"\\imported_tracks\\");
         if (!PathFileExists(l_sImport)) CreateDirectory(l_sImport, NULL);*/
       }
+
+      return l_sPath;
+    }
+
+    const std::wstring portableGetTexturePath() {
+      std::wstring l_sPath = portableGetDataPath();
+      l_sPath += L"\\data\\textures\\";
+
+      if (!PathFileExists(l_sPath.c_str())) CreateDirectory(l_sPath.c_str(), NULL);
 
       return l_sPath;
     }

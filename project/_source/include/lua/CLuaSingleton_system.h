@@ -189,6 +189,13 @@ namespace dustbin {
         int getTexturePatterns(lua_State* a_pState);
 
         /**
+        * Get a list of the imported textures
+        * @param a_pState the LUA state
+        * @return "1", as only the list of patterns is returned
+        */
+        int getImportedTextures(lua_State *a_pState);
+
+        /**
         * Change the Z-Layer for the menu controller
         * @param m_iZLayer the new Z-Layer
         */

@@ -5,6 +5,7 @@
 #include <messages/CMessageHelpers.h>
 #include <lua/CLuaSceneManager.h>
 #include <LuaBridge/LuaBridge.h>
+#include <platform/CPlatform.h>
 #include <lua/CLuaHelpers.h>
 #include <algorithm>
 #include <CGlobal.h>
@@ -33,6 +34,7 @@ namespace dustbin {
           .addFunction("setzlayer"             , &CLuaSingleton_system::setZLayer)
           .addFunction("getfirstcontroller"    , &CLuaSingleton_system::getFirstController)
           .addFunction("gettexturepatterns"    , &CLuaSingleton_system::getTexturePatterns)
+          .addFunction("getimportedtextures"   , &CLuaSingleton_system::getImportedTextures)
           .addFunction("removetexture"         , &CLuaSingleton_system::removeTexture)
         .endClass();
 
@@ -180,12 +182,44 @@ namespace dustbin {
     }
 
     /**
+    * Get a list of the imported textures
+    * @param a_pState the LUA state
+    * @return "1", as only the list of patterns is returned
+    */
+    int CLuaSingleton_system::getImportedTextures(lua_State* a_pState) {
+      std::vector<std::string> l_vTextures;
+
+      irr::io::IFileSystem* l_pFs = m_pGlobal->getFileSystem();
+
+      std::string l_sFolder = l_pFs->getWorkingDirectory().c_str();
+
+      l_pFs->changeWorkingDirectoryTo(platform::ws2s(platform::portableGetTexturePath()).c_str());
+
+      irr::io::IFileList* l_pList = l_pFs->createFileList();
+
+      if (l_pList != nullptr) {
+        for (unsigned i = 0; i < l_pList->getFileCount(); i++) {
+          std::string l_sName = l_pList->getFileName(i).c_str();
+          if (l_sName.find(".png") != std::string::npos) {
+            l_vTextures.push_back(l_sName);
+          }
+        }
+        l_pList->drop();
+      }
+
+      l_pFs->changeWorkingDirectoryTo(l_sFolder.c_str());
+
+      pushToStack(l_vTextures, a_pState);
+      return 1;
+    }
+
+    /**
     * Get a list of the available texture patterns
     * @param a_pState the LUA state
     * @return "1", as only the list of patterns is returned
     */
     int CLuaSingleton_system::getTexturePatterns(lua_State* a_pState) {
-      SPatternList l_cList;
+      std::vector<std::string> l_cList;
 
       irr::io::IReadFile* l_pFile = m_pGlobal->getFileSystem()->createAndOpenFile("data/texture_patterns.xml");
       if (l_pFile) {
@@ -197,7 +231,7 @@ namespace dustbin {
             if (l_sNode == "pattern" && l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
               std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
               if (l_sPattern != "")
-                l_cList.m_patterns.push_back(l_sPattern);
+                l_cList.push_back(l_sPattern);
             }
           }
 
@@ -206,7 +240,7 @@ namespace dustbin {
         l_pFile->drop();
       }
 
-      l_cList.pushToStack(a_pState);
+      pushToStack(l_cList, a_pState);
       return 1;
     }
 

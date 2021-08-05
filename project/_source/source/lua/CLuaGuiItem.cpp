@@ -182,8 +182,15 @@ namespace dustbin {
       std::string s = "";
 
       if (m_pElement != nullptr) {
-        std::wstring ws = m_pElement->getText();
-        s = platform::ws2s(ws);
+        if (m_pElement->getType() == irr::gui::EGUIET_LIST_BOX) {
+          irr::gui::IGUIListBox* p = reinterpret_cast<irr::gui::IGUIListBox*>(m_pElement);
+          if (p->getSelected() >= 0 && p->getSelected() < (irr::s32)p->getItemCount())
+            s = platform::ws2s(p->getListItem(p->getSelected()));
+        }
+        else {
+          std::wstring ws = m_pElement->getText();
+          s = platform::ws2s(ws);
+        }
       }
 
       return s;
@@ -210,15 +217,22 @@ namespace dustbin {
     * @return "true" if the element is a combobox
     */
     bool CLuaGuiItem::addItem(const std::string& a_sItem) {
-      if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
-        reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
-        return true;
+      if (m_pElement != nullptr) {
+        if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
+          return true;
+        }
+        else if (m_pElement->getType() == irr::gui::EGUIET_LIST_BOX) {
+          reinterpret_cast<irr::gui::IGUIListBox*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
+          return true;
+        }
+        else if (m_pElement->getType() == gui::g_SelectorId) {
+          reinterpret_cast<gui::CSelector*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
+          return true;
+        }
+        else return false;
       }
-      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
-        reinterpret_cast<gui::CSelector*>(m_pElement)->addItem(platform::s2ws(a_sItem).c_str());
-        return true;
-      }
-      else return false;
+      return false;
     }
 
     /**
@@ -245,13 +259,19 @@ namespace dustbin {
     * @return the selected item of the combobox (-1 if no item is selected)
     */
     int CLuaGuiItem::getSelected() {
-      if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
-        return reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->getSelected();
+      if (m_pElement != nullptr) {
+        if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          return reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->getSelected();
+        }
+        else if (m_pElement->getType() == gui::g_SelectorId) {
+          return reinterpret_cast<gui::CSelector*>(m_pElement)->getSelected();
+        }
+        else if (m_pElement->getType() == irr::gui::EGUIET_LIST_BOX) {
+          return reinterpret_cast<irr::gui::IGUIListBox*>(m_pElement)->getSelected();
+        }
       }
-      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
-        return reinterpret_cast<gui::CSelector*>(m_pElement)->getSelected();
-      }
-      else return false;
+
+      return -1;
     }
 
     /**
@@ -260,15 +280,28 @@ namespace dustbin {
     * @return "true" if the element is a combobox
     */
     bool CLuaGuiItem::setSelected(int a_iIndex) {
-      if (m_pElement != nullptr && m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
-        reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setSelected(a_iIndex);
-        return true;
+      if (m_pElement != nullptr) {
+        if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement)->setSelected(a_iIndex);
+          return true;
+        }
+        else if (m_pElement->getType() == gui::g_SelectorId) {
+          reinterpret_cast<gui::CSelector*>(m_pElement)->setSelected(a_iIndex);
+          return true;
+        }
+        else if (m_pElement->getType() == irr::gui::EGUIET_LIST_BOX) {
+          irr::gui::IGUIListBox* p = reinterpret_cast<irr::gui::IGUIListBox*>(m_pElement);
+
+          if (a_iIndex >= 0 && a_iIndex < (int)p->getItemCount())
+            p->setSelected(p->getListItem(a_iIndex));
+          else
+            p->setSelected(NULL);
+
+          return true;
+        }
       }
-      else if (m_pElement != nullptr && m_pElement->getType() == gui::g_SelectorId) {
-        reinterpret_cast<gui::CSelector*>(m_pElement)->setSelected(a_iIndex);
-        return true;
-      }
-      else return false;
+      
+      return false;
     }
 
     /**
