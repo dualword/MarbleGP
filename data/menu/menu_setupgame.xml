@@ -19,10 +19,11 @@
       <element type="MenuBackground" rect="relative: 4, 6, 40, 10">
         <attributes>
           <attribute key="Name" value="player1" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -30,10 +31,11 @@
       <element type="MenuBackground" rect="relative: 4, 11, 40, 15">
         <attributes>
           <attribute key="Name" value="player2" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -41,10 +43,11 @@
       <element type="MenuBackground" rect="relative: 4, 16, 40, 20">
         <attributes>
           <attribute key="Name" value="player3" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -52,10 +55,11 @@
       <element type="MenuBackground" rect="relative: 4, 21, 40, 25">
         <attributes>
           <attribute key="Name" value="player4" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -63,10 +67,11 @@
       <element type="MenuBackground" rect="relative: 4, 26, 40, 30">
         <attributes>
           <attribute key="Name" value="player5" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -74,10 +79,11 @@
       <element type="MenuBackground" rect="relative: 4, 31, 40, 35">
         <attributes>
           <attribute key="Name" value="player6" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -85,10 +91,11 @@
       <element type="MenuBackground" rect="relative: 4, 36, 40, 40">
         <attributes>
           <attribute key="Name" value="player7" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -96,10 +103,11 @@
       <element type="MenuBackground" rect="relative: 4, 41, 40, 45">
         <attributes>
           <attribute key="Name" value="player8" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
         </attributes>
         
         <children>
-          <include file="data/menu/dialog_select_player.xml" />
+          <include file="data/menu/dialog_playerlist.xml" />
         </children>
       </element>
       
@@ -219,7 +227,7 @@
           
           <element type="Selector" rect="relative: 18, 30, 33, 32">
             <attributes>
-              <attribute key="Name" value="AI Class" />
+              <attribute key="Name" value="ai_class" />
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
@@ -229,5 +237,5 @@
         </children>
       </element>
     </children>
-  </element>
+  </element>  
 </dialog>

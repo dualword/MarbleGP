@@ -54,8 +54,16 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           m_bMouseL = false;
-          if (getAbsoluteClippingRect().isPointInside(irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y)))
+          if (getAbsoluteClippingRect().isPointInside(irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y))) {
             m_bChecked = !m_bChecked;
+
+            irr::SEvent l_cEvent;
+            l_cEvent.EventType = irr::EET_GUI_EVENT;
+            l_cEvent.GUIEvent.EventType = irr::gui::EGET_CHECKBOX_CHANGED;
+            l_cEvent.GUIEvent.Caller    = this;
+            l_cEvent.GUIEvent.Element   = this;
+            CGlobal::getInstance()->getActiveState()->OnEvent(l_cEvent);
+          }
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)
           m_bMouseL = true;

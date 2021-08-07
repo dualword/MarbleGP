@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerMenu.h>
 #include <lua/CLuaScript_dialog.h>
+#include <gui/CDustbinCheckbox.h>
 #include <platform/CPlatform.h>
 #include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
@@ -136,6 +137,11 @@ namespace dustbin {
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_CHANGED || a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN) {
           m_pScript->uiValueChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), (float)reinterpret_cast<irr::gui::IGUIListBox*>(a_cEvent.GUIEvent.Caller)->getSelected());
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+          if (a_cEvent.GUIEvent.Caller->getType() == gui::g_DustbinCheckboxId) {
+            m_pScript->uiCheckboxChanged(a_cEvent.GUIEvent.Caller->getID(), a_cEvent.GUIEvent.Caller->getName(), reinterpret_cast<gui::CDustbinCheckbox*>(a_cEvent.GUIEvent.Caller)->isChecked());
+          }
         }
       }
       else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {

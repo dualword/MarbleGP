@@ -149,6 +149,21 @@ namespace dustbin {
       }
     }
 
+    void CLuaScript_dialog::uiCheckboxChanged(int a_iId, const std::string& a_sName, bool a_bChecked) {
+      try {
+        luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uicheckboxchanged");
+        if (l_cCallback.isCallable())
+          l_cCallback(a_iId, a_sName, a_bChecked);
+      }
+      catch (luabridge::LuaException e) {
+        std::string l_sError = lua_tostring(m_pState, -1);
+        printf("Error: \"%s\"\n", l_sError.c_str());
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", l_sError);
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uicheckboxchanged\"");
+        throw std::exception();
+      }
+    }
+
     void CLuaScript_dialog::uiTextChanged(int a_iId, const std::string& a_sName, const std::string& a_sNewValue) {
       try {
         luabridge::LuaRef l_cCallback = luabridge::getGlobal(m_pState, "uitextchanged");

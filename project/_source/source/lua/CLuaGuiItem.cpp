@@ -275,6 +275,19 @@ namespace dustbin {
     }
 
     /**
+    * Enable or disable the GUI item
+    * @param a_bEnabled the new enabled flag
+    * @return "true" if an element was changed, false otherwise
+    */
+    bool CLuaGuiItem::setEnabled(bool a_bEnabled) {
+      if (m_pElement != nullptr) {
+        m_pElement->setEnabled(a_bEnabled);
+        return true;
+      }
+      return false;
+    }
+
+    /**
     * Set the selected item of the combobox
     * @param a_iIndex the new selected item
     * @return "true" if the element is a combobox
@@ -542,6 +555,7 @@ namespace dustbin {
           .addFunction("getchildcount", &CLuaGuiItem::getChildCount)
           .addFunction("getchild"     , &CLuaGuiItem::getChild)
           .addFunction("settooltip"   , &CLuaGuiItem::setTooltip)
+          .addFunction("setenabled"   , &CLuaGuiItem::setEnabled)
         .endClass();
     }
   }

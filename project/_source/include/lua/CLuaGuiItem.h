@@ -134,6 +134,13 @@ namespace dustbin {
         bool setSelected(int a_iIndex);
 
         /**
+        * Enable or disable the GUI item
+        * @param a_bEnabled the new enabled flag
+        * @return "true" if an element was changed, false otherwise
+        */
+        bool setEnabled(bool a_bEnabled);
+
+        /**
         * Is the checkbox checked?
         * @return true if the checkbox is checked?
         */

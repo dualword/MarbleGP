@@ -113,6 +113,9 @@ namespace dustbin {
     }
 
     bool CSelector::OnEvent(const irr::SEvent& a_cEvent) {
+      if (!IsEnabled)
+        return false;
+
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           m_bLeftBtn = false;
