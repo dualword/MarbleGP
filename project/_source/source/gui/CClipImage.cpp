@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
+#include <platform/CPlatform.h>
 #include <gui/CClipImage.h>
 #include <CGlobal.h>
 
@@ -15,6 +16,7 @@ namespace dustbin {
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_pTexture(nullptr),
       m_bLDown(false),
+      m_sTexture(""),
       m_iX1(-1),
       m_iY1(-1),
       m_iX2(-1),
@@ -65,6 +67,8 @@ namespace dustbin {
       a_pOut->addInt("Top"   , m_iY1);
       a_pOut->addInt("Right" , m_iX2);
       a_pOut->addInt("Bottom", m_iY1);
+
+      a_pOut->addString("Texture", platform::s2ws(m_sTexture).c_str());
     }
 
     void CClipImage::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
@@ -74,6 +78,11 @@ namespace dustbin {
       m_iY1 = a_pIn->getAttributeAsInt("Top"   );
       m_iX2 = a_pIn->getAttributeAsInt("Right" );
       m_iY2 = a_pIn->getAttributeAsInt("Bottom");
+
+      m_sTexture = a_pIn->getAttributeAsString("Texture", "").c_str();
+
+      if (m_sTexture != "")
+        m_pTexture = CGlobal::getInstance()->createTexture(m_sTexture);
     }
 
     bool CClipImage::OnEvent(const irr::SEvent& a_cEvent) {

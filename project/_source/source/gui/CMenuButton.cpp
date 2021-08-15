@@ -8,6 +8,7 @@ namespace dustbin {
       IGUIElement((irr::gui::EGUI_ELEMENT_TYPE)g_MenuButtonId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent, -1, irr::core::recti()), 
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()), 
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
+      m_pImage(nullptr),
       m_sImage(""),
       m_bHovered(false)
     {

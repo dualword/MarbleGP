@@ -4,6 +4,7 @@
 #include <gui/CGuiItemFactory.h>
 #include <gui/CReactiveLabel.h>
 #include <gui/CControllerUi.h>
+#include <gui/CTrackButton.h>
 #include <gui/CClipImage.h>
 #include <gui/CSelector.h>
 #include <string>
@@ -67,13 +68,18 @@ namespace dustbin {
 				p->drop();
 				return p;
 			}
+			else if (l_sTypeName == g_TrackButtonName) {
+				irr::gui::IGUIElement* p = new gui::CTrackButton(a_pParent);
+				p->drop();
+				return p;
+			}
 
 			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-			return 7;
+			return 8;
 		}
 
 		//! Get type of a createable element type
@@ -107,6 +113,10 @@ namespace dustbin {
 
 				case 6:
 					return (irr::gui::EGUI_ELEMENT_TYPE)g_ClipImageId;
+					break;
+
+				case 7:
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_TrackButtonId;
 					break;
 
 				default:
@@ -148,6 +158,10 @@ namespace dustbin {
 					return g_ClipImageName;
 					break;
 
+				case 7:
+					return g_TrackButtonName;
+					break;
+
 				default:
 					return nullptr;
 					break;
@@ -185,6 +199,10 @@ namespace dustbin {
 
 				case g_ClipImageId:
 					return g_ClipImageName;
+					break;
+
+				case g_TrackButtonId:
+					return g_TrackButtonName;
 					break;
 
 				default:

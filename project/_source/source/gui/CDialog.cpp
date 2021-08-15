@@ -278,13 +278,13 @@ namespace dustbin {
               printf("Attribute %s: %s\n", l_pAttr->getAttributeName(i), l_pAttr->getAttributeAsString(i).c_str());
           }*/
 
-          if (m_sType == "ClipImage")
-            printf("ClipImage\n");
-
           irr::core::recti l_cRect = a_pGlobal->getRect(std::get<1>(m_cPosition), std::get<0>(m_cPosition), a_pParent);
 
           m_pElement->deserializeAttributes(l_pAttr);
           m_pElement->setRelativePosition(l_cRect);
+
+          if (m_mAttributes.find("Caption") != m_mAttributes.end())
+            m_pElement->setText(platform::s2ws(m_mAttributes["Caption"]).c_str());
 
           l_pAttr->clear();
           l_pAttr->drop();

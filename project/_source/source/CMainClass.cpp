@@ -215,7 +215,7 @@ namespace dustbin {
 
     if (l_pXml) {
       l_pXml->writeXMLHeader();
-      l_pXml->writeElement(L"marbles3", false);
+      l_pXml->writeElement(L"marblegp", false);
       l_pXml->writeLineBreak();
 
       for (std::map<std::string, std::string>::iterator it = m_mSettings.begin(); it != m_mSettings.end(); it++) {
@@ -230,7 +230,7 @@ namespace dustbin {
       }
 
 
-      l_pXml->writeClosingTag(L"marbles3");
+      l_pXml->writeClosingTag(L"marblegp");
 
       l_pXml->drop();
     }

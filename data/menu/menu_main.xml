@@ -33,6 +33,7 @@ Factory 1 element 3 : "DustbinCheckbox"
 Factory 1 element 4 : "Selector"
 Factory 1 element 5 : "ReactiveLabel"
 Factory 1 element 6 : "ClipImage"
+Factory 1 element 7 : "TrackButton"
 
 Unniversal Attributes:
 
@@ -177,6 +178,14 @@ Attribute Left: 0
 Attribute Top: 0
 Attribute Right: 128
 Attribute Bottom: 128
+Attribute Texture: ""
+
+Attributes of "TrackButton"
+
+Attribute Texture: ""
+Attribute Overlay: 128, 208, 208, 208
+Attribute Clicked: 128, 96, 96, 208
+Attribute Track: ""
 
 -->
 <dialog>

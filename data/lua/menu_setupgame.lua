@@ -98,11 +98,13 @@ function uibuttonclicked(a_Id, a_Name)
     end
   elseif a_Name == "ok" then
     local s = serializeTable(g_GameSetup, 2)
-    io.write("Saving " .. s)
     system:setsetting("game_setup", s)
+    system:pushscript("data/lua/menu_selecttrack.lua")
+    system:statechange(1)
   elseif a_Name == "add_player" then
     g_AddPlayer = a_Id
     g_Items["add_player"]["dialog"]:setvisible(true)
+    system:setzlayer(46)
     
     local l_Unassigned = getUnassignedPlayers()
     
@@ -118,11 +120,13 @@ function uibuttonclicked(a_Id, a_Name)
   elseif a_Name == "close_addplayer" then
     g_AddPlayer = -1
     g_Items["add_player"]["dialog"]:setvisible(false)
+    system:setzlayer(0)
   elseif string.sub(a_Name, 1, 6) == "add_pl" then
     io.write("Add player #" .. tostring(a_Id) .. " to game.\n")
     table.insert(g_GameSetup["players"], g_Players[a_Id]["name"])
     g_Items["add_player"]["dialog"]:setvisible(false)
     updatePlayerUi()
+    system:setzlayer(0)
   elseif a_Name == "remove_player" then
     table.remove(g_GameSetup["players"], a_Id)
     updatePlayerUi()

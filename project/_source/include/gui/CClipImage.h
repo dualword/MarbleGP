@@ -26,6 +26,8 @@ namespace dustbin {
       irr::video::ITexture     * m_pTexture;
       irr::gui::ICursorControl * m_pCursor;
 
+      std::string m_sTexture; /**< The texture string */
+
       irr::video::SColor m_cHover,  /**< The hover color */
                          m_cClick;  /**< The click color */
 

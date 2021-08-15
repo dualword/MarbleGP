@@ -127,6 +127,18 @@ namespace dustbin {
         int getSelected();
 
         /**
+        * Get the selected item of the combobox
+        * @return the selected item of the combobox
+        */
+        std::string getSelectedItem();
+
+        /**
+        * Select an item by content. Will clear the selection if the item is not found
+        * @param a_sItem the item to select
+        */
+        void setSelectedItem(const std::string& a_sItem);
+
+        /**
         * Set the selected item of the combobox
         * @param a_iIndex the new selected item
         * @return "true" if the element is a combobox

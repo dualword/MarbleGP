@@ -5,8 +5,9 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CReactiveLabel.h>
-#include <gui/CClipImage.h>
+#include <gui/CTrackButton.h>
 #include <gui/CMenuButton.h>
+#include <gui/CClipImage.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
 
@@ -52,7 +53,7 @@ namespace dustbin {
         switch (l_eType) {
           case irr::gui::EGUIET_EDIT_BOX:
             if (reinterpret_cast<irr::gui::IGUIEditBox*>(a_pParent)->isEnabled()) {
-              printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
+              printf("Ui element #%i found on Z-Layer %i: \"%s\" (%i)\n", (int)m_vElements.size(), a_iZLayer, a_pParent->getName(), a_pParent->getID());
               m_vElements.push_back(a_pParent);
             }
             break;
@@ -65,7 +66,8 @@ namespace dustbin {
           case dustbin::gui::g_SelectorId:
           case dustbin::gui::g_MenuButtonId:
           case dustbin::gui::g_ClipImageId:
-            printf("Ui element #%i found: \"%s\" (%i)\n", (int)m_vElements.size(), a_pParent->getName(), a_pParent->getID());
+          case dustbin::gui::g_TrackButtonId:
+            printf("Ui element #%i found on Z-Layer %i: \"%s\" (%i)\n", (int)m_vElements.size(), a_iZLayer, a_pParent->getName(), a_pParent->getID());
             m_vElements.push_back(a_pParent);
             break;
 
@@ -311,13 +313,20 @@ namespace dustbin {
       m_vElements.clear();
       fillItemList(m_pGui->getRootGUIElement(), m_iZLayer);
 
-      if (m_mFocused.find(m_iZLayer) != m_mFocused.end()) {
+      if (m_mFocused.find(m_iZLayer) != m_mFocused.end() && isVisible(m_mFocused[m_iZLayer])) {
         m_pHovered = m_mFocused[m_iZLayer];
         m_pCursor->setPosition(m_pHovered->getAbsoluteClippingRect().getCenter());
       }
       else {
-        if (m_vElements.size() > 0)
-          m_pCursor->setPosition((*m_vElements.begin())->getAbsoluteClippingRect().getCenter());
+        if (m_vElements.size() > 0) {
+          for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
+            if (isVisible(*it)) {
+              m_pCursor->setPosition((*it)->getAbsoluteClippingRect().getCenter());
+              m_pHovered = *it;
+              break;
+            }
+          }
+        }
 
         moveMouse(enDirection::Up);
       }

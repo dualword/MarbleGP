@@ -18,6 +18,7 @@ namespace dustbin {
           .addFunction("getscenemanager"       , &CLuaSingleton_system::getSceneManager)
           .addFunction("setsetting"            , &CLuaSingleton_system::setSetting)
           .addFunction("getsetting"            , &CLuaSingleton_system::getSetting)
+          .addFunction("hassetting"            , &CLuaSingleton_system::hasSetting)
           .addFunction("setglobal"             , &CLuaSingleton_system::setGlobal)
           .addFunction("getglobal"             , &CLuaSingleton_system::getGlobal)
           .addFunction("pushscript"            , &CLuaSingleton_system::pushScript)
@@ -39,6 +40,8 @@ namespace dustbin {
           .addFunction("gettexturepatterns"    , &CLuaSingleton_system::getTexturePatterns)
           .addFunction("getimportedtextures"   , &CLuaSingleton_system::getImportedTextures)
           .addFunction("removetexture"         , &CLuaSingleton_system::removeTexture)
+          .addFunction("gettracklist"          , &CLuaSingleton_system::getTrackList)
+          .addFunction("fileexists"            , &CLuaSingleton_system::fileExists)
         .endClass();
 
       std::error_code l_cError;
@@ -80,6 +83,15 @@ namespace dustbin {
         return m_pGlobal->getSetting(a_sKey);
       else
         return "";
+    }
+
+    /**
+    * Does a setting exist?
+    * @param a_sKey the setting key
+    * @return true if the setting exists
+    */
+    bool CLuaSingleton_system::hasSetting(const std::string& a_sKey) {
+      return m_pGlobal->hasSetting(a_sKey);
     }
 
     /**
@@ -345,6 +357,110 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Check whether or not a file exits
+    * @param a_sFile the file to check
+    * @return true if the file exists, false otherwise
+    */
+    bool CLuaSingleton_system::fileExists(const std::string& a_sFile) {
+      return m_pGlobal->getFileSystem()->existFile(a_sFile.c_str());
+    }
+
+    /**
+    * Get the list of tracks
+    * @param a_pState the LUA state
+    * @return the number of result values, 1 in this case
+    */
+    int CLuaSingleton_system::getTrackList(lua_State* a_pState) {
+      irr::io::IFileSystem* l_pFs = m_pGlobal->getFileSystem();
+
+      std::string l_sFolder = l_pFs->getWorkingDirectory().c_str();
+
+      l_pFs->changeWorkingDirectoryTo("data/levels");
+
+      irr::io::IFileList* l_pFolders = l_pFs->createFileList();
+
+      int l_iFound = 1;
+
+      lua_newtable(a_pState);
+
+      if (l_pFolders) {
+        for (unsigned i = 0; i < l_pFolders->getFileCount(); i++) {
+          if (l_pFolders->isDirectory(i)) {
+            std::string l_sFolder = l_pFolders->getFileName(i).c_str();
+
+            if (l_sFolder != "." && l_sFolder != "..") {
+              std::string l_sName = l_sFolder + "/track.xml",
+                          l_sInfo = l_sFolder + "/info.xml";
+
+              if (l_pFs->existFile(l_sName.c_str())) {
+                std::string l_sName = l_sFolder;
+                int         l_iPos  = -1;
+
+                printf("%2i: ==> %s\n", l_iFound, l_sName.c_str());
+                
+                if (l_pFs->existFile(l_sInfo.c_str())) {
+                  irr::io::IXMLReaderUTF8* l_pXml = l_pFs->createXMLReaderUTF8(l_sInfo.c_str());
+                  int l_iState = 0;
+
+                  if (l_pXml) {
+                    while (l_pXml->read()) {
+                      std::string l_sNode = l_pXml->getNodeName();
+
+                      switch (l_iState) {
+                        case 0: {
+                          if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+                            if (l_sNode == "name")
+                              l_iState = 1;
+                            else if (l_sNode == "position")
+                              l_iState = 2;
+                          }
+                          break;
+                        }
+
+                        case 1: {
+                          if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
+                            l_sName = l_pXml->getNodeData();
+                            l_iState = 0;
+                          }
+                          break;
+                        }
+
+                        case 2: {
+                          if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
+                            l_iPos = std::atoi(l_pXml->getNodeData());
+                            l_iState = 0;
+                          }
+                          break;
+                        }
+                      }
+                    }
+                    l_pXml->drop();
+                  }
+                }
+
+                STrack l_cTrack;
+                l_cTrack.m_folder   = l_sFolder;
+                l_cTrack.m_name     = l_sName;
+                l_cTrack.m_position = l_iPos;
+
+                lua_pushinteger(a_pState, l_iFound);
+                l_cTrack.pushToStack(a_pState);
+                lua_settable(a_pState, -3);
+
+                l_iFound++;
+              }
+            }
+          }
+        }
+
+        l_pFolders->drop();
+      }
+
+      l_pFs->changeWorkingDirectoryTo(l_sFolder.c_str());
+
+      return 1;
+    }
 
 
     CLuaResolutionList::CLuaResolutionList(lua_State* a_pState) {

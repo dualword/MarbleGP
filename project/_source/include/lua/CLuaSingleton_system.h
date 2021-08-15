@@ -96,6 +96,13 @@ namespace dustbin {
         std::string getSetting(const std::string &a_sKey);
 
         /**
+        * Does a setting exist?
+        * @param a_sKey the setting key
+        * @return true if the setting exists
+        */
+        bool hasSetting(const std::string& a_sKey);
+
+        /**
         * Set a global variable
         * @param a_sKey the key of the global variable
         * @param a_sValue the value of the global variable
@@ -224,6 +231,20 @@ namespace dustbin {
         * @param a_sTexture (file)name of the texture to remove
         */
         void removeTexture(const std::string& a_sTexture);
+
+        /**
+        * Get the list of tracks
+        * @param a_pState the LUA state
+        * @return the number of result values, 1 in this case
+        */
+        int getTrackList(lua_State* a_pState);
+
+        /**
+        * Check whether or not a file exits
+        * @param a_sFile the file to check
+        * @return true if the file exists, false otherwise
+        */
+        bool fileExists(const std::string& a_sFile);
     };
   }
 }

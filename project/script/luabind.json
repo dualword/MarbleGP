@@ -44,6 +44,14 @@
         { "name": "misc_usemenuctrl", "type": "bool"         },
         { "name": "misc_menuctrl"   , "type": "std::string"  }
       ]
+    },
+    "STrack": {
+      "comment": "A table for the track data",
+      "fields": [
+        { "name": "name"    , "type": "std::string" },
+        { "name": "folder"  , "type": "std::string" },
+        { "name": "position", "type": "int"         }
+      ]
     }
   }
 }

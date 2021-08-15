@@ -219,6 +219,14 @@ namespace dustbin {
     }
 
     /**
+    * Get the number of items in the selector
+    * @return the number of items in the selector
+    */
+    unsigned CSelector::getItemCount() {
+      return (unsigned)m_vItems.size();
+    }
+
+    /**
     * Set the selected item
     * @param a_iIndex the new index
     */

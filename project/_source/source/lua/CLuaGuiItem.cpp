@@ -275,6 +275,72 @@ namespace dustbin {
     }
 
     /**
+    * Select an item by content. Will clear the selection if the item is not found
+    * @param a_sItem the item to select
+    */
+    void CLuaGuiItem::setSelectedItem(const std::string& a_sItem) {
+      if (m_pElement != nullptr) {
+        std::wstring l_sItem = platform::s2ws(a_sItem);
+        if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          irr::gui::IGUIComboBox* p = reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement);
+
+          for (unsigned i = 0; i < p->getItemCount(); i++) {
+            std::wstring s = p->getItem(i);
+            if (s == l_sItem) {
+              p->setSelected(i);
+              return;
+            }
+          }
+        }
+        else if (m_pElement->getType() == gui::g_SelectorId) {
+          gui::CSelector* p = reinterpret_cast<gui::CSelector*>(m_pElement);
+
+          for (unsigned i = 0; i < p->getItemCount(); i++) {
+            std::wstring s = p->getItem(i);
+            if (s == l_sItem) {
+              p->setSelected(i);
+              return;
+            }
+          }
+        }
+        else if (m_pElement->getType() == irr::gui::EGUIET_LIST_BOX) {
+          irr::gui::IGUIListBox* p = reinterpret_cast<irr::gui::IGUIListBox*>(m_pElement);
+
+          for (unsigned i = 0; i < p->getItemCount(); i++) {
+            std::wstring s = p->getListItem(i);
+            if (s == l_sItem) {
+              p->setSelected(i);
+              return;
+            }
+          }
+        }
+      }
+    }
+
+    /**
+    * Get the selected item of the combobox
+    * @return the selected item of the combobox
+    */
+    std::string CLuaGuiItem::getSelectedItem() {
+      if (m_pElement != nullptr) {
+        if (m_pElement->getType() == irr::gui::EGUIET_COMBO_BOX) {
+          irr::gui::IGUIComboBox* p = reinterpret_cast<irr::gui::IGUIComboBox*>(m_pElement);
+          if (p->getSelected() != -1)
+            return platform::ws2s(p->getItem(p->getSelected()));
+        }
+        else if (m_pElement->getType() == gui::g_SelectorId) {
+          return platform::ws2s(reinterpret_cast<gui::CSelector*>(m_pElement)->getItem(reinterpret_cast<gui::CSelector*>(m_pElement)->getSelected()));
+        }
+        else if (m_pElement->getType() == irr::gui::EGUIET_LIST_BOX) {
+          irr::gui::IGUIListBox* p = reinterpret_cast<irr::gui::IGUIListBox*>(m_pElement);
+          if (p->getSelected() != -1)
+            return platform::ws2s(p->getListItem(p->getSelected()));
+        }
+      }
+      return "";
+    }
+
+    /**
     * Enable or disable the GUI item
     * @param a_bEnabled the new enabled flag
     * @return "true" if an element was changed, false otherwise
@@ -529,33 +595,35 @@ namespace dustbin {
     void CLuaGuiItem::registerClass(lua_State* a_pState) {
       luabridge::getGlobalNamespace(a_pState)
         .beginClass<CLuaGuiItem>("GuiItem")
-          .addFunction("getproperty"  , &CLuaGuiItem::getProperty)
-          .addFunction("setproperty"  , &CLuaGuiItem::setProperty)
-          .addFunction("getproperties", &CLuaGuiItem::getProperties)
-          .addFunction("setvisible"   , &CLuaGuiItem::setVisible)
-          .addFunction("isvisible"    , &CLuaGuiItem::isVisible)
-          .addFunction("setname"      , &CLuaGuiItem::setName)
-          .addFunction("getname"      , &CLuaGuiItem::getName)
-          .addFunction("setid"        , &CLuaGuiItem::setId)
-          .addFunction("getid"        , &CLuaGuiItem::getId)
-          .addFunction("settext"      , &CLuaGuiItem::setText)
-          .addFunction("gettext"      , &CLuaGuiItem::getText)
-          .addFunction("clearitems"   , &CLuaGuiItem::clearItems)
-          .addFunction("additem"      , &CLuaGuiItem::addItem)
-          .addFunction("getitem"      , &CLuaGuiItem::getItem)
-          .addFunction("getselected"  , &CLuaGuiItem::getSelected)
-          .addFunction("setselected"  , &CLuaGuiItem::setSelected)
-          .addFunction("ischecked"    , &CLuaGuiItem::isChecked)
-          .addFunction("setchecked"   , &CLuaGuiItem::setChecked)
-          .addFunction("getvalue"     , &CLuaGuiItem::getValue)
-          .addFunction("getvalueint"  , &CLuaGuiItem::getValueInt)
-          .addFunction("setvalue"     , &CLuaGuiItem::setValue)
-          .addFunction("setvalueint"  , &CLuaGuiItem::setValueInt)
-          .addFunction("setimage"     , &CLuaGuiItem::setImage)
-          .addFunction("getchildcount", &CLuaGuiItem::getChildCount)
-          .addFunction("getchild"     , &CLuaGuiItem::getChild)
-          .addFunction("settooltip"   , &CLuaGuiItem::setTooltip)
-          .addFunction("setenabled"   , &CLuaGuiItem::setEnabled)
+          .addFunction("getproperty"    , &CLuaGuiItem::getProperty)
+          .addFunction("setproperty"    , &CLuaGuiItem::setProperty)
+          .addFunction("getproperties"  , &CLuaGuiItem::getProperties)
+          .addFunction("setvisible"     , &CLuaGuiItem::setVisible)
+          .addFunction("isvisible"      , &CLuaGuiItem::isVisible)
+          .addFunction("setname"        , &CLuaGuiItem::setName)
+          .addFunction("getname"        , &CLuaGuiItem::getName)
+          .addFunction("setid"          , &CLuaGuiItem::setId)
+          .addFunction("getid"          , &CLuaGuiItem::getId)
+          .addFunction("settext"        , &CLuaGuiItem::setText)
+          .addFunction("gettext"        , &CLuaGuiItem::getText)
+          .addFunction("clearitems"     , &CLuaGuiItem::clearItems)
+          .addFunction("additem"        , &CLuaGuiItem::addItem)
+          .addFunction("getitem"        , &CLuaGuiItem::getItem)
+          .addFunction("getselected"    , &CLuaGuiItem::getSelected)
+          .addFunction("getselecteditem", &CLuaGuiItem::getSelectedItem)
+          .addFunction("setselected"    , &CLuaGuiItem::setSelected)
+          .addFunction("setselecteditem", &CLuaGuiItem::setSelectedItem)
+          .addFunction("ischecked"      , &CLuaGuiItem::isChecked)
+          .addFunction("setchecked"     , &CLuaGuiItem::setChecked)
+          .addFunction("getvalue"       , &CLuaGuiItem::getValue)
+          .addFunction("getvalueint"    , &CLuaGuiItem::getValueInt)
+          .addFunction("setvalue"       , &CLuaGuiItem::setValue)
+          .addFunction("setvalueint"    , &CLuaGuiItem::setValueInt)
+          .addFunction("setimage"       , &CLuaGuiItem::setImage)
+          .addFunction("getchildcount"  , &CLuaGuiItem::getChildCount)
+          .addFunction("getchild"       , &CLuaGuiItem::getChild)
+          .addFunction("settooltip"     , &CLuaGuiItem::setTooltip)
+          .addFunction("setenabled"     , &CLuaGuiItem::setEnabled)
         .endClass();
     }
   }
