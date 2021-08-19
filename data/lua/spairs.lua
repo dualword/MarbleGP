@@ -1,3 +1,5 @@
+-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
+
 function spairs(t, order)
   local keys = {}
   for k in pairs(t) do keys[#keys+1] = k end

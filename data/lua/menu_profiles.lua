@@ -1,3 +1,5 @@
+-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
+
 system:executeluascript("data/lua/splitstring.lua")
 system:executeluascript("data/lua/serializer.lua")
 system:executeluascript("data/lua/dialog_confirm.lua")
