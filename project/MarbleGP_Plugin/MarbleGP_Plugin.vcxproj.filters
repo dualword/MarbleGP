@@ -21,13 +21,10 @@
     <ClInclude Include="pch.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CGui3dSceneNodes.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodes.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Editor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,13 +35,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CGui3dSceneNodes.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Editor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

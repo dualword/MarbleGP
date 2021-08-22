@@ -216,6 +216,9 @@
     <ClCompile Include="..\_source\source\gui\CTrackButton.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -355,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CTrackButton.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

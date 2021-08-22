@@ -222,6 +222,7 @@
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
     <ClCompile Include="..\_source\source\sound\CSoundData.cpp" />
     <ClCompile Include="..\_source\source\sound\CSoundInterface.cpp" />
     <ClCompile Include="..\_source\source\sound\OggHelpers.cpp" />
@@ -266,6 +267,7 @@
     <ClInclude Include="..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h" />
     <ClInclude Include="..\_source\include\sound\CSoundData.h" />
     <ClInclude Include="..\_source\include\sound\CSoundEnums.h" />
     <ClInclude Include="..\_source\include\sound\CSoundInterface.h" />
