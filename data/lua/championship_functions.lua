@@ -5,6 +5,7 @@
 -- **** The data structure for a championship
 --
 -- {
+--   class = <The Marble Class (Marbles3, Marbles2, MarbleGP)>
 --   standings = {
 --     [1] = <Player Name>,
 --     [2] = <Player Name>,
@@ -59,7 +60,7 @@
 -- - Less stuns
 --
 -- If two players are equal in all of these points (not very likely, but to be sure)
--- the player who has finished in a better position in the first race the the lead
+-- the player who has finished in a better position in the first race takes the lead
 
 g_Verbose = false   -- Set this to "true" for more console output in the test application
 

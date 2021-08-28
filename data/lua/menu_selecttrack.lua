@@ -13,7 +13,7 @@ g_Settings  = { }
 g_AddPlayer = -1
 
 function initialize()
-  io.write("Setup Race script started.\n")
+  io.write("Select Track script started.\n")
   
   g_Smgr = system:getscenemanager()
   g_Smgr:loadscene("data/scenes/skybox.xml")
@@ -119,6 +119,10 @@ function updateThumbnails()
     end
   end
   
+  while 8 * g_Settings["page"] > #g_Filtered do
+    g_Settings["page"] = g_Settings["page"] - 1
+  end
+  
   for i = 1, 8 do
     local l_Index = g_Settings["page"] + i
     
@@ -128,10 +132,11 @@ function updateThumbnails()
         
         local l_Thumbnail = "data/levels/" .. g_Filtered[l_Index]["folder"] .. "/thumbnail.png"
         
+        io.write("==> " .. l_Thumbnail .. " (" .. tostring(system:fileexists(l_Thumbnail)) .. ")\n")
         if system:fileexists(l_Thumbnail) then
           g_Items["tracks"][i]:setproperty("Texture", "file://" .. l_Thumbnail)
         else
-          g_Items["tracks"][i]:setproperty("Texture", "data/images/no_image.png")
+          g_Items["tracks"][i]:setproperty("Texture", "file://data/images/no_image.png")
         end
         
         g_Items["tracks"][i]:settext(g_Filtered[l_Index]["name"])

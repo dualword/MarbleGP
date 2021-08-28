@@ -216,7 +216,16 @@
     <ClCompile Include="..\_source\source\gui\CTrackButton.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
+    <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CWorldNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Editor.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CDustbinId.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -360,6 +369,15 @@
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CWorldNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CDustbinId.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>

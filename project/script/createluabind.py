@@ -32,11 +32,11 @@ def CreatePush(a_Name, a_Type, a_Json, a_StatePrefix):
   elif IsEnum(a_Type, a_Json):
     return "lua_pushinteger(" + a_StatePrefix + "pState, (int)" + a_Name + ");\n"
   elif a_Type.startswith("std::vector"):
-    l_Ret =  "lua_newtable(" + a_StatePrefix + "pState);\n\n    int l_iCount = 1;\n    for (" + a_Type + "::const_iterator it = " + a_Name + ".begin(); it != " + a_Name + ".end(); it++) {\n      lua_pushinteger(" + a_StatePrefix + "pState, l_iCount);\n"
+    l_Ret =  "lua_newtable(" + a_StatePrefix + "pState);\n\n  {\n    int l_iCount = 1;\n    for (" + a_Type + "::const_iterator it = " + a_Name + ".begin(); it != " + a_Name + ".end(); it++) {\n      lua_pushinteger(" + a_StatePrefix + "pState, l_iCount);\n"
     
     l_Type = extract(a_Type, "<", ">")
     
-    l_Ret = l_Ret + "      " + CreatePush("(*it)", l_Type, a_Json, a_StatePrefix) + "      lua_settable(" + a_StatePrefix + "pState, -3);\n      l_iCount++;\n    }\n"
+    l_Ret = l_Ret + "      " + CreatePush("(*it)", l_Type, a_Json, a_StatePrefix) + "      lua_settable(" + a_StatePrefix + "pState, -3);\n      l_iCount++;\n    }\n  }\n\n"
     
     return l_Ret
   elif a_Type.startswith("std::map"):
@@ -59,6 +59,9 @@ def CreatePush(a_Name, a_Type, a_Json, a_StatePrefix):
     l_Ret = l_Ret + "    }\n"
     
     return l_Ret
+  else:
+    if a_Type in a_Json["tables"]:
+      return a_Name + ".pushToStack(a_pState);\n"
     
 def CreateTypeCheck(a_Name, a_Type, a_Json, a_ReturnValue, a_AllowNil, a_StatePrefix, a_Default):
   l_Ret = ""
@@ -106,7 +109,22 @@ def CreatePull(a_Name, a_Type, a_Json, a_Default, a_StatePrefix):
   elif IsEnum(a_Type, a_Json):
     l_Ret = l_Ret + a_Name + " = (" + a_Type + ")lua_tointeger(" + a_StatePrefix + "pState, lua_gettop(" + a_StatePrefix + "pState)); lua_pop(" + a_StatePrefix + "pState, 1);"
   elif a_Type.startswith("std::vector"):
-    print("**** Returning a vector from LUA to C++ is not yet supported!!!!")
+    l_Type = extract(a_Type, "<", ">")
+    l_Key  = a_Name[2:]
+    l_Ret = l_Ret + "\n  {\n"
+    l_Ret = l_Ret + "    if (lua_istable(" + a_StatePrefix + "pState, -1)) {\n"
+    l_Ret = l_Ret + "      int l_iCount = (int)lua_rawlen(" + a_StatePrefix + "pState, -1);\n\n"
+    l_Ret = l_Ret + "      for (int l_iIndex = 0; l_iIndex < l_iCount; l_iIndex++) {\n"
+    l_Ret = l_Ret + "        int l_iLuaIndex = l_iIndex + 1;\n"
+    l_Ret = l_Ret + "        lua_pushinteger(" + a_StatePrefix + "pState, l_iLuaIndex);\n"
+    l_Ret = l_Ret + "        lua_gettable(" + a_StatePrefix + "pState, -2);\n"
+    l_Ret = l_Ret + "        " + l_Type + " l_Value;\n"
+    l_Ret = l_Ret + "        " + CreatePull("l_Value", l_Type, a_Json, "", "a_")
+    l_Ret = l_Ret + "        " + a_Name + ".push_back(l_Value);\n"
+    l_Ret = l_Ret + "      }\n"
+    l_Ret = l_Ret + "      lua_pop(" + a_StatePrefix + "pState, 1);\n"
+    l_Ret = l_Ret + "    }\n"
+    l_Ret = l_Ret + "  }\n"
   else:
     l_Found = False
     
@@ -201,6 +219,7 @@ def CreateTables(a_Json):
   
   for l_Table in l_Tables:
     l_Value = l_Tables[l_Table]
+    print("  Creating table \"" + l_Table + "\"")
     l_Header.write("// " + l_Value["comment"] + "\n")
     l_Header.write("struct " + l_Table + " {\n")
     

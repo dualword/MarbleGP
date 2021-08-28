@@ -245,6 +245,26 @@ namespace dustbin {
         * @return true if the file exists, false otherwise
         */
         bool fileExists(const std::string& a_sFile);
+
+        /**
+        * This function creates a table for communication
+        * between LUA and C++
+        * @param a_pState the LUA state. A string parameter with the table name is expected
+        * @return "1" if a table was created and pushed to the stack, "0" otherwise
+        */
+        int createTable(lua_State* a_pState);
+
+        /**
+        * A little test function for the LUA tables that
+        * returns a table to LUA
+        */
+        int tableTestToLua(lua_State* a_pState);
+
+        /**
+        * A little test function for the LUA tables that
+        * returns a table to C++
+        */
+        int tableTestToCpp(lua_State* a_pState);
     };
   }
 }

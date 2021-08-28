@@ -1,6 +1,7 @@
 -- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
 
 system:executeluascript("data/lua/helpers_main.lua")
+system:executeluascript("data/lua/serializer.lua")
 
 function initialize()
   io.write("Main Menu script started.\n")
@@ -22,6 +23,25 @@ function initialize()
   dialog:createui();
   
   audio:startsoundtrack(0)
+  
+  local l_Test = {
+    [1] = "SPlayerRank",
+    [2] = "SPlayerResult",
+    [3] = "SRace",
+    [4] = "SChampionShip"
+  }
+  
+  for k,v in pairs(l_Test) do
+    io.write("\n*** Table test: " .. v .. "\n")
+    local l_Test = system:tabletesttolua(v)
+    
+    if l_Test ~= nil then
+      io.write("\n*********************\n")
+      io.write(serializeTable(l_Test, 2))
+      io.write("\n*********************\n")
+      system:tabletesttocpp(l_Test, v)
+    end
+  end
 end
 
 function cleanup()

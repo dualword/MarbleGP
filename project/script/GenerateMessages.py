@@ -90,8 +90,27 @@ def CreateMessages(a_Data, a_Static):
     l_Header.write("    class C" + l_MessageName + " : public IMessage {\n")
     l_Header.write("      private:\n")
     
+    l_Flags   = { }
+    l_FlagCnt = 0
+    
     for l_Field in l_Message["fields"]:
-      l_Header.write("        " + l_Field["type"] + " m_" + l_Field["name"] + ";  //*< " + l_Field["comment"] + "\n")
+      if l_Field["type"] == "bool":
+        l_Flags[l_Field["name"]] = l_FlagCnt
+        l_FlagCnt = l_FlagCnt + 1
+      else:
+        l_Header.write("        " + l_Field["type"] + " m_" + l_Field["name"] + ";  //*< " + l_Field["comment"] + "\n")
+    
+    if l_FlagCnt > 0:
+      print("Message " + l_MessageName + " has " + str(l_FlagCnt) + " Flags.")
+      print(l_Flags)
+      if l_FlagCnt <= 8:
+        l_Header.write("        irr::u8 m_Flags;    //*< This 8 Bit unsigned integer encodes all boolean flags of this message\n")
+      elif l_FlagCnt <= 16:
+        l_Header.write("        irr::u16 m_Flags    //*< This 16 Bit unsigned integer encodes all boolean flags of this message;\n")
+      elif l_FlagCnt <= 32:
+        l_Header.write("        irr::u32 m_Flags    //*< This 32 Bit unsigned integer encodes all boolean flags of this message;\n")
+      else:
+        l_Header.write("        irr::u64 m_Flags    //*< This 64 Bit unsigned integer encodes all boolean flags of this message;\n")
     
     l_Header.write("\n")
     l_Header.write("      public:\n")
@@ -158,30 +177,53 @@ def CreateMessages(a_Data, a_Static):
     l_Source.write(") {\n")
     
     for l_Field in l_Message["fields"]:
-      l_Source.write("      m_" + l_Field["name"] + " = a_" + l_Field["name"] + ";\n")
+      if l_Field["type"] != "bool":
+        l_Source.write("      m_" + l_Field["name"] + " = a_" + l_Field["name"] + ";\n")
+    
+    if l_FlagCnt > 0:
+      l_Source.write("\n      m_Flags = 0;\n\n")
+      
+    for l_Flag in l_Flags:
+      l_Source.write("      if (a_" + l_Flag + ") m_Flags |= " + str(1 << l_Flags[l_Flag]) + ";\n")
       
     l_Source.write("    }\n\n")
     
     l_Source.write("    C" + l_MessageName + "::C" + l_MessageName + "(ISerializer *a_pSerializer) {\n")
     
     for l_Field in l_Message["fields"]:
-      l_Source.write("      m_" + l_Field["name"] + " = a_pSerializer->");
+      if l_Field["type"] != "bool":
+        l_Source.write("      m_" + l_Field["name"] + " = a_pSerializer->");
       
-      if l_Field["type"] == "irr::core::vector3df":
-        l_Source.write("getVector3df")
-      elif l_Field["type"] == "std::string":
-        l_Source.write("getString")
-      elif "irr::" in l_Field["type"]:
-        l_Source.write("get" + l_Field["type"][5:].upper())
+        if l_Field["type"] == "irr::core::vector3df":
+          l_Source.write("getVector3df")
+        elif l_Field["type"] == "std::string":
+          l_Source.write("getString")
+        elif "irr::" in l_Field["type"]:
+          l_Source.write("get" + l_Field["type"][5:].upper())
+        
+        l_Source.write("();\n")
+        
+    if l_FlagCnt > 0:
+      if l_FlagCnt <= 8:
+        l_Source.write("      m_Flags = a_pSerializer->getU8();\n")
+      elif l_FlagCnt <= 16:
+        l_Source.write("      m_Flags = a_pSerializer->getU16();\n")
+      elif l_FlagCnt <= 32:
+        l_Source.write("      m_Flags = a_pSerializer->getU32();\n")
+      else:
+        l_Source.write("      m_Flags = a_pSerializer->getU64();\n")
       
-      l_Source.write("();\n")
-    
-    
     l_Source.write("    }\n\n")
     l_Source.write("    C" + l_MessageName + "::C" + l_MessageName + "(C" + l_MessageName + " *a_pOther) {\n")
     
     for l_Field in l_Message["fields"]:
-      l_Source.write("      m_" + l_Field["name"] + " = a_pOther->get" + l_Field["name"] + "();\n")
+      if l_Field["type"] != "bool":
+        l_Source.write("      m_" + l_Field["name"] + " = a_pOther->get" + l_Field["name"] + "();\n")
+        
+    if l_FlagCnt > 0:
+      l_Source.write("\n      m_Flags = 0;\n\n")
+      for l_Flag in l_Flags:
+        l_Source.write("      if (a_pOther->get" + l_Flag + "()) m_Flags |= " + str(1 << l_Flags[l_Flag]) + ";\n")
     
     l_Source.write("    }\n\n")
     
@@ -189,22 +231,37 @@ def CreateMessages(a_Data, a_Static):
     
     for l_Field in l_Message["fields"]:
       l_Source.write("    " + CreateParameter(l_Field, a_Static) + "C" + l_MessageName + "::get" + l_Field["name"] + "() {\n")
-      l_Source.write("      return m_" + l_Field["name"] + ";\n")
+      if l_Field["type"] != "bool":
+        l_Source.write("      return m_" + l_Field["name"] + ";\n")
+      else:
+        l_Source.write("      return (m_Flags & " + str(1 << l_Flags[l_Field["name"]]) + ") != 0;\n")
+        
       l_Source.write("    }\n\n")
       
     l_Source.write("    void C" + l_MessageName + "::serialize(ISerializer *a_pSerializer) {\n")
     l_Source.write("      a_pSerializer->addU16((irr::u16)enMessageIDs::" + l_MessageName + ");\n\n")
       
     for l_Field in l_Message["fields"]:
-      l_Source.write("      a_pSerializer->")
-      if l_Field["type"] == "irr::core::vector3df":
-        l_Source.write("addVector3df")
-      elif l_Field["type"] == "std::string":
-        l_Source.write("addString")
-      elif "irr::" in l_Field["type"]:
-        l_Source.write("add" + l_Field["type"][5:].upper())
-          
-      l_Source.write("(m_" + l_Field["name"] + ");\n")
+      if l_Field["type"] != "bool":
+        l_Source.write("      a_pSerializer->")
+        if l_Field["type"] == "irr::core::vector3df":
+          l_Source.write("addVector3df")
+        elif l_Field["type"] == "std::string":
+          l_Source.write("addString")
+        elif "irr::" in l_Field["type"]:
+          l_Source.write("add" + l_Field["type"][5:].upper())
+            
+        l_Source.write("(m_" + l_Field["name"] + ");\n")
+      
+    if l_FlagCnt > 0:
+      if l_FlagCnt <= 8:
+        l_Source.write("      a_pSerializer->addU8(m_Flags);\n")
+      elif l_FlagCnt <= 16:
+        l_Source.write("      a_pSerializer->addU16(m_Flags);\n")
+      elif l_FlagCnt <= 32:
+        l_Source.write("      a_pSerializer->addU32(m_Flags);\n")
+      else:
+        l_Source.write("      a_pSerializer->addU64(m_Flags);\n")
       
     l_Source.write("    }\n\n")
     

@@ -155,14 +155,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h" />
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Editor.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CWorldNode.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Editor.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CWorldNode.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

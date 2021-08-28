@@ -52,8 +52,6 @@ function initialize()
     g_GameSetup["settings"]["starting_positions"] = 0
   end
   
-  io.write("***** " .. type(g_GameSetup["settings"]["reverse_grid"      ]) .. "\n")
-  
   dialog:createui();
   audio:startsoundtrack(0)
   fillItems()
@@ -99,6 +97,10 @@ function uibuttonclicked(a_Id, a_Name)
       system:statechange(1)
     end
   elseif a_Name == "ok" then
+    local l_Players = { }
+    
+    
+    
     local s = serializeTable(g_GameSetup, 2)
     system:setsetting("game_setup", s)
     system:pushscript("data/lua/menu_selecttrack.lua")

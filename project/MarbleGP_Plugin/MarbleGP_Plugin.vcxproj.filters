@@ -27,6 +27,15 @@
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Editor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CWorldNode.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CDustbinId.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -39,6 +48,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Editor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CWorldNode.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CDustbinId.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

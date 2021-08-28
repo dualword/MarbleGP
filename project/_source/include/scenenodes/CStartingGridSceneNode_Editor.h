@@ -19,9 +19,10 @@ namespace dustbin {
         irr::video::S3DVertex m_aVertices[20];
 
         int m_iMarblesPerRow;
-        float m_fWidth,   /**< Total width of the grid*/
-              m_fLength,  /**< Total length of the grid*/
-              m_fAngle;   /**< Angle around the Y-axis of the grid*/
+        float m_fWidth,      /**< Total width of the grid*/
+              m_fRowLength,  /**< Total length of the grid*/
+              m_fOffset,     /**< The offset of the first marble in a row to the last marble in a row */
+              m_fAngle;      /**< Angle around the Y-axis of the grid*/
 
         irr::scene::IMeshSceneNode* m_pMarbles[16]; /**< The marble nodes */
 
@@ -41,6 +42,8 @@ namespace dustbin {
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
+
+        virtual irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent = 0, irr::scene::ISceneManager* a_pNewManager = 0);
     };
   }
 }

@@ -52,6 +52,44 @@
         { "name": "folder"  , "type": "std::string" },
         { "name": "position", "type": "int"         }
       ]
+    },
+    "SPlayerRank": {
+      "comment": "This table holds all data for the championship of a player",
+      "fields": [
+        { "name": "name"     , "type": "std::string"      },
+        { "name": "points"   , "type": "int"              },
+        { "name": "positions", "type": "std::vector<int>" },
+        { "name": "respawn"  , "type": "int"              },
+        { "name": "stunned"  , "type": "int"              },
+        { "name": "dnf"      , "type": "int"              },
+        { "name": "firstrace", "type": "int"              }
+      ]
+    },
+    "SPlayerResult": {
+      "comment": "Data structure for the players' results in a race",
+      "fields": [
+        { "name": "player" , "type": "std::string" },
+        { "name": "laps"   , "type": "int"         },
+        { "name": "time"   , "type": "int"         },
+        { "name": "respawn", "type": "int"         },
+        { "name": "stunned", "type": "int"         }
+      ]
+    },
+    "SRace": {
+      "comment": "This table holds all data necessary to define a race",
+      "fields": [
+        { "name": "track" , "type": "std::string"                },
+        { "name": "laps"  , "type": "int"                        },
+        { "name": "result", "type": "std::vector<SPlayerResult>" }
+      ]
+    },
+    "SChampionShip": {
+      "comment": "A data structure that holds all data of a championship",
+      "fields": [
+        { "name": "class"  , "type": "std::string"              },
+        { "name": "players", "type": "std::vector<SPlayerRank>" },
+        { "name": "races"  , "type": "std::vector<SRace>"       }
+      ]
     }
   }
 }

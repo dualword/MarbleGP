@@ -42,6 +42,9 @@ namespace dustbin {
           .addFunction("removetexture"         , &CLuaSingleton_system::removeTexture)
           .addFunction("gettracklist"          , &CLuaSingleton_system::getTrackList)
           .addFunction("fileexists"            , &CLuaSingleton_system::fileExists)
+          .addFunction("createtable"           , &CLuaSingleton_system::createTable)
+          .addFunction("tabletesttolua"        , &CLuaSingleton_system::tableTestToLua)
+          .addFunction("tabletesttocpp"        , &CLuaSingleton_system::tableTestToCpp)
         .endClass();
 
       std::error_code l_cError;
@@ -364,6 +367,215 @@ namespace dustbin {
     */
     bool CLuaSingleton_system::fileExists(const std::string& a_sFile) {
       return m_pGlobal->getFileSystem()->existFile(a_sFile.c_str());
+    }
+
+    /**
+    * This function creates a table for communication
+    * between LUA and C++
+    * @param a_pState the LUA state. A string parameter with the table name is expected
+    * @return "1" if a table was created and pushed to the stack, "0" otherwise
+    */
+    int CLuaSingleton_system::createTable(lua_State* a_pState) {
+      int l_iArgC = lua_gettop(a_pState);
+      if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"createtable\". 1 argument required."); return 0; }
+      if (!lua_isstring(a_pState, lua_gettop(a_pState))) { luaL_error(a_pState, "\"table\" is not a string."); return  0; }
+
+      std::string l_sTable = lua_tostring(a_pState, lua_gettop(a_pState));
+      lua_pop(a_pState, 1);
+
+      if (l_sTable == "SVector3d") {
+        SVector3d l_cVector;
+        l_cVector.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SColor") {
+        SColor l_cColor;
+        l_cColor.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SSettings") {
+        SSettings l_cSettings;
+        l_cSettings.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "STrack") {
+        STrack l_cTrack;
+        l_cTrack.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SPlayerRank") {
+        SPlayerRank l_cPlayerRank;
+        l_cPlayerRank.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SPlayerResult") {
+        SPlayerResult l_cPlayerResult;
+        l_cPlayerResult.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SRace") {
+        SRace l_cRace;
+        l_cRace.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SChampionShip") {
+        SChampionShip l_cChampionship;
+        l_cChampionship.pushToStack(a_pState);
+        return 1;
+      }
+
+      return 0;
+    }
+
+    /**
+    * A little test function for the LUA tables that
+    * returns a table to C++
+    */
+    int CLuaSingleton_system::tableTestToCpp(lua_State* a_pState) {
+      int l_iArgC = lua_gettop(a_pState);
+      if (l_iArgC < 3) { luaL_error(a_pState, "Not enough arguments for function \"tabletesttocpp\". 2 arguments required."); return 0; }
+      if (!lua_isstring(a_pState, lua_gettop(a_pState))) { luaL_error(a_pState, "\"table\" is not a string."); return  0; }
+
+      std::string l_sTable = lua_tostring(a_pState, lua_gettop(a_pState));
+      lua_pop(a_pState, 1);
+
+      printf("==> %s\n", l_sTable.c_str());
+
+      if (l_sTable == "SPlayerRank") {
+        SPlayerRank l_cRank;
+        l_cRank.loadFromStack(a_pState);
+
+        /*
+          Pop Vector from LUA stack code:
+
+          {
+            lua_pushstring(a_pState, "positions");
+            lua_gettable(a_pState, -2);
+
+            if (lua_istable(a_pState, -1)) {
+              int l_iCount = (int)lua_rawlen(a_pState, -1);
+
+              for (int l_iIndex = 0; l_iIndex < l_iCount; l_iIndex++) {
+                int l_iLuaIndex = l_iIndex + 1;
+                lua_pushinteger(a_pState, l_iLuaIndex);
+                lua_gettable(a_pState, -2);
+                m_positions.push_back(lua_tointeger(a_pState, -1));
+                lua_pop(a_pState, 1);
+              }
+
+              lua_pop(a_pState, 1);
+            }
+            else {
+              printf("Not a table, too bad.\n");
+            }
+          }
+
+        */
+      }
+      else if (l_sTable == "SPlayerResult") {
+        SPlayerResult l_cResult;
+        l_cResult.loadFromStack(a_pState);
+      }
+      else if (l_sTable == "SRace") {
+        SRace l_cRace;
+        l_cRace.loadFromStack(a_pState);
+      }
+      else if (l_sTable == "SChampionShip") {
+        SChampionShip l_cChampionship;
+        l_cChampionship.loadFromStack(a_pState);
+      }
+      return 0;
+    }
+
+    /**
+    * A little test function for the LUA tables that
+    * returns a table to LUA
+    */
+    int CLuaSingleton_system::tableTestToLua(lua_State* a_pState) {
+      int l_iArgC = lua_gettop(a_pState);
+      if (l_iArgC < 2) { luaL_error(a_pState, "Not enough arguments for function \"tabletesttolua\". 1 argument required."); return 0; }
+      if (!lua_isstring(a_pState, lua_gettop(a_pState))) { luaL_error(a_pState, "\"table\" is not a string."); return  0; }
+
+      std::string l_sTable = lua_tostring(a_pState, lua_gettop(a_pState));
+      lua_pop(a_pState, 1);
+
+      printf("==> %s\n", l_sTable.c_str());
+
+      if (l_sTable == "SPlayerRank") {
+        SPlayerRank l_cRank;
+
+        l_cRank.m_name = "TestName";
+        l_cRank.m_points    = 23;
+        l_cRank.m_firstrace = 1;
+        l_cRank.m_respawn   = 2;
+        l_cRank.m_stunned   = 3;
+        l_cRank.m_dnf       = 4;
+        while (l_cRank.m_positions.size() < 16) l_cRank.m_positions.push_back((int)l_cRank.m_positions.size());
+
+        l_cRank.pushToStack(a_pState);
+
+        return 1;
+      }
+      else if (l_sTable == "SPlayerResult") {
+        SPlayerResult l_cPlayerResult;
+
+        l_cPlayerResult.m_player  = "TestPlayer";
+        l_cPlayerResult.m_laps    = 3;
+        l_cPlayerResult.m_respawn = 0;
+        l_cPlayerResult.m_stunned = 1;
+        l_cPlayerResult.m_time    = 2;
+
+        l_cPlayerResult.pushToStack(a_pState);
+
+        return 1;
+      }
+      else if (l_sTable == "SRace") {
+        SRace l_cRace;
+
+        l_cRace.m_laps  = 23;
+        l_cRace.m_track = "TestTrack";
+
+        l_cRace.pushToStack(a_pState);
+        
+        return 1;
+      }
+      else if (l_sTable == "SChampionShip") {
+        SChampionShip l_cChampionship;
+
+        l_cChampionship.m_class = "MarbleTest";
+        
+        for (int i = 0; i < 8; i++) {
+          SPlayerRank l_cPlayer;
+
+          l_cPlayer.m_name = "DummyPlayer " + std::to_string(i + 1);
+          
+          l_cChampionship.m_players.push_back(l_cPlayer);
+        }
+
+        for (int i = 0; i < 4; i++) {
+          SRace l_cRace;
+
+          l_cRace.m_track = "TestTrack " + std::to_string(i + 1);
+          l_cRace.m_laps  = i + 3;
+          
+          for (int j = 0; j < 8; j++) {
+            SPlayerResult l_cPlayer;
+
+            l_cPlayer.m_player = "DummyPlayer " + std::to_string(i + 1);
+            l_cPlayer.m_laps   = i + 3;
+            l_cPlayer.m_time   = 10 * (j + 5);
+
+            l_cRace.m_result.push_back(l_cPlayer);
+          }
+
+          l_cChampionship.m_races.push_back(l_cRace);
+        }
+
+        l_cChampionship.pushToStack(a_pState);
+        return 1;
+      }
+
+      return 0;
     }
 
     /**
