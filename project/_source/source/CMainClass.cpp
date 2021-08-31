@@ -1010,8 +1010,8 @@ namespace dustbin {
       }
       else if (l_sPrefix == "generate") {
         irr::core::recti l_aDestRect[2] = {
-          irr::core::recti(0,   0, 511, 255),
-          irr::core::recti(0, 255, 511, 511)
+          irr::core::recti(0,   0, 512, 256),
+          irr::core::recti(0, 256, 512, 512)
         };
 
         irr::video::ITexture* l_pTexture = m_pDrv->findTexture(l_sPostFix.c_str());
@@ -1105,6 +1105,10 @@ namespace dustbin {
 
           m_pDrv->setRenderTarget(0, false, false);
         }
+
+        irr::video::IImage* l_pImg = m_pDrv->createImage(l_pTexture, irr::core::vector2di(0, 0), irr::core::dimension2du(512, 512));
+        m_pDrv->writeImageToFile(l_pImg, (platform::portableGetDataPath() + platform::s2ws(l_sPostFix) + L".png").c_str());
+        l_pImg->drop();
 
         return l_pTexture;
       }

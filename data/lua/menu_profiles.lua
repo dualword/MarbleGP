@@ -442,7 +442,7 @@ function uibuttonclicked(a_Id, a_Name)
         
         local l_Player = { }
         l_Player["name"    ] = l_Name
-        l_Player["controls"] = ""
+        l_Player["controls"] = "DustbinController;control;Key;Forward;;M;a;a;a;-0md;b;control;Key;Backward;;O;a;a;a;-0md;b;control;Key;Left;;L;a;a;a;-0md;b;control;Key;Right;;N;a;a;a;-0md;b;control;Key;Brake;;G;a;a;a;-0md;b;control;Key;Rearview;;j;a;a;a;-0md;b;control;Key;Respawn;;n;a;a;a;-0md;b"
         l_Player["texture" ] = ""
         
         table.insert(g_Players, l_Player)
@@ -615,12 +615,12 @@ function getTextureString()
            "&number="       .. "1"
   elseif g_Texture["texture_mode"]:gettext() == "Imported" then
     if g_Texture["texture"]:gettext() ~= "" then
-      return "imported://file=data/textures/" .. g_Texture["texture"]:gettext() .. "&color=" .. tostring(g_Texture["imported_name"]) .. "&background=" .. tostring(g_Texture["imported_back"])
+      return "imported://file=data/textures/" .. g_Texture["texture"]:gettext() .. "&color=" .. tostring(g_Texture["imported_name"]:gettext()) .. "&background=" .. tostring(g_Texture["imported_back"]:gettext())
     else
-      return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&number=1"
+      return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9"
     end
   else
-    return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&number=1"
+    return "generate://pattern=texture_marbles2.png&numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9"
   end
 end
 
@@ -628,7 +628,7 @@ function updateTexture()
   local l_Generate = getTextureString()
   
   io.write("Generate: " .. l_Generate .. "\n")
-  g_Marble3d:settexture(0, l_Generate)
+  g_Marble3d:settexture(0, l_Generate .. "&number=1")
   
   if g_OldTexture ~= nil then
     system:removetexture(g_OldTexture)

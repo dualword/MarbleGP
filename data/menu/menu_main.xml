@@ -206,9 +206,9 @@ Attribute Track: ""
   
   <element type="MenuButton" rect="center: -22, -12, -3, -8" font="big" tooltip="Race against other players or AI">
     <attributes>
-      <attribute key="Name" value="single_race" />
+      <attribute key="Name" value="free_racing" />
       <attribute key="Id" value="23001" />
-      <attribute key="Caption" value="Single Race" />
+      <attribute key="Caption" value="Free Racing" />
     </attributes>
   </element>
   <element type="MenuButton" rect="center: 4, -12, 23, -8" font="big" tooltip="Play a cup against other players or AI">

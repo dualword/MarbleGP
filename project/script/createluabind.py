@@ -231,7 +231,12 @@ def CreateTables(a_Json):
       elif l_Field["type"] == "std::map":
         l_Header.write("<" + l_Field["key"] + ", " + l_Field["element"] + ">")
       
-      l_Header.write(" m_" + l_Field["name"] + ";\n")
+      l_Header.write(" m_" + l_Field["name"] + ";")
+      
+      if "comment" in l_Field:
+        l_Header.write("  /**< " + l_Field["comment"] + " */")
+      
+      l_Header.write("\n")
     
     l_Header.write("\n")
     l_Header.write("  " + l_Table + "();\n\n")

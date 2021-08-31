@@ -1,5 +1,6 @@
 -- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
 
+system:executeluascript("data/lua/dialog_confirm.lua")
 system:executeluascript("data/lua/helpers_main.lua")
 system:executeluascript("data/lua/serializer.lua")
 
@@ -17,31 +18,13 @@ function initialize()
   g_Camera:activate()
   
   -- dialog:addlayoutraster()
-  dialog:loaddialog("data/menu/menu_main.xml")
-  dialog:loaddialog("data/menu/version.xml")
+  dialog:loaddialog("data/menu/menu_main.xml"     )
+  dialog:loaddialog("data/menu/version.xml"       )
+  dialog:loaddialog("data/menu/dialog_confirm.xml")
   
   dialog:createui();
   
   audio:startsoundtrack(0)
-  
-  local l_Test = {
-    [1] = "SPlayerRank",
-    [2] = "SPlayerResult",
-    [3] = "SRace",
-    [4] = "SChampionShip"
-  }
-  
-  for k,v in pairs(l_Test) do
-    io.write("\n*** Table test: " .. v .. "\n")
-    local l_Test = system:tabletesttolua(v)
-    
-    if l_Test ~= nil then
-      io.write("\n*********************\n")
-      io.write(serializeTable(l_Test, 2))
-      io.write("\n*********************\n")
-      system:tabletesttocpp(l_Test, v)
-    end
-  end
 end
 
 function cleanup()
@@ -50,15 +33,30 @@ function cleanup()
 end
 
 function uibuttonclicked(a_Id, a_Name)
+  confirmDialog_handleButton(a_Id, a_Name)
+  
   if a_Name == "settings" then
     system:pushscript("data/lua/menu_settings.lua")
     system:statechange(1)
   elseif a_Name == "profiles" then
     system:pushscript("data/lua/menu_profiles.lua")
     system:statechange(1)
-  elseif a_Name == "single_race" then
-    system:pushscript("data/lua/menu_setupgame.lua")
-    system:statechange(1)
+  elseif a_Name == "free_racing" then
+    local l_Profiles = system:getsetting("profiles")
+    
+    if l_Profiles ~= "" then
+      local s = "g_Players = " .. l_Profiles
+      system:executeluastring(s)
+    else
+      g_Players = { }
+    end
+    
+    if #g_Players == 0 then
+      showConfirmDialog("No player profiles found.\n\nPlease go to the \"Profiles\" dialog and add player profiles. When you have added one or more profiles you can start playing.")
+    else
+      system:pushscript("data/lua/menu_setupgame.lua")
+      system:statechange(1)
+    end
   elseif a_Name == "cup" then
     system:pushscript("data/lua/menu_setupgame.lua")
     system:statechange(1)

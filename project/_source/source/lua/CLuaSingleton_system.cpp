@@ -43,8 +43,10 @@ namespace dustbin {
           .addFunction("gettracklist"          , &CLuaSingleton_system::getTrackList)
           .addFunction("fileexists"            , &CLuaSingleton_system::fileExists)
           .addFunction("createtable"           , &CLuaSingleton_system::createTable)
+          .addFunction("getscreensize"         , &CLuaSingleton_system::getScreenSize)
           .addFunction("tabletesttolua"        , &CLuaSingleton_system::tableTestToLua)
           .addFunction("tabletesttocpp"        , &CLuaSingleton_system::tableTestToCpp)
+          .addFunction("createtexture"         , &CLuaSingleton_system::createTexture)
         .endClass();
 
       std::error_code l_cError;
@@ -369,6 +371,27 @@ namespace dustbin {
       return m_pGlobal->getFileSystem()->existFile(a_sFile.c_str());
     }
 
+    void CLuaSingleton_system::createTexture(const std::string& a_sUrl) {
+      m_pGlobal->createTexture(a_sUrl);
+    }
+
+    /**
+    * Return the size of the current window to LUA
+    * @param a_pState the LUA state
+    * @return "1" as one vector is returned
+    */
+    int CLuaSingleton_system::getScreenSize(lua_State* a_pState) {
+      SVector2d l_cSize;
+      irr::core::dimension2du l_cDim = m_pGlobal->getVideoDriver()->getScreenSize();
+      
+      l_cSize.m_x = l_cDim.Width;
+      l_cSize.m_y = l_cDim.Height;
+
+      l_cSize.pushToStack(a_pState);
+
+      return 1;
+    }
+
     /**
     * This function creates a table for communication
     * between LUA and C++
@@ -383,7 +406,12 @@ namespace dustbin {
       std::string l_sTable = lua_tostring(a_pState, lua_gettop(a_pState));
       lua_pop(a_pState, 1);
 
-      if (l_sTable == "SVector3d") {
+      if (l_sTable == "SVector2d") {
+        SVector2d l_cVector;
+        l_cVector.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SVector3d") {
         SVector3d l_cVector;
         l_cVector.pushToStack(a_pState);
         return 1;
@@ -398,9 +426,19 @@ namespace dustbin {
         l_cSettings.pushToStack(a_pState);
         return 1;
       }
+      else if (l_sTable == "SScreenRect") {
+        SScreenRect l_cRect;
+        l_cRect.pushToStack(a_pState);
+        return 1;
+      }
       else if (l_sTable == "STrack") {
         STrack l_cTrack;
         l_cTrack.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SPlayer") {
+        SPlayer l_cPlayer;
+        l_cPlayer.pushToStack(a_pState);
         return 1;
       }
       else if (l_sTable == "SPlayerRank") {
@@ -421,6 +459,16 @@ namespace dustbin {
       else if (l_sTable == "SChampionShip") {
         SChampionShip l_cChampionship;
         l_cChampionship.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SViewPort") {
+        SViewPort l_cViewport;
+        l_cViewport.pushToStack(a_pState);
+        return 1;
+      }
+      else if (l_sTable == "SGameSetup") {
+        SGameSetup l_cSetup;
+        l_cSetup.pushToStack(a_pState);
         return 1;
       }
 
@@ -499,12 +547,10 @@ namespace dustbin {
       std::string l_sTable = lua_tostring(a_pState, lua_gettop(a_pState));
       lua_pop(a_pState, 1);
 
-      printf("==> %s\n", l_sTable.c_str());
-
       if (l_sTable == "SPlayerRank") {
         SPlayerRank l_cRank;
 
-        l_cRank.m_name = "TestName";
+        l_cRank.m_playerid  = 46;
         l_cRank.m_points    = 23;
         l_cRank.m_firstrace = 1;
         l_cRank.m_respawn   = 2;
@@ -519,11 +565,11 @@ namespace dustbin {
       else if (l_sTable == "SPlayerResult") {
         SPlayerResult l_cPlayerResult;
 
-        l_cPlayerResult.m_player  = "TestPlayer";
-        l_cPlayerResult.m_laps    = 3;
-        l_cPlayerResult.m_respawn = 0;
-        l_cPlayerResult.m_stunned = 1;
-        l_cPlayerResult.m_time    = 2;
+        l_cPlayerResult.m_playerid = 46;
+        l_cPlayerResult.m_laps     = 3;
+        l_cPlayerResult.m_respawn  = 0;
+        l_cPlayerResult.m_stunned  = 1;
+        l_cPlayerResult.m_time     = 2;
 
         l_cPlayerResult.pushToStack(a_pState);
 
@@ -545,11 +591,16 @@ namespace dustbin {
         l_cChampionship.m_class = "MarbleTest";
         
         for (int i = 0; i < 8; i++) {
-          SPlayerRank l_cPlayer;
-
-          l_cPlayer.m_name = "DummyPlayer " + std::to_string(i + 1);
+          SPlayer l_cPlayer;
+          l_cPlayer.m_name     = "DummyPlayer " + std::to_string(i);
           
           l_cChampionship.m_players.push_back(l_cPlayer);
+        }
+
+        for (int i = 0; i < 8; i++) {
+          SPlayerRank l_cPlayer;
+
+          l_cChampionship.m_standings.push_back(l_cPlayer);
         }
 
         for (int i = 0; i < 4; i++) {
@@ -561,9 +612,9 @@ namespace dustbin {
           for (int j = 0; j < 8; j++) {
             SPlayerResult l_cPlayer;
 
-            l_cPlayer.m_player = "DummyPlayer " + std::to_string(i + 1);
-            l_cPlayer.m_laps   = i + 3;
-            l_cPlayer.m_time   = 10 * (j + 5);
+            l_cPlayer.m_playerid = i + 12;
+            l_cPlayer.m_laps     = i + 3;
+            l_cPlayer.m_time     = 10 * (j + 5);
 
             l_cRace.m_result.push_back(l_cPlayer);
           }

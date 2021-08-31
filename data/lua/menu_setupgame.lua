@@ -7,6 +7,7 @@ g_Players   = { }
 g_AddPlayer = -1
 
 function initialize()
+  system:createtexture(getDefaultTexture(16, 1))
   io.write("Setup Race script started.\n")
   
   g_Smgr = system:getscenemanager()
@@ -32,6 +33,8 @@ function initialize()
   if l_Profiles ~= "" then
     local s = "g_Players = " .. l_Profiles
     system:executeluastring(s)
+  else
+    g_Players = { }
   end
   
   local l_Setup = system:getsetting("game_setup")
@@ -39,6 +42,28 @@ function initialize()
   if l_Setup ~= "" then
     local s = "g_GameSetup = " .. l_Setup
     system:executeluastring(s)
+  end
+  
+  local l_ToErase = { }
+  
+  if g_GameSetup["players"] ~= nil then
+    local l_Index = #g_GameSetup["players"]
+    
+    while l_Index >= 1 do
+      local l_Erase = true
+      
+      for i = 1, #g_Players do
+        if g_Players[i]["name"] == g_GameSetup["players"][l_Index] then
+          l_Erase = false
+        end
+      end
+
+      if l_Erase then
+        table.remove(g_GameSetup["players"], l_Index)
+      end
+      
+      l_Index = l_Index - 1
+    end
   end
   
   if g_GameSetup["settings"] == nil then
@@ -87,6 +112,95 @@ function getUnassignedPlayers()
   return l_Ret
 end
 
+function fillGlobalVpData()
+  if g_ViewportData == nil then
+    local s = system:getsetting("viewportdata")
+    if s ~= "" then
+      s = "g_ViewportData = " .. s
+      system:executeluastring(s)
+    end
+  end
+  
+  if g_ViewportData == nil or g_ViewportData["viewports"] == nil or g_ViewportData["distribution"] == nil then
+    g_ViewportData = {
+      -- The definition of the distribution
+      -- of the viewports for [key] players
+      viewports = {
+        [1] = { columns = 1, rows = 1 },
+        [2] = { columns = 1, rows = 2 },
+        [3] = { columns = 2, rows = 2 },
+        [4] = { columns = 2, rows = 2 },
+        [5] = { columns = 3, rows = 2 },
+        [6] = { columns = 3, rows = 2 },
+        [7] = { columns = 3, rows = 3 },
+        [8] = { columns = 3, rows = 3 }
+      },
+      -- Which of the viewports are used for which player?
+      distribution = {
+        [1] = { [1] = 1 },
+        [2] = { [1] = 1, [2] = 2 },
+        [3] = { [1] = 1, [2] = 2, [3] = 3 },
+        [4] = { [1] = 1, [2] = 2, [3] = 3, [4] =  4 },
+        [5] = { [1] = 1, [2] = 2, [3] = 3, [4] =  4, [5] = 5 },
+        [6] = { [1] = 1, [2] = 2, [3] = 3, [4] =  4, [5] = 5, [6] = 6 },
+        [7] = { [1] = 1, [2] = 2, [3] = 3, [4] =  5, [5] = 7, [6] = 8, [7] = 9 },
+        [8] = { [1] = 1, [2] = 2, [3] = 3, [4] =  4, [5] = 6, [6] = 7, [7] = 8, [8] = 9 }
+      }
+    }
+  end
+end
+
+function createViewport(a_PlayerIndex, a_NumberOfPlayers)
+  local l_Size = system:getscreensize()
+  
+  fillGlobalVpData()
+  
+  local l_Viewport = system:createtable("SViewPort")
+  l_Viewport["playerid"] = a_PlayerIndex
+  
+  local l_Pos = g_ViewportData["distribution"][a_NumberOfPlayers][a_PlayerIndex] - 1
+  local l_Row = math.floor(l_Pos / g_ViewportData["viewports"][a_NumberOfPlayers]["columns"])
+  local l_Col = math.fmod (l_Pos,  g_ViewportData["viewports"][a_NumberOfPlayers]["columns"])
+  
+  l_Viewport["rect"]["upperleftcorner" ]["x"] = math.floor( l_Col      * l_Size["x"] / g_ViewportData["viewports"][a_NumberOfPlayers]["columns"])
+  l_Viewport["rect"]["upperleftcorner" ]["y"] = math.floor( l_Row      * l_Size["y"] / g_ViewportData["viewports"][a_NumberOfPlayers]["rows"   ])
+  l_Viewport["rect"]["lowerrightcorner"]["x"] = math.floor((l_Col + 1) * l_Size["x"] / g_ViewportData["viewports"][a_NumberOfPlayers]["columns"])
+  l_Viewport["rect"]["lowerrightcorner"]["y"] = math.floor((l_Row + 1) * l_Size["y"] / g_ViewportData["viewports"][a_NumberOfPlayers]["rows"   ])
+  
+  return l_Viewport
+end
+
+function getDefaultTexture(a_PlayerIndex, a_Class)
+  local l_Textures = {
+    [ 1] = "numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9",
+    [ 2] = "numbercolor=000000&numberback=fd5320&numberborder=fd5320&ringcolor=ba3b15&patterncolor=000000&patternback=fd5320",
+    [ 3] = "numbercolor=000000&numberback=3aec1e&numberborder=3aec1e&ringcolor=28ae13&patterncolor=000000&patternback=3aec1e",
+    [ 4] = "numbercolor=000000&numberback=c0c000&numberborder=c0c000&ringcolor=8d8d00&patterncolor=000000&patternback=c0c000",
+    [ 5] = "numbercolor=000000&numberback=ffc0cb&numberborder=ffc0cb&ringcolor=bc8d95&patterncolor=000000&patternback=ffc0cb",
+    [ 6] = "numbercolor=ffffff&numberback=6a0dad&numberborder=6a0dad&ringcolor=c1bbcc&patterncolor=ffffff&patternback=6a0dad",
+    [ 7] = "numbercolor=000000&numberback=00ffff&numberborder=00ffff&ringcolor=00bcbc&patterncolor=000000&patternback=00ffff",
+    [ 8] = "numbercolor=ffffff&numberback=000000&numberborder=000000&ringcolor=bbbbbb&patterncolor=ffffff&patternback=000000",
+    [ 9] = "numbercolor=000000&numberback=ffdab9&numberborder=ffdab9&ringcolor=b9906b&patterncolor=000000&patternback=ffdab9",
+    [10] = "numbercolor=000000&numberback=87cefa&numberborder=87cefa&ringcolor=8ebfdd&patterncolor=000000&patternback=87cefa",
+    [11] = "numbercolor=000000&numberback=daa520&numberborder=daa520&ringcolor=b8860b&patterncolor=000000&patternback=daa520",
+    [12] = "numbercolor=000000&numberback=9932cc&numberborder=9932cc&ringcolor=da70d6&patterncolor=000000&patternback=9932cc",
+    [13] = "numbercolor=ffffff&numberback=00008b&numberborder=00008b&ringcolor=0000ff&patterncolor=ffffff&patternback=00008b",
+    [14] = "numbercolor=000000&numberback=ffdead&numberborder=ffdead&ringcolor=ffefd5&patterncolor=000000&patternback=ffdead",
+    [15] = "numbercolor=000000&numberback=20b2aa&numberborder=20b2aa&ringcolor=7fffd4&patterncolor=000000&patternback=20b2aa",
+    [16] = "numbercolor=000000&numberback=ffffff&numberborder=ffffff&ringcolor=dddddd&patterncolor=000000&patternback=ffffff"
+  }
+  
+  local l_ClassTexture = "texture_marblegp.png"
+  
+  if a_Class == 0 then
+    l_ClassTexture = "texture_marbles3.png"
+  elseif a_Class == 1 then
+    l_ClassTexture = "texture_marbles2.png"
+  end
+  
+  return "generate://pattern=" .. l_ClassTexture .. "&" .. l_Textures[a_PlayerIndex] .. "&number=" .. tostring(a_PlayerIndex)
+end
+
 function uibuttonclicked(a_Id, a_Name)
   if a_Name == "cancel" then
     if g_Items["add_player"]["dialog"]:isvisible() then
@@ -97,14 +211,43 @@ function uibuttonclicked(a_Id, a_Name)
       system:statechange(1)
     end
   elseif a_Name == "ok" then
-    local l_Players = { }
-    
-    
-    
-    local s = serializeTable(g_GameSetup, 2)
-    system:setsetting("game_setup", s)
-    system:pushscript("data/lua/menu_selecttrack.lua")
-    system:statechange(1)
+    if #g_GameSetup["players"] == 0 then
+      -- ToDo: add message
+    else
+      local l_Game = system:createtable("SGameSetup")
+      
+      for i = 1, #g_GameSetup["players"] do
+        local l_Player = g_GameSetup["players"][i]
+        for j = 1, #g_Players do
+          if g_Players[j]["name"] == l_Player then
+            local l_Copy = { }
+            
+            for k,v in pairs(g_Players[j]) do
+              l_Copy[k] = v
+            end
+            
+            if l_Copy["texture"] == "" then
+              l_Copy["texture"] = getDefaultTexture(j, 0)
+            else
+              l_Copy["texture"] = l_Copy["texture"] .. "&number=" .. tostring(j)
+            end
+            
+            table.insert(l_Game["players"], l_Copy)
+            
+            table.insert(l_Game["viewports"], createViewport(#l_Game["players"], #g_GameSetup["players"]))
+          end
+        end
+      end
+      
+      local s = serializeTable(g_GameSetup, 2)
+      system:setsetting("game_setup", s)
+      
+      s = serializeTable(l_Game, 2)
+      system:setglobal("next_game", s)
+      
+      system:pushscript("data/lua/menu_selecttrack.lua")
+      system:statechange(1)
+    end
   elseif a_Name == "add_player" then
     g_AddPlayer = a_Id
     g_Items["add_player"]["dialog"]:setvisible(true)
@@ -232,8 +375,6 @@ function fillItems()
   end
   
   updatePlayerUi()
-  
-  io.write("\n\n" .. serializeTable(g_Items) .. "\n\n")
 end
 
 function windowresized()
@@ -243,8 +384,6 @@ end
 function uivaluechanged(a_Id, a_Name, a_Value)
   io.write("Value Changed: " .. a_Name .. " (" .. tostring(a_Id) .. "): " .. tostring(a_Value) .. "\n")
   g_GameSetup["settings"][a_Name] = math.floor(a_Value)
-  
-  io.write("\n\n" .. serializeTable(g_GameSetup, 2) .. "\n\n")
 end
 
 function uicheckboxchanged(a_Id, a_Name, a_Checked)

@@ -265,6 +265,15 @@ namespace dustbin {
         * returns a table to C++
         */
         int tableTestToCpp(lua_State* a_pState);
+
+        /**
+        * Return the size of the current window to LUA
+        * @param a_pState the LUA state
+        * @return "1" as one vector is returned
+        */
+        int getScreenSize(lua_State* a_pState);
+
+        void createTexture(const std::string& a_sUrl);
     };
   }
 }
