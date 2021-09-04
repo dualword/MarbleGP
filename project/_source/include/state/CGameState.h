@@ -7,12 +7,19 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <_generated/lua/lua_tables.h>
+#include <gameclasses/SPlayer.h>
+#include <gfx/SViewPort.h>
 #include <state/IState.h>
+#include <vector>
+#include <map>
 
 namespace dustbin {
   namespace controller {
     class CControllerMenu;
   }
+
+  class CGlobal;
 
   namespace state {
     /**
@@ -20,20 +27,33 @@ namespace dustbin {
     * @author Christian Keimel
     * This is the state that show the error messages
     */
-    class CErrorState : public IState {
+    class CGameState : public IState {
       private:
-        bool m_bBackToLua;
+        irr::scene::ISceneManager* m_pSgmr;
+        irr::video::IVideoDriver * m_pDrv;
+        irr::gui::IGUIEnvironment* m_pGui;
+        irr::io::IFileSystem     * m_pFs;
+
+        CGlobal* m_pGlobal;
+
+        SChampionShip m_cChampionship;  /**< This record contains information about the game setup, e.g. players and viewports */
+
+        std::vector<gameclasses::SPlayer> m_vPlayers; /**< The players of the game*/
+
+        std::map<int, gfx::SViewPort> m_mViewports;  /**< The viewports of the game */
+
+        irr::core::recti m_cScreen; /**< The viewport covering the while screen */
 
         /**
-        * This function creates the UI, it is called from "activate" and "onResize"
+        * Find a single scene node by it's type
+        * @param a_eType the type to search for
+        * @param a_pParent the parent node to search
         */
-        void createUi();
-
-        controller::CControllerMenu* m_pCtrlMenu;
+        irr::scene::ISceneNode* findSceneNodeByType(irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pParent);
 
       public:
-        CErrorState();
-        virtual ~CErrorState();
+        CGameState();
+        virtual ~CGameState();
 
         /**
          * This method is called when the state is activated

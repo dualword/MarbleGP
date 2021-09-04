@@ -466,11 +466,6 @@ namespace dustbin {
         l_cViewport.pushToStack(a_pState);
         return 1;
       }
-      else if (l_sTable == "SGameSetup") {
-        SGameSetup l_cSetup;
-        l_cSetup.pushToStack(a_pState);
-        return 1;
-      }
 
       return 0;
     }

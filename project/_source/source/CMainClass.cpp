@@ -20,6 +20,7 @@
 #include <platform/CPlatform.h>
 #include <state/CErrorState.h>
 #include <gui_freetype_font.h>
+#include <state/CGameState.h>
 #include <gui/CMenuButton.h>
 #include <state/CLuaState.h>
 #include <CMainClass.h>
@@ -199,8 +200,9 @@ namespace dustbin {
       m_pGui->getSkin()->setColor(irr::gui::EGDC_GRAY_EDITABLE, irr::video::SColor(0xFF, 230, 230, 230));
       m_pGui->getSkin()->setColor(irr::gui::EGDC_GRAY_TEXT    , irr::video::SColor(0xFF,   0,   0,   0));
 
-      m_mStates[state::enState::LuaState] = new state::CLuaState();
+      m_mStates[state::enState::LuaState  ] = new state::CLuaState  ();
       m_mStates[state::enState::ErrorState] = new state::CErrorState();
+      m_mStates[state::enState::GameState ] = new state::CGameState ();
 
       m_cScreenSize = m_pDrv->getScreenSize();
 
@@ -273,22 +275,24 @@ namespace dustbin {
           int l_iFps = m_pDrv->getFPS();
           m_pDevice->setWindowCaption(std::wstring(L"Dustbin::Games - MarbleGP [" + std::to_wstring(l_iFps) + L" FPS]").c_str());
 
-          m_pDrv->beginScene();
-          m_pSmgr->drawAll();
+          if (m_pActiveState != nullptr && m_pActiveState->getId() != state::enState::GameState) {
+            m_pDrv->beginScene();
+            m_pSmgr->drawAll();
 
-          for (std::vector<irr::scene::ISceneManager*>::iterator it = m_vBeforeGui.begin(); it != m_vBeforeGui.end(); it++) {
-            m_pDrv->clearZBuffer();
-            (*it)->drawAll();
+            for (std::vector<irr::scene::ISceneManager*>::iterator it = m_vBeforeGui.begin(); it != m_vBeforeGui.end(); it++) {
+              m_pDrv->clearZBuffer();
+              (*it)->drawAll();
+            }
+
+            m_pGui->drawAll();
+
+            for (std::vector<irr::scene::ISceneManager*>::iterator it = m_vAfterGui.begin(); it != m_vAfterGui.end(); it++) {
+              m_pDrv->clearZBuffer();
+              (*it)->drawAll();
+            }
+
+            m_pDrv->endScene();
           }
-
-          m_pGui->drawAll();
-
-          for (std::vector<irr::scene::ISceneManager*>::iterator it = m_vAfterGui.begin(); it != m_vAfterGui.end(); it++) {
-            m_pDrv->clearZBuffer();
-            (*it)->drawAll();
-          }
-
-          m_pDrv->endScene();
 
           state::enState l_eState = state::enState::None;
 

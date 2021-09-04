@@ -198,7 +198,7 @@ function getDefaultTexture(a_PlayerIndex, a_Class)
     l_ClassTexture = "texture_marbles2.png"
   end
   
-  return "generate://pattern=" .. l_ClassTexture .. "&" .. l_Textures[a_PlayerIndex] .. "&number=" .. tostring(a_PlayerIndex)
+  return "generate://pattern=" .. l_ClassTexture .. "&" .. l_Textures[a_PlayerIndex]
 end
 
 function uibuttonclicked(a_Id, a_Name)
@@ -214,7 +214,7 @@ function uibuttonclicked(a_Id, a_Name)
     if #g_GameSetup["players"] == 0 then
       -- ToDo: add message
     else
-      local l_Game = system:createtable("SGameSetup")
+      local l_Championship = system:createtable("SChampionShip")
       
       for i = 1, #g_GameSetup["players"] do
         local l_Player = g_GameSetup["players"][i]
@@ -229,12 +229,13 @@ function uibuttonclicked(a_Id, a_Name)
             if l_Copy["texture"] == "" then
               l_Copy["texture"] = getDefaultTexture(j, 0)
             else
-              l_Copy["texture"] = l_Copy["texture"] .. "&number=" .. tostring(j)
+              l_Copy["texture"] = l_Copy["texture"]
             end
             
-            table.insert(l_Game["players"], l_Copy)
+            l_Copy["playerid"] = i
+            table.insert(l_Championship["players"], l_Copy)
             
-            table.insert(l_Game["viewports"], createViewport(#l_Game["players"], #g_GameSetup["players"]))
+            table.insert(l_Championship["viewports"], createViewport(#l_Championship["players"], #g_GameSetup["players"]))
           end
         end
       end
@@ -242,9 +243,10 @@ function uibuttonclicked(a_Id, a_Name)
       local s = serializeTable(g_GameSetup, 2)
       system:setsetting("game_setup", s)
       
-      s = serializeTable(l_Game, 2)
-      system:setglobal("next_game", s)
+      s = serializeTable(l_Championship, 2)
+      system:setglobal("championship", s)
       
+      system:pushscript("data/lua/menu_setupgame.lua")
       system:pushscript("data/lua/menu_selecttrack.lua")
       system:statechange(1)
     end
@@ -384,6 +386,14 @@ end
 function uivaluechanged(a_Id, a_Name, a_Value)
   io.write("Value Changed: " .. a_Name .. " (" .. tostring(a_Id) .. "): " .. tostring(a_Value) .. "\n")
   g_GameSetup["settings"][a_Name] = math.floor(a_Value)
+  
+  if a_Name == "starting_positions" then
+    if math.floor(a_Value) == 2 then
+      g_Items["settings"]["randomize_first"]:setenabled(false)
+    else
+      g_Items["settings"]["randomize_first"]:setenabled(true)
+    end
+  end
 end
 
 function uicheckboxchanged(a_Id, a_Name, a_Checked)

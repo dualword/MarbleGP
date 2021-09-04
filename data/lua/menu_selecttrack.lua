@@ -1,6 +1,9 @@
 -- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
 
+system:executeluascript("data/lua/splitstring.lua")
 system:executeluascript("data/lua/serializer.lua")
+system:executeluascript("data/lua/nextrace.lua")
+system:executeluascript("data/lua/shuffle.lua")
 system:executeluascript("data/lua/spairs.lua")
 
 g_GameSetup = { }
@@ -79,7 +82,6 @@ end
 
 function uibuttonclicked(a_Id, a_Name)
   if a_Name == "cancel" then
-    system:clearscriptstack()
     system:statechange(1)
   elseif a_Name == "btn_right" then
     g_Settings["page"] = g_Settings["page"] + 8
@@ -95,6 +97,24 @@ function uibuttonclicked(a_Id, a_Name)
     if l_Item ~= nil then
       local l_Track = l_Item:getproperty("Track")
       io.write("Track selected: \"" .. l_Track .. "\"\n")
+      
+      local s = "g_GameSetup = " .. system:getsetting("game_setup")
+      system:executeluastring(s)
+      
+      s = "g_Championship = " .. system:getglobal("championship")
+      system:executeluastring(s)
+      
+      -- Fill "thisrace" field
+      
+      startNextRace(g_Championship, l_Track, tonumber(g_Items["nolaps"]:getselecteditem()), g_GameSetup)
+      
+      system:setglobal("championship", serializeTable(g_Championship, 2))
+      
+      io.write("\n**************************\n")
+      io.write(serializeTable(g_Championship, 2))
+      io.write("\n**************************\n")
+      
+      system:statechange(2)
     end
   else
     io.write("Button clicked: \"" .. a_Name .. "\" (" .. tostring(a_Id) .. ")\n")

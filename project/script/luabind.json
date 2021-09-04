@@ -70,62 +70,59 @@
     "SPlayer": {
       "comment": "The data of a player for the game",
       "fields": [
+        { "name": "playerid", "type": "int"        , "comment": "The Id of the player" },
         { "name": "name"    , "type": "std::string", "comment": "The name of the player" },
         { "name": "controls", "type": "std::string", "comment": "String with the encoded controller data" },
-        { "name": "texture" , "type": "std::string" }
+        { "name": "texture" , "type": "std::string", "comment": "The texture of the player." }
       ]
     },
     "SPlayerRank": {
       "comment": "This table holds all data for the championship of a player",
       "fields": [
-        { "name": "playerid" , "type": "int"              },
-        { "name": "points"   , "type": "int"              },
-        { "name": "positions", "type": "std::vector<int>" },
-        { "name": "respawn"  , "type": "int"              },
-        { "name": "stunned"  , "type": "int"              },
-        { "name": "dnf"      , "type": "int"              },
-        { "name": "firstrace", "type": "int"              }
+        { "name": "playerid" , "type": "int"             , "comment": "The id of the player" },
+        { "name": "points"   , "type": "int"             , "comment": "Number of scored points" },
+        { "name": "positions", "type": "std::vector<int>", "comment": "A vector with the finished position counter" },
+        { "name": "respawn"  , "type": "int"             , "comment": "How often did the player respawn?" },
+        { "name": "stunned"  , "type": "int"             , "comment": "How often was the player stunned?" },
+        { "name": "dnf"      , "type": "int"             , "comment": "How often did the player not finish?" },
+        { "name": "firstrace", "type": "int"             , "comment": "Finish position of the first race. May be importand as last resort when calculating the standings." }
       ]
     },
     "SPlayerResult": {
       "comment": "Data structure for the players' results in a race",
       "fields": [
-        { "name": "playerid", "type": "int" },
-        { "name": "laps"    , "type": "int" },
-        { "name": "time"    , "type": "int" },
-        { "name": "respawn" , "type": "int" },
-        { "name": "stunned" , "type": "int" }
+        { "name": "playerid", "type": "int", "comment": "The id of the player" },
+        { "name": "laps"    , "type": "int", "comment": "The number of laps the player has raced in the race" },
+        { "name": "time"    , "type": "int", "comment": "The race time (-1 == not finished)" },
+        { "name": "respawn" , "type": "int", "comment": "How often did the player respawn in this race?" },
+        { "name": "stunned" , "type": "int", "comment": "How often was the player stunned in this race?" }
       ]
     },
     "SRace": {
       "comment": "This table holds all data necessary to define a race",
       "fields": [
-        { "name": "track" , "type": "std::string"                },
-        { "name": "laps"  , "type": "int"                        },
-        { "name": "result", "type": "std::vector<SPlayerResult>" }
-      ]
-    },
-    "SChampionShip": {
-      "comment": "A data structure that holds all data of a championship",
-      "fields": [
-        { "name": "class"    , "type": "std::string"              },
-        { "name": "players"  , "type": "std::vector<SPlayer>"     },
-        { "name": "standings", "type": "std::vector<SPlayerRank>" },
-        { "name": "races"    , "type": "std::vector<SRace>"       }
+        { "name": "track" , "type": "std::string"               , "comment": "The track of the race" },
+        { "name": "laps"  , "type": "int"                       , "comment": "The number of laps of the race" },
+        { "name": "grid"  , "type": "std::vector<int>"          , "comment": "A vector of player IDs defining the starting grid" },
+        { "name": "result", "type": "std::vector<SPlayerResult>", "comment": "A vector of SPlayerResult storing the result of the race" }
       ]
     },
     "SViewPort": {
       "comment": "The viewport of the local players",
       "fields": [
-        { "name": "playerid", "type": "int"         },
-        { "name": "rect"    , "type": "SScreenRect" }
+        { "name": "playerid", "type": "int"        , "comment": "The player id" },
+        { "name": "rect"    , "type": "SScreenRect", "comment": "The viewport screen rectangle" }
       ]
     },
-    "SGameSetup": {
-      "comment": "This record stores all data necessary for starting a game",
+    "SChampionShip": {
+      "comment": "A data structure that holds all data of a championship",
       "fields": [
-        { "name": "players"  , "type": "std::vector<SPlayer>"  , "comment": "The list of players for the game" },
-        { "name": "viewports", "type": "std::vector<SViewPort>", "comment": "The viewports for the game" }
+        { "name": "class"    , "type": "std::string"             , "comment": "The class of the championship" },
+        { "name": "players"  , "type": "std::vector<SPlayer>"    , "comment": "A vector with all players of the championship" },
+        { "name": "standings", "type": "std::vector<SPlayerRank>", "comment": "The current standings of the championship" },
+        { "name": "races"    , "type": "std::vector<SRace>"      , "comment": "This vector stores all races that have already been done in the championship" },
+        { "name": "thisrace" , "type": "SRace"                   , "comment": "The current race. Needs to be filled before the race is started and it's result will be filled after the race has finished" },
+        { "name": "viewports", "type": "std::vector<SViewPort>"  , "comment": "The viewports for the game" }
       ]
     }
   }

@@ -611,8 +611,7 @@ function getTextureString()
            "&numberborder=" .. tostring(g_Texture["number_frame" ]:gettext()) ..
            "&ringcolor="    .. tostring(g_Texture["number_ring"  ]:gettext()) ..
            "&patterncolor=" .. tostring(g_Texture["pt_foreground"]:gettext()) ..
-           "&patternback="  .. tostring(g_Texture["pt_background"]:gettext()) ..
-           "&number="       .. "1"
+           "&patternback="  .. tostring(g_Texture["pt_background"]:gettext())
   elseif g_Texture["texture_mode"]:gettext() == "Imported" then
     if g_Texture["texture"]:gettext() ~= "" then
       return "imported://file=data/textures/" .. g_Texture["texture"]:gettext() .. "&color=" .. tostring(g_Texture["imported_name"]:gettext()) .. "&background=" .. tostring(g_Texture["imported_back"]:gettext())

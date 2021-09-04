@@ -154,7 +154,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Random;Last race;Standings" />
+              <attribute key="options" value="Last race;Standings;Random" />
             </custom>
           </element>
           

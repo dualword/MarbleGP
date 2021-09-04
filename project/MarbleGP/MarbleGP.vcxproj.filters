@@ -91,6 +91,27 @@
     <Filter Include="Quelldateien\controller">
       <UniqueIdentifier>{da810d51-2bdb-48fd-a179-9cdbc42d0741}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\shader">
+      <UniqueIdentifier>{52a3800b-2b8e-4355-b1e7-853146a1700f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\shader">
+      <UniqueIdentifier>{5fdf6a4f-420d-4217-9376-45bb9e76c8c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\xeffects">
+      <UniqueIdentifier>{3ed22105-a340-4b65-953b-699cccff65d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\xeffects">
+      <UniqueIdentifier>{19b12f49-a4e9-42a7-a6a2-a3caa798ade8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\gfx">
+      <UniqueIdentifier>{15cad7ee-86c5-47ab-aecc-09b7c3ffaef8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\gfx">
+      <UniqueIdentifier>{b2b6a86a-7341-4a0f-9b91-8c0f7746fa6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\gameclasses">
+      <UniqueIdentifier>{d869375b-e3fc-4ac7-b693-7283acb40696}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -226,6 +247,33 @@
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CDustbinId.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\shader\CShaderHandlerBase.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\shader\CShaderHandlerNone.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\shader\CShaderHandlerXEffect.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\shader\CShaderHandleXEffectSplitscreen.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\xeffects\CShaderPre.cpp">
+      <Filter>Quelldateien\xeffects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\xeffects\EffectHandler.cpp">
+      <Filter>Quelldateien\xeffects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\state\CGameState.cpp">
+      <Filter>Quelldateien\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Base.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -368,9 +416,6 @@
     <ClInclude Include="..\_source\include\gui\CTrackButton.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
@@ -379,6 +424,54 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CDustbinId.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\shader\CMyShaderNone.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\shader\CShaderHandlerBase.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\shader\CShaderHandlerXEffect.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\shader\CShaderHandleXEffectSplitscreen.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\xeffects\CScreenQuad.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\xeffects\CShaderPre.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\xeffects\EffectCB.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\xeffects\EffectHandler.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\xeffects\EffectShaders.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\xeffects\XEffects.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\state\CGameState.h">
+      <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Base.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Editor.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gfx\SViewPort.h">
+      <Filter>Headerdateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gameclasses\SPlayer.h">
+      <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

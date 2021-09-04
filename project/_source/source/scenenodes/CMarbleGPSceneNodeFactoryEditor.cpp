@@ -15,22 +15,29 @@ namespace dustbin {
     }
 
     irr::scene::ISceneNode* CMarbleGPSceneNodeFactoryEditor::addSceneNode(irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode* a_pParent) {
+      irr::scene::ISceneNode* p = nullptr;
+
       switch (a_eType) {
         case g_StartingGridScenenodeId:
-          return new CStartingGridSceneNode_Editor(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          p = new CStartingGridSceneNode_Editor(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
           break;
 
         case g_WorldNodeId:
-          return new CWorldNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          p = new CWorldNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
           break;
 
         case g_PhysicsNodeId:
-          return new CPhysicsNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          p = new CPhysicsNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          break;
 
         default:
-          return nullptr;
           break;
       }
+
+      if (p != nullptr)
+        p->drop();
+
+      return p;
     }
 
     irr::scene::ISceneNode* CMarbleGPSceneNodeFactoryEditor::addSceneNode(const irr::c8* a_sTypeName, irr::scene::ISceneNode* a_pParent) {
