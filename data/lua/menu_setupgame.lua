@@ -240,6 +240,38 @@ function uibuttonclicked(a_Id, a_Name)
         end
       end
       
+      if g_GameSetup["settings"]["fillgrid_ai"] then
+        local l_FillSize = 0
+        
+        if g_GameSetup["settings"]["gridsize"] == 0 then
+          l_FillSize = 2
+        elseif g_GameSetup["settings"]["gridsize"] == 1 then
+          l_FillSize = 4
+        elseif g_GameSetup["settings"]["gridsize"] == 2 then
+          l_FillSize = 8
+        elseif g_GameSetup["settings"]["gridsize"] == 3 then
+          l_FillSize = 12
+        elseif g_GameSetup["settings"]["gridsize"] == 4 then
+          l_FillSize = 16
+        end
+        
+        io.write("Fillgrid: " .. tostring(l_FillSize) .. "\n")
+        
+        for i = #l_Championship["players"], l_FillSize do
+          local l_Player = { }
+          l_Player["name"    ] = "Ai Bot #" .. tostring(i)
+          l_Player["texture" ] = getDefaultTexture(i, 0)
+          l_Player["controls"] = ""
+          l_Player["playerid"] = i
+          
+          table.insert(l_Championship["players"], l_Player)
+        end
+        
+        io.write("\n************************\n")
+        io.write(serializeTable(g_GameSetup, 2))
+        io.write("\n************************\n")
+      end
+      
       local s = serializeTable(g_GameSetup, 2)
       system:setsetting("game_setup", s)
       
