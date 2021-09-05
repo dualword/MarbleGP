@@ -36,6 +36,9 @@
     <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Base.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -57,6 +60,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Base.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

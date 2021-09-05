@@ -32,7 +32,10 @@ namespace dustbin {
           m_pMarbles[i]->setIsDebugObject(true);
           m_pMarbles[i]->setPosition(irr::core::vector3df(0.0f, 2.25f, 0.0f));
           m_pMarbles[i]->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
-          m_pMarbles[i]->getMaterial(0).Lighting = false;
+          m_pMarbles[i]->getMaterial(0).Lighting = true;
+          m_pMarbles[i]->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
+          m_pMarbles[i]->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
+          m_pMarbles[i]->getMaterial(0).Shininess = 50;
         }
 
       updateGridPositions();

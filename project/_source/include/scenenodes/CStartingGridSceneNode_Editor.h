@@ -5,8 +5,9 @@
 #include <irrlicht.h>
 #else
 #include <irrlicht/irrlicht.h>
-#include <scenenodes/CStartingGridSceneNode_base.h>
 #endif
+
+#include <scenenodes/CStartingGridSceneNode_base.h>
 
 namespace dustbin {
   namespace scenenodes {
