@@ -28,14 +28,16 @@ namespace dustbin {
 
       if (l_pMesh != nullptr)
         for (int i = 0; i < 16; i++) {
-          m_pMarbles[i] = a_pMgr->addMeshSceneNode(l_pMesh, this, 10000 + i);
+          m_pMarbles[i] = a_pMgr->addEmptySceneNode(this, 10000 + i);
           m_pMarbles[i]->setIsDebugObject(true);
           m_pMarbles[i]->setPosition(irr::core::vector3df(0.0f, 2.25f, 0.0f));
-          m_pMarbles[i]->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
-          m_pMarbles[i]->getMaterial(0).Lighting = true;
-          m_pMarbles[i]->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
-          m_pMarbles[i]->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
-          m_pMarbles[i]->getMaterial(0).Shininess = 50;
+
+          irr::scene::ISceneNode *l_pMarble = a_pMgr->addMeshSceneNode(l_pMesh, m_pMarbles[i]);
+          l_pMarble->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
+          l_pMarble->getMaterial(0).Lighting = true;
+          l_pMarble->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
+          l_pMarble->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
+          l_pMarble->getMaterial(0).Shininess = 50;
         }
 
       updateGridPositions();
@@ -85,7 +87,7 @@ namespace dustbin {
 
       for (int i = 0; i < 16; i++) {
         int l_iRow = i / m_iMarblesPerRow,
-          l_iCol = i % m_iMarblesPerRow;
+            l_iCol = i % m_iMarblesPerRow;
 
 
         irr::f32 l_fX = m_iMarblesPerRow == 1 ? 0.0f : (l_iCol * m_fWidth / (m_iMarblesPerRow - 1.0f)) - (m_fWidth / 2.0f),
@@ -96,6 +98,8 @@ namespace dustbin {
         v.rotateBy(m_fAngle);
 
         m_pMarbles[i]->setPosition(irr::core::vector3df(v.X, 2.5f, v.Y));
+        m_pMarbles[i]->setRotation(irr::core::vector3df(0.0f, -m_fAngle, 0.0f));
+
         m_cBox.addInternalPoint(irr::core::vector3df(v.X, 2.5f, v.Y));
       }
     }

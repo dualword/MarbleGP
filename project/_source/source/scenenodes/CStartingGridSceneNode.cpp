@@ -24,7 +24,7 @@ namespace dustbin {
           // Move the marble to our parent
           l_pRet->updateAbsolutePosition();
           irr::core::vector3df l_cPos = l_pRet->getAbsolutePosition();
-          printf("==> %.2f, %.2f, %.2f\n", l_cPos.X, l_cPos.Y, l_cPos.Z);
+
           l_pRet->setParent(getParent());
           l_pRet->setPosition(l_cPos);
         }

@@ -32,7 +32,7 @@ namespace dustbin {
           m_fOffset,     /**< The offset of the first marble in a row to the last marble in a row */
           m_fAngle;      /**< Angle around the Y-axis of the grid*/
 
-        irr::scene::IMeshSceneNode* m_pMarbles[16]; /**< The marble nodes */
+        irr::scene::ISceneNode* m_pMarbles[16]; /**< The marble nodes */
 
         void updateGridPositions();
 

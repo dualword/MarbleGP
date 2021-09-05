@@ -95,8 +95,8 @@ namespace dustbin {
 
       irr::f32 l_fAngle = l_pGrid->getAngle();
 
-      irr::core::vector3df l_fOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
-      l_fOffset.rotateXZBy(l_fAngle);
+      irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
+      l_vOffset.rotateXZBy(l_fAngle);
 
       // Now we fill the viewport vector
       for (std::vector<SViewPort>::iterator it = m_cChampionship.m_viewports.begin(); it != m_cChampionship.m_viewports.end(); it++) {
@@ -112,8 +112,9 @@ namespace dustbin {
         irr::core::vector2di l_cUpperLeft  = irr::core::vector2di((*it).m_rect.m_upperleftcorner .m_x, (*it).m_rect.m_upperleftcorner .m_y),
                              l_cLowerRight = irr::core::vector2di((*it).m_rect.m_lowerrightcorner.m_x, (*it).m_rect.m_lowerrightcorner.m_y);
 
-        irr::scene::ICameraSceneNode *l_pCam = m_pSgmr->addCameraSceneNode(m_pSgmr->getRootSceneNode(), l_pMarble->getAbsolutePosition() + l_fOffset, l_pMarble->getAbsolutePosition());
+        irr::scene::ICameraSceneNode *l_pCam = m_pSgmr->addCameraSceneNode(m_pSgmr->getRootSceneNode(), l_pMarble->getAbsolutePosition() + l_vOffset, l_pMarble->getAbsolutePosition());
         l_pCam->setAspectRatio((((irr::f32)l_cLowerRight.X) - ((irr::f32)l_cUpperLeft.X)) / (((irr::f32)l_cLowerRight.Y) - ((irr::f32)l_cUpperLeft.Y)));
+        l_pCam->updateAbsolutePosition();
 
         m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble, l_pCam);
       }
