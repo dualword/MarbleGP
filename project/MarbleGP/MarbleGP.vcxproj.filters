@@ -473,5 +473,8 @@
     <ClInclude Include="..\_source\include\gameclasses\SPlayer.h">
       <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\_source\include\gameclasses\SMarbleNodes.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

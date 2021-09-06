@@ -7,6 +7,8 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <gameclasses/SMarbleNodes.h>
+
 namespace dustbin {
   namespace scenenodes {
     const int g_StartingGridScenenodeId = MAKE_IRR_ID('d', 's', 'g', 's');
@@ -21,18 +23,19 @@ namespace dustbin {
     * objects
     */
     class CStartingGridSceneNode_Base : public irr::scene::ISceneNode {
-      protected:
+
+     protected:
         irr::core::aabbox3df  m_cBox;
         irr::video::SMaterial m_cMaterial;
         irr::video::S3DVertex m_aVertices[20];
 
         int m_iMarblesPerRow;
         float m_fWidth,      /**< Total width of the grid*/
-          m_fRowLength,  /**< Total length of the grid*/
-          m_fOffset,     /**< The offset of the first marble in a row to the last marble in a row */
-          m_fAngle;      /**< Angle around the Y-axis of the grid*/
+              m_fRowLength,  /**< Total length of the grid*/
+              m_fOffset,     /**< The offset of the first marble in a row to the last marble in a row */
+              m_fAngle;      /**< Angle around the Y-axis of the grid*/
 
-        irr::scene::ISceneNode* m_pMarbles[16]; /**< The marble nodes */
+        gameclasses::SMarbleNodes *m_pMarbles[16]; /**< The marble nodes */
 
         void updateGridPositions();
 

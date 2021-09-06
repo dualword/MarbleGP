@@ -15,18 +15,20 @@ namespace dustbin {
     void CStartingGridSceneNode::render() {
     }
 
-    irr::scene::ISceneNode* CStartingGridSceneNode::getNextMarble() {
-      irr::scene::ISceneNode* l_pRet = nullptr;
+    gameclasses::SMarbleNodes *CStartingGridSceneNode::getNextMarble() {
+      gameclasses::SMarbleNodes* l_pRet = nullptr;
 
       if (m_iNextMarble < 16) {
         l_pRet = m_pMarbles[m_iNextMarble];
         if (l_pRet != nullptr) {
           // Move the marble to our parent
-          l_pRet->updateAbsolutePosition();
-          irr::core::vector3df l_cPos = l_pRet->getAbsolutePosition();
+          l_pRet->m_pPositional->updateAbsolutePosition();
+          irr::core::vector3df l_cPos = l_pRet->m_pPositional->getAbsolutePosition();
 
-          l_pRet->setParent(getParent());
-          l_pRet->setPosition(l_cPos);
+          l_pRet->m_pPositional->setParent(getParent());
+          l_pRet->m_pPositional->setPosition(l_cPos);
+
+          m_pMarbles[m_iNextMarble] = nullptr;
         }
         m_iNextMarble++;
       }
@@ -37,8 +39,8 @@ namespace dustbin {
     void CStartingGridSceneNode::removeUnusedMarbles() {
       while (m_iNextMarble < 16) {
         if (m_pMarbles[m_iNextMarble] != nullptr) {
-          m_pMarbles[m_iNextMarble]->setVisible(false);
-          m_pMarbles[m_iNextMarble]->getSceneManager()->addToDeletionQueue(m_pMarbles[m_iNextMarble]);
+          m_pMarbles[m_iNextMarble]->m_pPositional->setVisible(false);
+          m_pMarbles[m_iNextMarble]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[m_iNextMarble]->m_pPositional);
         }
 
         m_iNextMarble++;

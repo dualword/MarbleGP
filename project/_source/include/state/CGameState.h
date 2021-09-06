@@ -38,7 +38,7 @@ namespace dustbin {
 
         SChampionShip m_cChampionship;  /**< This record contains information about the game setup, e.g. players and viewports */
 
-        std::vector<gameclasses::SPlayer> m_vPlayers; /**< The players of the game*/
+        std::vector<gameclasses::SPlayer*> m_vPlayers; /**< The players of the game*/
 
         std::map<int, gfx::SViewPort> m_mViewports;  /**< The viewports of the game */
 

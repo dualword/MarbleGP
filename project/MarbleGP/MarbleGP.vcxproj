@@ -252,6 +252,7 @@
     <ClInclude Include="..\_source\include\controller\CControllerGame.h" />
     <ClInclude Include="..\_source\include\controller\CControllerMenu.h" />
     <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h" />
+    <ClInclude Include="..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\_source\include\gameclasses\SPlayer.h" />
     <ClInclude Include="..\_source\include\gfx\SViewPort.h" />
     <ClInclude Include="..\_source\include\gui\CButtonRenderer.h" />

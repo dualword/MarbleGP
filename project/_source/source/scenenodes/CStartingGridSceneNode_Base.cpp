@@ -28,16 +28,18 @@ namespace dustbin {
 
       if (l_pMesh != nullptr)
         for (int i = 0; i < 16; i++) {
-          m_pMarbles[i] = a_pMgr->addEmptySceneNode(this, 10000 + i);
-          m_pMarbles[i]->setIsDebugObject(true);
-          m_pMarbles[i]->setPosition(irr::core::vector3df(0.0f, 2.25f, 0.0f));
+          m_pMarbles[i] = new gameclasses::SMarbleNodes();
 
-          irr::scene::ISceneNode *l_pMarble = a_pMgr->addMeshSceneNode(l_pMesh, m_pMarbles[i]);
-          l_pMarble->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
-          l_pMarble->getMaterial(0).Lighting = true;
-          l_pMarble->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
-          l_pMarble->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
-          l_pMarble->getMaterial(0).Shininess = 50;
+          m_pMarbles[i]->m_pPositional = a_pMgr->addEmptySceneNode(this, 10000 + i);
+          m_pMarbles[i]->m_pPositional->setIsDebugObject(true);
+          m_pMarbles[i]->m_pPositional->setPosition(irr::core::vector3df(0.0f, 2.25f, 0.0f));
+
+          m_pMarbles[i]->m_pRotational = a_pMgr->addMeshSceneNode(l_pMesh, m_pMarbles[i]->m_pPositional);
+          m_pMarbles[i]->m_pRotational->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
+          m_pMarbles[i]->m_pRotational->getMaterial(0).Lighting = true;
+          m_pMarbles[i]->m_pRotational->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
+          m_pMarbles[i]->m_pRotational->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
+          m_pMarbles[i]->m_pRotational->getMaterial(0).Shininess = 50;
         }
 
       updateGridPositions();
@@ -45,6 +47,10 @@ namespace dustbin {
 
     CStartingGridSceneNode_Base::~CStartingGridSceneNode_Base() {
       printf("Delete starting grid scene node.\n");
+
+      for (int i = 0; i < 16; i++)
+        if (m_pMarbles[i] != nullptr)
+          delete m_pMarbles[i];
     }
 
     //*** Virtual method inherited from irr::scene::ISceneNode
@@ -97,8 +103,10 @@ namespace dustbin {
 
         v.rotateBy(m_fAngle);
 
-        m_pMarbles[i]->setPosition(irr::core::vector3df(v.X, 2.5f, v.Y));
-        m_pMarbles[i]->setRotation(irr::core::vector3df(0.0f, -m_fAngle, 0.0f));
+        // Position and rotation of the positional node are updated. The rotation of the
+        // m_pRotational member will be changed with the data from the physics engine.
+        m_pMarbles[i]->m_pPositional->setPosition(irr::core::vector3df(v.X, 2.5f, v.Y));
+        m_pMarbles[i]->m_pPositional->setRotation(irr::core::vector3df(0.0f, -m_fAngle, 0.0f));
 
         m_cBox.addInternalPoint(irr::core::vector3df(v.X, 2.5f, v.Y));
       }

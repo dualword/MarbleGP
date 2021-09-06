@@ -5,8 +5,9 @@
 #include <irrlicht.h>
 #else
 #include <irrlicht/irrlicht.h>
-#include <scenenodes/CStartingGridSceneNode_base.h>
 #endif
+
+#include <scenenodes/CStartingGridSceneNode_base.h>
 
 namespace dustbin {
   namespace scenenodes {
@@ -26,7 +27,7 @@ namespace dustbin {
 
         irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager);
 
-        irr::scene::ISceneNode* getNextMarble();
+        gameclasses::SMarbleNodes *getNextMarble();
         void removeUnusedMarbles();
 
         irr::f32 getAngle();

@@ -87,8 +87,8 @@ namespace dustbin {
       for (size_t i = 0; i < m_cChampionship.m_thisrace.m_grid.size(); i++) {
         int l_iIndex = m_cChampionship.m_thisrace.m_grid[i] - 1;  // LUA index starts at 1, C++ index starts at 0
 
-        irr::scene::ISceneNode* l_pMarble = l_pGrid->getNextMarble();
-        m_vPlayers.push_back(gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, m_cChampionship.m_players[l_iIndex].m_name, m_cChampionship.m_players[l_iIndex].m_texture, l_pMarble));
+        gameclasses::SMarbleNodes* l_pMarble = l_pGrid->getNextMarble();
+        m_vPlayers.push_back(new gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, m_cChampionship.m_players[l_iIndex].m_name, m_cChampionship.m_players[l_iIndex].m_texture, l_pMarble));
       }
 
       l_pGrid->removeUnusedMarbles();
@@ -100,23 +100,27 @@ namespace dustbin {
 
       // Now we fill the viewport vector
       for (std::vector<SViewPort>::iterator it = m_cChampionship.m_viewports.begin(); it != m_cChampionship.m_viewports.end(); it++) {
-        irr::scene::ISceneNode* l_pMarble = nullptr;
+        gameclasses::SMarbleNodes* l_pMarble = nullptr;
 
-        for (std::vector<gameclasses::SPlayer>::iterator it2 = m_vPlayers.begin(); it2 != m_vPlayers.end(); it2++) {
-          if ((*it2).m_iPlayer == (*it).m_playerid) {
-            l_pMarble = (*it2).m_pMarble;
+        for (std::vector<gameclasses::SPlayer*>::iterator it2 = m_vPlayers.begin(); it2 != m_vPlayers.end(); it2++) {
+          if ((*it2)->m_iPlayer == (*it).m_playerid) {
+            l_pMarble = (*it2)->m_pMarble;
             break;
           }
         }
 
-        irr::core::vector2di l_cUpperLeft  = irr::core::vector2di((*it).m_rect.m_upperleftcorner .m_x, (*it).m_rect.m_upperleftcorner .m_y),
-                             l_cLowerRight = irr::core::vector2di((*it).m_rect.m_lowerrightcorner.m_x, (*it).m_rect.m_lowerrightcorner.m_y);
+        if (l_pMarble != nullptr) {
+          l_pMarble->m_pPositional->updateAbsolutePosition();
 
-        irr::scene::ICameraSceneNode *l_pCam = m_pSgmr->addCameraSceneNode(m_pSgmr->getRootSceneNode(), l_pMarble->getAbsolutePosition() + l_vOffset, l_pMarble->getAbsolutePosition());
-        l_pCam->setAspectRatio((((irr::f32)l_cLowerRight.X) - ((irr::f32)l_cUpperLeft.X)) / (((irr::f32)l_cLowerRight.Y) - ((irr::f32)l_cUpperLeft.Y)));
-        l_pCam->updateAbsolutePosition();
+          irr::core::vector2di l_cUpperLeft = irr::core::vector2di((*it).m_rect.m_upperleftcorner.m_x, (*it).m_rect.m_upperleftcorner.m_y),
+                               l_cLowerRight = irr::core::vector2di((*it).m_rect.m_lowerrightcorner.m_x, (*it).m_rect.m_lowerrightcorner.m_y);
 
-        m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble, l_pCam);
+          irr::scene::ICameraSceneNode* l_pCam = m_pSgmr->addCameraSceneNode(m_pSgmr->getRootSceneNode(), l_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset, l_pMarble->m_pPositional->getAbsolutePosition());
+          l_pCam->setAspectRatio((((irr::f32)l_cLowerRight.X) - ((irr::f32)l_cUpperLeft.X)) / (((irr::f32)l_cLowerRight.Y) - ((irr::f32)l_cUpperLeft.Y)));
+          l_pCam->updateAbsolutePosition();
+
+          m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble->m_pPositional, l_pCam);
+        }
       }
     }
 
@@ -124,6 +128,10 @@ namespace dustbin {
     * This method is called when the state is deactivated
     */
     void CGameState::deactivate() {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
+        delete* it;
+
+      m_vPlayers  .clear();
       m_mViewports.clear();
 
       m_pSgmr->clear();
