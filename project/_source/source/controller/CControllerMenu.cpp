@@ -206,13 +206,18 @@ namespace dustbin {
     }
 
     irr::gui::IGUIElement* CControllerMenu::findElement(int a_iStep, enDirection a_eDirection) {
-      if (m_pHovered == nullptr)
+      /*if (m_pHovered == nullptr)
         if (m_vElements.size() > 0)
           return *m_vElements.begin();
         else
-          return nullptr;
+          return nullptr;*/
 
-      irr::core::recti l_cRect = m_pHovered->getAbsoluteClippingRect();
+      irr::core::recti l_cRect;
+      
+      if (m_pHovered != nullptr)
+        l_cRect = m_pHovered->getAbsoluteClippingRect();
+      else
+        l_cRect = irr::core::recti(m_pCursor->getPosition() - irr::core::position2di(25, 25), m_pCursor->getPosition() + irr::core::position2di(25, 25));
 
       if (a_iStep == 0) {
         switch (a_eDirection) {
@@ -233,7 +238,13 @@ namespace dustbin {
         }
       }
 
-      irr::core::recti l_cHoverRect = m_pHovered->getAbsoluteClippingRect();
+      irr::core::recti l_cHoverRect;
+      
+      if (m_pHovered != nullptr)
+        l_cHoverRect = m_pHovered->getAbsoluteClippingRect();
+      else
+        l_cHoverRect = irr::core::recti(m_pCursor->getPosition() - irr::core::position2di(25, 25), m_pCursor->getPosition() + irr::core::position2di(25, 25));
+
       irr::gui::IGUIElement* l_pNew = nullptr;
 
       int i = 0;
@@ -306,30 +317,9 @@ namespace dustbin {
     * @param a_iZLayer the new Z-Layer
     */
     void CControllerMenu::setZLayer(int a_iZLayer) {
-      if (m_iZLayer >= 0 && m_pHovered != nullptr)
-        m_mFocused[m_iZLayer] = m_pHovered;
-
       m_iZLayer = a_iZLayer;
       m_vElements.clear();
       fillItemList(m_pGui->getRootGUIElement(), m_iZLayer);
-
-      if (m_mFocused.find(m_iZLayer) != m_mFocused.end() && isVisible(m_mFocused[m_iZLayer])) {
-        m_pHovered = m_mFocused[m_iZLayer];
-        m_pCursor->setPosition(m_pHovered->getAbsoluteClippingRect().getCenter());
-      }
-      else {
-        if (m_vElements.size() > 0) {
-          for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
-            if (isVisible(*it)) {
-              m_pCursor->setPosition((*it)->getAbsoluteClippingRect().getCenter());
-              m_pHovered = *it;
-              break;
-            }
-          }
-        }
-
-        moveMouse(enDirection::Up);
-      }
     }
   } // namespace controller
 } // namespace dustbin

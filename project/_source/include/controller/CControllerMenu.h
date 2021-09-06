@@ -36,8 +36,6 @@ namespace dustbin {
         irr::gui::IGUIElement* m_pHovered,
                              * m_pSelected;
 
-        std::map<int, irr::gui::IGUIElement*> m_mFocused; /**< This map is used on Z-Layer change to keep in mind the currently focused element */
-
         /**
         * Change the mouse position after controller input
         * @param a_eDirection the controller input
