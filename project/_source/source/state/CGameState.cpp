@@ -1,7 +1,9 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CSkyBoxFix.h>
+#include <scenenodes/CWorldNode.h>
 #include <state/CGameState.h>
 #include <CGlobal.h>
 #include <lua.hpp>
@@ -14,7 +16,11 @@ namespace dustbin {
       m_pSgmr(CGlobal::getInstance()->getSceneManager()), 
       m_pDrv(CGlobal::getInstance()->getVideoDriver()), 
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()),
-      m_pFs(CGlobal::getInstance()->getFileSystem())
+      m_pFs(CGlobal::getInstance()->getFileSystem()),
+      m_pOutputQueue(nullptr),
+      m_pInputQueue(nullptr),
+      m_pDynamics(nullptr),
+      m_iStep(0)
     {
       m_cScreen = irr::core::recti(irr::core::vector2di(0, 0), m_pDrv->getScreenSize());
     }
@@ -26,6 +32,11 @@ namespace dustbin {
      * This method is called when the state is activated
      */
     void CGameState::activate() {
+      m_iStep = 0;
+
+      for (int i = 0; i < 16; i++)
+        m_aMarbles[i] = nullptr;
+
       std::string l_sSettings[] = {
         "function getSettings()\n  return " + m_pGlobal->getGlobal("championship") + "\nend\n"
       };
@@ -55,6 +66,7 @@ namespace dustbin {
       }
 
       lua_close(l_pState);
+
 
       // Load the track, and don't forget to run the skybox fix beforehands
       std::string l_sTrack = "data/levels/" + m_cChampionship.m_thisrace.m_track + "/track.xml";
@@ -88,7 +100,10 @@ namespace dustbin {
         int l_iIndex = m_cChampionship.m_thisrace.m_grid[i] - 1;  // LUA index starts at 1, C++ index starts at 0
 
         gameclasses::SMarbleNodes* l_pMarble = l_pGrid->getNextMarble();
-        m_vPlayers.push_back(new gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, m_cChampionship.m_players[l_iIndex].m_name, m_cChampionship.m_players[l_iIndex].m_texture, l_pMarble));
+        gameclasses::SPlayer* p = new gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, m_cChampionship.m_players[l_iIndex].m_name, m_cChampionship.m_players[l_iIndex].m_texture, l_pMarble);
+        m_vPlayers.push_back(p);
+
+        m_aMarbles[i] = p->m_pMarble;
       }
 
       l_pGrid->removeUnusedMarbles();
@@ -122,12 +137,35 @@ namespace dustbin {
           m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble->m_pPositional, l_pCam);
         }
       }
+
+      l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSgmr->getRootSceneNode());
+
+      if (l_pNode != nullptr) {
+        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers);
+        m_pInputQueue = new threads::CInputQueue();
+        m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
+        m_pOutputQueue = new threads::COutputQueue();
+        m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
+        m_pDynamics->startThread();
+      }
+      else {
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "No world node found.");
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while initializing game physics.");
+        throw std::exception();
+      }
     }
 
     /**
     * This method is called when the state is deactivated
     */
     void CGameState::deactivate() {
+      if (m_pDynamics != nullptr) {
+        m_pDynamics->stopThread();
+        m_pDynamics->join();
+        delete m_pDynamics;
+        m_pDynamics = nullptr;
+      }
+
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
         delete* it;
 
@@ -136,6 +174,21 @@ namespace dustbin {
 
       m_pSgmr->clear();
       m_pGui->clear();
+
+      if (m_pInputQueue != nullptr) {
+        delete m_pInputQueue;
+        m_pInputQueue = nullptr;
+      }
+
+      if (m_pOutputQueue != nullptr) {
+        delete m_pOutputQueue;
+        m_pOutputQueue = nullptr;
+      }
+
+      for (std::vector<messages::IMessage*>::iterator it = m_vMoveMessages.begin(); it != m_vMoveMessages.end(); it++) {
+        delete* it;
+      }
+      m_vMoveMessages.clear();
     }
 
     /**
@@ -205,6 +258,28 @@ namespace dustbin {
     * @return enState::None for running without state change, any other value will switch to the state
     */
     enState CGameState::run() {
+      messages::IMessage* l_pMsg = nullptr;
+
+      do {
+        l_pMsg = m_pInputQueue->popMessage();
+        if (l_pMsg != nullptr) {
+          if (l_pMsg->getMessageId() == messages::enMessageIDs::ObjectMoved || l_pMsg->getMessageId() == messages::enMessageIDs::MarbleMoved) {
+            m_vMoveMessages.push_back(l_pMsg);
+          }
+          else {
+            if (l_pMsg->getMessageId() == messages::enMessageIDs::StepMsg) {
+              for (std::vector<messages::IMessage*>::iterator it = m_vMoveMessages.begin(); it != m_vMoveMessages.end(); it++) {
+                handleMessage(*it, true);
+              }
+              m_vMoveMessages.clear();
+            }
+
+            handleMessage(l_pMsg, true);
+          }
+        }
+      } 
+      while (l_pMsg != nullptr);
+
       m_pDrv->beginScene();
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
@@ -219,6 +294,107 @@ namespace dustbin {
       m_pDrv->endScene();
 
       return enState::None;
+    }
+
+    /**** Methods inherited from "messages:IGameState ****/
+
+    /**
+      * This function receives messages of type "StepMsg"
+      * @param a_StepNo The current step number
+      */
+    void CGameState::onStepmsg(irr::u32 a_StepNo) {
+      m_iStep = a_StepNo;
+    }
+
+    /**
+     * This function receives messages of type "Countdown"
+     * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+     */
+    void CGameState::onCountdown(irr::u8 a_Tick) {
+
+    }
+
+    /**
+     * This function receives messages of type "ObjectMoved"
+     * @param a_ObjectId The ID of the object
+     * @param a_Position The current position
+     * @param a_Rotation The current rotation (Euler angles)
+     * @param a_LinearVelocity The linear velocity
+     * @param a_AngularVelocity The angualar (rotation) velocity
+     */
+    void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity) {
+
+    }
+
+    /**
+     * This function receives messages of type "MarbleMoved"
+     * @param a_ObjectId The ID of the object
+     * @param a_Position The current position
+     * @param a_Rotation The current rotation (Euler angles)
+     * @param a_LinearVelocity The linear velocity
+     * @param a_AngularVelocity The angualar (rotation) velocity
+     * @param a_CameraPosition The position of the camera
+     * @param a_CameraUp The Up-Vector of the camera
+     * @param a_ControlX The marble's current controller state in X-Direction
+     * @param a_ControlY The marble's current controller state in Y-Direction
+     * @param a_Contact A Flag indicating whether or not the marble is in contact with another object
+     * @param a_ControlBrake Flag indicating whether or not the marble's brake is active
+     * @param a_ControlRearView Flag indicating whether or not the marble's player looks behind
+     * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed
+     */
+    void CGameState::onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df& a_CameraPosition, const irr::core::vector3df& a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) {
+      if (a_ObjectId >= 10000 && a_ObjectId < 10016) {
+        irr::s32 l_iIndex = a_ObjectId - 10000;
+        if (m_aMarbles[l_iIndex] != nullptr) {
+          m_aMarbles[l_iIndex]->m_pPositional->setPosition(a_Position);
+          m_aMarbles[l_iIndex]->m_pRotational->setRotation(a_Rotation);
+        }
+      }
+    }
+
+    /**
+     * This function receives messages of type "Trigger"
+     * @param a_TriggerId ID of the trigger
+     * @param a_ObjectId ID of the marble that caused the trigger
+     */
+    void CGameState::onTrigger(irr::s32 a_TriggerId, irr::s32 a_ObjectId) {
+
+    }
+
+    /**
+     * This function receives messages of type "PlayerRespawn"
+     * @param a_MarbleId ID of the marble
+     * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Camera, 3 == Respawn Done)
+     */
+    void CGameState::onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) {
+
+    }
+
+    /**
+     * This function receives messages of type "PlayerStunned"
+     * @param a_MarbleId ID of the marble
+     * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
+     */
+    void CGameState::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
+
+    }
+
+    /**
+     * This function receives messages of type "PlayerFinished"
+     * @param a_MarbleId ID of the finished marble
+     * @param a_RaceTime Racetime of the finished player in simulation steps
+     * @param a_Laps The number of laps the player has done
+     */
+    void CGameState::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+
+    }
+
+    /**
+     * This function receives messages of type "RaceFinished"
+     * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
+     */
+    void CGameState::onRacefinished(irr::u8 a_Cancelled) {
+
     }
   }
 }

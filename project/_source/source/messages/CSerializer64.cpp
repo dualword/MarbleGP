@@ -68,7 +68,7 @@ namespace dustbin {
     }
 
     CSerializer64::CSerializer64() {
-      m_iBase = strlen(_64_DIGITS_STRING);
+      m_iBase = (irr::u32)strlen(_64_DIGITS_STRING);
     }
 
     CSerializer64::~CSerializer64() { }
@@ -88,7 +88,7 @@ namespace dustbin {
         }
       }
       m_aData.push_back(a_sData.subString(l_iLast, l_iPos - l_iLast));
-      m_iBase = strlen(_64_DIGITS_STRING);
+      m_iBase = (irr::u32)strlen(_64_DIGITS_STRING);
     }
 
     /**

@@ -10,6 +10,7 @@ function startNextRace(a_Championship, a_Track, a_Laps, a_GameSettings)
   -- First we fill a "grid" table with the
   -- number of players
   local l_Grid = { }
+  io.write("\n\n\nGridsize: " .. tostring(#a_Championship["players"]) .. "\n\n\n")
   for i = 1, #a_Championship["players"] do
     table.insert(l_Grid, i)
   end

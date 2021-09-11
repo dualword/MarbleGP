@@ -56,6 +56,8 @@ namespace dustbin {
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
 
         virtual irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent = 0, irr::scene::ISceneManager* a_pNewManager = 0);
+
+        enNodeType getNodeType();
     };
   }
 }

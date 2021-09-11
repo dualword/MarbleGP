@@ -12,14 +12,13 @@
     [ "MarbleMoved"   ,  "1" ],
     [ "StepMsg"       ,  "2" ],
     [ "Trigger"       ,  "3" ],
-    [ "Controller"    ,  "4" ],
-    [ "PlayerRespawn" ,  "5" ],
-    [ "PlayerStunned" ,  "6" ],
-    [ "Checkpoint"    ,  "7" ],
-    [ "PlayerFinished",  "8" ],
-    [ "RaceFinished"  ,  "9" ],
-    [ "Countdown"     , "10" ],
-    [ "MarbleControl" , "11" ]
+    [ "PlayerRespawn" ,  "4" ],
+    [ "PlayerStunned" ,  "5" ],
+    [ "Checkpoint"    ,  "6" ],
+    [ "PlayerFinished",  "7" ],
+    [ "RaceFinished"  ,  "8" ],
+    [ "Countdown"     ,  "9" ],
+    [ "MarbleControl" , "10" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -61,16 +60,6 @@
       "fields": [
         { "name": "TriggerId", "type": "irr::s32", "comment": "ID of the trigger" },
         { "name": "ObjectId" , "type": "irr::s32", "comment": "ID of the marble that caused the trigger" }
-      ]
-    },
-    "Controller": {
-      "comment": "Message sent from the control thread to the physics thread for controlling a marble",
-      "fields": [
-        { "name": "MarbleId" , "type": "irr::s32"            , "comment": "The ID of the marble" },
-        { "name": "Direction", "type": "irr::core::vector3df", "comment": "The control direction "},
-        { "name": "CtrlX"    , "type": "irr::f32"            , "comment": "X-Control [-1..1]" },
-        { "name": "CtrlY"    , "type": "irr::f32"            , "comment": "Y-Control [-1..1]" },
-        { "name": "RearView" , "type": "irr::u8"             , "comment": "RearView flag" }
       ]
     },
     "PlayerRespawn": {
@@ -126,6 +115,40 @@
       ]
     }
   },
-  "interfaces": {
-  }
+  "interfaces": [
+    {
+      "name": "DynamicThread",
+      "send": [
+        "StepMsg",
+        "Countdown",
+        "ObjectMoved",
+        "MarbleMoved",
+        "Trigger",
+        "PlayerRespawn",
+        "PlayerStunned",
+        "PlayerFinished",
+        "RaceFinished"
+      ],
+      "receive": [
+        "MarbleControl"
+      ]
+    },
+    {
+      "name": "GameState",
+      "send": [
+        "MarbleControl"
+      ],
+      "receive": [
+        "StepMsg",
+        "Countdown",
+        "ObjectMoved",
+        "MarbleMoved",
+        "Trigger",
+        "PlayerRespawn",
+        "PlayerStunned",
+        "PlayerFinished",
+        "RaceFinished"
+      ]
+    }
+  ]
 }

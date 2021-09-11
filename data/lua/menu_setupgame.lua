@@ -81,6 +81,11 @@ function initialize()
   audio:startsoundtrack(0)
   fillItems()
   updatePlayerUi()
+  
+  if not g_GameSetup["settings"]["fillgrid_ai"] then
+    g_Items["settings"]["ai_class"]:setenabled(false)
+    g_Items["settings"]["gridsize"]:setenabled(false)
+  end
 end
 
 function cleanup()
@@ -255,9 +260,9 @@ function uibuttonclicked(a_Id, a_Name)
           l_FillSize = 16
         end
         
-        io.write("Fillgrid: " .. tostring(l_FillSize) .. "\n")
+        io.write("Fillgrid: " .. tostring(l_FillSize) .. " / " .. tostring(#l_Championship["players"]) .. "\n")
         
-        for i = #l_Championship["players"], l_FillSize do
+        for i = #l_Championship["players"] + 1, l_FillSize do
           local l_Player = { }
           l_Player["name"    ] = "Ai Bot #" .. tostring(i)
           l_Player["texture" ] = getDefaultTexture(i, 0)
@@ -266,10 +271,6 @@ function uibuttonclicked(a_Id, a_Name)
           
           table.insert(l_Championship["players"], l_Player)
         end
-        
-        io.write("\n************************\n")
-        io.write(serializeTable(g_GameSetup, 2))
-        io.write("\n************************\n")
       end
       
       local s = serializeTable(g_GameSetup, 2)
@@ -431,8 +432,6 @@ end
 function uicheckboxchanged(a_Id, a_Name, a_Checked)
   io.write("Checkbox changed: " .. a_Name .. " (" .. tostring(a_Id) .. "): " .. tostring(a_Checked) .. "\n")
   g_GameSetup["settings"][a_Name] = a_Checked
-  
-  io.write("\n\n" .. serializeTable(g_GameSetup, 2) .. "\n\n")
   
   if a_Name == "fillgrid_ai" then
     g_Items["settings"]["ai_class"]:setenabled(a_Checked)

@@ -133,5 +133,9 @@ namespace dustbin {
 
       return l_pNew;
     }
+
+    CPhysicsNode::enNodeType CPhysicsNode::getNodeType() {
+      return m_eType;
+    }
   }
 }

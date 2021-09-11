@@ -111,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -153,7 +153,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -174,7 +174,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -196,6 +196,8 @@
     <ClCompile Include="..\_source\source\controller\CControllerGame.cpp" />
     <ClCompile Include="..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\_source\source\extensions\gui_freetype_font.cpp" />
+    <ClCompile Include="..\_source\source\gameclasses\CDynamicThread.cpp" />
+    <ClCompile Include="..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\_source\source\gui\CButtonRenderer.cpp" />
     <ClCompile Include="..\_source\source\gui\CClipImage.cpp" />
     <ClCompile Include="..\_source\source\gui\CControllerUi.cpp" />
@@ -244,6 +246,8 @@
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
+    <ClCompile Include="..\_source\source\_generated\messages\IDynamicThread.cpp" />
+    <ClCompile Include="..\_source\source\_generated\messages\IGameState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CGlobal.h" />
@@ -252,6 +256,8 @@
     <ClInclude Include="..\_source\include\controller\CControllerGame.h" />
     <ClInclude Include="..\_source\include\controller\CControllerMenu.h" />
     <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h" />
+    <ClInclude Include="..\_source\include\gameclasses\CDynamicThread.h" />
+    <ClInclude Include="..\_source\include\gameclasses\COdeNodes.h" />
     <ClInclude Include="..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\_source\include\gameclasses\SPlayer.h" />
     <ClInclude Include="..\_source\include\gfx\SViewPort.h" />
@@ -302,6 +308,7 @@
     <ClInclude Include="..\_source\include\state\IState.h" />
     <ClInclude Include="..\_source\include\threads\CMessageQueue.h" />
     <ClInclude Include="..\_source\include\threads\IQueue.h" />
+    <ClInclude Include="..\_source\include\threads\IThread.h" />
     <ClInclude Include="..\_source\include\xeffects\CScreenQuad.h" />
     <ClInclude Include="..\_source\include\xeffects\CShaderPre.h" />
     <ClInclude Include="..\_source\include\xeffects\EffectCB.h" />
@@ -312,6 +319,8 @@
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessages.h" />
+    <ClInclude Include="..\_source\include\_generated\messages\IDynamicThread.h" />
+    <ClInclude Include="..\_source\include\_generated\messages\IGameState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

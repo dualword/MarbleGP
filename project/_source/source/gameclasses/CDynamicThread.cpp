@@ -1,0 +1,277 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
+
+#include <gameclasses/CDynamicThread.h>
+#include <scenenodes/CPhysicsNode.h>
+#include <scenenodes/CWorldNode.h>
+#include <gameclasses/COdeNodes.h>
+#include <exception>
+#include <CGlobal.h>
+#include <ode/ode.h>
+
+#define MAX_CONTACTS 16
+const double GRAD_PI = 180.0 / 3.1415926535897932384626433832795;
+
+namespace dustbin {
+  namespace gameclasses {
+    irr::core::vector3df vectorOdeToIrr(const dReal* a_pOde) {
+      return irr::core::vector3df((irr::f32)a_pOde[0], (irr::f32)a_pOde[1], (irr::f32)a_pOde[2]);
+    }
+
+    irr::core::vector3df quaternionToEuler(const dQuaternion a_aQuaternion) {
+      dReal w, x, y, z;
+
+      w = a_aQuaternion[0];
+      x = a_aQuaternion[1];
+      y = a_aQuaternion[2];
+      z = a_aQuaternion[3];
+
+      double sqw = w * w;
+      double sqx = x * x;
+      double sqy = y * y;
+      double sqz = z * z;
+
+      irr::core::vector3df l_vEuler;
+
+      l_vEuler.Z = (irr::f32)(atan2(2.0 * (x * y + z * w), (sqx - sqy - sqz + sqw)) * GRAD_PI);
+      l_vEuler.X = (irr::f32)(atan2(2.0 * (y * z + x * w), (-sqx - sqy + sqz + sqw)) * GRAD_PI);
+      l_vEuler.Y = (irr::f32)(asin(-2.0 * (x * z - y * w)) * GRAD_PI);
+
+      return l_vEuler;
+    }
+
+    void nearCollisionCallback(void* a_pData, dGeomID a_iGeom1, dGeomID a_iGeom2) {
+      dBodyID l_pBody1 = dGeomGetBody(a_iGeom1);
+      dBodyID l_pBody2 = dGeomGetBody(a_iGeom2);
+
+      CWorld* l_pWorld = (CWorld*)a_pData;
+
+      dWorldID      l_cWorld = l_pWorld->m_cWorld;
+      dJointGroupID l_cJointGroup = l_pWorld->m_cContacts;
+
+      dContact l_cContact[MAX_CONTACTS];
+
+      if (dGeomIsSpace(a_iGeom1) || dGeomIsSpace(a_iGeom2)) {
+
+        // colliding a space with something :
+        dSpaceCollide2(a_iGeom1, a_iGeom2, a_pData, &nearCollisionCallback);
+
+        // collide all geoms internal to the space(s)
+        if (dGeomIsSpace(a_iGeom1)) dSpaceCollide((dSpaceID)a_iGeom1, a_pData, &nearCollisionCallback);
+        if (dGeomIsSpace(a_iGeom2)) dSpaceCollide((dSpaceID)a_iGeom2, a_pData, &nearCollisionCallback);
+      }
+      else {
+        if (l_pBody1 == 0 && l_pBody2 == 0) return;
+
+        CObject* l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1),
+          * l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
+
+        bool l_bMarbleCollision = l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() == enObjectType::Marble;
+
+        // If two marbles collide we need some sort of "special" surface parameters
+        if (l_bMarbleCollision) {
+          for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
+            l_cContact[i].surface.bounce = (dReal)0.25;
+            l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2 | dContactSoftCFM | dContactSoftERP;
+            l_cContact[i].surface.mu = (dReal)25;
+            l_cContact[i].surface.mu2 = (dReal)0;
+            l_cContact[i].surface.bounce_vel = (dReal)0.0001;
+            l_cContact[i].surface.soft_cfm = (dReal)0.004;
+            l_cContact[i].surface.soft_erp = (dReal)0.4;
+            l_cContact[i].surface.rho = (dReal)0.9;
+            l_cContact[i].surface.rho2 = (dReal)0.9;
+            l_cContact[i].surface.slip1 = (dReal)0.05;
+            l_cContact[i].surface.slip2 = (dReal)0.05;
+          }
+        }
+        else {
+          for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
+            l_cContact[i].surface.bounce = (dReal)0.15;
+            l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2; // | dContactSoftCFM | dContactSoftERP;
+            l_cContact[i].surface.mu = (dReal)1500;
+            l_cContact[i].surface.mu2 = (dReal)0;
+            l_cContact[i].surface.bounce_vel = (dReal)0.0001;
+            l_cContact[i].surface.soft_cfm = (dReal)0.001;
+            l_cContact[i].surface.soft_erp = (dReal)0.2;
+            l_cContact[i].surface.rho = (dReal)0.9;
+            l_cContact[i].surface.rho2 = (dReal)0.9;
+            l_cContact[i].surface.slip1 = (dReal)0.05;
+            l_cContact[i].surface.slip2 = (dReal)0.05;
+          }
+        }
+
+        irr::u32 numc = dCollide(a_iGeom1, a_iGeom2, MAX_CONTACTS, &l_cContact[0].geom, sizeof(dContact));
+
+        if (!l_bMarbleCollision) {
+          if (numc > 0) {
+            if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->m_bTrigger) {
+              CObjectMarble* l_pMarble = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+
+              const dReal* l_vOdePos = dBodyGetPosition(l_pOdeNode1->m_cBody);
+              irr::core::vector3df l_vPos = irr::core::vector3df((irr::f32)l_vOdePos[0], (irr::f32)l_vOdePos[1], (irr::f32)l_vOdePos[2]);
+              l_pWorld->handleTrigger(l_pOdeNode2->m_iTrigger, l_pOdeNode1->m_iId, l_vPos);
+
+              if (l_pMarble->m_iManualRespawn != -1 && l_pOdeNode2->m_iTrigger != -1)
+                l_pMarble->m_iManualRespawn = 120;
+            }
+            else if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->m_bTrigger) {
+              CObjectMarble* l_pMarble = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+
+              const dReal* l_vOdePos = dBodyGetPosition(l_pOdeNode2->m_cBody);
+              irr::core::vector3df l_vPos = irr::core::vector3df((irr::f32)l_vOdePos[0], (irr::f32)l_vOdePos[1], (irr::f32)l_vOdePos[2]);
+              l_pWorld->handleTrigger(l_pOdeNode1->m_iTrigger, l_pOdeNode2->m_iId, l_vPos);
+
+              if (l_pMarble->m_iManualRespawn != -1 && l_pOdeNode1->m_iTrigger != -1)
+                l_pMarble->m_iManualRespawn = 120;
+            }
+          }
+
+          if (!l_pOdeNode1->m_bCollides || !l_pOdeNode2->m_bCollides)
+            return;
+        }
+
+        dJointID l_cJoints[MAX_CONTACTS];
+
+        for (irr::u32 i = 0; i < numc; i++) {
+          if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
+            const dReal* l_aPos = dBodyGetPosition(l_pBody1);
+            /*dReal l_vUp[4];
+            for (int j = 0; j < 3; j++) {
+              l_vUp[i] = l_aPos[j] - l_cContact[i].geom.pos[j];
+            }
+
+            CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+            p->m_bHasContact = true;
+            p->m_vContact = irr::core::vector3df((irr::f32)l_vUp[0], (irr::f32)l_vUp[1], (irr::f32)l_vUp[2]);*/
+          }
+
+          if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
+            const dReal* l_aPos = dBodyGetPosition(l_pBody2);
+            /*dReal l_vUp[4];
+            for (int j = 0; j < 3; j++) {
+              l_vUp[i] = l_aPos[j] - l_cContact[i].geom.pos[j];
+            }
+
+            CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+            p->m_bHasContact = true;
+            p->m_vContact = irr::core::vector3df((irr::f32)l_vUp[0], (irr::f32)l_vUp[1], (irr::f32)l_vUp[2]);*/
+          }
+
+          l_cJoints[i] = dJointCreateContact(l_cWorld, l_cJointGroup, &l_cContact[i]);
+          dJointAttach(l_cJoints[i], l_pBody1, l_pBody2);
+        }
+      }
+    }
+
+    void CDynamicThread::createPhysicsObjects(irr::scene::ISceneNode* a_pNode) {
+      if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId) {
+        if (m_pWorld == nullptr) {
+          m_pWorld = new CWorld();
+        }
+      }
+      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
+        if (m_pWorld != nullptr) {
+          scenenodes::CPhysicsNode* l_pNode = reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode);
+
+          switch (l_pNode->getNodeType()) {
+            case scenenodes::CPhysicsNode::enNodeType::Box:
+              m_pWorld->m_vObjects.push_back(new CObjectBox(l_pNode, m_pWorld));
+              break;
+
+            case scenenodes::CPhysicsNode::enNodeType::Sphere:
+              m_pWorld->m_vObjects.push_back(new CObjectSphere(l_pNode, m_pWorld));
+              break;
+
+            case scenenodes::CPhysicsNode::enNodeType::Trimesh:
+              m_pWorld->m_vObjects.push_back(new CObjectTrimesh(l_pNode, m_pWorld));
+              break;
+          }
+        }
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
+        createPhysicsObjects(*it);
+    }
+
+    void CDynamicThread::run() {
+      do {
+        messages::IMessage* l_pMsg = m_pInputQueue->popMessage();
+        if (l_pMsg != nullptr) {
+          if (!handleMessage(l_pMsg)) delete l_pMsg;
+        }
+        else break;
+      } 
+      while (true);
+
+      if (!m_bPaused) {
+        dSpaceCollide(m_pWorld->m_cSpace, m_pWorld, &nearCollisionCallback);
+        dWorldStep(m_pWorld->m_cWorld, (dReal)0.008);
+        dJointGroupEmpty(m_pWorld->m_cContacts);
+
+        m_iWorldStep++;
+
+        sendStepmsg(m_iWorldStep, m_pOutputQueue);
+
+        for (int i = 0; i < 16; i++)
+          if (m_aMarbles[i] != nullptr) {
+            CObjectMarble* p = m_aMarbles[i];
+            
+            const dReal *l_aPos    = dBodyGetPosition  (p->m_cBody), 
+                        *l_aRot    = dBodyGetQuaternion(p->m_cBody),
+                        *l_aLinVel = dBodyGetLinearVel (p->m_cBody), 
+                        *l_aAngVel = dBodyGetAngularVel(p->m_cBody);
+
+            sendMarblemoved(p->m_iId, vectorOdeToIrr(l_aPos), quaternionToEuler(l_aRot), vectorOdeToIrr(l_aLinVel), vectorOdeToIrr(l_aAngVel).getLength(), vectorOdeToIrr(l_aLinVel), irr::core::vector3df(), 0, 0, false, false, false, false, m_pOutputQueue);
+          }
+      }
+
+      m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
+      std::this_thread::sleep_until(m_cNextStep);
+    }
+
+    void CDynamicThread::execute() {
+      m_cNextStep = std::chrono::high_resolution_clock::now();
+
+      while (!m_bStopThread) {
+        run();
+      }
+
+      printf("Dynamics thread ends.\n");
+    }
+
+    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers) : m_pWorld(nullptr), m_bPaused(false), m_iWorldStep(0) {
+      createPhysicsObjects(a_pWorld);
+
+      for (int i = 0; i < 16; i++)
+        m_aMarbles[i] = nullptr;
+
+      if (m_pWorld != nullptr) {
+        int l_iIndex = 0;
+        for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
+          CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld);
+          m_pWorld->m_vObjects.push_back(l_pMarble);
+          m_aMarbles[l_iIndex] = l_pMarble;
+          printf("*** Marble with id %i stored in array index %i\n", (*it)->m_pMarble->m_pPositional->getID(), l_iIndex);
+          l_iIndex++;
+        }
+      }
+    }
+
+    CDynamicThread::~CDynamicThread() {
+      if (m_pWorld != nullptr)
+        delete m_pWorld;
+    }
+
+    /**
+     * This function receives messages of type "MarbleControl"
+     * @param a_ObjectId The ID of the Marble
+     * @param a_CtrlX The X Control (steer)
+     * @param a_CtrlY The Y Control (throttle)
+     * @param a_Brake Is the brake active?
+     * @param a_RearView Does the player want to look back?
+     * @param a_Respawn Is the manual respawn button pressed?
+     */
+    void CDynamicThread::onMarblecontrol(irr::s32 a_ObjectId, irr::s8 a_CtrlX, irr::s8 a_CtrlY, bool a_Brake, bool a_RearView, bool a_Respawn) {
+
+    }
+  }
+}

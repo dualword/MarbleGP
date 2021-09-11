@@ -112,6 +112,9 @@
     <Filter Include="Headerdateien\gameclasses">
       <UniqueIdentifier>{d869375b-e3fc-4ac7-b693-7283acb40696}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\gameclasses">
+      <UniqueIdentifier>{0dfbfda0-4c79-4bef-967b-72b44b5bf064}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\source\MarbleGP.cpp">
@@ -275,6 +278,18 @@
     </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\gameclasses\CDynamicThread.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\gameclasses\COdeNodes.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\messages\IDynamicThread.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\messages\IGameState.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +490,21 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\gameclasses\SMarbleNodes.h">
       <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gameclasses\CDynamicThread.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\threads\IThread.h">
+      <Filter>Headerdateien\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\gameclasses\COdeNodes.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\messages\IDynamicThread.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\messages\IGameState.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
