@@ -236,7 +236,6 @@ namespace dustbin {
 
               irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 3.0f * l_vNormUp;
               p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
-              printf("%.2f: %.2f, %.2f, %.2f\n", l_fFactor, p->m_vOffset.X, p->m_vOffset.Y, p->m_vOffset.Z);
             }
             
 

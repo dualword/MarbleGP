@@ -255,6 +255,36 @@ namespace dustbin {
     }
 
     /**
+    * This method prepares the scene before a viewport is rendered
+    * @param a_pViewport the viewport that will be rendered
+    */
+    void CGameState::beforeDrawScene(gfx::SViewPort* a_pViewPort) {
+      if (a_pViewPort != nullptr) {
+        // Make marbles behind the marble node transparent
+        irr::core::vector3df l_cNormal   = (a_pViewPort->m_pCamera->getTarget() - a_pViewPort->m_pCamera->getAbsolutePosition()).normalize(),
+                             l_cPosition = a_pViewPort->m_pCamera->getTarget() + 0.1f * (a_pViewPort->m_pCamera->getAbsolutePosition() - a_pViewPort->m_pCamera->getTarget());
+        irr::core::plane3df  l_cPlane    = irr::core::plane3df(l_cPosition, l_cNormal);
+
+        for (int i = 0; i < 16; i++) {
+          // ToDo: handle respawning marble
+          if (m_aMarbles[i] != nullptr && m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0) {
+            if (l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK) {
+              irr::scene::IMeshBuffer* l_pBuffer = m_aMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0);
+              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+
+              irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
+
+              for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
+                l_pVertices[j].Color.setAlpha(96);
+            }
+            else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID; // ToDo: Shader handler material
+          }
+          else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID; // ToDo: Shader handler material
+        }
+      }
+    }
+
+    /**
     * This method is always called. Here the state has to perform it's actual work
     * @return enState::None for running without state change, any other value will switch to the state
     */
@@ -289,6 +319,7 @@ namespace dustbin {
         if (it->second.m_pCamera != nullptr)
           m_pSgmr->setActiveCamera(it->second.m_pCamera);
 
+        beforeDrawScene(&it->second);
         m_pSgmr->drawAll();
         m_pDrv->setViewPort(m_cScreen);
       }

@@ -67,6 +67,12 @@ namespace dustbin {
         */
         irr::scene::ISceneNode* findSceneNodeByType(irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pParent);
 
+        /**
+        * This method prepares the scene before a viewport is rendered
+        * @param a_pViewport the viewport that will be rendered
+        */
+        void beforeDrawScene(gfx::SViewPort* a_pViewport);
+
       protected:
         /**
          * This function receives messages of type "StepMsg"
