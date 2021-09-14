@@ -237,6 +237,10 @@ namespace dustbin {
 
                 irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 3.0f * l_vNormUp;
                 p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
+
+                if (p->m_vOffset.getLength() < 8.0f) {
+                  p->m_vOffset *= 8.0f / p->m_vOffset.getLength();
+                }
               }
             }
             else if (l_vLinVel.getLength() > 15.0f) m_aMarbles[i]->m_bActive = true;
@@ -272,7 +276,7 @@ namespace dustbin {
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
           CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld);
 
-          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, -5.0f, -7.5f);
+          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, -6.0f, -5.5f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
           l_pMarble->m_vCamera    = irr::core::vector3df(l_vOffset);
