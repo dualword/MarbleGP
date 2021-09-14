@@ -135,6 +135,7 @@ namespace dustbin {
           l_pCam->updateAbsolutePosition();
 
           m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble->m_pPositional, l_pCam);
+          l_pMarble->m_pViewport = &m_mViewports[(*it).m_playerid];
         }
       }
 
@@ -347,7 +348,15 @@ namespace dustbin {
         irr::s32 l_iIndex = a_ObjectId - 10000;
         if (m_aMarbles[l_iIndex] != nullptr) {
           m_aMarbles[l_iIndex]->m_pPositional->setPosition(a_Position);
-          m_aMarbles[l_iIndex]->m_pRotational->setRotation(a_Rotation);
+          m_aMarbles[l_iIndex]->m_pPositional->setRotation(a_Rotation);
+          m_aMarbles[l_iIndex]->m_pPositional->updateAbsolutePosition();
+          
+          if (m_aMarbles[l_iIndex]->m_pViewport != nullptr) {
+            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
+            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setTarget  (a_Position);
+            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
+            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->updateAbsolutePosition();
+          }
         }
       }
     }

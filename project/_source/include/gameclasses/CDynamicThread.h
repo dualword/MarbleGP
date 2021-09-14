@@ -38,6 +38,8 @@ namespace dustbin {
 
         bool m_bPaused;
 
+        irr::f32 m_fGridAngle;
+
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);

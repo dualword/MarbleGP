@@ -13,7 +13,6 @@
 
 namespace dustbin {
   namespace gameclasses {
-
     /**
     * @class SPlayer
     * @author Christian Keimel

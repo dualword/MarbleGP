@@ -8,6 +8,10 @@
 #endif
 
 namespace dustbin {
+  namespace gfx {
+    struct SViewPort;
+  }
+
   namespace gameclasses {
     /**
     * This data structure is a collection
@@ -26,9 +30,15 @@ namespace dustbin {
       */
       irr::scene::IMeshSceneNode* m_pRotational;
 
+      /**
+      * The viewport that might be assigned to the marble
+      */
+      gfx::SViewPort *m_pViewport;
+
       SMarbleNodes() {
         m_pPositional = nullptr;
         m_pRotational = nullptr;
+        m_pViewport   = nullptr;
       }
     };
   }

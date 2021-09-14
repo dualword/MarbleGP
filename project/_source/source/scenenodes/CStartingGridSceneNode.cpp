@@ -10,6 +10,9 @@ namespace dustbin {
     }
 
     CStartingGridSceneNode::~CStartingGridSceneNode() {
+      for (int i = 0; i < 16; i++)
+        if (m_pMarbles[i] != nullptr)
+          delete m_pMarbles[i];
     }
 
     void CStartingGridSceneNode::render() {

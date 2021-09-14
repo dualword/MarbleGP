@@ -1,9 +1,11 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
+#include <scenenodes/CStartingGridSceneNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/COdeNodes.h>
+#include <gfx/SViewPort.h>
 #include <exception>
 #include <CGlobal.h>
 #include <ode/ode.h>
@@ -132,28 +134,18 @@ namespace dustbin {
         dJointID l_cJoints[MAX_CONTACTS];
 
         for (irr::u32 i = 0; i < numc; i++) {
-          if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
-            const dReal* l_aPos = dBodyGetPosition(l_pBody1);
-            /*dReal l_vUp[4];
-            for (int j = 0; j < 3; j++) {
-              l_vUp[i] = l_aPos[j] - l_cContact[i].geom.pos[j];
+          if (i == 0) {
+            if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
+              CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+              p->m_bHasContact = true;
+              p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
             }
 
-            CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
-            p->m_bHasContact = true;
-            p->m_vContact = irr::core::vector3df((irr::f32)l_vUp[0], (irr::f32)l_vUp[1], (irr::f32)l_vUp[2]);*/
-          }
-
-          if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
-            const dReal* l_aPos = dBodyGetPosition(l_pBody2);
-            /*dReal l_vUp[4];
-            for (int j = 0; j < 3; j++) {
-              l_vUp[i] = l_aPos[j] - l_cContact[i].geom.pos[j];
+            if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
+              CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+              p->m_bHasContact = true;
+              p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
             }
-
-            CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
-            p->m_bHasContact = true;
-            p->m_vContact = irr::core::vector3df((irr::f32)l_vUp[0], (irr::f32)l_vUp[1], (irr::f32)l_vUp[2]);*/
           }
 
           l_cJoints[i] = dJointCreateContact(l_cWorld, l_cJointGroup, &l_cContact[i]);
@@ -187,6 +179,9 @@ namespace dustbin {
           }
         }
       }
+      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId) {
+        m_fGridAngle = reinterpret_cast<scenenodes::CStartingGridSceneNode*>(a_pNode)->getAngle();
+      }
 
       for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
         createPhysicsObjects(*it);
@@ -209,19 +204,46 @@ namespace dustbin {
 
         m_iWorldStep++;
 
-        sendStepmsg(m_iWorldStep, m_pOutputQueue);
-
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 16; i++) {
           if (m_aMarbles[i] != nullptr) {
             CObjectMarble* p = m_aMarbles[i];
-            
-            const dReal *l_aPos    = dBodyGetPosition  (p->m_cBody), 
-                        *l_aRot    = dBodyGetQuaternion(p->m_cBody),
-                        *l_aLinVel = dBodyGetLinearVel (p->m_cBody), 
-                        *l_aAngVel = dBodyGetAngularVel(p->m_cBody);
 
-            sendMarblemoved(p->m_iId, vectorOdeToIrr(l_aPos), quaternionToEuler(l_aRot), vectorOdeToIrr(l_aLinVel), vectorOdeToIrr(l_aAngVel).getLength(), vectorOdeToIrr(l_aLinVel), irr::core::vector3df(), 0, 0, false, false, false, false, m_pOutputQueue);
+            const dReal* l_aPos = dBodyGetPosition(p->m_cBody),
+                       * l_aRot = dBodyGetQuaternion(p->m_cBody),
+                       * l_aLinVel = dBodyGetLinearVel(p->m_cBody),
+                       * l_aAngVel = dBodyGetAngularVel(p->m_cBody);
+
+            irr::core::vector3df l_vLinVel   = vectorOdeToIrr(l_aLinVel),
+                                 l_vPosition = vectorOdeToIrr(l_aPos);
+
+            irr::core::vector3df l_vUpVector = l_vPosition - p->m_vContact;
+            l_vUpVector.normalize();
+            p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, 0.9);
+
+            irr::f32 l_fLinVel = l_vLinVel.getLength();
+
+            p->m_vDirection = l_vLinVel;
+            p->m_vDirection.normalize();
+
+            if (l_fLinVel > 1.0f) {
+              irr::core::vector3df l_vNormVel = l_vLinVel,
+                                   l_vNormUp  = p->m_vUpVector;
+
+              l_vNormVel.normalize();
+              l_vNormUp .normalize();
+
+              irr::f32 l_fFactor = l_fLinVel / 2.0f;
+
+              irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 3.0f * l_vNormUp;
+              p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
+              printf("%.2f: %.2f, %.2f, %.2f\n", l_fFactor, p->m_vOffset.X, p->m_vOffset.Y, p->m_vOffset.Z);
+            }
+            
+
+            sendMarblemoved(p->m_iId, l_vPosition, quaternionToEuler(l_aRot), l_vLinVel, vectorOdeToIrr(l_aAngVel).getLength(), l_vPosition - p->m_vOffset, p->m_vUpVector, 0, 0, false, false, false, false, m_pOutputQueue);
           }
+        }
+        sendStepmsg(m_iWorldStep, m_pOutputQueue);
       }
 
       m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
@@ -238,7 +260,7 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers) : m_pWorld(nullptr), m_bPaused(false), m_iWorldStep(0) {
+    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers) : m_pWorld(nullptr), m_bPaused(false), m_iWorldStep(0), m_fGridAngle(0.0f) {
       createPhysicsObjects(a_pWorld);
 
       for (int i = 0; i < 16; i++)
@@ -248,9 +270,38 @@ namespace dustbin {
         int l_iIndex = 0;
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
           CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld);
+
+          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 15.0f, 5.0f);
+          l_vOffset.rotateXZBy(m_fGridAngle);
+
+          l_pMarble->m_vCamera    = irr::core::vector3df(l_vOffset);
+          l_pMarble->m_vOffset    = l_vOffset;
+          l_pMarble->m_vDirection = -l_vOffset;
+          l_pMarble->m_vUpVector  = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+          l_pMarble->m_vContact   = irr::core::vector3df();
+
+          l_pMarble->m_vDirection.normalize();
+          l_pMarble->m_vOffset   .normalize();
+
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
           printf("*** Marble with id %i stored in array index %i\n", (*it)->m_pMarble->m_pPositional->getID(), l_iIndex);
+
+          sendMarblemoved(l_pMarble->m_iId,
+            (*it)->m_pMarble->m_pPositional->getAbsolutePosition(),
+            (*it)->m_pMarble->m_pPositional->getRotation(),
+            irr::core::vector3df(0.0f, 0.0f, 0.0f),
+            0.0f,
+            (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + l_pMarble->m_vOffset,
+            irr::core::vector3df(0.0f, 1.0f, 0.0f),
+            0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            m_pOutputQueue);
+
           l_iIndex++;
         }
       }

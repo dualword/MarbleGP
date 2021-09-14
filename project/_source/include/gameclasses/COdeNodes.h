@@ -123,7 +123,13 @@ namespace dustbin {
         int m_iManualRespawn,
             m_iLastTrigger;
 
-        irr::core::vector3df m_vContact;
+        irr::core::vector3df m_vContact,
+                             m_vCamera,
+                             m_vUpVector,
+                             m_vOffset,
+                             m_vSideVector,
+                             m_vDirection;
+
         bool m_bHasContact;
 
         CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld);

@@ -46,11 +46,6 @@ namespace dustbin {
     }
 
     CStartingGridSceneNode_Base::~CStartingGridSceneNode_Base() {
-      printf("Delete starting grid scene node.\n");
-
-      for (int i = 0; i < 16; i++)
-        if (m_pMarbles[i] != nullptr)
-          delete m_pMarbles[i];
     }
 
     //*** Virtual method inherited from irr::scene::ISceneNode

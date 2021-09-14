@@ -142,13 +142,16 @@ namespace dustbin {
     }
 
     CObjectTrimesh::~CObjectTrimesh() {
-      // delete []m_aVertices;
-      // delete []m_aIndices;
     }
 
     CObjectMarble::CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld) : 
       CObject(enObjectType::Marble, nullptr, a_pWorld),
+      m_vSideVector(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
+      m_vUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
+      m_vDirection(irr::core::vector3df()),
       m_vContact(irr::core::vector3df()),
+      m_vOffset(irr::core::vector3df()),
+      m_vCamera(irr::core::vector3df()),
       m_iManualRespawn(-1),
       m_bHasContact(false),
       m_iLastTrigger(-1)
@@ -157,7 +160,7 @@ namespace dustbin {
 
       m_iId = a_pNode->getID();
 
-      m_cGeom = dCreateSphere(m_pWorld->m_cSpace, 1.8);
+      m_cGeom = dCreateSphere(m_pWorld->m_cSpace, 2.0);
       dGeomSetData(m_cGeom, this);
 
       m_cBody = dBodyCreate(m_pWorld->m_cWorld);
