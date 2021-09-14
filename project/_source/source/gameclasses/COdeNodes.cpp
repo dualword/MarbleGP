@@ -154,7 +154,8 @@ namespace dustbin {
       m_vCamera(irr::core::vector3df()),
       m_iManualRespawn(-1),
       m_bHasContact(false),
-      m_iLastTrigger(-1)
+      m_iLastTrigger(-1),
+      m_bActive(false)
     {
       m_bStatic = false;
 

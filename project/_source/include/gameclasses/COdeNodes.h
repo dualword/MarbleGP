@@ -123,6 +123,8 @@ namespace dustbin {
         int m_iManualRespawn,
             m_iLastTrigger;
 
+        bool m_bActive; /**< The player has already shown some activity */
+
         irr::core::vector3df m_vContact,
                              m_vCamera,
                              m_vUpVector,

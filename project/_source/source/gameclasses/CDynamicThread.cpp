@@ -208,37 +208,39 @@ namespace dustbin {
           if (m_aMarbles[i] != nullptr) {
             CObjectMarble* p = m_aMarbles[i];
 
-            const dReal* l_aPos = dBodyGetPosition(p->m_cBody),
-                       * l_aRot = dBodyGetQuaternion(p->m_cBody),
+            const dReal* l_aPos    = dBodyGetPosition(p->m_cBody),
+                       * l_aRot    = dBodyGetQuaternion(p->m_cBody),
                        * l_aLinVel = dBodyGetLinearVel(p->m_cBody),
                        * l_aAngVel = dBodyGetAngularVel(p->m_cBody);
 
             irr::core::vector3df l_vLinVel   = vectorOdeToIrr(l_aLinVel),
                                  l_vPosition = vectorOdeToIrr(l_aPos);
 
-            irr::core::vector3df l_vUpVector = l_vPosition - p->m_vContact;
-            l_vUpVector.normalize();
-            p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, 0.9);
+            if (m_aMarbles[i]->m_bActive) {
+              irr::core::vector3df l_vUpVector = l_vPosition - p->m_vContact;
+              l_vUpVector.normalize();
+              p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, 0.9);
 
-            irr::f32 l_fLinVel = l_vLinVel.getLength();
+              irr::f32 l_fLinVel = l_vLinVel.getLength();
 
-            p->m_vDirection = l_vLinVel;
-            p->m_vDirection.normalize();
+              p->m_vDirection = l_vLinVel;
+              p->m_vDirection.normalize();
 
-            if (l_fLinVel > 1.0f) {
-              irr::core::vector3df l_vNormVel = l_vLinVel,
-                                   l_vNormUp  = p->m_vUpVector;
+              if (l_fLinVel > 1.0f) {
+                irr::core::vector3df l_vNormVel = l_vLinVel,
+                                     l_vNormUp  = p->m_vUpVector;
 
-              l_vNormVel.normalize();
-              l_vNormUp .normalize();
+                l_vNormVel.normalize();
+                l_vNormUp .normalize();
 
-              irr::f32 l_fFactor = l_fLinVel / 2.0f;
+                irr::f32 l_fFactor = l_fLinVel / 2.0f;
 
-              irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 3.0f * l_vNormUp;
-              p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
+                irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 3.0f * l_vNormUp;
+                p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
+              }
             }
+            else if (l_vLinVel.getLength() > 15.0f) m_aMarbles[i]->m_bActive = true;
             
-
             sendMarblemoved(p->m_iId, l_vPosition, quaternionToEuler(l_aRot), l_vLinVel, vectorOdeToIrr(l_aAngVel).getLength(), l_vPosition - p->m_vOffset, p->m_vUpVector, 0, 0, false, false, false, false, m_pOutputQueue);
           }
         }
@@ -270,7 +272,7 @@ namespace dustbin {
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
           CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld);
 
-          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 15.0f, 5.0f);
+          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, -5.0f, -7.5f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
           l_pMarble->m_vCamera    = irr::core::vector3df(l_vOffset);
@@ -280,7 +282,6 @@ namespace dustbin {
           l_pMarble->m_vContact   = irr::core::vector3df();
 
           l_pMarble->m_vDirection.normalize();
-          l_pMarble->m_vOffset   .normalize();
 
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
@@ -291,7 +292,7 @@ namespace dustbin {
             (*it)->m_pMarble->m_pPositional->getRotation(),
             irr::core::vector3df(0.0f, 0.0f, 0.0f),
             0.0f,
-            (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + l_pMarble->m_vOffset,
+            (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - l_pMarble->m_vOffset,
             irr::core::vector3df(0.0f, 1.0f, 0.0f),
             0,
             0,
