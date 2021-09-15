@@ -193,8 +193,10 @@
     <ClCompile Include="..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\_source\source\controller\CControllerBase.cpp" />
+    <ClCompile Include="..\_source\source\controller\CControllerFactory.cpp" />
     <ClCompile Include="..\_source\source\controller\CControllerGame.cpp" />
     <ClCompile Include="..\_source\source\controller\CControllerMenu.cpp" />
+    <ClCompile Include="..\_source\source\controller\CMarbleController.cpp" />
     <ClCompile Include="..\_source\source\extensions\gui_freetype_font.cpp" />
     <ClCompile Include="..\_source\source\gameclasses\CDynamicThread.cpp" />
     <ClCompile Include="..\_source\source\gameclasses\COdeNodes.cpp" />
@@ -253,8 +255,11 @@
     <ClInclude Include="..\_source\include\CGlobal.h" />
     <ClInclude Include="..\_source\include\CMainClass.h" />
     <ClInclude Include="..\_source\include\controller\CControllerBase.h" />
+    <ClInclude Include="..\_source\include\controller\CControllerFactory.h" />
     <ClInclude Include="..\_source\include\controller\CControllerGame.h" />
     <ClInclude Include="..\_source\include\controller\CControllerMenu.h" />
+    <ClInclude Include="..\_source\include\controller\CMarbleController.h" />
+    <ClInclude Include="..\_source\include\controller\IController.h" />
     <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h" />
     <ClInclude Include="..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\_source\include\gameclasses\COdeNodes.h" />

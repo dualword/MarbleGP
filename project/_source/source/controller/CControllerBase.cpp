@@ -75,7 +75,7 @@ namespace dustbin {
 
         case enInputType::JoyAxis:
           if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-            if (a_cEvent.JoystickEvent.Joystick) {
+            if (a_cEvent.JoystickEvent.Joystick == m_iJoystick) {
               irr::s16 l_iValue = a_cEvent.JoystickEvent.Axis[m_iAxis];
               if (m_iDirection > 0) {
                 if (l_iValue < 0) l_iValue = 0;

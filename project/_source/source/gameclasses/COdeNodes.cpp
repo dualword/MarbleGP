@@ -154,8 +154,13 @@ namespace dustbin {
       m_vCamera(irr::core::vector3df()),
       m_iManualRespawn(-1),
       m_bHasContact(false),
+      m_bRearView(false),
       m_iLastTrigger(-1),
-      m_bActive(false)
+      m_bRespawn(false),
+      m_bActive(false),
+      m_bBrake(false),
+      m_iCtrlX(0),
+      m_iCtrlY(0)
     {
       m_bStatic = false;
 

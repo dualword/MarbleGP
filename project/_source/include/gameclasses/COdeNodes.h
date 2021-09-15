@@ -132,7 +132,13 @@ namespace dustbin {
                              m_vSideVector,
                              m_vDirection;
 
-        bool m_bHasContact;
+        int m_iCtrlX,   /**< The X-Control state updated in "onMarblecontrol" */
+            m_iCtrlY;   /**< The Y-Control state updated in "onMarblecontrol" */
+
+        bool m_bHasContact,
+             m_bBrake,         /**< The Brake Control state updated in "onMarblecontrol" */
+             m_bRearView,      /**< The Rearview Control state updated in "onMarblecontrol" */
+             m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
 
         CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld);
         virtual ~CObjectMarble();

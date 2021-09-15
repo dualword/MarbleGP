@@ -191,7 +191,8 @@ namespace dustbin {
       do {
         messages::IMessage* l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
-          if (!handleMessage(l_pMsg)) delete l_pMsg;
+          if (!handleMessage(l_pMsg)) 
+            delete l_pMsg;
         }
         else break;
       } 
@@ -326,7 +327,17 @@ namespace dustbin {
      * @param a_Respawn Is the manual respawn button pressed?
      */
     void CDynamicThread::onMarblecontrol(irr::s32 a_ObjectId, irr::s8 a_CtrlX, irr::s8 a_CtrlY, bool a_Brake, bool a_RearView, bool a_Respawn) {
-
+      irr::s32 l_iIndex = a_ObjectId - 10000;
+      
+      if (m_aMarbles[l_iIndex] != nullptr) {
+        // Update the controls of the marble. Will be
+        // applied before the simulation step.
+        m_aMarbles[l_iIndex]->m_iCtrlX    = a_CtrlX;
+        m_aMarbles[l_iIndex]->m_iCtrlY    = a_CtrlY;
+        m_aMarbles[l_iIndex]->m_bBrake    = a_Brake;
+        m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
+        m_aMarbles[l_iIndex]->m_bRespawn  = a_RearView;
+      }
     }
   }
 }

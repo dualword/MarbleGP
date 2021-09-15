@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <controller/CControllerFactory.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
@@ -100,7 +101,12 @@ namespace dustbin {
         int l_iIndex = m_cChampionship.m_thisrace.m_grid[i] - 1;  // LUA index starts at 1, C++ index starts at 0
 
         gameclasses::SMarbleNodes* l_pMarble = l_pGrid->getNextMarble();
-        gameclasses::SPlayer* p = new gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, m_cChampionship.m_players[l_iIndex].m_name, m_cChampionship.m_players[l_iIndex].m_texture, l_pMarble);
+        gameclasses::SPlayer* p = new gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, 
+          m_cChampionship.m_players[l_iIndex].m_name, 
+          m_cChampionship.m_players[l_iIndex].m_texture, 
+          m_cChampionship.m_players[l_iIndex].m_controls,
+          l_pMarble);
+
         m_vPlayers.push_back(p);
 
         m_aMarbles[i] = p->m_pMarble;
@@ -147,6 +153,15 @@ namespace dustbin {
         m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
         m_pOutputQueue = new threads::COutputQueue();
         m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
+
+        controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
+
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+          (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
+        }
+
+        delete l_pFactory;
+
         m_pDynamics->startThread();
       }
       else {
@@ -251,6 +266,10 @@ namespace dustbin {
      * Event handling method. The main class passes all Irrlicht events to this method
      */
     bool CGameState::OnEvent(const irr::SEvent& a_cEvent) {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        if ((*it)->m_pController != nullptr)
+          (*it)->m_pController->update(a_cEvent);
+      }
       return false;
     }
 
@@ -292,6 +311,11 @@ namespace dustbin {
     */
     enState CGameState::run() {
       messages::IMessage* l_pMsg = nullptr;
+
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        if ((*it)->m_pController != nullptr)
+          (*it)->m_pController->postControlMessage();
+      }
 
       do {
         l_pMsg = m_pInputQueue->popMessage();

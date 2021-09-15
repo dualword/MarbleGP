@@ -463,8 +463,10 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
     
     
     l_Source.write("          }\n\n")
-    l_Source.write("          if (a_bDelete)\n")
+    l_Source.write("          if (a_bDelete) {\n")
     l_Source.write("            delete a_pMessage;\n")
+    l_Source.write("            l_bRet = true;\n")
+    l_Source.write("          }\n")
     l_Source.write("        }\n")
     l_Source.write("        return l_bRet;\n") 
     l_Source.write("      }\n\n")

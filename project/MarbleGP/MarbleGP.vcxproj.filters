@@ -291,6 +291,12 @@
     <ClCompile Include="..\_source\source\_generated\messages\IGameState.cpp">
       <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\controller\CMarbleController.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\controller\CControllerFactory.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -505,6 +511,15 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\_generated\messages\IGameState.h">
       <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\controller\CControllerFactory.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\controller\IController.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\controller\CMarbleController.h">
+      <Filter>Headerdateien\controller</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
