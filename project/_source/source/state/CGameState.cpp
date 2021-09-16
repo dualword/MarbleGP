@@ -410,7 +410,7 @@ namespace dustbin {
           
           if (m_aMarbles[l_iIndex]->m_pViewport != nullptr) {
             m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
-            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setTarget  (a_Position);
+            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
             m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
             m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->updateAbsolutePosition();
           }

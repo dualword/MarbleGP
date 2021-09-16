@@ -199,12 +199,30 @@ namespace dustbin {
       while (true);
 
       if (!m_bPaused) {
+        // Apply the marble controls
+        for (int i = 0; i < 16; i++) {
+          if (m_aMarbles[i] != nullptr) {
+            irr::f32 l_fCtrlX = ((irr::f32)m_aMarbles[i]->m_iCtrlX) / 127.0f,
+                     l_fCtrlY = ((irr::f32)m_aMarbles[i]->m_iCtrlY) / 127.0f;
+
+            irr::core::vector3df l_vTorque = -50.0f * l_fCtrlX * m_aMarbles[i]->m_vDirection - 40.0f * l_fCtrlY * m_aMarbles[i]->m_vSideVector;
+
+            dBodyAddTorque(m_aMarbles[i]->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
+
+            if (m_aMarbles[i]->m_bBrake)
+              dBodySetAngularDamping(m_aMarbles[i]->m_cBody, (dReal)0.05);
+            else
+              dBodySetAngularDamping(m_aMarbles[i]->m_cBody, (dReal)0.0015);
+          }
+        }
+
         dSpaceCollide(m_pWorld->m_cSpace, m_pWorld, &nearCollisionCallback);
         dWorldStep(m_pWorld->m_cWorld, (dReal)0.008);
         dJointGroupEmpty(m_pWorld->m_cContacts);
 
         m_iWorldStep++;
 
+        // Update the states of all marbles and send the "marble moved" messages
         for (int i = 0; i < 16; i++) {
           if (m_aMarbles[i] != nullptr) {
             CObjectMarble* p = m_aMarbles[i];
@@ -217,15 +235,12 @@ namespace dustbin {
             irr::core::vector3df l_vLinVel   = vectorOdeToIrr(l_aLinVel),
                                  l_vPosition = vectorOdeToIrr(l_aPos);
 
-            if (m_aMarbles[i]->m_bActive) {
+            if (p->m_bActive) {
               irr::core::vector3df l_vUpVector = l_vPosition - p->m_vContact;
               l_vUpVector.normalize();
               p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, 0.9);
 
               irr::f32 l_fLinVel = l_vLinVel.getLength();
-
-              p->m_vDirection = l_vLinVel;
-              p->m_vDirection.normalize();
 
               if (l_fLinVel > 1.0f) {
                 irr::core::vector3df l_vNormVel = l_vLinVel,
@@ -234,19 +249,37 @@ namespace dustbin {
                 l_vNormVel.normalize();
                 l_vNormUp .normalize();
 
+                p->m_vDirection = l_vNormVel;
+
                 irr::f32 l_fFactor = l_fLinVel / 2.0f;
 
-                irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 3.0f * l_vNormUp;
+                irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 5.0f * l_vNormUp;
                 p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
 
                 if (p->m_vOffset.getLength() < 8.0f) {
                   p->m_vOffset *= 8.0f / p->m_vOffset.getLength();
                 }
+
+                p->m_vSideVector = p->m_vOffset.crossProduct(p->m_vUpVector);
+                p->m_vSideVector.normalize();
               }
             }
             else if (l_vLinVel.getLength() > 15.0f) m_aMarbles[i]->m_bActive = true;
             
-            sendMarblemoved(p->m_iId, l_vPosition, quaternionToEuler(l_aRot), l_vLinVel, vectorOdeToIrr(l_aAngVel).getLength(), l_vPosition - p->m_vOffset, p->m_vUpVector, 0, 0, false, false, false, false, m_pOutputQueue);
+            sendMarblemoved(p->m_iId, 
+              l_vPosition, 
+              quaternionToEuler(l_aRot), 
+              l_vLinVel, 
+              vectorOdeToIrr(l_aAngVel).getLength(), 
+              p->m_bRearView ? l_vPosition + p->m_vOffset : l_vPosition - p->m_vOffset, 
+              p->m_vUpVector, 
+              p->m_iCtrlX,
+              p->m_iCtrlY, 
+              false, 
+              p->m_bBrake, 
+              p->m_bRearView, 
+              false, 
+              m_pOutputQueue);
           }
         }
         sendStepmsg(m_iWorldStep, m_pOutputQueue);
@@ -280,11 +313,15 @@ namespace dustbin {
           irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, -6.0f, -5.5f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
-          l_pMarble->m_vCamera    = irr::core::vector3df(l_vOffset);
-          l_pMarble->m_vOffset    = l_vOffset;
-          l_pMarble->m_vDirection = -l_vOffset;
-          l_pMarble->m_vUpVector  = irr::core::vector3df(0.0f, 1.0f, 0.0f);
-          l_pMarble->m_vContact   = irr::core::vector3df();
+          l_pMarble->m_vCamera     = irr::core::vector3df(l_vOffset);
+          l_pMarble->m_vOffset     = l_vOffset;
+          l_pMarble->m_vDirection  = l_vOffset;
+          l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+          l_pMarble->m_vContact    = irr::core::vector3df();
+          l_pMarble->m_vSideVector = l_pMarble->m_vOffset.crossProduct(l_pMarble->m_vUpVector);
+
+          l_pMarble->m_vSideVector.normalize();
+          l_pMarble->m_vDirection .normalize();
 
           l_pMarble->m_vDirection.normalize();
 
