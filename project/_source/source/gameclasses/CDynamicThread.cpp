@@ -65,7 +65,7 @@ namespace dustbin {
         if (l_pBody1 == 0 && l_pBody2 == 0) return;
 
         CObject* l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1),
-          * l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
+               * l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
 
         bool l_bMarbleCollision = l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() == enObjectType::Marble;
 
@@ -236,11 +236,19 @@ namespace dustbin {
                                  l_vPosition = vectorOdeToIrr(l_aPos);
 
             if (p->m_bActive) {
+              irr::f32 l_fLinVel = l_vLinVel.getLength();
+
+              irr::f32 l_fInterpolate = 1.0f - (l_fLinVel / 250.0f);
+
+              if (l_fInterpolate < 0.05f)
+                l_fInterpolate = 0.05f;
+
+              if (l_fInterpolate > 0.95f)
+                l_fInterpolate = 0.95f;
+
               irr::core::vector3df l_vUpVector = l_vPosition - p->m_vContact;
               l_vUpVector.normalize();
-              p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, 0.9);
-
-              irr::f32 l_fLinVel = l_vLinVel.getLength();
+              p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector,  l_fInterpolate);
 
               if (l_fLinVel > 1.0f) {
                 irr::core::vector3df l_vNormVel = l_vLinVel,
@@ -251,27 +259,32 @@ namespace dustbin {
 
                 p->m_vDirection = l_vNormVel;
 
-                irr::f32 l_fFactor = l_fLinVel / 2.0f;
+                irr::f32 l_fFactor = l_fLinVel / 37.5f;
 
-                irr::core::vector3df l_vOffset = (l_fFactor < 7.5f ? 7.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel - 5.0f * l_vNormUp;
-                p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, 0.7);
+                if (l_fFactor > 2.0f)
+                  l_fFactor = 2.0f;
+
+                l_fFactor = (irr::f32)(sin(((l_fFactor - 1.0f) / 2.0f) * M_PI) + 1.0f) * 7.5f;
+
+                irr::core::vector3df l_vOffset = (l_fFactor < 2.5f ? 2.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel;
+                p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, l_fInterpolate);
 
                 if (p->m_vOffset.getLength() < 8.0f) {
                   p->m_vOffset *= 8.0f / p->m_vOffset.getLength();
                 }
 
-                p->m_vSideVector = p->m_vOffset.crossProduct(p->m_vUpVector);
+                p->m_vSideVector = p->m_vDirection.crossProduct(p->m_vUpVector);
                 p->m_vSideVector.normalize();
               }
             }
-            else if (l_vLinVel.getLength() > 15.0f) m_aMarbles[i]->m_bActive = true;
+            else if (l_vLinVel.getLength() > 1.0f) m_aMarbles[i]->m_bActive = true;
             
             sendMarblemoved(p->m_iId, 
               l_vPosition, 
               quaternionToEuler(l_aRot), 
               l_vLinVel, 
               vectorOdeToIrr(l_aAngVel).getLength(), 
-              p->m_bRearView ? l_vPosition + p->m_vOffset : l_vPosition - p->m_vOffset, 
+              l_vPosition - (p->m_bRearView ? -p->m_vOffset : p->m_vOffset) + 5.0f * p->m_vUpVector,
               p->m_vUpVector, 
               p->m_iCtrlX,
               p->m_iCtrlY, 
