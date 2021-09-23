@@ -134,18 +134,16 @@ namespace dustbin {
         dJointID l_cJoints[MAX_CONTACTS];
 
         for (irr::u32 i = 0; i < numc; i++) {
-          if (i == 0) {
-            if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
-              CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
-              p->m_bHasContact = true;
-              p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
-            }
+          if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
+            CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+            p->m_bHasContact = true;
+            p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
+          }
 
-            if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
-              CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
-              p->m_bHasContact = true;
-              p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
-            }
+          if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
+            CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+            p->m_bHasContact = true;
+            p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
           }
 
           l_cJoints[i] = dJointCreateContact(l_cWorld, l_cJointGroup, &l_cContact[i]);
@@ -205,6 +203,8 @@ namespace dustbin {
             irr::f32 l_fCtrlX = ((irr::f32)m_aMarbles[i]->m_iCtrlX) / 127.0f,
                      l_fCtrlY = ((irr::f32)m_aMarbles[i]->m_iCtrlY) / 127.0f;
 
+            irr::core::vector3df v = m_aMarbles[i]->m_vPosition - m_aMarbles[i]->m_vCamera;
+
             irr::core::vector3df l_vTorque = -50.0f * l_fCtrlX * m_aMarbles[i]->m_vDirection - 40.0f * l_fCtrlY * m_aMarbles[i]->m_vSideVector;
 
             dBodyAddTorque(m_aMarbles[i]->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
@@ -232,32 +232,26 @@ namespace dustbin {
                        * l_aLinVel = dBodyGetLinearVel(p->m_cBody),
                        * l_aAngVel = dBodyGetAngularVel(p->m_cBody);
 
-            irr::core::vector3df l_vLinVel   = vectorOdeToIrr(l_aLinVel),
-                                 l_vPosition = vectorOdeToIrr(l_aPos);
+            irr::core::vector3df l_vLinVel = vectorOdeToIrr(l_aLinVel);
+
+            p->m_vPosition = vectorOdeToIrr(l_aPos);
 
             if (p->m_bActive) {
               irr::f32 l_fLinVel = l_vLinVel.getLength();
-
-              irr::f32 l_fInterpolate = 1.0f - (l_fLinVel / 250.0f);
-
-              if (l_fInterpolate < 0.05f)
-                l_fInterpolate = 0.05f;
-
-              if (l_fInterpolate > 0.95f)
-                l_fInterpolate = 0.95f;
-
-              irr::core::vector3df l_vUpVector = l_vPosition - p->m_vContact;
-              l_vUpVector.normalize();
-              p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector,  l_fInterpolate);
-
-              if (l_fLinVel > 1.0f) {
+              if (l_fLinVel > 0.5f) {
                 irr::core::vector3df l_vNormVel = l_vLinVel,
-                                     l_vNormUp  = p->m_vUpVector;
+                  l_vNormUp = p->m_vUpVector;
 
                 l_vNormVel.normalize();
-                l_vNormUp .normalize();
+                l_vNormUp.normalize();
 
-                p->m_vDirection = l_vNormVel;
+                irr::f32 l_fInterpolate = 1.0f - (l_fLinVel / 750.0f);
+
+                if (p->m_bHasContact) {
+                  irr::core::vector3df l_vUpVector = p->m_vPosition - p->m_vContact;
+                  l_vUpVector.normalize();
+                  p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
+                }
 
                 irr::f32 l_fFactor = l_fLinVel / 37.5f;
 
@@ -267,24 +261,30 @@ namespace dustbin {
                 l_fFactor = (irr::f32)(sin(((l_fFactor - 1.0f) / 2.0f) * M_PI) + 1.0f) * 7.5f;
 
                 irr::core::vector3df l_vOffset = (l_fFactor < 2.5f ? 2.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel;
-                p->m_vOffset = l_vOffset.interpolate(p->m_vOffset, l_vOffset, l_fInterpolate);
+                p->m_vDirection = l_vOffset;
+                p->m_vDirection.normalize();
 
-                if (p->m_vOffset.getLength() < 8.0f) {
-                  p->m_vOffset *= 8.0f / p->m_vOffset.getLength();
-                }
+                if (l_vOffset.getLength() < 8.0f)
+                  l_vOffset = 8.0f * l_vOffset.normalize();
+                  
+                p->m_vCamera = p->m_vCamera.interpolate(p->m_vCamera, p->m_vPosition - l_vOffset + (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpVector, l_fInterpolate);
 
                 p->m_vSideVector = p->m_vDirection.crossProduct(p->m_vUpVector);
                 p->m_vSideVector.normalize();
+
+                p->m_bHasContact = false;
               }
             }
-            else if (l_vLinVel.getLength() > 1.0f) m_aMarbles[i]->m_bActive = true;
+            else {
+              p->m_vCamera = p->m_vPosition - p->m_vOffset + 5.0f * p->m_vUpVector;
+            }
             
             sendMarblemoved(p->m_iId, 
-              l_vPosition, 
+              p->m_vPosition, 
               quaternionToEuler(l_aRot), 
               l_vLinVel, 
               vectorOdeToIrr(l_aAngVel).getLength(), 
-              l_vPosition - (p->m_bRearView ? -p->m_vOffset : p->m_vOffset) + 5.0f * p->m_vUpVector,
+              p->m_vCamera,
               p->m_vUpVector, 
               p->m_iCtrlX,
               p->m_iCtrlY, 
@@ -323,20 +323,18 @@ namespace dustbin {
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
           CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld);
 
-          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, -6.0f, -5.5f);
+          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, -15.0f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
-          l_pMarble->m_vCamera     = irr::core::vector3df(l_vOffset);
-          l_pMarble->m_vOffset     = l_vOffset;
           l_pMarble->m_vDirection  = l_vOffset;
           l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
           l_pMarble->m_vContact    = irr::core::vector3df();
-          l_pMarble->m_vSideVector = l_pMarble->m_vOffset.crossProduct(l_pMarble->m_vUpVector);
+          l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
+          l_pMarble->m_vOffset     = l_vOffset;
+          l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
-
-          l_pMarble->m_vDirection.normalize();
 
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
@@ -347,7 +345,7 @@ namespace dustbin {
             (*it)->m_pMarble->m_pPositional->getRotation(),
             irr::core::vector3df(0.0f, 0.0f, 0.0f),
             0.0f,
-            (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - l_pMarble->m_vOffset,
+            l_pMarble->m_vCamera,
             irr::core::vector3df(0.0f, 1.0f, 0.0f),
             0,
             0,
@@ -380,13 +378,21 @@ namespace dustbin {
       irr::s32 l_iIndex = a_ObjectId - 10000;
       
       if (m_aMarbles[l_iIndex] != nullptr) {
-        // Update the controls of the marble. Will be
-        // applied before the simulation step.
-        m_aMarbles[l_iIndex]->m_iCtrlX    = a_CtrlX;
-        m_aMarbles[l_iIndex]->m_iCtrlY    = a_CtrlY;
-        m_aMarbles[l_iIndex]->m_bBrake    = a_Brake;
+        // Rearview is possible even if the marble is not yet active
         m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
-        m_aMarbles[l_iIndex]->m_bRespawn  = a_RearView;
+
+        if (m_aMarbles[l_iIndex]->m_bActive) {
+          // Update the controls of the marble. Will be
+          // applied before the simulation step.
+          m_aMarbles[l_iIndex]->m_iCtrlX = a_CtrlX;
+          m_aMarbles[l_iIndex]->m_iCtrlY = a_CtrlY;
+          m_aMarbles[l_iIndex]->m_bBrake = a_Brake;
+          m_aMarbles[l_iIndex]->m_bRespawn = a_RearView;
+        }
+        else {
+          if (abs(a_CtrlX > 64) || abs(a_CtrlY > 64))
+            m_aMarbles[l_iIndex]->m_bActive = true;
+        }
       }
     }
   }

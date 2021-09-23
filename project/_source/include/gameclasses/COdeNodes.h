@@ -127,10 +127,11 @@ namespace dustbin {
 
         irr::core::vector3df m_vContact,
                              m_vCamera,
-                             m_vUpVector,
                              m_vOffset,
+                             m_vUpVector,
                              m_vSideVector,
-                             m_vDirection;
+                             m_vDirection,
+                             m_vPosition;
 
         int m_iCtrlX,   /**< The X-Control state updated in "onMarblecontrol" */
             m_iCtrlY;   /**< The Y-Control state updated in "onMarblecontrol" */
