@@ -199,23 +199,25 @@ namespace dustbin {
       if (!m_bPaused) {
         // Apply the marble controls
         for (int i = 0; i < 16; i++) {
-          if (m_aMarbles[i] != nullptr) {
-            irr::f32 l_fCtrlX = ((irr::f32)m_aMarbles[i]->m_iCtrlX) / 127.0f,
-                     l_fCtrlY = ((irr::f32)m_aMarbles[i]->m_iCtrlY) / 127.0f;
+          CObjectMarble* p = m_aMarbles[i];
+
+          if (p != nullptr) {
+            irr::f32 l_fCtrlX = ((irr::f32)p->m_iCtrlX) / 127.0f,
+                     l_fCtrlY = ((irr::f32)p->m_iCtrlY) / 127.0f;
 
             irr::core::vector2df l_vSteer = irr::core::vector2df(1.5f * l_fCtrlX, 1.0f * l_fCtrlY);
             l_vSteer.normalize();
 
-            irr::core::vector3df v = m_aMarbles[i]->m_vPosition - m_aMarbles[i]->m_vCamera;
+            irr::core::vector3df v = p->m_vPosition - p->m_vCamera;
 
-            irr::core::vector3df l_vTorque = 60.0f * l_vSteer.X * m_aMarbles[i]->m_vDirection + 40.0f * l_vSteer.Y * m_aMarbles[i]->m_vSideVector;
+            irr::core::vector3df l_vTorque = 60.0f * l_vSteer.X * p->m_vDirection + 40.0f * l_vSteer.Y * p->m_vSideVector;
 
-            dBodyAddTorque(m_aMarbles[i]->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
+            dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
-            if (m_aMarbles[i]->m_bBrake)
-              dBodySetAngularDamping(m_aMarbles[i]->m_cBody, (dReal)0.05);
+            if (p->m_bBrake)
+              dBodySetAngularDamping(p->m_cBody, (dReal)0.05);
             else
-              dBodySetAngularDamping(m_aMarbles[i]->m_cBody, (dReal)0.0015);
+              dBodySetAngularDamping(p->m_cBody, p->m_fDamp);
           }
         }
 
@@ -235,7 +237,8 @@ namespace dustbin {
                        * l_aLinVel = dBodyGetLinearVel(p->m_cBody),
                        * l_aAngVel = dBodyGetAngularVel(p->m_cBody);
 
-            irr::core::vector3df l_vLinVel = vectorOdeToIrr(l_aLinVel);
+            irr::core::vector3df l_vLinVel = vectorOdeToIrr(l_aLinVel),
+                                 l_vAngVel = vectorOdeToIrr(l_aAngVel);
 
             p->m_vPosition = vectorOdeToIrr(l_aPos);
 
@@ -254,6 +257,28 @@ namespace dustbin {
                   irr::core::vector3df l_vUpVector = p->m_vPosition - p->m_vContact;
                   l_vUpVector.normalize();
                   p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
+                  p->m_iLastContact = m_iWorldStep;
+                  p->m_fDamp = (dReal)0.0015;
+                }
+                else {
+                  int l_iTimeSince = m_iWorldStep - p->m_iLastContact;
+
+                  // If the marble did not have a contact for
+                  // some time we add some damping to the marble
+                  // to prevent the marble spin too fast. This
+                  // may lead to unwanted behaviour when the marble
+                  // touches the ground again
+                  if (l_iTimeSince > 15) {
+                    dReal l_fDamp = (dReal)0.01,
+                          l_fFact = (dReal)(l_vAngVel.getLength() / l_vLinVel.getLength());
+
+                    if (l_fFact < 0.0) l_fFact = -l_fFact;
+
+                    l_fDamp *= 2.5 * l_fFact;
+                    if (l_fDamp > 0.75) l_fDamp = 0.75;
+
+                    p->m_fDamp = l_fDamp;
+                  }
                 }
 
                 irr::f32 l_fFactor = l_fLinVel / 60.0f;

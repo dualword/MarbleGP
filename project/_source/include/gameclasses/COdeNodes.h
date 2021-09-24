@@ -121,7 +121,8 @@ namespace dustbin {
     class CObjectMarble : public CObject {
       public:
         int m_iManualRespawn,
-            m_iLastTrigger;
+            m_iLastTrigger,
+            m_iLastContact;   /**< The step no. of the last contact */
 
         bool m_bActive; /**< The player has already shown some activity */
 
@@ -133,6 +134,8 @@ namespace dustbin {
                              m_vSideVector,
                              m_vDirection,
                              m_vPosition;
+
+        dReal m_fDamp;  /**< The damping of the marble's body */
 
         int m_iCtrlX,   /**< The X-Control state updated in "onMarblecontrol" */
             m_iCtrlY;   /**< The Y-Control state updated in "onMarblecontrol" */
