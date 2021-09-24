@@ -149,6 +149,7 @@ namespace dustbin {
       m_vSideVector(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
       m_vUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
       m_vDirection(irr::core::vector3df()),
+      m_vRearview(irr::core::vector3df()),
       m_vContact(irr::core::vector3df()),
       m_vCamera(irr::core::vector3df()),
       m_iManualRespawn(-1),

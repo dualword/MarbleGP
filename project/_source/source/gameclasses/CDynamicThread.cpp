@@ -203,9 +203,12 @@ namespace dustbin {
             irr::f32 l_fCtrlX = ((irr::f32)m_aMarbles[i]->m_iCtrlX) / 127.0f,
                      l_fCtrlY = ((irr::f32)m_aMarbles[i]->m_iCtrlY) / 127.0f;
 
+            irr::core::vector2df l_vSteer = irr::core::vector2df(1.5f * l_fCtrlX, 1.0f * l_fCtrlY);
+            l_vSteer.normalize();
+
             irr::core::vector3df v = m_aMarbles[i]->m_vPosition - m_aMarbles[i]->m_vCamera;
 
-            irr::core::vector3df l_vTorque = -50.0f * l_fCtrlX * m_aMarbles[i]->m_vDirection - 40.0f * l_fCtrlY * m_aMarbles[i]->m_vSideVector;
+            irr::core::vector3df l_vTorque = 60.0f * l_vSteer.X * m_aMarbles[i]->m_vDirection + 40.0f * l_vSteer.Y * m_aMarbles[i]->m_vSideVector;
 
             dBodyAddTorque(m_aMarbles[i]->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
@@ -253,30 +256,37 @@ namespace dustbin {
                   p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
                 }
 
-                irr::f32 l_fFactor = l_fLinVel / 37.5f;
+                irr::f32 l_fFactor = l_fLinVel / 60.0f;
 
                 if (l_fFactor > 2.0f)
                   l_fFactor = 2.0f;
 
                 l_fFactor = (irr::f32)(sin(((l_fFactor - 1.0f) / 2.0f) * M_PI) + 1.0f) * 7.5f;
 
-                irr::core::vector3df l_vOffset = (l_fFactor < 2.5f ? 2.5f : l_fFactor > 15.0f ? 15.0f : l_fFactor) * l_vNormVel;
-                p->m_vDirection = l_vOffset;
-                p->m_vDirection.normalize();
+                irr::core::vector3df l_vOffset = (l_fFactor < 1.5f ? 1.5f : l_fFactor > 10.0f ? 10.0f : l_fFactor) * l_vNormVel;
 
                 if (l_vOffset.getLength() < 8.0f)
                   l_vOffset = 8.0f * l_vOffset.normalize();
-                  
-                p->m_vCamera = p->m_vCamera.interpolate(p->m_vCamera, p->m_vPosition - l_vOffset + (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpVector, l_fInterpolate);
 
-                p->m_vSideVector = p->m_vDirection.crossProduct(p->m_vUpVector);
+                irr::core::vector3df l_vUp = (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpVector;
+
+                p->m_vRearview = p->m_vRearview.interpolate(p->m_vRearview, p->m_vPosition + l_vOffset + l_vUp, 1.0f - l_fInterpolate);
+                p->m_vCamera   = p->m_vCamera  .interpolate(p->m_vCamera  , p->m_vPosition - l_vOffset + l_vUp,        l_fInterpolate);
+
+                p->m_vDirection = p->m_vCamera - p->m_vPosition - l_vUp;
+                p->m_vDirection.normalize();
+
+                irr::core::vector3df v = p->m_vCamera - p->m_vPosition;
+
+                p->m_vSideVector = v.crossProduct(p->m_vUpVector);
                 p->m_vSideVector.normalize();
 
                 p->m_bHasContact = false;
               }
             }
             else {
-              p->m_vCamera = p->m_vPosition - p->m_vOffset + 5.0f * p->m_vUpVector;
+              p->m_vCamera   = p->m_vPosition - p->m_vOffset + 5.0f * p->m_vUpVector;
+              p->m_vRearview = p->m_vPosition + p->m_vOffset + 5.0f * p->m_vUpVector;
             }
             
             sendMarblemoved(p->m_iId, 
@@ -284,7 +294,7 @@ namespace dustbin {
               quaternionToEuler(l_aRot), 
               l_vLinVel, 
               vectorOdeToIrr(l_aAngVel).getLength(), 
-              p->m_vCamera,
+              p->m_bRearView ? p->m_vRearview : p->m_vCamera,
               p->m_vUpVector, 
               p->m_iCtrlX,
               p->m_iCtrlY, 
@@ -332,6 +342,7 @@ namespace dustbin {
           l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
           l_pMarble->m_vOffset     = l_vOffset;
           l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;
+          l_pMarble->m_vRearview   = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
@@ -384,10 +395,11 @@ namespace dustbin {
         if (m_aMarbles[l_iIndex]->m_bActive) {
           // Update the controls of the marble. Will be
           // applied before the simulation step.
-          m_aMarbles[l_iIndex]->m_iCtrlX = a_CtrlX;
-          m_aMarbles[l_iIndex]->m_iCtrlY = a_CtrlY;
-          m_aMarbles[l_iIndex]->m_bBrake = a_Brake;
-          m_aMarbles[l_iIndex]->m_bRespawn = a_RearView;
+          m_aMarbles[l_iIndex]->m_iCtrlX    = a_CtrlX;
+          m_aMarbles[l_iIndex]->m_iCtrlY    = a_CtrlY;
+          m_aMarbles[l_iIndex]->m_bBrake    = a_Brake;
+          m_aMarbles[l_iIndex]->m_bRespawn  = a_Respawn;
+          m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
         }
         else {
           if (abs(a_CtrlX > 64) || abs(a_CtrlY > 64))

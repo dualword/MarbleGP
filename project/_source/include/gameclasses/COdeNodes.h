@@ -126,7 +126,8 @@ namespace dustbin {
         bool m_bActive; /**< The player has already shown some activity */
 
         irr::core::vector3df m_vContact,
-                             m_vCamera,
+                             m_vCamera,     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
+                             m_vRearview,   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */
                              m_vOffset,
                              m_vUpVector,
                              m_vSideVector,
