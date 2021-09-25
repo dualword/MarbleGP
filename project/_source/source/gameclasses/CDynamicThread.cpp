@@ -157,8 +157,7 @@ namespace dustbin {
     void CDynamicThread::createPhysicsObjects(irr::scene::ISceneNode* a_pNode) {
       if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId) {
         if (m_pWorld == nullptr) {
-          m_pWorld = new CWorld();
-          m_pWorld->m_pTriggerHandler = this;
+          m_pWorld = new CWorld(this);
         }
       }
       else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {

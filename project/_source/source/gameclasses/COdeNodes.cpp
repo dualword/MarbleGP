@@ -194,7 +194,7 @@ namespace dustbin {
 
     }
 
-    CWorld::CWorld() : m_cWorld(nullptr), m_cSpace(nullptr), m_cContacts(nullptr), m_pTriggerHandler(nullptr) {
+    CWorld::CWorld(ITriggerHandler* a_pTriggerHandler) : m_cWorld(nullptr), m_cSpace(nullptr), m_cContacts(nullptr), m_pTriggerHandler(a_pTriggerHandler) {
       dInitODE2(0);
 
       m_cWorld = dWorldCreate();

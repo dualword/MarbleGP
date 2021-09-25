@@ -170,7 +170,7 @@ namespace dustbin {
 
         ITriggerHandler* m_pTriggerHandler;
 
-        CWorld();
+        CWorld(ITriggerHandler *a_pTriggerHandler);
 
         virtual ~CWorld();
 
