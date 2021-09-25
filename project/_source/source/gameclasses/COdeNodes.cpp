@@ -27,14 +27,15 @@ namespace dustbin {
       q[3] = (dReal)(s1 * c2 * c3 - c1 * s2 * s3); //z
     }
 
-    CObject::CObject(enObjectType a_eType, scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, int a_iMaterial) :
+    CObject::CObject(enObjectType a_eType, scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial) :
       m_iId(a_pNode != nullptr ? a_pNode->getID() : -1),
-      m_eType(a_eType),
-      m_bCollides(true),
-      m_bStatic(true),
-      m_bTrigger(false),
-      m_iTrigger(0),
       m_pWorld(a_pWorld),
+      m_bCollides(true),
+      m_bTrigger(false),
+      m_sName(a_sName),
+      m_eType(a_eType),
+      m_bStatic(true),
+      m_iTrigger(0),
       m_cGeom(0),
       m_cBody(0)
     {
@@ -67,19 +68,21 @@ namespace dustbin {
       return m_eType;
     }
 
-    CObjectBox::CObjectBox(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld) : CObject(enObjectType::Box, a_pNode, a_pWorld) {
+    CObjectBox::CObjectBox(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) : CObject(enObjectType::Box, a_pNode, a_pWorld, a_sName) {
     }
 
     CObjectBox::~CObjectBox() {
     }
 
-    CObjectSphere::CObjectSphere(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld) : CObject(enObjectType::Sphere, a_pNode, a_pWorld) {
+    CObjectSphere::CObjectSphere(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) : CObject(enObjectType::Sphere, a_pNode, a_pWorld, a_sName) {
     }
 
     CObjectSphere::~CObjectSphere() {
     }
 
-    CObjectTrimesh::CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, int a_iMaterial) : CObject(enObjectType::Trimesh, a_pNode, a_pWorld, a_iMaterial) {
+    CObjectTrimesh::CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial) : 
+      CObject(enObjectType::Trimesh, a_pNode, a_pWorld, a_sName + " #" + std::to_string(a_iMaterial), a_iMaterial)
+    {
       if (a_pNode->getParent()->getType() == irr::scene::ESNT_MESH) {
         irr::scene::IMeshSceneNode* l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode*>(a_pNode->getParent());
 
@@ -132,7 +135,7 @@ namespace dustbin {
         dGeomSetPosition(m_cGeom, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
 
         if (a_iMaterial < (int)l_pNode->getMaterialCount() - 1)
-          a_pWorld->m_vObjects.push_back(new CObjectTrimesh(a_pNode, a_pWorld, a_iMaterial + 1));
+          a_pWorld->m_vObjects.push_back(new CObjectTrimesh(a_pNode, a_pWorld, a_sName, a_iMaterial + 1));
       }
       else {
         CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "Trimesh physics objects can only be built from mesh scene nodes.");
@@ -144,10 +147,11 @@ namespace dustbin {
     CObjectTrimesh::~CObjectTrimesh() {
     }
 
-    CObjectMarble::CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld) : 
-      CObject(enObjectType::Marble, nullptr, a_pWorld),
+    CObjectMarble::CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) :
+      CObject(enObjectType::Marble, nullptr, a_pWorld, a_sName),
       m_vSideVector(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
       m_vUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
+      m_vUpOffset(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
       m_vDirection(irr::core::vector3df()),
       m_vRearview(irr::core::vector3df()),
       m_vContact(irr::core::vector3df()),

@@ -403,16 +403,19 @@ namespace dustbin {
     void CGameState::onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df& a_CameraPosition, const irr::core::vector3df& a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) {
       if (a_ObjectId >= 10000 && a_ObjectId < 10016) {
         irr::s32 l_iIndex = a_ObjectId - 10000;
-        if (m_aMarbles[l_iIndex] != nullptr) {
-          m_aMarbles[l_iIndex]->m_pPositional->setPosition(a_Position);
-          m_aMarbles[l_iIndex]->m_pPositional->setRotation(a_Rotation);
-          m_aMarbles[l_iIndex]->m_pPositional->updateAbsolutePosition();
+
+        gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
+
+        if (p != nullptr) {
+          p->m_pPositional->setPosition(a_Position);
+          p->m_pPositional->setRotation(a_Rotation);
+          p->m_pPositional->updateAbsolutePosition();
           
-          if (m_aMarbles[l_iIndex]->m_pViewport != nullptr) {
-            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
-            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
-            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
-            m_aMarbles[l_iIndex]->m_pViewport->m_pCamera->updateAbsolutePosition();
+          if (p->m_pViewport != nullptr) {
+            p->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
+            p->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
+            p->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
+            p->m_pViewport->m_pCamera->updateAbsolutePosition();
           }
         }
       }

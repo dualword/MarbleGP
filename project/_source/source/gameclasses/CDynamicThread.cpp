@@ -47,7 +47,7 @@ namespace dustbin {
 
       CWorld* l_pWorld = (CWorld*)a_pData;
 
-      dWorldID      l_cWorld = l_pWorld->m_cWorld;
+      dWorldID      l_cWorld      = l_pWorld->m_cWorld;
       dJointGroupID l_cJointGroup = l_pWorld->m_cContacts;
 
       dContact l_cContact[MAX_CONTACTS];
@@ -66,6 +66,8 @@ namespace dustbin {
 
         CObject* l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1),
                * l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
+
+        // printf("ncc: %s || %s\n", l_pOdeNode1->m_sName.c_str(), l_pOdeNode2->m_sName.c_str());
 
         bool l_bMarbleCollision = l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() == enObjectType::Marble;
 
@@ -164,15 +166,15 @@ namespace dustbin {
 
           switch (l_pNode->getNodeType()) {
             case scenenodes::CPhysicsNode::enNodeType::Box:
-              m_pWorld->m_vObjects.push_back(new CObjectBox(l_pNode, m_pWorld));
+              m_pWorld->m_vObjects.push_back(new CObjectBox(l_pNode, m_pWorld, l_pNode->getName()));
               break;
 
             case scenenodes::CPhysicsNode::enNodeType::Sphere:
-              m_pWorld->m_vObjects.push_back(new CObjectSphere(l_pNode, m_pWorld));
+              m_pWorld->m_vObjects.push_back(new CObjectSphere(l_pNode, m_pWorld, l_pNode->getName()));
               break;
 
             case scenenodes::CPhysicsNode::enNodeType::Trimesh:
-              m_pWorld->m_vObjects.push_back(new CObjectTrimesh(l_pNode, m_pWorld));
+              m_pWorld->m_vObjects.push_back(new CObjectTrimesh(l_pNode, m_pWorld, l_pNode->getName()));
               break;
           }
         }
@@ -246,16 +248,20 @@ namespace dustbin {
               irr::f32 l_fLinVel = l_vLinVel.getLength();
               if (l_fLinVel > 0.5f) {
                 irr::core::vector3df l_vNormVel = l_vLinVel,
-                  l_vNormUp = p->m_vUpVector;
+                                     l_vNormUp = p->m_vUpVector;
 
                 l_vNormVel.normalize();
-                l_vNormUp.normalize();
+                l_vNormUp .normalize();
 
                 irr::f32 l_fInterpolate = 1.0f - (l_fLinVel / 750.0f);
 
                 irr::core::vector3df l_vUpVector = p->m_vPosition - p->m_vContact;
                 l_vUpVector.normalize();
                 p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
+
+                irr::core::vector3df l_vUpOffset = p->m_bHasContact ? p->m_vPosition - p->m_vContact : p->m_vUpOffset;
+                l_vUpOffset.normalize();
+                p->m_vUpOffset = l_vUpOffset.interpolate(p->m_vUpOffset, l_vUpOffset, l_fInterpolate);
 
                 if (p->m_bHasContact) {
                   p->m_iLastContact = m_iWorldStep;
@@ -294,7 +300,7 @@ namespace dustbin {
                 if (l_vOffset.getLengthSQ() < 2.25f)
                   l_vOffset = 1.5f * l_vOffset.normalize();
 
-                irr::core::vector3df l_vUp = (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpVector;
+                irr::core::vector3df l_vUp = (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpOffset;
 
                 p->m_vRearview = p->m_vRearview.interpolate(p->m_vRearview, p->m_vPosition + l_vOffset + l_vUp, 1.0f - l_fInterpolate);
                 p->m_vCamera   = p->m_vCamera  .interpolate(p->m_vCamera  , p->m_vPosition - l_vOffset + l_vUp,        l_fInterpolate);
@@ -306,8 +312,6 @@ namespace dustbin {
 
                 p->m_vSideVector = v.crossProduct(p->m_vUpVector);
                 p->m_vSideVector.normalize();
-
-                p->m_bHasContact = false;
               }
             }
             else {
@@ -324,11 +328,13 @@ namespace dustbin {
               p->m_vUpVector, 
               p->m_iCtrlX,
               p->m_iCtrlY, 
-              false, 
-              p->m_bBrake, 
-              p->m_bRearView, 
-              false, 
+              p->m_bHasContact,
+              p->m_bBrake,
+              p->m_bRearView,
+              false,
               m_pOutputQueue);
+
+            p->m_bHasContact = false;
           }
         }
         sendStepmsg(m_iWorldStep, m_pOutputQueue);
@@ -357,15 +363,16 @@ namespace dustbin {
       if (m_pWorld != nullptr) {
         int l_iIndex = 0;
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
-          CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld);
+          CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
 
           irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, -15.0f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
           l_pMarble->m_vDirection  = l_vOffset;
           l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+          l_pMarble->m_vUpOffset   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
           l_pMarble->m_vContact    = irr::core::vector3df();
-          l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
+          l_pMarble->m_vSideVector = -l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
           l_pMarble->m_vOffset     = l_vOffset;
           l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;
           l_pMarble->m_vRearview   = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;

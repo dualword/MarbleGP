@@ -8,6 +8,7 @@
 #endif
 
 #include <ode/ode.h>
+#include <string>
 
 namespace dustbin {
   namespace scenenodes {
@@ -48,8 +49,8 @@ namespace dustbin {
         int m_iId;
 
         bool m_bStatic,
-          m_bCollides,
-          m_bTrigger;
+             m_bCollides,
+             m_bTrigger;
 
         int m_iTrigger;
 
@@ -58,13 +59,13 @@ namespace dustbin {
         dGeomID m_cGeom;
         dBodyID m_cBody;
 
-        CObject(enObjectType a_eType, scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, int a_iMaterial = 0);
+        std::string m_sName;
+
+        CObject(enObjectType a_eType, scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string &a_sName, int a_iMaterial = 0);
 
         virtual ~CObject();
 
         enObjectType getType();
-
-
     };
 
     /**
@@ -74,7 +75,7 @@ namespace dustbin {
     */
     class CObjectBox : public CObject {
       public:
-        CObjectBox(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld);
+        CObjectBox(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string &a_sName);
 
         virtual ~CObjectBox();
     };
@@ -86,7 +87,7 @@ namespace dustbin {
     */
     class CObjectSphere : public CObject {
       public:
-        CObjectSphere(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld);
+        CObjectSphere(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName);
 
         virtual ~CObjectSphere();
     };
@@ -107,7 +108,7 @@ namespace dustbin {
         std::vector<dTriIndex> m_vIndices;
 
       public:
-        CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, int a_iMaterial = 0);
+        CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial = 0);
 
         virtual ~CObjectTrimesh();
     };
@@ -130,6 +131,7 @@ namespace dustbin {
                              m_vRearview,   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */
                              m_vOffset,
                              m_vUpVector,   /**< The camera up-vector */
+                             m_vUpOffset,   /**< This is generally the same as m_vUpVector, but when the marble has no contact this is not interpolated to keep an up-offset for the camera */
                              m_vContact,    /**< The last contact point. This is used for up-vector interpolation even when currently no contact exists */
                              m_vSideVector, /**< The camera side-vector. This is used for acceleration, torque is applied around this axis */
                              m_vDirection,  /**< The direction the camera is pointing to. Torque is applied around this axis for steering */
@@ -145,7 +147,7 @@ namespace dustbin {
              m_bRearView,      /**< The Rearview Control state updated in "onMarblecontrol" */
              m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
 
-        CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld);
+        CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName);
         virtual ~CObjectMarble();
     };
 
