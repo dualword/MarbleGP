@@ -1084,7 +1084,7 @@ namespace dustbin {
 
           l_pTexture = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), l_sPostFix.c_str());
           m_pDrv->setRenderTarget(l_pTexture, true, true, l_cColorNumberBack);
-          m_pDrv->draw2DRectangle(l_cColorPatternBack, irr::core::recti(0, 255, 511, 511));
+          m_pDrv->draw2DRectangle(l_cColorPatternBack, irr::core::recti(0, 255, 512, 512));
 
           if (l_pNumber != nullptr) {
             m_pDrv->draw2DImage(l_pNumber, irr::core::vector2di(0, 0), true);
