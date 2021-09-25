@@ -32,6 +32,15 @@ namespace dustbin {
     */
     class CDynamicThread : public threads::IThread, public messages::IDynamicThread, public ITriggerHandler {
       private:
+        enum class enGameState {
+          Countdown,
+          Racing,
+          Finished,
+          Cancelled
+        };
+
+        enGameState m_eGameState;
+
         CWorld* m_pWorld;
         CObjectMarble* m_aMarbles[16];
 

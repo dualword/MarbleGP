@@ -369,7 +369,7 @@ namespace dustbin {
      * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
      */
     void CGameState::onCountdown(irr::u8 a_Tick) {
-
+      printf("On Countdown: %i\n", a_Tick);
     }
 
     /**

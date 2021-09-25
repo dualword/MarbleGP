@@ -214,20 +214,23 @@ namespace dustbin {
 
             irr::core::vector3df l_vTorque = 60.0f * l_vSteer.X * p->m_vDirection + 40.0f * l_vSteer.Y * p->m_vSideVector;
 
-            dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
+            if (p->m_eState == CObjectMarble::enMarbleState::Rolling) {
+              dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
-            if (p->m_bBrake)
-              dBodySetAngularDamping(p->m_cBody, (dReal)0.05);
-            else
-              dBodySetAngularDamping(p->m_cBody, p->m_fDamp);
+              if (p->m_bBrake)
+                dBodySetAngularDamping(p->m_cBody, (dReal)0.05);
+              else
+                dBodySetAngularDamping(p->m_cBody, p->m_fDamp);
+            }
+            else if (p->m_eState == CObjectMarble::enMarbleState::Countdown) {
+              dBodySetAngularDamping(p->m_cBody, (dReal)0.9);
+            }
           }
         }
 
         dSpaceCollide(m_pWorld->m_cSpace, m_pWorld, &nearCollisionCallback);
         dWorldStep(m_pWorld->m_cWorld, (dReal)0.008);
         dJointGroupEmpty(m_pWorld->m_cContacts);
-
-        m_iWorldStep++;
 
         // Update the states of all marbles and send the "marble moved" messages
         for (int i = 0; i < 16; i++) {
@@ -337,7 +340,37 @@ namespace dustbin {
             p->m_bHasContact = false;
           }
         }
+
+        if (m_eGameState == enGameState::Countdown) {
+          if (m_iWorldStep == 0) {
+            sendCountdown(4, m_pOutputQueue);
+          }
+          else {
+            int l_iStep = m_iWorldStep - 360;
+
+            if (l_iStep == 120) {
+              sendCountdown(3, m_pOutputQueue);
+            }
+            else if (l_iStep == 240) {
+              sendCountdown(2, m_pOutputQueue);
+            }
+            else if (l_iStep == 360) {
+              sendCountdown(1, m_pOutputQueue);
+            }
+            else if (l_iStep == 480) {
+              sendCountdown(0, m_pOutputQueue);
+              m_eGameState = enGameState::Racing;
+
+              for (int i = 0; i < 16; i++) {
+                if (m_aMarbles[i] != nullptr)
+                  m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Rolling;
+              }
+            }
+          }
+        }
+
         sendStepmsg(m_iWorldStep, m_pOutputQueue);
+        m_iWorldStep++;
       }
 
       m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
@@ -354,7 +387,13 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers) : m_pWorld(nullptr), m_bPaused(false), m_iWorldStep(0), m_fGridAngle(0.0f) {
+    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers) : 
+      m_eGameState(enGameState::Countdown),
+      m_fGridAngle(0.0f),
+      m_pWorld(nullptr),
+      m_bPaused(false),
+      m_iWorldStep(0)
+    {
       createPhysicsObjects(a_pWorld);
 
       for (int i = 0; i < 16; i++)

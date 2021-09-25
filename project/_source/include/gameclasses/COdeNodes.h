@@ -123,6 +123,14 @@ namespace dustbin {
     */
     class CObjectMarble : public CObject {
       public:
+        enum class enMarbleState {
+          Countdown,
+          Rolling,
+          Respawn,
+          Stunned,
+          Finished
+        };
+
         int m_iManualRespawn,
             m_iLastTrigger,
             m_iLastContact;   /**< The step no. of the last contact */
@@ -148,6 +156,8 @@ namespace dustbin {
              m_bBrake,         /**< The Brake Control state updated in "onMarblecontrol" */
              m_bRearView,      /**< The Rearview Control state updated in "onMarblecontrol" */
              m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
+
+        enMarbleState m_eState; /**< The state of the marble */
 
         CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName);
         virtual ~CObjectMarble();

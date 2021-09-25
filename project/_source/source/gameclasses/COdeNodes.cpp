@@ -156,6 +156,7 @@ namespace dustbin {
       m_vDirection(irr::core::vector3df()),
       m_vRearview(irr::core::vector3df()),
       m_vContact(irr::core::vector3df()),
+      m_eState(enMarbleState::Countdown),
       m_vCamera(irr::core::vector3df()),
       m_fDamp((dReal)0.0015),
       m_iManualRespawn(-1),
