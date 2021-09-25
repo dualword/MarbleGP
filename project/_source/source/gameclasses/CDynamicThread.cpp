@@ -281,7 +281,7 @@ namespace dustbin {
 
                     if (l_fFact < 0.0) l_fFact = -l_fFact;
 
-                    l_fDamp *= 2.5 * l_fFact;
+                    l_fDamp *= 1.5 * l_fFact;
                     if (l_fDamp > 0.75) l_fDamp = 0.75;
 
                     p->m_fDamp = l_fDamp;
