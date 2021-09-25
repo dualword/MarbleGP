@@ -126,14 +126,14 @@ namespace dustbin {
 
         bool m_bActive; /**< The player has already shown some activity */
 
-        irr::core::vector3df m_vContact,
-                             m_vCamera,     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
+        irr::core::vector3df m_vCamera,     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
                              m_vRearview,   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */
                              m_vOffset,
-                             m_vUpVector,
-                             m_vSideVector,
-                             m_vDirection,
-                             m_vPosition;
+                             m_vUpVector,   /**< The camera up-vector */
+                             m_vContact,    /**< The last contact point. This is used for up-vector interpolation even when currently no contact exists */
+                             m_vSideVector, /**< The camera side-vector. This is used for acceleration, torque is applied around this axis */
+                             m_vDirection,  /**< The direction the camera is pointing to. Torque is applied around this axis for steering */
+                             m_vPosition;   /**< The current position of the marble */
 
         dReal m_fDamp;  /**< The damping of the marble's body */
 

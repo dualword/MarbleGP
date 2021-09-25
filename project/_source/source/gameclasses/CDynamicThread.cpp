@@ -253,10 +253,11 @@ namespace dustbin {
 
                 irr::f32 l_fInterpolate = 1.0f - (l_fLinVel / 750.0f);
 
+                irr::core::vector3df l_vUpVector = p->m_vPosition - p->m_vContact;
+                l_vUpVector.normalize();
+                p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
+
                 if (p->m_bHasContact) {
-                  irr::core::vector3df l_vUpVector = p->m_vPosition - p->m_vContact;
-                  l_vUpVector.normalize();
-                  p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
                   p->m_iLastContact = m_iWorldStep;
                   p->m_fDamp = (dReal)0.0015;
                 }
@@ -281,17 +282,17 @@ namespace dustbin {
                   }
                 }
 
-                irr::f32 l_fFactor = l_fLinVel / 60.0f;
+                irr::f32 l_fFactor = l_fLinVel < 10.0f ? 0.0f : l_fLinVel > 110.0f ? 2.0f : (l_fLinVel - 10.0f) / 50.0f;
 
                 if (l_fFactor > 2.0f)
                   l_fFactor = 2.0f;
 
-                l_fFactor = (irr::f32)(sin(((l_fFactor - 1.0f) / 2.0f) * M_PI) + 1.0f) * 7.5f;
+                l_fFactor *= 10.0f;
 
-                irr::core::vector3df l_vOffset = (l_fFactor < 1.5f ? 1.5f : l_fFactor > 10.0f ? 10.0f : l_fFactor) * l_vNormVel;
+                irr::core::vector3df l_vOffset = (l_fFactor > 20.0f ? 20.0f : l_fFactor) * l_vNormVel;
 
-                if (l_vOffset.getLength() < 8.0f)
-                  l_vOffset = 8.0f * l_vOffset.normalize();
+                if (l_vOffset.getLengthSQ() < 2.25f)
+                  l_vOffset = 1.5f * l_vOffset.normalize();
 
                 irr::core::vector3df l_vUp = (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpVector;
 
