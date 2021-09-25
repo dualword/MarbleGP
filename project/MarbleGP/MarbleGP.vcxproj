@@ -263,6 +263,7 @@
     <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h" />
     <ClInclude Include="..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\_source\include\gameclasses\COdeNodes.h" />
+    <ClInclude Include="..\_source\include\gameclasses\ITriggerHandler.h" />
     <ClInclude Include="..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\_source\include\gameclasses\SPlayer.h" />
     <ClInclude Include="..\_source\include\gfx\SViewPort.h" />

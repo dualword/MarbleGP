@@ -8,6 +8,7 @@
 #endif
 
 #include <_generated/messages/IDynamicThread.h>
+#include <gameclasses/ITriggerHandler.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/SPlayer.h>
 #include <threads/IThread.h>
@@ -29,7 +30,7 @@ namespace dustbin {
     * @author Christian Keimel
     * This class computes all the dynamics of the actual game
     */
-    class CDynamicThread : public threads::IThread, public messages::IDynamicThread {
+    class CDynamicThread : public threads::IThread, public messages::IDynamicThread, public ITriggerHandler {
       private:
         CWorld* m_pWorld;
         CObjectMarble* m_aMarbles[16];
@@ -64,6 +65,14 @@ namespace dustbin {
         CDynamicThread(scenenodes::CWorldNode *a_pWorld, const std::vector<gameclasses::SPlayer*> &a_vPlayers);
 
         virtual ~CDynamicThread();
+
+        /**
+         * Callback to handle a trigger
+         * @param a_iTrigger trigger id
+         * @param a_iMarble Id of the marble
+         * @param a_vPosition position of the marble that triggered
+         */
+        virtual void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition);
     };
   }
 }

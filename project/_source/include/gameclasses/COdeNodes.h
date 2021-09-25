@@ -16,6 +16,8 @@ namespace dustbin {
   }
 
   namespace gameclasses {
+    class ITriggerHandler;
+
     /**
     * This function converts Irrlicht's Euler angles to ODE Quaternions
     * @param v the Irrlicht rotation in Euler angles
@@ -165,6 +167,8 @@ namespace dustbin {
         dJointGroupID  m_cContacts;
 
         std::vector<CObject*> m_vObjects;
+
+        ITriggerHandler* m_pTriggerHandler;
 
         CWorld();
 

@@ -158,6 +158,7 @@ namespace dustbin {
       if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId) {
         if (m_pWorld == nullptr) {
           m_pWorld = new CWorld();
+          m_pWorld->m_pTriggerHandler = this;
         }
       }
       else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
@@ -439,6 +440,10 @@ namespace dustbin {
             m_aMarbles[l_iIndex]->m_bActive = true;
         }
       }
+    }
+
+    void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
+      printf("Trigger #%i triggered by marble #%i\n", a_iTrigger, a_iMarble);
     }
   }
 }

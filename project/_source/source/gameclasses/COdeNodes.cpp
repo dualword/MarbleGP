@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <gameclasses/ITriggerHandler.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <gameclasses/COdeNodes.h>
 #include <CGlobal.h>
@@ -193,7 +194,7 @@ namespace dustbin {
 
     }
 
-    CWorld::CWorld() : m_cWorld(nullptr), m_cSpace(nullptr), m_cContacts(nullptr) {
+    CWorld::CWorld() : m_cWorld(nullptr), m_cSpace(nullptr), m_cContacts(nullptr), m_pTriggerHandler(nullptr) {
       dInitODE2(0);
 
       m_cWorld = dWorldCreate();
@@ -205,6 +206,8 @@ namespace dustbin {
     }
 
     void CWorld::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos) {
+      if (m_pTriggerHandler != nullptr)
+        m_pTriggerHandler->handleTrigger(a_iTrigger, a_iMarble, a_cPos);
     }
 
     CWorld::~CWorld() {

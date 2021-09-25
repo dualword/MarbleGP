@@ -521,5 +521,8 @@
     <ClInclude Include="..\_source\include\controller\CMarbleController.h">
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
+    <ClInclude Include="..\_source\include\gameclasses\ITriggerHandler.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
