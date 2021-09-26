@@ -120,7 +120,6 @@ namespace dustbin {
             if (p != nullptr) {
               const dReal* l_aPos = dBodyGetPosition(p->m_cBody);
               p->m_vUpVector = vectorOdeToIrr(l_aPos) - vectorOdeToIrr(l_cContact[0].geom.pos);
-              p->m_vUpVector.normalize();
             }
 
             if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->m_bTrigger) {
@@ -309,8 +308,8 @@ namespace dustbin {
               else p->m_fDamp = (dReal)0.0015;
             }
             else {
-              p->m_vCamera   = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpVector;
-              p->m_vRearview = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpVector;
+              p->m_vCamera   = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
+              p->m_vRearview = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
 
               if (l_fLinVel > 5.0f) {
                 printf("Activate (1)\n");
