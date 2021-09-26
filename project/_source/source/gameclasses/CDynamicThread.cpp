@@ -107,6 +107,22 @@ namespace dustbin {
 
         if (!l_bMarbleCollision) {
           if (numc > 0) {
+            CObjectMarble* p = nullptr;
+
+            if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
+              p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+            }
+            else if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
+              p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+            }
+
+            // A marble has contact with a non-marble object
+            if (p != nullptr) {
+              const dReal* l_aPos = dBodyGetPosition(p->m_cBody);
+              p->m_vUpVector = vectorOdeToIrr(l_aPos) - vectorOdeToIrr(l_cContact[0].geom.pos);
+              p->m_vUpVector.normalize();
+            }
+
             if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->m_bTrigger) {
               CObjectMarble* l_pMarble = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
 
@@ -204,17 +220,17 @@ namespace dustbin {
           CObjectMarble* p = m_aMarbles[i];
 
           if (p != nullptr) {
-            irr::f32 l_fCtrlX = ((irr::f32)p->m_iCtrlX) / 127.0f,
-                     l_fCtrlY = ((irr::f32)p->m_iCtrlY) / 127.0f;
-
-            irr::core::vector2df l_vSteer = irr::core::vector2df(1.5f * l_fCtrlX, 1.0f * l_fCtrlY);
-            l_vSteer.normalize();
-
-            irr::core::vector3df v = p->m_vPosition - p->m_vCamera;
-
-            irr::core::vector3df l_vTorque = 60.0f * l_vSteer.X * p->m_vDirection + 40.0f * l_vSteer.Y * p->m_vSideVector;
-
             if (p->m_eState == CObjectMarble::enMarbleState::Rolling) {
+              irr::f32 l_fCtrlX = ((irr::f32)p->m_iCtrlX) / 127.0f,
+                       l_fCtrlY = ((irr::f32)p->m_iCtrlY) / 127.0f;
+
+              // Marble Class Param: Steer Factor and Thrust Factor
+              irr::core::vector2df l_vSteer = irr::core::vector2df(1.0f * l_fCtrlX, 0.5f * l_fCtrlY);
+              l_vSteer.normalize();
+
+              // Marble Class Param: Steer Power and Thrust
+              irr::core::vector3df l_vTorque = -60.0f * l_vSteer.X * p->m_vDirection + 65.0f * l_vSteer.Y * p->m_vSideVector;
+
               dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
               if (p->m_bBrake)
@@ -247,79 +263,59 @@ namespace dustbin {
 
             p->m_vPosition = vectorOdeToIrr(l_aPos);
 
+            irr::f32 l_fLinVel = l_vLinVel.getLength();
+
             if (p->m_bActive) {
-              irr::f32 l_fLinVel = l_vLinVel.getLength();
               if (l_fLinVel > 0.5f) {
-                irr::core::vector3df l_vNormVel = l_vLinVel,
-                                     l_vNormUp = p->m_vUpVector;
+                irr::f32 l_fFactor = l_fLinVel / 750.0f;
 
-                l_vNormVel.normalize();
-                l_vNormUp .normalize();
+                p->m_vDirection = l_vLinVel;
+                p->m_vDirection.normalize();
 
-                irr::f32 l_fInterpolate = 1.0f - (l_fLinVel / 750.0f);
+                irr::core::vector3df l_vDirection = -(l_fLinVel < 5.0f ? 5.0f : l_fLinVel > 15.0f ? 15.0f : l_fLinVel) * p->m_vDirection;
 
-                irr::core::vector3df l_vUpVector = p->m_vPosition - p->m_vContact;
-                l_vUpVector.normalize();
-                p->m_vUpVector = l_vUpVector.interpolate(p->m_vUpVector, l_vUpVector, l_fInterpolate);
+                p->m_vOffset     = p->m_vOffset  .interpolate(l_vDirection  , p->m_vOffset  , l_fFactor);
+                p->m_vUpOffset   = p->m_vUpOffset.interpolate(p->m_vUpVector, p->m_vUpOffset, l_fFactor);
+                p->m_vSideVector = p->m_vOffset.crossProduct(p->m_vUpOffset);
+                p->m_vSideVector.normalize();
 
-                irr::core::vector3df l_vUpOffset = p->m_bHasContact ? p->m_vPosition - p->m_vContact : p->m_vUpOffset;
-                l_vUpOffset.normalize();
-                p->m_vUpOffset = l_vUpOffset.interpolate(p->m_vUpOffset, l_vUpOffset, l_fInterpolate);
+                p->m_vCamera   = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
+                p->m_vRearview = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
 
                 if (p->m_bHasContact) {
                   p->m_iLastContact = m_iWorldStep;
                   p->m_fDamp = (dReal)0.0015;
                 }
                 else {
-                  int l_iTimeSince = m_iWorldStep - p->m_iLastContact;
+                  int l_iLastContact = m_iWorldStep - p->m_iLastContact;
 
-                  // If the marble did not have a contact for
-                  // some time we add some damping to the marble
-                  // to prevent the marble spin too fast. This
-                  // may lead to unwanted behaviour when the marble
-                  // touches the ground again
-                  if (l_iTimeSince > 15) {
-                    dReal l_fDamp = (dReal)0.01,
-                          l_fFact = (dReal)(l_vAngVel.getLength() / l_vLinVel.getLength());
+                  p->m_fDamp = (dReal)0.01;
+
+                  // Marble Class Param: Damp Time Offset
+                  if (l_iLastContact > 10) {
+                    dReal l_fFact = (dReal)(l_fLinVel / l_vAngVel.getLength());
+                    if (l_fFact > 1.5) {
+                      l_fFact -= 1.5;
+                    }
 
                     if (l_fFact < 0.0) l_fFact = -l_fFact;
-
-                    l_fDamp *= 1.5 * l_fFact;
-                    if (l_fDamp > 0.75) l_fDamp = 0.75;
-
-                    p->m_fDamp = l_fDamp;
+                    // Marble Class Param: Damp Factor
+                    p->m_fDamp /= (dReal)(0.65 * l_fFact);
+                    // Marble Class Param: Max Damp
+                    if (p->m_fDamp > 0.75) p->m_fDamp = 0.75;
                   }
                 }
-
-                irr::f32 l_fFactor = l_fLinVel < 10.0f ? 0.0f : l_fLinVel > 110.0f ? 2.0f : (l_fLinVel - 10.0f) / 50.0f;
-
-                if (l_fFactor > 2.0f)
-                  l_fFactor = 2.0f;
-
-                l_fFactor *= 10.0f;
-
-                irr::core::vector3df l_vOffset = (l_fFactor > 20.0f ? 20.0f : l_fFactor) * l_vNormVel;
-
-                if (l_vOffset.getLengthSQ() < 2.25f)
-                  l_vOffset = 1.5f * l_vOffset.normalize();
-
-                irr::core::vector3df l_vUp = (l_fLinVel < 10.0f ? 2.0f : l_fLinVel > 25.0f ? 5.0f : l_fLinVel / 5.0f) * p->m_vUpOffset;
-
-                p->m_vRearview = p->m_vRearview.interpolate(p->m_vRearview, p->m_vPosition + l_vOffset + l_vUp, 1.0f - l_fInterpolate);
-                p->m_vCamera   = p->m_vCamera  .interpolate(p->m_vCamera  , p->m_vPosition - l_vOffset + l_vUp,        l_fInterpolate);
-
-                p->m_vDirection = p->m_vCamera - p->m_vPosition - l_vUp;
-                p->m_vDirection.normalize();
-
-                irr::core::vector3df v = p->m_vCamera - p->m_vPosition;
-
-                p->m_vSideVector = v.crossProduct(p->m_vUpVector);
-                p->m_vSideVector.normalize();
               }
+              else p->m_fDamp = (dReal)0.0015;
             }
             else {
-              p->m_vCamera   = p->m_vPosition - p->m_vOffset + 5.0f * p->m_vUpVector;
-              p->m_vRearview = p->m_vPosition + p->m_vOffset + 5.0f * p->m_vUpVector;
+              p->m_vCamera   = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpVector;
+              p->m_vRearview = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpVector;
+
+              if (l_fLinVel > 5.0f) {
+                printf("Activate (1)\n");
+                p->m_bActive = true;
+              }
             }
             
             sendMarblemoved(p->m_iId, 
@@ -328,7 +324,7 @@ namespace dustbin {
               l_vLinVel, 
               vectorOdeToIrr(l_aAngVel).getLength(), 
               p->m_bRearView ? p->m_vRearview : p->m_vCamera,
-              p->m_vUpVector, 
+              p->m_vUpOffset, 
               p->m_iCtrlX,
               p->m_iCtrlY, 
               p->m_bHasContact,
@@ -348,7 +344,7 @@ namespace dustbin {
           else {
             int l_iStep = m_iWorldStep - 360;
 
-            if (l_iStep == 120) {
+            /*if (l_iStep == 120) {
               sendCountdown(3, m_pOutputQueue);
             }
             else if (l_iStep == 240) {
@@ -357,7 +353,7 @@ namespace dustbin {
             else if (l_iStep == 360) {
               sendCountdown(1, m_pOutputQueue);
             }
-            else if (l_iStep == 480) {
+            else if (l_iStep == 480)*/ {
               sendCountdown(0, m_pOutputQueue);
               m_eGameState = enGameState::Racing;
 
@@ -404,17 +400,17 @@ namespace dustbin {
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
           CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
 
-          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, -15.0f);
+          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, 10.0f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
           l_pMarble->m_vDirection  = l_vOffset;
           l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
           l_pMarble->m_vUpOffset   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
           l_pMarble->m_vContact    = irr::core::vector3df();
-          l_pMarble->m_vSideVector = -l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
+          l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
           l_pMarble->m_vOffset     = l_vOffset;
-          l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;
-          l_pMarble->m_vRearview   = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - irr::core::vector3df(l_vOffset) + l_pMarble->m_vUpVector;
+          l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - l_vOffset + 3.0f * l_pMarble->m_vUpVector;
+          l_pMarble->m_vRearview   = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset + 3.0f * l_pMarble->m_vUpVector;
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
@@ -474,8 +470,10 @@ namespace dustbin {
           m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
         }
         else {
-          if (abs(a_CtrlX > 64) || abs(a_CtrlY > 64))
+          if (abs(a_CtrlX > 64) || abs(a_CtrlY > 64)) {
+            printf("Activate (2)\n");
             m_aMarbles[l_iIndex]->m_bActive = true;
+          }
         }
       }
     }

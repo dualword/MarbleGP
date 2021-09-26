@@ -181,6 +181,7 @@ namespace dustbin {
       m_cBody = dBodyCreate(m_pWorld->m_cWorld);
       dMass l_cMass;
       dMassSetZero(&l_cMass);
+      // Marble Class Param: Mass
       dMassSetSphereTotal(&l_cMass, 1.0f, 1.0f);
       dBodySetAngularDamping(m_cBody, (dReal)0.0015);
       dGeomSetBody(m_cGeom, m_cBody);
