@@ -1,10 +1,14 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
+#include <shader/CShaderHandleXEffectSplitscreen.h>
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <controller/CControllerFactory.h>
+#include <shader/CShaderHandlerXEffect.h>
 #include <gameclasses/CDynamicThread.h>
+#include <shader/CShaderHandlerBase.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
+#include <shader/CMyShaderNone.h>
 #include <state/CGameState.h>
 #include <CGlobal.h>
 #include <lua.hpp>
@@ -21,6 +25,7 @@ namespace dustbin {
       m_pOutputQueue(nullptr),
       m_pInputQueue(nullptr),
       m_pDynamics(nullptr),
+      m_pShader(nullptr),
       m_iStep(0)
     {
       m_cScreen = irr::core::recti(irr::core::vector2di(0, 0), m_pDrv->getScreenSize());
@@ -145,6 +150,57 @@ namespace dustbin {
         }
       }
 
+      SSettings l_cSettings = m_pGlobal->getSettings();
+
+      irr::u32 l_iAmbient = 196;
+
+      switch (l_cSettings.m_gfx_ambientlight) {
+        case 0: l_iAmbient = 32; break;
+        case 1: l_iAmbient = 64; break;
+        case 2: l_iAmbient = 96; break;
+        case 3: l_iAmbient = 128; break;
+        case 4: l_iAmbient = 160; break;
+      }
+
+      irr::core::dimension2du l_cDim = irr::core::dimension2du(m_mViewports.begin()->second.m_cRect.getSize().Width, m_mViewports.begin()->second.m_cRect.getSize().Height);
+
+      switch (l_cSettings.m_gfx_shadows) {
+        case 3:
+          if (m_mViewports.size() == 1) {
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);
+          }
+          else {
+            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_cSettings.m_gfx_ambientlight);
+          }
+          break;
+          
+        case 2:
+          if (m_mViewports.size() == 1) {
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_iAmbient);
+          }
+          else {
+            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_cSettings.m_gfx_ambientlight);
+          }
+          break;
+
+        case 1:
+          if (m_mViewports.size() == 1) {
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_iAmbient);
+          }
+          else {
+            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_cSettings.m_gfx_ambientlight);
+          }
+          break;
+
+        case 0:
+          m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);
+          break;
+      }
+
+      if (m_pShader != nullptr) {
+        m_pShader->initialize();
+      }
+
       l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSgmr->getRootSceneNode());
 
       if (l_pNode != nullptr) {
@@ -205,6 +261,11 @@ namespace dustbin {
         delete* it;
       }
       m_vMoveMessages.clear();
+
+      if (m_pShader != nullptr) {
+        delete m_pShader;
+        m_pShader = nullptr;
+      }
     }
 
     /**
@@ -297,9 +358,9 @@ namespace dustbin {
                 for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                   l_pVertices[j].Color.setAlpha(96);
               }
-              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID; // ToDo: Shader handler material
+              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
             }
-            else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID; // ToDo: Shader handler material
+            else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
           }
         }
       }
@@ -337,19 +398,23 @@ namespace dustbin {
       } 
       while (l_pMsg != nullptr);
 
-      m_pDrv->beginScene();
+      m_pDrv->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
+
+      if (m_pShader != nullptr)
+        m_pShader->beginScene();
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-        m_pDrv->setViewPort(it->second.m_cRect);
+        if (m_pShader != nullptr) {
+          if (it->second.m_pCamera != nullptr)
+            m_pSgmr->setActiveCamera(it->second.m_pCamera);
 
-        if (it->second.m_pCamera != nullptr)
-          m_pSgmr->setActiveCamera(it->second.m_pCamera);
-
-        beforeDrawScene(&it->second);
-        m_pSgmr->drawAll();
-        m_pDrv->setViewPort(m_cScreen);
+          beforeDrawScene(&it->second);
+          m_pShader->renderScene(it->second.m_cRect);
+        }
       }
+      m_pGui->drawAll();
       m_pDrv->endScene();
+      m_pDrv->setRenderTarget(0, false, false);
 
       return enState::None;
     }

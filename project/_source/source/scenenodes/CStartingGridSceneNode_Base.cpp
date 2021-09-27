@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CStartingGridSceneNode_base.h>
+#include <string>
 
 namespace dustbin {
   namespace scenenodes {
@@ -40,6 +41,7 @@ namespace dustbin {
           m_pMarbles[i]->m_pRotational->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
           m_pMarbles[i]->m_pRotational->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
           m_pMarbles[i]->m_pRotational->getMaterial(0).Shininess = 50;
+          m_pMarbles[i]->m_pRotational->setName(std::string("Marble_" + std::to_string(i + 1)).c_str());
         }
 
       updateGridPositions();

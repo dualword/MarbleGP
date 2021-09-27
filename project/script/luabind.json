@@ -38,7 +38,7 @@
         { "name": "gfx_resolution_w", "type": "int"        , "comment": "The width of the selected resolution" },
         { "name": "gfx_resolution_h", "type": "int"        , "comment": "The height of the selected resolution" },
         { "name": "gfx_fullscreen"  , "type": "bool"       , "comment": "Flag indicating whether or not fullscreen is wanted" },
-        { "name": "gfx_shadows"     , "type": "int"        , "comment": "The shadow value for the game (0 == High .. 3 == Off)" },
+        { "name": "gfx_shadows"     , "type": "int"        , "comment": "The shadow value for the game (3 == High .. 0 == Off)" },
         { "name": "gfx_ambientlight", "type": "int"        , "comment": "The ambient light value for the game" },
         { "name": "ingame_rearview" , "type": "bool"       , "comment": "Is a rearview mirror wanted?" },
         { "name": "ingame_ranking"  , "type": "bool"       , "comment": "Should a table with the standings be shown in the game?" },

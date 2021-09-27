@@ -11,14 +11,27 @@ namespace dustbin {
 
 
     bool CShaderHandlerBase::findLightCamera(irr::scene::ISceneNode *a_pNode) {
-      if (a_pNode->getType() == irr::scene::ESNT_CAMERA && std::string(a_pNode->getName()) == "LightCamera") {
+      if (a_pNode->getType() == irr::scene::ESNT_LIGHT) {
         a_pNode->updateAbsolutePosition();
 
-        irr::scene::ICameraSceneNode *l_pNode = reinterpret_cast<irr::scene::ICameraSceneNode *>(a_pNode);
+        irr::scene::ILightSceneNode *l_pNode = reinterpret_cast<irr::scene::ILightSceneNode *>(a_pNode);
 
         m_cLightPos = l_pNode->getAbsolutePosition();
-        m_cLightTgt = l_pNode->getTarget();
-        m_fLightFOV = l_pNode->getFOV();
+        
+        irr::core::vector3df v = l_pNode->getRotation().rotationToDirection();
+
+        m_cLightTgt = m_cLightPos + v;
+
+        irr::io::IAttributes* l_pAttr = m_pDevice->getFileSystem()->createEmptyAttributes();
+
+        l_pNode->serializeAttributes(l_pAttr);
+
+        if (l_pAttr->existsAttribute("OuterCone")) {
+          m_fLightFOV = l_pAttr->getAttributeAsFloat("OuterCone") * (irr::f32)(M_PI / 180.0);
+        }
+
+        l_pAttr->drop();
+
         return true;
       }
 

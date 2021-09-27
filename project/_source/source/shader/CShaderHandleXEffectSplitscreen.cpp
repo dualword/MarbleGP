@@ -16,7 +16,7 @@ namespace dustbin {
     }
 
     CShaderHandleXEffectSplitscreen::~CShaderHandleXEffectSplitscreen() {
-
+      m_pRtt->drop();
     }
 
     void CShaderHandleXEffectSplitscreen::renderScene(const irr::core::recti& a_cViewPort) {

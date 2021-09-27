@@ -25,6 +25,10 @@ namespace dustbin {
     class CDynamicThread;
   }
 
+  namespace shader {
+    class CShaderHandlerBase;
+  }
+
   class CGlobal;
 
   namespace state {
@@ -59,6 +63,8 @@ namespace dustbin {
         irr::core::recti m_cScreen; /**< The viewport covering the while screen */
 
         gameclasses::SMarbleNodes *m_aMarbles[16]; /**< For direct access to the marbles */
+
+        shader::CShaderHandlerBase* m_pShader;  /**< The shader to use */
 
         /**
         * Find a single scene node by it's type

@@ -17,16 +17,19 @@ namespace dustbin {
     }
 
     void CShaderHandlerXEffect::addToShadow(irr::scene::ISceneNode *a_pNode) {
-      if (a_pNode->getType() == irr::scene::ESNT_MESH && a_pNode->isVisible()) {
-        m_pEffect->addShadowToNode(a_pNode, EFT_16PCF);
+      if (a_pNode->isVisible()) {
+        if (a_pNode->getType() == irr::scene::ESNT_MESH) {
+          printf("Add node \"%s\" to shader\n", a_pNode->getName());
+          m_pEffect->addShadowToNode(a_pNode, EFT_16PCF);
 
-        irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
-        irr::scene::IMeshManipulator *l_pManipulator = m_pSmgr->getMeshManipulator();
-        l_pManipulator->recalculateNormals(l_pNode->getMesh(), true);
-      }
+          irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
+          irr::scene::IMeshManipulator *l_pManipulator = m_pSmgr->getMeshManipulator();
+          l_pManipulator->recalculateNormals(l_pNode->getMesh(), true);
+        }
 
-      for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
-        addToShadow(*it);
+        for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
+          addToShadow(*it);
+        }
       }
     }
 
