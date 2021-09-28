@@ -115,6 +115,8 @@ AmbientColour(0x0), use32BitDepth(use32BitDepthBuffers)
 		
 		// Drop the screen quad callback.
 		SQCB->drop();
+		depthMC->drop();
+		shadowMC->drop();
 	}
 	else
 	{
