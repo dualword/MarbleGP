@@ -1,5 +1,6 @@
 -- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
 
+system:executeluascript("data/lua/default_texture.lua")
 system:executeluascript("data/lua/dialog_confirm.lua")
 system:executeluascript("data/lua/helpers_main.lua")
 system:executeluascript("data/lua/serializer.lua")
@@ -59,6 +60,40 @@ function uibuttonclicked(a_Id, a_Name)
     end
   elseif a_Name == "cup" then
     system:pushscript("data/lua/menu_setupgame.lua")
+    system:statechange(1)
+  elseif a_Name == "view_track" then
+    local l_ViewData = system:createtable("SChampionShip")
+    
+    local l_Viewport = system:createtable("SViewPort")
+    l_Viewport["playerid"] = 0
+    
+    local l_Size = system:getscreensize()
+    
+    l_Viewport["rect"]["upperleftcorner" ]["x"] = 0
+    l_Viewport["rect"]["upperleftcorner" ]["y"] = 0
+    l_Viewport["rect"]["lowerrightcorner"]["x"] = l_Size["x"]
+    l_Viewport["rect"]["lowerrightcorner"]["y"] = l_Size["y"]
+    
+    table.insert(l_ViewData["viewports"], l_Viewport)
+    
+    l_ViewData["players"] = { }
+    
+    for i = 1, 16 do
+      local l_Player = { }
+      l_Player["name"] = "Dummy #" .. tostring(i)
+      l_Player["controls"] = ""
+      l_Player["playerid"] = i
+      l_Player["texture" ] = getDefaultTexture(i, 0)
+      
+      table.insert(l_ViewData["players"], l_Player)
+    end
+    
+    l_ViewData["races"] = { }
+    l_ViewData["class"] = ""
+    
+    system:setglobal("championship", serializeTable(l_ViewData, 2))
+    
+    system:pushscript("data/lua/menu_selecttrack.lua")
     system:statechange(1)
   elseif a_Name == "exit" then
     system:statechange(255)

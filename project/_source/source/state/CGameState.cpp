@@ -4,6 +4,7 @@
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <controller/CControllerFactory.h>
 #include <shader/CShaderHandlerXEffect.h>
+#include <scenenodes/CMyCameraAnimator.h>
 #include <gameclasses/CDynamicThread.h>
 #include <shader/CShaderHandlerBase.h>
 #include <scenenodes/CSkyBoxFix.h>
@@ -148,6 +149,23 @@ namespace dustbin {
           m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble->m_pPositional, l_pCam);
           l_pMarble->m_pViewport = &m_mViewports[(*it).m_playerid];
         }
+        else {
+          irr::core::vector3df l_cPos = irr::core::vector3df(0.0f, 100.0f, 0.0f);
+
+          irr::core::vector2di l_cUpperLeft = irr::core::vector2di((*it).m_rect.m_upperleftcorner.m_x, (*it).m_rect.m_upperleftcorner.m_y),
+                               l_cLowerRight = irr::core::vector2di((*it).m_rect.m_lowerrightcorner.m_x, (*it).m_rect.m_lowerrightcorner.m_y);
+
+          irr::scene::ICameraSceneNode* l_pCam = m_pSgmr->addCameraSceneNode(nullptr, l_cPos, irr::core::vector3df(0.0f, 0.0f, 0.0f));
+
+          scenenodes::CMyCameraAnimator* l_pAnimator = new scenenodes::CMyCameraAnimator(m_pGlobal->getIrrlichtDevice());
+          l_pCam->addAnimator(l_pAnimator);
+          l_pAnimator->drop();
+
+          l_pCam->setAspectRatio((((irr::f32)l_cLowerRight.X) - ((irr::f32)l_cUpperLeft.X)) / (((irr::f32)l_cLowerRight.Y) - ((irr::f32)l_cUpperLeft.Y)));
+          l_pCam->updateAbsolutePosition();
+
+          m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, nullptr, l_pCam);
+        }
       }
 
       SSettings l_cSettings = m_pGlobal->getSettings();
@@ -247,6 +265,10 @@ namespace dustbin {
       m_pSgmr->clear();
       m_pGui->clear();
 
+      m_pDrv->beginScene();
+      m_pSgmr->drawAll();
+      m_pDrv->endScene();
+
       if (m_pInputQueue != nullptr) {
         delete m_pInputQueue;
         m_pInputQueue = nullptr;
@@ -339,7 +361,9 @@ namespace dustbin {
     * @param a_pViewport the viewport that will be rendered
     */
     void CGameState::beforeDrawScene(gfx::SViewPort* a_pViewPort) {
-      if (a_pViewPort != nullptr) {
+      // Player "0" always is the player in "view track" so we don't need
+      // to adjust the textures in this case
+      if (a_pViewPort != nullptr && a_pViewPort->m_iPlayer != 0) {
         // Make marbles behind the marble node transparent
         irr::core::vector3df l_cNormal   = (a_pViewPort->m_pCamera->getTarget() - a_pViewPort->m_pCamera->getAbsolutePosition()).normalize(),
                              l_cPosition = a_pViewPort->m_pCamera->getTarget() + 0.1f * (a_pViewPort->m_pCamera->getAbsolutePosition() - a_pViewPort->m_pCamera->getTarget());

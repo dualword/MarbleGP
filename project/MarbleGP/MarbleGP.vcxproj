@@ -226,6 +226,7 @@
     <ClCompile Include="..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
@@ -294,6 +295,7 @@
     <ClInclude Include="..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CMyCameraAnimator.h" />
     <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h" />
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h" />
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h" />
