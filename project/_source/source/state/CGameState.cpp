@@ -41,6 +41,8 @@ namespace dustbin {
     void CGameState::activate() {
       m_iStep = 0;
 
+      m_pGlobal->getIrrlichtDevice()->setResizable(false);
+
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
@@ -249,6 +251,8 @@ namespace dustbin {
     * This method is called when the state is deactivated
     */
     void CGameState::deactivate() {
+      m_pGlobal->getIrrlichtDevice()->setResizable(true);
+
       if (m_pDynamics != nullptr) {
         m_pDynamics->stopThread();
         m_pDynamics->join();
