@@ -31,6 +31,11 @@ namespace dustbin {
       irr::scene::IMeshSceneNode* m_pRotational;
 
       /**
+      * Does the camera follow the marble (only false if respawning or finished)?
+      */
+      bool m_bCamLink;
+
+      /**
       * The viewport that might be assigned to the marble
       */
       gfx::SViewPort *m_pViewport;
@@ -39,6 +44,7 @@ namespace dustbin {
         m_pPositional = nullptr;
         m_pRotational = nullptr;
         m_pViewport   = nullptr;
+        m_bCamLink    = true;
       }
     };
   }

@@ -58,18 +58,16 @@ namespace dustbin {
       if (!m_bStatic)
         a_pOut->addFloat("mass", m_fMass);
 
-      int i = 1;
+      for (size_t i = 0; i < m_vTrigger.size() && i < m_vRespawn.size(); i++) {
+        std::string l_sNameFlag = "DoesTrigger_" + std::to_string(i + 1),
+                    l_sNameTrgr = "Trigger_" + std::to_string(i + 1),
+                    l_sNameRspn = "Respawn_" + std::to_string(i + 1);
 
-      for (std::vector<std::tuple<bool, irr::u16> >::const_iterator it = m_vTrigger.begin(); it != m_vTrigger.end(); it++) {
-        std::string l_sNameFlag = "DoesTrigger_" + std::to_string(i),
-                    l_sNameTrgr = "Trigger_" + std::to_string(i);
+        a_pOut->addBool(l_sNameRspn.c_str(), m_vRespawn[i]);
+        a_pOut->addBool(l_sNameFlag.c_str(), std::get<0>(m_vTrigger[i]));
 
-        a_pOut->addBool(l_sNameFlag.c_str(), std::get<0>(*it));
-
-        if (std::get<0>(*it))
-          a_pOut->addInt(l_sNameTrgr.c_str(), std::get<1>(*it));
-
-        i++;
+        if (std::get<0>(m_vTrigger[i]))
+          a_pOut->addInt(l_sNameTrgr.c_str(), std::get<1>(m_vTrigger[i]));
       }
     }
 
@@ -89,13 +87,16 @@ namespace dustbin {
           m_fMass = a_pIn->getAttributeAsFloat("mass");
 
         m_vTrigger.clear();
+        m_vRespawn.clear();
 
         for (unsigned i = 0; i < l_pParent->getMaterialCount(); i++) {
           std::string l_sNameFlag = "DoesTrigger_" + std::to_string(i + 1),
-                      l_sNameTrgr = "Trigger_" + std::to_string(i + 1);
+                      l_sNameTrgr = "Trigger_"     + std::to_string(i + 1),
+                      l_sNameRspn = "Respawn_"     + std::to_string(i + 1);
 
-          bool    b = false;
-          irr::u8 t = 0;
+          bool     b = false,
+                   r = false;
+          irr::s32 t = 0;
 
           if (a_pIn->existsAttribute(l_sNameFlag.c_str()))
             b = a_pIn->getAttributeAsBool(l_sNameFlag.c_str());
@@ -103,7 +104,12 @@ namespace dustbin {
           if (a_pIn->existsAttribute(l_sNameTrgr.c_str()))
             t = a_pIn->getAttributeAsInt(l_sNameTrgr.c_str());
 
-          m_vTrigger.push_back(std::make_tuple(b, t));
+          if (a_pIn->existsAttribute(l_sNameRspn.c_str()))
+            r = a_pIn->getAttributeAsBool(l_sNameRspn.c_str());
+
+          irr::u8 t8 = (t > 255 ? 255 : t < 0 ? 0 : (irr::u8)t);
+          m_vTrigger.push_back(std::make_tuple(b, t8));
+          m_vRespawn.push_back(r);
         }
 
         if (a_pIn->existsAttribute("Type")) {
@@ -127,8 +133,12 @@ namespace dustbin {
       l_pNew->m_bStatic   = m_bStatic;
       l_pNew->m_fMass     = m_fMass;
 
-      for (std::vector<std::tuple<bool, irr::u16> >::iterator it = m_vTrigger.begin(); it != m_vTrigger.end(); it++) {
+      for (std::vector<std::tuple<bool, irr::u8> >::iterator it = m_vTrigger.begin(); it != m_vTrigger.end(); it++) {
         l_pNew->m_vTrigger.push_back(std::make_tuple(std::get<0>(*it), std::get<1>(*it)));
+      }
+
+      for (std::vector<bool>::iterator it = m_vRespawn.begin(); it != m_vRespawn.end(); it++) {
+        l_pNew->m_vRespawn.push_back(*it);
       }
 
       return l_pNew;

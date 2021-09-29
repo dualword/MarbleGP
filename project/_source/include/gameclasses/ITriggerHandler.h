@@ -25,6 +25,12 @@ namespace dustbin {
         * @param a_vPosition position of the marble that triggered
         */
         virtual void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) = 0;
+
+        /**
+        * Callback to start respawn of a marble
+        * @param a_iMarble Id of the marble to respawn
+        */
+        virtual void handleRespawn(int a_iMarble) = 0;
     };
   }
 }

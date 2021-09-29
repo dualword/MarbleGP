@@ -29,7 +29,8 @@ namespace dustbin {
         };
 
       private:
-        std::vector<std::tuple<bool, irr::u16> > m_vTrigger; /**< Every material of the parent node can produce a trigger */
+        std::vector<std::tuple<bool, irr::u8> > m_vTrigger; /**< Every material of the parent node can produce a trigger */
+        std::vector<bool>                       m_vRespawn; /**< Respawn flag for every material */
 
         bool m_bCollides, /**< Does this object collide. If not it can still produce triggers */
              m_bStatic;   /**< Is this a static object? */

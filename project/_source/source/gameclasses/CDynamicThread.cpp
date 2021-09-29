@@ -108,56 +108,59 @@ namespace dustbin {
         if (!l_bMarbleCollision) {
           if (numc > 0) {
             CObjectMarble* p = nullptr;
+            CObject      * o = nullptr;
 
             if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
               p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+
+              if (l_pOdeNode2->m_bTrigger || l_pOdeNode2->m_bRespawn)
+                o = l_pOdeNode2;
             }
             else if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
               p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+
+              if (l_pOdeNode1->m_bTrigger || l_pOdeNode1->m_bRespawn)
+                o = l_pOdeNode1;
             }
 
-            // A marble has contact with a non-marble object
+            // We have a near collision of a marble
             if (p != nullptr) {
+              // Update the up-vector
               const dReal* l_aPos = dBodyGetPosition(p->m_cBody);
               p->m_vUpVector = vectorOdeToIrr(l_aPos) - vectorOdeToIrr(l_cContact[0].geom.pos);
-            }
 
-            if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->m_bTrigger) {
-              CObjectMarble* l_pMarble = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+              // The marble collides witha  non-marble object
+              if (o != nullptr) {
+                // The other objects triggers
+                if (o->m_bTrigger) {
+                  irr::core::vector3df l_vPos = irr::core::vector3df((irr::f32)l_aPos[0], (irr::f32)l_aPos[1], (irr::f32)l_aPos[2]);
 
-              const dReal* l_vOdePos = dBodyGetPosition(l_pOdeNode1->m_cBody);
-              irr::core::vector3df l_vPos = irr::core::vector3df((irr::f32)l_vOdePos[0], (irr::f32)l_vOdePos[1], (irr::f32)l_vOdePos[2]);
-              l_pWorld->handleTrigger(l_pOdeNode2->m_iTrigger, l_pOdeNode1->m_iId, l_vPos);
+                  l_pWorld->handleTrigger(o->m_iTrigger, p->m_iId, l_vPos);
+                }
 
-              if (l_pMarble->m_iManualRespawn != -1 && l_pOdeNode2->m_iTrigger != -1)
-                l_pMarble->m_iManualRespawn = 120;
-            }
-            else if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->m_bTrigger) {
-              CObjectMarble* l_pMarble = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
-
-              const dReal* l_vOdePos = dBodyGetPosition(l_pOdeNode2->m_cBody);
-              irr::core::vector3df l_vPos = irr::core::vector3df((irr::f32)l_vOdePos[0], (irr::f32)l_vOdePos[1], (irr::f32)l_vOdePos[2]);
-              l_pWorld->handleTrigger(l_pOdeNode1->m_iTrigger, l_pOdeNode2->m_iId, l_vPos);
-
-              if (l_pMarble->m_iManualRespawn != -1 && l_pOdeNode1->m_iTrigger != -1)
-                l_pMarble->m_iManualRespawn = 120;
+                // The other object starts a respawn
+                if (o->m_bRespawn) {
+                  l_pWorld->handleRespawn(p->m_iId);
+                }
+              }
             }
           }
 
-          if (!l_pOdeNode1->m_bCollides || !l_pOdeNode2->m_bCollides)
+          // We have a non-colliding object, so we stop here
+          if ((l_pOdeNode1 == nullptr || !l_pOdeNode1->m_bCollides) || (l_pOdeNode2 == nullptr || !l_pOdeNode2->m_bCollides))
             return;
         }
 
         dJointID l_cJoints[MAX_CONTACTS];
 
         for (irr::u32 i = 0; i < numc; i++) {
-          if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
+          if (l_pOdeNode1 != nullptr && l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
             CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
             p->m_bHasContact = true;
             p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
           }
 
-          if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
+          if (l_pOdeNode2 != nullptr && l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
             CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
             p->m_bHasContact = true;
             p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
@@ -260,6 +263,19 @@ namespace dustbin {
             irr::core::vector3df l_vLinVel = vectorOdeToIrr(l_aLinVel),
                                  l_vAngVel = vectorOdeToIrr(l_aAngVel);
 
+            if (p->m_eState == CObjectMarble::enMarbleState::Rolling) {
+              irr::core::vector3df l_vDiff = l_vLinVel - p->m_vVelocity;
+              irr::f32 l_fDot = l_vLinVel.dotProduct(p->m_vVelocity);
+
+              if (l_vDiff.getLength() > 30.0f && l_fDot < 0.0f) {
+                p->m_eState = CObjectMarble::enMarbleState::Stunned;
+                p->m_iStunnedStart = m_iWorldStep;
+                sendPlayerstunned(p->m_iId, 1, m_pOutputQueue);
+              }
+
+              p->m_vVelocity = l_vLinVel;
+            }
+
             p->m_vPosition = vectorOdeToIrr(l_aPos);
 
             irr::f32 l_fLinVel = l_vLinVel.getLength();
@@ -308,8 +324,10 @@ namespace dustbin {
               else p->m_fDamp = (dReal)0.0015;
             }
             else {
-              p->m_vCamera   = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
-              p->m_vRearview = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
+              p->m_vCamera     = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
+              p->m_vRearview   = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
+              p->m_vSideVector = p->m_vOffset.crossProduct(p->m_vUpOffset);
+              p->m_vSideVector.normalize();
 
               if (l_fLinVel > 5.0f) {
                 printf("Activate (1)\n");
@@ -317,7 +335,62 @@ namespace dustbin {
               }
             }
             
-            sendMarblemoved(p->m_iId, 
+            // The marble is respawning
+            if (p->m_iRespawnStart != -1) {
+              if (p->m_eState == CObjectMarble::enMarbleState::Respawn1 && m_iWorldStep - p->m_iRespawnStart >= 180) {
+                // Reset up vector
+                p->m_vUpVector = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+                p->m_vUpOffset = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+
+                // Set state to "Respawn 2"
+                p->m_eState = CObjectMarble::enMarbleState::Respawn2;
+
+                // Send message
+                sendCamerarespawn(p->m_iId, p->m_vRespawnPos + p->m_vRespawnDir + 3.0f * p->m_vUpOffset, p->m_vRespawnPos, m_pOutputQueue);
+              }
+              else if (p->m_eState == CObjectMarble::enMarbleState::Respawn2 && m_iWorldStep - p->m_iRespawnStart >= 360) {
+                // We need to check for possible collisions before we continue with the respawn
+                bool l_bRespawn = true;
+
+                for (int i = 0; i < 16; i++) {
+                  if (m_aMarbles[i] != nullptr && p != m_aMarbles[i]) {
+                    if ((m_aMarbles[i]->m_vPosition - p->m_vRespawnPos).getLengthSQ() < 100)  // 10 meters minimum distance (100 = 10²)
+                      l_bRespawn = false;
+                  }
+                }
+
+                if (l_bRespawn) {
+                  // Reset position of marble and stop all movement
+                  dBodySetLinearVel(p->m_cBody, 0.0, 0.0, 0.0);
+                  dBodySetAngularVel(p->m_cBody, 0.0, 0.0, 0.0);
+                  dBodySetPosition(p->m_cBody, p->m_vRespawnPos.X, p->m_vRespawnPos.Y, p->m_vRespawnPos.Z);
+
+                  // Update marble data
+                  p->m_iRespawnStart = -1;
+                  p->m_iStunnedStart = -1;
+                  p->m_vPosition     = p->m_vRespawnPos;
+                  p->m_vOffset       = p->m_vRespawnDir;
+                  p->m_vCamera       = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
+                  p->m_vRearview     = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
+                  p->m_vSideVector   = p->m_vOffset.crossProduct(p->m_vUpOffset);
+                  p->m_vSideVector.normalize();
+
+                  // Reset state of marble
+                  p->m_eState  = CObjectMarble::enMarbleState::Rolling;
+                  p->m_bActive = false;
+
+                  // Send message to game state
+                  sendPlayerrespawn(p->m_iId, 2, m_pOutputQueue);
+                }
+              }
+            }
+            else if (p->m_iStunnedStart != -1 && m_iWorldStep - p->m_iStunnedStart >= 360) {
+              sendPlayerstunned(p->m_iId, 0, m_pOutputQueue);
+              p->m_eState = CObjectMarble::enMarbleState::Rolling;
+              p->m_iStunnedStart = -1;
+            }
+
+            sendMarblemoved(p->m_iId,
               p->m_vPosition, 
               quaternionToEuler(l_aRot), 
               l_vLinVel, 
@@ -397,10 +470,10 @@ namespace dustbin {
       if (m_pWorld != nullptr) {
         int l_iIndex = 0;
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
-          CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
-
           irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, 10.0f);
           l_vOffset.rotateXZBy(m_fGridAngle);
+
+          CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
 
           l_pMarble->m_vDirection  = l_vOffset;
           l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
@@ -479,6 +552,28 @@ namespace dustbin {
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
       printf("Trigger #%i triggered by marble #%i\n", a_iTrigger, a_iMarble);
+    }
+
+    /**
+    * Callback to start respawn of a marble
+    * @param a_iMarble Id of the marble to respawn
+    */
+    void CDynamicThread::handleRespawn(int a_iMarble) {
+      int l_iId = a_iMarble - 10000;
+
+      if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr && m_aMarbles[l_iId]->canRespawn()) {
+        // Respawn overrides stunned
+        if (m_aMarbles[l_iId]->m_eState == CObjectMarble::enMarbleState::Stunned) {
+          m_aMarbles[l_iId]->m_iStunnedStart = -1;
+          sendPlayerstunned(m_aMarbles[l_iId]->m_iId, 0, m_pOutputQueue);
+        }
+
+        printf("Marble %i is respawning.\n", a_iMarble);
+        m_aMarbles[l_iId]->m_eState = CObjectMarble::enMarbleState::Respawn1;
+        m_aMarbles[l_iId]->m_iRespawnStart = m_iWorldStep;
+
+        sendPlayerrespawn(a_iMarble, 1, m_pOutputQueue);
+      }
     }
   }
 }

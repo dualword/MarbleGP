@@ -500,7 +500,7 @@ namespace dustbin {
           p->m_pPositional->setRotation(a_Rotation);
           p->m_pPositional->updateAbsolutePosition();
           
-          if (p->m_pViewport != nullptr) {
+          if (p->m_pViewport != nullptr && p->m_bCamLink) {
             p->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
             p->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
             p->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
@@ -522,10 +522,38 @@ namespace dustbin {
     /**
      * This function receives messages of type "PlayerRespawn"
      * @param a_MarbleId ID of the marble
-     * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Camera, 3 == Respawn Done)
+     * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
      */
     void CGameState::onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) {
+      if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
+        irr::s32 l_iIndex = a_MarbleId - 10000;
 
+        gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
+
+        if (a_State == 1)
+          p->m_bCamLink = false;
+        else
+          p->m_bCamLink = true;
+      }
+    }
+
+    /**
+     * This function receives messages of type "CameraRespawn"
+     * @param a_MarbleId The ID of the marble which is respawning
+     * @param a_Position The new position of the camera
+     * @param a_Target The new target of the camera, i.e. the future position of the marble
+     */
+    void CGameState::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target) {
+      if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
+        irr::s32 l_iIndex = a_MarbleId - 10000;
+
+        gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
+        if (p->m_pViewport != nullptr && p->m_pViewport->m_pCamera != nullptr) {
+          p->m_pViewport->m_pCamera->setPosition(a_Position);
+          p->m_pViewport->m_pCamera->setTarget(a_Target);
+          p->m_pViewport->m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+        }
+      }
     }
 
     /**
@@ -534,7 +562,7 @@ namespace dustbin {
      * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
      */
     void CGameState::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
-
+      printf("onPlayerStunned: %i, %i\n", a_MarbleId, a_State);
     }
 
     /**

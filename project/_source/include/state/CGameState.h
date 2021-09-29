@@ -130,9 +130,17 @@ namespace dustbin {
         /**
          * This function receives messages of type "PlayerRespawn"
          * @param a_MarbleId ID of the marble
-         * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Camera, 3 == Respawn Done)
+         * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
          */
         virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State);
+
+        /**
+         * This function receives messages of type "CameraRespawn"
+         * @param a_MarbleId The ID of the marble which is respawning
+         * @param a_Position The new position of the camera
+         * @param a_Target The new target of the camera, i.e. the future position of the marble
+         */
+        virtual void onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target);
 
         /**
          * This function receives messages of type "PlayerStunned"

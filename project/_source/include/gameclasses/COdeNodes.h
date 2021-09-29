@@ -52,7 +52,8 @@ namespace dustbin {
 
         bool m_bStatic,
              m_bCollides,
-             m_bTrigger;
+             m_bTrigger,
+             m_bRespawn;
 
         int m_iTrigger;
 
@@ -126,14 +127,17 @@ namespace dustbin {
         enum class enMarbleState {
           Countdown,
           Rolling,
-          Respawn,
+          Respawn1,
+          Respawn2,
           Stunned,
           Finished
         };
 
         int m_iManualRespawn,
             m_iLastTrigger,
-            m_iLastContact;   /**< The step no. of the last contact */
+            m_iLastContact,   /**< The step no. of the last contact */
+            m_iRespawnStart,  /**< The step when the respawn of the marble started */
+            m_iStunnedStart;  /**< The step when the stunned state started */
 
         bool m_bActive; /**< The player has already shown some activity */
 
@@ -145,7 +149,8 @@ namespace dustbin {
                              m_vContact,    /**< The last contact point. This is used for up-vector interpolation even when currently no contact exists */
                              m_vSideVector, /**< The camera side-vector. This is used for acceleration, torque is applied around this axis */
                              m_vDirection,  /**< The direction the camera is pointing to. Torque is applied around this axis for steering */
-                             m_vPosition;   /**< The current position of the marble */
+                             m_vPosition,   /**< The current position of the marble */
+                             m_vVelocity;   /**< The linear velocity. This is only used to determine whether or not a marble gets stunned */
 
         dReal m_fDamp;  /**< The damping of the marble's body */
 
@@ -157,10 +162,16 @@ namespace dustbin {
              m_bRearView,      /**< The Rearview Control state updated in "onMarblecontrol" */
              m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
 
+        irr::core::vector3df m_vRespawnPos,   /**< The respawn position taken from the last checkpoint */
+                             m_vRespawnDir;   /**< The respawn direction taken from the last checkpoint */
+
         enMarbleState m_eState; /**< The state of the marble */
 
-        CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName);
+        CObjectMarble(irr::scene::ISceneNode* a_pNode, const irr::core::vector3df &a_cDirection, CWorld* a_pWorld, const std::string& a_sName);
         virtual ~CObjectMarble();
+
+        bool canBeStunned();
+        bool canRespawn();
     };
 
     /**
@@ -185,6 +196,7 @@ namespace dustbin {
         virtual ~CWorld();
 
         void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos);
+        void handleRespawn(int a_iMarble);
     };
   }
 }

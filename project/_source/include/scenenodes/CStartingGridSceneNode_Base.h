@@ -23,7 +23,6 @@ namespace dustbin {
     * objects
     */
     class CStartingGridSceneNode_Base : public irr::scene::ISceneNode {
-
      protected:
         irr::core::aabbox3df  m_cBox;
         irr::video::SMaterial m_cMaterial;

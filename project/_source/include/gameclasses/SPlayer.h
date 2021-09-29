@@ -20,7 +20,8 @@ namespace dustbin {
     * This is the struct for the players
     */
     struct SPlayer {
-      int m_iPlayer;               /**< The player id */
+      int m_iPlayer,               /**< The player id */
+          m_iId;                   /**< The Marble id */
       std::string m_sName,         /**< The name of the player */
                   m_sTexture,      /**< The texture of the player's marble */
                   m_sController;   /**< The serialized controller configuration */
@@ -34,6 +35,7 @@ namespace dustbin {
       */
       SPlayer() {
         m_iPlayer     = 0;
+        m_iId         = -1;
         m_sName       = "";
         m_pMarble     = nullptr;
         m_pController = nullptr;
@@ -65,6 +67,11 @@ namespace dustbin {
         m_pMarble     = a_pMarble;
         m_sController = a_sController;
         m_pController = nullptr;
+
+        if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
+          m_iId = m_pMarble->m_pPositional->getID();
+        else
+          m_iId = -1;
 
         if (m_sTexture != "" && m_pMarble != nullptr) {
           m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));

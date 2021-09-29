@@ -33,6 +33,7 @@ namespace dustbin {
       m_pWorld(a_pWorld),
       m_bCollides(true),
       m_bTrigger(false),
+      m_bRespawn(false),
       m_sName(a_sName),
       m_eType(a_eType),
       m_bStatic(true),
@@ -55,6 +56,7 @@ namespace dustbin {
         if (l_pAttr->existsAttribute("collides"                                                )) m_bCollides = l_pAttr->getAttributeAsBool("collides");
         if (l_pAttr->existsAttribute(("DoesTrigger_" + std::to_string(a_iMaterial + 1)).c_str())) m_bTrigger  = l_pAttr->getAttributeAsBool(("DoesTrigger_" + std::to_string(a_iMaterial + 1)).c_str());
         if (l_pAttr->existsAttribute(("Trigger_"     + std::to_string(a_iMaterial + 1)).c_str())) m_iTrigger  = l_pAttr->getAttributeAsInt (("Trigger_"     + std::to_string(a_iMaterial + 1)).c_str());
+        if (l_pAttr->existsAttribute(("Respawn_"     + std::to_string(a_iMaterial + 1)).c_str())) m_bRespawn  = l_pAttr->getAttributeAsBool(("Respawn_"     + std::to_string(a_iMaterial + 1)).c_str());
 
         l_pAttr->drop();
       }
@@ -148,19 +150,25 @@ namespace dustbin {
     CObjectTrimesh::~CObjectTrimesh() {
     }
 
-    CObjectMarble::CObjectMarble(irr::scene::ISceneNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) :
+    CObjectMarble::CObjectMarble(irr::scene::ISceneNode* a_pNode, const irr::core::vector3df& a_cDirection, CWorld* a_pWorld, const std::string& a_sName) :
       CObject(enObjectType::Marble, nullptr, a_pWorld, a_sName),
+      m_vRespawnPos(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
       m_vSideVector(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
       m_vUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
       m_vUpOffset(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
       m_vDirection(irr::core::vector3df()),
       m_vRearview(irr::core::vector3df()),
+      m_vPosition(irr::core::vector3df()),
+      m_vVelocity(irr::core::vector3df()),
       m_vContact(irr::core::vector3df()),
       m_eState(enMarbleState::Countdown),
       m_vCamera(irr::core::vector3df()),
+      m_vRespawnDir(a_cDirection),
       m_fDamp((dReal)0.0015),
       m_iManualRespawn(-1),
       m_bHasContact(false),
+      m_iRespawnStart(-1),
+      m_iStunnedStart(-1),
       m_bRearView(false),
       m_iLastTrigger(-1),
       m_iLastContact(0),
@@ -190,10 +198,19 @@ namespace dustbin {
       dQuaternion l_vRot;
       eulerToQuaternion(a_pNode->getRotation(), l_vRot);
       dBodySetQuaternion(m_cBody, l_vRot);
+
+      m_vRespawnPos = a_pNode->getAbsolutePosition();
     }
 
     CObjectMarble::~CObjectMarble() {
+    }
 
+    bool CObjectMarble::canBeStunned() {
+      return m_eState == enMarbleState::Rolling;
+    }
+
+    bool CObjectMarble::canRespawn() {
+      return m_eState == enMarbleState::Rolling || m_eState == enMarbleState::Stunned;
     }
 
     CWorld::CWorld(ITriggerHandler* a_pTriggerHandler) : m_cWorld(nullptr), m_cSpace(nullptr), m_cContacts(nullptr), m_pTriggerHandler(a_pTriggerHandler) {
@@ -205,6 +222,11 @@ namespace dustbin {
 
       m_cSpace    = dSimpleSpaceCreate(0);
       m_cContacts = dJointGroupCreate (0);
+    }
+
+    void CWorld::handleRespawn(int a_iMarble) {
+      if (m_pTriggerHandler != nullptr)
+        m_pTriggerHandler->handleRespawn(a_iMarble);
     }
 
     void CWorld::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos) {
