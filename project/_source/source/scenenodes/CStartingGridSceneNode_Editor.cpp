@@ -1,11 +1,13 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CStartingGridSceneNode_Editor.h>
+#include <scenenodes/CDustbinId.h>
 
 namespace dustbin {
   namespace scenenodes {
     CStartingGridSceneNode_Editor::CStartingGridSceneNode_Editor(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) :
       CStartingGridSceneNode_Base(a_pParent, a_pMgr, a_iId)
     {
+      sceneNodeIdUsed(a_iId);
     }
 
     CStartingGridSceneNode_Editor::~CStartingGridSceneNode_Editor() {
@@ -39,7 +41,7 @@ namespace dustbin {
       if (a_pNewParent  == nullptr) a_pNewParent  = Parent;
       if (a_pNewManager == nullptr) a_pNewManager = SceneManager;
 
-      CStartingGridSceneNode_Editor* l_pRet = new CStartingGridSceneNode_Editor(a_pNewParent, a_pNewManager, ID);
+      CStartingGridSceneNode_Editor* l_pRet = new CStartingGridSceneNode_Editor(a_pNewParent, a_pNewManager, getNextSceneNodeId());
 
       l_pRet->m_iMarblesPerRow = m_iMarblesPerRow;
       l_pRet->m_fWidth         = m_fWidth;

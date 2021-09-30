@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CStartingGridSceneNode_base.h>
+#include <scenenodes/CDustbinId.h>
 #include <string>
 
 namespace dustbin {
@@ -78,6 +79,8 @@ namespace dustbin {
       a_pOut->addFloat("RowLength", m_fRowLength);
       a_pOut->addFloat("Angle", m_fAngle);
       a_pOut->addFloat("Offset", m_fOffset);
+
+      sceneNodeIdUsed(getID());
     }
 
     void CStartingGridSceneNode_Base::updateGridPositions() {
@@ -133,6 +136,8 @@ namespace dustbin {
         m_iMarblesPerRow = 16;
 
       updateGridPositions();
+
+      sceneNodeIdUsed(getID());
     }
 
   }

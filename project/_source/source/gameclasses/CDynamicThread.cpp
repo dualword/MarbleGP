@@ -76,7 +76,7 @@ namespace dustbin {
           for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
             l_cContact[i].surface.bounce = (dReal)0.5;
             l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2 | dContactSoftCFM | dContactSoftERP;
-            l_cContact[i].surface.mu = (dReal)25;
+            l_cContact[i].surface.mu = (dReal)0;
             l_cContact[i].surface.mu2 = (dReal)0;
             l_cContact[i].surface.bounce_vel = (dReal)0.00001;
             l_cContact[i].surface.soft_cfm = (dReal)0.004;
@@ -242,6 +242,22 @@ namespace dustbin {
             }
             else if (p->m_eState == CObjectMarble::enMarbleState::Countdown) {
               dBodySetAngularDamping(p->m_cBody, (dReal)0.9);
+            }
+
+            if (p->m_iManualRespawn == -1) {
+              if (p->m_bRespawn)
+                p->m_iManualRespawn = m_iWorldStep;
+            }
+            else {
+              if (!p->m_bRespawn)
+                p->m_iManualRespawn = -1;
+              else if (m_iWorldStep - p->m_iManualRespawn > 180) {
+                p->m_iManualRespawn = -1;
+                p->m_iRespawnStart = m_iWorldStep;
+                p->m_eState = CObjectMarble::enMarbleState::Respawn1;
+
+                sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
+              }
             }
           }
         }

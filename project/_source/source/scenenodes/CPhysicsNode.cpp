@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CPhysicsNode.h>
+#include <scenenodes/CDustbinId.h>
 #include <string>
 
 namespace dustbin {
@@ -19,6 +20,7 @@ namespace dustbin {
       m_fMass(1.0)
     {
       m_cBox.reset(getPosition());
+      sceneNodeIdUsed(a_iId);
     }
 
     CPhysicsNode::~CPhysicsNode() {
@@ -69,6 +71,8 @@ namespace dustbin {
         if (std::get<0>(m_vTrigger[i]))
           a_pOut->addInt(l_sNameTrgr.c_str(), std::get<1>(m_vTrigger[i]));
       }
+
+      sceneNodeIdUsed(getID());
     }
 
     void CPhysicsNode::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
@@ -121,13 +125,15 @@ namespace dustbin {
           }
         }
       }
+
+      sceneNodeIdUsed(getID());
     }
 
     irr::scene::ISceneNode* CPhysicsNode::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager) {
       if (a_pNewParent  == nullptr) a_pNewParent  = Parent;
       if (a_pNewManager == nullptr) a_pNewManager = SceneManager;
 
-      CPhysicsNode* l_pNew = new CPhysicsNode(a_pNewParent, a_pNewManager, ID);
+      CPhysicsNode* l_pNew = new CPhysicsNode(a_pNewParent, a_pNewManager, getNextSceneNodeId());
 
       l_pNew->m_bCollides = m_bCollides;
       l_pNew->m_bStatic   = m_bStatic;

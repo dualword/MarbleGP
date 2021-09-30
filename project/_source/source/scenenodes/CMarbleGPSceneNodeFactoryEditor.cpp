@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CMarbleGPSceneNodeFactoryEditor.h>
 #include <scenenodes/CStartingGridSceneNode_Editor.h>
+#include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CDustbinId.h>
@@ -30,6 +31,10 @@ namespace dustbin {
           p = new CPhysicsNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
           break;
 
+        case g_CheckpointNodeId:
+          p = new CCheckpointNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          break;
+
         default:
           break;
       }
@@ -45,22 +50,22 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactoryEditor::getCreatableSceneNodeTypeCount() const {
-      return 3;
+      return 4;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactoryEditor::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
       switch (a_iIdx) {
         case 0:
           return g_StartingGridScenenodeName;
-          break;
           
         case 1:
           return g_WorldName;
-          break;
 
         case 2:
           return g_PhysicsNodeName;
-          break;
+
+        case 3:
+          return g_CheckpointName;
       }
 
       return nullptr;
@@ -70,14 +75,15 @@ namespace dustbin {
       switch (a_iIdx) {
         case 0:
           return (irr::scene::ESCENE_NODE_TYPE)g_StartingGridScenenodeId;
-          break;
 
         case 1:
           return (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId;
-          break;
 
         case 2:
           return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
+
+        case 3:
+          return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -96,9 +102,11 @@ namespace dustbin {
         case g_PhysicsNodeId:
           return g_PhysicsNodeName;
 
+        case g_CheckpointNodeId:
+          return g_CheckpointName;
+
         default:
           return nullptr;
-          break;
       }
     }
 
@@ -111,6 +119,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId;
       else if (l_sName == g_PhysicsNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
+      else if (l_sName == g_CheckpointName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

@@ -1,4 +1,6 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CWorldNode.h>
+#include <scenenodes/CDustbinId.h>
 
 namespace dustbin {
   namespace scenenodes {
@@ -11,6 +13,8 @@ namespace dustbin {
       setScale(irr::core::vector3df(1.0f));
       setPosition(irr::core::vector3df(0.0f));
       setRotation(irr::core::vector3df(0.0f));
+
+      sceneNodeIdUsed(a_iId);
     }
 
     CWorldNode::~CWorldNode() {
@@ -42,6 +46,7 @@ namespace dustbin {
 
     void CWorldNode::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       ISceneNode::serializeAttributes(a_pOut, a_pOptions);
+      sceneNodeIdUsed(getID());
     }
 
     void CWorldNode::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
@@ -50,13 +55,15 @@ namespace dustbin {
       setScale   (irr::core::vector3df(1.0f));
       setPosition(irr::core::vector3df(0.0f));
       setRotation(irr::core::vector3df(0.0f));
+
+      sceneNodeIdUsed(getID());
     }
 
     irr::scene::ISceneNode* CWorldNode::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager) {
       if (a_pNewParent  == nullptr) a_pNewParent  = Parent;
       if (a_pNewManager == nullptr) a_pNewManager = SceneManager;
 
-      CWorldNode* l_pNew = new CWorldNode(a_pNewParent, a_pNewManager, ID);
+      CWorldNode* l_pNew = new CWorldNode(a_pNewParent, a_pNewManager, getNextSceneNodeId());
       l_pNew->drop();
       return l_pNew;
     }

@@ -1,0 +1,64 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
+
+#include <scenenodes/CCheckpointNode.h>
+#include <scenenodes/CDustbinId.h>
+
+namespace dustbin {
+  namespace scenenodes {
+    CCheckpointNode::CCheckpointNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) :
+      irr::scene::ISceneNode(a_pParent, a_pMgr, a_iId)
+    {
+      m_cBox.reset(getPosition());
+
+      setScale(irr::core::vector3df(1.0f));
+      setPosition(irr::core::vector3df(0.0f));
+      setRotation(irr::core::vector3df(0.0f));
+
+      sceneNodeIdUsed(a_iId);
+    }
+
+    CCheckpointNode::~CCheckpointNode() {
+    }
+
+    void CCheckpointNode::render() {
+    }
+
+    const irr::core::aabbox3d<irr::f32>& CCheckpointNode::getBoundingBox() const {
+      return m_cBox;
+    }
+
+    irr::scene::ESCENE_NODE_TYPE CCheckpointNode::getType() const {
+      return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
+    }
+
+    void CCheckpointNode::OnRegisterSceneNode() {
+      if (IsVisible)
+        SceneManager->registerNodeForRendering(this);
+
+      ISceneNode::OnRegisterSceneNode();
+    }
+
+    void CCheckpointNode::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
+      ISceneNode::serializeAttributes(a_pOut, a_pOptions);
+    }
+
+    void CCheckpointNode::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
+      ISceneNode::deserializeAttributes(a_pIn, a_pOptions);
+
+      setScale(irr::core::vector3df(1.0f));
+      setPosition(irr::core::vector3df(0.0f));
+      setRotation(irr::core::vector3df(0.0f));
+
+      sceneNodeIdUsed(getID());
+    }
+
+    irr::scene::ISceneNode* CCheckpointNode::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager) {
+      if (a_pNewParent == nullptr) a_pNewParent = Parent;
+      if (a_pNewManager == nullptr) a_pNewManager = SceneManager;
+
+      CCheckpointNode* l_pNew = new CCheckpointNode(a_pNewParent, a_pNewManager, getNextSceneNodeId());
+      l_pNew->drop();
+      return l_pNew;
+    }
+  }
+}

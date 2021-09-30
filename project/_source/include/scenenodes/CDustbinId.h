@@ -10,5 +10,6 @@
 namespace dustbin {
   namespace scenenodes {
     irr::s32 getNextSceneNodeId();
+    void sceneNodeIdUsed(irr::s32 a_iId);
   }
 }
