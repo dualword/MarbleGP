@@ -18,9 +18,18 @@ namespace dustbin {
     */
     struct SViewPort {
       irr::core::recti              m_cRect;    /**< The on-screen rectangle to render this viewport to */
-      int                           m_iPlayer;  /**< The player id this viewport belongs to */
+      int                           m_iPlayer,  /**< The player id this viewport belongs to */
+                                    m_iLastCp;  /**< The last Checkpoint the player has passed. Necessary to update the textures of the checkpoints */
       irr::scene::ISceneNode*       m_pMarble;  /**< The marble of the player */
       irr::scene::ICameraSceneNode* m_pCamera;  /**< The camera of the viewport */
+
+      /**
+      * A list of the possible next checkpoints for the player of this viewport.
+      * The vertices of material 0 are set to green in these checkpoints, the vertices 
+      * of the materials 2 and 3 are updated for flashlights in "CGameState::beforeDrawScene"
+      * @see CGameState::beforeDrawScene
+      */
+      std::vector<irr::scene::IMeshSceneNode*> m_vNextCheckpoints;
 
       /**
       * The constructor
@@ -34,6 +43,7 @@ namespace dustbin {
         m_iPlayer = a_iPlayer;
         m_pMarble = a_pMarble;
         m_pCamera = a_pCamera;
+        m_iLastCp = 0;
       }
 
       /**
@@ -41,6 +51,7 @@ namespace dustbin {
       */
       SViewPort() {
         m_iPlayer = 0;
+        m_iLastCp = 0;
         m_pMarble = nullptr;
         m_pCamera = nullptr;
       }

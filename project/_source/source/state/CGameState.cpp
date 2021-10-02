@@ -6,6 +6,7 @@
 #include <shader/CShaderHandlerXEffect.h>
 #include <scenenodes/CMyCameraAnimator.h>
 #include <gameclasses/CDynamicThread.h>
+#include <scenenodes/CCheckpointNode.h>
 #include <shader/CShaderHandlerBase.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
@@ -17,10 +18,10 @@
 
 namespace dustbin {
   namespace state {
-    CGameState::CGameState() : 
-      m_pGlobal(CGlobal::getInstance()), 
-      m_pSgmr(CGlobal::getInstance()->getSceneManager()), 
-      m_pDrv(CGlobal::getInstance()->getVideoDriver()), 
+    CGameState::CGameState() :
+      m_pGlobal(CGlobal::getInstance()),
+      m_pSgmr(CGlobal::getInstance()->getSceneManager()),
+      m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()),
       m_pFs(CGlobal::getInstance()->getFileSystem()),
       m_pOutputQueue(nullptr),
@@ -30,6 +31,10 @@ namespace dustbin {
       m_iStep(0)
     {
       m_cScreen = irr::core::recti(irr::core::vector2di(0, 0), m_pDrv->getScreenSize());
+
+      m_pCheckpointTextures[0] = m_pDrv->getTexture("data/textures/checkpoint_white.png");
+      m_pCheckpointTextures[1] = m_pDrv->getTexture("data/textures/checkpoint_flash1.png");
+      m_pCheckpointTextures[2] = m_pDrv->getTexture("data/textures/checkpoint_flash2.png");
     }
 
     CGameState::~CGameState() {
@@ -76,7 +81,6 @@ namespace dustbin {
 
       lua_close(l_pState);
 
-
       // Load the track, and don't forget to run the skybox fix beforehands
       std::string l_sTrack = "data/levels/" + m_cChampionship.m_thisrace.m_track + "/track.xml";
 
@@ -91,6 +95,14 @@ namespace dustbin {
       else {
         CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "Track \"" + m_cChampionship.m_thisrace.m_track + "\" not found.");
         CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while starting game state.");
+        throw std::exception();
+      }
+
+      fillCheckpointList(m_pSgmr->getRootSceneNode());
+
+      if (m_mCheckpoints.size() == 0) {
+        m_pGlobal->setGlobal("ERROR_MESSAGE", "Track \"" + m_cChampionship.m_thisrace.m_track + "\" does not contain checkpoints.");
+        m_pGlobal->setGlobal("ERROR_HEAD", "Invalid track");
         throw std::exception();
       }
 
@@ -150,6 +162,13 @@ namespace dustbin {
 
           m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble->m_pPositional, l_pCam);
           l_pMarble->m_pViewport = &m_mViewports[(*it).m_playerid];
+
+          // Initialize the viewport with the lap start checkpoints
+          for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
+            if (it->second->isFirstInLap() && it->second->getParent() != nullptr && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
+              l_pMarble->m_pViewport->m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode*>(it->second->getParent()));
+            }
+          }
         }
         else {
           irr::core::vector3df l_cPos = irr::core::vector3df(0.0f, 100.0f, 0.0f);
@@ -313,6 +332,21 @@ namespace dustbin {
     }
 
     /**
+    * Fill the "Checkpoint" list
+    * @param a_pParent the parent node to search
+    */
+    void CGameState::fillCheckpointList(irr::scene::ISceneNode* a_pParent) {
+      if (a_pParent->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_CheckpointNodeId) {
+        scenenodes::CCheckpointNode* p = reinterpret_cast<scenenodes::CCheckpointNode*>(a_pParent);
+        m_mCheckpoints[p->getID()] = p;
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++) {
+        fillCheckpointList(*it);
+      }
+    }
+
+    /**
      * This is a callback method that gets invoked when the window is resized
      * @param a_cDim the new dimension of the window
      */
@@ -361,6 +395,25 @@ namespace dustbin {
     }
 
     /**
+    * This method resets the scene after a viewport was rendered
+    * @param a_pViewport the viewport that was rendered
+    */
+    void CGameState::afterDrawScene(gfx::SViewPort* a_pViewPort) {
+      // Player "0" always is the player in "view track" so we don't need
+      // to adjust the textures in this case
+      if (a_pViewPort != nullptr && a_pViewPort->m_iPlayer != 0) {
+        // Set the material "0" of the next checkpoints to green, flash materials "2" and "3"
+        for (std::vector<irr::scene::IMeshSceneNode*>::iterator it = a_pViewPort->m_vNextCheckpoints.begin(); it != a_pViewPort->m_vNextCheckpoints.end(); it++) {
+          irr::scene::IMeshSceneNode* p = *it;
+
+          if (p->getMaterialCount() > 0) {
+            p->getMaterial(0).setTexture(0, m_pCheckpointTextures[0]);
+          }
+        }
+      }
+    }
+
+    /**
     * This method prepares the scene before a viewport is rendered
     * @param a_pViewport the viewport that will be rendered
     */
@@ -389,6 +442,16 @@ namespace dustbin {
               else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
             }
             else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
+          }
+        }
+
+        // Set the material "0" of the next checkpoints to green, flash materials "2" and "3"
+        for (std::vector<irr::scene::IMeshSceneNode*>::iterator it = a_pViewPort->m_vNextCheckpoints.begin(); it != a_pViewPort->m_vNextCheckpoints.end(); it++) {
+          irr::scene::IMeshSceneNode* p = *it;
+
+          if (p->getMaterialCount() > 0) {
+            int l_iIndex = ((m_iStep % 240) < 120) ? 1 : 2;
+            p->getMaterial(0).setTexture(0, m_pCheckpointTextures[l_iIndex]);
           }
         }
       }
@@ -438,6 +501,7 @@ namespace dustbin {
 
           beforeDrawScene(&it->second);
           m_pShader->renderScene(it->second.m_cRect);
+          afterDrawScene(&it->second);
         }
       }
       m_pGui->drawAll();
@@ -593,7 +657,29 @@ namespace dustbin {
      * @param a_Checkpoint The checkpoint ID the player has passed
      */
     void CGameState::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
-      printf("onCheckpoint: Marble %i, Checkpoint %i\n", a_MarbleId, a_Checkpoint);
+      int l_iId = a_MarbleId - 10000;
+
+      if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr) {
+        printf("onCheckpoint: Marble %i, Checkpoint %i\n", a_MarbleId, a_Checkpoint);
+        gfx::SViewPort* l_pViewport = m_aMarbles[l_iId]->m_pViewport;
+        if (l_pViewport != nullptr) {
+          afterDrawScene(l_pViewport);
+          l_pViewport->m_vNextCheckpoints.clear();
+
+          if (m_mCheckpoints.find(a_Checkpoint) != m_mCheckpoints.end() && m_mCheckpoints[a_Checkpoint]->m_mLinks.find(l_pViewport->m_iLastCp) != m_mCheckpoints[a_Checkpoint]->m_mLinks.end()) {
+            for (std::vector<int>::iterator it = m_mCheckpoints[a_Checkpoint]->m_mLinks[l_pViewport->m_iLastCp].begin(); it != m_mCheckpoints[a_Checkpoint]->m_mLinks[l_pViewport->m_iLastCp].end(); it++) {
+              if (m_mCheckpoints.find(*it) != m_mCheckpoints.end()) {
+                scenenodes::CCheckpointNode* p = m_mCheckpoints[*it];
+                if (p->getParent() != nullptr && p->getParent()->getType() == irr::scene::ESNT_MESH) {
+                  l_pViewport->m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode*>(p->getParent()));
+                }
+              }
+            }
+          }
+
+          l_pViewport->m_iLastCp = a_Checkpoint;
+        }
+      }
     }
 
     /**

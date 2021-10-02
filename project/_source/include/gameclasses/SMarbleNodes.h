@@ -7,6 +7,8 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
+#include <vector>
+
 namespace dustbin {
   namespace gfx {
     struct SViewPort;

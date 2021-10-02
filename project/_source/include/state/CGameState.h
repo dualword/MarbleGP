@@ -29,6 +29,10 @@ namespace dustbin {
     class CShaderHandlerBase;
   }
 
+  namespace scenenodes {
+    class CCheckpointNode;
+  }
+
   class CGlobal;
 
   namespace state {
@@ -57,8 +61,12 @@ namespace dustbin {
 
         std::vector<gameclasses::SPlayer*> m_vPlayers; /**< The players of the game*/
 
+        irr::video::ITexture* m_pCheckpointTextures[3];  /**< The checkpoint textures (0 == white, 1 == Flash 1, 2 == Flash 2) */
+
         std::vector<messages::IMessage*> m_vMoveMessages; /**< Move messages are not applied before the step has finished */
         std::map<int, gfx::SViewPort> m_mViewports;  /**< The viewports of the game */
+
+        std::map<irr::s32, scenenodes::CCheckpointNode*> m_mCheckpoints;  /**< All checkpoints on this lap */
 
         irr::core::recti m_cScreen; /**< The viewport covering the while screen */
 
@@ -74,10 +82,22 @@ namespace dustbin {
         irr::scene::ISceneNode* findSceneNodeByType(irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pParent);
 
         /**
+        * Fill the "Checkpoint" list
+        * @param a_pParent the parent node to search
+        */
+        void fillCheckpointList(irr::scene::ISceneNode* a_pParent);
+
+        /**
         * This method prepares the scene before a viewport is rendered
         * @param a_pViewport the viewport that will be rendered
         */
         void beforeDrawScene(gfx::SViewPort* a_pViewport);
+
+        /**
+        * This method resets the scene after a viewport was rendered
+        * @param a_pViewport the viewport that was rendered
+        */
+        void afterDrawScene(gfx::SViewPort* a_pViewPort);
 
       protected:
         /**
