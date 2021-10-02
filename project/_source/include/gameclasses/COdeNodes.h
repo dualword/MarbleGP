@@ -9,9 +9,11 @@
 
 #include <ode/ode.h>
 #include <string>
+#include <map>
 
 namespace dustbin {
   namespace scenenodes {
+    class CCheckpointNode;
     class CPhysicsNode;
   }
 
@@ -117,6 +119,21 @@ namespace dustbin {
     };
 
     /**
+    * @class CObjectCheckpoint
+    * @author Christian Keimel
+    * Physics object for the checkpoints
+    */
+    class CObjectCheckpoint : public CObject {
+      public:
+        CObjectCheckpoint(scenenodes::CCheckpointNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName);
+        virtual ~CObjectCheckpoint();
+
+        std::map<int, std::vector<int>> m_mNext;
+        bool m_bLapStart;
+        std::vector<int> m_vFinishLapIDs;
+    };
+
+    /**
     * @class CObjectMarble
     * @author Christian Keimel
     * This is the class that stores all marbles
@@ -155,7 +172,8 @@ namespace dustbin {
         dReal m_fDamp;  /**< The damping of the marble's body */
 
         int m_iCtrlX,   /**< The X-Control state updated in "onMarblecontrol" */
-            m_iCtrlY;   /**< The Y-Control state updated in "onMarblecontrol" */
+            m_iCtrlY,   /**< The Y-Control state updated in "onMarblecontrol" */
+            m_iLastCp;  /**< The last Checkpoint the marble has passed */
 
         bool m_bHasContact,
              m_bBrake,         /**< The Brake Control state updated in "onMarblecontrol" */
@@ -166,6 +184,8 @@ namespace dustbin {
                              m_vRespawnDir;   /**< The respawn direction taken from the last checkpoint */
 
         enMarbleState m_eState; /**< The state of the marble */
+
+        std::vector<int> m_vNextCheckpoints; /**< A list of the next checkpoint options */
 
         CObjectMarble(irr::scene::ISceneNode* a_pNode, const irr::core::vector3df &a_cDirection, CWorld* a_pWorld, const std::string& a_sName);
         virtual ~CObjectMarble();
@@ -188,6 +208,8 @@ namespace dustbin {
         dJointGroupID  m_cContacts;
 
         std::vector<CObject*> m_vObjects;
+
+        std::map<irr::s32, CObjectCheckpoint*> m_mCheckpoints;
 
         ITriggerHandler* m_pTriggerHandler;
 

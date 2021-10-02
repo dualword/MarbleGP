@@ -300,6 +300,12 @@
     <ClCompile Include="..\_source\source\scenenodes\CMyCameraAnimator.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CCheckpointNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CCheckpointNode_Editor.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -528,6 +534,12 @@
       <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CMyCameraAnimator.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CCheckpointNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CCheckpointNode_Editor.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>

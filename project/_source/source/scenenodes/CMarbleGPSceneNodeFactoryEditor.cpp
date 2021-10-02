@@ -1,7 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CMarbleGPSceneNodeFactoryEditor.h>
 #include <scenenodes/CStartingGridSceneNode_Editor.h>
-#include <scenenodes/CCheckpointNode.h>
+#include <scenenodes/CCheckpointNode_Editor.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CDustbinId.h>
@@ -32,7 +32,7 @@ namespace dustbin {
           break;
 
         case g_CheckpointNodeId:
-          p = new CCheckpointNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          p = new CCheckpointNode_Editor(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
           break;
 
         default:

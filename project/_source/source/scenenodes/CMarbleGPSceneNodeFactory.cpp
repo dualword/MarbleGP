@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <scenenodes/CCheckpointNode.h>
 #include <string>
 
 namespace dustbin {
@@ -17,6 +18,10 @@ namespace dustbin {
       switch (a_eType) {
         case g_StartingGridScenenodeId:
           p = new CStartingGridSceneNode(a_pParent, m_pSmgr, -1);
+          break;
+
+        case g_CheckpointNodeId:
+          p = new CCheckpointNode(a_pParent, m_pSmgr, -1);
           break;
 
         default:

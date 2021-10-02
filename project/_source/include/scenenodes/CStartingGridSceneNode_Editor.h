@@ -20,6 +20,7 @@ namespace dustbin {
 
         irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager);
 
+        virtual void OnRegisterSceneNode();
         virtual void render();
     };
   }

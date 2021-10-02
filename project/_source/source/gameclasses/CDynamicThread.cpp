@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CWorldNode.h>
@@ -53,7 +54,6 @@ namespace dustbin {
       dContact l_cContact[MAX_CONTACTS];
 
       if (dGeomIsSpace(a_iGeom1) || dGeomIsSpace(a_iGeom2)) {
-
         // colliding a space with something :
         dSpaceCollide2(a_iGeom1, a_iGeom2, a_pData, &nearCollisionCallback);
 
@@ -66,8 +66,6 @@ namespace dustbin {
 
         CObject* l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1),
                * l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
-
-        // printf("ncc: %s || %s\n", l_pOdeNode1->m_sName.c_str(), l_pOdeNode2->m_sName.c_str());
 
         bool l_bMarbleCollision = l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() == enObjectType::Marble;
 
@@ -107,27 +105,42 @@ namespace dustbin {
 
         if (!l_bMarbleCollision) {
           if (numc > 0) {
-            CObjectMarble* p = nullptr;
-            CObject      * o = nullptr;
+            CObjectMarble* p = nullptr; // The colliding marble
+            CObject      * o = nullptr, // Trigger or respawn object
+                         * c = nullptr, // Checkpoint
+                         * x = nullptr; // Any colliding object
 
             if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
               p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
 
+              x = l_pOdeNode2;
+
               if (l_pOdeNode2->m_bTrigger || l_pOdeNode2->m_bRespawn)
                 o = l_pOdeNode2;
+
+              if (l_pWorld->m_mCheckpoints.find(l_pOdeNode2->m_iId) != l_pWorld->m_mCheckpoints.end())
+                c = l_pOdeNode2;
             }
             else if (l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
               p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
 
+              x = l_pOdeNode1;
+
               if (l_pOdeNode1->m_bTrigger || l_pOdeNode1->m_bRespawn)
                 o = l_pOdeNode1;
+
+              if (l_pWorld->m_mCheckpoints.find(l_pOdeNode1->m_iId) != l_pWorld->m_mCheckpoints.end())
+                c = l_pOdeNode1;
             }
 
             // We have a near collision of a marble
             if (p != nullptr) {
-              // Update the up-vector
               const dReal* l_aPos = dBodyGetPosition(p->m_cBody);
-              p->m_vUpVector = vectorOdeToIrr(l_aPos) - vectorOdeToIrr(l_cContact[0].geom.pos);
+
+              if (x != nullptr && x->m_bCollides) {
+                // Update the up-vector
+                p->m_vUpVector = vectorOdeToIrr(l_aPos) - vectorOdeToIrr(l_cContact[0].geom.pos);
+              }
 
               // The marble collides witha  non-marble object
               if (o != nullptr) {
@@ -143,6 +156,44 @@ namespace dustbin {
                   l_pWorld->handleRespawn(p->m_iId);
                 }
               }
+
+              // Checkpoint hit
+              if (c != nullptr) {
+                // First we see whether or not this checkpoint is in the list of checkpoints ...
+                for (std::vector<int>::iterator it = p->m_vNextCheckpoints.begin(); it != p->m_vNextCheckpoints.end(); it++) {
+                  if (*it == c->m_iId && l_pWorld->m_mCheckpoints.find(c->m_iId) != l_pWorld->m_mCheckpoints.end()) {
+                    CObjectCheckpoint* l_pCp = l_pWorld->m_mCheckpoints[c->m_iId];
+
+                    // ... then we see if this is a possible next checkpoint for the marble ...
+                    if (l_pCp->m_mNext.find(p->m_iLastCp) != l_pCp->m_mNext.end()) {
+                      printf("Checkpoint: %i\n", c->m_iId);
+
+                      // ... then we update the next checkpoints vector
+                      p->m_vNextCheckpoints.clear();
+
+                      for (std::vector<int>::iterator it = l_pCp->m_mNext[p->m_iLastCp].begin(); it != l_pCp->m_mNext[p->m_iLastCp].end(); it++) {
+                        p->m_vNextCheckpoints.push_back(*it);
+                      }
+
+                      if (l_pCp->m_bLapStart) {
+                        if (p->m_iLastCp == 0) {
+                          printf("First lap started.\n");
+                        }
+                        else {
+                          for (std::vector<int>::iterator it = l_pCp->m_vFinishLapIDs.begin(); it != l_pCp->m_vFinishLapIDs.end(); it++) {
+                            if (p->m_iLastCp == *it) {
+                              printf("Next lap started\n");
+                            }
+                          }
+                        }
+                      }
+
+                      p->m_iLastCp = c->m_iId;
+                      break;
+                    }
+                  }
+                }
+              }
             }
           }
 
@@ -154,13 +205,13 @@ namespace dustbin {
         dJointID l_cJoints[MAX_CONTACTS];
 
         for (irr::u32 i = 0; i < numc; i++) {
-          if (l_pOdeNode1 != nullptr && l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
+          if (l_pOdeNode1 != nullptr && l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble && l_pOdeNode2->m_bCollides) {
             CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
             p->m_bHasContact = true;
             p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
           }
 
-          if (l_pOdeNode2 != nullptr && l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble) {
+          if (l_pOdeNode2 != nullptr && l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble && l_pOdeNode1->m_bCollides) {
             CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
             p->m_bHasContact = true;
             p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
@@ -199,6 +250,11 @@ namespace dustbin {
       }
       else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId) {
         m_fGridAngle = reinterpret_cast<scenenodes::CStartingGridSceneNode*>(a_pNode)->getAngle();
+      }
+      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_CheckpointNodeId) {
+        CObjectCheckpoint* p = new CObjectCheckpoint(reinterpret_cast<scenenodes::CCheckpointNode*>(a_pNode), m_pWorld, a_pNode->getName());
+        m_pWorld->m_vObjects.push_back(p);
+        m_pWorld->m_mCheckpoints[a_pNode->getID()] = p;
       }
 
       for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
@@ -239,25 +295,25 @@ namespace dustbin {
                 dBodySetAngularDamping(p->m_cBody, (dReal)0.05);
               else
                 dBodySetAngularDamping(p->m_cBody, p->m_fDamp);
+
+              if (p->m_iManualRespawn == -1) {
+                if (p->m_bRespawn)
+                  p->m_iManualRespawn = m_iWorldStep;
+              }
+              else {
+                if (!p->m_bRespawn)
+                  p->m_iManualRespawn = -1;
+                else if (m_iWorldStep - p->m_iManualRespawn > 180) {
+                  p->m_iManualRespawn = -1;
+                  p->m_iRespawnStart = m_iWorldStep;
+                  p->m_eState = CObjectMarble::enMarbleState::Respawn1;
+
+                  sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
+                }
+              }
             }
             else if (p->m_eState == CObjectMarble::enMarbleState::Countdown) {
               dBodySetAngularDamping(p->m_cBody, (dReal)0.9);
-            }
-
-            if (p->m_iManualRespawn == -1) {
-              if (p->m_bRespawn)
-                p->m_iManualRespawn = m_iWorldStep;
-            }
-            else {
-              if (!p->m_bRespawn)
-                p->m_iManualRespawn = -1;
-              else if (m_iWorldStep - p->m_iManualRespawn > 180) {
-                p->m_iManualRespawn = -1;
-                p->m_iRespawnStart = m_iWorldStep;
-                p->m_eState = CObjectMarble::enMarbleState::Respawn1;
-
-                sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
-              }
             }
           }
         }
@@ -404,6 +460,9 @@ namespace dustbin {
               sendPlayerstunned(p->m_iId, 0, m_pOutputQueue);
               p->m_eState = CObjectMarble::enMarbleState::Rolling;
               p->m_iStunnedStart = -1;
+
+              if (p->m_iManualRespawn != -1)
+                p->m_iManualRespawn = m_iWorldStep;
             }
 
             sendMarblemoved(p->m_iId,
@@ -506,6 +565,11 @@ namespace dustbin {
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
           printf("*** Marble with id %i stored in array index %i\n", (*it)->m_pMarble->m_pPositional->getID(), l_iIndex);
+
+          for (std::map<irr::s32, CObjectCheckpoint*>::iterator it = m_pWorld->m_mCheckpoints.begin(); it != m_pWorld->m_mCheckpoints.end(); it++) {
+            if (it->second->m_bLapStart)
+              l_pMarble->m_vNextCheckpoints.push_back(it->first);
+          }
 
           sendMarblemoved(l_pMarble->m_iId,
             (*it)->m_pMarble->m_pPositional->getAbsolutePosition(),

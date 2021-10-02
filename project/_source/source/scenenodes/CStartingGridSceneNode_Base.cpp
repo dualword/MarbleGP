@@ -56,13 +56,6 @@ namespace dustbin {
       return 0;
     }
 
-    void CStartingGridSceneNode_Base::OnRegisterSceneNode() {
-      if (IsVisible)
-        SceneManager->registerNodeForRendering(this);
-
-      ISceneNode::OnRegisterSceneNode();
-    }
-
     irr::scene::ESCENE_NODE_TYPE CStartingGridSceneNode_Base::getType() const {
       return (irr::scene::ESCENE_NODE_TYPE)g_StartingGridScenenodeId;
     }

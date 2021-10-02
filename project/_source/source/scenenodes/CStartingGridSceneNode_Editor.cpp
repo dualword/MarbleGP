@@ -51,5 +51,12 @@ namespace dustbin {
 
       return l_pRet;
     }
+
+    void CStartingGridSceneNode_Editor::OnRegisterSceneNode() {
+      if (IsVisible)
+        SceneManager->registerNodeForRendering(this);
+
+      ISceneNode::OnRegisterSceneNode();
+    }
   }
 }

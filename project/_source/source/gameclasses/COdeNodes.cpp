@@ -1,5 +1,6 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <gameclasses/ITriggerHandler.h>
+#include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <gameclasses/COdeNodes.h>
 #include <CGlobal.h>
@@ -72,6 +73,19 @@ namespace dustbin {
     }
 
     CObjectBox::CObjectBox(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) : CObject(enObjectType::Box, a_pNode, a_pWorld, a_sName) {
+      irr::core::aabbox3df l_cBox      = a_pNode->getParent()->getBoundingBox();
+      irr::core::vector3df l_cScale    = a_pNode->getParent()->getAbsoluteTransformation().getScale(),
+                           l_cRotate   = a_pNode->getParent()->getAbsoluteTransformation().getRotationDegrees(),
+                           l_cPosition = a_pNode->getParent()->getAbsoluteTransformation().getTranslation() + l_cBox.getCenter() * l_cScale;
+
+      m_cGeom = dCreateBox(m_pWorld->m_cSpace, l_cScale.X * l_cBox.getExtent().X, l_cScale.Y * l_cBox.getExtent().Y, l_cScale.Z * l_cBox.getExtent().Z);
+      dQuaternion l_vRot;
+      eulerToQuaternion(l_cRotate, l_vRot);
+      dGeomSetQuaternion(m_cGeom, l_vRot);
+      dGeomSetPosition(m_cGeom, l_cPosition.X, l_cPosition.Y, l_cPosition.Z);
+      dGeomSetData(m_cGeom, this);
+
+      // a_pNode->getSceneManager()->addCubeSceneNode(1.0f, a_pNode->getSceneManager()->getRootSceneNode(), -1, l_cPosition, l_cRotate, l_cScale * l_cBox.getExtent());
     }
 
     CObjectBox::~CObjectBox() {
@@ -81,6 +95,37 @@ namespace dustbin {
     }
 
     CObjectSphere::~CObjectSphere() {
+    }
+
+    CObjectCheckpoint::CObjectCheckpoint(scenenodes::CCheckpointNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) :
+      CObject(enObjectType::Checkpoint, reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName),
+      m_bLapStart(false)
+    {
+      a_pWorld->m_vObjects.push_back(new CObjectTrimesh(reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName + "_trimesh"));
+      
+      CObjectBox* p = new CObjectBox(reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName + "_box");
+      p->m_bCollides = false;
+
+      a_pWorld->m_vObjects.push_back(p);
+      a_pWorld->m_mCheckpoints[a_pNode->getID()] = this;
+
+      m_bLapStart = a_pNode->isFirstInLap();
+
+      if (m_bLapStart) {
+        for (std::vector<int>::iterator it = a_pNode->m_vFinishLapIDs.begin(); it != a_pNode->m_vFinishLapIDs.end(); it++)
+          m_vFinishLapIDs.push_back(*it);
+      }
+
+      for (std::map<int, std::vector<int>>::iterator it = a_pNode->m_mLinks.begin(); it != a_pNode->m_mLinks.end(); it++) {
+        m_mNext[it->first] = std::vector<int>();
+
+        for (std::vector<int>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+          m_mNext[it->first].push_back(*it2);
+        }
+      }
+    }
+
+    CObjectCheckpoint::~CObjectCheckpoint() {
     }
 
     CObjectTrimesh::CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial) : 
@@ -175,6 +220,7 @@ namespace dustbin {
       m_bRespawn(false),
       m_bActive(false),
       m_bBrake(false),
+      m_iLastCp(0),
       m_iCtrlX(0),
       m_iCtrlY(0)
     {
@@ -239,6 +285,8 @@ namespace dustbin {
         delete* it;
 
       m_vObjects.clear();
+
+      m_mCheckpoints.clear();
 
       if (m_cContacts != nullptr) dJointGroupEmpty(m_cContacts);
       if (m_cWorld != nullptr) dWorldDestroy(m_cWorld);

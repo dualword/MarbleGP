@@ -45,7 +45,6 @@ namespace dustbin {
         //*** Virtual method inherited from irr::scene::ISceneNode
         virtual irr::u32 getMaterialCount();
         virtual irr::scene::ESCENE_NODE_TYPE getType() const;
-        virtual void OnRegisterSceneNode();
 
         virtual const irr::core::aabbox3d<irr::f32>& getBoundingBox() const;
 
