@@ -166,7 +166,7 @@ namespace dustbin {
 
                     // ... then we see if this is a possible next checkpoint for the marble ...
                     if (l_pCp->m_mNext.find(p->m_iLastCp) != l_pCp->m_mNext.end()) {
-                      printf("Checkpoint: %i\n", c->m_iId);
+                      l_pWorld->handleCheckpoint(p->m_iId, c->m_iId);
 
                       // ... then we update the next checkpoints vector
                       p->m_vNextCheckpoints.clear();
@@ -177,12 +177,15 @@ namespace dustbin {
 
                       if (l_pCp->m_bLapStart) {
                         if (p->m_iLastCp == 0) {
-                          printf("First lap started.\n");
+                          p->m_iLapNo++;
+                          l_pWorld->handleLapStart(p->m_iId, p->m_iLapNo);
                         }
                         else {
                           for (std::vector<int>::iterator it = l_pCp->m_vFinishLapIDs.begin(); it != l_pCp->m_vFinishLapIDs.end(); it++) {
                             if (p->m_iLastCp == *it) {
-                              printf("Next lap started\n");
+                              p->m_iLapNo++;
+                              l_pWorld->handleLapStart(p->m_iId, p->m_iLapNo);
+                              break;
                             }
                           }
                         }
@@ -654,6 +657,24 @@ namespace dustbin {
 
         sendPlayerrespawn(a_iMarble, 1, m_pOutputQueue);
       }
+    }
+
+    /**
+    * Callback for sending a "Checkpoint" message
+    * @param a_iMarble Id of the marble
+    * @param a_iCheckpoint Checkpoint id
+    */
+    void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
+      sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
+    }
+
+    /**
+    * Callback for sending a "LapStart" message
+    * @param a_iMarbleId Id of the marble
+    * @param a_iLapNo Number of the started lap
+    */
+    void CDynamicThread::handleLapStart(int a_iMarbleId, int a_iLapNo) {
+      sendLapstart(a_iMarbleId, a_iLapNo, m_pOutputQueue);
     }
   }
 }

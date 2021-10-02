@@ -163,6 +163,20 @@ namespace dustbin {
          */
         virtual void onRacefinished(irr::u8 a_Cancelled);
 
+        /**
+         * This function receives messages of type "Checkpoint"
+         * @param a_MarbleId ID of the marble
+         * @param a_Checkpoint The checkpoint ID the player has passed
+         */
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint);
+
+        /**
+         * This function receives messages of type "LapStart"
+         * @param a_MarbleId ID of the marble
+         * @param a_LapNo Number of the started lap
+         */
+        virtual void onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo);
+
       public:
         CGameState();
         virtual ~CGameState();

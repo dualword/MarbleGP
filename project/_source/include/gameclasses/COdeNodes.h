@@ -154,7 +154,8 @@ namespace dustbin {
             m_iLastTrigger,
             m_iLastContact,   /**< The step no. of the last contact */
             m_iRespawnStart,  /**< The step when the respawn of the marble started */
-            m_iStunnedStart;  /**< The step when the stunned state started */
+            m_iStunnedStart,  /**< The step when the stunned state started */
+            m_iLapNo;         /**< The current lap of the marble */
 
         bool m_bActive; /**< The player has already shown some activity */
 
@@ -219,6 +220,8 @@ namespace dustbin {
 
         void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos);
         void handleRespawn(int a_iMarble);
+        void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+        void handleLapStart(int a_iMarbleId, int a_iLapNo);
     };
   }
 }

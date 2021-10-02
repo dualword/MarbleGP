@@ -88,6 +88,20 @@ namespace dustbin {
         * @param a_iMarble Id of the marble to respawn
         */
         virtual void handleRespawn(int a_iMarble);
+
+        /**
+        * Callback for sending a "Checkpoint" message
+        * @param a_iMarble Id of the marble
+        * @param a_iCheckpoint Checkpoint id
+        */
+        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+
+        /**
+        * Callback for sending a "LapStart" message
+        * @param a_iMarbleId Id of the marble
+        * @param a_iLapNo Number of the started lap
+        */
+        virtual void handleLapStart(int a_iMarbleId, int a_iLapNo);
     };
   }
 }

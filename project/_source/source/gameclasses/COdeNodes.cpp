@@ -221,6 +221,7 @@ namespace dustbin {
       m_bActive(false),
       m_bBrake(false),
       m_iLastCp(0),
+      m_iLapNo(0),
       m_iCtrlX(0),
       m_iCtrlY(0)
     {
@@ -273,6 +274,16 @@ namespace dustbin {
     void CWorld::handleRespawn(int a_iMarble) {
       if (m_pTriggerHandler != nullptr)
         m_pTriggerHandler->handleRespawn(a_iMarble);
+    }
+
+    void CWorld::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
+      if (m_pTriggerHandler != nullptr)
+        m_pTriggerHandler->handleCheckpoint(a_iMarbleId, a_iCheckpoint);
+    }
+
+    void CWorld::handleLapStart(int a_iMarbleId, int a_iLapNo) {
+      if (m_pTriggerHandler != nullptr)
+        m_pTriggerHandler->handleLapStart(a_iMarbleId, a_iLapNo);
     }
 
     void CWorld::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos) {

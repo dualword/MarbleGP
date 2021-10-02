@@ -586,5 +586,23 @@ namespace dustbin {
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
 
     }
+
+    /**
+     * This function receives messages of type "Checkpoint"
+     * @param a_MarbleId ID of the marble
+     * @param a_Checkpoint The checkpoint ID the player has passed
+     */
+    void CGameState::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
+      printf("onCheckpoint: Marble %i, Checkpoint %i\n", a_MarbleId, a_Checkpoint);
+    }
+
+    /**
+     * This function receives messages of type "LapStart"
+     * @param a_MarbleId ID of the marble
+     * @param a_LapNo Number of the started lap
+     */
+    void CGameState::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
+      printf("onLapstart: Marble %i, Lap %i\n", a_MarbleId, a_LapNo);
+    }
   }
 }
