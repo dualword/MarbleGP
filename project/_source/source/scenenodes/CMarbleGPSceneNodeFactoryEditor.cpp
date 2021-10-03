@@ -2,6 +2,7 @@
 #include <scenenodes/CMarbleGPSceneNodeFactoryEditor.h>
 #include <scenenodes/CStartingGridSceneNode_Editor.h>
 #include <scenenodes/CCheckpointNode_Editor.h>
+#include <scenenodes/CRespawnNode_Editor.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CDustbinId.h>
@@ -35,6 +36,10 @@ namespace dustbin {
           p = new CCheckpointNode_Editor(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
           break;
 
+        case g_RespawnNodeId:
+          p = new CRespawnNode_Editor(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          break;
+
         default:
           break;
       }
@@ -50,7 +55,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactoryEditor::getCreatableSceneNodeTypeCount() const {
-      return 4;
+      return 5;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactoryEditor::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -66,6 +71,9 @@ namespace dustbin {
 
         case 3:
           return g_CheckpointName;
+
+        case 4:
+          return g_RespawndName;
       }
 
       return nullptr;
@@ -84,6 +92,9 @@ namespace dustbin {
 
         case 3:
           return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
+
+        case 4:
+          return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -105,6 +116,9 @@ namespace dustbin {
         case g_CheckpointNodeId:
           return g_CheckpointName;
 
+        case g_RespawnNodeId:
+          return g_RespawndName;
+
         default:
           return nullptr;
       }
@@ -121,6 +135,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
       else if (l_sName == g_CheckpointName)
         return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
+      else if (l_sName == g_RespawndName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

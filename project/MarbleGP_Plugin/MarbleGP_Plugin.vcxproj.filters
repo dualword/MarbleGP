@@ -45,6 +45,12 @@
     <ClInclude Include="..\_source\include\scenenodes\CCheckpointNode_Editor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CRespawnNode.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CRespawnNode_Editor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,6 +81,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CCheckpointNode_Editor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CRespawnNode.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CRespawnNode_Editor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

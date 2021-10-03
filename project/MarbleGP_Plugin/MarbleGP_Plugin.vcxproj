@@ -160,6 +160,8 @@
     <ClInclude Include="..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactoryEditor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CRespawnNode.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CRespawnNode_Editor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Base.h" />
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Editor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CWorldNode.h" />
@@ -172,6 +174,8 @@
     <ClCompile Include="..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CRespawnNode.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CRespawnNode_Editor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Base.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Editor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CWorldNode.cpp" />

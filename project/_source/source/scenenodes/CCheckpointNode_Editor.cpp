@@ -22,14 +22,6 @@ namespace dustbin {
     }
 
     void CCheckpointNode_Editor::render() {
-      irr::video::SMaterial l_cMaterial;
-      l_cMaterial.AmbientColor = irr::video::SColor(255, 255, 255, 255);
-      l_cMaterial.Wireframe = false;
-      l_cMaterial.Lighting = false;
-      l_cMaterial.BackfaceCulling = false;
-      l_cMaterial.Thickness = 5.0f;
-
-      irr::video::IVideoDriver* l_pDrv = SceneManager->getVideoDriver();
     }
 
     void CCheckpointNode_Editor::OnRegisterSceneNode() {
