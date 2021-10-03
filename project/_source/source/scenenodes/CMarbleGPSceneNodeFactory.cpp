@@ -2,6 +2,7 @@
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CCheckpointNode.h>
+#include <scenenodes/CRespawnNode.h>
 #include <string>
 
 namespace dustbin {
@@ -22,6 +23,10 @@ namespace dustbin {
 
         case g_CheckpointNodeId:
           p = new CCheckpointNode(a_pParent, m_pSmgr, -1);
+          break;
+
+        case g_RespawnNodeId:
+          p = new CRespawnNode(a_pParent, m_pSmgr, -1);
           break;
 
         default:

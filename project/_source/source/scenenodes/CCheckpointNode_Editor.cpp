@@ -7,6 +7,7 @@
 #endif
 
 #include <scenenodes/CCheckpointNode_Editor.h>
+#include <scenenodes/CRespawnNode.h>
 
 namespace dustbin {
   namespace scenenodes {
@@ -77,7 +78,7 @@ namespace dustbin {
                 irr::core::vector3df l_cNextPos = l_pNext->getParent()->getTransformedBoundingBox().getCenter();
 
                 irr::core::vector3df l_cDiff = l_cPos - l_cNextPos,
-                  l_cRot = l_cDiff.getHorizontalAngle();
+                                     l_cRot  = l_cDiff.getHorizontalAngle();
 
                 irr::f32 l_fLength = l_cDiff.getLength();
 
@@ -92,6 +93,33 @@ namespace dustbin {
 
                 m_mLinkMeshes[it->first].push_back(l_pNode);
               }
+            }
+          }
+        }
+
+        for (std::map<irr::s32, irr::s32>::iterator it = m_mRespawn.begin(); it != m_mRespawn.end(); it++) {
+          irr::scene::ISceneNode* l_pRespawn = SceneManager->getSceneNodeFromId(it->second);
+          if (l_pRespawn != nullptr && l_pRespawn->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RespawnNodeId && m_mLinkMeshes.find(it->second) == m_mLinkMeshes.end()) {
+            irr::scene::IMesh* l_pMesh = SceneManager->getMesh("data/objects/Link.3ds");
+            if (l_pMesh != nullptr) {
+              irr::scene::ISceneNode* l_pNode = SceneManager->addMeshSceneNode(l_pMesh, this);
+
+              irr::core::vector3df l_cRespawnPos = l_pRespawn->getTransformedBoundingBox().getCenter(),
+                                   l_cDiff       = l_cPos - l_cRespawnPos,
+                                   l_cRot        = l_cDiff.getHorizontalAngle();
+
+              irr::f32 l_fLength = l_cDiff.getLength();
+
+              l_pNode->setRotation(l_cRot - getParent()->getRotation());
+              l_pNode->setPosition((l_cPos - getAbsolutePosition()) / getParent()->getScale());
+              l_pNode->setScale(irr::core::vector3df(3.0f, 3.0f, l_fLength) / l_cScale);
+              l_pNode->setIsDebugObject(true);
+              l_pNode->setVisible(m_iShowLinks == it->first);
+
+              if (m_mLinkMeshes.find(it->second) == m_mLinkMeshes.end())
+                m_mLinkMeshes[it->second] = std::vector<irr::scene::ISceneNode*>();
+
+              m_mLinkMeshes[it->second].push_back(l_pNode);
             }
           }
         }

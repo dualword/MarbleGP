@@ -29,7 +29,8 @@ namespace dustbin {
 
       public:
         std::map<irr::s32, std::vector<irr::s32> > m_mLinks;    /**< The links to the next checkpoint. The key defines the previous checkpoint, the vector of ints defines the optional next checkpoints */
-        std::vector<int> m_vFinishLapIDs; /**< IDs of the previous checkpoints that trigger a "lap done" if m_bFirstInLap == true. "0" always triggers the next lap */
+        std::vector<irr::s32> m_vFinishLapIDs; /**< IDs of the previous checkpoints that trigger a "lap done" if m_bFirstInLap == true. "0" always triggers the next lap */
+        std::map<irr::s32, irr::s32> m_mRespawn;  /**< The IDs of the respawn nodes (value) depending on the previous checkpoint (key) */
 
       public:
         CCheckpointNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId);

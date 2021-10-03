@@ -230,6 +230,8 @@
     <ClCompile Include="..\_source\source\scenenodes\CMarbleGPSceneNodeFactoryEditor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CPhysicsNode.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CRespawnNode.cpp" />
+    <ClCompile Include="..\_source\source\scenenodes\CRespawnNode_Editor.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
     <ClCompile Include="..\_source\source\scenenodes\CStartingGridSceneNode_Base.cpp" />
@@ -301,6 +303,8 @@
     <ClInclude Include="..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
     <ClInclude Include="..\_source\include\scenenodes\CMyCameraAnimator.h" />
     <ClInclude Include="..\_source\include\scenenodes\CPhysicsNode.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CRespawnNode.h" />
+    <ClInclude Include="..\_source\include\scenenodes\CRespawnNode_Editor.h" />
     <ClInclude Include="..\_source\include\scenenodes\CSkyBoxFix.h" />
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode.h" />
     <ClInclude Include="..\_source\include\scenenodes\CStartingGridSceneNode_Base.h" />

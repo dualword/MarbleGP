@@ -52,8 +52,6 @@ namespace dustbin {
       for (std::map<irr::s32, std::vector<irr::s32> >::const_iterator it = m_mLinks.begin(); it != m_mLinks.end(); it++) {
         a_pOut->addInt((std::string("Previous_") + std::to_string(l_iPrev)).c_str(), it->first);
 
-        l_iPrev++;
-
         int i = 1;
         for (std::vector<irr::s32>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
           std::string l_sName = "Next_" + std::to_string(it->first) + "_" + std::to_string(i);
@@ -64,6 +62,19 @@ namespace dustbin {
         }
 
         a_pOut->addInt((std::string("Next_") + std::to_string(it->first) + "_" + std::to_string(it->second.size() + 1)).c_str(), -1);
+
+        std::string l_sRespawn = "Respawn_" + std::to_string(it->first);
+
+        if (m_mRespawn.find(it->first) != m_mRespawn.end()) {
+          irr::s32 l_iKey   = it->first,
+                   l_iValue = m_mRespawn.find(it->first)->second;
+
+          a_pOut->addInt(l_sRespawn.c_str(), l_iValue);
+        }
+        else
+          a_pOut->addInt(l_sRespawn.c_str(), -1);
+
+        l_iPrev++;
       }
 
       if (m_bFirstInLap && m_mLinks.find(0) == m_mLinks.end()) {
@@ -100,6 +111,8 @@ namespace dustbin {
       int l_iPrev = m_bFirstInLap ? 0 : 1;
       std::string l_sName = "Previous_" + std::to_string(l_iPrev);
 
+      m_mRespawn.clear();
+
       while (a_pIn->existsAttribute(l_sName.c_str())) {
         int l_iId = a_pIn->getAttributeAsInt(l_sName.c_str());
         m_mLinks[l_iId] = std::vector<int>();
@@ -119,6 +132,14 @@ namespace dustbin {
 
         l_iPrev++;
         l_sName = "Previous_" + std::to_string(l_iPrev);
+
+        std::string l_sRespawn = "Respawn_" + std::to_string(l_iId);
+
+        if (a_pIn->existsAttribute(l_sRespawn.c_str())) {
+          irr::s32 l_iRespawn = a_pIn->getAttributeAsInt(l_sRespawn.c_str());
+          if (l_iRespawn != -1)
+            m_mRespawn[l_iId] = l_iRespawn;
+        }
       }
 
       if (m_bFirstInLap) {
