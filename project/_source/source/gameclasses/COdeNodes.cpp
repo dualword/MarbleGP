@@ -2,6 +2,7 @@
 #include <gameclasses/ITriggerHandler.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CPhysicsNode.h>
+#include <scenenodes/CRespawnNode.h>
 #include <gameclasses/COdeNodes.h>
 #include <CGlobal.h>
 
@@ -99,6 +100,9 @@ namespace dustbin {
 
     CObjectCheckpoint::CObjectCheckpoint(scenenodes::CCheckpointNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) :
       CObject(enObjectType::Checkpoint, reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName),
+      m_vRespawnDir(irr::core::vector3df()),
+      m_vRespawnPos(irr::core::vector3df()),
+      m_bHasRespawn(false),
       m_bLapStart(false)
     {
       a_pWorld->m_vObjects.push_back(new CObjectTrimesh(reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName + "_trimesh"));
@@ -109,19 +113,21 @@ namespace dustbin {
       a_pWorld->m_vObjects.push_back(p);
       a_pWorld->m_mCheckpoints[a_pNode->getID()] = this;
 
-      m_bLapStart = a_pNode->isFirstInLap();
+      m_bLapStart = a_pNode->m_bFirstInLap;
 
-      if (m_bLapStart) {
-        for (std::vector<int>::iterator it = a_pNode->m_vFinishLapIDs.begin(); it != a_pNode->m_vFinishLapIDs.end(); it++)
-          m_vFinishLapIDs.push_back(*it);
-      }
+      for (std::vector<int>::iterator it = a_pNode->m_vLinks.begin(); it != a_pNode->m_vLinks.end(); it++)
+        m_vNext.push_back(*it);
 
-      for (std::map<int, std::vector<int>>::iterator it = a_pNode->m_mLinks.begin(); it != a_pNode->m_mLinks.end(); it++) {
-        m_mNext[it->first] = std::vector<int>();
+      irr::scene::ISceneNode *l_pNode = a_pNode->getSceneManager()->getSceneNodeFromId(a_pNode->m_iRespawn);
 
-        for (std::vector<int>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
-          m_mNext[it->first].push_back(*it2);
-        }
+      if (l_pNode != nullptr && l_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RespawnNodeId) {
+        m_bHasRespawn = true;
+
+        scenenodes::CRespawnNode* l_pRespawn = reinterpret_cast<scenenodes::CRespawnNode*>(l_pNode);
+
+        l_pRespawn->updateAbsolutePosition();
+        m_vRespawnPos = l_pRespawn->getAbsolutePosition() + irr::core::vector3df(0.0f, 2.25f, 0.0f);
+        m_vRespawnDir = l_pRespawn->getRotation().rotationToDirection(irr::core::vector3df(0.0f, 0.0f, 10.0f));
       }
     }
 

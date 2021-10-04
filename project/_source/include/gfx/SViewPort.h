@@ -8,6 +8,10 @@
 #endif
 
 namespace dustbin {
+  namespace gameclasses {
+    struct SMarbleNodes;
+  }
+
   namespace gfx {
 
     /**
@@ -22,6 +26,8 @@ namespace dustbin {
                                     m_iLastCp;  /**< The last Checkpoint the player has passed. Necessary to update the textures of the checkpoints */
       irr::scene::ISceneNode*       m_pMarble;  /**< The marble of the player */
       irr::scene::ICameraSceneNode* m_pCamera;  /**< The camera of the viewport */
+
+      gameclasses::SMarbleNodes* m_pPlayer;   /**< Pointer to the player of the viewport */
 
       /**
       * A list of the possible next checkpoints for the player of this viewport.
@@ -43,6 +49,7 @@ namespace dustbin {
         m_iPlayer = a_iPlayer;
         m_pMarble = a_pMarble;
         m_pCamera = a_pCamera;
+        m_pPlayer = nullptr;
         m_iLastCp = 0;
       }
 
@@ -54,6 +61,7 @@ namespace dustbin {
         m_iLastCp = 0;
         m_pMarble = nullptr;
         m_pCamera = nullptr;
+        m_pPlayer = nullptr;
       }
     };
   }

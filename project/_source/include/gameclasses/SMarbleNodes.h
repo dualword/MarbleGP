@@ -20,6 +20,18 @@ namespace dustbin {
     * of all scene nodes that define a marble
     */
     struct SMarbleNodes {
+      enum class enMarbleState {
+        Rolling,
+        Stunned,
+        Respawn1,
+        Respawn2,
+        Finished
+      };
+
+      enMarbleState m_eState; /**< The state of the marble */
+
+      int m_iStateChange;   /**< The step of the last state change */
+
       /**
        * The empty scene node that acts as root node. A rotation might be applied
        * to this node to correct the starting number direction

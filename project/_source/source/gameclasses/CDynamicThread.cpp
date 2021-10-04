@@ -164,36 +164,25 @@ namespace dustbin {
                   if (*it == c->m_iId && l_pWorld->m_mCheckpoints.find(c->m_iId) != l_pWorld->m_mCheckpoints.end()) {
                     CObjectCheckpoint* l_pCp = l_pWorld->m_mCheckpoints[c->m_iId];
 
-                    // ... then we see if this is a possible next checkpoint for the marble ...
-                    if (l_pCp->m_mNext.find(p->m_iLastCp) != l_pCp->m_mNext.end()) {
-                      l_pWorld->handleCheckpoint(p->m_iId, c->m_iId);
+                    l_pWorld->handleCheckpoint(p->m_iId, c->m_iId);
 
-                      // ... then we update the next checkpoints vector
-                      p->m_vNextCheckpoints.clear();
-
-                      for (std::vector<int>::iterator it = l_pCp->m_mNext[p->m_iLastCp].begin(); it != l_pCp->m_mNext[p->m_iLastCp].end(); it++) {
-                        p->m_vNextCheckpoints.push_back(*it);
-                      }
-
-                      if (l_pCp->m_bLapStart) {
-                        if (p->m_iLastCp == 0) {
-                          p->m_iLapNo++;
-                          l_pWorld->handleLapStart(p->m_iId, p->m_iLapNo);
-                        }
-                        else {
-                          for (std::vector<int>::iterator it = l_pCp->m_vFinishLapIDs.begin(); it != l_pCp->m_vFinishLapIDs.end(); it++) {
-                            if (p->m_iLastCp == *it) {
-                              p->m_iLapNo++;
-                              l_pWorld->handleLapStart(p->m_iId, p->m_iLapNo);
-                              break;
-                            }
-                          }
-                        }
-                      }
-
-                      p->m_iLastCp = c->m_iId;
-                      break;
+                    if (l_pCp->m_bLapStart) {
+                      p->m_iLapNo++;
+                      l_pWorld->handleLapStart(p->m_iId, p->m_iLapNo);
                     }
+                    p->m_iLastCp = c->m_iId;
+
+                    p->m_vNextCheckpoints.clear();
+
+                    if (l_pCp->m_bHasRespawn) {
+                      p->m_vRespawnPos = l_pCp->m_vRespawnPos;
+                      p->m_vRespawnDir = l_pCp->m_vRespawnDir;
+                    }
+
+                    for (std::vector<int>::iterator it2 = l_pCp->m_vNext.begin(); it2 != l_pCp->m_vNext.end(); it2++)
+                      p->m_vNextCheckpoints.push_back(*it2);
+
+                    break;
                   }
                 }
               }
@@ -287,6 +276,16 @@ namespace dustbin {
 
               // Marble Class Param: Steer Factor and Thrust Factor
               irr::core::vector2df l_vSteer = irr::core::vector2df(1.0f * l_fCtrlX, 0.5f * l_fCtrlY);
+
+              // Marble Class Param: Max Steer Speed
+              irr::f32 l_fSpeed  = m_aMarbles[i]->m_vVelocity.getLength(),
+                       l_fFactor = (l_fSpeed / 30.0f) + 0.2f;
+
+              if (l_fFactor > 1.0f)
+                l_fFactor = 1.0f;
+
+              l_vSteer.X *= l_fFactor;
+
               l_vSteer.normalize();
 
               // Marble Class Param: Steer Power and Thrust
@@ -445,6 +444,9 @@ namespace dustbin {
                   p->m_iStunnedStart = -1;
                   p->m_vPosition     = p->m_vRespawnPos;
                   p->m_vOffset       = p->m_vRespawnDir;
+                  p->m_vVelocity     = irr::core::vector3df(0.0f);
+                  p->m_vUpVector     = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+                  p->m_vUpOffset     = irr::core::vector3df(0.0f, 1.0f, 0.0f);
                   p->m_vCamera       = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
                   p->m_vRearview     = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
                   p->m_vSideVector   = p->m_vOffset.crossProduct(p->m_vUpOffset);
@@ -494,7 +496,7 @@ namespace dustbin {
           else {
             int l_iStep = m_iWorldStep - 360;
 
-            /*if (l_iStep == 120) {
+            if (l_iStep == 120) {
               sendCountdown(3, m_pOutputQueue);
             }
             else if (l_iStep == 240) {
@@ -503,7 +505,7 @@ namespace dustbin {
             else if (l_iStep == 360) {
               sendCountdown(1, m_pOutputQueue);
             }
-            else if (l_iStep == 480)*/ {
+            else if (l_iStep == 480) {
               sendCountdown(0, m_pOutputQueue);
               m_eGameState = enGameState::Racing;
 

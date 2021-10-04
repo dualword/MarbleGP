@@ -256,11 +256,9 @@ namespace dustbin {
     m_pFontFace->drop();
 
     m_pGui->clear();
-    m_pDrv->removeAllTextures();
 
     CGlobal::m_pInstance = nullptr;
 
-    m_pDevice->closeDevice();
     m_pDevice->run();
     m_pDevice->drop();
   }

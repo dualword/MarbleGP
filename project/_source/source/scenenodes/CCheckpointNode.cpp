@@ -45,53 +45,17 @@ namespace dustbin {
 
       a_pOut->addBool("FirstInLap", m_bFirstInLap);
 
-      // If a checkpoint is marked as "First in Lap"
-      // counting starts at "0"
-      int l_iPrev = m_bFirstInLap ? 0 : 1;
+      int l_iNext = 1;
 
-      for (std::map<irr::s32, std::vector<irr::s32> >::const_iterator it = m_mLinks.begin(); it != m_mLinks.end(); it++) {
-        a_pOut->addInt((std::string("Previous_") + std::to_string(l_iPrev)).c_str(), it->first);
-
-        int i = 1;
-        for (std::vector<irr::s32>::const_iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
-          std::string l_sName = "Next_" + std::to_string(it->first) + "_" + std::to_string(i);
-
-          a_pOut->addInt(l_sName.c_str(), *it2);
-
-          i = i + 1;
-        }
-
-        a_pOut->addInt((std::string("Next_") + std::to_string(it->first) + "_" + std::to_string(it->second.size() + 1)).c_str(), -1);
-
-        std::string l_sRespawn = "Respawn_" + std::to_string(it->first);
-
-        if (m_mRespawn.find(it->first) != m_mRespawn.end()) {
-          irr::s32 l_iKey   = it->first,
-                   l_iValue = m_mRespawn.find(it->first)->second;
-
-          a_pOut->addInt(l_sRespawn.c_str(), l_iValue);
-        }
-        else
-          a_pOut->addInt(l_sRespawn.c_str(), -1);
-
-        l_iPrev++;
+      for (std::vector<irr::s32>::const_iterator it = m_vLinks.begin(); it != m_vLinks.end(); it++) {
+        std::string l_sName = "Next_" + std::to_string(l_iNext);
+        a_pOut->addInt(l_sName.c_str(), *it);
+        l_iNext++;
       }
 
-      if (m_bFirstInLap && m_mLinks.find(0) == m_mLinks.end()) {
-        a_pOut->addInt("Previous_0", 0);
-        a_pOut->addInt("Next_0_1", -1);
-      }
+      a_pOut->addInt((std::string("Next_") + std::to_string(l_iNext)).c_str(), -1);
 
-      if (m_bFirstInLap) {
-        int i = 1;
-
-        for (std::vector<int>::const_iterator it = m_vFinishLapIDs.begin(); it != m_vFinishLapIDs.end(); it++) {
-          a_pOut->addInt((std::string("FinishLap_") + std::to_string(i)).c_str(), *it);
-          i++;
-        }
-
-        a_pOut->addInt((std::string("FinishLap_") + std::to_string(i)).c_str(), -1);
-      }
+      a_pOut->addInt("Respawn", m_iRespawn);
     }
 
     void CCheckpointNode::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
@@ -104,60 +68,24 @@ namespace dustbin {
       if (a_pIn->existsAttribute("FirstInLap"))
         m_bFirstInLap = a_pIn->getAttributeAsBool("FirstInLap");
 
-      m_mLinks.clear();
+      
+      int l_iNext = 1;
 
-      // If a checkpoint is marked as "First in Lap"
-      // counting starts at "0"
-      int l_iPrev = m_bFirstInLap ? 0 : 1;
-      std::string l_sName = "Previous_" + std::to_string(l_iPrev);
+      m_vLinks.clear();
 
-      m_mRespawn.clear();
+      while (true) {
+        std::string l_sName = "Next_" + std::to_string(l_iNext++);
 
-      while (a_pIn->existsAttribute(l_sName.c_str())) {
-        int l_iId = a_pIn->getAttributeAsInt(l_sName.c_str());
-        m_mLinks[l_iId] = std::vector<int>();
-
-        int l_iNext = 1;
-        std::string l_sNext = "Next_" + std::to_string(l_iId) + "_" + std::to_string(l_iNext);
-
-        while (a_pIn->existsAttribute(l_sNext.c_str())) {
-          int l_iNextId = a_pIn->getAttributeAsInt(l_sNext.c_str());
-
-          if (l_iNextId != -1)
-            m_mLinks[l_iId].push_back(l_iNextId);
-
-          l_iNext++;
-          l_sNext = "Next_" + std::to_string(l_iId) + "_" + std::to_string(l_iNext);
-        }
-
-        l_iPrev++;
-        l_sName = "Previous_" + std::to_string(l_iPrev);
-
-        std::string l_sRespawn = "Respawn_" + std::to_string(l_iId);
-
-        if (a_pIn->existsAttribute(l_sRespawn.c_str())) {
-          irr::s32 l_iRespawn = a_pIn->getAttributeAsInt(l_sRespawn.c_str());
-          if (l_iRespawn != -1)
-            m_mRespawn[l_iId] = l_iRespawn;
-        }
-      }
-
-      if (m_bFirstInLap) {
-        m_vFinishLapIDs.clear();
-
-        int i = 1;
-
-        std::string l_sName = (std::string("FinishLap_") + std::to_string(i));
-
-        while (a_pIn->existsAttribute(l_sName.c_str())) {
+        if (a_pIn->existsAttribute(l_sName.c_str())) {
           int l_iId = a_pIn->getAttributeAsInt(l_sName.c_str());
-          if (l_iId != -1)
-            m_vFinishLapIDs.push_back(l_iId);
-
-          i++;
-          l_sName = (std::string("FinishLap_") + std::to_string(i));
-        };
+          if (l_iId != -1) {
+            m_vLinks.push_back(l_iId);
+          }
+        }
+        else break;
       }
+
+      m_iRespawn = a_pIn->getAttributeAsInt("Respawn");
 
       sceneNodeIdUsed(getID());
     }
@@ -172,19 +100,6 @@ namespace dustbin {
 
       l_pNew->drop();
       return l_pNew;
-    }
-
-    /**
-    * Register a previous node
-    * @param a_iId ID of the previous node
-    */
-    void CCheckpointNode::addPreviousNode(int a_iId) {
-      if (m_mLinks.find(a_iId) == m_mLinks.end())
-        m_mLinks[a_iId] = std::vector<int>();
-    }
-
-    bool CCheckpointNode::isFirstInLap() {
-      return m_bFirstInLap;
     }
   }
 }

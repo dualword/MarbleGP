@@ -43,6 +43,12 @@ namespace dustbin {
     */
     class CGameState : public IState, public messages::IGameState {
       private:
+        enum class enGameState {
+          Countdown,
+          Racing,
+          Finished
+        };
+
         irr::scene::ISceneManager* m_pSgmr;
         irr::video::IVideoDriver * m_pDrv;
         irr::gui::IGUIEnvironment* m_pGui;
@@ -52,6 +58,8 @@ namespace dustbin {
         threads::COutputQueue* m_pOutputQueue;
 
         int m_iStep;
+
+        enGameState m_eState;
 
         CGlobal* m_pGlobal;
         

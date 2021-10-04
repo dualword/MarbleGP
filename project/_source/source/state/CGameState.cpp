@@ -24,6 +24,7 @@ namespace dustbin {
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()),
       m_pFs(CGlobal::getInstance()->getFileSystem()),
+      m_eState(enGameState::Countdown),
       m_pOutputQueue(nullptr),
       m_pInputQueue(nullptr),
       m_pDynamics(nullptr),
@@ -47,6 +48,7 @@ namespace dustbin {
       m_iStep = 0;
 
       m_pGlobal->getIrrlichtDevice()->setResizable(false);
+      m_pGlobal->getIrrlichtDevice()->getCursorControl()->setVisible(false);
 
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
@@ -162,10 +164,11 @@ namespace dustbin {
 
           m_mViewports[(*it).m_playerid] = gfx::SViewPort(irr::core::recti(l_cUpperLeft, l_cLowerRight), (*it).m_playerid, l_pMarble->m_pPositional, l_pCam);
           l_pMarble->m_pViewport = &m_mViewports[(*it).m_playerid];
+          m_mViewports[(*it).m_playerid].m_pPlayer = l_pMarble;
 
           // Initialize the viewport with the lap start checkpoints
           for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
-            if (it->second->isFirstInLap() && it->second->getParent() != nullptr && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
+            if (it->second->m_bFirstInLap && it->second->getParent() != nullptr && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
               l_pMarble->m_pViewport->m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode*>(it->second->getParent()));
             }
           }
@@ -271,6 +274,7 @@ namespace dustbin {
     */
     void CGameState::deactivate() {
       m_pGlobal->getIrrlichtDevice()->setResizable(true);
+      m_pGlobal->getIrrlichtDevice()->getCursorControl()->setVisible(true);
 
       if (m_pDynamics != nullptr) {
         m_pDynamics->stopThread();
@@ -502,9 +506,51 @@ namespace dustbin {
           beforeDrawScene(&it->second);
           m_pShader->renderScene(it->second.m_cRect);
           afterDrawScene(&it->second);
+
+          if (it->second.m_pPlayer != nullptr && it->second.m_pPlayer->m_iStateChange != -1) {
+            switch (it->second.m_pPlayer->m_eState) {
+              // Fade the viewport out and in if the player is respawning
+              case gameclasses::SMarbleNodes::enMarbleState::Respawn1:
+              case gameclasses::SMarbleNodes::enMarbleState::Respawn2: {
+                int l_iStepSince = m_iStep - it->second.m_pPlayer->m_iStateChange;
+                irr::f32 l_fFactor = 1.0f;
+
+                if (l_iStepSince < 120) {
+                  l_fFactor = ((irr::f32)l_iStepSince) / 120.0f;
+                  if (l_fFactor > 1.0f)
+                    l_fFactor = 1.0f;
+                }
+
+                if (it->second.m_pPlayer->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2)
+                  l_fFactor = 1.0f - l_fFactor;
+
+                m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
+
+                break;
+              }
+
+              // Blue overlay for stunned players
+              case gameclasses::SMarbleNodes::enMarbleState::Stunned:
+                m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), it->second.m_cRect);
+                break;
+            }
+          }
         }
       }
       m_pGui->drawAll();
+
+      if (m_eState == enGameState::Countdown) {
+        irr::f32 l_fFade = 0.0f;
+
+        if (m_iStep < 120)
+          l_fFade = 1.0f;
+        else
+          l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
+
+        if (l_fFade > 0.0f)
+          m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
+      }
+
       m_pDrv->endScene();
       m_pDrv->setRenderTarget(0, false, false);
 
@@ -527,6 +573,8 @@ namespace dustbin {
      */
     void CGameState::onCountdown(irr::u8 a_Tick) {
       printf("On Countdown: %i\n", a_Tick);
+      if (a_Tick == 0)
+        m_eState = enGameState::Racing;
     }
 
     /**
@@ -598,10 +646,16 @@ namespace dustbin {
 
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
 
-        if (a_State == 1)
+        if (a_State == 1) {
           p->m_bCamLink = false;
-        else
+          p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn1;
+          p->m_iStateChange = m_iStep;
+        }
+        else {
           p->m_bCamLink = true;
+          p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
+          p->m_iStateChange = -1;
+        }
       }
     }
 
@@ -616,10 +670,16 @@ namespace dustbin {
         irr::s32 l_iIndex = a_MarbleId - 10000;
 
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
-        if (p->m_pViewport != nullptr && p->m_pViewport->m_pCamera != nullptr) {
-          p->m_pViewport->m_pCamera->setPosition(a_Position);
-          p->m_pViewport->m_pCamera->setTarget(a_Target);
-          p->m_pViewport->m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+
+        if (p != nullptr) {
+          if (p->m_pViewport != nullptr && p->m_pViewport->m_pCamera != nullptr) {
+            p->m_pViewport->m_pCamera->setPosition(a_Position);
+            p->m_pViewport->m_pCamera->setTarget(a_Target);
+            p->m_pViewport->m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+          }
+
+          p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn2;
+          p->m_iStateChange = m_iStep;
         }
       }
     }
@@ -631,6 +691,21 @@ namespace dustbin {
      */
     void CGameState::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
       printf("onPlayerStunned: %i, %i\n", a_MarbleId, a_State);
+      if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
+        irr::s32 l_iIndex = a_MarbleId - 10000;
+        gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
+
+        if (p != nullptr) {
+          if (a_State == 1) {
+            p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Stunned;
+            p->m_iStateChange = m_iStep;
+          }
+          else {
+            p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
+            p->m_iStateChange = -1;
+          }
+        }
+      }
     }
 
     /**
@@ -666,13 +741,11 @@ namespace dustbin {
           afterDrawScene(l_pViewport);
           l_pViewport->m_vNextCheckpoints.clear();
 
-          if (m_mCheckpoints.find(a_Checkpoint) != m_mCheckpoints.end() && m_mCheckpoints[a_Checkpoint]->m_mLinks.find(l_pViewport->m_iLastCp) != m_mCheckpoints[a_Checkpoint]->m_mLinks.end()) {
-            for (std::vector<int>::iterator it = m_mCheckpoints[a_Checkpoint]->m_mLinks[l_pViewport->m_iLastCp].begin(); it != m_mCheckpoints[a_Checkpoint]->m_mLinks[l_pViewport->m_iLastCp].end(); it++) {
-              if (m_mCheckpoints.find(*it) != m_mCheckpoints.end()) {
-                scenenodes::CCheckpointNode* p = m_mCheckpoints[*it];
-                if (p->getParent() != nullptr && p->getParent()->getType() == irr::scene::ESNT_MESH) {
-                  l_pViewport->m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode*>(p->getParent()));
-                }
+          for (std::vector<int>::iterator it = m_mCheckpoints[a_Checkpoint]->m_vLinks.begin(); it != m_mCheckpoints[a_Checkpoint]->m_vLinks.end(); it++) {
+            if (m_mCheckpoints.find(*it) != m_mCheckpoints.end()) {
+              scenenodes::CCheckpointNode* p = m_mCheckpoints[*it];
+              if (p->getParent() != nullptr && p->getParent()->getType() == irr::scene::ESNT_MESH) {
+                l_pViewport->m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode*>(p->getParent()));
               }
             }
           }

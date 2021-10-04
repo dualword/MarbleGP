@@ -128,9 +128,12 @@ namespace dustbin {
         CObjectCheckpoint(scenenodes::CCheckpointNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName);
         virtual ~CObjectCheckpoint();
 
-        std::map<int, std::vector<int>> m_mNext;
-        bool m_bLapStart;
-        std::vector<int> m_vFinishLapIDs;
+        std::vector<int> m_vNext;   /**< The IDs of the next checkpoints */
+        bool m_bLapStart,           /**< Does this checkpoint mark the start of a lap? */
+             m_bHasRespawn;         /**< Was a respawn node found? */
+
+        irr::core::vector3df m_vRespawnPos, /**< Respawn position (if m_bHasRespawn == true) */
+                             m_vRespawnDir; /**< Respawn direction (if m_bHasRespawn == true) */
     };
 
     /**

@@ -8,6 +8,7 @@
 
 #include <scenenodes/CCheckpointNode_Editor.h>
 #include <scenenodes/CRespawnNode.h>
+#include <algorithm>
 
 namespace dustbin {
   namespace scenenodes {
@@ -15,7 +16,7 @@ namespace dustbin {
 
     CCheckpointNode_Editor::CCheckpointNode_Editor(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) :
       CCheckpointNode(a_pParent, a_pMgr, a_iId),
-      m_iShowLinks(-1)
+      m_bShowLinks(false)
     {
     }
 
@@ -26,7 +27,7 @@ namespace dustbin {
     }
 
     void CCheckpointNode_Editor::OnRegisterSceneNode() {
-      if (IsVisible && m_mLinks.find(m_iShowLinks) != m_mLinks.end())
+      if (IsVisible && m_bShowLinks)
         SceneManager->registerNodeForRendering(this, irr::scene::ESNRP_SOLID);
 
       ISceneNode::OnRegisterSceneNode();
@@ -35,24 +36,21 @@ namespace dustbin {
     void CCheckpointNode_Editor::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       CCheckpointNode::serializeAttributes(a_pOut, a_pOptions);
 
-      a_pOut->addInt("ShowLinks", m_iShowLinks);
+      a_pOut->addBool("ShowLinks", m_bShowLinks);
     }
 
     void CCheckpointNode_Editor::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       CCheckpointNode::deserializeAttributes(a_pIn, a_pOptions);
 
       if (a_pIn->existsAttribute("ShowLinks")) {
-        int l_iShowLinks = a_pIn->getAttributeAsInt("ShowLinks");
+        bool l_bShowLinks = a_pIn->getAttributeAsBool("ShowLinks");
 
-        if (l_iShowLinks != m_iShowLinks) {
-          for (std::map<irr::s32, std::vector<irr::scene::ISceneNode*>>::iterator it = m_mLinkMeshes.begin(); it != m_mLinkMeshes.end(); it++) {
-            for (std::vector<irr::scene::ISceneNode*>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++)
-              (*it2)->setVisible(it->first == l_iShowLinks);
-          }
-          m_iShowLinks = l_iShowLinks;
+        if (l_bShowLinks != m_bShowLinks) {
+
+          m_bShowLinks = l_bShowLinks;
         }
       }
-      else m_iShowLinks = -1;
+      else m_bShowLinks = false;
 
       updateAbsolutePosition();
       getParent()->updateAbsolutePosition();
@@ -60,81 +58,91 @@ namespace dustbin {
       m_cBox.reset(getAbsolutePosition());
       m_cBox.addInternalPoint(getParent()->getTransformedBoundingBox().getCenter());
 
-      irr::core::vector3df l_cPos   = getParent()->getTransformedBoundingBox().getCenter(),
-                           l_cScale = getParent()->getScale();
+      if (m_bShowLinks) {
+        irr::core::vector3df l_cPos   = getParent()->getTransformedBoundingBox().getCenter(),
+                             l_cScale = getParent()->getScale();
 
-      for (std::map<irr::s32, std::vector<irr::s32> >::iterator it = m_mLinks.begin(); it != m_mLinks.end(); it++) {
-        for (std::vector<int>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
-          irr::scene::ISceneNode* l_pNext = SceneManager->getSceneNodeFromId(*it2);
-          if (l_pNext != nullptr && l_pNext->getType() == (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId) {
-            CCheckpointNode* p = reinterpret_cast<CCheckpointNode*>(l_pNext);
-            p->addPreviousNode(this->getID());
+        // first of all we create a vector with all link mesh IDs
+        std::vector<irr::s32> l_vLinkMeshes;
 
-            if (m_mLinkMeshes.find(*it2) == m_mLinkMeshes.end()) {
+        for (std::map<irr::s32, irr::scene::ISceneNode*>::iterator it = m_mLinkMeshes.begin(); it != m_mLinkMeshes.end(); it++)
+          l_vLinkMeshes.push_back(it->first);
+
+        // Next we iterate all the links of the checkpoint
+        for (std::vector<irr::s32>::iterator it = m_vLinks.begin(); it != m_vLinks.end(); it++) {
+          if (m_mLinkMeshes.find(*it) == m_mLinkMeshes.end()) {
+            irr::scene::ISceneNode* l_pLinked = SceneManager->getSceneNodeFromId(*it);
+            if (l_pLinked != nullptr) {
               irr::scene::IMesh* l_pMesh = SceneManager->getMesh("data/objects/Link.3ds");
               if (l_pMesh != nullptr) {
                 irr::scene::ISceneNode* l_pNode = SceneManager->addMeshSceneNode(l_pMesh, this);
-
-                irr::core::vector3df l_cNextPos = l_pNext->getParent()->getTransformedBoundingBox().getCenter();
-
-                irr::core::vector3df l_cDiff = l_cPos - l_cNextPos,
-                                     l_cRot  = l_cDiff.getHorizontalAngle();
-
-                irr::f32 l_fLength = l_cDiff.getLength();
-
-                l_pNode->setRotation(l_cRot - getParent()->getRotation());
-                l_pNode->setPosition((l_cPos - getAbsolutePosition()) / getParent()->getScale());
-                l_pNode->setScale(irr::core::vector3df(3.0f, 3.0f, l_fLength) / l_cScale);
                 l_pNode->setIsDebugObject(true);
-                l_pNode->setVisible(m_iShowLinks == it->first);
-
-                if (m_mLinkMeshes.find(it->first) == m_mLinkMeshes.end())
-                  m_mLinkMeshes[it->first] = std::vector<irr::scene::ISceneNode*>();
-
-                m_mLinkMeshes[it->first].push_back(l_pNode);
+                m_mLinkMeshes[*it] = l_pNode;
+                m_cBox.reset(getPosition());
+                m_cBox.addInternalBox(l_pNode->getBoundingBox());
+              }
+            }
+          }
+          else {
+            // Remove the ID from the local vector of all the link IDs
+            for (std::vector<irr::s32>::iterator it2 = l_vLinkMeshes.begin(); it2 != l_vLinkMeshes.end(); it2++) {
+              if (*it2 == *it) {
+                l_vLinkMeshes.erase(it2);
+                break;
               }
             }
           }
         }
 
-        for (std::map<irr::s32, irr::s32>::iterator it = m_mRespawn.begin(); it != m_mRespawn.end(); it++) {
-          irr::scene::ISceneNode* l_pRespawn = SceneManager->getSceneNodeFromId(it->second);
-          if (l_pRespawn != nullptr && l_pRespawn->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RespawnNodeId && m_mLinkMeshes.find(it->second) == m_mLinkMeshes.end()) {
+        irr::scene::ISceneNode* l_pRespawn = SceneManager->getSceneNodeFromId(m_iRespawn);
+
+        if (l_pRespawn != nullptr) {
+          for (std::vector<irr::s32>::iterator it = l_vLinkMeshes.begin(); it != l_vLinkMeshes.end(); it++) {
+            if (*it == m_iRespawn) {
+              l_vLinkMeshes.erase(it);
+              break;
+            }
+          }
+
+          if (m_mLinkMeshes.find(m_iRespawn) == m_mLinkMeshes.end()) {
             irr::scene::IMesh* l_pMesh = SceneManager->getMesh("data/objects/Link.3ds");
             if (l_pMesh != nullptr) {
               irr::scene::ISceneNode* l_pNode = SceneManager->addMeshSceneNode(l_pMesh, this);
-
-              irr::core::vector3df l_cRespawnPos = l_pRespawn->getTransformedBoundingBox().getCenter(),
-                                   l_cDiff       = l_cPos - l_cRespawnPos,
-                                   l_cRot        = l_cDiff.getHorizontalAngle();
-
-              irr::f32 l_fLength = l_cDiff.getLength();
-
-              l_pNode->setRotation(l_cRot - getParent()->getRotation());
-              l_pNode->setPosition((l_cPos - getAbsolutePosition()) / getParent()->getScale());
-              l_pNode->setScale(irr::core::vector3df(3.0f, 3.0f, l_fLength) / l_cScale);
               l_pNode->setIsDebugObject(true);
-              l_pNode->setVisible(m_iShowLinks == it->first);
-
-              if (m_mLinkMeshes.find(it->second) == m_mLinkMeshes.end())
-                m_mLinkMeshes[it->second] = std::vector<irr::scene::ISceneNode*>();
-
-              m_mLinkMeshes[it->second].push_back(l_pNode);
+              m_mLinkMeshes[m_iRespawn] = l_pNode;
             }
           }
         }
-      }
-    }
 
-    /**
-    * Remove a previous node
-    * @param a_iId ID of the previous node
-    */
-    void CCheckpointNode_Editor::removePreviousNode(int a_iId) {
-      if (m_mLinkMeshes.find(a_iId) != m_mLinkMeshes.end()) {
-        for (std::vector<irr::scene::ISceneNode*>::iterator it = m_mLinkMeshes[a_iId].begin(); it != m_mLinkMeshes[a_iId].end(); it++) {
-          (*it)->setVisible(false);
-          SceneManager->addToDeletionQueue(*it);
+        // l_vLinkMeshes does now contain link nodes that are no longer used so we clean up m_mLinkMeshes
+        for (std::vector<irr::s32>::iterator it = l_vLinkMeshes.begin(); it != l_vLinkMeshes.end(); it++) {
+          if (m_mLinkMeshes.find(*it) != m_mLinkMeshes.end()) {
+            m_mLinkMeshes[*it]->setVisible(false);
+            SceneManager->addToDeletionQueue(m_mLinkMeshes[*it]);
+            m_mLinkMeshes.erase(*it);
+          }
+        }
+
+        // We need to adjust rotation and scaling of the link meshes
+        for (std::map<irr::s32, irr::scene::ISceneNode*>::iterator it = m_mLinkMeshes.begin(); it != m_mLinkMeshes.end(); it++) {
+          irr::scene::ISceneNode* l_pLinked = SceneManager->getSceneNodeFromId(it->first);
+          if (l_pLinked != nullptr) {
+            irr::core::vector3df l_cLinkPos  = l_pLinked->getType() == (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId ? l_pLinked->getParent()->getTransformedBoundingBox().getCenter() : l_pLinked->getAbsolutePosition() + irr::core::vector3df(0.0f, 10.0f, 0.0f),
+                                 l_cDiff     = l_cPos - l_cLinkPos,
+                                 l_cRotation = l_cDiff.getHorizontalAngle();
+
+            irr::f32 l_fLength = l_cDiff.getLength();
+
+            it->second->setRotation(l_cRotation - getParent()->getRotation());
+            it->second->setPosition(irr::core::vector3df(0.0f, 2.5f, 0.0f) / getParent()->getScale());
+            it->second->setScale(irr::core::vector3df(3.0f, 3.0f, l_fLength) / l_cScale);
+            it->second->setVisible(m_bShowLinks);
+          }
+        }
+      }
+      else {
+        for (std::map<irr::s32, irr::scene::ISceneNode*>::iterator it = m_mLinkMeshes.begin(); it != m_mLinkMeshes.end(); it++) {
+          it->second->setVisible(false);
         }
       }
     }
