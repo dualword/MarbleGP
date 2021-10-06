@@ -3,9 +3,13 @@
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
+#include <_generated/lua/lua_tables.h>
+#include <lua/CLuaSingleton_system.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/COdeNodes.h>
+#include <LuaBridge/LuaBridge.h>
+#include <lua/CLuaHelpers.h>
 #include <gfx/SViewPort.h>
 #include <exception>
 #include <CGlobal.h>
@@ -164,12 +168,12 @@ namespace dustbin {
                   if (*it == c->m_iId && l_pWorld->m_mCheckpoints.find(c->m_iId) != l_pWorld->m_mCheckpoints.end()) {
                     CObjectCheckpoint* l_pCp = l_pWorld->m_mCheckpoints[c->m_iId];
 
-                    l_pWorld->handleCheckpoint(p->m_iId, c->m_iId);
-
                     if (l_pCp->m_bLapStart) {
                       p->m_iLapNo++;
                       l_pWorld->handleLapStart(p->m_iId, p->m_iLapNo);
                     }
+                    l_pWorld->handleCheckpoint(p->m_iId, c->m_iId);
+
                     p->m_iLastCp = c->m_iId;
 
                     p->m_vNextCheckpoints.clear();
@@ -311,11 +315,20 @@ namespace dustbin {
                   p->m_eState = CObjectMarble::enMarbleState::Respawn1;
 
                   sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
+
+                  if (m_pState != nullptr) {
+                    luabridge::LuaRef l_cRespawn = luabridge::getGlobal(m_pState, "onPlayerRespawn");
+                    if (l_cRespawn.isCallable())
+                      l_cRespawn(p->m_iId, m_iWorldStep);
+                  }
                 }
               }
             }
             else if (p->m_eState == CObjectMarble::enMarbleState::Countdown) {
               dBodySetAngularDamping(p->m_cBody, (dReal)0.9);
+            }
+            else if (p->m_eState == CObjectMarble::enMarbleState::Finished) {
+              dBodySetAngularDamping(p->m_cBody, (dReal)0.1);
             }
           }
         }
@@ -345,6 +358,11 @@ namespace dustbin {
                 p->m_eState = CObjectMarble::enMarbleState::Stunned;
                 p->m_iStunnedStart = m_iWorldStep;
                 sendPlayerstunned(p->m_iId, 1, m_pOutputQueue);
+                if (m_pState != nullptr) {
+                  luabridge::LuaRef l_cRespawn = luabridge::getGlobal(m_pState, "onPlayerStunned");
+                  if (l_cRespawn.isCallable())
+                    l_cRespawn(p->m_iId, m_iWorldStep);
+                }
               }
 
               p->m_vVelocity = l_vLinVel;
@@ -490,23 +508,36 @@ namespace dustbin {
         }
 
         if (m_eGameState == enGameState::Countdown) {
+          auto LuaCountdown = [](int a_iTick, int a_iStep, lua_State* a_pState) {
+            if (a_pState != nullptr) {
+              luabridge::LuaRef l_cCountdown = luabridge::getGlobal(a_pState, "onCountdown");
+              if (l_cCountdown.isCallable())
+                l_cCountdown(a_iTick, a_iStep);
+            }
+          };
+
           if (m_iWorldStep == 0) {
             sendCountdown(4, m_pOutputQueue);
+            LuaCountdown(4, m_iWorldStep, m_pState);
           }
           else {
             int l_iStep = m_iWorldStep - 360;
 
             if (l_iStep == 120) {
               sendCountdown(3, m_pOutputQueue);
+              LuaCountdown(3, m_iWorldStep, m_pState);
             }
             else if (l_iStep == 240) {
               sendCountdown(2, m_pOutputQueue);
+              LuaCountdown(2, m_iWorldStep, m_pState);
             }
             else if (l_iStep == 360) {
               sendCountdown(1, m_pOutputQueue);
+              LuaCountdown(1, m_iWorldStep, m_pState);
             }
             else if (l_iStep == 480) {
               sendCountdown(0, m_pOutputQueue);
+              LuaCountdown(0, m_iWorldStep, m_pState);
               m_eGameState = enGameState::Racing;
 
               for (int i = 0; i < 16; i++) {
@@ -535,8 +566,9 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers) : 
+    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers, int a_iLaps) :
       m_eGameState(enGameState::Countdown),
+      m_pLuaSystem(nullptr),
       m_fGridAngle(0.0f),
       m_pWorld(nullptr),
       m_bPaused(false),
@@ -594,9 +626,58 @@ namespace dustbin {
           l_iIndex++;
         }
       }
+
+      m_pState = luaL_newstate();
+      luaL_openlibs(m_pState);
+      luabridge::enableExceptions(m_pState);
+
+      luabridge::getGlobalNamespace(m_pState)
+        .beginClass<CDynamicThread>("LuaDynamics")
+          .addFunction("finishplayer", &CDynamicThread::finishPlayer)
+        .endClass();
+
+      m_pLuaSystem = new lua::CLuaSingleton_system(m_pState);
+
+      std::error_code l_cError;
+      luabridge::push(m_pState, this, l_cError);
+      lua_setglobal(m_pState, "dynamics");
+
+      std::string l_sScript = lua::loadLuaScript("data/lua/gamelogics.lua");
+      if (luaL_dostring(m_pState, l_sScript.c_str()) != LUA_OK) {
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", lua_tostring(m_pState, -1));
+        CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running game logic LUA script");
+        throw std::exception();
+      }
+
+      try {
+        lua_getglobal(m_pState, "initialize");
+        if (!lua_isnil(m_pState, -1)) {
+          SRaceData l_cRace;
+          l_cRace.m_laps = a_iLaps;
+
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i] != nullptr)
+              l_cRace.m_marbles.push_back(m_aMarbles[i]->m_iId);
+          }
+
+          l_cRace.pushToStack(m_pState);
+
+          if (lua_pcall(m_pState, 1, 0, 0) != 0) {
+            printf("*** Script initialization failed.\n");
+          }
+        }
+      }
+      catch (luabridge::LuaException e) {
+        printf("*** Error while initializing dynamics LUA script.\n");
+      }
     }
 
     CDynamicThread::~CDynamicThread() {
+      lua_close(m_pState);
+
+      if (m_pLuaSystem != nullptr)
+        delete m_pLuaSystem;
+
       if (m_pWorld != nullptr)
         delete m_pWorld;
     }
@@ -658,6 +739,12 @@ namespace dustbin {
         m_aMarbles[l_iId]->m_iRespawnStart = m_iWorldStep;
 
         sendPlayerrespawn(a_iMarble, 1, m_pOutputQueue);
+
+        if (m_pState != nullptr) {
+          luabridge::LuaRef l_cRespawn = luabridge::getGlobal(m_pState, "onPlayerRespawn");
+          if (l_cRespawn.isCallable())
+            l_cRespawn(a_iMarble, m_iWorldStep);
+        }
       }
     }
 
@@ -668,6 +755,12 @@ namespace dustbin {
     */
     void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
+
+      if (m_pState != nullptr) {
+        luabridge::LuaRef l_cCheckpoint = luabridge::getGlobal(m_pState, "onCheckpoint");
+        if (l_cCheckpoint.isCallable())
+          l_cCheckpoint(a_iMarbleId, a_iCheckpoint, m_iWorldStep);
+      }
     }
 
     /**
@@ -676,7 +769,25 @@ namespace dustbin {
     * @param a_iLapNo Number of the started lap
     */
     void CDynamicThread::handleLapStart(int a_iMarbleId, int a_iLapNo) {
+      if (m_pState != nullptr) {
+        luabridge::LuaRef l_cRespawn = luabridge::getGlobal(m_pState, "onLapStart");
+        if (l_cRespawn.isCallable())
+          l_cRespawn(a_iMarbleId, a_iLapNo, m_iWorldStep);
+      }
+
       sendLapstart(a_iMarbleId, a_iLapNo, m_pOutputQueue);
+    }
+
+    /**
+    * LUA callback for finishing a player
+    * @param a_iMarbleId the id of the marbles that has finished the race
+    */
+    void CDynamicThread::finishPlayer(int a_iMarbleId, int a_iRaceTime, int a_iLaps) {
+      int l_iIndex = a_iMarbleId - 10000;
+      if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+        m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Finished;
+        sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
+      }
     }
   }
 }

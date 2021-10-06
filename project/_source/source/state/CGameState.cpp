@@ -246,7 +246,7 @@ namespace dustbin {
       l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSgmr->getRootSceneNode());
 
       if (l_pNode != nullptr) {
-        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers);
+        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, m_cChampionship.m_thisrace.m_laps);
         m_pInputQueue = new threads::CInputQueue();
         m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
         m_pOutputQueue = new threads::COutputQueue();
@@ -715,7 +715,15 @@ namespace dustbin {
      * @param a_Laps The number of laps the player has done
      */
     void CGameState::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+      if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
+        irr::s32 l_iIndex = a_MarbleId - 10000;
+        gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
 
+        if (p != nullptr) {
+          p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Finished;
+          p->m_bCamLink = false;
+        }
+      }
     }
 
     /**

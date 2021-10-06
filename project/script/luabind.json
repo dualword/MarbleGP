@@ -124,6 +124,13 @@
         { "name": "thisrace" , "type": "SRace"                   , "comment": "The current race. Needs to be filled before the race is started and it's result will be filled after the race has finished" },
         { "name": "viewports", "type": "std::vector<SViewPort>"  , "comment": "The viewports for the game" }
       ]
+    },
+    "SRaceData": {
+      "comment": "This data structure is used for communication between the dynamics thread and it's LUA script",
+      "fields": [
+        { "name": "laps"   , "type": "int"             , "comment": "The number of laps of the race" },
+        { "name": "marbles", "type": "std::vector<int>", "comment": "A vector with all the marbles of the race" }
+      ]
     }
   }
 }

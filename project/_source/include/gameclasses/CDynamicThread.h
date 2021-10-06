@@ -12,10 +12,15 @@
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/SPlayer.h>
 #include <threads/IThread.h>
+#include <lua.hpp>
 #include <vector>
 #include <chrono>
 
 namespace dustbin {
+  namespace lua {
+    class CLuaSingleton_system;
+  }
+
   namespace gameclasses {
     /**
     * Foreward declaration of the CWorld object which
@@ -44,6 +49,8 @@ namespace dustbin {
         CWorld* m_pWorld;
         CObjectMarble* m_aMarbles[16];
 
+        lua_State* m_pState;
+
         int m_iWorldStep;
 
         bool m_bPaused;
@@ -51,6 +58,8 @@ namespace dustbin {
         irr::f32 m_fGridAngle;
 
         std::chrono::high_resolution_clock::time_point m_cNextStep;
+
+        lua::CLuaSingleton_system* m_pLuaSystem;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
@@ -71,7 +80,7 @@ namespace dustbin {
         virtual void execute();
 
       public:
-        CDynamicThread(scenenodes::CWorldNode *a_pWorld, const std::vector<gameclasses::SPlayer*> &a_vPlayers);
+        CDynamicThread(scenenodes::CWorldNode *a_pWorld, const std::vector<gameclasses::SPlayer*> &a_vPlayers, int a_iLaps);
 
         virtual ~CDynamicThread();
 
@@ -102,6 +111,12 @@ namespace dustbin {
         * @param a_iLapNo Number of the started lap
         */
         virtual void handleLapStart(int a_iMarbleId, int a_iLapNo);
+
+        /**
+        * LUA callback for finishing a player
+        * @param a_iMarbleId the id of the marbles that has finished the race
+        */
+        void finishPlayer(int a_iMarbleId, int a_iRaceTime, int a_iLaps);
     };
   }
 }

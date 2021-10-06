@@ -116,6 +116,8 @@ function uibuttonclicked(a_Id, a_Name)
       
       system:statechange(2)
     end
+    
+    system:setsetting("selecttrack", serializeTable(g_Settings, 2))
   else
     io.write("Button clicked: \"" .. a_Name .. "\" (" .. tostring(a_Id) .. ")\n")
   end
