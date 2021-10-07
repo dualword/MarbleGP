@@ -115,8 +115,15 @@ namespace dustbin {
         /**
         * LUA callback for finishing a player
         * @param a_iMarbleId the id of the marbles that has finished the race
+        * @param a_iLaps the number of laps the marble has raced
         */
         void finishPlayer(int a_iMarbleId, int a_iRaceTime, int a_iLaps);
+
+        /**
+        * LUA callback for starting a player
+        * @param a_iMarble the marble id
+        */
+        void startPlayer(int a_iMarble);
     };
   }
 }

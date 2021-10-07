@@ -57,7 +57,9 @@ namespace dustbin {
         threads::CInputQueue * m_pInputQueue;
         threads::COutputQueue* m_pOutputQueue;
 
-        int m_iStep;
+        int m_iStep,      /**< The current world step. 120 steps / second */
+            m_iFinished,  /**< The game step when the race was finishes */
+            m_iFadeOut;   /**< The game step when fading out starts */
 
         enGameState m_eState;
 
@@ -65,7 +67,7 @@ namespace dustbin {
         
         gameclasses::CDynamicThread* m_pDynamics;
 
-        SChampionShip m_cChampionship;  /**< This record contains information about the game setup, e.g. players and viewports */
+        SChampionShip *m_pChampionship;  /**< This record contains information about the game setup, e.g. players and viewports */
 
         std::vector<gameclasses::SPlayer*> m_vPlayers; /**< The players of the game*/
 

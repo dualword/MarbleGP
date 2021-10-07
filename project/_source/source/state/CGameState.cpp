@@ -29,6 +29,7 @@ namespace dustbin {
       m_pInputQueue(nullptr),
       m_pDynamics(nullptr),
       m_pShader(nullptr),
+      m_iFinished(-1),
       m_iStep(0)
     {
       m_cScreen = irr::core::recti(irr::core::vector2di(0, 0), m_pDrv->getScreenSize());
@@ -45,7 +46,10 @@ namespace dustbin {
      * This method is called when the state is activated
      */
     void CGameState::activate() {
-      m_iStep = 0;
+      m_iStep     = 0;
+      m_iFadeOut  = -1;
+      m_iFinished = -1;
+      m_eState    = enGameState::Countdown;
 
       m_pGlobal->getIrrlichtDevice()->setResizable(false);
       m_pGlobal->getIrrlichtDevice()->getCursorControl()->setVisible(false);
@@ -67,7 +71,8 @@ namespace dustbin {
       lua_getglobal(l_pState, "getSettings");
       if (!lua_isnil(l_pState, -1)) {
         if (lua_pcall(l_pState, 0, 1, 0) == 0) {
-          m_cChampionship.loadFromStack(l_pState);
+          m_pChampionship = new SChampionShip();
+          m_pChampionship->loadFromStack(l_pState);
         }
         else {
           CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "Error while loading settings.");
@@ -84,7 +89,7 @@ namespace dustbin {
       lua_close(l_pState);
 
       // Load the track, and don't forget to run the skybox fix beforehands
-      std::string l_sTrack = "data/levels/" + m_cChampionship.m_thisrace.m_track + "/track.xml";
+      std::string l_sTrack = "data/levels/" + m_pChampionship->m_thisrace.m_track + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
         scenenodes::CSkyBoxFix* l_pFix = new scenenodes::CSkyBoxFix(m_pDrv, m_pSgmr, m_pFs, l_sTrack.c_str());
@@ -95,7 +100,7 @@ namespace dustbin {
         m_pSgmr->addCameraSceneNode(nullptr, irr::core::vector3df(250, 250.0f, 250.0f));
       }
       else {
-        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "Track \"" + m_cChampionship.m_thisrace.m_track + "\" not found.");
+        CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "Track \"" + m_pChampionship->m_thisrace.m_track + "\" not found.");
         CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while starting game state.");
         throw std::exception();
       }
@@ -103,7 +108,7 @@ namespace dustbin {
       fillCheckpointList(m_pSgmr->getRootSceneNode());
 
       if (m_mCheckpoints.size() == 0) {
-        m_pGlobal->setGlobal("ERROR_MESSAGE", "Track \"" + m_cChampionship.m_thisrace.m_track + "\" does not contain checkpoints.");
+        m_pGlobal->setGlobal("ERROR_MESSAGE", "Track \"" + m_pChampionship->m_thisrace.m_track + "\" does not contain checkpoints.");
         m_pGlobal->setGlobal("ERROR_HEAD", "Invalid track");
         throw std::exception();
       }
@@ -119,14 +124,14 @@ namespace dustbin {
       scenenodes::CStartingGridSceneNode* l_pGrid = reinterpret_cast<scenenodes::CStartingGridSceneNode*>(l_pNode);
 
       // Fill the player vector
-      for (size_t i = 0; i < m_cChampionship.m_thisrace.m_grid.size(); i++) {
-        int l_iIndex = m_cChampionship.m_thisrace.m_grid[i] - 1;  // LUA index starts at 1, C++ index starts at 0
+      for (size_t i = 0; i < m_pChampionship->m_thisrace.m_grid.size(); i++) {
+        int l_iIndex = m_pChampionship->m_thisrace.m_grid[i] - 1;  // LUA index starts at 1, C++ index starts at 0
 
         gameclasses::SMarbleNodes* l_pMarble = l_pGrid->getNextMarble();
-        gameclasses::SPlayer* p = new gameclasses::SPlayer(m_cChampionship.m_players[l_iIndex].m_playerid, 
-          m_cChampionship.m_players[l_iIndex].m_name, 
-          m_cChampionship.m_players[l_iIndex].m_texture, 
-          m_cChampionship.m_players[l_iIndex].m_controls,
+        gameclasses::SPlayer* p = new gameclasses::SPlayer(m_pChampionship->m_players[l_iIndex].m_playerid,
+          m_pChampionship->m_players[l_iIndex].m_name,
+          m_pChampionship->m_players[l_iIndex].m_texture,
+          m_pChampionship->m_players[l_iIndex].m_controls,
           l_pMarble);
 
         m_vPlayers.push_back(p);
@@ -142,7 +147,7 @@ namespace dustbin {
       l_vOffset.rotateXZBy(l_fAngle);
 
       // Now we fill the viewport vector
-      for (std::vector<SViewPort>::iterator it = m_cChampionship.m_viewports.begin(); it != m_cChampionship.m_viewports.end(); it++) {
+      for (std::vector<SViewPort>::iterator it = m_pChampionship->m_viewports.begin(); it != m_pChampionship->m_viewports.end(); it++) {
         gameclasses::SMarbleNodes* l_pMarble = nullptr;
 
         for (std::vector<gameclasses::SPlayer*>::iterator it2 = m_vPlayers.begin(); it2 != m_vPlayers.end(); it2++) {
@@ -246,7 +251,7 @@ namespace dustbin {
       l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSgmr->getRootSceneNode());
 
       if (l_pNode != nullptr) {
-        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, m_cChampionship.m_thisrace.m_laps);
+        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, m_pChampionship->m_thisrace.m_laps);
         m_pInputQueue = new threads::CInputQueue();
         m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
         m_pOutputQueue = new threads::COutputQueue();
@@ -315,6 +320,11 @@ namespace dustbin {
         delete m_pShader;
         m_pShader = nullptr;
       }
+
+      m_mCheckpoints.clear();
+
+      if (m_pChampionship != nullptr)
+        delete m_pChampionship;
     }
 
     /**
@@ -466,6 +476,8 @@ namespace dustbin {
     * @return enState::None for running without state change, any other value will switch to the state
     */
     enState CGameState::run() {
+      enState l_eRet = enState::None;
+
       messages::IMessage* l_pMsg = nullptr;
 
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
@@ -550,11 +562,29 @@ namespace dustbin {
         if (l_fFade > 0.0f)
           m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
       }
+      else if (m_eState == enGameState::Racing) {
+        if (m_iFinished != -1 && m_iStep - m_iFinished > 600) { /**< toDo: waiting time adjustable */
+          m_eState = enGameState::Finished;
+          m_iFadeOut = m_iStep;
+        }
+      }
+      else if (m_eState == enGameState::Finished) {
+        int l_iStepSince = m_iStep - m_iFadeOut;
+
+        irr::f32 l_fFade = ((irr::f32)l_iStepSince) / 240.0f;
+
+        if (l_fFade > 1.0f) {
+          l_fFade = 1.0f;
+          l_eRet = enState::LuaState;
+        }
+
+        m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
+      }
 
       m_pDrv->endScene();
       m_pDrv->setRenderTarget(0, false, false);
 
-      return enState::None;
+      return l_eRet;
     }
 
     /**** Methods inherited from "messages:IGameState ****/
@@ -731,7 +761,7 @@ namespace dustbin {
      * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
      */
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
-
+      m_iFinished = m_iStep;
     }
 
     /**

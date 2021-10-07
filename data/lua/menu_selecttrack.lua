@@ -114,6 +114,8 @@ function uibuttonclicked(a_Id, a_Name)
       io.write(serializeTable(g_Championship, 2))
       io.write("\n**************************\n")
       
+      system:pushscript("data/lua/menu_selecttrack.lua")
+      
       system:statechange(2)
     end
     
