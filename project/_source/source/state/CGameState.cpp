@@ -405,6 +405,14 @@ namespace dustbin {
         if ((*it)->m_pController != nullptr)
           (*it)->m_pController->update(a_cEvent);
       }
+
+      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        if (!a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
+          printf("Race cancelled.\n");
+          sendCancelrace(m_pOutputQueue);
+        }
+      }
+
       return false;
     }
 

@@ -77,6 +77,11 @@ namespace dustbin {
          */
         virtual void onMarblecontrol(irr::s32 a_ObjectId, irr::s8 a_CtrlX, irr::s8 a_CtrlY, bool a_Brake, bool a_RearView, bool a_Respawn);
 
+        /**
+         * This function receives messages of type "CancelRace"
+         */
+        virtual void onCancelrace();
+
         virtual void execute();
 
       public:

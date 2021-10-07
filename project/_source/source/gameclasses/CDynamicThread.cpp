@@ -712,6 +712,21 @@ namespace dustbin {
       }
     }
 
+
+    /**
+     * This function receives messages of type "CancelRace"
+     */
+    void CDynamicThread::onCancelrace() {
+      for (int i = 0; i < 16; i++) {
+        if (m_aMarbles[i] != nullptr) {
+          m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Finished;
+          sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
+        }
+      }
+
+      sendRacefinished(1, m_pOutputQueue);
+    }
+
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
       printf("Trigger #%i triggered by marble #%i\n", a_iTrigger, a_iMarble);
     }
@@ -795,7 +810,7 @@ namespace dustbin {
         }
 
         if (l_bAllFinished)
-          sendRacefinished(false, m_pOutputQueue);
+          sendRacefinished(0, m_pOutputQueue);
       }
     }
 

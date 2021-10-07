@@ -331,7 +331,7 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
   global g_Include
   
   for l_Interface in a_Interfaces:
-    print("Creating I" + l_Interface["name"] + "...\n")
+    print("\nCreating I" + l_Interface["name"] + "...\n")
     
     l_Header = open(g_HeaderFolder + "/I" + l_Interface["name"] + ".h"  , "w")
     l_Source = open(g_SourceFolder + "/I" + l_Interface["name"] + ".cpp", "w")
@@ -369,10 +369,11 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
     l_Header.write("      protected:\n")
     
     for l_Receive in l_Interface["receive"]:
+      print("Receive \"" + l_Receive + "\".")
       l_Message = a_Messages[l_Receive]
+      l_Header.write("        /**\n         * This function receives messages of type \"" + l_Receive + "\"\n")
+      
       if "comment" in l_Message:
-        l_Header.write("        /**\n         * This function receives messages of type \"" + l_Receive + "\"\n")
-        
         for l_Field in l_Message["fields"]:
           l_Header.write("         * @param a_" + l_Field["name"])
           
@@ -397,26 +398,28 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
       l_Header.write(") = 0;\n\n")
       
     for l_Send in l_Interface["send"]:
+      print("   Send \"" + l_Send + "\".")
       l_Message = a_Messages[l_Send]
+      l_Header.write("        /**\n         * This function sends messages of type \"" + l_Send + "\"\n")
       if "comment" in l_Message:
-        l_Header.write("        /**\n         * This function sends messages of type \"" + l_Send + "\"\n")
+        l_Header.write("        * " + l_Message["comment"] + "\n")
         
-        for l_Field in l_Message["fields"]:
-          l_Header.write("         * @param a_" + l_Field["name"])
-          
-          if "comment" in l_Field:
-            l_Header.write(" " + l_Field["comment"])
-            
-          l_Header.write("\n")
-          
-        l_Header.write("         */\n")
-        l_Header.write("        void send" + l_Send.capitalize() + "(")
+      for l_Field in l_Message["fields"]:
+        l_Header.write("         * @param a_" + l_Field["name"])
         
-        l_First = True
-        for l_Field in l_Message["fields"]:
-          l_Header.write(CreateParameter(l_Field, a_Static) + "a_" + l_Field["name"] +  ", ")
+        if "comment" in l_Field:
+          l_Header.write(" " + l_Field["comment"])
           
-        l_Header.write("threads::IQueue *a_pQueue);\n\n")
+        l_Header.write("\n")
+          
+      l_Header.write("         */\n")
+      l_Header.write("        void send" + l_Send.capitalize() + "(")
+      
+      l_First = True
+      for l_Field in l_Message["fields"]:
+        l_Header.write(CreateParameter(l_Field, a_Static) + "a_" + l_Field["name"] +  ", ")
+        
+      l_Header.write("threads::IQueue *a_pQueue);\n\n")
     
     l_Header.write("\n")
     l_Header.write("      public:\n")
@@ -473,41 +476,45 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
     
     for l_Send in l_Interface["send"]:
       l_Message = a_Messages[l_Send]
+      l_Source.write("      /**\n       * This function sends messages of type \"" + l_Send + "\"")
+      
       if "comment" in l_Message:
-        l_Source.write("      /**\n       * This function sends messages of type \"" + l_Send + "\"\n")
+        l_Source.write(" (" + l_Message["comment"] + ")")
+      
+      l_Source.write("\n")
+      
+      for l_Field in l_Message["fields"]:
+        l_Source.write("       * @param a_" + l_Field["name"])
         
-        for l_Field in l_Message["fields"]:
-          l_Source.write("       * @param a_" + l_Field["name"])
+        if "comment" in l_Field:
+          l_Source.write(" " + l_Field["comment"])
           
-          if "comment" in l_Field:
-            l_Source.write(" " + l_Field["comment"])
-            
-          l_Source.write("\n")
+        l_Source.write("\n")
+        
+      l_Source.write("       */\n")
+      l_Source.write("      void I" + l_Interface["name"] + "::send" + l_Send.capitalize() + "(")
+      
+      for l_Field in l_Message["fields"]:
+        l_Source.write(CreateParameter(l_Field, a_Static) + "a_" + l_Field["name"] + ", ")
+        
+      l_Source.write("threads::IQueue *a_pQueue) {\n")
+      l_Source.write("        if (a_pQueue != nullptr) {\n")
+      l_Source.write("          IMessage *l_pMsg = new C" + l_Send + "(")
+      
+      l_First = True
+      for l_Field in l_Message["fields"]:
+        if l_First:
+          l_First = False
+        else:
+          l_Source.write(", ")
           
-        l_Source.write("       */\n")
-        l_Source.write("      void I" + l_Interface["name"] + "::send" + l_Send.capitalize() + "(")
-        
-        for l_Field in l_Message["fields"]:
-          l_Source.write(CreateParameter(l_Field, a_Static) + "a_" + l_Field["name"] + ", ")
-          
-        l_Source.write("threads::IQueue *a_pQueue) {\n")
-        l_Source.write("        if (a_pQueue != nullptr) {\n")
-        l_Source.write("          IMessage *l_pMsg = new C" + l_Send + "(")
-        
-        l_First = True
-        for l_Field in l_Message["fields"]:
-          if l_First:
-            l_First = False
-          else:
-            l_Source.write(", ")
-            
-          l_Source.write("a_" + l_Field["name"])
-        
-        l_Source.write(");\n")
-        l_Source.write("          a_pQueue->postMessage(l_pMsg);\n")
-        l_Source.write("          delete l_pMsg;\n")
-        l_Source.write("        }\n")
-        l_Source.write("      }\n\n")
+        l_Source.write("a_" + l_Field["name"])
+      
+      l_Source.write(");\n")
+      l_Source.write("          a_pQueue->postMessage(l_pMsg);\n")
+      l_Source.write("          delete l_pMsg;\n")
+      l_Source.write("        }\n")
+      l_Source.write("      }\n\n")
         
     EndNamepsaces(l_Header)
     EndNamepsaces(l_Source)

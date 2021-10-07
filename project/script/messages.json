@@ -20,7 +20,8 @@
     [ "PlayerFinished",  "9" ],
     [ "RaceFinished"  , "10" ],
     [ "Countdown"     , "11" ],
-    [ "MarbleControl" , "12" ]
+    [ "MarbleControl" , "12" ],
+    [ "CancelRace"    , "13" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -130,6 +131,10 @@
         { "name": "RearView", "type": "bool"    , "comment": "Does the player want to look back?" },
         { "name": "Respawn" , "type": "bool"    , "comment": "Is the manual respawn button pressed?" }
       ]
+    },
+    "CancelRace": {
+      "comment": "This message cancels a race",
+      "fields": [ ]
     }
   },
   "interfaces": [
@@ -150,13 +155,15 @@
         "LapStart"
       ],
       "receive": [
-        "MarbleControl"
+        "MarbleControl",
+        "CancelRace"
       ]
     },
     {
       "name": "GameState",
       "send": [
-        "MarbleControl"
+        "MarbleControl",
+        "CancelRace"
       ],
       "receive": [
         "StepMsg",
