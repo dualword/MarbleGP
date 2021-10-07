@@ -82,6 +82,11 @@ namespace dustbin {
          */
         virtual void onCancelrace();
 
+        /**
+         * This function receives messages of type "TogglePause"
+         */
+        virtual void onTogglepause();
+
         virtual void execute();
 
       public:

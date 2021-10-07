@@ -21,7 +21,9 @@
     [ "RaceFinished"  , "10" ],
     [ "Countdown"     , "11" ],
     [ "MarbleControl" , "12" ],
-    [ "CancelRace"    , "13" ]
+    [ "CancelRace"    , "13" ],
+    [ "TogglePause"   , "14" ],
+    [ "PauseChanged"  , "15" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -135,6 +137,16 @@
     "CancelRace": {
       "comment": "This message cancels a race",
       "fields": [ ]
+    },
+    "TogglePause": {
+      "comment": "This message pauses and unpauses the game",
+      "fields": [ ]
+    },
+    "PauseChanged": {
+      "comment": "The dynamic thread uses this message to notify the game thread about paused / unpaused game",
+      "fields": [
+        { "name": "Paused", "type": "bool", "comment": "The current paused state" }
+      ]
     }
   },
   "interfaces": [
@@ -152,18 +164,21 @@
         "PlayerFinished",
         "RaceFinished",
         "Checkpoint",
-        "LapStart"
+        "LapStart",
+        "PauseChanged"
       ],
       "receive": [
         "MarbleControl",
-        "CancelRace"
+        "CancelRace",
+        "TogglePause"
       ]
     },
     {
       "name": "GameState",
       "send": [
         "MarbleControl",
-        "CancelRace"
+        "CancelRace",
+        "TogglePause"
       ],
       "receive": [
         "StepMsg",
@@ -177,7 +192,8 @@
         "PlayerFinished",
         "RaceFinished",
         "Checkpoint",
-        "LapStart"
+        "LapStart",
+        "PauseChanged"
       ]
     }
   ]

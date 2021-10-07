@@ -719,12 +719,22 @@ namespace dustbin {
     void CDynamicThread::onCancelrace() {
       for (int i = 0; i < 16; i++) {
         if (m_aMarbles[i] != nullptr) {
-          m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Finished;
-          sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
+          if (m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished) {
+            m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Finished;
+            sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
+          }
         }
       }
 
       sendRacefinished(1, m_pOutputQueue);
+    }
+
+    /**
+     * This function receives messages of type "TogglePause"
+     */
+    void CDynamicThread::onTogglepause() {
+      m_bPaused = !m_bPaused;
+      sendPausechanged(m_bPaused, m_pOutputQueue);
     }
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {

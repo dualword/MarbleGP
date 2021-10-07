@@ -29,6 +29,7 @@ namespace dustbin {
       m_pInputQueue(nullptr),
       m_pDynamics(nullptr),
       m_pShader(nullptr),
+      m_bPaused(false),
       m_iFinished(-1),
       m_iStep(0)
     {
@@ -50,6 +51,7 @@ namespace dustbin {
       m_iFadeOut  = -1;
       m_iFinished = -1;
       m_eState    = enGameState::Countdown;
+      m_bPaused   = false;
 
       m_pGlobal->getIrrlichtDevice()->setResizable(false);
       m_pGlobal->getIrrlichtDevice()->getCursorControl()->setVisible(false);
@@ -407,9 +409,13 @@ namespace dustbin {
       }
 
       if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
-        if (!a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
-          printf("Race cancelled.\n");
-          sendCancelrace(m_pOutputQueue);
+        if (!a_cEvent.KeyInput.PressedDown) {
+          if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
+            sendCancelrace(m_pOutputQueue);
+          }
+          else if (a_cEvent.KeyInput.Key == irr::KEY_PAUSE) {
+            sendTogglepause(m_pOutputQueue);
+          }
         }
       }
 
@@ -574,6 +580,10 @@ namespace dustbin {
         if (m_iFinished != -1 && m_iStep - m_iFinished > 600) { /**< toDo: waiting time adjustable */
           m_eState = enGameState::Finished;
           m_iFadeOut = m_iStep;
+        }
+
+        if (m_bPaused) {
+          m_pDrv->draw2DRectangle(irr::video::SColor(128, 255, 255, 255), m_cScreen);
         }
       }
       else if (m_eState == enGameState::Finished) {
@@ -808,6 +818,14 @@ namespace dustbin {
      */
     void CGameState::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
       printf("onLapstart: Marble %i, Lap %i\n", a_MarbleId, a_LapNo);
+    }
+
+    /**
+     * This function receives messages of type "PauseChanged"
+     * @param a_Paused The current paused state
+     */
+    void CGameState::onPausechanged(bool a_Paused) {
+      m_bPaused = a_Paused;
     }
   }
 }

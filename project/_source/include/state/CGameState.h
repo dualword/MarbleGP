@@ -61,6 +61,8 @@ namespace dustbin {
             m_iFinished,  /**< The game step when the race was finishes */
             m_iFadeOut;   /**< The game step when fading out starts */
 
+        bool m_bPaused; /**< Is the game paused? */
+
         enGameState m_eState;
 
         CGlobal* m_pGlobal;
@@ -206,6 +208,12 @@ namespace dustbin {
          * @param a_LapNo Number of the started lap
          */
         virtual void onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo);
+
+        /**
+         * This function receives messages of type "PauseChanged"
+         * @param a_Paused The current paused state
+         */
+        virtual void onPausechanged(bool a_Paused);
 
       public:
         CGameState();
