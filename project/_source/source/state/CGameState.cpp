@@ -589,7 +589,7 @@ namespace dustbin {
       else if (m_eState == enGameState::Finished) {
         int l_iStepSince = m_iStep - m_iFadeOut;
 
-        irr::f32 l_fFade = ((irr::f32)l_iStepSince) / 240.0f;
+        irr::f32 l_fFade = ((irr::f32)l_iStepSince) / 120.0f;
 
         if (l_fFade > 1.0f) {
           l_fFade = 1.0f;
