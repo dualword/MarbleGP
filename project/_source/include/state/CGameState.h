@@ -86,6 +86,15 @@ namespace dustbin {
 
         shader::CShaderHandlerBase* m_pShader;  /**< The shader to use */
 
+        std::map<irr::s32, irr::scene::ISceneNode*> m_mMoving;  /**< All moving non-marble objects of the track */
+
+        /**
+        * Fill the map of the moving non-marble objects
+        * @param a_pNode the node to check
+        * @see CGameState::m_mMoving
+        */
+        void fillMovingMap(irr::scene::ISceneNode* a_pNode);
+
         /**
         * Find a single scene node by it's type
         * @param a_eType the type to search for

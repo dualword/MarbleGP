@@ -59,6 +59,8 @@ namespace dustbin {
         virtual irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent = 0, irr::scene::ISceneManager* a_pNewManager = 0);
 
         enNodeType getNodeType();
+        bool isStatic();
+        irr::f32 getMass();
     };
   }
 }

@@ -49,6 +49,9 @@ namespace dustbin {
       private:
         enObjectType m_eType;
 
+      protected:
+        void createJoint(irr::scene::ISceneNode* a_pNode);
+
       public:
         int m_iId;
 
@@ -61,8 +64,9 @@ namespace dustbin {
 
         CWorld* m_pWorld;
 
-        dGeomID m_cGeom;
-        dBodyID m_cBody;
+        dGeomID  m_cGeom;
+        dBodyID  m_cBody;
+        dJointID m_cJoint;
 
         std::string m_sName;
 
@@ -111,6 +115,14 @@ namespace dustbin {
 
         std::vector<dReal    > m_vVertices;
         std::vector<dTriIndex> m_vIndices;
+
+        /**
+        * Add a mesh buffer of the scene node to the trimesh
+        * @param a_pBuffer the mesh buffer to add
+        * @param a_cMatrix the transformation matrix of the scene node
+        * @param a_iIndexV the vertex index
+        */
+        void addMeshBuffer(irr::scene::IMeshBuffer* a_pBuffer, const irr::core::CMatrix4<irr::f32> &a_cMatrix, irr::u32 &a_iIndexV);
 
       public:
         CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial = 0);
@@ -211,7 +223,8 @@ namespace dustbin {
         dSpaceID       m_cSpace;
         dJointGroupID  m_cContacts;
 
-        std::vector<CObject*> m_vObjects;
+        std::vector<CObject*> m_vObjects,
+                              m_vMoving;
 
         std::map<irr::s32, CObjectCheckpoint*> m_mCheckpoints;
 

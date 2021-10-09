@@ -3,7 +3,9 @@
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CRespawnNode.h>
+#include <scenenodes/CJointNode.h>
 #include <gameclasses/COdeNodes.h>
+#include <scenenodes/CJointNode.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -30,6 +32,53 @@ namespace dustbin {
       q[3] = (dReal)(s1 * c2 * c3 - c1 * s2 * s3); //z
     }
 
+    void CObject::createJoint(irr::scene::ISceneNode* a_pNode) {
+      // Joints can only be attached to bodies
+      if (m_cBody == 0) {
+        printf("No body found for joint.\n");
+        return;
+      }
+
+      // Search for joints and create them
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
+        if ((*it)->getType() == scenenodes::g_JointNodeId) {
+          printf("**** Joint attached to body.\n");
+          scenenodes::CJointNode* l_pJoint = reinterpret_cast<scenenodes::CJointNode*>(*it);
+
+          switch (l_pJoint->m_iType) {
+            case 0: // Hinge Joint
+              m_cJoint = dJointCreateHinge(m_pWorld->m_cWorld, 0);
+              // Important: Attach the joint before setting the axis, otherwise
+              // the axis is not calculated correctly!
+              dJointAttach(m_cJoint, m_cBody, 0);
+              dJointSetHingeAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
+              break;
+
+            case 1: // Slider Joint
+              m_cJoint = dJointCreateSlider(m_pWorld->m_cWorld, 0);
+              // Important: Attach the joint before setting the axis, otherwise
+              // the axis is not calculated correctly!
+              dJointAttach(m_cJoint, m_cBody, 0);
+              dJointSetSliderAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
+              break;
+
+            default:
+              printf("Unknown joint type #%i\n", l_pJoint->m_iType);
+              return;
+              break;
+          }
+
+          if (l_pJoint->m_bEnableMotor) {
+            dJointSetSliderParam(m_cJoint, dParamVel , l_pJoint->m_fVelocity);
+            dJointSetSliderParam(m_cJoint, dParamFMax, l_pJoint->m_fForce   );
+          }
+
+          if (l_pJoint->m_bUseHiStop) dJointSetSliderParam(m_cJoint, dParamHiStop, l_pJoint->m_fHiStop);
+          if (l_pJoint->m_bUseLoStop) dJointSetSliderParam(m_cJoint, dParamLoStop, l_pJoint->m_fLoStop);
+        }
+      }
+    }
+
     CObject::CObject(enObjectType a_eType, scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial) :
       m_iId(a_pNode != nullptr ? a_pNode->getID() : -1),
       m_pWorld(a_pWorld),
@@ -40,6 +89,7 @@ namespace dustbin {
       m_eType(a_eType),
       m_bStatic(true),
       m_iTrigger(0),
+      m_cJoint(0),
       m_cGeom(0),
       m_cBody(0)
     {
@@ -65,8 +115,9 @@ namespace dustbin {
     }
 
     CObject::~CObject() {
-      if (m_cBody != nullptr) dBodyDestroy(m_cBody);
-      if (m_cGeom != nullptr) dGeomDestroy(m_cGeom);
+      if (m_cBody  != nullptr) dBodyDestroy (m_cBody );
+      if (m_cGeom  != nullptr) dGeomDestroy (m_cGeom );
+      if (m_cJoint != nullptr) dJointDestroy(m_cJoint);
     }
 
     enObjectType CObject::getType() {
@@ -134,61 +185,88 @@ namespace dustbin {
     CObjectCheckpoint::~CObjectCheckpoint() {
     }
 
+    /**
+    * Add a mesh buffer of the scene node to the trimesh
+    * @param a_cBuffer the mesh buffer to add
+    * @param a_cMatrix the transformation matrix of the scene node
+    * @param a_cScale the scale of the scene node
+    */
+    void CObjectTrimesh::addMeshBuffer(irr::scene::IMeshBuffer* a_pBuffer, const irr::core::CMatrix4<irr::f32>& a_cMatrix, irr::u32 &a_iIndexV) {
+      irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)a_pBuffer->getVertices();
+
+      irr::u32 l_iVertexIndexStart = a_iIndexV;
+
+      for (irr::u32 i = 0; i < a_pBuffer->getVertexCount(); i++) {
+        irr::core::vector3df l_cVec = l_pVertices[i].Pos;
+
+        a_cMatrix.rotateVect(l_cVec);
+
+        dVector3 v;
+
+        m_vVertices.push_back((dReal)l_cVec.X);
+        m_vVertices.push_back((dReal)l_cVec.Y);
+        m_vVertices.push_back((dReal)l_cVec.Z);
+        m_vVertices.push_back(0.0);
+
+        a_iIndexV++;
+      }
+
+      irr::u16* l_pIndices = a_pBuffer->getIndices();
+
+      for (irr::u32 i = 0; i < a_pBuffer->getIndexCount(); i++) {
+        m_vIndices.push_back(l_pIndices[i] + l_iVertexIndexStart);
+      }
+    }
+
     CObjectTrimesh::CObjectTrimesh(scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial) : 
-      CObject(enObjectType::Trimesh, a_pNode, a_pWorld, a_sName + " #" + std::to_string(a_iMaterial), a_iMaterial)
+      CObject(enObjectType::Trimesh, a_pNode, a_pWorld, a_iMaterial == 0 ? a_sName :  a_sName + " #" + std::to_string(a_iMaterial), a_iMaterial)
     {
       if (a_pNode->getParent()->getType() == irr::scene::ESNT_MESH) {
         irr::scene::IMeshSceneNode* l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode*>(a_pNode->getParent());
 
-        if (a_iMaterial < 0 || a_iMaterial >= (int)l_pNode->getMaterialCount()) {
+        if ((a_iMaterial < 0 || a_iMaterial >= (int)l_pNode->getMaterialCount()) && m_bStatic) {
           CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Got invalid material index #") + std::to_string(a_iMaterial) + " on Trimesh creation.");
           CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while initializing game physics.");
           throw std::exception();
         }
 
-        dQuaternion l_aQuaternion;
-        dQSetIdentity(l_aQuaternion);
-
-        irr::scene::IMeshBuffer* l_pBuffer = l_pNode->getMesh()->getMeshBuffer(a_iMaterial);
-
-        irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
-
         irr::u32 l_iIndexV = 0;
 
         irr::core::CMatrix4<irr::f32> l_cMatrix = l_pNode->getAbsoluteTransformation();
 
-        irr::core::vector3df l_vScale = l_pNode->getScale();
-
-        for (irr::u32 i = 0; i < l_pBuffer->getVertexCount(); i++) {
-          irr::core::vector3df l_cVec = l_pVertices[l_iIndexV].Pos;
-
-          l_cMatrix.rotateVect(l_cVec);
-
-          dVector3 v;
-
-          m_vVertices.push_back((dReal)l_cVec.X);
-          m_vVertices.push_back((dReal)l_cVec.Y);
-          m_vVertices.push_back((dReal)l_cVec.Z);
-          m_vVertices.push_back(0.0);
-
-          l_iIndexV++;
+        if (m_bStatic) {
+          addMeshBuffer(l_pNode->getMesh()->getMeshBuffer(a_iMaterial), l_cMatrix, l_iIndexV);
         }
-
-        irr::u32 l_iIndexI = 0;
-        irr::u16* l_pIndices = l_pBuffer->getIndices();
-
-        for (irr::u32 i = 0; i < l_pBuffer->getIndexCount(); i++) {
-          m_vIndices.push_back(l_pIndices[i]);
+        else {
+          for (irr::u32 i = 0; i < l_pNode->getMaterialCount(); i++)
+            addMeshBuffer(l_pNode->getMesh()->getMeshBuffer(i), l_cMatrix, l_iIndexV);
         }
 
         m_cTrimeshData = dGeomTriMeshDataCreate();
 
-        dGeomTriMeshDataBuildSimple(m_cTrimeshData, m_vVertices.data(), l_pBuffer->getVertexCount(), m_vIndices.data(), l_pBuffer->getIndexCount());
+        dGeomTriMeshDataBuildSimple(m_cTrimeshData, m_vVertices.data(), (int)m_vVertices.size() / 4, m_vIndices.data(), (int)m_vIndices.size());
         m_cGeom = dCreateTriMesh(m_pWorld->m_cSpace, m_cTrimeshData, 0, 0, 0);
         dGeomSetData(m_cGeom, this);
-        dGeomSetPosition(m_cGeom, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
 
-        if (a_iMaterial < (int)l_pNode->getMaterialCount() - 1)
+        if (m_bStatic) {
+          dGeomSetPosition(m_cGeom, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
+        }
+        else {
+          m_cBody = dBodyCreate(m_pWorld->m_cWorld);
+          dMass l_cMass;
+          dMassSetZero(&l_cMass);
+          // Marble Class Param: Mass
+          dMassSetSphereTotal(&l_cMass, (dReal)a_pNode->getMass(), 1.0f);
+          dBodySetAngularDamping(m_cBody, (dReal)0.0015);
+          dGeomSetBody(m_cGeom, m_cBody);
+          dBodySetPosition(m_cBody, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
+
+          createJoint(a_pNode);
+
+          m_pWorld->m_vMoving.push_back(this);
+        }
+
+        if (a_iMaterial < (int)l_pNode->getMaterialCount() - 1 && m_bStatic)
           a_pWorld->m_vObjects.push_back(new CObjectTrimesh(a_pNode, a_pWorld, a_sName, a_iMaterial + 1));
       }
       else {

@@ -507,6 +507,16 @@ namespace dustbin {
           }
         }
 
+        // Send all other moving objects to the game state
+        for (std::vector<CObject*>::iterator it = m_pWorld->m_vMoving.begin(); it != m_pWorld->m_vMoving.end(); it++) {
+          const dReal* l_aPos    = dBodyGetPosition  ((*it)->m_cBody),
+                     * l_aRot    = dBodyGetQuaternion((*it)->m_cBody),
+                     * l_aLinVel = dBodyGetLinearVel ((*it)->m_cBody),
+                     * l_aAngVel = dBodyGetAngularVel((*it)->m_cBody);
+
+          sendObjectmoved((*it)->m_iId, vectorOdeToIrr(l_aPos), quaternionToEuler(l_aRot), vectorOdeToIrr(l_aLinVel), vectorOdeToIrr(l_aAngVel).getLength(), m_pOutputQueue);
+        }
+
         if (m_eGameState == enGameState::Countdown) {
           auto LuaCountdown = [](int a_iTick, int a_iStep, lua_State* a_pState) {
             if (a_pState != nullptr) {

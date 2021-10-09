@@ -153,5 +153,13 @@ namespace dustbin {
     CPhysicsNode::enNodeType CPhysicsNode::getNodeType() {
       return m_eType;
     }
+
+    bool CPhysicsNode::isStatic() {
+      return m_bStatic;
+    }
+
+    irr::f32 CPhysicsNode::getMass() {
+      return m_fMass;
+    }
   }
 }

@@ -51,6 +51,9 @@
     <ClInclude Include="..\_source\include\scenenodes\CRespawnNode_Editor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\_source\include\scenenodes\CJointNode.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -87,6 +90,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\scenenodes\CRespawnNode_Editor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\scenenodes\CJointNode.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

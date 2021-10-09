@@ -4,6 +4,7 @@
 #include <scenenodes/CCheckpointNode_Editor.h>
 #include <scenenodes/CRespawnNode_Editor.h>
 #include <scenenodes/CPhysicsNode.h>
+#include <scenenodes/CJointNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CDustbinId.h>
 #include <string>
@@ -40,6 +41,10 @@ namespace dustbin {
           p = new CRespawnNode_Editor(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
           break;
 
+        case g_JointNodeId:
+          p = new CJointNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, getNextSceneNodeId());
+          break;
+
         default:
           break;
       }
@@ -55,25 +60,17 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactoryEditor::getCreatableSceneNodeTypeCount() const {
-      return 5;
+      return 6;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactoryEditor::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
       switch (a_iIdx) {
-        case 0:
-          return g_StartingGridScenenodeName;
-          
-        case 1:
-          return g_WorldName;
-
-        case 2:
-          return g_PhysicsNodeName;
-
-        case 3:
-          return g_CheckpointName;
-
-        case 4:
-          return g_RespawndName;
+        case 0: return g_StartingGridScenenodeName;
+        case 1: return g_WorldName;
+        case 2: return g_PhysicsNodeName;
+        case 3: return g_CheckpointName;
+        case 4: return g_RespawndName;
+        case 5: return g_JointNodeName;
       }
 
       return nullptr;
@@ -81,20 +78,12 @@ namespace dustbin {
 
     irr::scene::ESCENE_NODE_TYPE CMarbleGPSceneNodeFactoryEditor::getCreateableSceneNodeType(irr::u32 a_iIdx) const {
       switch (a_iIdx) {
-        case 0:
-          return (irr::scene::ESCENE_NODE_TYPE)g_StartingGridScenenodeId;
-
-        case 1:
-          return (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId;
-
-        case 2:
-          return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
-
-        case 3:
-          return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
-
-        case 4:
-          return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
+        case 0: return (irr::scene::ESCENE_NODE_TYPE)g_StartingGridScenenodeId;
+        case 1: return (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId;
+        case 2: return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
+        case 3: return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
+        case 4: return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
+        case 5: return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -104,11 +93,9 @@ namespace dustbin {
       switch (a_eType) {
         case g_StartingGridScenenodeId:
           return g_StartingGridScenenodeName;
-          break;
 
         case g_WorldNodeId:
           return g_WorldName;
-          break;
 
         case g_PhysicsNodeId:
           return g_PhysicsNodeName;
@@ -118,6 +105,9 @@ namespace dustbin {
 
         case g_RespawnNodeId:
           return g_RespawndName;
+
+        case g_JointNodeId:
+          return g_JointNodeName;
 
         default:
           return nullptr;
@@ -137,6 +127,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
       else if (l_sName == g_RespawndName)
         return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
+      else if (l_sName == g_JointNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

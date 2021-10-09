@@ -43,6 +43,18 @@ namespace dustbin {
     CGameState::~CGameState() {
     }
 
+    void CGameState::fillMovingMap(irr::scene::ISceneNode* a_pNode) {
+      if (a_pNode != nullptr && a_pNode->isVisible()) {
+        if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
+          if (!reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode)->isStatic())
+            m_mMoving[a_pNode->getID()] = a_pNode->getParent();
+        }
+
+        for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
+          fillMovingMap(*it);
+      }
+    }
+
     /**
      * This method is called when the state is activated
      */
@@ -142,6 +154,7 @@ namespace dustbin {
       }
 
       l_pGrid->removeUnusedMarbles();
+      fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSgmr->getRootSceneNode()));
 
       irr::f32 l_fAngle = l_pGrid->getAngle();
 
@@ -634,7 +647,11 @@ namespace dustbin {
      * @param a_AngularVelocity The angualar (rotation) velocity
      */
     void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity) {
-
+      if (m_mMoving.find(a_ObjectId) != m_mMoving.end()) {
+        m_mMoving[a_ObjectId]->setPosition(a_Position);
+        m_mMoving[a_ObjectId]->setRotation(a_Rotation);
+      }
+      else printf("Object %i not found.\n", a_ObjectId);
     }
 
     /**
