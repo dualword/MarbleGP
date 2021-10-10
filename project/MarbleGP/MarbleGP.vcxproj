@@ -218,9 +218,11 @@
     <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp" />
-    <ClCompile Include="..\_source\source\lua\CLuaScript_dynamics.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_audio.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaSingleton_gamelogic.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_system.cpp" />
+    <ClCompile Include="..\_source\source\lua\ILuaClass.cpp" />
+    <ClCompile Include="..\_source\source\lua\luawrap.cpp" />
     <ClCompile Include="..\_source\source\MarbleGP.cpp" />
     <ClCompile Include="..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\_source\source\messages\CSerializer64.cpp" />
@@ -253,6 +255,8 @@
     <ClCompile Include="..\_source\source\threads\CMessageQueue.cpp" />
     <ClCompile Include="..\_source\source\xeffects\CShaderPre.cpp" />
     <ClCompile Include="..\_source\source\xeffects\EffectHandler.cpp" />
+    <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp" />
+    <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp" />
     <ClCompile Include="..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\_source\source\_generated\messages\CMessages.cpp" />
@@ -293,10 +297,11 @@
     <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneNode.h" />
     <ClInclude Include="..\_source\include\lua\CLuaScript_dialog.h" />
-    <ClInclude Include="..\_source\include\lua\CLuaScript_dynamics.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSingleton_system.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSingleton_audio.h" />
+    <ClInclude Include="..\_source\include\lua\ILuaClass.h" />
     <ClInclude Include="..\_source\include\lua\ILuaObject.h" />
+    <ClInclude Include="..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\_source\include\messages\CMessageHelpers.h" />
     <ClInclude Include="..\_source\include\messages\CSerializer64.h" />
     <ClInclude Include="..\_source\include\messages\IMessage.h" />
@@ -337,6 +342,9 @@
     <ClInclude Include="..\_source\include\xeffects\EffectHandler.h" />
     <ClInclude Include="..\_source\include\xeffects\EffectShaders.h" />
     <ClInclude Include="..\_source\include\xeffects\XEffects.h" />
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_gamelogic.h" />
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_gamelogic.h" />
+    <ClInclude Include="..\_source\include\_generated\lua\lua_enums.h" />
     <ClInclude Include="..\_source\include\_generated\lua\lua_tables.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\_source\include\_generated\messages\CMessageFactory.h" />

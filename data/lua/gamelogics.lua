@@ -1,21 +1,20 @@
 
-system:executeluascript("data/lua/serializer.lua")
+-- system:executeluascript("data/lua/serializer.lua")
 
 io.write("**** Game Logics Script started\n")
 
-function initialize(a_RaceData)
-  g_Laps = a_RaceData["laps"]
+function initialize(a_RaceData, a_Laps)
+  g_Laps = a_Laps
   
   g_Players = { }
   
-  for i = 1, #a_RaceData["marbles"] do
-    local l_Id = a_RaceData["marbles"][i]
-    g_Players[l_Id] = { }
-    g_Players[l_Id]["laps"      ] = { }
-    g_Players[l_Id]["currentlap"] = 0
-    g_Players[l_Id]["respawn"   ] = 0
-    g_Players[l_Id]["stunned"   ] = 0
-    g_Players[l_Id]["finished"  ] = false
+  for k,v in pairs(a_RaceData) do
+    g_Players[v] = { }
+    g_Players[v]["laps"      ] = { }
+    g_Players[v]["currentlap"] = 0
+    g_Players[v]["respawn"   ] = 0
+    g_Players[v]["stunned"   ] = 0
+    g_Players[v]["finished"  ] = false
   end
 end
 
@@ -57,7 +56,7 @@ function onLapStart(a_Marble, a_LapNo, a_Step)
   io.write("Lua Lap Start: " .. tostring(a_Marble) .. ": " .. tostring(a_LapNo)  .. " [" .. tostring(a_Step) .. "]\n")
   
   if a_LapNo > g_Laps then
-    dynamics:finishplayer(a_Marble, a_Step, g_Players[a_Marble]["currentlap"])
+    gamelogic:finishplayer(a_Marble, a_Step, g_Players[a_Marble]["currentlap"])
     
     if g_Players[a_Marble] ~= nil then
       g_Players[a_Marble]["finished"] = true
@@ -71,7 +70,7 @@ end
 function onCountdown(a_Tick, a_Step)
   if a_Tick == 0 then
     for k,v in pairs(g_Players) do
-      dynamics:startplayer(k)
+      gamelogic:startplayer(k)
     end
   end
 end

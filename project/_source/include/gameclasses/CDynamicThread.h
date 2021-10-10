@@ -16,12 +16,9 @@
 #include <vector>
 #include <chrono>
 
-namespace dustbin {
-  namespace lua {
-    class CLuaSingleton_system;
-    class CLuaScript_dynamics;
-  }
+class CLuaScript_gamelogic;
 
+namespace dustbin {
   namespace gameclasses {
     /**
     * Foreward declaration of the CWorld object which
@@ -50,8 +47,6 @@ namespace dustbin {
         CWorld* m_pWorld;
         CObjectMarble* m_aMarbles[16];
 
-        lua_State* m_pState;
-
         int m_iWorldStep;
 
         bool m_bPaused;
@@ -60,8 +55,7 @@ namespace dustbin {
 
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
-        lua::CLuaSingleton_system* m_pLuaSystem;
-        lua::CLuaScript_dynamics* m_pTrackScript;
+        CLuaScript_gamelogic* m_pGameLogic;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 

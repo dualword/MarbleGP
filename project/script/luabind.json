@@ -4,7 +4,14 @@
     "irr::gui::IGUIStaticText *": "irrlicht.h",
     "std::vector"               : "vector"
   },
-  "classes": { },
+  "datatypes": [
+    { "name": "std::vector"                         , "include": "vector"                       },
+    { "name": "dustbin::gameclasses::CDynamicThread", "include": "gameclasses/CDynamicThread.h" }
+  ],
+  "enumerations": {
+  },
+  "basetypes": {
+  },
   "tables": {
     "SVector3d": {
       "comment": "3d float vector",
@@ -131,6 +138,129 @@
         { "name": "laps"   , "type": "int"             , "comment": "The number of laps of the race" },
         { "name": "marbles", "type": "std::vector<int>", "comment": "A vector with all the marbles of the race" }
       ]
+    }
+  },
+  "classes": { },
+  "singletons": { 
+    "gamelogic": {
+      "globalidentifier": "gamelogic_cinstance",
+      "comment": "A LUA singleton for the game logic, i.e. positioning, players finished...",
+      "members": [
+        { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The dynamics thread that is running", "default": "nullptr" }
+      ],
+      "methods": {
+        "lua_from": {
+          "startplayer": {
+            "comment": "Start a player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "Marble ID of the player to start" }
+            ]
+          },
+          "finishplayer": {
+            "comment": "Set a player to finished",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "Marble ID of the player that finished" },
+              { "name": "Time"  , "type": "int", "comment": "Race time of the player in simulation steps" },
+              { "name": "Laps"  , "type": "int", "comment": "The number of laps the player has finished" }
+            ]
+          },
+          "stunnplayer": {
+            "comment": "Stun a player",
+            "arguments": [
+              { "name": "Marble"  , "type": "int", "comment": "Marble ID of the player to be stunnned" },
+              { "name": "StunTime", "type": "int", "comment": "Time that the player will be stunned in simulation steps" }
+            ]
+          },
+          "respawnplayer": {
+            "comment": "Respawn a player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "Marble ID of the player to respawn" }
+            ]
+          }
+        },
+        "lua_to": {
+        },
+        "lua_none": {
+          "setDynamicsThread": {
+            "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scripts": { 
+    "gamelogic": {
+      "comment": "This script runs in the dynamics thread and is responsible for game-logics",
+      "globalidentifier": "gamelogic_script_cinstance",
+      "enums": [
+      ],
+      "exports": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "gamelogic"
+      ],
+      "methods": {
+        "lua_from": { },
+        "lua_to": { 
+          "initialize": {
+            "comment": "This function is called when the script is started",
+            "arguments": [
+              { "name": "player", "type": "std::vector<int>", "comment": "Vector with the marble IDs used in this race" },
+              { "name": "laps"  , "type": "int"             , "comment": "The number of laps of this race" }
+            ]
+          },
+          "onPlayerStunned": {
+            "comment": "Callback to notify the script about a stunned player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The stunned player's Marble ID" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onPlayerRespawn": {
+            "comment": "Callback to notify the script about a player respawning",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The respawning player's Marble ID" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCheckpoint": {
+            "comment": "Callback to notify the script about a player passing a checkpoint",
+            "arguments": [
+              { "name": "Marble"    , "type": "int", "comment": "The player's Marble ID" },
+              { "name": "Checkpoint", "type": "int", "comment": "The checkpoint ID the player has passed" },
+              { "name": "steps"     , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onLapStart": {
+            "comment": "Callback to notify the script about a player starting a new lap",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The player's Marble ID" },
+              { "name": "LapNo" , "type": "int", "comment": "The lap number the player has just started" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCountdown": {
+            "comment": "Callback for the countdown",
+            "arguments": [
+              { "name": "Tick" , "type": "int", "comment": "The callback tick (4..0 where 0 is race starts)" },
+              { "name": "steps", "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          }
+        },
+        "lua_none": { 
+          "setDynamicsThread": {
+            "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
     }
   }
 }

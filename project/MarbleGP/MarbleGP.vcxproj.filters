@@ -318,7 +318,19 @@
     <ClCompile Include="..\_source\source\lua\CLuaPhysicsEntity.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\lua\CLuaScript_dynamics.cpp">
+    <ClCompile Include="..\_source\source\_generated\lua\lua_binding.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\_generated\lua\lua_enums.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\ILuaClass.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\luawrap.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaSingleton_gamelogic.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
   </ItemGroup>
@@ -569,8 +581,20 @@
     <ClInclude Include="..\_source\include\lua\CLuaPhysicsEntity.h">
       <Filter>Headerdateien\lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\_source\include\lua\CLuaScript_dynamics.h">
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_gamelogic.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\lua_enums.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\ILuaClass.h">
       <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\luawrap.hpp">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_gamelogic.h">
+      <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
