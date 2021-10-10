@@ -511,6 +511,9 @@ namespace dustbin {
               m_pOutputQueue);
 
             p->m_bHasContact = false;
+
+            if (m_pTrackScript != nullptr)
+              m_pTrackScript->onMarbleMoved(p->m_iId, p->m_vPosition);
           }
         }
 
@@ -561,6 +564,10 @@ namespace dustbin {
         }
 
         sendStepmsg(m_iWorldStep, m_pOutputQueue);
+
+        if (m_pTrackScript != nullptr)
+          m_pTrackScript->onStep(m_iWorldStep);
+
         m_iWorldStep++;
       }
 
