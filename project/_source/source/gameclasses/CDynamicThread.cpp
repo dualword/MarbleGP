@@ -6,6 +6,7 @@
 #include <_generated/lua/lua_tables.h>
 #include <lua/CLuaSingleton_system.h>
 #include <scenenodes/CPhysicsNode.h>
+#include <lua/CLuaScript_dynamics.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/COdeNodes.h>
 #include <LuaBridge/LuaBridge.h>
@@ -571,8 +572,9 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers, int a_iLaps) :
+    CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers, int a_iLaps, const std::string& a_sLuaTrackScript) :
       m_eGameState(enGameState::Countdown),
+      m_pTrackScript(nullptr),
       m_pLuaSystem(nullptr),
       m_fGridAngle(0.0f),
       m_pWorld(nullptr),
@@ -644,6 +646,9 @@ namespace dustbin {
 
       m_pLuaSystem = new lua::CLuaSingleton_system(m_pState);
 
+      if (a_sLuaTrackScript != "")
+        m_pTrackScript = new lua::CLuaScript_dynamics(m_pWorld, a_sLuaTrackScript);
+
       std::error_code l_cError;
       luabridge::push(m_pState, this, l_cError);
       lua_setglobal(m_pState, "dynamics");
@@ -686,6 +691,9 @@ namespace dustbin {
 
       if (m_pWorld != nullptr)
         delete m_pWorld;
+
+      if (m_pTrackScript != nullptr)
+        delete m_pTrackScript;
     }
 
     /**
@@ -748,7 +756,8 @@ namespace dustbin {
     }
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
-      printf("Trigger #%i triggered by marble #%i\n", a_iTrigger, a_iMarble);
+      if (m_pTrackScript != nullptr)
+        m_pTrackScript->onTrigger(a_iMarble, a_iTrigger);
     }
 
     /**

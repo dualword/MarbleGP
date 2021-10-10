@@ -9,6 +9,7 @@
 
 #include <ode/ode.h>
 #include <string>
+#include <vector>
 #include <map>
 
 namespace dustbin {

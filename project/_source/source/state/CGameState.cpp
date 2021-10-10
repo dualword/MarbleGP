@@ -12,6 +12,7 @@
 #include <scenenodes/CWorldNode.h>
 #include <shader/CMyShaderNone.h>
 #include <state/CGameState.h>
+#include <lua/CLuaHelpers.h>
 #include <CGlobal.h>
 #include <lua.hpp>
 #include <string>
@@ -266,7 +267,7 @@ namespace dustbin {
       l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSgmr->getRootSceneNode());
 
       if (l_pNode != nullptr) {
-        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, m_pChampionship->m_thisrace.m_laps);
+        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, m_pChampionship->m_thisrace.m_laps, lua::loadLuaScript("data/levels/" + m_pChampionship->m_thisrace.m_track + "/dynamics.lua"));
         m_pInputQueue = new threads::CInputQueue();
         m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
         m_pOutputQueue = new threads::COutputQueue();

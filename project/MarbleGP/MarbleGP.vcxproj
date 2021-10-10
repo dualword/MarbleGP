@@ -214,9 +214,11 @@
     <ClCompile Include="..\_source\source\lua\CLuaCamera.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaGuiItem.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaHelpers.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaPhysicsEntity.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneManager.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSceneNode.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaScript_dialog.cpp" />
+    <ClCompile Include="..\_source\source\lua\CLuaScript_dynamics.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_audio.cpp" />
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_system.cpp" />
     <ClCompile Include="..\_source\source\MarbleGP.cpp" />
@@ -287,9 +289,11 @@
     <ClInclude Include="..\_source\include\lua\CLuaCamera.h" />
     <ClInclude Include="..\_source\include\lua\CLuaGuiItem.h" />
     <ClInclude Include="..\_source\include\lua\CLuaHelpers.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaPhysicsEntity.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneManager.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSceneNode.h" />
     <ClInclude Include="..\_source\include\lua\CLuaScript_dialog.h" />
+    <ClInclude Include="..\_source\include\lua\CLuaScript_dynamics.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSingleton_system.h" />
     <ClInclude Include="..\_source\include\lua\CLuaSingleton_audio.h" />
     <ClInclude Include="..\_source\include\lua\ILuaObject.h" />

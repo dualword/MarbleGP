@@ -19,6 +19,7 @@
 namespace dustbin {
   namespace lua {
     class CLuaSingleton_system;
+    class CLuaScript_dynamics;
   }
 
   namespace gameclasses {
@@ -60,6 +61,7 @@ namespace dustbin {
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
         lua::CLuaSingleton_system* m_pLuaSystem;
+        lua::CLuaScript_dynamics* m_pTrackScript;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
@@ -90,7 +92,7 @@ namespace dustbin {
         virtual void execute();
 
       public:
-        CDynamicThread(scenenodes::CWorldNode *a_pWorld, const std::vector<gameclasses::SPlayer*> &a_vPlayers, int a_iLaps);
+        CDynamicThread(scenenodes::CWorldNode *a_pWorld, const std::vector<gameclasses::SPlayer*> &a_vPlayers, int a_iLaps, const std::string &a_sLuaTrackScript);
 
         virtual ~CDynamicThread();
 

@@ -315,6 +315,12 @@
     <ClCompile Include="..\_source\source\scenenodes\CJointNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaPhysicsEntity.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaScript_dynamics.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -559,6 +565,12 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\scenenodes\CJointNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaPhysicsEntity.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\lua\CLuaScript_dynamics.h">
+      <Filter>Headerdateien\lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
