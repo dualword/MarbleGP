@@ -322,6 +322,9 @@ namespace dustbin {
                     if (l_cRespawn.isCallable())
                       l_cRespawn(p->m_iId, m_iWorldStep);
                   }
+
+                  if (m_pTrackScript != nullptr)
+                    m_pTrackScript->onRespawn(p->m_iId);
                 }
               }
             }
@@ -360,10 +363,13 @@ namespace dustbin {
                 p->m_iStunnedStart = m_iWorldStep;
                 sendPlayerstunned(p->m_iId, 1, m_pOutputQueue);
                 if (m_pState != nullptr) {
-                  luabridge::LuaRef l_cRespawn = luabridge::getGlobal(m_pState, "onPlayerStunned");
-                  if (l_cRespawn.isCallable())
-                    l_cRespawn(p->m_iId, m_iWorldStep);
+                  luabridge::LuaRef l_cStunned = luabridge::getGlobal(m_pState, "onPlayerStunned");
+                  if (l_cStunned.isCallable())
+                    l_cStunned(p->m_iId, m_iWorldStep);
                 }
+
+                if (m_pTrackScript != nullptr)
+                  m_pTrackScript->onPlayerStunned(p->m_iId, 1);
               }
 
               p->m_vVelocity = l_vLinVel;
@@ -772,9 +778,11 @@ namespace dustbin {
         if (m_aMarbles[l_iId]->m_eState == CObjectMarble::enMarbleState::Stunned) {
           m_aMarbles[l_iId]->m_iStunnedStart = -1;
           sendPlayerstunned(m_aMarbles[l_iId]->m_iId, 0, m_pOutputQueue);
+
+          if (m_pTrackScript != nullptr)
+            m_pTrackScript->onPlayerStunned(a_iMarble, 0);
         }
 
-        printf("Marble %i is respawning.\n", a_iMarble);
         m_aMarbles[l_iId]->m_eState = CObjectMarble::enMarbleState::Respawn1;
         m_aMarbles[l_iId]->m_iRespawnStart = m_iWorldStep;
 
@@ -786,8 +794,8 @@ namespace dustbin {
             l_cRespawn(a_iMarble, m_iWorldStep);
         }
 
-        if (a_iMarble >= 10000 && a_iMarble < 10016 && m_aMarbles[a_iMarble - 10000] != nullptr)
-          handleCheckpoint(a_iMarble, m_aMarbles[a_iMarble - 10000]->m_iLastCp);
+        if (m_pTrackScript != nullptr)
+          m_pTrackScript->onRespawn(a_iMarble);
       }
     }
 
@@ -804,6 +812,9 @@ namespace dustbin {
         if (l_cCheckpoint.isCallable())
           l_cCheckpoint(a_iMarbleId, a_iCheckpoint, m_iWorldStep);
       }
+      
+      if (m_pTrackScript != nullptr)
+        m_pTrackScript->onCheckpoint(a_iMarbleId, a_iCheckpoint);
     }
 
     /**

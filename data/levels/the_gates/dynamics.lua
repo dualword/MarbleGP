@@ -57,21 +57,21 @@ end
 -- Callback for a marble passing a checkpoint
 -- @param a_Marble the marble that passed the checkpoint
 -- @param a_Checkpoint the checkpoint passed
---[[function onCheckpoint(a_Marble, a_Checkpoint)
+function onCheckpoint(a_Marble, a_Checkpoint)
   io.write("Marble " .. tostring(a_Marble) .. " has passed checkpoint " .. tostring(a_Checkpoint) .. "\n")
-end--]]
+end
 
 -- Callback if the stunned state of a marble changed
 -- @param a_Marble the marble
 -- @param a_State the stunned state of the marble (1 == stunned, 0 == back to normal)
---[[ function onMarbleStunned(a_Marble, a_State)
+function onMarbleStunned(a_Marble, a_State)
   io.write("Marble " .. tostring(a_Marble) .. " stunned (" .. tostring(a_State) .. ")\n")
-end --]]
+end
 
 -- Callback for marble movement. This is called every step for every marble,
 -- so make sure it's not getting too complicated
 -- @param a_Marble the moving marble
 -- @param a_Position the new position
---[[function onMarbleMoved(a_Marble, a_Position)
+function onMarbleMoved(a_Marble, a_Position)
   io.write("Marble Moved: " .. tostring(a_Marble) .. " (" .. tostring(a_Position["x"]) .. ", ".. tostring(a_Position["y"]) .. ", ".. tostring(a_Position["z"]) .. ")\n")
-end--]]
+end

@@ -115,5 +115,18 @@ namespace dustbin {
         }
       }
     }
+
+    /**
+    * LUA callback for changes in the player stunned state
+    * @param a_iMarble the player's marble
+    * @param a_iState the new state (1 == stunned, 0 == back to normal)
+    */
+    void CLuaScript_dynamics::onPlayerStunned(int a_iMarble, int a_iState) {
+      if (m_pState != nullptr) {
+        luabridge::LuaRef l_cStunned = luabridge::getGlobal(m_pState, "onStep");
+        if (l_cStunned.isCallable())
+          l_cStunned(a_iMarble, a_iState);
+      }
+    }
   }
 }

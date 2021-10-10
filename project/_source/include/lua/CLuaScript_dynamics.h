@@ -71,6 +71,13 @@ namespace dustbin {
         * for every marble so be sure not to make this too complicated
         */
         void onMarbleMoved(int a_iMarble, const irr::core::vector3df& a_vPosition);
+
+        /**
+        * LUA callback for changes in the player stunned state
+        * @param a_iMarble the player's marble
+        * @param a_iState the new state (1 == stunned, 0 == back to normal)
+        */
+        void onPlayerStunned(int a_iMarble, int a_iState);
     };
   }
 }
