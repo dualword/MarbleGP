@@ -1,12 +1,16 @@
 {
   "includes": {
-    "irr::gui::IGUIElement *"   : "irrlicht.h",
-    "irr::gui::IGUIStaticText *": "irrlicht.h",
-    "std::vector"               : "vector"
+    "irr::gui::IGUIElement *"              : "irrlicht.h",
+    "irr::gui::IGUIStaticText *"           : "irrlicht.h",
+    "std::vector"                          : "vector",
+    "dustbin::gameclasses::CObjectMarble *": "gameclasses/COdeNodes.h",
+    "dustbin::gameclasses::CObject       *": "gameclasses/COdeNodes.h"
   },
   "datatypes": [
     { "name": "std::vector"                         , "include": "vector"                       },
-    { "name": "dustbin::gameclasses::CDynamicThread", "include": "gameclasses/CDynamicThread.h" }
+    { "name": "dustbin::gameclasses::CDynamicThread", "include": "gameclasses/CDynamicThread.h" },
+    { "name": "dustbin::gameclasses::CObjectMarble" , "include": "gameclasses/COdeNodes.h"      },
+    { "name": "dustbin::gameclasses::CObject"       , "include": "gameclasses/COdeNodes.h"      }
   ],
   "enumerations": {
   },
@@ -189,6 +193,45 @@
           }
         }
       }
+    },
+    "physics": {
+      "globalidentifier": "physics_cinstance",
+      "comment": "This singleton allows access to the objects of the current race",
+      "members": [
+        { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *"              , "comment": "The dynamics thread that is running", "default": "nullptr" },
+        { "name": "Marbles" , "type": "std::map<int, dustbin::gameclasses::CObjectMarble *>", "comment": "All marbles of the current race"    },
+        { "name": "Objects" , "type": "std::map<int, dustbin::gameclasses::CObject *>"      , "comment": "All objects of the current race"    },
+        { "name": "Moving"  , "type": "std::map<int, dustbin::gameclasses::CObject *>"      , "comment": "All non-static objects in a race"   }
+      ],
+      "methods": {
+        "lua_from": { 
+          "startmotor": {
+            "comment": "Set the parameters of a joint's motor. Setting velocity and / or force to zero deactivates the motor",
+            "arguments": [
+              { "name": "jointid" , "type": "int"  , "comment": "ID of the joint" },
+              { "name": "velocity", "type": "float", "comment": "The desired velocity of the joint" },
+              { "name": "force"   , "type": "float", "comment": "The force used to achieve the velocity" }
+            ]
+          },
+          "setmarbleupvector": {
+            "comment": "Set the up vector of a marble's camera. Useful for jumps.",
+            "arguments":  [
+              { "name": "marble" , "type": "int"      , "comment": "ID of the marble" },
+              { "name": "contact", "type": "SVector3d", "comment": "The new contact point" }
+            ]
+          }
+        },
+        "lua_to": {
+        },
+        "lua_none": {
+          "setDynamicsThread": {
+            "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
     }
   },
   "scripts": { 
@@ -218,6 +261,7 @@
             "comment": "Callback to notify the script about a stunned player",
             "arguments": [
               { "name": "Marble", "type": "int", "comment": "The stunned player's Marble ID" },
+              { "name": "state" , "type": "int", "comment": "The new stunned state (1 == stunned, 0 == back to normal)" },
               { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
             ]
           },
@@ -255,6 +299,93 @@
         "lua_none": { 
           "setDynamicsThread": {
             "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
+    },
+    "physics": {
+      "comment": "This is the per-track LUA script that allows access to all objects of the scene",
+      "globalidentifier": "physics_script_instance",
+      "members": [
+        { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The dynamics thread that is running", "default": "nullptr" }
+      ],
+      "enums": [
+      ],
+      "exports": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "physics"
+      ],
+      "methods": {
+        "lua_from": { },
+        "lua_to": { 
+          "initialize": {
+            "comment": "This function is called when the scripts starts to inform about the loaded track",
+            "arguments": [
+              { "name": "Marbles", "type": "std::vector<int>"          , "comment": "The IDs of all marbles participating in the race" },
+              { "name": "Objects", "type": "std::map<std::string, int>", "comment": "A map with all non-marble objects of the race. The key is the object's name, the value is the ID" }
+            ]
+          },
+          "onTrigger": {
+            "comment": "Callback to notify the script about a trigger event",
+            "arguments": [
+              { "name": "marble" , "type": "int", "comment": "The ID of the marble that triggered" },
+              { "name": "trigger", "type": "int", "comment": "The ID of the trigger that was hit" }
+            ]
+          },
+          "onPlayerStunned": {
+            "comment": "Callback to notify the script about a stunned player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The stunned player's Marble ID" },
+              { "name": "state" , "type": "int", "comment": "The new stunned state (1 == stunned, 0 == back to normal)" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onPlayerRespawn": {
+            "comment": "Callback to notify the script about a player respawning",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The respawning player's Marble ID" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCheckpoint": {
+            "comment": "Callback to notify the script about a player passing a checkpoint",
+            "arguments": [
+              { "name": "Marble"    , "type": "int", "comment": "The player's Marble ID" },
+              { "name": "Checkpoint", "type": "int", "comment": "The checkpoint ID the player has passed" },
+              { "name": "steps"     , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onLapStart": {
+            "comment": "Callback to notify the script about a player starting a new lap",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The player's Marble ID" },
+              { "name": "LapNo" , "type": "int", "comment": "The lap number the player has just started" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCountdown": {
+            "comment": "Callback for the countdown",
+            "arguments": [
+              { "name": "Tick" , "type": "int", "comment": "The callback tick (4..0 where 0 is race starts)" },
+              { "name": "steps", "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onPlayerFinished": {
+            "comment": "LUA callback invoked when a player finished",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The player's Marble ID" }
+            ]
+          }
+        },
+        "lua_none": { 
+          "setDynamicsThread": {
+            "comment": "Add the game data to this script",
             "arguments": [
               { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
             ]

@@ -946,7 +946,17 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
       
       a_Source.write(a_Name + "::~" + a_Name + "() {\n")
       a_Source.write("  if (m_pState != nullptr)\n")
-      a_Source.write("    lua_close(m_pState);\n")
+      a_Source.write("    lua_close(m_pState);\n\n")
+      
+      if "members" in a_Class:
+        for l_Member in a_Class["members"]:
+          a_Source.write("  if (m_" + a_Class["members"]["name"] + " != nullptr)\n    delete m_" + a_Class["members"]["name"] + ";\n")
+          
+      if "singletons" in a_Class:
+        a_Source.write("\n  // delete singletons\n")
+        for l_Singleton in a_Class["singletons"]:
+          a_Source.write("  if (m_LuaSgt_" + l_Singleton + " != nullptr)\n    delete m_LuaSgt_" + l_Singleton + ";\n")
+      
       a_Source.write("}\n")
 
 def CreateBinding(a_Json):

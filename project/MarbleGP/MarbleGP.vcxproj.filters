@@ -333,6 +333,9 @@
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_gamelogic.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\source\lua\CLuaPhysics.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\_source\include\CMainClass.h">
@@ -595,6 +598,12 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_gamelogic.h">
       <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaScript_physics.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_source\include\_generated\lua\CLuaSingleton_physics.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 
 #include <_generated/lua/CLuaScript_gamelogic.h>
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <_generated/lua/CLuaScript_physics.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <_generated/lua/lua_tables.h>
@@ -318,6 +319,9 @@ namespace dustbin {
 
                   if (m_pGameLogic != nullptr)
                     m_pGameLogic->onPlayerRespawn(p->m_iId, m_iWorldStep);
+
+                  if (m_pPhysicsScript != nullptr)
+                    m_pPhysicsScript->onPlayerRespawn(p->m_iId, m_iWorldStep);
                 }
               }
             }
@@ -357,7 +361,10 @@ namespace dustbin {
                 sendPlayerstunned(p->m_iId, 1, m_pOutputQueue);
 
                 if (m_pGameLogic != nullptr)
-                  m_pGameLogic->onPlayerStunned(p->m_iId, m_iWorldStep);
+                  m_pGameLogic->onPlayerStunned(p->m_iId, 1, m_iWorldStep);
+
+                if (m_pPhysicsScript != nullptr)
+                  m_pPhysicsScript->onPlayerStunned(p->m_iId, 1, m_iWorldStep);
               }
 
               p->m_vVelocity = l_vLinVel;
@@ -481,6 +488,9 @@ namespace dustbin {
 
               if (p->m_iManualRespawn != -1)
                 p->m_iManualRespawn = m_iWorldStep;
+
+              if (m_pPhysicsScript != nullptr)
+                m_pPhysicsScript->onPlayerStunned(p->m_iId, 0, m_iWorldStep);
             }
 
             sendMarblemoved(p->m_iId,
@@ -513,33 +523,36 @@ namespace dustbin {
         }
 
         if (m_eGameState == enGameState::Countdown) {
-          auto l_cLuaCountdown = [](int a_iTick, int a_iStep, CLuaScript_gamelogic *a_pScript) {
+          auto l_cLuaCountdown = [](int a_iTick, int a_iStep, CLuaScript_gamelogic *a_pScript, CLuaScript_physics *a_pPhysicsScript) {
             if (a_pScript != nullptr)
               a_pScript->onCountdown(a_iTick, a_iStep);
+
+            if (a_pPhysicsScript != nullptr)
+              a_pPhysicsScript->onCountdown(a_iTick, a_iStep);
           };
 
           if (m_iWorldStep == 0) {
             sendCountdown(4, m_pOutputQueue);
-            l_cLuaCountdown(4, m_iWorldStep, m_pGameLogic);
+            l_cLuaCountdown(4, m_iWorldStep, m_pGameLogic, m_pPhysicsScript);
           }
           else {
             int l_iStep = m_iWorldStep - 360;
 
             if (l_iStep == 120) {
               /*sendCountdown(3, m_pOutputQueue);
-              l_cLuaCountdown(3, m_iWorldStep, m_pGameLogic);
+              l_cLuaCountdown(3, m_iWorldStep, m_pGameLogic, m_pPhysicsScript);
             }
             else if (l_iStep == 240) {
               sendCountdown(2, m_pOutputQueue);
-              l_cLuaCountdown(2, m_iWorldStep, m_pGameLogic);
+              l_cLuaCountdown(2, m_iWorldStep, m_pGameLogic, m_pPhysicsScript);
             }
             else if (l_iStep == 360) {
               sendCountdown(1, m_pOutputQueue);
-              l_cLuaCountdown(1, m_iWorldStep, m_pGameLogic);
+              l_cLuaCountdown(1, m_iWorldStep, m_pGameLogic, m_pPhysicsScript);
             }
             else if (l_iStep == 480) {*/
               sendCountdown(0, m_pOutputQueue);
-              l_cLuaCountdown(0, m_iWorldStep, m_pGameLogic);
+              l_cLuaCountdown(0, m_iWorldStep, m_pGameLogic, m_pPhysicsScript);
               m_eGameState = enGameState::Racing;
             }
           }
@@ -566,6 +579,7 @@ namespace dustbin {
 
     CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers, int a_iLaps, const std::string& a_sLuaTrackScript) :
       m_eGameState(enGameState::Countdown),
+      m_pPhysicsScript(nullptr),
       m_pGameLogic(nullptr),
       m_fGridAngle(0.0f),
       m_pWorld(nullptr),
@@ -625,25 +639,44 @@ namespace dustbin {
         }
       }
 
+      std::vector<int> l_vMarbleIDs;
+
+      for (int i = 0; i < 16; i++)
+        if (m_aMarbles[i] != nullptr)
+          l_vMarbleIDs.push_back(m_aMarbles[i]->m_iId);
+
       std::string l_sScript = lua::loadLuaScript("data/lua/gamelogics.lua");
 
       if (l_sScript != "") {
         m_pGameLogic = new CLuaScript_gamelogic(l_sScript);
         m_pGameLogic->setDynamicsThread(this);
         
-        std::vector<int> l_vMarbleIDs;
-
-        for (int i = 0; i < 16; i++)
-          if (m_aMarbles[i] != nullptr)
-            l_vMarbleIDs.push_back(m_aMarbles[i]->m_iId);
-
         m_pGameLogic->initialize(l_vMarbleIDs, a_iLaps);
+      }
+
+      if (a_sLuaTrackScript != "") {
+        m_pPhysicsScript = new CLuaScript_physics(a_sLuaTrackScript);
+        m_pPhysicsScript->setDynamicsThread(this);
+
+        std::map<std::string, int> l_mObjects;
+
+        for (std::vector<CObject*>::iterator it = m_pWorld->m_vObjects.begin(); it != m_pWorld->m_vObjects.end(); it++) {
+          l_mObjects[(*it)->m_sName] = (*it)->m_iId;
+        }
+
+        m_pPhysicsScript->initialize(l_vMarbleIDs, l_mObjects);
       }
     }
 
     CDynamicThread::~CDynamicThread() {
       if (m_pWorld != nullptr)
         delete m_pWorld;
+
+      if (m_pGameLogic != nullptr)
+        delete m_pGameLogic;
+
+      if (m_pPhysicsScript != nullptr)
+        delete m_pPhysicsScript;
     }
 
     /**
@@ -706,6 +739,8 @@ namespace dustbin {
     }
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
+      if (m_pPhysicsScript != nullptr)
+        m_pPhysicsScript->onTrigger(a_iMarble, a_iTrigger);
     }
 
     /**
@@ -722,7 +757,10 @@ namespace dustbin {
           sendPlayerstunned(m_aMarbles[l_iId]->m_iId, 0, m_pOutputQueue);
 
           if (m_pGameLogic != nullptr)
-            m_pGameLogic->onPlayerStunned(a_iMarble, m_iWorldStep);
+            m_pGameLogic->onPlayerStunned(a_iMarble, 0, m_iWorldStep);
+
+          if (m_pPhysicsScript != nullptr)
+            m_pPhysicsScript->onPlayerStunned(a_iMarble, 0, m_iWorldStep);
         }
 
         m_aMarbles[l_iId]->m_eState = CObjectMarble::enMarbleState::Respawn1;
@@ -732,6 +770,9 @@ namespace dustbin {
 
         if (m_pGameLogic != nullptr)
           m_pGameLogic->onPlayerRespawn(a_iMarble, m_iWorldStep);
+
+        if (m_pPhysicsScript != nullptr)
+          m_pPhysicsScript->onPlayerRespawn(a_iMarble, m_iWorldStep);
       }
     }
 
@@ -745,6 +786,9 @@ namespace dustbin {
 
       if (m_pGameLogic != nullptr)
         m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_iWorldStep);
+
+      if (m_pPhysicsScript != nullptr)
+        m_pPhysicsScript->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_iWorldStep);
     }
 
     /**
@@ -757,6 +801,9 @@ namespace dustbin {
 
       if (m_pGameLogic != nullptr)
         m_pGameLogic->onLapStart(a_iMarbleId, a_iLapNo, m_iWorldStep);
+
+      if (m_pPhysicsScript != nullptr)
+        m_pPhysicsScript->onLapStart(a_iMarbleId, a_iLapNo, m_iWorldStep);
     }
 
     /**
@@ -776,6 +823,9 @@ namespace dustbin {
             l_bAllFinished = false;
         }
 
+        if (m_pPhysicsScript != nullptr)
+          m_pPhysicsScript->onPlayerFinished(a_iMarbleId);
+
         if (l_bAllFinished)
           sendRacefinished(0, m_pOutputQueue);
       }
@@ -790,6 +840,14 @@ namespace dustbin {
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         m_aMarbles[l_iIndex]->m_eState = gameclasses::CObjectMarble::enMarbleState::Rolling;
       }
+    }
+
+    /**
+    * Retrieve the world of the race
+    * @return the world of the race
+    */
+    CWorld* CDynamicThread::getWorld() {
+      return m_pWorld;
     }
   }
 }

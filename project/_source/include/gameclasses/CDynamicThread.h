@@ -17,6 +17,7 @@
 #include <chrono>
 
 class CLuaScript_gamelogic;
+class CLuaScript_physics;
 
 namespace dustbin {
   namespace gameclasses {
@@ -56,6 +57,7 @@ namespace dustbin {
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
         CLuaScript_gamelogic* m_pGameLogic;
+        CLuaScript_physics  * m_pPhysicsScript;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
@@ -130,6 +132,12 @@ namespace dustbin {
         * @param a_iMarble the marble id
         */
         void startPlayer(int a_iMarble);
+
+        /**
+        * Retrieve the world of the race
+        * @return the world of the race
+        */
+        CWorld* getWorld();
     };
   }
 }

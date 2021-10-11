@@ -1,7 +1,8 @@
 -- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
-system:executeluascript("data/lua/serializer.lua")
+-- system:executeluascript("data/lua/serializer.lua")
 
 g_Gates   = { }
+
 g_Trigger = {
   [1] = { },
   [2] = { }
@@ -11,31 +12,32 @@ g_Count = {
   [2] = 0
 }
 
-function initialize(a_World)
-  for k,v in pairs(a_World) do
-    io.write("==> " .. tostring(v:getname()) .. "\n")
-    if v:getname() == "PhyGate1" or v:getname() == "PhyGate2" then
-      table.insert(g_Gates, v)
-    end
-  end
+g_Finished = { }
+
+function initialize(a_Marbles, a_Objects)
+  table.insert(g_Gates, a_Objects["PhyGate1"])
+  table.insert(g_Gates, a_Objects["PhyGate2"])
 end
 
 -- Callback for a trigger hit by a marble
 -- @param a_Marble the marble that triggered
 -- @param a_Trigger the trigger id
 function onTrigger(a_Marble, a_Trigger)
-  if a_Trigger == 0 or a_Trigger == 1 then
-    if g_Trigger[a_Trigger + 1][a_Marble] == nil then
-      g_Count[a_Trigger + 1] = g_Count[a_Trigger + 1] + 1
-      g_Trigger[a_Trigger + 1][a_Marble] = true
-      g_Gates[a_Trigger + 1]:startmotor(50, 500)
-    end
-  elseif a_Trigger == 2 or a_Trigger == 3 then
-    if g_Trigger[a_Trigger - 1][a_Marble] ~= nil then
-      g_Trigger[a_Trigger - 1][a_Marble] = nil
-      g_Count[a_Trigger - 1] = g_Count[a_Trigger - 1] - 1
-      if g_Count[a_Trigger - 1] == 0 then
-        g_Gates[a_Trigger - 1]:startmotor(-50, 500)
+  if g_Finished[a_Marble] == nil then
+    if a_Trigger == 0 or a_Trigger == 1 then
+      if g_Trigger[a_Trigger + 1][a_Marble] == nil then
+        g_Count[a_Trigger + 1] = g_Count[a_Trigger + 1] + 1
+        g_Trigger[a_Trigger + 1][a_Marble] = true
+        
+        physics:startmotor(g_Gates[a_Trigger + 1], 50, 500)
+      end
+    elseif a_Trigger == 2 or a_Trigger == 3 then
+      if g_Trigger[a_Trigger - 1][a_Marble] ~= nil then
+        g_Trigger[a_Trigger - 1][a_Marble] = nil
+        g_Count[a_Trigger - 1] = g_Count[a_Trigger - 1] - 1
+        if g_Count[a_Trigger - 1] == 0 then
+          physics:startmotor(g_Gates[a_Trigger - 1], -50, 500)
+        end
       end
     end
   end
@@ -46,6 +48,10 @@ end
 function onRespawn(a_Marble)
   onTrigger(a_Marble, 2)
   onTrigger(a_Marble, 3)
+end
+
+function onPlayerFinished(a_Marble)
+  g_Finished[a_Marble] = true
 end
 
 -- Callback for every simulation step (120 per second)
