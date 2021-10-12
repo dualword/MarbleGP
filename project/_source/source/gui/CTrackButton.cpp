@@ -1,3 +1,5 @@
+// (w) 2021 by Dustbin::Games / Christian Keimel
+#include <sound/CSoundInterface.h>
 #include <platform/CPlatform.h>
 #include <gui/CTrackButton.h>
 #include <CGlobal.h>
@@ -154,6 +156,7 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.Caller == this) {
           if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
             m_bHovered = true;
             l_bRet = true;
           }
@@ -165,6 +168,7 @@ namespace dustbin {
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
           m_bLDown = true;
           l_bRet = true;
         }

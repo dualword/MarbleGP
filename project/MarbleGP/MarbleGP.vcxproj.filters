@@ -219,7 +219,7 @@
     <ClCompile Include="..\_source\source\gui\CControllerUi.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\_source\source\gui\CDhstbinCheckbox.cpp">
+    <ClCompile Include="..\_source\source\gui\CDustbinCheckbox.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\gui\CSelector.cpp">

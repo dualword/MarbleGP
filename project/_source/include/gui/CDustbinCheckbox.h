@@ -23,7 +23,8 @@ namespace dustbin {
       private:
         irr::video::IVideoDriver* m_pDrv;
         bool                      m_bChecked,
-                                  m_bMouseL;
+                                  m_bMouseL,
+                                  m_bHover;
         int                       m_iBorder;
         irr::gui::ICursorControl* m_pCursor;
 

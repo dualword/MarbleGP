@@ -10,7 +10,9 @@
 #include <shader/CShaderHandlerBase.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
+#include <sound/CSoundInterface.h>
 #include <shader/CMyShaderNone.h>
+#include <sound/CSoundEnums.h>
 #include <state/CGameState.h>
 #include <lua/CLuaHelpers.h>
 #include <CGlobal.h>
@@ -564,8 +566,6 @@ namespace dustbin {
                 if (it->second.m_pPlayer->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2)
                   l_fFactor = 1.0f - l_fFactor;
 
-                m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
-
                 break;
               }
 
@@ -589,6 +589,8 @@ namespace dustbin {
 
         if (l_fFade > 0.0f)
           m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
+
+        m_pGlobal->getSoundInterface()->setSoundtrackFade(l_fFade);
       }
       else if (m_eState == enGameState::Racing) {
         if (m_iFinished != -1 && m_iStep - m_iFinished > 600) { /**< toDo: waiting time adjustable */
@@ -611,6 +613,7 @@ namespace dustbin {
         }
 
         m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
+        m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f - l_fFade);
       }
 
       m_pDrv->endScene();
@@ -635,8 +638,14 @@ namespace dustbin {
      */
     void CGameState::onCountdown(irr::u8 a_Tick) {
       printf("On Countdown: %i\n", a_Tick);
-      if (a_Tick == 0)
+      if (a_Tick == 0) {
         m_eState = enGameState::Racing;
+        m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStRace);
+        m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f);
+
+        m_pGlobal->getSoundInterface()->play2d(L"data/sounds/countdown_go.ogg", 1.0f, 0.0f);
+      }
+      else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(L"data/sounds/countdown.ogg", 1.0f, 0.0f);
     }
 
     /**
@@ -798,6 +807,7 @@ namespace dustbin {
      */
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
       m_iFinished = m_iStep;
+      m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
     }
 
     /**

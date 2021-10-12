@@ -164,7 +164,7 @@ function initialize()
   dialog:loaddialog("data/menu/button_cancel.xml")
   dialog:loaddialog("data/menu/button_ok.xml")
   
-    dialog:createui();
+  dialog:createui();
   audio:startsoundtrack(0)
   
   g_Settings = system:getsettings()

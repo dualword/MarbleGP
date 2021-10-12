@@ -52,6 +52,7 @@ namespace dustbin {
               // the axis is not calculated correctly!
               dJointAttach(m_cJoint, m_cBody, 0);
               dJointSetHingeAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
+              m_bSliderJoint = false;
               break;
 
             case 1: // Slider Joint
@@ -60,6 +61,7 @@ namespace dustbin {
               // the axis is not calculated correctly!
               dJointAttach(m_cJoint, m_cBody, 0);
               dJointSetSliderAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
+              m_bSliderJoint = true;
               break;
 
             default:
@@ -81,6 +83,7 @@ namespace dustbin {
 
     CObject::CObject(enObjectType a_eType, scenenodes::CPhysicsNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName, int a_iMaterial) :
       m_iId(a_pNode != nullptr ? a_pNode->getID() : -1),
+      m_bSliderJoint(false),
       m_pWorld(a_pWorld),
       m_bCollides(true),
       m_bTrigger(false),
@@ -199,13 +202,9 @@ namespace dustbin {
       for (irr::u32 i = 0; i < a_pBuffer->getVertexCount(); i++) {
         irr::core::vector3df l_cVec = l_pVertices[i].Pos;
 
-        a_cMatrix.rotateVect(l_cVec);
-
-        dVector3 v;
-
-        m_vVertices.push_back((dReal)l_cVec.X);
-        m_vVertices.push_back((dReal)l_cVec.Y);
-        m_vVertices.push_back((dReal)l_cVec.Z);
+        m_vVertices.push_back((dReal)(l_cVec.X * a_cMatrix.getScale().X));
+        m_vVertices.push_back((dReal)(l_cVec.Y * a_cMatrix.getScale().Y));
+        m_vVertices.push_back((dReal)(l_cVec.Z * a_cMatrix.getScale().Z));
         m_vVertices.push_back(0.0);
 
         a_iIndexV++;
@@ -250,6 +249,10 @@ namespace dustbin {
 
         if (m_bStatic) {
           dGeomSetPosition(m_cGeom, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
+
+          dQuaternion l_vRot;
+          eulerToQuaternion(a_pNode->getParent()->getRotation(), l_vRot);
+          dGeomSetQuaternion(m_cGeom, l_vRot);
         }
         else {
           m_cBody = dBodyCreate(m_pWorld->m_cWorld);
@@ -260,6 +263,10 @@ namespace dustbin {
           dBodySetAngularDamping(m_cBody, (dReal)0.0015);
           dGeomSetBody(m_cGeom, m_cBody);
           dBodySetPosition(m_cBody, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
+          
+          dQuaternion l_vRot;
+          eulerToQuaternion(a_pNode->getParent()->getRotation(), l_vRot);
+          dBodySetQuaternion(m_cBody, l_vRot);
 
           createJoint(a_pNode);
 

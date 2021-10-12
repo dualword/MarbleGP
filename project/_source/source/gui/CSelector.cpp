@@ -1,5 +1,5 @@
-#pragma once
-
+// (w) 2021 by Dustbin::Games / Christian Keimel
+#include <sound/CSoundInterface.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
 
@@ -32,9 +32,14 @@ namespace dustbin {
       if (IsVisible) {
         irr::core::position2di l_cPos = m_pCursor->getPosition();
 
+        bool l_bHover = m_bHoverL || m_bHoverR || m_bHoverT;
+
         m_bHoverL = m_cBoxL.isPointInside(l_cPos);
         m_bHoverR = m_cBoxR.isPointInside(l_cPos);
         m_bHoverT = m_cText.isPointInside(l_cPos);
+
+        if (!l_bHover && (m_bHoverL || m_bHoverR || m_bHoverT) && isEnabled())
+          CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
 
         irr::core::rect l_cRect = getAbsoluteClippingRect();
 
@@ -148,8 +153,11 @@ namespace dustbin {
             }
           }
         }
-        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
           m_bLeftBtn = true;
+          if (m_bHoverL || m_bHoverR || m_bHoverT)
+            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+        }
       }
       return false;
     }

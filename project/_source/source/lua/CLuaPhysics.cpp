@@ -24,9 +24,14 @@ void CLuaSingleton_physics::startmotor(int a_jointid, float a_velocity, float a_
   if (m_Moving.find(a_jointid) != m_Moving.end() && m_Moving[a_jointid]->m_cJoint != 0) {
     dJointID l_cJoint = m_Moving[a_jointid]->m_cJoint;
 
-    dJointSetSliderParam(l_cJoint, dParamVel, a_velocity);
-    dJointSetSliderParam(l_cJoint, dParamFMax, a_force);
-
+    if (m_Moving[a_jointid]->m_bSliderJoint) {
+      dJointSetSliderParam(l_cJoint, dParamVel, a_velocity);
+      dJointSetSliderParam(l_cJoint, dParamFMax, a_force);
+    }
+    else {
+      dJointSetHingeParam(l_cJoint, dParamVel, a_velocity);
+      dJointSetHingeParam(l_cJoint, dParamFMax, a_force);
+    }
   }
 }
 

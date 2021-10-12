@@ -237,7 +237,7 @@ namespace dustbin {
 
     void CSoundInterface::setSoundtrackFade(irr::f32 a_fValue) {
       if (m_pSoundTrack != nullptr) {
-        m_pSoundTrack->setVolume(a_fValue * m_fMasterVolume * m_fSoundtrackVolume);
+        m_pSoundTrack->setVolume((a_fValue > 0.0f ? a_fValue : 0.0f) * m_fMasterVolume * m_fSoundtrackVolume);
       }
     }
 

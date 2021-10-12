@@ -56,10 +56,11 @@ namespace dustbin {
       public:
         int m_iId;
 
-        bool m_bStatic,
-             m_bCollides,
-             m_bTrigger,
-             m_bRespawn;
+        bool m_bStatic,       /**< Is this a static object? */
+             m_bCollides,     /**< Does this object collide with others. Hint: triggers do not have to */
+             m_bTrigger,      /**< Does this object trigger? */
+             m_bRespawn,      /**< Does the collision of a marble with this object respawn the marble? */
+             m_bSliderJoint;  /**< Is the joint attached to the object (if any) a slider? */
 
         int m_iTrigger;
 

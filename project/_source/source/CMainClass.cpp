@@ -721,7 +721,9 @@ namespace dustbin {
       m_pSoundInterface->preloadSound(L"data/sounds/theme_race.ogg");
       m_pSoundInterface->preloadSound(L"data/sounds/theme_result.ogg");
       m_pSoundInterface->preloadSound(L"data/sounds/button_hover.ogg");
-      m_pSoundInterface->preloadSound(L"data/sounds/button_press.ogg");
+      m_pSoundInterface->preloadSound(L"data/sounds/button_hover.ogg");
+      m_pSoundInterface->preloadSound(L"data/sounds/countdown.ogg");
+      m_pSoundInterface->preloadSound(L"data/sounds/countdown_go.ogg");
 
       m_pSoundInterface->assignSoundtracks(
         {
