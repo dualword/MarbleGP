@@ -566,6 +566,8 @@ namespace dustbin {
                 if (it->second.m_pPlayer->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2)
                   l_fFactor = 1.0f - l_fFactor;
 
+                m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
+
                 break;
               }
 
