@@ -1,7 +1,4 @@
-/*
-(w) 2016 - 2018 by Christian Keimel / https://www.bulletbyte.de
-This file is licensed under the terms of the ZLib license - https://www.zlib.net/zlib_license.html
-*/
+// (w) 2021 by Dustbin::Games / Christian Keimel
 #include <platform/CPlatform.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,16 +18,50 @@ namespace dustbin {
       std::strftime(a_sBuffer, a_iLen, "%d %b %Y", ptm);
     }
 
-    void portableOpenUrl(const char *a_sUrl) {
+    const std::string portableGetFontPath() {
     }
 
-    void portableFocusWindow(irr::video::IVideoDriver *a_pDrv) {
+    const std::wstring portableGetDataPath() {
+    }
+    const std::wstring portableGetTexturePath() {
     }
 
-    void portableGetDataPaths(char *a_sRoot, char *a_sGhosts, char *a_sReplay) {
-      sprintf(a_sRoot  , "."); //~/.DustbinGames/marbles3");
-      sprintf(a_sGhosts, "."); //"~/.DustbinGames/marbles3/ghosts");
-      sprintf(a_sReplay, "."); //"~/.DustbinGames/marbles3/replay");
+    void preventScreenSaver() {
     }
+
+    std::wstring s2ws(const std::string& str) {
+    }
+
+    std::wstring s2ws(const std::string& str) {
+      using convert_typeX = std::codecvt_utf8<wchar_t>;
+      std::wstring_convert<convert_typeX, wchar_t> converterX;
+      return converterX.from_bytes(str);
+    }
+
+    std::string ws2s(const std::wstring& wstr) {
+      using convert_typeX = std::codecvt_utf8<wchar_t>;
+      std::wstring_convert<convert_typeX, wchar_t> converterX;
+      return converterX.to_bytes(wstr);
+    }
+
+    std::vector<std::string> splitString(const std::string a_sInput, const char a_sDelimiter) {
+      std::vector<std::string> l_vRet;
+
+      std::string l_sInput = a_sInput;
+
+      while (l_sInput.size() > 0) {
+        size_t l_iPos = l_sInput.find_first_of(a_sDelimiter);
+
+        if (l_iPos != std::string::npos) {
+          l_vRet.push_back(l_sInput.substr(0, l_iPos));
+          l_sInput = l_sInput.substr(l_iPos + 1);
+        }
+        else {
+          l_vRet.push_back(l_sInput);
+          l_sInput = "";
+        }
+      }
+
+      return l_vRet;
   }
 }
