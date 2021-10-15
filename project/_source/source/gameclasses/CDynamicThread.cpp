@@ -296,7 +296,7 @@ namespace dustbin {
               irr::core::vector3df v = p->m_vOffset;
               v.normalize();
               // Marble Class Param: Steer Power and Thrust
-              irr::core::vector3df l_vTorque = 60.0f * l_vSteer.X * v + 65.0f * l_vSteer.Y * p->m_vSideVector;
+              irr::core::vector3df l_vTorque = 70.0f * l_vSteer.X * v + 60.0f * l_vSteer.Y * p->m_vSideVector;
 
               dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
