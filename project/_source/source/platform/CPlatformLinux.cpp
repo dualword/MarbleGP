@@ -1,18 +1,21 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <platform/CPlatform.h>
 #include <stdlib.h>
+#include <cstring>
+#include <codecvt>
 #include <stdio.h>
+#include <locale>
 #include <ctime>
 
 namespace dustbin {
   namespace platform {
-    
-    void portableItoa(int a_iValue, char *a_sBuffer, int a_iLen) {
+
+    void portableItoa(int a_iValue, char* a_sBuffer, int a_iLen) {
       sprintf(a_sBuffer, "%d", a_iValue);
     }
 
-    void portableDateStr(long a_iTime, char *a_sBuffer, int a_iLen) {
-      std::tm *ptm;
+    void portableDateStr(long a_iTime, char* a_sBuffer, int a_iLen) {
+      std::tm* ptm;
       time_t l_iDummy = a_iTime;
       ptm = std::localtime(&l_iDummy);
       std::strftime(a_sBuffer, a_iLen, "%d %b %Y", ptm);
@@ -27,9 +30,6 @@ namespace dustbin {
     }
 
     void preventScreenSaver() {
-    }
-
-    std::wstring s2ws(const std::string& str) {
     }
 
     std::wstring s2ws(const std::string& str) {
@@ -63,5 +63,6 @@ namespace dustbin {
       }
 
       return l_vRet;
+    }
   }
 }

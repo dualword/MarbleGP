@@ -7,7 +7,7 @@
 #include <irrlicht/irrlicht.h>
 #endif
 
-#include <scenenodes/CStartingGridSceneNode_base.h>
+#include <scenenodes/CStartingGridSceneNode_Base.h>
 
 namespace dustbin {
   namespace scenenodes {

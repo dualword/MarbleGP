@@ -3,6 +3,7 @@
 #include <platform/CPlatform.h>
 #include <gui/CClipImage.h>
 #include <CGlobal.h>
+#include <cstring>
 
 namespace dustbin {
   namespace gui {
@@ -79,7 +80,13 @@ namespace dustbin {
       m_iX2 = a_pIn->getAttributeAsInt("Right" );
       m_iY2 = a_pIn->getAttributeAsInt("Bottom");
 
+#ifdef NO_XEFFECT
+      irr::c8 l_sBuffer[2048];
+      a_pIn->getAttributeAsString("Texture", l_sBuffer);
+      m_sTexture = l_sBuffer;
+#else
       m_sTexture = a_pIn->getAttributeAsString("Texture", "").c_str();
+#endif
 
       if (m_sTexture != "")
         m_pTexture = CGlobal::getInstance()->createTexture(m_sTexture);

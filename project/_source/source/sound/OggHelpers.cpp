@@ -1,4 +1,6 @@
 #include <sound/OggHelpers.h>
+#include <string.h>
+#include <stdio.h>
 #include <string>
 
 namespace dustbin {
@@ -10,7 +12,7 @@ namespace dustbin {
       if (l_pOggFile->m_pCurrent + l_iLen > l_pOggFile->m_pFileData + l_pOggFile->m_iFileSize) {
         l_iLen = l_pOggFile->m_pFileData + l_pOggFile->m_iFileSize - l_pOggFile->m_pCurrent;
       }
-      memcpy(l_pDst, l_pOggFile->m_pCurrent, l_iLen);
+      memcpy(l_pDst, (void*)l_pOggFile->m_pCurrent, l_iLen);
       l_pOggFile->m_pCurrent += l_iLen;
       return l_iLen;
     }

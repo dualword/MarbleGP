@@ -31,7 +31,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char *sCmdLi
 
   do {
     dustbin::CMainClass l_cMainClass;
-    std::chrono::steady_clock::time_point l_cNextStep = std::chrono::high_resolution_clock::now();
+    std::chrono::steady_clock::time_point l_cNextStep = std::chrono::steady_clock::now();
     do {
       l_eState = l_cMainClass.run();
       l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(10);

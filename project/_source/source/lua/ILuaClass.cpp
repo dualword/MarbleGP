@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LUA/ILuaClass.h>
+#include <lua/ILuaClass.h>
 
 ILuaClass::ILuaClass() {
   m_pState = nullptr;

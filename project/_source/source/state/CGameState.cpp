@@ -1,9 +1,12 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
+#ifndef NO_XEFFECT
 #include <shader/CShaderHandleXEffectSplitscreen.h>
+#include <shader/CShaderHandlerXEffect.h>
+#endif
+
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <controller/CControllerFactory.h>
-#include <shader/CShaderHandlerXEffect.h>
 #include <scenenodes/CMyCameraAnimator.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CCheckpointNode.h>
@@ -231,6 +234,7 @@ namespace dustbin {
 
       switch (l_cSettings.m_gfx_shadows) {
         case 3:
+#ifndef NO_XEFFECT
           if (m_mViewports.size() == 1) {
             m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);
           }
@@ -238,8 +242,10 @@ namespace dustbin {
             m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_cSettings.m_gfx_ambientlight);
           }
           break;
+#endif
           
         case 2:
+#ifndef NO_XEFFECT
           if (m_mViewports.size() == 1) {
             m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_iAmbient);
           }
@@ -247,8 +253,10 @@ namespace dustbin {
             m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_cSettings.m_gfx_ambientlight);
           }
           break;
+#endif
 
         case 1:
+#ifndef NO_XEFFECT
           if (m_mViewports.size() == 1) {
             m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_iAmbient);
           }
@@ -256,6 +264,7 @@ namespace dustbin {
             m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_cSettings.m_gfx_ambientlight);
           }
           break;
+#endif
 
         case 0:
           m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);

@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <stddef.h>
 #include <ogg/ogg.h>
 
 namespace dustbin {
