@@ -240,6 +240,7 @@ namespace dustbin {
 
     irr::io::IXMLWriter *l_pXml = m_pFs->createXMLWriter(l_sPath.c_str());
 
+    printf("Save settings to %s ...\n", platform::ws2s(l_sPath).c_str());
     if (l_pXml) {
       l_pXml->writeXMLHeader();
       l_pXml->writeElement(L"marblegp", false);
@@ -247,10 +248,12 @@ namespace dustbin {
 
       for (std::map<std::string, std::string>::iterator it = m_mSettings.begin(); it != m_mSettings.end(); it++) {
         irr::core::array<irr::core::stringw> l_aNames,
-          l_aValues;
+                                             l_aValues;
 
         l_aNames.push_back("name" ); l_aValues.push_back(irr::core::stringw(it->first .c_str()));
         l_aNames.push_back("value"); l_aValues.push_back(irr::core::stringw(messages::urlEncode(it->second.c_str()).c_str()));
+
+        printf("  \"%s\" saved.\n", it->first.c_str());
 
         l_pXml->writeElement(L"setting", true, l_aNames, l_aValues);
         l_pXml->writeLineBreak();
@@ -260,7 +263,9 @@ namespace dustbin {
       l_pXml->writeClosingTag(L"marblegp");
 
       l_pXml->drop();
+      printf("Ready.\n");
     }
+    else printf("Cannot create XML file.\n");
 
     if (m_pActiveState)
       m_pActiveState->deactivate();
@@ -1136,10 +1141,6 @@ namespace dustbin {
 
           m_pDrv->setRenderTarget(0, false, false);
         }
-
-        irr::video::IImage* l_pImg = m_pDrv->createImage(l_pTexture, irr::core::vector2di(0, 0), irr::core::dimension2du(512, 512));
-        m_pDrv->writeImageToFile(l_pImg, (platform::portableGetDataPath() + platform::s2ws(l_sPostFix) + L".png").c_str());
-        l_pImg->drop();
 
         return l_pTexture;
       }

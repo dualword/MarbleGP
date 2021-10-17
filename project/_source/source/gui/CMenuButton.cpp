@@ -1,4 +1,5 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#include <platform/CPlatform.h>
 #include <gui/CMenuButton.h>
 #include <CGlobal.h>
 
@@ -32,7 +33,10 @@ namespace dustbin {
         if (l_pFont == nullptr)
           l_pFont = m_pGui->getSkin()->getFont();
 
-        l_pFont->draw(getText(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+        std::wstring l_sText = getText();
+
+        if (l_sText != L"")
+          l_pFont->draw(getText(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
       }
     }
 
