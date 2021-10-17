@@ -164,7 +164,7 @@ namespace dustbin {
           else {
             alCall(alDistanceModel, AL_INVERSE_DISTANCE_CLAMPED);
             alCall(alListenerf, AL_GAIN, 0.95f);
-            alCall(alListenerf, AL_MIN_GAIN, 0.0f);
+            // alCall(alListenerf, AL_MIN_GAIN, 0.0f);
           }
         }
       }

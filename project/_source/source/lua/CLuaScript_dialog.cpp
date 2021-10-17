@@ -54,9 +54,7 @@ namespace dustbin {
       try {
         luabridge::LuaRef l_cInitialize = luabridge::getGlobal(m_pState, "initialize");
         if (l_cInitialize.isCallable()) {
-          printf("Call dialog::initialize...\n");
           l_cInitialize();
-          printf("Finished.\n");
         }
       }
       catch (luabridge::LuaException e) {

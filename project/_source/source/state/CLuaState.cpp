@@ -47,14 +47,11 @@ namespace dustbin {
       m_pScript = new lua::CLuaScript_dialog(l_sScript);
       m_pScript->initialize();
 
-      printf("Use menu ctrl\n");
-      printf("%s\n", m_pGlobal->getSettings().m_misc_usemenuctrl);
       if (m_pGlobal->getSettings().m_misc_usemenuctrl)
         m_pMenuCtrl = new controller::CControllerMenu(m_iZLayer);
 
       m_bDefCanc[0] = false;
       m_bDefCanc[1] = false;
-      printf("a\n");
     }
 
     /**
@@ -71,6 +68,9 @@ namespace dustbin {
         delete m_pMenuCtrl;
         m_pMenuCtrl = nullptr;
       }
+
+      m_pGui->clear();
+      m_pSmgr->clear();
     }
 
     /**

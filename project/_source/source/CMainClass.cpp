@@ -27,7 +27,19 @@
 #include <algorithm>
 
 namespace dustbin {
-  CMainClass::CMainClass() : m_pActiveState(nullptr), m_pFs(nullptr), m_pSmgr(nullptr), m_pGui(nullptr), m_pDrv(nullptr), m_pDevice(nullptr), m_eStateChange(state::enState::None), m_pSoundInterface(nullptr), m_iRasterSize(-1), m_eState(enAppState::Continue) {
+  CMainClass::CMainClass() : 
+    m_eStateChange(state::enState::None),
+    m_eState(enAppState::Continue),
+    m_pSoundInterface(nullptr),
+    m_pActiveState(nullptr),
+    m_pFontFace(nullptr),
+    m_pDevice(nullptr),
+    m_iRasterSize(-1),
+    m_pSmgr(nullptr),
+    m_pFs(nullptr),
+    m_pGui(nullptr),
+    m_pDrv(nullptr)
+  {
     CGlobal::m_pInstance = this;
 
 #ifdef _OPENGL_ES
@@ -83,8 +95,6 @@ namespace dustbin {
       luabridge::enableExceptions(l_pState);
       
       std::string l_sScript = std::string("function getSettings()\n  return ") + l_sSettings + "\nend\n";
-
-      printf("%s\n", l_sScript.c_str());
 
       luaL_dostring(l_pState, l_sScript.c_str());
 
@@ -168,6 +178,7 @@ namespace dustbin {
         }
       }
 
+
       std::string l_sFontPath = platform::portableGetFontPath();
 
       if (l_sFontPath != "") {
@@ -192,8 +203,6 @@ namespace dustbin {
 
       if (m_pFs->existFile(l_sFontPath.c_str()))
         m_pFontFace->load(l_sFontPath.c_str());
-      else
-        m_pFontFace->load("data/fonts/adventpro-regular.ttf");
 
       m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
@@ -269,7 +278,9 @@ namespace dustbin {
     m_mFonts.clear();
 
     delete m_pSoundInterface;
-    m_pFontFace->drop();
+
+    if (m_pFontFace != nullptr)
+      m_pFontFace->drop();
 
     m_pGui->clear();
 
@@ -322,9 +333,7 @@ namespace dustbin {
             m_pActiveState = m_mStates.find(l_eState) != m_mStates.end() ? m_mStates[l_eState] : nullptr;
 
             if (m_pActiveState != nullptr) {
-              printf("Activate new state...\n");
               m_pActiveState->activate();
-              printf("Ready.\n");
             }
           }
 

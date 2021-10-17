@@ -776,8 +776,6 @@ namespace dustbin {
 
           return false;
         });
-
-      printf("Ready.\n");
     }
 
     CLuaResolutionList::~CLuaResolutionList() {

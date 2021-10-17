@@ -46,6 +46,8 @@ namespace dustbin {
 
       CGUITTFace* m_pFontFace;  /**< The Truetype font to use */
 
+      irr::gui::IGUIFont* m_pFallbackFont;  /**< Fallback font for OpenGL ES */
+
       state::IState *m_pActiveState;  /**< The currently active state */
 
       std::map<std::string, std::string> m_mSettings,   /**< The settings table. Will be stored when the instance is destroyed */

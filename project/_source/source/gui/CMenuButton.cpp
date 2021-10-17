@@ -15,6 +15,7 @@ namespace dustbin {
     }
 
     CMenuButton::~CMenuButton() {
+      printf("Free Menu Button\n");
     }
 
     void CMenuButton::draw() {
