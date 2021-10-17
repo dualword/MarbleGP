@@ -40,7 +40,7 @@ namespace dustbin {
 
     std::wstring l_sPath = platform::portableGetDataPath() + L"/setup.xml";
     irr::io::IXMLReader *l_pXml = l_pDevice->getFileSystem()->createXMLReader(l_sPath.c_str());
-
+    
     if (l_pXml) {
       while (l_pXml->read()) {
         irr::core::stringw l_sNode = l_pXml->getNodeName();
@@ -73,7 +73,7 @@ namespace dustbin {
     l_pDevice->closeDevice();
     l_pDevice->run();
     l_pDevice->drop();
-
+    
     std::string l_sSettings = getSetting("settings");
     bool l_bSettingsLoaded = false;
 
@@ -107,12 +107,23 @@ namespace dustbin {
 
       lua_close(l_pState);
     }
+    
+    irr::u32 l_iBpp = 32;
 
     if (!l_bSettingsLoaded) {
+#ifdef _OPENGL_ES
+      l_iBpp = 16;
+
+      m_cSettings.m_gfx_resolution_w = 1024;
+      m_cSettings.m_gfx_resolution_h = 768;
+      m_cSettings.m_gfx_fullscreen = false;
+      m_cSettings.m_gfx_shadows = 0;
+#else
       m_cSettings.m_gfx_resolution_w = l_cScreenSize.Width;
       m_cSettings.m_gfx_resolution_h = l_cScreenSize.Height;
       m_cSettings.m_gfx_fullscreen = true;
       m_cSettings.m_gfx_shadows = 1;
+#endif
       m_cSettings.m_gfx_ambientlight = 2;
       m_cSettings.m_sfx_master = 1000;
       m_cSettings.m_sfx_soundtrack = 750;
@@ -126,7 +137,7 @@ namespace dustbin {
       m_cSettings.m_misc_usemenuctrl = false;
     }
 
-    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(m_cSettings.m_gfx_resolution_w, m_cSettings.m_gfx_resolution_h), 32, m_cSettings.m_gfx_fullscreen, false, false, this);
+    m_pDevice = irr::createDevice(l_eDriver, irr::core::dimension2du(m_cSettings.m_gfx_resolution_w, m_cSettings.m_gfx_resolution_h), l_iBpp, m_cSettings.m_gfx_fullscreen, false, false, this);
 
     if (m_pDevice != nullptr) {
       irr::core::array<irr::SJoystickInfo> l_cList;
@@ -164,7 +175,9 @@ namespace dustbin {
 
         std::vector<std::string> l_vSearchFonts = {
           "Arial.ttf",
-          "Arialbd.ttf"
+          "Arialbd.ttf",
+          "FreeMono.ttf",
+          "FreeSans.ttf"
         };
 
         for (std::vector<std::string>::iterator it = l_vSearchFonts.begin(); it != l_vSearchFonts.end(); it++) {
@@ -297,10 +310,10 @@ namespace dustbin {
 
           state::enState l_eState = state::enState::None;
 
-          if (m_pActiveState != nullptr)
+          if (m_pActiveState != nullptr) {
             l_eState = m_pActiveState->run();
-          else
-            l_eState = state::enState::LuaState;
+          }
+          else l_eState = state::enState::LuaState;
 
           if (l_eState != state::enState::None) {
             if (m_pActiveState != nullptr)
@@ -309,7 +322,9 @@ namespace dustbin {
             m_pActiveState = m_mStates.find(l_eState) != m_mStates.end() ? m_mStates[l_eState] : nullptr;
 
             if (m_pActiveState != nullptr) {
+              printf("Activate new state...\n");
               m_pActiveState->activate();
+              printf("Ready.\n");
             }
           }
 
