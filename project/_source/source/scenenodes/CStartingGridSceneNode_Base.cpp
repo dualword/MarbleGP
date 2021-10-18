@@ -26,7 +26,11 @@ namespace dustbin {
       }
       m_aVertices[19] = irr::video::S3DVertex(0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, irr::video::SColor(255, 255, 255, 0), 0, 0);
 
+#ifdef _OPENGL_ES
+      irr::scene::IAnimatedMesh* l_pMesh = a_pMgr->getMesh("data/objects/sphere_raspi.obj");
+#else
       irr::scene::IAnimatedMesh* l_pMesh = a_pMgr->getMesh("data/objects/sphere.obj");
+#endif
 
       if (l_pMesh != nullptr)
         for (int i = 0; i < 16; i++) {
