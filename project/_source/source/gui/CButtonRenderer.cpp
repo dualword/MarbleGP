@@ -48,13 +48,26 @@ namespace dustbin {
       }
 
       // Draw the central part
-      irr::core::recti l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(0, l_iRaster), a_cRect.UpperLeftCorner + irr::core::vector2di(l_iBorder, a_cRect.getHeight() - l_iRaster));
+      irr::core::recti l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(0, l_iRaster
+#ifdef _OPENGL_ES
+        - 1
+#endif
+      ), a_cRect.UpperLeftCorner + irr::core::vector2di(l_iBorder, a_cRect.getHeight() - l_iRaster));
       m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0, 0, 0), l_cRect);
 
-      l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(a_cRect.getWidth() - l_iBorder, l_iRaster), a_cRect.LowerRightCorner - irr::core::vector2di(0, l_iRaster));
+      l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(a_cRect.getWidth() - l_iBorder, l_iRaster
+#ifdef _OPENGL_ES
+        - 1
+#endif
+      ), a_cRect.LowerRightCorner - irr::core::vector2di(0, l_iRaster));
+
       m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0, 0, 0), l_cRect);
 
-      m_pDrv->draw2DRectangle(a_cColor, irr::core::recti(a_cRect.UpperLeftCorner + irr::core::position2di(l_iBorder, l_iRaster), a_cRect.LowerRightCorner - irr::core::position2di(l_iBorder, l_iRaster)));
+      m_pDrv->draw2DRectangle(a_cColor, irr::core::recti(a_cRect.UpperLeftCorner + irr::core::position2di(l_iBorder, l_iRaster
+#ifdef _OPENGL_ES
+        - 1
+#endif
+      ), a_cRect.LowerRightCorner - irr::core::position2di(l_iBorder, l_iRaster)));
 
       // Draw the lower border
       for (int l_iLine = l_iHeight - l_iRaster; l_iLine < l_iHeight; l_iLine++) {
