@@ -187,8 +187,8 @@ namespace dustbin {
         std::vector<std::string> l_vSearchFonts = {
           "Arial.ttf",
           "Arialbd.ttf",
-          "FreeMono.ttf",
-          "FreeSans.ttf"
+          "FreeSans.ttf",
+          "FreeMono.ttf"
         };
 
         for (std::vector<std::string>::iterator it = l_vSearchFonts.begin(); it != l_vSearchFonts.end(); it++) {
