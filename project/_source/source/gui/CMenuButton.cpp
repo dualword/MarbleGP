@@ -10,8 +10,9 @@ namespace dustbin {
       m_pGui(CGlobal::getInstance()->getGuiEnvironment()), 
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_pImage(nullptr),
-      m_sImage(""),
-      m_bHovered(false)
+      m_bHovered(false),
+      m_bLDown(false),
+      m_sImage("")
     {
     }
 
