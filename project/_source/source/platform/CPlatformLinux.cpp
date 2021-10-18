@@ -26,12 +26,7 @@ namespace dustbin {
     }
 
     const std::wstring portableGetDataPath() {
-      std::wstring l_sPath = L"/usr/local/games/DustbinGames/MarbleGP";
-
-      std::string l_sCmd = std::string("mkdir -p ") + platform::ws2s(l_sPath);
-      system(l_sCmd.c_str());
-
-      return l_sPath;
+      return L"./";
     }
 
     const std::wstring portableGetTexturePath() {

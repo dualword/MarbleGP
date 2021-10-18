@@ -120,6 +120,15 @@ namespace dustbin {
         */
         void afterDrawScene(gfx::SViewPort* a_pViewPort);
 
+#ifdef _OPENGL_ES
+        /**
+        * Adjust the materials of the node to get proper lighting when using
+        * with OpenGL-ES on the raspberry PI
+        * @param a_pNode the node to adjust
+        */
+        void adjustNodeMaterials(irr::scene::ISceneNode* a_pNode);
+#endif
+
       protected:
         /**
          * This function receives messages of type "StepMsg"

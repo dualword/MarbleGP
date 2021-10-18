@@ -125,6 +125,10 @@ namespace dustbin {
         throw std::exception();
       }
 
+#ifdef _OPENGL_ES
+      adjustNodeMaterials(m_pSgmr->getRootSceneNode());
+#endif
+
       fillCheckpointList(m_pSgmr->getRootSceneNode());
 
       if (m_mCheckpoints.size() == 0) {
@@ -866,5 +870,21 @@ namespace dustbin {
     void CGameState::onPausechanged(bool a_Paused) {
       m_bPaused = a_Paused;
     }
+
+#ifdef _OPENGL_ES
+    /**
+    * Adjust the materials of the node to get proper lighting when using
+    * with OpenGL-ES on the raspberry PI
+    * @param a_pNode the node to adjust
+    */
+    void CGameState::adjustNodeMaterials(irr::scene::ISceneNode* a_pNode) {
+      for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++) {
+        a_pNode->getMaterial(i).Lighting = false;
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
+        adjustNodeMaterials(*it);
+    }
+#endif
   }
 }
