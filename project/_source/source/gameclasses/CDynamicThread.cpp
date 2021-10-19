@@ -538,7 +538,7 @@ namespace dustbin {
             l_cLuaCountdown(4, m_iWorldStep, m_pGameLogic, m_pPhysicsScript);
           }
           else {
-            int l_iStep = m_iWorldStep - 360;
+            int l_iStep = m_iWorldStep - 60;
 
             if (l_iStep == 120) {
               sendCountdown(3, m_pOutputQueue);
