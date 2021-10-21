@@ -485,16 +485,37 @@ namespace dustbin {
 
         for (int i = 0; i < 16; i++) {
           if (m_aMarbles[i] != nullptr) {
-            // ToDo: handle respawning marble
-            if (m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0) {
-              if (l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK) {
+            bool l_bRespawn = m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn1 || m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2,
+                 l_bOther   = m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0;
+
+            if (l_bOther || l_bRespawn) {
+              bool l_bBehind = l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK;
+              if (l_bBehind || l_bRespawn) {
                 irr::scene::IMeshBuffer* l_pBuffer = m_aMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0);
                 m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
                 irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
 
+                // The "Behind Camera" Alpha Value
+                irr::u32 l_iAlpha = 96;
+
+                // If the marble is respawning ..
+                if (l_bRespawn) {
+                  // .. we calculate a factor ..
+                  irr::f32 l_fFactor = 1.0f - (irr::f32)(m_iStep - m_aMarbles[i]->m_iRespawnStart) / 120.0f;
+                  if (l_fFactor < 0.1f)
+                    l_fFactor = 0.1f;
+
+                  l_iAlpha = (irr::u32)(255.0f * l_fFactor);
+
+                  // .. and if the marble is behind the camera we make sure
+                  // the factor does not exceed "96"
+                  if (l_iAlpha > 96 && l_bBehind)
+                    l_iAlpha = 96;
+                }
+
                 for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
-                  l_pVertices[j].Color.setAlpha(96);
+                  l_pVertices[j].Color.setAlpha(l_iAlpha);
               }
               else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
             }
@@ -739,12 +760,14 @@ namespace dustbin {
         if (a_State == 1) {
           p->m_bCamLink = false;
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn1;
-          p->m_iStateChange = m_iStep;
+          p->m_iStateChange  = m_iStep;
+          p->m_iRespawnStart = m_iStep;
         }
         else {
           p->m_bCamLink = true;
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
-          p->m_iStateChange = -1;
+          p->m_iStateChange  = -1;
+          p->m_iRespawnStart = -1;
         }
       }
     }

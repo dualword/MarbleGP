@@ -30,7 +30,8 @@ namespace dustbin {
 
       enMarbleState m_eState; /**< The state of the marble */
 
-      int m_iStateChange;   /**< The step of the last state change */
+      int m_iStateChange,   /**< The step of the last state change */
+          m_iRespawnStart;  /**< Start of the respawn state */
 
       /**
        * The empty scene node that acts as root node. A rotation might be applied
@@ -55,10 +56,12 @@ namespace dustbin {
       gfx::SViewPort *m_pViewport;
 
       SMarbleNodes() {
-        m_pPositional = nullptr;
-        m_pRotational = nullptr;
-        m_pViewport   = nullptr;
-        m_bCamLink    = true;
+        m_pPositional   = nullptr;
+        m_pRotational   = nullptr;
+        m_pViewport     = nullptr;
+        m_bCamLink      = true;
+        m_iRespawnStart = -1;
+        m_iStateChange  = -1;
       }
     };
   }
