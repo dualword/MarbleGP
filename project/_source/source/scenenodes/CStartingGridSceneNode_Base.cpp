@@ -26,10 +26,17 @@ namespace dustbin {
       }
       m_aVertices[19] = irr::video::S3DVertex(0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, irr::video::SColor(255, 255, 255, 0), 0, 0);
 
-#ifdef _OPENGL_ES
-      irr::scene::IAnimatedMesh* l_pMesh = a_pMgr->getMesh("data/objects/sphere_raspi.obj");
-#else
       irr::scene::IAnimatedMesh* l_pMesh = a_pMgr->getMesh("data/objects/sphere.obj");
+
+#ifdef _OPENGL_ES
+      // On the RaspberryPI the textures of the marbles are flipped so we correct this here
+      irr::scene::IMeshBuffer* l_pBuffer = l_pMesh->getMesh(0)->getMeshBuffer(0);
+      irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
+
+      for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++) {
+        l_pVertices[j].TCoords.X = abs(l_pVertices[j].TCoords.X - 1.0f);
+        l_pVertices[j].TCoords.Y = abs(l_pVertices[j].TCoords.Y - 1.0f);
+      }
 #endif
 
       if (l_pMesh != nullptr)
@@ -47,6 +54,8 @@ namespace dustbin {
           m_pMarbles[i]->m_pRotational->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
           m_pMarbles[i]->m_pRotational->getMaterial(0).Shininess = 50;
           m_pMarbles[i]->m_pRotational->setName(std::string("Marble_" + std::to_string(i + 1)).c_str());
+
+          m_pMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0)->setDirty();
         }
 
       updateGridPositions();
