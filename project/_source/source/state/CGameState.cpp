@@ -844,7 +844,7 @@ namespace dustbin {
      * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
      */
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
-      m_iFinished = m_iStep;
+      m_iFinished = a_Cancelled ? m_iStep - 550 : m_iStep;
       m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
     }
 
