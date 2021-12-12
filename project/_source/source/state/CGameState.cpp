@@ -695,7 +695,9 @@ namespace dustbin {
     void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity) {
       if (m_mMoving.find(a_ObjectId) != m_mMoving.end()) {
         m_mMoving[a_ObjectId]->setPosition(a_Position);
-        m_mMoving[a_ObjectId]->setRotation(a_Rotation);
+
+        if (a_Rotation.X == a_Rotation.X && a_Rotation.Y == a_Rotation.Y && a_Rotation.Z == a_Rotation.Z)
+          m_mMoving[a_ObjectId]->setRotation(a_Rotation);
       }
       else printf("Object %i not found.\n", a_ObjectId);
     }
@@ -724,9 +726,12 @@ namespace dustbin {
 
         if (p != nullptr) {
           p->m_pPositional->setPosition(a_Position);
-          p->m_pPositional->setRotation(a_Rotation);
           p->m_pPositional->updateAbsolutePosition();
-          
+          p->m_pRotational->updateAbsolutePosition();
+
+          if (a_Rotation.X == a_Rotation.X && a_Rotation.Y == a_Rotation.Y && a_Rotation.Z == a_Rotation.Z)
+            p->m_pPositional->setRotation(a_Rotation);
+
           if (p->m_pViewport != nullptr && p->m_bCamLink) {
             p->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
             p->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
