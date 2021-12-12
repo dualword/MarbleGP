@@ -49,8 +49,9 @@ function initialize()
   local l_Tracks = system:gettracklist()
   g_Tracks = { }
   
+  
   for k,v in spairs(l_Tracks, function(t, a, b)
-    return t[a]["position"] < t[b]["position"]
+    return t[a]["position"] < t[b]["position"] or (t[a]["position"] == -1 and t[b]["position"] ~= -1) or (t[b]["position"] == -1 and t[a]["position"] ~= -1)
   end) do
     table.insert(g_Tracks, v)
     
@@ -84,11 +85,11 @@ function uibuttonclicked(a_Id, a_Name)
   if a_Name == "cancel" then
     system:statechange(1)
   elseif a_Name == "btn_right" then
-    g_Settings["page"] = g_Settings["page"] + 8
+    g_Settings["page"] = g_Settings["page"] + 1
     updateThumbnails()
     system:setsetting("selecttrack", serializeTable(g_Settings, 2))
   elseif a_Name == "btn_left" then
-    g_Settings["page"] = g_Settings["page"] - 8
+    g_Settings["page"] = g_Settings["page"] - 1
     updateThumbnails()
     system:setsetting("selecttrack", serializeTable(g_Settings, 2))
   elseif a_Name == "SelectTrack" then
@@ -109,10 +110,6 @@ function uibuttonclicked(a_Id, a_Name)
       startNextRace(g_Championship, l_Track, tonumber(g_Items["nolaps"]:getselecteditem()), g_GameSetup)
       
       system:setglobal("championship", serializeTable(g_Championship, 2))
-      
-      io.write("\n**************************\n")
-      io.write(serializeTable(g_Championship, 2))
-      io.write("\n**************************\n")
       
       system:pushscript("data/lua/menu_selecttrack.lua")
       
@@ -148,7 +145,7 @@ function updateThumbnails()
   end
   
   for i = 1, 8 do
-    local l_Index = g_Settings["page"] + i
+    local l_Index = 8 * tonumber(g_Settings["page"]) + i
     
     if g_Items["tracks"][i] ~= nil then
       if g_Filtered[l_Index] ~= nil then
@@ -156,7 +153,6 @@ function updateThumbnails()
         
         local l_Thumbnail = "data/levels/" .. g_Filtered[l_Index]["folder"] .. "/thumbnail.png"
         
-        io.write("==> " .. l_Thumbnail .. " (" .. tostring(system:fileexists(l_Thumbnail)) .. ")\n")
         if system:fileexists(l_Thumbnail) then
           g_Items["tracks"][i]:setproperty("Texture", "file://" .. l_Thumbnail)
         else
@@ -171,7 +167,7 @@ function updateThumbnails()
     end
   end
   
-  if g_Settings["page"] < 8 then
+  if g_Settings["page"] < 1 then
     g_Items["btn_left"]:setvisible(false)
   else
     g_Items["btn_left"]:setvisible(true)
