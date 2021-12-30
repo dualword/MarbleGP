@@ -374,7 +374,7 @@ namespace dustbin {
           if (a_iIndex >= 0 && a_iIndex < (int)p->getItemCount())
             p->setSelected(p->getListItem(a_iIndex));
           else
-            p->setSelected(NULL);
+            p->setSelected(nullptr);
 
           return true;
         }

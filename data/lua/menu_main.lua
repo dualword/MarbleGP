@@ -1,5 +1,7 @@
 -- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib
 
+print(_VERSION)
+
 system:executeluascript("data/lua/default_texture.lua")
 system:executeluascript("data/lua/dialog_confirm.lua")
 system:executeluascript("data/lua/helpers_main.lua")

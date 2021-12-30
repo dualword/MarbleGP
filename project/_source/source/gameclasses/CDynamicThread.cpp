@@ -312,7 +312,7 @@ namespace dustbin {
               else {
                 if (!p->m_bRespawn)
                   p->m_iManualRespawn = -1;
-                else if (m_iWorldStep - p->m_iManualRespawn > 180) {
+                else if (m_iWorldStep - p->m_iManualRespawn > 120) {
                   p->m_iManualRespawn = -1;
                   p->m_iRespawnStart = m_iWorldStep;
                   p->m_eState = CObjectMarble::enMarbleState::Respawn1;
@@ -487,9 +487,6 @@ namespace dustbin {
               sendPlayerstunned(p->m_iId, 0, m_pOutputQueue);
               p->m_eState = CObjectMarble::enMarbleState::Rolling;
               p->m_iStunnedStart = -1;
-
-              if (p->m_iManualRespawn != -1)
-                p->m_iManualRespawn = m_iWorldStep;
 
               if (m_pPhysicsScript != nullptr)
                 m_pPhysicsScript->onPlayerStunned(p->m_iId, 0, m_iWorldStep);
