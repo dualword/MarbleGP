@@ -394,9 +394,6 @@
     <ClCompile Include="..\..\..\..\_source\source\messages\CSerializer64.cpp">
       <Filter>Source\messages</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\_source\source\platform\CPlatformLinux.cpp">
-      <Filter>Source\platform</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\_source\source\scenenodes\CCheckpointNode.cpp">
       <Filter>Source\scenenodes</Filter>
     </ClCompile>
@@ -477,6 +474,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\_source\source\CMainClass.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\_source\source\platform\CPlatformAndroid.cpp">
+      <Filter>Source\platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

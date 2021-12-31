@@ -348,7 +348,7 @@
     <ClCompile Include="..\..\..\..\_source\source\lua\luawrap.cpp" />
     <ClCompile Include="..\..\..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\..\..\_source\source\messages\CSerializer64.cpp" />
-    <ClCompile Include="..\..\..\..\_source\source\platform\CPlatformLinux.cpp" />
+    <ClCompile Include="..\..\..\..\_source\source\platform\CPlatformAndroid.cpp" />
     <ClCompile Include="..\..\..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\..\..\_source\source\scenenodes\CCheckpointNode_Editor.cpp" />
     <ClCompile Include="..\..\..\..\_source\source\scenenodes\CDustbinId.cpp" />
