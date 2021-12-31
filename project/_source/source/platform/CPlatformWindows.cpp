@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 #include <irrlicht/irrlicht.h>
+#include <gui_freetype_font.h>
 #include <filesystem>
 #include <shellapi.h>
 #include <winerror.h>
@@ -29,12 +30,6 @@ namespace dustbin {
       __time32_t l_iDummy = a_iTime;
       _localtime32_s(&ptm, &l_iDummy);
       std::strftime(a_sBuffer, a_iLen, "%d %b %Y", &ptm);
-    }
-
-    const std::string portableGetFontPath() {
-      char l_sPath[MAX_PATH] = "";
-      SHGetFolderPathA(NULL, CSIDL_FONTS, NULL, 0, l_sPath);
-      return l_sPath;
     }
 
     const std::wstring portableGetDataPath() {
@@ -138,6 +133,31 @@ namespace dustbin {
       }
 
       return l_vRet;
+    }
+
+    CGUITTFace* portableGetFontFace(irr::IrrlichtDevice *a_pDevice) {
+      char l_sPath[MAX_PATH] = "";
+      SHGetFolderPathA(NULL, CSIDL_FONTS, NULL, 0, l_sPath);
+
+      irr::io::IFileSystem *l_pFs = a_pDevice->getFileSystem();
+
+      std::vector<std::string> l_vSearchFonts = {
+        "Arial.ttf",
+        "Arialbd.ttf",
+        "FreeSans.ttf",
+        "FreeMono.ttf"
+      };
+
+      for (std::vector<std::string>::iterator it = l_vSearchFonts.begin(); it != l_vSearchFonts.end(); it++) {
+        std::string l_sFile = std::string(l_sPath) + "/"  + *it;
+        if (l_pFs->existFile(l_sFile.c_str())) {
+          CGUITTFace *l_pFontFace = new CGUITTFace();
+          l_pFontFace->load(l_sFile.c_str());
+          return l_pFontFace;
+        }
+      }
+
+      return nullptr;
     }
   }
 }

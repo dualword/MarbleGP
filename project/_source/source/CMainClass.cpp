@@ -179,30 +179,7 @@ namespace dustbin {
       }
 
 
-      std::string l_sFontPath = platform::portableGetFontPath();
-
-      if (l_sFontPath != "") {
-        printf("Font path: \"%s\"\n", l_sFontPath.c_str());
-
-        std::vector<std::string> l_vSearchFonts = {
-          "Arial.ttf",
-          "Arialbd.ttf",
-          "FreeSans.ttf",
-          "FreeMono.ttf"
-        };
-
-        for (std::vector<std::string>::iterator it = l_vSearchFonts.begin(); it != l_vSearchFonts.end(); it++) {
-          if (m_pFs->existFile(std::string(l_sFontPath + "/" + *it).c_str())) {
-            l_sFontPath += "/" + *it;
-            break;
-          }
-        }
-      }
-
-      m_pFontFace = new CGUITTFace();
-
-      if (m_pFs->existFile(l_sFontPath.c_str()))
-        m_pFontFace->load(l_sFontPath.c_str());
+      m_pFontFace = platform::portableGetFontFace(m_pDevice);
 
       m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 

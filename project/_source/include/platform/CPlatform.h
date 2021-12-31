@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+class CGUITTFace; /**< Forward declaration of the Font Face */
+
 namespace dustbin {
   namespace platform {
     void portableItoa(int a_iValue, char *a_sBuffer, int a_iLen);
@@ -17,12 +19,13 @@ namespace dustbin {
     void preventScreenSaver();
 
     const std::wstring portableGetDataPath   ();
-    const std::string  portableGetFontPath   ();
     const std::wstring portableGetTexturePath();
 
     std::wstring s2ws(const std::string& str);
     std::string ws2s(const std::wstring& wstr);
 
     std::vector<std::string> splitString(const std::string a_sInput, const char a_sDelimiter);
+
+    CGUITTFace *portableGetFontFace(irr::IrrlichtDevice *a_pDevice);
   }
 }
