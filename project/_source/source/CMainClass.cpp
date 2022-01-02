@@ -48,10 +48,8 @@ namespace dustbin {
     irr::video::E_DRIVER_TYPE l_eDriver = irr::video::EDT_OPENGL;
 #endif
 
-    irr::IrrlichtDevice *l_pDevice = irr::createDevice(irr::video::EDT_NULL);
-
     std::wstring l_sPath = platform::portableGetDataPath() + L"/setup.xml";
-    irr::io::IXMLReader *l_pXml = l_pDevice->getFileSystem()->createXMLReader(l_sPath.c_str());
+    irr::io::IrrXMLReader *l_pXml = irr::io::createIrrXMLReader(platform::ws2s(l_sPath).c_str());
     
     if (l_pXml) {
       while (l_pXml->read()) {
@@ -69,23 +67,11 @@ namespace dustbin {
             m_mSettings[l_sName] = l_sValue;
         }
       }
-      l_pXml->drop();
+      delete l_pXml;
     }
 
-    irr::video::IVideoModeList* l_pList = l_pDevice->getVideoModeList();
+    irr::core::dimension2du l_cScreenSize = platform::platformGetScreenSize();
 
-    irr::core::dimension2du l_cScreenSize = irr::core::dimension2du(0, 0);
-
-    for (int i = 0; i < l_pList->getVideoModeCount(); i++) {
-      irr::core::dimension2du l_cDim = l_pList->getDesktopResolution();
-      if (l_cDim.Width > l_cScreenSize.Width && l_cDim.Height > l_cScreenSize.Height)
-        l_cScreenSize = l_cDim;
-    }
-
-    l_pDevice->closeDevice();
-    l_pDevice->run();
-    l_pDevice->drop();
-    
     std::string l_sSettings = getSetting("settings");
     bool l_bSettingsLoaded = false;
 
@@ -268,6 +254,8 @@ namespace dustbin {
 
     CGlobal::m_pInstance = nullptr;
 
+    m_pDevice->setEventReceiver(nullptr);
+    m_pDevice->closeDevice();
     m_pDevice->run();
     m_pDevice->drop();
   }

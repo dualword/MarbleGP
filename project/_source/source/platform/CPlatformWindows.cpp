@@ -159,5 +159,19 @@ namespace dustbin {
 
       return nullptr;
     }
+
+    /**
+    * Get the screen size. For the Android platform function
+    * this function returns (0,0), other implementations should
+    * create a NULL device and query the screen size
+    * @return the screen size
+    */
+    irr::core::dimension2du platformGetScreenSize() {
+      irr::IrrlichtDevice *l_pDevice = irr::createDevice(irr::video::EDT_NULL);
+      irr::video::IVideoModeList *l_pList = l_pDevice->getVideoModeList();
+      irr::core::dimension2du l_cRet = l_pList->getDesktopResolution();
+      l_pDevice->drop();
+      return l_cRet;
+    }
   }
 }

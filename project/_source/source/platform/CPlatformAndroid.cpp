@@ -1,6 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #include <extensions/gui_freetype_font.h>
 #include <platform/CPlatform.h>
+#include <irrlicht.h>
 #include <stdlib.h>
 #include <cstring>
 #include <codecvt>
@@ -77,7 +78,24 @@ namespace dustbin {
     }
 
     CGUITTFace* portableGetFontFace(irr::IrrlichtDevice* a_pDevice) {
+      irr::io::IFileSystem *l_pFs = a_pDevice->getFileSystem();
+
+      if (l_pFs->existFile("ayar.ttf")) {
+        CGUITTFace *l_pFontFace = new CGUITTFace();
+        l_pFontFace->load("ayar.ttf");
+        return l_pFontFace;
+      }
       return nullptr;
+    }
+
+    /**
+    * Get the screen size. For the Android platform function
+    * this function returns (0,0), other implementations should
+    * create a NULL device and query the screen size
+    * @return the screen size
+    */
+    irr::core::dimension2du platformGetScreenSize() {
+      return irr::core::dimension2du(0, 0);
     }
   }
 }
