@@ -19,7 +19,6 @@
 #include <platform/CPlatform.h>
 #include <platform/CPlatform.h>
 #include <state/CErrorState.h>
-#include <gui_freetype_font.h>
 #include <state/CGameState.h>
 #include <gui/CMenuButton.h>
 #include <state/CLuaState.h>
@@ -32,7 +31,6 @@ namespace dustbin {
     m_eState(enAppState::Continue),
     m_pSoundInterface(nullptr),
     m_pActiveState(nullptr),
-    m_pFontFace(nullptr),
     m_pDevice(nullptr),
     m_iRasterSize(-1),
     m_pSmgr(nullptr),
@@ -152,6 +150,22 @@ namespace dustbin {
       m_pDrv  = m_pDevice->getVideoDriver();
       m_pFs   = m_pDevice->getFileSystem();
 
+      irr::io::IXMLReader *l_pXml = m_pFs->createXMLReader("data/fonts/fontsizes.xml");
+
+      if (l_pXml != nullptr) {
+        while (l_pXml->read()) {
+          switch (l_pXml->getNodeType()) {
+            case irr::io::EXN_ELEMENT: {
+              std::wstring l_sName = l_pXml->getNodeName();
+              if (l_sName == L"size") {
+                m_vFontSizes.push_back(l_pXml->getAttributeValueAsInt(L"value"));
+              }
+            }
+          }
+        }
+        l_pXml->drop();
+      }
+
       gui::CGuiItemFactory* l_pGuiFactory = new gui::CGuiItemFactory(m_pGui);
       m_pGui->registerGUIElementFactory(l_pGuiFactory);
       l_pGuiFactory->drop();
@@ -163,9 +177,6 @@ namespace dustbin {
           printf("Factory %i element %-2i: \"%s\"\n", i, j, l_pFactory->getCreateableGUIElementTypeName(j));
         }
       }
-
-
-      m_pFontFace = platform::portableGetFontFace(m_pDevice);
 
       m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
@@ -238,17 +249,9 @@ namespace dustbin {
 
     m_mStates.clear();
 
-    while (m_mFonts.size() > 0) {
-      m_mFonts.begin()->second->drop();
-      m_mFonts.erase(m_mFonts.begin());
-    }
-
     m_mFonts.clear();
 
     delete m_pSoundInterface;
-
-    if (m_pFontFace != nullptr)
-      m_pFontFace->drop();
 
     m_pGui->clear();
 
@@ -745,21 +748,29 @@ namespace dustbin {
     int l_iSize = getRasterSize();
 
     switch (a_eFont) {
-      case enFont::Tiny   : l_iSize = 3 * l_iSize / 4; break;
-      case enFont::Small  : l_iSize =     l_iSize    ; break;
-      case enFont::Regular: l_iSize = 3 * l_iSize / 2; break;
-      case enFont::Big    : l_iSize = 2 * l_iSize    ; break;
-      case enFont::Huge   : l_iSize = 5 * l_iSize / 2; break;
+      case enFont::Tiny   : l_iSize =     l_iSize / 2; break;
+      case enFont::Small  : l_iSize = 3 * l_iSize / 4; break;
+      case enFont::Regular: l_iSize =     l_iSize    ; break;
+      case enFont::Big    : l_iSize = 3 * l_iSize / 2; break;
+      case enFont::Huge   : l_iSize = 2 * l_iSize    ; break;
     }
 
-    if (m_mFonts.find(l_iSize) == m_mFonts.end()) {
-      CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
-      l_pFont->AntiAlias = true;
-      l_pFont->attach(m_pFontFace, l_iSize);
-      m_mFonts[l_iSize] = l_pFont;
+    int l_iFontFile = 0;
+
+    for (std::vector<int>::iterator it = m_vFontSizes.begin(); it != m_vFontSizes.end(); it++) {
+      if (*it >= l_iSize)
+        break;
+
+      l_iFontFile = *it;
     }
 
-    return m_mFonts[l_iSize];
+    if (m_mFonts.find(l_iFontFile) == m_mFonts.end()) {
+      printf("Loading font with size %i\n", l_iSize);
+      std::string l_sFile = "data/fonts/font_" + std::to_string(l_iFontFile) + ".xml";
+      m_mFonts[l_iFontFile] = m_pGui->getFont(l_sFile.c_str());
+    }
+
+    return m_mFonts[l_iFontFile];
   }
 
   /**
@@ -917,48 +928,49 @@ namespace dustbin {
   * @param a_cFrameColor the color of the frame
   * @return a texture with the fading border
   */
-  irr::video::ITexture* CMainClass::createFadingBorder(const std::string a_sNumber, const irr::video::SColor& a_cNumberColor, const irr::video::SColor& a_cBorderColor) {
+  irr::video::ITexture* CMainClass::createFadingBorder(const std::string a_sNumber, const irr::video::SColor& a_cNumberColor, const irr::video::SColor& a_cBorderColor, const irr::video::SColor &a_cBackgroundColor) {
+    
     irr::video::ITexture* l_pTexture = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(256, 256), "FadingBorder_dummy", irr::video::ECF_A8R8G8B8);
     m_pDrv->setRenderTarget(l_pTexture, true, true, irr::video::SColor(0, a_cBorderColor.getRed(), a_cBorderColor.getGreen(), a_cBorderColor.getBlue()));
 
-    CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
-    l_pFont->AntiAlias = true;
-    l_pFont->attach(m_pFontFace, 180);
+    std::string s = "data/textures/numbers/" + a_sNumber + ".png";
 
-    l_pFont->draw(platform::s2ws(a_sNumber).c_str(), irr::core::recti(0, 0, 255, 255), a_cNumberColor, true, true);
-    l_pFont->drop();
+    irr::video::ITexture *l_pNumber = m_pDrv->getTexture(s.c_str());
 
-    irr::video::IImage* l_pImage = m_pDrv->createImage(l_pTexture, irr::core::position2di(0, 0), irr::core::dimension2du(256, 256));
+    if (l_pNumber != nullptr) {
+      irr::video::IImage *l_pNumberImg = m_pDrv->createImage(l_pNumber, irr::core::position2di(0, 0), irr::core::dimension2du(256, 256));
 
-    std::vector<irr::core::position2di> l_cStepPixels;
+      if (l_pNumberImg != nullptr) {
+        for (int y = 0; y < 256; y++) {
+          for (int x = 0; x < 256; x++) {
+            irr::video::SColor c = l_pNumberImg->getPixel(x, y);
+            if (c.getAlpha() != 0) {
+              if (c.getRed() < 128 || c.getGreen() < 128 || c.getBlue() < 128) {
+                if (a_cBackgroundColor != a_cBorderColor) {
+                  c.setRed  (a_cBorderColor.getRed  ());
+                  c.setGreen(a_cBorderColor.getGreen());
+                  c.setBlue (a_cBorderColor.getBlue ());
+                }
+                else c.setAlpha(0);
+              }
+              else {
+                c.setRed  (a_cNumberColor.getRed  ());
+                c.setGreen(a_cNumberColor.getGreen());
+                c.setBlue (a_cNumberColor.getBlue ());
+              }
 
-    for (int l_iStep = 0; l_iStep < 5; l_iStep++) {
-      for (int y = 0; y < 256; y++) {
-        for (int x = 0; x < 256; x++) {
-          irr::video::SColor c = l_pImage->getPixel(x, y);
-          if (c.getAlpha() > 0) {
-            l_cStepPixels.push_back(irr::core::position2di(x, y));
-          }
-        }
-      }
-
-      for (std::vector<irr::core::position2di>::iterator it = l_cStepPixels.begin(); it != l_cStepPixels.end(); it++) {
-        for (int y = (*it).Y - 1; y <= (*it).Y + 1; y++) {
-          for (int x = (*it).X - 1; x <= (*it).X + 1; x++) {
-            if (x >= 0 && x <= 255 && y >= 0 && y <= 255) {
-              irr::video::SColor l_cColor = l_pImage->getPixel(x, y);
-              irr::u32 l_iAlpha = l_cColor.getAlpha();
-              l_iAlpha += 8;
-              if (l_iAlpha > 255) l_iAlpha = 255;
-              l_cColor.setAlpha(l_iAlpha);
-              l_pImage->setPixel(x, y, l_cColor);
+              l_pNumberImg->setPixel(x, y, c);
             }
           }
         }
       }
 
-      l_cStepPixels.clear();
+      m_pDrv->draw2DImage(m_pDrv->addTexture("numberPlate", l_pNumberImg), irr::core::vector2di(0, 0), true);
+      m_pDrv->removeTexture(l_pNumber);
+      l_pNumberImg->drop();
     }
+
+    irr::video::IImage* l_pImage = m_pDrv->createImage(l_pTexture, irr::core::position2di(0, 0), irr::core::dimension2du(256, 256));
 
     m_pDrv->setRenderTarget(nullptr, false, false);
 
@@ -1075,9 +1087,7 @@ namespace dustbin {
 
           irr::video::ITexture* l_pNumber = nullptr;
 
-          if (l_sColorNumberBack != l_sColorNumberBorder) {
-            l_pNumber = createFadingBorder(l_sNumber, l_cColorNumber, l_cColorNumberBorder);
-          }
+          l_pNumber = createFadingBorder(l_sNumber, l_cColorNumber, l_cColorNumberBorder, l_cColorNumberBack);
 
           l_pTexture = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), l_sPostFix.c_str());
           m_pDrv->setRenderTarget(l_pTexture, true, true, l_cColorNumberBack);
@@ -1089,15 +1099,6 @@ namespace dustbin {
 
             m_pDrv->removeTexture(l_pNumber);
           }
-
-          CGUIFreetypeFont* l_pFont = new CGUIFreetypeFont(m_pDrv);
-          l_pFont->AntiAlias = true;
-          l_pFont->attach(m_pFontFace, 180);
-
-          l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(  0, 0, 255, 255), l_cColorNumber, true, true);
-          l_pFont->draw(platform::s2ws(l_sNumber).c_str(), irr::core::recti(256, 0, 512, 255), l_cColorNumber, true, true);
-
-          l_pFont->drop();
 
           irr::video::ITexture* l_pTop = adjustTextureForMarble(l_sFileTop, l_cColorRing);
           m_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 511, 255), nullptr, nullptr, true);

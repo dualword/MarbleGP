@@ -80,12 +80,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;C:\Program Files (x86)\Visual Leak Detector\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;C:\Program Files (x86)\Visual Leak Detector\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\_source\include\extensions;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\myStuff\projects\MarbleGP\project\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
@@ -199,7 +199,6 @@
     <ClCompile Include="..\_source\source\controller\CControllerGame.cpp" />
     <ClCompile Include="..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\_source\source\controller\CMarbleController.cpp" />
-    <ClCompile Include="..\_source\source\extensions\gui_freetype_font.cpp" />
     <ClCompile Include="..\_source\source\gameclasses\CDynamicThread.cpp" />
     <ClCompile Include="..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\_source\source\gui\CButtonRenderer.cpp" />
@@ -275,7 +274,6 @@
     <ClInclude Include="..\_source\include\controller\CControllerMenu.h" />
     <ClInclude Include="..\_source\include\controller\CMarbleController.h" />
     <ClInclude Include="..\_source\include\controller\IController.h" />
-    <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h" />
     <ClInclude Include="..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\_source\include\gameclasses\COdeNodes.h" />
     <ClInclude Include="..\_source\include\gameclasses\ITriggerHandler.h" />

@@ -26,8 +26,6 @@ namespace dustbin {
 
     std::vector<std::string> splitString(const std::string a_sInput, const char a_sDelimiter);
 
-    CGUITTFace *portableGetFontFace(irr::IrrlichtDevice *a_pDevice);
-
     /**
     * Get the screen size. For the Android platform function
     * this function returns (0,0), other implementations should

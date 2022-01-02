@@ -73,12 +73,6 @@
     <Filter Include="Quelldateien\sound">
       <UniqueIdentifier>{d5104d8c-7d71-4673-aba4-8631ae65bc44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\extensions">
-      <UniqueIdentifier>{d6530817-877c-4e44-90cf-36c3f8f877fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\extensions">
-      <UniqueIdentifier>{e660e04b-0c20-4d8a-a3e7-07664aaf3784}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\gui">
       <UniqueIdentifier>{bdced1ab-60f4-414d-8bd9-e041a2188a86}</UniqueIdentifier>
     </Filter>
@@ -182,9 +176,6 @@
     </ClCompile>
     <ClCompile Include="..\_source\source\lua\CLuaSingleton_audio.cpp">
       <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\_source\source\extensions\gui_freetype_font.cpp">
-      <Filter>Quelldateien\extensions</Filter>
     </ClCompile>
     <ClCompile Include="..\_source\source\gui\CDialog.cpp">
       <Filter>Quelldateien\gui</Filter>
@@ -421,9 +412,6 @@
     </ClInclude>
     <ClInclude Include="..\_source\include\lua\CLuaSingleton_audio.h">
       <Filter>Headerdateien\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\_source\include\extensions\gui_freetype_font.h">
-      <Filter>Headerdateien\extensions</Filter>
     </ClInclude>
     <ClInclude Include="..\_source\include\gui\CDialog.h">
       <Filter>Headerdateien\gui</Filter>

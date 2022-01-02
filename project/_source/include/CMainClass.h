@@ -44,8 +44,6 @@ namespace dustbin {
 
       SSettings m_cSettings;  /**< The game settings */
 
-      CGUITTFace* m_pFontFace;  /**< The Truetype font to use */
-
       irr::gui::IGUIFont* m_pFallbackFont;  /**< Fallback font for OpenGL ES */
 
       state::IState *m_pActiveState;  /**< The currently active state */
@@ -69,6 +67,8 @@ namespace dustbin {
       std::map<int, irr::gui::IGUIFont*> m_mFonts;  /**< A map for the fonts */
 
       std::vector<irr::video::ITexture*> m_pRtts; /**< Render target textures */
+
+      std::vector<int> m_vFontSizes;  /**< The supported font sizes */
 
       /**
       * This function loads the pattern texture and adjusts the marble
@@ -104,9 +104,10 @@ namespace dustbin {
       * @param a_sNumber the number
       * @param a_cNumberColor the color of the number
       * @param a_cBorderColor the color of the frame
+      * @param a_cBackgroundColor the background color of the number portion of the texture
       * @return a texture with the fading border
       */
-      irr::video::ITexture *createFadingBorder(const std::string a_sNumber, const irr::video::SColor &a_cNumberColor, const irr::video::SColor &a_cBorderColor);
+      irr::video::ITexture *createFadingBorder(const std::string a_sNumber, const irr::video::SColor &a_cNumberColor, const irr::video::SColor &a_cBorderColor, const irr::video::SColor &a_cBackgroundColor);
 
     public:
       CMainClass();

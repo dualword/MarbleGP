@@ -3,7 +3,6 @@
 #include <lua/CLuaScript_dialog.h>
 #include <gui/CDustbinCheckbox.h>
 #include <platform/CPlatform.h>
-#include <gui_freetype_font.h>
 #include <lua/CLuaHelpers.h>
 #include <state/CLuaState.h>
 #include <gui/CSelector.h>
