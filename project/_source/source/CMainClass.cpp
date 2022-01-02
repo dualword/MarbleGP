@@ -150,6 +150,12 @@ namespace dustbin {
       m_pDrv  = m_pDevice->getVideoDriver();
       m_pFs   = m_pDevice->getFileSystem();
 
+      if (m_pFs->existFile("marblegp.dat")) {
+        bool b = m_pFs->addFileArchive("marblegp.dat", true, false, irr::io::EFAT_ZIP);
+
+        printf("Marblegp.dat added: %s\n", b ? "success" : "failed");
+      }
+
       irr::io::IXMLReader *l_pXml = m_pFs->createXMLReader("data/fonts/fontsizes.xml");
 
       if (l_pXml != nullptr) {
@@ -203,9 +209,6 @@ namespace dustbin {
       m_cScreenSize = m_pDrv->getScreenSize();
 
       m_pFs->addFileArchive(platform::ws2s(platform::portableGetDataPath()).c_str(), true, false, irr::io::EFAT_FOLDER);
-
-      if (m_pFs->existFile("marblegp.dat"))
-        m_pFs->addFileArchive("marblegp.dat", true, false, irr::io::EFAT_ZIP);
     }
   }
 

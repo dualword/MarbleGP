@@ -68,14 +68,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_shared</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_shared</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -121,11 +121,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\lua;D:\myStuff\projects\libs\android-freetype-master\include;D:\myStuff\projects\MarbleGP\project\_source\include\extensions;D:\myStuff\projects\MarbleGP\project\libs\LuaBridge3\Source;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\MarbleGP\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.Android.NativeActivity;D:\myStuff\projects\MarbleGP\project\_source\include\lua;D:\myStuff\projects\libs\android-freetype-master\include;D:\myStuff\projects\MarbleGP\project\_source\include\extensions;D:\myStuff\projects\MarbleGP\project\libs\LuaBridge3\Source;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\MarbleGP\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\myStuff\projects\vcpkg\installed\arm64-android\debug\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\lua;D:\myStuff\projects\libs\android-freetype-master\include;D:\myStuff\projects\MarbleGP\project\_source\include\extensions;D:\myStuff\projects\MarbleGP\project\libs\LuaBridge3\Source;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\MarbleGP\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.Android.NativeActivity;D:\myStuff\projects\MarbleGP\project\_source\include\lua;D:\myStuff\projects\libs\android-freetype-master\include;D:\myStuff\projects\MarbleGP\project\_source\include\extensions;D:\myStuff\projects\MarbleGP\project\libs\LuaBridge3\Source;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\MarbleGP\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\myStuff\projects\vcpkg\installed\arm64-android\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" />
@@ -138,12 +140,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>_LINUX_INCLUDE_PATH;NO_XEFFECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LINUX_INCLUDE_PATH;_PLATFORM_ANDROID;NO_XEFFECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStandard>gnu++1z</CppLanguageStandard>
       <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;lua;ode;ogg;openal;vorbis;vorbisfile;freetype</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;lua;ode;openal;vorbisenc;vorbisfile;vorbis;freetype;ogg</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -151,7 +153,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>_LINUX_INCLUDE_PATH;NO_XEFFECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LINUX_INCLUDE_PATH;_PLATFORM_ANDROID;NO_XEFFECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStandard>gnu++1z</CppLanguageStandard>
       <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>

@@ -119,38 +119,9 @@
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Content Include="libs\arm64-v8a\libaaudio.so" />
-    <Content Include="libs\arm64-v8a\libandroid.so" />
-    <Content Include="libs\arm64-v8a\libbrotlicommon.so" />
-    <Content Include="libs\arm64-v8a\libbrotlidec.so" />
-    <Content Include="libs\arm64-v8a\libbrotlienc.so" />
-    <Content Include="libs\arm64-v8a\libbz2.so" />
-    <Content Include="libs\arm64-v8a\libc.so" />
-    <Content Include="libs\arm64-v8a\libcamera2ndk.so" />
-    <Content Include="libs\arm64-v8a\libdl.so" />
-    <Content Include="libs\arm64-v8a\libEGL.so" />
+    <Content Include="assets\marblegp.dat" />
+    <Content Include="assets\ayar.ttf" />
     <Content Include="libs\arm64-v8a\libfreetype.so" />
-    <Content Include="libs\arm64-v8a\libGLESv1_CM.so" />
-    <Content Include="libs\arm64-v8a\libGLESv2.so" />
-    <Content Include="libs\arm64-v8a\libGLESv3.so" />
-    <Content Include="libs\arm64-v8a\libjnigraphics.so" />
-    <Content Include="libs\arm64-v8a\liblog.so" />
-    <Content Include="libs\arm64-v8a\liblua.so" />
-    <Content Include="libs\arm64-v8a\libm.so" />
-    <Content Include="libs\arm64-v8a\libmediandk.so" />
-    <Content Include="libs\arm64-v8a\libnativewindow.so" />
-    <Content Include="libs\arm64-v8a\libode.so" />
-    <Content Include="libs\arm64-v8a\libogg.so" />
-    <Content Include="libs\arm64-v8a\libopenal.so" />
-    <Content Include="libs\arm64-v8a\libOpenMAXAL.so" />
-    <Content Include="libs\arm64-v8a\libOpenSLES.so" />
-    <Content Include="libs\arm64-v8a\libstdc++.so" />
-    <Content Include="libs\arm64-v8a\libsync.so" />
-    <Content Include="libs\arm64-v8a\libvorbis.so" />
-    <Content Include="libs\arm64-v8a\libvorbisenc.so" />
-    <Content Include="libs\arm64-v8a\libvorbisfile.so" />
-    <Content Include="libs\arm64-v8a\libvulkan.so" />
-    <Content Include="libs\arm64-v8a\libz.so" />
     <Content Include="res\values\strings.xml" />
     <AntBuildXml Include="build.xml" />
     <AndroidManifest Include="AndroidManifest.xml" />
@@ -160,6 +131,9 @@
     <ProjectReference Include="..\MarbleGP_Android.Android.NativeActivity\MarbleGP_Android.Android.NativeActivity.vcxproj">
       <Project>{983408e1-0453-416a-829a-adc267514908}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="fonts\" />
   </ItemGroup>
   <Import Project="$(AndroidTargetsPath)\Android.targets" />
   <ImportGroup Label="ExtensionTargets" />
