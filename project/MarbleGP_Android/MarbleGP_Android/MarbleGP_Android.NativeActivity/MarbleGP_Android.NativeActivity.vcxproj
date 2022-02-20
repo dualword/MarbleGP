@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{a7089204-3770-41b8-a147-2096481dee56}</ProjectGuid>
+    <Keyword>Android</Keyword>
+    <RootNamespace>MarbleGP_Android</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <ApplicationType>Android</ApplicationType>
+    <ApplicationTypeRevision>3.0</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+    <AndroidAPILevel>android-29</AndroidAPILevel>
+    <UseOfStl>c++_shared</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+    <AndroidAPILevel>android-29</AndroidAPILevel>
+    <UseOfStl>c++_shared</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
+    <UseOfStl>c++_shared</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Clang_5_0</PlatformToolset>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
+    <UseOfStl>c++_shared</UseOfStl>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CppLanguageStandard>c++1z</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CppLanguageStandard>c++1z</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>_OPENGL_ES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>_OPENGL_ES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>NO_XEFFECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>NO_XEFFECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\_source\include\CGlobal.h" />
+    <ClInclude Include="..\..\..\_source\include\CMainClass.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerBase.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerFactory.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerGame.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerMenu.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CMarbleController.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\IController.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\ICustomEventReceiver.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\IJoystickEventHandler.h" />
+    <ClInclude Include="..\..\..\_source\include\data\CDataStructs.h" />
+    <ClInclude Include="..\..\..\_source\include\Defines.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\CDynamicThread.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\CGameLogicDefault.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\CMarbleCounter.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\COdeNodes.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\IGameLogic.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\ITriggerHandler.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\SMarbleNodes.h" />
+    <ClInclude Include="..\..\..\_source\include\gameclasses\SPlayer.h" />
+    <ClInclude Include="..\..\..\_source\include\gfx\SViewPort.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CButtonRenderer.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CClipImage.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CControllerUi.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CDustbinCheckbox.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CGuiImageList.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CGuiItemFactory.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CGuiTouchControl.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CMenuBackground.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CMenuButton.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CReactiveLabel.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CSelector.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CTrackButton.h" />
+    <ClInclude Include="..\..\..\_source\include\helpers\CMenuLoader.h" />
+    <ClInclude Include="..\..\..\_source\include\helpers\CStringHelpers.h" />
+    <ClInclude Include="..\..\..\_source\include\helpers\CTextureHelpers.h" />
+    <ClInclude Include="..\..\..\_source\include\menu\CMenuFactory.h" />
+    <ClInclude Include="..\..\..\_source\include\menu\IMenuHandler.h" />
+    <ClInclude Include="..\..\..\_source\include\menu\IMenuManager.h" />
+    <ClInclude Include="..\..\..\_source\include\messages\CMessageHelpers.h" />
+    <ClInclude Include="..\..\..\_source\include\messages\CSerializer64.h" />
+    <ClInclude Include="..\..\..\_source\include\messages\IMessage.h" />
+    <ClInclude Include="..\..\..\_source\include\messages\ISerializer.h" />
+    <ClInclude Include="..\..\..\_source\include\platform\CPlatform.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CCheckpointNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CDustbinId.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CJointNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleCountSceneNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMyCameraAnimator.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CPhysicsNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CRespawnNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CRespawnNode_Editor.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CSkyBoxFix.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CStartingGridSceneNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CTriggerTimerNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CWorldNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\STriggerAction.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\STriggerVector.h" />
+    <ClInclude Include="..\..\..\_source\include\shader\CMyShaderNone.h" />
+    <ClInclude Include="..\..\..\_source\include\shader\CShaderHandlerBase.h" />
+    <ClInclude Include="..\..\..\_source\include\sound\ISoundInterface.h" />
+    <ClInclude Include="..\..\..\_source\include\state\CGameState.h" />
+    <ClInclude Include="..\..\..\_source\include\state\CMenuState.h" />
+    <ClInclude Include="..\..\..\_source\include\state\IState.h" />
+    <ClInclude Include="..\..\..\_source\include\threads\CMessageQueue.h" />
+    <ClInclude Include="..\..\..\_source\include\threads\IQueue.h" />
+    <ClInclude Include="..\..\..\_source\include\threads\IThread.h" />
+    <ClInclude Include="..\..\..\_source\include\_generated\messages\CMessageEnums.h" />
+    <ClInclude Include="..\..\..\_source\include\_generated\messages\CMessageFactory.h" />
+    <ClInclude Include="..\..\..\_source\include\_generated\messages\CMessages.h" />
+    <ClInclude Include="..\..\..\_source\include\_generated\messages\IDynamicThread.h" />
+    <ClInclude Include="..\..\..\_source\include\_generated\messages\IGameState.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="android_native_app_glue.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\_source\source\CGlobal.cpp" />
+    <ClCompile Include="..\..\..\_source\source\CMainClass.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerBase.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerFactory.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerGame.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerMenu.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CMarbleController.cpp" />
+    <ClCompile Include="..\..\..\_source\source\data\CDataStructs.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gameclasses\CDynamicThread.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gameclasses\CGameLogicDefault.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gameclasses\CMarbleCounter.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gameclasses\COdeNodes.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CButtonRenderer.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CClipImage.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CControllerUi.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CDustbinCheckbox.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CGuiImageList.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CGuiItemFactory.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CGuiTouchControl.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CMenuBackground.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CMenuButton.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CReactiveLabel.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CSelector.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CTrackButton.cpp" />
+    <ClCompile Include="..\..\..\_source\source\helpers\CMenuLoader.cpp" />
+    <ClCompile Include="..\..\..\_source\source\helpers\CStringHelpers.cpp" />
+    <ClCompile Include="..\..\..\_source\source\helpers\CTextureHelpers.cpp" />
+    <ClCompile Include="..\..\..\_source\source\main_android.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuMain.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuProfiles.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuSelectTrack.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuSettings.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuSetupGame.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\IMenuHandler.cpp" />
+    <ClCompile Include="..\..\..\_source\source\messages\CMessageHelpers.cpp" />
+    <ClCompile Include="..\..\..\_source\source\messages\CSerializer64.cpp" />
+    <ClCompile Include="..\..\..\_source\source\platform\CPlatformAndroid.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CDustbinId.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CJointNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CPhysicsNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CRespawnNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CSkyBoxFix.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CTriggerTimerNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CWorldNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\STriggerAction.cpp" />
+    <ClCompile Include="..\..\..\_source\source\shader\CShaderHandlerBase.cpp" />
+    <ClCompile Include="..\..\..\_source\source\shader\CShaderHandlerNone.cpp" />
+    <ClCompile Include="..\..\..\_source\source\sound\CSoundInterfaceAndroid.cpp" />
+    <ClCompile Include="..\..\..\_source\source\state\CGameState.cpp" />
+    <ClCompile Include="..\..\..\_source\source\state\CMenuState.cpp" />
+    <ClCompile Include="..\..\..\_source\source\threads\CMessageQueue.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\messages\CMessageFactory.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\messages\CMessages.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\messages\IDynamicThread.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\messages\IGameState.cpp" />
+    <ClCompile Include="android_native_app_glue.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

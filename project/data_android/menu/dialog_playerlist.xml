@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="relative: 0, 0, 50, 4">
+    <attributes>
+      <attribute key="Name" value="player_tab" />
+      <attribute key="Visible" value="true" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 0, 4, 4" font="big">
+        <attributes>
+          <attribute key="Caption" value="1" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="player_label" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 0, 42, 4" font="big">
+        <attributes>
+          <attribute key="Name" value="player_name" />
+          <attribute key="Caption" value="Mr. Nukular" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 43, 1, 45, 3" tooltip="Remove Player">
+        <attributes>
+          <attribute key="Name" value="remove_player" />
+          <attribute key="ImagePath" value="data/images/btn_delete.png" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <element type="MenuButton" rect="relative: 43, 1, 45, 3" tooltip="Add Player">
+    <attributes>
+      <attribute key="Name" value="add_player" />
+      <attribute key="ImagePath" value="data/images/btn_add_small.png" />
+      <attribute key="Visible" value="true" />
+    </attributes>
+  </element>
+</dialog>

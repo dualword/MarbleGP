@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "ee28f920-cd4d-45d6-859e-1e65759d2a03": {
+      "ProjectGuid": "ee28f920-cd4d-45d6-859e-1e65759d2a03",
+      "DisplayName": "MarbleGP_Windows",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Sonstige Dateien",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 1
+}

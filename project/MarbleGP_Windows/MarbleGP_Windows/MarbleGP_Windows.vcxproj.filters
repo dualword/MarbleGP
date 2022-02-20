@@ -1,0 +1,567 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\gui">
+      <UniqueIdentifier>{1d70b7ec-7277-4708-ba71-cc20166813ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\gui">
+      <UniqueIdentifier>{f7566158-b629-4cb8-bd59-2329adcc057c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\platform">
+      <UniqueIdentifier>{2a8a7dbb-86e5-4229-8d1e-7bdac644e5da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\platform">
+      <UniqueIdentifier>{597e8425-523c-4d9b-b56d-daabffbb4492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\state">
+      <UniqueIdentifier>{d553b0c7-7060-45ec-ba09-3f33ea8d161e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\controller">
+      <UniqueIdentifier>{3cfb5791-032b-4653-899b-c64dc6236361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\controller">
+      <UniqueIdentifier>{0b3deaac-73e8-4935-abfb-01a1a97b2400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\messages">
+      <UniqueIdentifier>{034e3fe9-fcac-4869-bf26-fac920f9dcd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\messages">
+      <UniqueIdentifier>{7039fbeb-d10a-4091-93d6-8607fa66ba3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\helpers">
+      <UniqueIdentifier>{7019f3d1-e871-426b-b155-59ea050ef82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\helpers">
+      <UniqueIdentifier>{4074bded-b448-418a-b813-c9592498fca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\menu">
+      <UniqueIdentifier>{0e844b33-5d38-4c05-96e3-aa9fed9f290c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\menu">
+      <UniqueIdentifier>{4307bdf3-0016-4255-822c-9dcd2257d66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\data">
+      <UniqueIdentifier>{98d2b5ce-8436-46d0-b056-b094e1536ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\data">
+      <UniqueIdentifier>{55448382-1ed6-4f4d-90e0-4a6023cc50f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\state">
+      <UniqueIdentifier>{5b039a50-e530-4ac0-aa0c-af0c3201d559}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\gameclasses">
+      <UniqueIdentifier>{ad1a854d-ccf0-4b90-9664-05d491250752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\gameclasses">
+      <UniqueIdentifier>{76812ff3-8ec2-4d2f-94c1-1469aaf84b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\shader">
+      <UniqueIdentifier>{01b08324-884a-4f26-95b1-88ef1026cca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\shader">
+      <UniqueIdentifier>{46f33eff-2cdd-4cc1-9e23-a9292397014a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\scenenodes">
+      <UniqueIdentifier>{86b967ec-bbea-451b-9793-204c435da710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\scenenodes">
+      <UniqueIdentifier>{0648ff7b-4d80-4a37-9a47-d2c7db1520f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\gfx">
+      <UniqueIdentifier>{e591d053-376c-4d6c-8bf1-8bebd0d6dc69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\threads">
+      <UniqueIdentifier>{064502ca-971c-4386-b111-ea68aa55ddc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\threads">
+      <UniqueIdentifier>{04534e8b-56e4-4fb4-8b5d-e1990bee8796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\xeffects">
+      <UniqueIdentifier>{0b9d6bb8-0d95-4404-b947-539c4900a581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\xeffects">
+      <UniqueIdentifier>{02c66b3b-ce5a-4f57-be57-3c37f2cda6f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated">
+      <UniqueIdentifier>{ad486936-4590-4050-806d-74f78a0bdd4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated\messages">
+      <UniqueIdentifier>{ee69bc3a-26b5-4ed1-a9f6-50669158fd15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated">
+      <UniqueIdentifier>{486608fc-50f3-4a25-aab2-7b0a1d0b0314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated\messages">
+      <UniqueIdentifier>{b8c4fca4-9809-42c5-abd6-a6a066c49a31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\sound">
+      <UniqueIdentifier>{16bc0403-91d2-4c0e-a22c-d74aa950f65d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\sound">
+      <UniqueIdentifier>{5a9fa0da-3061-438f-8a61-f64814d6a041}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\_source\source\CMainClass.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\main_windows.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CDustbinCheckbox.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CMenuButton.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CReactiveLabel.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CSelector.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CTrackButton.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp">
+      <Filter>Quelldateien\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\CGlobal.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerBase.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp">
+      <Filter>Quelldateien\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp">
+      <Filter>Quelldateien\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp">
+      <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp">
+      <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp">
+      <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\data\CDataStructs.cpp">
+      <Filter>Quelldateien\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\state\CMenuState.cpp">
+      <Filter>Quelldateien\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSettings.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSetupGame.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\state\CGameState.cpp">
+      <Filter>Quelldateien\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CDynamicThread.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerBase.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerNone.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerXEffect.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandleXEffectSplitscreen.cpp">
+      <Filter>Quelldateien\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CPhysicsNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CRespawnNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CSkyBoxFix.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp">
+      <Filter>Quelldateien\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\xeffects\CShaderPre.cpp">
+      <Filter>Quelldateien\xeffects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\xeffects\EffectHandler.cpp">
+      <Filter>Quelldateien\xeffects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\CMessages.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerFactory.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicDefault.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\sound\CSoundData.cpp">
+      <Filter>Quelldateien\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\sound\CSoundInterface.cpp">
+      <Filter>Quelldateien\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\sound\OggHelpers.cpp">
+      <Filter>Quelldateien\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CTriggerTimerNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\STriggerAction.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\_source\include\CMainClass.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CButtonRenderer.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CClipImage.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CDustbinCheckbox.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CMenuButton.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CReactiveLabel.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CSelector.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CTrackButton.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\CGlobal.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
+      <Filter>Headerdateien\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\state\IState.h">
+      <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerBase.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\CMessageHelpers.h">
+      <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\CSerializer64.h">
+      <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\IMessage.h">
+      <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\ISerializer.h">
+      <Filter>Headerdateien\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\state\CMenuState.h">
+      <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h">
+      <Filter>Headerdateien\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h">
+      <Filter>Headerdateien\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h">
+      <Filter>Headerdateien\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\IMenuHandler.h">
+      <Filter>Headerdateien\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\IMenuManager.h">
+      <Filter>Headerdateien\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\data\CDataStructs.h">
+      <Filter>Headerdateien\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\ICustomEventReceiver.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\CMenuFactory.h">
+      <Filter>Headerdateien\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerMenu.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\Defines.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerGame.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\state\CGameState.h">
+      <Filter>Headerdateien\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\COdeNodes.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\ITriggerHandler.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shader\CMyShaderNone.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shader\CShaderHandlerBase.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shader\CShaderHandlerXEffect.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shader\CShaderHandleXEffectSplitscreen.h">
+      <Filter>Headerdateien\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CPhysicsNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CRespawnNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CSkyBoxFix.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gfx\SViewPort.h">
+      <Filter>Headerdateien\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\threads\CMessageQueue.h">
+      <Filter>Headerdateien\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\threads\IQueue.h">
+      <Filter>Headerdateien\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\threads\IThread.h">
+      <Filter>Headerdateien\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\xeffects\CScreenQuad.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\xeffects\CShaderPre.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\xeffects\EffectCB.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\xeffects\EffectHandler.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\xeffects\EffectShaders.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\xeffects\XEffects.h">
+      <Filter>Headerdateien\xeffects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerFactory.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CMarbleController.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\IGameLogic.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\CSoundData.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\CSoundEnums.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\ISoundInterface.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\OggHelpers.h">
+      <Filter>Headerdateien\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CTriggerTimerNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\STriggerAction.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\STriggerVector.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleCountSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CMarbleCounter.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

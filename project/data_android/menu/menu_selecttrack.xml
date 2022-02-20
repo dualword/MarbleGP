@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 40, 3" font="big">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Select Track" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+        <children>
+          
+        </children>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 12, 49, 14">
+        <attributes>
+          <attribute key="Name" value="selected_track" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Caption" value="Selected Track" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinImageList" rect="relative: 1, 15, 49, 30" font="small">
+        <attributes>
+          <attribute key="Name" value="TrackList" />
+          <attribute key="Rows" value="1" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 5, 17, 7" tooltip="Select the number of laps of the race">
+        <attributes>
+          <attribute key="Caption" value="Number of Laps:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 18, 5, 31, 7">
+        <attributes>
+          <attribute key="Name" value="nolaps" />
+          <attribute key="Selected" value="1" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="1;2;3;4;5;6;7;8;9;10" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 8, 17, 10" tooltip="Filter Tracks by Category">
+        <attributes>
+          <attribute key="Caption" value="Filter Tracks:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 18, 8, 31, 10">
+        <attributes>
+          <attribute key="Name" value="track_filter" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="** All Tracks;Newbie;Flat;Loop;Jump;Steep;Complex;Moving" />
+        </custom>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_cancel.xml" />
+  <include file="data/menu/button_ok.xml" />
+</dialog>

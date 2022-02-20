@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Name" value="texture_dialog" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -35, -20, 35, 22">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="10" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="center: -35, -19, 35, -17" font="big">
+            <attributes>
+              <attribute key="Caption" value="Marble Texture" />
+              <attribute key="Name" value="texture_headline" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="center: -35, -16, 35, -14">
+            <attributes>
+              <attribute key="Caption" value="Use this dialog to customize the texture of your marble" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="tab" rect="center: -33, -11, -6, 15">
+            <attributes>
+              <attribute key="BackColor" value="200, 0, 0, 0" />
+              <attribute key="DrawBackground" value="true" /> 
+            </attributes>
+          </element>
+          
+          <element type="image" rect="center: -32, -10, -7, 14">
+            <attributes>
+              <attribute key="ScaleImage" value="true" />
+              <attribute key="Name" value="texture_image" />
+            </attributes>
+            <custom>
+              <attribute key="src" value="file://data/textures/texture_marblemann.png" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="center: -5, -10, 13, -8">
+            <attributes>
+              <attribute key="Caption" value="Texture Mode:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="center: 14, -10, 32, -8">
+            <attributes>
+              <attribute key="Name" value="texture_mode" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="Default;Generated;Imported" />
+            </custom>
+          </element>
+          
+          <element type="tab" rect="center: -5, -8, 34, 18">
+            <attributes>
+              <attribute key="Name" value="texture_generated" />
+              <attribute key="Visible" value="false" />
+            </attributes>
+            
+            <children>
+              <element type="staticText" rect="relative: 0, 2, 18, 4">
+                <attributes>
+                  <attribute key="Caption" value="Pattern:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 2, 32, 4">
+                <attributes>
+                  <attribute key="Name" value="texture_pattern" />
+                  <attribute key="Enabled" value="false" />
+                  <attribute key="Caption" value="texture_marbles2.png" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 2, 37, 4">
+                <attributes>
+                  <attribute key="Name" value="btn_select_pattern" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 5, 18, 7">
+                <attributes>
+                  <attribute key="Caption" value="Number Foreground Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 5, 32, 7">
+                <attributes>
+                  <attribute key="Name" value="texture_fg_nb" />
+                  <attribute key="Caption" value="000000" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 5, 37, 7">
+                <attributes>
+                  <attribute key="Name" value="btn_select_fg_nb" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 8, 18, 10">
+                <attributes>
+                  <attribute key="Caption" value="Number Background Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 8, 32, 10">
+                <attributes>
+                  <attribute key="Name" value="texture_bg_nb" />
+                  <attribute key="Caption" value="4b64f9" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 8, 37, 10">
+                <attributes>
+                  <attribute key="Name" value="btn_select_bg_nb" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 11, 18, 13">
+                <attributes>
+                  <attribute key="Caption" value="Number Ring Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 11, 32, 13">
+                <attributes>
+                  <attribute key="Name" value="texture_nr" />
+                  <attribute key="Caption" value="000000" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 11, 37, 13">
+                <attributes>
+                  <attribute key="Name" value="btn_select_nr" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 14, 18, 16">
+                <attributes>
+                  <attribute key="Caption" value="Number Frame Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 14, 32, 16">
+                <attributes>
+                  <attribute key="Name" value="texture_nf" />
+                  <attribute key="Caption" value="4b64f9" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 14, 37, 16">
+                <attributes>
+                  <attribute key="Name" value="btn_select_nf" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 17, 18, 19">
+                <attributes>
+                  <attribute key="Caption" value="Pattern Foreground Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 17, 32, 19">
+                <attributes>
+                  <attribute key="Name" value="texture_fg_pt" />
+                  <attribute key="Caption" value="000000" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 17, 37, 19">
+                <attributes>
+                  <attribute key="Name" value="btn_select_fg_pt" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 20, 18, 22">
+                <attributes>
+                  <attribute key="Caption" value="Pattern Background Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 20, 32, 22">
+                <attributes>
+                  <attribute key="Name" value="texture_bg_pt" />
+                  <attribute key="Caption" value="4b64f9" />
+                  <attribute key="Enabled" value="false" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 20, 37, 22">
+                <attributes>
+                  <attribute key="Name" value="btn_select_bg_pt" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+            </children>
+          </element>
+          
+          <element type="tab" rect="center: -5, -8, 34, 18">
+            <attributes>
+              <attribute key="Name" value="texture_imported" />
+              <attribute key="Visible" value="false" />
+            </attributes>
+            
+            <children>
+              <element type="staticText" rect="relative: 0, 2, 38, 4">
+                <attributes>
+                  <attribute key="Caption" value="Select Texture" />
+                  <attribute key="HTextAlign" value="center" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="listBox" rect="relative: 1, 5, 38, 18">
+                <attributes>
+                  <attribute key="DrawBack" value="true" />
+                  <attribute key="Name" value="imported_texture" />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 19, 18, 21">
+                <attributes>
+                  <attribute key="Caption" value="Name Label Text Color:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 19, 32, 21">
+                <attributes>
+                  <attribute key="Name" value="imported_name_color" />
+                  <attribute key="Enabled" value="false" />
+                  <attribute key="Caption" value="000000" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 19, 37, 21">
+                <attributes>
+                  <attribute key="Name" value="btn_select_name_color" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+              
+              <element type="staticText" rect="relative: 0, 22, 18, 24">
+                <attributes>
+                  <attribute key="Caption" value="Name Label Background:" />
+                  <attribute key="HTextAlign" value="lowerRight" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+              
+              <element type="editBox" rect="relative: 19, 22, 32, 24">
+                <attributes>
+                  <attribute key="Name" value="imported_name_back" />
+                  <attribute key="Enabled" value="false" />
+                  <attribute key="Caption" value="ffffff" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 33, 22, 37, 24">
+                <attributes>
+                  <attribute key="Name" value="btn_select_name_back" />
+                  <attribute key="Caption" value="..." />
+                </attributes>
+              </element>
+            </children>
+          </element>
+              
+          <element type="MenuButton" rect="center: 1, 17, 5, 21" tooltip="Save texture changes">
+            <attributes>
+              <attribute key="Name" value="btn_texture_ok" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_ok.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: -4, 17, 0, 21" tooltip="Discard texture changes">
+            <attributes>
+              <attribute key="Name" value="btn_texture_cancel" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

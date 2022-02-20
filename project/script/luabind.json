@@ -1,0 +1,397 @@
+{
+  "includes": {
+    "irr::gui::IGUIElement *"              : "irrlicht.h",
+    "irr::gui::IGUIStaticText *"           : "irrlicht.h",
+    "std::vector"                          : "vector",
+    "dustbin::gameclasses::CObjectMarble *": "gameclasses/COdeNodes.h",
+    "dustbin::gameclasses::CObject       *": "gameclasses/COdeNodes.h"
+  },
+  "datatypes": [
+    { "name": "std::vector"                         , "include": "vector"                       },
+    { "name": "dustbin::gameclasses::CDynamicThread", "include": "gameclasses/CDynamicThread.h" },
+    { "name": "dustbin::gameclasses::CObjectMarble" , "include": "gameclasses/COdeNodes.h"      },
+    { "name": "dustbin::gameclasses::CObject"       , "include": "gameclasses/COdeNodes.h"      }
+  ],
+  "enumerations": {
+  },
+  "basetypes": {
+  },
+  "tables": {
+    "SVector3d": {
+      "comment": "3d float vector",
+      "fields": [
+        { "name": "x", "type": "float", "comment": "The X Value of the vector" },
+        { "name": "y", "type": "float", "comment": "The Y Value of the vector" },
+        { "name": "z", "type": "float", "comment": "The Z Value of the vector" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SVector2d": {
+      "comment": "2d integer vector",
+      "fields": [
+        { "name": "x", "type": "int", "comment": "The X Value of the vector" },
+        { "name": "y", "type": "int", "comment": "The Y Value of the vector" }
+      ]
+    },
+    "SColor": {
+      "comment": "RGBA color information",
+      "fields": [
+        { "name": "r", "type": "int", "comment": "The red value of the color (0..255)" },
+        { "name": "g", "type": "int", "comment": "The green value of the color (0..255)" },
+        { "name": "b", "type": "int", "comment": "The blue value of the color (0..255)" },
+        { "name": "a", "type": "int", "comment": "The alpha value of the color (0..255)" }
+      ]
+    },
+    "SSettings": {
+      "comment": "This struct holds all game settings",
+      "fields": [
+        { "name": "gfx_resolution_w", "type": "int"        , "comment": "The width of the selected resolution" },
+        { "name": "gfx_resolution_h", "type": "int"        , "comment": "The height of the selected resolution" },
+        { "name": "gfx_fullscreen"  , "type": "bool"       , "comment": "Flag indicating whether or not fullscreen is wanted" },
+        { "name": "gfx_shadows"     , "type": "int"        , "comment": "The shadow value for the game (3 == High .. 0 == Off)" },
+        { "name": "gfx_ambientlight", "type": "int"        , "comment": "The ambient light value for the game" },
+        { "name": "ingame_rearview" , "type": "bool"       , "comment": "Is a rearview mirror wanted?" },
+        { "name": "ingame_ranking"  , "type": "bool"       , "comment": "Should a table with the standings be shown in the game?" },
+        { "name": "ingame_racetime" , "type": "bool"       , "comment": "Do you want to show the racetime in the game?" },
+        { "name": "ingame_laptimes" , "type": "bool"       , "comment": "Show a list of laptimes in the HUD" },
+        { "name": "sfx_master"      , "type": "float"      , "comment": "The master volume (0..1)" },
+        { "name": "sfx_soundtrack"  , "type": "float"      , "comment": "The soundtrack volume (0..1)" },
+        { "name": "sfx_menu"        , "type": "float"      , "comment": "The sound effect volume in the menu (0..1)" },
+        { "name": "sfx_game"        , "type": "float"      , "comment": "The sound effect volume in the game (0..1)" },
+        { "name": "misc_usemenuctrl", "type": "bool"       , "comment": "Do you want to control the menu with a controller?" },
+        { "name": "misc_menuctrl"   , "type": "std::string", "comment": "The menu controller settings" }
+      ]
+    },
+    "SScreenRect": {
+      "comment": "A rectangle on the screen",
+      "fields": [
+        { "name": "upperleftcorner" , "type": "SVector2d", "comment": "The upper left corner of the rectangle" },
+        { "name": "lowerrightcorner", "type": "SVector2d", "comment": "The lower right corner of the rectangle" }
+      ]
+    },
+    "STrack": {
+      "comment": "A table for the track data",
+      "fields": [
+        { "name": "name"    , "type": "std::string", "comment": "The name of the track" },
+        { "name": "folder"  , "type": "std::string", "comment": "The folder of the track" },
+        { "name": "position", "type": "int"        , "comment": "The position of the track in the track selection dialog" }
+      ]
+    },
+    "SPlayer": {
+      "comment": "The data of a player for the game",
+      "fields": [
+        { "name": "playerid", "type": "int"        , "comment": "The Id of the player" },
+        { "name": "name"    , "type": "std::string", "comment": "The name of the player" },
+        { "name": "controls", "type": "std::string", "comment": "String with the encoded controller data" },
+        { "name": "texture" , "type": "std::string", "comment": "The texture of the player." }
+      ]
+    },
+    "SPlayerRank": {
+      "comment": "This table holds all data for the championship of a player",
+      "fields": [
+        { "name": "playerid" , "type": "int"             , "comment": "The id of the player" },
+        { "name": "points"   , "type": "int"             , "comment": "Number of scored points" },
+        { "name": "positions", "type": "std::vector<int>", "comment": "A vector with the finished position counter" },
+        { "name": "respawn"  , "type": "int"             , "comment": "How often did the player respawn?" },
+        { "name": "stunned"  , "type": "int"             , "comment": "How often was the player stunned?" },
+        { "name": "dnf"      , "type": "int"             , "comment": "How often did the player not finish?" },
+        { "name": "firstrace", "type": "int"             , "comment": "Finish position of the first race. May be importand as last resort when calculating the standings." }
+      ]
+    },
+    "SPlayerResult": {
+      "comment": "Data structure for the players' results in a race",
+      "fields": [
+        { "name": "playerid", "type": "int", "comment": "The id of the player" },
+        { "name": "laps"    , "type": "int", "comment": "The number of laps the player has raced in the race" },
+        { "name": "time"    , "type": "int", "comment": "The race time (-1 == not finished)" },
+        { "name": "respawn" , "type": "int", "comment": "How often did the player respawn in this race?" },
+        { "name": "stunned" , "type": "int", "comment": "How often was the player stunned in this race?" }
+      ]
+    },
+    "SRace": {
+      "comment": "This table holds all data necessary to define a race",
+      "fields": [
+        { "name": "track" , "type": "std::string"               , "comment": "The track of the race" },
+        { "name": "laps"  , "type": "int"                       , "comment": "The number of laps of the race" },
+        { "name": "grid"  , "type": "std::vector<int>"          , "comment": "A vector of player IDs defining the starting grid" },
+        { "name": "result", "type": "std::vector<SPlayerResult>", "comment": "A vector of SPlayerResult storing the result of the race" }
+      ]
+    },
+    "SViewPort": {
+      "comment": "The viewport of the local players",
+      "fields": [
+        { "name": "playerid", "type": "int"        , "comment": "The player id" },
+        { "name": "rect"    , "type": "SScreenRect", "comment": "The viewport screen rectangle" }
+      ]
+    },
+    "SChampionShip": {
+      "comment": "A data structure that holds all data of a championship",
+      "fields": [
+        { "name": "class"    , "type": "std::string"             , "comment": "The class of the championship" },
+        { "name": "players"  , "type": "std::vector<SPlayer>"    , "comment": "A vector with all players of the championship" },
+        { "name": "standings", "type": "std::vector<SPlayerRank>", "comment": "The current standings of the championship" },
+        { "name": "races"    , "type": "std::vector<SRace>"      , "comment": "This vector stores all races that have already been done in the championship" },
+        { "name": "thisrace" , "type": "SRace"                   , "comment": "The current race. Needs to be filled before the race is started and it's result will be filled after the race has finished" },
+        { "name": "viewports", "type": "std::vector<SViewPort>"  , "comment": "The viewports for the game" }
+      ]
+    },
+    "SRaceData": {
+      "comment": "This data structure is used for communication between the dynamics thread and it's LUA script",
+      "fields": [
+        { "name": "laps"   , "type": "int"             , "comment": "The number of laps of the race" },
+        { "name": "marbles", "type": "std::vector<int>", "comment": "A vector with all the marbles of the race" }
+      ]
+    }
+  },
+  "classes": { },
+  "singletons": { 
+    "gamelogic": {
+      "globalidentifier": "gamelogic_cinstance",
+      "comment": "A LUA singleton for the game logic, i.e. positioning, players finished...",
+      "members": [
+        { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The dynamics thread that is running", "default": "nullptr" }
+      ],
+      "methods": {
+        "lua_from": {
+          "startplayer": {
+            "comment": "Start a player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "Marble ID of the player to start" }
+            ]
+          },
+          "finishplayer": {
+            "comment": "Set a player to finished",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "Marble ID of the player that finished" },
+              { "name": "Time"  , "type": "int", "comment": "Race time of the player in simulation steps" },
+              { "name": "Laps"  , "type": "int", "comment": "The number of laps the player has finished" }
+            ]
+          },
+          "stunnplayer": {
+            "comment": "Stun a player",
+            "arguments": [
+              { "name": "Marble"  , "type": "int", "comment": "Marble ID of the player to be stunnned" },
+              { "name": "StunTime", "type": "int", "comment": "Time that the player will be stunned in simulation steps" }
+            ]
+          },
+          "respawnplayer": {
+            "comment": "Respawn a player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "Marble ID of the player to respawn" }
+            ]
+          }
+        },
+        "lua_to": {
+        },
+        "lua_none": {
+          "setDynamicsThread": {
+            "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
+    },
+    "physics": {
+      "globalidentifier": "physics_cinstance",
+      "comment": "This singleton allows access to the objects of the current race",
+      "members": [
+        { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *"              , "comment": "The dynamics thread that is running", "default": "nullptr" },
+        { "name": "Marbles" , "type": "std::map<int, dustbin::gameclasses::CObjectMarble *>", "comment": "All marbles of the current race"    },
+        { "name": "Objects" , "type": "std::map<int, dustbin::gameclasses::CObject *>"      , "comment": "All objects of the current race"    },
+        { "name": "Moving"  , "type": "std::map<int, dustbin::gameclasses::CObject *>"      , "comment": "All non-static objects in a race"   }
+      ],
+      "methods": {
+        "lua_from": { 
+          "startmotor": {
+            "comment": "Set the parameters of a joint's motor. Setting velocity and / or force to zero deactivates the motor",
+            "arguments": [
+              { "name": "jointid" , "type": "int"  , "comment": "ID of the joint" },
+              { "name": "velocity", "type": "float", "comment": "The desired velocity of the joint" },
+              { "name": "force"   , "type": "float", "comment": "The force used to achieve the velocity" }
+            ]
+          },
+          "setmarbleupvector": {
+            "comment": "Set the up vector of a marble's camera. Useful for jumps.",
+            "arguments":  [
+              { "name": "marble" , "type": "int"      , "comment": "ID of the marble" },
+              { "name": "contact", "type": "SVector3d", "comment": "The new contact point" }
+            ]
+          }
+        },
+        "lua_to": {
+        },
+        "lua_none": {
+          "setDynamicsThread": {
+            "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scripts": { 
+    "gamelogic": {
+      "comment": "This script runs in the dynamics thread and is responsible for game-logics",
+      "globalidentifier": "gamelogic_script_cinstance",
+      "enums": [
+      ],
+      "exports": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "gamelogic"
+      ],
+      "methods": {
+        "lua_from": { },
+        "lua_to": { 
+          "initialize": {
+            "comment": "This function is called when the script is started",
+            "arguments": [
+              { "name": "player", "type": "std::vector<int>", "comment": "Vector with the marble IDs used in this race" },
+              { "name": "laps"  , "type": "int"             , "comment": "The number of laps of this race" }
+            ]
+          },
+          "onPlayerStunned": {
+            "comment": "Callback to notify the script about a stunned player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The stunned player's Marble ID" },
+              { "name": "state" , "type": "int", "comment": "The new stunned state (1 == stunned, 0 == back to normal)" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onPlayerRespawn": {
+            "comment": "Callback to notify the script about a player respawning",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The respawning player's Marble ID" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCheckpoint": {
+            "comment": "Callback to notify the script about a player passing a checkpoint",
+            "arguments": [
+              { "name": "Marble"    , "type": "int", "comment": "The player's Marble ID" },
+              { "name": "Checkpoint", "type": "int", "comment": "The checkpoint ID the player has passed" },
+              { "name": "steps"     , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onLapStart": {
+            "comment": "Callback to notify the script about a player starting a new lap",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The player's Marble ID" },
+              { "name": "LapNo" , "type": "int", "comment": "The lap number the player has just started" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCountdown": {
+            "comment": "Callback for the countdown",
+            "arguments": [
+              { "name": "Tick" , "type": "int", "comment": "The callback tick (4..0 where 0 is race starts)" },
+              { "name": "steps", "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          }
+        },
+        "lua_none": { 
+          "setDynamicsThread": {
+            "comment": "Attach the running dynamics thread to this singleton",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
+    },
+    "physics": {
+      "comment": "This is the per-track LUA script that allows access to all objects of the scene",
+      "globalidentifier": "physics_script_instance",
+      "members": [
+        { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The dynamics thread that is running", "default": "nullptr" }
+      ],
+      "enums": [
+      ],
+      "exports": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "physics"
+      ],
+      "methods": {
+        "lua_from": { },
+        "lua_to": { 
+          "initialize": {
+            "comment": "This function is called when the scripts starts to inform about the loaded track",
+            "arguments": [
+              { "name": "Marbles", "type": "std::vector<int>"          , "comment": "The IDs of all marbles participating in the race" },
+              { "name": "Objects", "type": "std::map<std::string, int>", "comment": "A map with all non-marble objects of the race. The key is the object's name, the value is the ID" }
+            ]
+          },
+          "onTrigger": {
+            "comment": "Callback to notify the script about a trigger event",
+            "arguments": [
+              { "name": "marble" , "type": "int", "comment": "The ID of the marble that triggered" },
+              { "name": "trigger", "type": "int", "comment": "The ID of the trigger that was hit" }
+            ]
+          },
+          "onPlayerStunned": {
+            "comment": "Callback to notify the script about a stunned player",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The stunned player's Marble ID" },
+              { "name": "state" , "type": "int", "comment": "The new stunned state (1 == stunned, 0 == back to normal)" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onPlayerRespawn": {
+            "comment": "Callback to notify the script about a player respawning",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The respawning player's Marble ID" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCheckpoint": {
+            "comment": "Callback to notify the script about a player passing a checkpoint",
+            "arguments": [
+              { "name": "Marble"    , "type": "int", "comment": "The player's Marble ID" },
+              { "name": "Checkpoint", "type": "int", "comment": "The checkpoint ID the player has passed" },
+              { "name": "steps"     , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onLapStart": {
+            "comment": "Callback to notify the script about a player starting a new lap",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The player's Marble ID" },
+              { "name": "LapNo" , "type": "int", "comment": "The lap number the player has just started" },
+              { "name": "steps" , "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onCountdown": {
+            "comment": "Callback for the countdown",
+            "arguments": [
+              { "name": "Tick" , "type": "int", "comment": "The callback tick (4..0 where 0 is race starts)" },
+              { "name": "steps", "type": "int", "comment": "The current simulation time in steps" }
+            ]
+          },
+          "onPlayerFinished": {
+            "comment": "LUA callback invoked when a player finished",
+            "arguments": [
+              { "name": "Marble", "type": "int", "comment": "The player's Marble ID" }
+            ]
+          }
+        },
+        "lua_none": { 
+          "setDynamicsThread": {
+            "comment": "Add the game data to this script",
+            "arguments": [
+              { "name": "Dynamics", "type": "dustbin::gameclasses::CDynamicThread *", "comment": "The running dynamics thread" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

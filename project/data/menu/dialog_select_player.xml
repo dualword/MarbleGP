@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Name" value="addplayer_dialog" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -20, -21, 20, 21">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="230, 239, 239, 255" />
+          <attribute key="ZLayer" value="46" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 40, 4" font="big">
+            <attributes>
+              <attribute key="Caption" value="Add Player" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 5, 38, 8" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl1" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 9, 38, 12" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl2" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 13, 38, 16" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl3" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 17, 38, 20" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl4" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 21, 38, 24" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl5" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 25, 38, 28" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl6" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 29, 38, 32" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl7" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 2, 33, 38, 36" tooltip="Select Player">
+            <attributes>
+              <attribute key="Name" value="add_pl8" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 18, 37, 22, 41" tooltip="Close">
+            <attributes>
+              <attribute key="Name" value="close_addplayer" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+            <custom>
+              <!-- <attribute key="Cancel" value="true" /> -->
+            </custom>
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

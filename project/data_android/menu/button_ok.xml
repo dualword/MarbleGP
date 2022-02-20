@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuButton" rect="lowermiddle: 1, -3, 4, 0" tooltip="OK">
+    <attributes>
+      <attribute key="Name" value="ok" />
+      <attribute key="Id" value="20000" />
+      <attribute key="ImagePath" value="data/images/btn_ok.png" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+</dialog>

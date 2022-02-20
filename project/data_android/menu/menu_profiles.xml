@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <attributes>
+      <attribute key="Name" value="menu_background" />
+    </attributes>
+  </element>
+  
+  <element type="staticText" rect="center: -25, -16, 25, -13" font="huge">
+    <attributes>
+      <attribute key="Id" value="23000" />
+      <attribute key="Caption" value="MarbleGP - Edit Player Profiles" />
+      <attribute key="HTextAlign" value="center" />
+      <attribute key="VTextAlign" value="center" />
+      <attribute key="Name" value="label_headline" />
+    </attributes>
+  </element>
+    
+  <element type="MenuBackground" rect="center: -24, -12, 24, -4">
+    <attributes>
+      <attribute key="Name" value="root_player1" />
+    </attributes>
+    
+    <children>
+      <include file="data/menu/menu_playerprofiles.xml" />
+    </children>
+  </element>
+  
+  <element type="MenuBackground" rect="center: -24, -3, 24, 5">
+    <attributes>
+      <attribute key="Name" value="root_player2" />
+      <attribute key="Visible" value="true" />
+    </attributes>
+    
+    <children>
+      <include file="data/menu/menu_playerprofiles.xml" />
+    </children>
+  </element>
+  
+  <element type="MenuBackground" rect="center: -24, 6, 24, 14">
+    <attributes>
+      <attribute key="Name" value="root_player3" />
+      <attribute key="Visible" value="true" />
+    </attributes>
+    
+    <children>
+      <include file="data/menu/menu_playerprofiles.xml" />
+    </children>
+  </element>
+  
+  <include file="data/menu/button_ok.xml" />
+  <include file="data/menu/button_cancel.xml" />
+  
+  <include file="data/menu/dialog_texture.xml" />
+  <include file="data/menu/dialog_color.xml" />
+  <include file="data/menu/dialog_select_pattern.xml" />
+  <include file="data/menu/dialog_controls.xml" />
+  <include file="data/menu/dialog_confirm.xml" />
+</dialog>

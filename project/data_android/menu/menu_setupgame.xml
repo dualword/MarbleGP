@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 40, 3" font="big">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Setup Game" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+        <children>
+          
+        </children>
+      </element>
+      
+      <!-- Player 1 -->
+      <element type="MenuBackground" rect="relative: 1, 4, 49, 8">
+        <attributes>
+          <attribute key="Name" value="player1" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
+        <children>
+          <element type="staticText" rect="relative: 24, 1, 35, 3" tooltip="Select the Raceclass, i.e. how fast the Marbles are">
+            <attributes>
+              <attribute key="Caption" value="Race Class:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="relative: 36, 1, 47, 3">
+            <attributes>
+              <attribute key="Name" value="raceclass" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="Marbles3;Marbles2;MarbleGP" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="relative: 24, 4, 35, 6" tooltip="Select the starting Order of the Races">
+            <attributes>
+              <attribute key="Caption" value="Grid Positions:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>          
+          
+          <element type="Selector" rect="relative: 36, 4, 47, 6">
+            <attributes>
+              <attribute key="Name" value="starting_positions" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="Last race;Standings;Random" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="relative: 1, 1, 20, 3" tooltip="Reverse Starting Positions">
+            <attributes>
+              <attribute key="Caption" value="Reverse Grid:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>          
+          
+          <element type="DustbinCheckbox" rect="relative: 21, 1, 23, 3">
+            <attributes>
+              <attribute key="Name" value="reverse_grid" />
+            </attributes>
+          </element>
+                    
+          <element type="staticText" rect="relative: 1, 4, 20, 6" tooltip="Randomize Starting Positions of the First Race">
+            <attributes>
+              <attribute key="Caption" value="Shuffle First Race:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>          
+          
+          <element type="DustbinCheckbox" rect="relative: 21, 4, 23, 6">
+            <attributes>
+              <attribute key="Name" value="randomize_first" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 1, 9, 20, 11" tooltip="Fill the Grid with AI Marbles">
+            <attributes>
+              <attribute key="Caption" value="Add AI Players:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>          
+          
+          <element type="DustbinCheckbox" rect="relative: 21, 9, 23, 11">
+            <attributes>
+              <attribute key="Name" value="fillgrid_ai" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 26, 9, 35, 11" tooltip="Select the Grid Size">
+            <attributes>
+              <attribute key="Caption" value="Grid Size:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>          
+          
+          <element type="Selector" rect="relative: 36, 9, 47, 11">
+            <attributes>
+              <attribute key="Name" value="gridsize" />
+              <attribute key="Selected" value="3" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="2;4;8;12;16" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="relative: 24, 12, 35, 14" tooltip="Select the Class of the AI Opponents">
+            <attributes>
+              <attribute key="Caption" value="AI Class:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element> 
+          
+          <element type="Selector" rect="relative: 36, 12, 47, 14">
+            <attributes>
+              <attribute key="Name" value="ai_class" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="Marbles3;Marbles2;MarbleGP;Configure" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="relative: 0, 17, 20, 19"/>
+            <attributes>
+              <attribute key="Caption" value="Enable touch control:">
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 21, 17, 23, 19">
+            <attributes>
+              <attribute key="Name" value="touchcontrol" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+  <include file="data/menu/button_cancel.xml" />
+  <include file="data/menu/dialog_select_player.xml" />
+</dialog>

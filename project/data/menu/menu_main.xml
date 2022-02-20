@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+
+<!--
+
+Factory 0 element 0 : "button"
+Factory 0 element 1 : "checkBox"
+Factory 0 element 2 : "comboBox"
+Factory 0 element 3 : "contextMenu"
+Factory 0 element 4 : "menu"
+Factory 0 element 5 : "editBox"
+Factory 0 element 6 : "fileOpenDialog"
+Factory 0 element 7 : "colorSelectDialog"
+Factory 0 element 8 : "inOutFader"
+Factory 0 element 9 : "image"
+Factory 0 element 10: "listBox"
+Factory 0 element 11: "meshViewer"
+Factory 0 element 12: "messageBox"
+Factory 0 element 13: "modalScreen"
+Factory 0 element 14: "scrollBar"
+Factory 0 element 15: "spinBox"
+Factory 0 element 16: "staticText"
+Factory 0 element 17: "tab"
+Factory 0 element 18: "tabControl"
+Factory 0 element 19: "table"
+Factory 0 element 20: "toolBar"
+Factory 0 element 21: "treeview"
+Factory 0 element 22: "window"
+Factory 0 element 23: "element"
+Factory 0 element 24: "root"
+Factory 1 element 0 : "MenuButton"
+Factory 1 element 1 : "MenuBackground"
+Factory 1 element 2 : "ControllerUi"
+Factory 1 element 3 : "DustbinCheckbox"
+Factory 1 element 4 : "Selector"
+Factory 1 element 5 : "ReactiveLabel"
+Factory 1 element 6 : "ClipImage"
+Factory 1 element 7 : "TrackButton"
+
+Unniversal Attributes:
+
+Attribute Name:
+Attribute Id: -1
+Attribute Caption:
+Attribute Rect: 0, 0, 100, 100
+Attribute MinSize: 1, 1
+Attribute MaxSize: 0, 0
+Attribute LeftAlign: upperLeft
+Attribute RightAlign: upperLeft
+Attribute TopAlign: upperLeft
+Attribute BottomAlign: upperLeft
+Attribute Visible: true
+Attribute Enabled: true
+Attribute TabStop: false
+Attribute TabGroup: false
+Attribute TabOrder: -1
+Attribute NoClip: false
+
+Attributes "Button":
+
+Attribute PushButton: false
+Attribute Image: 0
+Attribute ImageRect: 0, 0, 0, 0
+Attribute PressedImage: 0
+Attribute PressedImageRect: 0, 0, 0, 0
+Attribute UseAlphaChannel: false
+Attribute Border: true
+Attribute ScaleImage: false
+
+Attributes "StaticText":
+
+Attribute Border: false
+Attribute OverrideColorEnabled: false
+Attribute OverrideBGColorEnabled: false
+Attribute WordWrap: true
+Attribute Background: false
+Attribute RightToLeft: false
+Attribute RestrainTextInside: true
+Attribute OverrideColor: 255, 255, 255, 101
+Attribute BGColor: 210, 210, 210, 101
+Attribute HTextAlign: upperLeft
+Attribute VTextAlign: upperLeft
+
+Attributes of "tab":
+
+Attribute TabNumber: -1
+Attribute DrawBackground: false
+Attribute BackColor: 0, 0, 0, 0
+Attribute OverrideTextColorEnabled: false
+Attribute TextColor: 10, 10, 10, 240
+
+Attributes of "image":
+
+Attribute Texture: 0
+Attribute UseAlphaChannel: true
+Attribute Color: 255, 255, 255, 255
+Attribute ScaleImage: false
+
+Attributes of "comboBox"
+
+Attribute HTextAlign: upperLeft
+Attribute VTextAlign: center
+Attribute MaxSelectionRows: 5
+Attribute Selected: -1
+Attribute ItemCount: 0
+
+Attributes of "spinBox"
+
+Attribute Min: -340282346638528859811704183484516925440.000000
+Attribute Max: 340282346638528859811704183484516925440.000000
+Attribute Step: 1.000000
+Attribute DecimalPlaces: -1
+
+Attributes of "DustbinCheckbox"
+
+Attribute Checked: false
+Attribute BackgroundColor: 255, 255, 255, 255
+Attribute DisabledColor: 255, 160, 160, 160
+Attribute HoverColor: 255, 51, 103, 184
+Attribute ClickColor: 255, 236, 241 , 99
+
+Attributes of "checkBox"
+
+Attribute Checked: false
+
+Attributes of "Selector"
+
+Attribute CenterH: false
+Attribute CenterV: true
+Attribute Selected: -1
+Attribute BackgroundColor: 255, 255, 255, 255
+Attribute DisabledColor: 255, 160, 160, 160
+Attribute HoverColor: 255, 51, 103, 184
+Attribute ClickColor: 255, 236, 241 , 99
+
+Attributes of "MenuBackground"
+
+Attribute UseOverrideColor: false
+Attribute OverrideColor: 192, 239, 239, 255
+Attribute ZLayer: 0
+
+Attributes of "editBox"
+
+Attribute Border: true
+Attribute Background: true
+Attribute OverrideColorEnabled: false
+Attribute OverrideColor: 65ffffff
+Attribute MaxChars: 0
+Attribute WordWrap: false
+Attribute MultiLine: false
+Attribute AutoScroll: true
+Attribute PasswordBox: false
+Attribute PasswordChar: *
+Attribute HTextAlign: upperLeft
+Attribute VTextAlign: center
+Attribute ToolTip:
+
+Attributes of "listBox"
+
+Attribute DrawBack: false
+Attribute MoveOverSelect: false
+Attribute AutoScroll: true
+Attribute ItemCount: 0
+
+Attributes of "ReactiveLabel"
+
+Attribute CenterH: false
+Attribute CenterV: true
+Attribute DrawBackground: false
+Attribute DrawBorder: false
+Attribute TextColor: 255, 0, 0, 0
+Attribute BorderColor: 255, 0, 0, 0
+Attribute BackgroundColor: 32, 255, 255, 255
+Attribute HoverColor: 128, 255, 255, 128
+Attribute ClickColor: 128, 255, 128, 128
+
+Attributes of "ClipImage"
+
+Attribute Left: 0
+Attribute Top: 0
+Attribute Right: 128
+Attribute Bottom: 128
+Attribute Texture: ""
+
+Attributes of "TrackButton"
+
+Attribute Texture: ""
+Attribute Overlay: 128, 208, 208, 208
+Attribute Clicked: 128, 96, 96, 208
+Attribute Track: ""
+
+-->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+  </element>
+  
+  <element type="image" rect="center: -30, -24, 31, -18">
+    <attributes>
+      <attribute key="UseAlphaChannel" value="true" />
+      <attribute key="ScaleImage" value="true" />
+    </attributes>
+    <custom>
+      <attribute key="src" value="file://data/images/headline.png" />
+    </custom>
+  </element>
+  
+  <element type="MenuButton" rect="center: -22, -12, -3, -8" font="big" tooltip="Race against other players or AI">
+    <attributes>
+      <attribute key="Name" value="free_racing" />
+      <attribute key="Id" value="23001" />
+      <attribute key="Caption" value="Free Racing" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: 4, -12, 23, -8" font="big" tooltip="Play a cup against other players or AI">
+    <attributes>
+      <attribute key="Name" value="cup" />
+      <attribute key="Id" value="23002" />
+      <attribute key="Caption" value="MarbleGP Cup" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: -22, -6, -3, -2" font="big" tooltip="Add, edit and remove player profiles">
+    <attributes>
+      <attribute key="Name" value="profiles" />
+      <attribute key="Id" value="23003" />
+      <attribute key="Caption" value="Profiles" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: 4, -6, 23, -2" font="big" tooltip="Change graphics and sound settings">
+    <attributes>
+      <attribute key="Name" value="settings" />
+      <attribute key="Id" value="23004" />
+      <attribute key="Caption" value="Settings" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: -22, 0, -3, 4" font="big" tooltip="Review a recorded race">
+    <attributes>
+      <attribute key="Name" value="race_replay" />
+      <attribute key="Id" value="23005" />
+      <attribute key="Caption" value="Race Replay" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: 4, 0, 23, 4" font="big" tooltip="Take a closer look at a track of your choice">
+    <attributes>
+      <attribute key="Name" value="view_track" />
+      <attribute key="Id" value="23006" />
+      <attribute key="Caption" value="View Track" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: -22, 6, -3, 10" font="big" tooltip="Show credits">
+    <attributes>
+      <attribute key="Name" value="credits" />
+      <attribute key="Id" value="23007" />
+      <attribute key="Caption" value="Credits" />
+    </attributes>
+  </element>
+  <element type="MenuButton" rect="center: 4, 6, 23, 10" font="big" tooltip="Quit the game if you want to">
+    <attributes>
+      <attribute key="Name" value="exit" />
+      <attribute key="Id" value="23008" />
+      <attribute key="Caption" value="Exit" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: -39, 13, -6, 15" font="small">
+    <attributes>
+      <attribute key="Name" value="dustbin" />
+      <attribute key="Id" value="23008" />
+      <attribute key="Caption" value="(w) 2016-2021 by Christian Keimel / Dustbin::Games" />
+      <attribute key="HTextAlign" value="lowerRight" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: 7, 13, 39, 15" font="small">
+    <attributes>
+      <attribute key="Name" value="toshi" />
+      <attribute key="Id" value="23009" />
+      <attribute key="Caption" value="Music and some sound effects by Toshi Clinch" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: -39, 15, -6, 17" font="small">
+    <attributes>
+      <attribute key="Name" value="dustbin" />
+      <attribute key="Id" value="23008" />
+      <attribute key="Caption" value="https://www.dustbin-online.de" />
+      <attribute key="HTextAlign" value="lowerRight" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="staticText" rect="center: 7, 15, 39, 17" font="small">
+    <attributes>
+      <attribute key="Name" value="toshi" />
+      <attribute key="Id" value="23009" />
+      <attribute key="Caption" value="https://www.toshiclinchmusic.com/" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+  <element type="image" rect="center: -5, 13, 5, 23">
+    <attributes>
+      <attribute key="UseAlphaChannel" value="true" />
+      <attribute key="ScaleImage" value="true" />
+    </attributes>
+    <custom>
+      <attribute key="src" value="file://data/images/dustbin.png" />
+    </custom>
+  </element>
+  <!-- <element type="spinBox" rect="center: -26, 16, -20, 18" font="regular">
+    <attributes>
+      <attribute key="Min" value="1" />
+      <attribute key="Max" value="10" />
+      <attribute key="DecimalPlaces" value="0" />
+    </attributes>
+    <custom>
+      <attribute key="textAlignment" value="right" />
+    </custom>
+  </element> -->
+</dialog>

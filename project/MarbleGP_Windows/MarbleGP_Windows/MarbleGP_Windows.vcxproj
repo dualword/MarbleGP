@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
+    <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerBase.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp" />
+    <ClCompile Include="..\..\_source\source\data\CDataStructs.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\CDynamicThread.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicDefault.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CDustbinCheckbox.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CMenuButton.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CReactiveLabel.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CSelector.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CTrackButton.cpp" />
+    <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp" />
+    <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\main_windows.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuSettings.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuSetupGame.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp" />
+    <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp" />
+    <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CPhysicsNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CRespawnNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CSkyBoxFix.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CTriggerTimerNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\STriggerAction.cpp" />
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerBase.cpp" />
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerNone.cpp" />
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerXEffect.cpp" />
+    <ClCompile Include="..\..\_source\source\shader\CShaderHandleXEffectSplitscreen.cpp" />
+    <ClCompile Include="..\..\_source\source\sound\CSoundData.cpp" />
+    <ClCompile Include="..\..\_source\source\sound\CSoundInterface.cpp" />
+    <ClCompile Include="..\..\_source\source\sound\OggHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\state\CGameState.cpp" />
+    <ClCompile Include="..\..\_source\source\state\CMenuState.cpp" />
+    <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp" />
+    <ClCompile Include="..\..\_source\source\xeffects\CShaderPre.cpp" />
+    <ClCompile Include="..\..\_source\source\xeffects\EffectHandler.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\CMessages.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\_source\include\CGlobal.h" />
+    <ClInclude Include="..\..\_source\include\CMainClass.h" />
+    <ClInclude Include="..\..\_source\include\controller\CControllerBase.h" />
+    <ClInclude Include="..\..\_source\include\controller\CControllerFactory.h" />
+    <ClInclude Include="..\..\_source\include\controller\CControllerGame.h" />
+    <ClInclude Include="..\..\_source\include\controller\CControllerMenu.h" />
+    <ClInclude Include="..\..\_source\include\controller\CMarbleController.h" />
+    <ClInclude Include="..\..\_source\include\controller\ICustomEventReceiver.h" />
+    <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
+    <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />
+    <ClInclude Include="..\..\_source\include\Defines.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\COdeNodes.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\IGameLogic.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\ITriggerHandler.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\CMarbleCounter.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h" />
+    <ClInclude Include="..\..\_source\include\gfx\SViewPort.h" />
+    <ClInclude Include="..\..\_source\include\gui\CButtonRenderer.h" />
+    <ClInclude Include="..\..\_source\include\gui\CClipImage.h" />
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi.h" />
+    <ClInclude Include="..\..\_source\include\gui\CDustbinCheckbox.h" />
+    <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h" />
+    <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h" />
+    <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h" />
+    <ClInclude Include="..\..\_source\include\gui\CMenuButton.h" />
+    <ClInclude Include="..\..\_source\include\gui\CReactiveLabel.h" />
+    <ClInclude Include="..\..\_source\include\gui\CSelector.h" />
+    <ClInclude Include="..\..\_source\include\gui\CTrackButton.h" />
+    <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h" />
+    <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
+    <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />
+    <ClInclude Include="..\..\_source\include\menu\CMenuFactory.h" />
+    <ClInclude Include="..\..\_source\include\menu\IMenuHandler.h" />
+    <ClInclude Include="..\..\_source\include\menu\IMenuManager.h" />
+    <ClInclude Include="..\..\_source\include\messages\CMessageHelpers.h" />
+    <ClInclude Include="..\..\_source\include\messages\CSerializer64.h" />
+    <ClInclude Include="..\..\_source\include\messages\IMessage.h" />
+    <ClInclude Include="..\..\_source\include\messages\ISerializer.h" />
+    <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleCountSceneNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CPhysicsNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CRespawnNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CSkyBoxFix.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CTriggerTimerNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\STriggerAction.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\STriggerVector.h" />
+    <ClInclude Include="..\..\_source\include\shader\CMyShaderNone.h" />
+    <ClInclude Include="..\..\_source\include\shader\CShaderHandlerBase.h" />
+    <ClInclude Include="..\..\_source\include\shader\CShaderHandlerXEffect.h" />
+    <ClInclude Include="..\..\_source\include\shader\CShaderHandleXEffectSplitscreen.h" />
+    <ClInclude Include="..\..\_source\include\sound\CSoundData.h" />
+    <ClInclude Include="..\..\_source\include\sound\CSoundEnums.h" />
+    <ClInclude Include="..\..\_source\include\sound\ISoundInterface.h" />
+    <ClInclude Include="..\..\_source\include\sound\OggHelpers.h" />
+    <ClInclude Include="..\..\_source\include\state\CGameState.h" />
+    <ClInclude Include="..\..\_source\include\state\CMenuState.h" />
+    <ClInclude Include="..\..\_source\include\state\IState.h" />
+    <ClInclude Include="..\..\_source\include\threads\CMessageQueue.h" />
+    <ClInclude Include="..\..\_source\include\threads\IQueue.h" />
+    <ClInclude Include="..\..\_source\include\threads\IThread.h" />
+    <ClInclude Include="..\..\_source\include\xeffects\CScreenQuad.h" />
+    <ClInclude Include="..\..\_source\include\xeffects\CShaderPre.h" />
+    <ClInclude Include="..\..\_source\include\xeffects\EffectCB.h" />
+    <ClInclude Include="..\..\_source\include\xeffects\EffectHandler.h" />
+    <ClInclude Include="..\..\_source\include\xeffects\EffectShaders.h" />
+    <ClInclude Include="..\..\_source\include\xeffects\XEffects.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{ee28f920-cd4d-45d6-859e-1e65759d2a03}</ProjectGuid>
+    <RootNamespace>MarbleGP</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;..\libs\Irrlicht-1.9\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgInstalledDir>.\vcpkg</VcpkgInstalledDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgInstalledDir>.\vcpkg</VcpkgInstalledDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

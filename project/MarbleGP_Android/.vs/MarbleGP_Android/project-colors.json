@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "a7089204-3770-41b8-a147-2096481dee56": {
+      "ProjectGuid": "a7089204-3770-41b8-a147-2096481dee56",
+      "DisplayName": "MarbleGP_Android.NativeActivity",
+      "ColorIndex": 0
+    },
+    "ae916be5-2859-4f95-874a-4126d85535fb": {
+      "ProjectGuid": "ae916be5-2859-4f95-874a-4126d85535fb",
+      "DisplayName": "MarbleGP_Android.Packaging",
+      "ColorIndex": 1
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Sonstige Dateien",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 2
+}
