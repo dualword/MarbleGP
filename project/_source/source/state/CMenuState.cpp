@@ -63,6 +63,9 @@ namespace dustbin {
     * @param a_iZLayer the new Z-Layer
     */
     void CMenuState::setZLayer(int a_iZLayer) {
+      if (m_pController != nullptr)
+        m_pController->setZLayer(a_iZLayer);
+
     }
 
     /**
@@ -110,6 +113,10 @@ namespace dustbin {
           m_pMenu->run();
 
         m_pGui->drawAll();
+
+        if (m_pController != nullptr)
+          m_pController->draw();
+
         m_pDrv->endScene();
       }
       else m_eState = enState::Quit;
@@ -172,7 +179,6 @@ namespace dustbin {
       m_pMenu = a_pMenu;
 
       if (m_pController != nullptr) {
-        m_pController->setZLayer(0);
         m_pController->reset();
       }
 

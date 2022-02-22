@@ -4,7 +4,6 @@
 #include <gui/CReactiveLabel.h>
 #include <gui/CGuiImageList.h>
 #include <gui/CControllerUi.h>
-#include <gui/CTrackButton.h>
 #include <gui/CMenuButton.h>
 #include <gui/CClipImage.h>
 #include <gui/CSelector.h>

@@ -200,6 +200,7 @@ namespace dustbin {
             l_pTouch->setChecked(CGlobal::getInstance()->getSettingData().m_bTouchControl);
 
           updateSelectedPlayers();
+          m_pState->setZLayer(0);
           printf("Ready.\n");
         }
 

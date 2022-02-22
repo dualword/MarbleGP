@@ -31,11 +31,16 @@ namespace dustbin {
         irr::gui::ICursorControl * m_pCursor;
         irr::IrrlichtDevice *m_pDevice;
 
+        irr::core::position2di m_cMousePos;   /**< The mouse position (mainly for Android) */
+
         irr::ITimer* m_pTimer;
 
         int m_iZLayer;    /**< The current Z-Layer */
 
         std::vector<irr::gui::IGUIElement *> m_vElements;  /**< all relevant UI elements */
+
+        std::vector<int> m_vColumns;    /**< Store the columns that contain UI elements */
+        std::vector<int> m_vRows;       /**< Store the rows that contain UI elements */
 
         irr::gui::IGUIElement* m_pHovered,
                              * m_pSelected;
@@ -59,12 +64,6 @@ namespace dustbin {
         * @param a_iZLayer the current Z-Layer
         */
         void fillItemList(irr::gui::IGUIElement* a_pParent, int a_iZLayer);
-
-        /**
-        * Find an UI element after controller input
-        * @param a_iStep defines whether the item's bounding box (== 0) is used or the complete width / height of the screen (== 1)
-        */
-        irr::gui::IGUIElement* findElement(int a_iStep, enDirection a_eDirection);
 
         /**
         * Get the Z-Layer of an item. Iterates through all ancestors until either a "MenuBackground" element or the root element
@@ -94,6 +93,8 @@ namespace dustbin {
         * Reset all necessary members as a new menu was loaded
         */
         void reset();
+
+        void draw();
     };
 
   } // namespace controller

@@ -187,6 +187,8 @@ namespace dustbin {
           updateSoundUI(23024, 30003, m_cSettings.m_fSfxGame   );
 
           updateSplitscreenUI();
+
+          m_pState->setZLayer(1);
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
@@ -200,6 +202,8 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "gfx") {
+                m_pState->setZLayer(1);
+
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(true);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(true);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
@@ -208,6 +212,8 @@ namespace dustbin {
                 l_bRet = true;
               }
               else if (l_sSender == "sfx") {
+                m_pState->setZLayer(2);
+
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(true);
@@ -216,6 +222,8 @@ namespace dustbin {
                 l_bRet = true;
               }
               else if (l_sSender == "misc") {
+                m_pState->setZLayer(4);
+
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);

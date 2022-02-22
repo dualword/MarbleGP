@@ -51,7 +51,7 @@ namespace dustbin {
           SCtrlInput(messages::CSerializer64 *a_pSerializer);
           SCtrlInput(const SCtrlInput& a_cOther);
 
-          ~SCtrlInput();
+          virtual ~SCtrlInput();
 
           /**
           * Event handler for this input

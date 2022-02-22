@@ -23,6 +23,8 @@ namespace dustbin {
           m_pSmgr->addCameraSceneNode();
 
           m_pManager->clearMenuStack();
+
+          m_pState->setZLayer(0);
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {

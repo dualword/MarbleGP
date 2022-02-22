@@ -4,7 +4,6 @@
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CGuiImageList.h>
-#include <gui/CTrackButton.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
@@ -31,6 +30,7 @@ namespace dustbin {
 
         gui::CMenuButton *m_pLeft;    /**< The "Left" button */
         gui::CMenuButton *m_pRight;   /**< The "Right" button */
+        gui::CMenuButton *m_pOk;      /**< The "OK" button */
 
         std::string m_sTrackFilter;   /**< The filter string of the tracks (category). The track name has to start with the filter to be visible */
 
@@ -166,6 +166,7 @@ namespace dustbin {
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_pLeft       (nullptr), 
           m_pRight      (nullptr),
+          m_pOk         (nullptr),
           m_sTrackFilter(""),
           m_pTrackList  (nullptr),
           m_pTrackName  (nullptr)
@@ -190,12 +191,18 @@ namespace dustbin {
 
           m_pLeft  = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("btn_left" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
           m_pRight = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("btn_right", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+          m_pOk    = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+          if (m_pOk != nullptr)
+            m_pOk->setVisible(false);
 
           gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pLaps != nullptr) {
             std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
             l_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
           }
+
+          m_pState->setZLayer(0);
         }
 
         virtual ~CMenuSelectTrack() {
@@ -214,7 +221,7 @@ namespace dustbin {
                 m_pManager->pushToMenuStack("menu_selecttrack");
                 createMenu(l_sScript, m_pDevice, m_pManager, m_pState);
               }
-              else if (l_sCaller == "ok") {
+              else if (l_sCaller == "ok" && (m_pOk == nullptr || m_pOk->isVisible())) {
                 if (m_pTrackList != nullptr) {
                   printf("Track selected: \"%s\"\n", m_pTrackList->getSelectedName().c_str());
 
@@ -255,6 +262,9 @@ namespace dustbin {
               if (m_pTrackName != nullptr) {
                 m_pTrackList->selectImage();
                 m_pTrackName->setText(helpers::s2ws(m_pTrackList->getSelectedName()).c_str());
+
+                if (m_pOk != nullptr)
+                  m_pOk->setVisible(true);
               }
             }
           }

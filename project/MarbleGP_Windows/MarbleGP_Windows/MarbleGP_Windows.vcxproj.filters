@@ -147,9 +147,6 @@
     <ClCompile Include="..\..\_source\source\gui\CSelector.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\gui\CTrackButton.cpp">
-      <Filter>Quelldateien\gui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp">
       <Filter>Quelldateien\platform</Filter>
     </ClCompile>
@@ -342,9 +339,6 @@
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CSelector.h">
-      <Filter>Headerdateien\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\gui\CTrackButton.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\CGlobal.h">

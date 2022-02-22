@@ -875,6 +875,8 @@ namespace dustbin {
             fillColorPickVector(m_pGui->getRootGUIElement());
 
             printf("Loaded (%i).\n", m_iMaxIndex);
+
+            m_pState->setZLayer(0);
           }
 
           virtual ~CMenuProfiles() {
