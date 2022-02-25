@@ -19,15 +19,16 @@ namespace dustbin {
       m_pBtnLeft  (nullptr),
       m_pBtnRight (nullptr),
       m_bHover    (false),
-      m_bMouseDown(false),
-      m_pHovered  (nullptr),
-      m_pSelected (nullptr)
+      m_bMouseDown(false)
     {
       m_pDrv = CGlobal::getInstance()->getVideoDriver   ();
       m_pGui = CGlobal::getInstance()->getGuiEnvironment();
       m_pFs  = CGlobal::getInstance()->getFileSystem    ();
 
       m_cImageSrc = irr::core::rectf(0.0f, 0.0f, 1.0f, 1.0f);
+
+      m_itSelected = m_vImages.end();
+      m_itHovered  = m_vImages.end();
 
       prepareUi();
     }
@@ -113,8 +114,8 @@ namespace dustbin {
     void CGuiImageList::sendUserEvent() {
       irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;
-      l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
-      l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
+      l_cEvent.UserEvent.UserData1 = c_iEventImagePosChanged;
+      l_cEvent.UserEvent.UserData2 = c_iEventImagePosChanged;
       CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
     }
 
@@ -123,18 +124,27 @@ namespace dustbin {
     * @param a_vImages the list of images
     */
     void CGuiImageList::setImageList(const std::vector<CGuiImageList::SListImage> a_vImages) {
+      std::string l_sSelected = m_itSelected != m_vImages.end() ? (*m_itSelected).m_sData : "";
+
       m_vImages.clear();
 
-      for (std::vector<SListImage>::const_iterator it = a_vImages.begin(); it != a_vImages.end(); it++)
+      for (std::vector<SListImage>::const_iterator it = a_vImages.begin(); it != a_vImages.end(); it++) {
         m_vImages.push_back(*it);
+      }
+
+      m_itSelected = m_vImages.begin();
+      m_itHovered  = m_vImages.end();
 
       int l_iRow = 0;
 
       irr::core::position2di l_cPos = m_cImages.UpperLeftCorner + irr::core::position2di(CGlobal::getInstance()->getRasterSize() / 2, CGlobal::getInstance()->getRasterSize() / 2);
 
-      std::string l_sSelected = m_pSelected != nullptr ? m_pSelected->m_sData : "";
-
       for (std::vector<SListImage>::iterator it = m_vImages.begin(); it != m_vImages.end(); it++) {
+        if ((*it).m_sData == l_sSelected) {
+          m_itSelected = it;
+          sendUserEvent();
+        }
+
         (*it).m_cDrawRect = irr::core::recti(
           l_cPos,
           m_cImageSize
@@ -153,8 +163,7 @@ namespace dustbin {
       m_iMaxScroll = l_cPos.X - m_cImages.getWidth();
       m_iPos = 0;
 
-      m_pSelected = nullptr;
-      sendUserEvent();
+      checkPositionAndButtons();
     }
 
     /**
@@ -162,7 +171,7 @@ namespace dustbin {
     * @return the "name" property of the selected image
     */
     std::string CGuiImageList::getSelectedName() {
-      return m_pSelected != nullptr ? m_pSelected->m_sName : "";
+      return m_itSelected != m_vImages.end() ? (*m_itSelected).m_sName : "";
     }
 
     /**
@@ -170,7 +179,7 @@ namespace dustbin {
     * @return the "path" property of the selected image
     */
     std::string CGuiImageList::getSelectedPath() {
-      return m_pSelected != nullptr ? m_pSelected->m_sPath : "";
+      return m_itSelected != m_vImages.end() ? (*m_itSelected).m_sPath : "";
     }
 
     /**
@@ -178,21 +187,31 @@ namespace dustbin {
     * @return the "data" property of the selected image
     */
     std::string CGuiImageList::getSelectedData() {
-      return m_pSelected != nullptr ? m_pSelected->m_sData : "";
+      return m_itSelected != m_vImages.end() ? (*m_itSelected).m_sData : "";
     }
 
     /**
-    * Select the currently hovered track
+    * Set the selected image
+    * @param a_sImage the image data to select
     */
-    void CGuiImageList::selectImage() {
-      m_pSelected = m_pHovered;
+    void CGuiImageList::setSelected(const std::string& a_sImage) {
+      m_itSelected = m_vImages.end();
+
+      for (std::vector<SListImage>::iterator it = m_vImages.begin(); it != m_vImages.end(); it++)
+        if ((*it).m_sData == a_sImage) {
+          m_itSelected = it;
+          m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+          checkPositionAndButtons();
+          break;
+        }
     }
 
     /**
     * Clear the selection
     */
     void CGuiImageList::clearSelection() {
-      m_pSelected = nullptr;
+      m_itSelected = m_vImages.end();
+      sendUserEvent();
     }
 
     /**
@@ -211,8 +230,7 @@ namespace dustbin {
         m_iPos = m_iMaxScroll;
       }
 
-      m_pBtnLeft ->setVisible(m_iPos > 0);
-      m_pBtnRight->setVisible(m_iPos < m_iMaxScroll);
+      m_pBtnLeft->setVisible(m_itSelected != m_vImages.begin());
       m_pGui->setFocus(this);
     }
 
@@ -223,13 +241,37 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
           if (a_cEvent.GUIEvent.Caller == m_pBtnLeft) {
-            m_iPos -= m_iOffset;
-            checkPositionAndButtons();
+            if (m_itSelected != m_vImages.begin()) {
+              m_itSelected--;
+
+              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+
+              checkPositionAndButtons();
+              m_pBtnRight->setVisible(true);
+              sendUserEvent();
+            }
+
             l_bRet = true;
           }
           else if (a_cEvent.GUIEvent.Caller == m_pBtnRight) {
-            m_iPos += m_iOffset;
-            checkPositionAndButtons();
+            if (m_itSelected == m_vImages.end()) {
+              m_itSelected = m_vImages.begin();
+              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+              checkPositionAndButtons();
+              m_pBtnRight->setVisible(true);
+              sendUserEvent();
+            }
+            else {
+              if (m_itSelected + 1 != m_vImages.end()) {
+                m_itSelected++;
+                m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+                checkPositionAndButtons();
+
+                m_pBtnRight->setVisible(m_itSelected + 1 != m_vImages.end());
+                sendUserEvent();
+              }
+            }
+
             l_bRet = true;
           }
         }
@@ -266,7 +308,7 @@ namespace dustbin {
 
             irr::core::position2di l_cPos = irr::core::position2di(m_iPos, 0);
 
-            m_pHovered = nullptr;
+            m_itHovered = m_vImages.end();
             for (std::vector<SListImage>::iterator it = m_vImages.begin(); it != m_vImages.end(); it++) {
               irr::core::recti l_cRect = (*it).m_cDrawRect;
               l_cRect -= l_cPos;
@@ -274,12 +316,17 @@ namespace dustbin {
               m_pDrv->draw2DImage((*it).getImage(), l_cRect, irr::core::recti(irr::core::position2di(0, 0), (*it).getImage()->getOriginalSize()), &m_cImages, nullptr, true);
 
               if (l_cRect.isPointInside(m_cMouse))
-                m_pHovered = &(*it);
+                m_itHovered = it;
             }
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-            if (abs(m_cMouse.X - m_iMDown) < CGlobal::getInstance()->getRasterSize() / 4 && m_pHovered != nullptr) {
-              sendUserEvent();
+            if (abs(m_cMouse.X - m_iMDown) < CGlobal::getInstance()->getRasterSize() / 4 && m_itHovered != m_vImages.end()) {
+              m_itSelected = m_itHovered;
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
+              l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
+              CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
               l_bRet = true;
             }
           }
@@ -312,11 +359,11 @@ namespace dustbin {
 
         m_pDrv->draw2DImage((*it).getImage(), l_cRect, l_cSource, &m_cImages, nullptr, true);
 
-        if ((!m_bHover || !l_cRect.isPointInside(m_cMouse)) && &(*it) != m_pSelected) {
+        if ((!m_bHover || !l_cRect.isPointInside(m_cMouse)) && it != m_itSelected) {
           m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), l_cRect, &m_cImages);
         }
 
-        if (&(*it) == m_pSelected) {
+        if (it == m_itSelected) {
           m_pDrv->draw2DRectangle(irr::video::SColor(64, 0, 0xFF, 0), l_cRect, &m_cImages);
         }
       }

@@ -3,7 +3,8 @@
 namespace dustbin {
   #define c_iEventSettingsChanged 1
   #define c_iEventChangeZLayer 2
-  #define c_iEventImageSelected 3
+  #define c_iEventImagePosChanged 3
+  #define c_iEventImageSelected 4
 
   // Some constants for profile serialization
   #define c_iProfileHead 42

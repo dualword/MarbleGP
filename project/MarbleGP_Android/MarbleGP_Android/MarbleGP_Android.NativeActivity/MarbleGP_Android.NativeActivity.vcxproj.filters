@@ -265,9 +265,6 @@
     <ClCompile Include="..\..\..\_source\source\gui\CSelector.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\gui\CTrackButton.cpp">
-      <Filter>Quelldateien\gui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\_source\source\helpers\CMenuLoader.cpp">
       <Filter>Quelldateien\helpers</Filter>
     </ClCompile>

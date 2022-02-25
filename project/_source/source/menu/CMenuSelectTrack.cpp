@@ -103,7 +103,7 @@ namespace dustbin {
           m_vFiltered.clear();
 
           for (std::vector<std::tuple<int, std::string, std::string>>::iterator it = m_vTracks.begin(); it != m_vTracks.end(); it++) {
-            std::string l_sTrack = std::get<1>(*it);
+            std::string l_sTrack = std::get<2>(*it);
             std::string s = l_sTrack.substr(0, m_sTrackFilter.size());
             if (s == m_sTrackFilter) {
               m_vFiltered.push_back(std::make_tuple(std::get<0>(*it), std::get<1>(*it), std::get<2>(*it)));
@@ -133,6 +133,7 @@ namespace dustbin {
             }
 
             m_pTrackList->setImageList(l_vTracks);
+            m_pTrackList->setSelected(m_pState->getGlobal()->getGlobal("track"));
           }
         }
 
@@ -144,7 +145,7 @@ namespace dustbin {
 
             std::vector<std::wstring> l_vFilter;
             for (std::vector<std::tuple<int, std::string, std::string>>::iterator it = m_vTracks.begin(); it != m_vTracks.end(); it++) {
-              std::wstring l_sTrack = helpers::s2ws(std::get<1>(*it));
+              std::wstring l_sTrack = helpers::s2ws(std::get<2>(*it));
 
               size_t l_iPos = l_sTrack.find_first_of(':');
               if (l_iPos != std::string::npos) {
@@ -258,9 +259,8 @@ namespace dustbin {
             }
           }
           else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
-            if (a_cEvent.UserEvent.UserData1 == c_iEventImageSelected && a_cEvent.UserEvent.UserData2 == c_iEventImageSelected && m_pTrackList != nullptr) {
+            if (a_cEvent.UserEvent.UserData1 == c_iEventImagePosChanged && a_cEvent.UserEvent.UserData2 == c_iEventImagePosChanged && m_pTrackList != nullptr) {
               if (m_pTrackName != nullptr) {
-                m_pTrackList->selectImage();
                 m_pTrackName->setText(helpers::s2ws(m_pTrackList->getSelectedName()).c_str());
 
                 if (m_pOk != nullptr)

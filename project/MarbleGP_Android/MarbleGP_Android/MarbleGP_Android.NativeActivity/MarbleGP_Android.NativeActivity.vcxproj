@@ -333,7 +333,6 @@
     <ClCompile Include="..\..\..\_source\source\gui\CMenuButton.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CReactiveLabel.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CSelector.cpp" />
-    <ClCompile Include="..\..\..\_source\source\gui\CTrackButton.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CTextureHelpers.cpp" />

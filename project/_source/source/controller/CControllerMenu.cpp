@@ -199,10 +199,13 @@ namespace dustbin {
       if (m_bButtonDown) {
         if (m_vControls[4].m_fValue < 0.5f) {
           m_bButtonDown = false;
-          if (m_pHovered != nullptr) {
+
+          irr::gui::IGUIElement *l_pHovered = m_pGui->getRootGUIElement()->getElementFromPoint(m_cMousePos);
+
+          if (l_pHovered != nullptr) {
             bool l_bPost = true;
 
-            switch (m_pHovered->getType()) {
+            switch (l_pHovered->getType()) {
               case gui::g_DustbinCheckboxId:
                 break;
 
@@ -212,7 +215,7 @@ namespace dustbin {
                   if (m_pSelected->getType() == gui::g_SelectorId) reinterpret_cast<gui::CSelector*>(m_pSelected)->setItemSelected(false);
                 }
 
-                m_pSelected = m_pHovered == m_pSelected ? nullptr : m_pHovered;
+                m_pSelected = l_pHovered == m_pSelected ? nullptr : l_pHovered;
 
                 if (m_pSelected != nullptr) {
                   if (m_pSelected->getType() == gui::g_SelectorId) reinterpret_cast<gui::CSelector*>(m_pSelected)->setItemSelected(true);
@@ -231,8 +234,8 @@ namespace dustbin {
               l_cEvent.MouseInput.ButtonStates = 1;
               l_cEvent.MouseInput.Shift        = false;
               l_cEvent.MouseInput.Wheel        = 0;
-              l_cEvent.MouseInput.X            = m_pCursor != nullptr ? m_pCursor->getPosition().X : m_pHovered != nullptr ? m_cMousePos.X : 0;
-              l_cEvent.MouseInput.Y            = m_pCursor != nullptr ? m_pCursor->getPosition().Y : m_pHovered != nullptr ? m_cMousePos.Y : 0;
+              l_cEvent.MouseInput.X            = m_pCursor != nullptr ? m_pCursor->getPosition().X : l_pHovered != nullptr ? m_cMousePos.X : 0;
+              l_cEvent.MouseInput.Y            = m_pCursor != nullptr ? m_pCursor->getPosition().Y : l_pHovered != nullptr ? m_cMousePos.Y : 0;
 
               m_pDevice->postEventFromUser(l_cEvent);
             }
@@ -243,7 +246,7 @@ namespace dustbin {
         if (m_vControls[4].m_fValue > 0.5f) {
           m_bButtonDown = true;
 
-          if (m_pHovered != nullptr && m_pHovered->getType() != gui::g_DustbinCheckboxId && m_pHovered->getType() != irr::gui::EGUIET_SCROLL_BAR) {
+          if (m_pHovered == nullptr || (m_pHovered->getType() != gui::g_DustbinCheckboxId && m_pHovered->getType() != irr::gui::EGUIET_SCROLL_BAR)) {
             irr::SEvent l_cEvent;
 
             l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;

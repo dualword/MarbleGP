@@ -65,6 +65,9 @@ namespace dustbin {
 
         std::vector<SListImage> m_vImages;    /**< The list of images */
 
+        std::vector<SListImage>::iterator m_itSelected;   /**< The selected image */
+        std::vector<SListImage>::iterator m_itHovered;    /**< The hovered image */
+
         CMenuButton *m_pBtnLeft,    /**< The "Left" button */
                     *m_pBtnRight;   /**< The "right" button */
 
@@ -73,9 +76,6 @@ namespace dustbin {
 
         irr::core::position2di m_cClick;  /**< The mouse position for dragging */
         irr::core::position2di m_cMouse;  /**< The current mouse position */
-
-        SListImage *m_pHovered;     /**< The hovered image */
-        SListImage *m_pSelected;    /**< The selected image */
 
         void prepareUi();
         void checkPositionAndButtons();
@@ -109,9 +109,10 @@ namespace dustbin {
         std::string getSelectedData();
 
         /**
-        * Select the currently hovered track
+        * Set the selected image
+        * @param a_sImage the image data to select
         */
-        void selectImage();
+        void setSelected(const std::string &a_sImage);
         
         /**
         * Clear the selection

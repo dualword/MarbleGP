@@ -260,6 +260,7 @@ namespace dustbin {
               }
 
               m_pPatternList->setImageList(l_vPatterns);
+              m_pPatternList->setSelected(helpers::ws2s(m_pTexturePattern->getText()));
             }
 
             l_pXml->drop();
@@ -416,9 +417,7 @@ namespace dustbin {
         */
         bool buttonTexturePatternSelectClicked(const irr::SEvent &a_cEvent) {
           if (a_cEvent.EventType == irr::EET_USER_EVENT && a_cEvent.UserEvent.UserData1 == c_iEventImageSelected && a_cEvent.UserEvent.UserData2 == c_iEventImageSelected && m_pPatternList != nullptr) {
-            m_pPatternList->selectImage();
             std::string s = m_pPatternList->getSelectedData();
-            m_pPatternList->clearSelection();
 
             if (s != "") {
               m_pTexturePattern->setText(helpers::s2ws(s).c_str());
@@ -1033,6 +1032,7 @@ namespace dustbin {
                 }
                 else if (l_sSender == "btn_select_pattern") {
                   if (m_pPatternDialog != nullptr) {
+                    m_pPatternList->setSelected("");
                     m_pPatternDialog->setVisible(true);
                     changeZLayer(46);
                     updatePatterns();
@@ -1069,6 +1069,13 @@ namespace dustbin {
                 }
                 else if (l_sSender == "btn_ctrl_cancel") {
                   buttonControlsCancelClicked();
+                }
+                else if (l_sSender == "btn_pattern_select") {
+                  irr::SEvent l_cEvent;
+                  l_cEvent.EventType = irr::EET_USER_EVENT;
+                  l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
+                  l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
+                  buttonTexturePatternSelectClicked(l_cEvent);
                 }
                 else {
                   for (std::map<std::string, std::tuple<std::string, irr::gui::IGUITab *>>::iterator it = m_mButtonLinks.begin(); it != m_mButtonLinks.end(); it++) {
