@@ -24,14 +24,18 @@ namespace dustbin {
         bool m_bButtonDown,
              m_bMoved,
              m_bActive,
+             m_bEvent,
              m_bCancelDown,
              m_bOkDown;
 
-        irr::gui::IGUIEnvironment* m_pGui;
-        irr::gui::ICursorControl * m_pCursor;
-        irr::IrrlichtDevice *m_pDevice;
+        irr::gui::IGUIEnvironment *m_pGui;
+        irr::video::IVideoDriver  *m_pDrv;
+        irr::gui::ICursorControl  *m_pCursor;
+        irr::IrrlichtDevice       *m_pDevice;
 
         irr::core::position2di m_cMousePos;   /**< The mouse position (mainly for Android) */
+
+        irr::core::dimension2du m_cEditSize;
 
         irr::ITimer* m_pTimer;
 
@@ -42,8 +46,12 @@ namespace dustbin {
         std::vector<int> m_vColumns;    /**< Store the columns that contain UI elements */
         std::vector<int> m_vRows;       /**< Store the rows that contain UI elements */
 
-        irr::gui::IGUIElement* m_pHovered,
-                             * m_pSelected;
+        irr::gui::IGUIElement *m_pSelected;
+
+        std::wstring m_sEditChars;    /**< String with the characters for name editing with the menu controller */
+        int m_iEditTime;              /**< Timestamp when the last editing was done */
+
+        irr::video::ITexture *m_pArrows[2];
 
         /**
         * Change the mouse position after controller input
