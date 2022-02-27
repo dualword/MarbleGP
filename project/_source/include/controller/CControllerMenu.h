@@ -51,6 +51,8 @@ namespace dustbin {
         std::wstring m_sEditChars;    /**< String with the characters for name editing with the menu controller */
         int m_iEditTime;              /**< Timestamp when the last editing was done */
 
+        bool m_bFirstCall;    /**< Then first called on Android we set the virtual cursor on the first element */
+
         irr::video::ITexture *m_pArrows[2];
 
         /**

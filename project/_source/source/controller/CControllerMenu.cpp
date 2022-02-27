@@ -31,7 +31,8 @@ namespace dustbin {
       m_iZLayer    (a_iZLayer),
       m_pSelected  (nullptr),
       m_sEditChars (L""),
-      m_iEditTime  (-1)
+      m_iEditTime  (-1),
+      m_bFirstCall (true)
     {
       SCtrlInput l_cInput;
 
@@ -552,6 +553,18 @@ namespace dustbin {
 
       for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
         irr::core::position2di l_cPos = (*it)->getAbsoluteClippingRect().getCenter();
+
+        if (m_bFirstCall) {
+          m_bFirstCall = false;
+          m_cMousePos = l_cPos;
+
+          irr::SEvent l_cEvent;
+          l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+          l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
+          l_cEvent.MouseInput.X = m_cMousePos.X;
+          l_cEvent.MouseInput.Y = m_cMousePos.Y;
+          m_pDevice->postEventFromUser(l_cEvent);
+        }
 
         if (std::find(m_vRows.begin(), m_vRows.end(), l_cPos.Y) == m_vRows.end()) {
           m_vRows.push_back(l_cPos.Y);

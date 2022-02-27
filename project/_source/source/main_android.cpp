@@ -3,6 +3,7 @@
 
 #include <controller/ICustomEventReceiver.h>
 #include <state/IState.h>
+#include <Defines.h>
 
 #include "android_native_app_glue.h"
 
@@ -229,6 +230,12 @@ void android_main(struct android_app* a_pApp) {
 
     do {
       l_eState = l_pMainClass->run();
+
+      irr::SEvent l_cEvent;
+      l_cEvent.EventType = irr::EET_USER_EVENT;
+      l_cEvent.UserEvent.UserData1 = c_iEventNewFrame;
+      l_cEvent.UserEvent.UserData2 = c_iEventNewFrame;
+      l_pDevice->postEventFromUser(l_cEvent);
     }
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
 
