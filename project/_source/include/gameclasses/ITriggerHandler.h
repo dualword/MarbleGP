@@ -41,6 +41,13 @@ namespace dustbin {
         * @param a_iLapNo Number of the started lap
         */
         virtual void handleLapStart(int a_iMarbleId, int a_iLapNo) = 0;
+
+        /**
+        * Callback for "Marble Touch" Triggers
+        * @param a_iMarbleId the ID of the marble
+        * @param a_iTouchId the ID of the touched trigger
+        */
+        virtual void handleMarbleTouch(int a_iMarbleId, int a_iTouchId) = 0;
     };
   }
 }

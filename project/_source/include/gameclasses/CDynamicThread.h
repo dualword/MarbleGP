@@ -14,6 +14,7 @@
 #include <threads/IThread.h>
 #include <vector>
 #include <chrono>
+#include <map>
 
 namespace dustbin {
   namespace gameclasses {
@@ -55,6 +56,8 @@ namespace dustbin {
 
         std::vector<scenenodes::STriggerVector> m_vTimerActions;
         std::vector<gameclasses::CMarbleCounter> m_vMarbleCounters; /**< A list of marble counters */
+
+        std::map<int, std::vector<scenenodes::STriggerAction>> m_mTouchMap;    /**< A map of the trigger actions for marble touch actions */
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
@@ -116,6 +119,13 @@ namespace dustbin {
         * @param a_iLapNo Number of the started lap
         */
         virtual void handleLapStart(int a_iMarbleId, int a_iLapNo);
+
+        /**
+        * Callback for "Marble Touch" Triggers
+        * @param a_iMarbleId the ID of the marble
+        * @param a_iTouchId the ID of the touched trigger
+        */
+        virtual void handleMarbleTouch(int a_iMarbleId, int a_iTouchId);
 
         /**
         * LUA callback for finishing a player

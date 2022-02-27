@@ -13,6 +13,7 @@ namespace dustbin {
       "SetMotorParameters",
       "RotateSceneNode",
       "SceneNodeVisibility",
+      "CameraUpVector",
       0
     };
 
@@ -27,7 +28,8 @@ namespace dustbin {
 
     enum class enTriggerType {
       Timer       = 0,
-      MarbleCount = 1
+      MarbleCount = 1,
+      MarbleTouch = 2
     };
 
     enum class enAction {
@@ -37,7 +39,8 @@ namespace dustbin {
       StopMotor           = 3,
       SetMotorParams      = 4,
       RotateSceneNode     = 5,
-      SceneNodeVisibility = 6
+      SceneNodeVisibility = 6,
+      CameraUpVector      = 7
     };
 
     enum class enMarbleCountCondition {
@@ -63,7 +66,7 @@ namespace dustbin {
 
       enTriggerType m_eType;
 
-      irr::core::vector3df m_vTargetRotation;
+      irr::core::vector3df m_vTarget;
 
       STriggerAction();
 

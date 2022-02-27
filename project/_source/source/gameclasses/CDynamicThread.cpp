@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CPhysicsNode.h>
@@ -123,7 +124,7 @@ namespace dustbin {
 
               x = l_pOdeNode2;
 
-              if (l_pOdeNode2->m_bTrigger || l_pOdeNode2->m_bRespawn)
+              if (l_pOdeNode2->m_bTrigger || l_pOdeNode2->m_bRespawn || l_pOdeNode2->m_bMarbleTouch)
                 o = l_pOdeNode2;
 
               if (l_pWorld->m_mCheckpoints.find(l_pOdeNode2->m_iId) != l_pWorld->m_mCheckpoints.end())
@@ -134,7 +135,7 @@ namespace dustbin {
 
               x = l_pOdeNode1;
 
-              if (l_pOdeNode1->m_bTrigger || l_pOdeNode1->m_bRespawn)
+              if (l_pOdeNode1->m_bTrigger || l_pOdeNode1->m_bRespawn || l_pOdeNode2->m_bMarbleTouch)
                 o = l_pOdeNode1;
 
               if (l_pWorld->m_mCheckpoints.find(l_pOdeNode1->m_iId) != l_pWorld->m_mCheckpoints.end())
@@ -150,7 +151,7 @@ namespace dustbin {
                 p->m_vUpVector = vectorOdeToIrr(l_aPos) - vectorOdeToIrr(l_cContact[0].geom.pos);
               }
 
-              // The marble collides witha  non-marble object
+              // The marble collides with a non-marble object
               if (o != nullptr) {
                 // The other objects triggers
                 if (o->m_bTrigger) {
@@ -165,6 +166,11 @@ namespace dustbin {
                 // The other object starts a respawn
                 if (o->m_bRespawn) {
                   l_pWorld->handleRespawn(p->m_iId);
+                }
+
+                // The other object has a marble-touch trigger
+                if (o->m_bMarbleTouch) {
+                  l_pWorld->handleMarbleTouch(p->m_iId, o->m_iId);
                 }
               }
 
@@ -236,18 +242,32 @@ namespace dustbin {
         if (m_pWorld != nullptr) {
           scenenodes::CPhysicsNode* l_pNode = reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode);
 
+          CObject *l_pObject = nullptr;
+
           switch (l_pNode->getNodeType()) {
             case scenenodes::CPhysicsNode::enNodeType::Box:
-              m_pWorld->m_vObjects.push_back(new CObjectBox(l_pNode, m_pWorld, l_pNode->getName()));
+              l_pObject = new CObjectBox(l_pNode, m_pWorld, l_pNode->getName());
               break;
 
             case scenenodes::CPhysicsNode::enNodeType::Sphere:
-              m_pWorld->m_vObjects.push_back(new CObjectSphere(l_pNode, m_pWorld, l_pNode->getName()));
+              l_pObject = new CObjectSphere(l_pNode, m_pWorld, l_pNode->getName());
               break;
 
             case scenenodes::CPhysicsNode::enNodeType::Trimesh:
-              m_pWorld->m_vObjects.push_back(new CObjectTrimesh(l_pNode, m_pWorld, l_pNode->getName()));
+              l_pObject = new CObjectTrimesh(l_pNode, m_pWorld, l_pNode->getName());
               break;
+          }
+
+          if (l_pObject != nullptr) {
+            for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
+              if ((*it)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_MarbleTouchNodeId) {
+                l_pObject->m_bMarbleTouch = true;
+                printf("%i has marble touch!\n\n", l_pObject->m_iId);
+                break;
+              }
+            }
+
+            m_pWorld->m_vObjects.push_back(l_pObject);
           }
         }
       }
@@ -259,9 +279,21 @@ namespace dustbin {
         m_pWorld->m_vObjects.push_back(p);
         m_pWorld->m_mCheckpoints[a_pNode->getID()] = p;
       }
+      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_MarbleTouchNodeId) {
+        scenenodes::CMarbleTouchNode *p = reinterpret_cast<scenenodes::CMarbleTouchNode *>(a_pNode);
 
-      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
+        m_mTouchMap[p->getID()] = std::vector<scenenodes::STriggerAction>();
+
+        for (std::vector<scenenodes::STriggerAction>::iterator it = p->m_vActions.begin(); it != p->m_vActions.end(); it++) {
+          if ((*it).m_eAction != scenenodes::enAction::None) {
+            m_mTouchMap[p->getParent()->getID()].push_back(*it);
+          }
+        }
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
         createPhysicsObjects(*it);
+      }
     }
 
     void CDynamicThread::run() {
@@ -622,8 +654,8 @@ namespace dustbin {
                   }
                   break;
 
-              default:
-                break;
+                default:
+                  break;
               }
 
               (*it).m_itAction++;
@@ -860,6 +892,24 @@ namespace dustbin {
         if (m_pGameLogic->onLapStart(a_iMarbleId)) {
           finishPlayer(a_iMarbleId, m_pWorld->m_iWorldStep, a_iLapNo);
         }
+    }
+
+
+    /**
+    * Callback for "Marble Touch" Triggers
+    * @param a_iMarbleId the ID of the marble
+    * @param a_iTouchId the ID of the touched trigger
+    */
+    void CDynamicThread::handleMarbleTouch(int a_iMarbleId, int a_iTouchId) {
+      int l_iId = a_iMarbleId - 10000;
+
+      if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr && m_mTouchMap.find(a_iTouchId) != m_mTouchMap.end()) {
+        for (std::vector<scenenodes::STriggerAction>::iterator it = m_mTouchMap[a_iTouchId].begin(); it != m_mTouchMap[a_iTouchId].end(); it++) {
+          if ((*it).m_eAction == scenenodes::enAction::CameraUpVector) {
+            m_aMarbles[l_iId]->m_vUpVector = (*it).m_vTarget;
+          }
+        }
+      }
     }
 
     /**

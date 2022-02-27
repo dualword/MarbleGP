@@ -225,6 +225,9 @@
     <ClInclude Include="..\..\..\_source\include\scenenodes\STriggerVector.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleTouchNode.h">
+      <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -408,6 +411,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gameclasses\CMarbleCounter.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleTouchNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

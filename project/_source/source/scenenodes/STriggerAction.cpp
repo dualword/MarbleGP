@@ -27,7 +27,7 @@ namespace dustbin {
       m_fVelocity      (a_cOther.m_fVelocity),
       m_fForce         (a_cOther.m_fForce),
       m_bVisible       (a_cOther.m_bVisible),
-      m_vTargetRotation(a_cOther.m_vTargetRotation),
+      m_vTarget(a_cOther.m_vTarget),
       m_eCondition     (a_cOther.m_eCondition),
       m_eType          (a_cOther.m_eType)
     {
@@ -70,13 +70,16 @@ namespace dustbin {
 
         case enAction::RotateSceneNode:
 
-          m_fVelocity       = a_pIn->getAttributeAsFloat   ((std::string("Velocity_") + std::to_string(a_iIndex)).c_str());
-          m_vTargetRotation = a_pIn->getAttributeAsVector3d((std::string("Target_"  ) + std::to_string(a_iIndex)).c_str());
+          m_fVelocity = a_pIn->getAttributeAsFloat   ((std::string("Velocity_") + std::to_string(a_iIndex)).c_str());
+          m_vTarget   = a_pIn->getAttributeAsVector3d((std::string("Target_"  ) + std::to_string(a_iIndex)).c_str());
           break;
 
         case enAction::SceneNodeVisibility:
           m_bVisible = a_pIn->getAttributeAsBool((std::string("Visible_") + std::to_string(a_iIndex)).c_str());
           break;
+
+        case enAction::CameraUpVector:
+          m_vTarget = a_pIn->getAttributeAsVector3d((std::string("UpVector") + std::to_string(a_iIndex)).c_str());
       }
     }
 
@@ -109,12 +112,15 @@ namespace dustbin {
 
         case enAction::RotateSceneNode:
           a_pOut->addFloat   ((std::string("Velocity_") + std::to_string(a_iIndex)).c_str(), m_fVelocity);
-          a_pOut->addVector3d((std::string("Target_"  ) + std::to_string(a_iIndex)).c_str(), m_vTargetRotation);
+          a_pOut->addVector3d((std::string("Target_"  ) + std::to_string(a_iIndex)).c_str(), m_vTarget);
           break;
 
         case enAction::SceneNodeVisibility:
           a_pOut->addBool ((std::string("Visible_" ) + std::to_string(a_iIndex)).c_str(), m_bVisible );
           break;
+
+        case enAction::CameraUpVector:
+          a_pOut->addVector3d((std::string("UpVector") + std::to_string(a_iIndex)).c_str(), m_vTarget);
       }
     }
   }

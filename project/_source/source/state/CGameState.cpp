@@ -855,7 +855,7 @@ namespace dustbin {
               case scenenodes::enAction::RotateSceneNode: {
                 irr::scene::ISceneNode *p = m_pSmgr->getSceneNodeFromId((*(*it).m_itAction).m_iNodeId);
                 if (p != nullptr) {
-                  p->setRotation((*(*it).m_itAction).m_vTargetRotation);
+                  p->setRotation((*(*it).m_itAction).m_vTarget);
                 }
                 break;
               }

@@ -3,6 +3,7 @@
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CMarbleCountSceneNode.h>
 #include <scenenodes/CTriggerTimerNode.h>
+#include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CRespawnNode.h>
@@ -55,6 +56,10 @@ namespace dustbin {
           p = new CMarbleCountSceneNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId:
+          p = new CMarbleTouchNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
+          break;
+
         default:
           break;
       }
@@ -70,7 +75,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 8;
+      return 9;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -83,6 +88,7 @@ namespace dustbin {
         case 5: return g_JointNodeName;
         case 6: return g_TriggerTimerNodeName;
         case 7: return g_MarbleCountNodeName;
+        case 8: return g_MarbleTouchNodeName;
       }
 
       return nullptr;
@@ -98,6 +104,7 @@ namespace dustbin {
         case 5: return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
         case 6: return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
         case 7: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
+        case 8: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -129,6 +136,9 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId:
           return g_MarbleCountNodeName;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId:
+          return g_MarbleTouchNodeName;
+
         default:
           return nullptr;
       }
@@ -153,6 +163,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
       else if (l_sName == g_MarbleCountNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
+      else if (l_sName == g_MarbleTouchNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

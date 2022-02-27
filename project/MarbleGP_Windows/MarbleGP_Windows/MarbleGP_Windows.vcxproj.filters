@@ -312,6 +312,9 @@
     <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleTouchNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -556,6 +559,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gameclasses\CMarbleCounter.h">
       <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleTouchNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

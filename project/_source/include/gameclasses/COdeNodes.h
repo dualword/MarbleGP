@@ -52,11 +52,12 @@ namespace dustbin {
       public:
         int m_iId;
 
-        bool m_bStatic,       /**< Is this a static object? */
-             m_bCollides,     /**< Does this object collide with others. Hint: triggers do not have to */
-             m_bTrigger,      /**< Does this object trigger? */
-             m_bRespawn,      /**< Does the collision of a marble with this object respawn the marble? */
-             m_bSliderJoint;  /**< Is the joint attached to the object (if any) a slider? */
+        bool m_bStatic;       /**< Is this a static object? */
+        bool m_bCollides;     /**< Does this object collide with others. Hint: triggers do not have to */
+        bool m_bTrigger;      /**< Does this object trigger? */
+        bool m_bRespawn;      /**< Does the collision of a marble with this object respawn the marble? */
+        bool m_bSliderJoint;  /**< Is the joint attached to the object (if any) a slider? */
+        bool m_bMarbleTouch;  /**< This object has a "Marble Touch" trigger */
 
         int m_iTrigger;
 
@@ -169,22 +170,22 @@ namespace dustbin {
 
         bool m_bActive; /**< The player has already shown some activity */
 
-        irr::core::vector3df m_vCamera,     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
-                             m_vRearview,   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */
-                             m_vOffset,
-                             m_vUpVector,   /**< The camera up-vector */
-                             m_vUpOffset,   /**< This is generally the same as m_vUpVector, but when the marble has no contact this is not interpolated to keep an up-offset for the camera */
-                             m_vContact,    /**< The last contact point. This is used for up-vector interpolation even when currently no contact exists */
-                             m_vSideVector, /**< The camera side-vector. This is used for acceleration, torque is applied around this axis */
-                             m_vDirection,  /**< The direction the camera is pointing to. Torque is applied around this axis for steering */
-                             m_vPosition,   /**< The current position of the marble */
-                             m_vVelocity;   /**< The linear velocity. This is only used to determine whether or not a marble gets stunned */
+        irr::core::vector3df m_vCamera;     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
+        irr::core::vector3df m_vRearview;   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */
+        irr::core::vector3df m_vOffset;
+        irr::core::vector3df m_vUpVector;   /**< The camera up-vector */
+        irr::core::vector3df m_vUpOffset;   /**< This is generally the same as m_vUpVector, but when the marble has no contact this is not interpolated to keep an up-offset for the camera */
+        irr::core::vector3df m_vContact;    /**< The last contact point. This is used for up-vector interpolation even when currently no contact exists */
+        irr::core::vector3df m_vSideVector; /**< The camera side-vector. This is used for acceleration, torque is applied around this axis */
+        irr::core::vector3df m_vDirection;  /**< The direction the camera is pointing to. Torque is applied around this axis for steering */
+        irr::core::vector3df m_vPosition;   /**< The current position of the marble */
+        irr::core::vector3df m_vVelocity;   /**< The linear velocity. This is only used to determine whether or not a marble gets stunned */
 
         dReal m_fDamp;  /**< The damping of the marble's body */
 
-        int m_iCtrlX,   /**< The X-Control state updated in "onMarblecontrol" */
-            m_iCtrlY,   /**< The Y-Control state updated in "onMarblecontrol" */
-            m_iLastCp;  /**< The last Checkpoint the marble has passed */
+        int m_iCtrlX;   /**< The X-Control state updated in "onMarblecontrol" */
+        int m_iCtrlY;   /**< The Y-Control state updated in "onMarblecontrol" */
+        int m_iLastCp;  /**< The last Checkpoint the marble has passed */
 
         bool m_bHasContact,
              m_bBrake,         /**< The Brake Control state updated in "onMarblecontrol" */
@@ -236,6 +237,7 @@ namespace dustbin {
         void handleRespawn(int a_iMarble);
         void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint);
         void handleLapStart(int a_iMarbleId, int a_iLapNo);
+        void handleMarbleTouch(int a_iMarbleId, int a_iTouchId);
     };
   }
 }

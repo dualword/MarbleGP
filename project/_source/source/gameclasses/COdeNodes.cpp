@@ -108,6 +108,7 @@ namespace dustbin {
       m_bTrigger    (false),
       m_bRespawn    (false),
       m_bSliderJoint(false),
+      m_bMarbleTouch(false),
       m_iTrigger    (-1),
       m_pWorld      (a_pWorld),
       m_cGeom       (0),
@@ -401,6 +402,11 @@ namespace dustbin {
     void CWorld::handleLapStart(int a_iMarbleId, int a_iLapNo) {
       if (m_pTriggerHandler != nullptr)
         m_pTriggerHandler->handleLapStart(a_iMarbleId, a_iLapNo);
+    }
+
+    void CWorld::handleMarbleTouch(int a_iMarbleId, int a_iTouchId) {
+      if (m_pTriggerHandler != nullptr)
+        m_pTriggerHandler->handleMarbleTouch(a_iMarbleId, a_iTouchId);
     }
 
     void CWorld::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos) {
