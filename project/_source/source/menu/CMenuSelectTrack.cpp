@@ -259,7 +259,12 @@ namespace dustbin {
             }
           }
           else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
-            if (a_cEvent.UserEvent.UserData1 == c_iEventImagePosChanged && a_cEvent.UserEvent.UserData2 == c_iEventImagePosChanged && m_pTrackList != nullptr) {
+            if (m_pTrackList != nullptr && 
+              (
+                (a_cEvent.UserEvent.UserData1 == c_iEventImageSelected   && a_cEvent.UserEvent.UserData2 == c_iEventImageSelected  ) ||
+                (a_cEvent.UserEvent.UserData1 == c_iEventImagePosChanged && a_cEvent.UserEvent.UserData2 == c_iEventImagePosChanged)
+              )
+            ) {
               if (m_pTrackName != nullptr) {
                 m_pTrackName->setText(helpers::s2ws(m_pTrackList->getSelectedName()).c_str());
 

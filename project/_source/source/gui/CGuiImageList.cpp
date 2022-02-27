@@ -111,11 +111,19 @@ namespace dustbin {
       }
     }
 
-    void CGuiImageList::sendUserEvent() {
+    void CGuiImageList::sendImagePosition() {
       irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iEventImagePosChanged;
       l_cEvent.UserEvent.UserData2 = c_iEventImagePosChanged;
+      CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
+    }
+
+    void CGuiImageList::sendImageSelected() {
+      irr::SEvent l_cEvent;
+      l_cEvent.EventType = irr::EET_USER_EVENT;
+      l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
+      l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
       CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
     }
 
@@ -142,7 +150,7 @@ namespace dustbin {
       for (std::vector<SListImage>::iterator it = m_vImages.begin(); it != m_vImages.end(); it++) {
         if ((*it).m_sData == l_sSelected) {
           m_itSelected = it;
-          sendUserEvent();
+          sendImagePosition();
         }
 
         (*it).m_cDrawRect = irr::core::recti(
@@ -211,7 +219,7 @@ namespace dustbin {
     */
     void CGuiImageList::clearSelection() {
       m_itSelected = m_vImages.end();
-      sendUserEvent();
+      sendImagePosition();
     }
 
     /**
@@ -248,7 +256,7 @@ namespace dustbin {
 
               checkPositionAndButtons();
               m_pBtnRight->setVisible(true);
-              sendUserEvent();
+              sendImagePosition();
             }
 
             l_bRet = true;
@@ -259,7 +267,7 @@ namespace dustbin {
               m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
               checkPositionAndButtons();
               m_pBtnRight->setVisible(true);
-              sendUserEvent();
+              sendImagePosition();
             }
             else {
               if (m_itSelected + 1 != m_vImages.end()) {
@@ -268,7 +276,7 @@ namespace dustbin {
                 checkPositionAndButtons();
 
                 m_pBtnRight->setVisible(m_itSelected + 1 != m_vImages.end());
-                sendUserEvent();
+                sendImagePosition();
               }
             }
 
@@ -315,18 +323,15 @@ namespace dustbin {
 
               m_pDrv->draw2DImage((*it).getImage(), l_cRect, irr::core::recti(irr::core::position2di(0, 0), (*it).getImage()->getOriginalSize()), &m_cImages, nullptr, true);
 
-              if (l_cRect.isPointInside(m_cMouse))
+              if (l_cRect.isPointInside(m_cMouse)) {
                 m_itHovered = it;
+              }
             }
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
             if (abs(m_cMouse.X - m_iMDown) < CGlobal::getInstance()->getRasterSize() / 4 && m_itHovered != m_vImages.end()) {
               m_itSelected = m_itHovered;
-              irr::SEvent l_cEvent;
-              l_cEvent.EventType = irr::EET_USER_EVENT;
-              l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
-              l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
-              CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
+              sendImageSelected();
               l_bRet = true;
             }
           }

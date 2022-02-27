@@ -79,7 +79,9 @@ namespace dustbin {
 
         void prepareUi();
         void checkPositionAndButtons();
-        void sendUserEvent();
+        void sendImagePosition();
+        void sendImageSelected();
+
     public:
         CGuiImageList(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiImageList();
