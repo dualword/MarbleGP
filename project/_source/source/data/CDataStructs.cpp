@@ -165,7 +165,7 @@ namespace dustbin {
     }
 
     std::string SPlayerData::serialize() {
-      if (m_iPlayerId > 0 && m_iPlayerId <= 8) {
+      if (m_iPlayerId > 0 && (m_iPlayerId <= 8 || (m_eType != enPlayerType::Local && m_iPlayerId <= 16))) {
         messages::CSerializer64 l_cSerializer;
 
         l_cSerializer.addS32(c_iPlayerDataHead);

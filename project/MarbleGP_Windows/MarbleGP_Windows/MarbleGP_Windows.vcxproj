@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp" />
     <ClCompile Include="..\..\_source\source\data\CDataStructs.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\CAiGameData.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CDynamicThread.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicDefault.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp" />
     <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp" />
@@ -95,10 +97,12 @@
     <ClInclude Include="..\..\_source\include\controller\CControllerGame.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerMenu.h" />
     <ClInclude Include="..\..\_source\include\controller\CMarbleController.h" />
+    <ClInclude Include="..\..\_source\include\controller\IController.h" />
     <ClInclude Include="..\..\_source\include\controller\ICustomEventReceiver.h" />
     <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\_source\include\Defines.h" />
+    <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\COdeNodes.h" />
@@ -129,6 +133,7 @@
     <ClInclude Include="..\..\_source\include\messages\IMessage.h" />
     <ClInclude Include="..\..\_source\include\messages\ISerializer.h" />
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h" />

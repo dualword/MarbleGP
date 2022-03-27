@@ -163,9 +163,6 @@ namespace dustbin {
       m_bPaused    = false;
       m_fSfxVolume = m_pGlobal->getSettingData().m_fSfxGame;
 
-      if (m_pDevice->getCursorControl() != nullptr)
-        m_pDevice->getCursorControl()->setVisible(false);
-
       m_pGui->clear();
 
       for (int i = 0; i < 16; i++)
@@ -330,8 +327,14 @@ namespace dustbin {
       }
 
       irr::core::dimension2di l_cViewportSize = m_cScreen.getSize();
-      l_cViewportSize.Width  /= l_cViewports.m_mDistribution[l_iNumOfViewports].m_iColumns;
-      l_cViewportSize.Height /= l_cViewports.m_mDistribution[l_iNumOfViewports].m_iRows;
+
+      if (l_iNumOfViewports > 0) {
+        l_cViewportSize.Width  /= l_cViewports.m_mDistribution[l_iNumOfViewports].m_iColumns;
+        l_cViewportSize.Height /= l_cViewports.m_mDistribution[l_iNumOfViewports].m_iRows;
+
+        if (m_pDevice->getCursorControl() != nullptr)
+          m_pDevice->getCursorControl()->setVisible(false);
+      }
 
       printf("******** Viewport Assignment:\n");
       int l_iViewport = 0;
@@ -389,6 +392,16 @@ namespace dustbin {
             }
           }
         }
+      }
+
+      if (m_mViewports.size() == 0) {
+        // No viewport ==> view track, create a viewport
+        scenenodes::CMyCameraAnimator *l_pAnimator = new scenenodes::CMyCameraAnimator(m_pDevice);
+        irr::scene::ICameraSceneNode* l_pCam = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), l_vOffset);
+        l_pCam->addAnimator(l_pAnimator);
+        l_pAnimator->drop();
+        gfx::SViewPort l_cViewport = gfx::SViewPort(irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()), 0, nullptr, l_pCam);
+        m_mViewports[0] = l_cViewport;
       }
 
       printf("******** Ready.\n");

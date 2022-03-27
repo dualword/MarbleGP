@@ -10,6 +10,7 @@
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CJointNode.h>
 #include <scenenodes/CDustbinId.h>
+#include <scenenodes/CAiNode.h>
 #include <string>
 
 namespace dustbin {
@@ -60,6 +61,10 @@ namespace dustbin {
           p = new CMarbleTouchNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
+          p = new CAiNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
+          break;
+
         default:
           break;
       }
@@ -75,7 +80,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 9;
+      return 10;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -89,6 +94,7 @@ namespace dustbin {
         case 6: return g_TriggerTimerNodeName;
         case 7: return g_MarbleCountNodeName;
         case 8: return g_MarbleTouchNodeName;
+        case 9: return g_AiNodeName;
       }
 
       return nullptr;
@@ -105,6 +111,7 @@ namespace dustbin {
         case 6: return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
         case 7: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
         case 8: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
+        case 9: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -139,6 +146,9 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId:
           return g_MarbleTouchNodeName;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
+          return g_AiNodeName;
+
         default:
           return nullptr;
       }
@@ -165,6 +175,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
       else if (l_sName == g_MarbleTouchNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
+      else if (l_sName == g_AiNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

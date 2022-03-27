@@ -315,6 +315,12 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleTouchNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CAiGameData.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -562,6 +568,15 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleTouchNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\IController.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h">
+      <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

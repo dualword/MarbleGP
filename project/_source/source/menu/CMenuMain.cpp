@@ -2,6 +2,7 @@
 #include <helpers/CMenuLoader.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
+#include <data/CDataStructs.h>
 #include <state/IState.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
@@ -49,6 +50,23 @@ namespace dustbin {
                 createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
               }
               else createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState);
+            }
+            else if (l_sButton == "view_track") {
+              data::SRacePlayers l_cPlayers;
+
+              data::SPlayerData l_cData;
+              l_cData.m_eType     = data::SPlayerData::enPlayerType::Ai;
+              l_cData.m_iGridPos  = 0;
+              l_cData.m_iPlayerId = 1;
+              l_cData.m_sName     = "AI Demo Player";
+              l_cData.m_sControls = "";
+              l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
+
+              l_cPlayers.m_vPlayers.push_back(l_cData);
+
+              m_pState->getGlobal()->setGlobal("raceplayers", l_cPlayers.serialize());
+
+              createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "exit") {
               m_pState->setState(state::enState::Quit);
