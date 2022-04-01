@@ -12,9 +12,7 @@
 namespace dustbin {
   namespace scenenodes {
     CAiNode::CAiNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) : 
-      irr::scene::ISceneNode(a_pParent, a_pMgr, a_iId),
-      m_pSelected(nullptr),
-      m_pHovered (nullptr)
+      irr::scene::ISceneNode(a_pParent, a_pMgr, a_iId)
     {
     }
 
@@ -56,8 +54,16 @@ namespace dustbin {
               case enLinkType::MayBeBlocked: l_cColor = irr::video::SColor(0xFF, 0x00, 0x00, 0x00); break;
             }
 
-            l_pDrv->draw3DLine((*it)->m_cPos + 2.5f * (*it)->m_cNormal, (*it2)->m_pNext->m_cPos +  2.5f * (*it2)->m_pNext->m_cNormal, l_cColor);
+            l_pDrv->draw3DLine((*it2)->m_cLinkLine.start, (*it2)->m_cLinkLine.end, l_cColor);
           }
+        }
+
+        for (std::map<irr::s32, irr::core::line3df>::iterator it = m_mClosest.begin(); it != m_mClosest.end(); it++) {
+          l_pDrv->draw3DLine(it->second.start, it->second.end, irr::video::SColor(0xFF, 0, 0, 0xFF));
+        }
+
+        for (std::map<irr::s32, irr::core::line3df>::iterator it = m_mLookAhead.begin(); it != m_mLookAhead.end(); it++) {
+          l_pDrv->draw3DLine(it->second.start, it->second.end, irr::video::SColor(0xFF, 0, 0xFF, 0));
         }
       }
     }
@@ -125,64 +131,12 @@ namespace dustbin {
       }
     }
 
-    bool CAiNode::addPathNode(const irr::core::vector3df& a_cPos, const irr::core::vector3df& a_cNormal) {
-      SAiPathNode *p = nullptr;
-
-      if (m_pHovered != nullptr) {
-        for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-          if ((*it)->m_pBox == m_pHovered) {
-            p = *it;
-            std::wstring s = L"Close path by linking to node #" + std::to_wstring(p->m_iIndex);
-            // IMainClass::getInstance()->log(s, irr::ELL_INFORMATION);
-          }
-        }
-      }
-
-      if (p == nullptr) {
-        p = new SAiPathNode();
-
-        p->m_cPos    = a_cPos;
-        p->m_cNormal = a_cNormal;
-        p->m_cNormal = p->m_cNormal.normalize();
-      
-        m_vPathData.push_back(p);
-        updatePathIndices();
-
-        irr::scene::IMeshSceneNode *l_pNode = SceneManager->addMeshSceneNode(SceneManager->getMesh("data/objects/box.3ds"), this, -1, p->m_cPos + 2.5f * p->m_cNormal);
-        l_pNode->setScale(irr::core::vector3df(1.5f));
-        l_pNode->getMaterial(0).TextureLayer[0].Texture = SceneManager->getVideoDriver()->getTexture("data/textures/blue.png");
-        l_pNode->setIsDebugObject(true);
-
-        irr::scene::ITriangleSelector* l_pSelector = SceneManager->createTriangleSelector(l_pNode->getMesh(), l_pNode);
-
-        if (l_pSelector != nullptr) {
-          l_pNode->setTriangleSelector(l_pSelector);
-          l_pSelector->drop();
-        }
-
-        p->m_pBox = l_pNode;
-
-        // IMainClass::getInstance()->log(L"Add new AI path node", irr::ELL_INFORMATION);
-      }
-
-      if (m_pSelected != nullptr) {
-        m_pSelected->m_vNext.push_back(new SAiLink(p, enLinkType::Default));
-      }
-
-      m_pSelected = p;
-
-      updatePathColors();
-
-      return true;
+    void CAiNode::setClosest(irr::s32 a_iMarble, const irr::core::line3df& a_cLine) {
+      m_mClosest[a_iMarble] = a_cLine;
     }
 
-    void CAiNode::updatePathColors() {
-      for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-        (*it)->m_pBox->getMaterial(0).TextureLayer[0].Texture = 
-          (*it)->m_pBox == m_pHovered ? SceneManager->getVideoDriver()->getTexture("data/textures/yellow.png") :
-          (*it) == m_pSelected        ? SceneManager->getVideoDriver()->getTexture("data/textures/blue.png"  ) :
-                                        SceneManager->getVideoDriver()->getTexture("data/textures/white.png" );
-      }
+    void CAiNode::setLookAhead(irr::s32 a_iMarble, const irr::core::line3df& a_cLine) {
+      m_mLookAhead[a_iMarble] = a_cLine;
     }
 
     void CAiNode::updatePathIndices() {
@@ -193,9 +147,14 @@ namespace dustbin {
       }
     }
 
-    void CAiNode::clearSelection() {
-      // IMainClass::getInstance()->log(L"AI Path node selection cleared.", irr::ELL_INFORMATION);
-      m_pSelected = nullptr;
+    /**
+    * Get the defined path from the AI scene-node.
+    * Ownership is passed to the calling object
+    * @return the defined path
+    */
+    std::vector<scenenodes::CAiNode::SAiPathNode*>& CAiNode::getPath() {
+
+      return m_vPathData;
     }
 
     CAiNode::SAiPathNode::SAiPathNode() :
@@ -231,7 +190,7 @@ namespace dustbin {
               int l_iSize = l_cSerializer.getS32();
 
               for (int i = 0; i < l_iSize; i++) {
-                m_vNext.push_back(new SAiLink(l_cSerializer.getString()));
+                m_vNext.push_back(new SAiLink(l_cSerializer.getString(), this));
               }
 
               break;
@@ -315,6 +274,8 @@ namespace dustbin {
         for (std::vector<SAiPathNode*>::const_iterator cit = a_cPathData.begin(); cit != a_cPathData.end(); cit++) {
           if ((*it)->m_iNext == (*cit)->m_iIndex) {
             (*it)->m_pNext = *cit;
+            (*it)->m_cLinkLine = irr::core::line3df(m_cPos + 2.5f * m_cNormal, (*cit)->m_cPos + 2.5f * (*cit)->m_cNormal);
+            (*it)->m_fLinkLength = (*it)->m_cLinkLine.getLength();
             printf("Link %i to %i\n", m_iIndex, (*cit)->m_iIndex);
             break;
           }
@@ -322,13 +283,10 @@ namespace dustbin {
       }
     }
 
-    CAiNode::SAiLink::SAiLink() : m_pNext(nullptr), m_eType(enLinkType::Default), m_iNext(-1), m_iPriority(-1), m_sBlocking("") {
+    CAiNode::SAiLink::SAiLink() : m_pNext(nullptr), m_eType(enLinkType::Default), m_iNext(-1), m_iPriority(-1), m_fLinkLength(0.0f), m_sBlocking("") {
     }
 
-    CAiNode::SAiLink::SAiLink(SAiPathNode* a_pNext, enLinkType a_eType) : m_pNext(a_pNext), m_eType(a_eType), m_iNext(-1), m_iPriority(-1), m_sBlocking("") {
-    }
-
-    CAiNode::SAiLink::SAiLink(const std::string &a_sData) : m_pNext(nullptr), m_eType(enLinkType::Default), m_iNext(-1), m_iPriority(-1), m_sBlocking("") {
+    CAiNode::SAiLink::SAiLink(const std::string &a_sData, SAiPathNode *a_pThis) : m_pNext(nullptr), m_pThis(a_pThis), m_eType(enLinkType::Default), m_iNext(-1), m_iPriority(-1), m_fLinkLength(0.0f), m_sBlocking("") {
       messages::CSerializer64 l_cSerializer(a_sData.c_str());
 
       irr::s32 l_iHeader = l_cSerializer.getS32();
@@ -393,103 +351,5 @@ namespace dustbin {
 
       return l_cSerializer.getMessageAsString();
     }
-
-    void CAiNode::setHovered(irr::scene::ISceneNode* a_pNode) {
-      m_pHovered = a_pNode;
-      updatePathColors();
-    }
-
-    void CAiNode::moveSelected(const irr::core::vector3df& a_cNewPos) {
-      if (m_pSelected != nullptr) {
-        m_pSelected->m_cPos = a_cNewPos;
-        if (m_pSelected->m_pBox != nullptr)
-          m_pSelected->m_pBox->setPosition(a_cNewPos + 2.5f * m_pSelected->m_cNormal);
-      }
-    }
-
-    void CAiNode::deletePathNode(irr::scene::ISceneNode *a_pNode) {
-      SAiPathNode *l_pNode = nullptr;
-
-      for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-        if ((*it)->m_pBox == a_pNode) {
-          l_pNode = *it;
-          break;
-        }
-      }
-
-      if (l_pNode != nullptr) {
-        if (m_pSelected == l_pNode) {
-          m_pSelected = nullptr;
-        }
-
-        for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-          for (std::vector<SAiLink*>::iterator it2 = (*it)->m_vNext.begin(); it2 != (*it)->m_vNext.end(); it2++) {
-            if ((*it2)->m_pNext == l_pNode) {
-              delete *it2;
-              (*it)->m_vNext.erase(it2);
-              // IMainClass::getInstance()->log(L"Node Link deleted.", irr::ELL_INFORMATION);
-              break;
-            }
-          }
-        }
-
-        for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-          if (*it == l_pNode) {
-            break;
-          }
-        }
-      }
-
-      updatePathColors();
-      updatePathIndices();
-    }
-
-    scenenodes::CAiNode::SAiPathNode* CAiNode::getSelectedNodeData() {
-      return m_pSelected;
-    }
-
-    void CAiNode::deleteLink(irr::scene::ISceneNode* a_pLink) {
-      SAiPathNode *l_pNode = nullptr;
-
-      for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-        if ((*it)->m_pBox == a_pLink) {
-          l_pNode = *it;
-          break;
-        }
-      }
-
-      if (l_pNode != nullptr) {
-        for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-          for (std::vector<SAiLink*>::iterator it2 = (*it)->m_vNext.begin(); it2 != (*it)->m_vNext.end(); it2++) {
-            if ((*it2)->m_pNext == l_pNode) {
-              delete *it2;
-              (*it)->m_vNext.erase(it2);
-              // IMainClass::getInstance()->log(L"Node Link deleted.", irr::ELL_INFORMATION);
-              break;
-            }
-          }
-        }
-      }
-
-      updatePathColors();
-      updatePathIndices();
-    }
-
-    bool CAiNode::setSelected(irr::scene::ISceneNode* a_pNode) {
-      m_pSelected = nullptr;
-
-      for (std::vector<SAiPathNode*>::iterator it = m_vPathData.begin(); it != m_vPathData.end(); it++) {
-        if ((*it)->m_pBox == a_pNode) {
-          if (m_pSelected != nullptr)
-            m_pSelected->m_vNext.push_back(new SAiLink(*it, enLinkType::Default));
-
-          m_pSelected = *it;
-          updatePathColors();
-          return true;
-        }
-      }
-
-      return false;
-    }
- }
+  }
 }

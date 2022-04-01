@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerAI.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerBase.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerFactory.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerGame.cpp" />
@@ -37,6 +38,7 @@
     <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinCheckbox.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CGuiAiDebug.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp" />
@@ -92,6 +94,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CGlobal.h" />
     <ClInclude Include="..\..\_source\include\CMainClass.h" />
+    <ClInclude Include="..\..\_source\include\controller\CControllerAI.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerBase.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerFactory.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerGame.h" />
@@ -116,6 +119,7 @@
     <ClInclude Include="..\..\_source\include\gui\CClipImage.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi.h" />
     <ClInclude Include="..\..\_source\include\gui\CDustbinCheckbox.h" />
+    <ClInclude Include="..\..\_source\include\gui\CGuiAiDebug.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h" />
     <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h" />

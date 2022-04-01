@@ -24,9 +24,10 @@ namespace dustbin {
 
         irr::video::IVideoDriver  *m_pDrv;
         irr::scene::ISceneManager *m_pSmgr;
+        scenenodes::CAiNode       *m_pNode;
 
       public:
-        CAiGameData(irr::video::IVideoDriver *a_pDrv, irr::scene::ISceneManager *a_pSmgr);
+        CAiGameData(irr::video::IVideoDriver *a_pDrv, irr::scene::ISceneManager *a_pSmgr, scenenodes::CAiNode *a_pAiNode);
         ~CAiGameData();
 
         void draw();

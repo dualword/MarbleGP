@@ -321,6 +321,12 @@
     <ClCompile Include="..\..\_source\source\gameclasses\CAiGameData.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerAI.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiAiDebug.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -577,6 +583,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h">
       <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerAI.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiAiDebug.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,0 +1,64 @@
+// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#pragma once
+
+#include <controller/CMarbleController.h>
+#include <scenenodes/CAiNode.h>
+#include <vector>
+
+namespace dustbin {
+  namespace gui {
+    class CGuiAiDebug;
+  }
+
+  namespace controller {
+    /**
+    * @class CControllerAI
+    * @author Christian Keimel
+    * This is the class that actually controls the AI marbles
+    */
+    class CControllerAI : public CMarbleController {
+      private:
+        irr::core::vector3df m_cPos;
+        irr::core::vector3df m_cVel;
+        irr::core::vector3df m_cCamPos;
+        irr::core::vector3df m_cCamUp;
+
+        irr::f32 m_fVel;
+
+        scenenodes::CAiNode *m_pNode;
+
+        scenenodes::CAiNode::SAiLink *m_pCurrent;
+
+        std::vector<scenenodes::CAiNode::SAiPathNode *> m_vPath;
+
+        gui::CGuiAiDebug *m_pAiDebug;
+
+        void selectClosestLink();
+        irr::core::vector3df getLookAhead(irr::f32 a_fDistance);
+
+      public:
+        CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode);
+        virtual ~CControllerAI();
+
+        /**
+        * This message must be implemented by all descendants. If called
+        * it posts a control message to the queue.
+        */
+        virtual void postControlMessage();
+
+        /**
+        * Update the controller with the Irrlicht event
+        * @param a_cEvent the Irrlicht event
+        */
+        virtual void update(const irr::SEvent& a_cEvent) { }
+
+        virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos);
+
+        virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp);
+
+        virtual void onMarbleRespawn(int a_iMarbleId);
+
+        virtual void setDebugGui(gui::CGuiAiDebug *a_pDebug);
+    };
+  }
+}

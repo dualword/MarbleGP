@@ -7,6 +7,10 @@
 #include <string>
 
 namespace dustbin {
+  namespace scenenodes {
+    class CAiNode;
+  }
+
   namespace controller {
     /**
     * @class CControllerFactory
@@ -25,7 +29,7 @@ namespace dustbin {
         * Create a controller from the configuration string
         * @returns a new controller instance
         */
-        IController* createController(int a_iMarbleId, const std::string& a_sControls);
+        IController* createController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode);
     };
   }
 }

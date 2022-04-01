@@ -259,7 +259,7 @@ namespace dustbin {
     s += "<marblegp>\n";
 
     for (std::map<std::string, std::string>::iterator it = m_mSettings.begin(); it != m_mSettings.end(); it++) {
-      s += "  <setting name=\"" + it->first + "\" value=\"" + it->second + "\">\n";
+      s += "  <setting name=\"" + it->first + "\" value=\"" + it->second + "\" />\n";
     }
 
     s += "</marblegp>\n";

@@ -40,6 +40,7 @@ namespace dustbin {
 #ifdef _TOUCH_CONTROL
     class CGuiTouchControl;
 #endif
+    class CGuiAiDebug;
   }
 
   class CGlobal;
@@ -95,6 +96,8 @@ namespace dustbin {
         std::vector<scenenodes::STriggerVector> m_vTimerActions;  /**< List of timer actions */
 
         std::vector<gameclasses::CMarbleCounter> m_vMarbleCounters; /**< A list of marble counters */
+
+        gui::CGuiAiDebug *m_pAiDebug;
 
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;

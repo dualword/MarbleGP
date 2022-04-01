@@ -12,14 +12,20 @@
 
 namespace dustbin {
   namespace gameclasses {
-    CAiGameData::CAiGameData(irr::video::IVideoDriver *a_pDrv, irr::scene::ISceneManager *a_pSmgr) :
+    CAiGameData::CAiGameData(irr::video::IVideoDriver *a_pDrv, irr::scene::ISceneManager *a_pSmgr, scenenodes::CAiNode *a_pAiNode) :
       m_pDrv (a_pDrv),
-      m_pSmgr(a_pSmgr)
+      m_pSmgr(a_pSmgr),
+      m_pNode(a_pAiNode)
     {
+      if (m_pNode != nullptr)
+        m_pNode->grab();
+
       printf("Ready.\n");
     }
 
     CAiGameData::~CAiGameData() {
+      if (m_pNode != nullptr)
+        m_pNode->drop();
     }
 
     void CAiGameData::draw() {

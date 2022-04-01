@@ -33,15 +33,18 @@ namespace dustbin {
 
         struct SAiLink {
           SAiPathNode *m_pNext;       /**< The next path node*/
+          SAiPathNode *m_pThis;       /**< The previous path node */
           enLinkType   m_eType;       /**< Type of this link */
           int          m_iNext;       /**< Index of the next path node (for de-serialization) */
           int          m_iPriority;   /**< A priority index for multiple links of a path node */
+          irr::f32     m_fLinkLength; /**< Length of the link line */
+
+          irr::core::line3df m_cLinkLine;   /**< The 3d line that represents this link */
 
           std::string m_sBlocking;
 
           SAiLink();
-          SAiLink(SAiPathNode *a_pNext, enLinkType a_eType);
-          SAiLink(const std::string &a_sData);
+          SAiLink(const std::string &a_sData, SAiPathNode *a_pThis);
 
           std::string serialize();
         };
@@ -68,15 +71,12 @@ namespace dustbin {
           void fillNextVector(const std::vector<SAiPathNode *> &a_cPathData);
         };
 
-        void updatePathColors();
-
       private:
-        SAiPathNode *m_pSelected;
-
-        irr::scene::ISceneNode *m_pHovered;
-
         irr::core::aabbox3df m_cBox;
         std::vector<SAiPathNode *> m_vPathData;
+
+        std::map<irr::s32, irr::core::line3df> m_mClosest;
+        std::map<irr::s32, irr::core::line3df> m_mLookAhead;
 
         void updatePathIndices();
 
@@ -95,16 +95,16 @@ namespace dustbin {
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
 
-        bool addPathNode(const irr::core::vector3df &a_cPos, const irr::core::vector3df &a_cNormal);
-        void setHovered(irr::scene::ISceneNode *a_pNode);
-        bool setSelected(irr::scene::ISceneNode *a_pNode);
-        void moveSelected(const irr::core::vector3df &a_cNewPos);
-        void deletePathNode(irr::scene::ISceneNode *a_pNode);
-        void deleteLink(irr::scene::ISceneNode *a_pLink);
+        void setClosest(irr::s32 a_iMarble, const irr::core::line3df &a_cLine);
 
-        scenenodes::CAiNode::SAiPathNode *getSelectedNodeData();
-        
-        void clearSelection();
+        void setLookAhead(irr::s32 a_iMarble, const irr::core::line3df &a_cLine);
+
+        /**
+        * Get the defined path from the AI scene-node.
+        * Ownership is passed to the calling object
+        * @return the defined path
+        */
+        std::vector<SAiPathNode *> &getPath();
       };
   }
 }

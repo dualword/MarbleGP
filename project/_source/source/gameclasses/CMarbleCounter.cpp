@@ -49,8 +49,6 @@ namespace dustbin {
     }
 
     void CMarbleCounter::checkAction(int a_iMarbleCountNew) {
-      printf("Marble Counter: %i --> %i\n", m_iMarbleCount, a_iMarbleCountNew);
-
       for (std::vector<scenenodes::STriggerAction>::iterator it = m_vActions.begin(); it != m_vActions.end(); it++) {
         switch ((*it).m_eCondition) {
           case scenenodes::enMarbleCountCondition::Equal: {

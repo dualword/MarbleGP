@@ -54,15 +54,17 @@ namespace dustbin {
             else if (l_sButton == "view_track") {
               data::SRacePlayers l_cPlayers;
 
-              data::SPlayerData l_cData;
-              l_cData.m_eType     = data::SPlayerData::enPlayerType::Ai;
-              l_cData.m_iGridPos  = 0;
-              l_cData.m_iPlayerId = 1;
-              l_cData.m_sName     = "AI Demo Player";
-              l_cData.m_sControls = "";
-              l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
+              for (int i = 0; i < 1; i++) {
+                data::SPlayerData l_cData;
+                l_cData.m_eType     = data::SPlayerData::enPlayerType::Ai;
+                l_cData.m_iGridPos  = i;
+                l_cData.m_iPlayerId = i + 1;
+                l_cData.m_sName     = "AI Demo Player #" + std::to_string(i + 1);
+                l_cData.m_sControls = "ai_player";
+                l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
 
-              l_cPlayers.m_vPlayers.push_back(l_cData);
+                l_cPlayers.m_vPlayers.push_back(l_cData);
+              }
 
               m_pState->getGlobal()->setGlobal("raceplayers", l_cPlayers.serialize());
 
