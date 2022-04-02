@@ -1,5 +1,4 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
-#pragma once
 
 #include <gameclasses/CMarbleCounter.h>
 #include <gameclasses/COdeNodes.h>

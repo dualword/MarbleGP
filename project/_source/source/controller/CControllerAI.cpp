@@ -1,9 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
-#pragma once
 
 #include <_generated/messages/CMessages.h>
 #include <controller/CControllerAI.h>
-#include <gui/CGuiAiDebug.h>
 #include <math.h>
 #include <cmath>
 
@@ -13,8 +11,7 @@ namespace dustbin {
       CMarbleController(a_iMarbleId, a_sControls, a_pQueue), 
       m_fVel    (0.0f),
       m_pNode   (a_pNode),  
-      m_pCurrent(nullptr),
-      m_pAiDebug(nullptr)
+      m_pCurrent(nullptr)
     {
       if (m_pNode != nullptr)
         m_vPath = a_pNode->getPath();
@@ -82,59 +79,59 @@ namespace dustbin {
     */
     void CControllerAI::postControlMessage() {
       if (m_pCurrent != nullptr) {
-        irr::core::vector3df l_cPoint = m_cPos - getLookAhead(0.0f);
-        
-        irr::f32 l_fOffset = 1.0f - std::fmin(1.0f, l_cPoint.getLengthSQ() / 9.0f);
+        irr::core::matrix4 l_cMatrix;
+        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
+
+        irr::core::vector3df l_cPoint = getLookAhead(0.0f);
+        l_cMatrix.transformVect(l_cPoint);
+
+        irr::f32 l_fOffset = 1.0f - std::fmin(1.0f, std::abs(l_cPoint.X / 2.0f));
 
         irr::f32 l_fLookAhead = 1.5f * l_fOffset * m_fVel;
         
         l_fLookAhead = std::fmax(l_fLookAhead, 15.0f);
 
-        irr::core::vector3df l_cAhead1 = getLookAhead(       l_fLookAhead);
-        irr::core::vector3df l_cAhead2 = getLookAhead(2.0f * l_fLookAhead);
+        irr::core::vector3df l_cAhead1 = getLookAhead(l_fLookAhead);
 
-        m_pNode->setClosest  (m_iMarbleId, irr::core::line3df(m_cPos, l_cAhead1));
-        m_pNode->setLookAhead(m_iMarbleId, irr::core::line3df(m_cPos, l_cAhead2));
+        m_pNode->setLookAhead(m_iMarbleId, irr::core::line3df(m_cPos, l_cAhead1));
 
-        irr::core::matrix4 l_cMatrix;
-        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
 
         l_cMatrix.transformVect(l_cAhead1);
-        l_cMatrix.transformVect(l_cAhead2);
 
         irr::core::vector2df l_cPoint1 = irr::core::vector2df(l_cAhead1.X, l_cAhead1.Z);
-        irr::core::vector2df l_cPoint2 = irr::core::vector2df(l_cAhead2.X, l_cAhead2.Z);
 
         l_cPoint1.normalize();
-        l_cPoint2.normalize();
 
-        m_pAiDebug->clearLines();
-        m_pAiDebug->addLine(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f)));
-        m_pAiDebug->addLine(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
-        m_pAiDebug->addLine(irr::core::line2df(irr::core::vector2df(), l_cPoint2));
+        irr::f32 l_fAngle = (l_cPoint1.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
 
-        irr::f32 l_fAngle1 = (l_cPoint1.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
-        irr::f32 l_fAngle2 = (l_cPoint2.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint2));
-
-        irr::f32 l_fSteer = l_fAngle1 / 5.0f;
+        irr::f32 l_fSteer = l_fAngle / 5.0f;
 
         if (l_fSteer >  1.0f) l_fSteer =  1.0f;
         if (l_fSteer < -1.0f) l_fSteer = -1.0f;
 
-        irr::f32 l_fThrottle = m_fVel < 1.25f * l_cAhead1.Z ? 1.0f : 0.0f;
+        irr::f32 l_fSpeedFactor = 3.0f - std::min(2.0f, std::abs(l_fAngle / 3.5f));
 
-        irr::s8 l_iCtrlX = (irr::s8)(127.0f * l_fSteer   );
+        irr::f32 l_fVel = l_fSpeedFactor * l_cAhead1.Z;
+
+        if (m_pCurrent->m_pNext->m_fMaxVel > 0.0f) {
+          if (l_fVel > m_pCurrent->m_pNext->m_fMaxVel)
+            l_fVel = m_pCurrent->m_pNext->m_fMaxVel;
+        }
+        else if (m_pCurrent->m_pNext->m_fMinVel > 0.0f) {
+          if (l_fVel < m_pCurrent->m_pNext->m_fMinVel)
+            l_fVel = m_pCurrent->m_pNext->m_fMinVel;
+        }
+
+        irr::f32 l_fThrottle = m_fVel < l_fVel ? 1.0f : -1.0f;
+
+        irr::s8 l_iCtrlX = (irr::s8)(127.0f * l_fSteer * l_fSteer * (l_fSteer < 0.0f ? -1.0f : 1.0f));
         irr::s8 l_iCtrlY = (irr::s8)(127.0f * l_fThrottle);
 
-        bool l_bBrake = m_fVel > l_cAhead1.Z;
+        bool l_bBrake = m_fVel > l_fVel;
 
         messages::CMarbleControl l_cMarble = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, false, false);
         m_pQueue->postMessage(&l_cMarble);
       }
-    }
-
-    void CControllerAI::setDebugGui(gui::CGuiAiDebug* a_pDebug) {
-      m_pAiDebug = a_pDebug;
     }
 
     void CControllerAI::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cNewPos) {

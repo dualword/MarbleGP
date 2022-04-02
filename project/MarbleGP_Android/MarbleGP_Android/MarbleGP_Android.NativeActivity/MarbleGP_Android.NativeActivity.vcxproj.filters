@@ -156,9 +156,6 @@
     <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\scenenodes\CMyCameraAnimator.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\scenenodes\CPhysicsNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
@@ -227,6 +224,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleTouchNode.h">
       <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CAiNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerAI.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMyCameraAnimator.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CCameraTouchAnimator.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -355,9 +364,6 @@
     <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\scenenodes\CMyCameraAnimator.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\_source\source\scenenodes\CPhysicsNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
@@ -413,6 +419,15 @@
       <Filter>Quelldateien\gameclasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleTouchNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CAiNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerAI.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CCameraTouchAnimator.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
   </ItemGroup>

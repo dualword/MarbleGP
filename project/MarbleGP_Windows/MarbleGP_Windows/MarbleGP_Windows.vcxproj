@@ -38,7 +38,6 @@
     <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinCheckbox.cpp" />
-    <ClCompile Include="..\..\_source\source\gui\CGuiAiDebug.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp" />
@@ -119,7 +118,6 @@
     <ClInclude Include="..\..\_source\include\gui\CClipImage.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi.h" />
     <ClInclude Include="..\..\_source\include\gui\CDustbinCheckbox.h" />
-    <ClInclude Include="..\..\_source\include\gui\CGuiAiDebug.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h" />
     <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h" />

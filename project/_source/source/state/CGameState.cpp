@@ -10,7 +10,6 @@
 #include <controller/ICustomEventReceiver.h>
 #include <_generated/messages/CMessages.h>
 #include <controller/CControllerFactory.h>
-#include <scenenodes/CMyCameraAnimator.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <shader/CShaderHandlerBase.h>
@@ -23,13 +22,15 @@
 #include <sound/CSoundEnums.h>
 #include <data/CDataStructs.h>
 #include <state/CGameState.h>
-#include <gui/CGuiAiDebug.h>
 #include <CGlobal.h>
 #include <string>
 #include <map>
 
 #ifdef _TOUCH_CONTROL
 #include <gui/CGuiTouchControl.h>
+#include <scenenodes/CCameraTouchAnimator.h>
+#else
+#include <scenenodes/CMyCameraAnimator.h>
 #endif
 
 
@@ -108,7 +109,8 @@ namespace dustbin {
       m_pSoundIntf   (nullptr),
       m_pDynamics    (nullptr),
       m_pShader      (nullptr),
-      m_pAiDebug     (nullptr)
+      m_pCamAnimator (nullptr),
+      m_pCamera      (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -131,11 +133,6 @@ namespace dustbin {
       if (m_pOutputQueue != nullptr) {
         delete m_pOutputQueue;
         m_pOutputQueue = nullptr;
-      }
-
-      if (m_pAiDebug != nullptr) {
-        m_pAiDebug->drop();
-        m_pAiDebug = nullptr;
       }
     }
 
@@ -405,11 +402,11 @@ namespace dustbin {
 
       if (m_mViewports.size() == 0) {
         // No viewport ==> view track, create a viewport
-        scenenodes::CMyCameraAnimator *l_pAnimator = new scenenodes::CMyCameraAnimator(m_pDevice);
-        irr::scene::ICameraSceneNode* l_pCam = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), l_vOffset);
-        l_pCam->addAnimator(l_pAnimator);
-        l_pAnimator->drop();
-        gfx::SViewPort l_cViewport = gfx::SViewPort(irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()), 0, nullptr, l_pCam);
+        m_pCamAnimator = new scenenodes::CMyCameraAnimator(m_pDevice);
+        m_pCamera = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), l_vOffset);
+        m_pCamera->addAnimator(m_pCamAnimator);
+        m_pSmgr->setActiveCamera(m_pCamera);
+        gfx::SViewPort l_cViewport = gfx::SViewPort(irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()), 0, nullptr, m_pCamera);
         m_mViewports[0] = l_cViewport;
       }
 
@@ -472,9 +469,6 @@ namespace dustbin {
 
       if (l_pAiNode != nullptr) {
         l_pAiNode->setVisible(getGlobal()->getSetting("show_ai_data") == "1");
-        if (getGlobal()->getSetting("show_ai_data") == "1") {
-          m_pAiDebug = new gui::CGuiAiDebug(m_pGui);
-        }
       }
 
       if (m_pShader != nullptr) {
@@ -496,7 +490,6 @@ namespace dustbin {
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
           (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, reinterpret_cast<scenenodes::CAiNode *>(l_pAiNode));
-          (*it)->m_pController->setDebugGui(m_pAiDebug);
         }
 
         delete l_pFactory;
@@ -541,6 +534,9 @@ namespace dustbin {
 #ifdef _TOUCH_CONTROL
       m_pTouchControl = nullptr;
 #endif
+
+      if (m_pCamAnimator != nullptr)
+        m_pCamAnimator->drop();
 
       m_pSmgr->clear();
       m_pGui->clear();
@@ -738,6 +734,9 @@ namespace dustbin {
       }
 
 #ifdef _TOUCH_CONTROL
+      if (m_pCamAnimator != nullptr && m_pCamera != nullptr)
+        m_pCamAnimator->animateNode(m_pCamera, 0);
+
       if (m_pTouchControl != nullptr) {
         irr::s8 l_iCtrlX    = 0,
                 l_iCtrlY    = 0;

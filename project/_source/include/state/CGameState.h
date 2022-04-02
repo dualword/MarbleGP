@@ -30,6 +30,7 @@ namespace dustbin {
 
   namespace scenenodes {
     class CCheckpointNode;
+    class CMyCameraAnimator;
   }
 
   namespace sound {
@@ -40,7 +41,6 @@ namespace dustbin {
 #ifdef _TOUCH_CONTROL
     class CGuiTouchControl;
 #endif
-    class CGuiAiDebug;
   }
 
   class CGlobal;
@@ -97,7 +97,9 @@ namespace dustbin {
 
         std::vector<gameclasses::CMarbleCounter> m_vMarbleCounters; /**< A list of marble counters */
 
-        gui::CGuiAiDebug *m_pAiDebug;
+        scenenodes::CMyCameraAnimator *m_pCamAnimator;   /**< Camera animator for the "view track" mode */
+
+        irr::scene::ICameraSceneNode* m_pCamera;     /**< The camera for the "view track" mode */
 
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;

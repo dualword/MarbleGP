@@ -6,10 +6,6 @@
 #include <vector>
 
 namespace dustbin {
-  namespace gui {
-    class CGuiAiDebug;
-  }
-
   namespace controller {
     /**
     * @class CControllerAI
@@ -30,8 +26,6 @@ namespace dustbin {
         scenenodes::CAiNode::SAiLink *m_pCurrent;
 
         std::vector<scenenodes::CAiNode::SAiPathNode *> m_vPath;
-
-        gui::CGuiAiDebug *m_pAiDebug;
 
         void selectClosestLink();
         irr::core::vector3df getLookAhead(irr::f32 a_fDistance);
@@ -57,8 +51,6 @@ namespace dustbin {
         virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp);
 
         virtual void onMarbleRespawn(int a_iMarbleId);
-
-        virtual void setDebugGui(gui::CGuiAiDebug *a_pDebug);
     };
   }
 }

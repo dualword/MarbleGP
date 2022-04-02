@@ -233,6 +233,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\_source\include\CGlobal.h" />
     <ClInclude Include="..\..\..\_source\include\CMainClass.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerAI.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerBase.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerFactory.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerGame.h" />
@@ -275,6 +276,8 @@
     <ClInclude Include="..\..\..\_source\include\messages\IMessage.h" />
     <ClInclude Include="..\..\..\_source\include\messages\ISerializer.h" />
     <ClInclude Include="..\..\..\_source\include\platform\CPlatform.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CAiNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CCameraTouchAnimator.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CCheckpointNode.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CJointNode.h" />
@@ -312,6 +315,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\..\_source\source\CMainClass.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerAI.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerBase.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerFactory.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerGame.cpp" />
@@ -347,6 +351,8 @@
     <ClCompile Include="..\..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\messages\CSerializer64.cpp" />
     <ClCompile Include="..\..\..\_source\source\platform\CPlatformAndroid.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CAiNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CCameraTouchAnimator.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CJointNode.cpp" />
@@ -354,7 +360,6 @@
     <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleTouchNode.cpp" />
-    <ClCompile Include="..\..\..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CPhysicsNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CRespawnNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CSkyBoxFix.cpp" />

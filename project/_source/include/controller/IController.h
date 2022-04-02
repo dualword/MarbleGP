@@ -6,10 +6,6 @@
 #include <irrlicht.h>
 
 namespace dustbin {
-  namespace gui {
-    class CGuiAiDebug;
-  }
-
   namespace controller {
     /**
     * @class IController
@@ -46,8 +42,6 @@ namespace dustbin {
         virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) { }
 
         virtual void onMarbleRespawn(int a_iMarbleId) { }
-
-        virtual void setDebugGui(gui::CGuiAiDebug *a_pDebug) { }
     };
   }
 }

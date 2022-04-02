@@ -54,7 +54,7 @@ namespace dustbin {
             else if (l_sButton == "view_track") {
               data::SRacePlayers l_cPlayers;
 
-              for (int i = 0; i < 1; i++) {
+              for (int i = 0; i < 16; i++) {
                 data::SPlayerData l_cData;
                 l_cData.m_eType     = data::SPlayerData::enPlayerType::Ai;
                 l_cData.m_iGridPos  = i;

@@ -190,7 +190,13 @@ namespace dustbin {
               int l_iSize = l_cSerializer.getS32();
 
               for (int i = 0; i < l_iSize; i++) {
-                m_vNext.push_back(new SAiLink(l_cSerializer.getString(), this));
+                SAiLink *l_pLink = new SAiLink(l_cSerializer.getString(), this);
+                if (l_pLink->m_iNext != m_iIndex)
+                  m_vNext.push_back(l_pLink);
+                else {
+                  printf("Can't link node to itself!\n");
+                  delete l_pLink;
+                }
               }
 
               break;

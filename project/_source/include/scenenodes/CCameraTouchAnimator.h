@@ -10,20 +10,19 @@ namespace dustbin {
     * @class CMyCameraAnimator
     * @author Christian Keimel
     * This is the custom scene node animator for the "view track" camera
+    * with touch control for the Android version
     */
     class CMyCameraAnimator : public irr::scene::ISceneNodeAnimator {
       private:
-        irr::core::vector2di   m_vPosition;
-        irr::core::vector3df   m_vCamLookAt,
-                               m_vCamPos;
-        irr::IrrlichtDevice   *m_pDevice;
-        bool                   m_bLeftDown,
-                               m_bRightDown,
-                               m_bActive,
-                               m_bLoaded;
-        irr::f32               m_fAngleV,
-                               m_fAngleH;
-        irr::core::position2di m_cMouse;      /**< Mouse position for touch control */
+        irr::core::vector2di   m_vPosition[2];
+        irr::core::vector3df   m_vCamLookAt;
+        irr::core::vector3df   m_vCamPos;
+        irr::f32               m_fAngleV;
+        irr::f32               m_fAngleH;
+        irr::s32               m_aTouchID[2];
+        irr::s32               m_iTouchCnt;     /**< The number of touching fingers */
+        bool                   m_bReady;
+        irr::core::line2di     m_cLine;
 
       public:
         CMyCameraAnimator(irr::IrrlichtDevice *a_pDevice);
@@ -42,19 +41,10 @@ namespace dustbin {
         void setAngleH(irr::f32 a_fAngleH) { m_fAngleH = a_fAngleH; }
 
         void setMousePosition(const irr::core::position2di a_cPos) {
-          m_vPosition.X = a_cPos.X;
-          m_vPosition.Y = a_cPos.Y;
         }
 
-        void initPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam);
         void copyPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam, irr::scene::ICameraSceneNode *a_pOther);
         void setPositionLookAt(irr::scene::ICameraSceneNode *a_pCam, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cLookAt);
-
-        void setIsActive(bool a_bIsActive);
-        bool isActive();
-
-        std::string saveData();
-        void loadData(const std::string &a_sData, irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt);
     };
   }
 }
