@@ -9,6 +9,8 @@
 #include <state/CMenuState.h>
 #include <state/CGameState.h>
 #include <CMainClass.h>
+#include <cstdlib>
+#include <ctime>
 
 namespace dustbin {
   /**
@@ -35,6 +37,7 @@ namespace dustbin {
 #endif
   {
     m_pInstance = this;
+    std::srand((unsigned int)std::time(nullptr));
 
     /**
     * @class CMemoryReadFile
