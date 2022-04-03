@@ -12,6 +12,7 @@
 #include <controller/CControllerFactory.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CCheckpointNode.h>
+#include <scenenodes/CDustbinCamera.h>
 #include <shader/CShaderHandlerBase.h>
 #include <controller/CControllerAI.h>
 #include <scenenodes/CSkyBoxFix.h>
@@ -182,6 +183,8 @@ namespace dustbin {
         m_pSmgr->loadScene(l_sTrack.c_str());
         l_pFix->hideOriginalSkybox(m_pSmgr->getRootSceneNode());
         delete l_pFix;
+        addStaticCameras(m_pSmgr->getRootSceneNode());
+        printf("%i static cameras found.\n", (int)m_vCameras.size());
 
         m_pSmgr->addCameraSceneNode(nullptr, irr::core::vector3df(250, 250.0f, 250.0f));
       }
@@ -628,6 +631,35 @@ namespace dustbin {
           else if (a_cEvent.KeyInput.Key == irr::KEY_PAUSE) {
             sendTogglepause(m_pOutputQueue);
             l_bRet = true;
+          }
+        }
+        else {
+          // Not available during gameplay
+          if (m_pCamAnimator != nullptr) {
+            int l_iIndex = -1;
+
+            switch (a_cEvent.KeyInput.Key) {
+              case irr::KEY_KEY_1: l_iIndex = 0; break;
+              case irr::KEY_KEY_2: l_iIndex = 1; break;
+              case irr::KEY_KEY_3: l_iIndex = 2; break;
+              case irr::KEY_KEY_4: l_iIndex = 3; break;
+              case irr::KEY_KEY_5: l_iIndex = 4; break;
+              case irr::KEY_KEY_6: l_iIndex = 5; break;
+              case irr::KEY_KEY_7: l_iIndex = 6; break;
+              case irr::KEY_KEY_8: l_iIndex = 7; break;
+              case irr::KEY_KEY_9: l_iIndex = 8; break;
+              case irr::KEY_KEY_0: l_iIndex = 9; break;
+            }
+
+            if (l_iIndex >= 0 && l_iIndex < m_vCameras.size()) {
+              if (m_pCamAnimator != nullptr && m_pCamera != nullptr) {
+                irr::core::vector3df l_vPos;
+                irr::f32 l_fAngleH, l_fAngleV;
+
+                m_vCameras[l_iIndex]->getValues(l_vPos, l_fAngleV, l_fAngleH);
+                m_pCamAnimator->setData(l_vPos, l_fAngleV, l_fAngleH);
+              }
+            }
           }
         }
       }
@@ -1167,6 +1199,15 @@ namespace dustbin {
       if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr && m_aMarbles[l_iId]->m_pViewport != nullptr) {
         m_pSoundIntf->play2d(L"data/sounds/lap.ogg", m_fSfxVolume, 0.0f);
       }
+    }
+
+    void CGameState::addStaticCameras(irr::scene::ISceneNode *a_pNode) {
+      if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_DustbinCameraId) {
+        m_vCameras.push_back(reinterpret_cast<scenenodes::CDustbinCamera *>(a_pNode));
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
+        addStaticCameras(*it);
     }
 
     /**

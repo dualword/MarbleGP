@@ -324,6 +324,9 @@
     <ClCompile Include="..\..\_source\source\controller\CControllerAI.cpp">
       <Filter>Quelldateien\controller</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -583,6 +586,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\CControllerAI.h">
       <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

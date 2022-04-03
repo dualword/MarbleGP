@@ -25,6 +25,8 @@ namespace dustbin {
                                m_fAngleH;
         irr::core::position2di m_cMouse;      /**< Mouse position for touch control */
 
+        irr::scene::ICameraSceneNode *m_pCamera;  /**< The animated camera */
+
       public:
         CMyCameraAnimator(irr::IrrlichtDevice *a_pDevice);
 
@@ -35,11 +37,7 @@ namespace dustbin {
         virtual bool isEventReceiverEnabled() const;
         virtual bool OnEvent(const irr::SEvent &a_cEvent);
 
-        irr::f32 getAngleV() { return m_fAngleV; }
-        irr::f32 getAngleH() { return m_fAngleH; }
-
-        void setAngleV(irr::f32 a_fAngleV) { m_fAngleV = a_fAngleV; }
-        void setAngleH(irr::f32 a_fAngleH) { m_fAngleH = a_fAngleH; }
+        void setData(const irr::core::vector3df &a_cPos, irr::f32 a_fAngleV, irr::f32 a_fAngleH);
 
         void setMousePosition(const irr::core::position2di a_cPos) {
           m_vPosition.X = a_cPos.X;
@@ -47,14 +45,6 @@ namespace dustbin {
         }
 
         void initPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam);
-        void copyPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam, irr::scene::ICameraSceneNode *a_pOther);
-        void setPositionLookAt(irr::scene::ICameraSceneNode *a_pCam, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cLookAt);
-
-        void setIsActive(bool a_bIsActive);
-        bool isActive();
-
-        std::string saveData();
-        void loadData(const std::string &a_sData, irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt);
     };
   }
 }

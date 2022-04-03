@@ -31,6 +31,7 @@ namespace dustbin {
   namespace scenenodes {
     class CCheckpointNode;
     class CMyCameraAnimator;
+    class CDustbinCamera;
   }
 
   namespace sound {
@@ -100,6 +101,8 @@ namespace dustbin {
         scenenodes::CMyCameraAnimator *m_pCamAnimator;   /**< Camera animator for the "view track" mode */
 
         irr::scene::ICameraSceneNode* m_pCamera;     /**< The camera for the "view track" mode */
+
+        std::vector<scenenodes::CDustbinCamera *> m_vCameras;   /**< Static cameras for the "replay" and "view track" modes */
 
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;
@@ -249,6 +252,8 @@ namespace dustbin {
          * @param a_Paused The current paused state
          */
         virtual void onPausechanged(bool a_Paused) override;
+
+        void addStaticCameras(irr::scene::ISceneNode *a_pNode);
 
       public:
         CGameState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal);

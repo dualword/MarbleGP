@@ -17,28 +17,7 @@ namespace dustbin {
       m_bActive       = true;
       m_fAngleH       = 0.0f;
       m_fAngleV       = 0.0f;
-    }
-
-    void CMyCameraAnimator::setPositionLookAt(irr::scene::ICameraSceneNode *a_pCam, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cLookAt) {
-      a_pCam->setPosition(a_cPosition);
-      a_pCam->setTarget(a_cLookAt);
-
-      irr::core::vector3df l_vLook = (a_pCam->getTarget() - a_pCam->getPosition()).normalize();
-
-      m_fAngleV = (irr::f32)(asin(l_vLook.Y) * 180.0f / M_PI);
-      m_fAngleH = (irr::f32)((acos(l_vLook.Z) * 180.0 / M_PI) / cos(m_fAngleV * M_PI / 180));
-    }
-
-    void CMyCameraAnimator::copyPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam, irr::scene::ICameraSceneNode *a_pOther) {
-      a_pCam->setPosition(a_pOther->getPosition());
-      a_pCam->setTarget(a_pOther->getTarget());
-
-      irr::core::vector3df l_vLook = (a_pCam->getTarget() - a_pCam->getPosition()).normalize();
-
-      m_fAngleV = (irr::f32)(asin(l_vLook.Y) * 180.0f / M_PI);
-      m_fAngleH = (irr::f32)(irr::core::vector2df(l_vLook.X, l_vLook.Z).getAngle()) + 90.0f;
-
-      printf("%.2f, %.2f\n", m_fAngleV, m_fAngleH);
+      m_pCamera       = nullptr;
     }
 
     void CMyCameraAnimator::initPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam) {
@@ -59,6 +38,9 @@ namespace dustbin {
     void CMyCameraAnimator::animateNode(irr::scene::ISceneNode *a_pNode, irr::u32 m_iTimeMs) {
       if (a_pNode->getType() == irr::scene::ESNT_CAMERA && m_bActive) {
         irr::scene::ICameraSceneNode *l_pCam = reinterpret_cast<irr::scene::ICameraSceneNode *>(a_pNode);
+
+        if (l_pCam != m_pCamera)
+          m_pCamera = l_pCam;
 
         if (m_bLoaded) {
           l_pCam->setPosition(m_vCamPos);
@@ -109,41 +91,21 @@ namespace dustbin {
       return false;
     }
 
-    void CMyCameraAnimator::setIsActive(bool a_bIsActive) {
-      m_bActive = a_bIsActive;
-    }
+    void CMyCameraAnimator::setData(const irr::core::vector3df& a_cPos, irr::f32 a_fAngleV, irr::f32 a_fAngleH) {
+      m_vCamPos = a_cPos;
+      m_fAngleV = a_fAngleV;
+      m_fAngleH = a_fAngleH;
 
-    bool CMyCameraAnimator::isActive() {
-      return m_bActive;
-    }
+      if (m_pCamera != nullptr) {
+        m_bLeftDown  = true;
+        m_bRightDown = true;
 
-    std::string CMyCameraAnimator::saveData() {
-      messages::CSerializer64 *l_pData = new messages::CSerializer64();
+        m_pCamera->setPosition(m_vCamPos);
+        animateNode(m_pCamera, 0);
 
-      l_pData->addVector3df(m_vCamLookAt);
-      l_pData->addVector3df(m_vCamPos   );
-      l_pData->addF32(m_fAngleH);
-      l_pData->addF32(m_fAngleV);
-
-      std::string l_sRet = (const char *)l_pData->getBuffer();
-      delete l_pData;
-      return l_sRet;
-    }
-
-    void CMyCameraAnimator::loadData(const std::string& a_sData, irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt) {
-      messages::CSerializer64 *l_pData = new messages::CSerializer64(a_sData.c_str());
-
-      m_vCamLookAt = l_pData->getVector3df();
-      m_vCamPos    = l_pData->getVector3df();
-      m_fAngleH    = l_pData->getF32();
-      m_fAngleV    = l_pData->getF32();
-
-      m_bLoaded = true;
-
-      delete l_pData;
-
-      a_cPos = m_vCamPos;
-      a_cTgt = m_vCamLookAt;
+        m_bLeftDown  = false;
+        m_bRightDown = false;
+      }
     }
   }
 }

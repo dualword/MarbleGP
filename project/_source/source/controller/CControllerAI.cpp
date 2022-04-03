@@ -9,9 +9,10 @@ namespace dustbin {
   namespace controller {
     CControllerAI::CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode) : 
       CMarbleController(a_iMarbleId, a_sControls, a_pQueue), 
-      m_fVel    (0.0f),
-      m_pNode   (a_pNode),  
-      m_pCurrent(nullptr)
+      m_fVel       (0.0f),
+      m_iLastChange(0),
+      m_pNode      (a_pNode),  
+      m_pCurrent   (nullptr)
     {
       if (m_pNode != nullptr)
         m_vPath = a_pNode->getPath();
@@ -29,14 +30,11 @@ namespace dustbin {
           irr::f32 l_fDummy = m_cPos.getDistanceFrom(l_cPoint);
 
           if ((it == m_vPath.begin() && it2 == (*it)->m_vNext.begin()) || l_fDummy < l_fDist) {
-            printf("%i: %.2f | %.2f\n", (*it2)->m_pThis->m_iIndex, l_fDummy, l_fDist);
             m_pCurrent = *it2;
             l_fDist = l_fDummy;
           }
         }
       }
-
-      printf("Closest: %i\n", m_pCurrent != nullptr ? m_pCurrent->m_pThis->m_iIndex : -1);
     }
 
     irr::core::vector3df CControllerAI::getLookAhead(irr::f32 a_fDistance) {
@@ -78,7 +76,11 @@ namespace dustbin {
     * it posts a control message to the queue.
     */
     void CControllerAI::postControlMessage() {
-      if (m_pCurrent != nullptr) {
+      if (m_iLastChange > 1200) {
+        m_pCurrent = nullptr;
+        printf("Search for new AI path!\n");
+      }
+      else if (m_pCurrent != nullptr) {
         irr::core::matrix4 l_cMatrix;
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
 
@@ -131,6 +133,8 @@ namespace dustbin {
 
         messages::CMarbleControl l_cMarble = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, false, false);
         m_pQueue->postMessage(&l_cMarble);
+
+        m_iLastChange++;
       }
     }
 
@@ -148,6 +152,7 @@ namespace dustbin {
 
         if (m_pCurrent == nullptr) {
           selectClosestLink();
+          m_iLastChange = 0;
         }
       }
     }
@@ -155,7 +160,6 @@ namespace dustbin {
     void CControllerAI::onMarbleRespawn(int a_iMarbleId) {
       if (a_iMarbleId == m_iMarbleId) {
         m_pCurrent = nullptr;
-        printf("I have respawned.\n");
       }
     }
   }

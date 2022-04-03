@@ -5,6 +5,7 @@
 #include <scenenodes/CTriggerTimerNode.h>
 #include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
+#include <scenenodes/CDustbinCamera.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CRespawnNode.h>
 #include <scenenodes/CWorldNode.h>
@@ -65,6 +66,10 @@ namespace dustbin {
           p = new CAiNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId:
+          p = new CDustbinCamera(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
+          break;
+
         default:
           break;
       }
@@ -80,21 +85,22 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 10;
+      return 11;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
       switch (a_iIdx) {
-        case 0: return g_StartingGridScenenodeName;
-        case 1: return g_WorldName;
-        case 2: return g_PhysicsNodeName;
-        case 3: return g_CheckpointName;
-        case 4: return g_RespawndName;
-        case 5: return g_JointNodeName;
-        case 6: return g_TriggerTimerNodeName;
-        case 7: return g_MarbleCountNodeName;
-        case 8: return g_MarbleTouchNodeName;
-        case 9: return g_AiNodeName;
+        case  0: return g_StartingGridScenenodeName;
+        case  1: return g_WorldName;
+        case  2: return g_PhysicsNodeName;
+        case  3: return g_CheckpointName;
+        case  4: return g_RespawndName;
+        case  5: return g_JointNodeName;
+        case  6: return g_TriggerTimerNodeName;
+        case  7: return g_MarbleCountNodeName;
+        case  8: return g_MarbleTouchNodeName;
+        case  9: return g_AiNodeName;
+        case 10: return g_DustbinCameraNodeName;
       }
 
       return nullptr;
@@ -102,16 +108,17 @@ namespace dustbin {
 
     irr::scene::ESCENE_NODE_TYPE CMarbleGPSceneNodeFactory::getCreateableSceneNodeType(irr::u32 a_iIdx) const {
       switch (a_iIdx) {
-        case 0: return (irr::scene::ESCENE_NODE_TYPE)g_StartingGridScenenodeId;
-        case 1: return (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId;
-        case 2: return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
-        case 3: return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
-        case 4: return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
-        case 5: return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
-        case 6: return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
-        case 7: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
-        case 8: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
-        case 9: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
+        case  0: return (irr::scene::ESCENE_NODE_TYPE)g_StartingGridScenenodeId;
+        case  1: return (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId;
+        case  2: return (irr::scene::ESCENE_NODE_TYPE)g_PhysicsNodeId;
+        case  3: return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
+        case  4: return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
+        case  5: return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
+        case  6: return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
+        case  7: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
+        case  8: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
+        case  9: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
+        case 10: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -149,6 +156,9 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
           return g_AiNodeName;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId:
+          return g_DustbinCameraNodeName;
+
         default:
           return nullptr;
       }
@@ -177,6 +187,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
       else if (l_sName == g_AiNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
+      else if (l_sName == g_DustbinCameraNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

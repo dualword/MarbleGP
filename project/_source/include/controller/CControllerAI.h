@@ -20,6 +20,7 @@ namespace dustbin {
         irr::core::vector3df m_cCamUp;
 
         irr::f32 m_fVel;
+        irr::s32 m_iLastChange;
 
         scenenodes::CAiNode *m_pNode;
 
