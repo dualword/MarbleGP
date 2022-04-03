@@ -24,6 +24,8 @@ namespace dustbin {
         bool                   m_bReady;
         irr::core::line2di     m_cLine;
 
+        irr::scene::ICameraSceneNode *m_pCamera;
+
       public:
         CMyCameraAnimator(irr::IrrlichtDevice *a_pDevice);
 
@@ -45,6 +47,8 @@ namespace dustbin {
 
         void copyPositionAndLookAt(irr::scene::ICameraSceneNode *a_pCam, irr::scene::ICameraSceneNode *a_pOther);
         void setPositionLookAt(irr::scene::ICameraSceneNode *a_pCam, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cLookAt);
+
+        void setData(const irr::core::vector3df& a_cPos, irr::f32 a_fAngleV, irr::f32 a_fAngleH);
     };
   }
 }

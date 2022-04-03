@@ -279,6 +279,7 @@
     <ClInclude Include="..\..\..\_source\include\scenenodes\CAiNode.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CCameraTouchAnimator.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CCheckpointNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CDustbinCamera.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CJointNode.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleCountSceneNode.h" />
@@ -354,6 +355,7 @@
     <ClCompile Include="..\..\..\_source\source\scenenodes\CAiNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CCameraTouchAnimator.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CJointNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp" />

@@ -13,7 +13,8 @@ namespace dustbin {
       m_fAngleV   (0.0f),
       m_fAngleH   (0.0f),
       m_iTouchCnt (0),
-      m_bReady    (false)
+      m_bReady    (false),
+      m_pCamera   (nullptr)
     {
       m_aTouchID[0] = -1;
       m_aTouchID[1] = -1;
@@ -42,6 +43,9 @@ namespace dustbin {
     void CMyCameraAnimator::animateNode(irr::scene::ISceneNode *a_pNode, irr::u32 a_iTimeMs) {
       if (a_pNode->getType() == irr::scene::ESNT_CAMERA) {
         irr::scene::ICameraSceneNode *l_pCam = reinterpret_cast<irr::scene::ICameraSceneNode *>(a_pNode);
+
+        if (l_pCam != m_pCamera)
+          m_pCamera = l_pCam;
 
         if (!m_bReady) {
           l_pCam->updateAbsolutePosition();
@@ -168,6 +172,17 @@ namespace dustbin {
       }
 
       return l_bRet;
+    }
+
+    void CMyCameraAnimator::setData(const irr::core::vector3df& a_cPos, irr::f32 a_fAngleV, irr::f32 a_fAngleH) {
+      m_vCamPos = a_cPos;
+      m_fAngleV = a_fAngleV;
+      m_fAngleH = a_fAngleH;
+
+      if (m_pCamera != nullptr) {
+        m_pCamera->setPosition(m_vCamPos);
+        animateNode(m_pCamera, 0);
+      }
     }
   }
 }

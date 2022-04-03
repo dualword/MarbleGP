@@ -45,7 +45,7 @@ namespace dustbin {
 
         while (l_cPoint == m_pCurrent->m_cLinkLine.end) {
           m_pCurrent = m_pCurrent->m_pNext->m_vNext[std::rand() % m_pCurrent->m_pNext->m_vNext.size()];
-          irr::core::vector3df l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
+          l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
         }
 
         if (a_fDistance == 0.0f)
