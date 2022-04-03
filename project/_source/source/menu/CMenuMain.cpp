@@ -62,6 +62,7 @@ namespace dustbin {
                 l_cData.m_sName     = "AI Demo Player #" + std::to_string(i + 1);
                 l_cData.m_sControls = "ai_player";
                 l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
+                l_cData.m_sTexture  = "default://number=" + std::to_string(i + 1);
 
                 l_cPlayers.m_vPlayers.push_back(l_cData);
               }
