@@ -216,6 +216,20 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "ok") {
+                bool l_bFillGridAI = false;
+                int  l_iGridSize   = 1;
+                irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
+
+                gui::CDustbinCheckbox *l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
+                if (l_pCheckbox != nullptr && l_pCheckbox->isChecked()) {
+                  l_bFillGridAI = true;
+
+                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  if (l_pSelector != nullptr) {
+                    l_iGridSize = std::wcstol(l_pSelector->getItem(l_pSelector->getSelected()).c_str(), nullptr, 10);
+                  }
+                }
+
                 messages::CSerializer64 l_cSerializer;
 
                 for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++)
@@ -227,7 +241,7 @@ namespace dustbin {
                 // We fill a vector with the grid positions and ..
                 std::vector<int> l_vGrid;
 
-                for (int i = 0; i < m_vSelectedPlayers.size(); i++)
+                for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++)
                   l_vGrid.push_back(i);
 
                 // .. if necessary shuffle the vector
@@ -266,6 +280,24 @@ namespace dustbin {
                       l_cPlayers.m_vPlayers.push_back(l_cPlayer);
                       break;
                     }
+                  }
+                }
+
+                if (l_bFillGridAI) { 
+                  while (l_cPlayers.m_vPlayers.size() < l_iGridSize) {
+                    data::SPlayerData l_cData;
+                    l_cData.m_eType     = data::enPlayerType::Ai;
+                    l_cData.m_iGridPos  = *l_vGrid.begin();
+                    l_cData.m_iPlayerId = l_iNum;
+                    l_cData.m_sName     = "AI Demo Player #" + std::to_string(l_iNum);
+                    l_cData.m_sControls = "ai_player";
+                    l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
+                    l_cData.m_sTexture  = "default://number=" + std::to_string(l_iNum);
+
+                    l_vGrid.erase(l_vGrid.begin());
+
+                    l_cPlayers.m_vPlayers.push_back(l_cData);
+                    l_iNum++;
                   }
                 }
 
