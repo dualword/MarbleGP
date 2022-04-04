@@ -6,6 +6,10 @@
 #include <vector>
 
 namespace dustbin {
+  namespace messages {
+    class CMarbleControl;
+  }
+
   namespace controller {
     /**
     * @class CControllerAI
@@ -25,6 +29,13 @@ namespace dustbin {
         scenenodes::CAiNode *m_pNode;
 
         scenenodes::CAiNode::SAiLink *m_pCurrent;
+
+        irr::f32 m_fThrottle;
+
+        irr::s8 m_iCtrlX;
+        irr::s8 m_iCtrlY;
+
+        bool m_bBrake;
 
         std::vector<scenenodes::CAiNode::SAiPathNode *> m_vPath;
 
@@ -52,6 +63,8 @@ namespace dustbin {
         virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp);
 
         virtual void onMarbleRespawn(int a_iMarbleId);
+
+        messages::CMarbleControl *getControlMessage();
     };
   }
 }

@@ -56,7 +56,7 @@ namespace dustbin {
 
               for (int i = 0; i < 16; i++) {
                 data::SPlayerData l_cData;
-                l_cData.m_eType     = data::SPlayerData::enPlayerType::Ai;
+                l_cData.m_eType     = data::enPlayerType::Ai;
                 l_cData.m_iGridPos  = i;
                 l_cData.m_iPlayerId = i + 1;
                 l_cData.m_sName     = "AI Demo Player #" + std::to_string(i + 1);

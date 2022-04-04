@@ -5,6 +5,7 @@
 
 #include <gameclasses/SMarbleNodes.h>
 #include <controller/IController.h>
+#include <data/CDataStructs.h>
 #include <CGlobal.h>
 #include <string>
 
@@ -16,11 +17,13 @@ namespace dustbin {
     * This is the struct for the players
     */
     struct SPlayer {
-      int m_iPlayer,               /**< The player id */
-          m_iId;                   /**< The Marble id */
-      std::string m_sName,         /**< The name of the player */
-                  m_sTexture,      /**< The texture of the player's marble */
-                  m_sController;   /**< The serialized controller configuration */
+      int          m_iPlayer,       /**< The player id */
+                   m_iId;           /**< The Marble id */
+      std::string  m_sName,         /**< The name of the player */
+                   m_sTexture,      /**< The texture of the player's marble */
+                   m_sController;   /**< The serialized controller configuration */
+
+      data::enPlayerType m_eType;
 
       gameclasses::SMarbleNodes *m_pMarble;  /**< The marble of the player */
 
@@ -35,6 +38,7 @@ namespace dustbin {
         m_sName       = "";
         m_pMarble     = nullptr;
         m_pController = nullptr;
+        m_eType       = data::enPlayerType::Local;
       }
 
       /**
@@ -56,13 +60,14 @@ namespace dustbin {
       * @param a_sController the controller configuration string of the player
       * @param a_pMarble the marble of the player
       */
-      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, gameclasses::SMarbleNodes* a_pMarble) {
+      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) {
         m_iPlayer     = a_iPlayer;
         m_sName       = a_sName;
         m_sTexture    = a_sTexture;
         m_pMarble     = a_pMarble;
         m_sController = a_sController;
         m_pController = nullptr;
+        m_eType       = a_eType;
 
         if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
           m_iId = m_pMarble->m_pPositional->getID();

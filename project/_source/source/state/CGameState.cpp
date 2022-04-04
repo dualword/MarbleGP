@@ -10,6 +10,7 @@
 #include <controller/ICustomEventReceiver.h>
 #include <_generated/messages/CMessages.h>
 #include <controller/CControllerFactory.h>
+#include <controller/CAiControlThread.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CDustbinCamera.h>
@@ -111,7 +112,8 @@ namespace dustbin {
       m_pDynamics    (nullptr),
       m_pShader      (nullptr),
       m_pCamAnimator (nullptr),
-      m_pCamera      (nullptr)
+      m_pCamera      (nullptr),
+      m_pAiThread    (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -185,8 +187,6 @@ namespace dustbin {
         delete l_pFix;
         addStaticCameras(m_pSmgr->getRootSceneNode());
         printf("%i static cameras found.\n", (int)m_vCameras.size());
-
-        m_pSmgr->addCameraSceneNode(nullptr, irr::core::vector3df(250, 250.0f, 250.0f));
       }
       else {
       }
@@ -305,14 +305,15 @@ namespace dustbin {
           l_cPlayers.m_vPlayers[i].m_sName,
           l_cPlayers.m_vPlayers[i].m_sTexture,
           l_cPlayers.m_vPlayers[i].m_sControls,
-          l_pMarble
+          l_pMarble,
+          l_cPlayers.m_vPlayers[i].m_eType
         );
 
         printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
 
         m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
 
-        if (l_cPlayers.m_vPlayers[i].m_eType == data::SPlayerData::enPlayerType::Local)
+        if (l_cPlayers.m_vPlayers[i].m_eType == data::enPlayerType::Local)
           l_iNumOfViewports++;
 
         m_vPlayers.push_back(l_pPlayer);
@@ -345,19 +346,25 @@ namespace dustbin {
           m_pDevice->getCursorControl()->setVisible(false);
       }
 
+      irr::scene::ISceneNode *l_pAiNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiNodeId, m_pSmgr->getRootSceneNode());
+
+      if (l_pAiNode != nullptr) {
+        l_pAiNode->setVisible(getGlobal()->getSetting("show_ai_data") == "1");
+      }
+
       printf("******** Viewport Assignment:\n");
       int l_iViewport = 0;
       for (size_t i = 0; i < l_cPlayers.m_vPlayers.size(); i++) {
         gameclasses::SPlayer *l_pPlayer = nullptr;
 
-        if (l_cPlayers.m_vPlayers[i].m_eType == data::SPlayerData::enPlayerType::Local) {
-          for (std::vector<gameclasses::SPlayer*>::iterator l_itPlayer = m_vPlayers.begin(); l_itPlayer != m_vPlayers.end(); l_itPlayer++) {
-            if ((*l_itPlayer)->m_iPlayer == l_cPlayers.m_vPlayers[i].m_iPlayerId) {
-              l_pPlayer = *l_itPlayer;
-              break;
-            }
+        for (std::vector<gameclasses::SPlayer*>::iterator l_itPlayer = m_vPlayers.begin(); l_itPlayer != m_vPlayers.end(); l_itPlayer++) {
+          if ((*l_itPlayer)->m_iPlayer == l_cPlayers.m_vPlayers[i].m_iPlayerId) {
+            l_pPlayer = *l_itPlayer;
+            break;
           }
+        }
 
+        if (l_cPlayers.m_vPlayers[i].m_eType == data::enPlayerType::Local) {
           if (l_pPlayer != nullptr && l_pPlayer->m_pMarble->m_pPositional) {
             std::vector<SGameViewports::SViewportDef>::iterator it = l_cViewports.m_mDistribution[l_iNumOfViewports].m_vViewports.begin();
 
@@ -411,6 +418,15 @@ namespace dustbin {
         m_pSmgr->setActiveCamera(m_pCamera);
         gfx::SViewPort l_cViewport = gfx::SViewPort(irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()), 0, nullptr, m_pCamera);
         m_mViewports[0] = l_cViewport;
+
+        if (m_vCameras.size() > 0) {
+          irr::core::vector3df l_vPos;
+          irr::f32 l_fAngleH, l_fAngleV;
+
+          m_pCamAnimator->animateNode(m_pCamera, 0);
+          (*m_vCameras.begin())->getValues(l_vPos, l_fAngleV, l_fAngleH);
+          m_pCamAnimator->setData(l_vPos, l_fAngleV, l_fAngleH);
+        }
       }
 
       printf("******** Ready.\n");
@@ -468,12 +484,6 @@ namespace dustbin {
           break;
       }
 
-      irr::scene::ISceneNode *l_pAiNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiNodeId, m_pSmgr->getRootSceneNode());
-
-      if (l_pAiNode != nullptr) {
-        l_pAiNode->setVisible(getGlobal()->getSetting("show_ai_data") == "1");
-      }
-
       if (m_pShader != nullptr) {
         m_pShader->initialize();
       }
@@ -492,12 +502,23 @@ namespace dustbin {
         controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-          (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, reinterpret_cast<scenenodes::CAiNode *>(l_pAiNode));
+          if ((*it)->m_eType == data::enPlayerType::Local)
+            (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, reinterpret_cast<scenenodes::CAiNode *>(l_pAiNode));
+          else if ((*it)->m_eType == data::enPlayerType::Ai) {
+            if (m_pAiThread == nullptr) {
+              m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
+            }
+
+            m_pAiThread->addAiMarble((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
+          }
         }
 
         delete l_pFactory;
 
         m_pDynamics->startThread();
+
+        if (m_pAiThread != nullptr)
+          m_pAiThread->startThread();
       }
       else {
         m_pGlobal->setGlobal("ERROR_MESSAGE", "No world node found.");
@@ -520,6 +541,15 @@ namespace dustbin {
 
       if (m_pDevice->getCursorControl() != nullptr)
         m_pDevice->getCursorControl()->setVisible(true);
+
+      // Important: stop the AI thread
+      // before the dynamics thread
+      if (m_pAiThread != nullptr) {
+        m_pAiThread->stopThread();
+        m_pAiThread->join();
+        delete m_pAiThread;
+        m_pAiThread = nullptr;
+      }
 
       if (m_pDynamics != nullptr) {
         m_pDynamics->stopThread();
@@ -974,7 +1004,8 @@ namespace dustbin {
     void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity) {
       if (m_mMoving.find(a_ObjectId) != m_mMoving.end()) {
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-          (*it)->m_pController->onObjectMoved(a_ObjectId, a_Position);
+          if ((*it)->m_pController != nullptr)
+            (*it)->m_pController->onObjectMoved(a_ObjectId, a_Position);
         }
 
         m_mMoving[a_ObjectId]->setPosition(a_Position);
@@ -1006,7 +1037,8 @@ namespace dustbin {
         irr::s32 l_iIndex = a_ObjectId - 10000;
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-          (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_CameraPosition, a_CameraUp);
+          if ((*it)->m_pController != nullptr)
+            (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_CameraPosition, a_CameraUp);
         }
 
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
@@ -1064,7 +1096,8 @@ namespace dustbin {
           p->m_iRespawnStart = -1;
 
           for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-            (*it)->m_pController->onMarbleRespawn(a_MarbleId);
+            if ((*it)->m_pController != nullptr)
+              (*it)->m_pController->onMarbleRespawn(a_MarbleId);
           }
         }
       }

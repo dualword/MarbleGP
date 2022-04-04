@@ -18,6 +18,7 @@
 namespace dustbin {
   namespace controller {
     class ICustomEventReceiver;
+    class CAiControlThread;
   }
 
   namespace gameclasses {
@@ -104,6 +105,8 @@ namespace dustbin {
 
         std::vector<scenenodes::CDustbinCamera *> m_vCameras;   /**< Static cameras for the "replay" and "view track" modes */
 
+        controller::CAiControlThread *m_pAiThread;
+        
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;
 #endif

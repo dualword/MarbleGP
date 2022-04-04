@@ -8,6 +8,13 @@
 
 namespace dustbin {
   namespace data {
+    /**
+    * Enumeration for the player type
+    */
+    enum class enPlayerType {
+      Local,  /**< A local player (with his own viewport) */
+      Ai      /**< An AI player (has no viewport) */
+    };
 
     /**
     * @class SGameGFX
@@ -67,14 +74,6 @@ namespace dustbin {
     * This data structure holds the players' data
     */
     struct SPlayerData {
-      /**
-      * Enumeration for the player type
-      */
-      enum class enPlayerType {
-        Local,  /**< A local player (with his own viewport) */
-        Ai      /**< An AI player (has no viewport) */
-      };
-
       /**
       * Enumeration for the AI help level of the player
       */

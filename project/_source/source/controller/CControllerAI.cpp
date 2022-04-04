@@ -35,6 +35,8 @@ namespace dustbin {
           }
         }
       }
+
+      m_iLastChange = 0;
     }
 
     irr::core::vector3df CControllerAI::getLookAhead(irr::f32 a_fDistance) {
@@ -46,6 +48,7 @@ namespace dustbin {
         while (l_cPoint == m_pCurrent->m_cLinkLine.end) {
           m_pCurrent = m_pCurrent->m_pNext->m_vNext[std::rand() % m_pCurrent->m_pNext->m_vNext.size()];
           l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
+          m_iLastChange = 0;
         }
 
         if (a_fDistance == 0.0f)
@@ -76,6 +79,39 @@ namespace dustbin {
     * it posts a control message to the queue.
     */
     void CControllerAI::postControlMessage() {
+      if (m_pQueue != nullptr) {
+        messages::CMarbleControl *p = getControlMessage();
+        m_pQueue->postMessage(p);
+        delete p;
+      }
+    }
+
+    void CControllerAI::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cNewPos) {
+    }
+
+    void CControllerAI::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) {
+      if (a_iMarbleId == m_iMarbleId) {
+        m_cPos    = a_cNewPos;
+        m_cVel    = a_cVelocity;
+        m_cCamPos = a_cCameraPos;
+        m_cCamUp  = a_cCameraUp;
+        
+        m_fVel = a_cVelocity.getLength();
+
+        if (m_pCurrent == nullptr) {
+          selectClosestLink();
+          m_iLastChange = 0;
+        }
+      }
+    }
+
+    void CControllerAI::onMarbleRespawn(int a_iMarbleId) {
+      if (a_iMarbleId == m_iMarbleId) {
+        m_pCurrent = nullptr;
+      }
+    }
+
+    messages::CMarbleControl *CControllerAI::getControlMessage() { 
       if (m_iLastChange > 1200) {
         m_pCurrent = nullptr;
         printf("Search for new AI path!\n");
@@ -90,7 +126,7 @@ namespace dustbin {
         irr::f32 l_fOffset = 1.0f - std::fmin(1.0f, std::abs(l_cPoint.X / 2.0f));
 
         irr::f32 l_fLookAhead = 1.5f * l_fOffset * m_fVel;
-        
+
         l_fLookAhead = std::fmax(l_fLookAhead, 15.0f);
 
         irr::core::vector3df l_cAhead1 = getLookAhead(l_fLookAhead);
@@ -124,43 +160,19 @@ namespace dustbin {
             l_fVel = m_pCurrent->m_pNext->m_fMinVel;
         }
 
-        irr::f32 l_fThrottle = m_fVel < l_fVel ? 1.0f : -1.0f;
+        m_fThrottle = m_fVel < l_fVel ? 1.0f : -1.0f;
 
-        irr::s8 l_iCtrlX = (irr::s8)(127.0f * l_fSteer * l_fSteer * (l_fSteer < 0.0f ? -1.0f : 1.0f));
-        irr::s8 l_iCtrlY = (irr::s8)(127.0f * l_fThrottle);
+        m_iCtrlX = (irr::s8)(127.0f * l_fSteer * l_fSteer * (l_fSteer < 0.0f ? -1.0f : 1.0f));
+        m_iCtrlY = (irr::s8)(127.0f * m_fThrottle);
 
-        bool l_bBrake = m_fVel > l_fVel;
-
-        messages::CMarbleControl l_cMarble = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, false, false);
-        m_pQueue->postMessage(&l_cMarble);
+        m_bBrake = m_fVel > l_fVel;
 
         m_iLastChange++;
+
+        return new messages::CMarbleControl(m_iMarbleId, m_iCtrlX, m_iCtrlY, m_bBrake, false, false);
       }
-    }
 
-    void CControllerAI::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cNewPos) {
-    }
-
-    void CControllerAI::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) {
-      if (a_iMarbleId == m_iMarbleId) {
-        m_cPos    = a_cNewPos;
-        m_cVel    = a_cVelocity;
-        m_cCamPos = a_cCameraPos;
-        m_cCamUp  = a_cCameraUp;
-        
-        m_fVel = a_cVelocity.getLength();
-
-        if (m_pCurrent == nullptr) {
-          selectClosestLink();
-          m_iLastChange = 0;
-        }
-      }
-    }
-
-    void CControllerAI::onMarbleRespawn(int a_iMarbleId) {
-      if (a_iMarbleId == m_iMarbleId) {
-        m_pCurrent = nullptr;
-      }
+      return nullptr;
     }
   }
 }
