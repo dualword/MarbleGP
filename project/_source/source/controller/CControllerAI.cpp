@@ -12,7 +12,9 @@ namespace dustbin {
       m_fVel       (0.0f),
       m_iLastChange(0),
       m_pNode      (a_pNode),  
-      m_pCurrent   (nullptr)
+      m_pCurrent   (nullptr),
+      m_bBrake     (false),
+      m_bDebug     (false)
     {
       if (m_pNode != nullptr)
         m_vPath = a_pNode->getPath();
@@ -45,8 +47,14 @@ namespace dustbin {
 
         irr::core::vector3df l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
 
+        m_pCurrent->m_pThis->m_iIndex;
+
         while (l_cPoint == m_pCurrent->m_cLinkLine.end) {
-          m_pCurrent = m_pCurrent->m_pNext->m_vNext[std::rand() % m_pCurrent->m_pNext->m_vNext.size()];
+          if (m_mChoices.find(m_pCurrent->m_pThis->m_iIndex) == m_mChoices.end()) {
+            m_mChoices[m_pCurrent->m_pThis->m_iIndex] = std::rand() % m_pCurrent->m_pNext->m_vNext.size();
+          }
+
+          m_pCurrent = m_pCurrent->m_pNext->m_vNext[m_mChoices[m_pCurrent->m_pThis->m_iIndex]];
           l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
           m_iLastChange = 0;
         }
@@ -60,7 +68,12 @@ namespace dustbin {
 
         while (a_fDistance > l_fLength) {
           a_fDistance -= l_fLength;
-          p = *p->m_pNext->m_vNext.begin();
+
+          if (m_mChoices.find(p->m_pThis->m_iIndex) == m_mChoices.end()) {
+            m_mChoices[p->m_pThis->m_iIndex] = std::rand() % p->m_pNext->m_vNext.size();
+          }
+
+          p = p->m_pNext->m_vNext[m_mChoices[p->m_pThis->m_iIndex]];
 
           l_cLine   = p->m_cLinkLine;
           l_fLength = p->m_fLinkLength;
@@ -117,6 +130,8 @@ namespace dustbin {
         printf("Search for new AI path!\n");
       }
       else if (m_pCurrent != nullptr) {
+        std::vector<irr::core::line3df> l_vDebug;
+
         irr::core::matrix4 l_cMatrix;
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
 
@@ -125,31 +140,54 @@ namespace dustbin {
 
         irr::f32 l_fOffset = 1.0f - std::fmin(1.0f, std::abs(l_cPoint.X / 2.0f));
 
-        irr::f32 l_fLookAhead = 1.5f * l_fOffset * m_fVel;
+        irr::f32 l_fLookAhead1 = 1.5f * l_fOffset * m_fVel;
+        irr::f32 l_fLookAhead2 = 2.5f * l_fOffset * m_fVel;
 
-        l_fLookAhead = std::fmax(l_fLookAhead, 15.0f);
+        l_fLookAhead1 = std::fmax(l_fLookAhead1, 15.0f);
+        l_fLookAhead2 = std::fmax(l_fLookAhead2, 25.0f);
 
-        irr::core::vector3df l_cAhead1 = getLookAhead(l_fLookAhead);
+        irr::core::vector3df l_cAhead1 = getLookAhead(l_fLookAhead1);
+        irr::core::vector3df l_cAhead2 = getLookAhead(l_fLookAhead2);
 
-        m_pNode->setLookAhead(m_iMarbleId, irr::core::line3df(m_cPos, l_cAhead1));
-
+        if (m_bDebug) {
+          l_vDebug.push_back(irr::core::line3df(m_cPos   , l_cAhead1));
+          l_vDebug.push_back(irr::core::line3df(l_cAhead1, l_cAhead2));
+        }
 
         l_cMatrix.transformVect(l_cAhead1);
+        l_cMatrix.transformVect(l_cAhead2);
 
         irr::core::vector2df l_cPoint1 = irr::core::vector2df(l_cAhead1.X, l_cAhead1.Z);
+        irr::core::vector2df l_cPoint2 = irr::core::vector2df(l_cAhead2.X, l_cAhead2.Z);
+
+        irr::f32 l_fAngleNew = (irr::f32)irr::core::line2df(irr::core::vector2df(0.0f), l_cPoint1).getAngleWith(irr::core::line2df(l_cPoint1, l_cPoint2));
+
+        irr::f32 l_fFactor = 2.0f - (irr::f32)(std::fmin(90.0, l_fAngleNew) / 45.0);
+        l_fFactor = std::fmax(0.5f, l_fFactor);
+
+        irr::core::vector3df l_cNewPoint = getLookAhead(std::fmax(15.0f, l_fFactor * l_fOffset * m_fVel));
+
+        if (m_bDebug) {
+          l_vDebug.push_back(irr::core::line3df(m_cPos, l_cNewPoint));
+        }
+
+        l_cMatrix.transformVect(l_cNewPoint);
 
         l_cPoint1.normalize();
 
-        irr::f32 l_fAngle = (l_cPoint1.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
+        irr::f32 l_fAngle = (l_cPoint1.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(l_cNewPoint.X, l_cNewPoint.Z)));// l_cPoint1));
 
         irr::f32 l_fSteer = l_fAngle / 5.0f;
+
+        if (l_fSteer >  0.75f) l_fSteer =  1.0f;
+        if (l_fSteer < -0.75f) l_fSteer = -1.0f;
 
         if (l_fSteer >  1.0f) l_fSteer =  1.0f;
         if (l_fSteer < -1.0f) l_fSteer = -1.0f;
 
         irr::f32 l_fSpeedFactor = 3.0f - std::min(2.0f, std::abs(l_fAngle / 3.5f));
 
-        irr::f32 l_fVel = l_fSpeedFactor * l_cAhead1.Z;
+        irr::f32 l_fVel = 1.1f * l_fSpeedFactor * l_cNewPoint.Z;  // 1.1f needs to be verified
 
         if (m_pCurrent->m_pNext->m_fMaxVel > 0.0f) {
           if (l_fVel > m_pCurrent->m_pNext->m_fMaxVel)
@@ -167,12 +205,17 @@ namespace dustbin {
 
         m_bBrake = m_fVel > l_fVel;
 
+        if (m_bDebug) m_pNode->setDebugLines(m_iMarbleId, l_vDebug);
         m_iLastChange++;
 
         return new messages::CMarbleControl(m_iMarbleId, m_iCtrlX, m_iCtrlY, m_bBrake, false, false);
       }
 
       return nullptr;
+    }
+
+    void CControllerAI::setDebug(bool a_bDebug) {
+      m_bDebug = a_bDebug;
     }
   }
 }

@@ -321,13 +321,7 @@ namespace dustbin {
               irr::core::vector2df l_vSteer = irr::core::vector2df(1.0f * l_fCtrlX, 0.5f * l_fCtrlY);
 
               // Marble Class Param: Max Steer Speed
-              irr::f32 l_fSpeed  = m_aMarbles[i]->m_vVelocity.getLength(),
-                       l_fFactor = (l_fSpeed / 30.0f) + 0.2f;
-
-              if (l_fFactor > 1.0f)
-                l_fFactor = 1.0f;
-
-              l_vSteer.X *= l_fFactor;
+              irr::f32 l_fSpeed  = m_aMarbles[i]->m_vVelocity.getLength();
 
               l_vSteer.normalize();
 

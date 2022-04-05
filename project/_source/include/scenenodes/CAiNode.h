@@ -75,8 +75,7 @@ namespace dustbin {
         irr::core::aabbox3df m_cBox;
         std::vector<SAiPathNode *> m_vPathData;
 
-        std::map<irr::s32, irr::core::line3df> m_mClosest;
-        std::map<irr::s32, irr::core::line3df> m_mLookAhead;
+        std::map<irr::s32, std::vector<irr::core::line3df>> m_mDebug;
 
         void updatePathIndices();
 
@@ -95,9 +94,7 @@ namespace dustbin {
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
 
-        void setClosest(irr::s32 a_iMarble, const irr::core::line3df &a_cLine);
-
-        void setLookAhead(irr::s32 a_iMarble, const irr::core::line3df &a_cLine);
+        void setDebugLines(int a_iMarbleId, const std::vector<irr::core::line3df> &a_vLines);
 
         /**
         * Get the defined path from the AI scene-node.

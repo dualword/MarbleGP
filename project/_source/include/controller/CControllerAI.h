@@ -36,6 +36,9 @@ namespace dustbin {
         irr::s8 m_iCtrlY;
 
         bool m_bBrake;
+        bool m_bDebug;
+
+        std::map<int, int> m_mChoices;
 
         std::vector<scenenodes::CAiNode::SAiPathNode *> m_vPath;
 
@@ -65,6 +68,8 @@ namespace dustbin {
         virtual void onMarbleRespawn(int a_iMarbleId);
 
         messages::CMarbleControl *getControlMessage();
+
+        void setDebug(bool a_bDebug);
     };
   }
 }

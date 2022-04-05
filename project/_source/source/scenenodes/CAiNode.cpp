@@ -58,12 +58,21 @@ namespace dustbin {
           }
         }
 
-        for (std::map<irr::s32, irr::core::line3df>::iterator it = m_mClosest.begin(); it != m_mClosest.end(); it++) {
-          l_pDrv->draw3DLine(it->second.start, it->second.end, irr::video::SColor(0xFF, 0, 0, 0xFF));
-        }
+        irr::video::SColor l_aColors[] = {
+          irr::video::SColor(0xFF,    0,    0,    0),
+          irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF),
+          irr::video::SColor(0xFF, 0xFF, 0xFF, 0x80),
+          irr::video::SColor(0xFF, 0xFF, 0x80, 0x80)
+        };
 
-        for (std::map<irr::s32, irr::core::line3df>::iterator it = m_mLookAhead.begin(); it != m_mLookAhead.end(); it++) {
-          l_pDrv->draw3DLine(it->second.start, it->second.end, irr::video::SColor(0xFF, 0, 0xFF, 0));
+        for (std::map<irr::s32, std::vector<irr::core::line3df>>::iterator l_itDebug = m_mDebug.begin(); l_itDebug != m_mDebug.end(); l_itDebug++) {
+          int l_iNum = 0;
+
+          for (std::vector<irr::core::line3df>::iterator it = l_itDebug->second.begin(); it != l_itDebug->second.end(); it++) {
+            l_pDrv->draw3DLine((*it).start, (*it).end, l_aColors[l_iNum]);
+            l_iNum++;
+            if (l_iNum >= 4) l_iNum = 0;
+          }
         }
       }
     }
@@ -131,12 +140,8 @@ namespace dustbin {
       }
     }
 
-    void CAiNode::setClosest(irr::s32 a_iMarble, const irr::core::line3df& a_cLine) {
-      m_mClosest[a_iMarble] = a_cLine;
-    }
-
-    void CAiNode::setLookAhead(irr::s32 a_iMarble, const irr::core::line3df& a_cLine) {
-      m_mLookAhead[a_iMarble] = a_cLine;
+    void CAiNode::setDebugLines(int a_iMarbleId, const std::vector<irr::core::line3df>& a_vLines) {
+      m_mDebug[a_iMarbleId] = a_vLines;
     }
 
     void CAiNode::updatePathIndices() {

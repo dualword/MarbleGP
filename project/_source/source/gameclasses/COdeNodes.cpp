@@ -353,7 +353,7 @@ namespace dustbin {
       dMass l_cMass;
       dMassSetZero(&l_cMass);
       // Marble Class Param: Mass
-      dMassSetSphereTotal(&l_cMass, 1.0f, 1.0f);
+      dMassSetSphereTotal(& l_cMass, 5.0f, 1.0f);
       dBodySetAngularDamping(m_cBody, (dReal)0.0015);
       dGeomSetBody(m_cGeom, m_cBody);
       dBodySetPosition(m_cBody, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);

@@ -24,6 +24,7 @@
 #include <sound/CSoundEnums.h>
 #include <data/CDataStructs.h>
 #include <state/CGameState.h>
+#include <CMainClass.h>
 #include <CGlobal.h>
 #include <string>
 #include <map>
@@ -510,6 +511,11 @@ namespace dustbin {
             }
 
             m_pAiThread->addAiMarble((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
+          }
+          else if ((*it)->m_eType == data::enPlayerType::Debug_Ai) {
+             controller::CControllerAI *p = reinterpret_cast<controller::CControllerAI *>(l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), "ai_player", reinterpret_cast<scenenodes::CAiNode *>(l_pAiNode)));
+             p->setDebug(CMainClass::getInstance()->getSetting("show_ai_data") == "1");
+             (*it)->m_pController = p;
           }
         }
 
