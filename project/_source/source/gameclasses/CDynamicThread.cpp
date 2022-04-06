@@ -333,7 +333,7 @@ namespace dustbin {
               dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
               if (p->m_bBrake)
-                dBodySetAngularDamping(p->m_cBody, (dReal)0.05);
+                dBodySetAngularDamping(p->m_cBody, (dReal)0.075);
               else
                 dBodySetAngularDamping(p->m_cBody, p->m_fDamp);
 

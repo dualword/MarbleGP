@@ -11,6 +11,7 @@ namespace dustbin {
       CMarbleController(a_iMarbleId, a_sControls, a_pQueue), 
       m_fVel       (0.0f),
       m_iLastChange(0),
+      m_fLastOffset(0.0f),
       m_pNode      (a_pNode),  
       m_pCurrent   (nullptr),
       m_bBrake     (false),
@@ -138,7 +139,22 @@ namespace dustbin {
         irr::core::vector3df l_cPoint = getLookAhead(0.0f);
         l_cMatrix.transformVect(l_cPoint);
 
-        irr::f32 l_fOffset = 1.0f - std::fmin(1.0f, std::abs(l_cPoint.X / 2.0f));
+        irr::core::vector3df l_cOffset = getLookAhead(m_fVel);
+        l_cMatrix.transformVect(l_cOffset);
+
+        irr::f32 l_fOffset = std::abs(l_cPoint.X / 2.0f);
+
+        bool l_bRoll = false;
+
+        if ((l_cPoint.X < 0.0f && l_cOffset.X > 0.0f) || (l_cPoint.X > 0.0f && l_cOffset.X < 0.0f)) {
+          l_fOffset /= 3.0f;
+
+          if (l_fOffset < m_fLastOffset)
+            l_bRoll = true;
+        }
+
+        l_fOffset = 1.0f - std::fmin(1.0f, l_fOffset);
+
 
         irr::f32 l_fLookAhead1 = 1.5f * l_fOffset * m_fVel;
         irr::f32 l_fLookAhead2 = 2.5f * l_fOffset * m_fVel;
@@ -175,12 +191,9 @@ namespace dustbin {
 
         l_cPoint1.normalize();
 
-        irr::f32 l_fAngle = (l_cPoint1.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(l_cNewPoint.X, l_cNewPoint.Z)));// l_cPoint1));
+        irr::f32 l_fAngle = (l_cNewPoint.X < 0.0f ? -1.0f : 1.0f) * (irr::f32)(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(0.0f, 1.0f))).getAngleWith(irr::core::line2df(irr::core::vector2df(), irr::core::vector2df(l_cNewPoint.X, l_cNewPoint.Z)));// l_cPoint1));
 
         irr::f32 l_fSteer = l_fAngle / 5.0f;
-
-        if (l_fSteer >  0.75f) l_fSteer =  1.0f;
-        if (l_fSteer < -0.75f) l_fSteer = -1.0f;
 
         if (l_fSteer >  1.0f) l_fSteer =  1.0f;
         if (l_fSteer < -1.0f) l_fSteer = -1.0f;
@@ -203,10 +216,13 @@ namespace dustbin {
         m_iCtrlX = (irr::s8)(127.0f * l_fSteer * l_fSteer * (l_fSteer < 0.0f ? -1.0f : 1.0f));
         m_iCtrlY = (irr::s8)(127.0f * m_fThrottle);
 
-        m_bBrake = m_fVel > l_fVel;
+        m_bBrake = m_fVel > 1.1f * l_fVel && (!l_bRoll || m_fVel > 1.15f * l_fVel);
 
         if (m_bDebug) m_pNode->setDebugLines(m_iMarbleId, l_vDebug);
         m_iLastChange++;
+
+        // printf("%5i%5i %s %5.2f\n", m_iCtrlX, m_iCtrlY, m_bBrake ? "B" : " ", m_fLastOffset - l_fOffset);
+        m_fLastOffset = l_fOffset;
 
         return new messages::CMarbleControl(m_iMarbleId, m_iCtrlX, m_iCtrlY, m_bBrake, false, false);
       }

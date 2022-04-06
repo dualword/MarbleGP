@@ -25,6 +25,7 @@ namespace dustbin {
 
         irr::f32 m_fVel;
         irr::s32 m_iLastChange;
+        irr::f32 m_fLastOffset;
 
         scenenodes::CAiNode *m_pNode;
 
