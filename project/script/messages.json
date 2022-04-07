@@ -23,7 +23,8 @@
     [ "MarbleControl" , "12" ],
     [ "CancelRace"    , "13" ],
     [ "TogglePause"   , "14" ],
-    [ "PauseChanged"  , "15" ]
+    [ "PauseChanged"  , "15" ],
+    [ "RacePosition"  , "16" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -147,6 +148,15 @@
       "fields": [
         { "name": "Paused", "type": "bool", "comment": "The current paused state" }
       ]
+    },
+    "RacePosition": {
+      "comment": "Message to notify about the position of a marble in a race",
+      "fields": [
+        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" },
+        { "name": "Position", "type": "irr::s32", "comment": "Position of the marble" },
+        { "name": "Laps"    , "type": "irr::s32", "comment": "The current lap of the marble" },
+        { "name": "Deficit" , "type": "irr::s32", "comment": "Deficit of the marble on the leader in steps" }
+      ]
     }
   },
   "interfaces": [
@@ -165,7 +175,8 @@
         "RaceFinished",
         "Checkpoint",
         "LapStart",
-        "PauseChanged"
+        "PauseChanged",
+        "RacePosition"
       ],
       "receive": [
         "MarbleControl",
@@ -193,7 +204,8 @@
         "RaceFinished",
         "Checkpoint",
         "LapStart",
-        "PauseChanged"
+        "PauseChanged",
+        "RacePosition"
       ]
     }
   ]

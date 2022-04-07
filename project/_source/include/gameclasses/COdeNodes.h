@@ -166,7 +166,9 @@ namespace dustbin {
             m_iLastContact,   /**< The step no. of the last contact */
             m_iRespawnStart,  /**< The step when the respawn of the marble started */
             m_iStunnedStart,  /**< The step when the stunned state started */
-            m_iLapNo;         /**< The current lap of the marble */
+            m_iLapNo,         /**< The current lap of the marble */
+            m_iFinishTime,    /**< Finish time of the marble */
+            m_iPosition;      /**< Position in the race */
 
         bool m_bActive; /**< The player has already shown some activity */
 

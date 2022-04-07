@@ -1,6 +1,9 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <data/CDataStructs.h>
+#include <vector>
+
 namespace dustbin {
   namespace gameclasses {
     /**
@@ -49,8 +52,9 @@ namespace dustbin {
         * Callback for checkpoint passes of the marbles
         * @param a_iMarble the ID of the marble
         * @param a_iCheckpoint the checkpoint ID
+        * @param a_iStep the current step
         */
-        virtual void onCheckpoint(int a_iMarble, int a_iCheckpoint) = 0;
+        virtual void onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) = 0;
 
         /**
         * A method called when a marble is stunned
@@ -63,6 +67,12 @@ namespace dustbin {
         * @param a_iMarble the marble ID
         */
         virtual void onRespawn(int a_iMarble) = 0;
+
+        /**
+        * Get the current race positions
+        * @return the current race positions
+        */
+        virtual const std::vector<data::SRacePlayer *> getRacePositions() = 0;
     };
   }
 }

@@ -4,6 +4,7 @@
 #include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
+#include <scenenodes/CRostrumNode.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <gameclasses/IGameLogic.h>
 #include <scenenodes/CWorldNode.h>
@@ -12,6 +13,7 @@
 #include <exception>
 #include <CGlobal.h>
 #include <ode/ode.h>
+#include <algorithm>
 
 #define MAX_CONTACTS 16
 const double GRAD_PI = 180.0 / 3.1415926535897932384626433832795;
@@ -240,6 +242,7 @@ namespace dustbin {
       }
       else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
         if (m_pWorld != nullptr) {
+
           scenenodes::CPhysicsNode* l_pNode = reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode);
 
           CObject *l_pObject = nullptr;
@@ -289,6 +292,9 @@ namespace dustbin {
             m_mTouchMap[p->getParent()->getID()].push_back(*it);
           }
         }
+      }
+      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RostrumNodeId) {
+        m_pRostrumNode = reinterpret_cast<scenenodes::CRostrumNode *>(a_pNode);
       }
 
       for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
@@ -453,7 +459,6 @@ namespace dustbin {
               p->m_vSideVector.normalize();
 
               if (l_fLinVel > 5.0f) {
-                printf("Activate (1)\n");
                 p->m_bActive = true;
               }
             }
@@ -518,6 +523,39 @@ namespace dustbin {
               /*if (m_pPhysicsScript != nullptr)
                 m_pPhysicsScript->onPlayerStunned(p->m_iId, 0, m_iWorldStep);*/
             }
+
+            if (m_pRostrumNode != nullptr && p->m_eState == CObjectMarble::enMarbleState::Finished && p->m_iFinishTime > 0) {
+              if (m_pWorld->m_iWorldStep > p->m_iFinishTime + 240) {
+                irr::core::vector3df l_cPos = m_pRostrumNode->getRostrumPosition(p->m_iPosition - 1);
+                printf("%2i --> %.2f, %.2f, %.2f\n", p->m_iPosition - 1, l_cPos.X, l_cPos.Y, l_cPos.Z);
+
+                p->m_iFinishTime = -1;
+                p->m_vPosition = l_cPos;
+
+                dQuaternion q;
+                q[0] = -m_pRostrumNode->getAbsoluteTransformation().getRotationDegrees().Y * M_PI / 180.0;
+                q[1] = 0.0;
+                q[2] = 1.0;
+                q[3] = 0.0;
+
+                dBodySetLinearVel (p->m_cBody, 0.0, 0.0, 0.0);
+                dBodySetQuaternion(p->m_cBody, q);
+                dBodySetAngularVel(p->m_cBody, 0.0, 0.0, 0.0);
+                dBodySetPosition(p->m_cBody, l_cPos.X, l_cPos.Y, l_cPos.Z);
+              }
+            }
+            /*if (m_pRostrum != nullptr && p->m_eState == CObjectMarble::enMarbleState::Finished && p->m_iFinishTime > 0 && m_pWorld->m_iWorldStep > p->m_iFinishTime + 280) {
+              p->m_iFinishTime = -1;
+              dBodySetLinearVel (p->m_cBody, 0.0, 0.0, 0.0);
+              dBodySetAngularVel(p->m_cBody, 0.0, 0.0, 0.0);
+
+              int l_iIndex = p->m_iPosition - 1;
+
+              if (l_iIndex >= 0 && l_iIndex < m_vRostrumPos.size()) {
+                p->m_vPosition = m_vRostrumPos[l_iIndex];
+                dBodySetPosition(p->m_cBody, p->m_vPosition.X, p->m_vPosition.Y, p->m_vPosition.Z);
+              }
+            }*/
 
             sendMarblemoved(p->m_iId,
               p->m_vPosition, 
@@ -683,11 +721,12 @@ namespace dustbin {
     }
 
     CDynamicThread::CDynamicThread(scenenodes::CWorldNode* a_pWorld, const std::vector<gameclasses::SPlayer*>& a_vPlayers, int a_iLaps, std::vector<scenenodes::STriggerVector> a_vTimerActions, std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters) :
-      m_eGameState(enGameState::Countdown),
-      m_pWorld     (nullptr),
-      m_bPaused    (false),
-      m_fGridAngle (0.0f),
-      m_pGameLogic (nullptr)
+      m_eGameState  (enGameState::Countdown),
+      m_pWorld      (nullptr),
+      m_bPaused     (false),
+      m_fGridAngle  (0.0f),
+      m_pGameLogic  (nullptr),
+      m_pRostrumNode(nullptr)
     {
       createPhysicsObjects(a_pWorld);
 
@@ -795,7 +834,6 @@ namespace dustbin {
         }
         else {
           if (true) { // abs(a_CtrlX > 32) || abs(a_CtrlY > 32)) {
-            printf("Activate (2)\n");
             m_aMarbles[l_iIndex]->m_bActive = true;
           }
         }
@@ -871,8 +909,25 @@ namespace dustbin {
     */
     void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
-      if (m_pGameLogic != nullptr)
-        m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint);
+      if (m_pGameLogic != nullptr) {
+        m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
+
+        const std::vector<data::SRacePlayer *> l_vPositions = m_pGameLogic->getRacePositions();
+
+        int l_iPos = 1;
+        for (std::vector<data::SRacePlayer*>::const_iterator it = l_vPositions.begin(); it != l_vPositions.end(); it++) {
+          sendRaceposition((*it)->m_iId, l_iPos, (*it)->m_iLapNo, (*it)->m_iDeficit, m_pOutputQueue);
+
+          int l_iIndex = (*it)->m_iId - 10000;
+          if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+            m_aMarbles[l_iIndex]->m_iPosition = l_iPos;
+          }
+
+          l_iPos++;
+        }
+
+        printf("*****\n");
+      }
     }
 
     /**
@@ -914,6 +969,8 @@ namespace dustbin {
       int l_iIndex = a_iMarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Finished;
+        m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
+
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
 
         for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++)

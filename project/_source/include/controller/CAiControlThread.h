@@ -131,6 +131,15 @@ namespace dustbin {
         virtual void onPausechanged(bool a_Paused);
 
         /**
+        * This function receives messages of type "RacePosition"
+        * @param a_MarbleId ID of the marble
+        * @param a_Position Position of the marble
+        * @param a_Laps The current lap of the marble
+        * @param a_Deficit Deficit of the marble on the leader in steps
+        */
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit);
+
+        /**
         * The implementing object must implement this method. It is called when the thread start working
         */
         virtual void execute();

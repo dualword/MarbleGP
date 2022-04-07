@@ -16,6 +16,7 @@
 #include <scenenodes/CDustbinCamera.h>
 #include <shader/CShaderHandlerBase.h>
 #include <controller/CControllerAI.h>
+#include <scenenodes/CRostrumNode.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
 #include <sound/ISoundInterface.h>
@@ -111,6 +112,7 @@ namespace dustbin {
       m_bPaused      (false),
       m_pSoundIntf   (nullptr),
       m_pDynamics    (nullptr),
+      m_pRostrum     (nullptr),
       m_pShader      (nullptr),
       m_pCamAnimator (nullptr),
       m_pCamera      (nullptr),
@@ -593,6 +595,7 @@ namespace dustbin {
       }
 
       m_mCheckpoints.clear();
+      m_vCameras    .clear();
     }
 
     /**
@@ -730,58 +733,67 @@ namespace dustbin {
       // Player "0" always is the player in "view track" so we don't need
       // to adjust the textures in this case
       if (a_pViewPort != nullptr && a_pViewPort->m_iPlayer != 0) {
-        // Make marbles behind the marble node transparent
-        irr::core::vector3df l_cNormal   = (a_pViewPort->m_pCamera->getTarget() - a_pViewPort->m_pCamera->getAbsolutePosition()).normalize(),
-                             l_cPosition = a_pViewPort->m_pCamera->getTarget() + 0.1f * (a_pViewPort->m_pCamera->getAbsolutePosition() - a_pViewPort->m_pCamera->getTarget());
-        irr::core::plane3df  l_cPlane    = irr::core::plane3df(l_cPosition, l_cNormal);
+        if (a_pViewPort->m_pPlayer->m_eState != gameclasses::SMarbleNodes::enMarbleState::Finished) {
+          // Make marbles behind the marble node transparent
+          irr::core::vector3df l_cNormal   = (a_pViewPort->m_pCamera->getTarget() - a_pViewPort->m_pCamera->getAbsolutePosition()).normalize(),
+                               l_cPosition = a_pViewPort->m_pCamera->getTarget() + 0.1f * (a_pViewPort->m_pCamera->getAbsolutePosition() - a_pViewPort->m_pCamera->getTarget());
+          irr::core::plane3df  l_cPlane    = irr::core::plane3df(l_cPosition, l_cNormal);
 
-        for (int i = 0; i < 16; i++) {
-          if (m_aMarbles[i] != nullptr) {
-            bool l_bRespawn = m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn1 || m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2,
-                 l_bOther   = m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0;
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i] != nullptr) {
+              bool l_bRespawn = m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn1 || m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2,
+                   l_bOther   = m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0;
 
-            if (l_bOther || l_bRespawn) {
-              bool l_bBehind = l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK;
-              if (l_bBehind || l_bRespawn) {
-                irr::scene::IMeshBuffer* l_pBuffer = m_aMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0);
-                m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+              if (l_bOther || l_bRespawn) {
+                bool l_bBehind = l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK;
+                if (l_bBehind || l_bRespawn) {
+                  irr::scene::IMeshBuffer* l_pBuffer = m_aMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0);
+                  m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
-                irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
+                  irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
 
-                // The "Behind Camera" Alpha Value
-                irr::u32 l_iAlpha = 96;
+                  // The "Behind Camera" Alpha Value
+                  irr::u32 l_iAlpha = 96;
 
-                // If the marble is respawning ..
-                if (l_bRespawn) {
-                  // .. we calculate a factor ..
-                  irr::f32 l_fFactor = 1.0f - (irr::f32)(m_iStep - m_aMarbles[i]->m_iRespawnStart) / 120.0f;
-                  if (l_fFactor < 0.1f)
-                    l_fFactor = 0.1f;
+                  // If the marble is respawning ..
+                  if (l_bRespawn) {
+                    // .. we calculate a factor ..
+                    irr::f32 l_fFactor = 1.0f - (irr::f32)(m_iStep - m_aMarbles[i]->m_iRespawnStart) / 120.0f;
+                    if (l_fFactor < 0.1f)
+                      l_fFactor = 0.1f;
 
-                  l_iAlpha = (irr::u32)(255.0f * l_fFactor);
+                    l_iAlpha = (irr::u32)(255.0f * l_fFactor);
 
-                  // .. and if the marble is behind the camera we make sure
-                  // the factor does not exceed "96"
-                  if (l_iAlpha > 96 && l_bBehind)
-                    l_iAlpha = 96;
+                    // .. and if the marble is behind the camera we make sure
+                    // the factor does not exceed "96"
+                    if (l_iAlpha > 96 && l_bBehind)
+                      l_iAlpha = 96;
+                  }
+
+                  for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
+                    l_pVertices[j].Color.setAlpha(l_iAlpha);
                 }
-
-                for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
-                  l_pVertices[j].Color.setAlpha(l_iAlpha);
+                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
               }
               else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
             }
-            else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
+          }
+
+          // Set the material "0" of the next checkpoints to green, flash materials "2" and "3"
+          for (std::vector<irr::scene::IMeshSceneNode*>::iterator it = a_pViewPort->m_vNextCheckpoints.begin(); it != a_pViewPort->m_vNextCheckpoints.end(); it++) {
+            irr::scene::IMeshSceneNode* p = *it;
+
+            if (p->getMaterialCount() > 0) {
+              int l_iIndex = ((m_iStep % 240) < 120) ? 1 : 2;
+              p->getMaterial(0).setTexture(0, m_pCheckpointTextures[l_iIndex]);
+            }
           }
         }
-
-        // Set the material "0" of the next checkpoints to green, flash materials "2" and "3"
-        for (std::vector<irr::scene::IMeshSceneNode*>::iterator it = a_pViewPort->m_vNextCheckpoints.begin(); it != a_pViewPort->m_vNextCheckpoints.end(); it++) {
-          irr::scene::IMeshSceneNode* p = *it;
-
-          if (p->getMaterialCount() > 0) {
-            int l_iIndex = ((m_iStep % 240) < 120) ? 1 : 2;
-            p->getMaterial(0).setTexture(0, m_pCheckpointTextures[l_iIndex]);
+        else {
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i] != nullptr) {
+              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
+            }
           }
         }
       }
@@ -881,6 +893,31 @@ namespace dustbin {
               // Blue overlay for stunned players
               case gameclasses::SMarbleNodes::enMarbleState::Stunned:
                 m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), it->second.m_cRect);
+                break;
+
+              case gameclasses::SMarbleNodes::enMarbleState::Finished:
+                if (m_pRostrum != nullptr) {
+                  int l_iStepSince = m_iStep - it->second.m_pPlayer->m_iStateChange;
+                  irr::f32 l_fFactor = 0.0f;
+
+                  if (l_iStepSince > 180) {
+                    l_fFactor = 1.0f - ((irr::f32)(l_iStepSince - 180)) / 100.0f;
+                    if (l_fFactor < 0.0f) l_fFactor = 0.0f;
+                  }
+                  else if (l_iStepSince > 160) {
+                    it->second.m_pCamera->setPosition(m_pRostrum->getCameraPosition());
+                    it->second.m_pCamera->setTarget(m_pRostrum->getAbsolutePosition() - irr::core::vector3df(0.0f, 15.0f, 0.0f));
+                    l_fFactor = 1.0f;
+                  }
+                  else if (l_iStepSince > 60) {
+                    l_fFactor = ((irr::f32)(l_iStepSince - 60)) / 100.0f;
+                    if (l_fFactor > 1.0f) {
+                      l_fFactor = 1.0f;
+                    }
+                  }
+
+                  m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
+                }
                 break;
 
               default:
@@ -1180,6 +1217,7 @@ namespace dustbin {
         if (p != nullptr) {
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Finished;
           p->m_bCamLink = false;
+          p->m_iStateChange = m_iStep;
           m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
         }
       }
@@ -1203,7 +1241,7 @@ namespace dustbin {
       int l_iId = a_MarbleId - 10000;
 
       if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr) {
-        printf("onCheckpoint (GameState): Marble %i, Checkpoint %i\n", a_MarbleId, a_Checkpoint);
+        // printf("onCheckpoint (GameState): Marble %i, Checkpoint %i\n", a_MarbleId, a_Checkpoint);
         gfx::SViewPort* l_pViewport = m_aMarbles[l_iId]->m_pViewport;
         if (l_pViewport != nullptr) {
           m_pSoundIntf->play2d(L"data/sounds/checkpoint.ogg", m_fSfxVolume, 0.0f);
@@ -1244,6 +1282,9 @@ namespace dustbin {
       if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_DustbinCameraId) {
         m_vCameras.push_back(reinterpret_cast<scenenodes::CDustbinCamera *>(a_pNode));
       }
+      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RostrumNodeId) {
+        m_pRostrum = reinterpret_cast<scenenodes::CRostrumNode *>(a_pNode);
+      }
 
       for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
         addStaticCameras(*it);
@@ -1256,6 +1297,18 @@ namespace dustbin {
     void CGameState::onPausechanged(bool a_Paused) {
       m_bPaused = a_Paused;
     }
+
+    /**
+    * This function receives messages of type "RacePosition"
+    * @param a_MarbleId ID of the marble
+    * @param a_Position Position of the marble
+    * @param a_Laps The current lap of the marble
+    * @param a_Deficit Deficit of the marble on the leader in steps
+    */
+    void CGameState::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit) {
+      printf("Race position update: %i, %i, %i, %i\n", a_MarbleId, a_Position, a_Laps, a_Deficit);
+    }
+
 
 #ifdef _OPENGL_ES
     /**

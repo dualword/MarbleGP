@@ -33,6 +33,7 @@ namespace dustbin {
     class CCheckpointNode;
     class CMyCameraAnimator;
     class CDustbinCamera;
+    class CRostrumNode;
   }
 
   namespace sound {
@@ -76,7 +77,9 @@ namespace dustbin {
 
         sound::ISoundInterface *m_pSoundIntf;
 
-        gameclasses::CDynamicThread* m_pDynamics;
+        gameclasses::CDynamicThread *m_pDynamics;
+
+        scenenodes::CRostrumNode *m_pRostrum;
 
         std::vector<gameclasses::SPlayer*> m_vPlayers; /**< The players of the game*/
 
@@ -249,6 +252,15 @@ namespace dustbin {
          * @param a_LapNo Number of the started lap
          */
         virtual void onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) override;
+
+        /**
+        * This function receives messages of type "RacePosition"
+        * @param a_MarbleId ID of the marble
+        * @param a_Position Position of the marble
+        * @param a_Laps The current lap of the marble
+        * @param a_Deficit Deficit of the marble on the leader in steps
+        */
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit);
 
         /**
          * This function receives messages of type "PauseChanged"

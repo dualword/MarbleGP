@@ -337,6 +337,8 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
     WriteFileHeader(l_Header)
     WriteFileHeader(l_Source)
     
+    l_Header.write("#pragma once\n\n")
+    
     l_Header.write("#include <irrlicht.h>\n")
     
     l_Header.write("#include <messages/IMessage.h>\n")

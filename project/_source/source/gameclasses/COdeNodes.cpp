@@ -338,6 +338,7 @@ namespace dustbin {
       m_bBrake(false),
       m_iLastCp(0),
       m_iLapNo(0),
+      m_iFinishTime(0),
       m_iCtrlX(0),
       m_iCtrlY(0)
     {

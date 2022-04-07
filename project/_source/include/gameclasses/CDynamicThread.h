@@ -17,6 +17,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace scenenodes {
+    class CRostrumNode;
+  }
+
   namespace gameclasses {
     /**
     * Foreward declaration of the CWorld object which
@@ -53,6 +57,8 @@ namespace dustbin {
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
         IGameLogic *m_pGameLogic;
+
+        scenenodes::CRostrumNode *m_pRostrumNode;
 
         std::vector<scenenodes::STriggerVector> m_vTimerActions;
         std::vector<gameclasses::CMarbleCounter> m_vMarbleCounters; /**< A list of marble counters */

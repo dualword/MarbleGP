@@ -146,6 +146,25 @@ namespace dustbin {
 
       std::string toString();
     };
+
+    /**
+    * @class SRacePlayer
+    * @author Christian Keimel
+    * This data structure holds all data to keep up with
+    * a player during a race in the dynamics thread
+    */
+    struct SRacePlayer {
+      int m_iId,        /**< Marble ID */
+        m_iCpCount,   /**< Number of passed checkpoints*/
+        m_iStunned,   /**< Stunned counter */
+        m_iRespawn,   /**< Respawn counter */
+        m_iLapNo,     /**< The current lap */
+        m_iDeficit,   /**< Deficit to the leader */
+        m_iLastCp;    /**< The time of the last checkpoint */
+
+      SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficit(0), m_iLastCp(0) {
+      }
+    };
   }
 }
 

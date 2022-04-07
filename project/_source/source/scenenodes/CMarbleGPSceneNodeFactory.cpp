@@ -8,6 +8,7 @@
 #include <scenenodes/CDustbinCamera.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CRespawnNode.h>
+#include <scenenodes/CRostrumNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CJointNode.h>
 #include <scenenodes/CDustbinId.h>
@@ -70,6 +71,10 @@ namespace dustbin {
           p = new CDustbinCamera(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId:
+          p = new CRostrumNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
+          break;
+
         default:
           break;
       }
@@ -85,7 +90,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 11;
+      return 12;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -101,6 +106,7 @@ namespace dustbin {
         case  8: return g_MarbleTouchNodeName;
         case  9: return g_AiNodeName;
         case 10: return g_DustbinCameraNodeName;
+        case 11: return g_RostrumNodeName;
       }
 
       return nullptr;
@@ -119,6 +125,7 @@ namespace dustbin {
         case  8: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
         case  9: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
         case 10: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
+        case 11: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -159,6 +166,9 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId:
           return g_DustbinCameraNodeName;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId:
+          return g_RostrumNodeName;
+
         default:
           return nullptr;
       }
@@ -189,6 +199,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
       else if (l_sName == g_DustbinCameraNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
+      else if (l_sName == g_RostrumNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

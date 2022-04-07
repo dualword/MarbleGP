@@ -330,6 +330,9 @@
     <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp">
       <Filter>Quelldateien\controller</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -595,6 +598,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\CAiControlThread.h">
       <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

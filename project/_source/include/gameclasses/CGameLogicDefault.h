@@ -2,6 +2,7 @@
 #pragma once
 
 #include <gameclasses/IGameLogic.h>
+#include <data/CDataStructs.h>
 
 namespace dustbin {
   namespace gameclasses {
@@ -11,22 +12,17 @@ namespace dustbin {
     * This is the default game logic for standard races
     */
     class CGameLogicDefault : public IGameLogic {
+      public:
+
       private:
-        struct SPlayer {
-          int m_iId,        /**< Marble ID */
-              m_iCpCount,   /**< Number of passed checkpoints*/
-              m_iStunned,   /**< Stunned counter */
-              m_iRespawn,   /**< Respawn counter */
-              m_iLapNo;     /**< The current lap */
+        data::SRacePlayer m_aPlayers[16];   /**< Array with player data */
+        int               m_iPlayerCount,   /**< Number of players */
+                          m_iStepNo,        /**< The current simulation step */
+                          m_iLapCount;      /**< The number of laps */
 
-          SPlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0) {
-          }
-        };
+        std::vector<data::SRacePlayer *> m_vPositions;  /**< This vector is used to keep track of the positions in a race */
 
-        SPlayer m_aPlayers[16];   /**< Array with player data */
-        int     m_iPlayerCount,   /**< Number of players */
-                m_iStepNo,        /**< The current simulation step */
-                m_iLapCount;      /**< The number of laps */
+        bool m_bRaceFinished;   /**< Will turn true once the first player has finished, thereafter all players will have finished when ending their lap */
 
       public:
         CGameLogicDefault();
@@ -67,8 +63,9 @@ namespace dustbin {
         * Callback for checkpoint passes of the marbles
         * @param a_iMarble the ID of the marble
         * @param a_iCheckpoint the checkpoint ID
+        * @param a_iStep the current step
         */
-        virtual void onCheckpoint(int a_iMarble, int a_iCheckpoint);
+        virtual void onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep);
 
         /**
         * A method called when a marble is stunned
@@ -81,6 +78,19 @@ namespace dustbin {
         * @param a_iMarble the marble ID
         */
         virtual void onRespawn(int a_iMarble);
+
+        /**
+        * Get the data of all the players in a race
+        * @param a_iCount [out] the number of players
+        * @return the array of the players
+        */
+        virtual const data::SRacePlayer *getPlayersOfRace(int &a_iCount);
+
+        /**
+        * Get the current race positions
+        * @return the current race positions
+        */
+        virtual const std::vector<data::SRacePlayer *> getRacePositions();
     };
   }
 }

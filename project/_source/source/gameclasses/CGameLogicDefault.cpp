@@ -1,10 +1,11 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <gameclasses/CGameLogicDefault.h>
+#include <algorithm>
 
 namespace dustbin {
   namespace gameclasses {
-    CGameLogicDefault::CGameLogicDefault() : m_iPlayerCount(0), m_iStepNo(0), m_iLapCount(0) {
+    CGameLogicDefault::CGameLogicDefault() : m_iPlayerCount(0), m_iStepNo(0), m_iLapCount(0), m_bRaceFinished(false) {
     }
 
     CGameLogicDefault::~CGameLogicDefault() {
@@ -33,6 +34,7 @@ namespace dustbin {
     void CGameLogicDefault::addMarble(int a_iMarble) {
       if (m_iPlayerCount < 16) {
         m_aPlayers[m_iPlayerCount].m_iId = a_iMarble;
+        m_vPositions.push_back(&m_aPlayers[m_iPlayerCount]);
         m_iPlayerCount++;
       }
     }
@@ -47,8 +49,10 @@ namespace dustbin {
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
         m_aPlayers[l_iId].m_iLapNo++;
 
-        if (m_aPlayers[l_iId].m_iLapNo > m_iLapCount)
+        if (m_aPlayers[l_iId].m_iLapNo > m_iLapCount || m_bRaceFinished) {
+          m_bRaceFinished = true;
           return true;
+        }
       }
 
       return false;
@@ -71,10 +75,17 @@ namespace dustbin {
     * @param a_iMarble the ID of the marble
     * @param a_iCheckpoint the checkpoint ID
     */
-    void CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint) {
+    void CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
         m_aPlayers[l_iId].m_iCpCount++;
+
+        std::sort(m_vPositions.begin(), m_vPositions.end(), [](data::SRacePlayer* p1, data::SRacePlayer* p2) {
+          if (p1->m_iCpCount != p2->m_iCpCount)
+            return p1->m_iCpCount > p2->m_iCpCount;
+          else
+            return p1->m_iLastCp < p2->m_iLastCp;
+        });
       }
     }
 
@@ -99,5 +110,23 @@ namespace dustbin {
         m_aPlayers[l_iId].m_iRespawn++;
       }
     }
-  }
+
+    /**
+    * Get the data of all the players in a race
+    * @param a_iCount [out] the number of players
+    * @return the array of the players
+    */
+    const data::SRacePlayer* CGameLogicDefault::getPlayersOfRace(int& a_iCount) {
+      a_iCount = m_iPlayerCount;
+      return m_aPlayers;
+    }
+
+    /**
+    * Get the current race positions
+    * @return the current race positions
+    */
+    const std::vector<data::SRacePlayer *> CGameLogicDefault::getRacePositions() {
+      return m_vPositions;
+    }
+ }
 }
