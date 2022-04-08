@@ -64,7 +64,6 @@ namespace dustbin {
       if (a_pNewManager == nullptr) a_pNewManager = SceneManager;
 
       CWorldNode* l_pNew = new CWorldNode(a_pNewParent, a_pNewManager, getNextSceneNodeId());
-      l_pNew->drop();
       return l_pNew;
     }
   }

@@ -222,12 +222,14 @@ namespace dustbin {
 
       irr::u32 l_iVertexIndexStart = a_iIndexV;
 
+      irr::core::vector3df l_cScale = a_cMatrix.getScale();
+
       for (irr::u32 i = 0; i < a_pBuffer->getVertexCount(); i++) {
         irr::core::vector3df l_cVec = l_pVertices[i].Pos;
 
-        m_vVertices.push_back((dReal)(l_cVec.X * a_cMatrix.getScale().X));
-        m_vVertices.push_back((dReal)(l_cVec.Y * a_cMatrix.getScale().Y));
-        m_vVertices.push_back((dReal)(l_cVec.Z * a_cMatrix.getScale().Z));
+        m_vVertices.push_back((dReal)(l_cVec.X * l_cScale.X));
+        m_vVertices.push_back((dReal)(l_cVec.Y * l_cScale.Y));
+        m_vVertices.push_back((dReal)(l_cVec.Z * l_cScale.Z));
         m_vVertices.push_back(0.0);
 
         a_iIndexV++;
@@ -256,6 +258,7 @@ namespace dustbin {
 
         irr::u32 l_iIndexV = 0;
 
+        l_pNode->updateAbsolutePosition();
         irr::core::CMatrix4<irr::f32> l_cMatrix = l_pNode->getAbsoluteTransformation();
 
         if (m_bStatic) {
@@ -273,10 +276,15 @@ namespace dustbin {
         dGeomSetData(m_cGeom, this);
 
         if (m_bStatic) {
-          dGeomSetPosition(m_cGeom, (dReal)a_pNode->getAbsolutePosition().X, (dReal)a_pNode->getAbsolutePosition().Y, (dReal)a_pNode->getAbsolutePosition().Z);
+          a_pNode->getParent()->updateAbsolutePosition();
+
+          irr::core::vector3df l_cPos = a_pNode->getParent()->getAbsolutePosition();
+          irr::core::vector3df l_cRot = a_pNode->getParent()->getAbsoluteTransformation().getRotationDegrees();
+
+          dGeomSetPosition(m_cGeom, (dReal)l_cPos.X, (dReal)l_cPos.Y, (dReal)l_cPos.Z);
 
           dQuaternion l_vRot;
-          eulerToQuaternion(a_pNode->getParent()->getRotation(), l_vRot);
+          eulerToQuaternion(l_cRot, l_vRot);
           dGeomSetQuaternion(m_cGeom, l_vRot);
         }
         else {

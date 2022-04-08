@@ -33,7 +33,6 @@ namespace dustbin {
       l_pNew->setRotation(getRotation());
       l_pNew->setScale(getScale());
 
-      l_pNew->drop();
       return l_pNew;
     }
   }

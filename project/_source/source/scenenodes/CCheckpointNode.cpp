@@ -98,7 +98,6 @@ namespace dustbin {
 
       l_pNew->m_bFirstInLap = m_bFirstInLap;
 
-      l_pNew->drop();
       return l_pNew;
     }
   }

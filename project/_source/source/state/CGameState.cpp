@@ -576,8 +576,10 @@ namespace dustbin {
       m_pTouchControl = nullptr;
 #endif
 
-      if (m_pCamAnimator != nullptr)
+      if (m_pCamAnimator != nullptr) {
         m_pCamAnimator->drop();
+        m_pCamAnimator = nullptr;
+      }
 
       m_pSmgr->clear();
       m_pGui->clear();
@@ -907,6 +909,7 @@ namespace dustbin {
                   else if (l_iStepSince > 160) {
                     it->second.m_pCamera->setPosition(m_pRostrum->getCameraPosition());
                     it->second.m_pCamera->setTarget(m_pRostrum->getAbsolutePosition() - irr::core::vector3df(0.0f, 15.0f, 0.0f));
+                    it->second.m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
                     l_fFactor = 1.0f;
                   }
                   else if (l_iStepSince > 60) {

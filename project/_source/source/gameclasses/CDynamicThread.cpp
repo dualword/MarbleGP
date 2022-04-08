@@ -527,11 +527,11 @@ namespace dustbin {
             if (m_pRostrumNode != nullptr && p->m_eState == CObjectMarble::enMarbleState::Finished && p->m_iFinishTime > 0) {
               if (m_pWorld->m_iWorldStep > p->m_iFinishTime + 240) {
                 irr::core::vector3df l_cPos = m_pRostrumNode->getRostrumPosition(p->m_iPosition - 1);
-                printf("%2i --> %.2f, %.2f, %.2f\n", p->m_iPosition - 1, l_cPos.X, l_cPos.Y, l_cPos.Z);
 
                 p->m_iFinishTime = -1;
                 p->m_vPosition = l_cPos;
 
+                printf("**** %.2f\n", m_pRostrumNode->getAbsoluteTransformation().getRotationDegrees().Y);
                 dQuaternion q;
                 q[0] = -m_pRostrumNode->getAbsoluteTransformation().getRotationDegrees().Y * M_PI / 180.0;
                 q[1] = 0.0;
@@ -544,18 +544,6 @@ namespace dustbin {
                 dBodySetPosition(p->m_cBody, l_cPos.X, l_cPos.Y, l_cPos.Z);
               }
             }
-            /*if (m_pRostrum != nullptr && p->m_eState == CObjectMarble::enMarbleState::Finished && p->m_iFinishTime > 0 && m_pWorld->m_iWorldStep > p->m_iFinishTime + 280) {
-              p->m_iFinishTime = -1;
-              dBodySetLinearVel (p->m_cBody, 0.0, 0.0, 0.0);
-              dBodySetAngularVel(p->m_cBody, 0.0, 0.0, 0.0);
-
-              int l_iIndex = p->m_iPosition - 1;
-
-              if (l_iIndex >= 0 && l_iIndex < m_vRostrumPos.size()) {
-                p->m_vPosition = m_vRostrumPos[l_iIndex];
-                dBodySetPosition(p->m_cBody, p->m_vPosition.X, p->m_vPosition.Y, p->m_vPosition.Z);
-              }
-            }*/
 
             sendMarblemoved(p->m_iId,
               p->m_vPosition, 

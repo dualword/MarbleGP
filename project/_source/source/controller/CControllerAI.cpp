@@ -137,6 +137,7 @@ namespace dustbin {
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
 
         irr::core::vector3df l_cPoint = getLookAhead(0.0f);
+        bool l_bRespawn = l_cPoint.getDistanceFromSQ(m_cPos) > 10000;
         l_cMatrix.transformVect(l_cPoint);
 
         irr::core::vector3df l_cOffset = getLookAhead(m_fVel);
@@ -224,7 +225,7 @@ namespace dustbin {
         // printf("%5i%5i %s %5.2f\n", m_iCtrlX, m_iCtrlY, m_bBrake ? "B" : " ", m_fLastOffset - l_fOffset);
         m_fLastOffset = l_fOffset;
 
-        return new messages::CMarbleControl(m_iMarbleId, m_iCtrlX, m_iCtrlY, m_bBrake, false, false);
+        return new messages::CMarbleControl(m_iMarbleId, m_iCtrlX, m_iCtrlY, m_bBrake, false, l_bRespawn);
       }
 
       return nullptr;
