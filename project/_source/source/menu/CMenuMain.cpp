@@ -56,7 +56,7 @@ namespace dustbin {
 
               for (int i = 0; i < (m_pState->getGlobal()->getSetting("show_ai_data") == "1" ? 1 : 16); i++) {
                 data::SPlayerData l_cData;
-                l_cData.m_eType     = i == 0 ? data::enPlayerType::Debug_Ai : data::enPlayerType::Ai;
+                l_cData.m_eType     = data::enPlayerType::Ai;
                 l_cData.m_iGridPos  = i;
                 l_cData.m_iPlayerId = i + 1;
                 l_cData.m_sName     = "AI Demo Player #" + std::to_string(i + 1);

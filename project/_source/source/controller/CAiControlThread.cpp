@@ -11,9 +11,17 @@ namespace dustbin {
     */
     void CAiControlThread::onStepmsg(irr::u32 a_StepNo) {
       for (int i = 0; m_aControllers[i] != nullptr; i++) {
-        messages::CMarbleControl *p = m_aControllers[i]->getControlMessage();
-        m_pDynamicsIn->postMessage(p);
-        delete p;
+        irr::s32 l_iMarbleId = -1;
+        irr::s8  l_iCtrlX    = 0;
+        irr::s8  l_iCtrlY    = 0;
+        bool     l_bBrake    = false;
+        bool     l_bRearView = false;
+        bool     l_bRespawn  = false;
+
+        if (m_aControllers[i]->getControlMessage(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn)) {
+          messages::CMarbleControl p = messages::CMarbleControl(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
+          m_pDynamicsIn->postMessage(&p);
+        }
       }
     }
 

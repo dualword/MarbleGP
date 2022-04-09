@@ -25,6 +25,8 @@ namespace dustbin {
 
       data::enPlayerType m_eType;
 
+      data::SPlayerData::enAiHelp m_eAiHelp;
+
       gameclasses::SMarbleNodes *m_pMarble;  /**< The marble of the player */
 
       controller::IController* m_pController;
@@ -60,7 +62,7 @@ namespace dustbin {
       * @param a_sController the controller configuration string of the player
       * @param a_pMarble the marble of the player
       */
-      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) {
+      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) {
         m_iPlayer     = a_iPlayer;
         m_sName       = a_sName;
         m_sTexture    = a_sTexture;
@@ -68,6 +70,7 @@ namespace dustbin {
         m_sController = a_sController;
         m_pController = nullptr;
         m_eType       = a_eType;
+        m_eAiHelp     = a_eAiHelp;
 
         if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
           m_iId = m_pMarble->m_pPositional->getID();

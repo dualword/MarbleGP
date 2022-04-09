@@ -5,11 +5,18 @@
 
 #include <controller/CControllerGame.h>
 #include <controller/IController.h>
+#include <data/CDataStructs.h>
 #include <threads/IQueue.h>
 #include <string>
 
 namespace dustbin {
+  namespace scenenodes {
+    class CAiNode;
+  }
   namespace controller {
+
+    class CControllerAI;
+
     /**
     * @class CMarbleController
     * @author Christian Keimel
@@ -17,11 +24,15 @@ namespace dustbin {
     */
     class CMarbleController : public IController {
       protected:
-        CControllerGame* m_pController;
+        CControllerGame *m_pController;
+        CControllerAI   *m_pAiControls;
         int              m_iMarbleId;
+        
+        data::SPlayerData::enAiHelp  m_eAiHelp;
+        scenenodes::CAiNode         *m_pAiNode;
 
       public:
-        CMarbleController(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue);
+        CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue);
 
         virtual ~CMarbleController();
 
@@ -36,6 +47,12 @@ namespace dustbin {
         * @param a_cEvent the Irrlicht event
         */
         virtual void update(const irr::SEvent& a_cEvent);
+
+        virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos);
+
+        virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp);
+
+        virtual void onMarbleRespawn(int a_iMarbleId);
     };
   }
 }

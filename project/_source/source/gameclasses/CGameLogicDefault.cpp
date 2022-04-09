@@ -5,7 +5,7 @@
 
 namespace dustbin {
   namespace gameclasses {
-    CGameLogicDefault::CGameLogicDefault() : m_iPlayerCount(0), m_iStepNo(0), m_iLapCount(0), m_bRaceFinished(false) {
+    CGameLogicDefault::CGameLogicDefault() : m_iPlayerCount(0), m_iStepNo(0), m_iLapCount(0), m_iCpPerLap(-1), m_iLapNo(0), m_bRaceFinished(false) {
     }
 
     CGameLogicDefault::~CGameLogicDefault() {
@@ -49,6 +49,15 @@ namespace dustbin {
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
         m_aPlayers[l_iId].m_iLapNo++;
 
+        if (m_iLapNo < m_aPlayers[l_iId].m_iLapNo)
+          m_iLapNo = m_aPlayers[l_iId].m_iLapNo;
+
+        // The first marble that completes a lap
+        // shows us how many checkpoints a lap has
+        if (m_iCpPerLap == -1 && m_aPlayers[l_iId].m_iLapNo > 1) {
+          m_iCpPerLap = m_aPlayers[l_iId].m_iCpCount;
+        }
+
         if (m_aPlayers[l_iId].m_iLapNo > m_iLapCount || m_bRaceFinished) {
           m_bRaceFinished = true;
           return true;
@@ -78,6 +87,18 @@ namespace dustbin {
     void CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
+        while (m_vCpTimes.size() <= m_aPlayers[l_iId].m_iCpCount) {
+          m_vCpTimes.push_back(-1);
+        }
+
+        if (m_vCpTimes[m_aPlayers[l_iId].m_iCpCount] == -1) {
+          m_vCpTimes[m_aPlayers[l_iId].m_iCpCount] = a_iStep;
+          m_aPlayers[l_iId].m_iDeficit = 0;
+        }
+        else {
+          m_aPlayers[l_iId].m_iDeficit = a_iStep - m_vCpTimes[m_aPlayers[l_iId].m_iCpCount];
+        }
+
         m_aPlayers[l_iId].m_iCpCount++;
 
         std::sort(m_vPositions.begin(), m_vPositions.end(), [](data::SRacePlayer* p1, data::SRacePlayer* p2) {

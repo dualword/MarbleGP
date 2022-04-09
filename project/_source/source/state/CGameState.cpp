@@ -309,6 +309,7 @@ namespace dustbin {
           l_cPlayers.m_vPlayers[i].m_sName,
           l_cPlayers.m_vPlayers[i].m_sTexture,
           l_cPlayers.m_vPlayers[i].m_sControls,
+          l_cPlayers.m_vPlayers[i].m_eAiHelp,
           l_pMarble,
           l_cPlayers.m_vPlayers[i].m_eType
         );
@@ -507,18 +508,13 @@ namespace dustbin {
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
           if ((*it)->m_eType == data::enPlayerType::Local)
-            (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, reinterpret_cast<scenenodes::CAiNode *>(l_pAiNode));
+            (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, (*it)->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
           else if ((*it)->m_eType == data::enPlayerType::Ai) {
             if (m_pAiThread == nullptr) {
               m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
             }
 
             m_pAiThread->addAiMarble((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
-          }
-          else if ((*it)->m_eType == data::enPlayerType::Debug_Ai) {
-             controller::CControllerAI *p = reinterpret_cast<controller::CControllerAI *>(l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), "ai_player", reinterpret_cast<scenenodes::CAiNode *>(l_pAiNode)));
-             p->setDebug(CMainClass::getInstance()->getSetting("show_ai_data") == "1");
-             (*it)->m_pController = p;
           }
         }
 

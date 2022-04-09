@@ -8,7 +8,7 @@
 namespace dustbin {
   namespace controller {
     CControllerAI::CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode) : 
-      CMarbleController(a_iMarbleId, a_sControls, a_pQueue), 
+      m_iMarbleId  (a_iMarbleId),
       m_fVel       (0.0f),
       m_iLastChange(0),
       m_fLastOffset(0.0f),
@@ -88,18 +88,6 @@ namespace dustbin {
       return irr::core::vector3df(0.0f);
     }
 
-    /**
-    * This message must be implemented by all descendants. If called
-    * it posts a control message to the queue.
-    */
-    void CControllerAI::postControlMessage() {
-      if (m_pQueue != nullptr) {
-        messages::CMarbleControl *p = getControlMessage();
-        m_pQueue->postMessage(p);
-        delete p;
-      }
-    }
-
     void CControllerAI::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cNewPos) {
     }
 
@@ -125,19 +113,26 @@ namespace dustbin {
       }
     }
 
-    messages::CMarbleControl *CControllerAI::getControlMessage() { 
+    bool CControllerAI::getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) { 
+      bool l_bRespawn = false;
+
       if (m_iLastChange > 1200) {
         m_pCurrent = nullptr;
         printf("Search for new AI path!\n");
+        selectClosestLink();
       }
-      else if (m_pCurrent != nullptr) {
+
+      if (m_pCurrent == nullptr)
+        return false;
+
+      if (m_pCurrent != nullptr) {
         std::vector<irr::core::line3df> l_vDebug;
 
         irr::core::matrix4 l_cMatrix;
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
 
         irr::core::vector3df l_cPoint = getLookAhead(0.0f);
-        bool l_bRespawn = l_cPoint.getDistanceFromSQ(m_cPos) > 10000;
+        l_bRespawn = l_cPoint.getDistanceFromSQ(m_cPos) > 10000;
         l_cMatrix.transformVect(l_cPoint);
 
         irr::core::vector3df l_cOffset = getLookAhead(m_fVel);
@@ -224,11 +219,16 @@ namespace dustbin {
 
         // printf("%5i%5i %s %5.2f\n", m_iCtrlX, m_iCtrlY, m_bBrake ? "B" : " ", m_fLastOffset - l_fOffset);
         m_fLastOffset = l_fOffset;
-
-        return new messages::CMarbleControl(m_iMarbleId, m_iCtrlX, m_iCtrlY, m_bBrake, false, l_bRespawn);
       }
 
-      return nullptr;
+      a_iMarbleId = m_iMarbleId;
+      a_iCtrlX    = m_iCtrlX;
+      a_iCtrlY    = m_iCtrlY;
+      a_bBrake    = m_bBrake;
+      a_bRearView = false;
+      a_bRespawn  = l_bRespawn;
+
+      return true;
     }
 
     void CControllerAI::setDebug(bool a_bDebug) {

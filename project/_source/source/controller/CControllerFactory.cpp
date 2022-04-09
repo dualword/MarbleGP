@@ -13,18 +13,13 @@ namespace dustbin {
     * Create a controller from the configuration string
     * @returns a new controller instance
     */
-    IController* CControllerFactory::createController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode) {
-      if (a_sControls == "ai_player") {
-        return new CControllerAI(a_iMarbleId, a_sControls, m_pQueue, a_pAiNode);
-      }
-      else {
-        messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sControls.c_str());
+    IController* CControllerFactory::createController(int a_iMarbleId, const std::string& a_sControls, data::SPlayerData::enAiHelp a_eAiHelp, scenenodes::CAiNode *a_pAiNode) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sControls.c_str());
 
-        std::string l_sHead = l_cSerializer.getString();
+      std::string l_sHead = l_cSerializer.getString();
 
-        if (l_sHead == "DustbinController") {
-          return new CMarbleController(a_iMarbleId, a_sControls, m_pQueue);
-        }
+      if (l_sHead == "DustbinController") {
+        return new CMarbleController(a_iMarbleId, a_sControls, a_pAiNode, a_eAiHelp, m_pQueue);
       }
 
       return nullptr;

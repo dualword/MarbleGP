@@ -41,16 +41,17 @@ namespace dustbin {
 
       irr::gui::IGUIEditBox *m_pName; /**< The player name edit box */
 
-      irr::gui::IGUIStaticText *m_pControl,     /**< The label for type of controls */
-                               *m_pTextureType; /**< The label for type of texture */
+      irr::gui::IGUIStaticText *m_pControl;     /**< The label for type of controls */
+      irr::gui::IGUIStaticText *m_pTextureType; /**< The label for type of texture */
+      irr::gui::IGUIStaticText *m_pAiHelp;      /**< The label for the AI help level */
 
-      gui::CMenuButton *m_pDelete,      /**< The "remove profile" button */
-                       *m_pControls,    /**< The "edit controls" button */
-                       *m_pTexture,     /**< The "edit texture" button */
-                       *m_pAddProfile;  /**< The "add profile" button */
+      gui::CMenuButton *m_pDelete;      /**< The "remove profile" button */
+      gui::CMenuButton *m_pControls;    /**< The "edit controls" button */
+      gui::CMenuButton *m_pTexture;     /**< The "edit texture" button */
+      gui::CMenuButton *m_pAddProfile;  /**< The "add profile" button */
 
-      irr::gui::IGUIImage *m_pYellow,   /**< The yellow warning image */
-                          *m_pRed;      /**< The red error image */
+      irr::gui::IGUIImage *m_pYellow;   /**< The yellow warning image */
+      irr::gui::IGUIImage *m_pRed;      /**< The red error image */
 
       data::SPlayerData m_cData;   /**< The Player Data structure linked to this profile UI */
 
@@ -60,6 +61,7 @@ namespace dustbin {
         m_pName       (nullptr),
         m_pControl    (nullptr),
         m_pTextureType(nullptr),
+        m_pAiHelp     (nullptr),
         m_pDelete     (nullptr),
         m_pControls   (nullptr),
         m_pTexture    (nullptr),
@@ -111,6 +113,16 @@ namespace dustbin {
             else
               m_pTextureType->setText(L"Default");
           }
+
+          if (m_pAiHelp != nullptr)
+            switch (m_cData.m_eAiHelp) {
+              case data::SPlayerData::enAiHelp::Off    : m_pAiHelp->setText(L"Off"    ); break;
+              case data::SPlayerData::enAiHelp::Display: m_pAiHelp->setText(L"Display"); break;
+              case data::SPlayerData::enAiHelp::Low    : m_pAiHelp->setText(L"Low"    ); break;
+              case data::SPlayerData::enAiHelp::Medium : m_pAiHelp->setText(L"Medium" ); break;
+              case data::SPlayerData::enAiHelp::High   : m_pAiHelp->setText(L"High"   ); break;
+              case data::SPlayerData::enAiHelp::Bot    : m_pAiHelp->setText(L"AI Bot" ); break;
+            }
         }
       }
     };
@@ -758,6 +770,7 @@ namespace dustbin {
                 m_aProfiles[i].m_pName        = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_name"     , irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
                 m_aProfiles[i].m_pControl     = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_controls", irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
                 m_aProfiles[i].m_pTextureType = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_texture" , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pAiHelp      = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_aihelp"  , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
                 m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_delete"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 m_aProfiles[i].m_pControls    = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_controls"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 m_aProfiles[i].m_pTexture     = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_texture"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));

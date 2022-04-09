@@ -16,13 +16,16 @@ namespace dustbin {
 
       private:
         data::SRacePlayer m_aPlayers[16];   /**< Array with player data */
-        int               m_iPlayerCount,   /**< Number of players */
-                          m_iStepNo,        /**< The current simulation step */
-                          m_iLapCount;      /**< The number of laps */
-
-        std::vector<data::SRacePlayer *> m_vPositions;  /**< This vector is used to keep track of the positions in a race */
+        int               m_iPlayerCount;   /**< Number of players */
+        int               m_iStepNo;        /**< The current simulation step */
+        int               m_iLapCount;      /**< The number of laps */
+        int               m_iCpPerLap;      /**< Checkpoints per lap */
+        int               m_iLapNo;         /**< The current lap (defined by the leader) */
 
         bool m_bRaceFinished;   /**< Will turn true once the first player has finished, thereafter all players will have finished when ending their lap */
+
+        std::vector<data::SRacePlayer *> m_vPositions;  /**< This vector is used to keep track of the positions in a race */
+        std::vector<int                > m_vCpTimes;    /**< Time when the leader has passed a checkpoint of the race */
 
       public:
         CGameLogicDefault();

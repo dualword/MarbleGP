@@ -2,6 +2,7 @@
 #pragma once
 
 #include <controller/IController.h>
+#include <data/CDataStructs.h>
 #include <threads/IQueue.h>
 #include <irrlicht.h>
 #include <string>
@@ -29,7 +30,7 @@ namespace dustbin {
         * Create a controller from the configuration string
         * @returns a new controller instance
         */
-        IController* createController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode);
+        IController* createController(int a_iMarbleId, const std::string& a_sControls, data::SPlayerData::enAiHelp a_eAiHelp, scenenodes::CAiNode *a_pAiNode);
     };
   }
 }

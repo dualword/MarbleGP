@@ -246,7 +246,7 @@ namespace dustbin {
 
       s += "  Texture: \"" + m_sTexture + "\"\n";
       s += "  Controls: \"" + m_sControls + "\"\n";
-      s += "  Grid Pos: " + std::to_string(m_iGridPos) + "\n";
+      s += "  Grid Pos: " + std::to_string(m_iGridPos) + "\n"; 
 
       s += "  Ai Help: ";
 

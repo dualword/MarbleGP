@@ -13,8 +13,7 @@ namespace dustbin {
     */
     enum class enPlayerType {
       Local,    /**< A local player (with his own viewport) */
-      Ai,       /**< An AI player (has no viewport) */
-      Debug_Ai  /**< Debug AI player (has no viewport, controller runs in game-state) */
+      Ai        /**< An AI player (has no viewport) */
     };
 
     /**

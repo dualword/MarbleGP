@@ -2,11 +2,19 @@
 
 #include <_generated/messages/CMessages.h>
 #include <controller/CMarbleController.h>
+#include <controller/CControllerAI.h>
 #include <messages/CSerializer64.h>
 
 namespace dustbin {
   namespace controller {
-    CMarbleController::CMarbleController(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue) : IController(a_pQueue), m_pController(nullptr), m_iMarbleId(a_iMarbleId) {
+    CMarbleController::CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue) : 
+      IController  (a_pQueue), 
+      m_pController(nullptr), 
+      m_pAiControls(nullptr), 
+      m_iMarbleId  (a_iMarbleId),
+      m_eAiHelp    (a_eAiHelp),
+      m_pAiNode    (a_pAiNode)
+    {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sControls.c_str());
 
       std::string l_sHead = l_cSerializer.getString();
@@ -15,11 +23,18 @@ namespace dustbin {
         m_pController = new controller::CControllerGame();
         m_pController->deserialize(a_sControls);
       }
+
+      if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
+        m_pAiControls = new CControllerAI(a_iMarbleId, "", a_pQueue, a_pAiNode);
+      }
     }
 
     CMarbleController::~CMarbleController() {
       if (m_pController != nullptr)
         delete m_pController;
+
+      if (m_pAiControls != nullptr)
+        delete m_pAiControls;
     }
 
     /**
@@ -31,10 +46,28 @@ namespace dustbin {
         irr::f32 l_fCtrlX = m_pController->getSteer(),
                  l_fCtrlY = m_pController->getThrottle();
 
-        irr::s8 l_iCtrlX = (irr::s8)(127.0f * (l_fCtrlX > 1.0f ? 1.0f : l_fCtrlX < -1.0f ? -1.0f : l_fCtrlX)),
-                l_iCtrlY = (irr::s8)(127.0f * (l_fCtrlY > 1.0f ? 1.0f : l_fCtrlY < -1.0f ? -1.0f : l_fCtrlY));
+        irr::s8 l_iCtrlX = (irr::s8)(127.0f * (l_fCtrlX > 1.0f ? 1.0f : l_fCtrlX < -1.0f ? -1.0f : l_fCtrlX));
+        irr::s8 l_iCtrlY = (irr::s8)(127.0f * (l_fCtrlY > 1.0f ? 1.0f : l_fCtrlY < -1.0f ? -1.0f : l_fCtrlY));
 
-        messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, m_pController->getBrake(), m_pController->getRearView(), m_pController->getRespawn());
+
+        bool l_bBrake    = m_pController->getBrake();
+        bool l_bRearView = m_pController->getRearView();
+        bool l_bRespawn  = m_pController->getRespawn();
+
+        if (m_pAiControls != nullptr) {
+          switch (m_eAiHelp) {
+            case data::SPlayerData::enAiHelp::Bot: {
+              irr::s32 i = 0;
+              m_pAiControls->getControlMessage(i, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
+              break;
+            }
+
+            default:
+              break;
+          }
+        }
+
+        messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
         m_pQueue->postMessage(&l_cMessage);
       }
     }
@@ -46,6 +79,21 @@ namespace dustbin {
     void CMarbleController::update(const irr::SEvent& a_cEvent) {
       if (m_pController != nullptr)
         m_pController->update(a_cEvent);
+    }
+
+    void CMarbleController::onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos) { 
+      if (m_pAiControls != nullptr)
+        m_pAiControls->onObjectMoved(a_iObjectId, a_cNewPos);
+    }
+
+    void CMarbleController::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) { 
+      if (m_pAiControls != nullptr)
+        m_pAiControls->onMarbleMoved(a_iMarbleId, a_cNewPos, a_cVelocity, a_cCameraPos, a_cCameraUp);
+    }
+
+    void CMarbleController::onMarbleRespawn(int a_iMarbleId) { 
+      if (m_pAiControls != nullptr)
+        m_pAiControls->onMarbleRespawn(a_iMarbleId);
     }
   }
 }

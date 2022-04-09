@@ -16,13 +16,14 @@ namespace dustbin {
     * @author Christian Keimel
     * This is the class that actually controls the AI marbles
     */
-    class CControllerAI : public CMarbleController {
+    class CControllerAI {
       private:
         irr::core::vector3df m_cPos;
         irr::core::vector3df m_cVel;
         irr::core::vector3df m_cCamPos;
         irr::core::vector3df m_cCamUp;
 
+        irr::s32 m_iMarbleId;
         irr::f32 m_fVel;
         irr::s32 m_iLastChange;
         irr::f32 m_fLastOffset;
@@ -51,12 +52,6 @@ namespace dustbin {
         virtual ~CControllerAI();
 
         /**
-        * This message must be implemented by all descendants. If called
-        * it posts a control message to the queue.
-        */
-        virtual void postControlMessage();
-
-        /**
         * Update the controller with the Irrlicht event
         * @param a_cEvent the Irrlicht event
         */
@@ -68,7 +63,7 @@ namespace dustbin {
 
         virtual void onMarbleRespawn(int a_iMarbleId);
 
-        messages::CMarbleControl *getControlMessage();
+        bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn);
 
         void setDebug(bool a_bDebug);
     };
