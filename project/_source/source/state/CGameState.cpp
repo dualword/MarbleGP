@@ -184,6 +184,7 @@ namespace dustbin {
       std::string l_sTrack = "data/levels/" + m_pGlobal->getGlobal("track") + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
+        m_pSmgr->clear();
         scenenodes::CSkyBoxFix* l_pFix = new scenenodes::CSkyBoxFix(m_pDrv, m_pSmgr, m_pFs, l_sTrack.c_str());
         m_pSmgr->loadScene(l_sTrack.c_str());
         l_pFix->hideOriginalSkybox(m_pSmgr->getRootSceneNode());
@@ -1309,7 +1310,7 @@ namespace dustbin {
     * @param a_Deficit Deficit of the marble on the leader in steps
     */
     void CGameState::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit) {
-      printf("Race position update: %i, %i, %i, %i\n", a_MarbleId, a_Position, a_Laps, a_Deficit);
+      // printf("Race position update: %i, %i, %i, %i\n", a_MarbleId, a_Position, a_Laps, a_Deficit);
     }
 
 

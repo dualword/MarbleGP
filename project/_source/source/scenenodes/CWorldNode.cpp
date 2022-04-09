@@ -21,12 +21,6 @@ namespace dustbin {
     }
 
     void CWorldNode::render() {
-      if (m_iChildren != Children.getSize()) {
-        m_cBox.reset(getPosition());
-
-        for (irr::core::list<irr::scene::ISceneNode*>::Iterator it = Children.begin(); it != Children.end(); it++)
-          m_cBox.addInternalBox((*it)->getBoundingBox());
-      }
     }
 
     const irr::core::aabbox3d<irr::f32>& CWorldNode::getBoundingBox() const {
