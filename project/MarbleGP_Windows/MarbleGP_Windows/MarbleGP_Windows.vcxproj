@@ -39,6 +39,7 @@
     <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinCheckbox.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CGameHUD.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp" />
@@ -91,6 +92,7 @@
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessages.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\IGameHUD.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +124,7 @@
     <ClInclude Include="..\..\_source\include\gui\CClipImage.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi.h" />
     <ClInclude Include="..\..\_source\include\gui\CDustbinCheckbox.h" />
+    <ClInclude Include="..\..\_source\include\gui\CGameHUD.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h" />
     <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h" />
@@ -182,6 +185,7 @@
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

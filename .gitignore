@@ -1028,3 +1028,9 @@
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CGuiAiDebug.obj
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CAiControlThread.obj
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CRostrumNode.obj
+/project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/532effd045d3549/CCONTROLLERFACTORY.ipch
+/project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/d3ac91047ed35ffb/CGAMEHUD.ipch
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CControllerAI.obj
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CGameHUD.obj
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/IGameHUD.obj
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/cgamelogicdefault.obj.enc

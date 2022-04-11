@@ -137,7 +137,7 @@ namespace dustbin {
         * @param a_Laps The current lap of the marble
         * @param a_Deficit Deficit of the marble on the leader in steps
         */
-        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit);
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader);
 
         /**
         * The implementing object must implement this method. It is called when the thread start working

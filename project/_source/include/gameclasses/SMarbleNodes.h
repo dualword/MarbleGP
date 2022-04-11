@@ -11,6 +11,8 @@ namespace dustbin {
   }
 
   namespace gameclasses {
+    struct SPlayer;
+
     /**
     * This data structure is a collection
     * of all scene nodes that define a marble
@@ -28,6 +30,8 @@ namespace dustbin {
 
       int m_iStateChange,   /**< The step of the last state change */
           m_iRespawnStart;  /**< Start of the respawn state */
+
+      SPlayer *m_pPlayer; /**< The player of the marble */
 
       /**
        * The empty scene node that acts as root node. A rotation might be applied
@@ -55,6 +59,7 @@ namespace dustbin {
         m_pPositional   = nullptr;
         m_pRotational   = nullptr;
         m_pViewport     = nullptr;
+        m_pPlayer       = nullptr;
         m_bCamLink      = true;
         m_iRespawnStart = -1;
         m_iStateChange  = -1;

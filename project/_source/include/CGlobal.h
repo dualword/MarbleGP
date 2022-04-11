@@ -102,7 +102,7 @@ namespace dustbin {
       * Get the raster size for the UI layout
       * @return the raster size
       */
-      virtual int getRasterSize() = 0;
+      virtual int getRasterSize(const irr::core::dimension2du *l_pViewport = nullptr) = 0;
 
       /**
       * Get an image from a string. The following prefixes are possible:

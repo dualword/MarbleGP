@@ -84,22 +84,32 @@ namespace dustbin {
     * @param a_iMarble the ID of the marble
     * @param a_iCheckpoint the checkpoint ID
     */
-    void CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
+    data::SRacePlayer *CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
+        m_aPlayers[l_iId].m_iCpCount++;
+        m_aPlayers[l_iId].m_vCpTimes.push_back(a_iStep);
+
         while (m_vCpTimes.size() <= m_aPlayers[l_iId].m_iCpCount) {
           m_vCpTimes.push_back(-1);
         }
 
         if (m_vCpTimes[m_aPlayers[l_iId].m_iCpCount] == -1) {
           m_vCpTimes[m_aPlayers[l_iId].m_iCpCount] = a_iStep;
-          m_aPlayers[l_iId].m_iDeficit = 0;
+          m_aPlayers[l_iId].m_iDeficitL = 0;
+          m_aPlayers[l_iId].m_iDeficitA = 0;
         }
         else {
-          m_aPlayers[l_iId].m_iDeficit = a_iStep - m_vCpTimes[m_aPlayers[l_iId].m_iCpCount];
-        }
+          m_aPlayers[l_iId].m_iDeficitL = a_iStep - m_vCpTimes[m_aPlayers[l_iId].m_iCpCount];
 
-        m_aPlayers[l_iId].m_iCpCount++;
+          if (&m_aPlayers[l_iId] != *m_vPositions.begin() && m_iCpPerLap > 0) {
+            data::SRacePlayer *l_pLeader = *m_vPositions.begin();
+            data::SRacePlayer *l_pThis   = &m_aPlayers[l_iId];
+
+            int l_iCpDiff = l_pLeader->m_iCpCount - l_pThis->m_iCpCount;
+            int l_iLaps   = l_iCpDiff / m_iCpPerLap;
+          }
+        }
 
         std::sort(m_vPositions.begin(), m_vPositions.end(), [](data::SRacePlayer* p1, data::SRacePlayer* p2) {
           if (p1->m_iCpCount != p2->m_iCpCount)
@@ -107,7 +117,47 @@ namespace dustbin {
           else
             return p1->m_iLastCp < p2->m_iLastCp;
         });
+
+        data::SRacePlayer *l_pLeader = *m_vPositions.begin();
+
+        int l_iPos = 1;
+        for (std::vector<data::SRacePlayer*>::iterator it = m_vPositions.begin(); it != m_vPositions.end(); it++) {
+          (*it)->m_iPos = l_iPos++;
+
+          if (it == m_vPositions.begin()) {
+            (*it)->m_iDeficitL = 0;
+            (*it)->m_iDeficitA = 0;
+          }
+          else {
+            int l_iLaps[] = { 0, 0 };
+
+            data::SRacePlayer* l_pAhead[] = {
+              l_pLeader,
+              *(it - 1)
+            };
+
+            for (int i = 0; i < 2; i++) {
+              if (m_iCpPerLap > 0 && (*it)->m_iCpCount > 0) {
+                l_iLaps[i] = (l_pAhead[i]->m_iCpCount - (*it)->m_iCpCount) / m_iCpPerLap;
+              }
+
+              if (l_iLaps[i] == 0 && (*it)->m_iCpCount > 0) {
+                if (i == 0) 
+                  (*it)->m_iDeficitL = (*it)->m_vCpTimes[(*it)->m_iCpCount - 1] - l_pAhead[0]->m_vCpTimes[(*it)->m_iCpCount - 1];
+                else
+                  (*it)->m_iDeficitA = (*it)->m_vCpTimes[(*it)->m_iCpCount - 1] - l_pAhead[1]->m_vCpTimes[(*it)->m_iCpCount - 1];
+              }
+              else {
+                if (i == 0) (*it)->m_iDeficitL = -l_iLaps[i]; else (*it)->m_iDeficitA = -l_iLaps[i];
+              }
+            }
+          }
+        }
+
+        return &m_aPlayers[l_iId];
       }
+
+      return nullptr;
     }
 
     /**

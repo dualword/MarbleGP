@@ -17,11 +17,15 @@ namespace dustbin {
     * This is the struct for the players
     */
     struct SPlayer {
-      int          m_iPlayer,       /**< The player id */
-                   m_iId;           /**< The Marble id */
-      std::string  m_sName,         /**< The name of the player */
-                   m_sTexture,      /**< The texture of the player's marble */
-                   m_sController;   /**< The serialized controller configuration */
+      int          m_iPlayer;           /**< The player id */
+      int          m_iId;               /**< The Marble id */
+      int          m_iPosition;         /**< Position in the race */
+      int          m_iLastPosUpdate;    /**< Step of the last positional update */
+      int          m_iDiffLeader;       /**< Deficit to the leader */
+      int          m_iDiffAhead;        /**< Deficit to the marble ahead */
+      std::string  m_sName;             /**< The name of the player */
+      std::string  m_sTexture;          /**< The texture of the player's marble */
+      std::string  m_sController;       /**< The serialized controller configuration */
 
       data::enPlayerType m_eType;
 
@@ -35,12 +39,16 @@ namespace dustbin {
       * The default constructor
       */
       SPlayer() {
-        m_iPlayer     = 0;
-        m_iId         = -1;
-        m_sName       = "";
-        m_pMarble     = nullptr;
-        m_pController = nullptr;
-        m_eType       = data::enPlayerType::Local;
+        m_iPlayer        = 0;
+        m_iId            = -1;
+        m_iPosition      = 0;
+        m_iLastPosUpdate = 0;
+        m_iDiffLeader    = 0;
+        m_iDiffAhead     = 0;
+        m_sName          = "";
+        m_pMarble        = nullptr;
+        m_pController    = nullptr;
+        m_eType          = data::enPlayerType::Local;
       }
 
       /**

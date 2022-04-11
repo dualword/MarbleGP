@@ -25,6 +25,7 @@
 #include <sound/CSoundEnums.h>
 #include <data/CDataStructs.h>
 #include <state/CGameState.h>
+#include <gui/CGameHUD.h>
 #include <CMainClass.h>
 #include <CGlobal.h>
 #include <string>
@@ -314,6 +315,8 @@ namespace dustbin {
           l_cPlayers.m_vPlayers[i].m_eType
         );
 
+        l_pMarble->m_pPlayer = l_pPlayer;
+
         printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
 
         m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
@@ -321,7 +324,8 @@ namespace dustbin {
         if (l_cPlayers.m_vPlayers[i].m_eType == data::enPlayerType::Local)
           l_iNumOfViewports++;
 
-        m_vPlayers.push_back(l_pPlayer);
+        m_vPlayers .push_back(l_pPlayer);
+        m_vPosition.push_back(l_pPlayer);
       }
 
       // .. next we sort the players by the player IDs to give them the correct viewports
@@ -405,6 +409,8 @@ namespace dustbin {
               }
 
               l_cViewport.m_pPlayer = l_pPlayer->m_pMarble;
+              l_cViewport.m_pHUD    = new gui::CGameHUD(l_pPlayer, l_cRect, std::atoi(m_pGlobal->getSetting("laps").c_str()), m_pGui, &m_vPosition);
+              l_cViewport.m_pHUD->drop();
               m_mViewports[l_cPlayers.m_vPlayers[i].m_iPlayerId] = l_cViewport;
               l_pPlayer->m_pMarble->m_pViewport = &m_mViewports[l_cPlayers.m_vPlayers[i].m_iPlayerId];
             }
@@ -567,6 +573,7 @@ namespace dustbin {
         delete* it;
 
       m_vPlayers  .clear();
+      m_vPosition .clear();
       m_mViewports.clear();
 
 #ifdef _TOUCH_CONTROL
@@ -833,6 +840,12 @@ namespace dustbin {
       do {
         l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
+          for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+            if (it->second.m_pHUD != nullptr) {
+              it->second.m_pHUD->handleMessage(l_pMsg, false);
+            }
+          }
+
           if (l_pMsg->getMessageId() == messages::enMessageIDs::ObjectMoved || l_pMsg->getMessageId() == messages::enMessageIDs::MarbleMoved) {
             m_vMoveMessages.push_back(l_pMsg);
           }
@@ -1305,8 +1318,28 @@ namespace dustbin {
     * @param a_Laps The current lap of the marble
     * @param a_Deficit Deficit of the marble on the leader in steps
     */
-    void CGameState::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit) {
+    void CGameState::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
       // printf("Race position update: %i, %i, %i, %i\n", a_MarbleId, a_Position, a_Laps, a_Deficit);
+      int l_iIndex = a_MarbleId - 10000;
+      if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+        m_aMarbles[l_iIndex]->m_pPlayer->m_iPosition      = a_Position;
+        m_aMarbles[l_iIndex]->m_pPlayer->m_iLastPosUpdate = m_iStep;
+        m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffAhead     = a_DeficitAhead;
+        m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffLeader    = a_DeficitLeader;
+
+        std::sort(m_vPosition.begin(), m_vPosition.end(), [](gameclasses::SPlayer *p1, gameclasses::SPlayer *p2) {
+          if (p1->m_iPosition != p2->m_iPosition)
+            return p1->m_iPosition < p2->m_iPosition;
+          else
+            return p1->m_iLastPosUpdate > p2->m_iLastPosUpdate;
+        });
+
+        for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+          if (it->second.m_pHUD != nullptr) {
+            it->second.m_pHUD->updateRanking();
+          }
+        }
+      }
     }
 
 

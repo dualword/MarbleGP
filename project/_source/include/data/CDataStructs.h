@@ -153,15 +153,19 @@ namespace dustbin {
     * a player during a race in the dynamics thread
     */
     struct SRacePlayer {
-      int m_iId,        /**< Marble ID */
-        m_iCpCount,   /**< Number of passed checkpoints*/
-        m_iStunned,   /**< Stunned counter */
-        m_iRespawn,   /**< Respawn counter */
-        m_iLapNo,     /**< The current lap */
-        m_iDeficit,   /**< Deficit to the leader */
-        m_iLastCp;    /**< The time of the last checkpoint */
+      int m_iId;        /**< Marble ID */
+      int m_iCpCount;   /**< Number of passed checkpoints*/
+      int m_iStunned;   /**< Stunned counter */
+      int m_iRespawn;   /**< Respawn counter */
+      int m_iLapNo;     /**< The current lap */
+      int m_iDeficitL;  /**< Deficit to the leader */
+      int m_iDeficitA;  /**< Deficit to the player ahead */
+      int m_iLastCp;    /**< The time of the last checkpoint */
+      int m_iPos;       /**< The position of the player in the race */
 
-      SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficit(0), m_iLastCp(0) {
+      std::vector<int> m_vCpTimes;
+
+      SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0) {
       }
     };
   }

@@ -8,6 +8,10 @@ namespace dustbin {
     struct SMarbleNodes;
   }
 
+  namespace gui {
+    class CGameHUD;
+  }
+
   namespace gfx {
 
     /**
@@ -18,12 +22,14 @@ namespace dustbin {
     */
     struct SViewPort {
       irr::core::recti              m_cRect;    /**< The on-screen rectangle to render this viewport to */
-      int                           m_iPlayer,  /**< The player id this viewport belongs to */
-                                    m_iLastCp;  /**< The last Checkpoint the player has passed. Necessary to update the textures of the checkpoints */
+      int                           m_iPlayer;  /**< The player id this viewport belongs to */
+      int                           m_iLastCp;  /**< The last Checkpoint the player has passed. Necessary to update the textures of the checkpoints */
       irr::scene::ISceneNode*       m_pMarble;  /**< The marble of the player */
       irr::scene::ICameraSceneNode* m_pCamera;  /**< The camera of the viewport */
 
       gameclasses::SMarbleNodes* m_pPlayer;   /**< Pointer to the player of the viewport */
+
+      gui::CGameHUD *m_pHUD;    /**< The viewport's HUD */
 
       /**
       * A list of the possible next checkpoints for the player of this viewport.
@@ -46,6 +52,7 @@ namespace dustbin {
         m_pMarble = a_pMarble;
         m_pCamera = a_pCamera;
         m_pPlayer = nullptr;
+        m_pHUD    = nullptr;
         m_iLastCp = 0;
       }
 

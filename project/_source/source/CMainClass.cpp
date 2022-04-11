@@ -183,6 +183,10 @@ namespace dustbin {
       l_pXml->drop();
     }
 
+    // The tiny original Irrlicht font 
+    // is stored as minimal sized font
+    m_mFonts[0] = m_pGui->getSkin()->getFont();
+
     // Set the "regular" font size for the resolution to be the default font size
     m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
@@ -193,10 +197,6 @@ namespace dustbin {
     scenenodes::CMarbleGPSceneNodeFactory *l_pNodeFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pSmgr);
     m_pSmgr->registerSceneNodeFactory(l_pNodeFactory);
     l_pNodeFactory->drop();
-
-    // The tiny original Irrlicht font 
-    // is stored as minimal sized font
-    m_mFonts[0] = m_pGui->getSkin()->getFont();
 
     m_pSoundInterface = sound::createSoundInterface(m_pDevice);
 
@@ -340,7 +340,7 @@ namespace dustbin {
   */
   irr::gui::IGUIFont* CMainClass::getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport) {
     // Tiny: 0.5 * RasterSize, Small: 0.75 * RasterSize, Regular: RasterSize, Big: 1.5 * RasterSize, Huge: 2 * RasterSize
-    int l_iSize = getRasterSize();
+    int l_iSize = getRasterSize(&a_cViewport);
 
     switch (a_eFont) {
       case enFont::Tiny   : l_iSize =     l_iSize / 2; break;
@@ -372,8 +372,8 @@ namespace dustbin {
   * Get the raster size for the UI layout
   * @return the raster size
   */
-  int CMainClass::getRasterSize() {
-    if (m_iRasterSize == -1) {
+  int CMainClass::getRasterSize(const irr::core::dimension2du *l_pViewport) {
+    if (m_iRasterSize == -1 || l_pViewport != nullptr) {
       int l_iColumns = 80,
           l_iRows    = 55;
 
@@ -397,10 +397,13 @@ namespace dustbin {
         }
       }
 
-      irr::core::dimension2du l_cDim = m_pDrv->getScreenSize();
+      irr::core::dimension2du l_cDim = l_pViewport == nullptr ? m_pDrv->getScreenSize() : *l_pViewport;
 
       int l_iWidth  = l_cDim.Width  / l_iColumns,
           l_iHeight = l_cDim.Height / l_iRows;
+
+      if (l_pViewport != nullptr)
+        return l_iWidth < l_iHeight ? l_iWidth : l_iHeight;
 
       m_iRasterSize = l_iWidth < l_iHeight ? l_iWidth : l_iHeight;
     }

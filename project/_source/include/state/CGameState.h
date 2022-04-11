@@ -81,7 +81,8 @@ namespace dustbin {
 
         scenenodes::CRostrumNode *m_pRostrum;
 
-        std::vector<gameclasses::SPlayer*> m_vPlayers; /**< The players of the game*/
+        std::vector<gameclasses::SPlayer*> m_vPlayers;    /**< The players of the game */
+        std::vector<gameclasses::SPlayer*> m_vPosition;   /**< The players' positions in the race */
 
         irr::video::ITexture* m_pCheckpointTextures[3];  /**< The checkpoint textures (0 == white, 1 == Flash 1, 2 == Flash 2) */
 
@@ -260,7 +261,7 @@ namespace dustbin {
         * @param a_Laps The current lap of the marble
         * @param a_Deficit Deficit of the marble on the leader in steps
         */
-        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit);
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader);
 
         /**
          * This function receives messages of type "PauseChanged"

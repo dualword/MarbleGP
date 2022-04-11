@@ -262,7 +262,7 @@ namespace dustbin {
                 l_mParameters = parseParameters(l_sType, "generate://numbercolor=000000&numberback=ffdead&numberborder=ffdead&ringcolor=ffefd5&patterncolor=000000&patternback=ffdead&pattern=texture_marbles2.png");
               else if (l_sNumber == "15")
                 l_mParameters = parseParameters(l_sType, "generate://numbercolor=000000&numberback=20b2aa&numberborder=20b2aa&ringcolor=7fffd4&patterncolor=000000&patternback=20b2aa&pattern=texture_marbles2.png");
-              else if (l_sNumber == "16")
+              else
                 l_mParameters = parseParameters(l_sType, "generate://numbercolor=000000&numberback=ffffff&numberborder=ffffff&ringcolor=dddddd&patterncolor=000000&patternback=ffffff&pattern=texture_marbles2.png");
             }
 

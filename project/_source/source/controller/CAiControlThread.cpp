@@ -149,7 +149,7 @@ namespace dustbin {
     * @param a_Laps The current lap of the marble
     * @param a_Deficit Deficit of the marble on the leader in steps
     */
-    void CAiControlThread::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_Deficit) {
+    void CAiControlThread::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
 
     }
 

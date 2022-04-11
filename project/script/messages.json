@@ -152,10 +152,11 @@
     "RacePosition": {
       "comment": "Message to notify about the position of a marble in a race",
       "fields": [
-        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" },
-        { "name": "Position", "type": "irr::s32", "comment": "Position of the marble" },
-        { "name": "Laps"    , "type": "irr::s32", "comment": "The current lap of the marble" },
-        { "name": "Deficit" , "type": "irr::s32", "comment": "Deficit of the marble on the leader in steps" }
+        { "name": "MarbleId"     , "type": "irr::s32", "comment": "ID of the marble" },
+        { "name": "Position"     , "type": "irr::s32", "comment": "Position of the marble" },
+        { "name": "Laps"         , "type": "irr::s32", "comment": "The current lap of the marble" },
+        { "name": "DeficitAhead" , "type": "irr::s32", "comment": "Deficit of the marble on the marble ahead in steps" },
+        { "name": "DeficitLeader", "type": "irr::s32", "comment": "Deficit of the marble on the leader in steps" }
       ]
     }
   },
@@ -206,6 +207,19 @@
         "LapStart",
         "PauseChanged",
         "RacePosition"
+      ]
+    },
+    {
+      "name": "GameHUD",
+      "send": [ ],
+      "receive": [
+        "PlayerRespawn",
+        "PlayerFinished",
+        "PlayerStunned",
+        "RaceFinished",
+        "RacePosition",
+        "MarbleMoved",
+        "LapStart"
       ]
     }
   ]

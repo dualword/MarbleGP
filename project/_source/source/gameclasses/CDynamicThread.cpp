@@ -531,7 +531,6 @@ namespace dustbin {
                 p->m_iFinishTime = -1;
                 p->m_vPosition = l_cPos;
 
-                printf("**** %.2f\n", m_pRostrumNode->getAbsoluteTransformation().getRotationDegrees().Y);
                 dQuaternion q;
                 q[0] = -m_pRostrumNode->getAbsoluteTransformation().getRotationDegrees().Y * M_PI / 180.0;
                 q[1] = 0.0;
@@ -898,23 +897,14 @@ namespace dustbin {
     void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
       if (m_pGameLogic != nullptr) {
-        m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
+        data::SRacePlayer *l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
+        if (l_pPlayer != nullptr) {
+          int l_iIndex = l_pPlayer->m_iId - 10000;
+          if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr)
+            m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
 
-        const std::vector<data::SRacePlayer *> l_vPositions = m_pGameLogic->getRacePositions();
-
-        int l_iPos = 1;
-        for (std::vector<data::SRacePlayer*>::const_iterator it = l_vPositions.begin(); it != l_vPositions.end(); it++) {
-          sendRaceposition((*it)->m_iId, l_iPos, (*it)->m_iLapNo, (*it)->m_iDeficit, m_pOutputQueue);
-
-          int l_iIndex = (*it)->m_iId - 10000;
-          if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-            m_aMarbles[l_iIndex]->m_iPosition = l_iPos;
-          }
-
-          l_iPos++;
+          sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
         }
-
-        printf("*****\n");
       }
     }
 

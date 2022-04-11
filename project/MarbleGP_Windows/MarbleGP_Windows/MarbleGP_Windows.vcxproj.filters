@@ -333,6 +333,12 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IGameHUD.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGameHUD.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -601,6 +607,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGameHUD.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
