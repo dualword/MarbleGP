@@ -55,5 +55,26 @@ namespace dustbin {
       }
 
       return l_vRet;
-    }  }
+    }
+
+    /**
+    * Fit a string to a dimension using a specific font (one line, only width)
+    * @param a_sText the string to fit
+    * @param a_pFont the font to use
+    * @param a_cSize the size to fit the string to
+    * @return the string that fits the size using the font
+    */
+    std::wstring fitString(const std::wstring& a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::dimension2du& a_cSize) {
+      std::wstring s = a_sText;
+
+      irr::core::dimension2du l_cSize = a_pFont->getDimension(s.c_str());
+
+      while (l_cSize.Width > a_cSize.Width) {
+        s = s.substr(0, s.size() - 3) + L"..";
+        l_cSize = a_pFont->getDimension(s.c_str());
+      }
+
+      return s;
+    }
+  }
 }

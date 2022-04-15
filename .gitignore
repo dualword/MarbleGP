@@ -1034,3 +1034,7 @@
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CGameHUD.obj
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/IGameHUD.obj
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/cgamelogicdefault.obj.enc
+/project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/1bf262b7de4082cc/CCONTROLLERUI.ipch
+/project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/48b3eeb1270cfe/CMENUSETTINGS.ipch
+/project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/fb7d792bc448ce49/IJOYSTICKEVENTHANDLER.ipch
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CRankingElement.obj

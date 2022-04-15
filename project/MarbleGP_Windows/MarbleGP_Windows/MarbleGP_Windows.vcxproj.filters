@@ -339,6 +339,9 @@
     <ClCompile Include="..\..\_source\source\gui\CGameHUD.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CRankingElement.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -613,6 +616,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h">
       <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CRankingElement.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,9 +14,12 @@ namespace dustbin {
     * and the menu background
     */
     class CButtonRenderer {
-      private:
+      protected:
         CGlobal                 * m_pGlobal;
         irr::video::IVideoDriver* m_pDrv;
+
+        int m_iBorder;  /**< The border size */
+        int m_iRaster;  /**< The raster size */
         
       public:
         CButtonRenderer();

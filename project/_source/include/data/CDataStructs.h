@@ -24,10 +24,9 @@ namespace dustbin {
     * splitscreen possibility
     */
     struct SGameGFX {
-      bool m_bRearview,   /**< Show rearview camera? */
-           m_bRanking,    /**< Show ranking? */
-           m_bRaceTime,   /**< Show racetime? */
-           m_bLapTimes;   /**< Show laptimes? */
+      bool m_bHightlight;   /**< Highlight the leader and the marble ahead*/
+      bool m_bShowControls; /**< Show the marble controls */
+      bool m_bShowRanking;  /**< Show the race ranking */
 
       SGameGFX();
 

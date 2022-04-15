@@ -178,6 +178,8 @@ namespace dustbin {
 
       m_pGui->clear();
 
+      data::SSettings l_cSettings= m_pGlobal->getSettingData();
+
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
@@ -421,6 +423,12 @@ namespace dustbin {
         }
       }
 
+      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+        if (it->second.m_pHUD != nullptr) {
+          it->second.m_pHUD->setSettings(l_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, l_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, l_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking);
+        }
+      }
+
       if (m_mViewports.size() == 0) {
         // No viewport ==> view track, create a viewport
         m_pCamAnimator = new scenenodes::CMyCameraAnimator(m_pDevice);
@@ -440,9 +448,7 @@ namespace dustbin {
         }
       }
 
-      printf("******** Ready.\n");
-
-      data::SSettings l_cSettings= m_pGlobal->getSettingData();
+      printf("******** Ready.\n");      
 
       irr::u32 l_iAmbient = 196;
 

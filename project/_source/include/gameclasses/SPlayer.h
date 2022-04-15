@@ -79,6 +79,7 @@ namespace dustbin {
         m_pController = nullptr;
         m_eType       = a_eType;
         m_eAiHelp     = a_eAiHelp;
+        m_iPosition   = 0;
 
         if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
           m_iId = m_pMarble->m_pPositional->getID();

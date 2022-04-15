@@ -54,6 +54,16 @@ namespace dustbin {
               onLapstart(p->getMarbleId(), p->getLapNo());
               break;
             }
+            case dustbin::messages::enMessageIDs::PlayerRostrum: {
+              dustbin::messages::CPlayerRostrum *p = reinterpret_cast<dustbin::messages::CPlayerRostrum *>(a_pMessage);
+              onPlayerrostrum(p->getMarbleId());
+              break;
+            }
+            case dustbin::messages::enMessageIDs::Countdown: {
+              dustbin::messages::CCountdown *p = reinterpret_cast<dustbin::messages::CCountdown *>(a_pMessage);
+              onCountdown(p->getTick());
+              break;
+            }
             default:
               break;
           }

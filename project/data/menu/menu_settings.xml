@@ -183,16 +183,16 @@
       
       <element type="DustbinCheckbox" rect="center: 5, -1, 7, 1">
         <attributes>
-          <attribute key="Caption" value="Rearview Camera" />
+          <attribute key="Caption" value="Hightlight Leader" />
           <attribute key="Id" value="23014" />
-          <attribute key="Name" value="RearviewCamera" />
+          <attribute key="Name" value="Highlight" />
         </attributes>
       </element>
       
       <element type="staticText" rect="center: 8, -1, 34, 1">
         <attributes>
-          <attribute key="Name" value="label_rearview" />
-          <attribute key="Caption" value="Rearview Camera" />
+          <attribute key="Name" value="label_highlight" />
+          <attribute key="Caption" value="Highlight Leader and Marble ahead" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
@@ -200,14 +200,14 @@
       <element type="DustbinCheckbox" rect="center: 5, 3, 7, 5">
         <attributes>
           <attribute key="Id" value="23015" />
-          <attribute key="Name" value="Ranking" />
+          <attribute key="Name" value="show_controls" />
         </attributes>
       </element>
       
       <element type="staticText" rect="center: 8, 3, 34, 5">
         <attributes>
-          <attribute key="Name" value="label_ranking" />
-          <attribute key="Caption" value="Show Ranking" />
+          <attribute key="Name" value="label_showctrl" />
+          <attribute key="Caption" value="Show Marble Controls" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
@@ -215,32 +215,18 @@
       <element type="DustbinCheckbox" rect="center: 5, 7, 7, 9">
         <attributes>
           <attribute key="Id" value="23016" />
-          <attribute key="Name" value="Racetime" />
+          <attribute key="Name" value="show_ranking" />
         </attributes>
       </element>
       
       <element type="staticText" rect="center: 8, 7, 34, 9">
         <attributes>
-          <attribute key="Name" value="label_racetime" />
-          <attribute key="Caption" value="Show Racetime" />
+          <attribute key="Name" value="label_showranking" />
+          <attribute key="Caption" value="Show Ranking" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 5, 11, 7, 13">
-        <attributes>
-          <attribute key="Id" value="23017" />
-          <attribute key="Name" value="Laptimes" />
-        </attributes>
-      </element>
-      
-      <element type="staticText" rect="center: 8, 11, 34, 13">
-        <attributes>
-          <attribute key="Name" value="label_laptimes" />
-          <attribute key="Caption" value="Show Laptimes" />
-          <attribute key="VTextAlign" value="center" />
-        </attributes>
-      </element>
     </children>
   </element>
   

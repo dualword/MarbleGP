@@ -74,6 +74,19 @@
         </attributes>
       </element>
       
+      <element type="staticText" rect="relative: 2, 6, 8, 8" font="small">
+        <attributes>
+          <attribute key="Caption" value="AI Help:" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 7, 6, 20, 8" font="small" tooltip="AI help level">
+        <attributes>
+          <attribute key="Name" value="label_aihelp" />
+          <attribute key="Caption" value="Off" />
+        </attributes>
+      </element>
+      
       <element type="image" rect="relative: 31, 1, 33, 3" tooltip="Something's wrong">
         <attributes>
           <attribute key="UseAlphaChannel" value="true" />

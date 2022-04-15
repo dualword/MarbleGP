@@ -524,6 +524,22 @@ namespace dustbin {
                 m_pPhysicsScript->onPlayerStunned(p->m_iId, 0, m_iWorldStep);*/
             }
 
+            sendMarblemoved(p->m_iId,
+              p->m_vPosition, 
+              quaternionToEuler(l_aRot), 
+              l_vLinVel, 
+              vectorOdeToIrr(l_aAngVel).getLength(), 
+              p->m_bRearView ? p->m_vRearview : p->m_vCamera,
+              p->m_vUpOffset, 
+              p->m_iCtrlX,
+              p->m_iCtrlY, 
+              p->m_bHasContact,
+              p->m_bBrake,
+              p->m_bRearView,
+              false,
+              m_pOutputQueue);
+
+
             if (m_pRostrumNode != nullptr && p->m_eState == CObjectMarble::enMarbleState::Finished && p->m_iFinishTime > 0) {
               if (m_pWorld->m_iWorldStep > p->m_iFinishTime + 240) {
                 irr::core::vector3df l_cPos = m_pRostrumNode->getRostrumPosition(p->m_iPosition - 1);
@@ -541,23 +557,10 @@ namespace dustbin {
                 dBodySetQuaternion(p->m_cBody, q);
                 dBodySetAngularVel(p->m_cBody, 0.0, 0.0, 0.0);
                 dBodySetPosition(p->m_cBody, l_cPos.X, l_cPos.Y, l_cPos.Z);
+
+                sendPlayerrostrum(p->m_iId, m_pOutputQueue);
               }
             }
-
-            sendMarblemoved(p->m_iId,
-              p->m_vPosition, 
-              quaternionToEuler(l_aRot), 
-              l_vLinVel, 
-              vectorOdeToIrr(l_aAngVel).getLength(), 
-              p->m_bRearView ? p->m_vRearview : p->m_vCamera,
-              p->m_vUpOffset, 
-              p->m_iCtrlX,
-              p->m_iCtrlY, 
-              p->m_bHasContact,
-              p->m_bBrake,
-              p->m_bRearView,
-              false,
-              m_pOutputQueue);
 
             p->m_bHasContact = false;
           }

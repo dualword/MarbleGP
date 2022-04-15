@@ -79,6 +79,18 @@ namespace dustbin {
          */
         virtual void onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) = 0;
 
+        /**
+         * This function receives messages of type "PlayerRostrum"
+         * @param a_MarbleId ID of the marble sent to the rostrum
+         */
+        virtual void onPlayerrostrum(irr::s32 a_MarbleId) = 0;
+
+        /**
+         * This function receives messages of type "Countdown"
+         * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+         */
+        virtual void onCountdown(irr::u8 a_Tick) = 0;
+
 
       public:
         IGameHUD();

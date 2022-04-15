@@ -33,14 +33,13 @@ namespace dustbin {
 
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
-    SGameGFX::SGameGFX() : m_bRearview(true), m_bRanking(true), m_bRaceTime(true), m_bLapTimes(false) {
+    SGameGFX::SGameGFX() : m_bHightlight(true), m_bShowControls(true), m_bShowRanking(true) {
     }
 
     void SGameGFX::copyFrom(const SGameGFX& a_cOther) {
-      m_bRearview = a_cOther.m_bRearview;
-      m_bRanking  = a_cOther.m_bRanking;
-      m_bRaceTime = a_cOther.m_bRaceTime;
-      m_bLapTimes = a_cOther.m_bLapTimes;
+      m_bHightlight   = a_cOther.m_bHightlight;
+      m_bShowControls = a_cOther.m_bShowControls;
+      m_bShowRanking  = a_cOther.m_bShowRanking;
     }
 
     SSettings::SSettings() : 
@@ -80,10 +79,9 @@ namespace dustbin {
       if (a_mData.find("menu_control") != a_mData.end()) m_sController = a_mData.at("menu_control");
 
       for (int i = 0; i < 8; i++) {
-        if (a_mData.find(std::string("rearview_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bRearview = a_mData.at(std::string("rearview_") + std::to_string(i)) == "true";
-        if (a_mData.find(std::string("ranking_" ) + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bRanking  = a_mData.at(std::string("ranking_" ) + std::to_string(i)) == "true";
-        if (a_mData.find(std::string("racetime_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bRaceTime = a_mData.at(std::string("racetime_") + std::to_string(i)) == "true";
-        if (a_mData.find(std::string("laptimes_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bLapTimes = a_mData.at(std::string("laptimes_") + std::to_string(i)) == "true";
+        if (a_mData.find(std::string("highlight_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bHightlight   = a_mData.at(std::string("highlight_") + std::to_string(i)) == "true";
+        if (a_mData.find(std::string("showctrls_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bShowControls = a_mData.at(std::string("showctrls_") + std::to_string(i)) == "true";
+        if (a_mData.find(std::string("showrank_" ) + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bShowRanking  = a_mData.at(std::string("showrank_" ) + std::to_string(i)) == "true";
       }
     }
 
@@ -106,10 +104,9 @@ namespace dustbin {
       a_mData["menu_control"] = m_sController;
 
       for (int i = 0; i < 8; i++) {
-        a_mData[std::string("rearview_") + std::to_string(i)] = m_aGameGFX[i].m_bRearview ? "true" : "false";
-        a_mData[std::string("ranking_" ) + std::to_string(i)] = m_aGameGFX[i].m_bRanking  ? "true" : "false";
-        a_mData[std::string("racetime_") + std::to_string(i)] = m_aGameGFX[i].m_bRaceTime ? "true" : "false";
-        a_mData[std::string("laptimes_") + std::to_string(i)] = m_aGameGFX[i].m_bLapTimes ? "true" : "false";
+        a_mData[std::string("highlight_") + std::to_string(i)] = m_aGameGFX[i].m_bHightlight   ? "true" : "false";
+        a_mData[std::string("showctrls_") + std::to_string(i)] = m_aGameGFX[i].m_bShowControls ? "true" : "false";
+        a_mData[std::string("showrank_" ) + std::to_string(i)] = m_aGameGFX[i].m_bShowRanking  ? "true" : "false";
       }
     }
 
