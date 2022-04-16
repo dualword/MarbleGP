@@ -87,8 +87,8 @@ namespace dustbin {
 
       enPlayerType m_eType;     /**< The type of player */
       enAiHelp     m_eAiHelp;   /**< The level of AI help */
-      int          m_iPlayerId, /**< The ID of the player */
-                   m_iGridPos;  /**< Position in the grid (1..16) */
+      int          m_iPlayerId; /**< The ID of the player */
+      int          m_iGridPos;  /**< Position in the grid (1..16) */
 
       std::string m_sName,      /**< The player's name */
                   m_sTexture,   /**< The player's texture generation string */
@@ -168,6 +168,68 @@ namespace dustbin {
 
       SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
       }
+
+      SRacePlayer(const std::string &a_sData);
+
+      std::string serialize();
+    };
+
+    /**
+    * @class SChampionshipPlayer
+    * @author Christian Keimel
+    * This data struct stores the data of a player during a championship
+    */
+    struct SChampionshipPlayer {
+      int         m_iPlayerId;      /**< The player ID (0..16) */
+      std::string m_sName;          /**< Name */
+      int         m_aResult[16];    /**< The race positions */
+      int         m_iPoints;        /**< Points of the player */
+      int         m_iRespawn;       /**< The total number of respawns */
+      int         m_iStunned;       /**< The total number of stuns */
+      int         m_iFastestLaps;   /**< Race in which this player made the fastest lap */
+
+      SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName);
+      SChampionshipPlayer(const std::string &a_sData);
+
+      std::string serialize();
+    };
+
+    /**
+    * @class SChampionshipRace
+    * @author Christian Keimel
+    * Used to store the races of a championship
+    */
+    struct SChampionshipRace {
+      std::string m_sTrack;       /**< The track of the race */
+      int         m_iPlayers;     /**< The number of players of the race*/
+      int         m_iLaps;        /**< The number of laps of the race */
+      SRacePlayer m_aResult[16];  /**< The race result */
+
+      std::map<int, int> m_mAssignment;   /**< The assignment of players (key == player id) to marbles (value == marble id) in the race */
+
+      SChampionshipRace(const std::string &a_sTrack, int a_iPlayers, int a_iLaps);
+      SChampionshipRace(const std::string &a_sData);
+
+      std::string serialize();
+    };
+
+    /**
+    * @class SChampionship
+    * @author Christian Keimel
+    * This data structure stores
+    */
+    struct SChampionship {
+      std::vector<SChampionshipPlayer> m_vPlayers;  /**< The players of the championship */
+      std::vector<SChampionshipRace  > m_vRaces;    /**< The races of the championship */
+
+      int m_iClass;   /**< Class of the championship (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP) */
+
+      SChampionship(int a_iClass);
+      SChampionship(const std::string &a_sData);
+
+      std::string serialize();
+
+      std::vector<SChampionshipPlayer *> getStandings();
     };
   }
 }

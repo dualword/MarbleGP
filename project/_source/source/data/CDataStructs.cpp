@@ -3,6 +3,7 @@
 #include <messages/CSerializer64.h>
 #include <data/CDataStructs.h>
 #include <Defines.h>
+#include <algorithm>
 
 namespace dustbin {
   namespace data {
@@ -17,6 +18,7 @@ namespace dustbin {
     const irr::s32 c_iPlayerGridPos  = 29;  /**< Marker for the position in the grid */
     const irr::s32 c_iPlayerDataEnd  = 30;  /**< Marker for the player data to end */
 
+    // Game Settings
     const irr::s32 c_iGameSettings    = 32;   /**< Marker for the game settings */
     const irr::s32 c_iRaceClass       = 33;   /**< Marker for the race class */
     const irr::s32 c_iGridPos         = 34;   /**< Marker for the Grid position scheme */
@@ -26,10 +28,56 @@ namespace dustbin {
     const irr::s32 c_iFirstRaceRandom = 38;   /**< Marker for the randomize first race flag */
     const irr::s32 c_iFillGrid        = 39;   /**< Marker for the fill grid with AI flag */
 
-    const irr::s32 c_iRacePlayersHead  = 50;   /**< Marker for the beginning of the race player list */
-    const irr::s32 c_iRacePlayerStart  = 51;   /**< Marker for a new dataset of a player */
-    const irr::s32 c_iRacePlayerEnd    = 52;   /**< Marker for the end of a dataset */
-    const irr::s32 c_iRacePlayerFooter = 53;   /**< Marker for the end of the list of players */
+    // Race Player
+    const irr::s32 c_iRacePlayersHead   = 50;   /**< Marker for the beginning of the race player list */
+    const irr::s32 c_iRacePlayersStart  = 51;   /**< Marker for a new dataset of a player */
+    const irr::s32 c_iRacePlayersEnd    = 52;   /**< Marker for the end of a dataset */
+    const irr::s32 c_iRacePlayersFooter = 53;   /**< Marker for the end of the list of players */
+
+    // Championship Player
+    const irr::s32 c_iChampionshipPlayerHead     = -60;      /**< Marker for the beginning of a championship player */
+    const irr::s32 c_iChampionshipPlayerId       = -61;      /**< Marker for the name of a championship player */
+    const irr::s32 c_iChampionshipPlayerName     = -62;      /**< Marker for the name of a championship player */
+    const irr::s32 c_iChampionshipPlayerResults  = -63;      /**< Marker for the race results of a championship player */
+    const irr::s32 c_iChampionshipPlayerPoints   = -64;      /**< Marker for the points of a championship player */
+    const irr::s32 c_iChampionshipPlayerRespawns = -65;      /**< Marker for the number of respawns of a championship player */
+    const irr::s32 c_iChampionshipPlayerStunned  = -66;      /**< Marker for the number of stuns of a championship player */
+    const irr::s32 c_iChampionshipPlayerFastest  = -67;      /**< Marker for the number of fastest race laps of a championship player */
+    const irr::s32 c_iChampionshipPlayerFooter   = -68;      /**< Marker for the end of the dataset */
+
+    // Championship Race
+    const irr::s32 c_iChampionshipRaceHead        = -70;      /**< Marker for the beginning of a championship race */
+    const irr::s32 c_iChampionshipRacePlayers     = -71;      /**< Marker for number of players of the race */
+    const irr::s32 c_iChampionshipRaceLaps        = -72;      /**< Marker for number of laps of the race */
+    const irr::s32 c_iChampionshipRaceTrack       = -73;      /**< Marker for number of laps of the race */
+    const irr::s32 c_iChampionshipRaceResult      = -74;      /**< Marker for the beginning of result of the race */
+    const irr::s32 c_iChampionshipRacePlayer      = -75;      /**< Marker for a player of the result */
+    const irr::s32 c_iChampionshipRaceResultEnd   = -76;      /**< Marker for the end of result of the race */
+    const irr::s32 c_iChampionshipRaceAssignBegin = -77;      /**< Marker for the beginning of the marble assignment */
+    const irr::s32 c_iChampionshipRaceAssignEnd   = -78;      /**< Marker for the end of the marble assignment */
+    const irr::s32 c_iChampionshipRaceFooter      = -79;      /**< Marker for the end of a championship race */
+
+    // Championship
+    const irr::s32 c_iChampionshipHeader       = -100;    /**< Marker for the start of a championship data structure */
+    const irr::s32 c_iChampionshipClass        = -101;    /**< Marker for the the championship class */
+    const irr::s32 c_iChampionshipPlayersStart = -102;    /**< Marker for the the start of the championship players */
+    const irr::s32 c_iChampionshipPlayersCount = -103;    /**< Marker for the the number of championship players */
+    const irr::s32 c_iChampionshipPlayersData  = -104;    /**< Marker for the the start of a championship player */
+    const irr::s32 c_iChampionshipPlayersEnd   = -105;    /**< Marker for the the end of the players of the championship */
+    const irr::s32 c_iChampionshipRacesStart   = -106;    /**< Marker for the the start of the championship races */
+    const irr::s32 c_iChampionshipRacesCount   = -107;    /**< Marker for the the number of championship races */
+    const irr::s32 c_iChampionshipRacesData    = -108;    /**< Marker for the start of a championship race structure */
+    const irr::s32 c_iChampionshipRacesFooter  = -109;    /**< Marker for the end of the championship data structure */
+
+    // Race Player (limited data is encoded)
+    const irr::s32 c_iRacePlayerHeader  = -120;   /**< Marker for the start of a race player data structure */
+    const irr::s32 c_iRacePlayerId      = -121;   /**< Marker for the race player's id (aka marble id) */
+    const irr::s32 c_iRacePlayerPos     = -122;   /**< Marker for the finishing position of the player */
+    const irr::s32 c_iRacePlayerDeficit = -123;   /**< Marker for the deficit of the player on the leader */
+    const irr::s32 c_iRacePlayerFastest = -124;   /**< Marker for the fastest race lap of the player */
+    const irr::s32 c_iRacePlayerStunned = -125;   /**< Marker for the number of stuns a player has experienced during the race */
+    const irr::s32 c_iRacePlayerRespawn = -126;   /**< Marker for the number of respawns of the player during the race */
+    const irr::s32 c_iRacePlayerFooter  = -127;   /**< Marker for the end of the race player data structure */
 
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
@@ -342,12 +390,12 @@ namespace dustbin {
       l_cSerializer.addS32(c_iRacePlayersHead);
 
       for (std::vector<SPlayerData>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-        l_cSerializer.addS32(c_iRacePlayerStart);
+        l_cSerializer.addS32(c_iRacePlayersStart);
         l_cSerializer.addString((*it).serialize());
-        l_cSerializer.addS32(c_iRacePlayerEnd);
+        l_cSerializer.addS32(c_iRacePlayersEnd);
       }
 
-      l_cSerializer.addS32(c_iRacePlayerFooter);
+      l_cSerializer.addS32(c_iRacePlayersFooter);
 
       return l_cSerializer.getMessageAsString();
     }
@@ -361,14 +409,14 @@ namespace dustbin {
         while (l_cSerializer.hasMoreMessages()) {
           irr::s32 l_iToken = l_cSerializer.getS32();
 
-          if (l_iToken == c_iRacePlayerStart) {
+          if (l_iToken == c_iRacePlayersStart) {
             SPlayerData l_cPlayer;
             if (!l_cPlayer.deserialize(l_cSerializer.getString())) {
               printf("Unable to deserialize race player, aborting.\n");
               return false;
             }
 
-            if (l_cSerializer.getS32() != c_iRacePlayerEnd) {
+            if (l_cSerializer.getS32() != c_iRacePlayersEnd) {
               printf("Invalid flag for end of race player dataset.\n");
               return false;
             }
@@ -376,7 +424,7 @@ namespace dustbin {
             l_cPlayer.m_iPlayerId = l_iPlayerId++;
             m_vPlayers.push_back(l_cPlayer);
           }
-          else if (l_iToken == c_iRacePlayerFooter) {
+          else if (l_iToken == c_iRacePlayersFooter) {
             return false;
           }
           else {
@@ -402,5 +450,437 @@ namespace dustbin {
 
       return s;
     }
+
+    SChampionshipPlayer::SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName) : m_iPlayerId(a_iPlayerId), m_sName(a_sName), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0) {
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = 0;
+    }
+
+    SChampionshipPlayer::SChampionshipPlayer(const std::string& a_sData) : m_iPlayerId(0), m_sName(""), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0) {
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = 0;
+
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      if (l_cSerializer.getS32() == c_iChampionshipPlayerHead) {
+        while (l_cSerializer.hasMoreMessages()) {
+          int l_iType = l_cSerializer.getS32();
+
+          switch (l_iType) {
+            case c_iChampionshipPlayerId:
+              m_iPlayerId = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipPlayerName:
+              m_sName = l_cSerializer.getString();
+              break;
+
+            case c_iChampionshipPlayerResults: {
+              int l_iValue = -1;
+              for (int i = 0; i < l_cSerializer.getS32(); i++) {
+                l_iValue = l_cSerializer.getS32();
+                if (l_iValue == c_iChampionshipPlayerResults)
+                  break;
+                m_aResult[i] = l_iValue;
+              }
+
+              if (l_iValue != c_iChampionshipPlayerResults) {
+                l_iValue = l_cSerializer.getS32();
+              }
+
+              if (l_iValue != c_iChampionshipPlayerResults) {
+                printf("Invalid result marker %i\n", l_iValue);
+              }
+              break;
+            }
+
+            case c_iChampionshipPlayerPoints:
+              m_iPoints = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipPlayerRespawns:
+              m_iRespawn = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipPlayerStunned:
+              m_iStunned = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipPlayerFastest:
+              m_iFastestLaps = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipPlayerFooter:
+              break;
+
+            default:
+              printf("Unknown data marker %i\n", l_iType);
+              break;
+          }
+        }
+      }
+      else printf("Invalid header for championship player.\n");
+    }
+
+    std::string SChampionshipPlayer::serialize() {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64();
+
+      l_cSerializer.addS32(c_iChampionshipPlayerHead);  // Header
+
+      // Player ID
+      l_cSerializer.addS32(c_iChampionshipPlayerId);
+      l_cSerializer.addS32(m_iPlayerId);
+
+      // Name
+      l_cSerializer.addS32(c_iChampionshipPlayerName);
+      l_cSerializer.addString(m_sName.c_str());
+
+      // Results
+      l_cSerializer.addS32(c_iChampionshipPlayerResults);
+      l_cSerializer.addS32(16);
+      for (int i = 0; i < 16; i++) {
+        l_cSerializer.addS32(m_aResult[i]);
+      }
+      l_cSerializer.addS32(c_iChampionshipPlayerResults);
+
+      // Points
+      l_cSerializer.addS32(c_iChampionshipPlayerPoints);
+      l_cSerializer.addS32(m_iPoints);
+
+      // Respawns
+      l_cSerializer.addS32(c_iChampionshipPlayerRespawns);
+      l_cSerializer.addS32(m_iRespawn);
+
+      // Stuns
+      l_cSerializer.addS32(c_iChampionshipPlayerStunned);
+      l_cSerializer.addS32(m_iStunned);
+
+      // Fastest laps
+      l_cSerializer.addS32(c_iChampionshipPlayerFastest);
+      l_cSerializer.addS32(m_iFastestLaps);
+
+      // Footer
+      l_cSerializer.addS32(c_iChampionshipPlayerFooter);
+
+      return l_cSerializer.getMessageAsString();
+    }
+
+    SChampionshipRace::SChampionshipRace(const std::string& a_sTrack, int a_iPlayers, int a_iLaps) : m_sTrack(a_sTrack), m_iPlayers(a_iPlayers), m_iLaps(a_iLaps) {
+    }
+
+    SChampionshipRace::SChampionshipRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      int l_iHead = l_cSerializer.getS32();
+      if (l_iHead == c_iChampionshipRaceHead) {
+        while (l_cSerializer.hasMoreMessages()) {
+          int l_iField = l_cSerializer.getS32();
+
+          switch (l_iField) {
+            case c_iChampionshipRacePlayers:
+              m_iPlayers = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipRaceLaps:
+              m_iLaps = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipRaceTrack:
+              m_sTrack = l_cSerializer.getString();
+              break;
+
+            case c_iChampionshipRaceResult: {
+              do {
+                int l_iValue = l_cSerializer.getS32();
+                int l_iCount = 0;
+
+                if (l_iValue == c_iChampionshipRacePlayer) {
+                  m_aResult[l_iCount] = SRacePlayer(l_cSerializer.getString());
+                }
+                else if (l_iValue == c_iChampionshipRaceResultEnd) {
+                  break;
+                }
+                else {
+                  printf("Unknown marker %i in championship race result.", l_iValue);
+                }
+              }
+              while (true);
+              break;
+            }
+
+            case c_iChampionshipRaceAssignBegin:
+              while (true) {
+                int l_iValue = l_cSerializer.getS32();
+                if (l_iValue == c_iChampionshipRaceAssignEnd) {
+                  break;
+                }
+                else {
+                  m_mAssignment[l_iValue] = l_cSerializer.getS32();
+                }
+              }
+              break;
+
+            case c_iChampionshipRaceFooter:
+              break;
+
+            default:
+              printf("Unkown field marker %i in championship race.\n", l_iField);
+          }
+        }
+      }
+      else printf("Unknown championship race header %i\n", l_iHead);
+    }
+
+    std::string SChampionshipRace::serialize() {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64();
+
+      // Header
+      l_cSerializer.addS32(c_iChampionshipRaceHead);
+
+      // Track
+      l_cSerializer.addS32(c_iChampionshipRaceTrack);
+      l_cSerializer.addString(m_sTrack);
+
+      // Laps
+      l_cSerializer.addS32(c_iChampionshipRaceLaps);
+      l_cSerializer.addS32(m_iLaps);
+
+      // Number of players
+      l_cSerializer.addS32(c_iChampionshipRacePlayers);
+      l_cSerializer.addS32(m_iPlayers);
+
+      // Players
+      l_cSerializer.addS32(c_iChampionshipRaceResult);
+      for (int i = 0; i < m_iPlayers; i++) {
+        l_cSerializer.addS32(c_iChampionshipRacePlayer);
+        l_cSerializer.addString(m_aResult[i].serialize());
+      }
+      l_cSerializer.addS32(c_iChampionshipRaceResultEnd);
+
+      // Marble Assignment
+      l_cSerializer.addS32(c_iChampionshipRaceAssignBegin);
+      for (std::map<int, int>::iterator it = m_mAssignment.begin(); it != m_mAssignment.end(); it++) {
+        l_cSerializer.addS32(it->first);
+        l_cSerializer.addS32(it->second);
+      }
+      l_cSerializer.addS32(c_iChampionshipRaceAssignEnd);
+
+      // Footer
+      l_cSerializer.addS32(c_iChampionshipRaceFooter);
+
+      return l_cSerializer.getMessageAsString();
+    }
+
+    SChampionship::SChampionship(int a_iClass) : m_iClass(a_iClass) {
+    }
+
+    SChampionship::SChampionship(const std::string& a_sData) : m_iClass(-1) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      int l_iHead = l_cSerializer.getS32();
+      if (l_iHead == c_iChampionshipHeader) {
+        while (l_cSerializer.hasMoreMessages()) {
+          int l_iType = l_cSerializer.getS32();
+
+          switch (l_iType) {
+            case c_iChampionshipClass:
+              m_iClass = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipPlayersStart: {
+              int l_iCountHead = l_cSerializer.getS32();
+              if (l_iCountHead == c_iChampionshipPlayersCount) {
+                int l_iNum = l_cSerializer.getS32();
+                for (int i = 0; i < l_iNum; i++) {
+                  int l_iData = l_cSerializer.getS32();
+                  if (l_iData == c_iChampionshipPlayersData) {
+                    m_vPlayers.push_back(SChampionshipPlayer(l_cSerializer.getString()));
+                  }
+                  else printf("Invalid data header for championshipplayers: %i (%i of %i)\n", l_iData, i, l_iNum);
+                }
+              }
+              else printf("Inavalid count header for championship players: %i\n", l_iCountHead);
+              break;
+            }
+
+            case c_iChampionshipRacesStart: {
+              int l_iRaceCount = l_cSerializer.getS32();
+              if (l_iRaceCount == c_iChampionshipRacesCount) {
+                int l_iNum = l_cSerializer.getS32();
+                for (int i = 0; i < l_iNum; i++) {
+                  int l_iData = l_cSerializer.getS32();
+                  if (l_iData == c_iChampionshipRacesData) {
+                    m_vRaces.push_back(SChampionshipRace(l_cSerializer.getString()));
+                  }
+                  else printf("Invalid race data header: %i (%i of %i)\n", l_iData, i, l_iNum);
+                }
+              }
+              else printf("Invalid header for race count: %i\n", l_iRaceCount);
+              break;
+            }
+          }
+        }
+      }
+      else printf("Invalid header for championship: %i\n", l_iHead);
+    }
+
+    std::string SChampionship::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      // Championship header
+      l_cSerializer.addS32(c_iChampionshipHeader);
+
+      // Championship class
+      l_cSerializer.addS32(c_iChampionshipClass);
+      l_cSerializer.addS32(m_iClass);
+
+      // The players
+      l_cSerializer.addS32(c_iChampionshipPlayersStart);
+      l_cSerializer.addS32(c_iChampionshipPlayersCount);
+      l_cSerializer.addS32((irr::s32)m_vPlayers.size());
+
+      for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        l_cSerializer.addS32(c_iChampionshipPlayersData);
+        l_cSerializer.addString((*it).serialize());
+      }
+
+      l_cSerializer.addS32(c_iChampionshipPlayersEnd);
+
+      // The races
+      l_cSerializer.addS32(c_iChampionshipRacesStart);
+      l_cSerializer.addS32(c_iChampionshipRacesCount);
+      l_cSerializer.addS32((irr::s32)m_vRaces.size());
+
+      for (std::vector<SChampionshipRace>::iterator it = m_vRaces.begin(); it != m_vRaces.end(); it++) {
+        l_cSerializer.addS32(c_iChampionshipRacesData);
+        l_cSerializer.addString((*it).serialize());
+      }
+
+      l_cSerializer.addS32(c_iChampionshipRacesFooter);
+
+      return l_cSerializer.getMessageAsString();
+    }
+
+    std::vector<SChampionshipPlayer*> SChampionship::getStandings() {
+      std::vector <SChampionshipPlayer*> l_vRet;
+
+      for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        l_vRet.push_back(&(*it));
+      }
+
+      std::sort(l_vRet.begin(), l_vRet.end(), [](SChampionshipPlayer* p1, SChampionshipPlayer* p2) {
+        if (p1->m_iPoints != p2->m_iPoints) {
+          // The player with more points leads
+          return p1->m_iPoints > p2->m_iPoints;
+        }
+        else {
+          // If two players have equal points the player with more
+          // better results leads
+          for (int i = 0; i < 16; i++) {
+            if (p1->m_aResult[i] != p2->m_aResult[i]) {
+              return p1->m_aResult[i] > p2->m_aResult[i];
+            }
+          }
+
+          // If none of the two above criteria define
+          // a leader we take the number of respawns
+          if (p1->m_iRespawn != p2->m_iRespawn) {
+            return p1->m_iRespawn < p2->m_iRespawn;
+          }
+
+          // If this does not help the number of stuns
+          // is taken into account
+          if (p1->m_iStunned != p2->m_iStunned) {
+            return p1->m_iStunned < p2->m_iStunned;
+          }
+
+          // If nothing helps we roll a dice
+          return (std::rand() % 2) == 0;
+        }
+      });
+
+      return l_vRet;
+    }
+
+    SRacePlayer::SRacePlayer(const std::string &a_sData) : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      int l_iHead = l_cSerializer.getS32();
+      if (l_iHead == c_iRacePlayerHeader) {
+        while (l_cSerializer.hasMoreMessages()) {
+          int l_iType = l_cSerializer.getS32();
+
+          switch (l_iType) {
+            case c_iRacePlayerId:
+              m_iId = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerPos:
+              m_iPos = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerDeficit:
+              m_iDeficitL = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerFastest:
+              m_iFastest = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerStunned:
+              m_iStunned = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerRespawn:
+              m_iRespawn = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerFooter:
+              break;
+
+            default:
+              printf("Unknown data marker in race player structure: %i\n", l_iType);
+          }
+        }
+      }
+      else printf("Invalid header for the race player (%i)\n", l_iHead);
+    }
+
+    std::string SRacePlayer::serialize() {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64();
+
+      // Start of the structure
+      l_cSerializer.addS32(c_iRacePlayerHeader);
+
+      // ID of the player in the race (aka marble id)
+      l_cSerializer.addS32(c_iRacePlayerId);
+      l_cSerializer.addS32(m_iId);
+
+      // Finishing position of the player
+      l_cSerializer.addS32(c_iRacePlayerPos);
+      l_cSerializer.addS32(m_iPos);
+
+      // Deficit of the player on the leader
+      l_cSerializer.addS32(c_iRacePlayerDeficit);
+      l_cSerializer.addS32(m_iDeficitL);
+
+      // Fastest lap of the player
+      l_cSerializer.addS32(c_iRacePlayerFastest);
+      l_cSerializer.addS32(m_iFastest);
+
+      // Number of stuns of the player
+      l_cSerializer.addS32(c_iRacePlayerStunned);
+      l_cSerializer.addS32(m_iStunned);
+
+      // Number of respawns of the player
+      l_cSerializer.addS32(c_iRacePlayerRespawn);
+      l_cSerializer.addS32(m_iRespawn);
+
+      // End of the data structure
+      l_cSerializer.addS32(c_iRacePlayerFooter);
+
+      return l_cSerializer.getMessageAsString();
+    }
+
   }
 }

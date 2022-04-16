@@ -30,10 +30,12 @@ namespace dustbin {
     /**
     * Add a marble
     * @param a_iMarble the ID of the marble
+    * @param a_iPlayerId ID of the player
     */
     void CGameLogicDefault::addMarble(int a_iMarble) {
       if (m_iPlayerCount < 16) {
         m_aPlayers[m_iPlayerCount].m_iId = a_iMarble;
+
         m_vPositions.push_back(&m_aPlayers[m_iPlayerCount]);
         m_iPlayerCount++;
       }

@@ -32,6 +32,7 @@ namespace dustbin {
         /**
         * Add a marble
         * @param a_iMarble the ID of the marble
+        * @param a_iPlayerId ID of the player
         */
         virtual void addMarble(int a_iMarble) = 0;
 
