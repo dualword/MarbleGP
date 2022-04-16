@@ -81,7 +81,7 @@ namespace dustbin {
 
         /**
          * This function receives messages of type "PlayerRostrum"
-         * @param a_MarbleId ID of the marble sent to the rostrum
+         * @param a_MarbleId ID of the marble
          */
         virtual void onPlayerrostrum(irr::s32 a_MarbleId) = 0;
 

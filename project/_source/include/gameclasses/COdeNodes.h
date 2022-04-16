@@ -161,14 +161,14 @@ namespace dustbin {
           Finished
         };
 
-        int m_iManualRespawn,
-            m_iLastTrigger,
-            m_iLastContact,   /**< The step no. of the last contact */
-            m_iRespawnStart,  /**< The step when the respawn of the marble started */
-            m_iStunnedStart,  /**< The step when the stunned state started */
-            m_iLapNo,         /**< The current lap of the marble */
-            m_iFinishTime,    /**< Finish time of the marble */
-            m_iPosition;      /**< Position in the race */
+        int m_iManualRespawn;
+        int m_iLastTrigger;
+        int m_iLastContact;   /**< The step no. of the last contact */
+        int m_iRespawnStart;  /**< The step when the respawn of the marble started */
+        int m_iStunnedStart;  /**< The step when the stunned state started */
+        int m_iLapNo;         /**< The current lap of the marble */
+        int m_iFinishTime;    /**< Finish time of the marble */
+        int m_iPosition;      /**< Position in the race */
 
         bool m_bActive; /**< The player has already shown some activity */
 
