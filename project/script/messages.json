@@ -175,7 +175,8 @@
         { "name": "Deficit" , "type": "irr::s32", "comment": "Deficit on the leader" },
         { "name": "Laps"    , "type": "irr::s32", "comment": "Number of laps done" },
         { "name": "Stunned" , "type": "irr::s32", "comment": "Counter of the stuns of the marble during the race" },
-        { "name": "Respawn" , "type": "irr::s32", "comment": "Counter of the respawns of the marble during the race" }
+        { "name": "Respawn" , "type": "irr::s32", "comment": "Counter of the respawns of the marble during the race" },
+        { "name": "Fastest" , "type": "irr::s32", "comment": "Fastest lap of the player" }
       ]
     }
   },
@@ -244,6 +245,18 @@
         "LapStart",
         "PlayerRostrum",
         "Countdown"
+      ]
+    },
+    {
+      "name": "AiController",
+      "send": [
+        "MarbleControl"
+      ],
+      "receive": [
+        "StepMsg",
+        "ObjectMoved",
+        "MarbleMoved",
+        "PlayerRespawn"
       ]
     }
   ]

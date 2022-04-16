@@ -26,13 +26,6 @@ namespace dustbin {
     }
 
     /**
-    * This function receives messages of type "Countdown"
-    * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
-    */
-    void CAiControlThread::onCountdown(irr::u8 a_Tick) {
-    }
-
-    /**
     * This function receives messages of type "ObjectMoved"
     * @param a_ObjectId The ID of the object
     * @param a_Position The current position
@@ -67,14 +60,6 @@ namespace dustbin {
     }
 
     /**
-    * This function receives messages of type "Trigger"
-    * @param a_TriggerId ID of the trigger
-    * @param a_ObjectId ID of the marble that caused the trigger
-    */
-    void CAiControlThread::onTrigger(irr::s32 a_TriggerId, irr::s32 a_ObjectId) {
-    }
-
-    /**
     * This function receives messages of type "PlayerRespawn"
     * @param a_MarbleId ID of the marble
     * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
@@ -84,73 +69,6 @@ namespace dustbin {
         for (int i = 0; m_aControllers[i] != nullptr; i++)
           m_aControllers[i]->onMarbleRespawn(a_MarbleId);
       }
-    }
-
-    /**
-    * This function receives messages of type "CameraRespawn"
-    * @param a_MarbleId The ID of the marble which is respawning
-    * @param a_Position The new position of the camera
-    * @param a_Target The new target of the camera, i.e. the future position of the marble
-    */
-    void CAiControlThread::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Target) {
-    }
-
-    /**
-    * This function receives messages of type "PlayerStunned"
-    * @param a_MarbleId ID of the marble
-    * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
-    */
-    void CAiControlThread::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
-    }
-
-    /**
-    * This function receives messages of type "PlayerFinished"
-    * @param a_MarbleId ID of the finished marble
-    * @param a_RaceTime Racetime of the finished player in simulation steps
-    * @param a_Laps The number of laps the player has done
-    */
-    void CAiControlThread::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
-    }
-
-    /**
-    * This function receives messages of type "RaceFinished"
-    * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
-    */
-    void CAiControlThread::onRacefinished(irr::u8 a_Cancelled) {
-    }
-
-    /**
-    * This function receives messages of type "Checkpoint"
-    * @param a_MarbleId ID of the marble
-    * @param a_Checkpoint The checkpoint ID the player has passed
-    */
-    void CAiControlThread::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
-    }
-
-    /**
-    * This function receives messages of type "LapStart"
-    * @param a_MarbleId ID of the marble
-    * @param a_LapNo Number of the started lap
-    */
-    void CAiControlThread::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
-    }
-
-    /**
-    * This function receives messages of type "PauseChanged"
-    * @param a_Paused The current paused state
-    */
-    void CAiControlThread::onPausechanged(bool a_Paused) {
-    }
-
-    /**
-    * This function receives messages of type "RacePosition"
-    * @param a_MarbleId ID of the marble
-    * @param a_Position Position of the marble
-    * @param a_Laps The current lap of the marble
-    * @param a_Deficit Deficit of the marble on the leader in steps
-    */
-    void CAiControlThread::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
-
     }
 
     /**

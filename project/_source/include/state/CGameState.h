@@ -272,7 +272,7 @@ namespace dustbin {
         * @param a_Stunned Counter of the stuns of the marble during the race
         * @param a_Respawn Counter of the respawns of the marble during the race
         */
-        virtual void onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn);
+        virtual void onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn, irr::s32 a_Fastest);
 
         /**
          * This function receives messages of type "PauseChanged"

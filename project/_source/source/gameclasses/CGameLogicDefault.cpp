@@ -62,6 +62,14 @@ namespace dustbin {
           m_bRaceFinished = true;
           return true;
         }
+
+        if (m_aPlayers[l_iId].m_iLapStart > 0) {
+          irr::s32 l_iLapTime = m_iStepNo - m_aPlayers[l_iId].m_iLapStart;
+          if (m_aPlayers[l_iId].m_iFastest == 0 || l_iLapTime < m_aPlayers[l_iId].m_iFastest)
+            m_aPlayers[l_iId].m_iFastest = l_iLapTime;
+        }
+
+        m_aPlayers[l_iId].m_iLapStart = m_iStepNo;
       }
 
       return false;

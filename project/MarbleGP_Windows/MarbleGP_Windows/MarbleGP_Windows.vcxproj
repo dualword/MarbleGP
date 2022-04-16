@@ -92,6 +92,7 @@
     <ClCompile Include="..\..\_source\source\xeffects\EffectHandler.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessages.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\IAiController.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameHUD.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\IAiController.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h" />

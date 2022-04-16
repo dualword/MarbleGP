@@ -1038,3 +1038,7 @@
 /project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/48b3eeb1270cfe/CMENUSETTINGS.ipch
 /project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/fb7d792bc448ce49/IJOYSTICKEVENTHANDLER.ipch
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/CRankingElement.obj
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/IAiController.obj
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/MarbleGP_Windows.tlog/CL.11572.write.1.tlog
+/project/_source/include/_generated/messages/IAiController.h
+/project/_source/source/_generated/messages/IAiController.cpp

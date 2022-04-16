@@ -1357,8 +1357,8 @@ namespace dustbin {
     * @param a_Stunned Counter of the stuns of the marble during the race
     * @param a_Respawn Counter of the respawns of the marble during the race
     */
-    void CGameState::onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn) {
-      printf("onFinishPosition: %2i | %i | %i | %i | %i | %i |\n", a_Position, a_MarbleId, a_Deficit, a_Laps, a_Stunned, a_Respawn);
+    void CGameState::onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn, irr::s32 a_Fastest) {
+      printf("onFinishPosition: %2i | %i | %i | %i | %i | %i | %i |\n", a_Position, a_MarbleId, a_Deficit, a_Laps, a_Stunned, a_Respawn, a_Fastest);
     }
 
 

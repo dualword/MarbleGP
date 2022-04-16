@@ -161,10 +161,12 @@ namespace dustbin {
       int m_iDeficitA;  /**< Deficit to the player ahead */
       int m_iLastCp;    /**< The time of the last checkpoint */
       int m_iPos;       /**< The position of the player in the race */
+      int m_iFastest;   /**< Fastest lap of the player */
+      int m_iLapStart;  /**< Start of the current lap */
 
       std::vector<int> m_vCpTimes;
 
-      SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0) {
+      SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
       }
     };
   }
