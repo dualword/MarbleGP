@@ -1044,7 +1044,6 @@ namespace dustbin {
      * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
      */
     void CGameState::onCountdown(irr::u8 a_Tick) {
-      printf("On Countdown: %i\n", a_Tick);
       if (a_Tick == 0) {
         m_eState = enGameState::Racing;
         m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStRace);
@@ -1198,7 +1197,6 @@ namespace dustbin {
      * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
      */
     void CGameState::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
-      printf("onPlayerStunned: %i, %i\n", a_MarbleId, a_State);
       if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
         irr::s32 l_iIndex = a_MarbleId - 10000;
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
@@ -1290,7 +1288,6 @@ namespace dustbin {
      * @param a_LapNo Number of the started lap
      */
     void CGameState::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
-      printf("onLapstart (GameState): Marble %i, Lap %i\n", a_MarbleId, a_LapNo);
       int l_iId = a_MarbleId - 10000;
       if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr && m_aMarbles[l_iId]->m_pViewport != nullptr) {
         m_pSoundIntf->play2d(L"data/sounds/lap.ogg", m_fSfxVolume, 0.0f);
@@ -1325,7 +1322,6 @@ namespace dustbin {
     * @param a_Deficit Deficit of the marble on the leader in steps
     */
     void CGameState::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
-      // printf("Race position update: %i, %i, %i, %i\n", a_MarbleId, a_Position, a_Laps, a_Deficit);
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         m_aMarbles[l_iIndex]->m_pPlayer->m_iPosition      = a_Position;
