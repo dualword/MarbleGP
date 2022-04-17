@@ -166,9 +166,8 @@ namespace dustbin {
 
       std::vector<int> m_vCpTimes;
 
-      SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
-      }
-
+      SRacePlayer();
+      SRacePlayer(const SRacePlayer &a_cOther);
       SRacePlayer(const std::string &a_sData);
 
       std::string serialize();
@@ -190,6 +189,7 @@ namespace dustbin {
 
       SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName);
       SChampionshipPlayer(const std::string &a_sData);
+      SChampionshipPlayer(const SChampionshipPlayer &a_cOther);
 
       std::string serialize();
     };
@@ -209,6 +209,7 @@ namespace dustbin {
 
       SChampionshipRace(const std::string &a_sTrack, int a_iPlayers, int a_iLaps);
       SChampionshipRace(const std::string &a_sData);
+      SChampionshipRace(const SChampionshipRace &a_cOther);
 
       std::string serialize();
     };
@@ -226,6 +227,7 @@ namespace dustbin {
 
       SChampionship(int a_iClass);
       SChampionship(const std::string &a_sData);
+      SChampionship(const SChampionship &a_sOther);
 
       std::string serialize();
 

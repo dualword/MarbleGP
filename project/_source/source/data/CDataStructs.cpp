@@ -456,6 +456,18 @@ namespace dustbin {
         m_aResult[i] = 0;
     }
 
+    SChampionshipPlayer::SChampionshipPlayer(const SChampionshipPlayer &a_cOther) : 
+      m_iPlayerId   (a_cOther.m_iPlayerId),
+      m_sName       (a_cOther.m_sName),
+      m_iPoints     (a_cOther.m_iPoints),
+      m_iRespawn    (a_cOther.m_iRespawn),
+      m_iStunned    (a_cOther.m_iStunned),
+      m_iFastestLaps(a_cOther.m_iFastestLaps)
+    {
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = a_cOther.m_aResult[i];
+    }
+
     SChampionshipPlayer::SChampionshipPlayer(const std::string& a_sData) : m_iPlayerId(0), m_sName(""), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0) {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = 0;
@@ -568,6 +580,18 @@ namespace dustbin {
     SChampionshipRace::SChampionshipRace(const std::string& a_sTrack, int a_iPlayers, int a_iLaps) : m_sTrack(a_sTrack), m_iPlayers(a_iPlayers), m_iLaps(a_iLaps) {
     }
 
+    SChampionshipRace::SChampionshipRace(const SChampionshipRace &a_cOther) : 
+      m_sTrack  (a_cOther.m_sTrack), 
+      m_iPlayers(a_cOther.m_iPlayers), 
+      m_iLaps   (a_cOther.m_iLaps) 
+    {
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = a_cOther.m_aResult[i];
+
+      for (std::map<int, int>::const_iterator it = a_cOther.m_mAssignment.begin(); it != a_cOther.m_mAssignment.end(); it++)
+        m_mAssignment[it->first] = it->second;
+    }
+
     SChampionshipRace::SChampionshipRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
@@ -672,6 +696,14 @@ namespace dustbin {
     }
 
     SChampionship::SChampionship(int a_iClass) : m_iClass(a_iClass) {
+    }
+
+    SChampionship::SChampionship(const SChampionship &a_cOther) : m_iClass(a_cOther.m_iClass) {
+      for (std::vector<SChampionshipPlayer>::const_iterator it = a_cOther.m_vPlayers.begin(); it != a_cOther.m_vPlayers.end(); it++)
+        m_vPlayers.push_back(SChampionshipPlayer(*it));
+
+      for (std::vector<SChampionshipRace>::const_iterator it = a_cOther.m_vRaces.begin(); it != a_cOther.m_vRaces.end(); it++)
+        m_vRaces.push_back(SChampionshipRace(*it));
     }
 
     SChampionship::SChampionship(const std::string& a_sData) : m_iClass(-1) {
@@ -800,6 +832,26 @@ namespace dustbin {
       });
 
       return l_vRet;
+    }
+
+    SRacePlayer::SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
+    }
+
+    SRacePlayer::SRacePlayer(const SRacePlayer& a_cOther) : 
+      m_iId      (a_cOther.m_iId), 
+      m_iCpCount (a_cOther.m_iCpCount), 
+      m_iStunned (a_cOther.m_iStunned), 
+      m_iRespawn (a_cOther.m_iRespawn), 
+      m_iLapNo   (a_cOther.m_iLapNo), 
+      m_iDeficitL(a_cOther.m_iDeficitL), 
+      m_iDeficitA(a_cOther.m_iDeficitA), 
+      m_iLastCp  (a_cOther.m_iLastCp), 
+      m_iPos     (a_cOther.m_iPos), 
+      m_iFastest (a_cOther.m_iFastest), 
+      m_iLapStart(a_cOther.m_iLapStart)
+    {
+      for (std::vector<int>::const_iterator it = a_cOther.m_vCpTimes.begin(); it != a_cOther.m_vCpTimes.end(); it++)
+        m_vCpTimes.push_back(*it);
     }
 
     SRacePlayer::SRacePlayer(const std::string &a_sData) : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
