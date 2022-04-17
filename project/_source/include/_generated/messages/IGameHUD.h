@@ -91,6 +91,12 @@ namespace dustbin {
          */
         virtual void onCountdown(irr::u8 a_Tick) = 0;
 
+        /**
+         * This function receives messages of type "StepMsg"
+         * @param a_StepNo The current step number
+         */
+        virtual void onStepmsg(irr::u32 a_StepNo) = 0;
+
 
       public:
         IGameHUD();

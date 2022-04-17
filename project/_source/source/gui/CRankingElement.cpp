@@ -9,6 +9,8 @@ namespace dustbin {
     CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui) :
       IGUIElement(irr::gui::EGUIET_COUNT, a_pGui, a_pParent != nullptr ? a_pParent : a_pGui->getRootGUIElement(), -1, a_cRect),
       m_cBackground(a_cBackground),
+      m_cOriginal  (a_cBackground),
+      m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
       m_iDeficit   (0),
       m_sName      (L""),
       m_sPosition  (std::to_wstring(a_iPosition) + L": "),
@@ -55,7 +57,7 @@ namespace dustbin {
       if (IsVisible) {
         renderBackground(AbsoluteClippingRect, m_cBackground);
 
-        m_pFont->draw(m_sPosition.c_str(), m_cPosition, irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
+        m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &AbsoluteClippingRect);
 
 
         wchar_t s[0xFF];
@@ -68,10 +70,23 @@ namespace dustbin {
         }
 
         if (m_iDeficit != 0)
-          m_pFont->draw(s, m_cDeficit, irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
+          m_pFont->draw(s, m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
 
-        m_pFont->draw(m_sName.c_str(), m_cName, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+        m_pFont->draw(m_sName.c_str(), m_cName, m_cTextColor, false, true, &AbsoluteClippingRect);
       }
+    }
+
+
+    /**
+    * Set the alpha value
+    * @param a_fAlpha the alpha value
+    */
+    void CRankingElement::setAlpha(irr::f32 a_fAlpha) {
+      m_cBackground = m_cOriginal;
+      irr::u32 l_iAlpha = (irr::u32)(((irr::f32)m_cOriginal.getAlpha()) * a_fAlpha);
+      m_cBackground.setAlpha(l_iAlpha);
+      m_cBorder    .setAlpha((irr::u32)(255.0f * a_fAlpha));
+      m_cTextColor .setAlpha((irr::u32)(255.0f * a_fAlpha));
     }
   }
 }

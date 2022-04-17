@@ -77,7 +77,8 @@ namespace dustbin {
         bool                       m_bHightlight;   /**< From the settings: highlight leader and marble ahead */
         bool                       m_bShowCtrl;     /**< From the settings: show marble controls */
         bool                       m_aRostrum[16];  /**< Flags for all player that are on the rostrum */
-        bool                       m_bShowRanking;  /**> From the settings: show ranking */
+        bool                       m_bShowRanking;  /**< From the settings: show ranking */
+        bool                       m_bFadeStart;    /**< Are we currently fading the start screen? */
         irr::core::recti           m_cRect;         /**< The total rect of the viewport */
         irr::gui::IGUIEnvironment *m_pGui;
         gameclasses::SPlayer      *m_pPlayer;       /**< This is the data of the player this HUD belongs to */
@@ -187,6 +188,12 @@ namespace dustbin {
         * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
         */
         virtual void onCountdown(irr::u8 a_Tick);
+
+        /**
+        * This function receives messages of type "StepMsg"
+        * @param a_StepNo The current step number
+        */
+        virtual void onStepmsg(irr::u32 a_StepNo);
 
       public:
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);

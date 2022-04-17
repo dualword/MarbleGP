@@ -24,6 +24,8 @@ namespace dustbin {
         irr::core::recti m_cDeficit;    /**< Rendering rect for the deficit */
 
         irr::video::SColor m_cBackground;   /**< The background color */
+        irr::video::SColor m_cOriginal;     /**< The original background color */
+        irr::video::SColor m_cTextColor;    /**< The text color */
 
         irr::gui::IGUIFont *m_pFont;  /**< The font to use */
 
@@ -39,6 +41,12 @@ namespace dustbin {
         void setData(const std::wstring &a_sName, int a_iDeficit);
 
         virtual void draw();
+
+        /**
+        * Set the alpha value
+        * @param a_fAlpha the alpha value
+        */
+        void setAlpha(irr::f32 a_fAlpha);
     };
   }
 }

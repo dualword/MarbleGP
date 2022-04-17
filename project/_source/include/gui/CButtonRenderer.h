@@ -15,8 +15,9 @@ namespace dustbin {
     */
     class CButtonRenderer {
       protected:
-        CGlobal                 * m_pGlobal;
-        irr::video::IVideoDriver* m_pDrv;
+        CGlobal                  *m_pGlobal;
+        irr::video::IVideoDriver *m_pDrv;
+        irr::video::SColor        m_cBorder;    /**< The border color */
 
         int m_iBorder;  /**< The border size */
         int m_iRaster;  /**< The raster size */

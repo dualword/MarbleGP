@@ -64,6 +64,11 @@ namespace dustbin {
               onCountdown(p->getTick());
               break;
             }
+            case dustbin::messages::enMessageIDs::StepMsg: {
+              dustbin::messages::CStepMsg *p = reinterpret_cast<dustbin::messages::CStepMsg *>(a_pMessage);
+              onStepmsg(p->getStepNo());
+              break;
+            }
             default:
               break;
           }

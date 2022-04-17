@@ -159,12 +159,40 @@ namespace dustbin {
     */
     void CGameHUD::onCountdown(irr::u8 a_Tick) {
       if (a_Tick == 1) {
+        m_bFadeStart = true;
+      }
+      else if (a_Tick == 0) {
+        m_bFadeStart = false;
         m_pRankParent->setVisible(false);
+
+        m_pRankParent->setBackgroundColor(irr::video::SColor(96, 192, 192, 192));
+
+        for (int i = 0; i < 16; i++) {
+          if (m_aRanking[i] != nullptr)
+            m_aRanking[i]->setAlpha(1.0f);
+        }
+
         m_bShowSpeed = true;
 
         for (int i = 0; i < 16; i++)
           if (m_aRanking[i] != nullptr)
             m_aRanking[i]->setVisible(false);
+      }
+    }
+
+    /**
+    * This function receives messages of type "StepMsg"
+    * @param a_StepNo The current step number
+    */
+    void CGameHUD::onStepmsg(irr::u32 a_StepNo) {
+      if (m_bFadeStart) {
+        irr::f32 l_fFactor = 1.0f - ((irr::f32)a_StepNo - 480) / 120.0f;
+        m_pRankParent->setBackgroundColor(irr::video::SColor((irr::u32)(96.0f * l_fFactor), 192, 192, 192));
+
+        for (int i = 0; i < 16; i++) {
+          if (m_aRanking[i] != nullptr)
+            m_aRanking[i]->setAlpha(l_fFactor);
+        }
       }
     }
 
@@ -224,6 +252,7 @@ namespace dustbin {
       m_bHightlight (true),
       m_bShowCtrl   (true),
       m_bShowRanking(true),
+      m_bFadeStart  (false),
       m_cRect       (a_cRect),
       m_pGui        (a_pGui),
       m_pPlayer     (a_pPlayer),
