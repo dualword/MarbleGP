@@ -889,6 +889,10 @@ namespace dustbin {
 
         for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++)
           (*it).marbleRespawn(a_iMarble);
+
+        if (m_pGameLogic != nullptr) {
+          m_pGameLogic->onRespawn(a_iMarble);
+        }
       }
     }
 
