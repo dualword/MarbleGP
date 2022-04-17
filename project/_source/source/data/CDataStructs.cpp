@@ -851,6 +851,59 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
+    void SChampionship::addRace(const SChampionshipRace& a_cRace) {
+      m_vRaces.push_back(SChampionshipRace(a_cRace));
+
+      // The scores for each finishing position, depending on the number of players
+      int l_iScore[16][16] = {
+        /*  1 player  */ {  0 },
+        /*  2 players */ {  2,  0 },
+        /*  3 players */ {  3,  1,  0 },
+        /*  4 players */ {  4,  2,  1,  0 },
+        /*  5 players */ {  5,  3,  2,  1,  0 },
+        /*  6 players */ {  7,  4,  3,  2,  1,  0 },
+        /*  7 players */ {  9,  6,  4,  3,  2,  1, 0 },
+        /*  8 players */ { 10,  7,  5,  4,  3,  2, 1, 0 },
+        /*  9 players */ { 10,  7,  6,  5,  4,  3, 2, 1, 0 },
+        /* 10 players */ { 10,  8,  7,  6,  5,  4, 3, 2, 1, 0 },
+        /* 11 players */ { 11,  9,  8,  7,  6,  5, 4, 3, 2, 1, 0 },
+        /* 12 players */ { 13, 11, 10,  8,  7,  6, 5, 4, 3, 2, 1, 0 },
+        /* 13 players */ { 15, 12, 10,  9,  8,  7, 6, 5, 4, 3, 2, 1, 0 },
+        /* 14 players */ { 16, 13, 11, 10,  9,  8, 7, 6, 5, 4, 3, 2, 1, 0 },
+        /* 15 players */ { 20, 16, 13, 11, 10,  9, 8, 7, 6, 5, 4, 3, 2, 1, 0 },
+        /* 16 players */ { 25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }
+      };
+
+      int l_iFastestTime = -1;
+      
+      std::vector<SChampionshipPlayer>::iterator l_itFastest = m_vPlayers.end();
+
+      for (int i = 0; i < a_cRace.m_iPlayers; i++) {
+        int l_iMarble = a_cRace.m_aResult[i].m_iId;
+        if (a_cRace.m_mAssignment.find(l_iMarble) != a_cRace.m_mAssignment.end()) {
+          int l_iId = a_cRace.m_mAssignment.find(l_iMarble)->second;
+          for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+            if ((*it).m_iPlayerId == l_iId) {
+              (*it).m_iPoints  += l_iScore[a_cRace.m_iPlayers][i];
+              (*it).m_iRespawn += a_cRace.m_aResult[i].m_iRespawn;
+              (*it).m_iStunned += a_cRace.m_aResult[i].m_iStunned;
+
+              if (l_iFastestTime == -1 || a_cRace.m_aResult[i].m_iFastest < l_iFastestTime) {
+                l_itFastest = it;
+                l_iFastestTime = a_cRace.m_aResult[i].m_iFastest;
+              }
+
+              break;
+            }
+          }
+        }
+      }
+
+      if (l_itFastest != m_vPlayers.end()) {
+        (*l_itFastest).m_iFastestLaps++;
+      }
+    }
+
     std::string SChampionship::to_string() {
       std::string s = "SChampionship: " + 
         std::string("class=") + std::to_string(m_iClass) + ", " +

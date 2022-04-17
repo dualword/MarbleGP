@@ -209,7 +209,7 @@ namespace dustbin {
       int         m_iLaps;        /**< The number of laps of the race */
       SRacePlayer m_aResult[16];  /**< The race result */
 
-      std::map<int, int> m_mAssignment;   /**< The assignment of players (key == player id) to marbles (value == marble id) in the race */
+      std::map<int, int> m_mAssignment;   /**< The assignment of players (key == marble id) to marbles (value == player id) in the race */
 
       SChampionshipRace(const std::string &a_sTrack, int a_iPlayers, int a_iLaps);
       SChampionshipRace(const std::string &a_sData);
@@ -241,6 +241,8 @@ namespace dustbin {
       std::string serialize();
 
       std::vector<SChampionshipPlayer *> getStandings();
+
+      void addRace(const SChampionshipRace &a_cRace);
 
       std::string to_string();
     };
