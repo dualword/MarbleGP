@@ -171,6 +171,8 @@ namespace dustbin {
       SRacePlayer(const std::string &a_sData);
 
       std::string serialize();
+
+      std::string to_string();
     };
 
     /**
@@ -192,6 +194,8 @@ namespace dustbin {
       SChampionshipPlayer(const SChampionshipPlayer &a_cOther);
 
       std::string serialize();
+
+      std::string to_string();
     };
 
     /**
@@ -212,6 +216,8 @@ namespace dustbin {
       SChampionshipRace(const SChampionshipRace &a_cOther);
 
       std::string serialize();
+
+      std::string to_string();
     };
 
     /**
@@ -224,6 +230,9 @@ namespace dustbin {
       std::vector<SChampionshipRace  > m_vRaces;    /**< The races of the championship */
 
       int m_iClass;   /**< Class of the championship (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP) */
+      int m_iGrid;    /**< The grid order (0 == Last Race, 1 == Standings, 2 == Random) */
+
+      bool m_bReverseGrid;  /**< Reverse the grid? */
 
       SChampionship(int a_iClass);
       SChampionship(const std::string &a_sData);
@@ -232,6 +241,8 @@ namespace dustbin {
       std::string serialize();
 
       std::vector<SChampionshipPlayer *> getStandings();
+
+      std::string to_string();
     };
   }
 }

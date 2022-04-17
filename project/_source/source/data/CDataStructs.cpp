@@ -60,14 +60,16 @@ namespace dustbin {
     // Championship
     const irr::s32 c_iChampionshipHeader       = -100;    /**< Marker for the start of a championship data structure */
     const irr::s32 c_iChampionshipClass        = -101;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipPlayersStart = -102;    /**< Marker for the the start of the championship players */
-    const irr::s32 c_iChampionshipPlayersCount = -103;    /**< Marker for the the number of championship players */
-    const irr::s32 c_iChampionshipPlayersData  = -104;    /**< Marker for the the start of a championship player */
-    const irr::s32 c_iChampionshipPlayersEnd   = -105;    /**< Marker for the the end of the players of the championship */
-    const irr::s32 c_iChampionshipRacesStart   = -106;    /**< Marker for the the start of the championship races */
-    const irr::s32 c_iChampionshipRacesCount   = -107;    /**< Marker for the the number of championship races */
-    const irr::s32 c_iChampionshipRacesData    = -108;    /**< Marker for the start of a championship race structure */
-    const irr::s32 c_iChampionshipRacesFooter  = -109;    /**< Marker for the end of the championship data structure */
+    const irr::s32 c_iChampionshipGridOrder    = -102;    /**< Marker for the the championship class */
+    const irr::s32 c_iChampionshipReverseGrid  = -103;    /**< Marker for the the championship class */
+    const irr::s32 c_iChampionshipPlayersStart = -104;    /**< Marker for the the start of the championship players */
+    const irr::s32 c_iChampionshipPlayersCount = -105;    /**< Marker for the the number of championship players */
+    const irr::s32 c_iChampionshipPlayersData  = -106;    /**< Marker for the the start of a championship player */
+    const irr::s32 c_iChampionshipPlayersEnd   = -107;    /**< Marker for the the end of the players of the championship */
+    const irr::s32 c_iChampionshipRacesStart   = -108;    /**< Marker for the the start of the championship races */
+    const irr::s32 c_iChampionshipRacesCount   = -109;    /**< Marker for the the number of championship races */
+    const irr::s32 c_iChampionshipRacesData    = -110;    /**< Marker for the start of a championship race structure */
+    const irr::s32 c_iChampionshipRacesFooter  = -111;    /**< Marker for the end of the championship data structure */
 
     // Race Player (limited data is encoded)
     const irr::s32 c_iRacePlayerHeader  = -120;   /**< Marker for the start of a race player data structure */
@@ -577,6 +579,25 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
+    std::string SChampionshipPlayer::to_string() {
+      std::string s = "SChampionshipPlayer: " +
+        std::string("player id=") + std::to_string(m_iPlayerId) + ", " +
+        std::string("name="     ) +                m_sName      + ", results = [ ";
+
+      for (int i = 0; i < 16; i++) {
+        if (i != 0) s += ", ";
+        s += std::to_string(m_aResult[i]);
+      }
+
+      s += "], "+
+        std::string("points=" ) + std::to_string(m_iPoints     ) + ", " +
+        std::string("respawn=") + std::to_string(m_iRespawn    ) + ", " +
+        std::string("stunned=") + std::to_string(m_iStunned    ) + ", " +
+        std::string("fastest=") + std::to_string(m_iFastestLaps);
+
+      return s;
+    }
+
     SChampionshipRace::SChampionshipRace(const std::string& a_sTrack, int a_iPlayers, int a_iLaps) : m_sTrack(a_sTrack), m_iPlayers(a_iPlayers), m_iLaps(a_iLaps) {
     }
 
@@ -695,6 +716,27 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
+    std::string SChampionshipRace::to_string() {
+      std::string s = "SChampionshipRace: " + 
+        std::string("track="  ) +               m_sTrack     + ", " +
+        std::string("laps="   ) + std::to_string(m_iLaps   ) + ", " +
+        std::string("players=") + std::to_string(m_iPlayers) + "\n\nResult:\n";
+
+      for (int i = 0; i < m_iPlayers; i++) {
+        s += std::to_string(i) + ": " + m_aResult[i].to_string() + "\n";
+      }
+
+      s += "\n\nMarble Assignment:\n";
+
+      for (std::map<int, int>::const_iterator it = m_mAssignment.begin(); it != m_mAssignment.end(); it++) {
+        if (it != m_mAssignment.begin()) s += ", ";
+        s += std::to_string(it->first) + "->" + std::to_string(it->second);
+      }
+      s += "\n\n";
+
+      return s;
+    }
+
     SChampionship::SChampionship(int a_iClass) : m_iClass(a_iClass) {
     }
 
@@ -717,6 +759,14 @@ namespace dustbin {
           switch (l_iType) {
             case c_iChampionshipClass:
               m_iClass = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipGridOrder:
+              m_iGrid = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipReverseGrid:
+              m_bReverseGrid = l_cSerializer.getS32() != 0;
               break;
 
             case c_iChampionshipPlayersStart: {
@@ -766,6 +816,14 @@ namespace dustbin {
       l_cSerializer.addS32(c_iChampionshipClass);
       l_cSerializer.addS32(m_iClass);
 
+      // Grid order
+      l_cSerializer.addS32(c_iChampionshipGridOrder);
+      l_cSerializer.addS32(m_iGrid);
+
+      // Reverse grid
+      l_cSerializer.addS32(c_iChampionshipReverseGrid);
+      l_cSerializer.addS32(m_bReverseGrid ? 1 : 0);
+
       // The players
       l_cSerializer.addS32(c_iChampionshipPlayersStart);
       l_cSerializer.addS32(c_iChampionshipPlayersCount);
@@ -791,6 +849,29 @@ namespace dustbin {
       l_cSerializer.addS32(c_iChampionshipRacesFooter);
 
       return l_cSerializer.getMessageAsString();
+    }
+
+    std::string SChampionship::to_string() {
+      std::string s = "SChampionship: " + 
+        std::string("class=") + std::to_string(m_iClass) + ", " +
+        std::string("grid=" ) + std::to_string(m_iGrid );
+
+      if (m_bReverseGrid)
+        s += " [reverted grid]";
+
+      s += "\n\nPlayers:\n";
+
+      for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        s += (*it).to_string() + "\n";
+      }
+
+      s += "\nRaces:\n";
+
+      for (std::vector<SChampionshipRace>::iterator it = m_vRaces.begin(); it != m_vRaces.end(); it++) {
+        s += (*it).to_string() + "\n";
+      }
+
+      return s;
     }
 
     std::vector<SChampionshipPlayer*> SChampionship::getStandings() {
@@ -934,5 +1015,14 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
+    std::string SRacePlayer::to_string() {
+      return "SRacePlayer: " +
+        std::string("id="     ) + std::to_string(m_iId      ) + ", " +
+        std::string("pos="    ) + std::to_string(m_iPos     ) + ", " +
+        std::string("deficit=") + std::to_string(m_iDeficitL) + ", " +
+        std::string("fastest=") + std::to_string(m_iFastest ) + ", " +
+        std::string("stunned=") + std::to_string(m_iStunned ) + ", " +
+        std::string("respawn=") + std::to_string(m_iRespawn );
+    }
   }
 }
