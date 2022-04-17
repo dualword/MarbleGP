@@ -10,6 +10,7 @@
 #include <scenenodes/STriggerVector.h>
 #include <threads/CMessageQueue.h>
 #include <gameclasses/SPlayer.h>
+#include <data/CDataStructs.h>
 #include <gfx/SViewPort.h>
 #include <state/IState.h>
 #include <vector>
@@ -110,6 +111,8 @@ namespace dustbin {
         std::vector<scenenodes::CDustbinCamera *> m_vCameras;   /**< Static cameras for the "replay" and "view track" modes */
 
         controller::CAiControlThread *m_pAiThread;
+
+        data::SChampionshipRace *m_pRace;
         
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;

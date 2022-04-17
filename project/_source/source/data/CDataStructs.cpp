@@ -491,7 +491,9 @@ namespace dustbin {
 
             case c_iChampionshipPlayerResults: {
               int l_iValue = -1;
-              for (int i = 0; i < l_cSerializer.getS32(); i++) {
+              int l_iCount = l_cSerializer.getS32();
+
+              for (int i = 0; i < l_iCount; i++) {
                 l_iValue = l_cSerializer.getS32();
                 if (l_iValue == c_iChampionshipPlayerResults)
                   break;
@@ -582,18 +584,18 @@ namespace dustbin {
     std::string SChampionshipPlayer::to_string() {
       std::string s = "SChampionshipPlayer: " +
         std::string("player id=") + std::to_string(m_iPlayerId) + ", " +
-        std::string("name="     ) +                m_sName      + ", results = [ ";
+        std::string("name="     ) +                m_sName      + "\nresults = [ ";
 
       for (int i = 0; i < 16; i++) {
         if (i != 0) s += ", ";
         s += std::to_string(m_aResult[i]);
       }
 
-      s += "], "+
+      s += "]\n"+
         std::string("points=" ) + std::to_string(m_iPoints     ) + ", " +
         std::string("respawn=") + std::to_string(m_iRespawn    ) + ", " +
         std::string("stunned=") + std::to_string(m_iStunned    ) + ", " +
-        std::string("fastest=") + std::to_string(m_iFastestLaps);
+        std::string("fastest=") + std::to_string(m_iFastestLaps) + "\n";
 
       return s;
     }
@@ -635,9 +637,9 @@ namespace dustbin {
               break;
 
             case c_iChampionshipRaceResult: {
+              int l_iCount = 0;
               do {
                 int l_iValue = l_cSerializer.getS32();
-                int l_iCount = 0;
 
                 if (l_iValue == c_iChampionshipRacePlayer) {
                   m_aResult[l_iCount] = SRacePlayer(l_cSerializer.getString());
@@ -648,6 +650,7 @@ namespace dustbin {
                 else {
                   printf("Unknown marker %i in championship race result.", l_iValue);
                 }
+                l_iCount++;
               }
               while (true);
               break;
@@ -737,7 +740,7 @@ namespace dustbin {
       return s;
     }
 
-    SChampionship::SChampionship(int a_iClass) : m_iClass(a_iClass) {
+    SChampionship::SChampionship(int a_iClass, int a_iGrid, bool a_bReverseGrid) : m_iClass(a_iClass), m_iGrid(a_iGrid), m_bReverseGrid(a_bReverseGrid) {
     }
 
     SChampionship::SChampionship(const SChampionship &a_cOther) : m_iClass(a_cOther.m_iClass) {
@@ -884,9 +887,13 @@ namespace dustbin {
           int l_iId = a_cRace.m_mAssignment.find(l_iMarble)->second;
           for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
             if ((*it).m_iPlayerId == l_iId) {
-              (*it).m_iPoints  += l_iScore[a_cRace.m_iPlayers][i];
+              int l_iDiff = l_iScore[a_cRace.m_iPlayers - 1][i];
+
+              (*it).m_iPoints  += l_iDiff;
               (*it).m_iRespawn += a_cRace.m_aResult[i].m_iRespawn;
               (*it).m_iStunned += a_cRace.m_aResult[i].m_iStunned;
+
+              (*it).m_aResult[i]++;
 
               if (l_iFastestTime == -1 || a_cRace.m_aResult[i].m_iFastest < l_iFastestTime) {
                 l_itFastest = it;
@@ -927,41 +934,41 @@ namespace dustbin {
       return s;
     }
 
-    std::vector<SChampionshipPlayer*> SChampionship::getStandings() {
-      std::vector <SChampionshipPlayer*> l_vRet;
+    std::vector<SChampionshipPlayer> SChampionship::getStandings() {
+      std::vector <SChampionshipPlayer> l_vRet;
 
       for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-        l_vRet.push_back(&(*it));
+        l_vRet.push_back(SChampionshipPlayer(*it));
       }
 
-      std::sort(l_vRet.begin(), l_vRet.end(), [](SChampionshipPlayer* p1, SChampionshipPlayer* p2) {
-        if (p1->m_iPoints != p2->m_iPoints) {
+      std::sort(l_vRet.begin(), l_vRet.end(), [](SChampionshipPlayer p1, SChampionshipPlayer p2) {
+        if (p1.m_iPoints != p2.m_iPoints) {
           // The player with more points leads
-          return p1->m_iPoints > p2->m_iPoints;
+          return p1.m_iPoints > p2.m_iPoints;
         }
         else {
           // If two players have equal points the player with more
           // better results leads
           for (int i = 0; i < 16; i++) {
-            if (p1->m_aResult[i] != p2->m_aResult[i]) {
-              return p1->m_aResult[i] > p2->m_aResult[i];
+            if (p1.m_aResult[i] != p2.m_aResult[i]) {
+              return p1.m_aResult[i] > p2.m_aResult[i];
             }
           }
 
           // If none of the two above criteria define
           // a leader we take the number of respawns
-          if (p1->m_iRespawn != p2->m_iRespawn) {
-            return p1->m_iRespawn < p2->m_iRespawn;
+          if (p1.m_iRespawn != p2.m_iRespawn) {
+            return p1.m_iRespawn < p2.m_iRespawn;
           }
 
           // If this does not help the number of stuns
           // is taken into account
-          if (p1->m_iStunned != p2->m_iStunned) {
-            return p1->m_iStunned < p2->m_iStunned;
+          if (p1.m_iStunned != p2.m_iStunned) {
+            return p1.m_iStunned < p2.m_iStunned;
           }
 
-          // If nothing helps we roll a dice
-          return (std::rand() % 2) == 0;
+          // If nothing helps we take the player id
+          return p1.m_iPlayerId < p2.m_iPlayerId;
         }
       });
 

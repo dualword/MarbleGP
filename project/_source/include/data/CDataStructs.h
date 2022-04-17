@@ -234,13 +234,13 @@ namespace dustbin {
 
       bool m_bReverseGrid;  /**< Reverse the grid? */
 
-      SChampionship(int a_iClass);
+      SChampionship(int a_iClass, int a_iGrid, bool a_bReverseGrid);
       SChampionship(const std::string &a_sData);
       SChampionship(const SChampionship &a_sOther);
 
       std::string serialize();
 
-      std::vector<SChampionshipPlayer *> getStandings();
+      std::vector<SChampionshipPlayer> getStandings();
 
       void addRace(const SChampionshipRace &a_cRace);
 

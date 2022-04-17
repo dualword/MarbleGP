@@ -969,13 +969,13 @@ namespace dustbin {
         }
 
         if (l_bAllFinished) {
-          sendRacefinished(0, m_pOutputQueue);
-
           const std::vector<data::SRacePlayer *> l_vResult = m_pGameLogic->getRacePositions();
 
           for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
             sendFinishposition((*it)->m_iPos, (*it)->m_iId, (*it)->m_iDeficitL, (*it)->m_iLapNo, (*it)->m_iStunned, (*it)->m_iRespawn, (*it)->m_iFastest, m_pOutputQueue);
           }
+
+          sendRacefinished(0, m_pOutputQueue);
         }
       }
     }

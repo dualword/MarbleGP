@@ -117,7 +117,8 @@ namespace dustbin {
       m_pShader      (nullptr),
       m_pCamAnimator (nullptr),
       m_pCamera      (nullptr),
-      m_pAiThread    (nullptr)
+      m_pAiThread    (nullptr),
+      m_pRace        (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -303,6 +304,8 @@ namespace dustbin {
 
       int l_iNumOfViewports = 0;  // The number of necessary viewports, aka local players
 
+      m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)l_cPlayers.m_vPlayers.size(), std::atoi(m_pGlobal->getSetting("laps").c_str()));
+
       printf("******** Marble assignment:\n");
       // .. fill the player vector and assign the marbles to the players (depending on the grid positions) ...
       for (size_t i = 0; i < l_cPlayers.m_vPlayers.size(); i++) {
@@ -317,7 +320,7 @@ namespace dustbin {
           l_cPlayers.m_vPlayers[i].m_eType
         );
 
-        l_pMarble->m_pPlayer = l_pPlayer;
+        l_pMarble->m_pPlayer = l_pPlayer; 
 
         printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
 
@@ -328,6 +331,8 @@ namespace dustbin {
 
         m_vPlayers .push_back(l_pPlayer);
         m_vPosition.push_back(l_pPlayer);
+
+        m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
       }
 
       // .. next we sort the players by the player IDs to give them the correct viewports
@@ -608,6 +613,11 @@ namespace dustbin {
 
       m_mCheckpoints.clear();
       m_vCameras    .clear();
+
+      if (m_pRace != nullptr) {
+        delete m_pRace;
+        m_pRace = nullptr;
+      }
     }
 
     /**
@@ -1247,6 +1257,12 @@ namespace dustbin {
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
       m_iFinished = a_Cancelled ? m_iStep - 550 : m_iStep;
       m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
+      
+      if (m_pRace != nullptr) {
+        data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
+        l_cChampionship.addRace(*m_pRace);
+        m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
+      }
     }
 
     /**
@@ -1355,6 +1371,19 @@ namespace dustbin {
     */
     void CGameState::onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn, irr::s32 a_Fastest) {
       printf("onFinishPosition: %2i | %5i | Def: %6i | Laps: %3i | Stuns: %3i | Resp: %3i | Fstst: %6i | %s\n", a_Position, a_MarbleId, a_Deficit, a_Laps, a_Stunned, a_Respawn, a_Fastest, m_aMarbles[a_MarbleId - 10000]->m_pPlayer->m_sName.c_str());
+
+
+      if (m_pRace != nullptr) {
+        int l_iIndex = a_Position - 1;
+
+        m_pRace->m_aResult[l_iIndex] = data::SRacePlayer();
+        m_pRace->m_aResult[l_iIndex].m_iId       = a_MarbleId;
+        m_pRace->m_aResult[l_iIndex].m_iDeficitL = a_Deficit;
+        m_pRace->m_aResult[l_iIndex].m_iPos      = l_iIndex;
+        m_pRace->m_aResult[l_iIndex].m_iFastest  = a_Fastest;
+        m_pRace->m_aResult[l_iIndex].m_iStunned  = a_Stunned;
+        m_pRace->m_aResult[l_iIndex].m_iRespawn  = a_Respawn;
+      }
     }
 
 

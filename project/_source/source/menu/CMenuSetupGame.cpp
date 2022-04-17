@@ -301,9 +301,13 @@ namespace dustbin {
                   }
                 }
 
-                printf("\n**********\n");
-                printf("%s\n", l_cPlayers.toString().c_str());
-                printf("\n**********\n");
+                data::SChampionship l_cChampionship = data::SChampionship(m_cSettings.m_iRaceClass, (int)l_cPlayers.m_vPlayers.size(), m_cSettings.m_bReverseGrid);
+
+                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+                  l_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer((*it).m_iPlayerId, (*it).m_sName));
+                }
+
+                m_pState->getGlobal()->setGlobal("championship", l_cChampionship.serialize());
 
                 gui::CDustbinCheckbox *l_pTouch = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
                 if (l_pTouch != nullptr)

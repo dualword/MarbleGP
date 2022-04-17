@@ -204,6 +204,52 @@ namespace dustbin {
           }
 
           m_pState->setZLayer(0);
+
+          data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+          std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();
+
+          printf("\n********************************");
+          printf(  "**** Championship Standings ****\n");
+          printf("\n********************************\n");
+
+          printf("   |      Name       | Pts |");
+
+          for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
+            printf("%2i |", i + 1);
+
+          printf(" Rs | St | Fl |\n");
+
+          printf("---+-----------------+-----+");
+
+          for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
+            printf("---+");
+
+          printf("----+----+----+\n");
+
+          int l_iPos = 1;
+          for (std::vector<data::SChampionshipPlayer>::iterator it = l_vStanding.begin(); it != l_vStanding.end(); it++) {
+            std::string s = (*it).m_sName;
+
+            if (s.length() > 15)
+              s = s.substr(s.length() - 15);
+
+            while (s.length() < 15)
+              s += " ";
+
+            printf("%2i | %s | %3i |", l_iPos, s.c_str(), (*it).m_iPoints);
+
+            for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
+              if ((*it).m_aResult[i] != 0)
+                printf("%2i |", (*it).m_aResult[i]);
+              else
+                printf("   |");
+
+            printf(" %2i | %2i | %2i |\n", (*it).m_iRespawn, (*it).m_iStunned, (*it).m_iFastestLaps);
+
+            l_iPos++;
+          }
+
+          printf("\n********************************\n");
         }
 
         virtual ~CMenuSelectTrack() {
