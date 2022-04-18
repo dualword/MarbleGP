@@ -28,6 +28,8 @@
 #include <gui/CGameHUD.h>
 #include <CMainClass.h>
 #include <CGlobal.h>
+#include <algorithm>
+#include <random>
 #include <string>
 #include <map>
 
@@ -224,14 +226,79 @@ namespace dustbin {
         return;
       }
 
-      data::SRacePlayers l_cPlayers;
+      int  l_iGridOrder  = 0;
+      bool l_bGridRevert = false;
+
+      std::string l_sSettings = m_pGlobal->getSetting("gamesetup");
+      if (l_sSettings != "") {
+        data::SGameSettings l_cSettings;
+        l_cSettings.deserialize(l_sSettings);
+        l_iGridOrder  = l_cSettings.m_iGridPos;
+        l_bGridRevert = l_cSettings.m_bReverseGrid;
+      }
+
+      data::SChampionship      l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
+      data::SChampionshipRace *l_pLastRace     = l_cChampionship.getLastRace();
+      data::SRacePlayers       l_cPlayers;
+
       std::string l_sPlayers = m_pGlobal->getGlobal("raceplayers");
       l_cPlayers.deserialize(l_sPlayers);
+
+      if (l_pLastRace != nullptr && l_iGridOrder != 0) {
+        // Grid order: Result of last race
+        if (l_iGridOrder == 1) {
+          // Go through the players ..
+          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+            // .. next go through the last race result ..
+            for (int i = 0; i < l_cChampionship.m_iGridSize; i++) {
+              if (l_pLastRace->m_mAssignment.find(l_pLastRace->m_aResult[i].m_iId) != l_pLastRace->m_mAssignment.end()) {
+                // .. and search for the player
+                if ((*it).m_iPlayerId == l_pLastRace->m_mAssignment[l_pLastRace->m_aResult[i].m_iId]) {
+                  (*it).m_iGridPos = i;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        else if (l_iGridOrder == 2) {
+          // Get the current standings ..
+          std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();
+          // .. iterate of the standings ..
+          int l_iPos = 0;
+          for (std::vector<data::SChampionshipPlayer>::iterator it2 = l_vStanding.begin(); it2 != l_vStanding.end(); it2++) {
+            for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+              if ((*it).m_iPlayerId == (*it2).m_iPlayerId) {
+                (*it).m_iGridPos = l_iPos;
+                break;
+              }
+            }
+            l_iPos++;
+          }
+        }
+        else if (l_iGridOrder == 3) {
+          std::vector<int> l_vGrid;
+          for (int i = 1; i <= (int)l_cPlayers.m_vPlayers.size(); i++)
+            l_vGrid.push_back(i);
+
+          std::random_device l_cRd { };
+          std::default_random_engine l_cRe { l_cRd() };
+
+          std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
+          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+            (*it).m_iGridPos = *l_vGrid.begin();
+            l_vGrid.erase(l_vGrid.begin());
+          }
+        }
+      }
 
       // First we sort the player vector by the grid position as the first step will be marble assignment ..
       std::sort(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
         return a_cPlayer1.m_iGridPos < a_cPlayer2.m_iGridPos;
       });
+
+      if (l_bGridRevert && l_iGridOrder != 0 && l_pLastRace != nullptr)
+        std::reverse(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end());
 
       SGameViewports l_cViewports;
 

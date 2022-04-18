@@ -60,16 +60,17 @@ namespace dustbin {
     // Championship
     const irr::s32 c_iChampionshipHeader       = -100;    /**< Marker for the start of a championship data structure */
     const irr::s32 c_iChampionshipClass        = -101;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipGridOrder    = -102;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipReverseGrid  = -103;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipPlayersStart = -104;    /**< Marker for the the start of the championship players */
-    const irr::s32 c_iChampionshipPlayersCount = -105;    /**< Marker for the the number of championship players */
-    const irr::s32 c_iChampionshipPlayersData  = -106;    /**< Marker for the the start of a championship player */
-    const irr::s32 c_iChampionshipPlayersEnd   = -107;    /**< Marker for the the end of the players of the championship */
-    const irr::s32 c_iChampionshipRacesStart   = -108;    /**< Marker for the the start of the championship races */
-    const irr::s32 c_iChampionshipRacesCount   = -109;    /**< Marker for the the number of championship races */
-    const irr::s32 c_iChampionshipRacesData    = -110;    /**< Marker for the start of a championship race structure */
-    const irr::s32 c_iChampionshipRacesFooter  = -111;    /**< Marker for the end of the championship data structure */
+    const irr::s32 c_iChampionshipGridSize     = -102;    /**< Marker for the the championship class */
+    const irr::s32 c_iChampionshipGridOrder    = -103;    /**< Marker for the the championship class */
+    const irr::s32 c_iChampionshipReverseGrid  = -104;    /**< Marker for the the championship class */
+    const irr::s32 c_iChampionshipPlayersStart = -105;    /**< Marker for the the start of the championship players */
+    const irr::s32 c_iChampionshipPlayersCount = -106;    /**< Marker for the the number of championship players */
+    const irr::s32 c_iChampionshipPlayersData  = -107;    /**< Marker for the the start of a championship player */
+    const irr::s32 c_iChampionshipPlayersEnd   = -108;    /**< Marker for the the end of the players of the championship */
+    const irr::s32 c_iChampionshipRacesStart   = -109;    /**< Marker for the the start of the championship races */
+    const irr::s32 c_iChampionshipRacesCount   = -110;    /**< Marker for the the number of championship races */
+    const irr::s32 c_iChampionshipRacesData    = -111;    /**< Marker for the start of a championship race structure */
+    const irr::s32 c_iChampionshipRacesFooter  = -112;    /**< Marker for the end of the championship data structure */
 
     // Race Player (limited data is encoded)
     const irr::s32 c_iRacePlayerHeader  = -120;   /**< Marker for the start of a race player data structure */
@@ -740,7 +741,7 @@ namespace dustbin {
       return s;
     }
 
-    SChampionship::SChampionship(int a_iClass, int a_iGrid, bool a_bReverseGrid) : m_iClass(a_iClass), m_iGrid(a_iGrid), m_bReverseGrid(a_bReverseGrid) {
+    SChampionship::SChampionship(int a_iClass, int a_iGridSize, int a_iGridOrder, bool a_bReverseGrid) : m_iClass(a_iClass), m_iGridSize(a_iGridSize), m_iGridOrder(a_iGridOrder), m_bReverseGrid(a_bReverseGrid) {
     }
 
     SChampionship::SChampionship(const SChampionship &a_cOther) : m_iClass(a_cOther.m_iClass) {
@@ -765,7 +766,11 @@ namespace dustbin {
               break;
 
             case c_iChampionshipGridOrder:
-              m_iGrid = l_cSerializer.getS32();
+              m_iGridOrder = l_cSerializer.getS32();
+              break;
+
+            case c_iChampionshipGridSize:
+              m_iGridSize = l_cSerializer.getS32();
               break;
 
             case c_iChampionshipReverseGrid:
@@ -821,7 +826,11 @@ namespace dustbin {
 
       // Grid order
       l_cSerializer.addS32(c_iChampionshipGridOrder);
-      l_cSerializer.addS32(m_iGrid);
+      l_cSerializer.addS32(m_iGridOrder);
+
+      // Grid size
+      l_cSerializer.addS32(c_iChampionshipGridSize);
+      l_cSerializer.addS32(m_iGridSize);
 
       // Reverse grid
       l_cSerializer.addS32(c_iChampionshipReverseGrid);
@@ -852,6 +861,13 @@ namespace dustbin {
       l_cSerializer.addS32(c_iChampionshipRacesFooter);
 
       return l_cSerializer.getMessageAsString();
+    }
+
+    SChampionshipRace* SChampionship::getLastRace() {
+      if (m_vRaces.size() > 0)
+        return &m_vRaces.back();
+      else
+        return nullptr;
     }
 
     void SChampionship::addRace(const SChampionshipRace& a_cRace) {
@@ -914,7 +930,7 @@ namespace dustbin {
     std::string SChampionship::to_string() {
       std::string s = "SChampionship: " + 
         std::string("class=") + std::to_string(m_iClass) + ", " +
-        std::string("grid=" ) + std::to_string(m_iGrid );
+        std::string("grid=" ) + std::to_string(m_iGridSize );
 
       if (m_bReverseGrid)
         s += " [reverted grid]";

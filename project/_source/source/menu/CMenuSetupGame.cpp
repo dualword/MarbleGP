@@ -301,7 +301,7 @@ namespace dustbin {
                   }
                 }
 
-                data::SChampionship l_cChampionship = data::SChampionship(m_cSettings.m_iRaceClass, (int)l_cPlayers.m_vPlayers.size(), m_cSettings.m_bReverseGrid);
+                data::SChampionship l_cChampionship = data::SChampionship(m_cSettings.m_iRaceClass, (int)l_cPlayers.m_vPlayers.size(), m_cSettings.m_iGridPos, m_cSettings.m_bReverseGrid);
 
                 for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
                   l_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer((*it).m_iPlayerId, (*it).m_sName));

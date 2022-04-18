@@ -39,21 +39,21 @@ namespace dustbin {
     * This data structure holds all settings data, e.g. resolution and sound volume
     */
     struct SSettings {
-      int m_iResolutionW,   /**< Selected window width */
-          m_iResolutionH,   /**< Selected window height */
-          m_iShadows,       /**< Shadow details */
-          m_iAmbient,       /**< Ambient light */
-          m_iTouchType;     /**< Touch controller left or right (Android only) */
+      int m_iResolutionW;   /**< Selected window width */
+      int m_iResolutionH;   /**< Selected window height */
+      int m_iShadows;       /**< Shadow details */
+      int m_iAmbient;       /**< Ambient light */
+      int m_iTouchType;     /**< Touch controller left or right (Android only) */
 
-      float m_fSfxMaster,   /**< Sound master volume */
-            m_fSoundTrack,  /**< Sound track volume */
-            m_fSfxMenu,     /**< Menu sound effect volume */
-            m_fSfxGame;     /**< Game sound effect volume */
+      float m_fSfxMaster;   /**< Sound master volume */
+      float m_fSoundTrack;  /**< Sound track volume */
+      float m_fSfxMenu;     /**< Menu sound effect volume */
+      float m_fSfxGame;     /**< Game sound effect volume */
 
-      bool m_bFullscreen,   /**< Fullscreen or not? */
-           m_bUseMenuCtrl,  /**< Use the controller for the menu */
-           m_bGfxChange,    /**< Gfx settings have changed */
-           m_bTouchControl; /**< Flag for touch control (Android only) */
+      bool m_bFullscreen;   /**< Fullscreen or not? */
+      bool m_bUseMenuCtrl;  /**< Use the controller for the menu */
+      bool m_bGfxChange;    /**< Gfx settings have changed */
+      bool m_bTouchControl; /**< Flag for touch control (Android only) */
 
       std::string m_sController;  /**< The serialized menu controller configuration */
 
@@ -90,9 +90,9 @@ namespace dustbin {
       int          m_iPlayerId; /**< The ID of the player */
       int          m_iGridPos;  /**< Position in the grid (1..16) */
 
-      std::string m_sName,      /**< The player's name */
-                  m_sTexture,   /**< The player's texture generation string */
-                  m_sControls;  /**< The player's controls encoded as a string */
+      std::string m_sName;      /**< The player's name */
+      std::string m_sTexture;   /**< The player's texture generation string */
+      std::string m_sControls;  /**< The player's controls encoded as a string */
 
       
 
@@ -116,14 +116,14 @@ namespace dustbin {
     * A class for the general game settings
     */
     struct SGameSettings {
-      int m_iRaceClass,   /**< The race class (0 == Marbles3, 1 = Marbles2, 2 = MarbleGP) */
-          m_iGridPos,     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
-          m_iGridSize,    /**< The grid size, filled with AI players */
-          m_iAiClass;     /**< The class of the AI players (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP, 3 == Manual Configure, 4 == All Classes) */
+      int m_iRaceClass;   /**< The race class (0 == Marbles3, 1 = Marbles2, 2 = MarbleGP) */
+      int m_iGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
+      int m_iGridSize;    /**< The grid size, filled with AI players */
+      int m_iAiClass;     /**< The class of the AI players (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP, 3 == Manual Configure, 4 == All Classes) */
 
-      bool m_bReverseGrid,      /**< Shall the grid be reversed? */
-           m_bRandomFirstRace,  /**< Shall the grid of the first race be randomized? */
-           m_bFillGridAI;       /**< Should the grid be filled with AI players? */
+      bool m_bReverseGrid;      /**< Shall the grid be reversed? */
+      bool m_bRandomFirstRace;  /**< Shall the grid of the first race be randomized? */
+      bool m_bFillGridAI;       /**< Should the grid be filled with AI players? */
 
       SGameSettings();
 
@@ -209,7 +209,7 @@ namespace dustbin {
       int         m_iLaps;        /**< The number of laps of the race */
       SRacePlayer m_aResult[16];  /**< The race result */
 
-      std::map<int, int> m_mAssignment;   /**< The assignment of players (key == marble id) to marbles (value == player id) in the race */
+      std::map<int, int> m_mAssignment;   /**< The assignment of marbles (key == marble id) to players (value == player id) in the race */
 
       SChampionshipRace(const std::string &a_sTrack, int a_iPlayers, int a_iLaps);
       SChampionshipRace(const std::string &a_sData);
@@ -229,12 +229,13 @@ namespace dustbin {
       std::vector<SChampionshipPlayer> m_vPlayers;  /**< The players of the championship */
       std::vector<SChampionshipRace  > m_vRaces;    /**< The races of the championship */
 
-      int m_iClass;   /**< Class of the championship (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP) */
-      int m_iGrid;    /**< The grid order (0 == Last Race, 1 == Standings, 2 == Random) */
+      int m_iClass;     /**< Class of the championship (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP) */
+      int m_iGridSize;  /**< Grid size (0..16) */
+      int m_iGridOrder; /**< The grid order (0 == Last Race, 1 == Standings, 2 == Random) */
 
       bool m_bReverseGrid;  /**< Reverse the grid? */
 
-      SChampionship(int a_iClass, int a_iGrid, bool a_bReverseGrid);
+      SChampionship(int a_iClass, int a_iGridSize, int a_iGridOrder, bool a_bReverseGrid);
       SChampionship(const std::string &a_sData);
       SChampionship(const SChampionship &a_sOther);
 
@@ -243,6 +244,8 @@ namespace dustbin {
       std::vector<SChampionshipPlayer> getStandings();
 
       void addRace(const SChampionshipRace &a_cRace);
+
+      SChampionshipRace *getLastRace();
 
       std::string to_string();
     };
