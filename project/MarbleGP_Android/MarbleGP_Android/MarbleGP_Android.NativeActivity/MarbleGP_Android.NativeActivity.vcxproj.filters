@@ -255,6 +255,9 @@
     <ClInclude Include="..\..\..\_source\include\gui\CRankingElement.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\messages\IAiController.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -465,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gui\CRankingElement.cpp">
       <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\_generated\messages\IAiController.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
