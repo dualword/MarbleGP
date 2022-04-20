@@ -11,6 +11,9 @@
 #include <map>
 
 namespace dustbin {
+  namespace menu {
+    class IMenuManager;   /**< Forward declaration of the menu manager */
+  }
   namespace gui {
     const int g_ControllerUiId = MAKE_IRR_ID('d', 'g', 'c', 'u');
     const irr::c8 g_ControllerUiName[] = "ControllerUi";
@@ -65,6 +68,8 @@ namespace dustbin {
 
         std::vector<SJoystickState> m_vJoyStates;
 
+        menu::IMenuManager *m_pMenuManager;
+
         void elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter);
         void resetSelected();
 
@@ -101,7 +106,14 @@ namespace dustbin {
         */
         void setFont(irr::gui::IGUIFont* a_pFont);
 
-        virtual void OnJoystickEvent(const irr::SEvent& a_cEvent);
+        /**
+        * Is currently editing an item active? This will block the menu controller
+        */
+        bool isEditing();
+
+        void setMenuManager(menu::IMenuManager *a_pMenuManager);
+
+        virtual bool OnJoystickEvent(const irr::SEvent& a_cEvent) override;
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions);

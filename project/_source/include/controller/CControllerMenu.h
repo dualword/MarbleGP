@@ -21,12 +21,13 @@ namespace dustbin {
           Right
         };
 
-        bool m_bButtonDown,
-             m_bMoved,
-             m_bActive,
-             m_bEvent,
-             m_bCancelDown,
-             m_bOkDown;
+        bool m_bButtonDown;
+        bool m_bMoved;
+        bool m_bActive;
+        bool m_bEvent;
+        bool m_bCancelDown;
+        bool m_bOkDown;
+        bool m_bAllowOkCancel;
 
         irr::gui::IGUIEnvironment *m_pGui;
         irr::video::IVideoDriver  *m_pDrv;
@@ -105,6 +106,12 @@ namespace dustbin {
         void reset();
 
         void draw();
+
+        /**
+        * Optionally deactivate the "ok" and "cancel" options
+        * @param a_bAllow is it active or not?
+        */
+        void allowOkCancel(bool a_bAllow);
     };
 
   } // namespace controller

@@ -13,7 +13,7 @@ namespace dustbin {
     */
     class IJoystickEventHandler {
       public:
-        virtual void OnJoystickEvent(const irr::SEvent& a_cEvent) = 0;
+        virtual bool OnJoystickEvent(const irr::SEvent& a_cEvent) = 0;
     };
   }
 }

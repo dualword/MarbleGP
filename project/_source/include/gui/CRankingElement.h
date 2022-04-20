@@ -4,6 +4,7 @@
 #include <gui/CButtonRenderer.h>
 #include <irrlicht.h>
 #include <string>
+#include <vector>
 
 namespace dustbin {
   namespace gui {
@@ -26,8 +27,16 @@ namespace dustbin {
         irr::video::SColor m_cBackground;   /**< The background color */
         irr::video::SColor m_cOriginal;     /**< The original background color */
         irr::video::SColor m_cTextColor;    /**< The text color */
+        irr::video::SColor m_cHlColor;      /**< The highlight color */
 
         irr::gui::IGUIFont *m_pFont;  /**< The font to use */
+
+        bool m_bHighLight;    /**< Highlight this player */
+
+        irr::core::vector2di  m_cHighLight;   /**< The hightlight position */
+
+        std::vector<irr::core::line2di> m_vHightLight;  /**< The highlight 3d lines for drawing */
+        irr::core::dimension2du         m_cHlSize;      /**< Size of the highlight */
 
       public:
         CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui);
@@ -47,6 +56,12 @@ namespace dustbin {
         * @param a_fAlpha the alpha value
         */
         void setAlpha(irr::f32 a_fAlpha);
+
+        /**
+        * Highlight this player (to mark the marble of the HUD in the starting grid)
+        * @para a_bHighLight Hightlight or don't
+        */
+        void highlight(bool a_bHighLight);
     };
   }
 }

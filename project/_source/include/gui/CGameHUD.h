@@ -99,14 +99,32 @@ namespace dustbin {
         irr::core::vector3df       m_cUpVector;     /**< The marble's up vector */
         CRankingElement           *m_aRanking[16];  /**< The GUI elements for the ranking */
         irr::gui::IGUITab         *m_pRankParent;   /**< The parent for the ranking display */
+        irr::video::ITexture      *m_pCountDown[5]; /**< The countdown textures */
+        int                        m_iCountDown;    /**< The current countdown state (4..0) */
+        irr::f32                   m_fCdAlpha;      /**< Alpha channel of the countdown */
+        int                        m_iGoStep;       /**< The step when the countdown reached 0 */
+        int                        m_iStep;         /**< The current simulation step */
+        irr::core::recti           m_cCountDown;    /**< The rect to draw the countdown */
+        irr::core::recti           m_cCntSource;    /**< The source rect for drawning the countdow */
+        irr::video::ITexture      *m_pStunned;      /**< The "Stunned" image */
+        irr::video::ITexture      *m_pRespawn;      /**< The "Respawn" image */
+        irr::video::ITexture      *m_pFinished;     /**< The "Finished" image */
+        bool                       m_bRespawn;      /**< Is the marble this HUD belongs to currently respawning? */
+        bool                       m_bStunned;      /**< Is the marble this HUD belongs to currently stunned? */
+        bool                       m_bFinished;     /**< Has the marble this HUD belongs to finished the race ? */
+        int                        m_iFadeStart;    /**< The step when countdown 1 was received (and fading the grid starts) */
+        int                        m_iFinished;     /**< Finished position of the player */
+        irr::core::recti           m_cLaurelLft;    /**< Recti for the left laurel wreath */
+        irr::core::recti           m_cLaurelRgt;    /**< Recti for the right laurel wreath */
+        irr::core::recti           m_cLaurelSrc;    /**< Source rect for rendering the laurel wreaths */
+        irr::video::ITexture      *m_pLaurel[4];    /**< The laurel wreath images */
+        irr::gui::IGUIFont        *m_pPosFont;      /**< Font for showing the finish position */
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The Irrlicht scene collision manager */
 
         std::map<enTextElements, STextElement> m_mTextElements;   /**< The text elements of the HUD */
 
         std::vector<gameclasses::SPlayer *> *m_vRanking;
-
-        STextElement m_aPositions[4];
 
         irr::core::dimension2du getDimension(const std::wstring &s, irr::gui::IGUIFont *a_pFont);
 
@@ -204,6 +222,9 @@ namespace dustbin {
         void updateRanking();
 
         void setSettings(bool a_bHightlight, bool a_bShowCtrl, bool a_bShowRanking);
+
+        bool isResultParentVisible();
+        void showResultParent();
     };
   }
 }

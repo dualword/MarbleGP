@@ -585,7 +585,7 @@ namespace dustbin {
             l_cOnCountDown(4, m_pWorld->m_iWorldStep);
           }
           else {
-            int l_iStep = m_pWorld->m_iWorldStep - 120;
+            int l_iStep = m_pWorld->m_iWorldStep - 240;
 
             if (l_iStep == 120) {
               sendCountdown(3, m_pOutputQueue);

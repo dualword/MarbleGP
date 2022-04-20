@@ -990,32 +990,6 @@ namespace dustbin {
                 m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), it->second.m_cRect);
                 break;
 
-              case gameclasses::SMarbleNodes::enMarbleState::Finished:
-                if (m_pRostrum != nullptr) {
-                  int l_iStepSince = m_iStep - it->second.m_pPlayer->m_iStateChange;
-                  irr::f32 l_fFactor = 0.0f;
-
-                  if (l_iStepSince > 180) {
-                    l_fFactor = 1.0f - ((irr::f32)(l_iStepSince - 180)) / 100.0f;
-                    if (l_fFactor < 0.0f) l_fFactor = 0.0f;
-                  }
-                  else if (l_iStepSince > 160) {
-                    it->second.m_pCamera->setPosition(m_pRostrum->getCameraPosition());
-                    it->second.m_pCamera->setTarget(m_pRostrum->getAbsolutePosition() - irr::core::vector3df(0.0f, 15.0f, 0.0f));
-                    it->second.m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
-                    l_fFactor = 1.0f;
-                  }
-                  else if (l_iStepSince > 60) {
-                    l_fFactor = ((irr::f32)(l_iStepSince - 60)) / 100.0f;
-                    if (l_fFactor > 1.0f) {
-                      l_fFactor = 1.0f;
-                    }
-                  }
-
-                  m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
-                }
-                break;
-
               default:
                 break;
             }
@@ -1024,6 +998,41 @@ namespace dustbin {
       }
 
       m_pGui->drawAll();
+
+      // Fade-out of the HUD after the race must be drawn after the rest of the GUI so that the gray rectangle
+      // showing the result does not overlay the fade-out
+      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+        if (it->second.m_pPlayer != nullptr && it->second.m_pPlayer->m_iStateChange != -1) {
+          if (it->second.m_pPlayer->m_eState == gameclasses::SMarbleNodes::enMarbleState::Finished) {
+            if (m_pRostrum != nullptr) {
+              int l_iStepSince = m_iStep - it->second.m_pPlayer->m_iStateChange;
+              irr::f32 l_fFactor = 0.0f;
+
+              if (l_iStepSince > 180) {
+                l_fFactor = 1.0f - ((irr::f32)(l_iStepSince - 180)) / 100.0f;
+                if (l_fFactor < 0.0f) l_fFactor = 0.0f;
+              }
+              else if (l_iStepSince > 160) {
+                if (!it->second.m_pHUD->isResultParentVisible())
+                  it->second.m_pHUD->showResultParent();
+
+                it->second.m_pCamera->setPosition(m_pRostrum->getCameraPosition());
+                it->second.m_pCamera->setTarget(m_pRostrum->getAbsolutePosition() - irr::core::vector3df(0.0f, 15.0f, 0.0f));
+                it->second.m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+                l_fFactor = 1.0f;
+              }
+              else if (l_iStepSince > 60) {
+                l_fFactor = ((irr::f32)(l_iStepSince - 60)) / 100.0f;
+                if (l_fFactor > 1.0f) {
+                  l_fFactor = 1.0f;
+                }
+              }
+
+              m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
+            }
+          }
+        }
+      }
 
       if (m_eState == enGameState::Countdown) {
         irr::f32 l_fFade = 0.0f;

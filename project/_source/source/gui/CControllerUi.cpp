@@ -3,6 +3,7 @@
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
 #include <gui/CControllerUi.h>
+#include <menu/IMenuManager.h>
 #include <CGlobal.h>
 #include <string>
 
@@ -166,7 +167,8 @@ namespace dustbin {
       m_pSelectedTwo (nullptr),
       m_pHoveredOne  (nullptr),
       m_pHoveredTwo  (nullptr),
-      m_pFont        (nullptr)
+      m_pFont        (nullptr),
+      m_pMenuManager (nullptr)
     {
     }
 
@@ -269,6 +271,14 @@ namespace dustbin {
       }
     }
 
+    bool CControllerUi::isEditing() {
+      return m_pSelectedOne != nullptr;
+    }
+
+    void CControllerUi::setMenuManager(menu::IMenuManager* a_pMenuManager) {
+      m_pMenuManager = a_pMenuManager;
+    }
+
     void CControllerUi::resetSelected() {
       if (m_pSelectedOne != nullptr) {
         if (m_pSelectedOne->getType() == irr::gui::EGUIET_STATIC_TEXT)
@@ -308,6 +318,9 @@ namespace dustbin {
             p2->setBackgroundColor(irr::video::SColor(192, 128, 128, 255));
             p2->setDrawBackground(a_bEnter);
 
+            if (m_pMenuManager != nullptr)
+              m_pMenuManager->setMenuControllerEnabled(!a_bEnter);
+
             if (a_bEnter) {
               m_pHoveredOne = a_pElement;
               m_pHoveredTwo = l_pOther;
@@ -327,7 +340,8 @@ namespace dustbin {
       CControllerBase::update(a_cEvent);
       
       if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
-        OnJoystickEvent(a_cEvent);
+        if (OnJoystickEvent(a_cEvent))
+          return true;
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
@@ -441,7 +455,7 @@ namespace dustbin {
       }
     }
 
-    void CControllerUi::OnJoystickEvent(const irr::SEvent& a_cEvent) {
+    bool CControllerUi::OnJoystickEvent(const irr::SEvent& a_cEvent) {
       if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
         for (std::vector<SJoystickState>::iterator it = m_vJoyStates.begin(); it != m_vJoyStates.end(); it++) {
           if (!(*it).m_bInitialized && (*it).m_iIndex == a_cEvent.JoystickEvent.Joystick) {
@@ -468,7 +482,7 @@ namespace dustbin {
                   m_mControlText[m_itSelected]->setText(helpers::s2ws(s).c_str());
 
                   resetSelected();
-                  return;
+                  return true;
                 }
               }
 
@@ -496,7 +510,7 @@ namespace dustbin {
                   m_mControlText[m_itSelected]->setText(helpers::s2ws(s).c_str());
 
                   resetSelected();
-                  return;
+                  return true;
                 }
               }
 
@@ -514,13 +528,14 @@ namespace dustbin {
                   m_mControlText[m_itSelected]->setText(helpers::s2ws(s).c_str());
 
                   resetSelected();
-                  return;
+                  return true;
                 }
               }
             }
           }
         }
       }
+      return false;
     }
 
     /**

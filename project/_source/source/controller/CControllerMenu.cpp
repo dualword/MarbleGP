@@ -17,22 +17,23 @@ namespace dustbin {
   namespace controller {
 
     CControllerMenu::CControllerMenu(int a_iZLayer) :
-      m_bButtonDown(false),
-      m_bMoved     (false),
-      m_bActive    (false),
-      m_bEvent     (false),
-      m_bCancelDown(false),
-      m_bOkDown    (false),
-      m_pGui       (CGlobal::getInstance()->getGuiEnvironment()),
-      m_pDrv       (CGlobal::getInstance()->getVideoDriver()),
-      m_pCursor    (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()),
-      m_pDevice    (CGlobal::getInstance()->getIrrlichtDevice()),
-      m_pTimer     (CGlobal::getInstance()->getIrrlichtDevice()->getTimer()),
-      m_iZLayer    (a_iZLayer),
-      m_pSelected  (nullptr),
-      m_sEditChars (L""),
-      m_iEditTime  (-1),
-      m_bFirstCall (true)
+      m_bButtonDown   (false),
+      m_bMoved        (false),
+      m_bActive       (false),
+      m_bEvent        (false),
+      m_bCancelDown   (false),
+      m_bOkDown       (false),
+      m_bAllowOkCancel(true),
+      m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
+      m_pDrv          (CGlobal::getInstance()->getVideoDriver()),
+      m_pCursor       (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()),
+      m_pDevice       (CGlobal::getInstance()->getIrrlichtDevice()),
+      m_pTimer        (CGlobal::getInstance()->getIrrlichtDevice()->getTimer()),
+      m_iZLayer       (a_iZLayer),
+      m_pSelected     (nullptr),
+      m_sEditChars    (L""),
+      m_iEditTime     (-1),
+      m_bFirstCall    (true)
     {
       SCtrlInput l_cInput;
 
@@ -386,42 +387,49 @@ namespace dustbin {
         }
 
         if (m_vControls[5].m_fValue > 0.5f) {
-          m_bOkDown = true;
+          if (m_bAllowOkCancel)
+            m_bOkDown = true;
         }
         else {
           if (m_bOkDown) {
             m_bOkDown = false;
-            irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20000);
 
-            if (p != nullptr) {
-              irr::SEvent l_cEvent;
+            if (m_bAllowOkCancel) {
+              irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20000);
 
-              l_cEvent.EventType          = irr::EET_GUI_EVENT;
-              l_cEvent.GUIEvent.Caller    = p;
-              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+              if (p != nullptr) {
+                irr::SEvent l_cEvent;
 
-              CGlobal::getInstance()->OnEvent(l_cEvent);
+                l_cEvent.EventType          = irr::EET_GUI_EVENT;
+                l_cEvent.GUIEvent.Caller    = p;
+                l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+
+                CGlobal::getInstance()->OnEvent(l_cEvent);
+              }
             }
           }
         }
 
         if (m_vControls[6].m_fValue > 0.5f) {
-          m_bCancelDown = true;
+          if (m_bAllowOkCancel)
+            m_bCancelDown = true;
         }
         else {
           if (m_bCancelDown) {
             m_bCancelDown = false;
 
-            irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
+            if (m_bAllowOkCancel) {
+              irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
 
-            if (p != nullptr) {
-              irr::SEvent l_cEvent;
+              if (p != nullptr) {
+                irr::SEvent l_cEvent;
 
-              l_cEvent.EventType          = irr::EET_GUI_EVENT;
-              l_cEvent.GUIEvent.Caller    = p;
-              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+                l_cEvent.EventType          = irr::EET_GUI_EVENT;
+                l_cEvent.GUIEvent.Caller    = p;
+                l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
 
-              CGlobal::getInstance()->OnEvent(l_cEvent);
+                CGlobal::getInstance()->OnEvent(l_cEvent);
+              }
             }
           }
         }
@@ -591,6 +599,14 @@ namespace dustbin {
     */
     void CControllerMenu::reset() {
       m_pSelected = nullptr;
+    }
+
+    /**
+    * Optionally deactivate the "ok" and "cancel" options
+    * @param a_bAllow is it active or not?
+    */
+    void CControllerMenu::allowOkCancel(bool a_bAllow) {
+      m_bAllowOkCancel = a_bAllow;
     }
 
     void CControllerMenu::draw() {

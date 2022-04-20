@@ -719,6 +719,7 @@ namespace dustbin {
             if (m_pControllerUI != nullptr) {
               controller::CControllerGame *l_pCtrl = new controller::CControllerGame();
               m_pControllerUI->setText(helpers::s2ws(l_pCtrl->serialize()).c_str());
+              m_pControllerUI->setMenuManager(m_pManager);
               delete l_pCtrl;
             }
 
@@ -901,287 +902,289 @@ namespace dustbin {
             if (m_pControlDialog != nullptr && m_pControllerUI != nullptr && m_pControlDialog->isVisible())
               l_bRet = m_pControllerUI->update(a_cEvent);
 
-            if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-              std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();
+            if (!l_bRet) {
+              if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+                std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();
 
-              if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
-                for (int i = 0; i <= m_iMaxIndex; i++) {
-                  if (m_aProfiles[i].m_pName == a_cEvent.GUIEvent.Caller) {
-                    m_aProfiles[i].m_cData.m_sName = helpers::ws2s(m_aProfiles[i].m_pName->getText()).c_str();
-                    break;
-                  }
-                }
-              }
-              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-                if (l_sSender == "ok") {
-                  if (m_pColorDialog != nullptr && m_pColorDialog->isVisible())
-                    buttonColorOkClicked();
-                  else if (m_pTextureDialog != nullptr && m_pTextureDialog->isVisible())
-                    buttonTextureOkClicked();
-                  else if (m_pConfirmDialog != nullptr && m_pConfirmDialog->isVisible())
-                    buttonOhISeeClicked();
-                  else if (m_pPatternDialog == nullptr || !m_pPatternDialog->isVisible())
-                     buttonOkClicked();
-
-                  l_bRet = true;
-                }
-                else if (l_sSender == "cancel") {
-                  if (m_pColorDialog != nullptr && m_pColorDialog->isVisible())
-                    buttonColorCancelClicked();
-                  else if (m_pPatternDialog != nullptr && m_pPatternDialog->isVisible())
-                    buttonPatternCloseClicked();
-                  else if (m_pTextureDialog != nullptr && m_pTextureDialog->isVisible())
-                    buttonTextureCancelClicked();
-                  else
-                    buttonCancelClicked();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "btn_texture") {
+                if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
                   for (int i = 0; i <= m_iMaxIndex; i++) {
-                    if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pTexture == a_cEvent.GUIEvent.Caller && m_pTextureDialog != nullptr) {
-                      m_iEditing = i;
-                      m_pTextureDialog->setVisible(true);
-                      updateTextureUI();
-                      updateTexture(createTextureString());
-                      changeZLayer(10);
-                      l_bRet = true;
+                    if (m_aProfiles[i].m_pName == a_cEvent.GUIEvent.Caller) {
+                      m_aProfiles[i].m_cData.m_sName = helpers::ws2s(m_aProfiles[i].m_pName->getText()).c_str();
                       break;
                     }
                   }
                 }
-                else if (l_sSender == "btn_texture_cancel") {
-                  buttonTextureCancelClicked();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "btn_texture_ok") {
-                  buttonTextureOkClicked();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "btn_add") {
-                  for (int i = 0; i <= m_iMaxIndex; i++) {
-                    if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pAddProfile == a_cEvent.GUIEvent.Caller) {
-                      int l_iNum = 1;
-                      std::wstring l_sName = L"Player " + std::to_wstring(l_iNum++);
-
-                      for (int j = 0; j < i; j++) {
-                        if (m_aProfiles[j].isValid() && l_sName == m_aProfiles[j].m_pName->getText()) {
-                          l_sName = std::wstring(L"Player ") + std::to_wstring(l_iNum++);
-                        }
-                      }
-
-                      m_aProfiles[i].m_pAddProfile->setVisible(false);
-                      m_aProfiles[i].m_pDataRoot  ->setVisible(true);
-                      m_aProfiles[i].m_pName      ->setText   (l_sName.c_str());
-
-                      m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
-                      m_aProfiles[i].m_cData.m_sName = helpers::ws2s(l_sName);
-
-                      if (i + 1 <= m_iMaxIndex && m_aProfiles[i + 1].isValid()) {
-                        m_aProfiles[i + 1].m_pAddProfile->setVisible(true);
-                        m_aProfiles[i + 1].m_pDataRoot  ->setVisible(false);
-                      }
-                    }
-                  }
-                }
-                else if (l_sSender == "btn_delete") {
-                  int l_iDeleted = -1;
-                  bool l_bFirstEmpty = true;
-
-                  // Search for the delete button that was clicked
-                  for (int i = 0; i <= m_iMaxIndex; i++) {
-                    // if found ..
-                    if (m_aProfiles[i].m_pDelete == a_cEvent.GUIEvent.Caller && m_aProfiles[i].isValid()) {
-                      l_iDeleted = i;
-                      // .. we iterate all following profiles and copy
-                      // the data of the next profile to the iterated
-                      for (int j = i; j < m_iMaxIndex; j++) {
-                        if (m_aProfiles[j].isValid() && m_aProfiles[j + 1].isValid()) {
-                          m_aProfiles[j].m_cData.copyFrom(m_aProfiles[j + 1].m_cData);
-
-                          // If the profile is used (m_iPlayerId set) the we fill the UI ...
-                          if (m_aProfiles[j].m_cData.m_iPlayerId > 0)
-                            m_aProfiles[j].fillUI();
-                          else {
-                            // .. Otherwise we hide the data ..
-                            m_aProfiles[j].m_pDataRoot->setVisible(false);
-                            if (m_aProfiles[j].m_cData.m_iPlayerId <= 0) {
-                              // .. and if it's the first empty profile we show the add button
-                              if (l_bFirstEmpty) {
-                                l_bFirstEmpty = false;
-                                m_aProfiles[j].m_pAddProfile->setVisible(true);
-                              }
-                              else m_aProfiles[j].m_pAddProfile->setVisible(false);
-                            }
-                          }
-                        }
-                      }
-
-                      // One of m_iMaxIndex profiles has been deleted, we need 
-                      // to set the last add button to visible if all profiles
-                      // were used before the deletion
-                      if (l_bFirstEmpty) {
-                        if (m_aProfiles[m_iMaxIndex].isValid()) {
-                          m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(true);
-                          m_aProfiles[m_iMaxIndex].m_pDataRoot->setVisible(false);
-                          m_aProfiles[m_iMaxIndex].m_cData.m_iPlayerId = -1;
-                          m_aProfiles[m_iMaxIndex].m_cData.m_sName     = "";
-                          m_aProfiles[m_iMaxIndex].m_cData.m_sControls = "";
-                          m_aProfiles[m_iMaxIndex].m_cData.m_sTexture  = "";
-                        }
-                      }
-                      else m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(false);
-                    }
-                  }
-
-                  for (int i = 0; i <= m_iMaxIndex; i++)
-                    if (m_aProfiles[i].m_cData.m_iPlayerId > 0)
-                      m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
-                }
-                else if (l_sSender == "btn_color_ok") {
-                  buttonColorOkClicked();
-                }
-                else if (l_sSender == "btn_color_cancel") {
-                  buttonColorCancelClicked();
-                }
-                else if (l_sSender == "btn_select_pattern") {
-                  if (m_pPatternDialog != nullptr) {
-                    m_pPatternList->setSelected("");
-                    m_pPatternDialog->setVisible(true);
-                    changeZLayer(46);
-                    updatePatterns();
-                  }
-                }
-                else if (l_sSender == "btn_pattern_close") {
-                  buttonPatternCloseClicked();
-                }
-                else if (l_sSender  == "btn_pattern_left") {
-                  m_iPatternPage -= 3;
-                  updatePatterns();
-                }
-                else if (l_sSender == "btn_pattern_right") {
-                  m_iPatternPage += 3;
-                  updatePatterns();
-                }
-                else if (l_sSender == "btn_ohisee") {
-                  buttonOhISeeClicked();
-                } 
-                else if (l_sSender == "btn_controls") {
-                  for (int i = 0; i <= m_iMaxIndex; i++) {
-                    if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pControls == a_cEvent.GUIEvent.Caller && m_pControlDialog != nullptr) {
-                      m_iEditing = i;
-                      m_pControlDialog->setVisible(true);
-                      updateControlDialog();
-                      changeZLayer(42);
-                      l_bRet = true;
-                      break;
-                    }
-                  }
-                }
-                else if (l_sSender == "btn_ctrl_ok") {
-                  buttonControlsOkClicked();
-                }
-                else if (l_sSender == "btn_ctrl_cancel") {
-                  buttonControlsCancelClicked();
-                }
-                else if (l_sSender == "btn_pattern_select") {
-                  irr::SEvent l_cEvent;
-                  l_cEvent.EventType = irr::EET_USER_EVENT;
-                  l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
-                  l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
-                  buttonTexturePatternSelectClicked(l_cEvent);
-                }
-                else {
-                  for (std::map<std::string, std::tuple<std::string, irr::gui::IGUITab *>>::iterator it = m_mButtonLinks.begin(); it != m_mButtonLinks.end(); it++) {
-                    if (l_sSender == it->first && std::get<1>(it->second) != nullptr && m_pColorDialog != nullptr) {
-                      m_sTextureEdit = std::get<0>(it->second);
-                      m_pColorDialog->setVisible(true);
-
-                      if (m_sTextureEdit != "" && m_mGeneratedEd.find(m_sTextureEdit) != m_mGeneratedEd.end() && m_mGeneratedEd[m_sTextureEdit] != nullptr) {
-                        std::string l_sColor = helpers::ws2s(m_mGeneratedEd[m_sTextureEdit]->getText());
-                      
-                        while (l_sColor.size() < 6)
-                          l_sColor = "0" + l_sColor;
-
-                        updateColorDialog(l_sColor);
-                      }
-
-
-                      changeZLayer(23);
-                      l_bRet = true;
-                    }
-                  }
-
-                  if (!l_bRet) {
-                    for (std::vector<gui::CReactiveLabel*>::iterator it = m_vColorPick.begin(); it != m_vColorPick.end(); it++) {
-                      if (*it == a_cEvent.GUIEvent.Caller) {
-                        std::string l_sColor = helpers::ws2s((*it)->getText());
-
-                        while (l_sColor.size() < 6)
-                          l_sColor = "0" + l_sColor;
-
-                        updateColorDialog(l_sColor);
-                        l_bRet = true;
-                      }
-                    }
-                  }
-
-                  if (!l_bRet)
-                    printf("Button clicked (%s, %i, CMenuProfiles).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());            
-                }
-              }
-              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
-                if (l_sSender == "texture_mode") {
-                  switchTextureMode();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "ai_help") {
-                  gui::CSelector *p = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  if (p) {
-                    m_aProfiles[m_iEditing].m_cData.m_eAiHelp = (data::SPlayerData::enAiHelp)p->getSelected();
+                else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+                  if (l_sSender == "ok") {
+                    if (m_pColorDialog != nullptr && m_pColorDialog->isVisible())
+                      buttonColorOkClicked();
+                    else if (m_pTextureDialog != nullptr && m_pTextureDialog->isVisible())
+                      buttonTextureOkClicked();
+                    else if (m_pConfirmDialog != nullptr && m_pConfirmDialog->isVisible())
+                      buttonOhISeeClicked();
+                    else if (m_pPatternDialog == nullptr || !m_pPatternDialog->isVisible())
+                       buttonOkClicked();
 
                     l_bRet = true;
                   }
+                  else if (l_sSender == "cancel") {
+                    if (m_pColorDialog != nullptr && m_pColorDialog->isVisible())
+                      buttonColorCancelClicked();
+                    else if (m_pPatternDialog != nullptr && m_pPatternDialog->isVisible())
+                      buttonPatternCloseClicked();
+                    else if (m_pTextureDialog != nullptr && m_pTextureDialog->isVisible())
+                      buttonTextureCancelClicked();
+                    else
+                      buttonCancelClicked();
+                    l_bRet = true;
+                  }
+                  else if (l_sSender == "btn_texture") {
+                    for (int i = 0; i <= m_iMaxIndex; i++) {
+                      if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pTexture == a_cEvent.GUIEvent.Caller && m_pTextureDialog != nullptr) {
+                        m_iEditing = i;
+                        m_pTextureDialog->setVisible(true);
+                        updateTextureUI();
+                        updateTexture(createTextureString());
+                        changeZLayer(10);
+                        l_bRet = true;
+                        break;
+                      }
+                    }
+                  }
+                  else if (l_sSender == "btn_texture_cancel") {
+                    buttonTextureCancelClicked();
+                    l_bRet = true;
+                  }
+                  else if (l_sSender == "btn_texture_ok") {
+                    buttonTextureOkClicked();
+                    l_bRet = true;
+                  }
+                  else if (l_sSender == "btn_add") {
+                    for (int i = 0; i <= m_iMaxIndex; i++) {
+                      if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pAddProfile == a_cEvent.GUIEvent.Caller) {
+                        int l_iNum = 1;
+                        std::wstring l_sName = L"Player " + std::to_wstring(l_iNum++);
+
+                        for (int j = 0; j < i; j++) {
+                          if (m_aProfiles[j].isValid() && l_sName == m_aProfiles[j].m_pName->getText()) {
+                            l_sName = std::wstring(L"Player ") + std::to_wstring(l_iNum++);
+                          }
+                        }
+
+                        m_aProfiles[i].m_pAddProfile->setVisible(false);
+                        m_aProfiles[i].m_pDataRoot  ->setVisible(true);
+                        m_aProfiles[i].m_pName      ->setText   (l_sName.c_str());
+
+                        m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
+                        m_aProfiles[i].m_cData.m_sName = helpers::ws2s(l_sName);
+
+                        if (i + 1 <= m_iMaxIndex && m_aProfiles[i + 1].isValid()) {
+                          m_aProfiles[i + 1].m_pAddProfile->setVisible(true);
+                          m_aProfiles[i + 1].m_pDataRoot  ->setVisible(false);
+                        }
+                      }
+                    }
+                  }
+                  else if (l_sSender == "btn_delete") {
+                    int l_iDeleted = -1;
+                    bool l_bFirstEmpty = true;
+
+                    // Search for the delete button that was clicked
+                    for (int i = 0; i <= m_iMaxIndex; i++) {
+                      // if found ..
+                      if (m_aProfiles[i].m_pDelete == a_cEvent.GUIEvent.Caller && m_aProfiles[i].isValid()) {
+                        l_iDeleted = i;
+                        // .. we iterate all following profiles and copy
+                        // the data of the next profile to the iterated
+                        for (int j = i; j < m_iMaxIndex; j++) {
+                          if (m_aProfiles[j].isValid() && m_aProfiles[j + 1].isValid()) {
+                            m_aProfiles[j].m_cData.copyFrom(m_aProfiles[j + 1].m_cData);
+
+                            // If the profile is used (m_iPlayerId set) the we fill the UI ...
+                            if (m_aProfiles[j].m_cData.m_iPlayerId > 0)
+                              m_aProfiles[j].fillUI();
+                            else {
+                              // .. Otherwise we hide the data ..
+                              m_aProfiles[j].m_pDataRoot->setVisible(false);
+                              if (m_aProfiles[j].m_cData.m_iPlayerId <= 0) {
+                                // .. and if it's the first empty profile we show the add button
+                                if (l_bFirstEmpty) {
+                                  l_bFirstEmpty = false;
+                                  m_aProfiles[j].m_pAddProfile->setVisible(true);
+                                }
+                                else m_aProfiles[j].m_pAddProfile->setVisible(false);
+                              }
+                            }
+                          }
+                        }
+
+                        // One of m_iMaxIndex profiles has been deleted, we need 
+                        // to set the last add button to visible if all profiles
+                        // were used before the deletion
+                        if (l_bFirstEmpty) {
+                          if (m_aProfiles[m_iMaxIndex].isValid()) {
+                            m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(true);
+                            m_aProfiles[m_iMaxIndex].m_pDataRoot->setVisible(false);
+                            m_aProfiles[m_iMaxIndex].m_cData.m_iPlayerId = -1;
+                            m_aProfiles[m_iMaxIndex].m_cData.m_sName     = "";
+                            m_aProfiles[m_iMaxIndex].m_cData.m_sControls = "";
+                            m_aProfiles[m_iMaxIndex].m_cData.m_sTexture  = "";
+                          }
+                        }
+                        else m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(false);
+                      }
+                    }
+
+                    for (int i = 0; i <= m_iMaxIndex; i++)
+                      if (m_aProfiles[i].m_cData.m_iPlayerId > 0)
+                        m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
+                  }
+                  else if (l_sSender == "btn_color_ok") {
+                    buttonColorOkClicked();
+                  }
+                  else if (l_sSender == "btn_color_cancel") {
+                    buttonColorCancelClicked();
+                  }
+                  else if (l_sSender == "btn_select_pattern") {
+                    if (m_pPatternDialog != nullptr) {
+                      m_pPatternList->setSelected("");
+                      m_pPatternDialog->setVisible(true);
+                      changeZLayer(46);
+                      updatePatterns();
+                    }
+                  }
+                  else if (l_sSender == "btn_pattern_close") {
+                    buttonPatternCloseClicked();
+                  }
+                  else if (l_sSender  == "btn_pattern_left") {
+                    m_iPatternPage -= 3;
+                    updatePatterns();
+                  }
+                  else if (l_sSender == "btn_pattern_right") {
+                    m_iPatternPage += 3;
+                    updatePatterns();
+                  }
+                  else if (l_sSender == "btn_ohisee") {
+                    buttonOhISeeClicked();
+                  } 
+                  else if (l_sSender == "btn_controls") {
+                    for (int i = 0; i <= m_iMaxIndex; i++) {
+                      if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pControls == a_cEvent.GUIEvent.Caller && m_pControlDialog != nullptr) {
+                        m_iEditing = i;
+                        m_pControlDialog->setVisible(true);
+                        updateControlDialog();
+                        changeZLayer(42);
+                        l_bRet = true;
+                        break;
+                      }
+                    }
+                  }
+                  else if (l_sSender == "btn_ctrl_ok") {
+                    buttonControlsOkClicked();
+                  }
+                  else if (l_sSender == "btn_ctrl_cancel") {
+                    buttonControlsCancelClicked();
+                  }
+                  else if (l_sSender == "btn_pattern_select") {
+                    irr::SEvent l_cEvent;
+                    l_cEvent.EventType = irr::EET_USER_EVENT;
+                    l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
+                    l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
+                    buttonTexturePatternSelectClicked(l_cEvent);
+                  }
+                  else {
+                    for (std::map<std::string, std::tuple<std::string, irr::gui::IGUITab *>>::iterator it = m_mButtonLinks.begin(); it != m_mButtonLinks.end(); it++) {
+                      if (l_sSender == it->first && std::get<1>(it->second) != nullptr && m_pColorDialog != nullptr) {
+                        m_sTextureEdit = std::get<0>(it->second);
+                        m_pColorDialog->setVisible(true);
+
+                        if (m_sTextureEdit != "" && m_mGeneratedEd.find(m_sTextureEdit) != m_mGeneratedEd.end() && m_mGeneratedEd[m_sTextureEdit] != nullptr) {
+                          std::string l_sColor = helpers::ws2s(m_mGeneratedEd[m_sTextureEdit]->getText());
+                      
+                          while (l_sColor.size() < 6)
+                            l_sColor = "0" + l_sColor;
+
+                          updateColorDialog(l_sColor);
+                        }
+
+
+                        changeZLayer(23);
+                        l_bRet = true;
+                      }
+                    }
+
+                    if (!l_bRet) {
+                      for (std::vector<gui::CReactiveLabel*>::iterator it = m_vColorPick.begin(); it != m_vColorPick.end(); it++) {
+                        if (*it == a_cEvent.GUIEvent.Caller) {
+                          std::string l_sColor = helpers::ws2s((*it)->getText());
+
+                          while (l_sColor.size() < 6)
+                            l_sColor = "0" + l_sColor;
+
+                          updateColorDialog(l_sColor);
+                          l_bRet = true;
+                        }
+                      }
+                    }
+
+                    if (!l_bRet)
+                      printf("Button clicked (%s, %i, CMenuProfiles).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());            
+                  }
                 }
-                else {
-                  for (std::map<irr::gui::IGUIScrollBar*, irr::gui::IGUIStaticText*>::iterator it = m_mColorLink.begin(); it != m_mColorLink.end(); it++) {
-                    if (a_cEvent.GUIEvent.Caller == it->first) {
-                      if (it->second != nullptr) {
-                        it->second->setText(std::to_wstring(it->first->getPos()).c_str());
-                      }
-
-                      irr::s32 l_iRed   = 0,
-                               l_iGreen = 0,
-                               l_iBlue  = 0;
-
-                      for (std::map<irr::gui::IGUIScrollBar*, irr::gui::IGUIStaticText*>::iterator it2 = m_mColorLink.begin(); it2 != m_mColorLink.end(); it2++) {
-                        std::string l_sName = it2->first->getName();
-
-                        if (l_sName == "scrollbar_red")
-                          l_iRed = it2->first->getPos();
-                        else if (l_sName == "scrollbar_green")
-                          l_iGreen = it2->first->getPos();
-                        else if (l_sName == "scrollbar_blue")
-                          l_iBlue = it2->first->getPos();
-                      }
-
-                      if (m_pColorDisplay != nullptr)
-                        m_pColorDisplay->setBackgroundColor(irr::video::SColor(0xFF, l_iRed, l_iGreen, l_iBlue));
+                else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
+                  if (l_sSender == "texture_mode") {
+                    switchTextureMode();
+                    l_bRet = true;
+                  }
+                  else if (l_sSender == "ai_help") {
+                    gui::CSelector *p = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                    if (p) {
+                      m_aProfiles[m_iEditing].m_cData.m_eAiHelp = (data::SPlayerData::enAiHelp)p->getSelected();
 
                       l_bRet = true;
                     }
                   }
+                  else {
+                    for (std::map<irr::gui::IGUIScrollBar*, irr::gui::IGUIStaticText*>::iterator it = m_mColorLink.begin(); it != m_mColorLink.end(); it++) {
+                      if (a_cEvent.GUIEvent.Caller == it->first) {
+                        if (it->second != nullptr) {
+                          it->second->setText(std::to_wstring(it->first->getPos()).c_str());
+                        }
 
-                  if (!l_bRet) printf("Scrollbar \"%s\" changed.\n", l_sSender.c_str());
+                        irr::s32 l_iRed   = 0,
+                                 l_iGreen = 0,
+                                 l_iBlue  = 0;
+
+                        for (std::map<irr::gui::IGUIScrollBar*, irr::gui::IGUIStaticText*>::iterator it2 = m_mColorLink.begin(); it2 != m_mColorLink.end(); it2++) {
+                          std::string l_sName = it2->first->getName();
+
+                          if (l_sName == "scrollbar_red")
+                            l_iRed = it2->first->getPos();
+                          else if (l_sName == "scrollbar_green")
+                            l_iGreen = it2->first->getPos();
+                          else if (l_sName == "scrollbar_blue")
+                            l_iBlue = it2->first->getPos();
+                        }
+
+                        if (m_pColorDisplay != nullptr)
+                          m_pColorDisplay->setBackgroundColor(irr::video::SColor(0xFF, l_iRed, l_iGreen, l_iBlue));
+
+                        l_bRet = true;
+                      }
+                    }
+
+                    if (!l_bRet) printf("Scrollbar \"%s\" changed.\n", l_sSender.c_str());
+                  }
+                }
+                else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_CHANGED || a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN) {
+                  if (a_cEvent.GUIEvent.Caller == m_pCustomTexture) {
+                    updateTexture(createTextureString());
+                  }
                 }
               }
-              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_CHANGED || a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN) {
-                if (a_cEvent.GUIEvent.Caller == m_pCustomTexture) {
-                  updateTexture(createTextureString());
-                }
+              else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+                l_bRet = buttonTexturePatternSelectClicked(a_cEvent);
               }
-            }
-            else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
-              l_bRet = buttonTexturePatternSelectClicked(a_cEvent);
             }
 
             return l_bRet;

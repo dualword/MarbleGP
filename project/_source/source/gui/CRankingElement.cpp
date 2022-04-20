@@ -11,10 +11,12 @@ namespace dustbin {
       m_cBackground(a_cBackground),
       m_cOriginal  (a_cBackground),
       m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
+      m_cHlColor   (irr::video::SColor(232, 0, 255, 0)),
       m_iDeficit   (0),
       m_sName      (L""),
       m_sPosition  (std::to_wstring(a_iPosition) + L": "),
-      m_pFont      (a_pFont)
+      m_pFont      (a_pFont),
+      m_bHighLight (false)
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
@@ -37,6 +39,20 @@ namespace dustbin {
 
       if (m_iRaster < 8) m_iRaster = 8;
       if (m_iBorder < 1) m_iBorder = 1;
+
+      irr::video::IVideoDriver *l_pDrv = a_pGui->getVideoDriver();
+        
+      m_cHlSize = irr::core::dimension2du(m_cName.getHeight() / 2, m_cName.getHeight() / 2);
+
+        double l_fRadius = (float)(m_cName.getHeight() / 4);
+        for (int y = -(int)l_fRadius; y < (int)l_fRadius; y++) {
+          double l_fY = (float)y;
+          double l_fX1 = sqrt(l_fRadius * l_fRadius - l_fY * l_fY);
+          double l_fX2 = -l_fX1;
+          m_vHightLight.push_back(irr::core::line2di(irr::core::vector2di((irr::s32)(l_fX1 + l_fRadius), (irr::s32)(l_fY + l_fRadius)), irr::core::vector2di((irr::s32)(l_fX2 + l_fRadius), (irr::s32)(l_fY + l_fRadius))));
+        }
+
+        m_cHighLight = irr::core::vector2di(m_cName.LowerRightCorner.X - m_cName.getHeight(), m_cName.UpperLeftCorner.Y);
     }
 
     CRankingElement::~CRankingElement() {
@@ -73,6 +89,14 @@ namespace dustbin {
           m_pFont->draw(s, m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
 
         m_pFont->draw(m_sName.c_str(), m_cName, m_cTextColor, false, true, &AbsoluteClippingRect);
+
+        if (m_bHighLight) {
+          irr::core::vector2di l_cPos = irr::core::vector2di(AbsoluteClippingRect.LowerRightCorner.X - 3 * m_cHlSize.Width / 2, AbsoluteClippingRect.getCenter().Y - m_cHlSize.Height / 2);
+
+          for (std::vector<irr::core::line2di>::const_iterator it = m_vHightLight.begin(); it != m_vHightLight.end(); it++) {
+            m_pDrv->draw2DLine(l_cPos + (*it).start, l_cPos + (*it).end, m_cHlColor);
+          }
+        }
       }
     }
 
@@ -87,6 +111,15 @@ namespace dustbin {
       m_cBackground.setAlpha(l_iAlpha);
       m_cBorder    .setAlpha((irr::u32)(255.0f * a_fAlpha));
       m_cTextColor .setAlpha((irr::u32)(255.0f * a_fAlpha));
+      m_cHlColor   .setAlpha((irr::u32)(232.0f * a_fAlpha));
+    }
+
+    /**
+    * Highlight this player (to mark the marble of the HUD in the starting grid)
+    * @para a_bHighLight Hightlight or don't
+    */
+    void CRankingElement::highlight(bool a_bHighLight) {
+      m_bHighLight = a_bHighLight;
     }
   }
 }

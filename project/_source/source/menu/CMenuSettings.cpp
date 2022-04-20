@@ -151,6 +151,7 @@ namespace dustbin {
           if (m_pController != nullptr) {
             m_pController->setFont(m_pState->getGlobal()->getFont(enFont::Small, m_pDrv->getScreenSize()));
             m_pController->setText(helpers::s2ws(l_sCtrl).c_str());
+            m_pController->setMenuManager(m_pManager);
           }
 
           // Fill the video resolution list

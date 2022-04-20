@@ -99,6 +99,12 @@ namespace dustbin {
         virtual std::string popMenuStack();
 
         /**
+        * Enable or disable the menu controller
+        * @param a_bEnabled flag to indicate whether or not the menu controller shall be enabled
+        */
+        virtual void setMenuControllerEnabled(bool a_bEnabled);
+
+        /**
         * Set a controller to handle touch input
         */
         void setTouchController(controller::ICustomEventReceiver *a_pTouchCtrl);

@@ -29,8 +29,6 @@ namespace dustbin {
      */
     class IState {
       protected:
-        
-
         irr::IrrlichtDevice       *m_pDevice;
         irr::io::IFileSystem      *m_pFs;
         irr::scene::ISceneManager *m_pSmgr;

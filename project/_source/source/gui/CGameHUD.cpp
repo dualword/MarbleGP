@@ -7,6 +7,7 @@
 #include <gfx/SViewPort.h>
 #include <gui/CGameHUD.h>
 #include <CGlobal.h>
+#include <algorithm>
 
 namespace dustbin {
   namespace gui {
@@ -60,8 +61,10 @@ namespace dustbin {
     * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
     */
     void CGameHUD::onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) {
-      if (a_MarbleId == m_iMarble)
+      if (a_MarbleId == m_iMarble) {
         m_bShowSpeed = a_State == 2;
+        m_bRespawn   = a_State != 2;
+      }
     }
 
     /**
@@ -73,6 +76,9 @@ namespace dustbin {
     void CGameHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
       if (a_MarbleId == m_iMarble) {
         m_bShowSpeed = false;
+        m_bFinished  = true;
+        m_bRespawn   = false;
+        m_bStunned   = false;
 
         m_iLeader = -2;
         m_iAhead  = -2;
@@ -94,8 +100,10 @@ namespace dustbin {
     * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
     */
     void CGameHUD::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
-      if (a_MarbleId == m_iMarble)
+      if (a_MarbleId == m_iMarble) {
         m_bShowSpeed = a_State != 1;
+        m_bStunned   = a_State == 1;
+      }
     }
 
     /**
@@ -113,6 +121,8 @@ namespace dustbin {
     * @param a_Deficit Deficit of the marble on the leader in steps
     */
     void CGameHUD::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
+      if (a_MarbleId == m_iMarble)
+        m_iFinished = a_Position - 1;
     }
 
     /**
@@ -148,9 +158,6 @@ namespace dustbin {
           }
         }
       }
-
-      if (a_MarbleId == m_iMarble)
-        m_pRankParent->setVisible(true);
     }
 
     /**
@@ -158,8 +165,11 @@ namespace dustbin {
     * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
     */
     void CGameHUD::onCountdown(irr::u8 a_Tick) {
+      m_iCountDown = a_Tick;
+
       if (a_Tick == 1) {
         m_bFadeStart = true;
+        m_iFadeStart = m_iStep;
       }
       else if (a_Tick == 0) {
         m_bFadeStart = false;
@@ -175,8 +185,12 @@ namespace dustbin {
         m_bShowSpeed = true;
 
         for (int i = 0; i < 16; i++)
-          if (m_aRanking[i] != nullptr)
+          if (m_aRanking[i] != nullptr) {
             m_aRanking[i]->setVisible(false);
+            m_aRanking[i]->highlight (false);
+          }
+
+        m_iGoStep = m_iStep;
       }
     }
 
@@ -185,14 +199,22 @@ namespace dustbin {
     * @param a_StepNo The current step number
     */
     void CGameHUD::onStepmsg(irr::u32 a_StepNo) {
+      m_iStep = a_StepNo;
+
       if (m_bFadeStart) {
-        irr::f32 l_fFactor = 1.0f - ((irr::f32)a_StepNo - 480) / 120.0f;
+        irr::f32 l_fFactor = 1.0f - ((irr::f32)a_StepNo - m_iFadeStart) / 120.0f;
         m_pRankParent->setBackgroundColor(irr::video::SColor((irr::u32)(96.0f * l_fFactor), 192, 192, 192));
 
         for (int i = 0; i < 16; i++) {
           if (m_aRanking[i] != nullptr)
             m_aRanking[i]->setAlpha(l_fFactor);
         }
+      }
+
+      if (m_iCountDown == 0 && m_iStep > m_iGoStep + 240) {
+        m_fCdAlpha = std::min(1.0f, ((irr::f32)(m_iGoStep - m_iStep + 300)) / 60.0f);
+        if (m_fCdAlpha < 0.0f)
+          m_iCountDown = -1;
       }
     }
 
@@ -260,6 +282,19 @@ namespace dustbin {
       m_pDrv        (a_pGui->getVideoDriver()),
       m_pSpeedFont  (nullptr),
       m_pRankParent (nullptr),
+      m_iCountDown  (4),
+      m_fCdAlpha    (1.0f),
+      m_iGoStep     (0),
+      m_iStep       (0),
+      m_pStunned    (nullptr),
+      m_pRespawn    (nullptr),
+      m_pFinished   (nullptr),
+      m_bRespawn    (false),
+      m_bStunned    (false),
+      m_bFinished   (false),
+      m_iFadeStart  (-1),
+      m_iFinished   (-1),
+      m_pPosFont    (nullptr),
       m_pColMgr     (nullptr),
       m_vRanking    (a_vRanking)
     {
@@ -286,6 +321,8 @@ namespace dustbin {
       irr::gui::IGUIFont *l_pBig     = l_pGlobal->getFont(enFont::Big    , l_cViewport);
       irr::gui::IGUIFont *l_pHuge    = l_pGlobal->getFont(enFont::Huge   , l_cViewport);
 
+      m_pPosFont = l_pHuge;
+
       m_pDefFont = l_pSmall;
       m_cDefSize = getDimension(L"+666.6", m_pDefFont);
 
@@ -300,8 +337,13 @@ namespace dustbin {
 
       m_cSpeedOffset.X = m_cSpeedTotal.Width - m_cSpeedBar.Width;
 
-      m_cSpeedBar *= 5;
-      m_cSpeedBar /= 6;
+      int l_iSpeedOffset = m_cSpeedBar.Height / 8;
+      if (l_iSpeedOffset < 2)
+        l_iSpeedOffset = 2;
+
+      m_cSpeedOffset.Y += l_iSpeedOffset;
+      m_cSpeedBar.Width -= l_iSpeedOffset;
+      m_cSpeedBar.Height -= 2 * l_iSpeedOffset;
 
       m_cSpeedOffset.Y = (m_cSpeedTotal.Height - m_cSpeedBar.Height) / 2;
 
@@ -388,7 +430,7 @@ namespace dustbin {
 
       l_cRankSize.Height += l_cRankSize.Height / 8;
 
-      l_cRankPos.Y -= m_iPlayers * 3 * l_cRankSize.Height / 4;
+      l_cRankPos.Y -= 16 * 3 * l_cRankSize.Height / 4;
 
       int l_iOffsetY = 0;
 
@@ -411,6 +453,9 @@ namespace dustbin {
           a_pGui
         );
 
+        if ((*m_vRanking)[i]->m_iId == m_iMarble)
+          m_aRanking[i]->highlight(true);
+
         m_aRanking[i]->setData(helpers::s2ws((*m_vRanking)[i]->m_sName), 0);
         m_aRanking[i]->drop();
 
@@ -418,6 +463,60 @@ namespace dustbin {
           l_iOffsetY = 0;
         else
           l_iOffsetY += 3 * l_cRankSize.Height / 2;
+      }
+
+      m_pStunned  = m_pDrv->getTexture("data/images/text_stunned.png");
+      m_pRespawn  = m_pDrv->getTexture("data/images/text_respawn.png");
+      m_pFinished = m_pDrv->getTexture("data/images/text_finished.png");
+
+      m_pCountDown[4] = m_pDrv->getTexture("data/images/countdown_ready.png");
+      m_pCountDown[3] = m_pDrv->getTexture("data/images/countdown_three.png");
+      m_pCountDown[2] = m_pDrv->getTexture("data/images/countdown_two.png");
+      m_pCountDown[1] = m_pDrv->getTexture("data/images/countdown_one.png");
+      m_pCountDown[0] = m_pDrv->getTexture("data/images/countdown_go.png");
+
+      m_pLaurel[0] = m_pDrv->getTexture("data/images/laurel_gold.png");
+      m_pLaurel[1] = m_pDrv->getTexture("data/images/laurel_silver.png");
+      m_pLaurel[2] = m_pDrv->getTexture("data/images/laurel_bronze.png");
+      m_pLaurel[3] = m_pDrv->getTexture("data/images/laurel_rest.png");
+
+      if (m_pCountDown[0] != nullptr) {
+        irr::core::dimension2du l_cSize   = m_pCountDown[0]->getOriginalSize();
+        irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
+        irr::core::position2di  l_cPos    = a_cRect.UpperLeftCorner;
+
+        irr::f32 l_fRatio = ((irr::f32)l_cScreen.Width) / ((irr::f32)l_cScreen.Height);
+
+        printf("Ratio: %.2f\n", l_fRatio);
+
+        if (l_fRatio > 1.77777777) {
+          l_cScreen.Width = 16 * l_cScreen.Height / 9;
+        }
+        else {
+          l_cScreen.Height = 9 * l_cScreen.Width / 16;
+        }
+
+        irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
+          l_cSize.Width  * l_cScreen.Width  / 3840,
+          l_cSize.Height * l_cScreen.Height / 2160
+        );
+
+        irr::core::position2di l_cCntPos = irr::core::position2di(
+          l_cPos.X + l_cScreen .Width / 2 - l_cCntSize.Width  / 2,
+          l_cPos.Y + l_cRankPos.Y     / 2 - l_cCntSize.Height / 2
+        );
+
+        m_cCountDown = irr::core::recti(l_cCntPos, l_cCntSize);
+        m_cCntSource = irr::core::recti(irr::core::vector2di(0, 0), m_pCountDown[0]->getOriginalSize());
+
+        if (m_pLaurel[0] != nullptr) {
+          irr::core::dimension2di l_cDim = irr::core::dimension2di(m_cCountDown.getHeight(), m_cCountDown.getHeight());
+
+          m_cLaurelLft = irr::core::recti(m_cCountDown.UpperLeftCorner                                                                        , l_cDim);
+          m_cLaurelRgt = irr::core::recti(irr::core::vector2di(m_cCountDown.LowerRightCorner.X - l_cDim.Width, m_cCountDown.UpperLeftCorner.Y), l_cDim);
+
+          m_cLaurelSrc = irr::core::recti(irr::core::vector2di(0, 0), m_pLaurel[0]->getOriginalSize());
+        }
       }
     }
 
@@ -547,16 +646,15 @@ namespace dustbin {
 
             int l_iPos[] = {
               1,
-              m_pPlayer->m_iPosition == 1 ? 2 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_iPosition - 1,
-              m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
-              m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
+              m_pPlayer->m_iPosition == 1 ? 2 : m_pPlayer->m_iPosition == 2 ? 2 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_iPosition - 1,
+              m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == 2 ? 3 :m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
+              m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == 2 ? 4 :m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
             };
 
             for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
               m_pDrv->draw2DRectangle(irr::video::SColor(192, 232, 232, 232), l_cRects[i], &m_cRect);
               if (l_iPos[i] == m_pPlayer->m_iPosition) {
                 std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + helpers::s2ws(m_pPlayer->m_sName);
-                wchar_t s[0xFF];
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &l_cRects[i]);
               }
               else {
@@ -598,6 +696,34 @@ namespace dustbin {
                 }
               }
             }
+          }
+        }
+      }
+
+      if (m_iCountDown >= 0 && m_iCountDown < 5 && m_pCountDown[m_iCountDown] != nullptr) {
+        irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255);
+        m_pDrv->draw2DImage(m_pCountDown[m_iCountDown], m_cCountDown, m_cCntSource, nullptr, &l_cColor, true);
+      }
+
+      if (m_bRespawn && m_pRespawn != nullptr)
+        m_pDrv->draw2DImage(m_pRespawn, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
+
+      if (m_bStunned && m_pStunned != nullptr)
+        m_pDrv->draw2DImage(m_pStunned, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
+
+      if (m_bFinished) {
+        if (m_pFinished != nullptr) {
+          m_pDrv->draw2DImage(m_pFinished, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
+        }
+
+        if (m_iFinished >= 0) {
+          int l_iIndex = m_iFinished < 3 ? m_iFinished : 3;
+          m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelLft, m_cLaurelSrc, nullptr, nullptr, true);
+          m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelRgt, m_cLaurelSrc, nullptr, nullptr, true);
+
+          if (m_pPosFont != nullptr) {
+            m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelLft, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+            m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelRgt, irr::video::SColor(0xFF, 0, 0, 0), true, true);
           }
         }
       }
@@ -651,6 +777,15 @@ namespace dustbin {
       m_bHightlight  = a_bHightlight;
       m_bShowCtrl    = a_bShowCtrl;
       m_bShowRanking = a_bShowRanking;
+    }
+
+    bool CGameHUD::isResultParentVisible() {
+      return m_pRankParent == nullptr || m_pRankParent->isVisible();
+    }
+
+    void CGameHUD::showResultParent() {
+      if (m_pRankParent != nullptr)
+        m_pRankParent->setVisible(true);
     }
   }
 }

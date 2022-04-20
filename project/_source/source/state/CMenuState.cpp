@@ -81,8 +81,7 @@ namespace dustbin {
     bool CMenuState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
-      if (m_pController != nullptr)
-        m_pController->update(a_cEvent);
+      m_pController->update(a_cEvent);
 
       if (m_pTouchCtrl != nullptr)
         m_pTouchCtrl->handleEvent(a_cEvent);
@@ -163,6 +162,15 @@ namespace dustbin {
       }
 
       return l_sState;
+    }
+
+    /**
+    * Enable or disable the menu controller
+    * @param a_bEnabled flag to indicate whether or not the menu controller shall be enabled
+    */
+    void CMenuState::setMenuControllerEnabled(bool a_bEnabled) {
+      if (m_pController != nullptr)
+        m_pController->allowOkCancel(a_bEnabled);
     }
 
     /**
