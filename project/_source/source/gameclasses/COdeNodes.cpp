@@ -344,6 +344,7 @@ namespace dustbin {
       m_bRespawn(false),
       m_bActive(false),
       m_bBrake(false),
+      m_iWithdraw(-1),
       m_iLastCp(0),
       m_iLapNo(0),
       m_iFinishTime(0),

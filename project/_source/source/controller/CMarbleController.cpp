@@ -69,6 +69,16 @@ namespace dustbin {
 
         messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
         m_pQueue->postMessage(&l_cMessage);
+
+        if (m_pController->pause()) {
+          messages::CTogglePause l_cMsg = messages::CTogglePause();
+          m_pQueue->postMessage(&l_cMsg);
+        }
+
+        if (m_pController->withdrawFromRace()) {
+          messages::CPlayerWithdraw l_cMsg = messages::CPlayerWithdraw(m_iMarbleId);
+          m_pQueue->postMessage(&l_cMsg);
+        }
       }
     }
 

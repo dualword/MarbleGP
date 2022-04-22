@@ -26,6 +26,7 @@ namespace dustbin {
       std::string  m_sName;             /**< The name of the player */
       std::string  m_sTexture;          /**< The texture of the player's marble */
       std::string  m_sController;       /**< The serialized controller configuration */
+      bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
 
       data::enPlayerType m_eType;
 
@@ -38,17 +39,19 @@ namespace dustbin {
       /**
       * The default constructor
       */
-      SPlayer() {
-        m_iPlayer        = 0;
-        m_iId            = -1;
-        m_iPosition      = 0;
-        m_iLastPosUpdate = 0;
-        m_iDiffLeader    = 0;
-        m_iDiffAhead     = 0;
-        m_sName          = "";
-        m_pMarble        = nullptr;
-        m_pController    = nullptr;
-        m_eType          = data::enPlayerType::Local;
+      SPlayer() :
+        m_iPlayer        (0),
+        m_iId            (-1),
+        m_iPosition      (0),
+        m_iLastPosUpdate (0),
+        m_iDiffLeader    (0),
+        m_iDiffAhead     (0),
+        m_sName          (""),
+        m_pMarble        (nullptr),
+        m_pController    (nullptr),
+        m_eType          (data::enPlayerType::Local),
+        m_bWithdrawn     (false)
+      {
       }
 
       /**
@@ -70,16 +73,18 @@ namespace dustbin {
       * @param a_sController the controller configuration string of the player
       * @param a_pMarble the marble of the player
       */
-      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) {
-        m_iPlayer     = a_iPlayer;
-        m_sName       = a_sName;
-        m_sTexture    = a_sTexture;
-        m_pMarble     = a_pMarble;
-        m_sController = a_sController;
-        m_pController = nullptr;
-        m_eType       = a_eType;
-        m_eAiHelp     = a_eAiHelp;
-        m_iPosition   = 0;
+      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
+        m_iPlayer    (a_iPlayer),
+        m_sName      (a_sName),
+        m_sTexture   (a_sTexture),
+        m_pMarble    (a_pMarble),
+        m_sController(a_sController),
+        m_pController(nullptr),
+        m_eType      (a_eType),
+        m_eAiHelp    (a_eAiHelp),
+        m_iPosition  (0),
+        m_bWithdrawn (false)
+      {
 
         if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
           m_iId = m_pMarble->m_pPositional->getID();

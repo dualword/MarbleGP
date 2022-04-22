@@ -16,7 +16,8 @@ namespace dustbin {
       m_sName      (L""),
       m_sPosition  (std::to_wstring(a_iPosition) + L": "),
       m_pFont      (a_pFont),
-      m_bHighLight (false)
+      m_bHighLight (false),
+      m_bWithdrawn (false)
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
@@ -64,9 +65,10 @@ namespace dustbin {
     * @param a_sName name of the player
     * @param a_iDeficit deficit to the leader
     */
-    void CRankingElement::setData(const std::wstring& a_sName, int a_iDeficit) {
-      m_sName    = helpers::fitString(a_sName, m_pFont, irr::core::dimension2du(m_cName.getWidth(), m_cName.getHeight()));
-      m_iDeficit = a_iDeficit;
+    void CRankingElement::setData(const std::wstring& a_sName, int a_iDeficit, bool a_bWithdrawn) {
+      m_sName      = helpers::fitString(a_sName, m_pFont, irr::core::dimension2du(m_cName.getWidth(), m_cName.getHeight()));
+      m_iDeficit   = a_iDeficit;
+      m_bWithdrawn = a_bWithdrawn;
     }
 
     void CRankingElement::draw() {
@@ -76,17 +78,22 @@ namespace dustbin {
         m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &AbsoluteClippingRect);
 
 
-        wchar_t s[0xFF];
+        wchar_t s[0xFF] = L"";
 
-        if (m_iDeficit >= 0) {
-          swprintf(s, 0xFF, L"+%.2f", ((irr::f32)m_iDeficit) / 120.0f);
+        if (m_bWithdrawn) {
+          m_pFont->draw(L"DNF", m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
         }
         else {
-          swprintf(s, 0xFF, L"+%i lap%s", abs(m_iDeficit), m_iDeficit != -1 ? L"s" : L"");
-        }
+          if (m_iDeficit >= 0) {
+            swprintf(s, 0xFF, L"+%.2f", ((irr::f32)m_iDeficit) / 120.0f);
+          }
+          else {
+            swprintf(s, 0xFF, L"+%i lap%s", abs(m_iDeficit), m_iDeficit != -1 ? L"s" : L"");
+          }
 
-        if (m_iDeficit != 0)
-          m_pFont->draw(s, m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
+          if (m_iDeficit != 0 || m_bWithdrawn)
+            m_pFont->draw(s, m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
+        }
 
         m_pFont->draw(m_sName.c_str(), m_cName, m_cTextColor, false, true, &AbsoluteClippingRect);
 

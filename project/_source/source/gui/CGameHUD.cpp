@@ -175,7 +175,7 @@ namespace dustbin {
         m_bFadeStart = false;
         m_pRankParent->setVisible(false);
 
-        m_pRankParent->setBackgroundColor(irr::video::SColor(96, 192, 192, 192));
+        m_cRankBack = irr::video::SColor(96, 192, 192, 192);
 
         for (int i = 0; i < 16; i++) {
           if (m_aRanking[i] != nullptr)
@@ -194,6 +194,20 @@ namespace dustbin {
       }
     }
 
+
+    /**
+    * This function receives messages of type "ConfirmWithdraw"
+    * @param a_MarbleId ID of the marble
+    * @param a_Timeout The number of steps defining the timeout for the withdrawal
+    */
+    void CGameHUD::onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout) {
+      if (a_MarbleId == m_iMarble) {
+        m_iWithdraw = m_iStep + a_Timeout;
+        m_pWithdraw->setVisible(true);
+      }
+    }
+
+
     /**
     * This function receives messages of type "StepMsg"
     * @param a_StepNo The current step number
@@ -203,7 +217,7 @@ namespace dustbin {
 
       if (m_bFadeStart) {
         irr::f32 l_fFactor = 1.0f - ((irr::f32)a_StepNo - m_iFadeStart) / 120.0f;
-        m_pRankParent->setBackgroundColor(irr::video::SColor((irr::u32)(96.0f * l_fFactor), 192, 192, 192));
+        m_cRankBack = irr::video::SColor((irr::u32)(96.0f * l_fFactor), 192, 192, 192);
 
         for (int i = 0; i < 16; i++) {
           if (m_aRanking[i] != nullptr)
@@ -215,6 +229,11 @@ namespace dustbin {
         m_fCdAlpha = std::min(1.0f, ((irr::f32)(m_iGoStep - m_iStep + 300)) / 60.0f);
         if (m_fCdAlpha < 0.0f)
           m_iCountDown = -1;
+      }
+
+      if (m_iWithdraw != -1 && m_iWithdraw < m_iStep) {
+        m_pWithdraw->setVisible(false);
+        m_iWithdraw = -1;
       }
     }
 
@@ -295,6 +314,9 @@ namespace dustbin {
       m_iFadeStart  (-1),
       m_iFinished   (-1),
       m_pPosFont    (nullptr),
+      m_pWithdraw   (nullptr),
+      m_iWithdraw   (-1),
+      m_cRankBack   (irr::video::SColor(96, 192, 192, 192)),
       m_pColMgr     (nullptr),
       m_vRanking    (a_vRanking)
     {
@@ -415,8 +437,6 @@ namespace dustbin {
       }
 
       m_pRankParent = a_pGui->addTab(a_cRect, a_pGui->getRootGUIElement());
-      m_pRankParent->setDrawBackground(true);
-      m_pRankParent->setBackgroundColor(irr::video::SColor(96, 192, 192, 192));
       m_pRankParent->setVisible(true);
 
       irr::core::dimension2du l_cRankSize = getDimension(L"ThisStringReallyIsEnough", 
@@ -456,7 +476,7 @@ namespace dustbin {
         if ((*m_vRanking)[i]->m_iId == m_iMarble)
           m_aRanking[i]->highlight(true);
 
-        m_aRanking[i]->setData(helpers::s2ws((*m_vRanking)[i]->m_sName), 0);
+        m_aRanking[i]->setData(helpers::s2ws((*m_vRanking)[i]->m_sName), 0, (*m_vRanking)[i]->m_bWithdrawn);
         m_aRanking[i]->drop();
 
         if (i == (m_iPlayers / 2) - 1)
@@ -517,6 +537,11 @@ namespace dustbin {
 
           m_cLaurelSrc = irr::core::recti(irr::core::vector2di(0, 0), m_pLaurel[0]->getOriginalSize());
         }
+
+        m_pWithdraw = m_pGui->addStaticText(L"Withdraw from Race? Click again!", m_cCountDown);
+        m_pWithdraw->setOverrideFont(l_pBig);
+        m_pWithdraw->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        m_pWithdraw->setVisible(false);
       }
     }
 
@@ -700,30 +725,35 @@ namespace dustbin {
         }
       }
 
-      if (m_iCountDown >= 0 && m_iCountDown < 5 && m_pCountDown[m_iCountDown] != nullptr) {
-        irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255);
-        m_pDrv->draw2DImage(m_pCountDown[m_iCountDown], m_cCountDown, m_cCntSource, nullptr, &l_cColor, true);
-      }
+      if (m_pRankParent->isVisible())
+        m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect, &AbsoluteClippingRect);
 
-      if (m_bRespawn && m_pRespawn != nullptr)
-        m_pDrv->draw2DImage(m_pRespawn, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
-
-      if (m_bStunned && m_pStunned != nullptr)
-        m_pDrv->draw2DImage(m_pStunned, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
-
-      if (m_bFinished) {
-        if (m_pFinished != nullptr) {
-          m_pDrv->draw2DImage(m_pFinished, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
+      if (!m_pWithdraw->isVisible()) {
+        if (m_iCountDown >= 0 && m_iCountDown < 5 && m_pCountDown[m_iCountDown] != nullptr) {
+          irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255);
+          m_pDrv->draw2DImage(m_pCountDown[m_iCountDown], m_cCountDown, m_cCntSource, nullptr, &l_cColor, true);
         }
 
-        if (m_iFinished >= 0) {
-          int l_iIndex = m_iFinished < 3 ? m_iFinished : 3;
-          m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelLft, m_cLaurelSrc, nullptr, nullptr, true);
-          m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelRgt, m_cLaurelSrc, nullptr, nullptr, true);
+        if (m_bRespawn && m_pRespawn != nullptr)
+          m_pDrv->draw2DImage(m_pRespawn, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
 
-          if (m_pPosFont != nullptr) {
-            m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelLft, irr::video::SColor(0xFF, 0, 0, 0), true, true);
-            m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelRgt, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+        if (m_bStunned && m_pStunned != nullptr)
+          m_pDrv->draw2DImage(m_pStunned, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
+
+        if (m_bFinished) {
+          if (m_pFinished != nullptr) {
+            m_pDrv->draw2DImage(m_pFinished, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
+          }
+
+          if (m_iFinished >= 0) {
+            int l_iIndex = m_iFinished < 3 ? m_iFinished : 3;
+            m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelLft, m_cLaurelSrc, nullptr, nullptr, true);
+            m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelRgt, m_cLaurelSrc, nullptr, nullptr, true);
+
+            if (m_pPosFont != nullptr) {
+              m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelLft, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+              m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelRgt, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+            }
           }
         }
       }
@@ -767,7 +797,7 @@ namespace dustbin {
       int l_iIndex = 0;
       for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         if (m_aRanking[l_iIndex] != nullptr) {
-          m_aRanking[l_iIndex]->setData(helpers::s2ws((*it)->m_sName), (*it)->m_iDiffLeader);
+          m_aRanking[l_iIndex]->setData(helpers::s2ws((*it)->m_sName), (*it)->m_iDiffLeader, (*it)->m_bWithdrawn);
         }
         l_iIndex++;
       }

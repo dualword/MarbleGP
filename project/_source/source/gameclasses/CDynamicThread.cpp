@@ -381,6 +381,9 @@ namespace dustbin {
           if (m_aMarbles[i] != nullptr) {
             CObjectMarble* p = m_aMarbles[i];
 
+            if (p->m_iWithdraw != -1 && m_pWorld->m_iWorldStep > p->m_iWithdraw)
+              p->m_iWithdraw = -1;
+
             const dReal* l_aPos    = dBodyGetPosition(p->m_cBody),
                        * l_aRot    = dBodyGetQuaternion(p->m_cBody),
                        * l_aLinVel = dBodyGetLinearVel(p->m_cBody),
@@ -540,7 +543,7 @@ namespace dustbin {
               m_pOutputQueue);
 
 
-            if (m_pRostrumNode != nullptr && p->m_eState == CObjectMarble::enMarbleState::Finished && p->m_iFinishTime > 0) {
+            if (m_pRostrumNode != nullptr && (p->m_eState == CObjectMarble::enMarbleState::Finished || p->m_eState == CObjectMarble::enMarbleState::Withdrawn) && p->m_iFinishTime > 0) {
               if (m_pWorld->m_iWorldStep > p->m_iFinishTime + 240) {
                 irr::core::vector3df l_cPos = m_pRostrumNode->getRostrumPosition(p->m_iPosition - 1);
 
@@ -605,7 +608,7 @@ namespace dustbin {
               m_eGameState = enGameState::Racing;
 
               for (int i = 0; i < 16; i++)
-                if (m_aMarbles[i] != nullptr) 
+                if (m_aMarbles[i] != nullptr)
                   startPlayer(i + 10000);
             }
           }
@@ -739,6 +742,7 @@ namespace dustbin {
           l_pMarble->m_vOffset     = l_vOffset;
           l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - l_vOffset + 3.0f * l_pMarble->m_vUpVector;
           l_pMarble->m_vRearview   = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset + 3.0f * l_pMarble->m_vUpVector;
+          l_pMarble->m_bAiPlayer   = (*it)->m_eType == data::enPlayerType::Ai;
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
@@ -858,6 +862,63 @@ namespace dustbin {
       sendPausechanged(m_bPaused, m_pOutputQueue);
     }
 
+    /**
+    * This function receives messages of type "PlayerWithdraw"
+    * @param a_MarbleId ID of the marble
+    */
+    void CDynamicThread::onPlayerwithdraw(irr::s32 a_MarbleId) {
+      if (m_eGameState == enGameState::Racing) {
+        irr::s32 l_iIndex = a_MarbleId - 10000;
+
+        if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+          if (m_aMarbles[l_iIndex]->m_iWithdraw == -1) {
+            sendConfirmwithdraw(a_MarbleId, 120, m_pOutputQueue);
+            m_aMarbles[l_iIndex]->m_iWithdraw = m_pWorld->m_iWorldStep + 120;
+          }
+          else {
+            if (m_pWorld->m_iWorldStep < m_aMarbles[l_iIndex]->m_iWithdraw) {
+              m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Withdrawn;
+              m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
+              data::SRacePlayer *l_pPlayer = m_pGameLogic->withdrawPlayer(a_MarbleId, m_pWorld->m_iWorldStep);
+              finishPlayer(a_MarbleId, -1, m_aMarbles[l_iIndex]->m_iLapNo);
+
+              if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+                m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
+              }
+
+              sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+              sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
+            }
+          }
+        }
+      }
+    }
+
+
+    /**
+    * Get the race result
+    * @return the race result
+    */
+    const std::vector<data::SRacePlayer*> CDynamicThread::getRaceResult() {
+      const std::vector<data::SRacePlayer *> l_vResult = m_pGameLogic->getRacePositions();
+
+      int l_iDiff = 0;
+
+      for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
+        if (it != l_vResult.begin() && !(*it)->m_bFinished) {
+          if ((*it)->m_iDeficitL > 0 || (*it)->m_iLapNo == (*(l_vResult.begin()))->m_iLapNo - 1) {
+            if ((*it)->m_iDeficitL < l_iDiff) {
+              l_iDiff += std::rand() % 480;
+              (*it)->m_iDeficitL = l_iDiff;
+            }
+            else l_iDiff = (*it)->m_iDeficitL;
+          }
+        }
+      }
+
+      return l_vResult;
+    }
+
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
       int l_iId = a_iMarble - 10000;
 
@@ -953,29 +1014,28 @@ namespace dustbin {
     void CDynamicThread::finishPlayer(int a_iMarbleId, int a_iRaceTime, int a_iLaps) {
       int l_iIndex = a_iMarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Finished;
-        m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
+
+        if (m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
+          m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Finished;
+          m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
+        }
 
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
 
         for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++)
           (*it).marbleRespawn(a_iMarbleId);
 
-        bool l_bAllFinished = true;
+        if (!m_aMarbles[l_iIndex]->m_bAiPlayer) {
+          bool l_bAllFinished = true;
 
-        for (int i = 0; i < 16; i++) {
-          if (m_aMarbles[i] != nullptr && m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished)
-            l_bAllFinished = false;
-        }
-
-        if (l_bAllFinished) {
-          const std::vector<data::SRacePlayer *> l_vResult = m_pGameLogic->getRacePositions();
-
-          for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
-            sendFinishposition((*it)->m_iPos, (*it)->m_iId, (*it)->m_iDeficitL, (*it)->m_iLapNo, (*it)->m_iStunned, (*it)->m_iRespawn, (*it)->m_iFastest, m_pOutputQueue);
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i] != nullptr && !(m_aMarbles[i]->m_eState == CObjectMarble::enMarbleState::Finished || m_aMarbles[i]->m_eState == CObjectMarble::enMarbleState::Withdrawn) && !m_aMarbles[i]->m_bAiPlayer)
+              l_bAllFinished = false;
           }
 
-          sendRacefinished(0, m_pOutputQueue);
+          if (l_bAllFinished) {
+            sendRacefinished(0, m_pOutputQueue);
+          }
         }
       }
     }

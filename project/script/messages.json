@@ -8,25 +8,27 @@
     "std::string", "irr::core::vector3df"
   ],
   "messageids": [
-    [ "ObjectMoved"   ,  "0" ],
-    [ "MarbleMoved"   ,  "1" ],
-    [ "StepMsg"       ,  "2" ],
-    [ "Trigger"       ,  "3" ],
-    [ "PlayerRespawn" ,  "4" ],
-    [ "CameraRespawn" ,  "5" ],
-    [ "PlayerStunned" ,  "6" ],
-    [ "Checkpoint"    ,  "7" ],
-    [ "LapStart"      ,  "8" ],
-    [ "PlayerFinished",  "9" ],
-    [ "RaceFinished"  , "10" ],
-    [ "Countdown"     , "11" ],
-    [ "MarbleControl" , "12" ],
-    [ "CancelRace"    , "13" ],
-    [ "TogglePause"   , "14" ],
-    [ "PauseChanged"  , "15" ],
-    [ "RacePosition"  , "16" ],
-    [ "PlayerRostrum" , "17" ],
-    [ "FinishPosition", "18" ]
+    [ "ObjectMoved"    ,  "0" ],
+    [ "MarbleMoved"    ,  "1" ],
+    [ "StepMsg"        ,  "2" ],
+    [ "Trigger"        ,  "3" ],
+    [ "PlayerRespawn"  ,  "4" ],
+    [ "CameraRespawn"  ,  "5" ],
+    [ "PlayerStunned"  ,  "6" ],
+    [ "Checkpoint"     ,  "7" ],
+    [ "LapStart"       ,  "8" ],
+    [ "PlayerFinished" ,  "9" ],
+    [ "RaceFinished"   , "10" ],
+    [ "Countdown"      , "11" ],
+    [ "MarbleControl"  , "12" ],
+    [ "CancelRace"     , "13" ],
+    [ "TogglePause"    , "14" ],
+    [ "PauseChanged"   , "15" ],
+    [ "RacePosition"   , "16" ],
+    [ "PlayerRostrum"  , "17" ],
+    [ "PlayerWithdraw" , "18" ],
+    [ "ConfirmWithdraw", "19" ],
+    [ "PlayerWithdrawn", "20" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -167,16 +169,23 @@
         { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" }
       ]
     },
-    "FinishPosition": {
-      "comment": "The final position with all necessary data of a player sent at the end of a race",
+    "PlayerWithdraw": {
+      "comment": "This message is sent by a player to withdraw from the race. For confirmation it must be sent twice within a second or so",
+      "fields": [ 
+        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" }
+      ]
+    },
+    "ConfirmWithdraw": {
+      "comment": "Using this message the physics thread notifies the player that a confirmation is necessary to withdraw from the race",
       "fields": [
-        { "name": "Position", "type": "irr::s32", "comment": "The finish position of the marble" },
         { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" },
-        { "name": "Deficit" , "type": "irr::s32", "comment": "Deficit on the leader" },
-        { "name": "Laps"    , "type": "irr::s32", "comment": "Number of laps done" },
-        { "name": "Stunned" , "type": "irr::s32", "comment": "Counter of the stuns of the marble during the race" },
-        { "name": "Respawn" , "type": "irr::s32", "comment": "Counter of the respawns of the marble during the race" },
-        { "name": "Fastest" , "type": "irr::s32", "comment": "Fastest lap of the player" }
+        { "name": "Timeout" , "type": "irr::s32", "comment": "The number of steps defining the timeout for the withdrawal" }
+      ]
+    },
+    "PlayerWithdrawn": {
+      "comment": "Confirm that a player has withdrawn from the race",
+      "fields": [ 
+        { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the marble" }
       ]
     }
   },
@@ -199,12 +208,14 @@
         "PauseChanged",
         "RacePosition",
         "PlayerRostrum",
-        "FinishPosition"
+        "ConfirmWithdraw",
+        "PlayerWithdrawn"
       ],
       "receive": [
         "MarbleControl",
         "CancelRace",
-        "TogglePause"
+        "TogglePause",
+        "PlayerWithdraw"
       ]
     },
     {
@@ -212,7 +223,8 @@
       "send": [
         "MarbleControl",
         "CancelRace",
-        "TogglePause"
+        "TogglePause",
+        "PlayerWithdraw"
       ],
       "receive": [
         "StepMsg",
@@ -229,7 +241,7 @@
         "LapStart",
         "PauseChanged",
         "RacePosition",
-        "FinishPosition"
+        "PlayerWithdrawn"
       ]
     },
     {
@@ -245,7 +257,8 @@
         "LapStart",
         "PlayerRostrum",
         "Countdown",
-        "StepMsg"
+        "StepMsg",
+        "ConfirmWithdraw"
       ]
     },
     {

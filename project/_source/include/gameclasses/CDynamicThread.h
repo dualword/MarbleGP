@@ -91,6 +91,12 @@ namespace dustbin {
          */
         virtual void onTogglepause();
 
+        /**
+        * This function receives messages of type "PlayerWithdraw"
+        * @param a_MarbleId ID of the marble
+        */
+        virtual void onPlayerwithdraw(irr::s32 a_MarbleId);
+
         virtual void execute();
 
       public:
@@ -145,6 +151,12 @@ namespace dustbin {
         * @param a_iMarble the marble id
         */
         void startPlayer(int a_iMarble);
+
+        /**
+        * Get the race result
+        * @return the race result
+        */
+        const std::vector<data::SRacePlayer *> getRaceResult();
 
         /**
         * Retrieve the world of the race

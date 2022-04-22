@@ -278,6 +278,12 @@ namespace dustbin {
         virtual void onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn, irr::s32 a_Fastest);
 
         /**
+        * This function receives messages of type "PlayerWithdrawn"
+        * @param a_MarbleId ID of the marble
+        */
+        virtual void onPlayerwithdrawn(irr::s32 a_MarbleId);
+
+        /**
          * This function receives messages of type "PauseChanged"
          * @param a_Paused The current paused state
          */

@@ -32,6 +32,7 @@ namespace dustbin {
         irr::gui::IGUIFont *m_pFont;  /**< The font to use */
 
         bool m_bHighLight;    /**< Highlight this player */
+        bool m_bWithdrawn;    /**< did the player withdraw from the race (true) or finish normally (false)? */
 
         irr::core::vector2di  m_cHighLight;   /**< The hightlight position */
 
@@ -46,8 +47,9 @@ namespace dustbin {
         * Update the data
         * @param a_sName name of the player
         * @param a_iDeficit deficit to the leader
+        * @param a_bWithdrawn did the player withdraw from the race (true) or finish normally (false)?
         */
-        void setData(const std::wstring &a_sName, int a_iDeficit);
+        void setData(const std::wstring &a_sName, int a_iDeficit, bool a_bWithdrawn);
 
         virtual void draw();
 

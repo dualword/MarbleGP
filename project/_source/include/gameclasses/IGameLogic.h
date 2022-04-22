@@ -74,6 +74,13 @@ namespace dustbin {
         * @return the current race positions
         */
         virtual const std::vector<data::SRacePlayer *> getRacePositions() = 0;
+
+        /**
+        * Withdraw a player from the race
+        * @param a_iMarble the marble ID
+        * @param a_iStep the current simulation step
+        */
+        virtual data::SRacePlayer *withdrawPlayer(int a_iMarble, int a_iStep) = 0;
     };
   }
 }

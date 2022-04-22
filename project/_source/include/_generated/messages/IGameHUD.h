@@ -97,6 +97,13 @@ namespace dustbin {
          */
         virtual void onStepmsg(irr::u32 a_StepNo) = 0;
 
+        /**
+         * This function receives messages of type "ConfirmWithdraw"
+         * @param a_MarbleId ID of the marble
+         * @param a_Timeout The number of steps defining the timeout for the withdrawal
+         */
+        virtual void onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout) = 0;
+
 
       public:
         IGameHUD();

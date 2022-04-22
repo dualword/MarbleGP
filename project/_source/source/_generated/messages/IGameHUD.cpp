@@ -69,6 +69,11 @@ namespace dustbin {
               onStepmsg(p->getStepNo());
               break;
             }
+            case dustbin::messages::enMessageIDs::ConfirmWithdraw: {
+              dustbin::messages::CConfirmWithdraw *p = reinterpret_cast<dustbin::messages::CConfirmWithdraw *>(a_pMessage);
+              onConfirmwithdraw(p->getMarbleId(), p->getTimeout());
+              break;
+            }
             default:
               break;
           }

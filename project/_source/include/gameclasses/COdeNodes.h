@@ -153,12 +153,13 @@ namespace dustbin {
     class CObjectMarble : public CObject {
       public:
         enum class enMarbleState {
-          Countdown,
-          Rolling,
-          Respawn1,
-          Respawn2,
-          Stunned,
-          Finished
+          Countdown,  /**< Countdown is going on */
+          Rolling,    /**< Racing normally */
+          Respawn1,   /**< First part of the respawn */
+          Respawn2,   /**< Second part of the respawn */
+          Stunned,    /**< The player is stunned */
+          Finished,   /**< The player has finished the race */
+          Withdrawn   /**< The player has cancelled his race */
         };
 
         int m_iManualRespawn;
@@ -169,8 +170,10 @@ namespace dustbin {
         int m_iLapNo;         /**< The current lap of the marble */
         int m_iFinishTime;    /**< Finish time of the marble */
         int m_iPosition;      /**< Position in the race */
+        int m_iWithdraw;      /**< Time (in simulation steps) for the user to confirm a withdraw (-1 == no withdraw requested) */
 
-        bool m_bActive; /**< The player has already shown some activity */
+        bool m_bActive;     /**< The player has already shown some activity */
+        bool m_bAiPlayer;   /**< Is this an AI player? */
 
         irr::core::vector3df m_vCamera;     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
         irr::core::vector3df m_vRearview;   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */

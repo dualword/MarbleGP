@@ -27,6 +27,15 @@ namespace dustbin {
         std::vector<data::SRacePlayer *> m_vPositions;  /**< This vector is used to keep track of the positions in a race */
         std::vector<int                > m_vCpTimes;    /**< Time when the leader has passed a checkpoint of the race */
 
+        /**
+        * Update the positions in the race
+        * @param a_iId the ID of the current player (0..15)
+        * @see m_vPositions
+        * @see CGameLogicDefault::withdrawPlayer
+        * @see CGameLogicDefault::onCheckpoint
+        */
+        data::SRacePlayer *updatePositions(int a_iId);
+
       public:
         CGameLogicDefault();
         virtual ~CGameLogicDefault();
@@ -67,7 +76,7 @@ namespace dustbin {
         * Callback for checkpoint passes of the marbles
         * @param a_iMarble the ID of the marble
         * @param a_iCheckpoint the checkpoint ID
-        * @param a_iStep the current step
+        * @param a_iStep the current simulation step
         */
         virtual data::SRacePlayer *onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep);
 
@@ -95,6 +104,13 @@ namespace dustbin {
         * @return the current race positions
         */
         virtual const std::vector<data::SRacePlayer *> getRacePositions();
+
+        /**
+        * Withdraw a player from the race
+        * @param a_iMarble the marble ID
+        * @param a_iStep the current simulation step
+        */
+        virtual data::SRacePlayer *withdrawPlayer(int a_iMarble, int a_iStep);
     };
   }
 }

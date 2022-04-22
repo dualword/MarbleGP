@@ -119,6 +119,9 @@ namespace dustbin {
         irr::core::recti           m_cLaurelSrc;    /**< Source rect for rendering the laurel wreaths */
         irr::video::ITexture      *m_pLaurel[4];    /**< The laurel wreath images */
         irr::gui::IGUIFont        *m_pPosFont;      /**< Font for showing the finish position */
+        irr::gui::IGUIStaticText  *m_pWithdraw;     /**< The "Confirm Withdraw" static text */
+        int                        m_iWithdraw;     /**< The step when the "confirm withdraw" will be hidden again */
+        irr::video::SColor         m_cRankBack;     /**< The background color for the ranking */
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The Irrlicht scene collision manager */
 
@@ -212,6 +215,13 @@ namespace dustbin {
         * @param a_StepNo The current step number
         */
         virtual void onStepmsg(irr::u32 a_StepNo);
+
+        /**
+        * This function receives messages of type "ConfirmWithdraw"
+        * @param a_MarbleId ID of the marble
+        * @param a_Timeout The number of steps defining the timeout for the withdrawal
+        */
+        virtual void onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout);
 
       public:
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);

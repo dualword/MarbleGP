@@ -73,14 +73,15 @@ namespace dustbin {
     const irr::s32 c_iChampionshipRacesFooter  = -112;    /**< Marker for the end of the championship data structure */
 
     // Race Player (limited data is encoded)
-    const irr::s32 c_iRacePlayerHeader  = -120;   /**< Marker for the start of a race player data structure */
-    const irr::s32 c_iRacePlayerId      = -121;   /**< Marker for the race player's id (aka marble id) */
-    const irr::s32 c_iRacePlayerPos     = -122;   /**< Marker for the finishing position of the player */
-    const irr::s32 c_iRacePlayerDeficit = -123;   /**< Marker for the deficit of the player on the leader */
-    const irr::s32 c_iRacePlayerFastest = -124;   /**< Marker for the fastest race lap of the player */
-    const irr::s32 c_iRacePlayerStunned = -125;   /**< Marker for the number of stuns a player has experienced during the race */
-    const irr::s32 c_iRacePlayerRespawn = -126;   /**< Marker for the number of respawns of the player during the race */
-    const irr::s32 c_iRacePlayerFooter  = -127;   /**< Marker for the end of the race player data structure */
+    const irr::s32 c_iRacePlayerHeader   = -120;   /**< Marker for the start of a race player data structure */
+    const irr::s32 c_iRacePlayerId       = -121;   /**< Marker for the race player's id (aka marble id) */
+    const irr::s32 c_iRacePlayerPos      = -122;   /**< Marker for the finishing position of the player */
+    const irr::s32 c_iRacePlayerDeficit  = -123;   /**< Marker for the deficit of the player on the leader */
+    const irr::s32 c_iRacePlayerFastest  = -124;   /**< Marker for the fastest race lap of the player */
+    const irr::s32 c_iRacePlayerStunned  = -125;   /**< Marker for the number of stuns a player has experienced during the race */
+    const irr::s32 c_iRacePlayerRespawn  = -126;   /**< Marker for the number of respawns of the player during the race */
+    const irr::s32 c_iRacePlayerWithdraw = -127;   /**< Marker for the "player withdrawn from race" data */
+    const irr::s32 c_iRacePlayerFooter   = -128;   /**< Marker for the end of the race player data structure */
 
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
@@ -991,27 +992,60 @@ namespace dustbin {
       return l_vRet;
     }
 
-    SRacePlayer::SRacePlayer() : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
+    SRacePlayer::SRacePlayer() : 
+      m_iId       (-1),
+      m_iCpCount  (0), 
+      m_iStunned  (0), 
+      m_iRespawn  (0), 
+      m_iLapNo    (0), 
+      m_iDeficitL (0), 
+      m_iDeficitA (0), 
+      m_iLastCp   (0), 
+      m_iPos      (0), 
+      m_iFastest  (0), 
+      m_iLapStart (0), 
+      m_iWithdrawn(-1), 
+      m_bWithdrawn(false),
+      m_bFinished (false)
+    {
     }
 
     SRacePlayer::SRacePlayer(const SRacePlayer& a_cOther) : 
-      m_iId      (a_cOther.m_iId), 
-      m_iCpCount (a_cOther.m_iCpCount), 
-      m_iStunned (a_cOther.m_iStunned), 
-      m_iRespawn (a_cOther.m_iRespawn), 
-      m_iLapNo   (a_cOther.m_iLapNo), 
-      m_iDeficitL(a_cOther.m_iDeficitL), 
-      m_iDeficitA(a_cOther.m_iDeficitA), 
-      m_iLastCp  (a_cOther.m_iLastCp), 
-      m_iPos     (a_cOther.m_iPos), 
-      m_iFastest (a_cOther.m_iFastest), 
-      m_iLapStart(a_cOther.m_iLapStart)
+      m_iId       (a_cOther.m_iId), 
+      m_iCpCount  (a_cOther.m_iCpCount), 
+      m_iStunned  (a_cOther.m_iStunned), 
+      m_iRespawn  (a_cOther.m_iRespawn), 
+      m_iLapNo    (a_cOther.m_iLapNo), 
+      m_iDeficitL (a_cOther.m_iDeficitL), 
+      m_iDeficitA (a_cOther.m_iDeficitA), 
+      m_iLastCp   (a_cOther.m_iLastCp), 
+      m_iPos      (a_cOther.m_iPos), 
+      m_iFastest  (a_cOther.m_iFastest), 
+      m_iLapStart (a_cOther.m_iLapStart),
+      m_iWithdrawn(a_cOther.m_iWithdrawn),
+      m_bWithdrawn(a_cOther.m_bWithdrawn),
+      m_bFinished (a_cOther.m_bFinished)
     {
       for (std::vector<int>::const_iterator it = a_cOther.m_vCpTimes.begin(); it != a_cOther.m_vCpTimes.end(); it++)
         m_vCpTimes.push_back(*it);
     }
 
-    SRacePlayer::SRacePlayer(const std::string &a_sData) : m_iId(-1), m_iCpCount(0), m_iStunned(0), m_iRespawn(0), m_iLapNo(0), m_iDeficitL(0), m_iDeficitA(0), m_iLastCp(0), m_iPos(0), m_iFastest(0), m_iLapStart(0) {
+    SRacePlayer::SRacePlayer(const std::string &a_sData) : 
+      m_iId       (-1), 
+      m_iCpCount  (0), 
+      m_iStunned  (0), 
+      m_iRespawn  (0), 
+      m_iLapNo    (0), 
+      m_iDeficitL (0), 
+      m_iDeficitA (0), 
+      m_iLastCp   (0), 
+      m_iPos      (0), 
+      m_iFastest  (0), 
+      m_iLapStart (0), 
+      m_iWithdrawn(-1), 
+      m_bWithdrawn(false),
+      m_bFinished (false)
+    {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
       int l_iHead = l_cSerializer.getS32();
@@ -1042,6 +1076,11 @@ namespace dustbin {
 
             case c_iRacePlayerRespawn:
               m_iRespawn = l_cSerializer.getS32();
+              break;
+
+            case c_iRacePlayerWithdraw:
+              m_iWithdrawn = l_cSerializer.getS32();
+              m_bWithdrawn = l_cSerializer.getU8() != 0;
               break;
 
             case c_iRacePlayerFooter:
@@ -1084,6 +1123,11 @@ namespace dustbin {
       // Number of respawns of the player
       l_cSerializer.addS32(c_iRacePlayerRespawn);
       l_cSerializer.addS32(m_iRespawn);
+
+      // Withdrawn from race data
+      l_cSerializer.addS32(c_iRacePlayerWithdraw);
+      l_cSerializer.addS32(m_iWithdrawn);
+      l_cSerializer.addU8(m_bWithdrawn ? 1 : 0);
 
       // End of the data structure
       l_cSerializer.addS32(c_iRacePlayerFooter);

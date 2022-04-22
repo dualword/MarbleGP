@@ -643,6 +643,46 @@ namespace dustbin {
       if (m_pDynamics != nullptr) {
         m_pDynamics->stopThread();
         m_pDynamics->join();
+
+        messages::IMessage *l_pMsg = nullptr;
+        do {
+          l_pMsg = m_pInputQueue->popMessage();
+          if (l_pMsg != nullptr)
+            handleMessage(l_pMsg);
+        }
+        while (l_pMsg != nullptr);
+
+        if (m_pRace != nullptr) {
+          const std::vector<data::SRacePlayer*> l_vResult = m_pDynamics->getRaceResult();
+
+          printf("\n***** Race Result *****\n\n");
+          int l_iNum = 0;
+          for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
+            m_pRace->m_aResult[l_iNum] = data::SRacePlayer(*(*it));
+
+            for (int i = 0; i < 16 && m_aMarbles[i] != nullptr; i++) {
+              if (m_aMarbles[i]->m_pPositional->getID() == (*it)->m_iId) {
+                std::string s = m_aMarbles[i]->m_pPlayer->m_sName;
+                if (s.size() > 16)
+                  s = s.substr(0, 16);
+
+                while (s.size() < 16)
+                  s += " ";
+
+                printf("%2i: %s | %.2f\n", (*it)->m_iPos, s.c_str(), ((irr::f32)(*it)->m_iDeficitL) / 120.0f);
+              }
+            }
+
+            l_iNum++;
+          }
+
+          printf("\n***********************\n\n");
+
+          data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
+          l_cChampionship.addRace(*m_pRace);
+          m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
+        }
+
         delete m_pDynamics;
         m_pDynamics = nullptr;
       }
@@ -1051,7 +1091,7 @@ namespace dustbin {
         m_pGlobal->getSoundInterface()->setSoundtrackFade(l_fFade);
       }
       else if (m_eState == enGameState::Racing) {
-        if (m_iFinished != -1 && m_iStep - m_iFinished > 600) { /**< toDo: waiting time adjustable */
+        if (m_iFinished != -1 && m_iStep - m_iFinished > 1800) { // Wait until the finished soundtrack has ended
           m_eState = enGameState::Finished;
           m_iFadeOut = m_iStep;
         }
@@ -1331,14 +1371,8 @@ namespace dustbin {
      * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
      */
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
-      m_iFinished = a_Cancelled ? m_iStep - 550 : m_iStep;
+      m_iFinished = a_Cancelled ? m_iStep - 1500 : m_iStep;
       m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
-      
-      if (m_pRace != nullptr) {
-        data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
-        l_cChampionship.addRace(*m_pRace);
-        m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
-      }
     }
 
     /**
@@ -1460,6 +1494,21 @@ namespace dustbin {
         m_pRace->m_aResult[l_iIndex].m_iStunned  = a_Stunned;
         m_pRace->m_aResult[l_iIndex].m_iRespawn  = a_Respawn;
       }
+    }
+
+    /**
+    * This function receives messages of type "PlayerWithdrawn"
+    * @param a_MarbleId ID of the marble
+    */
+    void CGameState::onPlayerwithdrawn(irr::s32 a_MarbleId) {
+      int l_iIndex = a_MarbleId - 10000;
+      if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+        m_aMarbles[l_iIndex]->m_pPlayer->m_bWithdrawn = true;
+      }
+
+      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++)
+        if (it->second.m_pHUD != nullptr)
+          it->second.m_pHUD->updateRanking();
     }
 
 

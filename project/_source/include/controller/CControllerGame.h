@@ -13,6 +13,10 @@ namespace dustbin {
     * This class handles handles controls for the actual game
     */
     class CControllerGame : public CControllerBase {
+      private:
+        bool m_bWithdrawDown;   /**< Cancel button pressed? */
+        bool m_bPauseDown;    /**< Pause button pressed? */
+
       public:
         CControllerGame();
         virtual ~CControllerGame();
@@ -46,6 +50,18 @@ namespace dustbin {
         * @return true if control >= 0.5, false otherwise
         */
         bool getRespawn();
+
+        /**
+        * Get the "withdraw from race" button state
+        * @return true if the button was pressed since the last query, false otherwise
+        */
+        bool withdrawFromRace();
+
+        /**
+        * Get the pause button state
+        * @return true if the button was pressed since the last query, false otherwise
+        */
+        bool pause();
     };
 
   } // namespace controller
