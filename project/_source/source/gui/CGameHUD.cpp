@@ -509,17 +509,12 @@ namespace dustbin {
 
         printf("Ratio: %.2f\n", l_fRatio);
 
-        if (l_fRatio > 1.77777777) {
-          l_cScreen.Width = 16 * l_cScreen.Height / 9;
-        }
-        else {
-          l_cScreen.Height = 9 * l_cScreen.Width / 16;
-        }
-
         irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
           l_cSize.Width  * l_cScreen.Width  / 3840,
           l_cSize.Height * l_cScreen.Height / 2160
         );
+
+        l_cCntSize.Height = 250 * l_cCntSize.Width / 2560;
 
         irr::core::position2di l_cCntPos = irr::core::position2di(
           l_cPos.X + l_cScreen .Width / 2 - l_cCntSize.Width  / 2,
