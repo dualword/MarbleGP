@@ -138,9 +138,9 @@ namespace dustbin {
           }
           else printf("Ui element \"gridsize\" not found.");
 
-          l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_class", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
+          l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("race_finish", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
-            l_pSelector->setSelected(m_cSettings.m_iAiClass); 
+            l_pSelector->setSelected(m_cSettings.m_iAutoFinish); 
             l_pSelector->setEnabled(m_cSettings.m_bFillGridAI); 
           }
           else printf("Ui element \"ai_class\" not found.");
@@ -437,8 +437,8 @@ namespace dustbin {
                   m_cSettings.m_iGridSize = p->getSelected();
                   l_bRet = true;
                 }
-                else if (l_sSender == "ai_class") {
-                  m_cSettings.m_iAiClass = p->getSelected();
+                else if (l_sSender == "race_finish") {
+                  m_cSettings.m_iAutoFinish = p->getSelected();
                   l_bRet = true;
                 }
                 else if (l_sSender == "raceclass") {

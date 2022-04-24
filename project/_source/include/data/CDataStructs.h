@@ -119,7 +119,7 @@ namespace dustbin {
       int m_iRaceClass;   /**< The race class (0 == Marbles3, 1 = Marbles2, 2 = MarbleGP) */
       int m_iGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
       int m_iGridSize;    /**< The grid size, filled with AI players */
-      int m_iAiClass;     /**< The class of the AI players (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP, 3 == Manual Configure, 4 == All Classes) */
+      int m_iAutoFinish;  /**< The auto finish mode (0 == All Players finished, 1 == Second to Last player finished, 2 == First Player Finished, 3 == All Players and AI finished) */
 
       bool m_bReverseGrid;      /**< Shall the grid be reversed? */
       bool m_bRandomFirstRace;  /**< Shall the grid of the first race be randomized? */

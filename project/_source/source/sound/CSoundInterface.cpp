@@ -241,6 +241,7 @@ namespace dustbin {
 
         void startSoundtrack(enSoundTrack a_eSoundTrack) {
           if (a_eSoundTrack != m_eSoundTrack) {
+            printf("Start Soundtrack: %s\n", a_eSoundTrack == enSoundTrack::enStMenu ? "Menu" : a_eSoundTrack == enSoundTrack::enStRace ? "Race" : a_eSoundTrack == enSoundTrack::enStFinish ? "Finish" : "None");
             if (m_pSoundTrack != nullptr)
               m_pSoundTrack->stop();
 

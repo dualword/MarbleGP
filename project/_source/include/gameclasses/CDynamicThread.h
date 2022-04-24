@@ -37,6 +37,14 @@ namespace dustbin {
     * This class computes all the dynamics of the actual game
     */
     class CDynamicThread : public threads::IThread, public messages::IDynamicThread, public ITriggerHandler {
+      public:
+        enum class enAutoFinish {
+          AllPlayers,
+          SecondToLast,
+          FirstPlayer,
+          PlayersAndAI
+        };
+
       private:
         enum class enGameState {
           Countdown,
@@ -45,14 +53,17 @@ namespace dustbin {
           Cancelled
         };
 
-        enGameState m_eGameState;
+        enGameState  m_eGameState;
+        enAutoFinish m_eAutoFinish;
 
-        CWorld* m_pWorld;
-        CObjectMarble* m_aMarbles[16];
+        CWorld        *m_pWorld;
+        CObjectMarble *m_aMarbles[16];
 
         bool m_bPaused;
 
         irr::f32 m_fGridAngle;
+        irr::s32 m_iPlayers;      /**< Number of app players (incl. AI) */
+        irr::s32 m_iHuman;        /**< Number of all human (non-AI) players */
 
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
@@ -100,7 +111,13 @@ namespace dustbin {
         virtual void execute();
 
       public:
-        CDynamicThread(scenenodes::CWorldNode *a_pWorld, const std::vector<gameclasses::SPlayer*> &a_vPlayers, int a_iLaps, std::vector<scenenodes::STriggerVector> a_vTimerActions, std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters);
+        CDynamicThread(
+          scenenodes::CWorldNode *a_pWorld, 
+          const std::vector<gameclasses::SPlayer*> &a_vPlayers, 
+          int a_iLaps, 
+          std::vector<scenenodes::STriggerVector> a_vTimerActions, 
+          std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters, 
+          enAutoFinish a_eAutoFinish);
 
         virtual ~CDynamicThread();
 

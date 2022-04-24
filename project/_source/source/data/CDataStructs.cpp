@@ -23,7 +23,7 @@ namespace dustbin {
     const irr::s32 c_iRaceClass       = 33;   /**< Marker for the race class */
     const irr::s32 c_iGridPos         = 34;   /**< Marker for the Grid position scheme */
     const irr::s32 c_iGridSize        = 35;   /**< Marker for the grid size */
-    const irr::s32 c_iAiClass         = 36;   /**< Marker for the AI class */
+    const irr::s32 c_iAutoFinish      = 36;   /**< Marker for the auto finish type */
     const irr::s32 c_iReverseGrid     = 37;   /**< Marker for the reverse grid flag */
     const irr::s32 c_iFirstRaceRandom = 38;   /**< Marker for the randomize first race flag */
     const irr::s32 c_iFillGrid        = 39;   /**< Marker for the fill grid with AI flag */
@@ -342,7 +342,7 @@ namespace dustbin {
       m_iRaceClass      (0),
       m_iGridPos        (1),
       m_iGridSize       (16),
-      m_iAiClass        (0),
+      m_iAutoFinish     (0),
       m_bReverseGrid    (false),
       m_bRandomFirstRace(true),
       m_bFillGridAI     (true)
@@ -354,10 +354,10 @@ namespace dustbin {
       messages::CSerializer64 l_cSerializer;
 
       l_cSerializer.addS32(c_iGameSettings   );
-      l_cSerializer.addS32(c_iRaceClass      ); l_cSerializer.addS32(m_iRaceClass);
-      l_cSerializer.addS32(c_iGridPos        ); l_cSerializer.addS32(m_iGridPos  );
-      l_cSerializer.addS32(c_iGridSize       ); l_cSerializer.addS32(m_iGridSize );
-      l_cSerializer.addS32(c_iAiClass        ); l_cSerializer.addS32(m_iAiClass  );
+      l_cSerializer.addS32(c_iRaceClass      ); l_cSerializer.addS32(m_iRaceClass );
+      l_cSerializer.addS32(c_iGridPos        ); l_cSerializer.addS32(m_iGridPos   );
+      l_cSerializer.addS32(c_iGridSize       ); l_cSerializer.addS32(m_iGridSize  );
+      l_cSerializer.addS32(c_iAutoFinish     ); l_cSerializer.addS32(m_iAutoFinish);
       l_cSerializer.addS32(c_iReverseGrid    ); l_cSerializer.addS32(m_bReverseGrid     ? 1 : 0);
       l_cSerializer.addS32(c_iFirstRaceRandom); l_cSerializer.addS32(m_bRandomFirstRace ? 1 : 0);
       l_cSerializer.addS32(c_iFillGrid       ); l_cSerializer.addS32(m_bFillGridAI      ? 1 : 0);
@@ -374,7 +374,7 @@ namespace dustbin {
             case c_iRaceClass      : m_iRaceClass       = l_cSerializer.getS32()     ; break;
             case c_iGridPos        : m_iGridPos         = l_cSerializer.getS32()     ; break;
             case c_iGridSize       : m_iGridSize        = l_cSerializer.getS32()     ; break;
-            case c_iAiClass        : m_iAiClass         = l_cSerializer.getS32()     ; break;
+            case c_iAutoFinish     : m_iAutoFinish      = l_cSerializer.getS32()     ; break;
             case c_iReverseGrid    : m_bReverseGrid     = l_cSerializer.getS32() != 0; break;
             case c_iFirstRaceRandom: m_bRandomFirstRace = l_cSerializer.getS32() != 0; break;
             case c_iFillGrid       : m_bFillGridAI      = l_cSerializer.getS32() != 0; break;

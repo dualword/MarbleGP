@@ -227,6 +227,7 @@ namespace dustbin {
       }
 
       int  l_iGridOrder  = 0;
+      int  l_iAutoFinish = 0;
       bool l_bGridRevert = false;
 
       std::string l_sSettings = m_pGlobal->getSetting("gamesetup");
@@ -235,6 +236,7 @@ namespace dustbin {
         l_cSettings.deserialize(l_sSettings);
         l_iGridOrder  = l_cSettings.m_iGridPos;
         l_bGridRevert = l_cSettings.m_bReverseGrid;
+        l_iAutoFinish = l_cSettings.m_iAutoFinish;
       }
 
       data::SChampionship      l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
@@ -580,7 +582,16 @@ namespace dustbin {
       l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
       
       if (l_pNode != nullptr) {
-        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, std::atoi(m_pGlobal->getSetting("laps").c_str()), m_vTimerActions, m_vMarbleCounters);
+        gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
+
+        switch (l_iAutoFinish) {
+          case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
+          case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
+          case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
+          case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
+        }
+        
+        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, std::atoi(m_pGlobal->getSetting("laps").c_str()), m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
 
         if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
         if (m_pOutputQueue == nullptr) m_pOutputQueue = new threads::COutputQueue();
@@ -663,10 +674,10 @@ namespace dustbin {
             for (int i = 0; i < 16 && m_aMarbles[i] != nullptr; i++) {
               if (m_aMarbles[i]->m_pPositional->getID() == (*it)->m_iId) {
                 std::string s = m_aMarbles[i]->m_pPlayer->m_sName;
-                if (s.size() > 16)
-                  s = s.substr(0, 16);
+                if (s.size() > 20)
+                  s = s.substr(0, 20);
 
-                while (s.size() < 16)
+                while (s.size() < 20)
                   s += " ";
 
                 printf("%2i: %s | %.2f\n", (*it)->m_iPos, s.c_str(), ((irr::f32)(*it)->m_iDeficitL) / 120.0f);
@@ -1371,8 +1382,10 @@ namespace dustbin {
      * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
      */
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
-      m_iFinished = a_Cancelled ? m_iStep - 1500 : m_iStep;
-      m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
+      if (m_iFinished == -1) {
+        m_iFinished = a_Cancelled ? m_iStep - 1500 : m_iStep;
+        m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
+      }
     }
 
     /**

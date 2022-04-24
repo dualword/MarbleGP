@@ -118,7 +118,7 @@ namespace dustbin {
 
       if (m_iLastChange > 1200) {
         m_pCurrent = nullptr;
-        printf("Search for new AI path!\n");
+        // printf("Search for new AI path!\n");
         selectClosestLink();
       }
 

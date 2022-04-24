@@ -154,7 +154,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Last race;Standings;Random" />
+              <attribute key="options" value="Fixed;Last race;Standings;Random" />
             </custom>
           </element>
           
@@ -218,21 +218,21 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 5, 29, 17, 33" tooltip="Select the Class of the AI Opponents">
+          <element type="staticText" rect="relative: 5, 32, 33, 33" tooltip="When will the race be finished?">
             <attributes>
-              <attribute key="Caption" value="AI Marble Class:" />
-              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="Caption" value="Race Auto Finish" />
+              <attribute key="HTextAlign" value="center" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 18, 30, 33, 32">
+          <element type="Selector" rect="relative: 5, 34, 33, 36">
             <attributes>
-              <attribute key="Name" value="ai_class" />
+              <attribute key="Name" value="race_finish" />
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Marbles3;Marbles2;MarbleGP;Configure" />
+              <attribute key="options" value="All Players finished;Second to Last finished;First Player finished;All Players and AI finished" />
             </custom>
           </element>
         </children>
