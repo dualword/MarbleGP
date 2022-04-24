@@ -680,13 +680,13 @@ namespace dustbin {
               m_pDrv->draw2DRectangle(irr::video::SColor(192, 232, 232, 232), l_cRects[i], &m_cRect);
               if (l_iPos[i] == m_pPlayer->m_iPosition) {
                 std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + helpers::s2ws(m_pPlayer->m_sName);
-                m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &l_cRects[i]);
+                m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
               }
               else {
                 for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
                   if ((*it)->m_iPosition == l_iPos[i]) {
                     std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + helpers::s2ws((*it)->m_sName).c_str();
-                    m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, & l_cRects[i]);
+                    m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
                     
                     std::wstring l_sDeficit;
 
@@ -715,7 +715,7 @@ namespace dustbin {
                     }
 
                     irr::core::dimension2du l_cSize = m_pDefFont->getDimension(l_sDeficit.c_str());
-                    m_pDefFont->draw(l_sDeficit.c_str(), irr::core::recti(l_cRects[i].LowerRightCorner.X - l_cSize.Width, l_cRects[i].UpperLeftCorner.Y, l_cRects[i].LowerRightCorner.X, l_cRects[i].LowerRightCorner.Y), irr::video::SColor(0xFF, 0, 0, 0), true, true, &l_cRects[i]);
+                    m_pDefFont->draw(l_sDeficit.c_str(), irr::core::recti(l_cRects[i].LowerRightCorner.X - l_cSize.Width, l_cRects[i].UpperLeftCorner.Y, l_cRects[i].LowerRightCorner.X, l_cRects[i].LowerRightCorner.Y), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
                     break;
                   }
                 }
