@@ -274,6 +274,7 @@ namespace dustbin {
           case irr::gui::EGUIET_EDIT_BOX: 
           case irr::gui::EGUIET_SPIN_BOX:
             // case gui::g_ControllerUiId:
+          case irr::gui::EGUIET_TABLE:
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId: {
@@ -310,6 +311,9 @@ namespace dustbin {
               }
               else if (l_pRet->getType() == gui::g_ReactiveLabelId) {
                 reinterpret_cast<gui::CReactiveLabel*>(l_pRet)->setOverrideFont(l_pFont);
+              }
+              else if (l_pRet->getType() == irr::gui::EGUIET_TABLE) {
+                reinterpret_cast<irr::gui::IGUITable *>(l_pRet)->setOverrideFont(l_pFont);
               }
             }
             break;
@@ -398,6 +402,27 @@ namespace dustbin {
     }
 
     void parseDialog(irr::io::IXMLReaderUTF8* a_pXml, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui) {
+      /*for (int i = 0; i < a_pGui->getRegisteredGUIElementFactoryCount(); i++) {
+        irr::gui::IGUIElementFactory *l_pFactory = a_pGui->getGUIElementFactory(i);
+        const irr::c8 *l_pName = l_pFactory->getCreateableGUIElementTypeName(irr::gui::EGUIET_TABLE);
+        if (l_pName != nullptr) {
+          printf("\nAttributes of \"%s\"\n\n", l_pName);
+
+          irr::gui::IGUIElement *p = l_pFactory->addGUIElement(irr::gui::EGUIET_TABLE, a_pParent);
+          irr::io::IAttributes *l_pAttr = a_pGui->getFileSystem()->createEmptyAttributes();
+
+          p->serializeAttributes(l_pAttr);
+
+          for (int j = 0; j < l_pAttr->getAttributeCount(); j++) {
+            printf("Attribute %s: %s\n", l_pAttr->getAttributeName(j), l_pAttr->getAttributeAsString(j).c_str());
+          }
+
+          l_pAttr->drop();
+
+          break;
+        }
+      }*/
+
       while (a_pXml->read()) {
         std::string l_sName = a_pXml->getNodeName();
 

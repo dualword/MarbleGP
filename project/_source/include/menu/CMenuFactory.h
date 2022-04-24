@@ -21,6 +21,8 @@ namespace dustbin {
     IMenuHandler *createMenuProfiles   (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
     IMenuHandler *createMenuSetupGame  (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
     IMenuHandler *createMenuSelectTrack(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
+    IMenuHandler *createMenuRaceResult (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
+    IMenuHandler* createMenuStandings  (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
   }
 }
 

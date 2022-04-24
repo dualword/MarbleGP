@@ -35,15 +35,16 @@ namespace dustbin {
     const irr::s32 c_iRacePlayersFooter = 53;   /**< Marker for the end of the list of players */
 
     // Championship Player
-    const irr::s32 c_iChampionshipPlayerHead     = -60;      /**< Marker for the beginning of a championship player */
-    const irr::s32 c_iChampionshipPlayerId       = -61;      /**< Marker for the name of a championship player */
-    const irr::s32 c_iChampionshipPlayerName     = -62;      /**< Marker for the name of a championship player */
-    const irr::s32 c_iChampionshipPlayerResults  = -63;      /**< Marker for the race results of a championship player */
-    const irr::s32 c_iChampionshipPlayerPoints   = -64;      /**< Marker for the points of a championship player */
-    const irr::s32 c_iChampionshipPlayerRespawns = -65;      /**< Marker for the number of respawns of a championship player */
-    const irr::s32 c_iChampionshipPlayerStunned  = -66;      /**< Marker for the number of stuns of a championship player */
-    const irr::s32 c_iChampionshipPlayerFastest  = -67;      /**< Marker for the number of fastest race laps of a championship player */
-    const irr::s32 c_iChampionshipPlayerFooter   = -68;      /**< Marker for the end of the dataset */
+    const irr::s32 c_iChampionshipPlayerHead     = -60;       /**< Marker for the beginning of a championship player */
+    const irr::s32 c_iChampionshipPlayerId       = -61;       /**< Marker for the name of a championship player */
+    const irr::s32 c_iChampionshipPlayerName     = -62;       /**< Marker for the name of a championship player */
+    const irr::s32 c_iChampionshipPlayerResults  = -63;       /**< Marker for the race results of a championship player */
+    const irr::s32 c_iChampionshipPlayerPoints   = -64;       /**< Marker for the points of a championship player */
+    const irr::s32 c_iChampionshipPlayerRespawns = -65;       /**< Marker for the number of respawns of a championship player */
+    const irr::s32 c_iChampionshipPlayerStunned  = -66;       /**< Marker for the number of stuns of a championship player */
+    const irr::s32 c_iChampionshipPlayerFastest  = -67;       /**< Marker for the number of fastest race laps of a championship player */
+    const irr::s32 c_iChampionshipPlayerDNF      = -68;       /**< Marker for the number of races the player didn't finish */
+    const irr::s32 c_iChampionshipPlayerFooter   = -69;       /**< Marker for the end of the dataset */
 
     // Championship Race
     const irr::s32 c_iChampionshipRaceHead        = -70;      /**< Marker for the beginning of a championship race */
@@ -455,24 +456,25 @@ namespace dustbin {
       return s;
     }
 
-    SChampionshipPlayer::SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName) : m_iPlayerId(a_iPlayerId), m_sName(a_sName), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0) {
+    SChampionshipPlayer::SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName) : m_iPlayerId(a_iPlayerId), m_sName(a_sName), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0), m_iDidNotFinish(0) {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = 0;
     }
 
     SChampionshipPlayer::SChampionshipPlayer(const SChampionshipPlayer &a_cOther) : 
-      m_iPlayerId   (a_cOther.m_iPlayerId),
-      m_sName       (a_cOther.m_sName),
-      m_iPoints     (a_cOther.m_iPoints),
-      m_iRespawn    (a_cOther.m_iRespawn),
-      m_iStunned    (a_cOther.m_iStunned),
-      m_iFastestLaps(a_cOther.m_iFastestLaps)
+      m_iPlayerId    (a_cOther.m_iPlayerId),
+      m_sName        (a_cOther.m_sName),
+      m_iPoints      (a_cOther.m_iPoints),
+      m_iRespawn     (a_cOther.m_iRespawn),
+      m_iStunned     (a_cOther.m_iStunned),
+      m_iFastestLaps (a_cOther.m_iFastestLaps),
+      m_iDidNotFinish(a_cOther.m_iDidNotFinish)
     {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = a_cOther.m_aResult[i];
     }
 
-    SChampionshipPlayer::SChampionshipPlayer(const std::string& a_sData) : m_iPlayerId(0), m_sName(""), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0) {
+    SChampionshipPlayer::SChampionshipPlayer(const std::string& a_sData) : m_iPlayerId(0), m_sName(""), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0), m_iDidNotFinish(0) {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = 0;
 
@@ -528,6 +530,10 @@ namespace dustbin {
               m_iFastestLaps = l_cSerializer.getS32();
               break;
 
+            case c_iChampionshipPlayerDNF:
+              m_iDidNotFinish = l_cSerializer.getS32();
+              break;
+
             case c_iChampionshipPlayerFooter:
               break;
 
@@ -577,6 +583,10 @@ namespace dustbin {
       l_cSerializer.addS32(c_iChampionshipPlayerFastest);
       l_cSerializer.addS32(m_iFastestLaps);
 
+      //DNFs
+      l_cSerializer.addS32(c_iChampionshipPlayerDNF);
+      l_cSerializer.addS32(m_iDidNotFinish);
+
       // Footer
       l_cSerializer.addS32(c_iChampionshipPlayerFooter);
 
@@ -594,10 +604,11 @@ namespace dustbin {
       }
 
       s += "]\n"+
-        std::string("points=" ) + std::to_string(m_iPoints     ) + ", " +
-        std::string("respawn=") + std::to_string(m_iRespawn    ) + ", " +
-        std::string("stunned=") + std::to_string(m_iStunned    ) + ", " +
-        std::string("fastest=") + std::to_string(m_iFastestLaps) + "\n";
+        std::string("points=" ) + std::to_string(m_iPoints      ) + ", " +
+        std::string("respawn=") + std::to_string(m_iRespawn     ) + ", " +
+        std::string("stunned=") + std::to_string(m_iStunned     ) + ", " +
+        std::string("fastest=") + std::to_string(m_iFastestLaps ) + ", " +
+        std::string("DNF="    ) + std::to_string(m_iDidNotFinish) + "\n";
 
       return s;
     }

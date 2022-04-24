@@ -267,17 +267,6 @@ namespace dustbin {
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader);
 
         /**
-        * This function receives messages of type "FinishPosition"
-        * @param a_Position The finish position of the marble
-        * @param a_MarbleId ID of the marble
-        * @param a_Deficit Deficit on the leader
-        * @param a_Laps Number of laps done
-        * @param a_Stunned Counter of the stuns of the marble during the race
-        * @param a_Respawn Counter of the respawns of the marble during the race
-        */
-        virtual void onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn, irr::s32 a_Fastest);
-
-        /**
         * This function receives messages of type "PlayerWithdrawn"
         * @param a_MarbleId ID of the marble
         */

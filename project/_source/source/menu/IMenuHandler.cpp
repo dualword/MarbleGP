@@ -99,6 +99,12 @@ namespace dustbin {
       else if (a_sName == "menu_selecttrack") {
         return a_pManager->changeMenu(createMenuSelectTrack(a_pDevice, a_pManager, a_pState));
       }
+      else if (a_sName == "menu_raceresult") {
+        return a_pManager->changeMenu(createMenuRaceResult(a_pDevice, a_pManager, a_pState));
+      }
+      else if (a_sName == "menu_standings") {
+        return a_pManager->changeMenu(createMenuStandings(a_pDevice, a_pManager, a_pState));
+      }
 
       printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());
 

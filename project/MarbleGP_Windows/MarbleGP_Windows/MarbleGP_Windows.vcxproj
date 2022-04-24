@@ -53,9 +53,11 @@
     <ClCompile Include="..\..\_source\source\main_windows.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSettings.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSetupGame.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuStandings.cpp" />
     <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp" />

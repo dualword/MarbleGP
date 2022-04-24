@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Championship Standings" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="tab" rect="relative: 1, 9, 79, 47" font="regular">
+        <attributes>
+          <attribute key="Name" value="tab_result" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+</dialog>

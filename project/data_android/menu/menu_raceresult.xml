@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <children>
+      <element type="staticText" rect="center: -25, -16, 25, -13" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Race Result" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 4, 16, 7" font="small">
+        <attributes>
+          <attribute key="Caption" value="Track: " />
+          <attribute key="HTextAlign" value="lowerright" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 16, 4, 26, 7" font="small">
+        <attributes>
+          <attribute key="Caption" value="Complex: Eight Hi-Lo" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_trackname" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 6, 16, 7" font="small">
+        <attributes>
+          <attribute key="Caption" value="Laps: " />
+          <attribute key="HTextAlign" value="lowerright" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 16, 6, 26, 7" font="small">
+        <attributes>
+          <attribute key="Caption" value="3" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_laps" />
+        </attributes>
+      </element>
+      
+      <element type="tab" rect="relative: 1, 8, 50, 30" font="regular">
+        <attributes>
+          <attribute key="Name" value="tab_result" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+</dialog>

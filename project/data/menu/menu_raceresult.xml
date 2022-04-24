@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Race Result" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 1, 1, 12, 12">
+        <attributes>
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Name" value="thumbnail" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/no_image.png" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 20, 6, 26, 8" font="regular">
+        <attributes>
+          <attribute key="Caption" value="Track: " />
+          <attribute key="HTextAlign" value="lowerright" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 26, 6, 60, 8" font="regular">
+        <attributes>
+          <attribute key="Caption" value="Complex: Eight Hi-Lo" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_trackname" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 20, 8, 26, 10" font="regular">
+        <attributes>
+          <attribute key="Caption" value="Laps: " />
+          <attribute key="HTextAlign" value="lowerright" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 26, 8, 60, 10" font="regular">
+        <attributes>
+          <attribute key="Caption" value="3" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_laps" />
+        </attributes>
+      </element>
+      
+      
+      <element type="staticText" rect="relative: 20, 10, 26, 12" font="regular">
+        <attributes>
+          <attribute key="Caption" value="Players: " />
+          <attribute key="HTextAlign" value="lowerright" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 26, 10, 60, 12" font="regular">
+        <attributes>
+          <attribute key="Caption" value="16" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_players" />
+        </attributes>
+      </element>
+      
+      <element type="tab" rect="relative: 1, 13, 79, 47" font="regular">
+        <attributes>
+          <attribute key="Name" value="tab_result" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+</dialog>

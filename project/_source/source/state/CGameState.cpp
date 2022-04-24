@@ -692,6 +692,7 @@ namespace dustbin {
           data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
           l_cChampionship.addRace(*m_pRace);
           m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
+          printf("\n\n%s\n\n", l_cChampionship.serialize().c_str());
         }
 
         delete m_pDynamics;
@@ -1480,32 +1481,6 @@ namespace dustbin {
             it->second.m_pHUD->updateRanking();
           }
         }
-      }
-    }
-
-    /**
-    * This function receives messages of type "FinishPosition"
-    * @param a_Position The finish position of the marble
-    * @param a_MarbleId ID of the marble
-    * @param a_Deficit Deficit on the leader
-    * @param a_Laps Number of laps done
-    * @param a_Stunned Counter of the stuns of the marble during the race
-    * @param a_Respawn Counter of the respawns of the marble during the race
-    */
-    void CGameState::onFinishposition(irr::s32 a_Position, irr::s32 a_MarbleId, irr::s32 a_Deficit, irr::s32 a_Laps, irr::s32 a_Stunned, irr::s32 a_Respawn, irr::s32 a_Fastest) {
-      printf("onFinishPosition: %2i | %5i | Def: %6i | Laps: %3i | Stuns: %3i | Resp: %3i | Fstst: %6i | %s\n", a_Position, a_MarbleId, a_Deficit, a_Laps, a_Stunned, a_Respawn, a_Fastest, m_aMarbles[a_MarbleId - 10000]->m_pPlayer->m_sName.c_str());
-
-
-      if (m_pRace != nullptr) {
-        int l_iIndex = a_Position - 1;
-
-        m_pRace->m_aResult[l_iIndex] = data::SRacePlayer();
-        m_pRace->m_aResult[l_iIndex].m_iId       = a_MarbleId;
-        m_pRace->m_aResult[l_iIndex].m_iDeficitL = a_Deficit;
-        m_pRace->m_aResult[l_iIndex].m_iPos      = l_iIndex;
-        m_pRace->m_aResult[l_iIndex].m_iFastest  = a_Fastest;
-        m_pRace->m_aResult[l_iIndex].m_iStunned  = a_Stunned;
-        m_pRace->m_aResult[l_iIndex].m_iRespawn  = a_Respawn;
       }
     }
 

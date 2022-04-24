@@ -472,6 +472,12 @@
     <ClCompile Include="..\..\..\_source\source\_generated\messages\IAiController.cpp">
       <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuRaceResult.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuStandings_Android.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">

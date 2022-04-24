@@ -89,6 +89,36 @@ Attribute BackColor: 0, 0, 0, 0
 Attribute OverrideTextColorEnabled: false
 Attribute TextColor: 10, 10, 10, 240
 
+Attributes of "table"
+
+Attribute Name:
+Attribute Id: -1
+Attribute Caption:
+Attribute ToolTip:
+Attribute Rect: 0, 0, 100, 100
+Attribute MinSize: 1, 1
+Attribute MaxSize: 0, 0
+Attribute LeftAlign: upperLeft
+Attribute RightAlign: upperLeft
+Attribute TopAlign: upperLeft
+Attribute BottomAlign: upperLeft
+Attribute Visible: true
+Attribute Enabled: true
+Attribute TabStop: false
+Attribute TabGroup: false
+Attribute TabOrder: -1
+Attribute NoClip: false
+Attribute ColumnCount: 0
+Attribute RowCount: 0
+Attribute Clip: true
+Attribute DrawBack: false
+Attribute MoveOverSelect: false
+Attribute ResizableColumns: true
+Attribute CellWidthPadding: 5
+Attribute CellHeightPadding: 2
+Attribute CurrentOrdering: none
+Attribute DrawFlags: 7
+
 Attributes of "image":
 
 Attribute Texture: 0

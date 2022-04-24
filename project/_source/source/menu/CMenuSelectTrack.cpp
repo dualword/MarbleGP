@@ -217,7 +217,7 @@ namespace dustbin {
           for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
             printf("%2i |", i + 1);
 
-          printf(" Rs | St | Fl |\n");
+          printf(" Rs | St | Fl | DNF |\n");
 
           printf("---+-----------------+-----+");
 
@@ -282,6 +282,8 @@ namespace dustbin {
                   printf("Laps: %i\n", l_iLaps);
 
                   m_pManager->pushToMenuStack("menu_selecttrack");
+                  m_pManager->pushToMenuStack("menu_standings"  );
+                  m_pManager->pushToMenuStack("menu_raceresult" );
 
                   m_pState->getGlobal()->setGlobal("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
