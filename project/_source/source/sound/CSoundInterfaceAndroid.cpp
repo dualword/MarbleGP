@@ -605,7 +605,7 @@ namespace dustbin {
         void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) {
           for (std::map<enSoundTrack, std::wstring>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
             if (m_mSounds.find(it->second) != m_mSounds.end()) {
-              m_mSounds[it->second]->setLooping(true);
+              m_mSounds[it->second]->setLooping(it->first != enSoundTrack::enStFinish);
               m_mSoundTracks[it->first] = m_mSounds[it->second];
             }
           }

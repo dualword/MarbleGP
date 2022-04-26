@@ -627,7 +627,7 @@ namespace dustbin {
       }
 
 #ifdef _TOUCH_CONTROL
-      if (m_pGlobal->getSettingData().m_bTouchControl) {
+      if (m_pGlobal->getSettingData().m_bTouchControl && m_pCamAnimator == nullptr) {
         m_pTouchControl = reinterpret_cast<gui::CGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
       }
 #endif
@@ -967,7 +967,7 @@ namespace dustbin {
 
         m_pTouchControl->getControl(l_iCtrlX, l_iCtrlY, l_bBrake, l_bRespawn, l_bRearView);
 
-        messages::CMarbleControl l_cMessage = messages::CMarbleControl((*m_vPlayers.begin())->m_pMarble->m_pPositional->getID(), l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
+        messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_mViewports.begin()->second.m_pMarble->getID(), l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
         m_pDynamics->getInputQueue()->postMessage(&l_cMessage);
       }
 #endif
@@ -1373,8 +1373,22 @@ namespace dustbin {
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Finished;
           p->m_bCamLink = false;
           p->m_iStateChange = m_iStep;
-          m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
+          for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+            if (it->second.m_pMarble->getID() == a_MarbleId) {
+              m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
+            }
+          }
         }
+
+#ifdef _TOUCH_CONTROL
+        if (m_pTouchControl != nullptr)
+          for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+            if (it->second.m_pMarble->getID() == a_MarbleId) {
+              m_pTouchControl->setVisible(false);
+              break;
+            }
+          }
+#endif
       }
     }
 

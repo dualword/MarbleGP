@@ -40,12 +40,12 @@ namespace dustbin {
       irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
 
       m_cRespawn = irr::core::recti(
-        m_eType == enType::ControlRight ? irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, l_iOffset) : irr::core::position2di(l_iOffset, l_iOffset),
+        m_eType == enType::ControlRight ? irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, a_cRect.getHeight() / 4) : irr::core::position2di(l_iOffset, a_cRect.getHeight() / 4),
         l_cSize
       );
 
       m_cRearView = irr::core::recti(
-        m_eType == enType::ControlLeft ? irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, l_iOffset) : irr::core::position2di(l_iOffset, l_iOffset),
+        m_eType == enType::ControlLeft ? irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, a_cRect.getHeight() / 4) : irr::core::position2di(l_iOffset, a_cRect.getHeight() / 4),
         l_cSize
       );
 
@@ -95,30 +95,32 @@ namespace dustbin {
     }
 
     void CGuiTouchControl::draw() {
-      m_pDrv->draw2DRectangle((m_iTouchIdRs != -1 && m_cRespawn.isPointInside(m_cTouchPos[2])) ? irr::video::SColor(192, 192, 192, 96) : irr::video::SColor(192, 192, 192, 192), m_cRespawn);
-      m_pDrv->draw2DRectangleOutline(m_cRespawn, irr::video::SColor(0xFF, 0, 0, 0));
+      if (IsVisible) {
+        m_pDrv->draw2DRectangle((m_iTouchIdRs != -1 && m_cRespawn.isPointInside(m_cTouchPos[2])) ? irr::video::SColor(192, 192, 192, 96) : irr::video::SColor(192, 192, 192, 192), m_cRespawn);
+        m_pDrv->draw2DRectangleOutline(m_cRespawn, irr::video::SColor(0xFF, 0, 0, 0));
 
-      if (m_pRespawn != nullptr)
-        m_pDrv->draw2DImage(m_pRespawn, m_cRespawn, irr::core::recti(irr::core::position2di(0, 0), m_pRespawn->getSize()), nullptr, nullptr, true);
+        if (m_pRespawn != nullptr)
+          m_pDrv->draw2DImage(m_pRespawn, m_cRespawn, irr::core::recti(irr::core::position2di(0, 0), m_pRespawn->getSize()), nullptr, nullptr, true);
 
-      m_pDrv->draw2DRectangle((m_iTouchIdRv != -1 && m_cRearView.isPointInside(m_cTouchPos[3])) ? irr::video::SColor(192, 96, 96, 192) : irr::video::SColor(192, 192, 192, 192), m_cRearView);
-      m_pDrv->draw2DRectangleOutline(m_cRearView, irr::video::SColor(0xFF, 0, 0, 0));
+        m_pDrv->draw2DRectangle((m_iTouchIdRv != -1 && m_cRearView.isPointInside(m_cTouchPos[3])) ? irr::video::SColor(192, 96, 96, 192) : irr::video::SColor(192, 192, 192, 192), m_cRearView);
+        m_pDrv->draw2DRectangleOutline(m_cRearView, irr::video::SColor(0xFF, 0, 0, 0));
 
-      if (m_pRearView != nullptr)
-        m_pDrv->draw2DImage(m_pRearView, m_cRearView, irr::core::recti(irr::core::position2di(0, 0), m_pRearView->getSize()), nullptr, nullptr, true);
+        if (m_pRearView != nullptr)
+          m_pDrv->draw2DImage(m_pRearView, m_cRearView, irr::core::recti(irr::core::position2di(0, 0), m_pRearView->getSize()), nullptr, nullptr, true);
 
-      for (int i = 0; i < 9; i++) {
-        m_pDrv->draw2DRectangle((m_iTouchIdTh != -1 && m_cDigital[i].isPointInside(m_cTouchPos[0])) ? irr::video::SColor(192, 96, 192, 96) : irr::video::SColor(192, 192, 192, 192), m_cDigital[i]);
-        m_pDrv->draw2DRectangleOutline(m_cDigital[i], irr::video::SColor(0xFF, 0, 0, 0));
+        for (int i = 0; i < 9; i++) {
+          m_pDrv->draw2DRectangle((m_iTouchIdTh != -1 && m_cDigital[i].isPointInside(m_cTouchPos[0])) ? irr::video::SColor(192, 96, 192, 96) : irr::video::SColor(192, 192, 192, 192), m_cDigital[i]);
+          m_pDrv->draw2DRectangleOutline(m_cDigital[i], irr::video::SColor(0xFF, 0, 0, 0));
 
-        if (m_aControl[i] != nullptr)
-          m_pDrv->draw2DImage(m_aControl[i], m_cDigital[i], irr::core::recti(irr::core::position2di(0, 0), m_aControl[i]->getSize()), nullptr, nullptr, true);
+          if (m_aControl[i] != nullptr)
+            m_pDrv->draw2DImage(m_aControl[i], m_cDigital[i], irr::core::recti(irr::core::position2di(0, 0), m_aControl[i]->getSize()), nullptr, nullptr, true);
+        }
+
+        m_pDrv->draw2DRectangle((m_iTouchIdBk != -1 && m_cBrake.isPointInside(m_cTouchPos[1])) ? irr::video::SColor(192, 255, 96, 96) : irr::video::SColor(192, 192, 192, 192), m_cBrake);
+
+        if (m_pBrake != nullptr)
+          m_pDrv->draw2DImage(m_pBrake, m_cBrake, irr::core::recti(irr::core::position2di(0, 0), m_pBrake->getSize()), nullptr, nullptr, true);
       }
-
-      m_pDrv->draw2DRectangle((m_iTouchIdBk != -1 && m_cBrake.isPointInside(m_cTouchPos[1])) ? irr::video::SColor(192, 255, 96, 96) : irr::video::SColor(192, 192, 192, 192), m_cBrake);
-
-      if (m_pBrake != nullptr)
-        m_pDrv->draw2DImage(m_pBrake, m_cBrake, irr::core::recti(irr::core::position2di(0, 0), m_pBrake->getSize()), nullptr, nullptr, true);
     }
 
     bool CGuiTouchControl::OnEvent(const irr::SEvent& a_cEvent) {

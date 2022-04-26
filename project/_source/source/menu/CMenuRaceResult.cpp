@@ -100,7 +100,7 @@ namespace dustbin {
 #ifdef _ANDROID
             irr::gui::IGUIFont *l_pFont  = m_pState->getGlobal()->getFont(enFont::Small, m_pDrv->getScreenSize());
 #else
-            irr::gui::IGUIFont *l_pFont  = m_pState->getGlobal()->getFont(enFont::Small, m_pDrv->getScreenSize());
+            irr::gui::IGUIFont *l_pFont  = m_pState->getGlobal()->getFont(enFont::Regular, m_pDrv->getScreenSize());
 #endif
 
             irr::u32 l_iHeight = 5 * l_pFont->getDimension(L"Hello World").Height / 4;
