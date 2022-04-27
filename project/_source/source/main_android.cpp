@@ -163,6 +163,22 @@ struct SJoystickInput {
 
         l_bRet = true;
       }
+
+      // Hacky, but the Irrlicht Android
+      // event handler does never return
+      // 1 on key events
+      if (l_iKeyCode == 4) {
+        irr::SEvent l_cEvent;
+        l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
+        l_cEvent.KeyInput.Key = irr::KEY_BACK;
+        l_cEvent.KeyInput.Char = l_iKeyCode;
+        l_cEvent.KeyInput.Shift = false;
+        l_cEvent.KeyInput.PressedDown = l_iAction != 0;
+
+        m_pDevice->postEventFromUser(l_cEvent);
+
+        l_bRet = true;
+      }
     }
 
     if (l_bRet && m_pDevice)

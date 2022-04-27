@@ -89,6 +89,26 @@ namespace dustbin {
       if (m_pMenu != nullptr)
         l_bRet = m_pMenu->OnEvent(a_cEvent);
 
+#ifdef _ANDROID
+      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {
+          if (m_pMenu != nullptr && a_cEvent.KeyInput.PressedDown) {
+            irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
+            if (p != nullptr) {
+              irr::SEvent l_cEvent;
+
+              l_cEvent.EventType          = irr::EET_GUI_EVENT;
+              l_cEvent.GUIEvent.Caller    = p;
+              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+
+              CGlobal::getInstance()->OnEvent(l_cEvent);
+            }
+          }
+          l_bRet = true;
+        }
+      }
+#endif
+
       return l_bRet;
     }
 

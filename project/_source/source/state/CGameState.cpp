@@ -844,6 +844,21 @@ namespace dustbin {
         }
       }
 
+#ifdef _ANDROID
+      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {
+          if (a_cEvent.KeyInput.PressedDown && m_mViewports.size() > 0) {
+            int l_iMarble = m_mViewports.begin()->second.m_pMarble->getID();
+            if (l_iMarble >= 10000 && l_iMarble < 10016) {
+              messages::CPlayerWithdraw l_cMessage = messages::CPlayerWithdraw(l_iMarble);
+              m_pDynamics->getInputQueue()->postMessage(&l_cMessage);
+            }
+          }
+          l_bRet = true;
+        }
+      }
+#endif
+
       return l_bRet;
     }
 
