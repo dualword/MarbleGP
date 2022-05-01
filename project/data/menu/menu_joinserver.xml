@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Setup Game" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+        <children>
+          
+        </children>
+      </element>
+       
+      <!-- Player 1 -->
+      <element type="MenuBackground" rect="relative: 4, 6, 40, 10">
+        <attributes>
+          <attribute key="Name" value="player1" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 2 -->
+      <element type="MenuBackground" rect="relative: 4, 11, 40, 15">
+        <attributes>
+          <attribute key="Name" value="player2" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 3 -->
+      <element type="MenuBackground" rect="relative: 4, 16, 40, 20">
+        <attributes>
+          <attribute key="Name" value="player3" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 4 -->
+      <element type="MenuBackground" rect="relative: 4, 21, 40, 25">
+        <attributes>
+          <attribute key="Name" value="player4" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 5 -->
+      <element type="MenuBackground" rect="relative: 4, 26, 40, 30">
+        <attributes>
+          <attribute key="Name" value="player5" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 6 -->
+      <element type="MenuBackground" rect="relative: 4, 31, 40, 35">
+        <attributes>
+          <attribute key="Name" value="player6" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 7 -->
+      <element type="MenuBackground" rect="relative: 4, 36, 40, 40">
+        <attributes>
+          <attribute key="Name" value="player7" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 8 -->
+      <element type="MenuBackground" rect="relative: 4, 41, 40, 45">
+        <attributes>
+          <attribute key="Name" value="player8" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 9 -->
+      <element type="MenuBackground" rect="relative: 42, 6, 77, 10">
+        <attributes>
+          <attribute key="Name" value="player9" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 10 -->
+      <element type="MenuBackground" rect="relative: 42, 11, 77, 15">
+        <attributes>
+          <attribute key="Name" value="player10" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 11 -->
+      <element type="MenuBackground" rect="relative: 42, 16, 77, 20">
+        <attributes>
+          <attribute key="Name" value="player11" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 12 -->
+      <element type="MenuBackground" rect="relative: 42, 21, 77, 25">
+        <attributes>
+          <attribute key="Name" value="player12" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 13 -->
+      <element type="MenuBackground" rect="relative: 42, 26, 77, 30">
+        <attributes>
+          <attribute key="Name" value="player13" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 14 -->
+      <element type="MenuBackground" rect="relative: 42, 31, 77, 35">
+        <attributes>
+          <attribute key="Name" value="player14" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 15 -->
+      <element type="MenuBackground" rect="relative: 42, 36, 77, 40">
+        <attributes>
+          <attribute key="Name" value="player15" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+      
+      <!-- Player 16 -->
+      <element type="MenuBackground" rect="relative: 42, 41, 77, 45">
+        <attributes>
+          <attribute key="Name" value="player16" />
+          <attribute key="OverrideColor" value="0, 0, 0, 0" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_playerlist.xml" />
+        </children>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+  <include file="data/menu/button_cancel.xml" />
+  <include file="data/menu/dialog_select_player.xml" />
+</dialog>

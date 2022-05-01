@@ -44,6 +44,9 @@ namespace dustbin {
 
       std::map<state::enState, state::IState *> m_mStates;
 
+      network::CGameServer *m_pServer;    /**< The game server */
+      network::CGameClient *m_pClient;    /**< The net game client */
+
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
 #endif
@@ -182,6 +185,31 @@ namespace dustbin {
       * @return true if the event was handled
       */
       virtual bool OnEvent(const irr::SEvent &a_cEvent);
+
+      /**
+      * Get the running network server instance
+      * @return the running network server instance or nullptr if none is running
+      */
+      virtual network::CGameServer *getGameServer() override;
+
+      /**
+      * Start a game server
+      * @param a_iNumberOfOpenSlots the number of open player slots (16 - number of local players on the server)
+      */
+      virtual void startGameServer(int a_iNumberOfOpenSlots) override;
+
+      /**
+      * Get the running network client
+      * @return the running network client, nullptr if no client is running
+      */
+      virtual network::CGameClient *getGameClient() override;
+
+      /**
+      * Start and connect a net client
+      * @param a_sHost the server to connect to
+      * @param a_iPort the port the server is running
+      */
+      virtual void startGameClient(const std::string &a_sHost, int a_iPort) override;
 
 #ifdef _ANDROID
       /**

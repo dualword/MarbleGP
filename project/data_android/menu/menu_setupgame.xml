@@ -157,6 +157,24 @@
               <attribute key="Name" value="touchcontrol" />
             </attributes>
           </element>
+          
+          <element type="staticText" rect="relative: 26, 12, 35, 14" tooltip="Network Game">
+            <attributes>
+              <attribute key="Caption" value="Network Game:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="relative: 36, 12, 47, 14">
+            <attributes>
+              <attribute key="Name" value="network_game" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="None;Start Server;Join Server" />
+            </custom>
+          </element>
         </children>
       </element>
     </children>

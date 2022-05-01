@@ -90,23 +90,23 @@ namespace dustbin {
          * @param a_RearView Does the player want to look back?
          * @param a_Respawn Is the manual respawn button pressed?
          */
-        virtual void onMarblecontrol(irr::s32 a_ObjectId, irr::s8 a_CtrlX, irr::s8 a_CtrlY, bool a_Brake, bool a_RearView, bool a_Respawn);
+        virtual void onMarblecontrol(irr::s32 a_ObjectId, irr::s8 a_CtrlX, irr::s8 a_CtrlY, bool a_Brake, bool a_RearView, bool a_Respawn) override;
 
         /**
          * This function receives messages of type "CancelRace"
          */
-        virtual void onCancelrace();
+        virtual void onCancelrace() override;
 
         /**
          * This function receives messages of type "TogglePause"
          */
-        virtual void onTogglepause();
+        virtual void onTogglepause() override;
 
         /**
         * This function receives messages of type "PlayerWithdraw"
         * @param a_MarbleId ID of the marble
         */
-        virtual void onPlayerwithdraw(irr::s32 a_MarbleId);
+        virtual void onPlayerwithdraw(irr::s32 a_MarbleId) override;
 
         virtual void execute();
 

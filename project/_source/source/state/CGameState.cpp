@@ -181,13 +181,14 @@ namespace dustbin {
 
       m_pGui->clear();
 
-      data::SSettings l_cSettings= m_pGlobal->getSettingData();
+      data::SGameData l_cGame = data::SGameData(m_pGlobal->getGlobal("gamedata"));
+      data::SSettings l_cSettings = m_pGlobal->getSettingData();
 
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
       // Load the track, and don't forget to run the skybox fix beforehands
-      std::string l_sTrack = "data/levels/" + m_pGlobal->getGlobal("track") + "/track.xml";
+      std::string l_sTrack = "data/levels/" + l_cGame.m_sTrack + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
         m_pSmgr->clear();
@@ -199,6 +200,7 @@ namespace dustbin {
         printf("%i static cameras found.\n", (int)m_vCameras.size());
       }
       else {
+        // ToDo Error Message
       }
 
 #ifdef _OPENGL_ES
@@ -216,13 +218,14 @@ namespace dustbin {
       if (l_pNode == nullptr) {
         m_pGlobal->setGlobal("ERROR_MESSAGE", "No Starting Grid Scene Node found.");
         m_pGlobal->setGlobal("ERROR_HEAD", "Error while starting game state.");
-        // throw std::exception();
+        // ToDo Error Message
       }
 
       scenenodes::CStartingGridSceneNode* l_pGrid = reinterpret_cast<scenenodes::CStartingGridSceneNode*>(l_pNode);
 
       if (l_pGrid == nullptr) {
         printf("Grid node not found.\n");
+        // ToDo Error Message
         return;
       }
 
@@ -373,7 +376,7 @@ namespace dustbin {
 
       int l_iNumOfViewports = 0;  // The number of necessary viewports, aka local players
 
-      m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)l_cPlayers.m_vPlayers.size(), std::atoi(m_pGlobal->getSetting("laps").c_str()));
+      m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)l_cPlayers.m_vPlayers.size(), l_cGame.m_iLaps);
 
       printf("******** Marble assignment:\n");
       // .. fill the player vector and assign the marbles to the players (depending on the grid positions) ...
@@ -485,7 +488,7 @@ namespace dustbin {
               }
 
               l_cViewport.m_pPlayer = l_pPlayer->m_pMarble;
-              l_cViewport.m_pHUD    = new gui::CGameHUD(l_pPlayer, l_cRect, std::atoi(m_pGlobal->getSetting("laps").c_str()), m_pGui, &m_vPosition);
+              l_cViewport.m_pHUD    = new gui::CGameHUD(l_pPlayer, l_cRect, l_cGame.m_iLaps, m_pGui, &m_vPosition);
               l_cViewport.m_pHUD->drop();
               m_mViewports[l_cPlayers.m_vPlayers[i].m_iPlayerId] = l_cViewport;
               l_pPlayer->m_pMarble->m_pViewport = &m_mViewports[l_cPlayers.m_vPlayers[i].m_iPlayerId];
@@ -590,8 +593,8 @@ namespace dustbin {
           case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
           case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
         }
-        
-        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, std::atoi(m_pGlobal->getSetting("laps").c_str()), m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
+
+        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, l_cGame.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
 
         if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
         if (m_pOutputQueue == nullptr) m_pOutputQueue = new threads::COutputQueue();
@@ -1389,7 +1392,7 @@ namespace dustbin {
           p->m_bCamLink = false;
           p->m_iStateChange = m_iStep;
           for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-            if (it->second.m_pMarble->getID() == a_MarbleId) {
+            if (it->second.m_pMarble != nullptr && it->second.m_pMarble->getID() == a_MarbleId) {
               m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
             }
           }

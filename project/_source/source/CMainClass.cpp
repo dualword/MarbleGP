@@ -1,8 +1,13 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#define ENET_IMPLEMENTATION
+#include <enet.h>
+
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <controller/CControllerBase.h>
 #include <helpers/CTextureHelpers.h>
 #include <sound/ISoundInterface.h>
+#include <network/CGameServer.h>
+#include <network/CGameClient.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CGuiItemFactory.h>
 #include <menu/IMenuHandler.h>
@@ -31,7 +36,9 @@ namespace dustbin {
     m_pCtrlMenu       (nullptr),
     m_pCtrlGame       (nullptr),
     m_pActiveState    (nullptr),
-    m_pSoundInterface (nullptr)
+    m_pSoundInterface (nullptr),
+    m_pServer         (nullptr),
+    m_pClient         (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -124,6 +131,20 @@ namespace dustbin {
     if (m_pSoundInterface != nullptr) {
       delete m_pSoundInterface;
       m_pSoundInterface = nullptr;
+    }
+
+    if (m_pServer != nullptr) {
+      m_pServer->stopThread();
+      m_pServer->join();
+      delete m_pServer;
+      m_pServer = nullptr;
+    }
+
+    if (m_pClient != nullptr) {
+      m_pClient->stopThread();
+      m_pClient->join();
+      delete m_pClient;
+      m_pClient = nullptr;
     }
 
     m_mStates.clear();
@@ -536,6 +557,53 @@ namespace dustbin {
       l_bRet = m_pActiveState->OnEvent(a_cEvent);
 
     return l_bRet;
+  }
+
+  /**
+  * Get the running network server instance
+  * @return the running network server instance or nullptr if none is running
+  */
+  network::CGameServer *CMainClass::getGameServer() {
+    return m_pServer;
+  }
+
+  /**
+  * Start a game server. Calling this function while a server is running will stop and destroy it
+  * @param a_iNumberOfOpenSlots the number of open player slots (16 - number of local players on the server)
+  */
+  void CMainClass::startGameServer(int a_iNumberOfOpenSlots) {
+    if (m_pServer != nullptr) {
+      m_pServer->stopThread();
+      m_pServer->join();
+      delete m_pServer;
+    }
+
+    m_pServer = new network::CGameServer(a_iNumberOfOpenSlots, this);
+    m_pServer->startThread();
+  }
+
+  /**
+  * Get the running network client
+  * @return the running network client, nullptr if no client is running
+  */
+  network::CGameClient *CMainClass::getGameClient() {
+    return m_pClient;
+  }
+
+  /**
+  * Start and connect a net client
+  * @param a_sHost the server to connect to
+  * @param a_iPort the port the server is running
+  */
+  void CMainClass::startGameClient(const std::string& a_sHost, int a_iPort) {
+    if (m_pClient != nullptr) {
+      m_pClient->stopThread();
+      m_pClient->join();
+      delete m_pClient;
+    }
+
+    m_pClient = new network::CGameClient(a_sHost, a_iPort, this);
+    m_pClient->startThread();
   }
 
   /**

@@ -124,11 +124,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
@@ -245,6 +245,7 @@
     <ClInclude Include="..\..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\..\_source\include\Defines.h" />
+    <ClInclude Include="..\..\..\_source\include\enet\enet.h" />
     <ClInclude Include="..\..\..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\..\..\_source\include\gameclasses\CGameLogicDefault.h" />
     <ClInclude Include="..\..\..\_source\include\gameclasses\CMarbleCounter.h" />
@@ -278,6 +279,9 @@
     <ClInclude Include="..\..\..\_source\include\messages\CSerializer64.h" />
     <ClInclude Include="..\..\..\_source\include\messages\IMessage.h" />
     <ClInclude Include="..\..\..\_source\include\messages\ISerializer.h" />
+    <ClInclude Include="..\..\..\_source\include\network\CGameClient.h" />
+    <ClInclude Include="..\..\..\_source\include\network\CGameServer.h" />
+    <ClInclude Include="..\..\..\_source\include\network\CNetBase.h" />
     <ClInclude Include="..\..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CAiNode.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CCameraTouchAnimator.h" />
@@ -352,6 +356,7 @@
     <ClCompile Include="..\..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CTextureHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\main_android.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuJoinServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuMain.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuProfiles.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuRaceResult.cpp" />
@@ -359,9 +364,13 @@
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSettings.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSetupGame.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuStandings_Android.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuStartServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\messages\CSerializer64.cpp" />
+    <ClCompile Include="..\..\..\_source\source\network\CGameClient.cpp" />
+    <ClCompile Include="..\..\..\_source\source\network\CGameServer.cpp" />
+    <ClCompile Include="..\..\..\_source\source\network\CNetBase.cpp" />
     <ClCompile Include="..\..\..\_source\source\platform\CPlatformAndroid.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CAiNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CCameraTouchAnimator.cpp" />

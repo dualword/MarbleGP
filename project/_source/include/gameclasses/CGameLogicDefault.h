@@ -44,33 +44,33 @@ namespace dustbin {
         * Set the number of laps
         * @param a_iLaps the number of laps
         */
-        virtual void setNumberOfLaps(int a_iLaps);
+        virtual void setNumberOfLaps(int a_iLaps) override;
 
         /**
         * Called once per step
         * @param a_iStep the simulation's step number
         */
-        virtual void onStep(int a_iStep);
+        virtual void onStep(int a_iStep) override;
 
         /**
         * Add a marble
         * @param a_iMarble the ID of the marble
         * @param a_iPlayerId ID of the player
         */
-        virtual void addMarble(int a_iMarble);
+        virtual void addMarble(int a_iMarble) override;
 
         /**
         * This method is called when a marble starts a new lap.
         * @param a_iMarble ID of the marble
         * @return "true" if the marble has finished the race, "false" otherwise
         */
-        virtual bool onLapStart(int a_iMarble);
+        virtual bool onLapStart(int a_iMarble) override;
 
         /**
         * Check wether or not all marbles have finished the race
         * @return true if all marbles have finished the race, false otherwise
         */
-        virtual bool raceFinished();
+        virtual bool raceFinished() override;
 
         /**
         * Callback for checkpoint passes of the marbles
@@ -78,19 +78,19 @@ namespace dustbin {
         * @param a_iCheckpoint the checkpoint ID
         * @param a_iStep the current simulation step
         */
-        virtual data::SRacePlayer *onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep);
+        virtual data::SRacePlayer *onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) override;
 
         /**
         * A method called when a marble is stunned
         * @param a_iMarble the marble ID
         */
-        virtual void onMarbleStunned(int a_iMarble);
+        virtual void onMarbleStunned(int a_iMarble) override;
 
         /**
         * Respawn callback for a marble's respawn
         * @param a_iMarble the marble ID
         */
-        virtual void onRespawn(int a_iMarble);
+        virtual void onRespawn(int a_iMarble) override;
 
         /**
         * Get the data of all the players in a race
@@ -103,14 +103,14 @@ namespace dustbin {
         * Get the current race positions
         * @return the current race positions
         */
-        virtual const std::vector<data::SRacePlayer *> getRacePositions();
+        virtual const std::vector<data::SRacePlayer *> getRacePositions() override;
 
         /**
         * Withdraw a player from the race
         * @param a_iMarble the marble ID
         * @param a_iStep the current simulation step
         */
-        virtual data::SRacePlayer *withdrawPlayer(int a_iMarble, int a_iStep);
+        virtual data::SRacePlayer *withdrawPlayer(int a_iMarble, int a_iStep) override;
     };
   }
 }

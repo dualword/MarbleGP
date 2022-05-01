@@ -112,6 +112,15 @@
     <Filter Include="Quelldateien\sound">
       <UniqueIdentifier>{5a9fa0da-3061-438f-8a61-f64814d6a041}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\enet">
+      <UniqueIdentifier>{6940c648-b946-4ac6-bdd5-d4efaf9dfb1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\network">
+      <UniqueIdentifier>{2d92a2ad-e099-461c-9a4f-22c4649e40d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\network">
+      <UniqueIdentifier>{9d072b5b-f3ae-4c00-91e9-cd7d5b71ea36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -349,6 +358,24 @@
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\menu\CMenuStandings.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\include\network\CGameServer.h">
+      <Filter>Headerdateien\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CGameServer.cpp">
+      <Filter>Quelldateien\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CNetBase.cpp">
+      <Filter>Quelldateien\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuStartServer.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CGameClient.cpp">
+      <Filter>Quelldateien\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
   </ItemGroup>
@@ -631,6 +658,15 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IAiController.h">
       <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\enet\enet.h">
+      <Filter>Headerdateien\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CNetBase.h">
+      <Filter>Headerdateien\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CGameClient.h">
+      <Filter>Headerdateien\network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

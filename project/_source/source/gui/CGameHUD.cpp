@@ -55,6 +55,12 @@ namespace dustbin {
       }
     }
 
+    void CGameHUD::STextElement::setPosition(const irr::core::position2di& a_cPos) {
+      irr::core::dimension2di l_cSize = m_cThisRect.getSize();
+      m_cThisRect.UpperLeftCorner  = a_cPos;
+      m_cThisRect.LowerRightCorner = a_cPos + l_cSize;
+    }
+
     /**
     * This function receives messages of type "PlayerRespawn"
     * @param a_MarbleId ID of the marble
@@ -372,8 +378,8 @@ namespace dustbin {
       m_iCtrlHeight = m_cSpeedTotal.Height / 4;
       if (m_iCtrlHeight < 2) m_iCtrlHeight = 2;
 
-      irr::core::dimension2du l_cSizeTop = getDimension(L"Lap"    , l_pSmall);
-      irr::core::dimension2du l_cSizeBot = getDimension(L"66 / 66", l_pBig  );
+      irr::core::dimension2du l_cSizeTop = getDimension(L"Lap"    , l_pSmall  );
+      irr::core::dimension2du l_cSizeBot = getDimension(L"66 / 66", l_pRegular);
 
       {
         irr::core::dimension2du d = getDimension(L"Pos", l_pSmall);
@@ -399,9 +405,9 @@ namespace dustbin {
       irr::core::position2di l_pName  = irr::core::position2di(a_cRect.getCenter().X - l_cSizeName.Width / 2, a_cRect.UpperLeftCorner.Y);
 
       m_mTextElements[enTextElements::LapHead] = STextElement(irr::core::recti(l_cPosHead, l_cSizeTop ), L"Lap"    , l_pSmall  , l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
-      m_mTextElements[enTextElements::Lap    ] = STextElement(irr::core::recti(l_cPos    , l_cSizeBot ), L"66 / 66", l_pBig   , l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::Lap    ] = STextElement(irr::core::recti(l_cPos    , l_cSizeBot ), L"66 / 66", l_pRegular, l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
       m_mTextElements[enTextElements::PosHead] = STextElement(irr::core::recti(l_cLapHead, l_cSizeTop ), L"Pos"    , l_pSmall  , l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
-      m_mTextElements[enTextElements::Pos    ] = STextElement(irr::core::recti(l_cLap    , l_cSizeBot ), L"0"      , l_pBig    , l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::Pos    ] = STextElement(irr::core::recti(l_cLap    , l_cSizeBot ), L"0"      , l_pRegular, l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
       m_mTextElements[enTextElements::Name   ] = STextElement(irr::core::recti(l_pName   , l_cSizeName), l_sName   , l_pRegular, l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
 
       m_mTextElements[enTextElements::LapHead].m_eAlignH = irr::gui::EGUIA_CENTER;
@@ -607,6 +613,14 @@ namespace dustbin {
           l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
 
           irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cSpeedTotal.Width, m_cSpeedTotal.Height) / 2, m_cSpeedTotal);
+
+          irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
+
+          m_mTextElements[enTextElements::PosHead].setPosition(l_cTotal.UpperLeftCorner - irr::core::position2di(10 * l_cPosSize.Width / 9, 0));
+          m_mTextElements[enTextElements::Pos    ].setPosition(m_mTextElements[enTextElements::PosHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
+
+          m_mTextElements[enTextElements::LapHead].setPosition(irr::core::position2di(l_cTotal.LowerRightCorner.X + l_cPosSize.Width / 9, l_cTotal.UpperLeftCorner.Y));
+          m_mTextElements[enTextElements::Lap    ].setPosition(m_mTextElements[enTextElements::LapHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
 
           m_pDrv->draw2DRectangle(irr::video::SColor(160, 192, 192, 192), l_cTotal, &m_cRect);
           wchar_t s[0xFF];

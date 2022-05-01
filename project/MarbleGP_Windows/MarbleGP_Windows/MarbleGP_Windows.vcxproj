@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\_source\include\network\CGameServer.h" />
     <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp" />
@@ -51,6 +52,7 @@
     <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\main_windows.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp" />
@@ -58,9 +60,13 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuSettings.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSetupGame.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuStandings.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuStartServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp" />
+    <ClCompile Include="..\..\_source\source\network\CGameClient.cpp" />
+    <ClCompile Include="..\..\_source\source\network\CGameServer.cpp" />
+    <ClCompile Include="..\..\_source\source\network\CNetBase.cpp" />
     <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
@@ -114,6 +120,7 @@
     <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\_source\include\Defines.h" />
+    <ClInclude Include="..\..\_source\include\enet\enet.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h" />
@@ -146,6 +153,8 @@
     <ClInclude Include="..\..\_source\include\messages\CSerializer64.h" />
     <ClInclude Include="..\..\_source\include\messages\IMessage.h" />
     <ClInclude Include="..\..\_source\include\messages\ISerializer.h" />
+    <ClInclude Include="..\..\_source\include\network\CGameClient.h" />
+    <ClInclude Include="..\..\_source\include\network\CNetBase.h" />
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
@@ -256,12 +265,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;..\libs\Irrlicht-1.9\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;..\libs\Irrlicht-1.9\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">

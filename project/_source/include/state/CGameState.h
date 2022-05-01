@@ -264,13 +264,13 @@ namespace dustbin {
         * @param a_Laps The current lap of the marble
         * @param a_Deficit Deficit of the marble on the leader in steps
         */
-        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader);
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
 
         /**
         * This function receives messages of type "PlayerWithdrawn"
         * @param a_MarbleId ID of the marble
         */
-        virtual void onPlayerwithdrawn(irr::s32 a_MarbleId);
+        virtual void onPlayerwithdrawn(irr::s32 a_MarbleId) override;
 
         /**
          * This function receives messages of type "PauseChanged"

@@ -31,7 +31,7 @@ namespace dustbin {
         * This function receives messages of type "StepMsg"
         * @param a_StepNo The current step number
         */
-        virtual void onStepmsg(irr::u32 a_StepNo);
+        virtual void onStepmsg(irr::u32 a_StepNo) override;
 
         /**
         * This function receives messages of type "ObjectMoved"
@@ -41,7 +41,7 @@ namespace dustbin {
         * @param a_LinearVelocity The linear velocity
         * @param a_AngularVelocity The angualar (rotation) velocity
         */
-        virtual void onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity);
+        virtual void onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity) override;
 
         /**
         * This function receives messages of type "MarbleMoved"
@@ -59,19 +59,19 @@ namespace dustbin {
         * @param a_ControlRearView Flag indicating whether or not the marble's player looks behind
         * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed 
         */
-        virtual void onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df &a_CameraPosition, const irr::core::vector3df &a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn);
+        virtual void onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df &a_CameraPosition, const irr::core::vector3df &a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) override;
 
         /**
         * This function receives messages of type "PlayerRespawn"
         * @param a_MarbleId ID of the marble
         * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
         */
-        virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State);
+        virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) override;
 
         /**
         * The implementing object must implement this method. It is called when the thread start working
         */
-        virtual void execute();
+        virtual void execute() override;
 
       public:
         CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn, scenenodes::CAiNode *a_pAiNode);

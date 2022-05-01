@@ -45,6 +45,7 @@ namespace dustbin {
           STextElement();
 
           void render();
+          void setPosition(const irr::core::position2di &a_cPos);
         };
 
         /**
@@ -141,7 +142,7 @@ namespace dustbin {
         * @param a_MarbleId ID of the marble
         * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
         */
-        virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State);
+        virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) override;
 
         /**
         * This function receives messages of type "PlayerFinished"
@@ -149,20 +150,20 @@ namespace dustbin {
         * @param a_RaceTime Racetime of the finished player in simulation steps
         * @param a_Laps The number of laps the player has done
         */
-        virtual void onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps);
+        virtual void onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) override;
 
         /**
         * This function receives messages of type "PlayerStunned"
         * @param a_MarbleId ID of the marble
         * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
         */
-        virtual void onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State);
+        virtual void onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) override;
 
         /**
         * This function receives messages of type "RaceFinished"
         * @param a_Cancelled A flag indicating whether or not the race was cancelled by a player
         */
-        virtual void onRacefinished(irr::u8 a_Cancelled);
+        virtual void onRacefinished(irr::u8 a_Cancelled) override;
 
         /**
         * This function receives messages of type "RacePosition"
@@ -171,7 +172,7 @@ namespace dustbin {
         * @param a_Laps The current lap of the marble
         * @param a_Deficit Deficit of the marble on the leader in steps
         */
-        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader);
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
 
         /**
         * This function receives messages of type "MarbleMoved"
@@ -189,39 +190,39 @@ namespace dustbin {
         * @param a_ControlRearView Flag indicating whether or not the marble's player looks behind
         * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed 
         */
-        virtual void onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df &a_CameraPosition, const irr::core::vector3df &a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn);
+        virtual void onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df &a_CameraPosition, const irr::core::vector3df &a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) override;
 
         /**
         * This function receives messages of type "LapStart"
         * @param a_MarbleId ID of the marble
         * @param a_LapNo Number of the started lap
         */
-        virtual void onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo);
+        virtual void onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) override;
 
         /**
         * This function receives messages of type "PlayerRostrum"
         * @param a_MarbleId ID of the marble sent to the rostrum
         */
-        virtual void onPlayerrostrum(irr::s32 a_MarbleId);
+        virtual void onPlayerrostrum(irr::s32 a_MarbleId) override;
 
         /**
         * This function receives messages of type "Countdown"
         * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
         */
-        virtual void onCountdown(irr::u8 a_Tick);
+        virtual void onCountdown(irr::u8 a_Tick) override;
 
         /**
         * This function receives messages of type "StepMsg"
         * @param a_StepNo The current step number
         */
-        virtual void onStepmsg(irr::u32 a_StepNo);
+        virtual void onStepmsg(irr::u32 a_StepNo) override;
 
         /**
         * This function receives messages of type "ConfirmWithdraw"
         * @param a_MarbleId ID of the marble
         * @param a_Timeout The number of steps defining the timeout for the withdrawal
         */
-        virtual void onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout);
+        virtual void onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout) override;
 
       public:
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);

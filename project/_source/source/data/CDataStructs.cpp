@@ -16,7 +16,8 @@ namespace dustbin {
     const irr::s32 c_iPlayerControls = 27;  /**< Marker for the player controller setup string */
     const irr::s32 c_iPlayerAiHelp   = 28;  /**< Marker for the level of AI help for the player */
     const irr::s32 c_iPlayerGridPos  = 29;  /**< Marker for the position in the grid */
-    const irr::s32 c_iPlayerDataEnd  = 30;  /**< Marker for the player data to end */
+    const irr::s32 c_iPlayerViewPort = 30;  /**< The player's viewport (if any) */
+    const irr::s32 c_iPlayerDataEnd  = 31;  /**< Marker for the player data to end */
 
     // Game Settings
     const irr::s32 c_iGameSettings    = 32;   /**< Marker for the game settings */
@@ -83,6 +84,13 @@ namespace dustbin {
     const irr::s32 c_iRacePlayerRespawn  = -126;   /**< Marker for the number of respawns of the player during the race */
     const irr::s32 c_iRacePlayerWithdraw = -127;   /**< Marker for the "player withdrawn from race" data */
     const irr::s32 c_iRacePlayerFooter   = -128;   /**< Marker for the end of the race player data structure */
+
+    // Game data
+    const irr::s32 c_iGameHead  = -150;   /**< Header for the game data */
+    const irr::s32 c_iGameType  = -151;   /**< The type of the game */
+    const irr::s32 c_iGameTrack = -152;   /**< The track of the upcoming race */
+    const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
+    const irr::s32 c_iGameClass = -154;   /**< The class of the race */
 
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
@@ -191,7 +199,8 @@ namespace dustbin {
       m_iGridPos (0 ),
       m_sName    (""),
       m_sTexture (""),
-      m_sControls("")
+      m_sControls(""),
+      m_iViewPort(-1)
     {
       // Default controls for new player
       m_sControls = "DustbinController;control;Key;Forward;Controller%20%28GAME%20FOR%20WINDOWS%29;M;a;a;a;-0md;b;control;Key;Backward;Controller%20%28GAME%20FOR%20WINDOWS%29;O;a;a;c;-0md;b;control;Key;Left;Controller%20%28GAME%20FOR%20WINDOWS%29;L;a;a;a;-0md;-b;control;Key;Right;Controller%20%28GAME%20FOR%20WINDOWS%29;N;a;a;a;-0md;b;control;Key;Brake;Controller%20%28GAME%20FOR%20WINDOWS%29;G;a;a;a;-0md;b;control;Key;Rearview;Controller%20%28GAME%20FOR%20WINDOWS%29;j;a;e;a;-0md;b;control;Key;Respawn;Controller%20%28GAME%20FOR%20WINDOWS%29;n;a;f;a;-0md;b";
@@ -212,6 +221,7 @@ namespace dustbin {
       m_iPlayerId = a_cOther.m_iPlayerId;
       m_eAiHelp   = a_cOther.m_eAiHelp;
       m_iGridPos  = a_cOther.m_iGridPos;
+      m_iViewPort = a_cOther.m_iViewPort;
     }
 
     std::string SPlayerData::serialize() {
@@ -238,6 +248,9 @@ namespace dustbin {
 
         l_cSerializer.addS32(c_iPlayerGridPos);
         l_cSerializer.addS32(m_iGridPos);
+
+        l_cSerializer.addS32(c_iPlayerViewPort);
+        l_cSerializer.addS32(m_iViewPort);
 
         l_cSerializer.addS32(c_iPlayerDataEnd);
 
@@ -272,6 +285,7 @@ namespace dustbin {
             case c_iPlayerTexture : m_sTexture  =               l_cSerializer.getString(); break;
             case c_iPlayerAiHelp  : m_eAiHelp   = (enAiHelp    )l_cSerializer.getS32   (); break;
             case c_iPlayerGridPos : m_iGridPos  =               l_cSerializer.getS32   (); break;
+            case c_iPlayerViewPort: m_iViewPort =               l_cSerializer.getS32   (); break;
             case c_iPlayerDataEnd : return true;
             default:
               printf("Unknow token %i\n", l_iToken);
@@ -297,6 +311,7 @@ namespace dustbin {
       s += "  Texture: \"" + m_sTexture + "\"\n";
       s += "  Controls: \"" + m_sControls + "\"\n";
       s += "  Grid Pos: " + std::to_string(m_iGridPos) + "\n"; 
+      s += "  Viewport: " + std::to_string(m_iViewPort) + "\n";
 
       s += "  Ai Help: ";
 
@@ -388,6 +403,72 @@ namespace dustbin {
       }
       return true;
     }
+
+    SGameData::SGameData() : m_eType(enType::Local), m_sTrack(""), m_iLaps(1), m_iClass(0) {
+    }
+
+    SGameData::SGameData(enType a_eType, const std::string& a_sTrack, int a_iLaps, int a_iClass) : m_eType(a_eType), m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_iClass(a_iClass) {
+    }
+
+    SGameData::SGameData(const std::string& a_sData) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      int l_iHead = l_cSerializer.getS32();
+
+      if (l_iHead == c_iGameHead) {
+        while (l_cSerializer.hasMoreMessages()) {
+          irr::s32 l_iData = l_cSerializer.getS32();
+
+          switch (l_iData) {
+            case c_iGameType:
+              m_eType = (enType)l_cSerializer.getS32();
+              break;
+
+            case c_iGameTrack:
+              m_sTrack = l_cSerializer.getString();
+              break;
+
+            case c_iGameLaps:
+              m_iLaps = l_cSerializer.getS32();
+              break;
+
+            case c_iGameClass:
+              m_iClass = l_cSerializer.getS32();
+              break;
+
+            default:
+              printf("Unkown data in game struct: #%i\n", l_iData);
+              break;
+          }
+        }
+      }
+      else printf("Invalid game data header #%i\n", l_iHead);
+    }
+
+    std::string SGameData::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      l_cSerializer.addS32(c_iGameHead);
+
+      // The type of the game
+      l_cSerializer.addS32(c_iGameType);
+      l_cSerializer.addS32((irr::s32)m_eType);
+
+      // The track
+      l_cSerializer.addS32(c_iGameTrack);
+      l_cSerializer.addString(m_sTrack);
+
+      // The number of laps
+      l_cSerializer.addS32(c_iGameLaps);
+      l_cSerializer.addS32(m_iLaps);
+
+      // The race class
+      l_cSerializer.addS32(c_iGameClass);
+      l_cSerializer.addS32(m_iClass);
+
+      return l_cSerializer.getMessageAsString();
+    }
+
 
     std::string SRacePlayers::serialize() {
       messages::CSerializer64 l_cSerializer;

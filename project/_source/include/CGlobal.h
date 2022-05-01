@@ -18,6 +18,11 @@ namespace dustbin {
     class ISoundInterface;  /**< Forward declaration for the audio interface */
   }
 
+  namespace network {
+    class CGameServer;  /**< Forward declaration of the network game server */
+    class CGameClient;  /**< Forward declaration of the network game client */
+  }
+
   // Enum for the font size. The actual size
   // depends on the screen resolution
   enum class enFont {
@@ -150,6 +155,31 @@ namespace dustbin {
       * @return the sound interface
       */
       virtual sound::ISoundInterface *getSoundInterface() = 0;
+
+      /**
+      * Get the running network server instance
+      * @return the running network server instance or nullptr if none is running
+      */
+      virtual network::CGameServer *getGameServer() = 0;
+
+      /**
+      * Start a game server
+      * @param a_iNumberOfPlayers the available number of players
+      */
+      virtual void startGameServer(int a_iNumberOfPlayers) = 0;
+
+      /**
+      * Get the running network client
+      * @return the running network client, nullptr if no client is running
+      */
+      virtual network::CGameClient *getGameClient() = 0;
+
+      /**
+      * Start and connect a net client
+      * @param a_sHost the server to connect to
+      * @param a_iPort the port the server is running
+      */
+      virtual void startGameClient(const std::string &a_sHost, int a_iPort) = 0;
 
 #ifdef _ANDROID
       /**

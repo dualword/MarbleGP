@@ -276,6 +276,7 @@ namespace dustbin {
                       else
                         l_cPlayer.m_sTexture = l_cPlayer.m_sTexture + "&number=" + std::to_string(l_cPlayer.m_iGridPos + 1);
 
+                      l_cPlayer.m_iViewPort = l_iNum;
                       l_cPlayer.m_iPlayerId = l_iNum++;
                       l_cPlayers.m_vPlayers.push_back(l_cPlayer);
                       break;
@@ -313,8 +314,18 @@ namespace dustbin {
                 if (l_pTouch != nullptr)
                   CGlobal::getInstance()->getSettingData().m_bTouchControl = l_pTouch->isChecked();
 
-                std::string l_sPlayers = l_cPlayers.serialize(),
-                            l_sNext    = m_pManager->popMenuStack();
+                gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                if (l_pNet != nullptr) {
+                  if (l_pNet->getSelected() == 1) {
+                    m_pManager->pushToMenuStack("menu_startserver");
+                  }
+                  else if (l_pNet->getSelected() == 2) {
+                    m_pManager->pushToMenuStack("menu_joinserver");
+                  }
+                }
+
+                std::string l_sPlayers = l_cPlayers.serialize();
+                std::string l_sNext    = m_pManager->popMenuStack();
 
                 m_pManager->pushToMenuStack("menu_setupgame");
                 m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);

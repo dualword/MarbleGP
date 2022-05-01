@@ -287,6 +287,12 @@ namespace dustbin {
 
                   m_pState->getGlobal()->setGlobal("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
+
+                  data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+
+                  data::SGameData l_cData(data::SGameData::enType::Local, m_pTrackList->getSelectedData(), l_iLaps, l_cChampionship.m_iClass);
+                  m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
+
                   m_pState->setState(state::enState::Game);
                 }
               }

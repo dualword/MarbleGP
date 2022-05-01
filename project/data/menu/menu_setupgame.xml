@@ -122,7 +122,7 @@
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 5, 5, 17, 9" tooltip="Select the Raceclass, i.e. how fast the Marbles are">
+          <element type="staticText" rect="relative: 5, 3, 17, 7" tooltip="Select the Raceclass, i.e. how fast the Marbles are">
             <attributes>
               <attribute key="Caption" value="Race Class:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -130,7 +130,7 @@
             </attributes>
           </element>
           
-          <element type="Selector" rect="relative: 18, 6, 33, 8">
+          <element type="Selector" rect="relative: 18, 4, 33, 6">
             <attributes>
               <attribute key="Name" value="raceclass" />
               <attribute key="Selected" value="0" />
@@ -140,7 +140,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 5, 9, 17, 13" tooltip="Select the starting Order of the Races">
+          <element type="staticText" rect="relative: 5, 7, 17, 11" tooltip="Select the starting Order of the Races">
             <attributes>
               <attribute key="Caption" value="Grid Positions:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -148,7 +148,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 18, 10, 33, 12">
+          <element type="Selector" rect="relative: 18, 8, 33, 10">
             <attributes>
               <attribute key="Name" value="starting_positions" />
               <attribute key="Selected" value="0" />
@@ -158,7 +158,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 0, 13, 17, 17" tooltip="Reverse Starting Positions">
+          <element type="staticText" rect="relative: 0, 11, 17, 15" tooltip="Reverse Starting Positions">
             <attributes>
               <attribute key="Caption" value="Reverse Grid:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -166,13 +166,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 18, 14, 20, 16">
+          <element type="DustbinCheckbox" rect="relative: 18, 12, 20, 14">
             <attributes>
               <attribute key="Name" value="reverse_grid" />
             </attributes>
           </element>
                     
-          <element type="staticText" rect="relative: 0, 17, 17, 21" tooltip="Randomize Starting Positions of the First Race">
+          <element type="staticText" rect="relative: 0, 15, 17, 19" tooltip="Randomize Starting Positions of the First Race">
             <attributes>
               <attribute key="Caption" value="Randomize First Race:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -180,13 +180,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 18, 18, 20, 20">
+          <element type="DustbinCheckbox" rect="relative: 18, 16, 20, 18">
             <attributes>
               <attribute key="Name" value="randomize_first" />
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 0, 21, 17, 25" tooltip="Fill the Grid with AI Marbles">
+          <element type="staticText" rect="relative: 0, 19, 17, 23" tooltip="Fill the Grid with AI Marbles">
             <attributes>
               <attribute key="Caption" value="Fill Grid with AI Players:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -194,13 +194,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 18, 22, 20, 24">
+          <element type="DustbinCheckbox" rect="relative: 18, 20, 20, 22">
             <attributes>
               <attribute key="Name" value="fillgrid_ai" />
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 5, 25, 17, 29" tooltip="Select the Grid Size">
+          <element type="staticText" rect="relative: 5, 23, 17, 27" tooltip="Select the Grid Size">
             <attributes>
               <attribute key="Caption" value="Grid Size:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -208,7 +208,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 18, 26, 33, 28">
+          <element type="Selector" rect="relative: 18, 24, 33, 26">
             <attributes>
               <attribute key="Name" value="gridsize" />
               <attribute key="Selected" value="3" />
@@ -218,7 +218,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 5, 32, 33, 33" tooltip="When will the race be finished?">
+          <element type="staticText" rect="relative: 5, 28, 33, 29" tooltip="When will the race be finished?">
             <attributes>
               <attribute key="Caption" value="Race Auto Finish" />
               <attribute key="HTextAlign" value="center" />
@@ -226,13 +226,31 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 5, 34, 33, 36">
+          <element type="Selector" rect="relative: 5, 30, 33, 32">
             <attributes>
               <attribute key="Name" value="race_finish" />
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
               <attribute key="options" value="All Players finished;Second to Last finished;First Player finished;All Players and AI finished" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 36, 17, 38" tooltip="Network Game">
+            <attributes>
+              <attribute key="Caption" value="Network Game:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="relative: 18, 36, 33, 38">
+            <attributes>
+              <attribute key="Name" value="network_game" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="None;Start Server;Join Server" />
             </custom>
           </element>
         </children>

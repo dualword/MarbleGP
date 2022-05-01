@@ -89,6 +89,7 @@ namespace dustbin {
       enAiHelp     m_eAiHelp;   /**< The level of AI help */
       int          m_iPlayerId; /**< The ID of the player */
       int          m_iGridPos;  /**< Position in the grid (1..16) */
+      int          m_iViewPort; /**< The viewport of this player (if any) */
 
       std::string m_sName;      /**< The player's name */
       std::string m_sTexture;   /**< The player's texture generation string */
@@ -129,6 +130,34 @@ namespace dustbin {
 
       std::string serialize();
       bool deserialize(const std::string &a_sSerialized);
+    };
+
+    /**
+    * @class SGameData
+    * @author Christian Keimel
+    * This struct holds the data for the upcoming race
+    */
+    struct SGameData {
+      /**
+      * The type of race for this instance of the application
+      */
+      enum class enType {
+        Local,      /**< The race is local. Might be a network race running on the server */
+        Network,    /**< The instance is a network client */
+        ViewTrack,  /**< The race is a view track race */
+        Replay      /**< The race is a race replay */
+      };
+
+      enType      m_eType;    /**< The type of race */
+      std::string m_sTrack;   /**< The track */
+      int         m_iLaps;    /**< The number of laps */
+      int         m_iClass;   /**< The race class */
+
+      SGameData();
+      SGameData(enType a_eType, const std::string &a_sTrack, int a_iLaps, int a_iClass);
+      SGameData(const std::string &a_sData);
+
+      std::string serialize();
     };
 
     /**
