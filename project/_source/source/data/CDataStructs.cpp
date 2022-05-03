@@ -92,6 +92,9 @@ namespace dustbin {
     const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
     const irr::s32 c_iGameClass = -154;   /**< The class of the race */
 
+    // Free Game Slots
+    const irr::s32 c_iFreeGameSlots = -180; /**< Marker for free game slots */
+
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
     SGameGFX::SGameGFX() : m_bHightlight(true), m_bShowControls(true), m_bShowRanking(true) {
@@ -1235,6 +1238,38 @@ namespace dustbin {
         std::string("fastest=") + std::to_string(m_iFastest ) + ", " +
         std::string("stunned=") + std::to_string(m_iStunned ) + ", " +
         std::string("respawn=") + std::to_string(m_iRespawn );
+    }
+
+    SFreeGameSlots::SFreeGameSlots() {
+
+    }
+
+    SFreeGameSlots::SFreeGameSlots(const SFreeGameSlots& a_cOther) {
+      for (std::vector<int>::const_iterator it = a_cOther.m_vSlots.begin(); it != a_cOther.m_vSlots.end(); it++)
+        m_vSlots.push_back(*it);
+    }
+
+    SFreeGameSlots::SFreeGameSlots(const std::string& a_sData) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      irr::s32 l_iHead = l_cSerializer.getS32();
+
+      if (l_iHead == c_iFreeGameSlots) {
+        while (l_cSerializer.hasMoreMessages())
+          m_vSlots.push_back(l_cSerializer.getS32());
+      }
+      else printf("Invalid header for free game slots data structure: %i\n", l_iHead);
+    }
+
+    std::string SFreeGameSlots::serialize() {
+      messages::CSerializer64 l_cSerializer;
+      
+      l_cSerializer.addS32(c_iFreeGameSlots);
+
+      for (std::vector<int>::iterator it = m_vSlots.begin(); it != m_vSlots.end(); it++)
+        l_cSerializer.addS32(*it);
+
+      return l_cSerializer.getMessageAsString();
     }
   }
 }

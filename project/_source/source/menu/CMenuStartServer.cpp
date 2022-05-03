@@ -55,7 +55,9 @@ namespace dustbin {
 
           m_pState->setZLayer(0);
 
-          a_pState->getGlobal()->startGameServer(16 - (int)m_cPlayers.m_vPlayers.size());
+          data::SFreeGameSlots l_cSlots = data::SFreeGameSlots(m_pState->getGlobal()->getGlobal("free_game_slots"));
+
+          a_pState->getGlobal()->startGameServer(l_cSlots.m_vSlots);
           m_pServer = a_pState->getGlobal()->getGameServer();
 
           for (int i = 0; i < 16; i++) {
@@ -119,8 +121,12 @@ namespace dustbin {
 
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
+                printf("Player %s added to player list\n", l_cPlayer.m_sName.c_str());
+
                 updatePlayerList();
               }
+
+              delete l_pMsg;
             }
           }
         }

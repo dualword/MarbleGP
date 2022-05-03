@@ -29,7 +29,29 @@ namespace dustbin {
         * Handle an event in a subclass
         * @return "true" if the event was handled
         */
-        virtual bool OnEvent(ENetEvent *a_cEvent) = 0;
+        virtual bool OnEnetEvent(ENetEvent *a_cEvent) = 0;
+
+        /**
+        * Handle a received message in a subclass
+        * @param a_pPeer the peer from which the message was received
+        * @param a_pMessage the message to handle
+        * @return true if the message was handled
+        */
+        virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
+
+        /**
+        * Broadcast a message
+        * @param a_pMessage the message to broadcast
+        * @param a_bReliable should the message be sent reliable?
+        */
+        void broadcastMessage(messages::IMessage *a_pMessage, bool a_bReliable);
+
+        /**
+        * Send a message to one specific peer
+        * @param a_pPeer the peer to send to
+        * @param a_pMessage the message to send
+        */
+        void sendMessage(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
 
       public:
         CNetBase(CGlobal *a_pGlobal);

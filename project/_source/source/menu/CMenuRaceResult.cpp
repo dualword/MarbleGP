@@ -159,6 +159,8 @@ namespace dustbin {
                   }
                 }
               }
+              else
+                printf("Oops\n");
 
               std::wstring l_sDeficit = L"";
 

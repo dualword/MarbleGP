@@ -52,7 +52,7 @@ namespace dustbin {
     * Handle an event in a subclass
     * @return "true" if the event was handled
     */
-    bool CGameClient::OnEvent(ENetEvent* a_cEvent) {
+    bool CGameClient::OnEnetEvent(ENetEvent* a_cEvent) {
       switch (a_cEvent->type) {
       case ENET_EVENT_TYPE_CONNECT:
         if (m_bConnectionAllowed && m_vPeers.size() < 16) {
@@ -83,6 +83,60 @@ namespace dustbin {
         break;
       }
 
+      return false;
+    }
+
+    /**
+    * Handle a received message in a subclass
+    * @param a_pPeer the peer from which the message was received
+    * @param a_pMessage the message to handle
+    * @return true if the message was handled
+    */
+    bool CGameClient::onMessageReceived(ENetPeer* a_pPeer, messages::IMessage* a_pMessage) {
+      // do here: handle all the messages of a newly connecting client
+      if (a_pMessage != nullptr) {
+        switch (a_pMessage->getMessageId()) {
+          case messages::enMessageIDs::ServerIdentifier: {
+            messages::CServerIdentifier *p = reinterpret_cast<messages::CServerIdentifier *>(a_pMessage);
+            printf("Server identifier: %s (%i free slots)\n", p->getidentify().c_str(), p->getfreeslots());
+            if (p->getidentify() == "MarbleGP Server") {
+              m_cPlayers.deserialize(m_pGlobal->getGlobal("raceplayers"));
+
+              messages::CClientRequest p = messages::CClientRequest((irr::s32)m_cPlayers.m_vPlayers.size());
+              sendMessage(a_pPeer, &p);
+            }
+            else {
+              enet_peer_disconnect(a_pPeer, 0);
+            }
+
+            return true;
+            break;
+          }
+
+          case messages::enMessageIDs::ClientApproval: {
+            messages::CClientApproval *p = reinterpret_cast<messages::CClientApproval *>(a_pMessage);
+            printf("Server has assigned %i slots to me.\n", p->getslotsassigned());
+
+            irr::s32 l_iSlots = p->getslotsassigned();
+            std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin();
+
+            while (l_iSlots > 0 && it != m_cPlayers.m_vPlayers.end()) {
+              printf("Register player \"%s\"...\n", (*it).m_sName.c_str());
+
+              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture);
+              sendMessage(a_pPeer, &l_cPlayer);
+              it++;
+              l_iSlots--;
+            }
+
+            return true;
+            break;
+          }
+
+          default:
+            break;
+        }
+      }
       return false;
     }
   }

@@ -569,16 +569,16 @@ namespace dustbin {
 
   /**
   * Start a game server. Calling this function while a server is running will stop and destroy it
-  * @param a_iNumberOfOpenSlots the number of open player slots (16 - number of local players on the server)
+  * @param a_vAvailableSlots a list of the available player IDs for the game  
   */
-  void CMainClass::startGameServer(int a_iNumberOfOpenSlots) {
+  void CMainClass::startGameServer(const std::vector<int> &a_vAvailableSlots) {
     if (m_pServer != nullptr) {
       m_pServer->stopThread();
       m_pServer->join();
       delete m_pServer;
     }
 
-    m_pServer = new network::CGameServer(a_iNumberOfOpenSlots, this);
+    m_pServer = new network::CGameServer(a_vAvailableSlots, this);
     m_pServer->startThread();
   }
 

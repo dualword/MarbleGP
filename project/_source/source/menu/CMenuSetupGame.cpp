@@ -141,7 +141,6 @@ namespace dustbin {
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("race_finish", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
             l_pSelector->setSelected(m_cSettings.m_iAutoFinish); 
-            l_pSelector->setEnabled(m_cSettings.m_bFillGridAI); 
           }
           else printf("Ui element \"ai_class\" not found.");
           
@@ -221,14 +220,12 @@ namespace dustbin {
                 irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
 
                 gui::CDustbinCheckbox *l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
-                if (l_pCheckbox != nullptr && l_pCheckbox->isChecked()) {
+                if (l_pCheckbox != nullptr && l_pCheckbox->isChecked())
                   l_bFillGridAI = true;
 
-                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  if (l_pSelector != nullptr) {
-                    l_iGridSize = std::wcstol(l_pSelector->getItem(l_pSelector->getSelected()).c_str(), nullptr, 10);
-                  }
-                }
+                gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                if (l_pSelector != nullptr)
+                  l_iGridSize = std::wcstol(l_pSelector->getItem(l_pSelector->getSelected()).c_str(), nullptr, 10);
 
                 messages::CSerializer64 l_cSerializer;
 
@@ -301,6 +298,10 @@ namespace dustbin {
                     l_iNum++;
                   }
                 }
+
+                data::SFreeGameSlots l_cSlots = data::SFreeGameSlots();
+                l_cSlots.m_vSlots = l_vGrid;
+                m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
                 data::SChampionship l_cChampionship = data::SChampionship(m_cSettings.m_iRaceClass, (int)l_cPlayers.m_vPlayers.size(), m_cSettings.m_iGridPos, m_cSettings.m_bReverseGrid);
 

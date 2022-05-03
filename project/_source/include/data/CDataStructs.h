@@ -282,6 +282,19 @@ namespace dustbin {
 
       std::string to_string();
     };
+
+    /**
+    * A little struct for storing the available free game slots in the globals
+    */
+    struct SFreeGameSlots {
+      std::vector<int> m_vSlots;
+
+      SFreeGameSlots();
+      SFreeGameSlots(const SFreeGameSlots &a_cOther);
+      SFreeGameSlots(const std::string &a_sData);
+
+      std::string serialize();
+    };
   }
 }
 

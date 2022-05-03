@@ -55,28 +55,18 @@ namespace dustbin {
           // The most frequent messages are sent using a non-reliable packet
           if (l_eMsg == messages::enMessageIDs::StepMsg || l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved || l_eMsg == messages::enMessageIDs::MarbleControl) {
             if (l_bSendStep) {
-              messages::CSerializer64 l_cSerializer;
-              l_pMsg->serialize(&l_cSerializer);
-              std::string l_sMsg = l_cSerializer.getMessageAsString();
-
-              ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, 0);
-              enet_host_broadcast(m_pHost, 1, p);
+              broadcastMessage(l_pMsg, false);
             }
           }
           else {
-            messages::CSerializer64 l_cSerializer;
-            l_pMsg->serialize(&l_cSerializer);
-            std::string l_sMsg = l_cSerializer.getMessageAsString();
-
-            ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, ENET_PACKET_FLAG_RELIABLE);
-            enet_host_broadcast(m_pHost, 0, p);
+            broadcastMessage(l_pMsg, true);
           }
         }
 
         // Do ENet host stuff here
         ENetEvent l_cEvent;
         while (enet_host_service(m_pHost, &l_cEvent, 0) != 0) {
-          if (!OnEvent(&l_cEvent)) {
+          if (!OnEnetEvent(&l_cEvent)) {
             switch (l_cEvent.type) {
               case ENET_EVENT_TYPE_CONNECT:
                 break;
@@ -94,9 +84,12 @@ namespace dustbin {
                 messages::IMessage *l_pMsg = l_cFactory.createMessage(&l_cSerializer);
 
                 if (l_pMsg != nullptr) {
-                  m_pOutputQueue->postMessage(l_pMsg);
+                  if (!onMessageReceived(l_cEvent.peer, l_pMsg)) {
+                    m_pOutputQueue->postMessage(l_pMsg);
+                  }
                   delete l_pMsg;
                 }
+                enet_packet_destroy(l_cEvent.packet);
                 break;
               }
 
@@ -111,6 +104,45 @@ namespace dustbin {
       }
 
       printf("Network thread stopped.\n");
+    }
+
+    /**
+    * Handle a received message in a subclass
+    * @param a_pPeer the peer from which the message was received
+    * @param a_pMessage the message to handle
+    * @return true if the message was handled
+    */
+    bool CNetBase::onMessageReceived(ENetPeer* a_pPeer, messages::IMessage* a_pMessage) {
+      return false;
+    }
+
+
+    /**
+    * Broadcast a message
+    * @param a_pMessage the message to broadcast
+    * @param a_bReliable should the message be sent reliable?
+    */
+    void CNetBase::broadcastMessage(messages::IMessage* a_pMessage, bool a_bReliable) {
+      messages::CSerializer64 l_cSerializer;
+      a_pMessage->serialize(&l_cSerializer);
+      std::string l_sMsg = l_cSerializer.getMessageAsString();
+
+      ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, a_bReliable ? ENET_PACKET_FLAG_RELIABLE : 0);
+      enet_host_broadcast(m_pHost, a_bReliable ? 0 : 1, p);
+    }
+
+    /**
+    * Send a message to one specific peer
+    * @param a_pPeer the peer to send to
+    * @param a_pMessage the message to send
+    */
+    void CNetBase::sendMessage(ENetPeer* a_pPeer, messages::IMessage* a_pMessage) {
+      messages::CSerializer64 l_cSerializer;
+      a_pMessage->serialize(&l_cSerializer);
+      std::string l_sMsg = l_cSerializer.getMessageAsString();
+
+      ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, ENET_PACKET_FLAG_RELIABLE);
+      enet_peer_send(a_pPeer, 0, p);
     }
   }
 }

@@ -194,9 +194,9 @@ namespace dustbin {
 
       /**
       * Start a game server
-      * @param a_iNumberOfOpenSlots the number of open player slots (16 - number of local players on the server)
+      * @param a_vAvailableSlots a list of the available player IDs for the game
       */
-      virtual void startGameServer(int a_iNumberOfOpenSlots) override;
+      virtual void startGameServer(const std::vector<int> &a_vAvailableSlots) override;
 
       /**
       * Get the running network client

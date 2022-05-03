@@ -360,12 +360,6 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuStandings.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\include\network\CGameServer.h">
-      <Filter>Headerdateien\network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\network\CGameServer.cpp">
-      <Filter>Quelldateien\network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\network\CNetBase.cpp">
       <Filter>Quelldateien\network</Filter>
     </ClCompile>
@@ -377,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp">
       <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CGameServer.cpp">
+      <Filter>Quelldateien\network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -666,6 +663,9 @@
       <Filter>Headerdateien\network</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\network\CGameClient.h">
+      <Filter>Headerdateien\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CGameServer.h">
       <Filter>Headerdateien\network</Filter>
     </ClInclude>
   </ItemGroup>
