@@ -8,13 +8,13 @@ namespace dustbin {
   namespace gui {
     CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui) :
       IGUIElement(irr::gui::EGUIET_COUNT, a_pGui, a_pParent != nullptr ? a_pParent : a_pGui->getRootGUIElement(), -1, a_cRect),
+      m_iDeficit   (0),
+      m_sName      (L""),
+      m_sPosition  (std::to_wstring(a_iPosition) + L": "),
       m_cBackground(a_cBackground),
       m_cOriginal  (a_cBackground),
       m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
       m_cHlColor   (irr::video::SColor(232, 0, 255, 0)),
-      m_iDeficit   (0),
-      m_sName      (L""),
-      m_sPosition  (std::to_wstring(a_iPosition) + L": "),
       m_pFont      (a_pFont),
       m_bHighLight (false),
       m_bWithdrawn (false)

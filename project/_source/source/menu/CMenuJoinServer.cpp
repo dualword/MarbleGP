@@ -32,6 +32,10 @@ namespace dustbin {
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
         void updatePlayerList() {
+          for (std::vector<std::tuple<gui::CMenuBackground*, irr::gui::IGUITab*, irr::gui::IGUIStaticText*>>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+            std::get<1>(*it)->setVisible(false);
+          }
+
           int i = 0;
           for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
             if (i < m_vPlayers.size()) {
@@ -73,6 +77,10 @@ namespace dustbin {
                 gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 if (l_pBtn != nullptr)
                   l_pBtn->setVisible(false);
+
+                l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                if (l_pBtn != nullptr)
+                  l_pBtn->setVisible(false);
               }
             }
           }
@@ -80,8 +88,6 @@ namespace dustbin {
           m_pInputQueue = new threads::CInputQueue();
           if (m_pClient != nullptr)
             m_pClient->getOutputQueue()->addListener(m_pInputQueue);
-
-          m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
 
           updatePlayerList();
         }
@@ -121,6 +127,59 @@ namespace dustbin {
 
                 updatePlayerList();
               }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::UpdatePlayerId) {
+                messages::CUpdatePlayerId *p = reinterpret_cast<messages::CUpdatePlayerId *>(l_pMsg);
+                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == p->getoriginal_id()) {
+                    printf("Update ID of player %s to %i\n", (*it).m_sName.c_str(), p->getnetgame_id());
+                    (*it).m_iPlayerId = p->getnetgame_id();
+                  }
+                }
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::RacePlayer) {
+                messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(l_pMsg);
+                bool l_bAdd = true;
+                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == p->getplayerid()) {
+                    l_bAdd = false;
+                    break;
+                  }
+                }
+
+                if (l_bAdd) {
+                  data::SPlayerData l_cNewPlayer;
+                  l_cNewPlayer.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
+                  l_cNewPlayer.m_eType     = data::enPlayerType::Network;
+                  l_cNewPlayer.m_iPlayerId = p->getplayerid();
+                  l_cNewPlayer.m_sControls = "Network";
+                  l_cNewPlayer.m_sName     = p->getname();
+                  l_cNewPlayer.m_sTexture  = p->gettexture();
+
+                  m_cPlayers.m_vPlayers.push_back(l_cNewPlayer);
+
+                  printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
+
+                  updatePlayerList();
+                }
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::PlayerRemoved) {
+                messages::CPlayerRemoved *p = reinterpret_cast<messages::CPlayerRemoved *>(l_pMsg);
+
+                int l_iPlayerId = m_cPlayers.m_vPlayers[p->getplayerid()].m_iPlayerId;
+
+                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == l_iPlayerId) {
+                    m_cPlayers.m_vPlayers.erase(it);
+
+                    printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
+
+                    updatePlayerList();
+                    break;
+                  }
+                }
+              }
+
+              delete l_pMsg;
             }
           }
         }

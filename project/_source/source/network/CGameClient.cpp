@@ -33,6 +33,9 @@ namespace dustbin {
     }
 
     CGameClient::~CGameClient() {
+      for (std::vector<ENetPeer *>::iterator it = m_vPeers.begin(); it != m_vPeers.end(); it++)
+        enet_peer_disconnect_now(*it, 0);
+
       if (m_pHost != nullptr) {
         enet_host_destroy(m_pHost);
         m_pHost = nullptr;
@@ -110,7 +113,6 @@ namespace dustbin {
             }
 
             return true;
-            break;
           }
 
           case messages::enMessageIDs::ClientApproval: {
@@ -123,14 +125,39 @@ namespace dustbin {
             while (l_iSlots > 0 && it != m_cPlayers.m_vPlayers.end()) {
               printf("Register player \"%s\"...\n", (*it).m_sName.c_str());
 
-              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture);
+              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture, (*it).m_iPlayerId);
               sendMessage(a_pPeer, &l_cPlayer);
               it++;
               l_iSlots--;
             }
 
+            messages::CPlayerListEnd l_cReady;
+            sendMessage(a_pPeer, &l_cReady);
+
             return true;
-            break;
+          }
+
+          case messages::enMessageIDs::UpdatePlayerId: {
+            messages::CUpdatePlayerId *p = reinterpret_cast<messages::CUpdatePlayerId *>(a_pMessage);
+
+            for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+              if ((*it).m_iPlayerId == p->getoriginal_id()) {
+                printf("ID of player %s changed from %i to %i\n", (*it).m_sName.c_str(), p->getoriginal_id(), p->getnetgame_id());
+                (*it).m_iPlayerId = p->getnetgame_id();
+              }
+            }
+
+            m_pOutputQueue->postMessage(a_pMessage);
+            return true;
+          }
+
+          case messages::enMessageIDs::RacePlayer: {
+            messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(a_pMessage);
+
+            printf("Race player %i: \"%s\"\n", p->getplayerid(), p->getname().c_str());
+            m_pOutputQueue->postMessage(a_pMessage);
+
+            return true;
           }
 
           default:

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <threads/CMessageQueue.h>
+#include <data/CDataStructs.h>
 #include <network/CNetBase.h>
 #include <threads/IThread.h>
 #include <irrlicht.h>
@@ -31,6 +32,9 @@ namespace dustbin {
         std::map<ENetPeer *, std::vector<std::tuple<int, bool>>> m_mAssignedSlots;  /**< The slots that were assigned to a specific peer */
 
         std::map<ENetPeer *, std::vector<int>> m_mMarbleMap;      /**< The marble IDs that were assigned to a specific peer */
+        std::map<ENetPeer *, std::vector<int>> m_mPlayerMap;      /**< The player IDs that were assigned to a specific peer */
+
+        data::SRacePlayers m_cPlayers;    /**< The players */
 
         /**
         * Handle an event in a subclass

@@ -5,7 +5,7 @@
     <children>
       <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
         <attributes>
-          <attribute key="Caption" value="Dustbin::Games MarbleGP - Setup Game" />
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Start Network Game" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
           <attribute key="Name" value="label_headline" />

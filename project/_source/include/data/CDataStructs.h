@@ -13,7 +13,8 @@ namespace dustbin {
     */
     enum class enPlayerType {
       Local,    /**< A local player (with his own viewport) */
-      Ai        /**< An AI player (has no viewport) */
+      Ai,       /**< An AI player (has no viewport) */
+      Network   /**< A player connected by network */
     };
 
     /**

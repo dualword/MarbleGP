@@ -326,9 +326,6 @@ namespace dustbin {
               // Marble Class Param: Steer Factor and Thrust Factor
               irr::core::vector2df l_vSteer = irr::core::vector2df(1.0f * l_fCtrlX, 0.5f * l_fCtrlY);
 
-              // Marble Class Param: Max Steer Speed
-              irr::f32 l_fSpeed  = m_aMarbles[i]->m_vVelocity.getLength();
-
               l_vSteer.normalize();
 
               irr::core::vector3df v = p->m_vOffset;

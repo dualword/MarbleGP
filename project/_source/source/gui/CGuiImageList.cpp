@@ -349,8 +349,6 @@ namespace dustbin {
     void CGuiImageList::draw() {
       irr::core::position2di l_cPos = irr::core::position2di(m_iPos, 0);
 
-      int l_iRow = 0;
-
       for (std::vector<SListImage>::iterator it = m_vImages.begin(); it != m_vImages.end(); it++) {
         irr::core::recti l_cRect = (*it).m_cDrawRect;
         l_cRect -= l_cPos;

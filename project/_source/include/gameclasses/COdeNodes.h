@@ -137,8 +137,8 @@ namespace dustbin {
         virtual ~CObjectCheckpoint();
 
         std::vector<int> m_vNext;   /**< The IDs of the next checkpoints */
-        bool m_bLapStart,           /**< Does this checkpoint mark the start of a lap? */
-             m_bHasRespawn;         /**< Was a respawn node found? */
+        bool m_bLapStart;           /**< Does this checkpoint mark the start of a lap? */
+        bool m_bHasRespawn;         /**< Was a respawn node found? */
 
         irr::core::vector3df m_vRespawnPos, /**< Respawn position (if m_bHasRespawn == true) */
                              m_vRespawnDir; /**< Respawn direction (if m_bHasRespawn == true) */
@@ -192,13 +192,13 @@ namespace dustbin {
         int m_iCtrlY;   /**< The Y-Control state updated in "onMarblecontrol" */
         int m_iLastCp;  /**< The last Checkpoint the marble has passed */
 
-        bool m_bHasContact,
-             m_bBrake,         /**< The Brake Control state updated in "onMarblecontrol" */
-             m_bRearView,      /**< The Rearview Control state updated in "onMarblecontrol" */
-             m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
+        bool m_bHasContact;
+        bool m_bBrake;         /**< The Brake Control state updated in "onMarblecontrol" */
+        bool m_bRearView;      /**< The Rearview Control state updated in "onMarblecontrol" */
+        bool m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
 
-        irr::core::vector3df m_vRespawnPos,   /**< The respawn position taken from the last checkpoint */
-                             m_vRespawnDir;   /**< The respawn direction taken from the last checkpoint */
+        irr::core::vector3df m_vRespawnPos;   /**< The respawn position taken from the last checkpoint */
+        irr::core::vector3df m_vRespawnDir;   /**< The respawn direction taken from the last checkpoint */
 
         enMarbleState m_eState; /**< The state of the marble */
 

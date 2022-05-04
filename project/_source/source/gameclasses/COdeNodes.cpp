@@ -177,10 +177,10 @@ namespace dustbin {
 
     CObjectCheckpoint::CObjectCheckpoint(scenenodes::CCheckpointNode* a_pNode, CWorld* a_pWorld, const std::string& a_sName) :
       CObject(enObjectType::Checkpoint, reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName),
-      m_vRespawnDir(irr::core::vector3df()),
-      m_vRespawnPos(irr::core::vector3df()),
+      m_bLapStart  (false),
       m_bHasRespawn(false),
-      m_bLapStart(false)
+      m_vRespawnPos(irr::core::vector3df()),
+      m_vRespawnDir(irr::core::vector3df())
     {
       a_pWorld->m_vObjects.push_back(new CObjectTrimesh(reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode), a_pWorld, a_sName + "_trimesh"));
       
@@ -321,35 +321,35 @@ namespace dustbin {
 
     CObjectMarble::CObjectMarble(irr::scene::ISceneNode* a_pNode, const irr::core::vector3df& a_cDirection, CWorld* a_pWorld, const std::string& a_sName) :
       CObject(enObjectType::Marble, nullptr, a_pWorld, a_sName),
-      m_vRespawnPos(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
-      m_vSideVector(irr::core::vector3df(1.0f, 0.0f, 0.0f)),
-      m_vUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
-      m_vUpOffset(irr::core::vector3df(0.0f, 1.0f, 0.0f)),
-      m_vDirection(irr::core::vector3df()),
-      m_vRearview(irr::core::vector3df()),
-      m_vPosition(irr::core::vector3df()),
-      m_vVelocity(irr::core::vector3df()),
-      m_vContact(irr::core::vector3df()),
-      m_eState(enMarbleState::Countdown),
-      m_vCamera(irr::core::vector3df()),
-      m_vRespawnDir(a_cDirection),
-      m_fDamp((dReal)0.0015),
       m_iManualRespawn(-1),
-      m_bHasContact(false),
-      m_iRespawnStart(-1),
-      m_iStunnedStart(-1),
-      m_bRearView(false),
-      m_iLastTrigger(-1),
-      m_iLastContact(0),
-      m_bRespawn(false),
-      m_bActive(false),
-      m_bBrake(false),
-      m_iWithdraw(-1),
-      m_iLastCp(0),
-      m_iLapNo(0),
-      m_iFinishTime(0),
-      m_iCtrlX(0),
-      m_iCtrlY(0)
+      m_iLastTrigger  (-1),
+      m_iLastContact  (0),
+      m_iRespawnStart (-1),
+      m_iStunnedStart (-1),
+      m_iLapNo        (0),
+      m_iFinishTime   (0),
+      m_iWithdraw     (-1),
+      m_bActive       (false),
+      m_vCamera       (irr::core::vector3df()),
+      m_vRearview     (irr::core::vector3df()),
+      m_vUpVector     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),
+      m_vUpOffset     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),
+      m_vContact      (irr::core::vector3df()),
+      m_vSideVector   (irr::core::vector3df(1.0f, 0.0f, 0.0f)),
+      m_vDirection    (irr::core::vector3df()),
+      m_vPosition     (irr::core::vector3df()),
+      m_vVelocity     (irr::core::vector3df()),
+      m_fDamp         ((dReal)0.0015),
+      m_iCtrlX        (0),
+      m_iCtrlY        (0),
+      m_iLastCp       (0),
+      m_bHasContact   (false),
+      m_bBrake        (false),
+      m_bRearView     (false),
+      m_bRespawn      (false),
+      m_vRespawnPos   (irr::core::vector3df(1.0f, 0.0f, 0.0f)),
+      m_vRespawnDir   (a_cDirection),
+      m_eState        (enMarbleState::Countdown)
     {
       m_bStatic = false;
 

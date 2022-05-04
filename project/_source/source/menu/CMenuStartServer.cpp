@@ -33,6 +33,10 @@ namespace dustbin {
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
         void updatePlayerList() {
+          for (std::vector<std::tuple<gui::CMenuBackground*, irr::gui::IGUITab*, irr::gui::IGUIStaticText*>>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+            std::get<1>(*it)->setVisible(false);
+          }
+
           int i = 0;
           for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
             if (i < m_vPlayers.size()) {
@@ -73,6 +77,10 @@ namespace dustbin {
                 l_pTab->setVisible(false);
 
                 gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                if (l_pBtn != nullptr)
+                  l_pBtn->setVisible(false);
+
+                l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 if (l_pBtn != nullptr)
                   l_pBtn->setVisible(false);
               }
@@ -116,14 +124,28 @@ namespace dustbin {
 
                 data::SPlayerData l_cPlayer = data::SPlayerData();
 
-                l_cPlayer.m_sName    = p->getname   ();
-                l_cPlayer.m_sTexture = p->gettexture();
+                l_cPlayer.m_sName     = p->getname   ();
+                l_cPlayer.m_sTexture  = p->gettexture();
+                l_cPlayer.m_iPlayerId = p->getident  ();
+                l_cPlayer.m_sControls = "Network";
+                l_cPlayer.m_eType     = data::enPlayerType::Network;
 
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
-                printf("Player %s added to player list\n", l_cPlayer.m_sName.c_str());
+                printf("Player %s added to player list (id = %i)\n", l_cPlayer.m_sName.c_str(), p->getident());
 
                 updatePlayerList();
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::PlayerRemoved) {
+                messages::CPlayerRemoved *p = reinterpret_cast<messages::CPlayerRemoved *>(l_pMsg);
+
+                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == p->getplayerid()) {
+                    m_cPlayers.m_vPlayers.erase(it);
+                    updatePlayerList();
+                    break;
+                  }
+                }
               }
 
               delete l_pMsg;

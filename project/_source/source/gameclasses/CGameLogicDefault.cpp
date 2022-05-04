@@ -197,14 +197,6 @@ namespace dustbin {
         }
         else {
           m_aPlayers[l_iId].m_iDeficitL = a_iStep - m_vCpTimes[m_aPlayers[l_iId].m_iCpCount];
-
-          if (&m_aPlayers[l_iId] != *m_vPositions.begin() && m_iCpPerLap > 0) {
-            data::SRacePlayer *l_pLeader = *m_vPositions.begin();
-            data::SRacePlayer *l_pThis   = &m_aPlayers[l_iId];
-
-            int l_iCpDiff = l_pLeader->m_iCpCount - l_pThis->m_iCpCount;
-            int l_iLaps   = l_iCpDiff / m_iCpPerLap;
-          }
         }
 
         return updatePositions(l_iId);

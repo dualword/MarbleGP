@@ -48,8 +48,6 @@ namespace dustbin {
 
         irr::core::vector3df l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
 
-        m_pCurrent->m_pThis->m_iIndex;
-
         while (l_cPoint == m_pCurrent->m_cLinkLine.end) {
           if (m_mChoices.find(m_pCurrent->m_pThis->m_iIndex) == m_mChoices.end()) {
             m_mChoices[m_pCurrent->m_pThis->m_iIndex] = std::rand() % m_pCurrent->m_pNext->m_vNext.size();

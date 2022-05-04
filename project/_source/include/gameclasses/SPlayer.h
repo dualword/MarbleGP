@@ -47,10 +47,13 @@ namespace dustbin {
         m_iDiffLeader    (0),
         m_iDiffAhead     (0),
         m_sName          (""),
-        m_pMarble        (nullptr),
-        m_pController    (nullptr),
+        m_sTexture       (""),
+        m_sController    (""),
+        m_bWithdrawn     (false),
         m_eType          (data::enPlayerType::Local),
-        m_bWithdrawn     (false)
+        m_eAiHelp        (data::SPlayerData::enAiHelp::Off),
+        m_pMarble        (nullptr),
+        m_pController    (nullptr)
       {
       }
 

@@ -108,7 +108,7 @@ namespace dustbin {
         */
         virtual void onPlayerwithdraw(irr::s32 a_MarbleId) override;
 
-        virtual void execute();
+        virtual void execute() override;
 
       public:
         CDynamicThread(
@@ -127,34 +127,34 @@ namespace dustbin {
          * @param a_iMarble Id of the marble
          * @param a_vPosition position of the marble that triggered
          */
-        virtual void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition);
+        virtual void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) override;
 
         /**
         * Callback to start respawn of a marble
         * @param a_iMarble Id of the marble to respawn
         */
-        virtual void handleRespawn(int a_iMarble);
+        virtual void handleRespawn(int a_iMarble) override;
 
         /**
         * Callback for sending a "Checkpoint" message
         * @param a_iMarble Id of the marble
         * @param a_iCheckpoint Checkpoint id
         */
-        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) override;
 
         /**
         * Callback for sending a "LapStart" message
         * @param a_iMarbleId Id of the marble
         * @param a_iLapNo Number of the started lap
         */
-        virtual void handleLapStart(int a_iMarbleId, int a_iLapNo);
+        virtual void handleLapStart(int a_iMarbleId, int a_iLapNo) override;
 
         /**
         * Callback for "Marble Touch" Triggers
         * @param a_iMarbleId the ID of the marble
         * @param a_iTouchId the ID of the touched trigger
         */
-        virtual void handleMarbleTouch(int a_iMarbleId, int a_iTouchId);
+        virtual void handleMarbleTouch(int a_iMarbleId, int a_iTouchId) override;
 
         /**
         * LUA callback for finishing a player

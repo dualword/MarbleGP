@@ -143,6 +143,7 @@ namespace dustbin {
 
       ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, ENET_PACKET_FLAG_RELIABLE);
       enet_peer_send(a_pPeer, 0, p);
+      enet_host_flush(m_pHost);
     }
   }
 }

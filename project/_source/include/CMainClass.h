@@ -91,39 +91,39 @@ namespace dustbin {
       */
       std::string getSettings();
 
-      virtual irr::IrrlichtDevice       *getIrrlichtDevice();   /**< Get the Irrlicht device */
-      virtual irr::gui::IGUIEnvironment *getGuiEnvironment();   /**< Get the Irrlicht GUI environment */
-      virtual irr::video::IVideoDriver  *getVideoDriver   ();   /**< Get the used video driver */
-      virtual irr::scene::ISceneManager *getSceneManager  ();   /**< Get the main scene manager */
-      virtual irr::io::IFileSystem      *getFileSystem    ();   /**< Get the Irrlicht file system instance */
+      virtual irr::IrrlichtDevice       *getIrrlichtDevice() override;   /**< Get the Irrlicht device */
+      virtual irr::gui::IGUIEnvironment *getGuiEnvironment() override;   /**< Get the Irrlicht GUI environment */
+      virtual irr::video::IVideoDriver  *getVideoDriver   () override;   /**< Get the used video driver */
+      virtual irr::scene::ISceneManager *getSceneManager  () override;   /**< Get the main scene manager */
+      virtual irr::io::IFileSystem      *getFileSystem    () override;   /**< Get the Irrlicht file system instance */
 
       /**
       * Set a setting (settings are stored when the program quits and restored on startup)
       * @param a_sKey the key of the setting
       * @param a_sValue the value of the setting
       */
-      virtual void setSetting(const std::string &a_sKey, const std::string &a_sValue);
+      virtual void setSetting(const std::string &a_sKey, const std::string &a_sValue) override;
 
       /**
       * Get a setting (settings are stored when the program quits and restored on startup)
       * @param a_sKey the key of the setting
       * @return a_sValue the value of the setting
       */
-      virtual std::string getSetting(const std::string &a_sKey);
+      virtual std::string getSetting(const std::string &a_sKey) override;
 
       /**
       * Set a global (globals are not stored when the program quits and restored on startup)
       * @param a_sKey the key of the global
       * @param a_sValue the value of the global
       */
-      virtual void setGlobal(const std::string &a_sKey, const std::string &a_sValue);
+      virtual void setGlobal(const std::string &a_sKey, const std::string &a_sValue) override;
 
       /**
       * Get a global (globals are not stored when the program quits and restored on startup)
       * @param a_sKey the key of the global
       * @return a_sValue the value of the global
       */
-      virtual std::string getGlobal(const std::string &a_sKey);
+      virtual std::string getGlobal(const std::string &a_sKey) override;
 
       /**
       * Get a font for a specific viewport size
@@ -131,13 +131,13 @@ namespace dustbin {
       * @param a_cViewport the viewport size
       * @see dustbin::enFont
       */
-      virtual irr::gui::IGUIFont* getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport);
+      virtual irr::gui::IGUIFont* getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport) override;
 
       /**
       * Get the raster size for the UI layout
       * @return the raster size
       */
-      virtual int getRasterSize(const irr::core::dimension2du *l_pViewport = 0);
+      virtual int getRasterSize(const irr::core::dimension2du *l_pViewport = 0) override;
 
       /**
       * Get an image from a string. The following prefixes are possible:
@@ -146,7 +146,7 @@ namespace dustbin {
       * @param a_sInput the URI of the file
       * @return an Irrlicht texture object with the requested image or nullptr
       */
-      virtual irr::video::ITexture* createTexture(const std::string& a_sUri);
+      virtual irr::video::ITexture* createTexture(const std::string& a_sUri) override;
 
       /**
       * Get a rectangle on the screen for GUI layout
@@ -157,7 +157,7 @@ namespace dustbin {
       * @param a_ePosition the layout position of the rectangle
       * @param a_pParent an optional parent element
       */
-      virtual irr::core::recti getRect(int a_iLeft, int a_iTop, int a_iRight, int a_iBottom, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr);
+      virtual irr::core::recti getRect(int a_iLeft, int a_iTop, int a_iRight, int a_iBottom, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr) override;
 
       /**
       * Get a rectangle on the screen for GUI layout
@@ -165,26 +165,26 @@ namespace dustbin {
       * @param a_ePosition the layout position of the rectangle
       * @param a_pParent an optional paraent element
       */
-      virtual irr::core::recti getRect(const irr::core::recti& a_cRect, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr);
+      virtual irr::core::recti getRect(const irr::core::recti& a_cRect, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr) override;
 
       /**
       * Get the game settings
       * @return the game settings
       */
-      virtual data::SSettings &getSettingData();
+      virtual data::SSettings &getSettingData() override;
 
       /**
       * Get the sound interface
       * @return the sound interface
       */
-      virtual sound::ISoundInterface *getSoundInterface();
+      virtual sound::ISoundInterface *getSoundInterface() override;
 
       /**
       * Handle an Irrlicht event
       * @param a_cEvent the event to handle
       * @return true if the event was handled
       */
-      virtual bool OnEvent(const irr::SEvent &a_cEvent);
+      virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
       /**
       * Get the running network server instance

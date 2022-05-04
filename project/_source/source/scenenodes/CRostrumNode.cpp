@@ -49,7 +49,7 @@ namespace dustbin {
     }
 
     //*** Virtual method inherited from irr::scene::ISceneNode
-    irr::u32 CRostrumNode::getMaterialCount() {
+    irr::u32 CRostrumNode::getMaterialCount() const {
       return 0;
     }
 

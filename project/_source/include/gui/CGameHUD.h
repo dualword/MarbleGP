@@ -65,7 +65,6 @@ namespace dustbin {
 
         int                        m_iMarble;       /**< The marble ID of the player */
         int                        m_iLapCnt;       /**< The number of laps */
-        int                        m_iPosition;     /**< Position in the race */
         int                        m_iPlayers;      /**< The number of players for the ranking */
         int                        m_iLeader;       /**< ID of the leading marble */
         int                        m_iAhead;        /**< ID of the marble ahead */

@@ -28,12 +28,12 @@ namespace dustbin {
         struct SJoystickState {
           std::string m_sName;  /**< Name of the joystick */
 
-          int m_iIndex,   /**< The index in the "m_aJoysticks" array */
-              m_iAxes,    /**< The number of axes*/
-              m_iButtons; /**< The number of buttons */
+          int m_iIndex;   /**< The index in the "m_aJoysticks" array */
+          int m_iAxes;    /**< The number of axes*/
+          int m_iButtons; /**< The number of buttons */
 
-          bool m_bInitialized,  /**< Set to "true" after the joystick got it's first update */
-               m_bHasPov;       /**< Is a POV present? */
+          bool m_bInitialized;  /**< Set to "true" after the joystick got it's first update */
+          bool m_bHasPov;       /**< Is a POV present? */
 
           std::vector<float> m_vAxes; /**< The values of the axes */
         };
@@ -85,7 +85,7 @@ namespace dustbin {
         */
         void buildUi(irr::gui::IGUIElement *a_pParent);
 
-        virtual bool update(const irr::SEvent& a_cEvent);
+        virtual bool update(const irr::SEvent& a_cEvent) override;
 
         /**
         * Get the configuration of the controller as XML string
@@ -93,13 +93,13 @@ namespace dustbin {
         */
         std::string getControllerString();
 
-        virtual irr::gui::EGUI_ELEMENT_TYPE getType();
+        virtual irr::gui::EGUI_ELEMENT_TYPE getType() override;
 
         /**
         * The "setText" method is abused to pass the configuration XML string to the UI
         * @param a_pText the new XML string
         */
-        virtual void setText(const wchar_t* a_pText);
+        virtual void setText(const wchar_t* a_pText) override;
 
         /**
         * Change the font for the configuration dialog
@@ -115,8 +115,8 @@ namespace dustbin {
 
         virtual bool OnJoystickEvent(const irr::SEvent& a_cEvent) override;
 
-        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const;
-        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions);
+        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
+        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
     };
   } // namespace controller 
 } // namespace dustbin

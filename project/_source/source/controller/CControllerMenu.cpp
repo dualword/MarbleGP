@@ -77,12 +77,12 @@ namespace dustbin {
           case irr::gui::EGUIET_CHECK_BOX:
           case irr::gui::EGUIET_COMBO_BOX:
           case irr::gui::EGUIET_SCROLL_BAR:
-          case dustbin::gui::g_ReactiveLabelId:
-          case dustbin::gui::g_DustbinCheckboxId:
-          case dustbin::gui::g_SelectorId:
-          case dustbin::gui::g_MenuButtonId:
-          case dustbin::gui::g_ClipImageId:
-          case dustbin::gui::g_ImageListId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)dustbin::gui::g_ReactiveLabelId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)dustbin::gui::g_DustbinCheckboxId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)dustbin::gui::g_SelectorId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)dustbin::gui::g_MenuButtonId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)dustbin::gui::g_ClipImageId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)dustbin::gui::g_ImageListId:
             printf("Ui element #%i found on Z-Layer %i: \"%s\" (%i)\n", (int)m_vElements.size(), a_iZLayer, a_pParent->getName(), a_pParent->getID());
             m_vElements.push_back(a_pParent);
             break;
@@ -300,10 +300,10 @@ namespace dustbin {
               bool l_bPost = true;
 
               switch (l_pHovered->getType()) {
-                case gui::g_DustbinCheckboxId:
+                case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId:
                   break;
 
-                case gui::g_SelectorId:
+                case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
                 case irr::gui::EGUIET_SCROLL_BAR:
                 case irr::gui::EGUIET_EDIT_BOX:
                   if (m_pSelected != nullptr) {
@@ -343,6 +343,9 @@ namespace dustbin {
                     if (m_pSelected->getType() == irr::gui::EGUIET_SCROLL_BAR) l_bPost = false;
                   }
 
+                  break;
+
+                default:
                   break;
               }
 

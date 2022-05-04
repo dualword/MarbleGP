@@ -31,9 +31,13 @@
     [ "PlayerWithdrawn" , "20" ],
     [ "RaceData"        , "21" ],
     [ "RegisterPlayer"  , "22" ],
-    [ "ServerIdentifier", "23" ],
-    [ "ClientRequest"   , "24" ],
-    [ "ClientApproval"  , "25" ]
+    [ "UpdatePlayerId"  , "23" ],
+    [ "PlayerListEnd"   , "24" ],
+    [ "ServerIdentifier", "25" ],
+    [ "ClientRequest"   , "26" ],
+    [ "ClientApproval"  , "27" ],
+    [ "RacePlayer"      , "28" ],
+    [ "PlayerRemoved"   , "29" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -203,8 +207,20 @@
       "comment": "Register a player via a network connection",
       "fields": [
         { "name": "name"   , "type": "std::string", "comment": "name of the player" },
-        { "name": "texture", "type": "std::string", "comment": "texture of the player" }
+        { "name": "texture", "type": "std::string", "comment": "texture of the player" },
+        { "name": "ident"  , "type": "irr::s32"   , "comment": "The original player ID on the client" }
       ]
+    },
+    "UpdatePlayerId": {
+      "comment": "This message is used by the server to notify a client about the network player id of a newly registered player",
+      "fields": [
+        { "name": "original_id", "type": "irr::s32", "comment": "The ID the client has sent with a 'RegisterPlayer' message" },
+        { "name": "netgame_id" , "type": "irr::s32", "comment": "The ID assigned by the server to the client's player" }
+      ]
+    },
+    "PlayerListEnd": {
+      "comment": "Sent by the network client once all it's players are registered",
+      "fields": [ ]
     },
     "ServerIdentifier": {
       "comment": "Message sent by the server upon connection to identify that it's a MarbleGP server",
@@ -223,6 +239,20 @@
       "comment": "Response to the client request message used by the server to tell how many players can be added",
       "fields": [
         { "name": "slotsassigned", "type": "irr::s32", "comment": "Number of player slots assigned to the client" }
+      ]
+    },
+    "RacePlayer": {
+      "comment": "Notification sent by the server about a player of the race.",
+      "fields": [
+        { "name": "playerid", "type": "irr::s32"   , "comment": "ID of the player" },
+        { "name": "name"    , "type": "std::string", "comment": "Name of the player" },
+        { "name": "texture" , "type": "std::string", "comment": "Texture of the player" }
+      ]
+    },
+    "PlayerRemoved": {
+      "comment": "Using this message the game server removes players of disconnected peers in the setup network game dialog",
+      "fields": [
+        { "name": "playerid", "type": "irr::s32", "comment": "ID of the removed player" }
       ]
     }
   },

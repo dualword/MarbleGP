@@ -200,10 +200,10 @@ namespace dustbin {
       m_eAiHelp  (enAiHelp::Off),
       m_iPlayerId(-1),
       m_iGridPos (0 ),
+      m_iViewPort(-1),
       m_sName    (""),
       m_sTexture (""),
-      m_sControls(""),
-      m_iViewPort(-1)
+      m_sControls("")
     {
       // Default controls for new player
       m_sControls = "DustbinController;control;Key;Forward;Controller%20%28GAME%20FOR%20WINDOWS%29;M;a;a;a;-0md;b;control;Key;Backward;Controller%20%28GAME%20FOR%20WINDOWS%29;O;a;a;c;-0md;b;control;Key;Left;Controller%20%28GAME%20FOR%20WINDOWS%29;L;a;a;a;-0md;-b;control;Key;Right;Controller%20%28GAME%20FOR%20WINDOWS%29;N;a;a;a;-0md;b;control;Key;Brake;Controller%20%28GAME%20FOR%20WINDOWS%29;G;a;a;a;-0md;b;control;Key;Rearview;Controller%20%28GAME%20FOR%20WINDOWS%29;j;a;e;a;-0md;b;control;Key;Respawn;Controller%20%28GAME%20FOR%20WINDOWS%29;n;a;f;a;-0md;b";
@@ -304,11 +304,13 @@ namespace dustbin {
     std::string SPlayerData::toString() {
       std::string s = "Player Data\n  \"" + m_sName + "\"\n";
 
+      s += "  PlayerId: " + std::to_string(m_iPlayerId) + "\n";
       s += "  Type: ";
 
       switch (m_eType) {
-        case enPlayerType::Local: s += "\"Local\"\n"; break;
-        case enPlayerType::Ai   : s += "\"Ai\"\n"   ; break;
+        case enPlayerType::Local  : s += "\"Local\"\n"  ; break;
+        case enPlayerType::Ai     : s += "\"Ai\"\n"     ; break;
+        case enPlayerType::Network: s += "\"Network\"\n"; break;
       }
 
       s += "  Texture: \"" + m_sTexture + "\"\n";
