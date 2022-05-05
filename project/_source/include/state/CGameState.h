@@ -278,6 +278,11 @@ namespace dustbin {
          */
         virtual void onPausechanged(bool a_Paused) override;
 
+        /**
+        * This function receives messages of type "ServerDisconnect"
+        */
+        virtual void onServerdisconnect();
+
         void addStaticCameras(irr::scene::ISceneNode *a_pNode);
 
       public:

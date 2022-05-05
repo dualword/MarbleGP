@@ -107,6 +107,19 @@ namespace dustbin {
           bool l_bRet = false;
 
 
+          if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+            std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();
+
+            if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+              if (l_sSender == "cancel") {
+                m_pServer = nullptr;
+                m_pState->getGlobal()->stopGameServer();
+                l_bRet = true;
+                createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+              }
+            }
+          }
+
 
           return l_bRet;
         }

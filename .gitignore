@@ -1068,3 +1068,6 @@
 /project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/c68189ca944aa70d/*.ipch
 /project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/ea323340e16d7d86/*.ipch
 /project/MarbleGP_Android/.vs/MarbleGP_Android/v17/ipch/AutoPCH/ece4bd2cdbb9bac4/*.ipch
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.sarif
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.xml
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.txt

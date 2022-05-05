@@ -583,6 +583,18 @@ namespace dustbin {
   }
 
   /**
+  * Stop a game server. Nothing happens if no server is running
+  */
+  void CMainClass::stopGameServer() {
+    if (m_pServer != nullptr) {
+      m_pServer->stopThread();
+      m_pServer->join();
+      delete m_pServer;
+      m_pServer = nullptr;
+    }
+  }
+
+  /**
   * Get the running network client
   * @return the running network client, nullptr if no client is running
   */
@@ -595,7 +607,7 @@ namespace dustbin {
   * @param a_sHost the server to connect to
   * @param a_iPort the port the server is running
   */
-  void CMainClass::startGameClient(const std::string& a_sHost, int a_iPort) {
+  void CMainClass::startGameClient(const std::string& a_sHost, int a_iPort, threads::CInputQueue *a_pQueue) {
     if (m_pClient != nullptr) {
       m_pClient->stopThread();
       m_pClient->join();
@@ -603,7 +615,20 @@ namespace dustbin {
     }
 
     m_pClient = new network::CGameClient(a_sHost, a_iPort, this);
+    m_pClient->getOutputQueue()->addListener(a_pQueue);
     m_pClient->startThread();
+  }
+
+  /**
+  * Stop a game client. Nothing happens if no client is running
+  */
+  void CMainClass::stopGameClient() {
+    if (m_pClient != nullptr) {
+      m_pClient->stopThread();
+      m_pClient->join();
+      delete m_pClient;
+      m_pClient = nullptr;
+    }
   }
 
   /**

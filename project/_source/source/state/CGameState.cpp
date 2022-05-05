@@ -1487,6 +1487,13 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "ServerDisconnect"
+    */
+    void CGameState::onServerdisconnect() {
+      m_iFinished = m_iStep;
+    }
+
+    /**
     * This function receives messages of type "RacePosition"
     * @param a_MarbleId ID of the marble
     * @param a_Position Position of the marble

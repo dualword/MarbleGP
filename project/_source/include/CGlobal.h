@@ -23,6 +23,10 @@ namespace dustbin {
     class CGameClient;  /**< Forward declaration of the network game client */
   }
 
+  namespace threads {
+    class CInputQueue;  /**< Forward declaration of the thread input queue */
+  }
+
   // Enum for the font size. The actual size
   // depends on the screen resolution
   enum class enFont {
@@ -169,6 +173,11 @@ namespace dustbin {
       virtual void startGameServer(const std::vector<int> &a_vAvailableSlots) = 0;
 
       /**
+      * Stop a game server. Nothing happens if no server is running
+      */
+      virtual void stopGameServer() = 0;
+
+      /**
       * Get the running network client
       * @return the running network client, nullptr if no client is running
       */
@@ -178,8 +187,14 @@ namespace dustbin {
       * Start and connect a net client
       * @param a_sHost the server to connect to
       * @param a_iPort the port the server is running
+      * @param a_pQueue the queue that will receive the output from this client
       */
-      virtual void startGameClient(const std::string &a_sHost, int a_iPort) = 0;
+      virtual void startGameClient(const std::string &a_sHost, int a_iPort, threads::CInputQueue *a_pQueue) = 0;
+
+      /**
+      * Stop a game client. Nothing happens if no client is running
+      */
+      virtual void stopGameClient() = 0;
 
 #ifdef _ANDROID
       /**

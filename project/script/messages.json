@@ -8,36 +8,40 @@
     "std::string", "irr::core::vector3df"
   ],
   "messageids": [
-    [ "ObjectMoved"     ,  "0" ],
-    [ "MarbleMoved"     ,  "1" ],
-    [ "StepMsg"         ,  "2" ],
-    [ "Trigger"         ,  "3" ],
-    [ "PlayerRespawn"   ,  "4" ],
-    [ "CameraRespawn"   ,  "5" ],
-    [ "PlayerStunned"   ,  "6" ],
-    [ "Checkpoint"      ,  "7" ],
-    [ "LapStart"        ,  "8" ],
-    [ "PlayerFinished"  ,  "9" ],
-    [ "RaceFinished"    , "10" ],
-    [ "Countdown"       , "11" ],
-    [ "MarbleControl"   , "12" ],
-    [ "CancelRace"      , "13" ],
-    [ "TogglePause"     , "14" ],
-    [ "PauseChanged"    , "15" ],
-    [ "RacePosition"    , "16" ],
-    [ "PlayerRostrum"   , "17" ],
-    [ "PlayerWithdraw"  , "18" ],
-    [ "ConfirmWithdraw" , "19" ],
-    [ "PlayerWithdrawn" , "20" ],
-    [ "RaceData"        , "21" ],
-    [ "RegisterPlayer"  , "22" ],
-    [ "UpdatePlayerId"  , "23" ],
-    [ "PlayerListEnd"   , "24" ],
-    [ "ServerIdentifier", "25" ],
-    [ "ClientRequest"   , "26" ],
-    [ "ClientApproval"  , "27" ],
-    [ "RacePlayer"      , "28" ],
-    [ "PlayerRemoved"   , "29" ]
+    [ "ObjectMoved"      ,  "0" ],
+    [ "MarbleMoved"      ,  "1" ],
+    [ "StepMsg"          ,  "2" ],
+    [ "Trigger"          ,  "3" ],
+    [ "PlayerRespawn"    ,  "4" ],
+    [ "CameraRespawn"    ,  "5" ],
+    [ "PlayerStunned"    ,  "6" ],
+    [ "Checkpoint"       ,  "7" ],
+    [ "LapStart"         ,  "8" ],
+    [ "PlayerFinished"   ,  "9" ],
+    [ "RaceFinished"     , "10" ],
+    [ "Countdown"        , "11" ],
+    [ "MarbleControl"    , "12" ],
+    [ "CancelRace"       , "13" ],
+    [ "TogglePause"      , "14" ],
+    [ "PauseChanged"     , "15" ],
+    [ "RacePosition"     , "16" ],
+    [ "PlayerRostrum"    , "17" ],
+    [ "PlayerWithdraw"   , "18" ],
+    [ "ConfirmWithdraw"  , "19" ],
+    [ "PlayerWithdrawn"  , "20" ],
+    [ "RaceData"         , "21" ],
+    [ "RegisterPlayer"   , "22" ],
+    [ "UpdatePlayerId"   , "23" ],
+    [ "PlayerListEnd"    , "24" ],
+    [ "ServerIdentifier" , "25" ],
+    [ "ClientRequest"    , "26" ],
+    [ "ClientApproval"   , "27" ],
+    [ "RacePlayer"       , "28" ],
+    [ "PlayerRemoved"    , "29" ],
+    [ "ClientDisconnect" , "30" ],
+    [ "ServerDisconnect" , "31" ],
+    [ "LogMessage"       , "32" ],
+    [ "ConnectedToServer", "33" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -254,6 +258,24 @@
       "fields": [
         { "name": "playerid", "type": "irr::s32", "comment": "ID of the removed player" }
       ]
+    },
+    "ClientDisconnect": {
+      "comment": "A message sent by the network server if a client has disconnected",
+      "fields": [ ]
+    },
+    "ServerDisconnect": {
+      "comment": "This message is created by the network client class if the connection to the server is lost",
+      "fields": [ ]
+    },
+    "LogMessage": {
+      "comment": "Logging message used in the net game lobby to notify about what the server does",
+      "fields": [
+        { "name": "message", "type": "std::string", "comment": "A message from the server" }
+      ]
+    },
+    "ConnectedToServer": {
+      "comment": "A notification from the game client thread to the rest to confirm that the connection was established",
+      "fields": [ ]
     }
   },
   "interfaces": [
@@ -308,7 +330,8 @@
         "LapStart",
         "PauseChanged",
         "RacePosition",
-        "PlayerWithdrawn"
+        "PlayerWithdrawn",
+        "ServerDisconnect"
       ]
     },
     {

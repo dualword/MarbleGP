@@ -53,6 +53,7 @@
     <ClCompile Include="..\..\_source\source\main_windows.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuMessage.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp" />

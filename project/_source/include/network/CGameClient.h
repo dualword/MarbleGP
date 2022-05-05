@@ -21,7 +21,7 @@ namespace dustbin {
     */
     class CGameClient : public CNetBase {
       protected:
-        bool m_bConnectionAllowed;
+        bool m_bConnected;
 
         std::vector<ENetPeer *> m_vPeers;
 
@@ -44,8 +44,6 @@ namespace dustbin {
       public:
         CGameClient(const std::string &a_sAddress, int a_iPort, CGlobal *a_pGlobal);
         ~CGameClient();
-
-        void setConnectionAllowed(bool a_bAllowed);
     };
   }
 }

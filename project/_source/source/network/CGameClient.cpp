@@ -11,8 +11,8 @@
 namespace dustbin {
   namespace network {
     CGameClient::CGameClient(const std::string &a_sAddress, int a_iPort, CGlobal* a_pGlobal) :
-      CNetBase            (a_pGlobal),
-      m_bConnectionAllowed(true)
+      CNetBase    (a_pGlobal),
+      m_bConnected(true)
     {
       if (m_pGlobal->getGlobal("enet_initialized") == "true") {
         m_pHost = enet_host_create(nullptr, 1, 2, 0, 0);
@@ -46,44 +46,41 @@ namespace dustbin {
       }
     }
 
-    void CGameClient::setConnectionAllowed(bool a_bAllowed) {
-      m_bConnectionAllowed = a_bAllowed;
-    }
-
-
     /**
     * Handle an event in a subclass
     * @return "true" if the event was handled
     */
     bool CGameClient::OnEnetEvent(ENetEvent* a_cEvent) {
       switch (a_cEvent->type) {
-      case ENET_EVENT_TYPE_CONNECT:
-        if (m_bConnectionAllowed && m_vPeers.size() < 16) {
-          printf("Client Connected.\n");
+        case ENET_EVENT_TYPE_CONNECT: {
           m_vPeers.push_back(a_cEvent->peer);
+          messages::CConnectedToServer l_cMsg;
+          m_pOutputQueue->postMessage(&l_cMsg);
+          printf("Game Client: Connected to server.\n");
+          return true;
         }
-        else {
-          printf("Sorry, we are full.\n");
-          enet_peer_disconnect_now(a_cEvent->peer, 0);
+
+        case ENET_EVENT_TYPE_DISCONNECT:
+        case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT: {
+          messages::CServerDisconnect l_cMsg;
+          m_pOutputQueue->postMessage(&l_cMsg);
+
+          for (std::vector<ENetPeer *>::iterator it = m_vPeers.begin(); it != m_vPeers.end(); it++)
+            if ((*it) == a_cEvent->peer) {
+              m_vPeers.erase(it);
+              break;
+            }
+
+          return true;
+          break;
         }
-        return true;
 
-      case ENET_EVENT_TYPE_DISCONNECT:
-      case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
-        for (std::vector<ENetPeer*>::iterator it = m_vPeers.begin(); it != m_vPeers.end(); it++) {
-          if ((*it) == a_cEvent->peer) {
-            m_vPeers.erase(it);
-            return true;
-          }
+        case ENET_EVENT_TYPE_RECEIVE: {
+          break;
         }
-        break;
 
-      case ENET_EVENT_TYPE_RECEIVE: {
-        break;
-      }
-
-      case ENET_EVENT_TYPE_NONE:
-        break;
+        case ENET_EVENT_TYPE_NONE:
+          break;
       }
 
       return false;

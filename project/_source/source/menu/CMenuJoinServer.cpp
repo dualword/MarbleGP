@@ -3,6 +3,7 @@
 #include <_generated/messages/CMessages.h>
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
+#include <gui/CMenuBackground.h>
 #include <network/CGameClient.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CMenuBackground.h>
@@ -29,6 +30,9 @@ namespace dustbin {
 
         data::SRacePlayers m_cPlayers;    /**< The players */
 
+        irr::gui::IGUIStaticText *m_pConnecting;    /**< The "connecting" label */
+        gui::CMenuBackground     *m_pMainFrame;     /**< The main frame */
+
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
         void updatePlayerList() {
@@ -48,7 +52,7 @@ namespace dustbin {
         }
 
       public:
-        CMenuJoinServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState) {
+        CMenuJoinServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_pConnecting(nullptr), m_pMainFrame(nullptr) {
           m_pGui->clear();
 
           helpers::loadMenuFromXML("data/menu/menu_joinserver.xml", m_pGui->getRootGUIElement(), m_pGui);
@@ -56,9 +60,20 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
+          m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+          if (m_pConnecting)
+            m_pConnecting->setVisible(true);
+
+          m_pMainFrame = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType("main_frame", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+
+          if (m_pMainFrame != nullptr)
+            m_pMainFrame->setVisible(false);
+
           m_pState->setZLayer(0);
 
-          a_pState->getGlobal()->startGameClient("Saratoga", 4693);
+          m_pInputQueue = new threads::CInputQueue();
+          a_pState->getGlobal()->startGameClient("Saratoga", 4693, m_pInputQueue);
           
           m_pClient = a_pState->getGlobal()->getGameClient();
 
@@ -85,10 +100,6 @@ namespace dustbin {
             }
           }
 
-          m_pInputQueue = new threads::CInputQueue();
-          if (m_pClient != nullptr)
-            m_pClient->getOutputQueue()->addListener(m_pInputQueue);
-
           updatePlayerList();
         }
 
@@ -102,7 +113,18 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
           bool l_bRet = false;
 
+          if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+            std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();
 
+            if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+              if (l_sSender == "cancel") {
+                m_pClient = nullptr;
+                m_pState->getGlobal()->stopGameClient();
+                l_bRet = true;
+                createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+              }
+            }
+          }
 
           return l_bRet;
         }
@@ -177,6 +199,14 @@ namespace dustbin {
                     break;
                   }
                 }
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::ServerDisconnect) {
+                m_pState->getGlobal()->setGlobal("message_text", m_pConnecting->isVisible() ? "Could not establish a connection to the server" : "The server has closed the connection.");
+                createMenu("menu_message", m_pDevice, m_pManager, m_pState);
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::ConnectedToServer) {
+                if (m_pConnecting != nullptr) m_pConnecting->setVisible(false);
+                if (m_pMainFrame  != nullptr) m_pMainFrame ->setVisible(true );
               }
 
               delete l_pMsg;
