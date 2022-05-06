@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 3" font="big">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Netgame Lobby" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+       
+      <element type="staticText" rect="relative: 1, 5, 49, 22" font="big">
+        <attributes>
+          <attribute key="Name" value="label_message" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_cancel.xml" />
+</dialog>

@@ -378,6 +378,12 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuMessage.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiLogDisplay.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuNetworkLobby.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -670,6 +676,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\network\CGameServer.h">
       <Filter>Headerdateien\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiLogDisplay.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

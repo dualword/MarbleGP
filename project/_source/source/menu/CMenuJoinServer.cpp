@@ -208,6 +208,12 @@ namespace dustbin {
                 if (m_pConnecting != nullptr) m_pConnecting->setVisible(false);
                 if (m_pMainFrame  != nullptr) m_pMainFrame ->setVisible(true );
               }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::ChangeState) {
+                messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
+                std::string l_sNewState = p->getnewstate();
+                printf("Change state to \"%s\"\n", l_sNewState.c_str());
+                createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
+              }
 
               delete l_pMsg;
             }

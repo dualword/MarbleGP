@@ -39,6 +39,15 @@ namespace dustbin {
         */
         virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
 
+      public:
+        CNetBase(CGlobal *a_pGlobal);
+        ~CNetBase();
+
+        /**
+        * The implementing object must implement this method. It is called when the thread start working
+        */
+        virtual void execute();
+
         /**
         * Broadcast a message
         * @param a_pMessage the message to broadcast
@@ -52,15 +61,6 @@ namespace dustbin {
         * @param a_pMessage the message to send
         */
         void sendMessage(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
-
-      public:
-        CNetBase(CGlobal *a_pGlobal);
-        ~CNetBase();
-
-        /**
-        * The implementing object must implement this method. It is called when the thread start working
-        */
-        virtual void execute();
     };
   }
 }

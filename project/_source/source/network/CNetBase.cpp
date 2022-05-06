@@ -47,16 +47,16 @@ namespace dustbin {
         if (l_pMsg != nullptr) {
           messages::enMessageIDs l_eMsg = l_pMsg->getMessageId();
 
-          if (l_eMsg == messages::enMessageIDs::StepMsg) {
+          /*if (l_eMsg == messages::enMessageIDs::StepMsg) {
             messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(l_pMsg);
             l_bSendStep = p->getStepNo() % 2 == 0;
-          }
+          }*/
 
           // The most frequent messages are sent using a non-reliable packet
           if (l_eMsg == messages::enMessageIDs::StepMsg || l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved || l_eMsg == messages::enMessageIDs::MarbleControl) {
-            if (l_bSendStep) {
+            // if (l_bSendStep) {
               broadcastMessage(l_pMsg, false);
-            }
+            // }
           }
           else {
             broadcastMessage(l_pMsg, true);

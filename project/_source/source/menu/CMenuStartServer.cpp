@@ -28,6 +28,8 @@ namespace dustbin {
         threads::CInputQueue *m_pInputQueue;  /**< The input queue to receive messages from the server */
         network::CGameServer *m_pServer;      /**< The game server */
 
+        irr::gui::IGUIStaticText *m_pWaiting;   /**< The "waiting for clients" overlay label */
+
         data::SRacePlayers m_cPlayers;    /**< The players */
 
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
@@ -85,6 +87,11 @@ namespace dustbin {
                   l_pBtn->setVisible(false);
               }
             }
+
+            m_pWaiting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_waiting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+            if (m_pWaiting != nullptr)
+              m_pWaiting->setVisible(false);
           }
 
           m_pInputQueue = new threads::CInputQueue();
@@ -116,6 +123,23 @@ namespace dustbin {
                 m_pState->getGlobal()->stopGameServer();
                 l_bRet = true;
                 createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+              }
+              else if (l_sSender == "ok") {
+                std::string l_sPlayers = m_cPlayers.serialize();
+                m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
+
+                messages::CChangeState l_cMsg = messages::CChangeState("menu_netlobby");
+                m_pServer->broadcastMessage(&l_cMsg, true);
+                if (m_pWaiting != nullptr)
+                  m_pWaiting->setVisible(true);
+
+                gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                if (p != nullptr)
+                  p->setVisible(false);
+
+                p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                if (p != nullptr)
+                  p->setVisible(false);
               }
             }
           }
@@ -162,6 +186,12 @@ namespace dustbin {
               }
 
               delete l_pMsg;
+            }
+          }
+
+          if (m_pWaiting != nullptr && m_pWaiting->isVisible() && m_pServer != nullptr) {
+            if (m_pServer->allClientsAreInState("menu_netlobby")) {
+              createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
             }
           }
         }

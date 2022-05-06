@@ -30,6 +30,8 @@ namespace dustbin {
             irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
             if (p != nullptr)
               p->setText(helpers::s2ws(l_sHeadline).c_str());
+
+            m_pState->getGlobal()->setGlobal("message_headline", "");
           }
 
           std::string l_sText = m_pState->getGlobal()->getGlobal("message_text");
@@ -37,6 +39,8 @@ namespace dustbin {
             irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_message", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
             if (p != nullptr)
               p->setText(helpers::s2ws(l_sText).c_str());
+
+            m_pState->getGlobal()->setGlobal("message_text", "");
           }
         }
 

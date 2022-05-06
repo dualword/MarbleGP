@@ -26,6 +26,7 @@ namespace dustbin {
     IMenuHandler *createMenuStartServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuJoinServer (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuMessage    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
+    IMenuHandler *createMenuNetLobby   (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
   }
 }
 

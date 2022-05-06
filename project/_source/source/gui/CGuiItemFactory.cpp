@@ -2,6 +2,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
+#include <gui/CGuiLogDisplay.h>
 #include <gui/CReactiveLabel.h>
 #include <gui/CGuiImageList.h>
 #include <gui/CControllerUi.h>
@@ -77,6 +78,11 @@ namespace dustbin {
         p->drop();
         return p;
       }
+      else if (l_sTypeName == g_GuiLogDisplayName) {
+        irr::gui::IGUIElement *p = new gui::CGuiLogDisplay(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+        p->drop();
+        return p;
+      }
 #ifdef _TOUCH_CONTROL
       else if (l_sTypeName == g_TouchControlName) {
         irr::gui::IGUIElement *p = new gui::CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
@@ -91,9 +97,9 @@ namespace dustbin {
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
 #ifdef _TOUCH_CONTROL
-      return 9;
+      return 10;
 #else
-			return 8;
+			return 9;
 #endif
 		}
 
@@ -133,8 +139,13 @@ namespace dustbin {
         case 7:
           return (irr::gui::EGUI_ELEMENT_TYPE)g_ImageListId;
           break;
-#ifdef _TOUCH_CONTROL
+
         case 8:
+          return (irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId;
+          break;
+
+#ifdef _TOUCH_CONTROL
+        case 9:
           return (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId;
           break;
 #endif
@@ -181,8 +192,13 @@ namespace dustbin {
         case 7:
           return g_ImageListName;
           break;
-#ifdef _TOUCH_CONTROL
+
         case 8:
+          return g_GuiLogDisplayName;
+          break;
+
+#ifdef _TOUCH_CONTROL
+        case 9:
           return g_TouchControlName;
           break;
 #endif
@@ -228,6 +244,10 @@ namespace dustbin {
 
         case (irr::gui::EGUI_ELEMENT_TYPE)g_ImageListId:
           return g_ImageListName;
+          break;
+
+        case (irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId:
+          return g_GuiLogDisplayName;
           break;
 
 #ifdef _TOUCH_CONTROL

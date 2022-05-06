@@ -2,6 +2,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CReactiveLabel.h>
+#include <gui/CGuiLogDisplay.h>
 #include <gui/CGuiImageList.h>
 #include <gui/CControllerUi.h>
 #include <gui/CMenuButton.h>
@@ -314,6 +315,9 @@ namespace dustbin {
               }
               else if (l_pRet->getType() == irr::gui::EGUIET_TABLE) {
                 reinterpret_cast<irr::gui::IGUITable *>(l_pRet)->setOverrideFont(l_pFont);
+              }
+              else if (l_pRet->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId) {
+                reinterpret_cast<gui::CGuiLogDisplay *>(l_pRet)->setFont(l_pFont);
               }
             }
             break;

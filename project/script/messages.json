@@ -41,7 +41,10 @@
     [ "ClientDisconnect" , "30" ],
     [ "ServerDisconnect" , "31" ],
     [ "LogMessage"       , "32" ],
-    [ "ConnectedToServer", "33" ]
+    [ "ConnectedToServer", "33" ],
+    [ "ChangeState"      , "34" ],
+    [ "StateChanged"     , "35" ],
+    [ "SetGlobalData"    , "36" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -276,6 +279,25 @@
     "ConnectedToServer": {
       "comment": "A notification from the game client thread to the rest to confirm that the connection was established",
       "fields": [ ]
+    },
+    "ChangeState": {
+      "comment": "The server uses this message to inform the clients that they need to change their current state",
+      "fields": [
+        { "name": "newstate", "type": "std::string", "comment": "ID of the state to change to" }
+      ]
+    },
+    "StateChanged": {
+      "comment": "This is the reply that the client sends to the server when the state change triggered by ChangeState is done",
+      "fields": [
+        { "name": "newstate", "type": "std::string", "comment": "ID of the state to change to" }
+      ]
+    },
+    "SetGlobalData": {
+      "comment": "The server uses this message to set some global data on the client, e.g. race definition",
+      "fields": [
+        { "name": "key"  , "type": "std::string", "comment": "The global data key to be set" },
+        { "name": "value", "type": "std::string", "comment": "The global value to be stored with the key" }
+      ]
     }
   },
   "interfaces": [

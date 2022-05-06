@@ -1,5 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
+#include <threads/CMessageQueue.h>
+#include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
@@ -37,6 +39,10 @@ namespace dustbin {
         gui::CGuiImageList *m_pTrackList; /**< The track list for selection */
 
         irr::gui::IGUIStaticText *m_pTrackName; /**< The label showing the name of the selected track */
+
+        int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" responsw? */
+
+        network::CGameServer *m_pServer;  /**< The game server (if running) */
         
         /**
         * Fill the vector of track names
@@ -164,13 +170,15 @@ namespace dustbin {
 
       public:
         CMenuSelectTrack(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler(a_pDevice, a_pManager, a_pState), 
+          IMenuHandler  (a_pDevice, a_pManager, a_pState), 
           m_pLeft       (nullptr), 
           m_pRight      (nullptr),
           m_pOk         (nullptr),
           m_sTrackFilter(""),
           m_pTrackList  (nullptr),
-          m_pTrackName  (nullptr)
+          m_pTrackName  (nullptr),
+          m_iClientState(0),
+          m_pServer     (a_pState->getGlobal()->getGameServer())
         {
           m_pGui->clear();
 
@@ -293,7 +301,11 @@ namespace dustbin {
                   data::SGameData l_cData(data::SGameData::enType::Local, m_pTrackList->getSelectedData(), l_iLaps, l_cChampionship.m_iClass);
                   m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
 
-                  m_pState->setState(state::enState::Game);
+                  if (m_pServer != nullptr) {
+                    m_pServer->sendGlobalData("gamedata");
+                    m_iClientState = 1;
+                  }
+                  else m_pState->setState(state::enState::Game);
                 }
               }
               else printf("Button clicked: \"%s\"\n", l_sCaller.c_str());
@@ -329,6 +341,35 @@ namespace dustbin {
           }
 
           return l_bRet;
+        }
+
+        /**
+        * This method is called every frame after "scenemanager::drawall" is called
+        */
+        virtual void run() { 
+          if (m_pServer != nullptr) {
+            if (m_iClientState == 1) {
+              if (m_pServer->allClientsAreInState("gamedata")) {
+                m_iClientState = 2;
+                m_pServer->sendGlobalData("raceplayers");
+                printf("Game data transmitted, sending playerlist.\n");
+              }
+            }
+            else if (m_iClientState == 2) {
+              if (m_pServer->allClientsAreInState("raceplayers")) {
+                m_iClientState = 3;
+
+                messages::CChangeState l_cMsg = messages::CChangeState("state_game");
+                m_pServer->broadcastMessage(&l_cMsg, true);
+                printf("Ready to go, start game.\n");
+              }
+            }
+            else if (m_iClientState == 3) {
+              if (m_pServer->allClientsAreInState("state_game")) {
+                m_pState->setState(state::enState::Game);
+              }
+            }
+          }
         }
     };
 

@@ -114,6 +114,9 @@ namespace dustbin {
       else if (a_sName == "menu_message") {
         return a_pManager->changeMenu(createMenuMessage(a_pDevice, a_pManager, a_pState));
       }
+      else if (a_sName == "menu_netlobby") {
+        return a_pManager->changeMenu(createMenuNetLobby(a_pDevice, a_pManager, a_pState));
+      }
 
       printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());
 

@@ -49,6 +49,28 @@ namespace dustbin {
     void CGameServer::setConnectionAllowed(bool a_bAllowed) {
       m_bConnectionAllowed = a_bAllowed;
     }
+    /**
+    * Check whether or not all of the clients are in a specific state
+    * @param a_sState the state to check for
+    * @return true if all clients have reached the requested state, false otherwise
+    */
+    bool CGameServer::allClientsAreInState(const std::string& a_sState) {
+      for (std::map<ENetPeer*, std::string>::iterator it = m_mCurrentStates.begin(); it != m_mCurrentStates.end(); it++) {
+        if (it->second != a_sState)
+          return false;
+      }
+
+      return true;
+    }
+
+    /**
+    * Transfer a global entry to all clients
+    * @param a_sKey the key to transfer
+    */
+    void CGameServer::sendGlobalData(const std::string& a_sKey) {
+      messages::CSetGlobalData l_cMsg = messages::CSetGlobalData(a_sKey, m_pGlobal->getGlobal(a_sKey));
+      broadcastMessage(&l_cMsg, true);
+    }
 
 
     /**
@@ -61,6 +83,8 @@ namespace dustbin {
           if (m_bConnectionAllowed && m_vPeers.size() < 16) {
             printf("Client Connected.\n");
             m_vPeers.push_back(a_cEvent->peer);
+
+            m_mCurrentStates[a_cEvent->peer] = "connecting";
 
             messages::CServerIdentifier l_cMsg = messages::CServerIdentifier("MarbleGP Server", (irr::s32)m_vAvailableSlots.size());
             sendMessage(a_cEvent->peer, &l_cMsg);
@@ -87,6 +111,17 @@ namespace dustbin {
           for (std::vector<ENetPeer*>::iterator it = m_vPeers.begin(); it != m_vPeers.end(); it++) {
             if ((*it) == a_cEvent->peer) {
               printf("Remove peer from list.\n");
+              if (m_mCurrentStates.find(*it) != m_mCurrentStates.end())
+                m_mCurrentStates.erase(*it);
+
+              if (m_mAssignedSlots.find(*it) != m_mAssignedSlots.end()) {
+                for (std::vector<std::tuple<int, bool>>::iterator it2 = m_mAssignedSlots[*it].begin(); it2 != m_mAssignedSlots[*it].end(); it2++) {
+                  m_vAvailableSlots.push_back(std::get<0>(*it2));
+                }
+
+                m_mAssignedSlots.erase(*it);
+              }
+
               m_vPeers.erase(it);
               return true;
             }
@@ -185,6 +220,16 @@ namespace dustbin {
             for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
               messages::CRacePlayer l_cPlayer = messages::CRacePlayer((*it).m_iPlayerId, (*it).m_sName, (*it).m_sTexture);
               broadcastMessage(&l_cPlayer, true);
+            }
+
+            return true;
+          }
+
+          case messages::enMessageIDs::StateChanged: {
+            if (m_mCurrentStates.find(a_pPeer) != m_mCurrentStates.end()) {
+              messages::CStateChanged *p = reinterpret_cast<messages::CStateChanged *>(a_pMessage);
+              printf("Peer has changed state to \"%s\"\n", p->getnewstate().c_str());
+              m_mCurrentStates[a_pPeer] = p->getnewstate();
             }
 
             return true;

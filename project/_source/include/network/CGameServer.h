@@ -34,6 +34,8 @@ namespace dustbin {
         std::map<ENetPeer *, std::vector<int>> m_mMarbleMap;      /**< The marble IDs that were assigned to a specific peer */
         std::map<ENetPeer *, std::vector<int>> m_mPlayerMap;      /**< The player IDs that were assigned to a specific peer */
 
+        std::map<ENetPeer *, std::string> m_mCurrentStates;    /**< The current states the clients are in */
+
         data::SRacePlayers m_cPlayers;    /**< The players */
 
         /**
@@ -55,6 +57,19 @@ namespace dustbin {
         ~CGameServer();
 
         void setConnectionAllowed(bool a_bAllowed);
+
+        /**
+        * Check whether or not all of the clients are in a specific state
+        * @param a_sState the state to check for
+        * @return true if all clients have reached the requested state, false otherwise
+        */
+        bool allClientsAreInState(const std::string &a_sState);
+
+        /**
+        * Transfer a global entry to all clients
+        * @param a_sKey the key to transfer
+        */
+        void sendGlobalData(const std::string &a_sKey);
     };
   }
 }

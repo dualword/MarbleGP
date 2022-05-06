@@ -42,6 +42,7 @@
     <ClCompile Include="..\..\_source\source\gui\CGameHUD.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CGuiLogDisplay.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CMenuButton.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CRankingElement.cpp" />
@@ -54,6 +55,7 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMessage.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuNetworkLobby.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp" />
@@ -138,6 +140,7 @@
     <ClInclude Include="..\..\_source\include\gui\CGameHUD.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h" />
+    <ClInclude Include="..\..\_source\include\gui\CGuiLogDisplay.h" />
     <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h" />
     <ClInclude Include="..\..\_source\include\gui\CMenuButton.h" />
     <ClInclude Include="..\..\_source\include\gui\CRankingElement.h" />

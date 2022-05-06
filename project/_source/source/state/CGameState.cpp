@@ -21,6 +21,8 @@
 #include <scenenodes/CWorldNode.h>
 #include <sound/ISoundInterface.h>
 #include <shader/CMyShaderNone.h>
+#include <network/CGameClient.h>
+#include <network/CGameServer.h>
 #include <scenenodes/CAiNode.h>
 #include <sound/CSoundEnums.h>
 #include <data/CDataStructs.h>
@@ -120,7 +122,9 @@ namespace dustbin {
       m_pCamAnimator (nullptr),
       m_pCamera      (nullptr),
       m_pAiThread    (nullptr),
-      m_pRace        (nullptr)
+      m_pRace        (nullptr),
+      m_pClient      (nullptr),
+      m_pServer      (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -180,6 +184,9 @@ namespace dustbin {
       m_fSfxVolume = m_pGlobal->getSettingData().m_fSfxGame;
 
       m_pGui->clear();
+
+      m_pClient = m_pGlobal->getGameClient();
+      m_pServer = m_pGlobal->getGameServer();
 
       data::SGameData l_cGame = data::SGameData(m_pGlobal->getGlobal("gamedata"));
       data::SSettings l_cSettings = m_pGlobal->getSettingData();
@@ -582,51 +589,63 @@ namespace dustbin {
         m_pShader->initialize();
       }
       
-      l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
+      if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
+      if (m_pOutputQueue == nullptr) m_pOutputQueue = new threads::COutputQueue();
+
+      if (m_pClient == nullptr) {
+        l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
       
-      if (l_pNode != nullptr) {
-        gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
+        if (l_pNode != nullptr) {
+          gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
 
-        switch (l_iAutoFinish) {
-          case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
-          case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
-          case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
-          case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
-        }
-
-        m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, l_cGame.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
-
-        if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
-        if (m_pOutputQueue == nullptr) m_pOutputQueue = new threads::COutputQueue();
-
-        m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
-        m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
-
-        controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
-
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-          if ((*it)->m_eType == data::enPlayerType::Local)
-            (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, (*it)->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
-          else if ((*it)->m_eType == data::enPlayerType::Ai) {
-            if (m_pAiThread == nullptr) {
-              m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
-            }
-
-            m_pAiThread->addAiMarble((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
+          switch (l_iAutoFinish) {
+            case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
+            case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
+            case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
+            case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
           }
+
+          m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, l_cGame.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
+
+          m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
+          m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
+
+          if (m_pServer != nullptr) {
+            m_pServer  ->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
+            m_pDynamics->getOutputQueue()->addListener(m_pServer  ->getInputQueue());
+          }
+
+          controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
+
+          for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+            if ((*it)->m_eType == data::enPlayerType::Local)
+              (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, (*it)->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
+            else if ((*it)->m_eType == data::enPlayerType::Ai) {
+              if (m_pAiThread == nullptr) {
+                m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
+              }
+
+              m_pAiThread->addAiMarble((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
+            }
+          }
+
+          delete l_pFactory;
+
+          m_pDynamics->startThread();
+
+          if (m_pAiThread != nullptr)
+            m_pAiThread->startThread();
         }
-
-        delete l_pFactory;
-
-        m_pDynamics->startThread();
-
-        if (m_pAiThread != nullptr)
-          m_pAiThread->startThread();
+        else {
+          m_pGlobal->setGlobal("ERROR_MESSAGE", "No world node found.");
+          m_pGlobal->setGlobal("ERROR_HEAD", "Error while initializing game physics.");
+          // throw std::exception();
+        }
       }
       else {
-        m_pGlobal->setGlobal("ERROR_MESSAGE", "No world node found.");
-        m_pGlobal->setGlobal("ERROR_HEAD", "Error while initializing game physics.");
-        // throw std::exception();
+        m_pOutputQueue->addListener(m_pClient->getInputQueue());
+        m_pClient->getOutputQueue()->addListener(m_pInputQueue);
+        m_pClient->stateChanged("state_game");
       }
 
 #ifdef _TOUCH_CONTROL
@@ -698,8 +717,19 @@ namespace dustbin {
           printf("\n\n%s\n\n", l_cChampionship.serialize().c_str());
         }
 
+        if (m_pServer != nullptr) {
+          m_pServer->getOutputQueue()->removeListener(m_pDynamics->getInputQueue());
+        }
+
+        if (m_pClient != nullptr) {
+          m_pClient->getOutputQueue()->removeListener(m_pDynamics->getInputQueue());
+        }
+
         delete m_pDynamics;
         m_pDynamics = nullptr;
+
+        m_pClient = nullptr;
+        m_pServer = nullptr;
       }
 
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
@@ -854,7 +884,7 @@ namespace dustbin {
             int l_iMarble = m_mViewports.begin()->second.m_pMarble->getID();
             if (l_iMarble >= 10000 && l_iMarble < 10016) {
               messages::CPlayerWithdraw l_cMessage = messages::CPlayerWithdraw(l_iMarble);
-              m_pDynamics->getInputQueue()->postMessage(&l_cMessage);
+              m_pOutputQueue->postMessage(&l_cMessage);
             }
           }
           l_bRet = true;
@@ -986,7 +1016,7 @@ namespace dustbin {
         m_pTouchControl->getControl(l_iCtrlX, l_iCtrlY, l_bBrake, l_bRespawn, l_bRearView);
 
         messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_mViewports.begin()->second.m_pMarble->getID(), l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
-        m_pDynamics->getInputQueue()->postMessage(&l_cMessage);
+        m_pOutputQueue->postMessage(&l_cMessage);
       }
 #endif
 

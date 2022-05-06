@@ -157,11 +157,27 @@ namespace dustbin {
             return true;
           }
 
+          case messages::enMessageIDs::SetGlobalData: {
+            messages::CSetGlobalData *p = reinterpret_cast<messages::CSetGlobalData *>(a_pMessage);
+            m_pGlobal->setGlobal(p->getkey(), p->getvalue());
+            printf("Global data set: \"%s\" = \"%s\"\n", p->getkey(), p->getvalue());
+            stateChanged(p->getkey());
+          }
+
           default:
             break;
         }
       }
       return false;
+    }
+
+    /**
+    * Notify the server about a state change
+    * @param a_sState the new active state
+    */
+    void CGameClient::stateChanged(const std::string& a_sState) {
+      messages::CStateChanged l_cMsg = messages::CStateChanged(a_sState);
+      broadcastMessage(&l_cMsg, true);
     }
   }
 }

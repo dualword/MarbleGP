@@ -44,6 +44,12 @@ namespace dustbin {
       public:
         CGameClient(const std::string &a_sAddress, int a_iPort, CGlobal *a_pGlobal);
         ~CGameClient();
+
+        /**
+        * Notify the server about a state change
+        * @param a_sState the new active state
+        */
+        void stateChanged(const std::string &a_sState);
     };
   }
 }

@@ -41,6 +41,11 @@ namespace dustbin {
     class ISoundInterface;
   }
 
+  namespace network {
+    class CGameClient;
+    class CGameServer;
+  }
+
   namespace gui {
 #ifdef _TOUCH_CONTROL
     class CGuiTouchControl;
@@ -113,6 +118,9 @@ namespace dustbin {
         controller::CAiControlThread *m_pAiThread;
 
         data::SChampionshipRace *m_pRace;
+
+        network::CGameClient *m_pClient;
+        network::CGameServer *m_pServer;
         
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;
