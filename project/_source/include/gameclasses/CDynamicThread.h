@@ -19,6 +19,7 @@
 namespace dustbin {
   namespace scenenodes {
     class CRostrumNode;
+    class CStartingGridSceneNode;
   }
 
   namespace gameclasses {
@@ -111,15 +112,18 @@ namespace dustbin {
         virtual void execute() override;
 
       public:
-        CDynamicThread(
-          scenenodes::CWorldNode *a_pWorld, 
-          const std::vector<gameclasses::SPlayer*> &a_vPlayers, 
+        CDynamicThread();
+
+        virtual ~CDynamicThread();
+
+        void setupGame(
+          scenenodes::CWorldNode *a_pWorld,
+          scenenodes::CStartingGridSceneNode *a_pGrid,
+          const std::vector<data::SPlayerData> &a_vPlayers, 
           int a_iLaps, 
           std::vector<scenenodes::STriggerVector> a_vTimerActions, 
           std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters, 
           enAutoFinish a_eAutoFinish);
-
-        virtual ~CDynamicThread();
 
         /**
          * Callback to handle a trigger

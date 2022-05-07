@@ -710,24 +710,32 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread(
-      scenenodes::CWorldNode* a_pWorld, 
-      const std::vector<gameclasses::SPlayer*>& a_vPlayers, 
-      int a_iLaps, 
-      std::vector<scenenodes::STriggerVector> a_vTimerActions, 
-      std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters, 
-      enAutoFinish a_eAutoFinish
-    ) :
+    CDynamicThread::CDynamicThread() :
       m_eGameState  (enGameState::Countdown),
-      m_eAutoFinish (a_eAutoFinish),
+      m_eAutoFinish (enAutoFinish::AllPlayers),
       m_pWorld      (nullptr),
       m_bPaused     (false),
       m_fGridAngle  (0.0f),
-      m_iPlayers    ((irr::s32)a_vPlayers.size()),
+      m_iPlayers    (0),
       m_iHuman      (0),
       m_pGameLogic  (nullptr),
       m_pRostrumNode(nullptr)
     {
+    }
+
+    void CDynamicThread::setupGame(
+      scenenodes::CWorldNode* a_pWorld, 
+      scenenodes::CStartingGridSceneNode *a_pGrid,
+      const std::vector<data::SPlayerData> &a_vPlayers, 
+      int a_iLaps, 
+      std::vector<scenenodes::STriggerVector> a_vTimerActions, 
+      std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters, 
+      enAutoFinish a_eAutoFinish
+    )
+    {
+      m_eAutoFinish = a_eAutoFinish;
+      m_iPlayers    = (irr::s32)a_vPlayers.size();
+
       createPhysicsObjects(a_pWorld);
 
       for (int i = 0; i < 16; i++)
@@ -735,14 +743,17 @@ namespace dustbin {
 
       if (m_pWorld != nullptr) {
         int l_iIndex = 0;
-        for (std::vector<gameclasses::SPlayer*>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
-          if ((*it)->m_eType != data::enPlayerType::Ai)
+        for (std::vector<data::SPlayerData>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
+          if ((*it).m_eType != data::enPlayerType::Ai)
             m_iHuman++;
 
+          irr::scene::ISceneNode *l_pMarbleNode = a_pGrid->getMarbleById(l_iIndex + 10000);
+
+          l_pMarbleNode->updateAbsolutePosition();
           irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, 10.0f);
           l_vOffset.rotateXZBy(m_fGridAngle);
 
-          CObjectMarble* l_pMarble = new CObjectMarble((*it)->m_pMarble->m_pPositional, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
+          CObjectMarble* l_pMarble = new CObjectMarble(l_pMarbleNode, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
 
           l_pMarble->m_vDirection  = l_vOffset;
           l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
@@ -750,25 +761,27 @@ namespace dustbin {
           l_pMarble->m_vContact    = irr::core::vector3df();
           l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
           l_pMarble->m_vOffset     = l_vOffset;
-          l_pMarble->m_vCamera     = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() - l_vOffset + 3.0f * l_pMarble->m_vUpVector;
-          l_pMarble->m_vRearview   = (*it)->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset + 3.0f * l_pMarble->m_vUpVector;
-          l_pMarble->m_bAiPlayer   = (*it)->m_eType == data::enPlayerType::Ai;
+          l_pMarble->m_vCamera     = l_pMarbleNode->getAbsolutePosition() - l_vOffset + 3.0f * l_pMarble->m_vUpVector;
+          l_pMarble->m_vRearview   = l_pMarbleNode->getAbsolutePosition() + l_vOffset + 3.0f * l_pMarble->m_vUpVector;
+          l_pMarble->m_bAiPlayer   = (*it).m_eType == data::enPlayerType::Ai;
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
 
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
-          printf("*** Marble with id %i stored in array index %i\n", (*it)->m_pMarble->m_pPositional->getID(), l_iIndex);
+          printf("*** Marble with id %i stored in array index %i\n", l_pMarbleNode->getID(), l_iIndex);
 
           for (std::map<irr::s32, CObjectCheckpoint*>::iterator it = m_pWorld->m_mCheckpoints.begin(); it != m_pWorld->m_mCheckpoints.end(); it++) {
             if (it->second->m_bLapStart)
               l_pMarble->m_vNextCheckpoints.push_back(it->first);
           }
 
+          sendPlayerassignmarble((*it).m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
+
           sendMarblemoved(l_pMarble->m_iId,
-            (*it)->m_pMarble->m_pPositional->getAbsolutePosition(),
-            (*it)->m_pMarble->m_pPositional->getRotation(),
+            l_pMarbleNode->getAbsolutePosition(),
+            l_pMarbleNode->getRotation(),
             irr::core::vector3df(0.0f, 0.0f, 0.0f),
             0.0f,
             l_pMarble->m_vCamera,
@@ -804,6 +817,8 @@ namespace dustbin {
 
       for (std::vector<gameclasses::CMarbleCounter>::iterator it = a_vMarbleCounters.begin(); it != a_vMarbleCounters.end(); it++)
         m_vMarbleCounters.push_back(gameclasses::CMarbleCounter(*it, m_pWorld));
+
+      sendRacesetupdone(m_pOutputQueue);
     }
 
     CDynamicThread::~CDynamicThread() {

@@ -45,86 +45,30 @@
 
 namespace dustbin {
   namespace state {
-    /**
-    * @class SGameViewports
-    * @author Christian Keimel
-    * This struct maps the number of local players
-    * to the viewport distribution
-    */
-    struct SGameViewports {
-      /**
-      * Enumeration for the type of viewport
-      */
-      enum class enType {
-        Player,   /**< A viewport for a player */
-        Racedata, /**< A viewport for the race data, i.e. ranking, racetime, leader... */
-        Logo      /**< A viewport for a logo, just to fill the empty space */
-      };
-
-      /**
-      * @class SViewportDef
-      * @author Christian Keimel
-      * This struct holds information about how a viewport looks like
-      */
-      struct SViewportDef {
-        int    m_iColumn,   /**< The column of the viewport*/
-               m_iRow;      /**< The row of the viewport*/
-        enType m_eType;     /**< The type of viewport */
-
-        SViewportDef() : m_iColumn(0), m_iRow(0), m_eType(enType::Player) {
-        }
-
-        SViewportDef(int a_iColumn, int a_iRow, enType a_eType) : m_iColumn(a_iColumn), m_iRow(a_iRow), m_eType(a_eType) {
-        }
-      };
-
-      /**
-      * @class SViewportDistribution
-      * @author Christian Keimel
-      * This struct is responsible for distributing the viewports
-      * across the window depending on the number of players
-      */
-      struct SViewportDistribution {
-        int m_iColumns,   /**< The number of columns for this distribution */
-            m_iRows;      /**< The number of rows for this distribution */
-
-        std::vector<SViewportDef> m_vViewports;  /**< The actual viewports for the players */
-
-        SViewportDistribution() : m_iColumns(0), m_iRows(0) {
-        }
-
-        SViewportDistribution(int a_iColumns, int a_iRows) : m_iColumns(a_iColumns), m_iRows(a_iRows) {
-        }
-      };
-
-      /**
-      * This map hods the data for the distribution per number of local players
-      * key == number of local players, value == actual distribution
-      */
-      std::map<int, SViewportDistribution> m_mDistribution;
-    };
-
-
     CGameState::CGameState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) :
-      IState(a_pDevice, a_pGlobal),
-      m_eState       (enGameState::Countdown),
-      m_pInputQueue  (nullptr),
-      m_pOutputQueue (nullptr),
-      m_iStep        (-1),
-      m_iFinished    (-1),
-      m_iFadeOut     (-1),
-      m_fSfxVolume   (1.0f),
-      m_bPaused      (false),
-      m_pSoundIntf   (nullptr),
-      m_pDynamics    (nullptr),
-      m_pRostrum     (nullptr),
-      m_pShader      (nullptr),
-      m_pCamAnimator (nullptr),
-      m_pCamera      (nullptr),
-      m_pAiThread    (nullptr),
-      m_pRace        (nullptr),
-      m_pClient      (nullptr),
-      m_pServer      (nullptr)
+      IState           (a_pDevice, a_pGlobal),
+      m_eState         (enGameState::Countdown),
+      m_pInputQueue    (nullptr),
+      m_pOutputQueue   (nullptr),
+      m_iStep          (-1),
+      m_iFinished      (-1),
+      m_iFadeOut       (-1),
+      m_fSfxVolume     (1.0f),
+      m_bPaused        (false),
+      m_pSoundIntf     (nullptr),
+      m_pDynamics      (nullptr),
+      m_pRostrum       (nullptr),
+      m_pShader        (nullptr),
+      m_pCamAnimator   (nullptr),
+      m_pCamera        (nullptr),
+      m_pAiThread      (nullptr),
+      m_pRace          (nullptr),
+      m_pClient        (nullptr),
+      m_pServer        (nullptr),
+      m_iNumOfViewports(0),
+      m_pGridNode      (nullptr),
+      m_fGridAngle     (0.0f),
+      m_pAiNode        (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -170,6 +114,212 @@ namespace dustbin {
         for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
           fillMovingMap(*it);
       }
+
+      // Fill list of viewport distribution
+      SGameViewports::SViewportDistribution l_cOnePlayer = SGameViewports::SViewportDistribution(1, 1);
+      l_cOnePlayer.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
+      m_cViewports.m_mDistribution[1] = l_cOnePlayer;
+
+      SGameViewports::SViewportDistribution l_cTwoPlayers = SGameViewports::SViewportDistribution(1, 2);
+      l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
+      l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
+      m_cViewports.m_mDistribution[2] = l_cTwoPlayers;
+
+      SGameViewports::SViewportDistribution l_cThreePlayers = SGameViewports::SViewportDistribution(2, 2);
+      l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
+      l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
+      l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
+      l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
+      m_cViewports.m_mDistribution[3] = l_cThreePlayers;
+
+      SGameViewports::SViewportDistribution l_cFourPlayers = SGameViewports::SViewportDistribution(2, 2);
+      l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
+      l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
+      l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player));
+      l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Player));
+      m_cViewports.m_mDistribution[4] = l_cFourPlayers;
+
+      SGameViewports::SViewportDistribution l_cFivePlayers = SGameViewports::SViewportDistribution(2, 3);
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
+      m_cViewports.m_mDistribution[5] = l_cFivePlayers;
+
+      SGameViewports::SViewportDistribution l_cSixPlayers = SGameViewports::SViewportDistribution(2, 3);
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player));
+      m_cViewports.m_mDistribution[6] = l_cSixPlayers;
+
+      SGameViewports::SViewportDistribution l_cSevenPlayers = SGameViewports::SViewportDistribution(3, 3);
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Logo    ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 2, SGameViewports::enType::Player  ));
+      m_cViewports.m_mDistribution[7] = l_cSevenPlayers;
+
+      SGameViewports::SViewportDistribution l_cEightPlayers = SGameViewports::SViewportDistribution(3, 3);
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Racedata));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 2, SGameViewports::enType::Player  ));
+      m_cViewports.m_mDistribution[8] = l_cEightPlayers;
+    }
+
+    /**
+    * Assign a viewport to a player
+    * @param a_fAngle the grid angle read from the grid scene node
+    * @param a_pPlayer the player to assign the viewport to
+    */
+    void CGameState::assignViewport(irr::f32 a_fAngle, gameclasses::SPlayer *a_pPlayer) {
+      irr::core::dimension2di l_cViewportSize = m_cScreen.getSize();
+
+      if (m_iNumOfViewports > 0) {
+        l_cViewportSize.Width  /= m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns;
+        l_cViewportSize.Height /= m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows;
+
+        if (m_pDevice->getCursorControl() != nullptr)
+          m_pDevice->getCursorControl()->setVisible(false);
+      }
+
+      irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
+      l_vOffset.rotateXZBy(a_fAngle);
+
+      for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
+        if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1 && m_cPlayers.m_vPlayers[i].m_iPlayerId == a_pPlayer->m_iPlayer) {
+          if (a_pPlayer != nullptr && a_pPlayer->m_pMarble->m_pPositional) {
+            SGameViewports::SViewportDef l_cViewportDef = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[m_cPlayers.m_vPlayers[i].m_iViewPort - 1];
+
+            printf("Viewport %i / %i assigned to player \"%s\".\n", m_cPlayers.m_vPlayers[i].m_iViewPort, m_iNumOfViewports, m_cPlayers.m_vPlayers[i].m_sName.c_str());
+
+            irr::core::recti l_cRect = irr::core::recti(
+               l_cViewportDef.m_iColumn      * l_cViewportSize.Width,
+               l_cViewportDef.m_iRow         * l_cViewportSize.Height,
+              (l_cViewportDef.m_iColumn + 1) * l_cViewportSize.Width,
+              (l_cViewportDef.m_iRow    + 1) * l_cViewportSize.Height
+            );
+
+
+            irr::scene::ICameraSceneNode* l_pCam = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), a_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset, a_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition());
+            l_pCam->setAspectRatio((((irr::f32)l_cRect.LowerRightCorner.X) - ((irr::f32)l_cRect.UpperLeftCorner.X)) / (((irr::f32)l_cRect.LowerRightCorner.Y) - ((irr::f32)l_cRect.UpperLeftCorner.Y)));
+            l_pCam->updateAbsolutePosition();
+
+            gfx::SViewPort l_cViewport = gfx::SViewPort(l_cRect, m_cPlayers.m_vPlayers[i].m_iPlayerId, a_pPlayer->m_pMarble->m_pPositional, l_pCam);
+
+            for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
+              if (it->second->m_bFirstInLap && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
+                l_cViewport.m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode *>(it->second->getParent()));
+              }
+            }
+
+            l_cViewport.m_pPlayer = a_pPlayer->m_pMarble;
+            m_mViewports[m_cPlayers.m_vPlayers[i].m_iPlayerId] = l_cViewport;
+            a_pPlayer->m_pMarble->m_pViewport = &m_mViewports[m_cPlayers.m_vPlayers[i].m_iPlayerId];
+          }
+        }
+      }
+
+      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+        if (it->second.m_pHUD != nullptr) {
+          it->second.m_pHUD->setSettings(m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking);
+        }
+      }
+    }
+
+    /**
+    * Set up the controllers for the marbles
+    */
+    void CGameState::prepareMarbleControllers() {
+      m_pAiNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiNodeId, m_pSmgr->getRootSceneNode());
+
+      if (m_pAiNode != nullptr) {
+        m_pAiNode->setVisible(getGlobal()->getSetting("show_ai_data") == "1");
+      }
+    }
+
+    /**
+    * Prepare the shader for the game
+    */
+    void CGameState::prepareShader() {
+      if (m_cViewports.m_mDistribution.find(m_iNumOfViewports) == m_cViewports.m_mDistribution.end()) {
+        // ToDo: Error message
+      }
+
+      irr::u32 l_iAmbient = 196;
+
+      switch (m_cSettings.m_iAmbient) {
+        case 0: l_iAmbient = 32; break;
+        case 1: l_iAmbient = 64; break;
+        case 2: l_iAmbient = 96; break;
+        case 3: l_iAmbient = 128; break;
+        case 4: l_iAmbient = 160; break;
+      }
+
+      irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
+
+      int l_iCols = m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns;
+      int l_iRows = m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows;
+
+      irr::core::dimension2du l_cDim = irr::core::dimension2du(l_cScreen.Width / l_iCols, l_cScreen.Height / l_iRows);
+
+      switch (m_cSettings.m_iShadows) {
+        case 3:
+  #ifndef NO_XEFFECT
+          if (m_mViewports.size() == 1) {
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);
+          }
+          else {
+            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, m_cSettings.m_iAmbient);
+          }
+          break;
+  #endif
+
+        case 2:
+  #ifndef NO_XEFFECT
+          if (m_mViewports.size() == 1) {
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_iAmbient);
+          }
+          else {
+            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, m_cSettings.m_iAmbient);
+          }
+          break;
+  #endif
+
+        case 1:
+  #ifndef NO_XEFFECT
+          if (m_mViewports.size() == 1) {
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_iAmbient);
+          }
+          else {
+            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, m_cSettings.m_iAmbient);
+          }
+          break;
+  #endif
+
+        case 0:
+          m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);
+          break;
+      }
+
+      if (m_pShader != nullptr) {
+        m_pShader->initialize();
+      }
     }
 
     /**
@@ -188,14 +338,14 @@ namespace dustbin {
       m_pClient = m_pGlobal->getGameClient();
       m_pServer = m_pGlobal->getGameServer();
 
-      data::SGameData l_cGame = data::SGameData(m_pGlobal->getGlobal("gamedata"));
-      data::SSettings l_cSettings = m_pGlobal->getSettingData();
+      m_cGameData = data::SGameData(m_pGlobal->getGlobal("gamedata"));
+      m_cSettings = m_pGlobal->getSettingData();
 
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
       // Load the track, and don't forget to run the skybox fix beforehands
-      std::string l_sTrack = "data/levels/" + l_cGame.m_sTrack + "/track.xml";
+      std::string l_sTrack = "data/levels/" + m_cGameData.m_sTrack + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
         m_pSmgr->clear();
@@ -228,13 +378,15 @@ namespace dustbin {
         // ToDo Error Message
       }
 
-      scenenodes::CStartingGridSceneNode* l_pGrid = reinterpret_cast<scenenodes::CStartingGridSceneNode*>(l_pNode);
+      m_pGridNode = reinterpret_cast<scenenodes::CStartingGridSceneNode *>(l_pNode);
 
-      if (l_pGrid == nullptr) {
+      if (m_pGridNode == nullptr) {
         printf("Grid node not found.\n");
         // ToDo Error Message
         return;
       }
+
+      m_fGridAngle = m_pGridNode->getAngle();
 
       int  l_iGridOrder  = 0;
       int  l_iAutoFinish = 0;
@@ -251,16 +403,21 @@ namespace dustbin {
 
       data::SChampionship      l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
       data::SChampionshipRace *l_pLastRace     = l_cChampionship.getLastRace();
-      data::SRacePlayers       l_cPlayers;
 
       std::string l_sPlayers = m_pGlobal->getGlobal("raceplayers");
-      l_cPlayers.deserialize(l_sPlayers);
+      m_cPlayers.deserialize(l_sPlayers);
+
+      // Find out how many viewports we need to create
+      for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
+        if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1)
+          m_iNumOfViewports++;
+      }
 
       if (l_pLastRace != nullptr && l_iGridOrder != 0) {
         // Grid order: Result of last race
         if (l_iGridOrder == 1) {
           // Go through the players ..
-          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+          for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
             // .. next go through the last race result ..
             for (int i = 0; i < l_cChampionship.m_iGridSize; i++) {
               if (l_pLastRace->m_mAssignment.find(l_pLastRace->m_aResult[i].m_iId) != l_pLastRace->m_mAssignment.end()) {
@@ -279,7 +436,7 @@ namespace dustbin {
           // .. iterate of the standings ..
           int l_iPos = 0;
           for (std::vector<data::SChampionshipPlayer>::iterator it2 = l_vStanding.begin(); it2 != l_vStanding.end(); it2++) {
-            for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+            for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
               if ((*it).m_iPlayerId == (*it2).m_iPlayerId) {
                 (*it).m_iGridPos = l_iPos;
                 break;
@@ -290,14 +447,14 @@ namespace dustbin {
         }
         else if (l_iGridOrder == 3) {
           std::vector<int> l_vGrid;
-          for (int i = 1; i <= (int)l_cPlayers.m_vPlayers.size(); i++)
+          for (int i = 1; i <= (int)m_cPlayers.m_vPlayers.size(); i++)
             l_vGrid.push_back(i);
 
           std::random_device l_cRd { };
           std::default_random_engine l_cRe { l_cRd() };
 
           std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
-          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+          for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
             (*it).m_iGridPos = *l_vGrid.begin();
             l_vGrid.erase(l_vGrid.begin());
           }
@@ -305,98 +462,28 @@ namespace dustbin {
       }
 
       // First we sort the player vector by the grid position as the first step will be marble assignment ..
-      std::sort(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
+      std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
         return a_cPlayer1.m_iGridPos < a_cPlayer2.m_iGridPos;
       });
 
       if (l_bGridRevert && l_iGridOrder != 0 && l_pLastRace != nullptr)
-        std::reverse(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end());
+        std::reverse(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end());
 
-      SGameViewports l_cViewports;
 
-      {
-        SGameViewports::SViewportDistribution l_cOnePlayer = SGameViewports::SViewportDistribution(1, 1);
-        l_cOnePlayer.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
-        l_cViewports.m_mDistribution[1] = l_cOnePlayer;
+      m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
 
-        SGameViewports::SViewportDistribution l_cTwoPlayers = SGameViewports::SViewportDistribution(1, 2);
-        l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
-        l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
-        l_cViewports.m_mDistribution[2] = l_cTwoPlayers;
-
-        SGameViewports::SViewportDistribution l_cThreePlayers = SGameViewports::SViewportDistribution(2, 2);
-        l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
-        l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
-        l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
-        l_cThreePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
-        l_cViewports.m_mDistribution[3] = l_cThreePlayers;
-
-        SGameViewports::SViewportDistribution l_cFourPlayers = SGameViewports::SViewportDistribution(2, 2);
-        l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
-        l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
-        l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player));
-        l_cFourPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Player));
-        l_cViewports.m_mDistribution[4] = l_cFourPlayers;
-
-        SGameViewports::SViewportDistribution l_cFivePlayers = SGameViewports::SViewportDistribution(2, 3);
-        l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
-        l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
-        l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
-        l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
-        l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
-        l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
-        l_cViewports.m_mDistribution[5] = l_cFivePlayers;
-
-        SGameViewports::SViewportDistribution l_cSixPlayers = SGameViewports::SViewportDistribution(2, 3);
-        l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
-        l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
-        l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player));
-        l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player));
-        l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Player));
-        l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player));
-        l_cViewports.m_mDistribution[6] = l_cSixPlayers;
-
-        SGameViewports::SViewportDistribution l_cSevenPlayers = SGameViewports::SViewportDistribution(3, 3);
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Logo    ));
-        l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 2, SGameViewports::enType::Player  ));
-        l_cViewports.m_mDistribution[7] = l_cSevenPlayers;
-
-        SGameViewports::SViewportDistribution l_cEightPlayers = SGameViewports::SViewportDistribution(3, 3);
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Racedata));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Player  ));
-        l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 2, SGameViewports::enType::Player  ));
-        l_cViewports.m_mDistribution[8] = l_cEightPlayers;
-      }
-
-      int l_iNumOfViewports = 0;  // The number of necessary viewports, aka local players
-
-      m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)l_cPlayers.m_vPlayers.size(), l_cGame.m_iLaps);
-
-      printf("******** Marble assignment:\n");
+      /*printf("******** Marble assignment:\n");
       // .. fill the player vector and assign the marbles to the players (depending on the grid positions) ...
-      for (size_t i = 0; i < l_cPlayers.m_vPlayers.size(); i++) {
-        gameclasses::SMarbleNodes *l_pMarble = l_pGrid->getNextMarble();
+      for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
+        gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getNextMarble();
         gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
-          l_cPlayers.m_vPlayers[i].m_iPlayerId,
-          l_cPlayers.m_vPlayers[i].m_sName,
-          l_cPlayers.m_vPlayers[i].m_sTexture,
-          l_cPlayers.m_vPlayers[i].m_sControls,
-          l_cPlayers.m_vPlayers[i].m_eAiHelp,
+          m_cPlayers.m_vPlayers[i].m_iPlayerId,
+          m_cPlayers.m_vPlayers[i].m_sName,
+          m_cPlayers.m_vPlayers[i].m_sTexture,
+          m_cPlayers.m_vPlayers[i].m_sControls,
+          m_cPlayers.m_vPlayers[i].m_eAiHelp,
           l_pMarble,
-          l_cPlayers.m_vPlayers[i].m_eType
+          m_cPlayers.m_vPlayers[i].m_eType
         );
 
         l_pMarble->m_pPlayer = l_pPlayer; 
@@ -405,190 +492,15 @@ namespace dustbin {
 
         m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
 
-        if (l_cPlayers.m_vPlayers[i].m_eType == data::enPlayerType::Local)
-          l_iNumOfViewports++;
-
         m_vPlayers .push_back(l_pPlayer);
         m_vPosition.push_back(l_pPlayer);
 
         m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
-      }
+      }*/
 
-      // .. next we sort the players by the player IDs to give them the correct viewports
-      std::sort(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
-        return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
-      });
-
-      l_pGrid->removeUnusedMarbles();
+      // m_pGridNode->removeUnusedMarbles();
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
 
-      irr::f32 l_fAngle = l_pGrid->getAngle();
-
-      irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
-      l_vOffset.rotateXZBy(l_fAngle);
-
-      if (l_cViewports.m_mDistribution.find(l_iNumOfViewports) == l_cViewports.m_mDistribution.end()) {
-        // ToDo: Error message
-      }
-
-      irr::core::dimension2di l_cViewportSize = m_cScreen.getSize();
-
-      if (l_iNumOfViewports > 0) {
-        l_cViewportSize.Width  /= l_cViewports.m_mDistribution[l_iNumOfViewports].m_iColumns;
-        l_cViewportSize.Height /= l_cViewports.m_mDistribution[l_iNumOfViewports].m_iRows;
-
-        if (m_pDevice->getCursorControl() != nullptr)
-          m_pDevice->getCursorControl()->setVisible(false);
-      }
-
-      irr::scene::ISceneNode *l_pAiNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiNodeId, m_pSmgr->getRootSceneNode());
-
-      if (l_pAiNode != nullptr) {
-        l_pAiNode->setVisible(getGlobal()->getSetting("show_ai_data") == "1");
-      }
-
-      printf("******** Viewport Assignment:\n");
-      int l_iViewport = 0;
-      for (size_t i = 0; i < l_cPlayers.m_vPlayers.size(); i++) {
-        gameclasses::SPlayer *l_pPlayer = nullptr;
-
-        for (std::vector<gameclasses::SPlayer*>::iterator l_itPlayer = m_vPlayers.begin(); l_itPlayer != m_vPlayers.end(); l_itPlayer++) {
-          if ((*l_itPlayer)->m_iPlayer == l_cPlayers.m_vPlayers[i].m_iPlayerId) {
-            l_pPlayer = *l_itPlayer;
-            break;
-          }
-        }
-
-        if (l_cPlayers.m_vPlayers[i].m_eType == data::enPlayerType::Local) {
-          if (l_pPlayer != nullptr && l_pPlayer->m_pMarble->m_pPositional) {
-            std::vector<SGameViewports::SViewportDef>::iterator it = l_cViewports.m_mDistribution[l_iNumOfViewports].m_vViewports.begin();
-
-            while (true) {
-              if ((*it).m_eType == SGameViewports::enType::Player) {
-                break;
-              }
-              it++;
-            }
-
-            if (it != l_cViewports.m_mDistribution[l_iNumOfViewports].m_vViewports.end()) {
-              printf("Viewport %i / %i assigned to player \"%s\".\n", l_iViewport++, l_iNumOfViewports, l_cPlayers.m_vPlayers[i].m_sName.c_str());
-
-              irr::core::recti l_cRect = irr::core::recti(
-                 (*it).m_iColumn      * l_cViewportSize.Width,
-                 (*it).m_iRow         * l_cViewportSize.Height,
-                ((*it).m_iColumn + 1) * l_cViewportSize.Width,
-                ((*it).m_iRow    + 1) * l_cViewportSize.Height
-              );
-
-              l_cViewports.m_mDistribution[l_iNumOfViewports].m_vViewports.erase(it);
-
-              irr::scene::ICameraSceneNode* l_pCam = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), l_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset, l_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition());
-              l_pCam->setAspectRatio((((irr::f32)l_cRect.LowerRightCorner.X) - ((irr::f32)l_cRect.UpperLeftCorner.X)) / (((irr::f32)l_cRect.LowerRightCorner.Y) - ((irr::f32)l_cRect.UpperLeftCorner.Y)));
-              l_pCam->updateAbsolutePosition();
-
-              gfx::SViewPort l_cViewport = gfx::SViewPort(l_cRect, l_cPlayers.m_vPlayers[i].m_iPlayerId, l_pPlayer->m_pMarble->m_pPositional, l_pCam);
-
-              for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
-                if (it->second->m_bFirstInLap && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
-                  l_cViewport.m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode *>(it->second->getParent()));
-                }
-              }
-
-              l_cViewport.m_pPlayer = l_pPlayer->m_pMarble;
-              l_cViewport.m_pHUD    = new gui::CGameHUD(l_pPlayer, l_cRect, l_cGame.m_iLaps, m_pGui, &m_vPosition);
-              l_cViewport.m_pHUD->drop();
-              m_mViewports[l_cPlayers.m_vPlayers[i].m_iPlayerId] = l_cViewport;
-              l_pPlayer->m_pMarble->m_pViewport = &m_mViewports[l_cPlayers.m_vPlayers[i].m_iPlayerId];
-            }
-            else {
-              // ToDo: error message "not enough viewport available"
-            }
-          }
-        }
-      }
-
-      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-        if (it->second.m_pHUD != nullptr) {
-          it->second.m_pHUD->setSettings(l_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, l_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, l_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking);
-        }
-      }
-
-      if (m_mViewports.size() == 0) {
-        // No viewport ==> view track, create a viewport
-        m_pCamAnimator = new scenenodes::CMyCameraAnimator(m_pDevice);
-        m_pCamera = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), l_vOffset);
-        m_pCamera->addAnimator(m_pCamAnimator);
-        m_pSmgr->setActiveCamera(m_pCamera);
-        gfx::SViewPort l_cViewport = gfx::SViewPort(irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()), 0, nullptr, m_pCamera);
-        m_mViewports[0] = l_cViewport;
-
-        if (m_vCameras.size() > 0) {
-          irr::core::vector3df l_vPos;
-          irr::f32 l_fAngleH, l_fAngleV;
-
-          m_pCamAnimator->animateNode(m_pCamera, 0);
-          (*m_vCameras.begin())->getValues(l_vPos, l_fAngleV, l_fAngleH);
-          m_pCamAnimator->setData(l_vPos, l_fAngleV, l_fAngleH);
-        }
-      }
-
-      printf("******** Ready.\n");      
-
-      irr::u32 l_iAmbient = 196;
-
-      switch (l_cSettings.m_iAmbient) {
-        case 0: l_iAmbient = 32; break;
-        case 1: l_iAmbient = 64; break;
-        case 2: l_iAmbient = 96; break;
-        case 3: l_iAmbient = 128; break;
-        case 4: l_iAmbient = 160; break;
-      }
-
-      irr::core::dimension2du l_cDim = irr::core::dimension2du(m_mViewports.begin()->second.m_cRect.getSize().Width, m_mViewports.begin()->second.m_cRect.getSize().Height);
-
-      switch (l_cSettings.m_iShadows) {
-        case 3:
-#ifndef NO_XEFFECT
-          if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);
-          }
-          else {
-            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_cSettings.m_iAmbient);
-          }
-          break;
-#endif
-          
-        case 2:
-#ifndef NO_XEFFECT
-          if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_iAmbient);
-          }
-          else {
-            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_cSettings.m_iAmbient);
-          }
-          break;
-#endif
-
-        case 1:
-#ifndef NO_XEFFECT
-          if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_iAmbient);
-          }
-          else {
-            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_cSettings.m_iAmbient);
-          }
-          break;
-#endif
-
-        case 0:
-          m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);
-          break;
-      }
-
-      if (m_pShader != nullptr) {
-        m_pShader->initialize();
-      }
-      
       if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
       if (m_pOutputQueue == nullptr) m_pOutputQueue = new threads::COutputQueue();
 
@@ -605,36 +517,18 @@ namespace dustbin {
             case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
           }
 
-          m_pDynamics = new gameclasses::CDynamicThread(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_vPlayers, l_cGame.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
+          m_pDynamics = new gameclasses::CDynamicThread();
 
           m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
           m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
 
           if (m_pServer != nullptr) {
-            m_pServer  ->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
-            m_pDynamics->getOutputQueue()->addListener(m_pServer  ->getInputQueue());
+            m_pDynamics->getOutputQueue()->addListener(m_pServer->getInputQueue());
+            m_pServer->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
           }
 
-          controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
-
-          for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-            if ((*it)->m_eType == data::enPlayerType::Local)
-              (*it)->m_pController = l_pFactory->createController((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController, (*it)->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
-            else if ((*it)->m_eType == data::enPlayerType::Ai) {
-              if (m_pAiThread == nullptr) {
-                m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(l_pAiNode));
-              }
-
-              m_pAiThread->addAiMarble((*it)->m_pMarble->m_pPositional->getID(), (*it)->m_sController);
-            }
-          }
-
-          delete l_pFactory;
-
-          m_pDynamics->startThread();
-
-          if (m_pAiThread != nullptr)
-            m_pAiThread->startThread();
+          prepareMarbleControllers();
+          m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
         }
         else {
           m_pGlobal->setGlobal("ERROR_MESSAGE", "No world node found.");
@@ -1315,6 +1209,97 @@ namespace dustbin {
      */
     void CGameState::onTrigger(irr::s32 a_TriggerId, irr::s32 a_ObjectId) {
 
+    }
+
+    /**
+    * This function receives messages of type "PlayerAssignMarble"
+    * @param a_playerid The ID of the player
+    * @param a_marbleid The ID of the marble for the player
+    */
+    void CGameState::onPlayerassignmarble(irr::s32 a_playerid, irr::s32 a_marbleid) {
+      printf("Assign Marble %i to player %i\n", a_marbleid, a_playerid);
+      for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+        if ((*it).m_iPlayerId == a_playerid) {
+          gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_marbleid);
+
+          gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+            (*it).m_iPlayerId,
+            (*it).m_sName,
+            (*it).m_sTexture,
+            (*it).m_sControls,
+            (*it).m_eAiHelp,
+            l_pMarble,
+            (*it).m_eType
+          );
+
+          l_pMarble->m_pPlayer = l_pPlayer; 
+
+          printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
+
+          m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
+
+          assignViewport(m_fGridAngle, l_pPlayer);
+
+          m_vPlayers .push_back(l_pPlayer);
+          m_vPosition.push_back(l_pPlayer);
+
+          controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
+
+          if ((*it).m_eType == data::enPlayerType::Local) {
+            l_pPlayer->m_pController = l_pFactory->createController(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, l_pPlayer->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+          }
+          else if ((*it).m_eType == data::enPlayerType::Ai) {
+            if (m_pAiThread == nullptr) {
+              m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+            }
+
+            m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController);
+          }
+
+          delete l_pFactory;
+
+          m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "RaceSetupDone"
+    */
+    void CGameState::onRacesetupdone() {
+      m_pDynamics->startThread();
+
+      if (m_pAiThread != nullptr)
+        m_pAiThread->startThread();
+
+      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+        it->second.m_pHUD    = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+        it->second.m_pHUD->drop();
+      }
+
+      if (m_mViewports.size() == 0) {
+        // No viewport ==> view track, create a viewport
+        irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
+        l_vOffset.rotateXZBy(m_fGridAngle);
+
+        m_pCamAnimator = new scenenodes::CMyCameraAnimator(m_pDevice);
+        m_pCamera = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), l_vOffset);
+        m_pCamera->addAnimator(m_pCamAnimator);
+        m_pSmgr->setActiveCamera(m_pCamera);
+        gfx::SViewPort l_cViewport = gfx::SViewPort(irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()), 0, nullptr, m_pCamera);
+        m_mViewports[0] = l_cViewport;
+
+        if (m_vCameras.size() > 0) {
+          irr::core::vector3df l_vPos;
+          irr::f32 l_fAngleH, l_fAngleV;
+
+          m_pCamAnimator->animateNode(m_pCamera, 0);
+          (*m_vCameras.begin())->getValues(l_vPos, l_fAngleV, l_fAngleH);
+          m_pCamAnimator->setData(l_vPos, l_fAngleV, l_fAngleH);
+        }
+      }
+
+      prepareShader();
     }
 
     /**

@@ -71,14 +71,48 @@ namespace dustbin {
       return l_pRet;
     }
 
-    void CStartingGridSceneNode::removeUnusedMarbles() {
-      while (m_iNextMarble < 16) {
-        if (m_pMarbles[m_iNextMarble] != nullptr) {
-          m_pMarbles[m_iNextMarble]->m_pPositional->setVisible(false);
-          m_pMarbles[m_iNextMarble]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[m_iNextMarble]->m_pPositional);
+    /**
+    * Get a marble scene node without removing it from the list
+    * @param a_iMarbleID the ID of the marble
+    * @return the marble's positional scene node
+    */
+    irr::scene::ISceneNode *CStartingGridSceneNode::getMarbleById(int a_iMarbleID) {
+      for (int i = 0; i < 16; i++) {
+        if (m_pMarbles[i] != nullptr && m_pMarbles[i]->m_pPositional != nullptr && m_pMarbles[i]->m_pPositional->getID() == a_iMarbleID) {
+          return m_pMarbles[i]->m_pPositional;
         }
+      }
 
-        m_iNextMarble++;
+      return nullptr;
+    }
+
+    gameclasses::SMarbleNodes *CStartingGridSceneNode::getMarble(int a_iMarbleID) {
+      for (int i = 0; i < 16; i++) {
+        if (m_pMarbles[i] != nullptr && m_pMarbles[i]->m_pPositional != nullptr && m_pMarbles[i]->m_pPositional->getID() == a_iMarbleID) {
+          gameclasses::SMarbleNodes *l_pRet = m_pMarbles[i];
+
+          // Move the marble to our parent
+          l_pRet->m_pPositional->updateAbsolutePosition();
+          irr::core::vector3df l_cPos = l_pRet->m_pPositional->getAbsolutePosition();
+
+          l_pRet->m_pPositional->setParent(getParent());
+          l_pRet->m_pPositional->setPosition(l_cPos);
+
+          m_pMarbles[i] = nullptr;
+
+          return l_pRet;
+        }
+      }
+
+      return nullptr;
+    }
+
+    void CStartingGridSceneNode::removeUnusedMarbles() {
+      for (int i = 0; i < 16; i++) {
+        if (m_pMarbles[i] != nullptr) {
+          m_pMarbles[i]->m_pPositional->setVisible(false);
+          m_pMarbles[i]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[m_iNextMarble]->m_pPositional);
+        }
       }
     }
 

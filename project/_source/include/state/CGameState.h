@@ -35,6 +35,7 @@ namespace dustbin {
     class CMyCameraAnimator;
     class CDustbinCamera;
     class CRostrumNode;
+    class CStartingGridSceneNode;
   }
 
   namespace sound {
@@ -55,6 +56,65 @@ namespace dustbin {
   class CGlobal;
 
   namespace state {
+    /**
+    * @class SGameViewports
+    * @author Christian Keimel
+    * This struct maps the number of local players
+    * to the viewport distribution
+    */
+    struct SGameViewports {
+      /**
+      * Enumeration for the type of viewport
+      */
+      enum class enType {
+        Player,   /**< A viewport for a player */
+        Racedata, /**< A viewport for the race data, i.e. ranking, racetime, leader... */
+        Logo      /**< A viewport for a logo, just to fill the empty space */
+      };
+
+      /**
+      * @class SViewportDef
+      * @author Christian Keimel
+      * This struct holds information about how a viewport looks like
+      */
+      struct SViewportDef {
+        int    m_iColumn;   /**< The column of the viewport*/
+        int    m_iRow;      /**< The row of the viewport*/
+        enType m_eType;     /**< The type of viewport */
+
+        SViewportDef() : m_iColumn(0), m_iRow(0), m_eType(enType::Player) {
+        }
+
+        SViewportDef(int a_iColumn, int a_iRow, enType a_eType) : m_iColumn(a_iColumn), m_iRow(a_iRow), m_eType(a_eType) {
+        }
+      };
+
+      /**
+      * @class SViewportDistribution
+      * @author Christian Keimel
+      * This struct is responsible for distributing the viewports
+      * across the window depending on the number of players
+      */
+      struct SViewportDistribution {
+        int m_iColumns;   /**< The number of columns for this distribution */
+        int m_iRows;      /**< The number of rows for this distribution */
+
+        std::vector<SViewportDef> m_vViewports;  /**< The actual viewports for the players */
+
+        SViewportDistribution() : m_iColumns(0), m_iRows(0) {
+        }
+
+        SViewportDistribution(int a_iColumns, int a_iRows) : m_iColumns(a_iColumns), m_iRows(a_iRows) {
+        }
+      };
+
+      /**
+      * This map hods the data for the distribution per number of local players
+      * key == number of local players, value == actual distribution
+      */
+      std::map<int, SViewportDistribution> m_mDistribution;
+    };
+
     /**
     * @class CErrorState
     * @author Christian Keimel
@@ -119,9 +179,24 @@ namespace dustbin {
 
         data::SChampionshipRace *m_pRace;
 
-        network::CGameClient *m_pClient;
-        network::CGameServer *m_pServer;
+        network::CGameClient *m_pClient;    /**< The game client (if a network game is running) */
+        network::CGameServer *m_pServer;    /**< The game server (if a network game is running) */
+
+        SGameViewports m_cViewports;  /**< Viewport distribution */
+
+        int m_iNumOfViewports;    /**< The number of necessary viewports, aka local players */
+
+        data::SRacePlayers m_cPlayers;  /**< The player of the race */
+
+        data::SGameData m_cGameData;  /**< The data of the current game */
+        data::SSettings m_cSettings;  /**< The global settings */
+
+        scenenodes::CStartingGridSceneNode *m_pGridNode;  /**< The starting grid scene node that holds all the available marbles */
         
+        irr::f32 m_fGridAngle;    /**< The starting grid angle */
+
+        irr::scene::ISceneNode *m_pAiNode;    /**< The scene node with the AI data */
+
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;
 #endif
@@ -216,6 +291,18 @@ namespace dustbin {
         virtual void onTrigger(irr::s32 a_TriggerId, irr::s32 a_ObjectId) override;
 
         /**
+        * This function receives messages of type "PlayerAssignMarble"
+        * @param a_playerid The ID of the player
+        * @param a_marbleid The ID of the marble for the player
+        */
+        virtual void onPlayerassignmarble(irr::s32 a_playerid, irr::s32 a_marbleid);
+
+        /**
+        * This function receives messages of type "RaceSetupDone"
+        */
+        virtual void onRacesetupdone();
+
+        /**
          * This function receives messages of type "PlayerRespawn"
          * @param a_MarbleId ID of the marble
          * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
@@ -292,6 +379,23 @@ namespace dustbin {
         virtual void onServerdisconnect();
 
         void addStaticCameras(irr::scene::ISceneNode *a_pNode);
+
+        /**
+        * Assign a viewport to a player
+        * @param a_fAngle the grid angle read from the grid scene node
+        * @param a_pPlayer the player to assign the viewport to
+        */
+        void assignViewport(irr::f32 a_fAngle, gameclasses::SPlayer *a_pPlayer);
+
+        /**
+        * Prepare the shader for the game
+        */
+        void prepareShader();
+
+        /**
+        * Set up the controllers for the marbles
+        */
+        void prepareMarbleControllers();
 
       public:
         CGameState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal);

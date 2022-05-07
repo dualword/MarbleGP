@@ -38,7 +38,15 @@ namespace dustbin {
         irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager);
 
         gameclasses::SMarbleNodes *getNextMarble();
+        gameclasses::SMarbleNodes *getMarble(int a_iMarbleID);
         void removeUnusedMarbles();
+
+        /**
+        * Get a marble scene node without removing it from the list
+        * @param a_iMarbleID the ID of the marble
+        * @return the marble's positional scene node
+        */
+        irr::scene::ISceneNode *getMarbleById(int a_iMarbleID);
 
         irr::f32 getAngle();
 
