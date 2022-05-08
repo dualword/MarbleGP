@@ -1,6 +1,8 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <network/CGameServer.h>
+#include <network/CGameClient.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
@@ -19,8 +21,15 @@ namespace dustbin {
       private:
         std::vector<std::vector<irr::gui::IGUIStaticText *>> m_vTable;
 
+        network::CGameServer *m_pServer;
+        network::CGameClient *m_pClient;
+
       public:
-        CMenuRaceResult(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState) {
+        CMenuRaceResult(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
+          IMenuHandler(a_pDevice, a_pManager, a_pState),
+          m_pServer(a_pState->getGlobal()->getGameServer()),
+          m_pClient(a_pState->getGlobal()->getGameClient())
+        {
           m_pGui ->clear();
           m_pSmgr->clear();
 
@@ -226,6 +235,10 @@ namespace dustbin {
 
               m_vTable.back().push_back(p);
             }
+          }
+
+          if (m_pServer != nullptr) {
+            
           }
         }
 

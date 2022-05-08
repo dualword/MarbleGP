@@ -27,6 +27,14 @@ namespace dustbin {
     class CInputQueue;  /**< Forward declaration of the thread input queue */
   }
 
+  namespace state {
+    class IState;   /**< Forward declaration of the state interface */
+  }
+
+  namespace menu {
+    class IMenuHandler; /**< Forward declaration of the menu handler interface */
+  }
+
   // Enum for the font size. The actual size
   // depends on the screen resolution
   enum class enFont {
@@ -195,6 +203,12 @@ namespace dustbin {
       * Stop a game client. Nothing happens if no client is running
       */
       virtual void stopGameClient() = 0;
+
+      /**
+      * Get the currently active state
+      * @return the currently active state
+      */
+      virtual state::IState *getActiveState() = 0;
 
 #ifdef _ANDROID
       /**

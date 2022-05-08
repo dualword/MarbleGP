@@ -70,6 +70,12 @@ namespace dustbin {
         * @param a_sKey the key to transfer
         */
         void sendGlobalData(const std::string &a_sKey);
+
+        /**
+        * Notify all clients about a state change
+        * @param a_sNewState the state to change to
+        */
+        void changeState(const std::string &a_sNewState);
     };
   }
 }

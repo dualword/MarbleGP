@@ -269,6 +269,7 @@ namespace dustbin {
 
       bool m_bReverseGrid;  /**< Reverse the grid? */
 
+      SChampionship();
       SChampionship(int a_iClass, int a_iGridSize, int a_iGridOrder, bool a_bReverseGrid);
       SChampionship(const std::string &a_sData);
       SChampionship(const SChampionship &a_sOther);

@@ -843,6 +843,9 @@ namespace dustbin {
       return s;
     }
 
+    SChampionship::SChampionship() : m_iClass(0), m_iGridSize(0), m_iGridOrder(0), m_bReverseGrid(false) {
+    }
+
     SChampionship::SChampionship(int a_iClass, int a_iGridSize, int a_iGridOrder, bool a_bReverseGrid) : m_iClass(a_iClass), m_iGridSize(a_iGridSize), m_iGridOrder(a_iGridOrder), m_bReverseGrid(a_bReverseGrid) {
     }
 

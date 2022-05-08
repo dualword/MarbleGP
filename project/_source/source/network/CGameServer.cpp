@@ -72,6 +72,15 @@ namespace dustbin {
       broadcastMessage(&l_cMsg, true);
     }
 
+    /**
+    * Notify all clients about a state change
+    * @param a_sNewState the state to change to
+    */
+    void CGameServer::changeState(const std::string& a_sNewState) {
+      messages::CChangeState l_cMsg = messages::CChangeState(a_sNewState);
+      broadcastMessage(&l_cMsg, true);
+    }
+
 
     /**
     * Handle an event in a subclass

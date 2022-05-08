@@ -222,6 +222,12 @@ namespace dustbin {
       */
       virtual void stopGameClient() override;
 
+      /**
+      * Get the currently active state
+      * @return the currently active state
+      */
+      virtual state::IState *getActiveState();
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app

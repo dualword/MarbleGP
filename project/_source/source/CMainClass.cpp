@@ -632,6 +632,14 @@ namespace dustbin {
   }
 
   /**
+  * Get the currently active state
+  * @return the currently active state
+  */
+  state::IState *CMainClass::getActiveState() {
+    return m_pActiveState;
+  }
+
+  /**
   * Get the sound interface
   * @return the sound interface
   */

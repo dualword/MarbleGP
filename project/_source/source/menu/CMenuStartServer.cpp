@@ -30,7 +30,8 @@ namespace dustbin {
 
         irr::gui::IGUIStaticText *m_pWaiting;   /**< The "waiting for clients" overlay label */
 
-        data::SRacePlayers m_cPlayers;    /**< The players */
+        data::SRacePlayers  m_cPlayers;       /**< The players */
+        data::SChampionship m_cChampionship;  /**< The championship */
 
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
@@ -100,6 +101,8 @@ namespace dustbin {
 
           m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
 
+          m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+
           updatePlayerList();
         }
 
@@ -128,12 +131,13 @@ namespace dustbin {
                 std::string l_sPlayers = m_cPlayers.serialize();
                 m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
 
+                m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
+
                 printf("\n*********\n");
                 printf("%s\n", m_cPlayers.toString().c_str());
                 printf("\n*********\n");
 
-                messages::CChangeState l_cMsg = messages::CChangeState("menu_netlobby");
-                m_pServer->broadcastMessage(&l_cMsg, true);
+                m_pServer->changeState("menu_netlobby");
                 if (m_pWaiting != nullptr)
                   m_pWaiting->setVisible(true);
 
@@ -174,6 +178,13 @@ namespace dustbin {
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
                 printf("Player %s added to player list (id = %i)\n", l_cPlayer.m_sName.c_str(), p->getident());
+
+                m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(
+                  l_cPlayer.m_iPlayerId,
+                  l_cPlayer.m_sName
+                ));
+
+                m_cChampionship.m_iGridSize = (int)m_cChampionship.m_vPlayers.size();
 
                 updatePlayerList();
               }

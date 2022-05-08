@@ -77,6 +77,7 @@ namespace dustbin {
 
               if (l_sNewState == "state_game") {
                 m_pState->setState(state::enState::Game);
+                m_pManager->pushToMenuStack("menu_raceresult");
               }
               else {
                 createMenu(l_sNewState, m_pDevice, m_pManager, m_pState);

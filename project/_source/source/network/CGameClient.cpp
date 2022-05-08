@@ -4,6 +4,8 @@
 #include <_generated/messages/CMessages.h>
 #include <messages/CSerializer64.h>
 #include <network/CGameClient.h>
+#include <state/CMenuState.h>
+#include <state/IState.h>
 #include <CGlobal.h>
 #include <chrono>
 
@@ -171,6 +173,7 @@ namespace dustbin {
             break;
         }
       }
+
       return false;
     }
 

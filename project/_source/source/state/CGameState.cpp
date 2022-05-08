@@ -326,12 +326,13 @@ namespace dustbin {
      * This method is called when the state is activated
      */
     void CGameState::activate() {
-      m_iStep      = 0;
-      m_iFadeOut   = -1;
-      m_iFinished  = -1;
-      m_eState     = enGameState::Countdown;
-      m_bPaused    = false;
-      m_fSfxVolume = m_pGlobal->getSettingData().m_fSfxGame;
+      m_iStep           = 0;
+      m_iFadeOut        = -1;
+      m_iFinished       = -1;
+      m_eState          = enGameState::Countdown;
+      m_bPaused         = false;
+      m_fSfxVolume      = m_pGlobal->getSettingData().m_fSfxGame;
+      m_iNumOfViewports = 0;
 
       m_pGui->clear();
 
@@ -587,6 +588,9 @@ namespace dustbin {
           l_cChampionship.addRace(*m_pRace);
           m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
           printf("\n\n%s\n\n", l_cChampionship.serialize().c_str());
+
+          if (m_pServer != nullptr)
+            m_pServer->sendGlobalData("championship");
         }
 
         if (m_pServer != nullptr) {
