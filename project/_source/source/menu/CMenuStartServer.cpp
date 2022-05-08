@@ -128,6 +128,10 @@ namespace dustbin {
                 std::string l_sPlayers = m_cPlayers.serialize();
                 m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
 
+                printf("\n*********\n");
+                printf("%s\n", m_cPlayers.toString().c_str());
+                printf("\n*********\n");
+
                 messages::CChangeState l_cMsg = messages::CChangeState("menu_netlobby");
                 m_pServer->broadcastMessage(&l_cMsg, true);
                 if (m_pWaiting != nullptr)

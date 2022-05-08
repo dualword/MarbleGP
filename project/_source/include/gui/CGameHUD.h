@@ -227,7 +227,7 @@ namespace dustbin {
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);
         virtual ~CGameHUD();
 
-        virtual void draw();
+        virtual void draw() override;
 
         void updateRanking();
 

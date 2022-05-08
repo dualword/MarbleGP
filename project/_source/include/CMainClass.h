@@ -201,7 +201,7 @@ namespace dustbin {
       /**
       * Stop a game server. Nothing happens if no server is running
       */
-      virtual void stopGameServer();
+      virtual void stopGameServer() override;
 
       /**
       * Get the running network client
@@ -220,14 +220,14 @@ namespace dustbin {
       /**
       * Stop a game client. Nothing happens if no client is running
       */
-      virtual void stopGameClient();
+      virtual void stopGameClient() override;
 
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app
       * @return the Android app
       */
-      virtual android_app *getAndroidApp();
+      virtual android_app *getAndroidApp() override;
 #endif
   };
 }

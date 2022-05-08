@@ -1071,3 +1071,4 @@
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.sarif
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.xml
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.txt
+*.ipch

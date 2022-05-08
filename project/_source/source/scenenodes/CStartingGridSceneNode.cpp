@@ -111,7 +111,7 @@ namespace dustbin {
       for (int i = 0; i < 16; i++) {
         if (m_pMarbles[i] != nullptr) {
           m_pMarbles[i]->m_pPositional->setVisible(false);
-          m_pMarbles[i]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[m_iNextMarble]->m_pPositional);
+          m_pMarbles[i]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[i]->m_pPositional);
         }
       }
     }

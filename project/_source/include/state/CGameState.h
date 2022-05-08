@@ -295,12 +295,12 @@ namespace dustbin {
         * @param a_playerid The ID of the player
         * @param a_marbleid The ID of the marble for the player
         */
-        virtual void onPlayerassignmarble(irr::s32 a_playerid, irr::s32 a_marbleid);
+        virtual void onPlayerassignmarble(irr::s32 a_playerid, irr::s32 a_marbleid) override;
 
         /**
         * This function receives messages of type "RaceSetupDone"
         */
-        virtual void onRacesetupdone();
+        virtual void onRacesetupdone() override;
 
         /**
          * This function receives messages of type "PlayerRespawn"
@@ -376,7 +376,7 @@ namespace dustbin {
         /**
         * This function receives messages of type "ServerDisconnect"
         */
-        virtual void onServerdisconnect();
+        virtual void onServerdisconnect() override;
 
         void addStaticCameras(irr::scene::ISceneNode *a_pNode);
 
@@ -393,9 +393,9 @@ namespace dustbin {
         void prepareShader();
 
         /**
-        * Set up the controllers for the marbles
+        * Hide the AI node unless defined as visible in the settings
         */
-        void prepareMarbleControllers();
+        void hideAiNode();
 
       public:
         CGameState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal);

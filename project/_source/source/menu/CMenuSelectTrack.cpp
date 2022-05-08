@@ -351,20 +351,13 @@ namespace dustbin {
             if (m_iClientState == 1) {
               if (m_pServer->allClientsAreInState("gamedata")) {
                 m_iClientState = 2;
-                m_pServer->sendGlobalData("raceplayers");
-                printf("Game data transmitted, sending playerlist.\n");
-              }
-            }
-            else if (m_iClientState == 2) {
-              if (m_pServer->allClientsAreInState("raceplayers")) {
-                m_iClientState = 3;
 
                 messages::CChangeState l_cMsg = messages::CChangeState("state_game");
                 m_pServer->broadcastMessage(&l_cMsg, true);
                 printf("Ready to go, start game.\n");
               }
             }
-            else if (m_iClientState == 3) {
+            else if (m_iClientState == 2) {
               if (m_pServer->allClientsAreInState("state_game")) {
                 m_pState->setState(state::enState::Game);
               }

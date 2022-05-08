@@ -777,6 +777,7 @@ namespace dustbin {
               l_pMarble->m_vNextCheckpoints.push_back(it->first);
           }
 
+          printf("Marble assignment: %i to player %s\n", l_pMarbleNode->getID(), (*it).m_sName.c_str()); 
           sendPlayerassignmarble((*it).m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
 
           sendMarblemoved(l_pMarble->m_iId,

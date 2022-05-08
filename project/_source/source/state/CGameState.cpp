@@ -206,7 +206,7 @@ namespace dustbin {
           if (a_pPlayer != nullptr && a_pPlayer->m_pMarble->m_pPositional) {
             SGameViewports::SViewportDef l_cViewportDef = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[m_cPlayers.m_vPlayers[i].m_iViewPort - 1];
 
-            printf("Viewport %i / %i assigned to player \"%s\".\n", m_cPlayers.m_vPlayers[i].m_iViewPort, m_iNumOfViewports, m_cPlayers.m_vPlayers[i].m_sName.c_str());
+            printf("Viewport %i / %i assigned to player \"%s\" (%i).\n", m_cPlayers.m_vPlayers[i].m_iViewPort, m_iNumOfViewports, m_cPlayers.m_vPlayers[i].m_sName.c_str(), a_pPlayer->m_pMarble->m_pPositional->getID());
 
             irr::core::recti l_cRect = irr::core::recti(
                l_cViewportDef.m_iColumn      * l_cViewportSize.Width,
@@ -243,9 +243,9 @@ namespace dustbin {
     }
 
     /**
-    * Set up the controllers for the marbles
+    * Hide the AI node unless defined as visible in the settings
     */
-    void CGameState::prepareMarbleControllers() {
+    void CGameState::hideAiNode() {
       m_pAiNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiNodeId, m_pSmgr->getRootSceneNode());
 
       if (m_pAiNode != nullptr) {
@@ -407,6 +407,10 @@ namespace dustbin {
       std::string l_sPlayers = m_pGlobal->getGlobal("raceplayers");
       m_cPlayers.deserialize(l_sPlayers);
 
+      printf("\n**********\n");
+      printf("%s", m_cPlayers.toString().c_str());
+      printf("\n**********\n");
+
       // Find out how many viewports we need to create
       for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
         if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1)
@@ -472,37 +476,12 @@ namespace dustbin {
 
       m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
 
-      /*printf("******** Marble assignment:\n");
-      // .. fill the player vector and assign the marbles to the players (depending on the grid positions) ...
-      for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
-        gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getNextMarble();
-        gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
-          m_cPlayers.m_vPlayers[i].m_iPlayerId,
-          m_cPlayers.m_vPlayers[i].m_sName,
-          m_cPlayers.m_vPlayers[i].m_sTexture,
-          m_cPlayers.m_vPlayers[i].m_sControls,
-          m_cPlayers.m_vPlayers[i].m_eAiHelp,
-          l_pMarble,
-          m_cPlayers.m_vPlayers[i].m_eType
-        );
-
-        l_pMarble->m_pPlayer = l_pPlayer; 
-
-        printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
-
-        m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
-
-        m_vPlayers .push_back(l_pPlayer);
-        m_vPosition.push_back(l_pPlayer);
-
-        m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
-      }*/
-
-      // m_pGridNode->removeUnusedMarbles();
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
 
       if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
       if (m_pOutputQueue == nullptr) m_pOutputQueue = new threads::COutputQueue();
+
+      hideAiNode();
 
       if (m_pClient == nullptr) {
         l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
@@ -527,7 +506,6 @@ namespace dustbin {
             m_pServer->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
           }
 
-          prepareMarbleControllers();
           m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
         }
         else {
@@ -1243,20 +1221,34 @@ namespace dustbin {
           m_vPlayers .push_back(l_pPlayer);
           m_vPosition.push_back(l_pPlayer);
 
-          controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pDynamics->getInputQueue());
+          threads::CInputQueue  *m_pTheInputQueue  = nullptr;
+          threads::COutputQueue *m_pTheOutputQueue = nullptr;
 
-          if ((*it).m_eType == data::enPlayerType::Local) {
-            l_pPlayer->m_pController = l_pFactory->createController(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, l_pPlayer->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+          if (m_pDynamics != nullptr) {
+            m_pTheInputQueue  = m_pDynamics->getInputQueue ();
+            m_pTheOutputQueue = m_pDynamics->getOutputQueue();
           }
-          else if ((*it).m_eType == data::enPlayerType::Ai) {
-            if (m_pAiThread == nullptr) {
-              m_pAiThread = new controller::CAiControlThread(m_pDynamics->getOutputQueue(), m_pDynamics->getInputQueue(), reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+          else if (m_pClient != nullptr) {
+            m_pTheInputQueue  = m_pClient->getInputQueue ();
+            m_pTheOutputQueue = m_pClient->getOutputQueue();
+          }
+
+          if (m_pTheInputQueue != nullptr) {
+            controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pTheInputQueue);
+
+            if ((*it).m_eType == data::enPlayerType::Local) {
+              l_pPlayer->m_pController = l_pFactory->createController(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, l_pPlayer->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+            }
+            else if ((*it).m_eType == data::enPlayerType::Ai) {
+              if (m_pAiThread == nullptr) {
+                m_pAiThread = new controller::CAiControlThread(m_pTheOutputQueue, m_pTheInputQueue, reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+              }
+
+              m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController);
             }
 
-            m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController);
+            delete l_pFactory;
           }
-
-          delete l_pFactory;
 
           m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
         }
@@ -1267,7 +1259,8 @@ namespace dustbin {
     * This function receives messages of type "RaceSetupDone"
     */
     void CGameState::onRacesetupdone() {
-      m_pDynamics->startThread();
+      if (m_pDynamics != nullptr)
+        m_pDynamics->startThread();
 
       if (m_pAiThread != nullptr)
         m_pAiThread->startThread();
@@ -1299,6 +1292,7 @@ namespace dustbin {
         }
       }
 
+      m_pGridNode->removeUnusedMarbles();
       prepareShader();
     }
 

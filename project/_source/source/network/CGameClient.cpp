@@ -107,6 +107,7 @@ namespace dustbin {
             }
             else {
               enet_peer_disconnect(a_pPeer, 0);
+              m_pGlobal->setGlobal("message_text", "Invalid server identifier received.");
             }
 
             return true;
@@ -160,8 +161,10 @@ namespace dustbin {
           case messages::enMessageIDs::SetGlobalData: {
             messages::CSetGlobalData *p = reinterpret_cast<messages::CSetGlobalData *>(a_pMessage);
             m_pGlobal->setGlobal(p->getkey(), p->getvalue());
-            printf("Global data set: \"%s\" = \"%s\"\n", p->getkey(), p->getvalue());
+            printf("Global data set: \"%s\" = \"%s\"\n", p->getkey().c_str(), p->getvalue().c_str());
             stateChanged(p->getkey());
+
+            return true;
           }
 
           default:

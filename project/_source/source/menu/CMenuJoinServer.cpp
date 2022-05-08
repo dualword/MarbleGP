@@ -60,6 +60,8 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
+          m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
+
           m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (m_pConnecting)
@@ -179,8 +181,6 @@ namespace dustbin {
 
                   m_cPlayers.m_vPlayers.push_back(l_cNewPlayer);
 
-                  printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
-
                   updatePlayerList();
                 }
               }
@@ -192,9 +192,6 @@ namespace dustbin {
                 for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == l_iPlayerId) {
                     m_cPlayers.m_vPlayers.erase(it);
-
-                    printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
-
                     updatePlayerList();
                     break;
                   }
@@ -212,6 +209,8 @@ namespace dustbin {
                 messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
                 std::string l_sNewState = p->getnewstate();
                 printf("Change state to \"%s\"\n", l_sNewState.c_str());
+                m_pState->getGlobal()->setGlobal("raceplayers", m_cPlayers.serialize());
+                printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
               }
 

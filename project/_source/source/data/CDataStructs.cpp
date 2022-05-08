@@ -479,6 +479,10 @@ namespace dustbin {
       messages::CSerializer64 l_cSerializer;
 
       l_cSerializer.addS32(c_iRacePlayersHead);
+      
+      std::sort(m_vPlayers.begin(), m_vPlayers.end(), [](const SPlayerData &p1, const SPlayerData &p2) {
+        return p1.m_iPlayerId < p2.m_iPlayerId;
+      });
 
       for (std::vector<SPlayerData>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
         l_cSerializer.addS32(c_iRacePlayersStart);
