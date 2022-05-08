@@ -1,8 +1,10 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/ICustomEventReceiver.h>
 #include <controller/CControllerMenu.h>
+#include <threads/CMessageQueue.h>
 #include <sound/ISoundInterface.h>
 #include <helpers/CMenuLoader.h>
+#include <network/CGameClient.h>
 #include <menu/IMenuHandler.h>
 #include <menu/IMenuHandler.h>
 #include <state/CMenuState.h>
@@ -11,7 +13,7 @@
 
 namespace dustbin {
   namespace state {
-    CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_pController(nullptr), m_pTouchCtrl(nullptr) {
+    CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_pController(nullptr), m_pTouchCtrl(nullptr), m_pClient(nullptr), m_pInputQueue(nullptr) {
       m_pController = new controller::CControllerMenu(-1);
 
       irr::SEvent l_cEvent;
@@ -56,6 +58,16 @@ namespace dustbin {
         delete m_pMenu;
         m_pMenu = nullptr;
       }
+
+      if (m_pInputQueue != nullptr) {
+        if (m_pClient != nullptr)
+          m_pClient->getOutputQueue()->removeListener(m_pInputQueue);
+
+        delete m_pInputQueue;
+        m_pInputQueue = nullptr;
+      }
+
+      m_pClient = nullptr;
     }
 
     /**
@@ -140,6 +152,30 @@ namespace dustbin {
       }
       else m_eState = enState::Quit;
 
+      if (m_pInputQueue != nullptr) {
+        messages::IMessage *l_pMsg = m_pInputQueue->popMessage();
+        if (l_pMsg != nullptr) {
+          if (l_pMsg->getMessageId() == messages::enMessageIDs::ChangeState) {
+            messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
+            std::string l_sNewState = p->getnewstate();
+            printf("Change state to \"%s\"\n", l_sNewState.c_str());
+
+            if (l_sNewState == "state_game") {
+              setState(state::enState::Game);
+              pushToMenuStack("menu_raceresult");
+            }
+            else {
+              m_pMenu->createMenu(l_sNewState, m_pDevice, m_pMenu->getMenuManager(), this);
+            }
+          }
+          else {
+            handleMessage(l_pMsg);
+          }
+
+          delete l_pMsg;
+        }
+      }
+
       return m_pGlobal->getSettingData().m_bGfxChange ? enState::Restart : m_eState;
     }
 
@@ -211,6 +247,23 @@ namespace dustbin {
       }
 
       return m_pMenu;
+    }
+
+    /**
+    * A callback for the menu state to get informed about a menu change
+    * @param a_sMenu the loaded menu
+    */
+    void CMenuState::menuChanged(const std::string &a_sMenu) { 
+      m_pClient = m_pGlobal->getGameClient();
+
+      if (m_pClient != nullptr) {
+        if (m_pInputQueue == nullptr) {
+          m_pInputQueue = new threads::CInputQueue();
+          m_pClient->getOutputQueue()->addListener(m_pInputQueue);
+        }
+
+        m_pClient->stateChanged(a_sMenu);
+      }
     }
   }
 }

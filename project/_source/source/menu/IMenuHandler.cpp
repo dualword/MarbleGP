@@ -66,6 +66,14 @@ namespace dustbin {
 
     }
 
+    /**
+    * Get the menu manager
+    * @return the menu manager
+    */
+    IMenuManager *IMenuHandler::getMenuManager() {
+      return m_pManager;
+    }
+
     void IMenuHandler::changeZLayer(int a_iZLayer) {
       irr::SEvent l_cEvent;
 
@@ -84,43 +92,49 @@ namespace dustbin {
     * @return "true" on success, "false" otherwise
     */
     IMenuHandler *IMenuHandler::createMenu(const std::string& a_sName, irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) {
+      IMenuHandler *l_pRet = nullptr;
+
       if (a_sName == "menu_main") {
-        return a_pManager->changeMenu(createMenuMain(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuMain(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_settings") {
-        return a_pManager->changeMenu(createMenuSettings(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuSettings(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_profiles") {
-        return a_pManager->changeMenu(createMenuProfiles(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuProfiles(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_setupgame") {
-        return a_pManager->changeMenu(createMenuSetupGame(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuSetupGame(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_selecttrack") {
-        return a_pManager->changeMenu(createMenuSelectTrack(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuSelectTrack(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_raceresult") {
-        return a_pManager->changeMenu(createMenuRaceResult(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuRaceResult(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_standings") {
-        return a_pManager->changeMenu(createMenuStandings(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuStandings(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_startserver") {
-        return a_pManager->changeMenu(createMenuStartServer(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuStartServer(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_joinserver") {
-        return a_pManager->changeMenu(createMenuJoinServer(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuJoinServer(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_message") {
-        return a_pManager->changeMenu(createMenuMessage(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuMessage(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_netlobby") {
-        return a_pManager->changeMenu(createMenuNetLobby(a_pDevice, a_pManager, a_pState));
+        l_pRet = a_pManager->changeMenu(createMenuNetLobby(a_pDevice, a_pManager, a_pState));
       }
 
-      printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());
+      if (l_pRet == nullptr)
+        printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());
+      else {
+        a_pState->menuChanged(a_sName);
+      }
 
-      return nullptr;
+      return l_pRet;
     }
   }
 }

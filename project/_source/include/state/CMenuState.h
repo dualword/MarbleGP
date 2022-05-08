@@ -18,6 +18,18 @@ namespace dustbin {
     class ICustomEventReceiver;   /**< Forward declaration of the custom event receiver interface */
   }
 
+  namespace threads {
+    class CInputQueue;    /**< Forward declaration of the input queue */
+  }
+
+  namespace network {
+    class CGameClient;  /**< Forward declaration of the network game client */
+  }
+
+  namespace messages {
+    class IMessage;   /**< Forward declaration of the message interface */
+  }
+
   namespace state {
     /**
     * @class CMenuState
@@ -32,6 +44,10 @@ namespace dustbin {
         controller::ICustomEventReceiver *m_pTouchCtrl;     /**< Touch controller for the menu */
 
         std::vector<std::string> m_vMenuStack;    /**< A stack for the menues that shall be activated */
+
+      protected:
+        network::CGameClient *m_pClient;
+        threads::CInputQueue *m_pInputQueue;
 
       public:
         CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal);
@@ -108,6 +124,18 @@ namespace dustbin {
         * Set a controller to handle touch input
         */
         void setTouchController(controller::ICustomEventReceiver *a_pTouchCtrl);
+
+        /**
+        * Handle a message received by the network client
+        * @param a_pMessage the message to handle
+        */
+        virtual void handleMessage(messages::IMessage *a_pMessage) { }
+
+        /**
+        * A callback for the menu state to get informed about a menu change
+        * @param a_sMenu the loaded menu
+        */
+        virtual void menuChanged(const std::string &a_sMenu);
     };
   }
 }

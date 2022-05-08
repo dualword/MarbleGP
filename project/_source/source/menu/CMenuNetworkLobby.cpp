@@ -17,13 +17,11 @@ namespace dustbin {
     */
     class CMenuNetworkLobby : public IMenuHandler {
       private:
-        threads::CInputQueue *m_pInputQueue;
         network::CGameClient *m_pClient;
 
       public:
         CMenuNetworkLobby(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
-          m_pInputQueue(new threads::CInputQueue()),
           m_pClient    (a_pState->getGlobal()->getGameClient())
         {
           m_pGui->clear();
@@ -43,48 +41,15 @@ namespace dustbin {
           if (p != nullptr)
             p->setText(L"Waiting for the server to select a race.");
 
-          if (m_pClient != nullptr) {
-            m_pClient->getOutputQueue()->addListener(m_pInputQueue);
-            m_pClient->stateChanged("menu_netlobby");
-          }
-          else {
-            m_pState->getGlobal()->setGlobal("message_headline", "Netgame Error");
-            m_pState->getGlobal()->setGlobal("message_text"    , "Game Client not initialized.");
-            createMenu("menu_message", m_pDevice, m_pManager, m_pState);
-          }
+          m_pManager->pushToMenuStack("menu_raceresult");
         }
 
         virtual ~CMenuNetworkLobby() {
-          if (m_pClient != nullptr) {
-            m_pClient->getOutputQueue()->removeListener(m_pInputQueue);
-          }
-
-          if (m_pInputQueue != nullptr) {
-            delete m_pInputQueue;
-            m_pInputQueue = nullptr;
-          }
         }
         /**
         * This method is called every frame after "scenemanager::drawall" is called
         */
         virtual void run() { 
-          messages::IMessage *l_pMsg = m_pInputQueue->popMessage();
-          if (l_pMsg != nullptr) {
-            if (l_pMsg->getMessageId() == messages::enMessageIDs::ChangeState) {
-              messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
-              std::string l_sNewState = p->getnewstate();
-              printf("Change state to \"%s\"\n", l_sNewState.c_str());
-
-              if (l_sNewState == "state_game") {
-                m_pState->setState(state::enState::Game);
-                m_pManager->pushToMenuStack("menu_raceresult");
-              }
-              else {
-                createMenu(l_sNewState, m_pDevice, m_pManager, m_pState);
-              }
-            }
-            delete l_pMsg;
-          }
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
@@ -98,7 +63,6 @@ namespace dustbin {
               if (l_sSender == "cancel") {
                 if (m_pClient != nullptr) {
                   m_pState->getGlobal()->stopGameClient();
-                  m_pClient = nullptr;
                 }
 
                 l_bRet = true;

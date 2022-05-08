@@ -101,6 +101,12 @@ namespace dustbin {
         void setState(enState a_eState) {
           m_eState = a_eState;
         }
+
+        /**
+        * A callback for the menu state to get informed about a menu change
+        * @param a_sMenu the loaded menu
+        */
+        virtual void menuChanged(const std::string &a_sMenu) { }
     };
   }
 }

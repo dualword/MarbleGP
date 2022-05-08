@@ -52,6 +52,12 @@ namespace dustbin {
         * via gamepad
         */
         void changeZLayer(int a_iZLayer);
+
+        /**
+        * Get the menu manager
+        * @return the menu manager
+        */
+        IMenuManager *getMenuManager();
     };
 
     irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement);
