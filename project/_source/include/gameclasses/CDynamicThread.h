@@ -177,7 +177,7 @@ namespace dustbin {
         * Get the race result
         * @return the race result
         */
-        const std::vector<data::SRacePlayer *> getRaceResult();
+        // const std::vector<data::SRacePlayer *> getRaceResult();
 
         /**
         * Retrieve the world of the race

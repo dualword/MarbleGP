@@ -55,6 +55,7 @@ namespace dustbin {
       m_iFadeOut       (-1),
       m_fSfxVolume     (1.0f),
       m_bPaused        (false),
+      m_bEnded         (false),
       m_pSoundIntf     (nullptr),
       m_pDynamics      (nullptr),
       m_pRostrum       (nullptr),
@@ -331,6 +332,7 @@ namespace dustbin {
       m_iFinished       = -1;
       m_eState          = enGameState::Countdown;
       m_bPaused         = false;
+      m_bEnded          = false;
       m_fSfxVolume      = m_pGlobal->getSettingData().m_fSfxGame;
       m_iNumOfViewports = 0;
 
@@ -547,7 +549,6 @@ namespace dustbin {
       }
 
       if (m_pDynamics != nullptr) {
-        m_pDynamics->stopThread();
         m_pDynamics->join();
 
         messages::IMessage *l_pMsg = nullptr;
@@ -558,7 +559,7 @@ namespace dustbin {
         }
         while (l_pMsg != nullptr);
 
-        if (m_pRace != nullptr) {
+        /*if (m_pRace != nullptr) {
           const std::vector<data::SRacePlayer*> l_vResult = m_pDynamics->getRaceResult();
 
           printf("\n***** Race Result *****\n\n");
@@ -591,7 +592,7 @@ namespace dustbin {
 
           if (m_pServer != nullptr)
             m_pServer->sendGlobalData("championship");
-        }
+        }*/
 
         if (m_pServer != nullptr) {
           m_pServer->getOutputQueue()->removeListener(m_pDynamics->getInputQueue());
@@ -869,8 +870,6 @@ namespace dustbin {
     * @return enState::None for running without state change, any other value will switch to the state
     */
     enState CGameState::run() {
-      enState l_eRet = enState::None;
-
       messages::IMessage* l_pMsg = nullptr;
 
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
@@ -1043,7 +1042,7 @@ namespace dustbin {
 
         if (l_fFade > 1.0f) {
           l_fFade = 1.0f;
-          l_eRet = enState::Menu;
+          m_pDynamics->stopThread();
         }
 
         m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
@@ -1053,7 +1052,7 @@ namespace dustbin {
       m_pDrv->endScene();
       m_pDrv->setRenderTarget(0, false, false);
 
-      return l_eRet;
+      return m_bEnded ? enState::Menu : enState::None;
     }
 
     /**** Methods inherited from "messages:IGameState ****/
@@ -1504,6 +1503,30 @@ namespace dustbin {
     */
     void CGameState::onServerdisconnect() {
       m_iFinished = m_iStep;
+    }
+
+    /**
+    * This function receives messages of type "RaceResult"
+    * @param a_data Encoded SRacePlayer structure
+    */
+    void CGameState::onRaceresult(const std::string& a_data) {
+      if (m_pRace != nullptr) {
+        data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
+        m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
+      }
+    }
+
+    /**
+    * This function receives messages of type "EndRaceState"
+    */
+    void CGameState::onEndracestate() {
+      if (m_pRace != nullptr) {
+        data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
+        l_cChampionship.addRace(*m_pRace);
+        m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
+      }
+
+      m_bEnded = true;
     }
 
     /**

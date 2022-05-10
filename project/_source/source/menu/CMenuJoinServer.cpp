@@ -40,6 +40,10 @@ namespace dustbin {
             std::get<1>(*it)->setVisible(false);
           }
 
+          std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &l_cPlayer1, const data::SPlayerData &l_cPlayer2) {
+            return l_cPlayer1.m_iPlayerId < l_cPlayer2.m_iPlayerId;
+          });
+
           int i = 0;
           for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
             if (i < m_vPlayers.size()) {
@@ -209,6 +213,11 @@ namespace dustbin {
                 messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
                 std::string l_sNewState = p->getnewstate();
                 printf("Change state to \"%s\"\n", l_sNewState.c_str());
+
+                std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &l_cPlayer1, const data::SPlayerData &l_cPlayer2) {
+                  return l_cPlayer1.m_iPlayerId < l_cPlayer2.m_iPlayerId;
+                });
+
                 m_pState->getGlobal()->setGlobal("raceplayers", m_cPlayers.serialize());
                 printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);

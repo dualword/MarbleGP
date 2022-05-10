@@ -707,6 +707,25 @@ namespace dustbin {
         run();
       }
 
+      const std::vector<data::SRacePlayer *> l_vResult = m_pGameLogic->getRacePositions();
+
+      int l_iDiff = 0;
+
+      for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
+        if (it != l_vResult.begin() && !(*it)->m_bFinished) {
+          if ((*it)->m_iDeficitL > 0 || (*it)->m_iLapNo == (*(l_vResult.begin()))->m_iLapNo - 1) {
+            if ((*it)->m_iDeficitL < l_iDiff) {
+              l_iDiff += std::rand() % 480;
+              (*it)->m_iDeficitL = l_iDiff;
+            }
+            else l_iDiff = (*it)->m_iDeficitL;
+          }
+        }
+
+        sendRaceresult((*it)->serialize(), m_pOutputQueue);
+      }
+
+      sendEndracestate(m_pOutputQueue);
       printf("Dynamics thread ends.\n");
     }
 
@@ -928,7 +947,7 @@ namespace dustbin {
     * Get the race result
     * @return the race result
     */
-    const std::vector<data::SRacePlayer*> CDynamicThread::getRaceResult() {
+    /*const std::vector<data::SRacePlayer*> CDynamicThread::getRaceResult() {
       const std::vector<data::SRacePlayer *> l_vResult = m_pGameLogic->getRacePositions();
 
       int l_iDiff = 0;
@@ -946,7 +965,7 @@ namespace dustbin {
       }
 
       return l_vResult;
-    }
+    }*/
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
       int l_iId = a_iMarble - 10000;

@@ -140,6 +140,7 @@ namespace dustbin {
         irr::f32 m_fSfxVolume;  /**< The volume of the in-game sound effects */
 
         bool m_bPaused; /**< Is the game paused? */
+        bool m_bEnded;  /**< A message notifying that the race has ended was received (dynamics thread terminated) */
 
         sound::ISoundInterface *m_pSoundIntf;
 
@@ -377,6 +378,17 @@ namespace dustbin {
         * This function receives messages of type "ServerDisconnect"
         */
         virtual void onServerdisconnect() override;
+
+        /**
+        * This function receives messages of type "RaceResult"
+        * @param a_data Encoded SRacePlayer structure
+        */
+        virtual void onRaceresult(const std::string &a_data) override;
+
+        /**
+        * This function receives messages of type "EndRaceState"
+        */
+        virtual void onEndracestate() override;
 
         void addStaticCameras(irr::scene::ISceneNode *a_pNode);
 

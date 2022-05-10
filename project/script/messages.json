@@ -46,7 +46,9 @@
     [ "ConnectedToServer" , "35" ],
     [ "ChangeState"       , "36" ],
     [ "StateChanged"      , "37" ],
-    [ "SetGlobalData"     , "38" ]
+    [ "SetGlobalData"     , "38" ],
+    [ "RaceResult"        , "39" ],
+    [ "EndRaceState"      , "40" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -311,6 +313,16 @@
         { "name": "key"  , "type": "std::string", "comment": "The global data key to be set" },
         { "name": "value", "type": "std::string", "comment": "The global value to be stored with the key" }
       ]
+    },
+    "RaceResult": {
+      "comment": "Sent by the dynamics thread to notify the game state(s) about the race result",
+      "fields": [
+        { "name": "data", "type": "std::string", "comment": "Encoded SRacePlayer structure" }
+      ]
+    },
+    "EndRaceState": {
+      "comment": "Message sent by the dynamics thread to notify all listeners that they can proceeed to the results state",
+      "fields": [ ]
     }
   },
   "interfaces": [
@@ -335,7 +347,9 @@
         "RacePosition",
         "PlayerRostrum",
         "ConfirmWithdraw",
-        "PlayerWithdrawn"
+        "PlayerWithdrawn",
+        "RaceResult",
+        "EndRaceState"
       ],
       "receive": [
         "MarbleControl",
@@ -370,7 +384,9 @@
         "PauseChanged",
         "RacePosition",
         "PlayerWithdrawn",
-        "ServerDisconnect"
+        "ServerDisconnect",
+        "RaceResult",
+        "EndRaceState"
       ]
     },
     {
