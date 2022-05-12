@@ -47,6 +47,9 @@ namespace dustbin {
       m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStMenu);
       m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f);
       m_pGlobal->getSoundInterface()->setMenuFlag(true);
+
+      if (m_pInputQueue != nullptr && m_pClient != nullptr)
+        m_pClient->getOutputQueue()->addListener(m_pInputQueue);
     }
 
     /**
@@ -156,16 +159,19 @@ namespace dustbin {
         messages::IMessage *l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
           if (l_pMsg->getMessageId() == messages::enMessageIDs::ChangeState) {
-            messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
-            std::string l_sNewState = p->getnewstate();
-            printf("Change state to \"%s\"\n", l_sNewState.c_str());
+            if (!m_pMenu->handlesNetworkStateChange()) {
+              messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
+              std::string l_sNewState = p->getnewstate();
+              printf("Change state to \"%s\"\n", l_sNewState.c_str());
 
-            if (l_sNewState == "state_game") {
-              setState(state::enState::Game);
-              pushToMenuStack("menu_raceresult");
-            }
-            else {
-              m_pMenu->createMenu(l_sNewState, m_pDevice, m_pMenu->getMenuManager(), this);
+              // Special handling if we start a game
+              if (l_sNewState == "state_game") {
+                setState(state::enState::Game);
+                pushToMenuStack("menu_raceresult");
+              }
+              else {
+                m_pMenu->createMenu(l_sNewState, m_pDevice, m_pMenu->getMenuManager(), this);
+              }
             }
           }
           else {

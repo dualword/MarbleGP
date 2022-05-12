@@ -496,6 +496,8 @@ namespace dustbin {
     }
 
     bool SRacePlayers::deserialize(const std::string& a_sSerialized) {
+      m_vPlayers.clear();
+
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sSerialized.c_str());
 
       if (l_cSerializer.getS32() == c_iRacePlayersHead) {

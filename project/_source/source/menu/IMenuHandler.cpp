@@ -74,6 +74,15 @@ namespace dustbin {
       return m_pManager;
     }
 
+    /**
+    * Does this menu handle the state change network message itself?
+    * Might me necessary if some data needs to be written to a global
+    * @return true it this menu handle the state change network message itself
+    */
+    bool IMenuHandler::handlesNetworkStateChange() {
+      return false;
+    }
+
     void IMenuHandler::changeZLayer(int a_iZLayer) {
       irr::SEvent l_cEvent;
 

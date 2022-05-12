@@ -202,12 +202,16 @@ namespace dustbin {
       irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
       l_vOffset.rotateXZBy(a_fAngle);
 
-      for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
-        if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1 && m_cPlayers.m_vPlayers[i].m_iPlayerId == a_pPlayer->m_iPlayer) {
-          if (a_pPlayer != nullptr && a_pPlayer->m_pMarble->m_pPositional) {
-            SGameViewports::SViewportDef l_cViewportDef = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[m_cPlayers.m_vPlayers[i].m_iViewPort - 1];
+      size_t l_iPlayers = m_cPlayers.m_vPlayers.size();
 
-            printf("Viewport %i / %i assigned to player \"%s\" (%i).\n", m_cPlayers.m_vPlayers[i].m_iViewPort, m_iNumOfViewports, m_cPlayers.m_vPlayers[i].m_sName.c_str(), a_pPlayer->m_pMarble->m_pPositional->getID());
+      for (size_t i = 0; i < l_iPlayers; i++) {
+        data::SPlayerData *l_pPlayer = &(m_cPlayers.m_vPlayers[i]);
+
+        if (l_pPlayer->m_iViewPort != -1 && l_pPlayer->m_iPlayerId == a_pPlayer->m_iPlayer) {
+          if (a_pPlayer != nullptr && a_pPlayer->m_pMarble->m_pPositional) {
+            SGameViewports::SViewportDef l_cViewportDef = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[l_pPlayer->m_iViewPort - 1];
+
+            printf("Viewport %i / %i assigned to player \"%s\" (%i).\n", l_pPlayer->m_iViewPort, m_iNumOfViewports, l_pPlayer->m_sName.c_str(), a_pPlayer->m_pMarble->m_pPositional->getID());
 
             irr::core::recti l_cRect = irr::core::recti(
                l_cViewportDef.m_iColumn      * l_cViewportSize.Width,
@@ -221,7 +225,7 @@ namespace dustbin {
             l_pCam->setAspectRatio((((irr::f32)l_cRect.LowerRightCorner.X) - ((irr::f32)l_cRect.UpperLeftCorner.X)) / (((irr::f32)l_cRect.LowerRightCorner.Y) - ((irr::f32)l_cRect.UpperLeftCorner.Y)));
             l_pCam->updateAbsolutePosition();
 
-            gfx::SViewPort l_cViewport = gfx::SViewPort(l_cRect, m_cPlayers.m_vPlayers[i].m_iPlayerId, a_pPlayer->m_pMarble->m_pPositional, l_pCam);
+            gfx::SViewPort l_cViewport = gfx::SViewPort(l_cRect, l_pPlayer->m_iPlayerId, a_pPlayer->m_pMarble->m_pPositional, l_pCam);
 
             for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
               if (it->second->m_bFirstInLap && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
@@ -230,8 +234,8 @@ namespace dustbin {
             }
 
             l_cViewport.m_pPlayer = a_pPlayer->m_pMarble;
-            m_mViewports[m_cPlayers.m_vPlayers[i].m_iPlayerId] = l_cViewport;
-            a_pPlayer->m_pMarble->m_pViewport = &m_mViewports[m_cPlayers.m_vPlayers[i].m_iPlayerId];
+            m_mViewports[l_pPlayer->m_iPlayerId] = l_cViewport;
+            a_pPlayer->m_pMarble->m_pViewport = &m_mViewports[l_pPlayer->m_iPlayerId];
           }
         }
       }
@@ -337,6 +341,8 @@ namespace dustbin {
       m_iNumOfViewports = 0;
 
       m_pGui->clear();
+
+      m_pStepLabel = m_pGui->addStaticText(L"Step", irr::core::recti(0, 0, 1000, 200));
 
       m_pClient = m_pGlobal->getGameClient();
       m_pServer = m_pGlobal->getGameServer();
@@ -477,7 +483,7 @@ namespace dustbin {
         std::reverse(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end());
 
 
-      m_pRace = new data::SChampionshipRace(m_pGlobal->getGlobal("track"), (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
+      m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
 
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
 
@@ -508,6 +514,10 @@ namespace dustbin {
             m_pDynamics->getOutputQueue()->addListener(m_pServer->getInputQueue());
             m_pServer->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
           }
+
+          std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
+            return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
+          });
 
           m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
         }
@@ -716,10 +726,6 @@ namespace dustbin {
         if (!a_cEvent.KeyInput.PressedDown) {
           if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
             sendCancelrace(m_pOutputQueue);
-            l_bRet = true;
-          }
-          else if (a_cEvent.KeyInput.Key == irr::KEY_PAUSE) {
-            sendTogglepause(m_pOutputQueue);
             l_bRet = true;
           }
         }
@@ -1042,7 +1048,9 @@ namespace dustbin {
 
         if (l_fFade > 1.0f) {
           l_fFade = 1.0f;
-          m_pDynamics->stopThread();
+
+          if (m_pDynamics != nullptr)
+            m_pDynamics->stopThread();
         }
 
         m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
@@ -1052,7 +1060,7 @@ namespace dustbin {
       m_pDrv->endScene();
       m_pDrv->setRenderTarget(0, false, false);
 
-      return m_bEnded ? enState::Menu : enState::None;
+      return (m_bEnded || (m_pDynamics != nullptr && m_pDynamics->hasFinished())) ? enState::Menu : enState::None;
     }
 
     /**** Methods inherited from "messages:IGameState ****/
@@ -1063,6 +1071,9 @@ namespace dustbin {
     */
     void CGameState::onStepmsg(irr::u32 a_StepNo) {
       m_iStep = a_StepNo;
+
+      if (m_pStepLabel != nullptr)
+        m_pStepLabel->setText((L"         " + std::to_wstring(a_StepNo)).c_str());
 
       for (std::vector<scenenodes::STriggerVector>::iterator it = m_vTimerActions.begin(); it != m_vTimerActions.end(); it++) {
         if ((*it).m_vActions.size() > 0) {

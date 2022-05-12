@@ -25,9 +25,9 @@ namespace dustbin {
 
         std::thread m_cThread;			/**< C++ std thread object */
 
-        bool m_bStopThread,				/**< Flag to stop the thread. The implementing thread should react to this flag */
-             m_bFinished,				  /**< Flag showing whether or not the thread has finished working */
-             m_bStarted;          /**< Has the thread been started? */
+        bool m_bStopThread;				/**< Flag to stop the thread. The implementing thread should react to this flag */
+        bool m_bFinished;				  /**< Flag showing whether or not the thread has finished working */
+        bool m_bStarted;          /**< Has the thread been started? */
 
         /**
         * The implementing object must implement this method. It is called when the thread start working

@@ -58,6 +58,13 @@ namespace dustbin {
         * @return the menu manager
         */
         IMenuManager *getMenuManager();
+
+        /**
+        * Does this menu handle the state change network message itself?
+        * Might me necessary if some data needs to be written to a global
+        * @return true it this menu handle the state change network message itself
+        */
+        virtual bool handlesNetworkStateChange();
     };
 
     irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement);

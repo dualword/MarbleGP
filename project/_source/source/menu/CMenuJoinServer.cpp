@@ -28,7 +28,8 @@ namespace dustbin {
         threads::CInputQueue *m_pInputQueue;  /**< The input queue to receive messages from the server */
         network::CGameClient *m_pClient;      /**< The game client */
 
-        data::SRacePlayers m_cPlayers;    /**< The players */
+        data::SRacePlayers  m_cPlayers;       /**< The players */
+        data::SChampionship m_cChampionship;  /**< The championship */
 
         irr::gui::IGUIStaticText *m_pConnecting;    /**< The "connecting" label */
         gui::CMenuBackground     *m_pMainFrame;     /**< The main frame */
@@ -65,6 +66,8 @@ namespace dustbin {
           m_pSmgr->addCameraSceneNode();
 
           m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
+
+          m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
           m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
@@ -163,6 +166,13 @@ namespace dustbin {
                     (*it).m_iPlayerId = p->getnetgame_id();
                   }
                 }
+
+                for (std::vector<data::SChampionshipPlayer>::iterator it = m_cChampionship.m_vPlayers.begin(); it != m_cChampionship.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == p->getoriginal_id()) {
+                    (*it).m_iPlayerId = p->getnetgame_id();
+                    break;
+                  }
+                }
               }
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::RacePlayer) {
                 messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(l_pMsg);
@@ -185,6 +195,8 @@ namespace dustbin {
 
                   m_cPlayers.m_vPlayers.push_back(l_cNewPlayer);
 
+                  m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(p->getplayerid(), p->getname()));
+
                   updatePlayerList();
                 }
               }
@@ -197,6 +209,13 @@ namespace dustbin {
                   if ((*it).m_iPlayerId == l_iPlayerId) {
                     m_cPlayers.m_vPlayers.erase(it);
                     updatePlayerList();
+                    break;
+                  }
+                }
+
+                for (std::vector<data::SChampionshipPlayer>::iterator it = m_cChampionship.m_vPlayers.begin(); it != m_cChampionship.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == p->getplayerid()) {
+                    m_cChampionship.m_vPlayers.erase(it);
                     break;
                   }
                 }
@@ -218,8 +237,9 @@ namespace dustbin {
                   return l_cPlayer1.m_iPlayerId < l_cPlayer2.m_iPlayerId;
                 });
 
-                m_pState->getGlobal()->setGlobal("raceplayers", m_cPlayers.serialize());
-                printf("\n******************\n%s\n", m_cPlayers.toString().c_str());
+                m_pState->getGlobal()->setGlobal("raceplayers" , m_cPlayers     .serialize());
+                m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
+
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
               }
 
@@ -227,6 +247,16 @@ namespace dustbin {
             }
           }
         }
+
+        /**
+        * Does this menu handle the state change network message itself?
+        * Might me necessary if some data needs to be written to a global
+        * @return true it this menu handle the state change network message itself
+        */
+        virtual bool handlesNetworkStateChange() {
+          return true;
+        }
+
       };
 
 

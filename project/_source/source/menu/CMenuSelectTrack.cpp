@@ -352,8 +352,7 @@ namespace dustbin {
               if (m_pServer->allClientsAreInState("gamedata")) {
                 m_iClientState = 2;
 
-                messages::CChangeState l_cMsg = messages::CChangeState("state_game");
-                m_pServer->broadcastMessage(&l_cMsg, true);
+                m_pServer->changeState("state_game");
                 printf("Ready to go, start game.\n");
               }
             }

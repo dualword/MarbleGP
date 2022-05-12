@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <network/CGameServer.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
@@ -19,8 +20,12 @@ namespace dustbin {
       private:
         std::vector<std::vector<irr::gui::IGUIStaticText *>> m_vTable;
 
-      public:
-        CMenuStandings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState) {
+        std::string m_sNewState;  /**< The next state important if we are a network game server */
+
+        network::CGameServer *m_pServer;  /**< The game server */
+
+    public:
+        CMenuStandings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_sNewState(""), m_pServer(a_pState->getGlobal()->getGameServer()) {
           m_pGui ->clear();
           m_pSmgr->clear();
 
@@ -204,7 +209,13 @@ namespace dustbin {
               std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
               if (l_sButton == "ok") {
-                createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                if (m_pServer != nullptr) {
+                  m_sNewState = "menu_netlobby";
+                  m_pServer->changeState(m_sNewState);
+                }
+                else {
+                  createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                }
                 l_bRet = true;
               }
             }
@@ -239,6 +250,17 @@ namespace dustbin {
           }
 
           return l_bRet;
+        }
+
+        /**
+        * This method is called every frame after "scenemanager::drawall" is called
+        */
+        virtual void run() { 
+          if (m_pServer != nullptr && m_sNewState != "") {
+            if (m_pServer->allClientsAreInState(m_sNewState)) {
+              createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+            }
+          }
         }
       };
 

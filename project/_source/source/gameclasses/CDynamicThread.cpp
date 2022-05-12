@@ -752,18 +752,28 @@ namespace dustbin {
       enAutoFinish a_eAutoFinish
     )
     {
+      m_bStopThread = false;
       m_eAutoFinish = a_eAutoFinish;
       m_iPlayers    = (irr::s32)a_vPlayers.size();
 
       createPhysicsObjects(a_pWorld);
+
+      std::vector<const data::SPlayerData *> l_vPlayers;
+
+      for (std::vector<data::SPlayerData>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++)
+        l_vPlayers.push_back(&(*it));
+
+      std::sort(l_vPlayers.begin(), l_vPlayers.end(), [](const data::SPlayerData *p1, const data::SPlayerData *p2) {
+        return p1->m_iGridPos < p2->m_iGridPos;
+      });
 
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
       if (m_pWorld != nullptr) {
         int l_iIndex = 0;
-        for (std::vector<data::SPlayerData>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++) {
-          if ((*it).m_eType != data::enPlayerType::Ai)
+        for (std::vector<const data::SPlayerData *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
+          if ((*it)->m_eType != data::enPlayerType::Ai)
             m_iHuman++;
 
           irr::scene::ISceneNode *l_pMarbleNode = a_pGrid->getMarbleById(l_iIndex + 10000);
@@ -782,7 +792,7 @@ namespace dustbin {
           l_pMarble->m_vOffset     = l_vOffset;
           l_pMarble->m_vCamera     = l_pMarbleNode->getAbsolutePosition() - l_vOffset + 3.0f * l_pMarble->m_vUpVector;
           l_pMarble->m_vRearview   = l_pMarbleNode->getAbsolutePosition() + l_vOffset + 3.0f * l_pMarble->m_vUpVector;
-          l_pMarble->m_bAiPlayer   = (*it).m_eType == data::enPlayerType::Ai;
+          l_pMarble->m_bAiPlayer   = (*it)->m_eType == data::enPlayerType::Ai;
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
@@ -796,8 +806,8 @@ namespace dustbin {
               l_pMarble->m_vNextCheckpoints.push_back(it->first);
           }
 
-          printf("Marble assignment: %i to player %s\n", l_pMarbleNode->getID(), (*it).m_sName.c_str()); 
-          sendPlayerassignmarble((*it).m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
+          printf("Marble assignment: %i to player %s\n", l_pMarbleNode->getID(), (*it)->m_sName.c_str()); 
+          sendPlayerassignmarble((*it)->m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
 
           sendMarblemoved(l_pMarble->m_iId,
             l_pMarbleNode->getAbsolutePosition(),
@@ -906,8 +916,10 @@ namespace dustbin {
      * This function receives messages of type "TogglePause"
      */
     void CDynamicThread::onTogglepause() {
-      m_bPaused = !m_bPaused;
-      sendPausechanged(m_bPaused, m_pOutputQueue);
+      if (m_eGameState == enGameState::Racing) {
+        m_bPaused = !m_bPaused;
+        sendPausechanged(m_bPaused, m_pOutputQueue);
+      }
     }
 
     /**
