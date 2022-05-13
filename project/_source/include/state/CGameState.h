@@ -198,7 +198,7 @@ namespace dustbin {
 
         irr::scene::ISceneNode *m_pAiNode;    /**< The scene node with the AI data */
 
-        irr::gui::IGUIStaticText *m_pStepLabel;
+        // irr::gui::IGUIStaticText *m_pStepLabel;
 
 #ifdef _TOUCH_CONTROL
         gui::CGuiTouchControl *m_pTouchControl;

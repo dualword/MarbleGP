@@ -27,6 +27,7 @@
 #include <sound/CSoundEnums.h>
 #include <data/CDataStructs.h>
 #include <state/CGameState.h>
+#include <state/CMenuState.h>
 #include <gui/CGameHUD.h>
 #include <CMainClass.h>
 #include <CGlobal.h>
@@ -340,9 +341,13 @@ namespace dustbin {
       m_fSfxVolume      = m_pGlobal->getSettingData().m_fSfxGame;
       m_iNumOfViewports = 0;
 
+      m_pDrv->beginScene(true, true);
+      m_pGlobal->drawNextRaceScreen(1.0f);
+      m_pDrv->endScene();
+
       m_pGui->clear();
 
-      m_pStepLabel = m_pGui->addStaticText(L"Step", irr::core::recti(0, 0, 1000, 200));
+      // m_pStepLabel = m_pGui->addStaticText(L"Step", irr::core::recti(0, 0, 1000, 200));
 
       m_pClient = m_pGlobal->getGameClient();
       m_pServer = m_pGlobal->getGameServer();
@@ -482,7 +487,6 @@ namespace dustbin {
       if (l_bGridRevert && l_iGridOrder != 0 && l_pLastRace != nullptr)
         std::reverse(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end());
 
-
       m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
 
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
@@ -559,50 +563,17 @@ namespace dustbin {
       }
 
       if (m_pDynamics != nullptr) {
+        m_pDynamics->stopThread();
         m_pDynamics->join();
 
         messages::IMessage *l_pMsg = nullptr;
         do {
           l_pMsg = m_pInputQueue->popMessage();
-          if (l_pMsg != nullptr)
+          if (l_pMsg != nullptr && !m_bWillBeDeleted) {
             handleMessage(l_pMsg);
+          }
         }
         while (l_pMsg != nullptr);
-
-        /*if (m_pRace != nullptr) {
-          const std::vector<data::SRacePlayer*> l_vResult = m_pDynamics->getRaceResult();
-
-          printf("\n***** Race Result *****\n\n");
-          int l_iNum = 0;
-          for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
-            m_pRace->m_aResult[l_iNum] = data::SRacePlayer(*(*it));
-
-            for (int i = 0; i < 16 && m_aMarbles[i] != nullptr; i++) {
-              if (m_aMarbles[i]->m_pPositional->getID() == (*it)->m_iId) {
-                std::string s = m_aMarbles[i]->m_pPlayer->m_sName;
-                if (s.size() > 20)
-                  s = s.substr(0, 20);
-
-                while (s.size() < 20)
-                  s += " ";
-
-                printf("%2i: %s | %.2f\n", (*it)->m_iPos, s.c_str(), ((irr::f32)(*it)->m_iDeficitL) / 120.0f);
-              }
-            }
-
-            l_iNum++;
-          }
-
-          printf("\n***********************\n\n");
-
-          data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
-          l_cChampionship.addRace(*m_pRace);
-          m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
-          printf("\n\n%s\n\n", l_cChampionship.serialize().c_str());
-
-          if (m_pServer != nullptr)
-            m_pServer->sendGlobalData("championship");
-        }*/
 
         if (m_pServer != nullptr) {
           m_pServer->getOutputQueue()->removeListener(m_pDynamics->getInputQueue());
@@ -1024,7 +995,7 @@ namespace dustbin {
           l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
 
         if (l_fFade > 0.0f)
-          m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
+          m_pGlobal->drawNextRaceScreen(l_fFade);
 
         if (l_fFade < 0.1f && l_fFade > 0.0f)
           m_pSoundIntf->setMenuFlag(false);
@@ -1072,8 +1043,8 @@ namespace dustbin {
     void CGameState::onStepmsg(irr::u32 a_StepNo) {
       m_iStep = a_StepNo;
 
-      if (m_pStepLabel != nullptr)
-        m_pStepLabel->setText((L"         " + std::to_wstring(a_StepNo)).c_str());
+      // if (m_pStepLabel != nullptr)
+      //   m_pStepLabel->setText((L"         " + std::to_wstring(a_StepNo)).c_str());
 
       for (std::vector<scenenodes::STriggerVector>::iterator it = m_vTimerActions.begin(); it != m_vTimerActions.end(); it++) {
         if ((*it).m_vActions.size() > 0) {
@@ -1513,7 +1484,17 @@ namespace dustbin {
     * This function receives messages of type "ServerDisconnect"
     */
     void CGameState::onServerdisconnect() {
+      m_pGlobal->setGlobal("message_headline", "Server Disconnected");
+      m_pGlobal->setGlobal("message_text"    , "The server has closed the connection.");
+
+      state::CMenuState *l_pMenu = reinterpret_cast<state::CMenuState *>(m_pGlobal->getState(state::enState::Menu));
+
+      if (l_pMenu != nullptr) {
+        l_pMenu->pushToMenuStack("menu_message");
+      }
+
       m_iFinished = m_iStep;
+      m_bEnded    = true;
     }
 
     /**
@@ -1522,8 +1503,10 @@ namespace dustbin {
     */
     void CGameState::onRaceresult(const std::string& a_data) {
       if (m_pRace != nullptr) {
-        data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
-        m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
+        if (m_pRace->m_sTrack != "") {
+          data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
+          m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
+        }
       }
     }
 

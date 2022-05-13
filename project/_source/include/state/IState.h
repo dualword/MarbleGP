@@ -39,6 +39,8 @@ namespace dustbin {
 
         enState m_eState;
 
+        bool m_bWillBeDeleted;    /**< A flag to distinguish between the normal deactivation and deletion on program end */
+
       public:
         enum enMouseButton {
           Left,
@@ -51,6 +53,8 @@ namespace dustbin {
           m_pGui  = m_pDevice->getGUIEnvironment();
           m_pFs   = m_pDevice->getFileSystem();
           m_pDrv  = m_pDevice->getVideoDriver();
+          
+          m_bWillBeDeleted = false;
         }
 
         virtual ~IState() { }
@@ -107,6 +111,10 @@ namespace dustbin {
         * @param a_sMenu the loaded menu
         */
         virtual void menuChanged(const std::string &a_sMenu) { }
+
+        void willBeDeleted() {
+          m_bWillBeDeleted = true;
+        }
     };
   }
 }

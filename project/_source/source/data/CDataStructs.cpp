@@ -720,6 +720,10 @@ namespace dustbin {
         m_mAssignment[it->first] = it->second;
     }
 
+    SChampionshipRace::~SChampionshipRace() {
+      printf("Delete championship race\n");
+    }
+
     SChampionshipRace::SChampionshipRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 

@@ -300,12 +300,16 @@ namespace dustbin {
 
                   data::SGameData l_cData(data::SGameData::enType::Local, m_pTrackList->getSelectedData(), l_iLaps, l_cChampionship.m_iClass);
                   m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
+                  m_pState->getGlobal()->initNextRaceScreen();
 
                   if (m_pServer != nullptr) {
                     m_pServer->sendGlobalData("gamedata");
                     m_iClientState = 1;
                   }
-                  else m_pState->setState(state::enState::Game);
+                  else {
+                    m_pState->getGlobal()->initNextRaceScreen();
+                    m_pState->setState(state::enState::Game);
+                  }
                 }
               }
               else printf("Button clicked: \"%s\"\n", l_sCaller.c_str());
@@ -355,8 +359,12 @@ namespace dustbin {
                 m_pServer->changeState("state_game");
                 printf("Ready to go, start game.\n");
               }
+
+              m_pState->getGlobal()->drawNextRaceScreen(1.0f);
             }
             else if (m_iClientState == 2) {
+              m_pState->getGlobal()->drawNextRaceScreen(1.0f);
+
               if (m_pServer->allClientsAreInState("state_game")) {
                 m_pState->setState(state::enState::Game);
               }

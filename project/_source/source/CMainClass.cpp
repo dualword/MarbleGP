@@ -5,6 +5,7 @@
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <controller/CControllerBase.h>
 #include <helpers/CTextureHelpers.h>
+#include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
@@ -13,6 +14,7 @@
 #include <menu/IMenuHandler.h>
 #include <state/CMenuState.h>
 #include <state/CGameState.h>
+#include <state/IState.h>
 #include <CMainClass.h>
 #include <cstdlib>
 #include <ctime>
@@ -38,7 +40,8 @@ namespace dustbin {
     m_pActiveState    (nullptr),
     m_pSoundInterface (nullptr),
     m_pServer         (nullptr),
-    m_pClient         (nullptr)
+    m_pClient         (nullptr),
+    m_pNextRaceScreen (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -111,8 +114,10 @@ namespace dustbin {
   }
 
   CMainClass::~CMainClass() {
-    if (m_pActiveState != nullptr)
+    if (m_pActiveState != nullptr) {
+      m_pActiveState->willBeDeleted();
       m_pActiveState->deactivate();
+    }
 
     if (m_pCtrlGame != nullptr) {
       delete m_pCtrlGame;
@@ -637,6 +642,115 @@ namespace dustbin {
   */
   state::IState *CMainClass::getActiveState() {
     return m_pActiveState;
+  }
+
+  /**
+  * Get the a state by it's id
+  * @param a_eState the id of the requested state
+  * @return the state with the id or nullptr if no state with the id exists
+  */
+  state::IState *CMainClass::getState(state::enState a_eState) {
+    if (m_mStates.find(a_eState) != m_mStates.end())
+      return m_mStates[a_eState];
+    else
+      return nullptr;
+  }
+
+  /**
+  * Get the name of a track
+  * @param a_sTrack the track identifier
+  * @return the track name, "Unknown Track" if no track data was found
+  */
+  std::string CMainClass::getTrackName(const std::string& a_sTrack) {
+    std::string l_sFile = "data/levels/" + a_sTrack + "/track.xml";
+
+    if (m_pFs->existFile(l_sFile.c_str())) {
+      std::string l_sXml = "data/levels/" + a_sTrack + "/info.xml", l_sName = a_sTrack;
+      int l_iPos = 9999;
+
+      if (m_pFs->existFile(l_sXml.c_str())) {
+        irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8(l_sXml.c_str());
+        if (l_pXml) {
+          bool l_bName = false;
+
+          while (l_pXml->read()) {
+            std::string l_sNode = l_pXml->getNodeName();
+
+            if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+              if (l_sNode == "name")
+                l_bName = true;
+            }
+            else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
+              if (l_bName)
+                return l_pXml->getNodeData();
+            }
+            else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+              if (l_sNode == "name")
+                l_bName = false;
+            }
+          }
+          l_pXml->drop();
+        }
+      }
+    }
+
+    return "Unknown Track";
+  }
+
+  /**
+  * Init the next game screen. Must be called when the race data is defined
+  */
+  void CMainClass::initNextRaceScreen() {
+    irr::gui::IGUIFont *l_pFont = getFont(enFont::Big, m_pDrv->getScreenSize());
+    irr::core::dimension2du l_cDim = l_pFont->getDimension(L"ThisTextShouldBeLongEnoughForThisScreenAtLeastIHopeSo");
+    irr::core::dimension2du l_cImg = irr::core::dimension2du(l_cDim.Width, 4 * l_cDim.Height);
+
+    if (m_pNextRaceScreen == nullptr) {
+      m_pNextRaceScreen = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(l_cDim.Width, 4 * l_cDim.Height), "__NextRaceScreen");
+    }
+
+    m_pDrv->setRenderTarget(m_pNextRaceScreen, true, true, irr::video::SColor(128, 192, 192, 192));
+
+    data::SGameData l_cData = data::SGameData(getGlobal("gamedata"));
+
+    std::string l_sThumbnail = "data/levels/" + l_cData.m_sTrack + "/thumbnail.png";
+
+    irr::core::position2di l_cPos = irr::core::position2di(0, 0);
+
+    if (m_pFs->existFile(l_sThumbnail.c_str())) {
+      irr::video::ITexture *l_pThumbnail = m_pDrv->getTexture(l_sThumbnail.c_str());
+      if (l_pThumbnail != nullptr) {
+        m_pDrv->draw2DImage(l_pThumbnail, irr::core::recti(0, 0, l_cImg.Height, l_cImg.Height), irr::core::recti(irr::core::position2di(0, 0), l_pThumbnail->getOriginalSize()));
+        l_cPos.X += 5 * l_cImg.Height / 4;
+        l_cDim.Width -= l_cPos.X;
+      }
+    }
+
+    l_cPos.Y += l_cDim.Height / 2;
+    irr::core::recti l_cRect = irr::core::recti(l_cPos, l_cDim);
+
+    l_pFont->draw(helpers::s2ws(getTrackName(l_cData.m_sTrack)).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
+
+    l_cRect.UpperLeftCorner .Y += 2 * l_cDim.Height;
+    l_cRect.LowerRightCorner.Y += 2 * l_cDim.Height;
+
+    l_pFont->draw((std::to_wstring(l_cData.m_iLaps) + L" Lap" + (l_cData.m_iLaps == 1 ? L"" : L"s")).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
+
+    m_pDrv->setRenderTarget(0, false, false);
+  }
+
+  /**
+  * Draw the next race screen
+  * @param a_fAlpha the transparency of the next race screen [0..1]
+  */
+  void CMainClass::drawNextRaceScreen(irr::f32 a_fAlpha) {
+    m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 0, 0, 0), irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()));
+
+    if (m_pNextRaceScreen != nullptr) {
+      irr::core::vector2di l_cPos = irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_pNextRaceScreen->getOriginalSize().Width / 2, m_pDrv->getScreenSize().Height / 2 - m_pNextRaceScreen->getOriginalSize().Height / 2);
+      irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255);
+      m_pDrv->draw2DImage(m_pNextRaceScreen, l_cPos, irr::core::recti(irr::core::position2di(0, 0), m_pNextRaceScreen->getOriginalSize()), (const irr::core::recti *)nullptr, l_cColor, true);
+    }
   }
 
   /**

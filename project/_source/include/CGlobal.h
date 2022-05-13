@@ -2,6 +2,7 @@
 #pragma once
 
 #include <data/CDataStructs.h>
+#include <state/IState.h>
 #include <irrlicht.h>
 #include <string>
 
@@ -209,6 +210,31 @@ namespace dustbin {
       * @return the currently active state
       */
       virtual state::IState *getActiveState() = 0;
+
+      /**
+      * Get the a state by it's id
+      * @param a_eState the id of the requested state
+      * @return the state with the id or nullptr if no state with the id exists
+      */
+      virtual state::IState *getState(state::enState a_eState) = 0;
+
+      /**
+      * Get the name of a track
+      * @param a_sTrack the track identifier
+      * @return the track name, "Unknown Track" if no track data was found
+      */
+      virtual std::string getTrackName(const std::string &a_sTrack) = 0;
+
+      /**
+      * Init the next game screen. Must be called when the race data is defined
+      */
+      virtual void initNextRaceScreen() = 0;
+
+      /**
+      * Draw the next race screen
+      * @param a_fAlpha the transparency of the next race screen [0..1]
+      */
+      virtual void drawNextRaceScreen(irr::f32 a_fAlpha) = 0;
 
 #ifdef _ANDROID
       /**

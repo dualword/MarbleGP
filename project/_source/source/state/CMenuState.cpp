@@ -143,10 +143,10 @@ namespace dustbin {
         m_pDrv->beginScene(true, true);
         m_pSmgr->drawAll();
 
+        m_pGui->drawAll();
+
         if (m_pMenu != nullptr)
           m_pMenu->run();
-
-        m_pGui->drawAll();
 
         if (m_pController != nullptr)
           m_pController->draw();
@@ -166,6 +166,7 @@ namespace dustbin {
 
               // Special handling if we start a game
               if (l_sNewState == "state_game") {
+                m_pGlobal->initNextRaceScreen();
                 setState(state::enState::Game);
                 pushToMenuStack("menu_raceresult");
               }
@@ -173,6 +174,11 @@ namespace dustbin {
                 m_pMenu->createMenu(l_sNewState, m_pDevice, m_pMenu->getMenuManager(), this);
               }
             }
+          }
+          else if (l_pMsg->getMessageId() == messages::enMessageIDs::ServerDisconnect) {
+            m_pGlobal->setGlobal("message_headline", "Server Disconnected");
+            m_pGlobal->setGlobal("message_text"    , "The server has closed the connection.");
+            m_pMenu->createMenu("menu_message", m_pDevice, m_pMenu->getMenuManager(), this);
           }
           else {
             handleMessage(l_pMsg);

@@ -249,6 +249,8 @@ namespace dustbin {
       SChampionshipRace(const std::string &a_sData);
       SChampionshipRace(const SChampionshipRace &a_cOther);
 
+      ~SChampionshipRace();
+
       std::string serialize();
 
       std::string to_string();

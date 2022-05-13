@@ -746,8 +746,14 @@ namespace dustbin {
 
       if (!m_pWithdraw->isVisible()) {
         if (m_iCountDown >= 0 && m_iCountDown < 5 && m_pCountDown[m_iCountDown] != nullptr) {
-          irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255);
-          m_pDrv->draw2DImage(m_pCountDown[m_iCountDown], m_cCountDown, m_cCntSource, nullptr, &l_cColor, true);
+          irr::video::SColor l_aColor[] = {
+            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255),
+            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255),
+            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255),
+            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255)
+          };
+
+          m_pDrv->draw2DImage(m_pCountDown[m_iCountDown], m_cCountDown, m_cCntSource, nullptr, l_aColor, true);
         }
 
         if (m_bRespawn && m_pRespawn != nullptr)
