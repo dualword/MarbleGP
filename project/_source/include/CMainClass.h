@@ -47,7 +47,9 @@ namespace dustbin {
       network::CGameServer *m_pServer;    /**< The game server */
       network::CGameClient *m_pClient;    /**< The net game client */
 
-      irr::video::ITexture *m_pNextRaceScreen;    /**< The render target texture used for the "next race" screen */
+      irr::video::ITexture    *m_pNextRaceScreen;     /**< The render target texture used for the "next race" screen */
+      irr::video::ITexture    *m_pLogo;               /**< The "Dustbin::Game MarbleGP" Logo */
+      irr::core::dimension2du  m_cLogo;               /**< The size of the rendered logo in the "next race" screen */
 
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */

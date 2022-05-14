@@ -41,7 +41,8 @@ namespace dustbin {
     m_pSoundInterface (nullptr),
     m_pServer         (nullptr),
     m_pClient         (nullptr),
-    m_pNextRaceScreen (nullptr)
+    m_pNextRaceScreen (nullptr),
+    m_pLogo           (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -737,6 +738,11 @@ namespace dustbin {
     l_pFont->draw((std::to_wstring(l_cData.m_iLaps) + L" Lap" + (l_cData.m_iLaps == 1 ? L"" : L"s")).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
 
     m_pDrv->setRenderTarget(0, false, false);
+
+    if (m_pLogo == nullptr) {
+      m_pLogo = m_pDrv->getTexture("data/images/logo.png");
+      m_cLogo = irr::core::dimension2du(m_pDrv->getScreenSize().Height / 5, m_pDrv->getScreenSize().Height / 5);
+    }
   }
 
   /**
@@ -747,9 +753,21 @@ namespace dustbin {
     m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 0, 0, 0), irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()));
 
     if (m_pNextRaceScreen != nullptr) {
-      irr::core::vector2di l_cPos = irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_pNextRaceScreen->getOriginalSize().Width / 2, m_pDrv->getScreenSize().Height / 2 - m_pNextRaceScreen->getOriginalSize().Height / 2);
+      irr::core::vector2di l_cPos = irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_pNextRaceScreen->getOriginalSize().Width / 2, m_pDrv->getScreenSize().Height / 3 - m_pNextRaceScreen->getOriginalSize().Height / 2);
       irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255);
       m_pDrv->draw2DImage(m_pNextRaceScreen, l_cPos, irr::core::recti(irr::core::position2di(0, 0), m_pNextRaceScreen->getOriginalSize()), (const irr::core::recti *)nullptr, l_cColor, true);
+    }
+
+    if (m_pLogo != nullptr) {
+      irr::core::vector2di l_cPos = irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_cLogo.Width / 2, (2 * m_pDrv->getScreenSize().Height / 3) - m_cLogo.Height / 2);
+      irr::video::SColor l_aColor[] = {
+        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
+        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
+        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
+        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255)
+      };
+
+      m_pDrv->draw2DImage(m_pLogo, irr::core::recti(l_cPos, m_cLogo), irr::core::recti(irr::core::vector2di(0, 0), m_pLogo->getOriginalSize()), nullptr, l_aColor, true);
     }
   }
 

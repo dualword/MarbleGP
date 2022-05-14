@@ -3,6 +3,7 @@
 #include <threads/CMessageQueue.h>
 #include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
+#include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CGuiImageList.h>
@@ -258,6 +259,8 @@ namespace dustbin {
           }
 
           printf("\n********************************\n");
+
+          printf("Path: \"%s\"\n", helpers::ws2s(platform::portableGetDataPath()).c_str());
         }
 
         virtual ~CMenuSelectTrack() {

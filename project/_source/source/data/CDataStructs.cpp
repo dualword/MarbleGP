@@ -1,9 +1,13 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <messages/CMessageHelpers.h>
 #include <messages/CSerializer64.h>
+#include <helpers/CStringHelpers.h>
+#include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <Defines.h>
+#include <CGlobal.h>
 #include <algorithm>
+#include <ostream>
 
 namespace dustbin {
   namespace data {
@@ -685,6 +689,29 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
+    std::string SChampionshipPlayer::to_xml() const {
+      std::string s = "    <player>\n";
+
+      s += "      <playerid>" + std::to_string(m_iPlayerId) + "</playerid>\n";
+      s += "      <name>"           +                m_sName          + "</name>\n";
+      s += "      <points>"         + std::to_string(m_iPoints      ) + "</points>\n";
+      s += "      <respawn>"        + std::to_string(m_iRespawn     ) + "</respawn>\n";
+      s += "      <stunned>"        + std::to_string(m_iStunned     ) + "</stunned>\n";
+      s += "      <fastest_laps>"   + std::to_string(m_iFastestLaps ) + "</fastest_laps>\n";
+      s += "      <did_not_finish>" + std::to_string(m_iDidNotFinish) + "</did_not_finish>\n";
+
+      s += "      <race_results>\n";
+
+      for (int i = 0; i < 16; i++)
+        s += "        <position pos=\"" + std::to_string(i + 1) + "\">" + std::to_string(m_aResult[i]) + "</position>\n";
+
+      s += "      </race_results>\n";
+
+      s += "    </player>\n";
+
+      return s;
+    }
+
     std::string SChampionshipPlayer::to_string() {
       std::string s = "SChampionshipPlayer: " +
         std::string("player id=") + std::to_string(m_iPlayerId) + ", " +
@@ -849,6 +876,33 @@ namespace dustbin {
       return s;
     }
 
+    std::string SChampionshipRace::to_xml() const {
+      std::string s = "    <race>\n";
+
+      s += "      <track>"       +                m_sTrack    + "</track>\n";
+      s += "      <playercount>" + std::to_string(m_iPlayers) + "</playercount>\n";
+      s += "      <laps>"        + std::to_string(m_iLaps   ) + "</laps>\n";
+
+      s += "      <result>\n";
+
+      for (int i = 0; i < m_iPlayers; i++) {
+        s += m_aResult[i].to_xml();
+      }
+
+      s += "      </result>\n";
+
+      s += "      <marble_assignment>\n";
+
+      for (std::map<int, int>::const_iterator it = m_mAssignment.begin(); it != m_mAssignment.end(); it++)
+        s += "          <assignment marble=\"" + std::to_string(it->first) + "\" player=\"" + std::to_string(it->second) + "\" />\n";
+
+      s += "        </marble_assignment>\n";
+
+      s += "      </race>\n";
+
+      return s;
+    }
+
     SChampionship::SChampionship() : m_iClass(0), m_iGridSize(0), m_iGridOrder(0), m_bReverseGrid(false) {
     }
 
@@ -981,6 +1035,44 @@ namespace dustbin {
         return nullptr;
     }
 
+    /**
+    * Save the result of the championship to an XML file
+    * @param a_sPath the path to save the file to
+    */
+    void SChampionship::saveToXML(const std::string& a_sPath) {
+      std::string l_sFile = "<?xml version=\"1.0\"?>\n";
+      l_sFile += "<marblegp_championship>\n";
+
+      l_sFile += "  <race_settings>\n";
+      l_sFile += "    <class>"     + std::to_string(m_iClass    ) + "</class>\n";
+      l_sFile += "    <gridsize>"  + std::to_string(m_iGridSize ) + "</gridsize>\n";
+      l_sFile += "    <gridorder>" + std::to_string(m_iGridOrder) + "</gridorder>\n";
+      l_sFile += std::string("    <reversegrid>") + (m_bReverseGrid ? "true" : "false") + "</reversegrid>\n";
+      l_sFile += "  </race_settings>\n";
+
+      l_sFile += "  <players>\n";
+
+      std::vector<SChampionshipPlayer> l_vResult = getStandings();
+
+      for (std::vector<SChampionshipPlayer>::const_iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
+        l_sFile += (*it).to_xml();
+
+      l_sFile += "  </players>\n";
+
+      l_sFile += "  <races>\n";
+
+      for (std::vector<SChampionshipRace>::const_iterator it = m_vRaces.begin(); it != m_vRaces.end(); it++)
+        l_sFile += (*it).to_xml();
+
+      l_sFile += "  </races>\n";
+
+      l_sFile += "</marblegp_championship>\n";
+
+      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(a_sPath.c_str());
+      l_pFile->write(l_sFile.c_str(), l_sFile.size());
+      l_pFile->drop();
+    }
+
     void SChampionship::addRace(const SChampionshipRace& a_cRace) {
       m_vRaces.push_back(SChampionshipRace(a_cRace));
 
@@ -1036,6 +1128,9 @@ namespace dustbin {
       if (l_itFastest != m_vPlayers.end()) {
         (*l_itFastest).m_iFastestLaps++;
       }
+
+      std::string l_sPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
+      saveToXML(l_sPath);
     }
 
     std::string SChampionship::to_string() {
@@ -1253,6 +1348,21 @@ namespace dustbin {
         std::string("fastest=") + std::to_string(m_iFastest ) + ", " +
         std::string("stunned=") + std::to_string(m_iStunned ) + ", " +
         std::string("respawn=") + std::to_string(m_iRespawn );
+    }
+
+    std::string SRacePlayer::to_xml() const {
+      std::string s = "      <raceplayer>\n";
+
+      s += "        <id>"      + std::to_string(m_iId      ) + "</id>\n";
+      s += "        <pos>"     + std::to_string(m_iPos     ) + "</pos>\n";
+      s += "        <deficit>" + std::to_string(m_iDeficitL) + "</deficit>\n";
+      s += "        <fastest>" + std::to_string(m_iFastest ) + "</fastest>\n";
+      s += "        <stunned>" + std::to_string(m_iStunned ) + "</stunned>\n";
+      s += "        <respawn>" + std::to_string(m_iRespawn ) + "</respawn>\n";
+
+      s += "      </raceplayer>\n";
+
+      return s;
     }
 
     SFreeGameSlots::SFreeGameSlots() {

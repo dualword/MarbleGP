@@ -206,6 +206,8 @@ namespace dustbin {
       std::string serialize();
 
       std::string to_string();
+
+      std::string to_xml() const;
     };
 
     /**
@@ -228,6 +230,8 @@ namespace dustbin {
       SChampionshipPlayer(const SChampionshipPlayer &a_cOther);
 
       std::string serialize();
+
+      std::string to_xml() const;
 
       std::string to_string();
     };
@@ -252,6 +256,8 @@ namespace dustbin {
       ~SChampionshipRace();
 
       std::string serialize();
+
+      std::string to_xml() const;
 
       std::string to_string();
     };
@@ -283,6 +289,12 @@ namespace dustbin {
       void addRace(const SChampionshipRace &a_cRace);
 
       SChampionshipRace *getLastRace();
+
+      /**
+      * Save the result of the championship to an XML file
+      * @param a_sPath the path to save the file to
+      */
+      void saveToXML(const std::string &a_sPath);
 
       std::string to_string();
     };
