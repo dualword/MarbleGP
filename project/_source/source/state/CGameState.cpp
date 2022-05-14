@@ -1244,12 +1244,6 @@ namespace dustbin {
     * This function receives messages of type "RaceSetupDone"
     */
     void CGameState::onRacesetupdone() {
-      if (m_pDynamics != nullptr)
-        m_pDynamics->startThread();
-
-      if (m_pAiThread != nullptr)
-        m_pAiThread->startThread();
-
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
         it->second.m_pHUD    = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
         it->second.m_pHUD->drop();
@@ -1279,6 +1273,12 @@ namespace dustbin {
 
       m_pGridNode->removeUnusedMarbles();
       prepareShader();
+
+      if (m_pDynamics != nullptr)
+        m_pDynamics->startThread();
+
+      if (m_pAiThread != nullptr)
+        m_pAiThread->startThread();
     }
 
     /**
