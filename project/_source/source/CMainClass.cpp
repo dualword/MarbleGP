@@ -670,27 +670,32 @@ namespace dustbin {
       int l_iPos = 9999;
 
       if (m_pFs->existFile(l_sXml.c_str())) {
-        irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8(l_sXml.c_str());
-        if (l_pXml) {
-          bool l_bName = false;
+        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXml.c_str());
 
-          while (l_pXml->read()) {
-            std::string l_sNode = l_pXml->getNodeName();
+        if (l_pFile) {
+          irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8(l_pFile);
+          if (l_pXml) {
+            bool l_bName = false;
 
-            if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              if (l_sNode == "name")
-                l_bName = true;
+            while (l_pXml->read()) {
+              std::string l_sNode = l_pXml->getNodeName();
+
+              if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+                if (l_sNode == "name")
+                  l_bName = true;
+              }
+              else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
+                if (l_bName)
+                  return l_pXml->getNodeData();
+              }
+              else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+                if (l_sNode == "name")
+                  l_bName = false;
+              }
             }
-            else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
-              if (l_bName)
-                return l_pXml->getNodeData();
-            }
-            else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-              if (l_sNode == "name")
-                l_bName = false;
-            }
+            l_pXml->drop();
           }
-          l_pXml->drop();
+          l_pFile->drop();
         }
       }
     }

@@ -187,6 +187,7 @@ namespace dustbin {
       int m_iStunned;     /**< Stunned counter */
       int m_iRespawn;     /**< Respawn counter */
       int m_iLapNo;       /**< The current lap */
+      int m_iRaceTime;    /**< The race time of the player */
       int m_iDeficitL;    /**< Deficit to the leader */
       int m_iDeficitA;    /**< Deficit to the player ahead */
       int m_iLastCp;      /**< The time of the last checkpoint */

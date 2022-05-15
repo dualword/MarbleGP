@@ -87,7 +87,8 @@ namespace dustbin {
     const irr::s32 c_iRacePlayerStunned  = -125;   /**< Marker for the number of stuns a player has experienced during the race */
     const irr::s32 c_iRacePlayerRespawn  = -126;   /**< Marker for the number of respawns of the player during the race */
     const irr::s32 c_iRacePlayerWithdraw = -127;   /**< Marker for the "player withdrawn from race" data */
-    const irr::s32 c_iRacePlayerFooter   = -128;   /**< Marker for the end of the race player data structure */
+    const irr::s32 c_iRacePlayerRaceTime = -128;   /**< Marker for the racetime of the player */
+    const irr::s32 c_iRacePlayerFooter   = -129;   /**< Marker for the end of the race player data structure */
 
     // Game data
     const irr::s32 c_iGameHead  = -150;   /**< Header for the game data */
@@ -1203,6 +1204,7 @@ namespace dustbin {
       m_iStunned  (0), 
       m_iRespawn  (0), 
       m_iLapNo    (0), 
+      m_iRaceTime (0),
       m_iDeficitL (0), 
       m_iDeficitA (0), 
       m_iLastCp   (0), 
@@ -1221,6 +1223,7 @@ namespace dustbin {
       m_iStunned  (a_cOther.m_iStunned), 
       m_iRespawn  (a_cOther.m_iRespawn), 
       m_iLapNo    (a_cOther.m_iLapNo), 
+      m_iRaceTime (a_cOther.m_iRaceTime),
       m_iDeficitL (a_cOther.m_iDeficitL), 
       m_iDeficitA (a_cOther.m_iDeficitA), 
       m_iLastCp   (a_cOther.m_iLastCp), 
@@ -1241,6 +1244,7 @@ namespace dustbin {
       m_iStunned  (0), 
       m_iRespawn  (0), 
       m_iLapNo    (0), 
+      m_iRaceTime (0),
       m_iDeficitL (0), 
       m_iDeficitA (0), 
       m_iLastCp   (0), 
@@ -1286,6 +1290,10 @@ namespace dustbin {
             case c_iRacePlayerWithdraw:
               m_iWithdrawn = l_cSerializer.getS32();
               m_bWithdrawn = l_cSerializer.getU8() != 0;
+              break;
+
+            case c_iRacePlayerRaceTime:
+              m_iRaceTime = l_cSerializer.getS32();
               break;
 
             case c_iRacePlayerFooter:
@@ -1334,6 +1342,10 @@ namespace dustbin {
       l_cSerializer.addS32(m_iWithdrawn);
       l_cSerializer.addU8(m_bWithdrawn ? 1 : 0);
 
+      // Racetime of the player
+      l_cSerializer.addS32(c_iRacePlayerRaceTime);
+      l_cSerializer.addS32(m_iRaceTime);
+
       // End of the data structure
       l_cSerializer.addS32(c_iRacePlayerFooter);
 
@@ -1342,23 +1354,25 @@ namespace dustbin {
 
     std::string SRacePlayer::to_string() {
       return "SRacePlayer: " +
-        std::string("id="     ) + std::to_string(m_iId      ) + ", " +
-        std::string("pos="    ) + std::to_string(m_iPos     ) + ", " +
-        std::string("deficit=") + std::to_string(m_iDeficitL) + ", " +
-        std::string("fastest=") + std::to_string(m_iFastest ) + ", " +
-        std::string("stunned=") + std::to_string(m_iStunned ) + ", " +
-        std::string("respawn=") + std::to_string(m_iRespawn );
+        std::string("id="      ) + std::to_string(m_iId      ) + ", " +
+        std::string("pos="     ) + std::to_string(m_iPos     ) + ", " +
+        std::string("racetime=") + std::to_string(m_iRaceTime) + ", " +
+        std::string("deficit=" ) + std::to_string(m_iDeficitL) + ", " +
+        std::string("fastest=" ) + std::to_string(m_iFastest ) + ", " +
+        std::string("stunned=" ) + std::to_string(m_iStunned ) + ", " +
+        std::string("respawn=" ) + std::to_string(m_iRespawn );
     }
 
     std::string SRacePlayer::to_xml() const {
       std::string s = "      <raceplayer>\n";
 
-      s += "        <id>"      + std::to_string(m_iId      ) + "</id>\n";
-      s += "        <pos>"     + std::to_string(m_iPos     ) + "</pos>\n";
-      s += "        <deficit>" + std::to_string(m_iDeficitL) + "</deficit>\n";
-      s += "        <fastest>" + std::to_string(m_iFastest ) + "</fastest>\n";
-      s += "        <stunned>" + std::to_string(m_iStunned ) + "</stunned>\n";
-      s += "        <respawn>" + std::to_string(m_iRespawn ) + "</respawn>\n";
+      s += "        <id>"       + std::to_string(m_iId      ) + "</id>\n";
+      s += "        <pos>"      + std::to_string(m_iPos     ) + "</pos>\n";
+      s += "        <racetime>" + std::to_string(m_iRaceTime) + "</racetime>\n";
+      s += "        <deficit>"  + std::to_string(m_iDeficitL) + "</deficit>\n";
+      s += "        <fastest>"  + std::to_string(m_iFastest ) + "</fastest>\n";
+      s += "        <stunned>"  + std::to_string(m_iStunned ) + "</stunned>\n";
+      s += "        <respawn>"  + std::to_string(m_iRespawn ) + "</respawn>\n";
 
       s += "      </raceplayer>\n";
 

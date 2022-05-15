@@ -62,6 +62,7 @@ namespace dustbin {
 
         if (m_aPlayers[l_iId].m_iLapNo > m_iLapCount || m_bRaceFinished) {
           m_aPlayers[l_iId].m_bFinished = true;
+          m_aPlayers[l_iId].m_iRaceTime = m_iStepNo;
           m_bRaceFinished = true;
           return true;
         }

@@ -37,5 +37,12 @@ namespace dustbin {
     * @return the string that fits the size using the font
     */
     std::wstring fitString(const std::wstring &a_sText, irr::gui::IGUIFont *a_pFont, const irr::core::dimension2du &a_cSize);
+
+    /**
+    * Convert a timestamp in steps to a time string
+    * @param a_iSteps the steps to convert
+    * @return a string with the steps converted to a readable time
+    */
+    std::wstring convertToTime(irr::s32 a_iSteps);
   }
 }

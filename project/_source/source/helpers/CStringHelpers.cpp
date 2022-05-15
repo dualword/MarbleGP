@@ -76,5 +76,38 @@ namespace dustbin {
 
       return s;
     }
+
+    /**
+    * Convert a timestamp in steps to a time string. Negative times are interpreted as lap deficits
+    * @param a_iSteps the steps to convert
+    * @return a string with the steps converted to a readable time
+    */
+    std::wstring convertToTime(irr::s32 a_iSteps) {
+      if (a_iSteps >= 0) {
+        // Convert to 1/100th seconds integer
+        irr::s32 l_iTime = (irr::s32)(a_iSteps / 1.2f);
+
+        irr::s32 l_iHundrts = l_iTime % 100; l_iTime /= 100;
+        irr::s32 l_iSeconds = l_iTime %  60; l_iTime /=  60;
+        irr::s32 l_iMinutes = l_iTime;
+
+        std::wstring l_sHundrts = std::to_wstring(l_iHundrts); while (l_sHundrts.size() < 2) l_sHundrts = L"0" + l_sHundrts;
+        std::wstring l_sSeconds = std::to_wstring(l_iSeconds); while (l_sSeconds.size() < 2) l_sSeconds = L"0" + l_sSeconds;
+        std::wstring l_sMinutes = std::to_wstring(l_iMinutes);
+
+        std::wstring l_sRet = L"";
+
+        if (l_iMinutes > 0)
+          l_sRet = l_sMinutes + L":";
+
+        return l_sRet + l_sSeconds + L"." + l_sHundrts;
+      }
+      else if (a_iSteps == -1) {
+        return L"+1 Lap";
+      }
+      else {
+        return L"+" + std::to_wstring(abs(a_iSteps)) + L" Laps";
+      }
+    }
   }
 }

@@ -132,7 +132,7 @@ namespace dustbin {
             p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
             l_cColPos.X += 45 * l_iWidth / 100;
 
-            p = m_pGui->addStaticText(L"Deficit", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
+            p = m_pGui->addStaticText(L"Racetime", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
             p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
             p->setDrawBackground(true);
             p->setOverrideFont(l_pFont);
@@ -176,7 +176,10 @@ namespace dustbin {
 
               std::wstring l_sDeficit = L"";
 
-              if (i > 0) {
+              if (i == 0) {
+                l_sDeficit = helpers::convertToTime(l_pRace->m_aResult[i].m_iRaceTime);
+              }
+              else {
                 if (l_pRace->m_aResult[i].m_bWithdrawn)
                   l_sDeficit = L"D.N.F.";
                 else if (l_pRace->m_aResult[i].m_iDeficitL < 0) {
@@ -187,9 +190,7 @@ namespace dustbin {
                   }
                 }
                 else {
-                  wchar_t s[0xFF];
-                  swprintf(s, 0xFF, L"+%.2f sec", ((irr::f32)l_pRace->m_aResult[i].m_iDeficitL) / 120.0f);
-                  l_sDeficit = s;
+                  l_sDeficit = L"+" + helpers::convertToTime(l_pRace->m_aResult[i].m_iDeficitL);
                 }
               }
 

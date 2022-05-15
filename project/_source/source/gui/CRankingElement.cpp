@@ -78,21 +78,16 @@ namespace dustbin {
         m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &AbsoluteClippingRect);
 
 
-        wchar_t s[0xFF] = L"";
-
         if (m_bWithdrawn) {
           m_pFont->draw(L"DNF", m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
         }
         else {
-          if (m_iDeficit >= 0) {
-            swprintf(s, 0xFF, L"+%.2f", ((irr::f32)m_iDeficit) / 120.0f);
+          if (!m_bWithdrawn) {
+            m_pFont->draw(helpers::convertToTime(m_iDeficit).c_str(), m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
           }
           else {
-            swprintf(s, 0xFF, L"+%i lap%s", abs(m_iDeficit), m_iDeficit != -1 ? L"s" : L"");
+            m_pFont->draw(L"D.N.F", m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
           }
-
-          if (m_iDeficit != 0 || m_bWithdrawn)
-            m_pFont->draw(s, m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
         }
 
         m_pFont->draw(m_sName.c_str(), m_cName, m_cTextColor, false, true, &AbsoluteClippingRect);

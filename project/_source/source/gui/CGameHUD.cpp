@@ -782,16 +782,7 @@ namespace dustbin {
     }
 
     std::wstring CGameHUD::getDeficitString(int a_iDeficit) {
-      wchar_t s[0xFF] = L"";
-
-      if (a_iDeficit > 0) {
-        swprintf(s, 0xFF, L"%.2f ", ((irr::s32)a_iDeficit) / 120.0f);
-      }
-      else if (a_iDeficit < 0) {
-        swprintf(s, 0xFF, L"+%i Lap%s ", -a_iDeficit, a_iDeficit == - 1 ? L"" : L"s");
-      }
-
-      return s;
+      return L"+" + helpers::convertToTime(a_iDeficit);
     }
 
     void CGameHUD::updateRanking() {
