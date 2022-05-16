@@ -723,10 +723,10 @@ namespace dustbin {
                     }
                     else {
                       if (m_pPlayer->m_iPosition == 1) {
-                        l_sDeficit = getDeficitString((*it)->m_iDiffLeader);
+                        l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffLeader);
                       }
                       else {
-                        l_sDeficit = getDeficitString((*it)->m_iDiffAhead);
+                        l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffAhead);
                       }
                     }
 
@@ -782,7 +782,7 @@ namespace dustbin {
     }
 
     std::wstring CGameHUD::getDeficitString(int a_iDeficit) {
-      return L"+" + helpers::convertToTime(a_iDeficit);
+      return helpers::convertToTime(a_iDeficit);
     }
 
     void CGameHUD::updateRanking() {

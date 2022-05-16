@@ -664,6 +664,7 @@ namespace dustbin {
   */
   std::string CMainClass::getTrackName(const std::string& a_sTrack) {
     std::string l_sFile = "data/levels/" + a_sTrack + "/track.xml";
+    std::string l_sName = "Unkown Track";
 
     if (m_pFs->existFile(l_sFile.c_str())) {
       std::string l_sXml = "data/levels/" + a_sTrack + "/info.xml", l_sName = a_sTrack;
@@ -686,7 +687,7 @@ namespace dustbin {
               }
               else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
                 if (l_bName)
-                  return l_pXml->getNodeData();
+                  l_sName = l_pXml->getNodeData();
               }
               else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
                 if (l_sNode == "name")
@@ -700,7 +701,7 @@ namespace dustbin {
       }
     }
 
-    return "Unknown Track";
+    return l_sName;
   }
 
   /**

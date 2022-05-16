@@ -92,7 +92,7 @@ namespace dustbin {
         irr::s32 l_iMinutes = l_iTime;
 
         std::wstring l_sHundrts = std::to_wstring(l_iHundrts); while (l_sHundrts.size() < 2) l_sHundrts = L"0" + l_sHundrts;
-        std::wstring l_sSeconds = std::to_wstring(l_iSeconds); while (l_sSeconds.size() < 2) l_sSeconds = L"0" + l_sSeconds;
+        std::wstring l_sSeconds = std::to_wstring(l_iSeconds); if (l_iMinutes > 0) while (l_sSeconds.size() < 2) l_sSeconds = L"0" + l_sSeconds;
         std::wstring l_sMinutes = std::to_wstring(l_iMinutes);
 
         std::wstring l_sRet = L"";
@@ -103,10 +103,10 @@ namespace dustbin {
         return l_sRet + l_sSeconds + L"." + l_sHundrts;
       }
       else if (a_iSteps == -1) {
-        return L"+1 Lap";
+        return L"1 Lap";
       }
       else {
-        return L"+" + std::to_wstring(abs(a_iSteps)) + L" Laps";
+        return std::to_wstring(abs(a_iSteps)) + L" Laps";
       }
     }
   }
