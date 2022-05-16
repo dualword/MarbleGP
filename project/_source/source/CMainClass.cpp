@@ -667,7 +667,7 @@ namespace dustbin {
     std::string l_sName = "Unkown Track";
 
     if (m_pFs->existFile(l_sFile.c_str())) {
-      std::string l_sXml = "data/levels/" + a_sTrack + "/info.xml", l_sName = a_sTrack;
+      std::string l_sXml = "data/levels/" + a_sTrack + "/info.xml";
       int l_iPos = 9999;
 
       if (m_pFs->existFile(l_sXml.c_str())) {
