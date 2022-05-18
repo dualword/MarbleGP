@@ -2,6 +2,7 @@
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
 #include <irrlicht.h>
+#include <CGlobal.h>
 #include <stdlib.h>
 #include <cstring>
 #include <codecvt>
@@ -28,7 +29,7 @@ namespace dustbin {
     }
 
     const std::wstring portableGetDataPath() {
-      return L"./";
+      return helpers::s2ws(CGlobal::getInstance()->getAndroidApp()->activity->internalDataPath) + L"/";
     }
 
     const std::wstring portableGetTexturePath() {

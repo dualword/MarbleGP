@@ -1069,9 +1069,13 @@ namespace dustbin {
 
       l_sFile += "</marblegp_championship>\n";
 
-      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(a_sPath.c_str());
-      l_pFile->write(l_sFile.c_str(), l_sFile.size());
-      l_pFile->drop();
+      const char *s = a_sPath.c_str();
+      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(s);
+
+      if (l_pFile != nullptr) {
+        l_pFile->write(l_sFile.c_str(), l_sFile.size());
+        l_pFile->drop();
+      }
     }
 
     void SChampionship::addRace(const SChampionshipRace& a_cRace) {
