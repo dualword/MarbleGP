@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
 <dialog>
-  <element type="tab" rect="relative: 0, 0, 50, 4">
+  <element type="tab" rect="relative: 0, 0, 50, 3">
     <attributes>
       <attribute key="Name" value="player_tab" />
       <attribute key="Visible" value="true" />
     </attributes>
     
     <children>
-      <element type="staticText" rect="relative: 0, 0, 4, 3" font="regular">
+      <element type="staticText" rect="relative: 0, 0, 4, 2" font="regular">
         <attributes>
           <attribute key="Caption" value="1" />
           <attribute key="HTextAlign" value="center" />
@@ -17,7 +17,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 5, 0, 42, 3" font="regular">
+      <element type="staticText" rect="relative: 5, 0, 42, 2" font="regular">
         <attributes>
           <attribute key="Name" value="player_name" />
           <attribute key="Caption" value="Mr. Nukular" />
