@@ -25,6 +25,8 @@ namespace dustbin {
       protected:
         bool m_bConnectionAllowed;  /**< If the server open for new connections? Will be set to "false" once the gaming starts */
 
+        std::string m_sHostName;    /**< Name of the host */
+
         std::vector<ENetPeer *> m_vPeers;
 
         std::vector<int> m_vAvailableSlots;   /**< The available client slots */
@@ -76,6 +78,12 @@ namespace dustbin {
         * @param a_sNewState the state to change to
         */
         void changeState(const std::string &a_sNewState);
+
+        /**
+        * Get the host name
+        * @return the host name
+        */
+        const std::string &getHostName();
     };
   }
 }

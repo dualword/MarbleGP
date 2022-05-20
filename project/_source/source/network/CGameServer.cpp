@@ -12,7 +12,8 @@ namespace dustbin {
   namespace network {
     CGameServer::CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal* a_pGlobal) :
       CNetBase            (a_pGlobal),
-      m_bConnectionAllowed(true)
+      m_bConnectionAllowed(true),
+      m_sHostName         ("")
     {
       m_vAvailableSlots = a_vAvailableIDs;
 
@@ -27,6 +28,14 @@ namespace dustbin {
         }
 
         m_pGlobal->setGlobal("enet_initialized", "true");
+
+        char s[4096];
+        if (!enet_address_get_host(&m_cAddress, s, 4096)) {
+          m_sHostName = s;
+        }
+        else if (!enet_address_get_host_ip(&m_cAddress, s, 4096)) {
+          m_sHostName = s;
+        }
       }
 
       m_cPlayers.deserialize(m_pGlobal->getGlobal("raceplayers"));
@@ -81,6 +90,14 @@ namespace dustbin {
       broadcastMessage(&l_cMsg, true);
     }
 
+
+    /**
+    * Get the host name
+    * @return the host name
+    */
+    const std::string& CGameServer::getHostName() {
+      return m_sHostName;
+    }
 
     /**
     * Handle an event in a subclass

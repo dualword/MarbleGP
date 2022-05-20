@@ -91,6 +91,13 @@ namespace dustbin {
               }
             }
 
+            irr::gui::IGUIStaticText *l_pHead = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+            if (l_pHead != nullptr && m_pServer != nullptr) {
+              std::wstring l_sHeadline = L"Server running on \"" + helpers::s2ws(m_pServer->getHostName()) + L"\"";
+              l_pHead->setText(l_sHeadline.c_str());
+            }
+
             m_pWaiting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_waiting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
             if (m_pWaiting != nullptr)
