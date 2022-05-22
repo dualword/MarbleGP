@@ -1073,3 +1073,4 @@
 /project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/*.txt
 *.ipch
 *.enc
+/project/MarbleGP_Android/MarbleGP_Android/MarbleGP_Android.NativeActivity/ARM64/Debug/MarbleGP.a7089204.tlog

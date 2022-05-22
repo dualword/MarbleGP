@@ -384,6 +384,15 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuNetworkLobby.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CDiscoveryClient.cpp">
+      <Filter>Quelldateien\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CDiscoveryServer.cpp">
+      <Filter>Quelldateien\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSearchServer.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -679,6 +688,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGuiLogDisplay.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CDiscoveryClient.h">
+      <Filter>Headerdateien\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CDiscoverySever.h">
+      <Filter>Headerdateien\network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

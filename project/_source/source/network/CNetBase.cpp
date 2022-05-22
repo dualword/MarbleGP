@@ -14,7 +14,7 @@ namespace dustbin {
       m_pGlobal           (a_pGlobal),
       m_pHost             (nullptr)
     {
-      if (m_pGlobal->getGlobal("enet_initialized") == "") {
+      if (m_pGlobal->getGlobal("enet_initialized") != "true") {
         if (enet_initialize() != 0) {
           printf("Error while initializing ENet!\n");
         }

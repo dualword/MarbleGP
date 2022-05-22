@@ -280,6 +280,8 @@
     <ClInclude Include="..\..\..\_source\include\messages\CSerializer64.h" />
     <ClInclude Include="..\..\..\_source\include\messages\IMessage.h" />
     <ClInclude Include="..\..\..\_source\include\messages\ISerializer.h" />
+    <ClInclude Include="..\..\..\_source\include\network\CDiscoveryClient.h" />
+    <ClInclude Include="..\..\..\_source\include\network\CDiscoverySever.h" />
     <ClInclude Include="..\..\..\_source\include\network\CGameClient.h" />
     <ClInclude Include="..\..\..\_source\include\network\CGameServer.h" />
     <ClInclude Include="..\..\..\_source\include\network\CNetBase.h" />
@@ -364,6 +366,7 @@
     <ClCompile Include="..\..\..\_source\source\menu\CMenuNetworkLobby.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuProfiles.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuRaceResult.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuSearchServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSelectTrack.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSettings.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSetupGame.cpp" />
@@ -372,6 +375,8 @@
     <ClCompile Include="..\..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\messages\CSerializer64.cpp" />
+    <ClCompile Include="..\..\..\_source\source\network\CDiscoveryClient.cpp" />
+    <ClCompile Include="..\..\..\_source\source\network\CDiscoveryServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\network\CGameClient.cpp" />
     <ClCompile Include="..\..\..\_source\source\network\CGameServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\network\CNetBase.cpp" />

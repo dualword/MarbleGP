@@ -321,7 +321,8 @@ namespace dustbin {
                     m_pManager->pushToMenuStack("menu_startserver");
                   }
                   else if (l_pNet->getSelected() == 2) {
-                    m_pManager->pushToMenuStack("menu_joinserver");
+                    m_pManager->pushToMenuStack("menu_joinserver"  );
+                    m_pManager->pushToMenuStack("menu_searchserver");
                   }
                 }
 

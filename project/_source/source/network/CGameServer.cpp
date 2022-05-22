@@ -2,6 +2,7 @@
 
 #include <_generated/messages/CMessageFactory.h>
 #include <_generated/messages/CMessages.h>
+#include <network/CDiscoverySever.h>
 #include <messages/CSerializer64.h>
 #include <network/CGameServer.h>
 #include <CGlobal.h>
@@ -13,7 +14,8 @@ namespace dustbin {
     CGameServer::CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal* a_pGlobal) :
       CNetBase            (a_pGlobal),
       m_bConnectionAllowed(true),
-      m_sHostName         ("")
+      m_sHostName         (""),
+      m_pDiscovery        (nullptr)
     {
       m_vAvailableSlots = a_vAvailableIDs;
 
@@ -36,6 +38,11 @@ namespace dustbin {
         else if (!enet_address_get_host_ip(&m_cAddress, s, 4096)) {
           m_sHostName = s;
         }
+
+        if (m_sHostName != "") {
+          m_pDiscovery = new CDiscoveryServer(m_sHostName, 4693);
+          m_pDiscovery->startThread();
+        }
       }
 
       m_cPlayers.deserialize(m_pGlobal->getGlobal("raceplayers"));
@@ -48,6 +55,13 @@ namespace dustbin {
       if (m_pHost != nullptr) {
         enet_host_destroy(m_pHost);
         m_pHost = nullptr;
+      }
+
+      if (m_pDiscovery != nullptr) {
+        m_pDiscovery->stopThread();
+        m_pDiscovery->join();
+        delete m_pDiscovery;
+        m_pDiscovery = nullptr;
       }
 
       if (m_pGlobal->getGlobal("enet_initialized") != "") {

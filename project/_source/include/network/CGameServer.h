@@ -15,6 +15,7 @@ namespace dustbin {
   class CGlobal;  /**< Forward declaration of the global class */
 
   namespace network {
+    class CDiscoveryServer; /**< Forward declaration of the discovery server thread */
     /**
     * @class CGameServer
     * @author Christian Keimel
@@ -39,6 +40,8 @@ namespace dustbin {
         std::map<ENetPeer *, std::string> m_mCurrentStates;    /**< The current states the clients are in */
 
         data::SRacePlayers m_cPlayers;    /**< The players */
+
+        CDiscoveryServer *m_pDiscovery;   /**< The discovery server thread */
 
         /**
         * Handle an event in a subclass
