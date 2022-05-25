@@ -858,7 +858,7 @@ namespace dustbin {
       if (m_pCamAnimator != nullptr && m_pCamera != nullptr)
         m_pCamAnimator->animateNode(m_pCamera, 0);
 
-      if (m_pTouchControl != nullptr) {
+      if (m_pTouchControl != nullptr && m_mViewports.size() > 0) {
         irr::s8 l_iCtrlX    = 0,
                 l_iCtrlY    = 0;
         bool    l_bBrake    = false,
