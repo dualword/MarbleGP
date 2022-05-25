@@ -872,7 +872,7 @@ namespace dustbin {
                     for (irr::u32 i = 0; i < l_pList->getFileCount(); i++) {
                       std::string l_sName = l_pList->getFileName(i).c_str();
                       if (l_sName.find(".png") != std::string::npos) {
-                        m_pCustomTexture->addItem(helpers::s2ws(l_sName).c_str());
+                        // m_pCustomTexture->addItem(helpers::s2ws(l_sName).c_str());
                       }
                     }
 
