@@ -179,6 +179,7 @@
     <ClInclude Include="..\..\_source\include\network\CGameClient.h" />
     <ClInclude Include="..\..\_source\include\network\CGameServer.h" />
     <ClInclude Include="..\..\_source\include\network\CNetBase.h" />
+    <ClInclude Include="..\..\_source\include\network\CPorts.h" />
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />

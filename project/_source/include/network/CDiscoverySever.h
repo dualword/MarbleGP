@@ -13,9 +13,9 @@ namespace dustbin {
       std::string m_sServer;  /**< Hostname of the server */
       int         m_iPortNo;  /**< Port the server is listening to */
 
-      struct addrinfo *m_MulticastAddr;
+      ENetAddress m_cMulticastAddress;
 
-      ENetSocket createMulticastServerSocket(struct addrinfo **a_pMulticastAddr);
+      ENetSocket createMulticastServerSocket(ENetAddress *a_pMulticastAddr);
 
     protected:
       /**
