@@ -146,6 +146,7 @@ namespace dustbin {
                 printf("%s\n", m_cPlayers.toString().c_str());
                 printf("\n*********\n");
 
+                m_pServer->setConnectionAllowed(false);
                 m_pServer->changeState("menu_netlobby");
                 if (m_pWaiting != nullptr)
                   m_pWaiting->setVisible(true);

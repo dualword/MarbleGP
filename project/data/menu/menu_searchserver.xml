@@ -15,16 +15,54 @@
           
         </children>
       </element>
-       
-      <element type="staticText" rect="relative: 1, 5, 79, 49" font="big">
+      
+      <element type="staticText" rect="center: -20, 12, 20, 16" font="big">
         <attributes>
-          <attribute key="Name" value="label_message" />
-          <attribute key="HTextAlign" value="center" />
+          <attribute key="Name" value="LabelStep" />
+          <attribute key="Caption" value="Searching for Game Servers " />
+          <attribute key="HTextAlign" value="upperleft" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
+      
+      <element type="MenuButton" rect="center: -20, -12, 20, -8" font="big" tooltip="Connect to the server">
+        <attributes>
+          <attribute key="Name" value="GameServer1" />
+          <attribute key="Caption" value="First Server" />
+          <attribute key="Visible" value="false" />
+          <attribute key="Id" value="0" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -20, -6, 20, -2" font="big" tooltip="Connect to the server">
+        <attributes>
+          <attribute key="Name" value="GameServer2" />
+          <attribute key="Caption" value="Second Server" />
+          <attribute key="Visible" value="false" />
+          <attribute key="Id" value="1" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -20, 0, 20, 4" font="big" tooltip="Connect to the server">
+        <attributes>
+          <attribute key="Name" value="GameServer3" />
+          <attribute key="Caption" value="Third Server" />
+          <attribute key="Visible" value="false" />
+          <attribute key="Id" value="2" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -20, 6, 20, 10" font="big" tooltip="Connect to the server">
+        <attributes>
+          <attribute key="Name" value="GameServer4" />
+          <attribute key="Caption" value="Fourth Server" />
+          <attribute key="Visible" value="false" />
+          <attribute key="Id" value="3" />
+        </attributes>
+      </element>
+      
     </children>
   </element>  
   
-  <include file="data/menu/button_ok.xml" />
+  <include file="data/menu/button_cancel.xml" />
 </dialog>

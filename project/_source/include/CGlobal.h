@@ -194,11 +194,11 @@ namespace dustbin {
 
       /**
       * Start and connect a net client
-      * @param a_sHost the server to connect to
+      * @param a_iHostIP the server to connect to
       * @param a_iPort the port the server is running
       * @param a_pQueue the queue that will receive the output from this client
       */
-      virtual void startGameClient(const std::string &a_sHost, int a_iPort, threads::CInputQueue *a_pQueue) = 0;
+      virtual void startGameClient(irr::u32 a_iHostIP, int a_iPort, threads::CInputQueue *a_pQueue) = 0;
 
       /**
       * Stop a game client. Nothing happens if no client is running

@@ -610,17 +610,18 @@ namespace dustbin {
 
   /**
   * Start and connect a net client
+  * @param a_iHostIP the server to connect to
   * @param a_sHost the server to connect to
   * @param a_iPort the port the server is running
   */
-  void CMainClass::startGameClient(const std::string& a_sHost, int a_iPort, threads::CInputQueue *a_pQueue) {
+  void CMainClass::startGameClient(irr::u32 a_iHostIP, int a_iPort, threads::CInputQueue *a_pQueue) {
     if (m_pClient != nullptr) {
       m_pClient->stopThread();
       m_pClient->join();
       delete m_pClient;
     }
 
-    m_pClient = new network::CGameClient(a_sHost, a_iPort, this);
+    m_pClient = new network::CGameClient(a_iHostIP, a_iPort, this);
     m_pClient->getOutputQueue()->addListener(a_pQueue);
     m_pClient->startThread();
   }

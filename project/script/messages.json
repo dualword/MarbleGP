@@ -50,7 +50,9 @@
     [ "RaceResult"            , "39" ],
     [ "EndRaceState"          , "40" ],
     [ "DiscoverServerRequest" , "41" ],
-    [ "DiscoverServerResponse", "42" ]
+    [ "DiscoverServerResponse", "42" ],
+    [ "DiscoveryStep"         , "43" ],
+    [ "GameServerFound"       , "44" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -337,6 +339,18 @@
       "fields": [
         { "name": "port"  , "type": "irr::s32"   , "comment": "The port the server is running on" },
         { "name": "server", "type": "std::string", "comment": "The network name of the server" }
+      ]
+    },
+    "DiscoveryStep": {
+      "comment": "This message is sent every time the server discovery client sends a broadcast to the network",
+      "fields": [ ]
+    },
+    "GameServerFound": {
+      "comment": "This is the message sent by the server discovery thread to the UI thread for every found game server",
+      "fields": [
+        { "name": "server", "type": "irr::u32"   , "comment": "The IP address of the server" },
+        { "name": "portno", "type": "irr::u32"   , "comment": "The port the server is listening to" },
+        { "name": "name"  , "type": "std::string", "comment": "Humand-readable name of the server" }
       ]
     }
   },

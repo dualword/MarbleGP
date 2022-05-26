@@ -81,8 +81,11 @@ namespace dustbin {
 
           m_pState->setZLayer(0);
 
+          irr::u32 l_iServerIp = std::atoi(m_pState->getGlobal()->getGlobal("selected_server_ip"  ).c_str());
+          irr::u32 l_iPortNo   = std::atoi(m_pState->getGlobal()->getGlobal("selected_server_port").c_str());
+
           m_pInputQueue = new threads::CInputQueue();
-          a_pState->getGlobal()->startGameClient("Saratoga", 4693, m_pInputQueue);
+          a_pState->getGlobal()->startGameClient(l_iServerIp, l_iPortNo, m_pInputQueue);
           
           m_pClient = a_pState->getGlobal()->getGameClient();
 

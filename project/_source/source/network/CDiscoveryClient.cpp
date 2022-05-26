@@ -50,45 +50,56 @@ namespace dustbin {
           sendbuf.dataLength = l_sMessage.length();
           int l_iSent = enet_socket_send(m_cScanner, &l_cAddress, &sendbuf, 1);
           printf("%i Bytes sent.\n", l_iSent);
-          ENetSocketSet set{};
-          ENET_SOCKETSET_EMPTY(set);
-          ENET_SOCKETSET_ADD(set, m_cScanner);
-          int l_iSelect = enet_socketset_select(m_cScanner, &set, NULL, 0);
-          printf("Select: %i\n", l_iSelect);
-          if (l_iSelect > 0) {
-            char l_aBuffer[1024]{};
-            ENetAddress l_cAddr;
-            ENetBuffer l_cRecvBuf{};
-            l_cRecvBuf.data = l_aBuffer;
-            l_cRecvBuf.dataLength = 1024;
-            int l_iRead = enet_socket_receive(m_cScanner, &l_cAddr, &l_cRecvBuf, 1);
 
-            enet_uint32 l_iServer = l_cAddr.host;
+          int l_iSelect = 0;
 
-            int l_iAddr1 = l_iServer & 0xFF;
-            int l_iAddr2 = l_iServer & 0xFF00;
-            int l_iAddr3 = l_iServer & 0xFF0000;
-            int l_iAddr4 = l_iServer & 0xFF000000;
+          do {
+            ENetSocketSet set{};
+            ENET_SOCKETSET_EMPTY(set);
+            ENET_SOCKETSET_ADD(set, m_cScanner);
+            l_iSelect = enet_socketset_select(m_cScanner, &set, NULL, 0);
+            printf("Select: %i\n", l_iSelect);
+            if (l_iSelect > 0) {
+              char l_aBuffer[1024]{};
+              ENetAddress l_cAddr;
+              ENetBuffer l_cRecvBuf{};
+              l_cRecvBuf.data = l_aBuffer;
+              l_cRecvBuf.dataLength = 1024;
+              int l_iRead = enet_socket_receive(m_cScanner, &l_cAddr, &l_cRecvBuf, 1);
 
-            printf("%i Bytes read (%s / %i.%i.%i.%i\n", l_iRead, l_aBuffer, l_iAddr1, l_iAddr2 / 256, l_iAddr3 / 65536, l_iAddr4 / 16777216);
+              enet_uint32 l_iServer = l_cAddr.host;
+              std::string l_sServerIP = std::to_string(l_iServer & 0xFF) + "." + std::to_string((l_iServer & 0xFF00) / 256) + "." + std::to_string((l_iServer & 0xFF0000) / 65536) + "." + std::to_string((l_iServer & 0xFF000000) / 16777216);
+              printf("%i Bytes read from %s (%s)\n", l_iRead, l_sServerIP.c_str(), l_aBuffer);
 
-            if (l_iRead > 0) {
-              messages::CMessageFactory l_cFactory;
-              messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_aBuffer);
-              messages::IMessage *l_pMsg = l_cFactory.createMessage(&l_cSerializer);
-              if (l_pMsg != nullptr) {
-                if (l_pMsg->getMessageId() == messages::enMessageIDs::DiscoverServerResponse) {
-                  messages::CDiscoverServerResponse *p = reinterpret_cast<messages::CDiscoverServerResponse *>(l_pMsg);
+              if (l_iRead > 0) {
+                messages::CMessageFactory l_cFactory;
+                messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_aBuffer);
+                messages::IMessage *l_pMsg = l_cFactory.createMessage(&l_cSerializer);
+                if (l_pMsg != nullptr) {
+                  if (l_pMsg->getMessageId() == messages::enMessageIDs::DiscoverServerResponse) {
+                    messages::CDiscoverServerResponse *p = reinterpret_cast<messages::CDiscoverServerResponse *>(l_pMsg);
 
-                  if (std::find(m_vServersFound.begin(), m_vServersFound.end(), std::make_tuple(l_iServer, p->getport())) == m_vServersFound.end()) {
-                    printf("Game Server Found: %s:%i\n", p->getserver().c_str(), p->getport());
-                    m_vServersFound.push_back(std::make_tuple(l_iServer, p->getport()));
+                    if (std::find(m_vServersFound.begin(), m_vServersFound.end(), std::make_tuple(l_iServer, p->getport())) == m_vServersFound.end()) {
+                      printf("Game Server Found: %s:%i\n", p->getserver().c_str(), p->getport());
+                      m_vServersFound.push_back(std::make_tuple(l_iServer, p->getport()));
+
+                      if (p->getserver() != "0.0.0.0")
+                        l_sServerIP = p->getserver();
+
+                      messages::CGameServerFound l_cMsg = messages::CGameServerFound(l_iServer, p->getport(), l_sServerIP);
+                      m_pOutputQueue->postMessage(&l_cMsg);
+                    }
                   }
+                  delete l_pMsg;
                 }
-                delete l_pMsg;
               }
             }
           }
+          while (l_iSelect > 0);
+
+          messages::CDiscoveryStep l_cDiscovery;
+          m_pOutputQueue->postMessage(&l_cDiscovery);
+
           std::this_thread::sleep_for(std::chrono::milliseconds(1500));
         }
       }

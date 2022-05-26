@@ -315,6 +315,8 @@ namespace dustbin {
                 if (l_pTouch != nullptr)
                   CGlobal::getInstance()->getSettingData().m_bTouchControl = l_pTouch->isChecked();
 
+                m_pManager->pushToMenuStack("menu_setupgame");
+
                 gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
                 if (l_pNet != nullptr) {
                   if (l_pNet->getSelected() == 1) {
@@ -329,7 +331,6 @@ namespace dustbin {
                 std::string l_sPlayers = l_cPlayers.serialize();
                 std::string l_sNext    = m_pManager->popMenuStack();
 
-                m_pManager->pushToMenuStack("menu_setupgame");
                 m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
                 createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
 

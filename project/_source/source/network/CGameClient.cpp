@@ -12,13 +12,14 @@
 
 namespace dustbin {
   namespace network {
-    CGameClient::CGameClient(const std::string &a_sAddress, int a_iPort, CGlobal* a_pGlobal) :
+    CGameClient::CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal* a_pGlobal) :
       CNetBase    (a_pGlobal),
       m_bConnected(true)
     {
       if (m_pGlobal->getGlobal("enet_initialized") == "true") {
         m_pHost = enet_host_create(nullptr, 1, 2, 0, 0);
-        enet_address_set_host(&m_cAddress, a_sAddress.c_str());
+        
+        m_cAddress.host = a_iHostIP;
         m_cAddress.port = a_iPort;
 
         ENetPeer *p = enet_host_connect(m_pHost, &m_cAddress, 2, 0);

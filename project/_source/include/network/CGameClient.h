@@ -42,7 +42,7 @@ namespace dustbin {
         virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
 
       public:
-        CGameClient(const std::string &a_sAddress, int a_iPort, CGlobal *a_pGlobal);
+        CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal *a_pGlobal);
         ~CGameClient();
 
         /**

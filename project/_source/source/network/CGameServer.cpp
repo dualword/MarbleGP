@@ -41,8 +41,7 @@ namespace dustbin {
         }
 
         if (m_sHostName != "") {
-          m_pDiscovery = new CDiscoveryServer(m_sHostName, c_iGamePort);
-          m_pDiscovery->startThread();
+          setConnectionAllowed(true);
         }
       }
 
@@ -72,6 +71,21 @@ namespace dustbin {
 
     void CGameServer::setConnectionAllowed(bool a_bAllowed) {
       m_bConnectionAllowed = a_bAllowed;
+
+      if (!a_bAllowed) {
+        if (m_pDiscovery != nullptr) {
+          m_pDiscovery->stopThread();
+          m_pDiscovery->join();
+          delete m_pDiscovery;
+          m_pDiscovery = nullptr;
+        }
+      }
+      else {
+        if (m_pDiscovery == nullptr) {
+          m_pDiscovery = new CDiscoveryServer(m_sHostName, c_iGamePort);
+          m_pDiscovery->startThread();
+        }
+      }
     }
     /**
     * Check whether or not all of the clients are in a specific state
