@@ -3,6 +3,7 @@
 #include <_generated/messages/CMessageFactory.h>
 #include <_generated/messages/CMessages.h>
 #include <network/CDiscoverySever.h>
+#include <network/CNetworkDefines.h>
 #include <messages/CSerializer64.h>
 #include <network/CGameServer.h>
 #include <CGlobal.h>
@@ -21,7 +22,7 @@ namespace dustbin {
 
       if (m_pGlobal->getGlobal("enet_initialized") == "true") {
         m_cAddress.host = ENET_HOST_ANY;
-        m_cAddress.port = 4693;
+        m_cAddress.port = c_iGamePort;
 
         m_pHost = enet_host_create(&m_cAddress, 16, 2, 0, 0);
 
@@ -40,7 +41,7 @@ namespace dustbin {
         }
 
         if (m_sHostName != "") {
-          m_pDiscovery = new CDiscoveryServer(m_sHostName, 4693);
+          m_pDiscovery = new CDiscoveryServer(m_sHostName, c_iGamePort);
           m_pDiscovery->startThread();
         }
       }

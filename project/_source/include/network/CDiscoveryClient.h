@@ -4,6 +4,8 @@
 #include <threads/IThread.h>
 #include <enet/enet.h>
 #include <string>
+#include <vector>
+#include <tuple>
 
 #ifdef _ANDROID
 #include <sys/types.h>
@@ -23,7 +25,9 @@ namespace dustbin {
       private:
         ENetSocket  m_cScanner;   /**< The socket used to broadcast search messages */
 
-        struct addrinfo *m_pMulticastAddr;
+        struct addrinfo *m_cMulticastAddr;
+
+        std::vector<std::tuple<int, int>> m_vServersFound;  /**< List of the found servers */
 
         ENetSocket createMulticastClientSocket(struct addrinfo **a_pMulticastAddr);
 
