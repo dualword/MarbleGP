@@ -6,7 +6,7 @@
 #include <network/CNetBase.h>
 #include <threads/IThread.h>
 #include <irrlicht.h>
-#include <enet.h>
+#include <enet/enet.h>
 #include <vector>
 
 namespace dustbin {

@@ -19,6 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\libs\enet-master\callbacks.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\compress.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\host.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\list.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\packet.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\peer.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\protocol.c" />
+    <ClCompile Include="..\..\..\..\libs\enet-master\win32.c" />
     <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp" />
@@ -111,6 +119,14 @@
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\callbacks.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\enet.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\list.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\protocol.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\time.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\types.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\utility.h" />
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\win32.h" />
     <ClInclude Include="..\..\_source\include\CGlobal.h" />
     <ClInclude Include="..\..\_source\include\CMainClass.h" />
     <ClInclude Include="..\..\_source\include\controller\CAiControlThread.h" />
@@ -125,7 +141,6 @@
     <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\_source\include\Defines.h" />
-    <ClInclude Include="..\..\_source\include\enet\enet.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h" />
@@ -376,7 +391,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;ws2_32.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -400,7 +415,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;ws2_32.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>

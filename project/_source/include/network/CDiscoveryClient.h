@@ -2,8 +2,14 @@
 #pragma once
 
 #include <threads/IThread.h>
-#include <enet.h>
+#include <enet/enet.h>
 #include <string>
+
+#ifdef _ANDROID
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#endif
 
 namespace dustbin {
   namespace network {

@@ -62,8 +62,7 @@ namespace dustbin {
           return true;
         }
 
-        case ENET_EVENT_TYPE_DISCONNECT:
-        case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT: {
+        case ENET_EVENT_TYPE_DISCONNECT: {
           messages::CServerDisconnect l_cMsg;
           m_pOutputQueue->postMessage(&l_cMsg);
 

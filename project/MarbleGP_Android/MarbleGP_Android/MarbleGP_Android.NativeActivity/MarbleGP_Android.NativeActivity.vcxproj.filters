@@ -258,9 +258,6 @@
     <ClInclude Include="..\..\..\_source\include\_generated\messages\IAiController.h">
       <Filter>Headerdateien\_generated\messages</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\enet\enet.h">
-      <Filter>Headerdateien\enet</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\network\CGameClient.h">
       <Filter>Headerdateien\network</Filter>
     </ClInclude>
@@ -632,9 +629,6 @@
     </Filter>
     <Filter Include="Quelldateien\sound">
       <UniqueIdentifier>{17c3544a-dc5a-434a-9c66-b3086946d53e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\enet">
-      <UniqueIdentifier>{aa19ba25-530a-4671-831d-a349a6c7c368}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headerdateien\network">
       <UniqueIdentifier>{9c2add4e-19ce-4189-b764-9cd66a81f4f2}</UniqueIdentifier>

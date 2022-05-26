@@ -124,11 +124,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
@@ -151,7 +151,7 @@
       <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk;enet</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -163,7 +163,7 @@
       <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk;enet</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -245,7 +245,6 @@
     <ClInclude Include="..\..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\..\_source\include\Defines.h" />
-    <ClInclude Include="..\..\..\_source\include\enet\enet.h" />
     <ClInclude Include="..\..\..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\..\..\_source\include\gameclasses\CGameLogicDefault.h" />
     <ClInclude Include="..\..\..\_source\include\gameclasses\CMarbleCounter.h" />

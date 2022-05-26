@@ -2,7 +2,7 @@
 #pragma once
 
 #include <threads/IThread.h>
-#include <enet.h>
+#include <enet/enet.h>
 #include <string>
 
 namespace dustbin {

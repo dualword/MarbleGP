@@ -136,7 +136,6 @@ namespace dustbin {
           return true;
 
         case ENET_EVENT_TYPE_DISCONNECT:
-        case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
           printf("Peer disconnected.\n");
           if (m_mPlayerMap.find(a_cEvent->peer) != m_mPlayerMap.end()) {
             for (std::vector<int>::iterator it = m_mPlayerMap[a_cEvent->peer].begin(); it != m_mPlayerMap[a_cEvent->peer].end(); it++) {

@@ -1,6 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #define ENET_IMPLEMENTATION
-#include <enet.h>
+#include <enet/enet.h>
 
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <controller/CControllerBase.h>

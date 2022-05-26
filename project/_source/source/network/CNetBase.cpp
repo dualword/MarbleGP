@@ -80,7 +80,6 @@ namespace dustbin {
                 break;
 
               case ENET_EVENT_TYPE_DISCONNECT:
-              case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
                 break;
 
               case ENET_EVENT_TYPE_RECEIVE: {
