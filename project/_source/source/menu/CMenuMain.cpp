@@ -43,7 +43,6 @@ namespace dustbin {
             }
             else if (l_sButton == "free_racing") {
               std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
-              m_pManager->pushToMenuStack("menu_selecttrack");
 
               if (l_vProfiles.size() == 0) {
                 m_pManager->pushToMenuStack("menu_setupgame");

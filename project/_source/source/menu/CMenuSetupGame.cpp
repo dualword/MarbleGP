@@ -200,6 +200,8 @@ namespace dustbin {
 
           updateSelectedPlayers();
           m_pState->setZLayer(0);
+          m_pManager->pushToMenuStack("menu_setupgame");
+          m_pManager->pushToMenuStack("menu_selecttrack");
           printf("Ready.\n");
         }
 
@@ -314,8 +316,6 @@ namespace dustbin {
                 gui::CDustbinCheckbox *l_pTouch = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
                 if (l_pTouch != nullptr)
                   CGlobal::getInstance()->getSettingData().m_bTouchControl = l_pTouch->isChecked();
-
-                m_pManager->pushToMenuStack("menu_setupgame");
 
                 gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
                 if (l_pNet != nullptr) {
