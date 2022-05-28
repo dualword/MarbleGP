@@ -45,11 +45,14 @@ namespace dustbin {
               std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
               if (l_vProfiles.size() == 0) {
+                m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_setupgame");
-                m_pManager->pushToMenuStack("menu_profiles");
-                createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                createMenu("menu_profiles", m_pDevice, m_pManager, m_pState);
               }
-              else createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState);
+              else {
+                m_pManager->pushToMenuStack("menu_selecttrack");
+                createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState);
+              }
             }
             else if (l_sButton == "view_track") {
               data::SRacePlayers l_cPlayers;

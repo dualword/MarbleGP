@@ -420,6 +420,9 @@
     <ClCompile Include="..\..\..\..\libs\enet-master\win32.c">
       <Filter>Quelldateien\enet</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuFillGrid.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

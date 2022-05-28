@@ -28,12 +28,8 @@ namespace dustbin {
         threads::CInputQueue *m_pInputQueue;  /**< The input queue to receive messages from the server */
         network::CGameServer *m_pServer;      /**< The game server */
 
-        irr::gui::IGUIStaticText *m_pWaiting;   /**< The "waiting for clients" overlay label */
-
         data::SRacePlayers  m_cPlayers;       /**< The players */
         data::SChampionship m_cChampionship;  /**< The championship */
-
-        bool m_bWaiting;  /**< Are we waiting for all clients to enter net game lobby? */
 
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
@@ -54,7 +50,7 @@ namespace dustbin {
         }
 
       public:
-        CMenuStartServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_bWaiting(false) {
+        CMenuStartServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState) {
           m_pGui->clear();
 
           helpers::loadMenuFromXML("data/menu/menu_startserver.xml", m_pGui->getRootGUIElement(), m_pGui);
@@ -97,11 +93,6 @@ namespace dustbin {
               std::wstring l_sHeadline = L"Server running on \"" + helpers::s2ws(m_pServer->getHostName()) + L"\"";
               l_pHead->setText(l_sHeadline.c_str());
             }
-
-            m_pWaiting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_waiting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-
-            if (m_pWaiting != nullptr)
-              m_pWaiting->setVisible(false);
           }
 
           m_pInputQueue = new threads::CInputQueue();
@@ -147,19 +138,7 @@ namespace dustbin {
                 printf("\n*********\n");
 
                 m_pServer->setConnectionAllowed(false);
-                m_pServer->changeState("menu_netlobby");
-                if (m_pWaiting != nullptr)
-                  m_pWaiting->setVisible(true);
-
-                gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                if (p != nullptr)
-                  p->setVisible(false);
-
-                p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                if (p != nullptr)
-                  p->setVisible(false);
-
-                m_bWaiting = true;
+                createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
               }
             }
           }
@@ -213,12 +192,6 @@ namespace dustbin {
               }
 
               delete l_pMsg;
-            }
-          }
-
-          if (m_bWaiting && m_pServer != nullptr) {
-            if (m_pServer->allClientsAreInState("menu_netlobby")) {
-              createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
             }
           }
         }

@@ -139,6 +139,9 @@ namespace dustbin {
       else if (a_sName == "menu_searchserver") {
         l_pRet = a_pManager->changeMenu(createMenuSearchServer(a_pDevice, a_pManager, a_pState));
       }
+      else if (a_sName == "menu_fillgrid") {
+        l_pRet = a_pManager->changeMenu(createMenuFillGrid(a_pDevice, a_pManager, a_pState));
+      }
 
       if (l_pRet == nullptr)
         printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());

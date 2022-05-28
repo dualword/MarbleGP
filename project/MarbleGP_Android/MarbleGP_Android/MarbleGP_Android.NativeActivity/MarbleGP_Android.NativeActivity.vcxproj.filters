@@ -532,6 +532,9 @@
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSearchServer.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuFillGrid.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">

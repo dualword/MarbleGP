@@ -67,7 +67,7 @@ namespace dustbin {
         ENET_SOCKETSET_EMPTY(set);
         ENET_SOCKETSET_ADD(set, m_cListen);
         int l_iSelect = enet_socketset_select(m_cListen, &set, NULL, 0);
-        printf("Select: %i\n", l_iSelect);
+
         if (l_iSelect > 0) {
           ENetAddress l_cAddr;
           char l_aBuf[1024]{};

@@ -54,6 +54,8 @@ namespace dustbin {
 
             i++;
           }
+
+          printf("\n\n%s\n\n", m_cPlayers.toString().c_str());
         }
 
       public:
@@ -154,8 +156,11 @@ namespace dustbin {
 
                 data::SPlayerData l_cPlayer = data::SPlayerData();
 
-                l_cPlayer.m_sName    = p->getname   ();
-                l_cPlayer.m_sTexture = p->gettexture();
+                l_cPlayer.m_sName     = p->getname   ();
+                l_cPlayer.m_sTexture  = p->gettexture();
+                l_cPlayer.m_iPlayerId = p->getident();
+                l_cPlayer.m_eType     = data::enPlayerType::Network;
+                l_cPlayer.m_sControls = "Network";
 
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 

@@ -28,6 +28,7 @@ namespace dustbin {
     IMenuHandler *createMenuMessage     (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuNetLobby    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuSearchServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
+    IMenuHandler *createMenuFillGrid    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
   }
 }
 

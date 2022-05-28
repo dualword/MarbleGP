@@ -360,6 +360,7 @@
     <ClCompile Include="..\..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CTextureHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\main_android.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuFillGrid.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuJoinServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuMain.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuMessage.cpp" />

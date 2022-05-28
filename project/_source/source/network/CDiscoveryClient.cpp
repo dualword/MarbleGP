@@ -58,7 +58,7 @@ namespace dustbin {
             ENET_SOCKETSET_EMPTY(set);
             ENET_SOCKETSET_ADD(set, m_cScanner);
             l_iSelect = enet_socketset_select(m_cScanner, &set, NULL, 0);
-            printf("Select: %i\n", l_iSelect);
+
             if (l_iSelect > 0) {
               char l_aBuffer[1024]{};
               ENetAddress l_cAddr;

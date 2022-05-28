@@ -200,8 +200,6 @@ namespace dustbin {
 
           updateSelectedPlayers();
           m_pState->setZLayer(0);
-          m_pManager->pushToMenuStack("menu_setupgame");
-          m_pManager->pushToMenuStack("menu_selecttrack");
           printf("Ready.\n");
         }
 
@@ -269,12 +267,6 @@ namespace dustbin {
                       // Remove the first element that was just assigned
                       l_vGrid.erase(l_vGrid.begin());
 
-                      // The starting position of the first race defines the number of each marble
-                      if (l_cPlayer.m_sTexture == "")
-                        l_cPlayer.m_sTexture = "default://number=" + std::to_string(l_cPlayer.m_iGridPos + 1);
-                      else
-                        l_cPlayer.m_sTexture = l_cPlayer.m_sTexture + "&number=" + std::to_string(l_cPlayer.m_iGridPos + 1);
-
                       l_cPlayer.m_iViewPort = l_iNum;
                       l_cPlayer.m_iPlayerId = l_iNum++;
                       l_cPlayers.m_vPlayers.push_back(l_cPlayer);
@@ -283,46 +275,26 @@ namespace dustbin {
                   }
                 }
 
-                if (l_bFillGridAI) { 
-                  while (l_cPlayers.m_vPlayers.size() < l_iGridSize) {
-                    data::SPlayerData l_cData;
-                    l_cData.m_eType     = data::enPlayerType::Ai;
-                    l_cData.m_iGridPos  = *l_vGrid.begin();
-                    l_cData.m_iPlayerId = l_iNum;
-                    l_cData.m_sName     = "AI Demo Player #" + std::to_string(l_cData.m_iGridPos + 1);
-                    l_cData.m_sControls = "ai_player";
-                    l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
-                    l_cData.m_sTexture  = "default://number=" + std::to_string(l_cData.m_iGridPos + 1);
-
-                    l_vGrid.erase(l_vGrid.begin());
-
-                    l_cPlayers.m_vPlayers.push_back(l_cData);
-                    l_iNum++;
-                  }
-                }
-
                 data::SFreeGameSlots l_cSlots = data::SFreeGameSlots();
                 l_cSlots.m_vSlots = l_vGrid;
                 m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
-
-                data::SChampionship l_cChampionship = data::SChampionship(m_cSettings.m_iRaceClass, (int)l_cPlayers.m_vPlayers.size(), m_cSettings.m_iGridPos, m_cSettings.m_bReverseGrid);
-
-                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
-                  l_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer((*it).m_iPlayerId, (*it).m_sName));
-                }
-
-                m_pState->getGlobal()->setGlobal("championship", l_cChampionship.serialize());
 
                 gui::CDustbinCheckbox *l_pTouch = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
                 if (l_pTouch != nullptr)
                   CGlobal::getInstance()->getSettingData().m_bTouchControl = l_pTouch->isChecked();
 
                 gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+                m_pManager->pushToMenuStack("menu_fillgrid");
+
                 if (l_pNet != nullptr) {
                   if (l_pNet->getSelected() == 1) {
                     m_pManager->pushToMenuStack("menu_startserver");
                   }
                   else if (l_pNet->getSelected() == 2) {
+                    // We don't want to go to the "fill grid" menu when connecting to a server
+                    m_pManager->popMenuStack();
+
                     m_pManager->pushToMenuStack("menu_joinserver"  );
                     m_pManager->pushToMenuStack("menu_searchserver");
                   }

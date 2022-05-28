@@ -11,8 +11,8 @@
 namespace dustbin {
   namespace network {
     CNetBase::CNetBase(CGlobal* a_pGlobal) :
-      m_pGlobal           (a_pGlobal),
-      m_pHost             (nullptr)
+      m_pGlobal(a_pGlobal),
+      m_pHost  (nullptr)
     {
       if (m_pGlobal->getGlobal("enet_initialized") != "true") {
         if (enet_initialize() != 0) {
@@ -51,14 +51,15 @@ namespace dustbin {
 
             if (l_eMsg == messages::enMessageIDs::StepMsg) {
               messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(l_pMsg);
-              l_bSendStep = p->getStepNo() % 2 == 0;
+              l_bSendStep = p->getStepNo() % 4 == 0;
             }
+            else l_bSendStep = true;
 
             // The most frequent messages are sent using a non-reliable packet
             if (l_eMsg == messages::enMessageIDs::StepMsg || l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved) {
-              // if (l_bSendStep) {
+              if (l_bSendStep) {
                 broadcastMessage(l_pMsg, false);
-                // }
+              }
             }
             else {
               broadcastMessage(l_pMsg, true);
@@ -136,6 +137,8 @@ namespace dustbin {
 
       ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, a_bReliable ? ENET_PACKET_FLAG_RELIABLE : 0);
       enet_host_broadcast(m_pHost, a_bReliable ? 0 : 1, p);
+
+      enet_host_flush(m_pHost);
     }
 
     /**
@@ -150,6 +153,7 @@ namespace dustbin {
 
       ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, ENET_PACKET_FLAG_RELIABLE);
       enet_peer_send(a_pPeer, 0, p);
+
       enet_host_flush(m_pHost);
     }
   }
