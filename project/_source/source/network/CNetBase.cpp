@@ -57,9 +57,9 @@ namespace dustbin {
 
             // The most frequent messages are sent using a non-reliable packet
             if (l_eMsg == messages::enMessageIDs::StepMsg || l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved) {
-              if (l_bSendStep) {
+              // if (l_bSendStep) {
                 broadcastMessage(l_pMsg, false);
-              }
+                // }
             }
             else {
               broadcastMessage(l_pMsg, true);
@@ -72,23 +72,30 @@ namespace dustbin {
         }
         while (l_pMsg != nullptr);
 
+        bool l_bEvent = false;
+
         // Do ENet host stuff here
         ENetEvent l_cEvent;
-        while (enet_host_service(m_pHost, &l_cEvent, 0) != 0) {
+        int l_iEvents = enet_host_service(m_pHost, &l_cEvent, 5);
+
+        while (l_iEvents > 0) {
+          l_bEvent = true;
+
           if (!OnEnetEvent(&l_cEvent)) {
             switch (l_cEvent.type) {
               case ENET_EVENT_TYPE_CONNECT:
                 break;
 
               case ENET_EVENT_TYPE_DISCONNECT:
+                printf("Disconnected.\n");
                 break;
 
               case ENET_EVENT_TYPE_RECEIVE: {
-                std::string l_sData;
-                l_sData.resize(l_cEvent.packet->dataLength + 1, 0);
-                memcpy(l_sData.data(), l_cEvent.packet->data, l_cEvent.packet->dataLength);
+                // std::string l_sData;
+                // l_sData.resize(l_cEvent.packet->dataLength + 1, 0);
+                // memcpy(l_sData.data(), l_cEvent.packet->data, l_cEvent.packet->dataLength);
 
-                messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_sData.c_str());
+                messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_cEvent.packet->data); //  l_sData.c_str());
                 messages::IMessage *l_pMsg = l_cFactory.createMessage(&l_cSerializer);
 
                 if (l_pMsg != nullptr) {
@@ -105,10 +112,17 @@ namespace dustbin {
                 break;
             }
           }
+          l_iEvents = enet_host_check_events(m_pHost, &l_cEvent);
         }
 
-        l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(5);
-        std::this_thread::sleep_until(l_cNextStep);
+        if (l_iEvents < 0) {
+          printf("Error on enet_host_service: %i\n", l_iEvents);
+        }
+
+        // if (!l_bEvent) {
+        //   l_cNextStep = l_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(1);
+        //   std::this_thread::sleep_until(l_cNextStep);
+        // }
       }
 
       printf("Network thread stopped.\n");

@@ -91,7 +91,7 @@ namespace dustbin {
               l_vGrid.erase(l_vGrid.begin());
             }
 
-          if (l_cSettings.m_bFillGridAI && m_pServer == nullptr) {
+          if (l_cSettings.m_bFillGridAI) { // && m_pServer == nullptr) {
             while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
               l_iCount++;
 
