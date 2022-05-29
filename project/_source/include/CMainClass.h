@@ -51,6 +51,8 @@ namespace dustbin {
       irr::video::ITexture    *m_pLogo;               /**< The "Dustbin::Game MarbleGP" Logo */
       irr::core::dimension2du  m_cLogo;               /**< The size of the rendered logo in the "next race" screen */
 
+      std::string m_sDeviceName;    /**< The device name, used for the Android port */
+
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
 #endif
@@ -100,6 +102,12 @@ namespace dustbin {
       virtual irr::video::IVideoDriver  *getVideoDriver   () override;   /**< Get the used video driver */
       virtual irr::scene::ISceneManager *getSceneManager  () override;   /**< Get the main scene manager */
       virtual irr::io::IFileSystem      *getFileSystem    () override;   /**< Get the Irrlicht file system instance */
+
+      /**
+      * Set the device name, important for the Android port
+      * @param a_sName the name of the device
+      */
+      void setDeviceName(const std::string &a_sName);
 
       /**
       * Set a setting (settings are stored when the program quits and restored on startup)
@@ -256,6 +264,12 @@ namespace dustbin {
       * @param a_fAlpha the transparency of the next race screen [0..1]
       */
       virtual void drawNextRaceScreen(irr::f32 a_fAlpha);
+
+      /**
+      * Get the device name
+      * @return the device name
+      */
+      virtual const std::string &getDeviceName();
 
 #ifdef _ANDROID
       /**

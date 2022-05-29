@@ -32,13 +32,7 @@ namespace dustbin {
 
         m_pGlobal->setGlobal("enet_initialized", "true");
 
-        char s[4096];
-        if (!enet_address_get_host(&m_cAddress, s, 4096)) {
-          m_sHostName = s;
-        }
-        else if (!enet_address_get_host_ip(&m_cAddress, s, 4096)) {
-          m_sHostName = s;
-        }
+        m_sHostName = CGlobal::getInstance()->getDeviceName();
 
         if (m_sHostName != "") {
           setConnectionAllowed(true);

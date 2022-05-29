@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include <controller/ICustomEventReceiver.h>
+#include <sys/system_properties.h>
 #include <state/IState.h>
 #include <Defines.h>
 
@@ -221,6 +222,10 @@ void android_main(struct android_app* a_pApp) {
     }
 
     l_pMainClass = new dustbin::CMainClass(l_sSettings, a_pApp);
+
+    char l_sDeviceName[PROP_VALUE_MAX+1];
+    __system_property_get("ro.product.model", l_sDeviceName);
+    l_pMainClass->setDeviceName(l_sDeviceName);
 
     irr::SIrrlichtCreationParameters l_cParams;
     l_cParams.DriverType       = irr::video::EDT_OGLES2;

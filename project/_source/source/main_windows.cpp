@@ -3,6 +3,7 @@
 #include <vld.h>
 #endif
 
+#include <helpers/CStringHelpers.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
 #include <filesystem>
@@ -49,6 +50,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     }
 
     l_pMainClass = new dustbin::CMainClass(l_sSettings);
+
+    #define INFO_BUFFER_SIZE 32767
+
+    TCHAR  l_aName[INFO_BUFFER_SIZE];
+    DWORD  l_iName = INFO_BUFFER_SIZE;
+
+    // Get and display the name of the computer.
+    if (GetComputerName(l_aName, &l_iName))
+      l_pMainClass->setDeviceName(dustbin::helpers::ws2s(l_aName));
 
     irr::u32 l_iWidth  = 1920,
              l_iHeight = 1080;

@@ -42,7 +42,8 @@ namespace dustbin {
     m_pServer         (nullptr),
     m_pClient         (nullptr),
     m_pNextRaceScreen (nullptr),
-    m_pLogo           (nullptr)
+    m_pLogo           (nullptr),
+    m_sDeviceName     ("")
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -315,6 +316,14 @@ namespace dustbin {
 
   irr::io::IFileSystem* CMainClass::getFileSystem() {
     return m_pFs;
+  }
+
+  /**
+  * Set the device name, important for the Android port
+  * @param a_sName the name of the device
+  */
+  void CMainClass::setDeviceName(const std::string& a_sName) {
+    m_sDeviceName = a_sName;
   }
 
   /**
@@ -750,6 +759,14 @@ namespace dustbin {
       m_pLogo = m_pDrv->getTexture("data/images/logo.png");
       m_cLogo = irr::core::dimension2du(m_pDrv->getScreenSize().Height / 5, m_pDrv->getScreenSize().Height / 5);
     }
+  }
+
+  /**
+  * Get the device name
+  * @return the device name
+  */
+  const std::string &CMainClass::getDeviceName() {
+    return m_sDeviceName;
   }
 
   /**

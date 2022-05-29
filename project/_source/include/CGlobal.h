@@ -236,6 +236,12 @@ namespace dustbin {
       */
       virtual void drawNextRaceScreen(irr::f32 a_fAlpha) = 0;
 
+      /**
+      * Get the device name
+      * @return the device name
+      */
+      virtual const std::string &getDeviceName() = 0;
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app
