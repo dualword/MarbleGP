@@ -37,6 +37,8 @@ namespace dustbin {
         std::map<ENetPeer *, std::vector<int>> m_mMarbleMap;      /**< The marble IDs that were assigned to a specific peer */
         std::map<ENetPeer *, std::vector<int>> m_mPlayerMap;      /**< The player IDs that were assigned to a specific peer */
 
+        std::vector<int> m_vDisconnected;     /**< All disconnected players */
+
         std::map<ENetPeer *, std::string> m_mCurrentStates;    /**< The current states the clients are in */
 
         data::SRacePlayers m_cPlayers;    /**< The players */
@@ -47,7 +49,7 @@ namespace dustbin {
         * Handle an event in a subclass
         * @return "true" if the event was handled
         */
-        virtual bool OnEnetEvent(ENetEvent *a_cEvent);
+        virtual bool OnEnetEvent(ENetEvent *a_cEvent) override;
 
         /**
         * Handle a received message in a subclass
@@ -55,7 +57,13 @@ namespace dustbin {
         * @param a_pMessage the message to handle
         * @return true if the message was handled
         */
-        virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
+        virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage) override;
+
+        /**
+        * React to a message before it's sent to all clients
+        * @param a_pMsg the message the will be sent
+        */
+        virtual void beforeSendMessage(messages::IMessage *a_pMsg) override;
 
       public:
         CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal *a_pGlobal);

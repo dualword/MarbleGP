@@ -15,7 +15,7 @@
 #include <ode/ode.h>
 #include <algorithm>
 
-#define MAX_CONTACTS 16
+constexpr auto MAX_CONTACTS = 16;
 const double GRAD_PI = 180.0 / 3.1415926535897932384626433832795;
 
 namespace dustbin {
@@ -62,7 +62,7 @@ namespace dustbin {
       dWorldID      l_cWorld      = l_pWorld->m_cWorld;
       dJointGroupID l_cJointGroup = l_pWorld->m_cContacts;
 
-      dContact l_cContact[MAX_CONTACTS];
+      dContact l_cContact[MAX_CONTACTS]{};
 
       if (dGeomIsSpace(a_iGeom1) || dGeomIsSpace(a_iGeom2)) {
         // colliding a space with something :
@@ -213,7 +213,7 @@ namespace dustbin {
             return;
         }
 
-        dJointID l_cJoints[MAX_CONTACTS];
+        dJointID l_cJoints[MAX_CONTACTS]{};
 
         for (irr::u32 i = 0; i < numc; i++) {
           if (l_pOdeNode1 != nullptr && l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble && l_pOdeNode2->m_bCollides) {
@@ -547,7 +547,7 @@ namespace dustbin {
                 p->m_iFinishTime = -1;
                 p->m_vPosition = l_cPos;
 
-                dQuaternion q;
+                dQuaternion q{};
                 q[0] = -m_pRostrumNode->getAbsoluteTransformation().getRotationDegrees().Y * M_PI / 180.0;
                 q[1] = 0.0;
                 q[2] = 1.0;
@@ -927,34 +927,40 @@ namespace dustbin {
     * @param a_MarbleId ID of the marble
     */
     void CDynamicThread::onPlayerwithdraw(irr::s32 a_MarbleId) {
-      if (m_eGameState == enGameState::Racing) {
-        irr::s32 l_iIndex = a_MarbleId - 10000;
+      irr::s32 l_iIndex = a_MarbleId - 10000;
 
-        if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-          if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Finished) {
-            sendRacefinished(1, m_pOutputQueue);
-          }
-          else if (m_aMarbles[l_iIndex]->m_iWithdraw == -1) {
-            sendConfirmwithdraw(a_MarbleId, 120, m_pOutputQueue);
-            m_aMarbles[l_iIndex]->m_iWithdraw = m_pWorld->m_iWorldStep + 120;
-          }
-          else {
-            if (m_pWorld->m_iWorldStep < m_aMarbles[l_iIndex]->m_iWithdraw) {
-              m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Withdrawn;
-              m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
-              data::SRacePlayer *l_pPlayer = m_pGameLogic->withdrawPlayer(a_MarbleId, m_pWorld->m_iWorldStep);
-              finishPlayer(a_MarbleId, -1, m_aMarbles[l_iIndex]->m_iLapNo);
+      if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+        if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Finished) {
+          sendRacefinished(1, m_pOutputQueue);
+        }
+        else if (m_aMarbles[l_iIndex]->m_iWithdraw == -1) {
+          sendConfirmwithdraw(a_MarbleId, 120, m_pOutputQueue);
+          m_aMarbles[l_iIndex]->m_iWithdraw = m_pWorld->m_iWorldStep + 120;
+        }
+        else {
+          if (m_pWorld->m_iWorldStep < m_aMarbles[l_iIndex]->m_iWithdraw && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
+            m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Withdrawn;
+            m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
+            data::SRacePlayer *l_pPlayer = m_pGameLogic->withdrawPlayer(a_MarbleId, m_pWorld->m_iWorldStep);
+            finishPlayer(a_MarbleId, -1, m_aMarbles[l_iIndex]->m_iLapNo);
 
-              if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-                m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
-              }
-
-              sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
-              sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
+            if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+              m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
             }
+
+            sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+            sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
           }
         }
       }
+    }
+
+    /**
+    * This function receives messages of type "PlayerRemoved"
+    * @param a_playerid ID of the removed player
+    */
+    void CDynamicThread::onPlayerremoved(irr::s32 a_playerid) {
+      sendPlayerremoved(a_playerid, m_pOutputQueue);
     }
 
 
@@ -1099,7 +1105,8 @@ namespace dustbin {
     void CDynamicThread::startPlayer(int a_iMarble) {
       int l_iIndex = a_iMarble - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        m_aMarbles[l_iIndex]->m_eState = gameclasses::CObjectMarble::enMarbleState::Rolling;
+        if (m_aMarbles[l_iIndex]->m_eState != gameclasses::CObjectMarble::enMarbleState::Withdrawn)
+          m_aMarbles[l_iIndex]->m_eState = gameclasses::CObjectMarble::enMarbleState::Rolling;
       }
     }
 

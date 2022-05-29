@@ -392,6 +392,12 @@ namespace dustbin {
         */
         virtual void onEndracestate() override;
 
+        /**
+        * This function receives messages of type "PlayerRemoved"
+        * @param a_playerid ID of the removed player
+        */
+        virtual void onPlayerremoved(irr::s32 a_playerid);
+
         void addStaticCameras(irr::scene::ISceneNode *a_pNode);
 
         /**

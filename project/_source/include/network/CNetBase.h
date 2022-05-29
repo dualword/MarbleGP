@@ -39,6 +39,12 @@ namespace dustbin {
         */
         virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
 
+        /**
+        * React to a message before it's sent to all clients
+        * @param a_pMsg the message the will be sent
+        */
+        virtual void beforeSendMessage(messages::IMessage *a_pMsg) { }
+
       public:
         CNetBase(CGlobal *a_pGlobal);
         ~CNetBase();

@@ -13,25 +13,25 @@ namespace dustbin {
   namespace data {
     // The message IDs for (de)serialization of the
     // player data structures
-    const irr::s32 c_iPlayerDataHead = 23;  /**< Marker for the player data to start */
-    const irr::s32 c_iPlayerType     = 24;  /**< Marker for the type of player */
-    const irr::s32 c_iPlayerName     = 25;  /**< Marker for the player name */
-    const irr::s32 c_iPlayerTexture  = 26;  /**< Marker for the player texture definition string */
-    const irr::s32 c_iPlayerControls = 27;  /**< Marker for the player controller setup string */
-    const irr::s32 c_iPlayerAiHelp   = 28;  /**< Marker for the level of AI help for the player */
-    const irr::s32 c_iPlayerGridPos  = 29;  /**< Marker for the position in the grid */
-    const irr::s32 c_iPlayerViewPort = 30;  /**< The player's viewport (if any) */
-    const irr::s32 c_iPlayerDataEnd  = 31;  /**< Marker for the player data to end */
+    const irr::s32 c_iPlayerDataHead     = 23;  /**< Marker for the player data to start */
+    const irr::s32 c_iPlayerType         = 24;  /**< Marker for the type of player */
+    const irr::s32 c_iPlayerName         = 25;  /**< Marker for the player name */
+    const irr::s32 c_iPlayerTexture      = 26;  /**< Marker for the player texture definition string */
+    const irr::s32 c_iPlayerControls     = 27;  /**< Marker for the player controller setup string */
+    const irr::s32 c_iPlayerAiHelp       = 28;  /**< Marker for the level of AI help for the player */
+    const irr::s32 c_iPlayerGridPos      = 29;  /**< Marker for the position in the grid */
+    const irr::s32 c_iPlayerViewPort     = 30;  /**< The player's viewport (if any) */
+    const irr::s32 c_iPlayerDataEnd      = 31;  /**< Marker for the player data to end */
 
     // Game Settings
-    const irr::s32 c_iGameSettings    = 32;   /**< Marker for the game settings */
-    const irr::s32 c_iRaceClass       = 33;   /**< Marker for the race class */
-    const irr::s32 c_iGridPos         = 34;   /**< Marker for the Grid position scheme */
-    const irr::s32 c_iGridSize        = 35;   /**< Marker for the grid size */
-    const irr::s32 c_iAutoFinish      = 36;   /**< Marker for the auto finish type */
-    const irr::s32 c_iReverseGrid     = 37;   /**< Marker for the reverse grid flag */
-    const irr::s32 c_iFirstRaceRandom = 38;   /**< Marker for the randomize first race flag */
-    const irr::s32 c_iFillGrid        = 39;   /**< Marker for the fill grid with AI flag */
+    const irr::s32 c_iGameSettings    = 42;   /**< Marker for the game settings */
+    const irr::s32 c_iRaceClass       = 43;   /**< Marker for the race class */
+    const irr::s32 c_iGridPos         = 44;   /**< Marker for the Grid position scheme */
+    const irr::s32 c_iGridSize        = 45;   /**< Marker for the grid size */
+    const irr::s32 c_iAutoFinish      = 46;   /**< Marker for the auto finish type */
+    const irr::s32 c_iReverseGrid     = 47;   /**< Marker for the reverse grid flag */
+    const irr::s32 c_iFirstRaceRandom = 48;   /**< Marker for the randomize first race flag */
+    const irr::s32 c_iFillGrid        = 49;   /**< Marker for the fill grid with AI flag */
 
     // Race Player
     const irr::s32 c_iRacePlayersHead   = 50;   /**< Marker for the beginning of the race player list */
@@ -40,28 +40,28 @@ namespace dustbin {
     const irr::s32 c_iRacePlayersFooter = 53;   /**< Marker for the end of the list of players */
 
     // Championship Player
-    const irr::s32 c_iChampionshipPlayerHead     = -60;       /**< Marker for the beginning of a championship player */
-    const irr::s32 c_iChampionshipPlayerId       = -61;       /**< Marker for the name of a championship player */
-    const irr::s32 c_iChampionshipPlayerName     = -62;       /**< Marker for the name of a championship player */
-    const irr::s32 c_iChampionshipPlayerResults  = -63;       /**< Marker for the race results of a championship player */
-    const irr::s32 c_iChampionshipPlayerPoints   = -64;       /**< Marker for the points of a championship player */
-    const irr::s32 c_iChampionshipPlayerRespawns = -65;       /**< Marker for the number of respawns of a championship player */
-    const irr::s32 c_iChampionshipPlayerStunned  = -66;       /**< Marker for the number of stuns of a championship player */
-    const irr::s32 c_iChampionshipPlayerFastest  = -67;       /**< Marker for the number of fastest race laps of a championship player */
-    const irr::s32 c_iChampionshipPlayerDNF      = -68;       /**< Marker for the number of races the player didn't finish */
-    const irr::s32 c_iChampionshipPlayerFooter   = -69;       /**< Marker for the end of the dataset */
+    const irr::s32 c_iChampionshipPlayerHead         = -60;       /**< Marker for the beginning of a championship player */
+    const irr::s32 c_iChampionshipPlayerId           = -61;       /**< Marker for the name of a championship player */
+    const irr::s32 c_iChampionshipPlayerName         = -62;       /**< Marker for the name of a championship player */
+    const irr::s32 c_iChampionshipPlayerResults      = -63;       /**< Marker for the race results of a championship player */
+    const irr::s32 c_iChampionshipPlayerPoints       = -64;       /**< Marker for the points of a championship player */
+    const irr::s32 c_iChampionshipPlayerRespawns     = -65;       /**< Marker for the number of respawns of a championship player */
+    const irr::s32 c_iChampionshipPlayerStunned      = -66;       /**< Marker for the number of stuns of a championship player */
+    const irr::s32 c_iChampionshipPlayerFastest      = -67;       /**< Marker for the number of fastest race laps of a championship player */
+    const irr::s32 c_iChampionshipPlayerDNF          = -68;       /**< Marker for the number of races the player didn't finish */
+    const irr::s32 c_iChampionshipPlayerFooter       = -69;       /**< Marker for the end of the dataset */
 
     // Championship Race
-    const irr::s32 c_iChampionshipRaceHead        = -70;      /**< Marker for the beginning of a championship race */
-    const irr::s32 c_iChampionshipRacePlayers     = -71;      /**< Marker for number of players of the race */
-    const irr::s32 c_iChampionshipRaceLaps        = -72;      /**< Marker for number of laps of the race */
-    const irr::s32 c_iChampionshipRaceTrack       = -73;      /**< Marker for number of laps of the race */
-    const irr::s32 c_iChampionshipRaceResult      = -74;      /**< Marker for the beginning of result of the race */
-    const irr::s32 c_iChampionshipRacePlayer      = -75;      /**< Marker for a player of the result */
-    const irr::s32 c_iChampionshipRaceResultEnd   = -76;      /**< Marker for the end of result of the race */
-    const irr::s32 c_iChampionshipRaceAssignBegin = -77;      /**< Marker for the beginning of the marble assignment */
-    const irr::s32 c_iChampionshipRaceAssignEnd   = -78;      /**< Marker for the end of the marble assignment */
-    const irr::s32 c_iChampionshipRaceFooter      = -79;      /**< Marker for the end of a championship race */
+    const irr::s32 c_iChampionshipRaceHead        = -80;      /**< Marker for the beginning of a championship race */
+    const irr::s32 c_iChampionshipRacePlayers     = -81;      /**< Marker for number of players of the race */
+    const irr::s32 c_iChampionshipRaceLaps        = -82;      /**< Marker for number of laps of the race */
+    const irr::s32 c_iChampionshipRaceTrack       = -83;      /**< Marker for number of laps of the race */
+    const irr::s32 c_iChampionshipRaceResult      = -84;      /**< Marker for the beginning of result of the race */
+    const irr::s32 c_iChampionshipRacePlayer      = -85;      /**< Marker for a player of the result */
+    const irr::s32 c_iChampionshipRaceResultEnd   = -86;      /**< Marker for the end of result of the race */
+    const irr::s32 c_iChampionshipRaceAssignBegin = -87;      /**< Marker for the beginning of the marble assignment */
+    const irr::s32 c_iChampionshipRaceAssignEnd   = -88;      /**< Marker for the end of the marble assignment */
+    const irr::s32 c_iChampionshipRaceFooter      = -89;      /**< Marker for the end of a championship race */
 
     // Championship
     const irr::s32 c_iChampionshipHeader       = -100;    /**< Marker for the start of a championship data structure */
@@ -287,16 +287,16 @@ namespace dustbin {
           irr::s32 l_iToken = l_cSerializer.getS32();
 
           switch (l_iToken) {
-            case c_iPlayerType    : m_eType     = (enPlayerType)l_cSerializer.getS32   (); break;
-            case c_iPlayerName    : m_sName     =               l_cSerializer.getString(); break;
-            case c_iPlayerControls: m_sControls =               l_cSerializer.getString(); break;
-            case c_iPlayerTexture : m_sTexture  =               l_cSerializer.getString(); break;
-            case c_iPlayerAiHelp  : m_eAiHelp   = (enAiHelp    )l_cSerializer.getS32   (); break;
-            case c_iPlayerGridPos : m_iGridPos  =               l_cSerializer.getS32   (); break;
-            case c_iPlayerViewPort: m_iViewPort =               l_cSerializer.getS32   (); break;
+            case c_iPlayerType    : m_eType         = (enPlayerType)l_cSerializer.getS32   ()     ; break;
+            case c_iPlayerName    : m_sName         =               l_cSerializer.getString()     ; break;
+            case c_iPlayerControls: m_sControls     =               l_cSerializer.getString()     ; break;
+            case c_iPlayerTexture : m_sTexture      =               l_cSerializer.getString()     ; break;
+            case c_iPlayerAiHelp  : m_eAiHelp       = (enAiHelp    )l_cSerializer.getS32   ()     ; break;
+            case c_iPlayerGridPos : m_iGridPos      =               l_cSerializer.getS32   ()     ; break;
+            case c_iPlayerViewPort: m_iViewPort     =               l_cSerializer.getS32   ()     ; break;
             case c_iPlayerDataEnd : return true;
             default:
-              printf("Unknow token %i\n", l_iToken);
+              printf("Unknown token %i\n", l_iToken);
               return false;
           }
         }
@@ -553,7 +553,15 @@ namespace dustbin {
       return s;
     }
 
-    SChampionshipPlayer::SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName) : m_iPlayerId(a_iPlayerId), m_sName(a_sName), m_iPoints(0), m_iRespawn(0), m_iStunned(0), m_iFastestLaps(0), m_iDidNotFinish(0) {
+    SChampionshipPlayer::SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName) : 
+      m_iPlayerId    (a_iPlayerId), 
+      m_sName        (a_sName), 
+      m_iPoints      (0), 
+      m_iRespawn     (0), 
+      m_iStunned     (0), 
+      m_iFastestLaps (0), 
+      m_iDidNotFinish(0)
+    {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = 0;
     }

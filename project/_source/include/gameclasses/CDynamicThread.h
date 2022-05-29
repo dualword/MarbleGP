@@ -109,6 +109,12 @@ namespace dustbin {
         */
         virtual void onPlayerwithdraw(irr::s32 a_MarbleId) override;
 
+        /**
+        * This function receives messages of type "PlayerRemoved"
+        * @param a_playerid ID of the removed player
+        */
+        virtual void onPlayerremoved(irr::s32 a_playerid);
+
         virtual void execute() override;
 
       public:

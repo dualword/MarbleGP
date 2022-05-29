@@ -1517,10 +1517,31 @@ namespace dustbin {
       if (m_pRace != nullptr) {
         data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
         l_cChampionship.addRace(*m_pRace);
+
         m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
       }
 
       m_bEnded = true;
+    }
+
+    /**
+    * This function receives messages of type "PlayerRemoved"
+    * @param a_playerid ID of the removed player
+    */
+    void CGameState::onPlayerremoved(irr::s32 a_playerid) {
+      for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+          if ((*it)->m_iPlayer == a_playerid) {
+            printf("Marble %i is withdrawn from race.\n", (*it)->m_pMarble->m_pPositional->getID());
+            
+            messages::CPlayerWithdraw l_cMsg = messages::CPlayerWithdraw((*it)->m_pMarble->m_pPositional->getID());
+
+            // Message needs to be posted twice, request and confirm withdraw
+            m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
+            m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
+          }
+        }
+      }
     }
 
     /**

@@ -158,6 +158,9 @@ namespace dustbin {
               messages::CPlayerRemoved l_cRemove = messages::CPlayerRemoved(*it);
               broadcastMessage(&l_cRemove, true);
               m_pOutputQueue->postMessage(&l_cRemove);
+
+              if (!m_bConnectionAllowed)
+                m_vDisconnected.push_back(*it);
             }
             m_mPlayerMap.erase(a_cEvent->peer);
           }
@@ -294,6 +297,25 @@ namespace dustbin {
         }
       }
       return false;
+    }
+
+    /**
+    * React to a message before it's sent to all clients
+    * @param a_pMsg the message the will be sent
+    */
+    void CGameServer::beforeSendMessage(messages::IMessage* a_pMsg) {
+      if (a_pMsg->getMessageId() == messages::enMessageIDs::Countdown) {
+        messages::CCountdown *p = reinterpret_cast<messages::CCountdown *>(a_pMsg);
+
+        if (p->getTick() == 2) {
+          for (std::vector<int>::iterator it = m_vDisconnected.begin(); it != m_vDisconnected.end(); it++) {
+            messages::CPlayerRemoved l_cRemove = messages::CPlayerRemoved(*it);
+            printf("Game Server: Remove player %i\n", *it);
+            broadcastMessage(&l_cRemove, true);
+            m_pOutputQueue->postMessage(&l_cRemove);
+          }
+        }
+      }
     }
   }
 }

@@ -47,6 +47,8 @@ namespace dustbin {
 
         do {
           if (l_pMsg != nullptr) {
+            beforeSendMessage(l_pMsg);
+
             messages::enMessageIDs l_eMsg = l_pMsg->getMessageId();
 
             if (l_eMsg == messages::enMessageIDs::StepMsg) {
