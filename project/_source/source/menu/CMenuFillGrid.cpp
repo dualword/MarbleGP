@@ -184,18 +184,20 @@ namespace dustbin {
                   m_pServer->changeState("menu_netlobby");
                   if (m_pWaiting != nullptr)
                     m_pWaiting->setVisible(true);
+
+                  gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  if (p != nullptr)
+                    p->setVisible(false);
+
+                  p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  if (p != nullptr)
+                    p->setVisible(false);
+
+                  m_bWaiting = true;
                 }
-                else createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
-
-                gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                if (p != nullptr)
-                  p->setVisible(false);
-
-                p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                if (p != nullptr)
-                  p->setVisible(false);
-
-                m_bWaiting = true;
+                else {
+                  createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                }
               }
               else if (l_sCaller == "cancel") {
                 m_pManager->clearMenuStack();
