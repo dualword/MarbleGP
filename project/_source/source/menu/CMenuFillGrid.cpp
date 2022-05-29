@@ -180,9 +180,12 @@ namespace dustbin {
               std::string l_sCaller = a_cEvent.GUIEvent.Caller->getName();
 
               if (l_sCaller == "ok") {
-                m_pServer->changeState("menu_netlobby");
-                if (m_pWaiting != nullptr)
-                  m_pWaiting->setVisible(true);
+                if (m_pServer != nullptr) {
+                  m_pServer->changeState("menu_netlobby");
+                  if (m_pWaiting != nullptr)
+                    m_pWaiting->setVisible(true);
+                }
+                else createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
 
                 gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
                 if (p != nullptr)
