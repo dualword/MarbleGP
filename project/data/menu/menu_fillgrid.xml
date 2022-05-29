@@ -1,15 +1,6 @@
 <?xml version="1.0"?>
 <!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
 <dialog>
-  <element type="staticText" rect="center: -40, -25, 40, 25" font="huge">
-    <attributes>
-      <attribute key="Caption" value="Connecting to Server..." />
-      <attribute key="HTextAlign" value="center" />
-      <attribute key="VTextAlign" value="center" />
-      <attribute key="Name" value="label_connecting" />
-    </attributes>
-  </element>
-  
   <element type="MenuBackground" rect="center: -40, -25, 40, 25">
     <attributes>
       <attribute key="Name" value="main_frame" />
@@ -18,7 +9,7 @@
     <children>
       <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
         <attributes>
-          <attribute key="Caption" value="Dustbin::Games MarbleGP - Network Game" />
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Starting Grid" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
           <attribute key="Name" value="label_headline" />
@@ -223,6 +214,6 @@
     </children>
   </element>  
   
+  <include file="data/menu/button_ok.xml" />
   <include file="data/menu/button_cancel.xml" />
-  <include file="data/menu/dialog_select_player.xml" />
 </dialog>

@@ -210,19 +210,6 @@
     </children>
   </element>  
   
-  <element type="staticText" rect="center: -20, -5, 20, 5" font="huge">
-    <attributes>
-      <attribute key="Caption" value="Waiting for Clients..." />
-      <attribute key="HTextAlign" value="center" />
-      <attribute key="VTextAlign" value="center" />
-      <attribute key="Name" value="label_waiting" />
-      <attribute key="Background" value="true" />
-      <attribute key="OverrideBGColorEnabled" value="true" />
-      <attribute key="BGColor" value="224, 192, 192, 192" />
-      <attribute key="Border" value="true" />
-    </attributes>
-  </element>
-  
   <include file="data/menu/button_ok.xml" />
   <include file="data/menu/button_cancel.xml" />
   <include file="data/menu/dialog_select_player.xml" />
