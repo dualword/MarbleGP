@@ -100,7 +100,7 @@ namespace dustbin {
           messages::CDiscoveryStep l_cDiscovery;
           m_pOutputQueue->postMessage(&l_cDiscovery);
 
-          std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+          std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
       }
       printf("Server discovery thread stopped.\n");
