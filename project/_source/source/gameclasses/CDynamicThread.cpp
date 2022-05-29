@@ -519,9 +519,6 @@ namespace dustbin {
               sendPlayerstunned(p->m_iId, 0, m_pOutputQueue);
               p->m_eState = CObjectMarble::enMarbleState::Rolling;
               p->m_iStunnedStart = -1;
-
-              /*if (m_pPhysicsScript != nullptr)
-                m_pPhysicsScript->onPlayerStunned(p->m_iId, 0, m_iWorldStep);*/
             }
 
             sendMarblemoved(p->m_iId,

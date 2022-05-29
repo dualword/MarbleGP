@@ -1410,8 +1410,13 @@ namespace dustbin {
      */
     void CGameState::onRacefinished(irr::u8 a_Cancelled) {
       if (m_iFinished == -1) {
-        m_iFinished = a_Cancelled ? m_iStep - 1500 : m_iStep;
+        printf("\nCGameState::onRacefinished: %s\n", a_Cancelled != 0 ? "true" : "false");
         m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStFinish);
+      }
+
+      if (m_iFinished == -1 || a_Cancelled != 0) {
+        printf("\nCGameState::onRacefinished: %s\n", a_Cancelled != 0 ? "true" : "false");
+        m_iFinished = a_Cancelled ? m_iStep - 1500 : m_iStep;
       }
     }
 
