@@ -27,6 +27,7 @@ namespace dustbin {
     CNetBase::~CNetBase() {
       if (m_pGlobal->getGlobal("enet_initialized") != "") {
         enet_deinitialize();
+        m_pGlobal->setGlobal("enet_initialized", "");
       }
     }
 

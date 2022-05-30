@@ -6,6 +6,7 @@
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
+#include <gui/CMenuButton.h>
 #include <state/IState.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
@@ -241,8 +242,10 @@ namespace dustbin {
             }
           }
 
-          if (m_pServer != nullptr) {
-            
+          if (m_pClient != nullptr) {
+            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            if (p != nullptr)
+              p->setVisible(false);
           }
         }
 

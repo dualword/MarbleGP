@@ -27,6 +27,9 @@ namespace dustbin {
           m_pManager->clearMenuStack();
 
           m_pState->setZLayer(0);
+
+          m_pState->getGlobal()->stopGameServer();
+          m_pState->getGlobal()->stopGameClient();
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {

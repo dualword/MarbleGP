@@ -54,8 +54,6 @@ namespace dustbin {
 
             i++;
           }
-
-          printf("\n\n%s\n\n", m_cPlayers.toString().c_str());
         }
 
       public:
@@ -68,6 +66,8 @@ namespace dustbin {
           m_pSmgr->addCameraSceneNode();
 
           m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
+
+          printf("%s\n\n", m_cPlayers.toString().c_str());
 
           m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
@@ -164,22 +164,36 @@ namespace dustbin {
 
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
+                m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(p->getident(), p->getname()));
+
                 updatePlayerList();
               }
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::UpdatePlayerId) {
+                std::string l_sName = "";
+
                 messages::CUpdatePlayerId *p = reinterpret_cast<messages::CUpdatePlayerId *>(l_pMsg);
                 for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == p->getoriginal_id()) {
-                    printf("Update ID of player %s to %i\n", (*it).m_sName.c_str(), p->getnetgame_id());
+                    printf("Update ID of race player %s to %i\n", (*it).m_sName.c_str(), p->getnetgame_id());
                     (*it).m_iPlayerId = p->getnetgame_id();
+                    l_sName = (*it).m_sName;
                   }
                 }
 
+                bool l_bFound = false;
+
                 for (std::vector<data::SChampionshipPlayer>::iterator it = m_cChampionship.m_vPlayers.begin(); it != m_cChampionship.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == p->getoriginal_id()) {
+                    printf("Update ID of championship player %s to %i\n", (*it).m_sName.c_str(), p->getnetgame_id());
                     (*it).m_iPlayerId = p->getnetgame_id();
+                    l_bFound = true;
                     break;
                   }
+                }
+
+                if (!l_bFound) {
+                  printf("Championship player not found, adding \"%s\"...\n", l_sName.c_str());
+                  m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(p->getnetgame_id(), l_sName));
                 }
               }
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::RacePlayer) {
@@ -247,6 +261,8 @@ namespace dustbin {
 
                 m_pState->getGlobal()->setGlobal("raceplayers" , m_cPlayers     .serialize());
                 m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
+
+                printf("\n\n%s\n\n", m_cChampionship.to_string().c_str());
 
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
               }

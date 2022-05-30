@@ -5,6 +5,7 @@
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
+#include <gui/CMenuButton.h>
 #include <state/IState.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
@@ -23,9 +24,15 @@ namespace dustbin {
         std::string m_sNewState;  /**< The next state important if we are a network game server */
 
         network::CGameServer *m_pServer;  /**< The game server */
+        network::CGameClient *m_pClient;  /**< The game client */
 
     public:
-        CMenuStandings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_sNewState(""), m_pServer(a_pState->getGlobal()->getGameServer()) {
+        CMenuStandings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
+          IMenuHandler(a_pDevice, a_pManager, a_pState), 
+          m_sNewState(""), 
+          m_pServer(a_pState->getGlobal()->getGameServer()),
+          m_pClient(a_pState->getGlobal()->getGameClient())
+        {
           m_pGui ->clear();
           m_pSmgr->clear();
 
@@ -198,6 +205,12 @@ namespace dustbin {
 
               l_iPos++;
             }
+          }
+
+          if (m_pClient != nullptr) {
+            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            if (p != nullptr)
+              p->setVisible(false);
           }
         }
 
