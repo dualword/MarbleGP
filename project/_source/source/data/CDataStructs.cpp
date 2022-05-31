@@ -1182,16 +1182,8 @@ namespace dustbin {
           return p1.m_iPoints > p2.m_iPoints;
         }
         else {
-          // If two players have equal points the player with more
-          // better results leads
-          for (int i = 0; i < 16; i++) {
-            if (p1.m_aResult[i] != p2.m_aResult[i]) {
-              return p1.m_aResult[i] > p2.m_aResult[i];
-            }
-          }
-
-          // If none of the two above criteria define
-          // a leader we take the number of respawns
+          // If two players have equal points the
+          // player with less respawns leads
           if (p1.m_iRespawn != p2.m_iRespawn) {
             return p1.m_iRespawn < p2.m_iRespawn;
           }
@@ -1200,6 +1192,26 @@ namespace dustbin {
           // is taken into account
           if (p1.m_iStunned != p2.m_iStunned) {
             return p1.m_iStunned < p2.m_iStunned;
+          }
+
+          // Better race results define the ranking
+          // if none of the above helps
+          for (int i = 0; i < 16; i++) {
+            if (p1.m_aResult[i] != p2.m_aResult[i]) {
+              return p1.m_aResult[i] > p2.m_aResult[i];
+            }
+          }
+
+          // Now we check for did not finishs, less
+          // of those is better
+          if (p1.m_iDidNotFinish != p2.m_iDidNotFinish) {
+            return p1.m_iDidNotFinish < p2.m_iDidNotFinish;
+          }
+
+          // Nothing to distinguish yet? Then we take
+          // the number of fastest laps in a race
+          if (p1.m_iFastestLaps != p2.m_iFastestLaps) {
+            return p1.m_iFastestLaps < p2.m_iFastestLaps;
           }
 
           // If nothing helps we take the player id
