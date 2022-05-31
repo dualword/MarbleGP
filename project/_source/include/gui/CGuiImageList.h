@@ -4,6 +4,7 @@
 #include <irrlicht.h>
 #include <string>
 #include <vector>
+#include <tuple>
 
 namespace dustbin {
   namespace gui {
@@ -30,17 +31,19 @@ namespace dustbin {
           std::string m_sName;    /**< The displayed name of the image */
           std::string m_sData;    /**< Some data that can be used to identify the selected image */
 
+          std::wstring m_sCategory; /**< Category for tracks */
+
           irr::video::ITexture *m_pImage;   /**< The image texture */
 
           irr::core::recti m_cDrawRect;   /**< The screen rect the texture is drawn to */
 
-          SListImage(const std::string a_sPath, const std::string a_sName, const std::string a_sData) : m_sPath(a_sPath), m_sName(a_sName), m_sData(a_sData), m_pImage(nullptr) {
+          SListImage(const std::string a_sPath, const std::string a_sName, const std::string a_sData) : m_sPath(a_sPath), m_sName(a_sName), m_sData(a_sData), m_sCategory(L""), m_pImage(nullptr) {
           }
 
-          SListImage() : m_sPath(""), m_sName(""), m_sData(""), m_pImage(nullptr) {
+          SListImage() : m_sPath(""), m_sName(""), m_sData(""), m_sCategory(L""), m_pImage(nullptr) {
           }
 
-          SListImage(const SListImage& a_cOther) : m_sPath(a_cOther.m_sPath), m_sName(a_cOther.m_sName), m_sData(a_cOther.m_sData), m_pImage(a_cOther.m_pImage), m_cDrawRect(a_cOther.m_cDrawRect) {
+          SListImage(const SListImage& a_cOther) : m_sPath(a_cOther.m_sPath), m_sName(a_cOther.m_sName), m_sData(a_cOther.m_sData), m_sCategory(a_cOther.m_sCategory), m_pImage(a_cOther.m_pImage), m_cDrawRect(a_cOther.m_cDrawRect) {
           }
 
           irr::video::ITexture *getImage();
@@ -68,14 +71,37 @@ namespace dustbin {
         std::vector<SListImage>::iterator m_itSelected;   /**< The selected image */
         std::vector<SListImage>::iterator m_itHovered;    /**< The hovered image */
 
-        CMenuButton *m_pBtnLeft,    /**< The "Left" button */
-                    *m_pBtnRight;   /**< The "right" button */
+        CMenuButton *m_pBtnLeft;    /**< The "Left" button */
+        CMenuButton *m_pBtnRight;   /**< The "right" button */
 
-        bool m_bHover,      /**< Is the element hovered? */
-             m_bMouseDown;  /**< Was a button pressed while hovering? */
+        bool m_bHover;        /**< Is the element hovered? */
+        bool m_bMouseDown;    /**< Was a button pressed while hovering? */
+        bool m_bCategories;   /**< Show categories (for the tracks) */
+        bool m_bShowSelected; /**< Add a headline showing the name of the selected item */
+        bool m_bOneCatPage;   /**< Categories fit on one page */
+        bool m_bScrollTrack;  /**< Scroll the track list (true) or the categories (false)? */
 
         irr::core::position2di m_cClick;  /**< The mouse position for dragging */
         irr::core::position2di m_cMouse;  /**< The current mouse position */
+
+        irr::core::recti m_cHeadline;       /**< The headline rect (if wanted) */
+        irr::core::recti m_cCategoryOuter;  /**< The outer rect of the category list (if wanted) */
+        irr::core::recti m_cCategoryInner;  /**< The inner rect of the category list (if wanted) */
+        irr::core::recti m_cCategoryLeft;   /**< The left button for the previous category */
+        irr::core::recti m_cCategoryRght;   /**< The right button for the next category */
+
+        irr::video::ITexture *m_pTextureLeft;   /**< Image for the left button */
+        irr::video::ITexture *m_pTextureRght;   /**< Image for the right button */
+
+        irr::gui::IGUIFont *m_pFontSelected;    /**< The font for the selected image */
+        irr::gui::IGUIFont *m_pFontCategory;    /**< The font for the category */
+
+        std::wstring m_sCategory;   /**< The currently selected category */
+        
+        std::vector<std::tuple<std::wstring, irr::core::recti>> m_vCategories;    /**< Categories of the items */
+
+        int m_iCategoryOffset;
+        int m_iCategoryMax;
 
         void prepareUi();
         void checkPositionAndButtons();
