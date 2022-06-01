@@ -140,14 +140,14 @@ namespace dustbin {
             p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
             l_cColPos.X += 15 * l_iWidth / 100;
 
-            p = m_pGui->addStaticText(L"Stunned", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
+            p = m_pGui->addStaticText(L"Respawn", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
             p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
             p->setDrawBackground(true);
             p->setOverrideFont(l_pFont);
             p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
             l_cColPos.X += 15 * l_iWidth / 100;
 
-            p = m_pGui->addStaticText(L"Respawn", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
+            p = m_pGui->addStaticText(L"Stunned", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
             p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
             p->setDrawBackground(true);
             p->setOverrideFont(l_pFont);
@@ -222,7 +222,7 @@ namespace dustbin {
 
               m_vTable.back().push_back(p);
 
-              p = m_pGui->addStaticText((std::to_wstring(l_pRace->m_aResult[i].m_iStunned) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
+              p = m_pGui->addStaticText((std::to_wstring(l_pRace->m_aResult[i].m_iRespawn) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
               p->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
               p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
               p->setDrawBackground(false);
@@ -231,7 +231,7 @@ namespace dustbin {
 
               m_vTable.back().push_back(p);
 
-              p = m_pGui->addStaticText((std::to_wstring(l_pRace->m_aResult[i].m_iRespawn) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
+              p = m_pGui->addStaticText((std::to_wstring(l_pRace->m_aResult[i].m_iStunned) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
               p->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
               p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
               p->setDrawBackground(false);

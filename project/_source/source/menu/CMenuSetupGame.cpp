@@ -48,6 +48,8 @@ namespace dustbin {
 
         std::vector<gui::CMenuButton *> m_vSelectPlayer;  /**< The player buttons in the "select player" dialog */
 
+        gui::CMenuButton *m_pOk;  /**< The OK button */
+
         /**
         * Update the list of selected players
         */
@@ -71,6 +73,9 @@ namespace dustbin {
 
             l_iNum++;
           }
+
+          if (m_pOk != nullptr)
+            m_pOk->setVisible(m_vSelectedPlayers.size() > 0);
         }
 
         void playerSelectCancel() {
@@ -85,7 +90,8 @@ namespace dustbin {
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_iMaxIndex    (-1), 
           m_itAdd        (m_vPlayerUI.end()),
-          m_pSelectPlayer(nullptr)
+          m_pSelectPlayer(nullptr),
+          m_pOk          (nullptr)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
@@ -200,6 +206,9 @@ namespace dustbin {
 
           updateSelectedPlayers();
           m_pState->setZLayer(0);
+
+          m_pOk = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
           printf("Ready.\n");
         }
 
