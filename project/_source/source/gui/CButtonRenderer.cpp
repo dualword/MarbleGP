@@ -36,59 +36,109 @@ namespace dustbin {
         l_iRadius = l_iRaster - l_iBorder;
       }
 
-      // Draw the upper border
-      for (int l_iLine = 0; l_iLine < l_iRaster + 1; l_iLine++) {
-        int l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iRaster - l_iLine) * (l_iRaster - l_iLine))),
-            l_iInner  = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
+      irr::core::position2di l_cUpperLeft = a_cRect.UpperLeftCorner;
+      irr::core::position2di l_cLowerRght = a_cRect.LowerRightCorner;
 
-        if (l_iLine < l_iBorder) {
-          m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine) + a_cRect.UpperLeftCorner, irr::core::vector2di(l_iWidth - l_iOffset, l_iLine) + a_cRect.UpperLeftCorner, m_cBorder);
+      irr::core::recti l_cRects[] = {
+        irr::core::recti(l_cUpperLeft                                                                                          , irr::core::dimension2di(l_iRaster                         , l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(l_iRaster                     , 0                              ), irr::core::dimension2di(a_cRect.getWidth() - 2 * l_iRaster, l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(a_cRect.getWidth() - l_iRaster, 0                              ), irr::core::dimension2di(l_iRaster                         , l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(                             0, l_iRaster                      ), irr::core::dimension2di(l_iRaster                         , a_cRect.getHeight() - 2 * l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(l_iRaster                     , l_iRaster                      ), irr::core::dimension2di(a_cRect.getWidth() - 2 * l_iRaster, a_cRect.getHeight() - 2 * l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(a_cRect.getWidth() - l_iRaster, l_iRaster                      ), irr::core::dimension2di(l_iRaster                         , a_cRect.getHeight() - 2 * l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(                             0, a_cRect.getHeight() - l_iRaster), irr::core::dimension2di(l_iRaster                         , l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(l_iRaster                     , a_cRect.getHeight() - l_iRaster), irr::core::dimension2di(a_cRect.getWidth() - 2 * l_iRaster, l_iRaster)),
+        irr::core::recti(l_cUpperLeft + irr::core::position2di(a_cRect.getWidth() - l_iRaster, a_cRect.getHeight() - l_iRaster), irr::core::dimension2di(l_iRaster                         , l_iRaster))
+      };
+
+      for (int i = 0; i < 9; i++) {
+        if (i != 0 && i != 2 && i != 6 && i != 8) {
+          bool l_bBorder = false;
+
+          irr::core::recti l_cBorder = l_cRects[i];
+
+          switch (i) {
+            case 1:
+              l_cRects[i].UpperLeftCorner .Y += l_iBorder;
+              l_cBorder  .LowerRightCorner.Y  = l_cRects[i].UpperLeftCorner.Y;
+              l_bBorder = true;
+              break;
+
+            case 3:
+              l_cRects[i].UpperLeftCorner .X += l_iBorder;
+              l_cBorder  .LowerRightCorner.X  = l_cRects[i].UpperLeftCorner.X;
+              l_bBorder = true;
+              break;
+
+            case 5:
+              l_cRects[i].LowerRightCorner.X -= l_iBorder;
+              l_cBorder  .UpperLeftCorner .X  = l_cRects[i].LowerRightCorner.X;
+              l_bBorder = true;
+              break;
+
+            case 7:
+              l_cRects[i].LowerRightCorner.Y -= l_iBorder;
+              l_cBorder  .UpperLeftCorner .Y  = l_cRects[i].LowerRightCorner.Y;
+              l_bBorder = true;
+              break;
+          }
+
+          if (l_bBorder)
+            m_pDrv->draw2DRectangle(m_cBorder, l_cBorder);
+
+          m_pDrv->draw2DRectangle(a_cColor, l_cRects[i]);
         }
         else {
-          irr::core::vector2di l_cLeft       = irr::core::vector2di(           l_iOffset, l_iLine) + a_cRect.UpperLeftCorner,
-                               l_cInnerLeft  = irr::core::vector2di(           l_iInner , l_iLine) + a_cRect.UpperLeftCorner,
-                               l_cRight      = irr::core::vector2di(l_iWidth - l_iOffset, l_iLine) + a_cRect.UpperLeftCorner,
-                               l_cInnerRight = irr::core::vector2di(l_iWidth - l_iInner , l_iLine) + a_cRect.UpperLeftCorner;
+          for (int y = l_cRects[i].UpperLeftCorner.Y; y < l_cRects[i].LowerRightCorner.Y; y++) {
+            int x1 = l_cRects[i].UpperLeftCorner .X;
+            int x2 = l_cRects[i].LowerRightCorner.X;
+            int x3 = x2;
 
-          m_pDrv->draw2DLine(l_cLeft      , l_cInnerLeft , m_cBorder);
-          m_pDrv->draw2DLine(l_cInnerRight, l_cRight     , m_cBorder);
-          m_pDrv->draw2DLine(l_cInnerLeft , l_cInnerRight, a_cColor);
-        }
-      }
+            int l_iLine = (i == 0 || i == 2) ? y - l_cRects[i].UpperLeftCorner.Y : l_cRects[i].LowerRightCorner.Y - y;
 
-#ifndef _OPENGL_ES
-      // Draw the central part
-      irr::core::recti l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(0, l_iRaster), a_cRect.UpperLeftCorner + irr::core::vector2di(l_iBorder, a_cRect.getHeight() - l_iRaster));
-      m_pDrv->draw2DRectangle(m_cBorder, l_cRect);
-      l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(a_cRect.getWidth() - l_iBorder, l_iRaster), a_cRect.LowerRightCorner - irr::core::vector2di(0, l_iRaster));
-      m_pDrv->draw2DRectangle(m_cBorder, l_cRect);
-      m_pDrv->draw2DRectangle(a_cColor, irr::core::recti(a_cRect.UpperLeftCorner + irr::core::position2di(l_iBorder, l_iRaster + 1), a_cRect.LowerRightCorner - irr::core::position2di(l_iBorder, l_iRaster + 1)));
-#else
-      // Draw the central part
-      irr::core::recti l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(0, l_iRaster - 1), a_cRect.UpperLeftCorner + irr::core::vector2di(l_iBorder, a_cRect.getHeight() - l_iRaster + 1));
-      m_pDrv->draw2DRectangle(m_cBorder, l_cRect);
-      l_cRect = irr::core::recti(a_cRect.UpperLeftCorner + irr::core::vector2di(a_cRect.getWidth() - l_iBorder, l_iRaster - 1), a_cRect.LowerRightCorner - irr::core::vector2di(0, l_iRaster - 1));
-      m_pDrv->draw2DRectangle(m_cBorder, l_cRect);
-      m_pDrv->draw2DRectangle(a_cColor, irr::core::recti(a_cRect.UpperLeftCorner + irr::core::position2di(l_iBorder, l_iRaster), a_cRect.LowerRightCorner - irr::core::position2di(l_iBorder, l_iRaster + 1)));
-#endif
+            int l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
+            int l_iInner  = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
 
-      // Draw the lower border
-      for (int l_iLine = l_iHeight - l_iRaster - 1; l_iLine < l_iHeight; l_iLine++) {
-        int l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iLine - l_iHeight + l_iRaster) * (l_iLine - l_iHeight + l_iRaster))),
-            l_iInner  = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iLine - l_iHeight + l_iRaster) * (l_iLine - l_iHeight + l_iRaster)));
+            bool l_bDrawBorder = false;
 
-        if (l_iLine >= l_iHeight - l_iBorder) {
-          m_pDrv->draw2DLine(irr::core::vector2di(l_iOffset, l_iLine) + a_cRect.UpperLeftCorner, irr::core::vector2di(l_iWidth - l_iOffset, l_iLine) + a_cRect.UpperLeftCorner, m_cBorder);
-        }
-        else {
-          irr::core::vector2di l_cLeft       = irr::core::vector2di(           l_iOffset, l_iLine) + a_cRect.UpperLeftCorner,
-                               l_cInnerLeft  = irr::core::vector2di(           l_iInner , l_iLine) + a_cRect.UpperLeftCorner,
-                               l_cRight      = irr::core::vector2di(l_iWidth - l_iOffset, l_iLine) + a_cRect.UpperLeftCorner,
-                               l_cInnerRight = irr::core::vector2di(l_iWidth - l_iInner , l_iLine) + a_cRect.UpperLeftCorner;
+            switch (i) {
+              // Upper left corner
+              case 0:
+              // Lower left corner
+              case 6: {
+                if (l_iLine > l_iBorder) {
+                  x3 = x1 + l_iOffset - 2;
+                  x1 = x1 + l_iInner  - 1;
 
-          m_pDrv->draw2DLine(l_cLeft, l_cInnerLeft, m_cBorder);
-          m_pDrv->draw2DLine(l_cInnerRight, l_cRight, m_cBorder);
-          m_pDrv->draw2DLine(l_cInnerLeft, l_cInnerRight, a_cColor);
+                  m_pDrv->draw2DLine(irr::core::vector2di(x1, y), irr::core::vector2di(x3, y), m_cBorder);
+                  m_pDrv->draw2DLine(irr::core::vector2di(x1, y), irr::core::vector2di(x2, y), a_cColor);
+                }
+                else {
+                  x1 = x1 + l_iOffset;
+                  m_pDrv->draw2DLine(irr::core::vector2di(x1, y), irr::core::vector2di(x2, y), m_cBorder);
+                }
+                break;
+              }
+
+              // Upper right corner
+              case 2:
+              // Lower right corner
+              case 8: {
+                if (l_iLine > l_iBorder) {
+                  x3 = x2 - l_iOffset;
+                  x2 -= l_iInner;
+
+                  m_pDrv->draw2DLine(irr::core::vector2di(x2, y), irr::core::vector2di(x3, y), m_cBorder);
+                  m_pDrv->draw2DLine(irr::core::vector2di(x1, y), irr::core::vector2di(x2, y), a_cColor);
+                }
+                else {
+                  x2 -= l_iOffset;
+                  m_pDrv->draw2DLine(irr::core::vector2di(x1, y), irr::core::vector2di(x2, y), m_cBorder);
+                }
+                break;
+              }
+            }
+          }
         }
       }
     }
