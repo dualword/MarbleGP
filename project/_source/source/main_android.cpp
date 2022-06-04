@@ -1,6 +1,7 @@
 #include <irrlicht.h>
 #include <fstream>
 
+
 #include <controller/ICustomEventReceiver.h>
 #include <sys/system_properties.h>
 #include <state/IState.h>
@@ -12,6 +13,11 @@
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "MarbleGP.NativeActivity", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "MarbleGP.NativeActivity", __VA_ARGS__))
+
+
+class CAndroidVirtualKeyboard {
+
+};
 
 class CAndroidMenuEventHandler : public dustbin::controller::ICustomEventReceiver {
   private:

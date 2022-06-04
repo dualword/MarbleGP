@@ -11,11 +11,6 @@
 
 namespace dustbin {
   namespace gui {
-    const int c_RankingPos     = 0;     /**< Index for the position text of the ranking list */
-    const int c_RankingName    = 1;     /**< Index for the name text of the ranking list */
-    const int c_RankingDeficit = 2;     /**< Index for the deficit to the leader text of the ranking list */
-    
-
     CGameHUD::STextElement::STextElement(const irr::core::recti &a_cRect, const std::wstring &a_sText, irr::gui::IGUIFont *a_pFont, const irr::video::SColor &a_cBackground, const irr::video::SColor &a_cTextColor, irr::video::IVideoDriver *a_pDrv) :
       m_cThisRect  (a_cRect),
       m_sText      (a_sText),
@@ -350,7 +345,6 @@ namespace dustbin {
       irr::video::SColor l_cBackground = irr::video::SColor( 128, 192, 192, 192);
       irr::video::SColor l_cTextColor  = irr::video::SColor(0xFF,   0,   0,   0);
 
-      irr::gui::IGUIFont *l_pTiny    = l_pGlobal->getFont(enFont::Tiny   , l_cViewport);
       irr::gui::IGUIFont *l_pSmall   = l_pGlobal->getFont(enFont::Small  , l_cViewport);
       irr::gui::IGUIFont *l_pRegular = l_pGlobal->getFont(enFont::Regular, l_cViewport);
       irr::gui::IGUIFont *l_pBig     = l_pGlobal->getFont(enFont::Big    , l_cViewport);

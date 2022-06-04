@@ -58,16 +58,24 @@ namespace dustbin {
       m_sJoystick  = a_cOther.m_sJoystick;
     }
 
+    bool CControllerBase::SCtrlInput::valueUpdate(irr::f32 a_fValue) {
+      bool b = a_fValue != m_fValue;
+      m_fValue = a_fValue;
+      return b;
+    }
+
     /**
     * Event handler for this input
     * @param a_cEvent the event to handle
     */
-    void CControllerBase::SCtrlInput::update(const irr::SEvent& a_cEvent) {
+    bool CControllerBase::SCtrlInput::update(const irr::SEvent& a_cEvent) {
+      bool l_bRet = false;
+
       switch (m_eType) {
         case enInputType::Key: {
           if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
             if (a_cEvent.KeyInput.Key == m_eKey) {
-              m_fValue = a_cEvent.KeyInput.PressedDown ? 1.0f : 0.0f;
+              l_bRet = valueUpdate(a_cEvent.KeyInput.PressedDown ? 1.0f : 0.0f);
             }
           }
           break;
@@ -79,13 +87,15 @@ namespace dustbin {
               irr::s16 l_iValue = a_cEvent.JoystickEvent.Axis[m_iAxis];
               if (m_iDirection > 0) {
                 if (l_iValue < 0) l_iValue = 0;
-                m_fValue = ((irr::f32)l_iValue) / 32000.0f;
-                if (m_fValue > 1.0f) m_fValue = 1.0f;
+                irr::f32 l_fValue = ((irr::f32)l_iValue) / 32000.0f;
+                if (l_fValue > 1.0f) l_fValue = 1.0f;
+                l_bRet = valueUpdate(l_fValue);
               }
               else {
                 if (l_iValue > 0) l_iValue = 0;
-                m_fValue = -((irr::f32)l_iValue) / 32000.0f;
-                if (m_fValue > 1.0f) m_fValue = 1.0f;
+                irr::f32 l_fValue = -((irr::f32)l_iValue) / 32000.0f;
+                if (l_fValue > 1.0f) l_fValue = 1.0f;
+                l_bRet = valueUpdate(l_fValue);
               }
             }
           }
@@ -94,7 +104,7 @@ namespace dustbin {
         case enInputType::JoyButton:
           if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
             if (a_cEvent.JoystickEvent.Joystick == m_iJoystick) {
-              m_fValue = a_cEvent.JoystickEvent.IsButtonPressed(m_iButton) ? 1.0f : 0.0f;
+              l_bRet = valueUpdate(a_cEvent.JoystickEvent.IsButtonPressed(m_iButton) ? 1.0f : 0.0f);
             }
           }
           break;
@@ -103,19 +113,21 @@ namespace dustbin {
           if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
             if (a_cEvent.JoystickEvent.Joystick == m_iJoystick) {
               if (a_cEvent.JoystickEvent.POV == 65535)
-                m_fValue = 0;
+                l_bRet = valueUpdate(0.0f);
               else {
                 irr::u16 l_iPov = a_cEvent.JoystickEvent.POV;
 
                 if (l_iPov == m_iPov)
-                  m_fValue = 1.0f;
+                  l_bRet = valueUpdate(1.0f);
                 else
-                  m_fValue = 0.0f;
+                  l_bRet = valueUpdate(0.0f);
               }
             }
           }
           break;
       }
+
+      return l_bRet;
     }
 
     void CControllerBase::SCtrlInput::serialize(messages::CSerializer64* a_pSerializer) const {
@@ -156,10 +168,13 @@ namespace dustbin {
     * @param a_cEvent the event to handle
     */
     bool CControllerBase::update(const irr::SEvent& a_cEvent) {
+      bool l_bRet = false;
+
       for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-        (*it).update(a_cEvent);
+        l_bRet |= (*it).update(a_cEvent);
       }
-      return false;
+
+      return l_bRet;
     }
 
     /**

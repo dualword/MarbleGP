@@ -40,7 +40,6 @@ namespace dustbin {
       ENetSocket l_cListen = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
       // Allow the port to be reused by other applications - this means we can run several servers at once
       enet_socket_set_option(l_cListen, ENET_SOCKOPT_REUSEADDR, 1);
-      ENetAddress l_cAddr{};
       a_pMulticastAddr->host = ENET_HOST_ANY;
       a_pMulticastAddr->port = c_iScanPort;
       enet_socket_bind(l_cListen, a_pMulticastAddr);

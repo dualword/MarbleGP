@@ -242,6 +242,16 @@ namespace dustbin {
     }
 
     /**
+    * Does this state want the virtual keyboard?
+    */
+    bool CMenuState::showVirtualKeyboard() {
+#ifdef _ANDROID
+      return true;
+#endif
+      return m_pController != nullptr && m_pGlobal->getSettingData().m_bVirtualKeys;
+    }
+
+    /**
     * Change the menu
     * @param a_pMenu the new active menu
     */

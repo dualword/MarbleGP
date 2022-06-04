@@ -11,6 +11,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace gui {
+    class CVirtualKeyboard;
+  }
+
   /**
   * @class CMainClass
   * @author Christian Keimel
@@ -52,6 +56,8 @@ namespace dustbin {
       irr::core::dimension2du  m_cLogo;               /**< The size of the rendered logo in the "next race" screen */
 
       std::string m_sDeviceName;    /**< The device name, used for the Android port */
+
+      gui::CVirtualKeyboard *m_pKeyBoard;
 
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
@@ -238,38 +244,48 @@ namespace dustbin {
       * Get the currently active state
       * @return the currently active state
       */
-      virtual state::IState *getActiveState();
+      virtual state::IState *getActiveState() override;
 
       /**
       * Get the a state by it's id
       * @param a_eState the id of the requested state
       * @return the state with the id or nullptr if no state with the id exists
       */
-      virtual state::IState *getState(state::enState a_eState);
+      virtual state::IState *getState(state::enState a_eState) override;
 
       /**
       * Get the name of a track
       * @param a_sTrack the track identifier
       * @return the track name, "Unknown Track" if no track data was found
       */
-      virtual std::string getTrackName(const std::string &a_sTrack);
+      virtual std::string getTrackName(const std::string &a_sTrack) override;
 
       /**
       * Init the next game screen. Must be called when the race data is defined
       */
-      virtual void initNextRaceScreen();
+      virtual void initNextRaceScreen() override;
 
       /**
       * Draw the next race screen
       * @param a_fAlpha the transparency of the next race screen [0..1]
       */
-      virtual void drawNextRaceScreen(irr::f32 a_fAlpha);
+      virtual void drawNextRaceScreen(irr::f32 a_fAlpha) override;
 
       /**
       * Get the device name
       * @return the device name
       */
-      virtual const std::string &getDeviceName();
+      virtual const std::string &getDeviceName() override;
+
+      /**
+      * Callback when a new menu has been loaded
+      */
+      virtual void menuLoaded() override;
+
+      /**
+      * Callback when the virtual keyboard is destroyed
+      */
+      virtual void virtualKeyboardDestroyed() override;
 
 #ifdef _ANDROID
       /**

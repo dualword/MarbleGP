@@ -7,6 +7,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
+#include <gui/CVirtualKeyboard.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
 #include <helpers/CMenuLoader.h>
@@ -43,7 +44,8 @@ namespace dustbin {
     m_pClient         (nullptr),
     m_pNextRaceScreen (nullptr),
     m_pLogo           (nullptr),
-    m_sDeviceName     ("")
+    m_sDeviceName     (""),
+    m_pKeyBoard       (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -116,6 +118,8 @@ namespace dustbin {
   }
 
   CMainClass::~CMainClass() {
+    m_pInstance = nullptr;
+
     if (m_pActiveState != nullptr) {
       m_pActiveState->willBeDeleted();
       m_pActiveState->deactivate();
@@ -173,6 +177,8 @@ namespace dustbin {
 
       printf("Marblegp.dat added: %s\n", b ? "success" : "failed");
     }
+
+    m_pDevice->getTimer()->start();
 
     irr::video::SColor l_cColor = m_pGui->getSkin()->getColor(irr::gui::EGDC_HIGH_LIGHT);
     l_cColor.setAlpha(232);
@@ -562,6 +568,21 @@ namespace dustbin {
   bool CMainClass::OnEvent(const irr::SEvent& a_cEvent) {
     bool l_bRet = false;
 
+    if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+      if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUSED) {
+        if (a_cEvent.GUIEvent.Caller->getType() == irr::gui::EGUIET_EDIT_BOX && m_pActiveState->showVirtualKeyboard()) {
+          irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(a_cEvent.GUIEvent.Caller);
+
+          if (m_pKeyBoard == nullptr) {
+            m_pKeyBoard = new gui::CVirtualKeyboard(CGlobal::getInstance()->getSettingData().m_bUseMenuCtrl);
+            m_pKeyBoard->drop();
+          }
+
+          m_pKeyBoard->setTarget(p);
+        }
+      }
+    }
+
     // if (m_pCtrlMenu != nullptr)
     //   l_bRet = m_pCtrlMenu->handleEvent(a_cEvent);
 
@@ -678,7 +699,6 @@ namespace dustbin {
 
     if (m_pFs->existFile(l_sFile.c_str())) {
       std::string l_sXml = "data/levels/" + a_sTrack + "/info.xml";
-      int l_iPos = 9999;
 
       if (m_pFs->existFile(l_sXml.c_str())) {
         irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXml.c_str());
@@ -768,6 +788,20 @@ namespace dustbin {
   const std::string &CMainClass::getDeviceName() {
     return m_sDeviceName;
   }
+
+  /**
+  * Callback when a new menu has been loaded
+  */
+  void CMainClass::menuLoaded() {
+  }
+
+  /**
+  * Callback when the virtual keyboard is destroyed
+  */
+  void CMainClass::virtualKeyboardDestroyed() {
+    m_pKeyBoard = nullptr;
+  }
+
 
   /**
   * Draw the next race screen

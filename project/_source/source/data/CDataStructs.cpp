@@ -125,7 +125,12 @@ namespace dustbin {
       m_bUseMenuCtrl (false),
       m_bGfxChange   (false),
       m_bTouchControl(true),
-      m_sController  ("")
+      m_sController  (""),
+#ifdef _ANDROID
+      m_bVirtualKeys (true)
+#else
+      m_bVirtualKeys (false) 
+#endif
     {
     }
 
@@ -152,6 +157,12 @@ namespace dustbin {
         if (a_mData.find(std::string("showctrls_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bShowControls = a_mData.at(std::string("showctrls_") + std::to_string(i)) == "true";
         if (a_mData.find(std::string("showrank_" ) + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bShowRanking  = a_mData.at(std::string("showrank_" ) + std::to_string(i)) == "true";
       }
+
+#ifdef _ANDROID
+      m_bVirtualKeys = true;
+#else
+      if (a_mData.find("virtualkeys") != a_mData.end()) m_bVirtualKeys = a_mData.at("virtualkeys") == "true";
+#endif
     }
 
     void SSettings::saveSettings(std::map<std::string, std::string>& a_mData) {
@@ -164,6 +175,12 @@ namespace dustbin {
       a_mData["fullscreen"  ] = m_bFullscreen   ? "true" : "false";
       a_mData["usemenuctrl" ] = m_bUseMenuCtrl  ? "true" : "false";
       a_mData["touchcontrol"] = m_bTouchControl ? "true" : "false";
+
+#ifdef _ANDROID
+      a_mData["virtualkeys"] = "true";
+#else
+      a_mData["virtualkeys"] = m_bVirtualKeys ? "true" : "false";
+#endif
 
       a_mData["sfx_master"] = std::to_string(m_fSfxMaster );
       a_mData["soundtrack"] = std::to_string(m_fSoundTrack);
@@ -195,6 +212,7 @@ namespace dustbin {
       m_bUseMenuCtrl  = a_cOther.m_bUseMenuCtrl;
       m_bTouchControl = a_cOther.m_bTouchControl;
       m_sController   = a_cOther.m_sController;
+      m_bVirtualKeys  = a_cOther.m_bVirtualKeys;
 
       for (int i = 0; i < 8; i++)
         m_aGameGFX[i].copyFrom(a_cOther.m_aGameGFX[i]);

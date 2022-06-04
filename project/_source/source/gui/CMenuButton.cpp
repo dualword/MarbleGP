@@ -70,46 +70,55 @@ namespace dustbin {
     }
 
     bool CMenuButton::OnEvent(const irr::SEvent& a_cEvent) {
-      if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-        if (a_cEvent.GUIEvent.Caller == this) {
-          if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
-            m_bHovered = true;
+      bool l_bRet = false;
 
-            if (Parent != nullptr) {
-              irr::SEvent l_cEvent;
-              l_cEvent.EventType          = irr::EET_GUI_EVENT;
-              l_cEvent.GUIEvent.EventType = irr::gui::EGET_ELEMENT_HOVERED;
-              l_cEvent.GUIEvent.Caller    = this;
-              Parent->OnEvent(l_cEvent);
+      if (!IGUIElement::OnEvent(a_cEvent)) {
+        if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+          if (a_cEvent.GUIEvent.Caller == this) {
+            if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+              m_bHovered = true;
+
+              if (Parent != nullptr) {
+                irr::SEvent l_cEvent;
+                l_cEvent.EventType          = irr::EET_GUI_EVENT;
+                l_cEvent.GUIEvent.EventType = irr::gui::EGET_ELEMENT_HOVERED;
+                l_cEvent.GUIEvent.Caller    = this;
+                Parent->OnEvent(l_cEvent);
+              }
+
+              CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
             }
-
-            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
-          }
-          else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
-            m_bHovered = false;
+            else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
+              m_bHovered = false;
+            }
           }
         }
-      }
-      else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-        bool l_bWasDown = m_bLDown;
-        if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
-          m_bLDown = true;
-        }
-        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-          m_bLDown = false;
-        }
+        else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+          bool l_bWasDown = m_bLDown;
+          if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+            m_bLDown = true;
+            l_bRet = true;
+          }
+          else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+            m_bLDown = false;
+            l_bRet = true;
+          }
         
-        if (l_bWasDown && !m_bLDown && m_bHovered && Parent != nullptr) {
-          irr::SEvent l_cEvent;
-          l_cEvent.EventType = irr::EET_GUI_EVENT;
-          l_cEvent.GUIEvent.Caller    = this;
-          l_cEvent.GUIEvent.Element   = this;
-          l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
-          Parent->OnEvent(l_cEvent);
+          if (l_bWasDown && !m_bLDown && m_bHovered && Parent != nullptr) {
+            irr::SEvent l_cEvent;
+            l_cEvent.EventType = irr::EET_GUI_EVENT;
+            l_cEvent.GUIEvent.Caller    = this;
+            l_cEvent.GUIEvent.Element   = this;
+            l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+            Parent->OnEvent(l_cEvent);
 
-          CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+          }
         }
       }
+
+      if (!l_bRet)
+        Parent->OnEvent(a_cEvent);
 
       return false;
     }

@@ -5,8 +5,7 @@
 namespace dustbin {
   namespace scenenodes {
     CWorldNode::CWorldNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) :
-      irr::scene::ISceneNode(a_pParent, a_pMgr, a_iId),
-      m_iChildren(0)
+      irr::scene::ISceneNode(a_pParent, a_pMgr, a_iId)
     {
       m_cBox.reset(getPosition());
 

@@ -463,6 +463,7 @@ namespace dustbin {
           }
         }
 
+        CGlobal::getInstance()->menuLoaded();
         l_pXml->drop();
       }
     }

@@ -107,6 +107,13 @@ namespace dustbin {
         }
 
         /**
+        * Does this state want the virtual keyboard?
+        */
+        virtual bool showVirtualKeyboard() {
+          return false;
+        }
+
+        /**
         * A callback for the menu state to get informed about a menu change
         * @param a_sMenu the loaded menu
         */

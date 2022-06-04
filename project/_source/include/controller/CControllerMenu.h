@@ -6,6 +6,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace gui {
+    class CVirtualKeyboard;
+  }
+
   namespace controller {
     /**
     * @class CControllerMenu
@@ -22,7 +26,6 @@ namespace dustbin {
         };
 
         bool m_bButtonDown;
-        bool m_bMoved;
         bool m_bActive;
         bool m_bEvent;
         bool m_bCancelDown;
@@ -33,7 +36,7 @@ namespace dustbin {
         irr::video::IVideoDriver  *m_pDrv;
         irr::gui::ICursorControl  *m_pCursor;
         irr::IrrlichtDevice       *m_pDevice;
-
+        
         irr::core::position2di m_cMousePos;   /**< The mouse position (mainly for Android) */
 
         irr::core::dimension2du m_cEditSize;
@@ -44,15 +47,14 @@ namespace dustbin {
 
         std::vector<irr::gui::IGUIElement *> m_vElements;  /**< all relevant UI elements */
 
-        std::vector<int> m_vColumns;    /**< Store the columns that contain UI elements */
-        std::vector<int> m_vRows;       /**< Store the rows that contain UI elements */
-
         irr::gui::IGUIElement *m_pSelected;
 
         std::wstring m_sEditChars;    /**< String with the characters for name editing with the menu controller */
         int m_iEditTime;              /**< Timestamp when the last editing was done */
 
         bool m_bFirstCall;    /**< Then first called on Android we set the virtual cursor on the first element */
+
+        irr::u32 m_aNextEvent[4];   /**< Timestamp of the last movement events */
 
         irr::video::ITexture *m_pArrows[2];
 

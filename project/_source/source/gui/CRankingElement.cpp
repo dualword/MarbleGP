@@ -41,8 +41,6 @@ namespace dustbin {
       if (m_iRaster < 8) m_iRaster = 8;
       if (m_iBorder < 1) m_iBorder = 1;
 
-      irr::video::IVideoDriver *l_pDrv = a_pGui->getVideoDriver();
-        
       m_cHlSize = irr::core::dimension2du(m_cName.getHeight() / 2, m_cName.getHeight() / 2);
 
         double l_fRadius = (float)(m_cName.getHeight() / 4);

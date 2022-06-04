@@ -57,11 +57,13 @@ namespace dustbin {
           * Event handler for this input
           * @param a_cEvent the event to handle
           */
-          virtual void update(const irr::SEvent& a_cEvent);
+          bool update(const irr::SEvent& a_cEvent);
 
           void serialize(messages::CSerializer64 *a_pSerializer) const;
 
           void copyFrom(const SCtrlInput& a_cOther);
+
+          bool valueUpdate(irr::f32 a_fValue);
         };
 
       protected:

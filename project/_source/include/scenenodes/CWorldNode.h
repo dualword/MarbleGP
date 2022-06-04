@@ -11,7 +11,6 @@ namespace dustbin {
     class CWorldNode : public irr::scene::ISceneNode {
       private:
         irr::core::aabbox3df m_cBox;
-        int m_iChildren;
 
       public:
         CWorldNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId);

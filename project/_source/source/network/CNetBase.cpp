@@ -39,8 +39,6 @@ namespace dustbin {
 
       messages::CMessageFactory l_cFactory;
 
-      std::chrono::steady_clock::time_point l_cNextStep = std::chrono::steady_clock::now();
-
       bool l_bSendStep = false;
 
       while (!m_bStopThread && m_pHost != nullptr) {

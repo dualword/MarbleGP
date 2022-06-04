@@ -3,6 +3,7 @@
 #include <messages/CMessageHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CDustbinCheckbox.h>
+#include <gui/CVirtualKeyboard.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CReactiveLabel.h>
 #include <gui/CGuiImageList.h>
@@ -18,7 +19,6 @@ namespace dustbin {
 
     CControllerMenu::CControllerMenu(int a_iZLayer) :
       m_bButtonDown   (false),
-      m_bMoved        (false),
       m_bActive       (false),
       m_bEvent        (false),
       m_bCancelDown   (false),
@@ -95,6 +95,9 @@ namespace dustbin {
       for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pParent->getChildren().begin(); it != a_pParent->getChildren().end(); it++) {
         fillItemList(*it, a_iZLayer);
       }
+
+      for (int i = 0; i < 4; i++)
+        m_aNextEvent[i] = 0;
     }
 
     /**
@@ -102,6 +105,9 @@ namespace dustbin {
     * @param a_cEvent the event to handle
     */
     bool CControllerMenu::update(const irr::SEvent& a_cEvent) {
+      bool l_bRet = false;
+      irr::gui::IGUIElement *l_pHovered = m_pGui->getRootGUIElement()->getElementFromPoint(m_cMousePos);
+
       if (a_cEvent.EventType == irr::EET_USER_EVENT) {
         if (a_cEvent.UserEvent.UserData1 == c_iEventSettingsChanged) {
           m_bActive = CGlobal::getInstance()->getSettingData().m_bUseMenuCtrl;
@@ -109,6 +115,46 @@ namespace dustbin {
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventChangeZLayer) {
           setZLayer((int)a_cEvent.UserEvent.UserData2);
+        }
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
+          switch (a_cEvent.UserEvent.UserData2) {
+            case 0: moveMouse(enDirection::Up   ); l_bRet = true; break;
+            case 1: moveMouse(enDirection::Down ); l_bRet = true; break;
+            case 2: moveMouse(enDirection::Left ); l_bRet = true; break;
+            case 3: moveMouse(enDirection::Right); l_bRet = true; break;
+          }
+        }
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
+          if (a_cEvent.UserEvent.UserData2 == 0) {
+            irr::SEvent l_cEvent{};
+
+            l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+
+            l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_LEFT_UP;
+            l_cEvent.MouseInput.Control      = false;
+            l_cEvent.MouseInput.Shift        = false;
+            l_cEvent.MouseInput.ButtonStates = 0;
+            l_cEvent.MouseInput.Wheel        = 0.0f;
+            l_cEvent.MouseInput.X            = m_cMousePos.X;
+            l_cEvent.MouseInput.Y            = m_cMousePos.Y;
+
+            l_pHovered->OnEvent(l_cEvent);
+          }
+          else {
+            irr::SEvent l_cEvent{};
+
+            l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+
+            l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_PRESSED_DOWN;
+            l_cEvent.MouseInput.Control      = false;
+            l_cEvent.MouseInput.Shift        = false;
+            l_cEvent.MouseInput.ButtonStates = irr::EMBSM_LEFT;
+            l_cEvent.MouseInput.Wheel        = 0.0f;
+            l_cEvent.MouseInput.X            = m_cMousePos.X;
+            l_cEvent.MouseInput.Y            = m_cMousePos.Y;
+
+            l_pHovered->OnEvent(l_cEvent);
+          }
         }
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT && a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
@@ -119,250 +165,44 @@ namespace dustbin {
       if (!m_bActive)
         return false;
 
-      bool l_bRet = false;
-      
       if (a_cEvent.EventType != irr::EET_GUI_EVENT && !m_bEvent) {
         m_bEvent = true;
 
         CControllerBase::update(a_cEvent);
+        
+        for (int i = 0; i < 4; i++) {
+          if (m_vControls[i].m_fValue > 0.5f) {
+            if (m_pTimer->getTime() > m_aNextEvent[i]) {
+              irr::SEvent l_cEvent{};
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventMoveMouse;
+              l_cEvent.UserEvent.UserData2 = i;
 
-        if (m_pSelected == nullptr) {
-          if (m_vControls[0].m_fValue > 0.5f) {
-            moveMouse(enDirection::Up);
+              if (l_pHovered != nullptr) 
+                l_pHovered->OnEvent(l_cEvent);
+
+              if (m_aNextEvent[i] == 0)
+                m_aNextEvent[i] = m_pTimer->getTime() + 500;
+              else
+                m_aNextEvent[i] = m_pTimer->getTime() + 50;
+            }
           }
-          else if (m_vControls[1].m_fValue > 0.5f) {
-            moveMouse(enDirection::Down);
-          }
-          else if (m_vControls[2].m_fValue > 0.5f) {
-            moveMouse(enDirection::Left);
-          }
-          else if (m_vControls[3].m_fValue > 0.5f) {
-            moveMouse(enDirection::Right);
-          }
-          else m_bMoved = false;
+          else m_aNextEvent[i] = 0;
         }
-        else {
-          if (m_pSelected->getType() == gui::g_SelectorId) {
-            if (m_vControls[2].m_fValue > 0.5f) {
-              if (!m_bMoved) {
-                m_bMoved = true;
-
-                reinterpret_cast<gui::CSelector*>(m_pSelected)->setSelected(reinterpret_cast<gui::CSelector*>(m_pSelected)->getSelected() - 1);
-
-                irr::SEvent l_cEvent;
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                l_cEvent.GUIEvent.Element   = m_pSelected;
-                l_cEvent.GUIEvent.Caller    = m_pSelected;
-                m_pDevice->postEventFromUser(l_cEvent);
-
-              }
-            }
-            else if (m_vControls[3].m_fValue > 0.5f) {
-              if (!m_bMoved) {
-                m_bMoved = true;
-
-                reinterpret_cast<gui::CSelector*>(m_pSelected)->setSelected(reinterpret_cast<gui::CSelector*>(m_pSelected)->getSelected() + 1);
-
-                irr::SEvent l_cEvent;
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                l_cEvent.GUIEvent.Element   = m_pSelected;
-                l_cEvent.GUIEvent.Caller    = m_pSelected;
-                m_pSelected->OnEvent(l_cEvent);
-              }
-            }
-            else if (m_vControls[0].m_fValue < 0.5f && m_vControls[1].m_fValue < 0.5f) {
-              m_bMoved = false;
-            }
-          }
-          else if (m_pSelected->getType() == irr::gui::EGUIET_SCROLL_BAR) {
-            irr::gui::IGUIScrollBar *p = reinterpret_cast<irr::gui::IGUIScrollBar *>(m_pSelected);
-            if (m_vControls[2].m_fValue > 0.5f) {
-              if (!m_bMoved) {
-                m_bMoved = true;
-
-                p->setPos(p->getPos() - p->getSmallStep());
-
-                irr::SEvent l_cEvent;
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                l_cEvent.GUIEvent.Element   = m_pSelected;
-                l_cEvent.GUIEvent.Caller    = m_pSelected;
-                m_pSelected->getParent()->OnEvent(l_cEvent);
-              }
-            }
-            else if (m_vControls[3].m_fValue > 0.5f) {
-              if (!m_bMoved) {
-                m_bMoved = true;
-
-                p->setPos(p->getPos() + p->getSmallStep());
-
-                irr::SEvent l_cEvent;
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                l_cEvent.GUIEvent.Element   = m_pSelected;
-                l_cEvent.GUIEvent.Caller    = m_pSelected;
-                m_pSelected->getParent()->OnEvent(l_cEvent);
-              }
-            }
-            else if (m_vControls[2].m_fValue < 0.5f && m_vControls[3].m_fValue < 0.5f) {
-              m_bMoved = false;
-            }
-          }
-          else if (m_pSelected->getType() == irr::gui::EGUIET_EDIT_BOX) {
-            if (!m_bMoved || (m_iEditTime != -1 && m_iEditTime < (int)m_pTimer->getTime() - 125)) {
-              irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(m_pSelected);
-              std::wstring s = p->getText();
-
-              if (s == L"") s = L" ";
-
-              wchar_t l_cLast  = s[s.length() - 1];
-              size_t  l_iIndex = m_sEditChars.find_first_of(l_cLast);
-
-              if (l_iIndex == std::string::npos)
-                l_iIndex = 0;
-
-              if (m_vControls[0].m_fValue > 0.5f) {
-                l_iIndex++;
-                if (l_iIndex >= m_sEditChars.size()) l_iIndex = 0;
-                s = s.substr(0, s.size() - 1) + m_sEditChars.substr(l_iIndex, 1);
-                m_bMoved = true;
-                m_iEditTime = (int)m_pTimer->getTime();
-              }
-              else if (m_vControls[1].m_fValue > 0.5f) {
-                l_iIndex--;
-                if (l_iIndex < 0 || l_iIndex == std::string::npos) l_iIndex = m_sEditChars.size() -1;
-                s = s.substr(0, s.size() - 1) + m_sEditChars.substr(l_iIndex, 1);
-                m_bMoved = true;
-                m_iEditTime = (int)m_pTimer->getTime();
-              }
-              else if (m_vControls[2].m_fValue > 0.5f) {
-                if (s.size() > 0) {
-                  s = s.substr(0, s.size() - 1);
-                }
-                m_bMoved = true;
-                m_iEditTime = (int)m_pTimer->getTime();
-              }
-              else if (m_vControls[3].m_fValue > 0.5f) {
-                if (s.size() < 32) {
-                  s = s + L" ";
-                }
-                m_bMoved = true;
-                m_iEditTime = (int)m_pTimer->getTime();
-              }
-            
-              if (m_bMoved) {
-                p->setText(s.c_str());
-                m_pGui->setFocus(p);
-                irr::SEvent l_cEvent;
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_EDITBOX_CHANGED;
-                l_cEvent.GUIEvent.Caller = p;
-                l_cEvent.GUIEvent.Element = p;
-                p->OnEvent(l_cEvent);
-
-                l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
-                l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_PRESSED_DOWN;
-                l_cEvent.MouseInput.Control      = false;
-                l_cEvent.MouseInput.ButtonStates = 1;
-                l_cEvent.MouseInput.Shift        = false;
-                l_cEvent.MouseInput.Wheel        = 0;
-                l_cEvent.MouseInput.X            = m_pCursor != nullptr ? m_pCursor->getPosition().X : m_cMousePos.X;
-                l_cEvent.MouseInput.Y            = m_pCursor != nullptr ? m_pCursor->getPosition().Y : m_cMousePos.Y;
-
-                m_pDevice->postEventFromUser(l_cEvent);
-
-                l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
-                l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_LEFT_UP;
-                l_cEvent.MouseInput.Control      = false;
-                l_cEvent.MouseInput.ButtonStates = 1;
-                l_cEvent.MouseInput.Shift        = false;
-                l_cEvent.MouseInput.Wheel        = 0;
-                l_cEvent.MouseInput.X            = m_pCursor != nullptr ? m_pCursor->getPosition().X : m_cMousePos.X;
-                l_cEvent.MouseInput.Y            = m_pCursor != nullptr ? m_pCursor->getPosition().Y : m_cMousePos.Y;
-
-                m_pDevice->postEventFromUser(l_cEvent);
-              }
-            }
-            else if (m_vControls[0].m_fValue <= 0.5f && m_vControls[1].m_fValue <= 0.5f && m_vControls[2].m_fValue <= 0.5f && m_vControls[3].m_fValue <= 0.5f)
-              m_bMoved = false;
-          }
-        }
-
+        
         if (m_bButtonDown) {
           if (m_vControls[4].m_fValue < 0.5f) {
             m_bButtonDown = false;
-
-            irr::gui::IGUIElement *l_pHovered = m_pGui->getRootGUIElement()->getElementFromPoint(m_cMousePos);
-
             if (l_pHovered != nullptr) {
-              bool l_bPost = true;
+              irr::SEvent l_cEvent{};
 
-              switch (l_pHovered->getType()) {
-                case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId:
-                  break;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventMouseClicked;
+              l_cEvent.UserEvent.UserData2 = 0;
 
-                case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
-                case irr::gui::EGUIET_SCROLL_BAR:
-                case irr::gui::EGUIET_EDIT_BOX:
-                  if (m_pSelected != nullptr) {
-                    if (m_pSelected->getType() == gui::g_SelectorId) reinterpret_cast<gui::CSelector*>(m_pSelected)->setItemSelected(false);
+              l_pHovered->OnEvent(l_cEvent);
 
-                    if (m_pSelected->getType() == irr::gui::EGUIET_EDIT_BOX) {
-                      irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(m_pSelected);
-                      p->setDrawBackground(true);
-                    }
-                  }
-
-                  if (m_pSelected != nullptr) {
-                    if (m_pSelected->getType() == irr::gui::EGUIET_EDIT_BOX) reinterpret_cast<irr::gui::IGUIEditBox *>(m_pSelected)->setDrawBackground(true);
-                  }
-
-                  m_pSelected = l_pHovered == m_pSelected ? nullptr : l_pHovered;
-
-                  if (m_pSelected != nullptr) {
-                    if (m_pSelected->getType() == irr::gui::EGUIET_EDIT_BOX) {
-                      irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(m_pSelected);
-                      p->setDrawBackground(true);
-
-                      m_cEditSize.Width  = 0;
-                      m_cEditSize.Height = 0;
-
-                      for (size_t i = 0; i < m_sEditChars.size(); i++) {
-                        irr::core::dimension2du l_cDim = p->getActiveFont()->getDimension(m_sEditChars.substr(i, 1).c_str());
-                        if (l_cDim.Width  > m_cEditSize.Width ) m_cEditSize.Width  = l_cDim.Width;
-                        if (l_cDim.Height > m_cEditSize.Height) m_cEditSize.Height = l_cDim.Height;
-                      }
-
-                      m_cEditSize.Width  = 4 * m_cEditSize.Width  / 3;
-                      m_cEditSize.Height = 4 * m_cEditSize.Height / 3;
-                    }
-
-                    if (m_pSelected->getType() == gui::g_SelectorId) reinterpret_cast<gui::CSelector*>(m_pSelected)->setItemSelected(true);
-                    if (m_pSelected->getType() == irr::gui::EGUIET_SCROLL_BAR) l_bPost = false;
-                  }
-
-                  break;
-
-                default:
-                  break;
-              }
-
-              if (l_bPost) {
-                irr::SEvent l_cEvent;
-
-                l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
-                l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_LEFT_UP;
-                l_cEvent.MouseInput.Control      = false;
-                l_cEvent.MouseInput.ButtonStates = 1;
-                l_cEvent.MouseInput.Shift        = false;
-                l_cEvent.MouseInput.Wheel        = 0;
-                l_cEvent.MouseInput.X            = m_pCursor != nullptr ? m_pCursor->getPosition().X : l_pHovered != nullptr ? m_cMousePos.X : 0;
-                l_cEvent.MouseInput.Y            = m_pCursor != nullptr ? m_pCursor->getPosition().Y : l_pHovered != nullptr ? m_cMousePos.Y : 0;
-
-                m_pDevice->postEventFromUser(l_cEvent);
-              }
+              m_pSelected = l_pHovered;
             }
           }
         }
@@ -371,20 +211,14 @@ namespace dustbin {
             m_bButtonDown = true;
 
             irr::gui::IGUIElement *l_pHovered = m_pGui->getRootGUIElement()->getElementFromPoint(m_cMousePos);
+            if (l_pHovered != nullptr) {
+              irr::SEvent l_cEvent{};
 
-            if (l_pHovered == nullptr || (l_pHovered->getType() != gui::g_DustbinCheckboxId && l_pHovered->getType() != irr::gui::EGUIET_SCROLL_BAR)) {
-              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventMouseClicked;
+              l_cEvent.UserEvent.UserData2 = 1;
 
-              l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
-              l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_PRESSED_DOWN;
-              l_cEvent.MouseInput.Control      = false;
-              l_cEvent.MouseInput.ButtonStates = 1;
-              l_cEvent.MouseInput.Shift        = false;
-              l_cEvent.MouseInput.Wheel        = 0;
-              l_cEvent.MouseInput.X            = m_pCursor != nullptr ? m_pCursor->getPosition().X : m_cMousePos.X;
-              l_cEvent.MouseInput.Y            = m_pCursor != nullptr ? m_pCursor->getPosition().Y : m_cMousePos.Y;
-
-              m_pDevice->postEventFromUser(l_cEvent);
+              l_pHovered->OnEvent(l_cEvent);
             }
           }
         }
@@ -401,7 +235,7 @@ namespace dustbin {
               irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20000);
 
               if (p != nullptr) {
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent{};
 
                 l_cEvent.EventType          = irr::EET_GUI_EVENT;
                 l_cEvent.GUIEvent.Caller    = p;
@@ -425,7 +259,7 @@ namespace dustbin {
               irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
 
               if (p != nullptr) {
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent{};
 
                 l_cEvent.EventType          = irr::EET_GUI_EVENT;
                 l_cEvent.GUIEvent.Caller    = p;
@@ -462,71 +296,34 @@ namespace dustbin {
     }
 
     void CControllerMenu::moveMouse(CControllerMenu::enDirection a_eDirection) {
-      if (m_bMoved)
-        return;
-
-      irr::core::position2di l_cMouse = m_pCursor != nullptr ? m_pCursor->getPosition() : m_cMousePos;
+      irr::core::position2di l_cMouse = m_cMousePos;
 
       switch (a_eDirection) {
         case enDirection::Up: {
-          if (m_vRows.size() > 0) {
-            int l_iPos = *m_vRows.begin();
-            for (std::vector<int>::iterator it = m_vRows.begin(); it != m_vRows.end(); it++) {
-              if ((*it) < l_cMouse.Y)
-                l_iPos = *it;
-              else 
-                break;
-            }
-            l_cMouse.Y = l_iPos;
-          }
+          l_cMouse.Y -= CGlobal::getInstance()->getRasterSize();
           break;
         }
 
         case enDirection::Down: {
-          int l_iPos = -1;
-          for (std::vector<int>::iterator it = m_vRows.begin(); it != m_vRows.end(); it++) {
-            if (l_iPos > l_cMouse.Y)
-              break;
-
-            l_iPos = *it;
-          }
-          l_cMouse.Y = l_iPos;
+          l_cMouse.Y += CGlobal::getInstance()->getRasterSize();
           break;
         }
 
         case enDirection::Left: {
-          if (m_vColumns.size() > 0) {
-            int l_iPos = *m_vColumns.begin();
-            for (std::vector<int>::iterator it = m_vColumns.begin(); it != m_vColumns.end(); it++) {
-              if ((*it) < l_cMouse.X)
-                l_iPos = *it;
-              else
-                break;
-            }
-            l_cMouse.X = l_iPos;
-          }
+          l_cMouse.X -= CGlobal::getInstance()->getRasterSize();
           break;
         }
 
         case enDirection::Right: {
-          int l_iPos = -1;
-          for (std::vector<int>::iterator it = m_vColumns.begin(); it != m_vColumns.end(); it++) {
-            if (l_iPos > l_cMouse.X)
-              break;
-
-            l_iPos = *it;
-          }
-          l_cMouse.X = l_iPos;
+          l_cMouse.X += CGlobal::getInstance()->getRasterSize();
           break;
         }
       }
 
-      m_bMoved = true;
-
       if (m_pCursor != nullptr)
         m_pCursor->setPosition(l_cMouse);
       else {
-        irr::SEvent l_cEvent;
+        irr::SEvent l_cEvent{};
         l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
         l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
         l_cEvent.MouseInput.X = l_cMouse.X;
@@ -559,9 +356,6 @@ namespace dustbin {
       m_vElements.clear();
       fillItemList(m_pGui->getRootGUIElement(), m_iZLayer);
 
-      m_vRows   .clear();
-      m_vColumns.clear();
-
       for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
         irr::core::position2di l_cPos = (*it)->getAbsoluteClippingRect().getCenter();
 
@@ -569,31 +363,14 @@ namespace dustbin {
           m_bFirstCall = false;
           m_cMousePos = l_cPos;
 
-          irr::SEvent l_cEvent;
+          irr::SEvent l_cEvent{};
           l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
           l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
           l_cEvent.MouseInput.X = m_cMousePos.X;
           l_cEvent.MouseInput.Y = m_cMousePos.Y;
           m_pDevice->postEventFromUser(l_cEvent);
         }
-
-        if (std::find(m_vRows.begin(), m_vRows.end(), l_cPos.Y) == m_vRows.end()) {
-          m_vRows.push_back(l_cPos.Y);
-        }
-
-        if (std::find(m_vColumns.begin(), m_vColumns.end(), l_cPos.X) == m_vColumns.end()) {
-          m_vColumns.push_back(l_cPos.X);
-        }
       }
-
-      std::sort(m_vColumns.begin(), m_vColumns.end(), [](int v1, int v2) {
-        return v1 < v2;
-      });
-
-      std::sort(m_vRows.begin(), m_vRows.end(), [](int v1, int v2) {
-        return v1 < v2;
-      });
-
       printf("Ready.\n");
     }
 
@@ -615,67 +392,6 @@ namespace dustbin {
     void CControllerMenu::draw() {
       if (m_pCursor == nullptr)
         m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), irr::core::recti(m_cMousePos - irr::core::position2di(15, 15), irr::core::dimension2du(30, 30)));
-
-      if (m_pSelected != nullptr) {
-        if (m_pSelected->getType() == irr::gui::EGUIET_EDIT_BOX) {
-          irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(m_pSelected);
-          irr::gui::IGUIFont    *l_pFont = l_pEdit->getActiveFont();
-          irr::core::recti       l_cRect = m_pSelected->getAbsoluteClippingRect();
-
-          std::wstring s = l_pEdit->getText();
-
-          irr::core::dimension2du  l_cText = l_pFont->getDimension(s.substr(0, s.size() - 1).c_str());
-
-          if (s == L"") s = L" ";
-
-          wchar_t l_cLast  = s[s.length() - 1];
-          size_t  l_iIndex = m_sEditChars.find_first_of(l_cLast);
-
-          l_iIndex++; if (l_iIndex >= m_sEditChars.length()) l_iIndex = 0;
-          l_iIndex++; if (l_iIndex >= m_sEditChars.length()) l_iIndex = 0;
-
-          irr::core::recti l_cBoxes[] = {
-            irr::core::recti(l_cRect.UpperLeftCorner.X + l_cText.Width, l_cRect.UpperLeftCorner.Y - 3 * m_cEditSize.Height, l_cRect.UpperLeftCorner.X + l_cText.Width + m_cEditSize.Width, l_cRect.UpperLeftCorner.Y - 2 * m_cEditSize.Height),
-            irr::core::recti(l_cRect.UpperLeftCorner.X + l_cText.Width, l_cRect.UpperLeftCorner.Y - 2 * m_cEditSize.Height, l_cRect.UpperLeftCorner.X + l_cText.Width + m_cEditSize.Width, l_cRect.UpperLeftCorner.Y -     m_cEditSize.Height),
-            irr::core::recti(l_cRect.UpperLeftCorner.X + l_cText.Width, l_cRect.UpperLeftCorner.Y -     m_cEditSize.Height, l_cRect.UpperLeftCorner.X + l_cText.Width + m_cEditSize.Width, l_cRect.UpperLeftCorner.Y),
-            irr::core::recti(),
-            irr::core::recti(l_cRect.UpperLeftCorner.X + l_cText.Width, l_cRect.LowerRightCorner.Y                         , l_cRect.UpperLeftCorner.X + l_cText.Width + m_cEditSize.Width, l_cRect.LowerRightCorner.Y +     m_cEditSize.Height),
-            irr::core::recti(l_cRect.UpperLeftCorner.X + l_cText.Width, l_cRect.LowerRightCorner.Y +     m_cEditSize.Height, l_cRect.UpperLeftCorner.X + l_cText.Width + m_cEditSize.Width, l_cRect.LowerRightCorner.Y + 2 * m_cEditSize.Height),
-            irr::core::recti(l_cRect.UpperLeftCorner.X + l_cText.Width, l_cRect.LowerRightCorner.Y + 2 * m_cEditSize.Height, l_cRect.UpperLeftCorner.X + l_cText.Width + m_cEditSize.Width, l_cRect.LowerRightCorner.Y + 3 * m_cEditSize.Height),
-          };
-
-          m_pDrv->draw2DRectangleOutline(irr::core::recti(l_cBoxes[0].UpperLeftCorner, l_cBoxes[2].LowerRightCorner), irr::video::SColor(0xFF, 0, 0, 0));
-          m_pDrv->draw2DRectangleOutline(irr::core::recti(l_cBoxes[4].UpperLeftCorner, l_cBoxes[6].LowerRightCorner), irr::video::SColor(0xFF, 0, 0, 0));
-
-          for (int i = 0; i < 7; i++) {
-            if (i != 0 && i != 6) {
-              if (i != 3) {
-                m_pDrv->draw2DRectangle(irr::video::SColor(224, 192, 255, 96), l_cBoxes[i]);
-                l_pFont->draw(m_sEditChars.substr(l_iIndex, 1).c_str(), l_cBoxes[i], irr::video::SColor(255, 0, 0, 0), true, true);
-              }
-
-              if (l_iIndex == 0)
-                l_iIndex = m_sEditChars.size() - 1;
-              else
-                l_iIndex--;
-            }
-            else {
-              m_pDrv->draw2DRectangle(irr::video::SColor(224, 192, 255, 96), l_cBoxes[i]);
-              int l_iArrow = i == 0 ? 0 : 1;
-              m_pDrv->draw2DImage(m_pArrows[l_iArrow], l_cBoxes[i], irr::core::recti(irr::core::position2di(0, 0), m_pArrows[l_iArrow]->getOriginalSize()), nullptr, nullptr, true);
-            }
-          }
-        }
-      }
-      /*irr::core::dimension2du l_cScreen = m_pGui->getVideoDriver()->getScreenSize();
-
-      for (std::vector<int>::iterator it = m_vColumns.begin(); it != m_vColumns.end(); it++) {
-        m_pGui->getVideoDriver()->draw2DLine(irr::core::vector2di(*it, 0), irr::core::vector2di(*it, l_cScreen.Height), irr::video::SColor(0xFF, 0xFF, 0, 0));
-      }
-
-      for (std::vector<int>::iterator it = m_vRows.begin(); it != m_vRows.end(); it++) {
-        m_pGui->getVideoDriver()->draw2DLine(irr::core::vector2di(0, *it), irr::core::vector2di(l_cScreen.Width, *it), irr::video::SColor(0xFF, 0xFF, 0, 0));
-      }*/
     }
   } // namespace controller
 } // namespace dustbin

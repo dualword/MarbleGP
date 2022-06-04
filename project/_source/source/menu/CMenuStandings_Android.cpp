@@ -32,7 +32,6 @@ namespace dustbin {
         m_pState->setZLayer(0);
 
         data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-        data::SChampionshipRace *l_pRace = l_cChampionship.getLastRace();
 
         printf("\n\n%s\n\n", l_cChampionship.to_string().c_str());
 

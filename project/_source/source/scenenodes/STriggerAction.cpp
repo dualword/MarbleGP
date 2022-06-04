@@ -84,7 +84,6 @@ namespace dustbin {
     }
 
     void STriggerAction::serialize(irr::io::IAttributes* a_pOut, int a_iIndex, enTriggerType a_eType) const {
-      size_t l_iIndex = (size_t)(m_eAction);
       a_pOut->addEnum((std::string("Action_") + std::to_string(a_iIndex)).c_str(), (irr::s32)m_eAction, g_ActionTypes);
 
       if (m_eAction != enAction::None) {

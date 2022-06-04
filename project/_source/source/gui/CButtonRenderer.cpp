@@ -21,7 +21,6 @@ namespace dustbin {
     */
     void CButtonRenderer::renderBackground(const irr::core::recti& a_cRect, const irr::video::SColor& a_cColor) {
       int l_iHeight = a_cRect.getHeight();
-      int l_iWidth  = a_cRect.getWidth();
       int l_iBorder = m_iBorder;
       int l_iRaster = m_iRaster;
       int l_iRadius = l_iRaster - l_iBorder;
@@ -98,8 +97,6 @@ namespace dustbin {
 
             int l_iOffset = l_iRaster - (int)(sqrt(l_iRaster * l_iRaster - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
             int l_iInner  = l_iRaster - (int)(sqrt(l_iRadius * l_iRadius - (l_iRaster - l_iLine) * (l_iRaster - l_iLine)));
-
-            bool l_bDrawBorder = false;
 
             switch (i) {
               // Upper left corner

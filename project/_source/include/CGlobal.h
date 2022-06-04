@@ -242,6 +242,16 @@ namespace dustbin {
       */
       virtual const std::string &getDeviceName() = 0;
 
+      /**
+      * Callback when a new menu has been loaded
+      */
+      virtual void menuLoaded() = 0;
+
+      /**
+      * Callback when the virtual keyboard is destroyed
+      */
+      virtual void virtualKeyboardDestroyed() = 0;
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app

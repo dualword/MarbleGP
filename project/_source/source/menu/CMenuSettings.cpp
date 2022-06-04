@@ -24,12 +24,12 @@ namespace dustbin {
     */
     class CMenuSettings : public IMenuHandler {
       private:
-        gui::CSelector       *m_pResolution,
-                             *m_pSplitScreen;
-        gui::CMenuBackground *m_pGfxG,
-                             *m_pGfxM,
-                             *m_pSfx,
-                             *m_pMisc;
+        gui::CSelector       *m_pResolution;
+        gui::CSelector       *m_pSplitScreen;
+        gui::CMenuBackground *m_pGfxG;
+        gui::CMenuBackground *m_pGfxM;
+        gui::CMenuBackground *m_pSfx;
+        gui::CMenuBackground *m_pMisc;
         gui::CControllerUi   *m_pController;
 
         std::map<std::string, bool[4]> m_mPageVisibility;
@@ -176,6 +176,7 @@ namespace dustbin {
 
           updateCheckboxUI(m_cSettings.m_bFullscreen , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23011, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
           updateCheckboxUI(m_cSettings.m_bUseMenuCtrl, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
+          updateCheckboxUI(m_cSettings.m_bVirtualKeys, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23046, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
 
           updateSplitscreenUI();
 
@@ -312,6 +313,11 @@ namespace dustbin {
               }
               else if (a_cEvent.GUIEvent.Caller->getID() == 23026) {
                 m_cSettings.m_bUseMenuCtrl = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
+              }
+              else if (a_cEvent.GUIEvent.Caller->getID() == 23046) {
+#ifndef _ANDROID
+                m_cSettings.m_bVirtualKeys = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
+#endif
               }
               else if (a_cEvent.GUIEvent.Caller->getID() == 23014 || 
                        a_cEvent.GUIEvent.Caller->getID() == 23015 ||
