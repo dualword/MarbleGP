@@ -25,17 +25,10 @@ namespace dustbin {
 
         irr::video::IVideoDriver *m_pDrv;
 
-        irr::video::ITexture *m_pAdd;
-        irr::video::ITexture *m_pDel;
-        irr::video::ITexture *m_pEnter;
-
         irr::core::recti m_cInner;
         irr::core::recti m_cChar;
         irr::core::recti m_cUp;
         irr::core::recti m_cDown;
-        irr::core::recti m_cEnter;
-        irr::core::recti m_cAdd;
-        irr::core::recti m_cDel;
 
         irr::core::position2di m_cMouse;
         irr::core::position2di m_cMDown;
@@ -48,11 +41,13 @@ namespace dustbin {
         bool m_bCtrlActive;
         bool m_bMoving;
 
-        int m_iMax;
+        int m_iMouseDown;
 
+        irr::ITimer           *m_pTimer;
         irr::gui::IGUIEditBox *m_pTarget;
 
         void initUI();
+        void hideKeyboard();
 
         void addChar();
         void delChar();

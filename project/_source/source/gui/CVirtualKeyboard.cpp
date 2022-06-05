@@ -7,22 +7,19 @@
 namespace dustbin {
   namespace gui {
     const int g_KeaboardId = MAKE_IRR_ID('d', 'k', 'e', 'y');
-    const irr::c8 g_KeyboardName[] = "VirtualKeyboard";
 
     CVirtualKeyboard::CVirtualKeyboard(bool a_bCtrlActive) : 
       IGUIElement((irr::gui::EGUI_ELEMENT_TYPE)g_KeaboardId, CGlobal::getInstance()->getGuiEnvironment(), CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()) ,
       m_pDevice    (CGlobal::getInstance()->getIrrlichtDevice()),
       m_pFont      (nullptr),
       m_pDrv       (nullptr),
-      m_pAdd       (nullptr),
-      m_pDel       (nullptr),
-      m_pEnter     (nullptr),
       m_bMouseDown (false),
       m_bInside    (false),
       m_bMoved     (false),
       m_bCtrlActive(a_bCtrlActive),
       m_bMoving    (false),
-      m_iMax       (0),
+      m_iMouseDown (0),
+      m_pTimer     (nullptr),
       m_pTarget    (nullptr)
     {
       m_pDrv = CGlobal::getInstance()->getVideoDriver();
@@ -35,9 +32,7 @@ namespace dustbin {
 
       m_itKey = m_vKeys.begin();
 
-      m_pAdd   = m_pDrv->getTexture("data/images/arrow_right.png" );
-      m_pDel   = m_pDrv->getTexture("data/images/arrow_left.png"  );
-      m_pEnter = m_pDrv->getTexture("data/images/arrow_enter.png" );
+      m_pTimer = CGlobal::getInstance()->getIrrlichtDevice()->getTimer();
     }
 
 
@@ -60,7 +55,7 @@ namespace dustbin {
       s += *m_itKey;
       m_pTarget->setText(s.c_str());
 
-      irr::SEvent l_cEvent;
+      irr::SEvent l_cEvent{};
 
       l_cEvent.EventType = irr::EET_GUI_EVENT;
       l_cEvent.GUIEvent.Element   = m_pTarget;
@@ -79,7 +74,7 @@ namespace dustbin {
         s = s.substr(0, s.length() - 1);
         m_pTarget->setText(s.c_str());
 
-        irr::SEvent l_cEvent;
+        irr::SEvent l_cEvent{};
 
         l_cEvent.EventType = irr::EET_GUI_EVENT;
         l_cEvent.GUIEvent.Element   = m_pTarget;
@@ -90,6 +85,13 @@ namespace dustbin {
       }
 
       initUI();
+    }
+
+    void CVirtualKeyboard::hideKeyboard() {
+      setVisible(false);
+
+      if (m_pDevice->getCursorControl() != nullptr && m_bCtrlActive)
+        m_pDevice->getCursorControl()->setVisible(true);
     }
 
     /** Inherited from irr::gui::IGUIElement **/
@@ -103,6 +105,7 @@ namespace dustbin {
 
           if (m_bMouseDown) {
             m_cOffset.Y -= m_cMDown.Y - m_cMouse.Y;
+            m_cOffset.X += m_cMDown.X - m_cMouse.X;
 
             m_cTotalMove.Y -= m_cMDown.Y - m_cMouse.Y;
             m_cTotalMove.X += m_cMDown.X - m_cMouse.X;
@@ -127,6 +130,7 @@ namespace dustbin {
           m_cMDown = m_cMouse;
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          m_cMouse = irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
           m_cMDown = m_cMouse;
           m_bMouseDown = true;
           m_bMoved     = false;
@@ -134,31 +138,34 @@ namespace dustbin {
           m_cTotalMove = irr::core::position2di();
 
           m_bMoving = m_cInner.isPointInside(m_cMouse);
+
+          m_iMouseDown = m_pTimer->getTime();
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-          m_bMouseDown = false;
-
-          if (m_bMoving) {
-            if (m_cOffset.Y < -m_cChar.getHeight() / 2) {
+          if (m_pTimer->getTime() - m_iMouseDown < 125) {
+            hideKeyboard();
+          }
+          else if (m_bMoving) {
+            if (m_cOffset.X > 2 * m_cChar.getWidth()) {
+              delChar();
+            }
+            else if (m_cOffset.X < -2 * m_cChar.getWidth()) {
+              addChar();
+            }
+            else if (m_cOffset.Y < -m_cChar.getHeight() / 2) {
               m_itKey++;
               if (m_itKey == m_vKeys.end())
                 m_itKey = m_vKeys.begin();
             }
-
-            if (m_cOffset.Y > m_cChar.getHeight() / 2) {
+            else if (m_cOffset.Y > m_cChar.getHeight() / 2) {
               if (m_itKey == m_vKeys.begin())
                 m_itKey = m_vKeys.end();
               m_itKey--;
             }
           }
-          else {
-            if (m_cAdd.isPointInside(m_cMouse))
-              addChar();
 
-            if (m_cDel.isPointInside(m_cMouse))
-              delChar();
-          }
-
+          m_bMouseDown = false;
+          m_iMouseDown = 0;
           m_cOffset    = irr::core::position2di();
           m_cTotalMove = irr::core::position2di();
         }
@@ -185,10 +192,7 @@ namespace dustbin {
           }
           else if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
             if (a_cEvent.UserEvent.UserData2 == 0) {
-              setVisible(false);
-
-              if (m_pDevice->getCursorControl() != nullptr && m_bCtrlActive)
-                m_pDevice->getCursorControl()->setVisible(true);
+              hideKeyboard();
             }
 
             l_bRet = true;
@@ -243,20 +247,6 @@ namespace dustbin {
           s[0] = *it;
           m_pFont->draw(s, r, irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
         }
-
-        if (!m_bCtrlActive) {
-          m_pDrv->draw2DRectangle(!m_cAdd.isPointInside(m_cMouse) ? irr::video::SColor(192, 224, 224, 224) : m_bMouseDown ? irr::video::SColor(0xFF, 0xFF, 128, 128) : irr::video::SColor(0xFF, 128, 128, 0xFF), m_cAdd);
-          m_pDrv->draw2DRectangleOutline(m_cAdd, irr::video::SColor(0xFF, 0, 0, 0));
-
-          if (m_pAdd != nullptr)
-            m_pDrv->draw2DImage(m_pAdd, m_cAdd, irr::core::recti(irr::core::position2di(0, 0), m_pAdd->getOriginalSize()), &AbsoluteClippingRect, nullptr, true);
-
-          m_pDrv->draw2DRectangle(!m_cDel.isPointInside(m_cMouse) ? irr::video::SColor(192, 224, 224, 224) : m_bMouseDown ? irr::video::SColor(0xFF, 0xFF, 128, 128) : irr::video::SColor(0xFF, 128, 128, 0xFF), m_cDel);
-          m_pDrv->draw2DRectangleOutline(m_cDel, irr::video::SColor(0xFF, 0, 0, 0));
-
-          if (m_pDel!= nullptr)
-            m_pDrv->draw2DImage(m_pDel, m_cDel, irr::core::recti(irr::core::position2di(0, 0), m_pDel->getOriginalSize()), &AbsoluteClippingRect, nullptr, true);
-        }
       }
     }
 
@@ -268,6 +258,8 @@ namespace dustbin {
     }
 
     void CVirtualKeyboard::initUI() {
+      setVisible(true);
+
       irr::core::recti        l_cRect = m_pTarget->getAbsoluteClippingRect();
       irr::core::dimension2du l_cText = m_pTarget->getTextDimension();
 
@@ -309,20 +301,6 @@ namespace dustbin {
       );
 
       AbsoluteClippingRect = m_cInner;
-
-      irr::s32 l_iRaster = CGlobal::getInstance()->getRasterSize();
-
-      irr::core::dimension2di l_cDimAdd = irr::core::dimension2di(l_iRaster * 2, l_iRaster * 2);
-      irr::core::position2di  l_cPosAdd = irr::core::position2di (m_cInner.LowerRightCorner.X, m_pTarget->getAbsoluteClippingRect().UpperLeftCorner.Y - l_cDimAdd.Height);
-
-      m_cAdd = irr::core::recti(l_cPosAdd, l_cDimAdd);
-      AbsoluteClippingRect.LowerRightCorner.X = m_cAdd.LowerRightCorner.X;
-
-      irr::core::position2di l_cPosDel = irr::core::position2di(m_cInner.UpperLeftCorner.X - l_cDimAdd.Width, m_pTarget->getAbsoluteClippingRect().UpperLeftCorner.Y - l_cDimAdd.Height);
-
-      m_cDel = irr::core::recti(l_cPosDel, l_cDimAdd);
-      AbsoluteClippingRect.UpperLeftCorner.X = m_cDel.UpperLeftCorner.X;
-
 
       irr::gui::ICursorControl *l_pCursor = m_pDevice->getCursorControl();
       if (l_pCursor != nullptr && m_bCtrlActive) {
