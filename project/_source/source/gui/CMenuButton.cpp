@@ -3,6 +3,7 @@
 #include <platform/CPlatform.h>
 #include <gui/CMenuButton.h>
 #include <CGlobal.h>
+#include <Defines.h>
 
 namespace dustbin {
   namespace gui {
@@ -69,6 +70,18 @@ namespace dustbin {
       m_pFont = a_pFont;
     }
 
+    void CMenuButton::buttonClicked() {
+      irr::SEvent l_cEvent{};
+      l_cEvent.EventType = irr::EET_GUI_EVENT;
+      l_cEvent.GUIEvent.Caller    = this;
+      l_cEvent.GUIEvent.Element   = this;
+      l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+
+      IGUIElement::OnEvent(l_cEvent);
+
+      CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+    }
+
     bool CMenuButton::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
@@ -79,7 +92,7 @@ namespace dustbin {
               m_bHovered = true;
 
               if (Parent != nullptr) {
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent{};
                 l_cEvent.EventType          = irr::EET_GUI_EVENT;
                 l_cEvent.GUIEvent.EventType = irr::gui::EGET_ELEMENT_HOVERED;
                 l_cEvent.GUIEvent.Caller    = this;
@@ -105,14 +118,12 @@ namespace dustbin {
           }
         
           if (l_bWasDown && !m_bLDown && m_bHovered && Parent != nullptr) {
-            irr::SEvent l_cEvent;
-            l_cEvent.EventType = irr::EET_GUI_EVENT;
-            l_cEvent.GUIEvent.Caller    = this;
-            l_cEvent.GUIEvent.Element   = this;
-            l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
-            Parent->OnEvent(l_cEvent);
-
-            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+            buttonClicked();
+          }
+        }
+        else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+          if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked && a_cEvent.UserEvent.UserData2 == 0) {
+            buttonClicked();
           }
         }
       }

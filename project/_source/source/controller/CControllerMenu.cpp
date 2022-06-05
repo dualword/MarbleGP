@@ -128,35 +128,37 @@ namespace dustbin {
           }
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
-          if (a_cEvent.UserEvent.UserData2 == 0) {
-            irr::SEvent l_cEvent{};
+          if (l_pHovered != nullptr) {
+            if (a_cEvent.UserEvent.UserData2 == 0) {
+              irr::SEvent l_cEvent{};
 
-            l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+              l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 
-            l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_LEFT_UP;
-            l_cEvent.MouseInput.Control      = false;
-            l_cEvent.MouseInput.Shift        = false;
-            l_cEvent.MouseInput.ButtonStates = 0;
-            l_cEvent.MouseInput.Wheel        = 0.0f;
-            l_cEvent.MouseInput.X            = m_cMousePos.X;
-            l_cEvent.MouseInput.Y            = m_cMousePos.Y;
+              l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_LEFT_UP;
+              l_cEvent.MouseInput.Control      = false;
+              l_cEvent.MouseInput.Shift        = false;
+              l_cEvent.MouseInput.ButtonStates = 0;
+              l_cEvent.MouseInput.Wheel        = 0.0f;
+              l_cEvent.MouseInput.X            = m_cMousePos.X;
+              l_cEvent.MouseInput.Y            = m_cMousePos.Y;
 
-            l_pHovered->OnEvent(l_cEvent);
-          }
-          else {
-            irr::SEvent l_cEvent{};
+              l_pHovered->OnEvent(l_cEvent);
+            }
+            else {
+              irr::SEvent l_cEvent{};
 
-            l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+              l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 
-            l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_PRESSED_DOWN;
-            l_cEvent.MouseInput.Control      = false;
-            l_cEvent.MouseInput.Shift        = false;
-            l_cEvent.MouseInput.ButtonStates = irr::EMBSM_LEFT;
-            l_cEvent.MouseInput.Wheel        = 0.0f;
-            l_cEvent.MouseInput.X            = m_cMousePos.X;
-            l_cEvent.MouseInput.Y            = m_cMousePos.Y;
+              l_cEvent.MouseInput.Event        = irr::EMIE_LMOUSE_PRESSED_DOWN;
+              l_cEvent.MouseInput.Control      = false;
+              l_cEvent.MouseInput.Shift        = false;
+              l_cEvent.MouseInput.ButtonStates = irr::EMBSM_LEFT;
+              l_cEvent.MouseInput.Wheel        = 0.0f;
+              l_cEvent.MouseInput.X            = m_cMousePos.X;
+              l_cEvent.MouseInput.Y            = m_cMousePos.Y;
 
-            l_pHovered->OnEvent(l_cEvent);
+              l_pHovered->OnEvent(l_cEvent);
+            }
           }
         }
       }

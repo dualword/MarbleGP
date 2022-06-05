@@ -29,6 +29,8 @@ namespace dustbin {
 
         irr::video::ITexture* m_pImage;           /*< The optional image to be rendered */
 
+        void buttonClicked();
+
       public:
         CMenuButton(irr::gui::IGUIElement* a_pParent);
         virtual ~CMenuButton();
