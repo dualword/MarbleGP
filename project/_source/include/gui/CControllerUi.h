@@ -46,10 +46,10 @@ namespace dustbin {
         std::string m_sHeadline;
         std::wstring m_sReturn;
 
-        irr::gui::IGUIElement *m_pSelectedOne,  /**< The first selected control static text */
-                              *m_pSelectedTwo,  /**< The second selected control static text*/
-                              *m_pHoveredOne,   /**< The first hovered control static text */
-                              *m_pHoveredTwo;   /**< The second hovered control static text */
+        irr::gui::IGUIElement *m_pSelectedOne;  /**< The first selected control static text */
+        irr::gui::IGUIElement *m_pSelectedTwo;  /**< The second selected control static text*/
+        irr::gui::IGUIElement *m_pHoveredOne;   /**< The first hovered control static text */
+        irr::gui::IGUIElement *m_pHoveredTwo;   /**< The second hovered control static text */
 
         bool m_bMouseDown;
 

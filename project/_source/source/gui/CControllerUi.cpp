@@ -4,6 +4,7 @@
 #include <platform/CPlatform.h>
 #include <gui/CControllerUi.h>
 #include <menu/IMenuManager.h>
+#include <irrlicht.h>
 #include <CGlobal.h>
 #include <string>
 
