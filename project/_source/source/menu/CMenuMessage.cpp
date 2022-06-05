@@ -23,7 +23,7 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(0);
+          m_pState->setZLayer(1);
 
           std::string l_sHeadline = m_pState->getGlobal()->getGlobal("message_headline");
           if (l_sHeadline != "") {

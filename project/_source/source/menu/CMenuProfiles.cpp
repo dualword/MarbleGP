@@ -455,7 +455,7 @@ namespace dustbin {
           m_aProfiles[m_iEditing].m_cData.m_sTexture = createTextureString();
           m_aProfiles[m_iEditing].fillUI();
           m_iEditing = -1;
-          changeZLayer(0);
+          changeZLayer(1);
         }
 
         /**
@@ -468,7 +468,7 @@ namespace dustbin {
         void buttonTextureCancelClicked() {
           m_pTextureDialog->setVisible(false);
           m_iEditing = -1;
-          changeZLayer(0);
+          changeZLayer(1);
         }
 
         /**
@@ -566,7 +566,7 @@ namespace dustbin {
         void buttonControlsCancelClicked() {
           if (m_pControlDialog != nullptr) {
             m_pControlDialog->setVisible(false);
-            changeZLayer(0);
+            changeZLayer(1);
           }
         }
 
@@ -584,7 +584,7 @@ namespace dustbin {
 
           if (m_pControlDialog != nullptr) {
             m_pControlDialog->setVisible(false);
-            changeZLayer(0);
+            changeZLayer(1);
           }
           m_iEditing = -1;
         }
@@ -595,7 +595,7 @@ namespace dustbin {
         void buttonOhISeeClicked() {
           if (m_pColorDialog != nullptr) {
             m_pConfirmDialog->setVisible(false);
-            changeZLayer(0);
+            changeZLayer(1);
           }
         }
 
@@ -889,7 +889,7 @@ namespace dustbin {
 
             printf("Loaded (%i).\n", m_iMaxIndex);
 
-            m_pState->setZLayer(0);
+            m_pState->setZLayer(1);
           }
 
           virtual ~CMenuProfiles() {

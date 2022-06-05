@@ -205,7 +205,7 @@ namespace dustbin {
             l_pTouch->setChecked(CGlobal::getInstance()->getSettingData().m_bTouchControl);
 
           updateSelectedPlayers();
-          m_pState->setZLayer(0);
+          m_pState->setZLayer(1);
 
           m_pOk = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 

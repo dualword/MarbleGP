@@ -117,9 +117,6 @@ namespace dustbin {
         }
       }
 
-      if (!l_bRet)
-        Parent->OnEvent(a_cEvent);
-
       return false;
     }
   }

@@ -212,7 +212,7 @@ namespace dustbin {
             l_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
           }
 
-          m_pState->setZLayer(0);
+          m_pState->setZLayer(1);
 
           data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
           std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();

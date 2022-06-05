@@ -10,7 +10,7 @@ namespace dustbin {
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_cOverrideColor(irr::video::SColor(0xc0, 0xef, 0xef, 0xff)),
       m_bOverrideColor(false),
-      m_iZLayer(0)
+      m_iZLayer(1)
     {
     }
 

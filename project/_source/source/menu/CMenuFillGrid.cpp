@@ -41,7 +41,7 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(0);
+          m_pState->setZLayer(1);
 
           data::SGameSettings l_cSettings = data::SGameSettings();
           l_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));

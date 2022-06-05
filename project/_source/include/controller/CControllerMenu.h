@@ -42,6 +42,8 @@ namespace dustbin {
 
         irr::core::dimension2du m_cEditSize;
 
+        irr::core::dimension2du m_cScreen;
+
         irr::ITimer* m_pTimer;
 
         int m_iZLayer;    /**< The current Z-Layer */
@@ -58,6 +60,22 @@ namespace dustbin {
         irr::u32 m_aNextEvent[4];   /**< Timestamp of the last movement events */
 
         irr::video::ITexture *m_pArrows[2];
+
+        std::map<int, std::vector<irr::gui::IGUIElement *>> m_mRows;    /**< The rows of items */
+        std::map<int, std::vector<irr::gui::IGUIElement *>> m_mCols;    /**< The columns of items */
+
+        std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator m_itRow;
+        std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator m_itCol;
+
+        /**
+        * Find the correct iterator for the current column
+        */
+        void findColumnIterator();
+
+        /**
+        * Find the correct iterator for the current row
+        */
+        void findRowIterator();
 
         /**
         * Change the mouse position after controller input

@@ -46,12 +46,14 @@ namespace dustbin {
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_RETURN; l_cInput.m_sName = "Ok"    ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_ESCAPE; l_cInput.m_sName = "Cancel"; m_vControls.push_back(l_cInput);
 
-      setZLayer(m_iZLayer > 0 ? m_iZLayer : 0);
+      setZLayer(m_iZLayer > 0 ? m_iZLayer : 1);
 
       m_sEditChars = L" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:";
 
       m_pArrows[0] = m_pDrv->getTexture("data/images/arrow_up.png"  );
       m_pArrows[1] = m_pDrv->getTexture("data/images/arrow_down.png");
+
+      m_cScreen = m_pDrv->getScreenSize();
     }
 
     CControllerMenu::~CControllerMenu() {
@@ -66,7 +68,7 @@ namespace dustbin {
 
       int l_iZLayer = getElementZLayer(a_pParent);
 
-      if ((l_iZLayer & a_iZLayer) == l_iZLayer) {
+      if (l_iZLayer == a_iZLayer) {
         switch (l_eType) {
           case irr::gui::EGUIET_EDIT_BOX:
             if (reinterpret_cast<irr::gui::IGUIEditBox*>(a_pParent)->isEnabled()) {
@@ -174,6 +176,11 @@ namespace dustbin {
         for (int i = 0; i < 4; i++) {
           if (m_vControls[i].m_fValue > 0.5f) {
             if (m_pTimer->getTime() > m_aNextEvent[i]) {
+              if (m_aNextEvent[i] == 0)
+                m_aNextEvent[i] = m_pTimer->getTime() + 500;
+              else
+                m_aNextEvent[i] = m_pTimer->getTime() + 50;
+
               irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_USER_EVENT;
               l_cEvent.UserEvent.UserData1 = c_iEventMoveMouse;
@@ -181,11 +188,6 @@ namespace dustbin {
 
               if (l_pHovered != nullptr) 
                 l_pHovered->OnEvent(l_cEvent);
-
-              if (m_aNextEvent[i] == 0)
-                m_aNextEvent[i] = m_pTimer->getTime() + 500;
-              else
-                m_aNextEvent[i] = m_pTimer->getTime() + 50;
             }
           }
           else m_aNextEvent[i] = 0;
@@ -296,27 +298,114 @@ namespace dustbin {
         return isVisible(a_pItem->getParent());
     }
 
+    /**
+    * Find the correct iterator for the current column
+    */
+    void CControllerMenu::findColumnIterator() {
+      m_itCol = m_mCols.begin();
+
+      int l_iDist = abs(m_cMousePos.X - m_itCol->first);
+
+      for (std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator it = m_mCols.begin(); it != m_mCols.end(); it++) {
+        int l_iNewDist = abs(m_cMousePos.X - it->first);
+        if (l_iNewDist < l_iDist) {
+          l_iDist = l_iNewDist;
+          m_itCol = it;
+        }
+      }
+
+      if (m_itCol == m_mCols.end())
+        m_itCol--;
+    }
+
+    /**
+    * Find the correct iterator for the current row
+    */
+    void CControllerMenu::findRowIterator() {
+      m_itRow = m_mRows.begin();
+
+      int l_iDist = abs(m_cMousePos.Y - m_itRow->first);
+
+      for (std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator it = m_mRows.begin(); it != m_mRows.end(); it++) {
+        int l_iNewDist = abs(m_cMousePos.Y - it->first);
+        if (l_iNewDist < l_iDist) {
+          l_iDist = l_iNewDist;
+          m_itRow = it;
+        }
+      }
+
+      if (m_itRow == m_mRows.end())
+        m_itRow--;
+    }
+
     void CControllerMenu::moveMouse(CControllerMenu::enDirection a_eDirection) {
       irr::core::position2di l_cMouse = m_cMousePos;
 
+
       switch (a_eDirection) {
         case enDirection::Up: {
-          l_cMouse.Y -= CGlobal::getInstance()->getRasterSize();
+          if (m_itCol == m_mCols.end())
+            findColumnIterator();
+
+          if (m_itRow == m_mRows.end()) {
+            findRowIterator();
+          }
+          else {
+            if (m_itRow != m_mRows.begin())
+              m_itRow--;
+          }
+          l_cMouse.X = m_itCol->first;
+          l_cMouse.Y = m_itRow->first;
           break;
         }
 
         case enDirection::Down: {
-          l_cMouse.Y += CGlobal::getInstance()->getRasterSize();
-          break;
-        }
+          if (m_itCol == m_mCols.end())
+            findColumnIterator();
 
-        case enDirection::Left: {
-          l_cMouse.X -= CGlobal::getInstance()->getRasterSize();
+          if (m_itRow == m_mRows.end()) {
+            findRowIterator();
+          }
+          else {
+            m_itRow++;
+            if (m_itRow == m_mRows.end())
+              m_itRow--;
+          }
+          l_cMouse.X = m_itCol->first;
+          l_cMouse.Y = m_itRow->first;
           break;
         }
 
         case enDirection::Right: {
-          l_cMouse.X += CGlobal::getInstance()->getRasterSize();
+          if (m_itRow == m_mRows.end())
+            findRowIterator();
+
+          if (m_itCol == m_mCols.end()) {
+            findColumnIterator();
+          }
+          else {
+            m_itCol++;
+            if (m_itCol == m_mCols.end())
+              m_itCol--;
+          }
+          l_cMouse.X = m_itCol->first;
+          l_cMouse.Y = m_itRow->first;
+          break;
+        }
+
+        case enDirection::Left: {
+          if (m_itRow == m_mRows.end())
+            findRowIterator();
+
+          if (m_itCol == m_mCols.end()) {
+            findColumnIterator();
+          }
+          else {
+            if (m_itCol != m_mCols.begin())
+              m_itCol--;
+          }
+          l_cMouse.X = m_itCol->first;
+          l_cMouse.Y = m_itRow->first;
           break;
         }
       }
@@ -343,7 +432,7 @@ namespace dustbin {
       if (a_pItem->getType() == gui::g_MenuBackgroundId)
         return reinterpret_cast<gui::CMenuBackground*>(a_pItem)->getZLayer();
       else if (a_pItem == m_pGui->getRootGUIElement())
-        return 0;
+        return 1;
       else
         return getElementZLayer(a_pItem->getParent());
     }
@@ -356,6 +445,27 @@ namespace dustbin {
       m_iZLayer = a_iZLayer;
       m_vElements.clear();
       fillItemList(m_pGui->getRootGUIElement(), m_iZLayer);
+
+      m_mRows.clear();
+      m_mCols.clear();
+
+      // Fill the rows and columns
+      for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
+        irr::core::position2di l_cPos = (*it)->getAbsolutePosition().getCenter();
+
+        if (m_mRows.find(l_cPos.Y) == m_mRows.end())
+          m_mRows[l_cPos.Y] = std::vector<irr::gui::IGUIElement *>();
+
+        m_mRows[l_cPos.Y].push_back(*it);
+
+        if (m_mCols.find(l_cPos.X) == m_mCols.end())
+          m_mCols[l_cPos.X] = std::vector<irr::gui::IGUIElement *>();
+
+        m_mCols[l_cPos.X].push_back(*it);
+      }
+
+      m_itRow = m_mRows.end();
+      m_itCol = m_mCols.end();
 
       for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
         irr::core::position2di l_cPos = (*it)->getAbsoluteClippingRect().getCenter();
@@ -403,6 +513,14 @@ namespace dustbin {
         m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF,    0,    0,    0), irr::core::recti(m_cMousePos - irr::core::position2di(16, 16), irr::core::dimension2du(32, 32)));
         m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), irr::core::recti(m_cMousePos - irr::core::position2di(15, 15), irr::core::dimension2du(30, 30)));
       }
+
+      /*for (std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator it = m_mRows.begin(); it != m_mRows.end(); it++) {
+        m_pDrv->draw2DLine(irr::core::vector2di(0, it->first), irr::core::vector2di(m_cScreen.Width, it->first), irr::video::SColor(0xFF, 0, 0xFF, 0));
+      }
+
+      for (std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator it = m_mCols.begin(); it != m_mCols.end(); it++) {
+        m_pDrv->draw2DLine(irr::core::vector2di(it->first, 0), irr::core::vector2di(it->first, m_cScreen.Height), irr::video::SColor(0xFF, 0, 0, 0xFF));
+      }*/
     }
   } // namespace controller
 } // namespace dustbin

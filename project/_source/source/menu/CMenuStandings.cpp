@@ -40,7 +40,7 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(0);
+          m_pState->setZLayer(1);
 
           data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
           data::SChampionshipRace *l_pRace = l_cChampionship.getLastRace();

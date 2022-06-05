@@ -58,7 +58,7 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(0);
+          m_pState->setZLayer(1);
 
           data::SFreeGameSlots l_cSlots = data::SFreeGameSlots(m_pState->getGlobal()->getGlobal("free_game_slots"));
 
