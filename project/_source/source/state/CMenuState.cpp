@@ -214,7 +214,10 @@ namespace dustbin {
       if (m_vMenuStack.size() > 0)
         return m_vMenuStack.back();
       else
-        return "menu_main";
+        if (CGlobal::getInstance()->getGlobal("message_headline") != "" && CGlobal::getInstance()->getGlobal("label_message") != "")
+          return "menu_message";
+        else
+          return "menu_main";
     }
 
     /**
@@ -223,6 +226,9 @@ namespace dustbin {
     */
     std::string CMenuState::popMenuStack() {
       std::string l_sState = "menu_main";
+
+      if (CGlobal::getInstance()->getGlobal("message_headline") != "" && CGlobal::getInstance()->getGlobal("label_message") != "")
+        l_sState = "menu_message";
 
       if (m_vMenuStack.size() > 0) {
         l_sState = m_vMenuStack.back();

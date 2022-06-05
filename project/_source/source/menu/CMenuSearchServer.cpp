@@ -39,7 +39,7 @@ namespace dustbin {
           m_iStep (0),
           m_pStep (nullptr)
         {
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_searchserver.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->clear();

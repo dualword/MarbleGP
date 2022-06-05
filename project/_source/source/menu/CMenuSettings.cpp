@@ -122,7 +122,7 @@ namespace dustbin {
           m_pController (nullptr),
           m_iSplitIdx   (-1)
         {
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_settings.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->loadScene("data/scenes/skybox.xml");

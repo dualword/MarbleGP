@@ -679,7 +679,7 @@ namespace dustbin {
             m_iPatternPage   (1),
             m_sTextureEdit   ("")
           {
-            m_pGui->clear();
+            m_pState->getGlobal()->clearGui();
 
             helpers::loadMenuFromXML("data/menu/menu_profiles.xml", m_pGui->getRootGUIElement(), m_pGui);
             m_pSmgr->loadScene("data/scenes/skybox.xml");

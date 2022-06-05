@@ -58,7 +58,7 @@ namespace dustbin {
 
       public:
         CMenuJoinServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_pConnecting(nullptr), m_pMainFrame(nullptr) {
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_joinserver.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->clear();

@@ -345,7 +345,7 @@ namespace dustbin {
       m_pGlobal->drawNextRaceScreen(1.0f);
       m_pDrv->endScene();
 
-      m_pGui->clear();
+      m_pGlobal->clearGui();
 
       // m_pStepLabel = m_pGui->addStaticText(L"Step", irr::core::recti(0, 0, 1000, 200));
 
@@ -607,7 +607,7 @@ namespace dustbin {
       }
 
       m_pSmgr->clear();
-      m_pGui->clear();
+      m_pGlobal->clearGui();
 
       m_vTimerActions.clear();
 

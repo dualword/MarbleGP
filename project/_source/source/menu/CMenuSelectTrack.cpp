@@ -183,7 +183,7 @@ namespace dustbin {
           m_iClientState(0),
           m_pServer     (a_pState->getGlobal()->getGameServer())
         {
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_selecttrack.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->loadScene("data/scenes/skybox.xml");

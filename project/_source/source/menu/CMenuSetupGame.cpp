@@ -115,7 +115,7 @@ namespace dustbin {
             }
           }
 
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_setupgame.xml", m_pGui->getRootGUIElement(), m_pGui);
 

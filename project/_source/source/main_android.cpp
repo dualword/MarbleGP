@@ -3,9 +3,11 @@
 
 
 #include <controller/ICustomEventReceiver.h>
+// #include <paddleboat/paddleboat.h>
 #include <sys/system_properties.h>
 #include <state/IState.h>
 #include <Defines.h>
+#include <CGlobal.h>
 
 #include "android_native_app_glue.h"
 
@@ -212,6 +214,26 @@ void android_main(struct android_app* a_pApp) {
     printf("Oops");
   }
 
+  /*Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
+
+  std::string l_sError   = "PADDLEBOAT_NO_ERROR";
+  std::string l_sMessage = "Everything fine.";
+
+  if (l_iError != PADDLEBOAT_NO_ERROR) {
+    printf("Oops, could not initialize Paddleboat.\n");
+
+    switch (l_iError) {
+      case PADDLEBOAT_ERROR_ALREADY_INITIALIZED     : l_sError = "PADDLEBOAT_ERROR_ALREADY_INITIALIZED"     ; l_sMessage = "Paddleboat_init was called a second time without a call to Paddleboat_destroy in between..\n"; break;
+      case PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED   : l_sError = "PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED"   ; l_sMessage = "The feature is not supported by the specified controller.\nExample: Calling Paddleboat_setControllerVibrationData on a controller that does not have the PADDLEBOAT_CONTROLLER_FLAG_VIBRATION bit set in Paddleboat_Controller_Info.controllerFlags..\n"; break;
+      case PADDLEBOAT_ERROR_INIT_GCM_FAILURE        : l_sError = "PADDLEBOAT_ERROR_INIT_GCM_FAILURE"        ; l_sMessage = "Paddleboat could not be successfully initialized.\nInstantiation of the GameControllerManager class failed..\n"; break;
+      case PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX: l_sError = "PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX"; l_sMessage = "Invalid controller index specified.\nValid index range is from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.\n"; break;
+      case PADDLEBOAT_ERROR_INVALID_PARAMETER       : l_sError = "PADDLEBOAT_ERROR_INVALID_PARAMETER"       ; l_sMessage = "An invalid parameter was specified.\nThis usually means NULL or nullptr was passed in a parameter that requires a valid pointer..\n"; break;
+      case PADDLEBOAT_ERROR_NOT_INITIALIZED         : l_sError = "PADDLEBOAT_ERROR_NOT_INITIALIZED"         ; l_sMessage = "Paddleboat was not successfully initialized.\nEither Paddleboat_init was not called or returned an error..\n"; break;
+      case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
+      case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
+    }
+  }*/
+
   dustbin::CMainClass *l_pMainClass = nullptr;
   dustbin::state::enState l_eState;
 
@@ -232,6 +254,9 @@ void android_main(struct android_app* a_pApp) {
     char l_sDeviceName[PROP_VALUE_MAX+1];
     __system_property_get("ro.product.model", l_sDeviceName);
     l_pMainClass->setDeviceName(l_sDeviceName);
+
+    // l_pMainClass->setGlobal("message_headline", l_sError);
+    // l_pMainClass->setGlobal("label_message"   , l_sMessage);
 
     irr::SIrrlichtCreationParameters l_cParams;
     l_cParams.DriverType       = irr::video::EDT_OGLES2;
@@ -279,6 +304,8 @@ void android_main(struct android_app* a_pApp) {
     l_pMainClass = nullptr;
   }
   while (l_eState != dustbin::state::enState::Quit);
+
+  // Paddleboat_destroy(l_pJni);
 
   std::exit(0);
 }

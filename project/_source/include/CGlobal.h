@@ -243,6 +243,16 @@ namespace dustbin {
       virtual const std::string &getDeviceName() = 0;
 
       /**
+      * Clear the GUI environment
+      */
+      virtual void clearGui() = 0;
+
+      /**
+      * Callback before the UI is cleared
+      */
+      virtual void beforeMenuLoad() = 0;
+
+      /**
       * Callback when a new menu has been loaded
       */
       virtual void menuLoaded() = 0;

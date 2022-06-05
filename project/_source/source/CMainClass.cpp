@@ -790,6 +790,20 @@ namespace dustbin {
   }
 
   /**
+  * Clear the GUI environment
+  */
+  void CMainClass::clearGui() {
+    beforeMenuLoad();
+    m_pGui->clear();
+  }
+
+  /**
+  * Callback before the UI is cleared
+  */
+  void CMainClass::beforeMenuLoad() {
+  }
+
+  /**
   * Callback when a new menu has been loaded
   */
   void CMainClass::menuLoaded() {

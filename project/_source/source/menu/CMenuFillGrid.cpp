@@ -34,7 +34,7 @@ namespace dustbin {
           m_bWaiting  (false), 
           m_pServer   (CGlobal::getInstance()->getGameServer()) 
         {
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_fillgrid.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->clear();

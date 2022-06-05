@@ -278,6 +278,16 @@ namespace dustbin {
       virtual const std::string &getDeviceName() override;
 
       /**
+      * Clear the GUI environment
+      */
+      virtual void clearGui() override;
+
+      /**
+      * Callback before the UI is cleared
+      */
+      virtual void beforeMenuLoad() override;
+
+      /**
       * Callback when a new menu has been loaded
       */
       virtual void menuLoaded() override;

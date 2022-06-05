@@ -68,15 +68,15 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-23</AndroidAPILevel>
-    <UseOfStl>c++_shared</UseOfStl>
+    <AndroidAPILevel>android-29</AndroidAPILevel>
+    <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
     <AndroidAPILevel>android-29</AndroidAPILevel>
-    <UseOfStl>c++_shared</UseOfStl>
+    <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>

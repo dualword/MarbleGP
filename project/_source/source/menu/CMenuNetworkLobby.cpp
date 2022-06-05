@@ -24,7 +24,7 @@ namespace dustbin {
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_pClient    (a_pState->getGlobal()->getGameClient())
         {
-          m_pGui->clear();
+          m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_lobby.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->clear();
