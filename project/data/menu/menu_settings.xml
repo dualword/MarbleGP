@@ -410,6 +410,21 @@
         </attributes>
       </element>
       
+      <element type="DustbinCheckbox" rect="center: 4, -5, 6, -3">
+        <attributes>
+          <attribute key="Name" value="misc_keyboard" />
+          <attribute key="Id" value="23046" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 7, -5, 37, -3" font="small">
+        <attributes>
+          <attribute key="Name" value="label_misc_use" />
+          <attribute key="Caption" value="Activate virtual Keyboard." />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
       <element type="ControllerUi" rect="center: -33, -2, 0, 20" font="small">
         <attributes>
           <attribute key="Name" value="controller_ui" />
