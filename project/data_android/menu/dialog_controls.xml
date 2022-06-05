@@ -31,7 +31,7 @@
             </attributes>
           </element>
           
-          <element type="ControllerUi" rect="center: -19, -11, 19, 12" font="small">
+          <element type="ControllerUi" rect="center: -19, -11, 19, 10" font="small">
             <attributes>
               <attribute key="Name" value="controller_ui" />
               <attribute key="UseOverrideColor" value="true" />

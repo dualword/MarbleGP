@@ -185,7 +185,9 @@ namespace dustbin {
       if (m_pFont == nullptr)
         m_pFont = l_pGlobal->getGuiEnvironment()->getSkin()->getFont();
 
-      irr::u32 l_iWidth  = getAbsoluteClippingRect().getWidth();
+      irr::core::recti l_cRect = AbsoluteClippingRect;
+
+      irr::u32 l_iWidth  = l_cRect.getWidth();
 
       irr::core::dimension2du l_cDim = irr::core::dimension2du(0, 0);
 
@@ -197,8 +199,8 @@ namespace dustbin {
         if (d.Height > l_cDim.Height) l_cDim.Height = d.Height;
       }
 
-      l_cDim.Height = 3 * l_cDim.Height / 2;
-      l_cDim.Width  = 3 * l_cDim.Width  / 2;
+      l_cDim.Height = 7 * l_cDim.Height / 6;
+      l_cDim.Width  = 7 * l_cDim.Width  / 6;
 
       irr::core::position2di l_cPos = irr::core::position2di(0, l_cDim.Height / 8);
 
@@ -216,7 +218,7 @@ namespace dustbin {
       irr::core::position2di l_cPos2 = l_cPos;
       l_cPos2.X += l_cDim.Height / 2 + l_cDim.Width;
 
-      int l_iLine = 3 * l_cDim.Height / 2;
+      int l_iLine = l_cRect.getHeight() / ((int)m_vControls.size() + 1);
         
       for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
         l_cPos .Y += l_iLine;
