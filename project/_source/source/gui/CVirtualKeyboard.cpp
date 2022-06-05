@@ -90,8 +90,13 @@ namespace dustbin {
     void CVirtualKeyboard::hideKeyboard() {
       setVisible(false);
 
-      if (m_pDevice->getCursorControl() != nullptr && m_bCtrlActive)
-        m_pDevice->getCursorControl()->setVisible(true);
+      irr::SEvent l_cEvent{};
+
+      l_cEvent.EventType = irr::EET_USER_EVENT;
+      l_cEvent.UserEvent.UserData1 = c_iEventHideCursor;
+      l_cEvent.UserEvent.UserData2 = 0;
+
+      m_pDevice->postEventFromUser(l_cEvent);
     }
 
     /** Inherited from irr::gui::IGUIElement **/
@@ -305,7 +310,6 @@ namespace dustbin {
       irr::gui::ICursorControl *l_pCursor = m_pDevice->getCursorControl();
       if (l_pCursor != nullptr && m_bCtrlActive) {
         l_pCursor->setPosition(AbsoluteClippingRect.getCenter());
-        m_pDevice->getCursorControl()->setVisible(false);
       }
       else {
         irr::SEvent l_cEvent{};
@@ -315,6 +319,14 @@ namespace dustbin {
         l_cEvent.MouseInput.Y = AbsoluteClippingRect.getCenter().Y;
         m_pDevice->postEventFromUser(l_cEvent);
       }
+
+      irr::SEvent l_cEvent{};
+
+      l_cEvent.EventType = irr::EET_USER_EVENT;
+      l_cEvent.UserEvent.UserData1 = c_iEventHideCursor;
+      l_cEvent.UserEvent.UserData2 = 1;
+
+      m_pDevice->postEventFromUser(l_cEvent);
     }
   }
 }

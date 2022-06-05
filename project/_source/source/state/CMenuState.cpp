@@ -104,6 +104,16 @@ namespace dustbin {
       if (m_pMenu != nullptr)
         l_bRet = m_pMenu->OnEvent(a_cEvent);
 
+      if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iEventHideCursor) {
+          if (m_pDevice->getCursorControl() != nullptr)
+            m_pDevice->getCursorControl()->setVisible(a_cEvent.UserEvent.UserData2 == 0 && m_pController != nullptr);
+
+          if (m_pController != nullptr) {
+            m_pController->setVisible(a_cEvent.UserEvent.UserData2 == 0);
+          }
+        }
+      }
 #ifdef _ANDROID
       if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
         if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {

@@ -31,6 +31,7 @@ namespace dustbin {
         bool m_bCancelDown;
         bool m_bOkDown;
         bool m_bAllowOkCancel;
+        bool m_bVisible;
 
         irr::gui::IGUIEnvironment *m_pGui;
         irr::video::IVideoDriver  *m_pDrv;
@@ -114,6 +115,12 @@ namespace dustbin {
         * @param a_bAllow is it active or not?
         */
         void allowOkCancel(bool a_bAllow);
+
+        /**
+        * Set the cursor visibility (only relevant for Android)
+        * @param a_bVisible the new visibility flag
+        */
+        void setVisible(bool a_bVisible);
     };
 
   } // namespace controller

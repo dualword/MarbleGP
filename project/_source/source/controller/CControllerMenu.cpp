@@ -24,6 +24,7 @@ namespace dustbin {
       m_bCancelDown   (false),
       m_bOkDown       (false),
       m_bAllowOkCancel(true),
+      m_bVisible      (true),
       m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
       m_pDrv          (CGlobal::getInstance()->getVideoDriver()),
       m_pCursor       (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()),
@@ -389,9 +390,19 @@ namespace dustbin {
       m_bAllowOkCancel = a_bAllow;
     }
 
+    /**
+    * Set the cursor visibility (only relevant for Android)
+    * @param a_bVisible the new visibility flag
+    */
+    void CControllerMenu::setVisible(bool a_bVisible) {
+      m_bVisible = a_bVisible;
+    }
+
     void CControllerMenu::draw() {
-      if (m_pCursor == nullptr)
+      if (m_pCursor == nullptr && m_bVisible) {
+        m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF,    0,    0,    0), irr::core::recti(m_cMousePos - irr::core::position2di(16, 16), irr::core::dimension2du(32, 32)));
         m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), irr::core::recti(m_cMousePos - irr::core::position2di(15, 15), irr::core::dimension2du(30, 30)));
+      }
     }
   } // namespace controller
 } // namespace dustbin
