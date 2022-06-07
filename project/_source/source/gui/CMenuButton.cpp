@@ -15,11 +15,13 @@ namespace dustbin {
       m_sImage   (""),
       m_bHovered (false),
       m_bLDown   (false),
+      m_bSend    (true),
       m_pImage   (nullptr)
     {
     }
 
     CMenuButton::~CMenuButton() {
+      m_bSend = false;
     }
 
     void CMenuButton::draw() {
@@ -71,15 +73,17 @@ namespace dustbin {
     }
 
     void CMenuButton::buttonClicked() {
-      irr::SEvent l_cEvent{};
-      l_cEvent.EventType = irr::EET_GUI_EVENT;
-      l_cEvent.GUIEvent.Caller    = this;
-      l_cEvent.GUIEvent.Element   = this;
-      l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+      if (m_bSend) {
+        irr::SEvent l_cEvent{};
+        l_cEvent.EventType = irr::EET_GUI_EVENT;
+        l_cEvent.GUIEvent.Caller    = this;
+        l_cEvent.GUIEvent.Element   = this;
+        l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
 
-      IGUIElement::OnEvent(l_cEvent);
+        IGUIElement::OnEvent(l_cEvent);
 
-      CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+        CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+      }
     }
 
     bool CMenuButton::OnEvent(const irr::SEvent& a_cEvent) {
@@ -91,7 +95,7 @@ namespace dustbin {
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
               m_bHovered = true;
 
-              if (Parent != nullptr) {
+              if (m_bSend && Parent != nullptr) {
                 irr::SEvent l_cEvent{};
                 l_cEvent.EventType          = irr::EET_GUI_EVENT;
                 l_cEvent.GUIEvent.EventType = irr::gui::EGET_ELEMENT_HOVERED;
@@ -119,11 +123,13 @@ namespace dustbin {
         
           if (l_bWasDown && !m_bLDown && m_bHovered && Parent != nullptr) {
             buttonClicked();
+            l_bRet = true;
           }
         }
         else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
           if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked && a_cEvent.UserEvent.UserData2 == 0) {
             buttonClicked();
+            l_bRet = true;
           }
         }
       }

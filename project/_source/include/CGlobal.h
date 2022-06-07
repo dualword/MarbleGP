@@ -150,6 +150,13 @@ namespace dustbin {
       virtual irr::core::recti getRect(int a_iLeft, int a_iTop, int a_iRight, int a_iBottom, enLayout a_ePosition, irr::gui::IGUIElement* a_pParent = nullptr) = 0;
 
       /**
+      * Get a rectangle from the mouse position
+      * @param a_cPosition the mouse position
+      * @returns the rectangle on the grid hovered by the mouse
+      */
+      virtual const irr::core::recti getRectFromMouse(const irr::core::position2di &a_cPosition) = 0;
+
+      /**
       * Get a rectangle on the screen for GUI layout
       * @param a_cRect Irrlicht rectangle with the coordinates to be converted
       * @param a_ePosition the layout position of the rectangle

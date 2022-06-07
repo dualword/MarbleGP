@@ -96,43 +96,45 @@ namespace dustbin {
     bool CMenuState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
-      m_pController->update(a_cEvent);
+      l_bRet = m_pController->update(a_cEvent);
 
-      if (m_pTouchCtrl != nullptr)
-        m_pTouchCtrl->handleEvent(a_cEvent);
+      if (!l_bRet && m_pTouchCtrl != nullptr)
+        l_bRet = m_pTouchCtrl->handleEvent(a_cEvent);
 
-      if (m_pMenu != nullptr)
+      if (!l_bRet && m_pMenu != nullptr)
         l_bRet = m_pMenu->OnEvent(a_cEvent);
 
-      if (a_cEvent.EventType == irr::EET_USER_EVENT) {
-        if (a_cEvent.UserEvent.UserData1 == c_iEventHideCursor) {
-          if (m_pDevice->getCursorControl() != nullptr)
-            m_pDevice->getCursorControl()->setVisible(a_cEvent.UserEvent.UserData2 == 0 && m_pController != nullptr);
+      if (!l_bRet) {
+        if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+          if (a_cEvent.UserEvent.UserData1 == c_iEventHideCursor) {
+            if (m_pDevice->getCursorControl() != nullptr)
+              m_pDevice->getCursorControl()->setVisible(a_cEvent.UserEvent.UserData2 == 0 && m_pController != nullptr);
 
-          if (m_pController != nullptr) {
-            m_pController->setVisible(a_cEvent.UserEvent.UserData2 == 0);
-          }
-        }
-      }
-#ifdef _ANDROID
-      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
-        if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {
-          if (m_pMenu != nullptr && a_cEvent.KeyInput.PressedDown) {
-            irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
-            if (p != nullptr) {
-              irr::SEvent l_cEvent;
-
-              l_cEvent.EventType          = irr::EET_GUI_EVENT;
-              l_cEvent.GUIEvent.Caller    = p;
-              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
-
-              CGlobal::getInstance()->OnEvent(l_cEvent);
+            if (m_pController != nullptr) {
+              m_pController->setVisible(a_cEvent.UserEvent.UserData2 == 0);
             }
           }
-          l_bRet = true;
         }
-      }
+#ifdef _ANDROID
+        if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+          if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {
+            if (m_pMenu != nullptr && a_cEvent.KeyInput.PressedDown) {
+              irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
+              if (p != nullptr) {
+                irr::SEvent l_cEvent;
+
+                l_cEvent.EventType          = irr::EET_GUI_EVENT;
+                l_cEvent.GUIEvent.Caller    = p;
+                l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+
+                CGlobal::getInstance()->OnEvent(l_cEvent);
+              }
+            }
+            l_bRet = true;
+          }
+        }
 #endif
+      }
 
       return l_bRet;
     }
@@ -268,16 +270,21 @@ namespace dustbin {
     }
 
     /**
-    * Change the menu
-    * @param a_pMenu the new active menu
+    * Callback before a menu is changed, deletes the current menu
     */
-    menu::IMenuHandler *CMenuState::changeMenu(menu::IMenuHandler *a_pMenu) {
+    void CMenuState::beforeChangeMenu() {
       menu::IMenuHandler *p = m_pMenu;
       m_pMenu = nullptr;
 
       if (p != nullptr)
         delete p;
+    }
 
+    /**
+    * Change the menu
+    * @param a_pMenu the new active menu
+    */
+    menu::IMenuHandler *CMenuState::changeMenu(menu::IMenuHandler *a_pMenu) {
       m_pMenu = a_pMenu;
 
       if (m_pController != nullptr) {

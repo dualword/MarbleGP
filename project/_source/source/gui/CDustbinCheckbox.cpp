@@ -60,6 +60,8 @@ namespace dustbin {
       if (!isEnabled())
         return false;
 
+      bool l_bRet = false;
+
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           m_bMouseL = false;
@@ -91,7 +93,11 @@ namespace dustbin {
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT)
           m_bInside = false;
       }
-      return false;
+
+      if (!l_bRet)
+        IGUIElement::OnEvent(a_cEvent);
+
+      return l_bRet;
     }
 
     void CDustbinCheckbox::setChecked(bool a_bChecked) {

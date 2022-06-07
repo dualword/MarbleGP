@@ -24,8 +24,9 @@ namespace dustbin {
 
         std::string m_sImage; /**< Optional image to be rendered */
 
-        bool m_bHovered,  /**< Is the element hovered? */
-             m_bLDown;    /**< Is the left mouse button pressed? */
+        bool m_bHovered;  /**< Is the element hovered? */
+        bool m_bLDown;    /**< Is the left mouse button pressed? */
+        bool m_bSend;     /**< Send event? */
 
         irr::video::ITexture* m_pImage;           /*< The optional image to be rendered */
 

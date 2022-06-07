@@ -21,27 +21,27 @@ namespace dustbin {
       private:
         irr::video::IVideoDriver* m_pDrv;
 
-        bool m_bCenterH,  /**< Center text horizontally? */
-             m_bCenterV,  /**< Center text vertically? */
-             m_bHoverL,   /**< Left arrow hovered? */
-             m_bHoverR,   /**< Right arrow hovered? */
-             m_bHoverT,   /**< Text rect hovered */
-             m_bLeftBtn,  /**< Left mouse button pressed? */
-             m_bSelected, /**< Selected by the menu controller */
-             m_bInside;   /**< Is the mouse pointer inside the element? */
+        bool m_bCenterH;  /**< Center text horizontally? */
+        bool m_bCenterV;  /**< Center text vertically? */
+        bool m_bHoverL;   /**< Left arrow hovered? */
+        bool m_bHoverR;   /**< Right arrow hovered? */
+        bool m_bHoverT;   /**< Text rect hovered */
+        bool m_bLeftBtn;  /**< Left mouse button pressed? */
+        bool m_bSelected; /**< Selected by the menu controller */
+        bool m_bInside;   /**< Is the mouse pointer inside the element? */
 
-        irr::video::SColor m_cBackgroundColor,  /**< The background color */
-                           m_cHoverColor,       /**< The color when the mouse hoveres the element */
-                           m_cClickColor,       /**< The color when the mouse button is clicked on the element */
-                           m_cDisabledColor;    /**< Background color when the item is disabled */
+        irr::video::SColor m_cBackgroundColor;  /**< The background color */
+        irr::video::SColor m_cHoverColor;       /**< The color when the mouse hoveres the element */
+        irr::video::SColor m_cClickColor;       /**< The color when the mouse button is clicked on the element */
+        irr::video::SColor m_cDisabledColor;    /**< Background color when the item is disabled */
 
         irr::core::position2di m_cMousePos;   /**< The mouse position */
 
         std::vector<std::wstring> m_vItems;   /**< A vector with the items of the selector */
 
-        irr::core::recti m_cBoxL, /**< The left box (reduce index by 1) */
-                         m_cBoxR, /**< The right box (increase index by 1) */
-                         m_cText; /**< The text outbox */
+        irr::core::recti m_cBoxL; /**< The left box (reduce index by 1) */
+        irr::core::recti m_cBoxR; /**< The right box (increase index by 1) */
+        irr::core::recti m_cText; /**< The text outbox */
 
         irr::gui::IGUIFont* m_pFont;  /**< The font to use for drawing the selected item */
 
@@ -88,8 +88,6 @@ namespace dustbin {
         * @param a_iIndex the new index
         */
         void setSelected(int a_iIndex);
-
-        void setItemSelected(bool a_bSelected);
 
         virtual irr::gui::EGUI_ELEMENT_TYPE getType();
 

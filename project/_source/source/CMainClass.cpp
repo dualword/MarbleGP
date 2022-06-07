@@ -465,6 +465,20 @@ namespace dustbin {
   }
 
   /**
+  * Get a rectangle from the mouse position
+  * @param a_cPosition the mouse position
+  * @returns the rectangle on the grid hovered by the mouse
+  */
+  const irr::core::recti CMainClass::getRectFromMouse(const irr::core::position2di& a_cPosition) {
+    int                     l_iRaster = getRasterSize();
+    irr::core::dimension2du l_cSize   = m_pDrv->getScreenSize();
+    irr::core::position2di  l_cAnchor = irr::core::position2di(l_cSize.Width / 2, l_cSize.Height / 2);
+    irr::core::position2di  l_cPos    = (a_cPosition - l_cAnchor) / l_iRaster;
+
+    return getRect(l_cPos.X, l_cPos.Y, l_cPos.X + 1, l_cPos.Y + 1, enLayout::Center, nullptr);
+  }
+
+  /**
   * Get a rectangle on the screen for GUI layout
   * @param a_iLeft Left position
   * @param a_iTop Top position

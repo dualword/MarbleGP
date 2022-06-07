@@ -33,6 +33,8 @@ namespace dustbin {
         bool m_bAllowOkCancel;
         bool m_bVisible;
 
+        int m_iRaster;
+
         irr::gui::IGUIEnvironment *m_pGui;
         irr::video::IVideoDriver  *m_pDrv;
         irr::gui::ICursorControl  *m_pCursor;
@@ -47,8 +49,6 @@ namespace dustbin {
         irr::ITimer* m_pTimer;
 
         int m_iZLayer;    /**< The current Z-Layer */
-
-        std::vector<irr::gui::IGUIElement *> m_vElements;  /**< all relevant UI elements */
 
         irr::gui::IGUIElement *m_pSelected;
 
@@ -89,13 +89,6 @@ namespace dustbin {
         * @return true if the item and all parents are visible
         */
         bool isVisible(irr::gui::IGUIElement* a_pItem);
-
-        /**
-        * Fill the "m_vElements" vector
-        * @param a_pParent the item to add, the children will be iterated and added as well
-        * @param a_iZLayer the current Z-Layer
-        */
-        void fillItemList(irr::gui::IGUIElement* a_pParent, int a_iZLayer);
 
         /**
         * Get the Z-Layer of an item. Iterates through all ancestors until either a "MenuBackground" element or the root element

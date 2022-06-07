@@ -92,6 +92,11 @@ namespace dustbin {
         virtual menu::IMenuHandler *changeMenu(menu::IMenuHandler *a_pMenu) override;
 
         /**
+        * Callback before a menu is changed, deletes the current menu
+        */
+        virtual void beforeChangeMenu() override;
+
+        /**
         * Push a menu to the menu stack
         * @param a_sMenu the name of the menu
         */

@@ -23,6 +23,11 @@ namespace dustbin {
         virtual IMenuHandler *changeMenu(IMenuHandler *a_pMenu) = 0;
 
         /**
+        * Callback before a menu is changed, deletes the current menu
+        */
+        virtual void beforeChangeMenu() = 0;
+
+        /**
         * Push a menu to the menu stack
         * @param a_sMenu the name of the menu
         */

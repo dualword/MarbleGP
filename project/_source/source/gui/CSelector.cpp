@@ -3,6 +3,7 @@
 #include <gui/CSelector.h>
 #include <state/IState.h>
 #include <CGlobal.h>
+#include <Defines.h>
 
 namespace dustbin {
   namespace gui {
@@ -120,6 +121,8 @@ namespace dustbin {
       if (!IsEnabled)
         return false;
 
+      bool l_bRet = false;
+
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           m_bLeftBtn = false;
@@ -131,7 +134,7 @@ namespace dustbin {
                 setText(m_vItems[m_iSelected].c_str());
 
               if (Parent != nullptr) {
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent{};
                 l_cEvent.EventType = irr::EET_GUI_EVENT;
                 l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
                 l_cEvent.GUIEvent.Caller = this;
@@ -147,7 +150,7 @@ namespace dustbin {
                 setText(m_vItems[m_iSelected].c_str());
 
               if (Parent != nullptr) {
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent{};
                 l_cEvent.EventType = irr::EET_GUI_EVENT;
                 l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
                 l_cEvent.GUIEvent.Caller = this;
@@ -174,11 +177,36 @@ namespace dustbin {
           m_bInside = true;
         }
       }
+      else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
+          if (a_cEvent.UserEvent.UserData2 == 0) {
+            m_bSelected = !m_bSelected;
+            m_bLeftBtn  =  m_bSelected;
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
+          if (m_bSelected) {
+            if (a_cEvent.UserEvent.UserData2 == 2) {
+              if (m_iSelected < m_vItems.size() - 1)
+                m_iSelected++;
 
-      if (Parent != nullptr)
-        Parent->OnEvent(a_cEvent);
+              l_bRet = true;
+            }
+            else if (a_cEvent.UserEvent.UserData2 == 3) {
+              if (m_iSelected > 0)
+                m_iSelected--;
 
-      return false;
+              l_bRet = true;
+            }
+          }
+        }
+      }
+
+      if (!l_bRet)
+        IGUIElement::OnEvent(a_cEvent);
+
+      return l_bRet;
     }
 
     void CSelector::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
@@ -264,11 +292,6 @@ namespace dustbin {
         if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
           setText(m_vItems[m_iSelected].c_str());
       }
-    }
-
-    void CSelector::setItemSelected(bool a_bSelected) {
-      printf("Selected: %s\n", a_bSelected ? "true" : "false");
-      m_bSelected = a_bSelected;
     }
   } // namespace gui
 }   // namespace dustbin
