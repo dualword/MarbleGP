@@ -49,12 +49,6 @@ namespace dustbin {
         * @return the topmost entry of the menu stack
         */
         virtual std::string popMenuStack() = 0;
-
-        /**
-        * Enable or disable the menu controller
-        * @param a_bEnabled flag to indicate whether or not the menu controller shall be enabled
-        */
-        virtual void setMenuControllerEnabled(bool a_bEnabled) = 0;
     };
 
   }

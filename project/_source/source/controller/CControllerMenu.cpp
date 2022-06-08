@@ -23,7 +23,6 @@ namespace dustbin {
       m_bEvent        (false),
       m_bCancelDown   (false),
       m_bOkDown       (false),
-      m_bAllowOkCancel(true),
       m_bVisible      (true),
       m_bDebug        (false),
       m_iRaster       (CGlobal::getInstance()->getRasterSize()),
@@ -457,49 +456,35 @@ namespace dustbin {
         }
 
         if (m_vControls[5].m_fValue > 0.5f) {
-          if (m_bAllowOkCancel)
-            m_bOkDown = true;
+          m_bOkDown = true;
         }
         else {
           if (m_bOkDown) {
             m_bOkDown = false;
 
-            if (m_bAllowOkCancel) {
-              irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20000);
-
-              if (p != nullptr) {
-                irr::SEvent l_cEvent{};
-
-                l_cEvent.EventType          = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.Caller    = p;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
-
-                CGlobal::getInstance()->OnEvent(l_cEvent);
-              }
+            if (l_pHovered != nullptr) {
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventOkClicked;
+              l_cEvent.UserEvent.UserData2 = c_iEventOkClicked;
+              l_pHovered->OnEvent(l_cEvent);
             }
           }
         }
 
         if (m_vControls[6].m_fValue > 0.5f) {
-          if (m_bAllowOkCancel)
-            m_bCancelDown = true;
+          m_bCancelDown = true;
         }
         else {
           if (m_bCancelDown) {
             m_bCancelDown = false;
 
-            if (m_bAllowOkCancel) {
-              irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromId(20001);
-
-              if (p != nullptr) {
-                irr::SEvent l_cEvent{};
-
-                l_cEvent.EventType          = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.Caller    = p;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
-
-                CGlobal::getInstance()->OnEvent(l_cEvent);
-              }
+            if (l_pHovered != nullptr) {
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventCancelClicked;
+              l_cEvent.UserEvent.UserData2 = c_iEventCancelClicked;
+              l_pHovered->OnEvent(l_cEvent);
             }
           }
         }
@@ -631,14 +616,6 @@ namespace dustbin {
     */
     void CControllerMenu::reset() {
       m_pSelected = nullptr;
-    }
-
-    /**
-    * Optionally deactivate the "ok" and "cancel" options
-    * @param a_bAllow is it active or not?
-    */
-    void CControllerMenu::allowOkCancel(bool a_bAllow) {
-      m_bAllowOkCancel = a_bAllow;
     }
 
     /**

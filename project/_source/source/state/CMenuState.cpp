@@ -8,6 +8,7 @@
 #include <menu/IMenuHandler.h>
 #include <menu/IMenuHandler.h>
 #include <state/CMenuState.h>
+#include <gui/CMenuButton.h>
 #include <CGlobal.h>
 #include <Defines.h>
 
@@ -113,6 +114,32 @@ namespace dustbin {
             if (m_pController != nullptr) {
               m_pController->setVisible(a_cEvent.UserEvent.UserData2 == 0);
             }
+
+            l_bRet = true;
+          }
+          else if (a_cEvent.UserEvent.UserData1 == c_iEventOkClicked) {
+            irr::gui::IGUIElement *p = menu::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
+            if (p != nullptr && m_pMenu != nullptr) {
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_GUI_EVENT;
+              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+              l_cEvent.GUIEvent.Caller    = p;
+              l_cEvent.GUIEvent.Element   = p;
+              m_pMenu->OnEvent(l_cEvent);
+            }
+            l_bRet = true;
+          }
+          else if (a_cEvent.UserEvent.UserData1 == c_iEventCancelClicked) {
+            irr::gui::IGUIElement *p = menu::findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
+            if (p != nullptr && m_pMenu != nullptr) {
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_GUI_EVENT;
+              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+              l_cEvent.GUIEvent.Caller    = p;
+              l_cEvent.GUIEvent.Element   = p;
+              m_pMenu->OnEvent(l_cEvent);
+            }
+            l_bRet = true;
           }
         }
 #ifdef _ANDROID
@@ -248,15 +275,6 @@ namespace dustbin {
       }
 
       return l_sState;
-    }
-
-    /**
-    * Enable or disable the menu controller
-    * @param a_bEnabled flag to indicate whether or not the menu controller shall be enabled
-    */
-    void CMenuState::setMenuControllerEnabled(bool a_bEnabled) {
-      if (m_pController != nullptr)
-        m_pController->allowOkCancel(a_bEnabled);
     }
 
     /**

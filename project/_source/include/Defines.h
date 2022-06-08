@@ -10,6 +10,8 @@ namespace dustbin {
   #define c_iEventKeyboardDestroyed 7
   #define c_iEventMouseClicked 8
   #define c_iEventHideCursor 9
+  #define c_iEventOkClicked 10
+  #define c_iEventCancelClicked 11
 
   // Some constants for profile serialization
   #define c_iProfileHead 42

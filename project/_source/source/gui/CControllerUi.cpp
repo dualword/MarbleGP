@@ -321,9 +321,6 @@ namespace dustbin {
             p2->setBackgroundColor(irr::video::SColor(192, 128, 128, 255));
             p2->setDrawBackground(a_bEnter);
 
-            if (m_pMenuManager != nullptr)
-              m_pMenuManager->setMenuControllerEnabled(!a_bEnter);
-
             if (a_bEnter) {
               m_pHoveredOne = a_pElement;
               m_pHoveredTwo = l_pOther;

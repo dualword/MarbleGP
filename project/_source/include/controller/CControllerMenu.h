@@ -31,7 +31,6 @@ namespace dustbin {
         bool m_bEvent;
         bool m_bCancelDown;
         bool m_bOkDown;
-        bool m_bAllowOkCancel;
         bool m_bVisible;
         bool m_bDebug;
 
@@ -156,12 +155,6 @@ namespace dustbin {
         void reset();
 
         void draw();
-
-        /**
-        * Optionally deactivate the "ok" and "cancel" options
-        * @param a_bAllow is it active or not?
-        */
-        void allowOkCancel(bool a_bAllow);
 
         /**
         * Set the cursor visibility (only relevant for Android)
