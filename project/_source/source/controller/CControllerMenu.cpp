@@ -25,6 +25,7 @@ namespace dustbin {
       m_bOkDown       (false),
       m_bAllowOkCancel(true),
       m_bVisible      (true),
+      m_bDebug        (false),
       m_iRaster       (CGlobal::getInstance()->getRasterSize()),
       m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
       m_pDrv          (CGlobal::getInstance()->getVideoDriver()),
@@ -58,9 +59,259 @@ namespace dustbin {
 
       if (m_pCursor != nullptr)
         m_cMousePos = m_pCursor->getPosition();
+
+      m_bDebug = CGlobal::getInstance()->getGlobal("debug_menucontroller") == "true";
     }
 
     CControllerMenu::~CControllerMenu() {
+    }
+
+    /**
+    * Get the Z-Layer of an element
+    * @param p the element to check
+    * @return the Z-Layer of the element
+    */
+    int CControllerMenu::getZLayer(irr::gui::IGUIElement* p) {
+      if (p->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId) {
+        return reinterpret_cast<gui::CMenuBackground *>(p)->getZLayer();
+      }
+
+      if (p == m_pGui->getRootGUIElement())
+        return 1;
+
+      return getZLayer(p->getParent());
+    }
+
+    /**
+    * Is this element really visible?
+    * @param p the element to check
+    * @return true if the element and all ancestors are visible
+    */
+    bool CControllerMenu::isElementVisible(irr::gui::IGUIElement* p) {
+      if (p != m_pGui->getRootGUIElement()) {
+        if (!p->isVisible())
+          return false;
+
+        return isElementVisible(p->getParent());
+      }
+      return true;
+    }
+
+    /**
+    * Fill the vector with all supported editable UI elements
+    * @param a_vElements the vector filled with the options
+    * @param a_pThis the current UI element
+    */
+    void CControllerMenu::fillElementVector(std::vector<irr::gui::IGUIElement*>& a_vElements, irr::gui::IGUIElement* a_pThis) {
+      // output is limited to:
+      // - button
+      // - checkbox
+      // - edit field
+      // - combobox
+      // - scrollbar
+      // - spinbox
+
+      switch (a_pThis->getType()) {
+        case irr::gui::EGUIET_BUTTON:
+        case irr::gui::EGUIET_CHECK_BOX:
+        case irr::gui::EGUIET_COMBO_BOX:
+        case irr::gui::EGUIET_EDIT_BOX:
+        case irr::gui::EGUIET_SCROLL_BAR:
+        case irr::gui::EGUIET_SPIN_BOX:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
+          if (isElementVisible(a_pThis) && a_pThis->isEnabled() && getElementZLayer(a_pThis) == m_iZLayer)
+            a_vElements.push_back(a_pThis);
+          break;
+
+        default:
+          break;
+      }
+
+      for (irr::core::list<irr::gui::IGUIElement *>::ConstIterator it = a_pThis->getChildren().begin(); it != a_pThis->getChildren().end(); it++)
+        fillElementVector(a_vElements, *it);
+    }
+
+    /**
+    * Find the best option for movement
+    * @param a_eDirection
+    * @return the GUI element that is the best option for the movement
+    */
+    irr::gui::IGUIElement *CControllerMenu::findBestOption(enDirection a_eDirection) {
+      std::vector<irr::gui::IGUIElement *> l_vElements = findMoveOptions(a_eDirection);
+
+      irr::gui::IGUIElement  *l_pRet   = nullptr;
+      irr::core::position2di  l_cMouse = m_cMousePos;
+
+      if (m_pCursor != nullptr)
+        l_cMouse = m_pCursor->getPosition();
+
+      irr::core::position2di l_cReference;
+
+      irr::gui::IGUIElement *l_pHover = m_pGui->getRootGUIElement()->getElementFromPoint(l_cMouse);
+
+      for (std::vector<irr::gui::IGUIElement*>::iterator it = l_vElements.begin(); it != l_vElements.end(); it++) {
+        if (a_eDirection == enDirection::Up) {
+          irr::core::position2di l_cPos = irr::core::position2di((*it)->getAbsoluteClippingRect().getCenter().X, (*it)->getAbsoluteClippingRect().UpperLeftCorner.Y);
+          int l_iDiff = abs(l_cPos.Y - l_cMouse.Y);          
+
+          if (l_cPos.Y < l_cMouse.Y && (l_pRet == nullptr || l_iDiff < abs(l_cReference.Y - l_cMouse.Y)) && *it != l_pHover && l_iDiff != 0) {
+            l_pRet = *it;
+            l_cReference = l_cPos;
+          }
+        }
+        else if (a_eDirection == enDirection::Down) {
+          irr::core::position2di l_cPos = irr::core::position2di((*it)->getAbsoluteClippingRect().getCenter().X, (*it)->getAbsoluteClippingRect().LowerRightCorner.Y);
+          int l_iDiff = abs(l_cPos.Y - l_cMouse.Y);
+
+          if (l_cPos.Y > l_cMouse.Y && (l_pRet == nullptr || l_iDiff < abs(l_cReference.Y - l_cMouse.Y)) && *it != l_pHover && l_iDiff != 0) {
+            l_pRet = *it;
+            l_cReference = l_cPos;
+          }
+        }
+        else if (a_eDirection == enDirection::Left) {
+          irr::core::position2di l_cPos = irr::core::position2di((*it)->getAbsoluteClippingRect().UpperLeftCorner.X, (*it)->getAbsoluteClippingRect().getCenter().Y);
+          int l_iDiff = abs(l_cPos.X - l_cMouse.X);
+
+          if (l_cPos.X < l_cMouse.X && (l_pRet == nullptr || l_iDiff < abs(l_cReference.X - l_cMouse.X)) && *it != l_pHover && l_iDiff != 0) {
+            l_pRet = *it;
+            l_cReference = l_cPos;
+          }
+        }
+        else if (a_eDirection == enDirection::Right) {
+          irr::core::position2di l_cPos = irr::core::position2di((*it)->getAbsoluteClippingRect().LowerRightCorner.X, (*it)->getAbsoluteClippingRect().getCenter().Y);
+          int l_iDiff = abs(l_cPos.X - l_cMouse.X);
+
+          if (l_cPos.X > l_cMouse.X && (l_pRet == nullptr || l_iDiff < abs(l_cReference.X - l_cMouse.X)) && *it != l_pHover && l_iDiff != 0) {
+            l_pRet = *it;
+            l_cReference = l_cPos;
+          }
+        }
+      }
+
+      // No good option found? Then we check if we can find a not so good yet valid option.
+      if (l_pRet == nullptr) {
+        std::vector<irr::gui::IGUIElement *> l_vNotSoGood = findMoveOptions(enDirection::Any);
+
+        for (std::vector<irr::gui::IGUIElement*>::iterator it = l_vNotSoGood.begin(); it != l_vNotSoGood.end(); it++) {
+          if (l_pRet == nullptr) {
+            if ((a_eDirection == enDirection::Right && (*it)->getAbsoluteClippingRect().getCenter().X > l_cMouse.X) ||
+                (a_eDirection == enDirection::Left  && (*it)->getAbsoluteClippingRect().getCenter().X < l_cMouse.X) ||
+                (a_eDirection == enDirection::Down  && (*it)->getAbsoluteClippingRect().getCenter().Y > l_cMouse.Y) ||
+                (a_eDirection == enDirection::Up    && (*it)->getAbsoluteClippingRect().getCenter().Y < l_cMouse.Y))
+            {
+              l_pRet = *it;
+            }
+          }
+          else {
+            int i1 = l_pRet->getAbsoluteClippingRect().getCenter().getDistanceFrom(l_cMouse);
+            int i2 = (*it) ->getAbsoluteClippingRect().getCenter().getDistanceFrom(l_cMouse);
+
+            if (i2 < i1) {
+              if (a_eDirection == enDirection::Left) {
+                if ((*it)->getAbsoluteClippingRect().getCenter().X < l_pRet->getAbsoluteClippingRect().getCenter().X)
+                  l_pRet = *it;
+              }
+              else if (a_eDirection == enDirection::Right) {
+                if ((*it)->getAbsoluteClippingRect().getCenter().X > l_pRet->getAbsoluteClippingRect().getCenter().X)
+                  l_pRet = *it;
+              }
+              else if (a_eDirection == enDirection::Up) {
+                if ((*it)->getAbsoluteClippingRect().getCenter().Y < l_pRet->getAbsoluteClippingRect().getCenter().Y)
+                  l_pRet = *it;
+              }
+              else if (a_eDirection == enDirection::Down) {
+                if ((*it)->getAbsoluteClippingRect().getCenter().Y > l_pRet->getAbsoluteClippingRect().getCenter().Y)
+                  l_pRet = *it;
+              }
+            }
+          }
+        }
+      }
+
+      return l_pRet;
+    }
+
+    /**
+    * Find the possible next UI elements when moving the mouse pointer
+    * @param a_eDirection the direction to move to
+    * @return a vector filled with the options
+    */
+    std::vector<irr::gui::IGUIElement *> CControllerMenu::findMoveOptions(enDirection a_eDirection) {
+      std::vector<irr::gui::IGUIElement *> l_vElements;
+      fillElementVector(l_vElements, m_pGui->getRootGUIElement());
+
+      // First step: Search all elements in the same column or row depending on the direction
+      irr::core::position2di l_cPos = m_cMousePos;
+
+      if (m_pCursor != nullptr)
+        l_cPos = m_pCursor->getPosition();
+
+      irr::core::recti l_cRect = irr::core::recti(
+        (a_eDirection == enDirection::Left || a_eDirection == enDirection::Right) ? 0               : l_cPos.X - 5,
+        (a_eDirection == enDirection::Left || a_eDirection == enDirection::Right) ? l_cPos.Y - 5    : 0,
+        (a_eDirection == enDirection::Left || a_eDirection == enDirection::Right) ? m_cScreen.Width : l_cPos.X + 5,
+        (a_eDirection == enDirection::Left || a_eDirection == enDirection::Right) ? l_cPos.Y + 5    : m_cScreen.Height
+      );
+
+      // Second step: find the biggest possible element
+      irr::gui::IGUIElement *l_pReference = nullptr;
+
+      for (std::vector<irr::gui::IGUIElement*>::iterator it = l_vElements.begin(); it != l_vElements.end(); it++) {
+        if ((*it)->getAbsoluteClippingRect().isRectCollided(l_cRect)) {
+          if (a_eDirection == enDirection::Up || a_eDirection == enDirection::Down) {
+            if (l_pReference == nullptr || (*it)->getAbsoluteClippingRect().getWidth() > l_pReference->getAbsoluteClippingRect().getWidth())
+              l_pReference = *it;
+          }
+          else {
+            if (l_pReference == nullptr || (*it)->getAbsoluteClippingRect().getHeight() > l_pReference->getAbsoluteClippingRect().getHeight())
+              l_pReference = *it;
+          }
+        }
+      }
+
+      if (l_pReference != nullptr) {
+        if (a_eDirection == enDirection::Up || a_eDirection == enDirection::Down) {
+          l_cRect.UpperLeftCorner .X = l_pReference->getAbsoluteClippingRect().UpperLeftCorner .X;
+          l_cRect.LowerRightCorner.X = l_pReference->getAbsoluteClippingRect().LowerRightCorner.X;
+        }
+        else {
+          l_cRect.UpperLeftCorner .Y = l_pReference->getAbsoluteClippingRect().UpperLeftCorner .Y;
+          l_cRect.LowerRightCorner.Y = l_pReference->getAbsoluteClippingRect().LowerRightCorner.Y;
+        }
+      }
+
+      std::vector<irr::gui::IGUIElement *> a_vOptions;
+
+      // Third step: Search for the element with the biggest outbox that meets the criteria
+      for (std::vector<irr::gui::IGUIElement*>::iterator it = l_vElements.begin(); it != l_vElements.end(); it++) {
+        if ((*it)->getAbsoluteClippingRect().isRectCollided(l_cRect)) {
+          bool l_bAdd = false;
+
+          if (a_eDirection == enDirection::Up) {
+            l_bAdd = (*it)->getAbsoluteClippingRect().LowerRightCorner.Y < l_cPos.Y;
+          }
+          else if (a_eDirection == enDirection::Down) {
+            l_bAdd = (*it)->getAbsoluteClippingRect().UpperLeftCorner.Y > l_cPos.Y;
+          }
+          else if (a_eDirection == enDirection::Left) {
+            l_bAdd = (*it)->getAbsoluteClippingRect().LowerRightCorner.X < l_cPos.X;
+          }
+          else if (a_eDirection == enDirection::Right) {
+            l_bAdd = (*it)->getAbsoluteClippingRect().UpperLeftCorner.X > l_cPos.X;
+          }
+
+          if (l_bAdd)
+            a_vOptions.push_back(*it);
+        }
+        else if (a_eDirection == enDirection::Any) {
+          a_vOptions.push_back(*it);
+        }
+      }
+
+      return a_vOptions;
     }
 
     /**
@@ -106,6 +357,15 @@ namespace dustbin {
 
               l_pHovered->OnEvent(l_cEvent);
               l_bRet = true;
+
+              if (l_pHovered->getType() == irr::gui::EGUIET_EDIT_BOX) {
+                l_cEvent.EventType          = irr::EET_GUI_EVENT;
+                l_cEvent.GUIEvent.EventType = irr::gui::EGET_ELEMENT_FOCUSED;
+                l_cEvent.GUIEvent.Caller    = l_pHovered;
+                l_cEvent.GUIEvent.Element   = l_pHovered;
+
+                l_pHovered->OnEvent(l_cEvent);
+              }
             }
             else {
               irr::SEvent l_cEvent{};
@@ -254,6 +514,12 @@ namespace dustbin {
           m_pSelected = nullptr;
         }
       }
+      else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED && m_pCursor == nullptr) {
+          m_cMousePos.X = a_cEvent.MouseInput.X;
+          m_cMousePos.Y = a_cEvent.MouseInput.Y;
+        }
+      }
 
       return l_bRet;
     }
@@ -309,39 +575,21 @@ namespace dustbin {
     }
 
     void CControllerMenu::moveMouse(CControllerMenu::enDirection a_eDirection) {
-      switch (a_eDirection) {
-        case enDirection::Up: {
-          m_cMousePos.Y -= m_iRaster;
-          break;
+      irr::gui::IGUIElement *p = findBestOption(a_eDirection);
+
+      if (p != nullptr) {
+        m_cMousePos = p->getAbsoluteClippingRect().getCenter();
+
+        if (m_pCursor != nullptr)
+          m_pCursor->setPosition(m_cMousePos);
+        else {
+          irr::SEvent l_cEvent{};
+          l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+          l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
+          l_cEvent.MouseInput.X = m_cMousePos.X;
+          l_cEvent.MouseInput.Y = m_cMousePos.Y;
+          m_pDevice->postEventFromUser(l_cEvent);
         }
-
-        case enDirection::Down: {
-          m_cMousePos.Y += m_iRaster;
-          break;
-        }
-
-        case enDirection::Right: {
-          m_cMousePos.X += m_iRaster;
-          break;
-        }
-
-        case enDirection::Left: {
-          m_cMousePos.X -= m_iRaster;
-          break;
-        }
-      }
-
-      m_cMousePos = CGlobal::getInstance()->getRectFromMouse(m_cMousePos).getCenter();
-
-      if (m_pCursor != nullptr)
-        m_pCursor->setPosition(m_cMousePos);
-      else {
-        irr::SEvent l_cEvent{};
-        l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-        l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-        l_cEvent.MouseInput.X = m_cMousePos.X;
-        l_cEvent.MouseInput.Y = m_cMousePos.Y;
-        m_pDevice->postEventFromUser(l_cEvent);
       }
     }
 
@@ -367,6 +615,8 @@ namespace dustbin {
     * @param a_iZLayer the new Z-Layer
     */
     void CControllerMenu::setZLayer(int a_iZLayer) {
+      m_iZLayer = a_iZLayer;
+
       irr::SEvent l_cEvent{};
       l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
       l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
@@ -408,13 +658,40 @@ namespace dustbin {
         m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), irr::core::recti(m_cMousePos - irr::core::position2di(15, 15), irr::core::dimension2du(30, 30)));
       }
 
-      /*for (std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator it = m_mRows.begin(); it != m_mRows.end(); it++) {
-        m_pDrv->draw2DLine(irr::core::vector2di(0, it->first), irr::core::vector2di(m_cScreen.Width, it->first), irr::video::SColor(0xFF, 0, 0xFF, 0));
-      }
+      if (m_bDebug) {
+        std::map<enDirection, irr::video::SColor> l_mDirection = {
+          { enDirection::Up   , irr::video::SColor(128,   0, 255,   0 ) },
+          { enDirection::Left , irr::video::SColor(128,   0,   0, 255 ) },
+          { enDirection::Down , irr::video::SColor(128, 255,   0,   0 ) },
+          { enDirection::Right, irr::video::SColor(128, 255, 255,   0 ) }
+        };
 
-      for (std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator it = m_mCols.begin(); it != m_mCols.end(); it++) {
-        m_pDrv->draw2DLine(irr::core::vector2di(it->first, 0), irr::core::vector2di(it->first, m_cScreen.Height), irr::video::SColor(0xFF, 0, 0, 0xFF));
-      }*/
+
+        for (std::map<enDirection, irr::video::SColor>::iterator mit = l_mDirection.begin(); mit != l_mDirection.end(); mit++) {
+          std::vector<irr::gui::IGUIElement *> l_vElements = findMoveOptions(mit->first);
+
+          for (std::vector<irr::gui::IGUIElement*>::iterator it = l_vElements.begin(); it != l_vElements.end(); it++) {
+            m_pDrv->draw2DRectangle(mit->second, (*it)->getAbsoluteClippingRect());
+          }
+        }
+
+        irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Big, m_cScreen);
+
+        std::map<enDirection, std::wstring> l_mBest = {
+          { enDirection::Up   , L"Up"    },
+          { enDirection::Left , L"Left"  },
+          { enDirection::Right, L"Right" },
+          { enDirection::Down , L"Down"  }
+        };
+
+        for (std::map<enDirection, std::wstring>::iterator mit = l_mBest.begin(); mit != l_mBest.end(); mit++) {
+          irr::gui::IGUIElement *p = findBestOption(mit->first);
+
+          if (p != nullptr) {
+            l_pFont->draw(mit->second.c_str(), p->getAbsoluteClippingRect(), irr::video::SColor(0xFF, 0xFF, 0, 0), true, true);
+          }
+        }
+      }
     }
   } // namespace controller
 } // namespace dustbin

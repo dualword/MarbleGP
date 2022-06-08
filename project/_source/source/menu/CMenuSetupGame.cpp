@@ -318,10 +318,11 @@ namespace dustbin {
                 l_bRet = true;
               }
               else if (l_sSender == "cancel") {
-                if (m_pSelectPlayer != nullptr && m_pSelectPlayer->isVisible())
+                if (m_pSelectPlayer != nullptr && m_pSelectPlayer->isVisible()) {
                   playerSelectCancel();
-                else
-                  createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+                  m_pState->setZLayer(1);
+                }
+                else createMenu("menu_main", m_pDevice, m_pManager, m_pState);
 
                 l_bRet = true;
               }
@@ -336,6 +337,7 @@ namespace dustbin {
 
                     if (m_pSelectPlayer != nullptr) {
                       m_pSelectPlayer->setVisible(true);
+                      m_pState->setZLayer(46);
 
                       std::vector<std::string> l_vNames;
 

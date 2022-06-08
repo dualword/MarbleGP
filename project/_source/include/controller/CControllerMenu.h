@@ -22,7 +22,8 @@ namespace dustbin {
           Up,
           Down,
           Left,
-          Right
+          Right,
+          Any
         };
 
         bool m_bButtonDown;
@@ -32,6 +33,7 @@ namespace dustbin {
         bool m_bOkDown;
         bool m_bAllowOkCancel;
         bool m_bVisible;
+        bool m_bDebug;
 
         int m_iRaster;
 
@@ -66,6 +68,40 @@ namespace dustbin {
 
         std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator m_itRow;
         std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator m_itCol;
+
+        /**
+        * Get the Z-Layer of an element
+        * @param p the element to check
+        * @return the Z-Layer of the element
+        */
+        int getZLayer(irr::gui::IGUIElement *p);
+
+        /**
+        * Is this element really visible?
+        * @param p the element to check
+        * @return true if the element and all ancestors are visible
+        */
+        bool isElementVisible(irr::gui::IGUIElement *p);
+
+        /**
+        * Fill the vector with all supported editable UI elements
+        * @param a_vElements the vector filled with the options
+        * @param a_pThis the current UI element
+        */
+        void fillElementVector(std::vector<irr::gui::IGUIElement *> &a_vElements, irr::gui::IGUIElement *a_pThis);
+
+        /**
+        * Find the possible next UI elements when moving the mouse pointer
+        * @param a_eDirection the direction to move to
+        */
+        std::vector<irr::gui::IGUIElement *> findMoveOptions(enDirection a_eDirection);
+
+        /**
+        * Find the best option for movement
+        * @param a_eDirection
+        * @return the GUI element that is the best option for the movement
+        */
+        irr::gui::IGUIElement *findBestOption(enDirection a_eDirection);
 
         /**
         * Find the correct iterator for the current column

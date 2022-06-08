@@ -258,8 +258,27 @@ namespace dustbin {
     void CVirtualKeyboard::setTarget(irr::gui::IGUIEditBox* a_pTarget) {
       m_pTarget = a_pTarget;
 
-      if (m_pTarget != nullptr)
+      if (m_pTarget != nullptr) {
         initUI();
+
+        if (m_pDevice->getCursorControl() != nullptr) {
+          m_pDevice->getCursorControl()->setPosition(AbsoluteClippingRect.getCenter());
+        }
+        else {
+          irr::SEvent l_cEvent;
+
+          l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
+          l_cEvent.MouseInput.Event        = irr::EMIE_MOUSE_MOVED;
+          l_cEvent.MouseInput.ButtonStates = 0;
+          l_cEvent.MouseInput.Wheel        = 0.0f;
+          l_cEvent.MouseInput.Control      = false;
+          l_cEvent.MouseInput.Shift        = false;
+          l_cEvent.MouseInput.X            = AbsoluteClippingRect.getCenter().X;
+          l_cEvent.MouseInput.Y            = AbsoluteClippingRect.getCenter().Y;
+
+          Parent->OnEvent(l_cEvent);
+        }
+      }
     }
 
     void CVirtualKeyboard::initUI() {
