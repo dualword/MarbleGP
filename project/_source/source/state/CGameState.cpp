@@ -279,8 +279,8 @@ namespace dustbin {
 
       irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
-      int l_iCols = max(1, m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns);
-      int l_iRows = max(1, m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows   );
+      int l_iCols = (int)fmax(1, m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns);
+      int l_iRows = (int)fmax(1, m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows   );
 
       irr::core::dimension2du l_cDim = irr::core::dimension2du(l_cScreen.Width / l_iCols, l_cScreen.Height / l_iRows);
 
