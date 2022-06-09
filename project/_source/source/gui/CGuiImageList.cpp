@@ -17,16 +17,13 @@ namespace dustbin {
       m_iOffset        (-1),
       m_iMaxScroll     (0),
       m_iMDown         (0),
-      m_pBtnLeft       (nullptr),
-      m_pBtnRight      (nullptr),
       m_bHover         (false),
       m_bMouseDown     (false),
       m_bCategories    (false),
       m_bShowSelected  (false),
       m_bOneCatPage    (false),
       m_bScrollTrack   (true),
-      m_pTextureLeft   (nullptr),
-      m_pTextureRght   (nullptr),
+      m_bSelected      (false),
       m_pFontSelected  (nullptr),
       m_pFontCategory  (nullptr),
       m_sCategory      (L""),
@@ -42,6 +39,13 @@ namespace dustbin {
       m_itSelected = m_vImages.end();
       m_itHovered  = m_vImages.end();
 
+      for (int i = 0; i < 4; i++) {
+        m_aBtnClick[i] = false;
+        m_aBtnHover[i] = false;
+
+        m_aButtons[i] = std::make_tuple(irr::core::recti(), nullptr);
+      }
+
       prepareUi();
     }
 
@@ -53,9 +57,6 @@ namespace dustbin {
 
       if (m_pFontSelected == nullptr) m_pFontSelected = CGlobal::getInstance()->getFont(enFont::Huge, m_pDrv->getScreenSize());
       if (m_pFontCategory == nullptr) m_pFontCategory = CGlobal::getInstance()->getFont(enFont::Big , m_pDrv->getScreenSize());
-
-      m_pTextureLeft = m_pDrv->getTexture("data/images/arrow_left.png");
-      m_pTextureRght = m_pDrv->getTexture("data/images/arrow_right.png");
 
       if (m_bShowSelected && m_pFontSelected != nullptr) {
         int l_iHeight = 5 * m_pFontSelected->getDimension(L"TesTexT").Height / 4;
@@ -75,8 +76,15 @@ namespace dustbin {
 
         m_cCategoryInner = irr::core::recti(m_cCategoryOuter.UpperLeftCorner + irr::core::vector2di(l_iOffset, l_iOffset), m_cCategoryOuter.LowerRightCorner - irr::core::vector2di(l_iOffset, l_iOffset));
 
-        m_cCategoryLeft = irr::core::recti(m_cCategoryInner.UpperLeftCorner, m_cCategoryInner.UpperLeftCorner + irr::core::vector2di(m_cCategoryInner.getHeight(), m_cCategoryInner.getHeight()));
-        m_cCategoryRght = irr::core::recti(m_cCategoryInner.LowerRightCorner - irr::core::vector2di(m_cCategoryInner.getHeight(), m_cCategoryInner.getHeight()), m_cCategoryInner.LowerRightCorner);
+        m_aButtons[(int)enInternalButtons::PrevCategory] = std::make_tuple(
+          irr::core::recti(m_cCategoryInner.UpperLeftCorner, m_cCategoryInner.UpperLeftCorner + irr::core::vector2di(m_cCategoryInner.getHeight(), m_cCategoryInner.getHeight())),
+          m_pDrv->getTexture("data/images/arrow_left.png")
+        );
+
+        m_aButtons[(int)enInternalButtons::NextCategory] = std::make_tuple(
+          irr::core::recti(m_cCategoryInner.LowerRightCorner - irr::core::vector2di(m_cCategoryInner.getHeight(), m_cCategoryInner.getHeight()), m_cCategoryInner.LowerRightCorner),
+          m_pDrv->getTexture("data/images/arrow_right.png")
+        );
 
         m_cCategoryInner.UpperLeftCorner .X += m_cCategoryInner.getHeight();
         m_cCategoryInner.LowerRightCorner.X -= m_cCategoryInner.getHeight();
@@ -86,26 +94,6 @@ namespace dustbin {
 
       int l_iRasterSize = CGlobal::getInstance()->getRasterSize();
 
-      irr::core::recti l_cBtnLeft = irr::core::recti(
-        l_cRect.UpperLeftCorner.X,
-        l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 - 2 * l_iRasterSize,
-        l_cRect.UpperLeftCorner.X + 4 * l_iRasterSize,
-        l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 + 2 * l_iRasterSize
-      );
-
-      l_cBtnLeft.UpperLeftCorner  -= AbsoluteClippingRect.UpperLeftCorner;
-      l_cBtnLeft.LowerRightCorner -= AbsoluteClippingRect.UpperLeftCorner;
-
-      irr::core::recti l_cBtnRight = irr::core::recti(
-        l_cRect.LowerRightCorner.X - 4 * l_iRasterSize,
-        l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 - 2 * l_iRasterSize,
-        l_cRect.LowerRightCorner.X,
-        l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 + 2 * l_iRasterSize
-      );
-
-      l_cBtnRight.UpperLeftCorner  -= AbsoluteClippingRect.UpperLeftCorner;
-      l_cBtnRight.LowerRightCorner -= AbsoluteClippingRect.UpperLeftCorner;
-
       m_cImages = irr::core::recti(
         l_cRect.UpperLeftCorner.X + 5 * l_iRasterSize,
         l_cRect.UpperLeftCorner.Y + l_iRasterSize,
@@ -113,33 +101,15 @@ namespace dustbin {
         l_cRect.LowerRightCorner.Y - l_iRasterSize
       );
 
-      if (m_pBtnLeft != nullptr) {
-        m_pBtnLeft->setVisible(false);
-        m_pBtnLeft = nullptr;
-      }
+      m_aButtons[(int)enInternalButtons::PrevImage] = std::make_tuple(
+        irr::core::recti(l_cRect.UpperLeftCorner.X, l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 - 2 * l_iRasterSize, l_cRect.UpperLeftCorner.X + 4 * l_iRasterSize, l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 + 2 * l_iRasterSize),
+        m_pDrv->getTexture("data/images/arrow_left.png")
+      );
 
-      if (m_pBtnRight != nullptr) {
-        m_pBtnRight->setVisible(false);
-        m_pBtnRight = nullptr;
-      }
-
-      irr::io::IAttributes *l_pAttr = m_pFs->createEmptyAttributes();
-
-      m_pBtnLeft = new CMenuButton(this);
-      m_pBtnLeft->serializeAttributes(l_pAttr);
-      l_pAttr->setAttribute("ImagePath", "data/images/arrow_left.png");
-      m_pBtnLeft->deserializeAttributes(l_pAttr);
-      m_pBtnLeft->setRelativePosition(l_cBtnLeft);
-      m_pBtnLeft->drop();
-
-      m_pBtnRight = new CMenuButton(this);
-      m_pBtnRight->serializeAttributes(l_pAttr);
-      l_pAttr->setAttribute("ImagePath", "data/images/arrow_right.png");
-      m_pBtnRight->deserializeAttributes(l_pAttr);
-      m_pBtnRight->setRelativePosition(l_cBtnRight);
-      m_pBtnRight->drop();
-
-      l_pAttr->drop();
+      m_aButtons[(int)enInternalButtons::NextImage] = std::make_tuple(
+        irr::core::recti(l_cRect.LowerRightCorner.X - 4 * l_iRasterSize, l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 - 2 * l_iRasterSize, l_cRect.LowerRightCorner.X, l_cRect.UpperLeftCorner.Y + l_cRect.getHeight() / 2 + 2 * l_iRasterSize),
+        m_pDrv->getTexture("data/images/arrow_right.png")
+      );
 
       m_cImageSize = irr::core::dimension2du(
         (m_cImages.getHeight() - CGlobal::getInstance()->getRasterSize()) / m_iRows - CGlobal::getInstance()->getRasterSize(),
@@ -341,13 +311,75 @@ namespace dustbin {
         m_iPos = m_iMaxScroll;
       }
 
-      m_pBtnLeft->setVisible(m_itSelected != m_vImages.begin());
-      m_pGui->setFocus(this);
-
       if (m_itSelected != m_vImages.end()) {
         m_sCategory = (*m_itSelected).m_sCategory;
       }
       else m_sCategory = L"";
+    }
+
+    void CGuiImageList::selectPrevImage() {
+      if (m_itSelected != m_vImages.begin()) {
+        m_itSelected--;
+
+        m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+
+        checkPositionAndButtons();
+        sendImagePosition();
+      }
+    }
+
+    void CGuiImageList::selectNextImage() {
+      if (m_itSelected == m_vImages.end()) {
+        m_itSelected = m_vImages.begin();
+        m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+        checkPositionAndButtons();
+        sendImagePosition();
+      }
+      else {
+        if (m_itSelected + 1 != m_vImages.end()) {
+          m_itSelected++;
+          m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+          checkPositionAndButtons();
+
+          sendImagePosition();
+        }
+      }
+    }
+
+    void CGuiImageList::selectPrevCategory() {
+      for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
+        if (m_sCategory == std::get<0>(*it) && it != m_vCategories.begin()) {
+          it--;
+          m_sCategory = std::get<0>(*it);
+          for (m_itSelected = m_vImages.begin(); m_itSelected != m_vImages.end(); m_itSelected++) {
+            if ((*m_itSelected).m_sCategory == m_sCategory) {
+              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+              checkPositionAndButtons();
+              sendImageSelected();
+              break;
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    void CGuiImageList::selectNextCategory() {
+      for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
+        if (m_sCategory == std::get<0>(*it) && it + 1 != m_vCategories.end()) {
+          it++;
+          m_sCategory = std::get<0>(*it);
+          for (m_itSelected = m_vImages.begin(); m_itSelected != m_vImages.end(); m_itSelected++) {
+            if ((*m_itSelected).m_sCategory == m_sCategory) {
+              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+              checkPositionAndButtons();
+              sendImageSelected();
+              break;
+            }
+          }
+          break;
+        }
+      }
     }
 
       /** Inherited from irr::gui::IGUIElement **/
@@ -355,43 +387,7 @@ namespace dustbin {
       bool l_bRet = false;
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-          if (a_cEvent.GUIEvent.Caller == m_pBtnLeft) {
-            if (m_itSelected != m_vImages.begin()) {
-              m_itSelected--;
-
-              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
-
-              checkPositionAndButtons();
-              m_pBtnRight->setVisible(true);
-              sendImagePosition();
-            }
-
-            l_bRet = true;
-          }
-          else if (a_cEvent.GUIEvent.Caller == m_pBtnRight) {
-            if (m_itSelected == m_vImages.end()) {
-              m_itSelected = m_vImages.begin();
-              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
-              checkPositionAndButtons();
-              m_pBtnRight->setVisible(true);
-              sendImagePosition();
-            }
-            else {
-              if (m_itSelected + 1 != m_vImages.end()) {
-                m_itSelected++;
-                m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
-                checkPositionAndButtons();
-
-                m_pBtnRight->setVisible(m_itSelected + 1 != m_vImages.end());
-                sendImagePosition();
-              }
-            }
-
-          l_bRet = true;
-          }
-        }
-        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
           if (a_cEvent.GUIEvent.Caller == this) {
             m_bHover = true;
             l_bRet = true;
@@ -399,6 +395,11 @@ namespace dustbin {
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
           if (a_cEvent.GUIEvent.Caller == this) {
+            for (int i = 0; i < 4; i++) {
+              m_aBtnHover[i] = false;
+              m_aBtnClick[i] = false;
+            }
+
             m_bHover = false;
             l_bRet = true;
           }
@@ -420,25 +421,7 @@ namespace dustbin {
               r.LowerRightCorner.X -= m_iCategoryOffset;
 
               if (r.isPointInside(m_cClick)) {
-              if (m_sCategory != std::get<0>(*it)) {
-                m_sCategory = std::get<0>(*it);
-                for (m_itSelected = m_vImages.begin(); m_itSelected != m_vImages.end(); m_itSelected++) {
-                  if ((*m_itSelected).m_sCategory == m_sCategory) {
-                    m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
-                    checkPositionAndButtons();
-                    sendImageSelected();
-                    break;
-                  }
-                }
-              }
-              break;
-              }
-            }
-
-            if (m_cCategoryRght.isPointInside(m_cMouse)) {
-              for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
-                if (m_sCategory == std::get<0>(*it) && it + 1 != m_vCategories.end()) {
-                  it++;
+                if (m_sCategory != std::get<0>(*it)) {
                   m_sCategory = std::get<0>(*it);
                   for (m_itSelected = m_vImages.begin(); m_itSelected != m_vImages.end(); m_itSelected++) {
                     if ((*m_itSelected).m_sCategory == m_sCategory) {
@@ -448,31 +431,30 @@ namespace dustbin {
                       break;
                     }
                   }
-                  break;
                 }
+                break;
               }
             }
 
-            if (m_cCategoryLeft.isPointInside(m_cMouse)) {
-              for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
-                if (m_sCategory == std::get<0>(*it) && it != m_vCategories.begin()) {
-                  it--;
-                  m_sCategory = std::get<0>(*it);
-                  for (m_itSelected = m_vImages.begin(); m_itSelected != m_vImages.end(); m_itSelected++) {
-                    if ((*m_itSelected).m_sCategory == m_sCategory) {
-                      m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
-                      checkPositionAndButtons();
-                      sendImageSelected();
-                      break;
-                    }
-                  }
-                  break;
-                }
-              }
+            for (int i = 0; i < 4; i++) {
+              m_aBtnClick[i] = std::get<0>(m_aButtons[i]).isPointInside(m_cMouse);
             }
+
             l_bRet = true;
           }
+          else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+            if (m_cImages.isPointInside(m_cMouse) && abs(m_cMouse.X - m_iMDown) < CGlobal::getInstance()->getRasterSize() / 4 && m_itHovered != m_vImages.end()) {
+              m_itSelected = m_itHovered;
+              checkPositionAndButtons();
+              sendImageSelected();
+              l_bRet = true;
+            }
 
+            if (std::get<0>(m_aButtons[(int)enInternalButtons::NextImage   ]).isPointInside(m_cMouse) && m_aBtnClick[(int)enInternalButtons::NextImage   ]) { selectNextImage   (); m_aBtnClick[(int)enInternalButtons::NextImage   ] = false; }
+            if (std::get<0>(m_aButtons[(int)enInternalButtons::PrevImage   ]).isPointInside(m_cMouse) && m_aBtnClick[(int)enInternalButtons::PrevImage   ]) { selectPrevImage   (); m_aBtnClick[(int)enInternalButtons::PrevImage   ] = false; }
+            if (std::get<0>(m_aButtons[(int)enInternalButtons::NextCategory]).isPointInside(m_cMouse) && m_aBtnClick[(int)enInternalButtons::NextCategory]) { selectNextCategory(); m_aBtnClick[(int)enInternalButtons::NextCategory] = false; }
+            if (std::get<0>(m_aButtons[(int)enInternalButtons::PrevCategory]).isPointInside(m_cMouse) && m_aBtnClick[(int)enInternalButtons::PrevCategory]) { selectPrevCategory(); m_aBtnClick[(int)enInternalButtons::PrevCategory] = false; }
+          }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
             m_cMouse = irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
 
@@ -505,13 +487,11 @@ namespace dustbin {
                 m_itHovered = it;
               }
             }
-          }
-          else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-            if (abs(m_cMouse.X - m_iMDown) < CGlobal::getInstance()->getRasterSize() / 4 && m_itHovered != m_vImages.end()) {
-              m_itSelected = m_itHovered;
-              checkPositionAndButtons();
-              sendImageSelected();
-              l_bRet = true;
+
+            for (int i = 0; i < 4; i++) {
+              if (std::get<1>(m_aButtons[i]) != nullptr) {
+                m_aBtnHover[i] = std::get<0>(m_aButtons[i]).isPointInside(m_cMouse);
+              }
             }
           }
         }
@@ -521,6 +501,57 @@ namespace dustbin {
           l_bRet = true;
         }
       }
+      else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
+          if (!std::get<0>(m_aButtons[(int)enInternalButtons::NextImage]).isPointInside(m_cMouse) && !std::get<0>(m_aButtons[(int)enInternalButtons::PrevImage]).isPointInside(m_cMouse)) {
+            if (a_cEvent.UserEvent.UserData2 != 0) {
+              m_bSelected = !m_bSelected;
+              m_bInCategories = false;
+            }
+            l_bRet = true;
+          }
+        }
+        else if (m_bSelected) {
+          if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
+            switch (a_cEvent.UserEvent.UserData2) {
+              case 0:
+                if (m_bCategories)
+                  m_bInCategories = true;
+                l_bRet = true;
+                break;
+                
+              case 1:
+                if (m_bCategories)
+                  m_bInCategories = false;
+                l_bRet = true;
+                break;
+
+              case 2:
+                if (m_bInCategories) {
+                  selectPrevCategory();
+                }
+                else {
+                  selectPrevImage();
+                }
+                l_bRet = true;
+                break;
+
+              case 3: 
+                if (m_bInCategories) {
+                  selectNextCategory();
+                }
+                else {
+                  selectNextImage();
+                }
+                l_bRet = true;
+                break;
+            }
+          }
+        }
+      }
+
+      if (!l_bRet)
+        l_bRet = IGUIElement::OnEvent(a_cEvent);
 
       return l_bRet;
     }
@@ -532,23 +563,26 @@ namespace dustbin {
         m_pFontSelected->draw(helpers::s2ws(getSelectedName()).c_str(), m_cHeadline, irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cHeadline);
       }
 
+      for (int i = 0; i < 4; i++) {
+        if (std::get<1>(m_aButtons[i]) != nullptr) {
+          m_cBtnRenderer.renderBackground(std::get<0>(m_aButtons[i]), m_aBtnHover[i] ? m_aBtnClick[i] ? irr::video::SColor(0xff, 0xec, 0xf1, 0x63) : irr::video::SColor(0xff, 0x33, 0x67, 0xb8) : irr::video::SColor(0xff, 0xb8, 0xc8, 0xff));
+          m_pDrv->draw2DImage(std::get<1>(m_aButtons[i]), std::get<0>(m_aButtons[i]), irr::core::recti(irr::core::position2di(), std::get<1>(m_aButtons[i])->getOriginalSize()), &AbsoluteClippingRect, nullptr, true);
+        }
+      }
+
       if (m_bCategories) {
+        if (m_bSelected) {
+          if (m_bInCategories) {
+            m_pDrv->draw2DRectangleOutline(m_cCategoryInner, irr::video::SColor(0xFF, 0xFF, 0, 0));
+          }
+          else {
+            m_pDrv->draw2DRectangleOutline(m_cImages, irr::video::SColor(0xFF, 0xFF, 0, 0));
+          }
+        }
+
         m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cCategoryInner);
 
-        if (m_pTextureLeft != nullptr) {
-          if (m_cCategoryLeft.isPointInside(m_cMouse))
-            m_pDrv->draw2DRectangle(m_bMouseDown ? irr::video::SColor(128, 0xec, 0xf1, 0x63) : irr::video::SColor(128, 0x33, 0x67, 0xb8), m_cCategoryLeft);
-
-          m_pDrv->draw2DImage(m_pTextureLeft, m_cCategoryLeft, irr::core::recti(irr::core::vector2di(0, 0), m_pTextureLeft->getOriginalSize()), &m_cCategoryLeft, nullptr, true);
-        }
-
-        if (m_pTextureRght != nullptr) {
-          if (m_cCategoryRght.isPointInside(m_cMouse))
-            m_pDrv->draw2DRectangle(m_bMouseDown ? irr::video::SColor(128, 0xec, 0xf1, 0x63) : irr::video::SColor(128, 0x33, 0x67, 0xb8), m_cCategoryRght);
-
-          m_pDrv->draw2DImage(m_pTextureRght, m_cCategoryRght, irr::core::recti(irr::core::vector2di(0, 0), m_pTextureRght->getOriginalSize()), &m_cCategoryRght, nullptr, true);
-        }
-
+ 
         for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
           irr::core::recti l_cRect = std::get<1>(*it);
           l_cRect.UpperLeftCorner .X -= m_iCategoryOffset;

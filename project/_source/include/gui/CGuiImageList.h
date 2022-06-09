@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <gui/CButtonRenderer.h>
 #include <irrlicht.h>
 #include <string>
 #include <vector>
@@ -50,6 +51,13 @@ namespace dustbin {
         };
 
       private:
+        enum class enInternalButtons {
+          PrevImage    = 0,
+          NextImage    = 1,
+          PrevCategory = 2,
+          NextCategory = 3
+        };
+
         irr::gui::IGUIEnvironment *m_pGui;  /**< The Irrlicht gui environment */
         irr::video::IVideoDriver  *m_pDrv;  /**< The Irrlicht video driver */
         irr::io::IFileSystem      *m_pFs;   /**< The Irrlicht file system */
@@ -71,15 +79,19 @@ namespace dustbin {
         std::vector<SListImage>::iterator m_itSelected;   /**< The selected image */
         std::vector<SListImage>::iterator m_itHovered;    /**< The hovered image */
 
-        CMenuButton *m_pBtnLeft;    /**< The "Left" button */
-        CMenuButton *m_pBtnRight;   /**< The "right" button */
-
         bool m_bHover;        /**< Is the element hovered? */
         bool m_bMouseDown;    /**< Was a button pressed while hovering? */
         bool m_bCategories;   /**< Show categories (for the tracks) */
         bool m_bShowSelected; /**< Add a headline showing the name of the selected item */
         bool m_bOneCatPage;   /**< Categories fit on one page */
         bool m_bScrollTrack;  /**< Scroll the track list (true) or the categories (false)? */
+        bool m_bSelected;     /**< Are we currently selected by Game-Pad menu control? */
+        bool m_bInCategories; /**< Is the game-pad control currently in the categories (if available) */
+
+        bool m_aBtnHover[4];    /**< Is any of the internal buttons hovered? */
+        bool m_aBtnClick[4];    /**< Is any of the internal buttons clicked? */
+
+        std::tuple<irr::core::recti, irr::video::ITexture *> m_aButtons[4]; /**< Rects and images of the internal buttons */
 
         irr::core::position2di m_cClick;  /**< The mouse position for dragging */
         irr::core::position2di m_cMouse;  /**< The current mouse position */
@@ -87,14 +99,11 @@ namespace dustbin {
         irr::core::recti m_cHeadline;       /**< The headline rect (if wanted) */
         irr::core::recti m_cCategoryOuter;  /**< The outer rect of the category list (if wanted) */
         irr::core::recti m_cCategoryInner;  /**< The inner rect of the category list (if wanted) */
-        irr::core::recti m_cCategoryLeft;   /**< The left button for the previous category */
-        irr::core::recti m_cCategoryRght;   /**< The right button for the next category */
-
-        irr::video::ITexture *m_pTextureLeft;   /**< Image for the left button */
-        irr::video::ITexture *m_pTextureRght;   /**< Image for the right button */
 
         irr::gui::IGUIFont *m_pFontSelected;    /**< The font for the selected image */
         irr::gui::IGUIFont *m_pFontCategory;    /**< The font for the category */
+
+        CButtonRenderer m_cBtnRenderer;
 
         std::wstring m_sCategory;   /**< The currently selected category */
         
@@ -107,6 +116,12 @@ namespace dustbin {
         void checkPositionAndButtons();
         void sendImagePosition();
         void sendImageSelected();
+
+        void selectPrevImage();
+        void selectNextImage();
+
+        void selectPrevCategory();
+        void selectNextCategory();
 
     public:
         CGuiImageList(irr::gui::IGUIElement *a_pParent);
