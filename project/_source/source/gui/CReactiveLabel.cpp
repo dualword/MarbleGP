@@ -101,6 +101,8 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.isLeftPressed()) {
           m_bLDown = true;
+
+          l_bRet = true;
         }
         else if (!a_cEvent.MouseInput.isLeftPressed()) {
           if (m_bLDown) {
@@ -114,9 +116,15 @@ namespace dustbin {
               l_cEvent.GUIEvent.Element   = this;
 
               Parent->OnEvent(l_cEvent);
+
+              l_bRet = true;
             }
           }
         }
+      }
+
+      if (!l_bRet) {
+        IGUIElement::OnEvent(a_cEvent);
       }
 
       return l_bRet;

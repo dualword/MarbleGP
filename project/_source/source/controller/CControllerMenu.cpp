@@ -121,6 +121,7 @@ namespace dustbin {
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId:
           if (isElementVisible(a_pThis) && a_pThis->isEnabled() && getElementZLayer(a_pThis) == m_iZLayer)
             a_vElements.push_back(a_pThis);
           break;
@@ -463,7 +464,7 @@ namespace dustbin {
             m_bOkDown = false;
 
             if (l_pHovered != nullptr) {
-              irr::SEvent l_cEvent;
+              irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_USER_EVENT;
               l_cEvent.UserEvent.UserData1 = c_iEventOkClicked;
               l_cEvent.UserEvent.UserData2 = c_iEventOkClicked;
@@ -480,7 +481,7 @@ namespace dustbin {
             m_bCancelDown = false;
 
             if (l_pHovered != nullptr) {
-              irr::SEvent l_cEvent;
+              irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_USER_EVENT;
               l_cEvent.UserEvent.UserData1 = c_iEventCancelClicked;
               l_cEvent.UserEvent.UserData2 = c_iEventCancelClicked;

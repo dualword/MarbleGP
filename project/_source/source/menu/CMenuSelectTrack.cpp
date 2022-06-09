@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
+#include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
@@ -209,7 +210,7 @@ namespace dustbin {
           gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pLaps != nullptr) {
             std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
-            l_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
+            l_pLaps->setSelected(10 - std::atoi(l_sLaps.c_str()));
           }
 
           m_pState->setZLayer(1);
@@ -287,8 +288,10 @@ namespace dustbin {
 
                   gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
-                  if (l_pLaps)
-                    l_iLaps = l_pLaps->getSelected() + 1;
+                  if (l_pLaps != nullptr) {
+                    std::wstring l_sLaps = l_pLaps->getText();
+                    l_iLaps = std::atoi(helpers::ws2s(l_sLaps).c_str());
+                  }
 
                   printf("Laps: %i\n", l_iLaps);
 

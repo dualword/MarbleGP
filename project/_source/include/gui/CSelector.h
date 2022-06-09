@@ -47,6 +47,11 @@ namespace dustbin {
 
         int m_iSelected;  /**< Index of the selected item */
 
+        /**
+        * Pass a "scrollbar changed" event on to the parent
+        */
+        void distributeEvent();
+
       public:
         CSelector(irr::gui::IGUIElement* a_pParent);
         virtual ~CSelector();

@@ -81,7 +81,7 @@ namespace dustbin {
         void playerSelectCancel() {
           if (m_pSelectPlayer != nullptr) {
             m_pSelectPlayer->setVisible(false);
-            changeZLayer(0);
+            changeZLayer(1);
           }
         }
 
@@ -380,7 +380,7 @@ namespace dustbin {
                     if (m_pSelectPlayer != nullptr)
                       m_pSelectPlayer->setVisible(false);
 
-                    changeZLayer(0);
+                    changeZLayer(1);
                     l_bRet = true;
                   }
                 }

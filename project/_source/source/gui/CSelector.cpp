@@ -133,13 +133,7 @@ namespace dustbin {
               if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
                 setText(m_vItems[m_iSelected].c_str());
 
-              if (Parent != nullptr) {
-                irr::SEvent l_cEvent{};
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                l_cEvent.GUIEvent.Caller = this;
-                Parent->OnEvent(l_cEvent);
-              }
+              distributeEvent();
             }
           }
           else if (m_cBoxR.isPointInside(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y))) {
@@ -149,13 +143,7 @@ namespace dustbin {
               if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
                 setText(m_vItems[m_iSelected].c_str());
 
-              if (Parent != nullptr) {
-                irr::SEvent l_cEvent{};
-                l_cEvent.EventType = irr::EET_GUI_EVENT;
-                l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                l_cEvent.GUIEvent.Caller = this;
-                Parent->OnEvent(l_cEvent);
-              }
+              distributeEvent();
             }
           }
         }
@@ -191,12 +179,20 @@ namespace dustbin {
               if (m_iSelected < m_vItems.size() - 1)
                 m_iSelected++;
 
+              if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
+                setText(m_vItems[m_iSelected].c_str());
+
+              distributeEvent();
               l_bRet = true;
             }
             else if (a_cEvent.UserEvent.UserData2 == 3) {
               if (m_iSelected > 0)
                 m_iSelected--;
 
+              if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
+                setText(m_vItems[m_iSelected].c_str());
+
+              distributeEvent();
               l_bRet = true;
             }
           }
@@ -207,6 +203,19 @@ namespace dustbin {
         IGUIElement::OnEvent(a_cEvent);
 
       return l_bRet;
+    }
+
+    /**
+    * Pass a "scrollbar changed" event on to the parent
+    */
+    void CSelector::distributeEvent() {
+      if (Parent != nullptr) {
+        irr::SEvent l_cEvent{};
+        l_cEvent.EventType = irr::EET_GUI_EVENT;
+        l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
+        l_cEvent.GUIEvent.Caller = this;
+        Parent->OnEvent(l_cEvent);
+      }
     }
 
     void CSelector::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
