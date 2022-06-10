@@ -24,9 +24,10 @@ namespace dustbin {
 
         std::string m_sImage; /**< Optional image to be rendered */
 
-        bool m_bHovered;  /**< Is the element hovered? */
-        bool m_bLDown;    /**< Is the left mouse button pressed? */
-        bool m_bSend;     /**< Send event? */
+        bool m_bHovered;    /**< Is the element hovered? */
+        bool m_bLDown;      /**< Is the left mouse button pressed? */
+        bool m_bSend;       /**< Send event? */
+        bool m_bAllZLayers; /**< Is this button available on all Z-Layers? */
 
         irr::video::ITexture* m_pImage;           /*< The optional image to be rendered */
 
@@ -35,6 +36,13 @@ namespace dustbin {
       public:
         CMenuButton(irr::gui::IGUIElement* a_pParent);
         virtual ~CMenuButton();
+
+        /**
+        * Is this button available on all Z-Layers for the menu controller
+        * @see CControllerMenu::fillElementVector
+        * @return true if the button is available on all Z-Layers for the menu controller
+        */
+        bool availableOnAllZLayers();
 
         virtual void draw();
 

@@ -111,6 +111,17 @@ namespace dustbin {
       // - spinbox
 
       switch (a_pThis->getType()) {
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: {
+          // Special handling: The menu buttons can be available on all Z-Layers
+          gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(a_pThis);
+
+          if (p->availableOnAllZLayers()) {
+            a_vElements.push_back(a_pThis);
+            break;
+          }
+
+          [[fallthrough]];
+        }
         case irr::gui::EGUIET_BUTTON:
         case irr::gui::EGUIET_CHECK_BOX:
         case irr::gui::EGUIET_COMBO_BOX:
@@ -118,7 +129,6 @@ namespace dustbin {
         case irr::gui::EGUIET_SCROLL_BAR:
         case irr::gui::EGUIET_SPIN_BOX:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId:
-        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId:
