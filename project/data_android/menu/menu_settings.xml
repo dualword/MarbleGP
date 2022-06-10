@@ -22,6 +22,7 @@
       <attribute key="Name" value="gfx" />
       <attribute key="Id" value="23001" />
       <attribute key="Caption" value="Graphics" />
+      <attribute key="AllZLayers" value="true" />
     </attributes>
   </element>
   
@@ -30,6 +31,7 @@
       <attribute key="Name" value="sfx" />
       <attribute key="Id" value="23002" />
       <attribute key="Caption" value="Sound" />
+      <attribute key="AllZLayers" value="true" />
     </attributes>
   </element>
   
@@ -38,6 +40,7 @@
       <attribute key="Name" value="misc" />
       <attribute key="Id" value="23003" />
       <attribute key="Caption" value="Others" />
+      <attribute key="AllZLayers" value="true" />
     </attributes>
   </element>
   
@@ -105,6 +108,7 @@
       <attribute key="OverrideColor" value="192, 192, 192, 255" />
       <attribute key="Visible" value="false" />
       <attribute key="Id" value="23052" />
+      <attribute key="ZLayer" value="2" />
     </attributes>
     
     <children>
@@ -193,6 +197,7 @@
       <attribute key="OverrideColor" value="192, 192, 255, 192" />
       <attribute key="Visible" value="false" />
       <attribute key="Id" value="23053" />
+      <attribute key="ZLayer" value="4" />
     </attributes>
     
     <children>
@@ -222,6 +227,27 @@
     </children>
   </element>
   
-  <include file="data/menu/button_ok.xml" />
-  <include file="data/menu/button_cancel.xml" />
+  <element type="MenuButton" rect="lowermiddle: 1, -4, 5, 0" tooltip="OK">
+    <attributes>
+      <attribute key="Name" value="ok" />
+      <attribute key="Id" value="20000" />
+      <attribute key="ImagePath" value="data/images/btn_ok.png" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: -4, -4, 0 , 0" tooltip="Cancel">
+    <attributes>
+      <attribute key="Name" value="cancel" />
+      <attribute key="Id" value="20001" />
+      <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
+    <custom>
+      <attribute key="Cancel" value="true" />
+    </custom>
+  </element>
 </dialog>
