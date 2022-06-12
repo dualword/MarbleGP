@@ -62,6 +62,7 @@ namespace dustbin {
         };
 
         bool m_bMouseDown;
+        bool m_bSelected;   /**< Is this UI element selected via gamepad input? */
 
         irr::gui::IGUIElement *m_pParent;
 
@@ -90,8 +91,6 @@ namespace dustbin {
         CDustbinScrollPane *m_pScrollPane;    /**< The helper for scrolling */
 
         irr::gui::ICursorControl *m_pCursor;  /**< The cursor control */
-
-        void elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter);
 
         void updateConfigData();
 

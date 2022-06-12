@@ -87,6 +87,7 @@ namespace dustbin {
         bool m_bScrollTrack;  /**< Scroll the track list (true) or the categories (false)? */
         bool m_bSelected;     /**< Are we currently selected by Game-Pad menu control? */
         bool m_bInCategories; /**< Is the game-pad control currently in the categories (if available) */
+        bool m_bImgChangeEv;  /**< Send image change events */
 
         bool m_aBtnHover[4];    /**< Is any of the internal buttons hovered? */
         bool m_aBtnClick[4];    /**< Is any of the internal buttons clicked? */
@@ -154,8 +155,9 @@ namespace dustbin {
         /**
         * Set the selected image
         * @param a_sImage the image data to select
+        * @param a_bSendEvent send an image selected event?
         */
-        void setSelected(const std::string &a_sImage);
+        void setSelected(const std::string &a_sImage, bool a_bSendEvent);
         
         /**
         * Clear the selection

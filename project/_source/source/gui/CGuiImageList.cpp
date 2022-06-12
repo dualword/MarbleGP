@@ -22,6 +22,8 @@ namespace dustbin {
       m_bCategories    (false),
       m_bShowSelected  (false),
       m_bOneCatPage    (false),
+      m_bInCategories  (false),
+      m_bImgChangeEv   (false),
       m_bScrollTrack   (true),
       m_bSelected      (false),
       m_pFontSelected  (nullptr),
@@ -274,7 +276,7 @@ namespace dustbin {
     * Set the selected image
     * @param a_sImage the image data to select
     */
-    void CGuiImageList::setSelected(const std::string& a_sImage) {
+    void CGuiImageList::setSelected(const std::string& a_sImage, bool a_bSendEvent) {
       m_itSelected = m_vImages.end();
 
       for (std::vector<SListImage>::iterator it = m_vImages.begin(); it != m_vImages.end(); it++)
@@ -282,7 +284,9 @@ namespace dustbin {
           m_itSelected = it;
           m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
           checkPositionAndButtons();
-          sendImageSelected();
+
+          if (a_bSendEvent)
+            sendImageSelected();
           break;
         }
     }
@@ -507,6 +511,9 @@ namespace dustbin {
             if (a_cEvent.UserEvent.UserData2 != 0) {
               m_bSelected = !m_bSelected;
               m_bInCategories = false;
+
+              if (m_bImgChangeEv && !m_bSelected)
+                sendImageSelected();
             }
             l_bRet = true;
           }
@@ -633,17 +640,19 @@ namespace dustbin {
     void CGuiImageList::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       IGUIElement::serializeAttributes(a_pOut, a_pOptions);
 
-      a_pOut->addInt ("Rows"        , m_iRows        );
-      a_pOut->addBool("Categories"  , m_bCategories  );
-      a_pOut->addBool("ShowSelected", m_bShowSelected);
+      a_pOut->addInt ("Rows"         , m_iRows        );
+      a_pOut->addBool("Categories"   , m_bCategories  );
+      a_pOut->addBool("ShowSelected" , m_bShowSelected);
+      a_pOut->addBool("EventOnChange", m_bImgChangeEv );
     }
 
     void CGuiImageList::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       IGUIElement::deserializeAttributes(a_pIn, a_pOptions);
       
-      if (a_pIn->existsAttribute("Rows"        )) m_iRows         = a_pIn->getAttributeAsInt ("Rows"        );
-      if (a_pIn->existsAttribute("Categories"  )) m_bCategories   = a_pIn->getAttributeAsBool("Categories"  );
-      if (a_pIn->existsAttribute("ShowSelected")) m_bShowSelected = a_pIn->getAttributeAsBool("ShowSelected");
+      if (a_pIn->existsAttribute("Rows"         )) m_iRows         = a_pIn->getAttributeAsInt ("Rows"         );
+      if (a_pIn->existsAttribute("Categories"   )) m_bCategories   = a_pIn->getAttributeAsBool("Categories"   );
+      if (a_pIn->existsAttribute("ShowSelected" )) m_bShowSelected = a_pIn->getAttributeAsBool("ShowSelected" );
+      if (a_pIn->existsAttribute("EventOnChange")) m_bImgChangeEv  = a_pIn->getAttributeAsBool("EventOnChange");
 
       if (a_pIn->existsAttribute("SelectedFont")) {
         std::string s = a_pIn->getAttributeAsString("SelectedFont").c_str();

@@ -195,6 +195,9 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
           bool l_bRet = false;
 
+          if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT && a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)
+            printf("*");
+
           if (m_pController != nullptr)
             m_pController->update(a_cEvent);
 

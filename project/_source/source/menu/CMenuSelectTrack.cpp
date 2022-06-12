@@ -158,7 +158,7 @@ namespace dustbin {
             }
 
             m_pTrackList->setImageList(l_vTracks);
-            m_pTrackList->setSelected(m_pState->getGlobal()->getSetting("track"));
+            m_pTrackList->setSelected(m_pState->getGlobal()->getSetting("track"), true);
 
             std::string l_sData = m_pTrackList->getSelectedData();
 

@@ -6,6 +6,7 @@
 #include <gui/CVirtualKeyboard.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CReactiveLabel.h>
+#include <gui/CControllerUi.h>
 #include <gui/CGuiImageList.h>
 #include <gui/CMenuButton.h>
 #include <gui/CClipImage.h>
@@ -120,8 +121,9 @@ namespace dustbin {
             break;
           }
 
-          [[fallthrough]];
+          
         }
+        [[fallthrough]];
         case irr::gui::EGUIET_BUTTON:
         case irr::gui::EGUIET_CHECK_BOX:
         case irr::gui::EGUIET_COMBO_BOX:
@@ -132,6 +134,7 @@ namespace dustbin {
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId:
           if (isElementVisible(a_pThis) && a_pThis->isEnabled() && getElementZLayer(a_pThis) == m_iZLayer)
             a_vElements.push_back(a_pThis);
           break;

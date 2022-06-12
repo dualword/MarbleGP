@@ -272,7 +272,7 @@ namespace dustbin {
               }
 
               m_pPatternList->setImageList(l_vPatterns);
-              m_pPatternList->setSelected(helpers::ws2s(m_pTexturePattern->getText()));
+              m_pPatternList->setSelected(helpers::ws2s(m_pTexturePattern->getText()), false);
             }
 
             l_pXml->drop();
@@ -437,6 +437,8 @@ namespace dustbin {
               m_pPatternDialog->setVisible(false);
               updateTexture(createTextureString());
               changeZLayer(10);
+
+              return true;
             }
           }
           return false;
@@ -1047,7 +1049,7 @@ namespace dustbin {
                   }
                   else if (l_sSender == "btn_select_pattern") {
                     if (m_pPatternDialog != nullptr) {
-                      m_pPatternList->setSelected("");
+                      m_pPatternList->setSelected("", true);
                       m_pPatternDialog->setVisible(true);
                       changeZLayer(46);
                       updatePatterns();

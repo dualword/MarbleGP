@@ -6,6 +6,7 @@
 #include <gui/CControllerUi.h>
 #include <menu/IMenuManager.h>
 #include <irrlicht.h>
+#include <Defines.h>
 #include <algorithm>
 #include <CGlobal.h>
 #include <string>
@@ -163,6 +164,7 @@ namespace dustbin {
     CControllerUi::CControllerUi(irr::gui::IGUIElement* a_pParent) :
       CMenuBackground(a_pParent, (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId),
       m_bMouseDown   (false),
+      m_bSelected    (false),
       m_pParent      (a_pParent),
       m_sConfigData  (""),
       m_sHeadline    ("Controller Setup"),
@@ -272,29 +274,124 @@ namespace dustbin {
       m_pMenuManager = a_pMenuManager;
     }
 
-    void CControllerUi::elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter) {
-    }
-
     bool CControllerUi::OnEvent(const irr::SEvent& a_cEvent) {
-      return false;
-    }
+      bool l_bRet = false;
 
-    bool CControllerUi::update(const irr::SEvent& a_cEvent) {
-      CControllerBase::update(a_cEvent);
+      if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
+          if (a_cEvent.UserEvent.UserData2 != 0) {
+            if (!m_bSelected) {
+              m_bSelected = true;
 
-      if (m_pScrollPane != nullptr && m_pScrollPane->OnEvent(a_cEvent))
-        return true;
-      
-      if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
-        if (OnJoystickEvent(a_cEvent))
-          return true;
+              if (m_itHover == m_vItems.end())
+                m_itHover = m_vItems.begin();
 
-      if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
-          elementEvent(a_cEvent.GUIEvent.Caller, true);
+              m_itSelct = m_vItems.end();
+
+              if (Parent != nullptr) {
+                irr::SEvent l_cEvent{};
+                l_cEvent.EventType = irr::EET_USER_EVENT;
+                l_cEvent.UserEvent.UserData1 = c_iEventHideCursor;
+                l_cEvent.UserEvent.UserData2 = 1;
+                Parent->OnEvent(l_cEvent);
+
+                irr::core::position2di l_cScroll = m_pScrollPane != nullptr ? m_pScrollPane->getScrollPosition() : irr::core::position2di();
+                irr::core::recti l_cRect = (*m_itHover).m_cRectLabel + AbsoluteClippingRect.UpperLeftCorner + l_cScroll;
+
+                l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+                l_cEvent.MouseInput.Event        = irr::EMIE_MOUSE_MOVED;
+                l_cEvent.MouseInput.X            = l_cRect.getCenter().X;
+                l_cEvent.MouseInput.Y            = l_cRect.getCenter().Y;
+                l_cEvent.MouseInput.ButtonStates = 0;
+                l_cEvent.MouseInput.Shift        = false;
+                l_cEvent.MouseInput.Control      = false;
+                l_cEvent.MouseInput.Wheel        = 0.0f;
+                Parent->OnEvent(l_cEvent);
+
+                if (m_pCursor != nullptr)
+                  m_pCursor->setPosition(l_cRect.getCenter());
+              }
+
+              l_bRet = true;
+            }
+          }
         }
-        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
-          elementEvent(a_cEvent.GUIEvent.Caller, false);
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
+          if (m_bSelected) {
+            if (a_cEvent.UserEvent.UserData2 == 1) {
+              if (m_itSelct == m_vItems.end()) {
+                if (m_itHover + 1 != m_vItems.end()) {
+                  m_itHover++;
+
+                  irr::SEvent l_cEvent{};
+
+                  irr::core::position2di l_cScroll = m_pScrollPane != nullptr ? m_pScrollPane->getScrollPosition() : irr::core::position2di();
+                  irr::core::recti l_cRect = (*m_itHover).m_cRectLabel + AbsoluteClippingRect.UpperLeftCorner + l_cScroll;
+
+                  l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+                  l_cEvent.MouseInput.Event        = irr::EMIE_MOUSE_MOVED;
+                  l_cEvent.MouseInput.X            = l_cRect.getCenter().X;
+                  l_cEvent.MouseInput.Y            = l_cRect.getCenter().Y;
+                  l_cEvent.MouseInput.ButtonStates = 0;
+                  l_cEvent.MouseInput.Shift        = false;
+                  l_cEvent.MouseInput.Control      = false;
+                  l_cEvent.MouseInput.Wheel        = 0.0f;
+                  Parent->OnEvent(l_cEvent);
+
+                  if (m_pCursor != nullptr) {
+                    m_pCursor->setPosition(l_cRect.getCenter());
+                  }
+                }
+              }
+            }
+            else if (a_cEvent.UserEvent.UserData2 == 0) {
+              if (m_itSelct == m_vItems.end()) {
+                if (m_itHover != m_vItems.begin()) {
+                  m_itHover--;
+
+                  irr::SEvent l_cEvent{};
+
+                  irr::core::position2di l_cScroll = m_pScrollPane != nullptr ? m_pScrollPane->getScrollPosition() : irr::core::position2di();
+                  irr::core::recti l_cRect = (*m_itHover).m_cRectLabel + AbsoluteClippingRect.UpperLeftCorner + l_cScroll;
+
+                  l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+                  l_cEvent.MouseInput.Event        = irr::EMIE_MOUSE_MOVED;
+                  l_cEvent.MouseInput.X            = l_cRect.getCenter().X;
+                  l_cEvent.MouseInput.Y            = l_cRect.getCenter().Y;
+                  l_cEvent.MouseInput.ButtonStates = 0;
+                  l_cEvent.MouseInput.Shift        = false;
+                  l_cEvent.MouseInput.Control      = false;
+                  l_cEvent.MouseInput.Wheel        = 0.0f;
+                  Parent->OnEvent(l_cEvent);
+
+                  if (m_pCursor != nullptr) {
+                    m_pCursor->setPosition(l_cRect.getCenter());
+                  }
+                }
+              }
+            }
+
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventOkClicked) {
+          if (m_bSelected) {
+            m_bSelected = false;
+            if (Parent != nullptr) {
+              irr::SEvent l_cEvent{};
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iEventHideCursor;
+              l_cEvent.UserEvent.UserData2 = 0;
+              Parent->OnEvent(l_cEvent);
+            }
+
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventCancelClicked) {
+          // Consume cancel event if we are selected via menu controller
+          if (m_bSelected)
+            l_bRet = true;
         }
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
@@ -302,11 +399,15 @@ namespace dustbin {
           if (m_pCursor == nullptr) {
             m_cMousePos.X = a_cEvent.MouseInput.X;
             m_cMousePos.Y = a_cEvent.MouseInput.Y;
+
+            l_bRet = true;
           }
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
           m_bMouseDown = true;
           m_itClick = m_itHover;
+
+          l_bRet = true;
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           m_bMouseDown = false;
@@ -330,8 +431,27 @@ namespace dustbin {
 
             m_vJoyStates.push_back(l_cState);
           }
+
+          l_bRet = true;
         }
       }
+      if (!l_bRet)
+        Parent->OnEvent(a_cEvent);
+
+      return l_bRet;
+    }
+
+    // This method is necessary because UI elements don't receive Joystick events
+    bool CControllerUi::update(const irr::SEvent& a_cEvent) {
+      CControllerBase::update(a_cEvent);
+
+      if (m_pScrollPane != nullptr && m_pScrollPane->OnEvent(a_cEvent))
+        return true;
+      
+      if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
+        if (OnJoystickEvent(a_cEvent))
+          return true;
+      
 
       if (m_itSelct != m_vItems.end()) {
         if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
@@ -433,6 +553,7 @@ namespace dustbin {
 
                   std::string s = (*it).m_sName + " POV " + l_sPov;
                   (*m_itSelct).m_sValue = helpers::s2ws(s).c_str();
+                  m_itSelct = m_vItems.end();
 
                   return true;
                 }
@@ -450,6 +571,7 @@ namespace dustbin {
 
                   std::string s = (*it).m_sName + " Axis " + std::to_string(i) + ((*m_itSelct).m_pInput->m_iDirection > 0 ? " +" : " -");
                   (*m_itSelct).m_sValue = helpers::s2ws(s).c_str();
+                  m_itSelct = m_vItems.end();
 
                   return true;
                 }
@@ -503,18 +625,18 @@ namespace dustbin {
 
         bool l_bHover = l_cClip1.isPointInside(m_cMousePos) || l_cClip2.isPointInside(m_cMousePos);
 
-        m_pDrv->draw2DRectangle(m_itSelct == it ? irr::video::SColor(224, 192, 192, 255) : l_bHover ? m_itClick == it ? irr::video::SColor(224, 255, 255, 192) : irr::video::SColor(224, 255, 192, 192) : irr::video::SColor(224, 192, 192, 192), l_cClip1, &m_cItemRect);
-        m_pDrv->draw2DRectangle(m_itSelct == it ? irr::video::SColor(224, 192, 192, 255) : l_bHover ? m_itClick == it ? irr::video::SColor(224, 255, 255, 192) : irr::video::SColor(224, 255, 192, 192) : irr::video::SColor(224, 192, 192, 192), l_cClip2, &m_cItemRect);
-
-        m_pFont->draw((*it).m_sName .c_str(), l_cClip1, irr::video::SColor(0xFF, 0, 0, 0), true , true, &m_cItemRect);
-        m_pFont->draw((*it).m_sValue.c_str(), l_cClip2, irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cItemRect);
-
         if (l_bHover) {
           if (m_itHover != it)
             m_itClick = m_vItems.end();
 
           l_itHover = it;
         }
+
+        m_pDrv->draw2DRectangle(m_itSelct == it ? irr::video::SColor(224, 192, 192, 255) : m_itHover == it ? m_itClick == it ? irr::video::SColor(224, 255, 255, 192) : irr::video::SColor(224, 255, 192, 192) : irr::video::SColor(224, 192, 192, 192), l_cClip1, &m_cItemRect);
+        m_pDrv->draw2DRectangle(m_itSelct == it ? irr::video::SColor(224, 192, 192, 255) : m_itHover == it ? m_itClick == it ? irr::video::SColor(224, 255, 255, 192) : irr::video::SColor(224, 255, 192, 192) : irr::video::SColor(224, 192, 192, 192), l_cClip2, &m_cItemRect);
+
+        m_pFont->draw((*it).m_sName .c_str(), l_cClip1, irr::video::SColor(0xFF, 0, 0, 0), true , true, &m_cItemRect);
+        m_pFont->draw((*it).m_sValue.c_str(), l_cClip2, irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cItemRect);
       }
 
       m_itHover = l_itHover;
