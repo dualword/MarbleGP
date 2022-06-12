@@ -43,6 +43,7 @@
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CVirtualKeyboard.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h" />
     <ClInclude Include="..\..\_source\include\gfx\SViewPort.h" />
+    <ClInclude Include="..\..\_source\include\gui\CDustbinScrollPane.h" />
     <ClInclude Include="..\..\_source\include\gui\CVirtualKeyboard.h" />
     <ClInclude Include="..\..\_source\include\gui\CButtonRenderer.h" />
     <ClInclude Include="..\..\_source\include\gui\CClipImage.h" />

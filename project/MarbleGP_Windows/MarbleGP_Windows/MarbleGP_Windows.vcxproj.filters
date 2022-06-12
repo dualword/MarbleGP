@@ -426,6 +426,9 @@
     <ClCompile Include="..\..\_source\source\gui\CVirtualKeyboard.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -753,6 +756,9 @@
       <Filter>Headerdateien\network</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CVirtualKeyboard.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CDustbinScrollPane.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>

@@ -149,7 +149,6 @@ namespace dustbin {
           m_pController = reinterpret_cast<gui::CControllerUi *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId, m_pGui->getRootGUIElement()));
 
           if (m_pController != nullptr) {
-            m_pController->setFont(m_pState->getGlobal()->getFont(enFont::Small, m_pDrv->getScreenSize()));
             m_pController->setText(helpers::s2ws(l_sCtrl).c_str());
             m_pController->setMenuManager(m_pManager);
           }

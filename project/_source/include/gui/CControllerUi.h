@@ -8,6 +8,8 @@
 #include <gui/CMenuBackground.h>
 #include <state/IState.h>
 #include <string>
+#include <vector>
+#include <tuple>
 #include <map>
 
 namespace dustbin {
@@ -17,6 +19,8 @@ namespace dustbin {
   namespace gui {
     const int g_ControllerUiId = MAKE_IRR_ID('d', 'g', 'c', 'u');
     const irr::c8 g_ControllerUiName[] = "ControllerUi";
+
+    class CDustbinScrollPane; /**< Forward declaration of the scroll pane */
 
     /**
     * @class CControllerUi
@@ -38,40 +42,56 @@ namespace dustbin {
           std::vector<float> m_vAxes; /**< The values of the axes */
         };
 
+        struct SCtrlUi {
+          controller::CControllerBase::SCtrlInput *m_pInput;    /**< The controller input configured by this UI item */
+
+          std::wstring m_sName;   /**< The display name of the item */
+          std::wstring m_sValue;  /**< The current value of this item */
+
+          irr::core::recti m_cRectLabel;  /**< The rectangle of this item */
+          irr::core::recti m_cRectItem;  /**< The rectangle of this item */
+
+          SCtrlUi(controller::CControllerBase::SCtrlInput* a_pInput, const std::wstring& a_sName, const std::wstring& a_sValue, const irr::core::recti& a_cRectLabel, const irr::core::recti &a_cRectItem) :
+            m_pInput    (a_pInput),
+            m_sName     (a_sName),
+            m_sValue    (a_sValue),
+            m_cRectLabel(a_cRectLabel),
+            m_cRectItem (a_cRectItem)
+          {
+          }
+        };
+
+        bool m_bMouseDown;
+
         irr::gui::IGUIElement *m_pParent;
 
         irr::core::position2di m_cMousePos;
+
+        irr::core::recti m_cItemRect;   /**< The inner rect for the items */
 
         std::string m_sConfigData;
         std::string m_sHeadline;
         std::wstring m_sReturn;
 
-        irr::gui::IGUIElement *m_pSelectedOne;  /**< The first selected control static text */
-        irr::gui::IGUIElement *m_pSelectedTwo;  /**< The second selected control static text*/
-        irr::gui::IGUIElement *m_pHoveredOne;   /**< The first hovered control static text */
-        irr::gui::IGUIElement *m_pHoveredTwo;   /**< The second hovered control static text */
+        irr::gui::IGUIFont       *m_pFont;
+        irr::video::IVideoDriver *m_pDrv;
+        CGlobal                  *m_pGlobal;
 
-        bool m_bMouseDown;
+        std::vector<SCtrlUi> m_vItems;
 
-        std::map<irr::gui::IGUIElement*, irr::gui::IGUIElement*> m_mTextPairs;  /**< A map that links the first and second control static texts */
-
-        std::vector<irr::gui::IGUIElement*> m_vElements;  /**< A vector that contains all elements of the UI */
-
-        std::map<irr::gui::IGUIElement*, std::vector<controller::CControllerBase::SCtrlInput>::iterator> m_mTextControls; /**< A map that links static texts to control items */
-
-        std::map<std::vector<controller::CControllerBase::SCtrlInput>::iterator, irr::gui::IGUIStaticText*> m_mControlText; /**< The label for the controllers */
-
-        irr::gui::IGUIFont* m_pFont;
-
-        std::vector<controller::CControllerBase::SCtrlInput>::iterator m_itHovered,   /**< The hovered control */
-                                                                       m_itSelected;  /**< The selected control */
+        std::vector<SCtrlUi>::iterator m_itHover;
+        std::vector<SCtrlUi>::iterator m_itClick;
+        std::vector<SCtrlUi>::iterator m_itSelct;
 
         std::vector<SJoystickState> m_vJoyStates;
 
         menu::IMenuManager *m_pMenuManager;
 
+        CDustbinScrollPane *m_pScrollPane;    /**< The helper for scrolling */
+
+        irr::gui::ICursorControl *m_pCursor;  /**< The cursor control */
+
         void elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter);
-        void resetSelected();
 
         void updateConfigData();
 
@@ -86,6 +106,8 @@ namespace dustbin {
         void buildUi(irr::gui::IGUIElement *a_pParent);
 
         virtual bool update(const irr::SEvent& a_cEvent) override;
+
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
         /**
         * Get the configuration of the controller as XML string
@@ -114,6 +136,8 @@ namespace dustbin {
         void setMenuManager(menu::IMenuManager *a_pMenuManager);
 
         virtual bool OnJoystickEvent(const irr::SEvent& a_cEvent) override;
+
+        virtual void draw();
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;

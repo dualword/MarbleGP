@@ -274,7 +274,6 @@ namespace dustbin {
           case irr::gui::EGUIET_STATIC_TEXT:
           case irr::gui::EGUIET_EDIT_BOX: 
           case irr::gui::EGUIET_SPIN_BOX:
-            // case gui::g_ControllerUiId:
           case irr::gui::EGUIET_TABLE:
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId: 

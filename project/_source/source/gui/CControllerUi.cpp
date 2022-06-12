@@ -1,10 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerBase.h>
+#include <gui/CDustbinScrollPane.h>
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
 #include <gui/CControllerUi.h>
 #include <menu/IMenuManager.h>
 #include <irrlicht.h>
+#include <algorithm>
 #include <CGlobal.h>
 #include <string>
 
@@ -160,20 +162,29 @@ namespace dustbin {
 
     CControllerUi::CControllerUi(irr::gui::IGUIElement* a_pParent) :
       CMenuBackground(a_pParent, (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId),
+      m_bMouseDown   (false),
       m_pParent      (a_pParent),
       m_sConfigData  (""),
       m_sHeadline    ("Controller Setup"),
       m_sReturn      (L""),
-      m_pSelectedOne (nullptr),
-      m_pSelectedTwo (nullptr),
-      m_pHoveredOne  (nullptr),
-      m_pHoveredTwo  (nullptr),
       m_pFont        (nullptr),
-      m_pMenuManager (nullptr)
+      m_pDrv         (CGlobal::getInstance()->getVideoDriver()),
+      m_pGlobal      (CGlobal::getInstance()),
+      m_pMenuManager (nullptr),
+      m_pScrollPane  (nullptr),
+      m_pCursor      (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl())
     {
+      m_pFont   = m_pGlobal->getFont(enFont::Regular, m_pDrv->getScreenSize());
+      m_itHover = m_vItems.end();
+      m_itClick = m_vItems.end();
+      m_itSelct = m_vItems.end();
     }
 
     CControllerUi::~CControllerUi() {
+      if (m_pScrollPane != nullptr) {
+        delete m_pScrollPane;
+        m_pScrollPane = nullptr;
+      }
     }
 
     /**
@@ -181,68 +192,47 @@ namespace dustbin {
     * @param a_pParent the parent element.
     */
     void CControllerUi::buildUi(irr::gui::IGUIElement* a_pParent) {
-      CGlobal* l_pGlobal = CGlobal::getInstance();
+      m_cItemRect = AbsoluteClippingRect;
 
-      if (m_pFont == nullptr)
-        m_pFont = l_pGlobal->getGuiEnvironment()->getSkin()->getFont();
+      m_cItemRect.UpperLeftCorner  += irr::core::vector2di(m_pGlobal->getRasterSize() / 2);
+      m_cItemRect.LowerRightCorner -= irr::core::vector2di(m_pGlobal->getRasterSize() / 2);
 
-      irr::core::recti l_cRect = AbsoluteClippingRect;
+      if (m_pScrollPane != nullptr)
+        delete m_pScrollPane;
 
-      irr::u32 l_iWidth  = l_cRect.getWidth();
+      m_pScrollPane = new CDustbinScrollPane(m_cItemRect);
 
-      irr::core::dimension2du l_cDim = irr::core::dimension2du(0, 0);
+      irr::core::dimension2du l_cFont = m_pFont->getDimension(L"ThisShouldBeEnoughForShowingAllControls");
+      irr::core::dimension2du l_cItem;
 
       for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-        std::wstring s = helpers::s2ws((*it).m_sName);
-        irr::core::dimension2du d = m_pFont->getDimension(s.c_str());
+        irr::core::dimension2du l_cDim = m_pFont->getDimension(helpers::s2ws((*it).m_sName).c_str());
 
-        if (d.Width  > l_cDim.Width ) l_cDim.Width  = d.Width;
-        if (d.Height > l_cDim.Height) l_cDim.Height = d.Height;
+        l_cItem.Width  = std::max(l_cItem.Width , l_cDim.Width );
+        l_cItem.Height = std::max(l_cItem.Height, l_cDim.Height);
       }
 
-      l_cDim.Height = 7 * l_cDim.Height / 6;
-      l_cDim.Width  = 7 * l_cDim.Width  / 6;
+      l_cItem.Width  = 5 * l_cItem.Width  / 4;
+      l_cItem.Height = 5 * l_cItem.Height / 4;
 
-      irr::core::position2di l_cPos = irr::core::position2di(0, l_cDim.Height / 8);
+      l_cFont.Width  = 5 * l_cFont.Width  / 4;
+      l_cFont.Height = 5 * l_cFont.Height / 4;
 
-      irr::gui::IGUIStaticText* p = l_pGlobal->getGuiEnvironment()->addStaticText(helpers::s2ws(m_sHeadline).c_str(), irr::core::recti(l_cPos, irr::core::dimension2du(l_iWidth, l_cDim.Height)), false, true, this);
-      p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER); 
-      p->setOverrideFont(m_pFont);
+      irr::core::position2di l_cPosL = irr::core::position2di(l_cFont.Height / 2, l_cFont.Height / 2);
+      irr::core::position2di l_cPosI = l_cPosL + irr::core::position2di(l_cItem.Width + l_cFont.Height / 4, 0);
 
-      m_vElements.push_back(p);
-
-      l_cPos.X = l_cDim.Height;
-
-      irr::core::dimension2du l_cDim2 = l_cDim;
-      l_cDim2.Width = l_iWidth - 3 * l_cDim.Height - l_cDim.Width;
-
-      irr::core::position2di l_cPos2 = l_cPos;
-      l_cPos2.X += l_cDim.Height / 2 + l_cDim.Width;
-
-      int l_iLine = l_cRect.getHeight() / ((int)m_vControls.size() + 1);
-        
       for (std::vector<controller::CControllerBase::SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-        l_cPos .Y += l_iLine;
-        l_cPos2.Y += l_iLine;
+        irr::core::recti r1 = irr::core::recti(l_cPosL, l_cItem);
+        irr::core::recti r2 = irr::core::recti(l_cPosI, l_cFont);
 
-        irr::gui::IGUIStaticText* p1 = l_pGlobal->getGuiEnvironment()->addStaticText(helpers::s2ws((*it).m_sName).c_str(), irr::core::recti(l_cPos, l_cDim), true, true, this);
-        p1->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        p1->setOverrideFont(m_pFont);
-
-        m_vElements.push_back(p1);
-
-        irr::gui::IGUIStaticText* p2 = l_pGlobal->getGuiEnvironment()->addStaticText(L"Controller", irr::core::recti(l_cPos2, l_cDim2), true, true, this);
-        p2->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
-        p2->setOverrideFont(m_pFont);
-
-        m_vElements.push_back(p2);
+        std::wstring l_sCtrl = L"";
 
         if ((*it).m_eType == controller::CControllerBase::enInputType::Key) {
-          p2->setText(keyCodeToString((*it).m_eKey).c_str());
+          l_sCtrl = keyCodeToString((*it).m_eKey).c_str();
         }
         else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyButton) {
           std::string s = (*it).m_sJoystick + " Button " + std::to_string((*it).m_iButton);
-          p2->setText(helpers::s2ws(s).c_str());
+          l_sCtrl = helpers::s2ws(s).c_str();
         }
         else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyPov) {
           std::string l_sPov = "";
@@ -257,87 +247,43 @@ namespace dustbin {
             l_sPov = "Left";
 
           std::string s = (*it).m_sJoystick + " POV " + l_sPov;
-          p2->setText(helpers::s2ws(s).c_str());
+          l_sCtrl = helpers::s2ws(s).c_str();
         }
         else if ((*it).m_eType == controller::CControllerBase::enInputType::JoyAxis) {
           std::string s = (*it).m_sJoystick + " Axis " + std::to_string((*it).m_iAxis) + ((*it).m_iDirection > 0 ? " +" : " -");
-          p2->setText(helpers::s2ws(s).c_str());
+          l_sCtrl = helpers::s2ws(s).c_str();
         }
 
-        m_mTextPairs[p1] = p2;
-        m_mTextPairs[p2] = p1;
+        m_vItems.push_back(SCtrlUi(&(*it), helpers::s2ws((*it).m_sName), (std::wstring(L" ") + l_sCtrl).c_str(), r1, r2));
 
-        m_mTextControls[p1] = it;
-        m_mTextControls[p2] = it;
+        m_pScrollPane->addRectangle(r1);
+        m_pScrollPane->addRectangle(r2);
 
-        m_mControlText[it] = p2;
+        l_cPosL += irr::core::position2di(0, 4 * l_cFont.Height / 3);
+        l_cPosI += irr::core::position2di(0, 4 * l_cFont.Height / 3);
       }
     }
 
     bool CControllerUi::isEditing() {
-      return m_pSelectedOne != nullptr;
+      return false;
     }
 
     void CControllerUi::setMenuManager(menu::IMenuManager* a_pMenuManager) {
       m_pMenuManager = a_pMenuManager;
     }
 
-    void CControllerUi::resetSelected() {
-      if (m_pSelectedOne != nullptr) {
-        if (m_pSelectedOne->getType() == irr::gui::EGUIET_STATIC_TEXT)
-          reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedOne)->setDrawBackground(false);
-
-        m_pSelectedOne = nullptr;
-      }
-
-      if (m_pSelectedTwo != nullptr) {
-        if (m_pSelectedTwo->getType() == irr::gui::EGUIET_STATIC_TEXT)
-          reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedTwo)->setDrawBackground(false);
-
-        m_pSelectedTwo = nullptr;
-      }
-
-      for (std::map<irr::gui::IGUIElement*, irr::gui::IGUIElement*>::iterator it = m_mTextPairs.begin(); it != m_mTextPairs.end(); it++) {
-        if (it->first->getAbsoluteClippingRect().isPointInside(m_cMousePos)) {
-          elementEvent(it->first, true);
-          break;
-        }
-      }
-      updateConfigData();
+    void CControllerUi::elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter) {
     }
 
-    void CControllerUi::elementEvent(irr::gui::IGUIElement* a_pElement, bool a_bEnter) {
-      if (m_mTextPairs.find(a_pElement) != m_mTextPairs.end()) {
-        irr::gui::IGUIElement* l_pOther = m_mTextPairs[a_pElement];
-
-        if (a_pElement != m_pSelectedOne && a_pElement != m_pSelectedTwo && l_pOther != m_pSelectedOne && l_pOther != m_pSelectedTwo && m_mTextControls.find(a_pElement) != m_mTextControls.end()) {
-          if (a_pElement->getType() == irr::gui::EGUIET_STATIC_TEXT && l_pOther->getType() == irr::gui::EGUIET_STATIC_TEXT) {
-            irr::gui::IGUIStaticText *p1 = reinterpret_cast<irr::gui::IGUIStaticText*>(a_pElement),
-                                     *p2 = reinterpret_cast<irr::gui::IGUIStaticText*>(l_pOther);
-
-            p1->setBackgroundColor(irr::video::SColor(192, 128, 128, 255));
-            p1->setDrawBackground(a_bEnter);
-
-            p2->setBackgroundColor(irr::video::SColor(192, 128, 128, 255));
-            p2->setDrawBackground(a_bEnter);
-
-            if (a_bEnter) {
-              m_pHoveredOne = a_pElement;
-              m_pHoveredTwo = l_pOther;
-
-              m_itHovered = m_mTextControls[a_pElement];
-            }
-            else {
-              m_pHoveredOne = nullptr;
-              m_pHoveredTwo = nullptr;
-            }
-          }
-        }
-      }
+    bool CControllerUi::OnEvent(const irr::SEvent& a_cEvent) {
+      return false;
     }
 
     bool CControllerUi::update(const irr::SEvent& a_cEvent) {
       CControllerBase::update(a_cEvent);
+
+      if (m_pScrollPane != nullptr && m_pScrollPane->OnEvent(a_cEvent))
+        return true;
       
       if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
         if (OnJoystickEvent(a_cEvent))
@@ -352,61 +298,49 @@ namespace dustbin {
         }
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-        if (a_cEvent.MouseInput.isLeftPressed()) {
-          m_bMouseDown = true;
-        }
-        else if (m_bMouseDown) {
-          m_bMouseDown = false;
-
-          if (m_pHoveredOne != nullptr && m_pHoveredTwo != nullptr) {
-            resetSelected();
-
-            m_pSelectedOne = m_pHoveredOne;
-            m_pSelectedTwo = m_pHoveredTwo;
-
-            m_itSelected = m_itHovered;
-
-            reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedOne)->setBackgroundColor(irr::video::SColor(192, 255, 128, 128));
-            reinterpret_cast<irr::gui::IGUIStaticText*>(m_pSelectedTwo)->setBackgroundColor(irr::video::SColor(192, 255, 128, 128));
-
-            m_pHoveredOne = nullptr;
-            m_pHoveredTwo = nullptr;
-
-            m_vJoyStates.clear();
-
-            for (unsigned i = 0; i < m_aJoysticks.size(); i++) {
-              SJoystickState l_cState;
-              l_cState.m_iIndex       = i;
-              l_cState.m_sName        = m_aJoysticks[i].Name.c_str();
-              l_cState.m_iAxes        = m_aJoysticks[i].Axes;
-              l_cState.m_iButtons     = m_aJoysticks[i].Buttons;
-              l_cState.m_bHasPov      = m_aJoysticks[i].PovHat == irr::SJoystickInfo::POV_HAT_PRESENT;
-              l_cState.m_bInitialized = false;
-
-              for (int i = 0; i < l_cState.m_iAxes; i++) {
-                l_cState.m_vAxes.push_back(0.0);
-              }
-
-              m_vJoyStates.push_back(l_cState);
-            }
+        if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+          if (m_pCursor == nullptr) {
+            m_cMousePos.X = a_cEvent.MouseInput.X;
+            m_cMousePos.Y = a_cEvent.MouseInput.Y;
           }
         }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          m_bMouseDown = true;
+          m_itClick = m_itHover;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          m_bMouseDown = false;
+          m_itSelct    = m_itClick;
+          m_itClick    = m_vItems.end();
 
-        if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
-          m_cMousePos.X = a_cEvent.MouseInput.X;
-          m_cMousePos.Y = a_cEvent.MouseInput.Y;
+          m_vJoyStates.clear();
+
+          for (unsigned i = 0; i < m_aJoysticks.size(); i++) {
+            SJoystickState l_cState;
+            l_cState.m_iIndex       = i;
+            l_cState.m_sName        = m_aJoysticks[i].Name.c_str();
+            l_cState.m_iAxes        = m_aJoysticks[i].Axes;
+            l_cState.m_iButtons     = m_aJoysticks[i].Buttons;
+            l_cState.m_bHasPov      = m_aJoysticks[i].PovHat == irr::SJoystickInfo::POV_HAT_PRESENT;
+            l_cState.m_bInitialized = false;
+
+            for (int i = 0; i < l_cState.m_iAxes; i++) {
+              l_cState.m_vAxes.push_back(0.0);
+            }
+
+            m_vJoyStates.push_back(l_cState);
+          }
         }
       }
 
-      if (m_pSelectedOne != nullptr && m_pSelectedTwo != nullptr) {
+      if (m_itSelct != m_vItems.end()) {
         if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
           if (!a_cEvent.KeyInput.PressedDown) {
-            (*m_itSelected).m_eType = controller::CControllerBase::enInputType::Key;
-            (*m_itSelected).m_eKey  = a_cEvent.KeyInput.Key;
+            (*m_itSelct).m_pInput->m_eType = controller::CControllerBase::enInputType::Key;
+            (*m_itSelct).m_pInput->m_eKey  = a_cEvent.KeyInput.Key;
+            (*m_itSelct).m_sValue = keyCodeToString(a_cEvent.KeyInput.Key).c_str();
 
-            m_mControlText[m_itSelected]->setText(keyCodeToString(a_cEvent.KeyInput.Key).c_str());
-
-            resetSelected();
+            m_itSelct = m_vItems.end();
             return true;
           }
         }
@@ -438,15 +372,6 @@ namespace dustbin {
       std::string s = helpers::ws2s(ws);
 
       if (s != m_sConfigData) {
-        for (std::vector<irr::gui::IGUIElement*>::iterator it = m_vElements.begin(); it != m_vElements.end(); it++) {
-          (*it)->setVisible(false);
-          (*it)->remove();
-        }
-
-        m_vElements    .clear();
-        m_mTextPairs   .clear();
-        m_mTextControls.clear();
-        m_mControlText .clear();
 
         m_sConfigData = s;
 
@@ -468,20 +393,20 @@ namespace dustbin {
           }
         }
 
-        if (m_pSelectedOne != nullptr && m_pSelectedTwo != nullptr) {
+        if (m_itSelct != m_vItems.end()) {
           for (std::vector<SJoystickState>::iterator it = m_vJoyStates.begin(); it != m_vJoyStates.end(); it++) {
             if ((*it).m_bInitialized && (*it).m_iIndex == a_cEvent.JoystickEvent.Joystick) {
               for (int i = 0; i < (*it).m_iButtons; i++) {
                 if (a_cEvent.JoystickEvent.IsButtonPressed(i)) {
-                  (*m_itSelected).m_eType     = controller::CControllerBase::enInputType::JoyButton;
-                  (*m_itSelected).m_iButton   = i;
-                  (*m_itSelected).m_iJoystick = a_cEvent.JoystickEvent.Joystick;
-                  (*m_itSelected).m_sJoystick = (*it).m_sName;
+                  (*m_itSelct).m_pInput->m_eType     = controller::CControllerBase::enInputType::JoyButton;
+                  (*m_itSelct).m_pInput->m_iButton   = i;
+                  (*m_itSelct).m_pInput->m_iJoystick = a_cEvent.JoystickEvent.Joystick;
+                  (*m_itSelct).m_pInput->m_sJoystick = (*it).m_sName;
 
                   std::string s = (*it).m_sName + " Button " + std::to_string(i);
-                  m_mControlText[m_itSelected]->setText(helpers::s2ws(s).c_str());
+                  (*m_itSelct).m_sValue = helpers::s2ws(s).c_str();
 
-                  resetSelected();
+                  m_itSelct = m_vItems.end();
                   return true;
                 }
               }
@@ -490,10 +415,10 @@ namespace dustbin {
                 irr::u16 l_iPov = a_cEvent.JoystickEvent.POV;
 
                 if (l_iPov == 0 || l_iPov == 9000 || l_iPov == 18000 || l_iPov == 27000) {
-                  (*m_itSelected).m_eType     = controller::CControllerBase::enInputType::JoyPov;
-                  (*m_itSelected).m_iJoystick = a_cEvent.JoystickEvent.Joystick;
-                  (*m_itSelected).m_sJoystick = (*it).m_sName;
-                  (*m_itSelected).m_iPov      = l_iPov;
+                  (*m_itSelct).m_pInput->m_eType     = controller::CControllerBase::enInputType::JoyPov;
+                  (*m_itSelct).m_pInput->m_iJoystick = a_cEvent.JoystickEvent.Joystick;
+                  (*m_itSelct).m_pInput->m_sJoystick = (*it).m_sName;
+                  (*m_itSelct).m_pInput->m_iPov      = l_iPov;
 
                   std::string l_sPov = "";
 
@@ -507,9 +432,8 @@ namespace dustbin {
                     l_sPov = "Left";
 
                   std::string s = (*it).m_sName + " POV " + l_sPov;
-                  m_mControlText[m_itSelected]->setText(helpers::s2ws(s).c_str());
+                  (*m_itSelct).m_sValue = helpers::s2ws(s).c_str();
 
-                  resetSelected();
                   return true;
                 }
               }
@@ -518,16 +442,15 @@ namespace dustbin {
                 float f = (((irr::f32)a_cEvent.JoystickEvent.Axis[i]) / 32500.0f) - (*it).m_vAxes[i];
                 
                 if (abs(f) > 0.5f) {
-                  (*m_itSelected).m_eType      = controller::CControllerBase::enInputType::JoyAxis;
-                  (*m_itSelected).m_iJoystick  = a_cEvent.JoystickEvent.Joystick;
-                  (*m_itSelected).m_sJoystick  = (*it).m_sName;
-                  (*m_itSelected).m_iAxis      = i;
-                  (*m_itSelected).m_iDirection = f > 0.0f ? 1 : -1;
+                  (*m_itSelct).m_pInput->m_eType      = controller::CControllerBase::enInputType::JoyAxis;
+                  (*m_itSelct).m_pInput->m_iJoystick  = a_cEvent.JoystickEvent.Joystick;
+                  (*m_itSelct).m_pInput->m_sJoystick  = (*it).m_sName;
+                  (*m_itSelct).m_pInput->m_iAxis      = i;
+                  (*m_itSelct).m_pInput->m_iDirection = f > 0.0f ? 1 : -1;
 
-                  std::string s = (*it).m_sName + " Axis " + std::to_string(i) + ((*m_itSelected).m_iDirection > 0 ? " +" : " -");
-                  m_mControlText[m_itSelected]->setText(helpers::s2ws(s).c_str());
+                  std::string s = (*it).m_sName + " Axis " + std::to_string(i) + ((*m_itSelct).m_pInput->m_iDirection > 0 ? " +" : " -");
+                  (*m_itSelct).m_sValue = helpers::s2ws(s).c_str();
 
-                  resetSelected();
                   return true;
                 }
               }
@@ -560,6 +483,41 @@ namespace dustbin {
       gui::CMenuBackground::deserializeAttributes(a_pIn, a_pOptions);
 
       m_sHeadline = a_pIn->getAttributeAsString("headline").c_str();
+    }
+
+    void CControllerUi::draw() {
+      CMenuBackground::draw();
+
+      if (m_pCursor != nullptr)
+        m_cMousePos = irr::core::position2di(m_pCursor->getPosition());
+
+      m_pDrv->draw2DRectangleOutline(m_cItemRect, irr::video::SColor(0xFF, 0, 0, 0));
+
+      irr::core::position2di l_cScroll = m_pScrollPane != nullptr ? m_pScrollPane->getScrollPosition() : irr::core::position2di();
+
+      std::vector<SCtrlUi>::iterator l_itHover = m_vItems.end();
+
+      for (std::vector<SCtrlUi>::iterator it = m_vItems.begin(); it != m_vItems.end(); it++) {
+        irr::core::recti l_cClip1 = (*it).m_cRectLabel + AbsoluteClippingRect.UpperLeftCorner + l_cScroll;
+        irr::core::recti l_cClip2 = (*it).m_cRectItem  + AbsoluteClippingRect.UpperLeftCorner + l_cScroll;
+
+        bool l_bHover = l_cClip1.isPointInside(m_cMousePos) || l_cClip2.isPointInside(m_cMousePos);
+
+        m_pDrv->draw2DRectangle(m_itSelct == it ? irr::video::SColor(224, 192, 192, 255) : l_bHover ? m_itClick == it ? irr::video::SColor(224, 255, 255, 192) : irr::video::SColor(224, 255, 192, 192) : irr::video::SColor(224, 192, 192, 192), l_cClip1, &m_cItemRect);
+        m_pDrv->draw2DRectangle(m_itSelct == it ? irr::video::SColor(224, 192, 192, 255) : l_bHover ? m_itClick == it ? irr::video::SColor(224, 255, 255, 192) : irr::video::SColor(224, 255, 192, 192) : irr::video::SColor(224, 192, 192, 192), l_cClip2, &m_cItemRect);
+
+        m_pFont->draw((*it).m_sName .c_str(), l_cClip1, irr::video::SColor(0xFF, 0, 0, 0), true , true, &m_cItemRect);
+        m_pFont->draw((*it).m_sValue.c_str(), l_cClip2, irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cItemRect);
+
+        if (l_bHover) {
+          if (m_itHover != it)
+            m_itClick = m_vItems.end();
+
+          l_itHover = it;
+        }
+      }
+
+      m_itHover = l_itHover;
     }
   } // namespace controller 
 } // namespace dustbin
