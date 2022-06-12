@@ -920,6 +920,8 @@ namespace dustbin {
                   if (l_sSender == "ok") {
                     if (m_pColorDialog != nullptr && m_pColorDialog->isVisible())
                       buttonColorOkClicked();
+                    else if (m_pPatternDialog != nullptr && m_pPatternDialog->isVisible())
+                      buttonPatternCloseClicked();
                     else if (m_pTextureDialog != nullptr && m_pTextureDialog->isVisible())
                       buttonTextureOkClicked();
                     else if (m_pConfirmDialog != nullptr && m_pConfirmDialog->isVisible())
