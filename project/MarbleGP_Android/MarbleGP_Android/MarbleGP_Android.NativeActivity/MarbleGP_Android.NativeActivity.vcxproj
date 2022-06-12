@@ -258,6 +258,7 @@
     <ClInclude Include="..\..\..\_source\include\gui\CClipImage.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CControllerUi.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CDustbinCheckbox.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CDustbinScrollPane.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGameHUD.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGuiImageList.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGuiItemFactory.h" />
@@ -347,6 +348,7 @@
     <ClCompile Include="..\..\..\_source\source\gui\CClipImage.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CControllerUi.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CDustbinCheckbox.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\CDustbinScrollPane.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CGameHUD.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CGuiImageList.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CGuiItemFactory.cpp" />
