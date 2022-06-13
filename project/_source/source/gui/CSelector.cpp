@@ -175,7 +175,7 @@ namespace dustbin {
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
           if (m_bSelected) {
-            if (a_cEvent.UserEvent.UserData2 == 2) {
+            if (a_cEvent.UserEvent.UserData2 == 3) {
               if (m_iSelected < m_vItems.size() - 1)
                 m_iSelected++;
 
@@ -185,7 +185,7 @@ namespace dustbin {
               distributeEvent();
               l_bRet = true;
             }
-            else if (a_cEvent.UserEvent.UserData2 == 3) {
+            else if (a_cEvent.UserEvent.UserData2 == 2) {
               if (m_iSelected > 0)
                 m_iSelected--;
 

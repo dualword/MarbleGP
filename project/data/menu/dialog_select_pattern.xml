@@ -31,6 +31,7 @@
             <attributes>
               <attribute key="Name" value="PatternList" />
               <attribute key="Rows" value="3" />
+              <attribute key="EventOnChange" value="true" />
             </attributes>
             
             <custom>
