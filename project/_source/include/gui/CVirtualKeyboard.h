@@ -35,6 +35,8 @@ namespace dustbin {
         irr::core::position2di m_cOffset;
         irr::core::position2di m_cTotalMove;
 
+        irr::video::SColor m_cBackground;
+
         bool m_bMouseDown;
         bool m_bInside;
         bool m_bMoved;

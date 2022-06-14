@@ -13,6 +13,7 @@ namespace dustbin {
       m_pDevice    (CGlobal::getInstance()->getIrrlichtDevice()),
       m_pFont      (nullptr),
       m_pDrv       (nullptr),
+      m_cBackground(irr::video::SColor(192, 255, 255, 192)),
       m_bMouseDown (false),
       m_bInside    (false),
       m_bMoved     (false),
@@ -129,6 +130,16 @@ namespace dustbin {
               m_itKey--;
             }
 
+            if (m_cOffset.X > m_cChar.getWidth()) {
+              m_cBackground = irr::video::SColor(192, 255, 128, 128);
+            }
+            else if (m_cOffset.X < -m_cChar.getWidth()) {
+              m_cBackground = irr::video::SColor(192, 128, 255, 128);
+            }
+            else {
+              m_cBackground = irr::video::SColor(192, 255, 255, 192);
+            }
+
             m_bMoved = true;
           }
 
@@ -151,10 +162,10 @@ namespace dustbin {
             hideKeyboard();
           }
           else if (m_bMoving) {
-            if (m_cOffset.X > 2 * m_cChar.getWidth()) {
+            if (m_cOffset.X > m_cChar.getWidth()) {
               delChar();
             }
-            else if (m_cOffset.X < -2 * m_cChar.getWidth()) {
+            else if (m_cOffset.X < -m_cChar.getWidth()) {
               addChar();
             }
             else if (m_cOffset.Y < -m_cChar.getHeight() / 2) {
@@ -214,8 +225,8 @@ namespace dustbin {
         m_pDrv->draw2DRectangleOutline(m_cUp  , irr::video::SColor(0xFF, 0, 0, 0));
         m_pDrv->draw2DRectangleOutline(m_cDown, irr::video::SColor(0xFF, 0, 0, 0));
 
-        m_pDrv->draw2DRectangle(irr::video::SColor(192, 255, 255, 192), m_cUp  );
-        m_pDrv->draw2DRectangle(irr::video::SColor(192, 255, 255, 192), m_cDown);
+        m_pDrv->draw2DRectangle(m_cBackground, m_cUp  );
+        m_pDrv->draw2DRectangle(m_cBackground, m_cDown);
 
         irr::core::position2di l_cPos = m_cInner.UpperLeftCorner;
 
@@ -265,7 +276,7 @@ namespace dustbin {
           m_pDevice->getCursorControl()->setPosition(AbsoluteClippingRect.getCenter());
         }
         else {
-          irr::SEvent l_cEvent;
+          irr::SEvent l_cEvent{};
 
           l_cEvent.EventType               = irr::EET_MOUSE_INPUT_EVENT;
           l_cEvent.MouseInput.Event        = irr::EMIE_MOUSE_MOVED;

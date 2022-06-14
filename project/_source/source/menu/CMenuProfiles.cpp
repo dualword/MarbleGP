@@ -137,18 +137,21 @@ namespace dustbin {
       private:
         SPlayerProfileUI  m_aProfiles[8];   /**< The UI array for modifying the profiles */
 
-        irr::gui::IGUITab *m_pTextureDialog,  /**< The texture root element */
-                          *m_pTextureTabs[2], /**< Tabs for generated / imported textures */
-                          *m_pColorDialog,    /**< The color selection dialog */
-                          *m_pPatternDialog,  /**< The pattern selection dialog */
-                          *m_pColorDisplay,   /**< The tab showing the color in the choose color dialog*/
-                          *m_pControlDialog,  /**< The tab with the control configuration */
-                          *m_pConfirmDialog;  /**< The error message dialog */
+        irr::gui::IGUITab *m_pTextureDialog;  /**< The texture root element */
+        irr::gui::IGUITab *m_pTextureTabs[2]; /**< Tabs for generated / imported textures */
+        irr::gui::IGUITab *m_pColorDialog;    /**< The color selection dialog */
+        irr::gui::IGUITab *m_pPatternDialog;  /**< The pattern selection dialog */
+        irr::gui::IGUITab *m_pColorDisplay;   /**< The tab showing the color in the choose color dialog*/
+        irr::gui::IGUITab *m_pControlDialog;  /**< the tab with the control configuration */
+        irr::gui::IGUITab *m_pConfirmDialog;  /**< The error message dialog */
+        irr::gui::IGUITab *m_pButtonTab;      /**< The tab with the "edit texture colors" buttons (Android) */
+
+        gui::CMenuButton *m_pMore;    /**< The "more" button in the texture UI (Android) */
 
         gui::CGuiImageList *m_pPatternList;   /**< The list of texture patterns */
 
-        gui::CSelector        *m_pTextureMode,           /**< The texture type selector (Default, Generated, Imported) */
-                              *m_pAiHelp;                /**< The "AI Help" selector in the user control configuration */
+        gui::CSelector        *m_pTextureMode;           /**< The texture type selector (Default, Generated, Imported) */
+        gui::CSelector        *m_pAiHelp;                /**< The "AI Help" selector in the user control configuration */
         irr::gui::IGUIImage   *m_pTextureImg;       /**< The texture GUI image showing the current texture */
         irr::gui::IGUIEditBox *m_pTexturePattern; /**< The edit field of the texture pattern */
         irr::gui::IGUIListBox *m_pCustomTexture;  /**< The custom texture list */
@@ -158,9 +161,9 @@ namespace dustbin {
         irr::video::ITexture* m_pMyRtt;         /**< Render target for the texture scene */
         irr::scene::ISceneNode* m_pMarble;      /**< The marble scene node in the texture scene */
 
-        int m_iMaxIndex,    /**< The highest found index of the profile edit tabs */
-            m_iEditing,     /**< The currently edited profile */
-            m_iPatternPage; /**< The currently active page of the texture pattern dialog */
+        int m_iMaxIndex;    /**< The highest found index of the profile edit tabs */
+        int m_iEditing;     /**< The currently edited profile */
+        int m_iPatternPage; /**< The currently active page of the texture pattern dialog */
 
         std::string m_sTextureEdit;   /**< The edited generate texture pattern */
 
@@ -212,7 +215,7 @@ namespace dustbin {
 
             for (std::map<std::string, std::string>::iterator it = l_mParamaters.begin(); it != l_mParamaters.end(); it++) {
               std::string l_sKey = l_mParamMap.find(it->first) != l_mParamMap.end() ? l_mParamMap[it->first] : "";
-              if (m_mGeneratedEd.find(l_sKey) != m_mGeneratedEd.end()) {
+              if (m_mGeneratedEd.find(l_sKey) != m_mGeneratedEd.end() && m_mGeneratedEd[l_sKey] != nullptr) {
                 m_mGeneratedEd[l_sKey]->setText(helpers::s2ws(it->second).c_str());
               }
             }
@@ -272,7 +275,9 @@ namespace dustbin {
               }
 
               m_pPatternList->setImageList(l_vPatterns);
-              m_pPatternList->setSelected(helpers::ws2s(m_pTexturePattern->getText()), false);
+
+              if (m_pTexturePattern != nullptr)
+                m_pPatternList->setSelected(helpers::ws2s(m_pTexturePattern->getText()), false);
             }
 
             l_pXml->drop();
@@ -432,7 +437,8 @@ namespace dustbin {
             std::string s = m_pPatternList->getSelectedData();
 
             if (s != "") {
-              m_pTexturePattern->setText(helpers::s2ws(s).c_str());
+              if (m_pTexturePattern != nullptr)
+                m_pTexturePattern->setText(helpers::s2ws(s).c_str());
 
               m_pPatternDialog->setVisible(false);
               updateTexture(createTextureString());
@@ -641,20 +647,26 @@ namespace dustbin {
               case 0:
                 if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(false);
                 if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(false);
+
+                if (m_pMore != nullptr) m_pMore->setVisible(false);
                 break;
 
               case 1:
                 if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(true);
                 if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(false);
+
+                if (m_pMore != nullptr) m_pMore->setVisible(true);
                 break;
 
               case 2:
                 if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(false);
                 if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(true);
-                break;
 
+                if (m_pMore != nullptr) m_pMore->setVisible(false);
+                break;
             }
           }
+          updateTexture(createTextureString());
         }
 
         public:
@@ -666,6 +678,8 @@ namespace dustbin {
             m_pColorDisplay  (nullptr),
             m_pControlDialog (nullptr),
             m_pConfirmDialog (nullptr),
+            m_pButtonTab     (nullptr),
+            m_pMore          (nullptr),
             m_pPatternList   (nullptr),
             m_pTextureMode   (nullptr),
             m_pAiHelp        (nullptr),
@@ -711,6 +725,8 @@ namespace dustbin {
             m_pColorDisplay   = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("color_display"    , irr::gui::EGUIET_TAB                              , l_pRoot));
             m_pControlDialog  = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("controllerDialog" , irr::gui::EGUIET_TAB                              , l_pRoot));
             m_pConfirmDialog  = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("confirmDialog"    , irr::gui::EGUIET_TAB                              , l_pRoot));
+            m_pButtonTab      = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("ButtonTab"        , irr::gui::EGUIET_TAB                              , l_pRoot));
+            m_pMore           = reinterpret_cast<     gui::CMenuButton   *>(findElementByNameAndType("btn_more"         , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId  , l_pRoot));
             m_pControllerUI   = reinterpret_cast<     gui::CControllerUi *>(findElementByNameAndType("controller_ui"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId, l_pRoot));
             m_pPatternList    = reinterpret_cast<     gui::CGuiImageList *>(findElementByNameAndType("PatternList"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId   , l_pRoot));
 
@@ -1056,6 +1072,9 @@ namespace dustbin {
                       changeZLayer(46);
                       updatePatterns();
                     }
+
+                    if (m_pButtonTab != nullptr)
+                      m_pButtonTab->setVisible(false);
                   }
                   else if (l_sSender == "btn_pattern_close") {
                     buttonPatternCloseClicked();
@@ -1089,8 +1108,12 @@ namespace dustbin {
                   else if (l_sSender == "btn_ctrl_cancel") {
                     buttonControlsCancelClicked();
                   }
+                  else if (l_sSender == "btn_more") {
+                    if (m_pButtonTab != nullptr)
+                      m_pButtonTab->setVisible(!m_pButtonTab->isVisible());
+                  }
                   else if (l_sSender == "btn_pattern_select") {
-                    irr::SEvent l_cEvent;
+                  irr::SEvent l_cEvent{};
                     l_cEvent.EventType = irr::EET_USER_EVENT;
                     l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
                     l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;
@@ -1111,6 +1134,8 @@ namespace dustbin {
                           updateColorDialog(l_sColor);
                         }
 
+                        if (m_pButtonTab != nullptr)
+                          m_pButtonTab->setVisible(false);
 
                         changeZLayer(23);
                         l_bRet = true;

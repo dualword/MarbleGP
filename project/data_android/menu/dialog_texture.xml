@@ -42,11 +42,18 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Default;Generated;Imported" />
+              <attribute key="options" value="Default;Generated" />
             </custom>
           </element>
           
-          <element type="tab" rect="center: -19, -9, 19, 12">
+          <element type="MenuButton" rect="center: 16, -9, 18, -7">
+            <attributes>
+              <attribute key="Name" value="btn_more" />
+              <attribute key="ImagePath" value="data/images/more.png" />
+            </attributes>
+          </element>
+          
+          <!-- <element type="tab" rect="center: -19, -9, 19, 12">
             <attributes>
               <attribute key="Name" value="texture_generated" />
               <attribute key="Visible" value="false" />
@@ -55,7 +62,6 @@
             </attributes>
             
             <children>
-              <!-- Pattern Row -->
               <element type="staticText" rect="relative: 0, 1, 11, 3">
                 <attributes>
                   <attribute key="Caption" value="Pattern:" />
@@ -79,7 +85,6 @@
                 </attributes>
               </element>
               
-              <!-- Number Color Row -->
               <element type="staticText" rect="relative: 0, 5, 11, 7">
                 <attributes>
                   <attribute key="Caption" value="Number:" />
@@ -118,7 +123,6 @@
                 </attributes>
               </element>
               
-              <!-- Number Decoration Row -->
               <element type="staticText" rect="relative: 0, 9, 11, 11">
                 <attributes>
                   <attribute key="Caption" value="Decoration:" />
@@ -157,7 +161,6 @@
                 </attributes>
               </element>
               
-              <!-- Pattern Color Row -->
               <element type="staticText" rect="relative: 0, 13, 11, 15">
                 <attributes>
                   <attribute key="Caption" value="Pattern Color:" />
@@ -196,7 +199,7 @@
                 </attributes>
               </element>
             </children>
-          </element>
+          </element> -->
           
           <element type="tab" rect="center: -10, -9, 19, 12">
             <attributes>
@@ -282,6 +285,91 @@
               <attribute key="Id" value="12345" />
               <attribute key="ImagePath" value="data/images/btn_cancel.png" />
             </attributes>
+          </element>
+        </children>
+      </element>
+  
+      <element type="tab" rect="fillwindow">
+        <attributes>
+          <attribute key="DrawBackground" value="true" />
+          <attribute key="BackColor" value="96, 200, 200, 200" />
+          <attribute key="Name" value="ButtonTab" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        
+        <children>
+          <element type="MenuBackground" rect="center: -4, -7, 18, 15">
+            <attributes>
+              <attribute key="Name" value="ButtonTab" />
+              <attribute key="ZLayer" value="69" />
+            </attributes>
+            
+            <children>
+              <element type="MenuButton" rect="relative: 1, 1, 21, 3" tooltip="Select Pattern" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_pattern" />
+                  <attribute key="Caption" value="Select Pattern" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 4, 21, 6" tooltip="Edit Number Background Color" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_bg_nb" />
+                  <attribute key="Caption" value="Number Background" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 7, 21, 9" tooltip="Edit Number Color" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_fg_nb" />
+                  <attribute key="Caption" value="Number Color" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 10, 21, 12" tooltip="Edit Number Border Color" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_nf" />
+                  <attribute key="Caption" value="Number Border Color" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 13, 21, 15" tooltip="Edit Number Ring Color" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_nr" />
+                  <attribute key="Caption" value="Number Ring Color" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 16, 21, 18" tooltip="Edit Pattern Background Color" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_bg_pt" />
+                  <attribute key="Caption" value="Pattern Background Color" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 19, 21, 21" tooltip="Edit Pattern  Color" font="small">
+                <attributes>
+                  <attribute key="Name" value="btn_select_fg_pt" />
+                  <attribute key="Caption" value="Pattern Color" />
+                </attributes>
+              </element>
+              
+              <element type="tab" rect="center: -19, -9, 19, 12">
+                <attributes>
+                  <attribute key="Visible" value="false" />
+                </attributes>
+                
+                <children>
+                  <element type="editBox" rect="relative: 12, 1, 32, 3"  ><attributes><attribute key="Name" value="texture_pattern" /><attribute key="Caption" value="texture_marbles2.png" /></attributes></element>
+                  <element type="editBox" rect="relative: 12, 5, 18, 7"  ><attributes><attribute key="Name" value="texture_fg_nb"   /><attribute key="Caption" value="000000"               /></attributes></element>
+                  <element type="editBox" rect="relative: 26, 5, 32, 7"  ><attributes><attribute key="Name" value="texture_bg_nb"   /><attribute key="Caption" value="4b64f9"               /></attributes></element>
+                  <element type="editBox" rect="relative: 12, 9, 18, 11" ><attributes><attribute key="Name" value="texture_nr"      /><attribute key="Caption" value="000000"               /></attributes></element>
+                  <element type="editBox" rect="relative: 26, 9, 32, 11" ><attributes><attribute key="Name" value="texture_nf"      /><attribute key="Caption" value="4b64f9"               /></attributes></element>
+                  <element type="editBox" rect="relative: 12, 13, 18, 15"><attributes><attribute key="Name" value="texture_fg_pt"   /><attribute key="Caption" value="000000"               /></attributes></element>
+                  <element type="editBox" rect="relative: 26, 13, 32, 15"><attributes><attribute key="Name" value="texture_bg_pt"   /><attribute key="Caption" value="4b64f9"               /></attributes></element>
+                </children>
+              </element>              
+            </children>
           </element>
         </children>
       </element>
