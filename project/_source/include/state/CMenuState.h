@@ -39,6 +39,7 @@ namespace dustbin {
     class CMenuState : public IState, public menu::IMenuManager {
       private:
         menu::IMenuHandler *m_pMenu;
+        menu::IMenuHandler *m_pNext;
 
         controller::CControllerMenu      *m_pController;    /**< The controller for navigating the menues with a joypad */
         controller::ICustomEventReceiver *m_pTouchCtrl;     /**< Touch controller for the menu */
@@ -92,9 +93,10 @@ namespace dustbin {
         virtual menu::IMenuHandler *changeMenu(menu::IMenuHandler *a_pMenu) override;
 
         /**
-        * Callback before a menu is changed, deletes the current menu
+        * Set the next menu to run
+        * @param a_pNext the menu to switch to
         */
-        virtual void beforeChangeMenu() override;
+        virtual void setNextMenu(menu::IMenuHandler *a_pNext) override;
 
         /**
         * Push a menu to the menu stack

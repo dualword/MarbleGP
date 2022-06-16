@@ -183,6 +183,7 @@ namespace dustbin {
     */
     void CGameClient::stateChanged(const std::string& a_sState) {
       messages::CStateChanged l_cMsg = messages::CStateChanged(a_sState);
+      printf("Send state change to \"%s\" to server.\n", a_sState.c_str());
       broadcastMessage(&l_cMsg, true);
     }
   }

@@ -306,7 +306,8 @@ namespace dustbin {
         virtual void run() { 
           if (m_pServer != nullptr && m_sNewState != "") {
             if (m_pServer->allClientsAreInState(m_sNewState)) {
-              createMenu(m_sNewState, m_pDevice, m_pManager, m_pState);
+              menu::IMenuHandler *p = createMenu(m_sNewState, m_pDevice, m_pManager, m_pState);
+              m_pManager->setNextMenu(p);
             }
           }
         }
