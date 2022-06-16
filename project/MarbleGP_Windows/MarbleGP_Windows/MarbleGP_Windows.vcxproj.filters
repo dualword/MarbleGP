@@ -429,6 +429,9 @@
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuFinalResult.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

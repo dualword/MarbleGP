@@ -41,8 +41,11 @@ namespace dustbin {
 
         int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" responsw? */
 
-        network::CGameServer *m_pServer;  /**< The game server (if running) */
-        
+        std::string m_sNewState;  /**< The next state important if we are a network game server */
+
+        network::CGameServer *m_pServer;  /**< The game server */
+        network::CGameClient *m_pClient;  /**< The game client */
+
         /**
         * Fill the vector of track names
         */
@@ -182,7 +185,9 @@ namespace dustbin {
           m_sTrackFilter(""),
           m_pTrackList  (nullptr),
           m_iClientState(0),
-          m_pServer     (a_pState->getGlobal()->getGameServer())
+          m_sNewState   (""),
+          m_pServer     (a_pState->getGlobal()->getGameServer()),
+          m_pClient     (a_pState->getGlobal()->getGameClient())
         {
           m_pState->getGlobal()->clearGui();
 
@@ -276,9 +281,15 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sCaller == "cancel") {
-                std::string l_sScript = m_pManager->peekMenuStack();
-                m_pManager->pushToMenuStack("menu_selecttrack");
-                createMenu(l_sScript, m_pDevice, m_pManager, m_pState);
+                if (m_pServer != nullptr) {
+                  m_sNewState = "menu_finalresult";
+                  m_pServer->changeState(m_sNewState);
+                  m_iClientState = 3;
+                }
+                else {
+                  m_pManager->clearMenuStack();
+                  createMenu("menu_finalresult", m_pDevice, m_pManager, m_pState);
+                }
               }
               else if (l_sCaller == "ok" && (m_pOk == nullptr || m_pOk->isVisible())) {
                 if (m_pTrackList != nullptr) {
@@ -357,6 +368,12 @@ namespace dustbin {
 
               if (m_pServer->allClientsAreInState("state_game")) {
                 m_pState->setState(state::enState::Game);
+              }
+            }
+            else if (m_iClientState == 3) {
+              if (m_pServer->allClientsAreInState(m_sNewState)) {
+                m_pManager->clearMenuStack();
+                createMenu(m_sNewState, m_pDevice, m_pManager, m_pState);
               }
             }
           }

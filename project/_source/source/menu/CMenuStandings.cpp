@@ -28,8 +28,8 @@ namespace dustbin {
 
     public:
         CMenuStandings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler(a_pDevice, a_pManager, a_pState), 
-          m_sNewState(""), 
+          IMenuHandler(a_pDevice, a_pManager, a_pState),
+          m_sNewState(""),
           m_pServer(a_pState->getGlobal()->getGameServer()),
           m_pClient(a_pState->getGlobal()->getGameClient())
         {
