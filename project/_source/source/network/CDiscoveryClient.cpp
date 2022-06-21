@@ -49,6 +49,7 @@ namespace dustbin {
           sendbuf.data = (void *)l_sMessage.data();
           sendbuf.dataLength = l_sMessage.length();
           int l_iSent = enet_socket_send(m_cScanner, &l_cAddress, &sendbuf, 1);
+          printf("%i Bytes sent.\n", l_iSent);
 
           int l_iSelect = 0;
 

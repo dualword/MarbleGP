@@ -105,6 +105,8 @@ namespace dustbin {
 
       printf("Create Menu \"%s\"\n", a_sName.c_str());
 
+      a_pManager->beforeChangeMenu();
+
       if (a_sName == "menu_main") {
         l_pRet = a_pManager->changeMenu(createMenuMain(a_pDevice, a_pManager, a_pState));
       }

@@ -21,15 +21,12 @@ namespace dustbin {
       private:
         std::vector<std::vector<irr::gui::IGUIStaticText *>> m_vTable;
 
-        std::string m_sNewState;  /**< The next state important if we are a network game server */
-
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
     public:
         CMenuStandings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState),
-          m_sNewState(""),
           m_pServer(a_pState->getGlobal()->getGameServer()),
           m_pClient(a_pState->getGlobal()->getGameClient())
         {
@@ -223,12 +220,10 @@ namespace dustbin {
 
               if (l_sButton == "ok") {
                 if (m_pServer != nullptr) {
-                  m_sNewState = "menu_netlobby";
-                  m_pServer->changeState(m_sNewState);
+                  m_pServer->changeState("menu_netlobby");
                 }
-                else {
-                  createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
-                }
+
+                createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
                 l_bRet = true;
               }
             }
@@ -263,17 +258,6 @@ namespace dustbin {
           }
 
           return l_bRet;
-        }
-
-        /**
-        * This method is called every frame after "scenemanager::drawall" is called
-        */
-        virtual void run() { 
-          if (m_pServer != nullptr && m_sNewState != "") {
-            if (m_pServer->allClientsAreInState(m_sNewState)) {
-              createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
-            }
-          }
         }
       };
 

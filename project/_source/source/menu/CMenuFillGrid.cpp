@@ -23,15 +23,11 @@ namespace dustbin {
     */
     class CMenuFillGrid : public IMenuHandler {
       private:
-        irr::gui::IGUIStaticText *m_pWaiting;   /**< The "waiting for clients" overlay label */
-        bool                      m_bWaiting;   /**< Are we waiting for all clients to enter net game lobby? */
         network::CGameServer     *m_pServer;    /**< The game server */
 
       public:
         CMenuFillGrid(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
-          m_pWaiting  (nullptr), 
-          m_bWaiting  (false), 
           m_pServer   (CGlobal::getInstance()->getGameServer()) 
         {
           m_pState->getGlobal()->clearGui();
@@ -141,7 +137,7 @@ namespace dustbin {
                 if (l_cData.size() < i)
                   l_pText->setVisible(false);
                 else
-                  l_pText->setText(helpers::s2ws(l_cData[i - 1].m_sName).c_str());
+                  l_pText->setText(helpers::s2ws(l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName).c_str());
               }
 
               gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
@@ -165,11 +161,6 @@ namespace dustbin {
           }
 
           m_pState->getGlobal()->setGlobal("championship", l_cChampionship.serialize());
-
-          m_pWaiting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_waiting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-
-          if (m_pWaiting != nullptr)
-            m_pWaiting->setVisible(false);
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
@@ -182,22 +173,8 @@ namespace dustbin {
               if (l_sCaller == "ok") {
                 if (m_pServer != nullptr) {
                   m_pServer->changeState("menu_netlobby");
-                  if (m_pWaiting != nullptr)
-                    m_pWaiting->setVisible(true);
-
-                  gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                  if (p != nullptr)
-                    p->setVisible(false);
-
-                  p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                  if (p != nullptr)
-                    p->setVisible(false);
-
-                  m_bWaiting = true;
                 }
-                else {
-                  createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
-                }
+                createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
               }
               else if (l_sCaller == "cancel") {
                 m_pManager->clearMenuStack();
@@ -207,14 +184,6 @@ namespace dustbin {
           }
 
           return l_bRet;
-        }
-
-        virtual void run() override {
-          if (m_bWaiting && m_pServer != nullptr) {
-            if (m_pServer->allClientsAreInState("menu_netlobby")) {
-              createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
-            }
-          }
         }
     };
 

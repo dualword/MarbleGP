@@ -41,8 +41,6 @@ namespace dustbin {
 
         int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" responsw? */
 
-        std::string m_sNewState;  /**< The next state important if we are a network game server */
-
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
@@ -54,7 +52,7 @@ namespace dustbin {
 
           long l_iSize = l_pFile->getSize();
           char *s = new char[l_iSize + 1];
-          memset(s, 0, l_iSize + 1);
+          memset(s, 0, static_cast<size_t>(l_iSize) + 1);
           l_pFile->read(s, l_iSize);
           std::vector<std::string> l_vTracks = helpers::splitString(s, '\n');
           delete []s;
@@ -185,7 +183,6 @@ namespace dustbin {
           m_sTrackFilter(""),
           m_pTrackList  (nullptr),
           m_iClientState(0),
-          m_sNewState   (""),
           m_pServer     (a_pState->getGlobal()->getGameServer()),
           m_pClient     (a_pState->getGlobal()->getGameClient())
         {
@@ -282,9 +279,8 @@ namespace dustbin {
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sCaller == "cancel") {
                 if (m_pServer != nullptr) {
-                  m_sNewState = "menu_finalresult";
-                  m_pServer->changeState(m_sNewState);
-                  m_iClientState = 3;
+                  m_pServer->changeState("menu_finalresult");
+                  createMenu("menu_finalresult", m_pDevice, m_pManager, m_pState);
                 }
                 else {
                   m_pManager->clearMenuStack();
@@ -368,12 +364,6 @@ namespace dustbin {
 
               if (m_pServer->allClientsAreInState("state_game")) {
                 m_pState->setState(state::enState::Game);
-              }
-            }
-            else if (m_iClientState == 3) {
-              if (m_pServer->allClientsAreInState(m_sNewState)) {
-                m_pManager->clearMenuStack();
-                createMenu(m_sNewState, m_pDevice, m_pManager, m_pState);
               }
             }
           }

@@ -14,10 +14,10 @@
 
 namespace dustbin {
   namespace state {
-    CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_pNext(nullptr), m_pController(nullptr), m_pTouchCtrl(nullptr), m_pClient(nullptr), m_pInputQueue(nullptr) {
+    CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_pController(nullptr), m_pTouchCtrl(nullptr), m_pClient(nullptr), m_pInputQueue(nullptr) {
       m_pController = new controller::CControllerMenu(-1);
 
-      irr::SEvent l_cEvent{};
+      irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iEventSettingsChanged;
       m_pController->update(l_cEvent);
@@ -120,7 +120,7 @@ namespace dustbin {
           else if (a_cEvent.UserEvent.UserData1 == c_iEventOkClicked) {
             irr::gui::IGUIElement *p = menu::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
             if (p != nullptr && m_pMenu != nullptr) {
-              irr::SEvent l_cEvent{};
+              irr::SEvent l_cEvent;
               l_cEvent.EventType = irr::EET_GUI_EVENT;
               l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
               l_cEvent.GUIEvent.Caller    = p;
@@ -132,7 +132,7 @@ namespace dustbin {
           else if (a_cEvent.UserEvent.UserData1 == c_iEventCancelClicked) {
             irr::gui::IGUIElement *p = menu::findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
             if (p != nullptr && m_pMenu != nullptr) {
-              irr::SEvent l_cEvent{};
+              irr::SEvent l_cEvent;
               l_cEvent.EventType = irr::EET_GUI_EVENT;
               l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
               l_cEvent.GUIEvent.Caller    = p;
@@ -184,15 +184,8 @@ namespace dustbin {
 
         m_pGui->drawAll();
 
-        if (m_pMenu != nullptr) {
+        if (m_pMenu != nullptr)
           m_pMenu->run();
-
-          if (m_pNext != nullptr) {
-            menu::IMenuHandler *p = m_pNext;
-            m_pNext = nullptr;
-            changeMenu(p);
-          }
-        }
 
         if (m_pController != nullptr)
           m_pController->draw();
@@ -295,14 +288,14 @@ namespace dustbin {
     }
 
     /**
-    * Set the next menu to run
-    * @param a_pNext the menu to switch to
+    * Callback before a menu is changed, deletes the current menu
     */
-    void CMenuState::setNextMenu(menu::IMenuHandler* a_pNext) {
-      if (m_pNext != nullptr)
-        delete m_pNext;
+    void CMenuState::beforeChangeMenu() {
+      menu::IMenuHandler *p = m_pMenu;
+      m_pMenu = nullptr;
 
-      m_pNext = a_pNext;
+      if (p != nullptr)
+        delete p;
     }
 
     /**
