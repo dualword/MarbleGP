@@ -81,18 +81,22 @@ namespace dustbin {
         m_bRespawn   = false;
         m_bStunned   = false;
 
-        m_iLeader = -2;
-        m_iAhead  = -2;
+        // The player of this HUD instance has
+        // finished so no hightlight will be 
+        // done any more
+        for (int i = 0; i < 3; i++) {
+          m_iArrow[i] = -2;
+        }
 
         for (std::map<enTextElements, STextElement>::iterator it = m_mTextElements.begin(); it != m_mTextElements.end(); it++)
           it->second.m_bVisible = false;
       }
 
-      if (a_MarbleId == m_iLeader)
-        m_iLeader = -2;
-      
-      if (a_MarbleId == m_iAhead)
-        m_iAhead = -2;
+      // The highlighted marble has finished and will therefore
+      // not be highlighted any more
+      for (int i = 0; i < 3; i++)
+        if (a_MarbleId == m_iArrow[i])
+          m_iArrow[i] = -2;
     }
 
     /**
@@ -282,8 +286,6 @@ namespace dustbin {
       m_iMarble     (a_pPlayer->m_pMarble->m_pPositional->getID()),
       m_iLapCnt     (a_iLapCnt),
       m_iPlayers    ((int)a_vRanking->size()),
-      m_iLeader     (-1),
-      m_iAhead      (-1),
       m_iCtrlHeight (0),
       m_fVel        (0.0f),
       m_fThrottle   (0.0f),
@@ -430,12 +432,12 @@ namespace dustbin {
 
       m_aArrow[0] = a_pGui->getVideoDriver()->getTexture("data/images/arrow_leader.png");
       m_aArrow[1] = a_pGui->getVideoDriver()->getTexture("data/images/arrow_ahead.png" );
+      m_aArrow[2] = a_pGui->getVideoDriver()->getTexture("data/images/arrow_down.png" );
 
-      for (int i = 0; i < 2; i++)
+      for (int i = 0; i < 3; i++)
         if (m_aArrow[i] != nullptr) {
           m_aArrowSrc [i] = irr::core::recti(irr::core::position2di(0, 0), m_aArrow[i]->getOriginalSize());
           m_aArrOffset[i] = irr::core::position2di(m_aArrow[i]->getOriginalSize().Width / 2, m_aArrow[i]->getOriginalSize().Height);
-          m_aTxtOffset[i] = irr::core::position2di(m_cDefSize.Width / 2, m_aArrowSrc->getHeight() + (6 * m_cDefSize.Height / 5));
         }
 
       for (int i = 0; i < 16; i++) {
@@ -545,6 +547,9 @@ namespace dustbin {
         m_pWithdraw->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
         m_pWithdraw->setVisible(false);
       }
+
+      for (int i = 0; i < 3; i++)
+        m_iArrow[i] = -1;
     }
 
     CGameHUD::~CGameHUD() {
@@ -557,43 +562,13 @@ namespace dustbin {
 
         if (m_pColMgr != nullptr) {
           if (m_bHightlight) {
-            if (m_aArrow[0] != nullptr) {
-              if (m_pPlayer->m_iDiffLeader > 60 && m_mMarblePositions.find(m_iLeader) != m_mMarblePositions.end()) {
-                irr::core::vector2di l_cPos = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_mMarblePositions[m_iLeader] + 2.5f * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
+            for (int i = 0; i < 3; i++) {
+              if (m_aArrow[i] != nullptr && m_mMarblePositions.find(m_iArrow[i]) != m_mMarblePositions.end()) {
+                irr::core::vector2di l_cPos = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_mMarblePositions[m_iArrow[i]] + 2.5f * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
                 l_cPos.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cPos.X / m_cScreen.Width;
                 l_cPos.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cPos.Y / m_cScreen.Height;
 
-                if (m_pPlayer->m_iDiffLeader > 180) {
-                  m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), irr::core::recti(l_cPos - m_aTxtOffset[0], m_cDefSize), &m_cRect);
-                }
-
-                m_pDrv->draw2DImage(m_aArrow[0], irr::core::recti(l_cPos - m_aArrOffset[0], m_cArrowSize), m_aArrowSrc[0], &m_cRect, nullptr, true);
-          
-                if (m_pPlayer->m_iDiffLeader > 180) {
-                  wchar_t s[0xFF];
-                  swprintf(s, 0xFF, L"-%.2f", ((irr::f32)m_pPlayer->m_iDiffLeader) / 120.0f);
-                  m_pDefFont->draw(s, irr::core::recti(l_cPos - m_aTxtOffset[0], m_cDefSize), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
-                }
-              }
-            }
-
-            if (m_aArrow[1] != nullptr) {
-              if (m_pPlayer->m_iDiffAhead > 60 && m_mMarblePositions.find(m_iAhead) != m_mMarblePositions.end()) {
-                irr::core::vector2di l_cPos = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_mMarblePositions[m_iAhead] + 2.5f * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
-                l_cPos.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cPos.X / m_cScreen.Width;
-                l_cPos.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cPos.Y / m_cScreen.Height;
-
-                if (m_pPlayer->m_iDiffAhead > 180) {
-                  m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), irr::core::recti(l_cPos - m_aTxtOffset[1], m_cDefSize), &m_cRect);
-                }
-
-                m_pDrv->draw2DImage(m_aArrow[1], irr::core::recti(l_cPos - m_aArrOffset[1], m_cArrowSize), m_aArrowSrc[1], &m_cRect, nullptr, true);
-
-                if (m_pPlayer->m_iDiffAhead > 180) {
-                  wchar_t s[0xFF];
-                  swprintf(s, 0xFF, L"-%.2f", ((irr::f32)m_pPlayer->m_iDiffAhead) / 120.0f);
-                  m_pDefFont->draw(s, irr::core::recti(l_cPos - m_aTxtOffset[1], m_cDefSize), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
-                }
+                m_pDrv->draw2DImage(m_aArrow[0], irr::core::recti(l_cPos - m_aArrOffset[i], m_cArrowSize), m_aArrowSrc[i], &m_cRect, nullptr, true);
               }
             }
           }
@@ -786,16 +761,69 @@ namespace dustbin {
             m_mTextElements[enTextElements::Pos].m_sText = std::to_wstring((*it)->m_iPosition);
           }
 
-          if (it != m_vRanking->begin()) {
-            if (m_iLeader != -2)
-              m_iLeader = (*m_vRanking->begin())->m_iId;
+          std::vector<gameclasses::SPlayer*>::const_iterator it2 = it;
 
-            if (it - 1 != m_vRanking->begin()) {
-              if (m_iAhead != -2) m_iAhead = (*(it - 1))->m_iId;
+          for (int i = 0; i < 3; i++)
+            if (m_iArrow[i] != -2)
+              m_iArrow[i] = -1;
+
+          if (it2 == m_vRanking->begin()) {
+            // The player of this HUD is the leader
+
+            for (int i = 0; i < 3; i++) {
+              it2++;
+
+              if (it2 == m_vRanking->end())
+                break;
+
+              if (m_iArrow[i] == -1)
+                m_iArrow[i] = (*it2)->m_iId;
             }
-            else m_iAhead = -1;
           }
-          else m_iLeader = -1;
+          else if (it2 - 1 == m_vRanking->begin()) {
+            // The player is in second place
+            m_iArrow[0] = (*(it2 - 1))->m_iId;
+
+            for (int i = 1; i < 3; i++) {
+              it2++;
+
+              if (it2 == m_vRanking->end())
+                break;
+
+              m_iArrow[i] = (*it2)->m_iId;
+            }
+          }
+          else if (it2 + 1 == m_vRanking->end()) {
+            // The player is on the last position
+            for (int i = 0; i < 3; i++) {
+              if (it2 == m_vRanking->begin())
+                break;
+
+              it2--;
+            }
+
+            for (int i = 0; i < 3; i++) {
+              if (it2 == m_vRanking->end() || (*it2)->m_iId == m_iMarble)
+                break;
+
+              m_iArrow[i] = (*it2)->m_iId;
+              it2++;
+            }
+          }
+          else {
+            m_iArrow[0] = (*m_vRanking->begin())->m_iId;
+
+            int i = 1;
+
+            if (it2 != m_vRanking->begin()) {
+              m_iArrow[i] = (*(it2 - 1))->m_iId;
+              i++;
+            }
+
+            if (it2 + 1 != m_vRanking->end()) {
+              m_iArrow[i] = (*(it2 + 1))->m_iId;
+            }
+          }
 
           break;
         }

@@ -66,9 +66,8 @@ namespace dustbin {
         int                        m_iMarble;       /**< The marble ID of the player */
         int                        m_iLapCnt;       /**< The number of laps */
         int                        m_iPlayers;      /**< The number of players for the ranking */
-        int                        m_iLeader;       /**< ID of the leading marble */
-        int                        m_iAhead;        /**< ID of the marble ahead */
         int                        m_iCtrlHeight;   /**< Height of the control display */
+        int                        m_iArrow[3];     /**< IDs of the marbles currently highlighted with an arrow */
         irr::f32                   m_fVel;          /**< Speed of the marble of this HUD */
         irr::f32                   m_fThrottle;     /**< The throttle setting of the marble */
         irr::f32                   m_fSteer;        /**< The steer setting of the marble */
@@ -85,11 +84,10 @@ namespace dustbin {
         irr::core::dimension2du    m_cArrowSize;    /**< Size of the arrow highlighting the marble in front and the leader */
         irr::core::dimension2du    m_cDefSize;      /**< Size of the deficit display */
         irr::gui::IGUIFont        *m_pDefFont;      /**< Font of the deficit display */
-        irr::video::ITexture      *m_aArrow[2];     /**< The arrow image */
+        irr::video::ITexture      *m_aArrow[3];     /**< The arrow image */
         irr::video::IVideoDriver  *m_pDrv;          /**< The Irrlicht video driver */
-        irr::core::recti           m_aArrowSrc[2];  /**< Source rects for drawing the arrows */
-        irr::core::position2di     m_aArrOffset[2]; /**< Offsets for drawing the arrows */
-        irr::core::position2di     m_aTxtOffset[2]; /**< Offsets for drawing text for the arrows */
+        irr::core::recti           m_aArrowSrc[3];  /**< Source rects for drawing the arrows */
+        irr::core::position2di     m_aArrOffset[3]; /**< Offsets for drawing the arrows */
         irr::core::dimension2du    m_cScreen;       /**< The screen size */
         irr::gui::IGUIFont        *m_pSpeedFont;    /**< Font for the speed text */
         irr::core::dimension2du    m_cSpeedTotal;   /**< Total size of the speed meter */
