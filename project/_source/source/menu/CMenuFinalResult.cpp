@@ -31,12 +31,71 @@ namespace dustbin {
 
           helpers::loadMenuFromXML("data/menu/menu_finalresult.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->clear();
-          m_pSmgr->loadScene("data/scenes/skybox.xml");
-          m_pSmgr->addCameraSceneNode();
+          m_pSmgr->loadScene("data/scenes/tournament_result.xml");
+          irr::scene::ICameraSceneNode *l_pCam = m_pSmgr->addCameraSceneNode();
+          l_pCam->setPosition(irr::core::vector3df(0.0f, 0.0f, -20.0f));
+          l_pCam->setTarget(irr::core::vector3df(0.0f, 0.0f, 0.0f));
 
           m_pState->setZLayer(1);
 
           CGlobal::getInstance()->stopGameClient();
+
+          irr::scene::IMeshSceneNode *l_pTrophy = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("trophy"));
+          irr::scene::IMeshSceneNode *l_pSilver = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("silver_name"));
+          irr::scene::IMeshSceneNode *l_pBronze = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("bronze_name"));
+
+          data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+
+          std::vector<data::SChampionshipPlayer> l_vStandings = l_cChampionship.getStandings();
+
+          irr::gui::IGUIFont *l_pFontBig   = CGlobal::getInstance()->getFontBySize(104);
+          irr::gui::IGUIFont *l_pFontSmall = CGlobal::getInstance()->getFontBySize(72);
+
+          if (l_pFontBig != nullptr && l_pFontSmall != nullptr) {
+            if (l_vStandings.size() > 0 && l_pTrophy != nullptr) {
+              data::SChampionshipPlayer l_cPlayer = l_vStandings[0];
+              std::string l_sName = l_cPlayer.m_sName;
+              helpers::fitString(helpers::s2ws(l_sName), l_pFontBig, irr::core::dimension2du(1024, 128));
+
+              irr::video::ITexture *p = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(1024, 128), "rtt_winner");
+              m_pDrv->setRenderTarget(p, true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
+              l_pFontBig->draw(helpers::s2ws(l_sName).c_str(), irr::core::recti(0, 0, 1024, 128), irr::video::SColor(0xFF, 0, 0, 0), true, true);
+              m_pDrv->setRenderTarget(nullptr, true, true);
+
+              if (l_pTrophy->getMaterialCount() > 1)
+                l_pTrophy->getMaterial(1).setTexture(0, p);
+            }
+
+            if (l_vStandings.size() > 1 && l_pSilver != nullptr) {
+              data::SChampionshipPlayer l_cPlayer = l_vStandings[1];
+              std::string l_sName = l_cPlayer.m_sName;
+              helpers::fitString(helpers::s2ws(l_sName), l_pFontSmall, irr::core::dimension2du(1024, 128));
+
+              irr::video::ITexture *p = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(1024, 128), "rtt_winner");
+              m_pDrv->setRenderTarget(p, true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
+              l_pFontSmall->draw(helpers::s2ws(l_sName).c_str(), irr::core::recti(0, 0, 1024, 128), irr::video::SColor(0xFF, 0, 0, 0), true, true);
+              m_pDrv->setRenderTarget(nullptr, true, true);
+
+              if (l_pSilver->getMaterialCount() > 0)
+                l_pSilver->getMaterial(0).setTexture(0, p);
+            }
+
+            if (l_vStandings.size() > 2 && l_pBronze != nullptr) {
+              data::SChampionshipPlayer l_cPlayer = l_vStandings[2];
+              std::string l_sName = l_cPlayer.m_sName;
+              helpers::fitString(helpers::s2ws(l_sName), l_pFontSmall, irr::core::dimension2du(1024, 128));
+
+              irr::video::ITexture *p = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(1024, 128), "rtt_winner");
+              m_pDrv->setRenderTarget(p, true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
+              l_pFontSmall->draw(helpers::s2ws(l_sName).c_str(), irr::core::recti(0, 0, 1024, 128), irr::video::SColor(0xFF, 0, 0, 0), true, true);
+              m_pDrv->setRenderTarget(nullptr, true, true);
+
+              if (l_pBronze->getMaterialCount() > 0)
+                l_pBronze->getMaterial(0).setTexture(0, p);
+            }
+          }
+
+          printf("Ready.\n");
         }
 
         virtual ~CMenuFinalResult() {

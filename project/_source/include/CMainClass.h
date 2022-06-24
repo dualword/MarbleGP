@@ -152,6 +152,14 @@ namespace dustbin {
       virtual irr::gui::IGUIFont* getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport) override;
 
       /**
+      * Get a font with a specific size. If no font with the size was
+      * found the biggest font with smaller size will be returned
+      * @param a_iSize the pixel size of the font
+      * @return the font
+      */
+      virtual irr::gui::IGUIFont *getFontBySize(irr::u32 a_iSize) override;
+
+      /**
       * Get the raster size for the UI layout
       * @return the raster size
       */

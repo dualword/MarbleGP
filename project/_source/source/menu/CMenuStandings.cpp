@@ -42,8 +42,6 @@ namespace dustbin {
           data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
           data::SChampionshipRace *l_pRace = l_cChampionship.getLastRace();
 
-          printf("\n\n%s\n\n", l_cChampionship.to_string().c_str());
-
           irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("tab_result", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
           if (l_pTab != nullptr) {

@@ -375,6 +375,31 @@ namespace dustbin {
   }
 
   /**
+  * Get a font with a specific size. If no font with the size was
+  * found the biggest font with smaller size will be returned
+  * @param a_iSize the pixel size of the font
+  * @return the font
+  */
+  irr::gui::IGUIFont* CMainClass::getFontBySize(irr::u32 a_iSize) {
+    int l_iFontFile = 0;
+
+    for (std::vector<int>::iterator it = m_vFontSizes.begin(); it != m_vFontSizes.end(); it++) {
+      if (*it >= a_iSize)
+        break;
+
+      l_iFontFile = *it;
+    }
+
+    if (m_mFonts.find(l_iFontFile) == m_mFonts.end()) {
+      printf("Loading font with size %i\n", a_iSize);
+      std::string l_sFile = "data/fonts/font_" + std::to_string(l_iFontFile) + ".xml";
+      m_mFonts[l_iFontFile] = m_pGui->getFont(l_sFile.c_str());
+    }
+
+    return m_mFonts[l_iFontFile];
+  }
+
+  /**
   * Get a font for a specific viewport size
   * @param a_eFont the type of font
   * @param a_cViewport the viewport size
