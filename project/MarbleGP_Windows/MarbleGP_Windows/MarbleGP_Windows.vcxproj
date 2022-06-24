@@ -94,7 +94,9 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleTouchNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CPhysicsNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CRespawnNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp" />
@@ -196,7 +198,9 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleTouchNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CPhysicsNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CRespawnNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h" />

@@ -55,7 +55,6 @@ namespace dustbin {
       m_iFinished      (-1),
       m_iFadeOut       (-1),
       m_fSfxVolume     (1.0f),
-      m_bPaused        (false),
       m_bEnded         (false),
       m_pSoundIntf     (nullptr),
       m_pDynamics      (nullptr),
@@ -336,7 +335,6 @@ namespace dustbin {
       m_iFadeOut        = -1;
       m_iFinished       = -1;
       m_eState          = enGameState::Countdown;
-      m_bPaused         = false;
       m_bEnded          = false;
       m_fSfxVolume      = m_pGlobal->getSettingData().m_fSfxGame;
       m_iNumOfViewports = 0;
@@ -765,6 +763,10 @@ namespace dustbin {
             p->getMaterial(0).setTexture(0, m_pCheckpointTextures[0]);
           }
         }
+
+        if (a_pViewPort->m_pHUD != nullptr) {
+          a_pViewPort->m_pHUD->afterDrawScene();
+        }
       }
     }
 
@@ -838,6 +840,10 @@ namespace dustbin {
               m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
             }
           }
+        }
+
+        if (a_pViewPort->m_pHUD != nullptr) {
+          a_pViewPort->m_pHUD->beforeDrawScene();
         }
       }
     }
@@ -1006,10 +1012,6 @@ namespace dustbin {
         if (m_iFinished != -1 && m_iStep - m_iFinished > 1800) { // Wait until the finished soundtrack has ended
           m_eState = enGameState::Finished;
           m_iFadeOut = m_iStep;
-        }
-
-        if (m_bPaused) {
-          m_pDrv->draw2DRectangle(irr::video::SColor(128, 255, 255, 255), m_cScreen);
         }
       }
       else if (m_eState == enGameState::Finished) {
@@ -1245,7 +1247,7 @@ namespace dustbin {
     */
     void CGameState::onRacesetupdone() {
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-        it->second.m_pHUD    = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+        it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
         it->second.m_pHUD->drop();
       }
 
@@ -1475,14 +1477,6 @@ namespace dustbin {
 
       for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
         addStaticCameras(*it);
-    }
-
-    /**
-     * This function receives messages of type "PauseChanged"
-     * @param a_Paused The current paused state
-     */
-    void CGameState::onPausechanged(bool a_Paused) {
-      m_bPaused = a_Paused;
     }
 
     /**

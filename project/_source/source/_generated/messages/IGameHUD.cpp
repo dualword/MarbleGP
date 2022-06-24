@@ -74,6 +74,11 @@ namespace dustbin {
               onConfirmwithdraw(p->getMarbleId(), p->getTimeout());
               break;
             }
+            case dustbin::messages::enMessageIDs::PauseChanged: {
+              dustbin::messages::CPauseChanged *p = reinterpret_cast<dustbin::messages::CPauseChanged *>(a_pMessage);
+              onPausechanged(p->getPaused());
+              break;
+            }
             default:
               break;
           }

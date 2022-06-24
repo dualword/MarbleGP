@@ -43,15 +43,16 @@ namespace dustbin {
 
       m_cHlSize = irr::core::dimension2du(m_cName.getHeight() / 2, m_cName.getHeight() / 2);
 
-        double l_fRadius = (float)(m_cName.getHeight() / 4);
-        for (int y = -(int)l_fRadius; y < (int)l_fRadius; y++) {
-          double l_fY = (float)y;
-          double l_fX1 = sqrt(l_fRadius * l_fRadius - l_fY * l_fY);
-          double l_fX2 = -l_fX1;
-          m_vHightLight.push_back(irr::core::line2di(irr::core::vector2di((irr::s32)(l_fX1 + l_fRadius), (irr::s32)(l_fY + l_fRadius)), irr::core::vector2di((irr::s32)(l_fX2 + l_fRadius), (irr::s32)(l_fY + l_fRadius))));
-        }
+      double l_fRadius = (float)(m_cName.getHeight() / static_cast<double>(4));
 
-        m_cHighLight = irr::core::vector2di(m_cName.LowerRightCorner.X - m_cName.getHeight(), m_cName.UpperLeftCorner.Y);
+      for (int y = -(int)l_fRadius; y < (int)l_fRadius; y++) {
+        double l_fY = (float)y;
+        double l_fX1 = sqrt(l_fRadius * l_fRadius - l_fY * l_fY);
+        double l_fX2 = -l_fX1;
+        m_vHightLight.push_back(irr::core::line2di(irr::core::vector2di((irr::s32)(l_fX1 + l_fRadius), (irr::s32)(l_fY + l_fRadius)), irr::core::vector2di((irr::s32)(l_fX2 + l_fRadius), (irr::s32)(l_fY + l_fRadius))));
+      }
+
+      m_cHighLight = irr::core::vector2di(m_cName.LowerRightCorner.X - m_cName.getHeight(), m_cName.UpperLeftCorner.Y);
     }
 
     CRankingElement::~CRankingElement() {

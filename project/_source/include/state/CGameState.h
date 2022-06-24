@@ -139,7 +139,6 @@ namespace dustbin {
 
         irr::f32 m_fSfxVolume;  /**< The volume of the in-game sound effects */
 
-        bool m_bPaused; /**< Is the game paused? */
         bool m_bEnded;  /**< A message notifying that the race has ended was received (dynamics thread terminated) */
 
         sound::ISoundInterface *m_pSoundIntf;
@@ -369,12 +368,6 @@ namespace dustbin {
         * @param a_MarbleId ID of the marble
         */
         virtual void onPlayerwithdrawn(irr::s32 a_MarbleId) override;
-
-        /**
-         * This function receives messages of type "PauseChanged"
-         * @param a_Paused The current paused state
-         */
-        virtual void onPausechanged(bool a_Paused) override;
 
         /**
         * This function receives messages of type "ServerDisconnect"

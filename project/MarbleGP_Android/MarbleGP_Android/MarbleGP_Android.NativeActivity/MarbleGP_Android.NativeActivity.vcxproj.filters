@@ -285,6 +285,12 @@
     <ClInclude Include="..\..\..\_source\include\gui\CDustbinScrollPane.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMyBillboard.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CMyTextSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -546,6 +552,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gui\CDustbinScrollPane.cpp">
       <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMyBillboard.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuFinalResult.cpp">
+      <Filter>Quelldateien\menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

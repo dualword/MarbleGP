@@ -12,6 +12,11 @@ namespace dustbin {
     struct SPlayer;
   }
 
+  namespace scenenodes {
+    class CMyBillboard;       /**< Forward declaration of the modified billboard */
+    class CMyBillboardText;   /**< Forward declaration of the modified text billboard */
+  }
+
   namespace gui {
     class CRankingElement;  /**< Forward declaration of the ranking element */
 
@@ -49,6 +54,27 @@ namespace dustbin {
         };
 
         /**
+        * @class SHighLight
+        * @author Christian Keimel
+        * This data struct holds all data
+        * necessary for highlighting the
+        * players that are also shown in
+        * the ranking display
+        */
+        struct SHighLight {
+          int  m_iMarbleId;     /**< ID of the highlighted marble */
+          int  m_iPosition;     /**< Position of the marble */
+          bool m_bVisible;      /**< Visibility flag */
+          bool m_bFinished;     /**< Has this player finished? */
+          bool m_bViewport;     /**< Visible in the current viewport? */
+
+          scenenodes::CMyBillboard     *m_pArrow;    /**< The arrow billboard node */
+          scenenodes::CMyBillboardText *m_pPosition; /**< The position text node */
+
+          SHighLight();
+        };
+
+        /**
         * An enum with all text elements used
         */
         enum class enTextElements {
@@ -67,7 +93,6 @@ namespace dustbin {
         int                        m_iLapCnt;       /**< The number of laps */
         int                        m_iPlayers;      /**< The number of players for the ranking */
         int                        m_iCtrlHeight;   /**< Height of the control display */
-        int                        m_iArrow[3];     /**< IDs of the marbles currently highlighted with an arrow */
         irr::f32                   m_fVel;          /**< Speed of the marble of this HUD */
         irr::f32                   m_fThrottle;     /**< The throttle setting of the marble */
         irr::f32                   m_fSteer;        /**< The steer setting of the marble */
@@ -78,16 +103,14 @@ namespace dustbin {
         bool                       m_aRostrum[16];  /**< Flags for all player that are on the rostrum */
         bool                       m_bShowRanking;  /**< From the settings: show ranking */
         bool                       m_bFadeStart;    /**< Are we currently fading the start screen? */
+        bool                       m_aFinished[16]; /**< Finished players */
+        bool                       m_bPaused;       /**< Is the game paused? */
         irr::core::recti           m_cRect;         /**< The total rect of the viewport */
         irr::gui::IGUIEnvironment *m_pGui;
         gameclasses::SPlayer      *m_pPlayer;       /**< This is the data of the player this HUD belongs to */
-        irr::core::dimension2du    m_cArrowSize;    /**< Size of the arrow highlighting the marble in front and the leader */
         irr::core::dimension2du    m_cDefSize;      /**< Size of the deficit display */
         irr::gui::IGUIFont        *m_pDefFont;      /**< Font of the deficit display */
-        irr::video::ITexture      *m_aArrow[3];     /**< The arrow image */
         irr::video::IVideoDriver  *m_pDrv;          /**< The Irrlicht video driver */
-        irr::core::recti           m_aArrowSrc[3];  /**< Source rects for drawing the arrows */
-        irr::core::position2di     m_aArrOffset[3]; /**< Offsets for drawing the arrows */
         irr::core::dimension2du    m_cScreen;       /**< The screen size */
         irr::gui::IGUIFont        *m_pSpeedFont;    /**< Font for the speed text */
         irr::core::dimension2du    m_cSpeedTotal;   /**< Total size of the speed meter */
@@ -95,9 +118,10 @@ namespace dustbin {
         irr::core::position2di     m_cSpeedOffset;  /**< Offset of the speed bar */
         irr::core::dimension2du    m_cSpeedBar;     /**< Size of the speed bar */
         irr::core::vector3df       m_cUpVector;     /**< The marble's up vector */
-        CRankingElement           *m_aRanking[16];  /**< The GUI elements for the ranking */
-        irr::gui::IGUITab         *m_pRankParent;   /**< The parent for the ranking display */
-        irr::video::ITexture      *m_pCountDown[5]; /**< The countdown textures */
+        CRankingElement            *m_aRanking[16];  /**< The GUI elements for the ranking */
+        irr::gui::IGUITab          *m_pRankParent;   /**< The parent for the ranking display */
+        irr::video::ITexture       *m_pCountDown[5]; /**< The countdown textures */
+        irr::video::ITexture       *m_pPaused;       /**< The paused texture */
         int                        m_iCountDown;    /**< The current countdown state (4..0) */
         irr::f32                   m_fCdAlpha;      /**< Alpha channel of the countdown */
         int                        m_iGoStep;       /**< The step when the countdown reached 0 */
@@ -120,6 +144,9 @@ namespace dustbin {
         irr::gui::IGUIStaticText  *m_pWithdraw;     /**< The "Confirm Withdraw" static text */
         int                        m_iWithdraw;     /**< The step when the "confirm withdraw" will be hidden again */
         irr::video::SColor         m_cRankBack;     /**< The background color for the ranking */
+        SHighLight                 m_aHiLight[3];   /**< Data for the highlighted marbles */
+
+
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The Irrlicht scene collision manager */
 
@@ -221,6 +248,12 @@ namespace dustbin {
         */
         virtual void onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout) override;
 
+        /**
+        * This function receives messages of type "PauseChanged"
+        * @param a_Paused The current paused state
+        */
+        virtual void onPausechanged(bool a_Paused) override;
+
       public:
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);
         virtual ~CGameHUD();
@@ -233,6 +266,18 @@ namespace dustbin {
 
         bool isResultParentVisible();
         void showResultParent();
+
+        /**
+        * This method is called to prepare for scene drawing,
+        * i.e. show the necessary highlight nodes
+        */
+        void beforeDrawScene();
+
+        /**
+        * This method is called when the scene was drawn to
+        * hide all highlight nodes of this HUD
+        */
+        void afterDrawScene();
     };
   }
 }

@@ -104,6 +104,12 @@ namespace dustbin {
          */
         virtual void onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout) = 0;
 
+        /**
+         * This function receives messages of type "PauseChanged"
+         * @param a_Paused The current paused state
+         */
+        virtual void onPausechanged(bool a_Paused) = 0;
+
 
       public:
         IGameHUD();

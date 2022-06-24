@@ -412,7 +412,6 @@
         "RaceFinished",
         "Checkpoint",
         "LapStart",
-        "PauseChanged",
         "RacePosition",
         "PlayerWithdrawn",
         "ServerDisconnect",
@@ -435,7 +434,8 @@
         "PlayerRostrum",
         "Countdown",
         "StepMsg",
-        "ConfirmWithdraw"
+        "ConfirmWithdraw",
+        "PauseChanged"
       ]
     },
     {
