@@ -77,16 +77,19 @@ namespace dustbin {
       * @param a_pMarble the marble of the player
       */
       SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
-        m_iPlayer    (a_iPlayer),
-        m_sName      (a_sName),
-        m_sTexture   (a_sTexture),
-        m_pMarble    (a_pMarble),
-        m_sController(a_sController),
-        m_pController(nullptr),
-        m_eType      (a_eType),
-        m_eAiHelp    (a_eAiHelp),
-        m_iPosition  (0),
-        m_bWithdrawn (false)
+        m_iPlayer       (a_iPlayer),
+        m_sName         (a_sName),
+        m_sTexture      (a_sTexture),
+        m_pMarble       (a_pMarble),
+        m_sController   (a_sController),
+        m_pController   (nullptr),
+        m_eType         (a_eType),
+        m_eAiHelp       (a_eAiHelp),
+        m_iPosition     (0),
+        m_iLastPosUpdate(0),
+        m_iDiffLeader   (0),
+        m_iDiffAhead    (0),
+        m_bWithdrawn    (false)
       {
 
         if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)

@@ -93,7 +93,7 @@ namespace dustbin {
 
         for (int i = 0; i < 16; i++)
           if (m_aRanking[i] != nullptr)
-            m_aRanking[i]->setVisible(false);
+            m_aRanking[i]->setVisible(m_aFinished[i]);
       }
       else {
         for (int i = 0; i < 3; i++) {

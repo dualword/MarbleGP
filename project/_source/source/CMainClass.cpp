@@ -384,7 +384,7 @@ namespace dustbin {
     int l_iFontFile = 0;
 
     for (std::vector<int>::iterator it = m_vFontSizes.begin(); it != m_vFontSizes.end(); it++) {
-      if (*it >= a_iSize)
+      if (*it >= (int)a_iSize)
         break;
 
       l_iFontFile = *it;
