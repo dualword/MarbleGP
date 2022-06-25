@@ -44,6 +44,9 @@ namespace dustbin {
           irr::scene::IMeshSceneNode *l_pSilver = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("silver_name"));
           irr::scene::IMeshSceneNode *l_pBronze = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("bronze_name"));
 
+          irr::scene::ISceneNode *l_pSilverRoot = m_pSmgr->getSceneNodeFromName("silver_root");
+          irr::scene::ISceneNode *l_pBronzeRoot = m_pSmgr->getSceneNodeFromName("bronze_root");
+
           data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
           std::vector<data::SChampionshipPlayer> l_vStandings = l_cChampionship.getStandings();
@@ -79,6 +82,7 @@ namespace dustbin {
               if (l_pSilver->getMaterialCount() > 0)
                 l_pSilver->getMaterial(0).setTexture(0, p);
             }
+            else if (l_pSilverRoot != nullptr) l_pSilverRoot->setVisible(false);
 
             if (l_vStandings.size() > 2 && l_pBronze != nullptr) {
               data::SChampionshipPlayer l_cPlayer = l_vStandings[2];
@@ -93,6 +97,7 @@ namespace dustbin {
               if (l_pBronze->getMaterialCount() > 0)
                 l_pBronze->getMaterial(0).setTexture(0, p);
             }
+            else if (l_pBronzeRoot != nullptr) l_pBronzeRoot->setVisible(false);
           }
 
           printf("Ready.\n");
