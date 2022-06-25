@@ -607,7 +607,11 @@ namespace dustbin {
   bool CMainClass::OnEvent(const irr::SEvent& a_cEvent) {
     bool l_bRet = false;
 
-    if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+    if (a_cEvent.EventType == irr::EET_LOG_TEXT_EVENT) {
+      m_vLogMessages.push_back(std::make_tuple(a_cEvent.LogEvent.Level, a_cEvent.LogEvent.Text));
+      l_bRet = true;
+    }
+    else if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
       if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUSED) {
         if (a_cEvent.GUIEvent.Caller->getType() == irr::gui::EGUIET_EDIT_BOX && m_pActiveState->showVirtualKeyboard()) {
           irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(a_cEvent.GUIEvent.Caller);
@@ -621,12 +625,6 @@ namespace dustbin {
         }
       }
     }
-
-    // if (m_pCtrlMenu != nullptr)
-    //   l_bRet = m_pCtrlMenu->handleEvent(a_cEvent);
-
-    // if (!l_bRet && m_pCtrlGame != nullptr)
-    //  l_bRet = m_pCtrlGame->handleEvent(a_cEvent);
 
     if (!l_bRet && m_pActiveState != nullptr)
       l_bRet = m_pActiveState->OnEvent(a_cEvent);
@@ -855,6 +853,13 @@ namespace dustbin {
     m_pKeyBoard = nullptr;
   }
 
+  /**
+  * Get the recorded log messages
+  * @return the recorded log messages
+  */
+  const std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> &CMainClass::getLogMessages() {
+    return m_vLogMessages;
+  }
 
   /**
   * Draw the next race screen

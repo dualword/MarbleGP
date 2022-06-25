@@ -5,6 +5,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
+#include <gui/CGuiLogDisplay.h>
 #include <menu/IMenuHandler.h>
 #include <menu/IMenuManager.h>
 #include <data/CDataStructs.h>
@@ -30,9 +31,12 @@ namespace dustbin {
         gui::CMenuBackground *m_pGfxM;
         gui::CMenuBackground *m_pSfx;
         gui::CMenuBackground *m_pMisc;
+        gui::CMenuBackground *m_pLog;
         gui::CControllerUi   *m_pController;
 
         std::map<std::string, bool[4]> m_mPageVisibility;
+
+        std::map<std::string, irr::gui::IGUIStaticText *> m_mHeadLines;
 
         std::vector<gui::CMenuBackground *> m_vPages;
 
@@ -137,6 +141,12 @@ namespace dustbin {
           m_pGfxM = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23051, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
           m_pSfx  = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23052, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
           m_pMisc = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23053, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pLog  = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(24001, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+
+          m_mHeadLines["gfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("headline_gfx" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["sfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("sfx_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["misc"] = reinterpret_cast<irr::gui::IGUIStaticText*>(findElementByNameAndType("misc_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["log" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("log_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           std::string l_sCtrl = m_cSettings.m_sController;
 
@@ -189,14 +199,21 @@ namespace dustbin {
 
           updateSplitscreenUI();
 
+          gui::CGuiLogDisplay *l_pLog = reinterpret_cast<gui::CGuiLogDisplay *>(findElementByNameAndType("log_display", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId, m_pGui->getRootGUIElement()));
+
+          if (l_pLog != nullptr) {
+            const std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> l_vLog = CGlobal::getInstance()->getLogMessages();
+
+            for (std::vector<std::tuple<irr::ELOG_LEVEL, std::string>>::const_iterator it = l_vLog.begin(); it != l_vLog.end(); it++) {
+              l_pLog->addLogLine(std::get<0>(*it), helpers::s2ws(std::get<1>(*it)));
+            }
+          }
+
           m_pState->setZLayer(1);
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
           bool l_bRet = false;
-
-          if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT && a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)
-            printf("*");
 
           if (m_pController != nullptr)
             m_pController->update(a_cEvent);
@@ -212,8 +229,12 @@ namespace dustbin {
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(true);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
                 if (m_pMisc != nullptr) m_pMisc->setVisible(false);
+                if (m_pLog  != nullptr) m_pLog ->setVisible(false);
 
                 l_bRet = true;
+
+                for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
+                  it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "sfx") {
                 m_pState->setZLayer(2);
@@ -222,8 +243,12 @@ namespace dustbin {
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(true);
                 if (m_pMisc != nullptr) m_pMisc->setVisible(false);
+                if (m_pLog  != nullptr) m_pLog ->setVisible(false);
 
                 l_bRet = true;
+
+                for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
+                  it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "misc") {
                 m_pState->setZLayer(4);
@@ -232,8 +257,27 @@ namespace dustbin {
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
                 if (m_pMisc != nullptr) m_pMisc->setVisible(true);
+                if (m_pLog  != nullptr) m_pLog ->setVisible(false);
 
                 l_bRet = true;
+
+                for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
+                  it->second->setVisible(l_sSender == it->first);
+              }
+              else if (l_sSender == "log") {
+                m_pState->setZLayer(5);
+
+                if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
+                if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
+                if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
+                if (m_pMisc != nullptr) m_pMisc->setVisible(false);
+                if (m_pLog  != nullptr) m_pLog ->setVisible(true);
+
+                l_bRet = true;
+
+                for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
+                  if (it->second != nullptr)
+                    it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "ok") {
                 if (m_pController != nullptr)

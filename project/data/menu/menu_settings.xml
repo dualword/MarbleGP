@@ -17,7 +17,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: -28, -19, -10, -16" font="big">
+  <element type="MenuButton" rect="center: -35, -19, -18, -16" font="big">
     <attributes>
       <attribute key="Name" value="gfx" />
       <attribute key="Id" value="23001" />
@@ -26,7 +26,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: -9, -19, 9, -16" font="big">
+  <element type="MenuButton" rect="center: -17, -19, 0, -16" font="big">
     <attributes>
       <attribute key="Name" value="sfx" />
       <attribute key="Id" value="23002" />
@@ -35,11 +35,20 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: 10, -19, 28, -16" font="big">
+  <element type="MenuButton" rect="center: 1, -19, 18, -16" font="big">
     <attributes>
       <attribute key="Name" value="misc" />
       <attribute key="Id" value="23003" />
       <attribute key="Caption" value="Others" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
+  </element>
+  
+  <element type="MenuButton" rect="center: 19, -19, 35, -16" font="big">
+    <attributes>
+      <attribute key="Name" value="log" />
+      <attribute key="Id" value="24000" />
+      <attribute key="Caption" value="Log" />
       <attribute key="AllZLayers" value="true" />
     </attributes>
   </element>
@@ -376,6 +385,35 @@
     <attributes>
       <attribute key="Name" value="misc_headline" />
       <attribute key="Caption" value="Other Settings" />
+      <attribute key="HTextAlign" value="center" />
+      <attribute key="VTextAlign" value="center" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+  </element>
+  
+  <element type="MenuBackground" rect="center: -35, -11, 35, 22">
+    <attributes>
+      <attribute key="Name" value="log_background" />
+      <attribute key="UseOverrideColor" value="true" />
+      <attribute key="OverrideColor" value="192, 192, 192, 192" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Id" value="24001" />
+      <attribute key="ZLayer" value="5" />
+    </attributes>
+    
+    <children>
+      <element type="LogDisplay" rect="center: -34, -10, 34, 21">
+        <attributes>
+          <attribute key="Name" value="log_display" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <element type="staticText" rect="center: -35, -15, 35, -12" font="big">
+    <attributes>
+      <attribute key="Name" value="log_headline" />
+      <attribute key="Caption" value="Log" />
       <attribute key="HTextAlign" value="center" />
       <attribute key="VTextAlign" value="center" />
       <attribute key="Visible" value="false" />

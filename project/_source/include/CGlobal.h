@@ -277,6 +277,12 @@ namespace dustbin {
       */
       virtual void virtualKeyboardDestroyed() = 0;
 
+      /**
+      * Get the recorded log messages
+      * @return the recorded log messages
+      */
+      virtual const std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> &getLogMessages() = 0;
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app

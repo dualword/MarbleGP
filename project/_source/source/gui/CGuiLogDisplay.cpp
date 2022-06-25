@@ -7,23 +7,15 @@
 namespace dustbin {
   namespace gui {
     CGuiLogDisplay::CGuiLogDisplay(irr::gui::IGUIElement* a_pParent) :
-      IGUIElement((irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
-      m_pFont(CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont()),
-      m_pDrv(CGlobal::getInstance()->getVideoDriver()),
-      m_iLineHeight(0)
+      IGUIElement  ((irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
+      m_pFont      (CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont()),
+      m_pDrv       (CGlobal::getInstance()->getVideoDriver()),
+      m_iLineHeight(0),
+      m_pScroll    (nullptr),
+      m_bDragging  (false),
+      m_bHover     (false)
     {
       m_iLineHeight = 4 * m_pFont->getDimension(L"TesTexT").Height / 3;
-
-      m_pScroll = CGlobal::getInstance()->getGuiEnvironment()->addScrollBar(
-        false,
-        irr::core::recti(
-          AbsoluteClippingRect.LowerRightCorner.X - m_iLineHeight,
-          AbsoluteClippingRect.UpperLeftCorner .Y,
-          AbsoluteClippingRect.LowerRightCorner.X,
-          AbsoluteClippingRect.LowerRightCorner.Y
-        ),
-        this
-      );
     }
 
     void CGuiLogDisplay::setFont(irr::gui::IGUIFont* a_pFont) {
@@ -95,6 +87,61 @@ namespace dustbin {
 
     void CGuiLogDisplay::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       IGUIElement::deserializeAttributes(a_pIn, a_pOptions);
+
+      if (m_pScroll == nullptr)
+        m_pScroll = CGlobal::getInstance()->getGuiEnvironment()->addScrollBar(
+          false,
+          irr::core::recti(
+            AbsoluteClippingRect.getWidth() - m_iLineHeight,
+            0,
+            AbsoluteClippingRect.getWidth(),
+            AbsoluteClippingRect.getHeight()
+          ),
+          this
+        );
+    }
+
+    bool CGuiLogDisplay::OnEvent(const irr::SEvent& a_cEvent) {
+      bool l_bRet = false;
+
+      if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+          if (a_cEvent.GUIEvent.Caller == this) {
+            m_bHover = true;
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
+          if (a_cEvent.GUIEvent.Caller == this) {
+            m_bHover = false;
+            l_bRet = true;
+          }
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          m_bDragging = true;
+
+          m_cDrag = m_cMouse;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          m_bDragging = false;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+          m_cMouse.X = a_cEvent.MouseInput.X;
+          m_cMouse.Y = a_cEvent.MouseInput.Y;
+
+          if (m_bDragging) {
+            int l_iDrag = m_cDrag.Y - m_cMouse.Y;
+
+            if (m_pScroll != nullptr)
+              m_pScroll->setPos(m_pScroll->getPos() + l_iDrag);
+
+            m_cDrag = m_cMouse;
+          }
+        }
+      }
+      return l_bRet;
     }
   }
 }

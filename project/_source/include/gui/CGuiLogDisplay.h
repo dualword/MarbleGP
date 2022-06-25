@@ -25,7 +25,13 @@ namespace dustbin {
 
         irr::u32 m_iLineHeight;   /**< Height of a line */
 
-        irr::gui::IGUIScrollBar* m_pScroll; /**< The scrollbar to scroll the log */
+        irr::gui::IGUIScrollBar *m_pScroll; /**< The scrollbar to scroll the log */
+
+        bool m_bDragging;
+        bool m_bHover;
+
+        irr::core::position2di m_cMouse;
+        irr::core::position2di m_cDrag;
 
       public:
         CGuiLogDisplay(irr::gui::IGUIElement* a_pParent);
@@ -41,6 +47,8 @@ namespace dustbin {
         * @param a_sLogLine the line to add
         */
         void addLogLine(irr::ELOG_LEVEL a_eLevel, const std::wstring& a_sLogLine);
+
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions);

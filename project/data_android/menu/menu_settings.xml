@@ -227,6 +227,25 @@
     </children>
   </element>
   
+  <element type="MenuBackground" rect="center: -24, -8, 24, 13">
+    <attributes>
+      <attribute key="Name" value="log_background" />
+      <attribute key="UseOverrideColor" value="true" />
+      <attribute key="OverrideColor" value="192, 192, 192, 192" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Id" value="24001" />
+      <attribute key="ZLayer" value="5" />
+    </attributes>
+    
+    <children>
+      <element type="LogDisplay" rect="center: -23, -7, 23, 12">
+        <attributes>
+          <attribute key="Name" value="log_display" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
   <element type="MenuButton" rect="lowermiddle: 1, -4, 5, 0" tooltip="OK">
     <attributes>
       <attribute key="Name" value="ok" />
@@ -249,5 +268,14 @@
     <custom>
       <attribute key="Cancel" value="true" />
     </custom>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: 10, -4, 24, 0" font="big">
+    <attributes>
+      <attribute key="Name" value="log" />
+      <attribute key="Id" value="24000" />
+      <attribute key="Caption" value="Log" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
   </element>
 </dialog>

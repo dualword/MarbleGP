@@ -89,7 +89,6 @@ namespace dustbin {
               char s[0xFFFF];
               memset(s, 0, 0xFFFF);
               fread(s, 1, 0xFFFF, f);
-              printf("\n\n%s\n\n%", s);
               fclose(f);
 
               m_pState->getGlobal()->setGlobal("championship", s);

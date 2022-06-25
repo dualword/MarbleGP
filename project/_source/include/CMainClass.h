@@ -8,6 +8,7 @@
 #include <CGlobal.h>
 #include <vector>
 #include <string>
+#include <tuple>
 #include <map>
 
 namespace dustbin {
@@ -58,6 +59,8 @@ namespace dustbin {
       std::string m_sDeviceName;    /**< The device name, used for the Android port */
 
       gui::CVirtualKeyboard *m_pKeyBoard;
+
+      std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> m_vLogMessages;   /**< The Irrlicht log messages */
 
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
@@ -311,6 +314,12 @@ namespace dustbin {
       * Callback when the virtual keyboard is destroyed
       */
       virtual void virtualKeyboardDestroyed() override;
+
+      /**
+      * Get the recorded log messages
+      * @return the recorded log messages
+      */
+      virtual const std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> &getLogMessages() override;
 
 #ifdef _ANDROID
       /**
