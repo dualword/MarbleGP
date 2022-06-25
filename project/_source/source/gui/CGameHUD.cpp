@@ -373,11 +373,12 @@ namespace dustbin {
       m_iWithdraw   (-1),
       m_cRankBack   (irr::video::SColor(96, 192, 192, 192)),
       m_pColMgr     (nullptr),
-      m_vRanking    (a_vRanking)
+      m_vRanking    (a_vRanking),
+      m_pSmgr       (CGlobal::getInstance()->getSceneManager())
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
-      m_pColMgr = l_pGlobal->getSceneManager()->getSceneCollisionManager();
+      m_pColMgr = m_pSmgr->getSceneCollisionManager();
       m_cScreen = m_pDrv->getScreenSize();
 
       irr::core::dimension2du l_cViewport = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
@@ -579,7 +580,7 @@ namespace dustbin {
       }
 
       for (int i = 0; i < 3; i++) {
-        m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(l_pGlobal->getSceneManager()->getRootSceneNode(), l_pGlobal->getSceneManager(), -1, irr::core::vector3df(0.0f), irr::core::dimension2df(2.5f, 2.5f));
+        m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(m_pSmgr->getRootSceneNode(), m_pSmgr, -1, irr::core::vector3df(0.0f), irr::core::dimension2df(2.5f, 2.5f));
         m_aHiLight[i].m_pArrow->setMaterialFlag(irr::video::EMF_LIGHTING, false);
         m_aHiLight[i].m_pArrow->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
         m_aHiLight[i].m_pArrow->setMaterialTexture(0, m_pDrv->getTexture("data/images/arrow_ahead.png"));
@@ -587,8 +588,8 @@ namespace dustbin {
         m_aHiLight[i].m_pArrow->drop();
 
         m_aHiLight[i].m_pPosition = new scenenodes::CMyBillboardText(
-          l_pGlobal->getSceneManager()->getRootSceneNode(),
-          l_pGlobal->getSceneManager(),
+          m_pSmgr->getRootSceneNode(),
+          m_pSmgr,
           -1,
           l_pGlobal->getFont(enFont::Big, l_pGlobal->getVideoDriver()->getScreenSize()), 
           L"16th",
@@ -928,9 +929,20 @@ namespace dustbin {
     * i.e. show the necessary highlight nodes
     */
     void CGameHUD::beforeDrawScene() {
+      irr::scene::ICameraSceneNode *l_pCam = m_pSmgr->getActiveCamera();
+
+      irr::core::vector3df l_cNormal   = (l_pCam->getTarget() - l_pCam->getAbsolutePosition()).normalize();
+      irr::core::vector3df l_cPosition = l_pCam->getTarget() + 0.1f * (l_pCam->getAbsolutePosition() - l_pCam->getTarget());
+      irr::core::plane3df  l_cPlane    = irr::core::plane3df(l_cPosition, l_cNormal);
+
       for (int i = 0; i < 3; i++) {
-        m_aHiLight[i].m_pArrow   ->setVisible(!m_aHiLight[i].m_bFinished);
-        m_aHiLight[i].m_pPosition->setVisible(!m_aHiLight[i].m_bFinished);
+        bool b = true;
+        
+        if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end())
+          b = l_cPlane.classifyPointRelation(m_mMarblePositions[m_aHiLight[i].m_iMarbleId]) == irr::core::ISREL3D_FRONT;
+
+        m_aHiLight[i].m_pArrow   ->setVisible(!m_aHiLight[i].m_bFinished && b);
+        m_aHiLight[i].m_pPosition->setVisible(!m_aHiLight[i].m_bFinished && b);
 
         m_aHiLight[i].m_bViewport = true;
       }

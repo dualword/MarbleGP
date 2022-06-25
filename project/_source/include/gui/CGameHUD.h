@@ -145,6 +145,7 @@ namespace dustbin {
         int                        m_iWithdraw;     /**< The step when the "confirm withdraw" will be hidden again */
         irr::video::SColor         m_cRankBack;     /**< The background color for the ranking */
         SHighLight                 m_aHiLight[3];   /**< Data for the highlighted marbles */
+        irr::scene::ISceneManager *m_pSmgr;         /**< The Irrlicht scene manager */
 
 
 
