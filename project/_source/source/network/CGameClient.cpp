@@ -7,7 +7,6 @@
 #include <state/CMenuState.h>
 #include <state/IState.h>
 #include <CGlobal.h>
-#include <thread>
 #include <chrono>
 
 
@@ -183,9 +182,6 @@ namespace dustbin {
     * @param a_sState the new active state
     */
     void CGameClient::stateChanged(const std::string& a_sState) {
-      using namespace std::chrono_literals;
-      std::this_thread::sleep_for(1000ms);
-
       messages::CStateChanged l_cMsg = messages::CStateChanged(a_sState);
       broadcastMessage(&l_cMsg, true);
     }
