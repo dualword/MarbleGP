@@ -184,7 +184,7 @@ namespace dustbin {
         void setMasterVolume(irr::f32 a_fVolume) {
           m_fMasterVolume = a_fVolume;
           if (m_pSoundTrack != nullptr)
-            m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
+            m_pSoundTrack->setVolume(0.5f * m_fMasterVolume * m_fSoundtrackVolume);
         }
 
         void setSfxVolumeGame(irr::f32 a_fVolume) {
@@ -198,7 +198,7 @@ namespace dustbin {
         void setSoundtrackVolume(irr::f32 a_fVolume) {
           m_fSoundtrackVolume = a_fVolume;
           if (m_pSoundTrack != nullptr)
-            m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
+            m_pSoundTrack->setVolume(0.5f * m_fMasterVolume * m_fSoundtrackVolume);
         }
 
         void muteAudio() {
@@ -254,7 +254,7 @@ namespace dustbin {
 
 
             if (m_pSoundTrack != nullptr) {
-              m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
+              m_pSoundTrack->setVolume(0.5f * m_fMasterVolume * m_fSoundtrackVolume);
               m_pSoundTrack->play();
             }
           }
@@ -262,7 +262,7 @@ namespace dustbin {
 
         void setSoundtrackFade(irr::f32 a_fValue) {
           if (m_pSoundTrack != nullptr) {
-            m_pSoundTrack->setVolume((a_fValue > 0.0f ? a_fValue : 0.0f) * m_fMasterVolume * m_fSoundtrackVolume);
+            m_pSoundTrack->setVolume((a_fValue > 0.0f ? a_fValue : 0.0f) * 0.5f * m_fMasterVolume * m_fSoundtrackVolume);
           }
         }
 
@@ -274,6 +274,7 @@ namespace dustbin {
             p->setVolume  (m_bMuteSfx ? 0.0f : m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
             p->play();
           }
+          else printf("Sound not found.\n");
         }
 
         void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, irr::f32 a_fVolume, bool a_bLooped) {
@@ -284,6 +285,7 @@ namespace dustbin {
             p->setVolume  (m_bMuteSfx ? 0.0f : m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
             p->play();
           }
+          else printf("Sound not found.\n");
         }
 
         void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) {

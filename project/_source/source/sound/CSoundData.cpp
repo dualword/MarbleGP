@@ -283,7 +283,7 @@ namespace dustbin {
       return m_iSource;
     }
 
-    CSound3d::CSound3d(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist) : ISound(a_pBuffer), m_bLoop(a_bLoop), m_bPlaying(false) {
+    CSound3d::CSound3d(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist) : ISound(a_pBuffer), m_bLoop(a_bLoop), m_bPlaying(false), m_fVolume(a_fVolume) {
       alCall(alGenSources, 1, &m_iSource);
       alCall(alSourcef, m_iSource, AL_PITCH, 1.0f);
       alCall(alSourcef, m_iSource, AL_GAIN, a_fVolume);
@@ -328,7 +328,7 @@ namespace dustbin {
 
     void CSound3d::setVolume(irr::f32 a_fVolume) {
       if (m_iSource == 0) return;
-      alCall(alSourcef, m_iSource, AL_GAIN, a_fVolume);
+      alCall(alSourcef, m_iSource, AL_GAIN, m_fVolume * a_fVolume);
     }
 
     CSound3dFixed::CSound3dFixed(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist, const irr::core::vector3df& a_cPos) : CSound3d(a_pBuffer, a_bLoop, a_fVolume, a_fMinDist, a_fMaxDist) {

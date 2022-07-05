@@ -343,6 +343,14 @@ namespace dustbin {
       m_pGlobal->drawNextRaceScreen(1.0f);
       m_pDrv->endScene();
 
+      m_pSoundIntf->preloadSound(L"data/sounds/hit.ogg"          , false);
+      m_pSoundIntf->preloadSound(L"data/sounds/respawn_start.ogg", false);
+      m_pSoundIntf->preloadSound(L"data/sounds/respawn.ogg"      , false);
+      m_pSoundIntf->preloadSound(L"data/sounds/stunned.ogg"      , false);
+      m_pSoundIntf->preloadSound(L"data/sounds/rolling.ogg"      , false);
+      m_pSoundIntf->preloadSound(L"data/sounds/skid.ogg"         , false);
+      m_pSoundIntf->preloadSound(L"data/sounds/wind.ogg"         , false);
+
       m_pGlobal->clearGui();
 
       // m_pStepLabel = m_pGui->addStaticText(L"Step", irr::core::recti(0, 0, 1000, 200));
@@ -535,6 +543,29 @@ namespace dustbin {
         m_pClient->stateChanged("state_game");
       }
 
+      for (int l_iMarble = 10000; l_iMarble < 10016; l_iMarble++) {
+        // Tuple: 0 == Sound File, 1 == Looped, 2 == Doppler
+        std::tuple<std::wstring, bool, bool> l_sSounds[] = {
+          { L"data/sounds/hit.ogg"          , false , false },
+          { L"data/sounds/respawn.ogg"      , false , false },
+          { L"data/sounds/respawn_start.ogg", false , false },
+          { L"data/sounds/rolling.ogg"      , true  , true  },
+          { L"data/sounds/skid.ogg"         , true  , true  },
+          { L"data/sounds/stunned.ogg"      , true  , false },
+          { L"data/sounds/wind.ogg"         , false , true  },
+          { L"data/sounds/gameover.ogg"     , false , false },
+          { L""                             , false , false }
+          };
+
+        for (int i = 0; std::get<0>(l_sSounds[i]) != L""; i++) {
+          m_pSoundIntf->assignSound(std::get<0>(l_sSounds[i]), l_iMarble, std::get<1>(l_sSounds[i]), std::get<2>(l_sSounds[i]));
+
+          if (std::get<1>(l_sSounds[i])) {
+            m_pSoundIntf->play3d(l_iMarble, std::get<0>(l_sSounds[i]), irr::core::vector3df(), 0.0f, true);
+          }
+        }
+      }
+
 #ifdef _TOUCH_CONTROL
       if (m_pGlobal->getSettingData().m_bTouchControl && m_pCamAnimator == nullptr) {
         m_pTouchControl = reinterpret_cast<gui::CGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
@@ -626,6 +657,8 @@ namespace dustbin {
         delete m_pRace;
         m_pRace = nullptr;
       }
+
+      m_pSoundIntf->clear3dSounds();
     }
 
     /**
@@ -1164,6 +1197,18 @@ namespace dustbin {
             p->m_pViewport->m_pCamera->updateAbsolutePosition();
           }
         }
+
+        irr::f32 l_fRolling = m_fSfxVolume * std::fmin((float)(a_LinearVelocity.getLengthSQ() / 10000.0), (float)1.0);
+
+        if (m_mViewports.size() == 1 && a_ObjectId == m_mViewports.begin()->second.m_pMarble->getID()) {
+          m_pSoundIntf->setListenerPosition(m_mViewports.begin()->second.m_pCamera, a_LinearVelocity);
+        }
+
+        if (m_mViewports.size() == 1) {
+          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/wind.ogg"   , a_Position, a_LinearVelocity,                  l_fRolling       , true);
+          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/skid.ogg"   , a_Position, a_LinearVelocity, a_ControlBrake ? l_fRolling : 0.0f, true);
+          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/rolling.ogg", a_Position, a_LinearVelocity, a_Contact      ? l_fRolling : 0.0f, true);
+        }
       }
     }
 
@@ -1300,7 +1345,7 @@ namespace dustbin {
           p->m_iStateChange  = m_iStep;
           p->m_iRespawnStart = m_iStep;
 
-          m_pSoundIntf->play2d(L"data/sounds/respawn_start.ogg", m_fSfxVolume, 0.0f);
+          m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn_start.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
         }
         else {
           p->m_bCamLink = true;
@@ -1334,7 +1379,7 @@ namespace dustbin {
             p->m_pViewport->m_pCamera->setTarget(a_Target);
             p->m_pViewport->m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
             
-            m_pSoundIntf->play2d(L"data/sounds/respawn.ogg", m_fSfxVolume, 0.0f);
+            m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
           }
 
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn2;
@@ -1358,15 +1403,13 @@ namespace dustbin {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Stunned;
             p->m_iStateChange = m_iStep;
 
-            if (p->m_pViewport != nullptr)
-              m_pSoundIntf->play2d(L"data/sounds/stunned.ogg", m_fSfxVolume, 0.0f);
+            m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", p->m_pPositional->getAbsolutePosition(), m_fSfxVolume, true);
           }
           else {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
             p->m_iStateChange = -1;
 
-            if (p->m_pViewport != nullptr)
-              m_pSoundIntf->play2d(L"data/sounds/stunned.ogg", 0.0f, 0.0f);
+            m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), 0.0f, true);
           }
         }
       }
@@ -1387,11 +1430,8 @@ namespace dustbin {
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Finished;
           p->m_bCamLink = false;
           p->m_iStateChange = m_iStep;
-          for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-            if (it->second.m_pMarble != nullptr && it->second.m_pMarble->getID() == a_MarbleId) {
-              m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
-            }
-          }
+          if (p->m_pViewport != nullptr)
+            m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
         }
 
 #ifdef _TOUCH_CONTROL

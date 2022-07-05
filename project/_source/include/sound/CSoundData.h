@@ -109,8 +109,10 @@ namespace dustbin {
     */
     class CSound3d : public ISound {
       private:
-        bool m_bLoop,
-             m_bPlaying;
+        bool m_bLoop;
+        bool m_bPlaying;
+
+        float m_fVolume;
 
       public:
         CSound3d(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist);

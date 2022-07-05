@@ -246,9 +246,6 @@ namespace dustbin {
     m_pSoundInterface->preloadSound(L"data/sounds/checkpoint.ogg"   , false);
     m_pSoundInterface->preloadSound(L"data/sounds/gameover.ogg"     , false);
     m_pSoundInterface->preloadSound(L"data/sounds/lap.ogg"          , false);
-    m_pSoundInterface->preloadSound(L"data/sounds/respawn_start.ogg", false);
-    m_pSoundInterface->preloadSound(L"data/sounds/respawn.ogg"      , false);
-    m_pSoundInterface->preloadSound(L"data/sounds/stunned.ogg"      , false);
 
     m_pSoundInterface->assignSoundtracks(
       {
