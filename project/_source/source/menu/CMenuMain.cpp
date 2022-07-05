@@ -82,18 +82,7 @@ namespace dustbin {
               createMenu("menu_message", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "credits") {
-              // m_pState->getGlobal()->setGlobal("message_text", "Credits are not yet implemented");
-              // createMenu("menu_message", m_pDevice, m_pManager, m_pState);
-
-              FILE *f = fopen("C:\\Users\\Brainsaw\\AppData\\Roaming\\DustbinGames\\MarbleGP\\championship_result.dat", "r");
-              char s[0xFFFF];
-              memset(s, 0, 0xFFFF);
-              fread(s, 1, 0xFFFF, f);
-              fclose(f);
-
-              m_pState->getGlobal()->setGlobal("championship", s);
-
-              createMenu("menu_finalresult", m_pDevice, m_pManager, m_pState);
+              createMenu("menu_credits", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "race_replay") {
               m_pState->getGlobal()->setGlobal("message_text", "Race Replay is not yet implemented");

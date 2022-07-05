@@ -6,6 +6,7 @@
 #include <gui/CReactiveLabel.h>
 #include <gui/CGuiImageList.h>
 #include <gui/CControllerUi.h>
+#include <gui/CGuiTextField.h>
 #include <gui/CClipImage.h>
 #include <gui/CSelector.h>
 #include <string>
@@ -83,6 +84,11 @@ namespace dustbin {
         p->drop();
         return p;
       }
+      else if (l_sTypeName == g_TextFieldName) {
+        irr::gui::IGUIElement *p = new gui::CGuiTextField(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+        p->drop();
+        return p;
+      }
 #ifdef _TOUCH_CONTROL
       else if (l_sTypeName == g_TouchControlName) {
         irr::gui::IGUIElement *p = new gui::CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
@@ -97,9 +103,9 @@ namespace dustbin {
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
 #ifdef _TOUCH_CONTROL
-      return 10;
+      return 11;
 #else
-			return 9;
+			return 10;
 #endif
 		}
 
@@ -144,8 +150,12 @@ namespace dustbin {
           return (irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId;
           break;
 
-#ifdef _TOUCH_CONTROL
         case 9:
+          return (irr::gui::EGUI_ELEMENT_TYPE)g_TextFieldId;
+          break;
+
+#ifdef _TOUCH_CONTROL
+        case 10:
           return (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId;
           break;
 #endif
@@ -197,8 +207,12 @@ namespace dustbin {
           return g_GuiLogDisplayName;
           break;
 
-#ifdef _TOUCH_CONTROL
         case 9:
+          return g_TextFieldName;
+          break;
+
+#ifdef _TOUCH_CONTROL
+        case 10:
           return g_TouchControlName;
           break;
 #endif
@@ -248,6 +262,10 @@ namespace dustbin {
 
         case (irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId:
           return g_GuiLogDisplayName;
+          break;
+
+        case (irr::gui::EGUI_ELEMENT_TYPE)g_TextFieldId:
+          return g_TextFieldName;
           break;
 
 #ifdef _TOUCH_CONTROL

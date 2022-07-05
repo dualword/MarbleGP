@@ -438,6 +438,12 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -775,6 +781,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiTextField.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
