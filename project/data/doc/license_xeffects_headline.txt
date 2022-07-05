@@ -1,0 +1,1 @@
+MarbleGP uses XEffects for shadow mapping

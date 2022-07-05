@@ -1,0 +1,1 @@
+LibJPG is used by the Irrlicht graphics engine
