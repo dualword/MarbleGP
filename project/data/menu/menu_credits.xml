@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Credits and Licenses" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+        <children>
+          
+        </children>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 5, 15, 7">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP" />
+          <attribute key="Name" value="license_marblegp" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 8, 15, 10">
+        <attributes>
+          <attribute key="Caption" value="Irrlicht" />
+          <attribute key="Name" value="license_irrlicht" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 11, 15, 13">
+        <attributes>
+          <attribute key="Caption" value="O.D.E." />
+          <attribute key="Name" value="license_ode" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 14, 15, 16">
+        <attributes>
+          <attribute key="Caption" value="ENet" />
+          <attribute key="Name" value="license_enet" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 17, 15, 19">
+        <attributes>
+          <attribute key="Caption" value="OpenAL" />
+          <attribute key="Name" value="license_openal" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 20, 15, 22">
+        <attributes>
+          <attribute key="Caption" value="LibJPEG" />
+          <attribute key="Name" value="license_libjpeg" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 23, 15, 25">
+        <attributes>
+          <attribute key="Caption" value="LibPNG" />
+          <attribute key="Name" value="license_libpng" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 26, 15, 28">
+        <attributes>
+          <attribute key="Caption" value="ZLib" />
+          <attribute key="Name" value="license_zlib" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 29, 15, 31">
+        <attributes>
+          <attribute key="Caption" value="Ogg" />
+          <attribute key="Name" value="license_ogg" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 32, 15, 34">
+        <attributes>
+          <attribute key="Caption" value="Vorbis" />
+          <attribute key="Name" value="license_vorbis" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 35, 15, 37">
+        <attributes>
+          <attribute key="Caption" value="XEffects" />
+          <attribute key="Name" value="license_xeffects" />
+        </attributes>
+      </element>
+      
+      <element type="TextField" rect="relative: 16, 5, 79, 44">
+        <attributes>
+          <attribute key="Name" value="textfield" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 45, 79, 48" font="regular">
+        <attributes>
+          <attribute key="Name" value="label_link" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+</dialog>
