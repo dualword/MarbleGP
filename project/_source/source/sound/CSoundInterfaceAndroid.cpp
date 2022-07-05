@@ -399,8 +399,10 @@ namespace dustbin {
           m_pStream->start();
         }
 
-        void setPlaying(bool a_bPlay) { 
-          resetPlayHead();
+        void setPlaying(bool a_bPlay, bool a_bReset) {
+          if (a_bReset)
+            resetPlayHead();
+
           m_bPlaying = a_bPlay; 
         }
 
@@ -533,12 +535,12 @@ namespace dustbin {
         void startSoundtrack(enSoundTrack a_eSoundTrack) {
           if (a_eSoundTrack != m_eSoundTrack) {
             if (m_mSoundTracks.find(m_eSoundTrack) != m_mSoundTracks.end())
-              m_mSoundTracks[m_eSoundTrack]->setPlaying(false);
+              m_mSoundTracks[m_eSoundTrack]->setPlaying(false, true);
 
             m_eSoundTrack = a_eSoundTrack;
 
             if (m_mSoundTracks.find(m_eSoundTrack) != m_mSoundTracks.end())
-              m_mSoundTracks[m_eSoundTrack]->setPlaying(true);
+              m_mSoundTracks[m_eSoundTrack]->setPlaying(true, true);
           }
         }
 
@@ -558,7 +560,8 @@ namespace dustbin {
 
         void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) {
           if (m_mSounds.find(a_sName) != m_mSounds.end()) {
-            m_mSounds[a_sName]->setPlaying(true);
+            m_mSounds[a_sName]->setPlaying(true, a_fPan == 0.0f);
+            m_mSounds[a_sName]->setVolume(a_fVolume);
           }
         }
 

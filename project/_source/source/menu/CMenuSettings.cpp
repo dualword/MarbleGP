@@ -234,7 +234,8 @@ namespace dustbin {
                 l_bRet = true;
 
                 for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
-                  it->second->setVisible(l_sSender == it->first);
+                  if (it->second != nullptr)
+                    it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "sfx") {
                 m_pState->setZLayer(2);
@@ -248,7 +249,8 @@ namespace dustbin {
                 l_bRet = true;
 
                 for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
-                  it->second->setVisible(l_sSender == it->first);
+                  if (it->second != nullptr)
+                    it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "misc") {
                 m_pState->setZLayer(4);
@@ -262,7 +264,8 @@ namespace dustbin {
                 l_bRet = true;
 
                 for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
-                  it->second->setVisible(l_sSender == it->first);
+                  if (it->second != nullptr)
+                    it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "log") {
                 m_pState->setZLayer(5);
