@@ -83,7 +83,7 @@ namespace dustbin {
                             (reinterpret_cast<gui::CGuiTextField *>(l_pElement))->setNewText(p);
                           }
 
-                          delete p;
+                          delete[] p;
                           f->drop();
                         }
                       }

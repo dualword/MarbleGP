@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 4" font="big">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Credits and Licenses" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+        <children>
+          
+        </children>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 5, 10, 7">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP" />
+          <attribute key="Name" value="license_marblegp" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 8, 10, 10">
+        <attributes>
+          <attribute key="Caption" value="Irrlicht" />
+          <attribute key="Name" value="license_irrlicht" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 11, 10, 13">
+        <attributes>
+          <attribute key="Caption" value="O.D.E." />
+          <attribute key="Name" value="license_ode" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 14, 10, 16">
+        <attributes>
+          <attribute key="Caption" value="ENet" />
+          <attribute key="Name" value="license_enet" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 17, 10, 19">
+        <attributes>
+          <attribute key="Caption" value="LibJPEG" />
+          <attribute key="Name" value="license_libjpeg" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 20, 10, 22">
+        <attributes>
+          <attribute key="Caption" value="LibPNG" />
+          <attribute key="Name" value="license_libpng" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 23, 10, 25">
+        <attributes>
+          <attribute key="Caption" value="ZLib" />
+          <attribute key="Name" value="license_zlib" />
+        </attributes>
+      </element>
+      
+      <element type="TextField" rect="relative: 11, 5, 49, 29">
+        <attributes>
+          <attribute key="Name" value="textfield" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 29, 50, 31" font="regular">
+        <attributes>
+          <attribute key="Name" value="label_link" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_ok.xml" />
+</dialog>
