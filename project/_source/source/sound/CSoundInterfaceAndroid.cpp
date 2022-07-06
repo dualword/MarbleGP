@@ -516,7 +516,7 @@ namespace dustbin {
           }
         }
 
-        irr::f32 getMasterColume() {
+        irr::f32 getMasterVolume() {
           return m_fMasterVolume;
         }
 
@@ -567,11 +567,6 @@ namespace dustbin {
 
         void clear3dSounds() {
           // 3d sounds not supported by Android
-        }
-
-        void addSoundParameter(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fMinDistance, irr::f32 a_fMaxDistance) {
-          // As we do not support 3d audio in Android we just store the volume
-          m_mParameters[a_sName] = a_fVolume;
         }
 
         void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) {

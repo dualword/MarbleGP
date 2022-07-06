@@ -27,7 +27,7 @@ namespace dustbin {
         virtual void setSoundtrackVolume(irr::f32 a_fVolume) = 0;
         virtual void muteAudio() = 0;
         virtual void unmuteAudio() = 0;
-        virtual irr::f32 getMasterColume() = 0;
+        virtual irr::f32 getMasterVolume() = 0;
         virtual irr::f32 getSfxVolumeGame() = 0;
         virtual irr::f32 getSfxVolumeMenu() = 0;
         virtual irr::f32 getSoundtrackVolume() = 0;
@@ -39,8 +39,6 @@ namespace dustbin {
         virtual void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, irr::f32 a_fVolume, bool a_bLooped) = 0;
         virtual void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) = 0;
         virtual void clear3dSounds() = 0;
-
-        virtual void addSoundParameter(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fMinDistance, irr::f32 a_fMaxDistance) = 0;
 
         virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) = 0;
 

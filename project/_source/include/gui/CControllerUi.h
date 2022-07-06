@@ -136,7 +136,7 @@ namespace dustbin {
 
         virtual bool OnJoystickEvent(const irr::SEvent& a_cEvent) override;
 
-        virtual void draw();
+        virtual void draw() override;
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;

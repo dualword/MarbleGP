@@ -32,8 +32,8 @@ namespace dustbin {
         1: Min Distance
         2: Max Distance
         */
-        std::map<std::wstring, std::tuple<irr::f32, irr::f32, irr::f32> > m_mSoundParameters;
-        std::map<std::wstring, IAudioBuffer                            *> m_mAudioBuffer;
+        std::map<std::wstring, irr::f32      > m_mSoundParameters;
+        std::map<std::wstring, IAudioBuffer *> m_mAudioBuffer;
 
         std::vector<ISound *> m_vNoDopplerSounds;
 
@@ -76,12 +76,6 @@ namespace dustbin {
                     if (l_sAttr == L"id") {
                       l_sName = l_sValue;
                     }
-                    else if (l_sAttr == L"mindistance") {
-                      l_fMinDist = std::stof(l_sValue);
-                    }
-                    else if (l_sAttr == L"maxdistance") {
-                      l_fMaxDist = std::stof(l_sValue);
-                    }
                     else if (l_sAttr == L"vol") {
                       l_fVolume = std::stof(l_sValue);
                     }
@@ -89,7 +83,7 @@ namespace dustbin {
 
                   if (l_sName != L"") {
                     printf("SFX Param: \"%ls\": %.2f, %.2f, %.2f\n", l_sName.c_str(), l_fVolume, l_fMinDist, l_fMaxDist);
-                    m_mSoundParameters[l_sName] = std::make_tuple(l_fVolume, l_fMinDist, l_fMaxDist);
+                    m_mSoundParameters[l_sName] = l_fVolume;
                   }
                 }
               }
@@ -136,20 +130,16 @@ namespace dustbin {
 
         void assignSound(const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, bool a_bDoppler) {
           if (m_mAudioBuffer.find(a_sName) != m_mAudioBuffer.end()) {
-            irr::f32 l_fVolume  = 0.6f,
-                     l_fMinDist = 50.0f,
-                     l_fMaxDist = 500.0f;
+            irr::f32 l_fVolume  = 0.6f;
 
             std::wstring l_sName = a_sName.substr(0, a_sName.size() - 4);
             l_sName += L".ogg";
 
             if (m_mSoundParameters.find(l_sName) != m_mSoundParameters.end()) {
-              l_fVolume  = std::get<0>(m_mSoundParameters[l_sName]);
-              l_fMinDist = std::get<1>(m_mSoundParameters[l_sName]);
-              l_fMaxDist = std::get<2>(m_mSoundParameters[l_sName]);
+              l_fVolume  = m_mSoundParameters[l_sName];
             }
 
-            ISound* p = new CSound3d(m_mAudioBuffer[a_sName], a_bLoop, l_fVolume, l_fMinDist, l_fMaxDist);
+            ISound* p = new CSound3d(m_mAudioBuffer[a_sName], a_bLoop, l_fVolume, 25, 150);
       
             if (m_m3dSounds.find(a_iId) == m_m3dSounds.end())
               m_m3dSounds[a_iId] = std::map<std::wstring, ISound *>();
@@ -227,7 +217,7 @@ namespace dustbin {
           return m_fSoundtrackVolume;
         }
 
-        irr::f32 getMasterColume() {
+        irr::f32 getMasterVolume() {
           return m_fMasterVolume;
         }
 
@@ -312,10 +302,6 @@ namespace dustbin {
           }
           m_m3dSounds.clear();
           m_vNoDopplerSounds.clear();
-        }
-
-        void addSoundParameter(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fMinDistance, irr::f32 a_fMaxDistance) {
-          m_mSoundParameters[a_sName] = std::make_tuple(a_fVolume, a_fMinDistance, a_fMaxDistance);
         }
 
         void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) {

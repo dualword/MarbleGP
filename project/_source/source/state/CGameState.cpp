@@ -553,7 +553,7 @@ namespace dustbin {
           { L"data/sounds/rolling.ogg"      , true  , true  },
           { L"data/sounds/skid.ogg"         , true  , true  },
           { L"data/sounds/stunned.ogg"      , true  , false },
-          { L"data/sounds/wind.ogg"         , false , true  },
+          { L"data/sounds/wind.ogg"         , true  , true  },
           { L"data/sounds/gameover.ogg"     , false , false },
           { L""                             , false , false }
           };
@@ -749,6 +749,8 @@ namespace dustbin {
               case irr::KEY_KEY_8: l_iIndex = 7; break;
               case irr::KEY_KEY_9: l_iIndex = 8; break;
               case irr::KEY_KEY_0: l_iIndex = 9; break;
+
+              default: break;
             }
 
             if (l_iIndex >= 0 && l_iIndex < m_vCameras.size()) {
@@ -1221,9 +1223,9 @@ namespace dustbin {
 
         if (m_mViewports.size() == 1) {
 #ifndef _ANDROID
-          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/wind.ogg"   , a_Position, a_LinearVelocity,                  l_fRolling       , true);
-          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/skid.ogg"   , a_Position, a_LinearVelocity, a_ControlBrake ? l_fRolling : 0.0f, true);
-          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/rolling.ogg", a_Position, a_LinearVelocity, a_Contact      ? l_fRolling : 0.0f, true);
+          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/wind.ogg"   , a_Position, a_LinearVelocity,                               l_fRolling       , true);
+          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/skid.ogg"   , a_Position, a_LinearVelocity, a_Contact && a_ControlBrake ? l_fRolling : 0.0f, true);
+          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/rolling.ogg", a_Position, a_LinearVelocity,              a_Contact      ? l_fRolling : 0.0f, true);
 #endif
         }
       }
