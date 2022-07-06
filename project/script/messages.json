@@ -417,7 +417,8 @@
         "ServerDisconnect",
         "RaceResult",
         "EndRaceState",
-        "PlayerRemoved"
+        "PlayerRemoved",
+        "PauseChanged"
       ]
     },
     {

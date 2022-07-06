@@ -11,19 +11,35 @@
 
 namespace dustbin {
   namespace sound {
+    #define __OTHER_MARBLE_SOUNDS 4
+
     class CSoundInterface : public IAudioBuffer::IDeletionListener, public ISoundInterface {
       private:
+        struct SMarbleSound {
+          int       m_iMarble;      /**< ID of the marble these sounds blong to */
+          bool      m_bActive;      /**< Is the sound active? */
+          irr::f32  m_fDistance;    /**< Squared distance of the sound */
+          irr::f32  m_fVolume;      /**< The current volume of the sound */
+          irr::f32  m_aParam[3];    /**< The volume factor read from the parameters*/
+          ISound   *m_pSounds[3];   /**< The sounds */
+
+          SMarbleSound() : m_iMarble(0), m_bActive(false), m_fDistance(0.0f), m_fVolume(0.0f) {
+          }
+        };
+
         irr::f32              m_fSoundtrackVolume,
                               m_fSoundFXVolumeMenu,
                               m_fSoundFXVolumeGame,
                               m_fMasterVolume;
         enSoundTrack          m_eSoundTrack;
+        irr::core::vector3df  m_vPosListener;
         irr::core::vector3df  m_vVelListener;
         CAudioDevice         *m_pDevice;
         ISound               *m_pSoundTrack;
         bool                  m_bMuteSfx,
                               m_bMenu;    /**< Are we currently in the menu or game? */
 
+        SMarbleSound m_aOthers[__OTHER_MARBLE_SOUNDS];
 
         /*
         Sound Parameters.
@@ -35,10 +51,7 @@ namespace dustbin {
         std::map<std::wstring, irr::f32      > m_mSoundParameters;
         std::map<std::wstring, IAudioBuffer *> m_mAudioBuffer;
 
-        std::vector<ISound *> m_vNoDopplerSounds;
-
         std::map                   <std::wstring, ISound *>   m_m2dSounds;
-        std::map<irr::s32, std::map<std::wstring, ISound *> > m_m3dSounds;
         std::map<enSoundTrack                   , ISound *>   m_mSoundTracks;
 
       public:
@@ -94,7 +107,7 @@ namespace dustbin {
           m_pDevice = new CAudioDevice();
         }
 
-        ~CSoundInterface() {
+        virtual ~CSoundInterface() {
           clear3dSounds();
 
           for (std::map<std::wstring, ISound *>::iterator it = m_m2dSounds.begin(); it != m_m2dSounds.end(); it++) {
@@ -120,7 +133,7 @@ namespace dustbin {
           m_mAudioBuffer.clear();
         }
 
-        void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) {
+        virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) override {
           if (m_mAudioBuffer.find(a_sName) == m_mAudioBuffer.end()) {
             IAudioBuffer *p = new CAudioBufferOggVorbis(a_sName);
             p->setDeletionListener(this);
@@ -128,108 +141,58 @@ namespace dustbin {
           }
         }
 
-        void assignSound(const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, bool a_bDoppler) {
-          if (m_mAudioBuffer.find(a_sName) != m_mAudioBuffer.end()) {
-            irr::f32 l_fVolume  = 0.6f;
-
-            std::wstring l_sName = a_sName.substr(0, a_sName.size() - 4);
-            l_sName += L".ogg";
-
-            if (m_mSoundParameters.find(l_sName) != m_mSoundParameters.end()) {
-              l_fVolume  = m_mSoundParameters[l_sName];
-            }
-
-            ISound* p = new CSound3d(m_mAudioBuffer[a_sName], a_bLoop, l_fVolume, 25, 150);
-      
-            if (m_m3dSounds.find(a_iId) == m_m3dSounds.end())
-              m_m3dSounds[a_iId] = std::map<std::wstring, ISound *>();
-
-            m_m3dSounds[a_iId][a_sName] = p;
-
-            if (!a_bDoppler)
-              m_vNoDopplerSounds.push_back(p);
-          }
-        }
-
-        void assignFixed (const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, const irr::core::vector3df &a_vPos) {
-          if (m_mAudioBuffer.find(a_sName) != m_mAudioBuffer.end()) {
-            printf("Assign fixed \"%ls\" to %i\n", a_sName.c_str(), a_iId);
-
-            ISound* p = new CSound3dFixed(m_mAudioBuffer[a_sName], a_bLoop, 1.0f, 10.0f, 100.0f, a_vPos);
-
-            if (m_m3dSounds.find(a_iId) == m_m3dSounds.end())
-              m_m3dSounds[a_iId] = std::map<std::wstring, ISound *>();
-
-            m_m3dSounds[a_iId][a_sName] = p;
-          }
-        }
-
-        void setMenuFlag(bool a_bMenu) {
+        virtual void setMenuFlag(bool a_bMenu) override {
           m_bMenu = a_bMenu;
         }
 
-        void createSoundFileFactory(irr::io::IFileArchive *a_pArchive) {
+        virtual void createSoundFileFactory(irr::io::IFileArchive *a_pArchive) override {
         }
 
-        void setMasterVolume(irr::f32 a_fVolume) {
+        virtual void setMasterVolume(irr::f32 a_fVolume) override {
           m_fMasterVolume = a_fVolume;
           if (m_pSoundTrack != nullptr)
             m_pSoundTrack->setVolume(0.5f * m_fMasterVolume * m_fSoundtrackVolume);
         }
 
-        void setSfxVolumeGame(irr::f32 a_fVolume) {
+        virtual void setSfxVolumeGame(irr::f32 a_fVolume) override {
           m_fSoundFXVolumeGame = a_fVolume;
         }
 
-        void setSfxVolumeMenu(irr::f32 a_fVolume) {
+        virtual void setSfxVolumeMenu(irr::f32 a_fVolume) override {
           m_fSoundFXVolumeMenu = a_fVolume;
         }
 
-        void setSoundtrackVolume(irr::f32 a_fVolume) {
+        virtual void setSoundtrackVolume(irr::f32 a_fVolume) override {
           m_fSoundtrackVolume = a_fVolume;
           if (m_pSoundTrack != nullptr)
             m_pSoundTrack->setVolume(0.5f * m_fMasterVolume * m_fSoundtrackVolume);
         }
 
-        void muteAudio() {
+        virtual void muteAudio() override {
           m_pDevice->mute();
         }
 
-        void unmuteAudio() {
+        virtual void unmuteAudio() override {
           m_pDevice->unmute();
         }
 
-        void muteSoundFX(bool a_bMute) {
-          for (std::map<std::wstring, ISound *>::iterator it = m_m2dSounds.begin(); it != m_m2dSounds.end(); it++)
-            it->second->setVolume(0.0f);
-
-          for (std::map<irr::s32, std::map<std::wstring, ISound*> >::iterator it = m_m3dSounds.begin(); it != m_m3dSounds.end(); it++) {
-            for (std::map<std::wstring, ISound*>::iterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
-              it2->second->setVolume(0.0f);
-            }
-          }
-
-          m_bMuteSfx = a_bMute;
-          printf("SoundFX %s\n", m_bMuteSfx ? "active" : "muted");
-        }
-
-        irr::f32 getSoundtrackVolume() {
+        virtual irr::f32 getSoundtrackVolume() override {
           return m_fSoundtrackVolume;
         }
 
-        irr::f32 getMasterVolume() {
+        virtual irr::f32 getMasterVolume() override {
           return m_fMasterVolume;
         }
 
-        irr::f32 getSfxVolumeGame() {
+        virtual irr::f32 getSfxVolumeGame() override {
           return m_fSoundFXVolumeGame;
         }
 
-        irr::f32 getSfxVolumeMenu() {
+        virtual irr::f32 getSfxVolumeMenu() override {
           return m_fSoundFXVolumeMenu;
         }
 
-        void startSoundtrack(enSoundTrack a_eSoundTrack) {
+        virtual void startSoundtrack(enSoundTrack a_eSoundTrack) override {
           if (a_eSoundTrack != m_eSoundTrack) {
             printf("Start Soundtrack: %s\n", a_eSoundTrack == enSoundTrack::enStMenu ? "Menu" : a_eSoundTrack == enSoundTrack::enStRace ? "Race" : a_eSoundTrack == enSoundTrack::enStFinish ? "Finish" : "None");
             if (m_pSoundTrack != nullptr)
@@ -250,35 +213,117 @@ namespace dustbin {
           }
         }
 
-        void setSoundtrackFade(irr::f32 a_fValue) {
+        virtual void setSoundtrackFade(irr::f32 a_fValue) override {
           if (m_pSoundTrack != nullptr) {
             m_pSoundTrack->setVolume((a_fValue > 0.0f ? a_fValue : 0.0f) * 0.5f * m_fMasterVolume * m_fSoundtrackVolume);
           }
         }
 
-        void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bLooped) {
-          if (m_m3dSounds.find(a_iId) != m_m3dSounds.end() && m_m3dSounds[a_iId].find(a_sName) != m_m3dSounds[a_iId].end()) {
-            ISound *p = m_m3dSounds[a_iId][a_sName];
-            p->setPosition(a_vPosition);
-            p->setVelocity(a_vVelocity);
-            p->setVolume  (m_bMuteSfx ? 0.0f : m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
-            p->play();
+
+        /**
+        * Start a game, i.e. the sounds are initialized
+        */
+        virtual void startGame() override {
+          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
+            if (m_aOthers[i].m_pSounds[0] == nullptr) m_aOthers[i].m_pSounds[0] = new CSound3d(m_mAudioBuffer[L"data/sounds/rolling.ogg"], true, 1.0f, 25, 250);
+            if (m_aOthers[i].m_pSounds[1] == nullptr) m_aOthers[i].m_pSounds[1] = new CSound3d(m_mAudioBuffer[L"data/sounds/wind.ogg"   ], true, 1.0f, 25, 250);
+            if (m_aOthers[i].m_pSounds[2] == nullptr) m_aOthers[i].m_pSounds[2] = new CSound3d(m_mAudioBuffer[L"data/sounds/skid.ogg"   ], true, 1.0f, 25, 250);
+
+            if (m_mSoundParameters.find(L"data/sounds/rolling.ogg") != m_mSoundParameters.end()) m_aOthers[i].m_aParam[0] = m_mSoundParameters[L"data/sounds/rolling.ogg"]; else m_aOthers[i].m_aParam[0] = 1.0f;
+            if (m_mSoundParameters.find(L"data/sounds/wind.ogg"   ) != m_mSoundParameters.end()) m_aOthers[i].m_aParam[1] = m_mSoundParameters[L"data/sounds/wind.ogg"   ]; else m_aOthers[i].m_aParam[1] = 1.0f;
+            if (m_mSoundParameters.find(L"data/sounds/skid.ogg"   ) != m_mSoundParameters.end()) m_aOthers[i].m_aParam[2] = m_mSoundParameters[L"data/sounds/skid.ogg"   ]; else m_aOthers[i].m_aParam[2] = 1.0f;
           }
-          else printf("Sound not found.\n");
         }
 
-        void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, irr::f32 a_fVolume, bool a_bLooped) {
-          if (m_m3dSounds.find(a_iId) != m_m3dSounds.end() && m_m3dSounds[a_iId].find(a_sName) != m_m3dSounds[a_iId].end()) {
-            ISound *p = m_m3dSounds[a_iId][a_sName];
-            p->setPosition(a_vPosition);
-            p->setVelocity(m_vVelListener);
-            p->setVolume  (m_bMuteSfx ? 0.0f : m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
-            p->play();
+        /**
+        * Stop a game, i.e. the sounds are muted
+        */
+        virtual void stopGame() override {
+          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
+            for (int j = 0; j < 3; j++) {
+              if (m_aOthers[i].m_pSounds[j] != nullptr) m_aOthers[i].m_pSounds[j]->stop();
+            }
           }
-          else printf("Sound not found.\n");
         }
 
-        void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) {
+        /**
+        * Pause or unpause a game, i.e. in-game sounds are muted or unmuted
+        */
+        virtual void pauseGame(bool a_bPaused) override {
+          if (a_bPaused) {
+            for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
+              for (int j = 0; j < 3; j++) {
+                if (m_aOthers[i].m_pSounds[j] != nullptr) m_aOthers[i].m_pSounds[j]->setVolume(0.0f);
+              }
+            }
+          }
+          else {
+            for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
+              for (int j = 0; j < 3; j++) {
+                if (m_aOthers[i].m_pSounds[j] != nullptr) m_aOthers[i].m_pSounds[j]->setVolume(m_aOthers[i].m_fVolume);
+              }
+            }
+          }
+        }
+
+        /**
+        * Update the sounds of a marble. Only the closest sounds to the listener
+        * are played
+        * @param a_iMarble ID of the marble to update
+        * @param a_cPosition the position of the marble
+        * @param a_cVelocity the velocity of the marble
+        * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
+        * @param a_bBrake does the marble currently brake?
+        * @param a_HasContact does the marble have a contact?
+        */
+        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
+          irr::f32 l_fDistSq = a_cPosition.getDistanceFromSQ(m_vPosListener);
+
+          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
+            if (!m_aOthers[i].m_bActive || m_aOthers[i].m_fDistance > l_fDistSq || m_aOthers[i].m_iMarble == a_iMarble) {
+              if (m_aOthers[i].m_iMarble != a_iMarble)
+                printf("%i: %.2f, %.2f\n", a_iMarble, std::sqrt(l_fDistSq), a_fVolume);
+
+              for (int j = 0; j < 3; j++) {
+                if (m_aOthers[i].m_pSounds[j] != nullptr) {
+                  m_aOthers[i].m_pSounds[j]->setPosition(a_cPosition);
+                  m_aOthers[i].m_pSounds[j]->setVelocity(a_vVelocity); 
+
+                  if (j == 0)
+                    m_aOthers[i].m_pSounds[0]->setVolume(a_bHasContact ? m_aOthers[i].m_aParam[0] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f); 
+                  else if (j == 1)
+                    m_aOthers[i].m_pSounds[1]->setVolume(m_aOthers[i].m_aParam[1] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
+                  else if (j == 2)
+                    m_aOthers[i].m_pSounds[2]->setVolume(a_bBrake && a_bHasContact ? m_aOthers[i].m_aParam[2] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
+
+                  m_aOthers[i].m_pSounds[j]->play();
+                }
+              }
+
+              m_aOthers[i].m_bActive   = true;
+              m_aOthers[i].m_fDistance = l_fDistSq;
+              m_aOthers[i].m_fVolume   = a_fVolume;
+              m_aOthers[i].m_iMarble   = a_iMarble;
+
+              break;
+            }
+          }
+        }
+
+        /**
+        * Play the sounds of a marble assigned to a viewport
+        * @param a_iMarble ID of the marble to update
+        * @param a_cPosition the position of the marble
+        * @param a_cVelocity the velocity of the marble
+        * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
+        * @param a_bBrake does the marble currently brake?
+        * @param a_HasContact does the marble have a contact?
+        */
+        virtual void playViewportMarbleSound(int a_iMarble, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
+
+        }
+
+        virtual void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) override {
           if (m_m2dSounds.find(a_sName) == m_m2dSounds.end()) {
             if (m_mAudioBuffer.find(a_sName) != m_mAudioBuffer.end()) {
               ISound* p = new CSound2d(m_mAudioBuffer[a_sName], false);
@@ -293,33 +338,23 @@ namespace dustbin {
           }
         }
 
-        void clear3dSounds() {
-          for (std::map<irr::s32, std::map<std::wstring, ISound*> >::iterator it = m_m3dSounds.begin(); it != m_m3dSounds.end(); it++) {
-            for (std::map<std::wstring, ISound*>::iterator itChild = it->second.begin(); itChild != it->second.end(); itChild++) {
-              delete itChild->second;
-            }
-            it->second.clear();
-          }
-          m_m3dSounds.clear();
-          m_vNoDopplerSounds.clear();
+        virtual void clear3dSounds() override {
         }
 
-        void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) {
+        virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) override {
           m_vVelListener = a_vVel;
+          m_vPosListener = a_pCamera->getAbsolutePosition();
           m_pDevice->updateListener(a_pCamera, m_vVelListener);
-
-          for (std::vector<ISound*>::iterator it = m_vNoDopplerSounds.begin(); it != m_vNoDopplerSounds.end(); it++)
-            (*it)->setVelocity(a_vVel);
         }
 
-        void bufferDeleted(IAudioBuffer* a_pBuffer) {
+        virtual void bufferDeleted(IAudioBuffer* a_pBuffer) override {
           if (m_mAudioBuffer.find(a_pBuffer->getName()) != m_mAudioBuffer.end()) {
             m_mAudioBuffer.erase(a_pBuffer->getName());
           }
           delete a_pBuffer;
         }
 
-        void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) {
+        virtual void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) override {
           for (std::map<enSoundTrack, std::wstring>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
             if (m_mAudioBuffer.find(it->second) != m_mAudioBuffer.end()) {
               ISound *p = new CSound2d(m_mAudioBuffer[it->second], it->second.find(L"_result") == std::string::npos);

@@ -35,17 +35,50 @@ namespace dustbin {
         virtual void startSoundtrack(enSoundTrack a_eSoundTrack) = 0;
         virtual void setSoundtrackFade(irr::f32 a_fValue) = 0;
 
-        virtual void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bLooped) = 0;
-        virtual void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, irr::f32 a_fVolume, bool a_bLooped) = 0;
+        /**
+        * Start a game, i.e. the sounds are initialized
+        */
+        virtual void startGame() = 0;
+
+        /**
+        * Stop a game, i.e. the sounds are muted
+        */
+        virtual void stopGame() = 0;
+
+        /**
+        * Pause or unpause a game, i.e. in-game sounds are muted or unmuted
+        */
+        virtual void pauseGame(bool a_bPaused) = 0;
+
+        /**
+        * Update the sounds of a marble. Only the closest sounds to the listener
+        * are played
+        * @param a_iMarble ID of the marble to update
+        * @param a_cPosition the position of the marble
+        * @param a_cVelocity the velocity of the marble
+        * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
+        * @param a_bBrake does the marble currently brake?
+        * @param a_HasContact does the marble have a contact?
+        */
+        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) = 0;
+
+        /**
+        * Play the sounds of a marble assigned to a viewport
+        * @param a_iMarble ID of the marble to update
+        * @param a_cPosition the position of the marble
+        * @param a_cVelocity the velocity of the marble
+        * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
+        * @param a_bBrake does the marble currently brake?
+        * @param a_HasContact does the marble have a contact?
+        */
+        virtual void playViewportMarbleSound(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) = 0;
+        
         virtual void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) = 0;
         virtual void clear3dSounds() = 0;
 
         virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) = 0;
 
         virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) = 0;
-        virtual void assignSound (const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, bool a_bDoppler) = 0;
-        virtual void assignFixed (const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, const irr::core::vector3df &a_vPos) = 0;
-
         virtual void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) = 0;
 
         virtual void setMenuFlag(bool a_bMenu) = 0;

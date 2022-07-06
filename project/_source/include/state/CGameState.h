@@ -391,6 +391,12 @@ namespace dustbin {
         */
         virtual void onPlayerremoved(irr::s32 a_playerid) override;
 
+        /**
+        * This function receives messages of type "PauseChanged"
+        * @param a_Paused The current paused state
+        */
+        virtual void onPausechanged(bool a_Paused) override;
+
         void addStaticCameras(irr::scene::ISceneNode *a_pNode);
 
         /**

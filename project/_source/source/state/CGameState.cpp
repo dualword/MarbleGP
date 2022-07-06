@@ -559,11 +559,7 @@ namespace dustbin {
           };
 
         for (int i = 0; std::get<0>(l_sSounds[i]) != L""; i++) {
-          m_pSoundIntf->assignSound(std::get<0>(l_sSounds[i]), l_iMarble, std::get<1>(l_sSounds[i]), std::get<2>(l_sSounds[i]));
-
-          if (std::get<1>(l_sSounds[i])) {
-            m_pSoundIntf->play3d(l_iMarble, std::get<0>(l_sSounds[i]), irr::core::vector3df(), 0.0f, true);
-          }
+          m_pSoundIntf->preloadSound(std::get<0>(l_sSounds[i]), false);
         }
       }
 #endif
@@ -573,6 +569,7 @@ namespace dustbin {
         m_pTouchControl = reinterpret_cast<gui::CGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
       }
 #endif
+      m_pSoundIntf->startGame();
     }
 
     /**
@@ -660,7 +657,7 @@ namespace dustbin {
         m_pRace = nullptr;
       }
 
-      m_pSoundIntf->clear3dSounds();
+      m_pSoundIntf->stopGame();
     }
 
     /**
@@ -1201,6 +1198,15 @@ namespace dustbin {
             p->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
             p->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
             p->m_pViewport->m_pCamera->updateAbsolutePosition();
+
+            m_pSoundIntf->playViewportMarbleSound(a_ObjectId, a_Position, a_LinearVelocity, l_fRolling, a_ControlBrake, a_Contact);
+          }
+          else {
+            if (m_mViewports.size() == 1) {
+#ifndef _ANDROID
+              m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fRolling, a_ControlBrake, a_Contact);
+#endif
+            }
           }
 
 #ifdef _ANDROID
@@ -1219,14 +1225,6 @@ namespace dustbin {
             m_pSoundIntf->setListenerPosition(m_mViewports.begin()->second.m_pCamera, a_LinearVelocity);
           else
             m_pSoundIntf->setListenerPosition(m_pSmgr->getActiveCamera(), irr::core::vector3df());
-        }
-
-        if (m_mViewports.size() == 1) {
-#ifndef _ANDROID
-          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/wind.ogg"   , a_Position, a_LinearVelocity,                               l_fRolling       , true);
-          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/skid.ogg"   , a_Position, a_LinearVelocity, a_Contact && a_ControlBrake ? l_fRolling : 0.0f, true);
-          m_pSoundIntf->play3d(a_ObjectId, L"data/sounds/rolling.ogg", a_Position, a_LinearVelocity,              a_Contact      ? l_fRolling : 0.0f, true);
-#endif
         }
       }
     }
@@ -1368,7 +1366,7 @@ namespace dustbin {
           if (p->m_pViewport != nullptr)
             m_pSoundIntf->play2d(L"data/sounds/respawn_start.ogg", m_fSfxVolume, 0.0f);
 #else
-          m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn_start.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
+          // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn_start.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
 #endif
         }
         else {
@@ -1406,7 +1404,7 @@ namespace dustbin {
 #ifdef _ANDROID
             m_pSoundIntf->play2d(L"data/sounds/respawn.ogg", m_fSfxVolume, 0.0f);
 #else
-            m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
+            // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
 #endif
           }
 
@@ -1435,7 +1433,7 @@ namespace dustbin {
             if (p->m_pViewport)
               m_pSoundIntf->play2d(L"data/sounds/stunned.ogg", m_fSfxVolume, 0.0f);
 #else
-            m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", p->m_pPositional->getAbsolutePosition(), m_fSfxVolume, true);
+            // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", p->m_pPositional->getAbsolutePosition(), m_fSfxVolume, true);
 #endif
           }
           else {
@@ -1446,7 +1444,7 @@ namespace dustbin {
             if (p->m_pViewport)
               m_pSoundIntf->play2d(L"data/sounds/stunned.ogg", 0.0f, 0.0f);
 #else
-            m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), 0.0f, true);
+            // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), 0.0f, true);
 #endif
           }
         }
@@ -1619,6 +1617,14 @@ namespace dustbin {
           }
         }
       }
+    }
+
+    /**
+    * This function receives messages of type "PauseChanged"
+    * @param a_Paused The current paused state
+    */
+    void CGameState::onPausechanged(bool a_Paused) {
+      m_pSoundIntf->pauseGame(a_Paused);
     }
 
     /**
