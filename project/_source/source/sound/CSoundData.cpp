@@ -314,6 +314,7 @@ namespace dustbin {
     void CSound3d::stop() {
       if (m_iSource == 0) return;
       alCall(alSourceStop, m_iSource);
+      m_bPlaying = false;
     }
 
     void CSound3d::setPosition(const irr::core::vector3df& a_cPos) {

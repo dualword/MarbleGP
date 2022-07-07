@@ -36,30 +36,24 @@ namespace dustbin {
         irr::core::vector3df  m_vVelListener;
         CAudioDevice         *m_pDevice;
         ISound               *m_pSoundTrack;
-        bool                  m_bMuteSfx,
-                              m_bMenu;    /**< Are we currently in the menu or game? */
+        bool                  m_bMenu;    /**< Are we currently in the menu or game? */
 
         SMarbleSound m_aOthers[__OTHER_MARBLE_SOUNDS];
 
-        /*
-        Sound Parameters.
-        Tuple Members:
-        0: Volume
-        1: Min Distance
-        2: Max Distance
+        /**
+        * Volume of the sounds. Key = path to file, Value = volume
         */
         std::map<std::wstring, irr::f32      > m_mSoundParameters;
         std::map<std::wstring, IAudioBuffer *> m_mAudioBuffer;
 
-        std::map                   <std::wstring, ISound *>   m_m2dSounds;
-        std::map<enSoundTrack                   , ISound *>   m_mSoundTracks;
+        std::map<std::wstring, ISound *> m_m2dSounds;
+        std::map<enSoundTrack, ISound *> m_mSoundTracks;
 
       public:
         CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true) {
           m_vVelListener = irr::core::vector3df(0.0f, 0.0f, 0.0f);
           m_eSoundTrack  = enSoundTrack::enStNone;
           m_pSoundTrack  = nullptr;
-          m_bMuteSfx     = false;
 
           dustbin::CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -332,7 +326,7 @@ namespace dustbin {
           }
 
           if (m_m2dSounds.find(a_sName) != m_m2dSounds.end()) {
-            m_m2dSounds[a_sName]->setVolume(m_bMuteSfx ? 0.0f : m_fMasterVolume * (m_bMenu ? m_fSoundFXVolumeMenu : m_fSoundFXVolumeGame) * a_fVolume);
+            m_m2dSounds[a_sName]->setVolume(m_fMasterVolume * (m_bMenu ? m_fSoundFXVolumeMenu : m_fSoundFXVolumeGame) * a_fVolume);
             m_m2dSounds[a_sName]->setPosition(irr::core::vector3df(0.0f, a_fPan, 0.0f));
             m_m2dSounds[a_sName]->play();
           }
