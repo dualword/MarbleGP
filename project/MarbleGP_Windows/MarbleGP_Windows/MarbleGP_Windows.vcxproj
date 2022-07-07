@@ -113,7 +113,6 @@
     <ClCompile Include="..\..\_source\source\shader\CShaderHandleXEffectSplitscreen.cpp" />
     <ClCompile Include="..\..\_source\source\sound\CSoundData.cpp" />
     <ClCompile Include="..\..\_source\source\sound\CSoundInterface.cpp" />
-    <ClCompile Include="..\..\_source\source\sound\OggHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\state\CGameState.cpp" />
     <ClCompile Include="..\..\_source\source\state\CMenuState.cpp" />
     <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp" />
@@ -220,7 +219,6 @@
     <ClInclude Include="..\..\_source\include\sound\CSoundData.h" />
     <ClInclude Include="..\..\_source\include\sound\CSoundEnums.h" />
     <ClInclude Include="..\..\_source\include\sound\ISoundInterface.h" />
-    <ClInclude Include="..\..\_source\include\sound\OggHelpers.h" />
     <ClInclude Include="..\..\_source\include\state\CGameState.h" />
     <ClInclude Include="..\..\_source\include\state\CMenuState.h" />
     <ClInclude Include="..\..\_source\include\state\IState.h" />
@@ -405,7 +403,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;ws2_32.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -429,7 +427,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;OpenAL32.lib;ws2_32.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>

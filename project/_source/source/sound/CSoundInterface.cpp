@@ -3,9 +3,7 @@
 #include <sound/CSoundData.h>
 #include <CGlobal.h>
 #include <iostream>
-#include <AL/alc.h>
 #include <fstream>
-#include <AL/al.h>
 #include <string>
 #include <vector>
 
@@ -150,9 +148,6 @@ namespace dustbin {
 
         virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) override {
           if (m_mAudioBuffer.find(a_sName) == m_mAudioBuffer.end()) {
-            IAudioBuffer *p = new CAudioBufferOggVorbis(a_sName);
-            p->setDeletionListener(this);
-            m_mAudioBuffer[a_sName] = p;
           }
         }
 

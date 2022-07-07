@@ -3,8 +3,6 @@
 
 #include <irrlicht.h>
 
-#include <AL/alc.h>
-#include <AL/al.h>
 #include <string>
 
 namespace dustbin {
@@ -17,16 +15,11 @@ namespace dustbin {
     */
     class CAudioDevice {
       private:
-        ALCdevice  *m_pAlDevice ;
-        ALCcontext *m_pALContext;
         bool        m_bInitialized;
 
       public:
         CAudioDevice();
         virtual ~CAudioDevice();
-
-        ALCdevice  *getDevice ();
-        ALCcontext *getContext();
 
         void updateListener(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVelocity);
         void mute();
@@ -52,7 +45,6 @@ namespace dustbin {
         IDeletionListener *m_pListener;
 
       protected:
-        ALuint m_iBuffer;
 
       public:
         IAudioBuffer(const std::wstring &a_sName);
@@ -61,21 +53,8 @@ namespace dustbin {
         void grab();
         bool drop();
 
-        ALuint getBuffer();
         const std::wstring &getName();
         void setDeletionListener(IDeletionListener* a_pListener);
-    };
-
-    /**
-    * @class CAudioBufferOggVorbis
-    * @author Christian Keimel
-    * The audio buffer implementation for ogg-vorbis audio files
-    * @see IAudioBuffer
-    */
-    class CAudioBufferOggVorbis : public IAudioBuffer {
-      public:
-        CAudioBufferOggVorbis(const std::wstring &a_sName);
-        virtual ~CAudioBufferOggVorbis();
     };
 
     /**
@@ -86,13 +65,10 @@ namespace dustbin {
     class ISound {
       protected:
         IAudioBuffer *m_pBuffer;
-        ALuint        m_iSource;
 
       public:
         ISound(IAudioBuffer *a_pBuffer);
         virtual ~ISound();
-
-        ALuint getSource();
 
         virtual void play() = 0;
         virtual void stop() = 0;

@@ -306,9 +306,6 @@
     <ClCompile Include="..\..\_source\source\sound\CSoundInterface.cpp">
       <Filter>Quelldateien\sound</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\sound\OggHelpers.cpp">
-      <Filter>Quelldateien\sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
@@ -666,9 +663,6 @@
       <Filter>Headerdateien\sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\sound\ISoundInterface.h">
-      <Filter>Headerdateien\sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\sound\OggHelpers.h">
       <Filter>Headerdateien\sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h">
