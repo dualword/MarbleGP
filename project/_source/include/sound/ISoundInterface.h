@@ -56,11 +56,12 @@ namespace dustbin {
         * @param a_iMarble ID of the marble to update
         * @param a_cPosition the position of the marble
         * @param a_cVelocity the velocity of the marble
+        * @param a_fHit the volume of the "hit" sound for the marble
         * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
         * @param a_bBrake does the marble currently brake?
         * @param a_HasContact does the marble have a contact?
         */
-        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) = 0;
+        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) = 0;
 
         /**
         * Play the sounds of a marble assigned to a viewport
@@ -72,6 +73,33 @@ namespace dustbin {
         * @param a_HasContact does the marble have a contact?
         */
         virtual void playViewportMarbleSound(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) = 0;
+
+        /**
+        * Play the stunned sound of a marble (only played if the distance is less than 150)
+        * @param a_iMarble ID of the stunned marble
+        * @param a_cPosition position of the stunned marble
+        */
+        virtual void playMarbleStunned(int a_iMarble, const irr::core::vector3df &a_cPosition) = 0;
+
+        /**
+        * Stunned state of a marble ends so the sound must be stopped
+        * @param a_iMarble ID of the no longer stunned marbel
+        */
+        virtual void stopMarbleStunned(int a_iMarble) = 0;
+
+        /**
+        * Play the first respawn sound of a marble (only played if the distance is less than 150)
+        * @param a_iMarble ID of the respawning marble
+        * @param a_cPosition position of the respawning marble
+        */
+        virtual void playMarbleRespawnStart(int a_iMarble, const irr::core::vector3df &a_cPosition) = 0;
+
+        /**
+        * Play the second respawn sound of a marble (only played if the distance is less than 150)
+        * @param a_iMarble ID of the respawning marble
+        * @param a_cPosition position of the respawning marble
+        */
+        virtual void playMarbleRespawnDone(int a_iMarble, const irr::core::vector3df &a_cPosition) = 0;
         
         virtual void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) = 0;
         virtual void clear3dSounds() = 0;

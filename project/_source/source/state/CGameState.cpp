@@ -1186,6 +1186,10 @@ namespace dustbin {
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
 
         if (p != nullptr) {
+          irr::f32 l_fVel = a_LinearVelocity.getLengthSQ();
+          irr::f32 l_fDif = std::abs(l_fVel - p->m_fVeclocity);
+
+          p->m_fVeclocity = l_fVel;
           p->m_pPositional->setPosition(a_Position);
           p->m_pPositional->updateAbsolutePosition();
           p->m_pRotational->updateAbsolutePosition();
@@ -1204,7 +1208,9 @@ namespace dustbin {
           else {
             if (m_mViewports.size() == 1) {
 #ifndef _ANDROID
-              m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fRolling, a_ControlBrake, a_Contact);
+              irr::f32 l_fHit = l_fDif < 1000.0f ? 0.0f : l_fDif > 2000.0f ? 1.0f : (l_fDif - 1000.0f) / 1000.0f;
+              if (l_fHit > 0.0f) printf("%.2f\n", l_fHit);
+              m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fHit, l_fRolling, a_ControlBrake, a_Contact);
 #endif
             }
           }
@@ -1362,12 +1368,11 @@ namespace dustbin {
           p->m_iStateChange  = m_iStep;
           p->m_iRespawnStart = m_iStep;
 
-#ifdef _ANDROID
-          if (p->m_pViewport != nullptr)
-            m_pSoundIntf->play2d(L"data/sounds/respawn_start.ogg", m_fSfxVolume, 0.0f);
-#else
-          // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn_start.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
-#endif
+          if (p->m_pViewport != nullptr) {
+          }
+          else {
+            m_pSoundIntf->playMarbleRespawnStart(a_MarbleId, p->m_pPositional->getAbsolutePosition());
+          }
         }
         else {
           p->m_bCamLink = true;
@@ -1400,12 +1405,12 @@ namespace dustbin {
             p->m_pViewport->m_pCamera->setPosition(a_Position);
             p->m_pViewport->m_pCamera->setTarget(a_Target);
             p->m_pViewport->m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
-            
-#ifdef _ANDROID
-            m_pSoundIntf->play2d(L"data/sounds/respawn.ogg", m_fSfxVolume, 0.0f);
-#else
-            // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/respawn.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), m_fSfxVolume, false);
-#endif
+          }
+
+          if (p->m_pViewport != nullptr) {
+          }
+          else {
+            m_pSoundIntf->playMarbleRespawnDone(a_MarbleId, a_Position);
           }
 
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn2;
@@ -1429,23 +1434,21 @@ namespace dustbin {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Stunned;
             p->m_iStateChange = m_iStep;
 
-#ifdef _ANDROID
-            if (p->m_pViewport)
-              m_pSoundIntf->play2d(L"data/sounds/stunned.ogg", m_fSfxVolume, 0.0f);
-#else
-            // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", p->m_pPositional->getAbsolutePosition(), m_fSfxVolume, true);
-#endif
+            if (p->m_pViewport != nullptr) {
+            }
+            else {
+              m_pSoundIntf->playMarbleStunned(a_MarbleId, p->m_pPositional->getAbsolutePosition());
+            }
           }
           else {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
             p->m_iStateChange = -1;
 
-#ifdef _ANDROID
-            if (p->m_pViewport)
-              m_pSoundIntf->play2d(L"data/sounds/stunned.ogg", 0.0f, 0.0f);
-#else
-            // m_pSoundIntf->play3d(a_MarbleId, L"data/sounds/stunned.ogg", m_aMarbles[l_iIndex]->m_pPositional->getAbsolutePosition(), 0.0f, true);
-#endif
+            if (p->m_pViewport != nullptr) {
+            }
+            else {
+              m_pSoundIntf->stopMarbleStunned(a_MarbleId);
+            }
           }
         }
       }

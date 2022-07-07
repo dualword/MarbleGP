@@ -28,8 +28,8 @@ namespace dustbin {
 
       enMarbleState m_eState; /**< The state of the marble */
 
-      int m_iStateChange,   /**< The step of the last state change */
-          m_iRespawnStart;  /**< Start of the respawn state */
+      int m_iStateChange;   /**< The step of the last state change */
+      int m_iRespawnStart;  /**< Start of the respawn state */
 
       SPlayer *m_pPlayer; /**< The player of the marble */
 
@@ -55,14 +55,22 @@ namespace dustbin {
       */
       gfx::SViewPort *m_pViewport;
 
-      SMarbleNodes() {
-        m_pPositional   = nullptr;
-        m_pRotational   = nullptr;
-        m_pViewport     = nullptr;
-        m_pPlayer       = nullptr;
-        m_bCamLink      = true;
-        m_iRespawnStart = -1;
-        m_iStateChange  = -1;
+      /**
+      * The current velocity of the marble
+      */
+      irr::f32 m_fVeclocity;
+
+      SMarbleNodes() :
+        m_eState       (enMarbleState::Rolling),
+        m_iStateChange (0),
+        m_iRespawnStart(0),
+        m_pPlayer      (nullptr),
+        m_pPositional  (nullptr),
+        m_pRotational  (nullptr),
+        m_bCamLink     (true),
+        m_pViewport    (nullptr),
+        m_fVeclocity   (0.0f)
+      {
       }
     };
   }
