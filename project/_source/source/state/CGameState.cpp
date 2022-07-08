@@ -1209,7 +1209,6 @@ namespace dustbin {
             if (m_mViewports.size() == 1) {
 #ifndef _ANDROID
               irr::f32 l_fHit = l_fDif < 1000.0f ? 0.0f : l_fDif > 2000.0f ? 1.0f : (l_fDif - 1000.0f) / 1000.0f;
-              if (l_fHit > 0.0f) printf("%.2f\n", l_fHit);
               m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fHit, l_fRolling, a_ControlBrake, a_Contact);
 #endif
             }

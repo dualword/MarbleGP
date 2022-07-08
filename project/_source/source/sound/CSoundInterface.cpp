@@ -384,8 +384,8 @@ namespace dustbin {
           int l_iIndex = a_iMarble - 10000;
 
           if (l_iIndex >= 0 && l_iIndex < 16) {
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setPlayPosition(0);
             m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setIsPaused(false);
+            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setVolume(m_fMasterVolume * m_fSoundFXVolumeGame * m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Stunned]);
           }
         }
 
