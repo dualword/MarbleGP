@@ -5,6 +5,7 @@
 
 #include <sound/CSoundEnums.h>
 #include <string>
+#include <tuple>
 #include <map>
 
 namespace dustbin {
@@ -105,7 +106,7 @@ namespace dustbin {
         virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) = 0;
 
         virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) = 0;
-        virtual void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) = 0;
+        virtual void assignSoundtracks(const std::map<enSoundTrack, std::tuple<std::string, bool>> &a_mSoundTracks) = 0;
 
         virtual void setMenuFlag(bool a_bMenu) = 0;
     };

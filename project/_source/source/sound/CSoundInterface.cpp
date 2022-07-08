@@ -10,6 +10,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <tuple>
 
 namespace dustbin {
   namespace sound {
@@ -55,7 +56,10 @@ namespace dustbin {
         */
         std::map<std::wstring, irr::f32> m_mSoundParameters;
 
-        std::map<enSoundTrack, irrklang::ISound *> m_mSoundTracks;
+        /**
+        * The soundtracks. Bool parameter in tuple is whether or not it is played looped
+        */
+        std::map<enSoundTrack, std::tuple<irrklang::ISoundSource *, bool>> m_mSoundTracks;
 
       public:
         CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true) {
@@ -198,13 +202,18 @@ namespace dustbin {
         virtual void startSoundtrack(enSoundTrack a_eSoundTrack) override {
           if (a_eSoundTrack != m_eSoundTrack) {
             printf("Start Soundtrack: %s\n", a_eSoundTrack == enSoundTrack::enStMenu ? "Menu" : a_eSoundTrack == enSoundTrack::enStRace ? "Race" : a_eSoundTrack == enSoundTrack::enStFinish ? "Finish" : "None");
-            if (m_pSoundTrack != nullptr)
+            if (m_pSoundTrack != nullptr) {
               m_pSoundTrack->stop();
+              m_pSoundTrack->drop();
+            }
 
             m_eSoundTrack = a_eSoundTrack;
 
-            if (m_mSoundTracks.find(m_eSoundTrack) != m_mSoundTracks.end())
-              m_pSoundTrack = m_mSoundTracks[m_eSoundTrack];
+            if (m_mSoundTracks.find(m_eSoundTrack) != m_mSoundTracks.end()) {
+              m_pSoundTrack = m_pEngine->play2D(std::get<0>(m_mSoundTracks[m_eSoundTrack]), std::get<1>(m_mSoundTracks[m_eSoundTrack]), true);
+              m_pSoundTrack->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
+              m_pSoundTrack->setIsPaused(false);
+            }
             else
               m_pSoundTrack = nullptr;
 
@@ -490,11 +499,11 @@ namespace dustbin {
         virtual void bufferDeleted(IAudioBuffer* a_pBuffer) override {
         }
 
-        virtual void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) override {
+        virtual void assignSoundtracks(const std::map<enSoundTrack, std::tuple<std::string, bool>> &a_mSoundTracks) override {
           if (m_pEngine != nullptr) {
-            for (std::map<enSoundTrack, std::wstring>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
-              m_mSoundTracks[it->first] = m_pEngine->play2D(helpers::ws2s(it->second).c_str(), true, true);
-              m_mSoundTracks[it->first]->setVolume(m_fMasterVolume * m_fSoundtrackVolume);
+            for (std::map<enSoundTrack, std::tuple<std::string, bool>>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
+              m_mSoundTracks[it->first] = std::tuple(m_pEngine->addSoundSourceFromFile(std::get<0>(it->second).c_str()), std::get<1>(it->second));
+              std::get<0>(m_mSoundTracks[it->first])->setDefaultVolume(m_fMasterVolume * m_fSoundtrackVolume);
             }
           }
         }

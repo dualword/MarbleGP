@@ -121,7 +121,11 @@ namespace dustbin {
     m_pInstance = nullptr;
 
     if (m_pSoundInterface != nullptr) {
+      // Hacky memory leak: Why does the game crash if the
+      // Sound interface is dropped????
+      // 
       // delete m_pSoundInterface;
+      m_pSoundInterface->startSoundtrack(enSoundTrack::enStNone);
       m_pSoundInterface = nullptr;
     }
 
@@ -247,11 +251,14 @@ namespace dustbin {
     m_pSoundInterface->preloadSound(L"data/sounds/gameover.ogg"     , false);
     m_pSoundInterface->preloadSound(L"data/sounds/lap.ogg"          , false);
 
+    const std::map<enSoundTrack, std::tuple<std::string, bool>> l_mSoundTracks;
+
+
     m_pSoundInterface->assignSoundtracks(
       {
-        { enSoundTrack::enStMenu  , L"data/sounds/theme_menu.ogg"   },
-        { enSoundTrack::enStRace  , L"data/sounds/theme_race.ogg"   },
-        { enSoundTrack::enStFinish, L"data/sounds/theme_result.ogg" }
+        { enSoundTrack::enStMenu  , std::make_tuple("data/sounds/theme_menu.ogg"  , true  ) },
+        { enSoundTrack::enStRace  , std::make_tuple("data/sounds/theme_race.ogg"  , true  ) },
+        { enSoundTrack::enStFinish, std::make_tuple("data/sounds/theme_result.ogg", false ) }
       }
     );
 
