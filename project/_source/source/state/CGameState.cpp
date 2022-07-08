@@ -1128,9 +1128,9 @@ namespace dustbin {
         m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStRace);
         m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f);
 
-        m_pGlobal->getSoundInterface()->play2d(L"data/sounds/countdown_go.ogg", 1.0f, 0.0f);
+        m_pGlobal->getSoundInterface()->play2d(en2dSounds::Countdown, 1.0f, 0.0f);
       }
-      else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(L"data/sounds/countdown.ogg", 1.0f, 0.0f);
+      else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(en2dSounds::CountdownGo, 1.0f, 0.0f);
     }
 
     /**
@@ -1371,7 +1371,7 @@ namespace dustbin {
           if (p->m_pViewport != nullptr) {
           }
           else {
-            m_pSoundIntf->playMarbleRespawnStart(a_MarbleId, p->m_pPositional->getAbsolutePosition());
+            m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::RespawnStart);
           }
         }
         else {
@@ -1410,7 +1410,7 @@ namespace dustbin {
           if (p->m_pViewport != nullptr) {
           }
           else {
-            m_pSoundIntf->playMarbleRespawnDone(a_MarbleId, a_Position);
+            m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::RespawnDone);
           }
 
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn2;
@@ -1469,8 +1469,7 @@ namespace dustbin {
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Finished;
           p->m_bCamLink = false;
           p->m_iStateChange = m_iStep;
-          if (p->m_pViewport != nullptr)
-            m_pSoundIntf->play2d(L"data/sounds/gameover.ogg", m_fSfxVolume, 0.0f);
+          m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::GameOver);
         }
 
 #ifdef _TOUCH_CONTROL
@@ -1510,10 +1509,10 @@ namespace dustbin {
       int l_iId = a_MarbleId - 10000;
 
       if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr) {
-        // printf("onCheckpoint (GameState): Marble %i, Checkpoint %i\n", a_MarbleId, a_Checkpoint);
+        m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::Checkpoint);
+
         gfx::SViewPort* l_pViewport = m_aMarbles[l_iId]->m_pViewport;
         if (l_pViewport != nullptr) {
-          m_pSoundIntf->play2d(L"data/sounds/checkpoint.ogg", m_fSfxVolume, 0.0f);
 
           afterDrawScene(l_pViewport);
           l_pViewport->m_vNextCheckpoints.clear();
@@ -1528,8 +1527,6 @@ namespace dustbin {
           }
 
           l_pViewport->m_iLastCp = a_Checkpoint;
-
-          
         }
       }
     }
@@ -1540,10 +1537,7 @@ namespace dustbin {
      * @param a_LapNo Number of the started lap
      */
     void CGameState::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
-      int l_iId = a_MarbleId - 10000;
-      if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr && m_aMarbles[l_iId]->m_pViewport != nullptr) {
-        m_pSoundIntf->play2d(L"data/sounds/lap.ogg", m_fSfxVolume, 0.0f);
-      }
+      m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::Lap);
     }
 
     void CGameState::addStaticCameras(irr::scene::ISceneNode *a_pNode) {

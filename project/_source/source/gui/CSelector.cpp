@@ -39,7 +39,7 @@ namespace dustbin {
         m_bHoverT = m_cText.isPointInside(m_cMousePos) && m_bInside;
 
         if (!l_bHover && (m_bHoverL || m_bHoverR || m_bHoverT) && isEnabled())
-          CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
+          CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
 
         irr::core::recti l_cRect = getAbsoluteClippingRect();
 
@@ -150,7 +150,7 @@ namespace dustbin {
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
           m_bLeftBtn = true;
           if (m_bHoverL || m_bHoverR || m_bHoverT)
-            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
           m_cMousePos.X = a_cEvent.MouseInput.X;

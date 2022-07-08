@@ -88,20 +88,13 @@ namespace dustbin {
         virtual void stopMarbleStunned(int a_iMarble) = 0;
 
         /**
-        * Play the first respawn sound of a marble (only played if the distance is less than 150)
-        * @param a_iMarble ID of the respawning marble
-        * @param a_cPosition position of the respawning marble
+        * Play a specific sound for a marble, i.e. checkpoint, lap passed
+        * @param a_iMarble ID of the marble
+        * @param a_eSound the sound to play
         */
-        virtual void playMarbleRespawnStart(int a_iMarble, const irr::core::vector3df &a_cPosition) = 0;
-
-        /**
-        * Play the second respawn sound of a marble (only played if the distance is less than 150)
-        * @param a_iMarble ID of the respawning marble
-        * @param a_cPosition position of the respawning marble
-        */
-        virtual void playMarbleRespawnDone(int a_iMarble, const irr::core::vector3df &a_cPosition) = 0;
+        virtual void playMarbleOneShotSound(int a_iMarble, enOneShots a_eSound) = 0;
         
-        virtual void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) = 0;
+        virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) = 0;
         virtual void clear3dSounds() = 0;
 
         virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) = 0;

@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <sound/ISoundInterface.h>
 #include <gui/CDustbinCheckbox.h>
+#include <sound/CSoundEnums.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -45,7 +46,7 @@ namespace dustbin {
 
       if (getAbsoluteClippingRect().isPointInside(m_cMousePos)) {
         if (!m_bHover)
-          CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
+          CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
 
         m_bHover = true;
       }
@@ -69,7 +70,7 @@ namespace dustbin {
             m_bChecked = !m_bChecked;
 
             if (Parent != nullptr) {
-              irr::SEvent l_cEvent;
+              irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_GUI_EVENT;
               l_cEvent.GUIEvent.EventType = irr::gui::EGET_CHECKBOX_CHANGED;
               l_cEvent.GUIEvent.Caller    = this;
@@ -77,7 +78,7 @@ namespace dustbin {
               Parent->OnEvent(l_cEvent);
             }
 
-            CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
           }
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)

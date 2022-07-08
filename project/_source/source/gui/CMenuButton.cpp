@@ -97,7 +97,7 @@ namespace dustbin {
 
         IGUIElement::OnEvent(l_cEvent);
 
-        CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_press.ogg", 1.0f, 0.0f);
+        CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
       }
     }
 
@@ -118,7 +118,7 @@ namespace dustbin {
                 Parent->OnEvent(l_cEvent);
               }
 
-              CGlobal::getInstance()->getSoundInterface()->play2d(L"data/sounds/button_hover.ogg", 1.0f, 0.0f);
+              CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
               m_bHovered = false;
