@@ -78,45 +78,6 @@ namespace dustbin {
     };
 
     /**
-    * @class CSound3d
-    * @author Christian Keimel
-    * This is the implementation of a 3d sound
-    * @see ISound
-    */
-    class CSound3d : public ISound {
-      private:
-        bool m_bLoop;
-        bool m_bPlaying;
-
-        float m_fVolume;
-
-      public:
-        CSound3d(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist);
-        virtual ~CSound3d();
-
-        virtual void play();
-        virtual void stop();
-        virtual void setPosition(const irr::core::vector3df &a_cPos);
-        virtual void setVelocity(const irr::core::vector3df &a_cVel);
-        virtual void setVolume(irr::f32 a_fVolume);
-    };
-
-    /**
-    * @class CSound3dFixed
-    * @author Christian Keimel
-    * This is a child class of CSound3d that has no velocity so that the Doppler effect does not apply
-    * @see CSound3d
-    */
-    class CSound3dFixed : public CSound3d {
-      public:
-        CSound3dFixed(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist, const irr::core::vector3df &a_cPos);
-        virtual ~CSound3dFixed();
-
-        virtual void setPosition(const irr::core::vector3df &a_cPos);
-        virtual void setVelocity(const irr::core::vector3df &a_cVel);
-    };
-
-    /**
     * @class CSound2d
     * @author Christian Keimel
     * This is the implementation of the ISound interface for 2d sounds

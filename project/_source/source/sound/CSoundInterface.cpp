@@ -1,6 +1,9 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+#define IRRKLANG_STATIC
+
 #include <sound/ISoundInterface.h>
 #include <sound/CSoundData.h>
+#include <irrKlang.h>
 #include <CGlobal.h>
 #include <iostream>
 #include <fstream>
@@ -9,19 +12,33 @@
 
 namespace dustbin {
   namespace sound {
-    #define __OTHER_MARBLE_SOUNDS 4
-    #define __STUNNED_MARBLE_SOUNDS 2
-    #define __RESPAWN_MARBLE_SOUNDS 2
+    // An enumeration for the continuus marble sounds
+    enum class enMarbleSounds {
+      Rolling = 0,
+      Wind    = 1,
+      Skid    = 2,
+      Stunned = 3,
+      Count   = 4
+    };
+
+    // An enumeration for the one-shot sounds
+    enum class enOneShots {
+      RespawnStart,
+      RespawnDone,
+      Hit,
+      Count
+    };
 
     class CSoundInterface : public IAudioBuffer::IDeletionListener, public ISoundInterface {
       private:
         struct SMarbleSound {
-          int       m_iMarble;      /**< ID of the marble these sounds blong to */
-          bool      m_bActive;      /**< Is the sound active? */
-          irr::f32  m_fDistance;    /**< Squared distance of the sound */
-          irr::f32  m_fVolume;      /**< The current volume of the sound */
-          irr::f32  m_aParam[4];    /**< The volume factor read from the parameters*/
-          ISound   *m_pSounds[4];   /**< The sounds (only the first sound is used for stunned and respawn) */
+          int       m_iMarble;                               /**< ID of the marble these sounds blong to */
+          bool      m_bActive;                               /**< Is the sound active? */
+          irr::f32  m_fDistance;                             /**< Squared distance of the sound */
+          irr::f32  m_fVolume;                               /**< The current volume of the sound */
+          irr::f32  m_aParam[(int)enMarbleSounds::Count];    /**< The volume factor read from the parameters*/
+
+          irrklang::ISound *m_pSounds[(int)enMarbleSounds::Count];
 
           SMarbleSound() : m_iMarble(0), m_bActive(false), m_fDistance(0.0f), m_fVolume(0.0f) {
           }
@@ -38,14 +55,11 @@ namespace dustbin {
         ISound               *m_pSoundTrack;
         bool                  m_bMenu;    /**< Are we currently in the menu or game? */
 
-        SMarbleSound m_aOthers      [__OTHER_MARBLE_SOUNDS  ];
-        SMarbleSound m_aStunned     [__STUNNED_MARBLE_SOUNDS];
-        SMarbleSound m_aRespawnStart[__RESPAWN_MARBLE_SOUNDS];
-        SMarbleSound m_aRespawnDone [__RESPAWN_MARBLE_SOUNDS];
+        irrklang::ISoundEngine *m_pEngine;    /**< The irrKlang sound engine */
 
-        int m_iNextStunned;       /**< The next stunned sound to be played */
-        int m_iNextRespawnStart;  /**< The next respawn start sound to be played */
-        int m_iNextRespawnDone;   /**< The next respawn done sound to be played */
+        SMarbleSound m_aMarbles[16];
+
+        irrklang::ISoundSource *m_aOneShots[(int)enOneShots::Count];
 
         /**
         * Volume of the sounds. Key = path to file, Value = volume
@@ -57,7 +71,9 @@ namespace dustbin {
         std::map<enSoundTrack, ISound *> m_mSoundTracks;
 
       public:
-        CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true), m_iNextStunned(0), m_iNextRespawnStart(0), m_iNextRespawnDone(0) {
+        CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true) {
+          m_pEngine = irrklang::createIrrKlangDevice();
+
           m_vVelListener = irr::core::vector3df(0.0f, 0.0f, 0.0f);
           m_eSoundTrack  = enSoundTrack::enStNone;
           m_pSoundTrack  = nullptr;
@@ -105,28 +121,31 @@ namespace dustbin {
             }
           }
 
+          for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < (int)enMarbleSounds::Count; j++)
+              m_aMarbles[i].m_pSounds[j] = nullptr;
+          }
+
+          for (int i = 0; i < (int)enOneShots::Count; i++)
+            m_aOneShots[i] = nullptr;
+
           m_pDevice = new CAudioDevice();
         }
 
         virtual ~CSoundInterface() {
-          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
-            for (int j = 0; j < 4; j++)
-              if (m_aOthers[i].m_pSounds[j] != nullptr) delete m_aOthers[i].m_pSounds[j];
-          }
-
-          for (int i = 0; i < __STUNNED_MARBLE_SOUNDS; i++) {
-            if (m_aStunned[i].m_pSounds[0] != nullptr) delete m_aStunned[i].m_pSounds[0];
-          }
-
-          for (int i = 0; i < __RESPAWN_MARBLE_SOUNDS; i++) {
-            if (m_aRespawnStart[i].m_pSounds[0] != nullptr) delete m_aRespawnStart[i].m_pSounds[0];
-            if (m_aRespawnDone [i].m_pSounds[0] != nullptr) delete m_aRespawnDone [i].m_pSounds[0];
+          for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < (int)enMarbleSounds::Count; j++)
+              if (m_aMarbles[i].m_pSounds[j] != nullptr) m_aMarbles[i].m_pSounds[j]->drop();
           }
 
           for (std::map<std::wstring, ISound *>::iterator it = m_m2dSounds.begin(); it != m_m2dSounds.end(); it++) {
             it->second->stop();
             delete it->second;
           }
+
+          for (int i = 0; i < (int)enOneShots::Count; i++)
+            if (m_aOneShots[i] != nullptr)
+              m_aOneShots[i]->drop();
 
           m_m2dSounds.clear();
 
@@ -144,6 +163,8 @@ namespace dustbin {
             delete it->second;
 
           m_mAudioBuffer.clear();
+
+          m_pEngine->drop();
         }
 
         virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) override {
@@ -234,26 +255,48 @@ namespace dustbin {
         * Start a game, i.e. the sounds are initialized
         */
         virtual void startGame() override {
-          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
-            if (m_aOthers[i].m_pSounds[0] == nullptr) m_aOthers[i].m_pSounds[0] = new CSound3d(m_mAudioBuffer[L"data/sounds/rolling.ogg"], true , 1.0f, 25, 250);
-            if (m_aOthers[i].m_pSounds[1] == nullptr) m_aOthers[i].m_pSounds[1] = new CSound3d(m_mAudioBuffer[L"data/sounds/wind.ogg"   ], true , 1.0f, 25, 250);
-            if (m_aOthers[i].m_pSounds[2] == nullptr) m_aOthers[i].m_pSounds[2] = new CSound3d(m_mAudioBuffer[L"data/sounds/skid.ogg"   ], true , 1.0f, 25, 250);
-            if (m_aOthers[i].m_pSounds[3] == nullptr) m_aOthers[i].m_pSounds[3] = new CSound3d(m_mAudioBuffer[L"data/sounds/hit.ogg"    ], false, 1.0f, 25, 250);
+          for (int i = 0; i < 16; i++) {
+            if (m_pEngine != nullptr) {
+              if (m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Rolling] == nullptr) m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Rolling] = m_pEngine->play3D("data/sounds/rolling.ogg"      , irrklang::vec3d(0.0f, 0.0f, 0.0f), true , true);
+              if (m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Wind   ] == nullptr) m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Wind   ] = m_pEngine->play3D("data/sounds/wind.ogg"         , irrklang::vec3d(0.0f, 0.0f, 0.0f), true , true);
+              if (m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Skid   ] == nullptr) m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Skid   ] = m_pEngine->play3D("data/sounds/skid.ogg"         , irrklang::vec3d(0.0f, 0.0f, 0.0f), true , true);
+              if (m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Stunned] == nullptr) m_aMarbles[i].m_pSounds[(int)enMarbleSounds::Stunned] = m_pEngine->play3D("data/sounds/stunned.ogg"      , irrklang::vec3d(0.0f, 0.0f, 0.0f), true , true);
 
-            if (m_mSoundParameters.find(L"data/sounds/rolling.ogg") != m_mSoundParameters.end()) m_aOthers[i].m_aParam[0] = m_mSoundParameters[L"data/sounds/rolling.ogg"]; else m_aOthers[i].m_aParam[0] = 1.0f;
-            if (m_mSoundParameters.find(L"data/sounds/wind.ogg"   ) != m_mSoundParameters.end()) m_aOthers[i].m_aParam[1] = m_mSoundParameters[L"data/sounds/wind.ogg"   ]; else m_aOthers[i].m_aParam[1] = 1.0f;
-            if (m_mSoundParameters.find(L"data/sounds/skid.ogg"   ) != m_mSoundParameters.end()) m_aOthers[i].m_aParam[2] = m_mSoundParameters[L"data/sounds/skid.ogg"   ]; else m_aOthers[i].m_aParam[2] = 1.0f;
-            if (m_mSoundParameters.find(L"data/sounds/hit.ogg"    ) != m_mSoundParameters.end()) m_aOthers[i].m_aParam[3] = m_mSoundParameters[L"data/sounds/hit.ogg"    ]; else m_aOthers[i].m_aParam[2] = 1.0f;
+              if (m_mSoundParameters.find(L"data/sounds/rolling.ogg") != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[(int)enMarbleSounds::Rolling] = m_mSoundParameters[L"data/sounds/rolling.ogg"]; else m_aMarbles[i].m_aParam[0] = 1.0f;
+              if (m_mSoundParameters.find(L"data/sounds/wind.ogg"   ) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[(int)enMarbleSounds::Wind   ] = m_mSoundParameters[L"data/sounds/wind.ogg"   ]; else m_aMarbles[i].m_aParam[1] = 1.0f;
+              if (m_mSoundParameters.find(L"data/sounds/skid.ogg"   ) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[(int)enMarbleSounds::Skid   ] = m_mSoundParameters[L"data/sounds/skid.ogg"   ]; else m_aMarbles[i].m_aParam[2] = 1.0f;
+              if (m_mSoundParameters.find(L"data/sounds/hit.ogg"    ) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[(int)enMarbleSounds::Stunned] = m_mSoundParameters[L"data/sounds/hit.ogg"    ]; else m_aMarbles[i].m_aParam[2] = 1.0f;
+
+              for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+                if (m_aMarbles[i].m_pSounds[j] != nullptr) {
+                  m_aMarbles[i].m_pSounds[j]->setMinDistance( 25.0f);
+                  m_aMarbles[i].m_pSounds[j]->setMaxDistance(250.0f);
+                  m_aMarbles[i].m_pSounds[j]->setVolume(0.0f);
+                  m_aMarbles[i].m_pSounds[j]->setIsPaused(false);
+                }
+              }
+            }
           }
 
-          for (int i = 0; i < __STUNNED_MARBLE_SOUNDS; i++) {
-            if (m_aStunned[i].m_pSounds[0] == nullptr) m_aStunned[i].m_pSounds[0] = new CSound3d(m_mAudioBuffer[L"data/sounds/stunned.ogg"], true, 0.0f, 25, 250);
-            m_aStunned[i].m_iMarble = -1;
+          if (m_aOneShots[(int)enOneShots::RespawnStart] == nullptr) {
+            m_aOneShots[(int)enOneShots::RespawnStart] = m_pEngine->addSoundSourceFromFile("data/sounds/respawn_start.ogg");
+            m_aOneShots[(int)enOneShots::RespawnStart]->setDefaultMinDistance( 25.0f);
+            m_aOneShots[(int)enOneShots::RespawnStart]->setDefaultMaxDistance(250.0f);
+            m_aOneShots[(int)enOneShots::RespawnStart]->setDefaultVolume     (m_mSoundParameters.find(L"data/sounds/respawn_start.ogg") != m_mSoundParameters.end() ? m_mSoundParameters[L"data/sounds/respawn_start.ogg"] : 1.0f);
           }
 
-          for (int i = 0; i < __RESPAWN_MARBLE_SOUNDS; i++) {
-            if (m_aRespawnStart[i].m_pSounds[0] == nullptr) m_aRespawnStart[i].m_pSounds[0] = new CSound3d(m_mAudioBuffer[L"data/sounds/respawn_start.ogg"], false, 1.0f, 25, 250);
-            if (m_aRespawnDone [i].m_pSounds[0] == nullptr) m_aRespawnDone [i].m_pSounds[0] = new CSound3d(m_mAudioBuffer[L"data/sounds/respawn.ogg"      ], false, 1.0f, 25, 250);
+          if (m_aOneShots[(int)enOneShots::RespawnDone] == nullptr) {
+            m_aOneShots[(int)enOneShots::RespawnDone] = m_pEngine->addSoundSourceFromFile("data/sounds/respawn.ogg");
+            m_aOneShots[(int)enOneShots::RespawnDone]->setDefaultMinDistance( 25.0f);
+            m_aOneShots[(int)enOneShots::RespawnDone]->setDefaultMaxDistance(250.0f);
+            m_aOneShots[(int)enOneShots::RespawnDone]->setDefaultVolume     (m_mSoundParameters.find(L"data/sounds/respawn.ogg") != m_mSoundParameters.end() ? m_mSoundParameters[L"data/sounds/respawn.ogg"] : 1.0f);
+          }
+
+          if (m_aOneShots[(int)enOneShots::Hit] == nullptr) {
+            m_aOneShots[(int)enOneShots::Hit] = m_pEngine->addSoundSourceFromFile("data/sounds/hit.ogg");
+            m_aOneShots[(int)enOneShots::Hit]->setDefaultMinDistance( 25.0f);
+            m_aOneShots[(int)enOneShots::Hit]->setDefaultMaxDistance(250.0f);
+            m_aOneShots[(int)enOneShots::Hit]->setDefaultVolume     (m_mSoundParameters.find(L"data/sounds/hit.ogg") != m_mSoundParameters.end() ? m_mSoundParameters[L"data/sounds/hit.ogg"] : 1.0f);
           }
         }
 
@@ -261,24 +304,11 @@ namespace dustbin {
         * Stop a game, i.e. the sounds are muted
         */
         virtual void stopGame() override {
-          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
-            for (int j = 0; j < 4; j++) {
-              if (m_aOthers[i].m_pSounds[j] != nullptr) m_aOthers[i].m_pSounds[j]->stop();
+          for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+              if (m_aMarbles[i].m_pSounds[j] != nullptr) m_aMarbles[i].m_pSounds[j]->stop();
             }
           }
-
-          for (int i = 0; i < __STUNNED_MARBLE_SOUNDS; i++) {
-            if (m_aStunned[i].m_pSounds[0] != nullptr) m_aStunned[i].m_pSounds[0]->stop();
-          }
-
-          for (int i = 0; i < __RESPAWN_MARBLE_SOUNDS; i++) {
-            if (m_aRespawnStart[i].m_pSounds[0] != nullptr) m_aRespawnStart[i].m_pSounds[0]->stop();
-            if (m_aRespawnDone [i].m_pSounds[0] != nullptr) m_aRespawnDone [i].m_pSounds[0]->stop();
-          }
-
-          m_iNextStunned      = 0;
-          m_iNextRespawnStart = 0;
-          m_iNextRespawnDone  = 0;
         }
 
         /**
@@ -286,16 +316,16 @@ namespace dustbin {
         */
         virtual void pauseGame(bool a_bPaused) override {
           if (a_bPaused) {
-            for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
-              for (int j = 0; j < 4; j++) {
-                if (m_aOthers[i].m_pSounds[j] != nullptr) m_aOthers[i].m_pSounds[j]->setVolume(0.0f);
+            for (int i = 0; i < 16; i++) {
+              for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+                if (m_aMarbles[i].m_pSounds[j] != nullptr) m_aMarbles[i].m_pSounds[j]->setVolume(0.0f);
               }
             }
           }
           else {
-            for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
-              for (int j = 0; j < 4; j++) {
-                if (m_aOthers[i].m_pSounds[j] != nullptr) m_aOthers[i].m_pSounds[j]->setVolume(m_aOthers[i].m_fVolume);
+            for (int i = 0; i < 16; i++) {
+              for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+                if (m_aMarbles[i].m_pSounds[j] != nullptr) m_aMarbles[i].m_pSounds[j]->setVolume(m_aMarbles[i].m_fVolume);
               }
             }
           }
@@ -312,42 +342,25 @@ namespace dustbin {
         * @param a_bBrake does the marble currently brake?
         * @param a_HasContact does the marble have a contact?
         */
-        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_vVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
+        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_cVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
           irr::f32 l_fDistSq = a_cPosition.getDistanceFromSQ(m_vPosListener);
 
           // printf("%.2f\n", a_fHit);
 
-          for (int i = 0; i < __OTHER_MARBLE_SOUNDS; i++) {
-            if (!m_aOthers[i].m_bActive || m_aOthers[i].m_fDistance > l_fDistSq || m_aOthers[i].m_iMarble == a_iMarble) {
-              if (m_aOthers[i].m_iMarble != a_iMarble)
-                printf("%i: %.2f, %.2f\n", a_iMarble, std::sqrt(l_fDistSq), a_fVolume);
+          int l_iIndex = a_iMarble - 10000;
 
-              for (int j = 0; j < 4; j++) {
-                if (m_aOthers[i].m_pSounds[j] != nullptr) {
-                  m_aOthers[i].m_pSounds[j]->setPosition(a_cPosition);
-                  m_aOthers[i].m_pSounds[j]->setVelocity(a_vVelocity); 
+          if (l_iIndex >= 0 && l_iIndex < 16) {
+            for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
+              m_aMarbles[l_iIndex].m_pSounds[i]->setPosition(irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z));
+              m_aMarbles[l_iIndex].m_pSounds[i]->setVelocity(irrklang::vec3df(a_cVelocity.X, a_cVelocity.Y, a_cVelocity.Z));
+            }
 
-                  if (j == 0)
-                    m_aOthers[i].m_pSounds[0]->setVolume(a_bHasContact ? m_aOthers[i].m_aParam[0] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f); 
-                  else if (j == 1)
-                    m_aOthers[i].m_pSounds[1]->setVolume(m_aOthers[i].m_aParam[1] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume);
-                  else if (j == 2)
-                    m_aOthers[i].m_pSounds[2]->setVolume(a_bBrake && a_bHasContact ? m_aOthers[i].m_aParam[2] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
-                  else if (j == 3 && a_fHit > 0.0f) {
-                    printf("==> %.2f\n", a_fHit);
-                    m_aOthers[i].m_pSounds[3]->setVolume(a_fHit);
-                  }
-
-                  m_aOthers[i].m_pSounds[j]->play();
-                }
-              }
-
-              m_aOthers[i].m_bActive   = true;
-              m_aOthers[i].m_fDistance = l_fDistSq;
-              m_aOthers[i].m_fVolume   = a_fVolume;
-              m_aOthers[i].m_iMarble   = a_iMarble;
-
-              break;
+            m_aMarbles[l_iIndex].m_pSounds[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Rolling] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
+            m_aMarbles[l_iIndex].m_pSounds[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Skid   ] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
+            m_aMarbles[l_iIndex].m_pSounds[(int)enMarbleSounds::Wind   ]->setVolume(                            m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Wind   ] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume       );
+            
+            if (a_fHit > 0.0f) {
+              m_pEngine->play3D(m_aOneShots[(int)enOneShots::Hit], irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z), false, false, false);
             }
           }
         }
@@ -358,32 +371,11 @@ namespace dustbin {
         * @param a_cPosition position of the stunned marble
         */
         virtual void playMarbleStunned(int a_iMarble, const irr::core::vector3df& a_cPosition) override {
-          irr::f32 l_fDistSq = a_cPosition.getDistanceFromSQ(m_vPosListener);
+          int l_iIndex = a_iMarble - 10000;
 
-          if (l_fDistSq < 62500) {
-            for (int i = 0; i < __STUNNED_MARBLE_SOUNDS; i++) {
-              if (m_aStunned[i].m_iMarble == -1) {
-                printf("Stunned sound %i: %i [1]\n", i, a_iMarble);
-
-                m_aStunned[i].m_iMarble = a_iMarble;
-                m_aStunned[i].m_pSounds[0]->setPosition(a_cPosition);
-                m_aStunned[i].m_pSounds[0]->setVolume(1.0f * m_mSoundParameters[L"data/sounds/stunned.ogg"]);
-                m_aStunned[i].m_pSounds[0]->play();
-
-                return;
-              }
-            }
-
-            printf("Stunned sound %i: %i [2]\n", m_iNextStunned, a_iMarble);
-            if (m_aStunned[m_iNextStunned].m_pSounds[0] != nullptr) {
-              m_aStunned[m_iNextStunned].m_iMarble = a_iMarble;
-              m_aStunned[m_iNextStunned].m_pSounds[0]->setPosition(a_cPosition);
-              m_aStunned[m_iNextStunned].m_pSounds[0]->setVolume(1.0f * m_mSoundParameters[L"data/sounds/stunned.ogg"]);
-              m_aStunned[m_iNextStunned].m_pSounds[0]->play();
-            }
-
-            m_iNextStunned++;
-            if (m_iNextStunned >= __STUNNED_MARBLE_SOUNDS) m_iNextStunned = 0;
+          if (l_iIndex >= 0 && l_iIndex < 16) {
+            m_aMarbles[l_iIndex].m_pSounds[(int)enMarbleSounds::Stunned]->setPlayPosition(0);
+            m_aMarbles[l_iIndex].m_pSounds[(int)enMarbleSounds::Stunned]->setIsPaused(false);
           }
         }
 
@@ -392,11 +384,10 @@ namespace dustbin {
         * @param a_iMarble ID of the no longer stunned marbel
         */
         virtual void stopMarbleStunned(int a_iMarble) override {
-          for (int i = 0; i < __STUNNED_MARBLE_SOUNDS; i++) {
-            if (m_aStunned[i].m_iMarble == a_iMarble && m_aStunned[i].m_pSounds[0] != nullptr) {
-              m_aStunned[i].m_pSounds[0]->setVolume(0.0f);
-              m_aStunned[i].m_iMarble = -1;
-            }
+          int l_iIndex = a_iMarble - 10000;
+
+          if (l_iIndex >= 0 && l_iIndex < 16) {
+            m_aMarbles[l_iIndex].m_pSounds[(int)enMarbleSounds::Stunned]->setIsPaused(true);
           }
         }
 
@@ -406,19 +397,10 @@ namespace dustbin {
         * @param a_cPosition position of the respawning marble
         */
         virtual void playMarbleRespawnStart(int a_iMarble, const irr::core::vector3df &a_cPosition) override {
-          irr::f32 l_fDistSq = a_cPosition.getDistanceFromSQ(m_vPosListener);
+          int l_iIndex = a_iMarble - 10000;
 
-          if (l_fDistSq < 62500) {
-            printf("Respawn start sound %i: %i\n", m_iNextRespawnStart, a_iMarble);
-            if (m_aRespawnStart[m_iNextRespawnStart].m_pSounds[0] != nullptr) {
-              m_aRespawnStart[m_iNextRespawnStart].m_iMarble = a_iMarble;
-              m_aRespawnStart[m_iNextRespawnStart].m_pSounds[0]->setPosition(a_cPosition);
-              m_aRespawnStart[m_iNextRespawnStart].m_pSounds[0]->setVolume(1.0f * m_mSoundParameters[L"data/sounds/respawn_start.ogg"]);
-              m_aRespawnStart[m_iNextRespawnStart].m_pSounds[0]->play();
-            }
-
-            m_iNextRespawnStart++;
-            if (m_iNextRespawnStart >= __RESPAWN_MARBLE_SOUNDS) m_iNextRespawnStart = 0;
+          if (l_iIndex >= 0 && l_iIndex < 16) {
+            m_pEngine->play3D(m_aOneShots[(int)enOneShots::RespawnStart], irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z), false, false, false);
           }
         }
 
@@ -428,19 +410,10 @@ namespace dustbin {
         * @param a_cPosition position of the respawning marble
         */
         virtual void playMarbleRespawnDone(int a_iMarble, const irr::core::vector3df &a_cPosition) override {
-          irr::f32 l_fDistSq = a_cPosition.getDistanceFromSQ(m_vPosListener);
+          int l_iIndex = a_iMarble - 10000;
 
-          if (l_fDistSq < 62500) {
-            printf("Respawn done sound %i: %i\n", m_iNextRespawnDone, a_iMarble);
-            if (m_aRespawnDone[m_iNextRespawnDone].m_pSounds[0] != nullptr) {
-              m_aRespawnDone[m_iNextRespawnDone].m_iMarble = a_iMarble;
-              m_aRespawnDone[m_iNextRespawnDone].m_pSounds[0]->setPosition(a_cPosition);
-              m_aRespawnDone[m_iNextRespawnDone].m_pSounds[0]->setVolume(1.0f * m_mSoundParameters[L"data/sounds/respawn.ogg"]);
-              m_aRespawnDone[m_iNextRespawnDone].m_pSounds[0]->play();
-            }
-
-            m_iNextRespawnDone++;
-            if (m_iNextRespawnDone>= __RESPAWN_MARBLE_SOUNDS) m_iNextRespawnDone = 0;
+          if (l_iIndex >= 0 && l_iIndex < 16) {
+            m_pEngine->play3D(m_aOneShots[(int)enOneShots::RespawnDone], irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z), false, false, false);
           }
         }
 
@@ -479,6 +452,12 @@ namespace dustbin {
           m_vVelListener = a_vVel;
           m_vPosListener = a_pCamera->getAbsolutePosition();
           m_pDevice->updateListener(a_pCamera, m_vVelListener);
+
+          irr::core::vector3df l_cPos = a_pCamera->getAbsolutePosition();
+          irr::core::vector3df l_cTgt = a_pCamera->getTarget          ();
+          irr::core::vector3df l_cUp  = a_pCamera->getUpVector        ();
+
+          m_pEngine->setListenerPosition(irrklang::vec3df(l_cPos.X, l_cPos.Y, l_cPos.Z), irrklang::vec3df(l_cTgt.X, l_cTgt.Y, l_cTgt.Z), irrklang::vec3df(a_vVel.X, a_vVel.Y, a_vVel.Z), irrklang::vec3df(l_cUp.X, l_cUp.Y, l_cUp.Z));
         }
 
         virtual void bufferDeleted(IAudioBuffer* a_pBuffer) override {

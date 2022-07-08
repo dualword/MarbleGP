@@ -75,41 +75,6 @@ namespace dustbin {
         m_pBuffer->drop();
     }
 
-    CSound3d::CSound3d(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist) : ISound(a_pBuffer), m_bLoop(a_bLoop), m_bPlaying(false), m_fVolume(a_fVolume) {
-    }
-
-    CSound3d::~CSound3d() {
-    }
-
-    void CSound3d::play() {
-    }
-
-    void CSound3d::stop() {
-    }
-
-    void CSound3d::setPosition(const irr::core::vector3df& a_cPos) {
-    }
-
-    void CSound3d::setVelocity(const irr::core::vector3df& a_cVel) {
-    }
-
-    void CSound3d::setVolume(irr::f32 a_fVolume) {
-    }
-
-    CSound3dFixed::CSound3dFixed(IAudioBuffer* a_pBuffer, bool a_bLoop, irr::f32 a_fVolume, irr::f32 a_fMinDist, irr::f32 a_fMaxDist, const irr::core::vector3df& a_cPos) : CSound3d(a_pBuffer, a_bLoop, a_fVolume, a_fMinDist, a_fMaxDist) {
-    }
-
-    CSound3dFixed::~CSound3dFixed() {
-    }
-
-    void CSound3dFixed::setPosition(const irr::core::vector3df& a_cPos) {
-    }
-
-    void CSound3dFixed::setVelocity(const irr::core::vector3df& a_cVel) {
-    }
-
-
-
     CSound2d::CSound2d(IAudioBuffer* a_pBuffer, bool a_bLoop) : ISound(a_pBuffer), m_bLoop(a_bLoop), m_bPlaying(false) {
     }
 

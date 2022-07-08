@@ -313,8 +313,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\include;..\..\libs\irrlicht\include\Irrlicht;C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -322,8 +322,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;..\..\libs\irrlicht\include\Irrlicht;..\libs\Irrlicht-1.9\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\include;..\..\libs\irrlicht\include\Irrlicht;..\libs\Irrlicht-1.9\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -403,7 +403,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -427,7 +427,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
