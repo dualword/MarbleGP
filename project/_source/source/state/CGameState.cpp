@@ -237,6 +237,8 @@ namespace dustbin {
             m_mViewports[l_pPlayer->m_iPlayerId] = l_cViewport;
             a_pPlayer->m_pMarble->m_pViewport = &m_mViewports[l_pPlayer->m_iPlayerId];
           }
+
+          m_pSoundIntf->setViewportMarble(a_pPlayer->m_pMarble->m_pPositional->getID());
         }
       }
 
@@ -569,7 +571,6 @@ namespace dustbin {
         m_pTouchControl = reinterpret_cast<gui::CGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
       }
 #endif
-      m_pSoundIntf->startGame();
     }
 
     /**
@@ -1205,13 +1206,11 @@ namespace dustbin {
 
             m_pSoundIntf->playViewportMarbleSound(a_ObjectId, a_Position, a_LinearVelocity, l_fRolling, a_ControlBrake, a_Contact);
           }
-          else {
-            if (m_mViewports.size() == 1) {
+          if (m_mViewports.size() == 1) {
 #ifndef _ANDROID
-              irr::f32 l_fHit = l_fDif < 1000.0f ? 0.0f : l_fDif > 2000.0f ? 1.0f : (l_fDif - 1000.0f) / 1000.0f;
-              m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fHit, l_fRolling, a_ControlBrake, a_Contact);
+            irr::f32 l_fHit = l_fDif < 1000.0f ? 0.0f : l_fDif > 2000.0f ? 1.0f : (l_fDif - 1000.0f) / 1000.0f;
+            m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fHit, l_fRolling, a_ControlBrake, a_Contact);
 #endif
-            }
           }
 
 #ifdef _ANDROID
@@ -1313,6 +1312,8 @@ namespace dustbin {
     * This function receives messages of type "RaceSetupDone"
     */
     void CGameState::onRacesetupdone() {
+      m_pSoundIntf->startGame();
+
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
         it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
         it->second.m_pHUD->drop();
@@ -1348,6 +1349,7 @@ namespace dustbin {
 
       if (m_pAiThread != nullptr)
         m_pAiThread->startThread();
+
     }
 
     /**
@@ -1367,11 +1369,7 @@ namespace dustbin {
           p->m_iStateChange  = m_iStep;
           p->m_iRespawnStart = m_iStep;
 
-          if (p->m_pViewport != nullptr) {
-          }
-          else {
-            m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::RespawnStart);
-          }
+          m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::RespawnStart);
         }
         else {
           p->m_bCamLink = true;
@@ -1406,11 +1404,7 @@ namespace dustbin {
             p->m_pViewport->m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
           }
 
-          if (p->m_pViewport != nullptr) {
-          }
-          else {
-            m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::RespawnDone);
-          }
+          m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::RespawnDone);
 
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn2;
           p->m_iStateChange = m_iStep;
@@ -1433,21 +1427,13 @@ namespace dustbin {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Stunned;
             p->m_iStateChange = m_iStep;
 
-            if (p->m_pViewport != nullptr) {
-            }
-            else {
-              m_pSoundIntf->playMarbleStunned(a_MarbleId, p->m_pPositional->getAbsolutePosition());
-            }
+            m_pSoundIntf->playMarbleStunned(a_MarbleId, p->m_pPositional->getAbsolutePosition());
           }
           else {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
             p->m_iStateChange = -1;
 
-            if (p->m_pViewport != nullptr) {
-            }
-            else {
-              m_pSoundIntf->stopMarbleStunned(a_MarbleId);
-            }
+            m_pSoundIntf->stopMarbleStunned(a_MarbleId);
           }
         }
       }

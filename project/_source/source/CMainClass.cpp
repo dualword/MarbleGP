@@ -120,6 +120,11 @@ namespace dustbin {
   CMainClass::~CMainClass() {
     m_pInstance = nullptr;
 
+    if (m_pSoundInterface != nullptr) {
+      // delete m_pSoundInterface;
+      m_pSoundInterface = nullptr;
+    }
+
     if (m_pActiveState != nullptr) {
       m_pActiveState->willBeDeleted();
       m_pActiveState->deactivate();
@@ -137,11 +142,6 @@ namespace dustbin {
 
     for (std::map<state::enState, state::IState*>::iterator it = m_mStates.begin(); it != m_mStates.end(); it++) {
       delete it->second;
-    }
-
-    if (m_pSoundInterface != nullptr) {
-      delete m_pSoundInterface;
-      m_pSoundInterface = nullptr;
     }
 
     if (m_pServer != nullptr) {

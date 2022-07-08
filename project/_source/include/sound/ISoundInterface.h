@@ -93,6 +93,11 @@ namespace dustbin {
         * @param a_eSound the sound to play
         */
         virtual void playMarbleOneShotSound(int a_iMarble, enOneShots a_eSound) = 0;
+
+        /**
+        * Define a marble controlled by a local player
+        */
+        virtual void setViewportMarble(int a_iMarble) = 0;
         
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) = 0;
         virtual void clear3dSounds() = 0;
