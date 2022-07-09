@@ -1207,19 +1207,9 @@ namespace dustbin {
             m_pSoundIntf->playViewportMarbleSound(a_ObjectId, a_Position, a_LinearVelocity, l_fRolling, a_ControlBrake, a_Contact);
           }
           if (m_mViewports.size() == 1) {
-#ifndef _ANDROID
             irr::f32 l_fHit = l_fDif < 1000.0f ? 0.0f : l_fDif > 2000.0f ? 1.0f : (l_fDif - 1000.0f) / 1000.0f;
             m_pSoundIntf->playMarbleSounds(a_ObjectId, a_Position, a_LinearVelocity, l_fHit, l_fRolling, a_ControlBrake, a_Contact);
-#endif
           }
-
-#ifdef _ANDROID
-          if (p->m_pViewport != nullptr) {
-            m_pSoundIntf->play2d(L"data/sounds/wind.ogg"   ,                               l_fRolling       , 1.0f);
-            m_pSoundIntf->play2d(L"data/sounds/skid.ogg"   , a_Contact && a_ControlBrake ? l_fRolling : 0.0f, 1.0f);
-            m_pSoundIntf->play2d(L"data/sounds/rolling.ogg", a_Contact                   ? l_fRolling : 0.0f, 1.0f);
-          }
-#endif
         }
 
         

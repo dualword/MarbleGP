@@ -341,7 +341,14 @@ namespace dustbin {
             .m_iSampleRate = 44100
           };
 
-          m_pSource = CAssetDataSource::newFromCompressedAsset(*(CGlobal::getInstance()->getAndroidApp()->activity->assetManager), a_sSound.c_str(), l_cTargetProperties);
+          std::string l_sSound = a_sSound;
+          if (l_sSound.substr(0, 5) == "data/")
+            l_sSound = l_sSound.substr(5);            
+
+          if (l_sSound.find_last_of(L'.') != std::string::npos)
+            l_sSound = l_sSound.substr(0, l_sSound.find_last_of(L'.')) + ".wav";
+
+          m_pSource = CAssetDataSource::newFromCompressedAsset(*(CGlobal::getInstance()->getAndroidApp()->activity->assetManager), l_sSound.c_str(), l_cTargetProperties);
 
           a_cBuilder.setCallback(this);
           oboe::Result l_eResult = a_cBuilder.openStream(m_pStream);
@@ -422,19 +429,25 @@ namespace dustbin {
 
     class CSoundInterface : public ISoundInterface {
       private:
-        irr::f32 m_fMasterVolume,
-                 m_fSoundtrackVolume,
-                 m_fGameVolume,
-                 m_fMenuVolume;
+        irr::f32 m_fMasterVolume;
+        irr::f32 m_fSoundtrackVolume;
+        irr::f32 m_fGameVolume;
+        irr::f32 m_fMenuVolume;
 
         bool m_bMenu;
 
-        std::map<enSoundTrack, CAudioPlayer *> m_mSoundTracks;
-        std::map<std::wstring, CAudioPlayer *> m_mSounds;
-        std::map<std::wstring, irr::f32      > m_mParameters;
+        int m_iPlayerMarble;
 
-        std::vector<CAudioPlayer *> m_vMenuSounds,
-                                    m_vGameSounds;
+        CAudioPlayer *m_aSounds[(int)en2dSounds    ::Count];
+        CAudioPlayer *m_aMarble[(int)enMarbleSounds::Count];
+        CAudioPlayer *m_aShots [(int)enOneShots    ::Count];
+
+        std::map<enSoundTrack  , CAudioPlayer *> m_mSoundTracks;
+        std::map<enOneShots    , CAudioPlayer *> m_mOneShots;
+        std::map<std::wstring  , irr::f32      > m_mParameters;
+
+        std::vector<CAudioPlayer *> m_vMenuSounds;
+        std::vector<CAudioPlayer *> m_vGameSounds;
 
         enSoundTrack m_eSoundTrack;
 
@@ -447,18 +460,31 @@ namespace dustbin {
           m_fGameVolume      (1.0f),
           m_fMenuVolume      (1.0f),
           m_bMenu            (true),
-          m_eSoundTrack(enSoundTrack::enStNone) 
+          m_iPlayerMarble    (0),
+          m_eSoundTrack      (enSoundTrack::enStNone) 
         {
           oboe::DefaultStreamValues::SampleRate = 44100;
+
+          std::string l_a2dSounds[] = {
+            "data/sounds/button_hover.ogg",
+            "data/sounds/button_press.ogg",
+            "data/sounds/countdown.ogg",
+            "data/sounds/countdown_go.ogg",
+            ""
+          };
+
+          for (int i = 0; l_a2dSounds[i] != ""; i++) {
+            m_aSounds[i] = new CAudioPlayer(l_a2dSounds[i], false, m_cBuilder);
+          }
         }
 
         virtual ~CSoundInterface() {
         }
 
-        void createSoundFileFactory(irr::io::IFileArchive *a_pArchive) {
+        virtual void createSoundFileFactory(irr::io::IFileArchive *a_pArchive) override {
         }
 
-        void setMasterVolume(irr::f32 a_fVolume) {
+        virtual void setMasterVolume(irr::f32 a_fVolume) override {
           m_fMasterVolume = a_fVolume < 0.0f ? 0.0f : a_fVolume > 1.0f ? 1.0f : a_fVolume;
 
           for (std::vector<CAudioPlayer *>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
@@ -474,7 +500,7 @@ namespace dustbin {
           }
         }
 
-        void setSfxVolumeGame(irr::f32 a_fVolume) {
+        virtual void setSfxVolumeGame(irr::f32 a_fVolume) override {
           m_fGameVolume = a_fVolume > 1.0f ? 1.0f : a_fVolume < 0.0f ? 0.0f : a_fVolume;
 
           for (std::vector<CAudioPlayer *>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
@@ -482,7 +508,7 @@ namespace dustbin {
           }
         }
 
-        void setSfxVolumeMenu(irr::f32 a_fVolume) {
+        virtual void setSfxVolumeMenu(irr::f32 a_fVolume) override {
           m_fMenuVolume = a_fVolume > 1.0f ? 1.0f : a_fVolume < 0.0f ? 0.0f : a_fVolume;
 
           for (std::vector<CAudioPlayer *>::iterator it = m_vMenuSounds.begin(); it != m_vMenuSounds.end(); it++) {
@@ -490,20 +516,20 @@ namespace dustbin {
           }
         }
 
-        void setSoundtrackVolume(irr::f32 a_fVolume) {
+        virtual void setSoundtrackVolume(irr::f32 a_fVolume) override {
           m_fSoundtrackVolume = a_fVolume < 0.0f ? 0.0f : a_fVolume > 1.0f ? 1.0f : a_fVolume;
-          for (std::map<std::wstring, CAudioPlayer *>::iterator it = m_mSounds.begin(); it != m_mSounds.end(); it++) {
+          for (std::map<enSoundTrack, CAudioPlayer*>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
             it->second->setVolume(m_fSoundtrackVolume * m_fMasterVolume);
           }
         }
 
-        void muteAudio() {
-          for (std::map<std::wstring, CAudioPlayer *>::iterator it = m_mSounds.begin(); it != m_mSounds.end(); it++)
-            it->second->setVolume(0.0f);
+        virtual void muteAudio() override {
+          // for (std::map<en2dSounds, CAudioPlayer *>::iterator it = m_mSounds.begin(); it != m_mSounds.end(); it++)
+          //   it->second->setVolume(0.0f);
         }
 
-        void unmuteAudio() {
-          for (std::vector<CAudioPlayer *>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
+        virtual void unmuteAudio() override {
+          /*for (std::vector<CAudioPlayer*>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
             (*it)->setVolume(m_fGameVolume * m_fMasterVolume);
           }
 
@@ -513,26 +539,26 @@ namespace dustbin {
 
           for (std::map<enSoundTrack, CAudioPlayer *>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
             it->second->setVolume(m_fSoundtrackVolume * m_fMasterVolume);
-          }
+          }*/
         }
 
-        irr::f32 getMasterVolume() {
+        virtual irr::f32 getMasterVolume() override {
           return m_fMasterVolume;
         }
 
-        irr::f32 getSfxVolumeGame() {
+        virtual irr::f32 getSfxVolumeGame() override {
           return m_fGameVolume;
         }
 
-        irr::f32 getSfxVolumeMenu() {
+        virtual irr::f32 getSfxVolumeMenu() override {
           return m_fMenuVolume;
         }
 
-        irr::f32 getSoundtrackVolume() {
+        virtual irr::f32 getSoundtrackVolume() override {
           return m_fSoundtrackVolume;
         }
 
-        void startSoundtrack(enSoundTrack a_eSoundTrack) {
+        virtual void startSoundtrack(enSoundTrack a_eSoundTrack) override {
           if (a_eSoundTrack != m_eSoundTrack) {
             if (m_mSoundTracks.find(m_eSoundTrack) != m_mSoundTracks.end())
               m_mSoundTracks[m_eSoundTrack]->setPlaying(false, true);
@@ -544,72 +570,166 @@ namespace dustbin {
           }
         }
 
-        void setSoundtrackFade(irr::f32 a_fValue) {
+        virtual void setSoundtrackFade(irr::f32 a_fValue) override {
           for (std::map<enSoundTrack, CAudioPlayer*>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
             it->second->setVolume(m_fMasterVolume * m_fSoundtrackVolume * a_fValue);
           }
         }
 
-        void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bLooped) {
-          // 3d sounds not supported by Android
-        }
+        /**
+        * Start a game, i.e. the sounds are initialized
+        */
+        virtual void startGame() override {
+          std::string l_aMarbleSounds[] = {
+            "data/sounds/rolling.ogg",
+            "data/sounds/wind.ogg",
+            "data/sounds/skid.ogg",
+            "data/sounds/stunned.ogg",
+            ""
+          };
 
-        void play3d(irr::s32 a_iId, const std::wstring &a_sName, const irr::core::vector3df &a_vPosition, irr::f32 a_fVolume, bool a_bLooped) {
-          // 3d sounds not supported by Android
-        }
+          for (int i = 0; l_aMarbleSounds[i] != ""; i++) {
+            m_aMarble[i] = new CAudioPlayer(l_aMarbleSounds[i], true, m_cBuilder);
+          }
 
-        void play2d(const std::wstring &a_sName, irr::f32 a_fVolume, irr::f32 a_fPan) {
-          if (m_mSounds.find(a_sName) != m_mSounds.end()) {
-            m_mSounds[a_sName]->setPlaying(true, a_fPan == 0.0f);
-            m_mSounds[a_sName]->setVolume(a_fVolume);
+          std::string l_aOneShots[] = {
+            "data/sounds/respawn_start.ogg",
+            "data/sounds/respawn.ogg",
+            "data/sounds/hit.ogg",
+            "data/sounds/checkpoint.ogg",
+            "data/sounds/lap.ogg",
+            "data/sounds/gameover.ogg",
+            ""
+          };
+
+          for (int i = 0; l_aOneShots[i] != ""; i++) {
+            m_aShots[i] = new CAudioPlayer(l_aMarbleSounds[i], false, m_cBuilder);
           }
         }
 
-        void clear3dSounds() {
-          // 3d sounds not supported by Android
-        }
-
-        void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) {
-          // 3d sounds not supported by Android
-        }
-
-        void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) {
-          std::wstring l_sName = a_sName;
-          if (l_sName.substr(0, 5) == L"data/")
-            l_sName = l_sName.substr(5);
-
-          if (l_sName.find_last_of(L'.') != std::string::npos) {
-            l_sName = l_sName.substr(0, l_sName.find_last_of(L'.')) + L".wav";
+        /**
+        * Stop a game, i.e. the sounds are muted
+        */
+        virtual void stopGame() override {
+          for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
+            if (m_aMarble[i] != nullptr) {
+              delete m_aMarble[i];
+              m_aMarble[i] = nullptr;
+            }
           }
 
-          if (m_mSounds.find(l_sName) == m_mSounds.end()) {
-            m_mSounds[a_sName] = new CAudioPlayer(helpers::ws2s(l_sName), false, m_cBuilder);
-
-            if (a_bMenuSound)
-              m_vMenuSounds.push_back(m_mSounds[a_sName]);
-            else {
-              m_vGameSounds.push_back(m_mSounds[a_sName]);
+          for (int i = 0; i < (int)enOneShots::Count; i++) {
+            if (m_aShots[i] != nullptr) {
+              delete m_aShots[i];
+              m_aShots[i] = nullptr;
             }
           }
         }
 
-        void assignSound (const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, bool a_bDoppler) {
+        /**
+        * Pause or unpause a game, i.e. in-game sounds are muted or unmuted
+        */
+        virtual void pauseGame(bool a_bPaused) override {
+
         }
 
-        void assignFixed (const std::wstring& a_sName, irr::s32 a_iId, bool a_bLoop, const irr::core::vector3df &a_vPos) {
+        /**
+        * Update the sounds of a marble. Only the closest sounds to the listener
+        * are played
+        * @param a_iMarble ID of the marble to update
+        * @param a_cPosition the position of the marble
+        * @param a_cVelocity the velocity of the marble
+        * @param a_fHit the volume of the "hit" sound for the marble
+        * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
+        * @param a_bBrake does the marble currently brake?
+        * @param a_HasContact does the marble have a contact?
+        */
+        virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
+          if (a_iMarble == m_iPlayerMarble) {
+            m_aMarble[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
+            m_aMarble[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
+            m_aMarble[(int)enMarbleSounds::Wind   ]->setVolume(                            a_fVolume * m_fMasterVolume * m_fGameVolume       );
+          }
         }
 
+        /**
+        * Play the sounds of a marble assigned to a viewport
+        * @param a_iMarble ID of the marble to update
+        * @param a_cPosition the position of the marble
+        * @param a_cVelocity the velocity of the marble
+        * @param a_fVolume the volume of the wind and rolling sounds calculated from the speed of the marble
+        * @param a_bBrake does the marble currently brake?
+        * @param a_HasContact does the marble have a contact?
+        */
+        virtual void playViewportMarbleSound(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
+        }
 
-        void assignSoundtracks(const std::map<enSoundTrack, std::wstring>& a_mSoundTracks) {
-          for (std::map<enSoundTrack, std::wstring>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
-            if (m_mSounds.find(it->second) != m_mSounds.end()) {
-              m_mSounds[it->second]->setLooping(it->first != enSoundTrack::enStFinish);
-              m_mSoundTracks[it->first] = m_mSounds[it->second];
+        /**
+        * Play the stunned sound of a marble (only played if the distance is less than 150)
+        * @param a_iMarble ID of the stunned marble
+        * @param a_cPosition position of the stunned marble
+        */
+        virtual void playMarbleStunned(int a_iMarble, const irr::core::vector3df &a_cPosition) override {
+          if (a_iMarble == m_iPlayerMarble) {
+            m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(m_fMasterVolume * m_fGameVolume);
+          }
+        }
+
+        /**
+        * Stunned state of a marble ends so the sound must be stopped
+        * @param a_iMarble ID of the no longer stunned marbel
+        */
+        virtual void stopMarbleStunned(int a_iMarble) override {
+          if (a_iMarble == m_iPlayerMarble) {
+            m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(0.0f);
+          }
+        }
+
+        /**
+        * Play a specific sound for a marble, i.e. checkpoint, lap passed
+        * @param a_iMarble ID of the marble
+        * @param a_eSound the sound to play
+        */
+        virtual void playMarbleOneShotSound(int a_iMarble, enOneShots a_eSound) override {
+          if (a_iMarble == m_iPlayerMarble) {
+            m_aShots[(int)a_eSound]->setPlaying(true, true);
+          }
+        }
+
+        /**
+        * Define a marble controlled by a local player
+        */
+        virtual void setViewportMarble(int a_iMarble) override {
+          m_iPlayerMarble = a_iMarble;
+        }
+
+        virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
+          if (m_aSounds[(int)a_eSound] != nullptr) {
+            m_aSounds[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
+            m_aSounds[(int)a_eSound]->setVolume(a_fVolume);
+          }
+        }
+
+        virtual void clear3dSounds() override {
+          // 3d sounds not supported by Android
+        }
+
+        virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) override {
+          // 3d sounds not supported by Android
+        }
+
+        virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) override {
+        }
+
+        virtual void assignSoundtracks(const std::map<enSoundTrack, std::tuple<std::string, bool>> &a_mSoundTracks) override {
+          for (std::map<enSoundTrack, std::tuple<std::string, bool>>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
+            if (m_mSoundTracks.find(it->first) == m_mSoundTracks.end()) {
+              m_mSoundTracks[it->first] = new CAudioPlayer(std::get<0>(it->second), std::get<1>(it->second), m_cBuilder);
             }
           }
         }
 
-        void setMenuFlag(bool a_bMenu) {
+        void setMenuFlag(bool a_bMenu) override {
           m_bMenu = a_bMenu;
         }
     };
