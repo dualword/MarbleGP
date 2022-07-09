@@ -430,6 +430,39 @@ namespace dustbin {
 
     class CSoundInterface : public ISoundInterface {
       private:
+        /**
+        * This structure holds all data necessary to play the marble sounds
+        */
+        struct SMarbleSound {
+          CAudioPlayer *m_aSounds[(int)enMarbleSounds::Count];
+
+          SMarbleSound() {
+            m_aSounds[(int)enMarbleSounds::Rolling] = new CAudioPlayer("data/sounds/rolling.ogg", true);
+            m_aSounds[(int)enMarbleSounds::Wind   ] = new CAudioPlayer("data/sounds/wind.ogg"   , true);
+            m_aSounds[(int)enMarbleSounds::Skid   ] = new CAudioPlayer("data/sounds/skid.ogg"   , true);
+            m_aSounds[(int)enMarbleSounds::Stunned] = new CAudioPlayer("data/sounds/stunned.ogg", true);
+
+            m_aSounds[(int)enMarbleSounds::Rolling]->setVolume(0.0f);
+            m_aSounds[(int)enMarbleSounds::Wind   ]->setVolume(0.0f);
+            m_aSounds[(int)enMarbleSounds::Skid   ]->setVolume(0.0f);
+            m_aSounds[(int)enMarbleSounds::Stunned]->setVolume(0.0f);
+
+            m_aSounds[(int)enMarbleSounds::Rolling]->setPlaying(true, true);
+            m_aSounds[(int)enMarbleSounds::Wind   ]->setPlaying(true, true);
+            m_aSounds[(int)enMarbleSounds::Skid   ]->setPlaying(true, true);
+            m_aSounds[(int)enMarbleSounds::Stunned]->setPlaying(true, true);
+          }
+
+          ~SMarbleSound() {
+            for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
+              if (m_aSounds[i] != nullptr) {
+                delete m_aSounds[i];
+                m_aSounds[i] = nullptr;
+              }
+            }
+          }
+        };
+
         irr::f32 m_fMasterVolume;
         irr::f32 m_fSoundtrackVolume;
         irr::f32 m_fGameVolume;
@@ -440,19 +473,25 @@ namespace dustbin {
         int m_iPlayerMarble;
 
         CAudioPlayer *m_aSounds[(int)en2dSounds    ::Count];
-        CAudioPlayer *m_aMarble[(int)enMarbleSounds::Count];
         CAudioPlayer *m_aShots [(int)enOneShots    ::Count];
 
         std::map<enSoundTrack  , CAudioPlayer *> m_mSoundTracks;
-        std::map<enOneShots    , CAudioPlayer *> m_mOneShots;
         std::map<std::wstring  , irr::f32      > m_mParameters;
 
         std::vector<CAudioPlayer *> m_vMenuSounds;
         std::vector<CAudioPlayer *> m_vGameSounds;
 
+        SMarbleSound m_aMarble;
+
         enSoundTrack m_eSoundTrack;
 
         irr::f32 m_fMarbleParams[4];
+
+        irr::core::vector3df m_cPosition;     /**< Position of the listener */
+        irr::core::vector3df m_cDirection;    /**< Looking direction of the listener */
+        irr::core::vector3df m_cVelocity;     /**< Velocity of the listener */
+
+        irr::core::matrix4 m_cViewMatrix;   /**< The view matrix of the listener */
 
       public:
         CSoundInterface(irr::IrrlichtDevice *a_pDevice) : 
@@ -517,21 +556,6 @@ namespace dustbin {
           m_fMarbleParams[2] = m_mParameters.find(L"data/sounds/skid.ogg"   ) != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
           m_fMarbleParams[3] = m_mParameters.find(L"data/sounds/stunned.ogg") != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
 
-          m_aMarble[(int)enMarbleSounds::Rolling] = new CAudioPlayer("data/sounds/rolling.ogg", true);
-          m_aMarble[(int)enMarbleSounds::Wind   ] = new CAudioPlayer("data/sounds/wind.ogg"   , true);
-          m_aMarble[(int)enMarbleSounds::Skid   ] = new CAudioPlayer("data/sounds/skid.ogg"   , true);
-          m_aMarble[(int)enMarbleSounds::Stunned] = new CAudioPlayer("data/sounds/stunned.ogg", true);
-
-          m_aMarble[(int)enMarbleSounds::Rolling]->setVolume(0.0f);
-          m_aMarble[(int)enMarbleSounds::Wind   ]->setVolume(0.0f);
-          m_aMarble[(int)enMarbleSounds::Skid   ]->setVolume(0.0f);
-          m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(0.0f);
-
-          m_aMarble[(int)enMarbleSounds::Rolling]->setPlaying(true, true);
-          m_aMarble[(int)enMarbleSounds::Wind   ]->setPlaying(true, true);
-          m_aMarble[(int)enMarbleSounds::Skid   ]->setPlaying(true, true);
-          m_aMarble[(int)enMarbleSounds::Stunned]->setPlaying(true, true);
-
           std::string l_aOneShots[] = {
             "data/sounds/respawn_start.ogg",
             "data/sounds/respawn.ogg",
@@ -548,13 +572,6 @@ namespace dustbin {
         }
 
         virtual ~CSoundInterface() {
-          for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
-            if (m_aMarble[i] != nullptr) {
-              delete m_aMarble[i];
-              m_aMarble[i] = nullptr;
-            }
-          }
-
           for (int i = 0; i < (int)enOneShots::Count; i++) {
             if (m_aShots[i] != nullptr) {
               delete m_aShots[i];
@@ -690,9 +707,9 @@ namespace dustbin {
         */
         virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
           if (a_iMarble == m_iPlayerMarble) {
-            m_aMarble[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? m_fMarbleParams[0] * a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
-            m_aMarble[(int)enMarbleSounds::Wind   ]->setVolume(                            m_fMarbleParams[1] * a_fVolume * m_fMasterVolume * m_fGameVolume       );
-            m_aMarble[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? m_fMarbleParams[2] * a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
+            m_aMarble.m_aSounds[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? m_fMarbleParams[0] * a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
+            m_aMarble.m_aSounds[(int)enMarbleSounds::Wind   ]->setVolume(                            m_fMarbleParams[1] * a_fVolume * m_fMasterVolume * m_fGameVolume       );
+            m_aMarble.m_aSounds[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? m_fMarbleParams[2] * a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
           }
         }
 
@@ -714,8 +731,8 @@ namespace dustbin {
         * @param a_cPosition position of the stunned marble
         */
         virtual void playMarbleStunned(int a_iMarble, const irr::core::vector3df &a_cPosition) override {
-          if (a_iMarble == m_iPlayerMarble) {
-            m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(m_fMarbleParams[3] * m_fMasterVolume * m_fGameVolume);
+          if (m_iPlayerMarble == a_iMarble) {
+            m_aMarble.m_aSounds[(int)enMarbleSounds::Stunned]->setVolume(m_fMarbleParams[3] * m_fMasterVolume * m_fGameVolume);
           }
         }
 
@@ -725,7 +742,7 @@ namespace dustbin {
         */
         virtual void stopMarbleStunned(int a_iMarble) override {
           if (a_iMarble == m_iPlayerMarble) {
-            m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(0.0f);
+            m_aMarble.m_aSounds[(int)enMarbleSounds::Stunned]->setVolume(0.0f);
           }
         }
 
@@ -759,7 +776,11 @@ namespace dustbin {
         }
 
         virtual void setListenerPosition(irr::scene::ICameraSceneNode *a_pCamera, const irr::core::vector3df &a_vVel) override {
-          // 3d sounds not supported by Android
+          m_cPosition  = a_pCamera->getAbsolutePosition();
+          m_cDirection = a_pCamera->getTarget();
+          m_cVelocity  = a_vVel;
+
+          m_cViewMatrix = a_pCamera->getViewMatrix();
         }
 
         virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) override {
