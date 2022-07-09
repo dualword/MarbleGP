@@ -298,6 +298,7 @@ namespace dustbin {
         bool m_bLooped;
         CAssetDataSource *m_pSource;
         std::shared_ptr<oboe::AudioStream> m_pStream;
+        oboe::AudioStreamBuilder m_cBuilder;
         
         CErrorCallback m_cError;
 
@@ -316,7 +317,7 @@ namespace dustbin {
         * @param a_pSource the audio source
         * @param a_bLooped flag to indicate whether or not this sound is looped
         */
-        CAudioPlayer(const std::string &a_sSound, bool a_bLooped, oboe::AudioStreamBuilder &a_cBuilder) :
+        CAudioPlayer(const std::string &a_sSound, bool a_bLooped) :
           m_iReadFrameIndex(0        ),
           m_fVolume        (1.0f     ),
           m_bPlaying       (false    ),
@@ -325,12 +326,12 @@ namespace dustbin {
           m_pStream        (nullptr  )
         {
           
-          a_cBuilder.setDirection(oboe::Direction::Output)
+          m_cBuilder.setDirection(oboe::Direction::Output)
             ->setFormatConversionAllowed(true)
             ->setSampleRate(44100)
             ->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Fastest)
             ->setUsage(oboe::Usage::Game)
-            ->setPerformanceMode(oboe::PerformanceMode::None)
+            ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
             ->setSharingMode(oboe::SharingMode::Shared)
             ->setFormat(oboe::AudioFormat::Float)
             ->setChannelCount(oboe::ChannelCount::Stereo)
@@ -350,8 +351,8 @@ namespace dustbin {
 
           m_pSource = CAssetDataSource::newFromCompressedAsset(*(CGlobal::getInstance()->getAndroidApp()->activity->assetManager), l_sSound.c_str(), l_cTargetProperties);
 
-          a_cBuilder.setCallback(this);
-          oboe::Result l_eResult = a_cBuilder.openStream(m_pStream);
+          m_cBuilder.setCallback(this);
+          oboe::Result l_eResult = m_cBuilder.openStream(m_pStream);
 
           if (l_eResult == oboe::Result::OK) {
             m_pStream->start();
@@ -451,7 +452,7 @@ namespace dustbin {
 
         enSoundTrack m_eSoundTrack;
 
-        oboe::AudioStreamBuilder m_cBuilder;
+        irr::f32 m_fMarbleParams[4];
 
       public:
         CSoundInterface(irr::IrrlichtDevice *a_pDevice) : 
@@ -474,11 +475,92 @@ namespace dustbin {
           };
 
           for (int i = 0; l_a2dSounds[i] != ""; i++) {
-            m_aSounds[i] = new CAudioPlayer(l_a2dSounds[i], false, m_cBuilder);
+            m_aSounds[i] = new CAudioPlayer(l_a2dSounds[i], false);
+          }
+
+          if (CGlobal::getInstance()->getFileSystem()->existFile("data/marblesounds.xml")) {
+            irr::io::IXMLReader *l_pReader = CGlobal::getInstance()->getFileSystem()->createXMLReader("data/marblesounds.xml");
+
+            if (l_pReader != nullptr) {
+              while (l_pReader->read()) {
+                std::wstring l_sNodeName = l_pReader->getNodeName();
+
+                if (l_sNodeName == L"sound") {
+                  std::wstring l_sName = L"";
+
+                  irr::f32 l_fVolume  =  1.0f;
+
+                  for (unsigned i = 0; i < l_pReader->getAttributeCount(); i++) {
+                    std::wstring l_sAttr  = l_pReader->getAttributeName (i),
+                      l_sValue = l_pReader->getAttributeValue(i);
+
+                    if (l_sAttr == L"id") {
+                      l_sName = l_sValue;
+                    }
+                    else if (l_sAttr == L"vol") {
+                      l_fVolume = std::stof(l_sValue);
+                    }
+                  }
+
+                  if (l_sName != L"") {
+                    printf("SFX Param: \"%ls\": %.2f\n", l_sName.c_str(), l_fVolume);
+                    m_mParameters[l_sName] = l_fVolume;
+                  }
+                }
+              }
+              l_pReader->drop();
+            }
+          }
+
+          m_fMarbleParams[0] = m_mParameters.find(L"data/sounds/rolling.ogg") != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
+          m_fMarbleParams[1] = m_mParameters.find(L"data/sounds/wind.ogg"   ) != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
+          m_fMarbleParams[2] = m_mParameters.find(L"data/sounds/skid.ogg"   ) != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
+          m_fMarbleParams[3] = m_mParameters.find(L"data/sounds/stunned.ogg") != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
+
+          m_aMarble[(int)enMarbleSounds::Rolling] = new CAudioPlayer("data/sounds/rolling.ogg", true);
+          m_aMarble[(int)enMarbleSounds::Wind   ] = new CAudioPlayer("data/sounds/wind.ogg"   , true);
+          m_aMarble[(int)enMarbleSounds::Skid   ] = new CAudioPlayer("data/sounds/skid.ogg"   , true);
+          m_aMarble[(int)enMarbleSounds::Stunned] = new CAudioPlayer("data/sounds/stunned.ogg", true);
+
+          m_aMarble[(int)enMarbleSounds::Rolling]->setVolume(0.0f);
+          m_aMarble[(int)enMarbleSounds::Wind   ]->setVolume(0.0f);
+          m_aMarble[(int)enMarbleSounds::Skid   ]->setVolume(0.0f);
+          m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(0.0f);
+
+          m_aMarble[(int)enMarbleSounds::Rolling]->setPlaying(true, true);
+          m_aMarble[(int)enMarbleSounds::Wind   ]->setPlaying(true, true);
+          m_aMarble[(int)enMarbleSounds::Skid   ]->setPlaying(true, true);
+          m_aMarble[(int)enMarbleSounds::Stunned]->setPlaying(true, true);
+
+          std::string l_aOneShots[] = {
+            "data/sounds/respawn_start.ogg",
+            "data/sounds/respawn.ogg",
+            "data/sounds/hit.ogg",
+            "data/sounds/checkpoint.ogg",
+            "data/sounds/lap.ogg",
+            "data/sounds/gameover.ogg",
+            ""
+          };
+
+          for (int i = 0; l_aOneShots[i] != ""; i++) {
+            m_aShots[i] = new CAudioPlayer(l_aOneShots[i], false);
           }
         }
 
         virtual ~CSoundInterface() {
+          for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
+            if (m_aMarble[i] != nullptr) {
+              delete m_aMarble[i];
+              m_aMarble[i] = nullptr;
+            }
+          }
+
+          for (int i = 0; i < (int)enOneShots::Count; i++) {
+            if (m_aShots[i] != nullptr) {
+              delete m_aShots[i];
+              m_aShots[i] = nullptr;
+            }
+          }
         }
 
         virtual void createSoundFileFactory(irr::io::IFileArchive *a_pArchive) override {
@@ -580,50 +662,12 @@ namespace dustbin {
         * Start a game, i.e. the sounds are initialized
         */
         virtual void startGame() override {
-          std::string l_aMarbleSounds[] = {
-            "data/sounds/rolling.ogg",
-            "data/sounds/wind.ogg",
-            "data/sounds/skid.ogg",
-            "data/sounds/stunned.ogg",
-            ""
-          };
-
-          for (int i = 0; l_aMarbleSounds[i] != ""; i++) {
-            m_aMarble[i] = new CAudioPlayer(l_aMarbleSounds[i], true, m_cBuilder);
-          }
-
-          std::string l_aOneShots[] = {
-            "data/sounds/respawn_start.ogg",
-            "data/sounds/respawn.ogg",
-            "data/sounds/hit.ogg",
-            "data/sounds/checkpoint.ogg",
-            "data/sounds/lap.ogg",
-            "data/sounds/gameover.ogg",
-            ""
-          };
-
-          for (int i = 0; l_aOneShots[i] != ""; i++) {
-            m_aShots[i] = new CAudioPlayer(l_aMarbleSounds[i], false, m_cBuilder);
-          }
         }
 
         /**
         * Stop a game, i.e. the sounds are muted
         */
         virtual void stopGame() override {
-          for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
-            if (m_aMarble[i] != nullptr) {
-              delete m_aMarble[i];
-              m_aMarble[i] = nullptr;
-            }
-          }
-
-          for (int i = 0; i < (int)enOneShots::Count; i++) {
-            if (m_aShots[i] != nullptr) {
-              delete m_aShots[i];
-              m_aShots[i] = nullptr;
-            }
-          }
         }
 
         /**
@@ -646,9 +690,9 @@ namespace dustbin {
         */
         virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_vVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
           if (a_iMarble == m_iPlayerMarble) {
-            m_aMarble[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
-            m_aMarble[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
-            m_aMarble[(int)enMarbleSounds::Wind   ]->setVolume(                            a_fVolume * m_fMasterVolume * m_fGameVolume       );
+            m_aMarble[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? m_fMarbleParams[0] * a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
+            m_aMarble[(int)enMarbleSounds::Wind   ]->setVolume(                            m_fMarbleParams[1] * a_fVolume * m_fMasterVolume * m_fGameVolume       );
+            m_aMarble[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? m_fMarbleParams[2] * a_fVolume * m_fMasterVolume * m_fGameVolume : 0.0f);
           }
         }
 
@@ -671,7 +715,7 @@ namespace dustbin {
         */
         virtual void playMarbleStunned(int a_iMarble, const irr::core::vector3df &a_cPosition) override {
           if (a_iMarble == m_iPlayerMarble) {
-            m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(m_fMasterVolume * m_fGameVolume);
+            m_aMarble[(int)enMarbleSounds::Stunned]->setVolume(m_fMarbleParams[3] * m_fMasterVolume * m_fGameVolume);
           }
         }
 
@@ -724,7 +768,7 @@ namespace dustbin {
         virtual void assignSoundtracks(const std::map<enSoundTrack, std::tuple<std::string, bool>> &a_mSoundTracks) override {
           for (std::map<enSoundTrack, std::tuple<std::string, bool>>::const_iterator it = a_mSoundTracks.begin(); it != a_mSoundTracks.end(); it++) {
             if (m_mSoundTracks.find(it->first) == m_mSoundTracks.end()) {
-              m_mSoundTracks[it->first] = new CAudioPlayer(std::get<0>(it->second), std::get<1>(it->second), m_cBuilder);
+              m_mSoundTracks[it->first] = new CAudioPlayer(std::get<0>(it->second), std::get<1>(it->second));
             }
           }
         }
