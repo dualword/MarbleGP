@@ -152,9 +152,19 @@ namespace dustbin {
           if (m_bHoverL || m_bHoverR || m_bHoverT)
             CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
         }
-        else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) { 
           m_cMousePos.X = a_cEvent.MouseInput.X;
           m_cMousePos.Y = a_cEvent.MouseInput.Y;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_WHEEL) {
+          m_iSelected += (int)a_cEvent.MouseInput.Wheel;
+
+          if (m_iSelected <                0) m_iSelected = 0;
+          if (m_iSelected >= m_vItems.size()) m_iSelected = (int)m_vItems.size() - 1;
+
+          setText(m_vItems[m_iSelected].c_str());
+
+          distributeEvent();
         }
       }
       else if (a_cEvent.EventType == irr::EET_GUI_EVENT && a_cEvent.GUIEvent.Caller == this) {
