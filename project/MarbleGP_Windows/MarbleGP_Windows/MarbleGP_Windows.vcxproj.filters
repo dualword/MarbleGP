@@ -792,8 +792,5 @@
     <Image Include="..\..\MarbleGP_Logo.ico">
       <Filter>Ressourcendateien</Filter>
     </Image>
-    <Image Include="..\..\MarbleGP_Logo.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
   </ItemGroup>
 </Project>

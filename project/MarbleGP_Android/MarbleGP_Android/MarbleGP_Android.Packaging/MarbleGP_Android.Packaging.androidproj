@@ -121,6 +121,7 @@
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Content Include="res\drawable\marblegp_logo.png" />
     <Content Include="assets\marblegp.dat" />
     <Content Include="assets\shaders_es\COGLES2DetailMap.fsh" />
     <Content Include="assets\shaders_es\COGLES2LightmapAdd.fsh" />
