@@ -54,9 +54,6 @@ namespace dustbin {
         irr::gui::IGUIElement *m_pSelected;
 
         std::wstring m_sEditChars;    /**< String with the characters for name editing with the menu controller */
-        int m_iEditTime;              /**< Timestamp when the last editing was done */
-
-        bool m_bFirstCall;    /**< Then first called on Android we set the virtual cursor on the first element */
 
         irr::u32 m_aNextEvent[4];   /**< Timestamp of the last movement events */
 

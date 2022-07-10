@@ -52,9 +52,9 @@ namespace dustbin {
       float m_fSfxGame;     /**< Game sound effect volume */
 
       bool m_bFullscreen;   /**< Fullscreen or not? */
-      bool m_bUseMenuCtrl;  /**< Use the controller for the menu */
       bool m_bGfxChange;    /**< Gfx settings have changed */
       bool m_bTouchControl; /**< Flag for touch control (Android only) */
+      bool m_bUseMenuCtrl;  /**< Use the controller for the menu */
       bool m_bVirtualKeys;  /**< Use virtual keyboard (always true for Android) */
 
       std::string m_sController;  /**< The serialized menu controller configuration */

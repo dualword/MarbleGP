@@ -34,9 +34,7 @@ namespace dustbin {
       m_pTimer        (CGlobal::getInstance()->getIrrlichtDevice()->getTimer()),
       m_iZLayer       (a_iZLayer),
       m_pSelected     (nullptr),
-      m_sEditChars    (L""),
-      m_iEditTime     (-1),
-      m_bFirstCall    (true)
+      m_sEditChars    (L"")
     {
       SCtrlInput l_cInput;
 

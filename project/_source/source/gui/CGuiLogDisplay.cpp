@@ -1,5 +1,4 @@
 /* (w) 2021 - 22 by Dustbin::Games (Christian Keimel) - This file is licensed under the terms of the zlib license */
-#pragma once
 
 #include <gui/CGuiLogDisplay.h>
 #include <CGlobal.h>
@@ -8,8 +7,8 @@ namespace dustbin {
   namespace gui {
     CGuiLogDisplay::CGuiLogDisplay(irr::gui::IGUIElement* a_pParent) :
       IGUIElement  ((irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
-      m_pFont      (CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont()),
       m_pDrv       (CGlobal::getInstance()->getVideoDriver()),
+      m_pFont      (CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont()),
       m_iLineHeight(0),
       m_pScroll    (nullptr),
       m_bDragging  (false),

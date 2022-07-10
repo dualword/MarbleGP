@@ -115,7 +115,7 @@ namespace dustbin {
       printf("Server discovery thread stopped.\n");
     }
 
-    CDiscoveryServer::CDiscoveryServer(const std::string& a_sServer, int a_iPortNo) : IThread(), m_sServer(a_sServer), m_iPortNo(a_iPortNo), m_cListen(ENET_SOCKET_NULL) {
+    CDiscoveryServer::CDiscoveryServer(const std::string& a_sServer, int a_iPortNo) : IThread(), m_cListen(ENET_SOCKET_NULL), m_sServer(a_sServer), m_iPortNo(a_iPortNo) {
       m_cListen = createMulticastServerSocket(&m_cMulticastAddress);
     }
 

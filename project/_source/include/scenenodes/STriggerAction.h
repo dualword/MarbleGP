@@ -53,12 +53,12 @@ namespace dustbin {
 
     struct STriggerAction {
       enAction m_eAction;
-      irr::s32 m_iTimer,
-               m_iNodeId,
-               m_iStep;
+      irr::s32 m_iTimer;
+      irr::s32 m_iNodeId;
+      irr::s32 m_iStep;
 
-      irr::f32 m_fVelocity,
-               m_fForce;
+      irr::f32 m_fVelocity;
+      irr::f32 m_fForce;
 
       bool m_bVisible;
 

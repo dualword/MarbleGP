@@ -373,9 +373,9 @@ namespace dustbin {
       m_pWithdraw   (nullptr),
       m_iWithdraw   (-1),
       m_cRankBack   (irr::video::SColor(96, 192, 192, 192)),
+      m_pSmgr       (CGlobal::getInstance()->getSceneManager()),
       m_pColMgr     (nullptr),
-      m_vRanking    (a_vRanking),
-      m_pSmgr       (CGlobal::getInstance()->getSceneManager())
+      m_vRanking    (a_vRanking)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -809,8 +809,6 @@ namespace dustbin {
           if (m_mTextElements.find(enTextElements::Pos) != m_mTextElements.end()) {
             m_mTextElements[enTextElements::Pos].m_sText = std::to_wstring((*it)->m_iPosition);
           }
-
-          std::vector<gameclasses::SPlayer*>::const_iterator it2 = it;
 
           for (int i = 0; i < 3; i++)
             if (!m_aHiLight[i].m_bFinished) {

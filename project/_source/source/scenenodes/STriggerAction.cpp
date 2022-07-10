@@ -27,9 +27,9 @@ namespace dustbin {
       m_fVelocity      (a_cOther.m_fVelocity),
       m_fForce         (a_cOther.m_fForce),
       m_bVisible       (a_cOther.m_bVisible),
-      m_vTarget(a_cOther.m_vTarget),
       m_eCondition     (a_cOther.m_eCondition),
-      m_eType          (a_cOther.m_eType)
+      m_eType          (a_cOther.m_eType),
+      m_vTarget        (a_cOther.m_vTarget)
     {
     }
 

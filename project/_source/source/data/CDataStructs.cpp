@@ -126,12 +126,12 @@ namespace dustbin {
       m_bTouchControl(true),
 #ifdef _ANDROID
       m_bUseMenuCtrl (true),
-      m_sController("DustbinController;control;JoyPov;Up;Gamepad;M;a;a;a;a;b;control;JoyPov;Down;Gamepad;O;a;a;a;qze;b;control;JoyPov;Left;Gamepad;L;a;a;a;4Lg;b;control;JoyPov;Right;Gamepad;N;a;a;a;Omc;b;control;JoyButton;Enter;Gamepad;G;a;a;a;a;b;control;JoyButton;Ok;Gamepad;n;a;m;a;a;b;control;JoyButton;Cancel;Gamepad;B;a;n;a;a;b"),
-      m_bVirtualKeys (true)
+      m_bVirtualKeys (true),
+      m_sController("DustbinController;control;JoyPov;Up;Gamepad;M;a;a;a;a;b;control;JoyPov;Down;Gamepad;O;a;a;a;qze;b;control;JoyPov;Left;Gamepad;L;a;a;a;4Lg;b;control;JoyPov;Right;Gamepad;N;a;a;a;Omc;b;control;JoyButton;Enter;Gamepad;G;a;a;a;a;b;control;JoyButton;Ok;Gamepad;n;a;m;a;a;b;control;JoyButton;Cancel;Gamepad;B;a;n;a;a;b")
 #else
       m_bUseMenuCtrl (false),
-      m_sController  (""),
-      m_bVirtualKeys (false) 
+      m_bVirtualKeys (false),
+      m_sController  ("")
 #endif
     {
     }
