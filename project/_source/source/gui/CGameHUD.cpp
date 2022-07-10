@@ -82,6 +82,8 @@ namespace dustbin {
     void CGameHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
       int l_iId = a_MarbleId - 10000;
 
+      printf("Player %i finished (%i)\n", l_iId, a_MarbleId);
+
       if (l_iId >= 0 && l_iId < 16)
         m_aFinished[l_iId] = true;
 
@@ -91,9 +93,12 @@ namespace dustbin {
         m_bRespawn   = false;
         m_bStunned   = false;
 
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 16; i++) {
           if (m_aRanking[i] != nullptr)
             m_aRanking[i]->setVisible(m_aFinished[i]);
+
+          printf("%2i finished: %s\n", i, m_aFinished[i] ? "true" : "false");
+        }
       }
       else {
         for (int i = 0; i < 3; i++) {
@@ -198,6 +203,7 @@ namespace dustbin {
         for (int i = 0; i < 16; i++)
           if (m_aRanking[i] != nullptr) {
             m_aRanking[i]->highlight (false);
+            m_aRanking[i]->setVisible(false);
           }
 
         m_iGoStep = m_iStep;
