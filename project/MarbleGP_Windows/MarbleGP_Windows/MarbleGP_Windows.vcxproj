@@ -238,6 +238,14 @@
     <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MarbleGP_Windows.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\MarbleGP_Logo.ico" />
+    <Image Include="..\..\MarbleGP_Logo.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
