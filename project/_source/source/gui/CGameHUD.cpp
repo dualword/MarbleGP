@@ -824,69 +824,34 @@ namespace dustbin {
             }
             else m_aHiLight[i].m_bVisible = false;
 
-          if (it2 == m_vRanking->begin()) {
-            // The player of this HUD is the leader
-
-            for (int i = 0; i < 3; i++) {
-              it2++;
-
-              if (it2 == m_vRanking->end())
-                break;
-
-              if (!m_aHiLight[i].m_bFinished) {
+          int l_iPos = (*it)->m_iPosition;
+          
+          // These positions need to be highlighted
+          int l_aHighLight[3] = {
+            l_iPos == 1 ? 2 : 1,
+            l_iPos <= 2 ? 3 : l_iPos >= 15 ? 14 : l_iPos - 1,
+            l_iPos <= 3 ? 4 : l_iPos == 16 ? 15 : l_iPos + 1
+          };
+          
+          for (int i = 0; i < 3; i++) {
+            for (std::vector<gameclasses::SPlayer*>::const_iterator it2 = m_vRanking->begin(); it2 != m_vRanking->end(); it2++) {
+              if ((*it2)->m_iPosition == l_aHighLight[i]) {
                 m_aHiLight[i].m_iMarbleId = (*it2)->m_iId;
-                m_aHiLight[i].m_iPosition = (*it2)->m_iPosition;
+                m_aHiLight[i].m_iPosition = l_aHighLight[i];
+                m_aHiLight[i].m_pArrow   ->setVisible(false);
+                m_aHiLight[i].m_pPosition->setVisible(false);
+                
+                std::wstring s = std::to_wstring(l_aHighLight[i]);
+
+                switch (l_aHighLight[i]) {
+                  case 1 : s += L"st"; break;
+                  case 2 : s += L"nd"; break;
+                  case 3 : s += L"rd"; break;
+                  default: s += L"th"; break;
+                }
+
+                break;
               }
-            }
-          }
-          else if (it2 - 1 == m_vRanking->begin()) {
-            // The player is in second place
-            m_aHiLight[0].m_iMarbleId = (*(it2 - 1))->m_iId;
-            m_aHiLight[0].m_iPosition = 1;
-
-            for (int i = 1; i < 3; i++) {
-              it2++;
-
-              if (it2 == m_vRanking->end())
-                break;
-
-              m_aHiLight[i].m_iMarbleId = (*it2)->m_iId;
-              m_aHiLight[i].m_iPosition = (*it2)->m_iPosition;
-            }
-          }
-          else if (it2 + 1 == m_vRanking->end()) {
-            // The player is on the last position
-            for (int i = 0; i < 3; i++) {
-              if (it2 == m_vRanking->begin())
-                break;
-
-              it2--;
-            }
-
-            for (int i = 0; i < 3; i++) {
-              if (it2 == m_vRanking->end() || (*it2)->m_iId == m_iMarble)
-                break;
-
-              m_aHiLight[i].m_iMarbleId = (*it2)->m_iId;
-              m_aHiLight[i].m_iPosition = (*it)->m_iPosition;
-              it2++;
-            }
-          }
-          else {
-            m_aHiLight[0].m_iMarbleId = (*m_vRanking->begin())->m_iId;
-            m_aHiLight[0].m_iPosition = 1;
-
-            int i = 1;
-
-            if (it2 != m_vRanking->begin()) {
-              m_aHiLight[i].m_iMarbleId = (*(it2 - 1))->m_iId;
-              m_aHiLight[i].m_iPosition = (*(it2 - 1))->m_iPosition;
-              i++;
-            }
-
-            if (it2 + 1 != m_vRanking->end()) {
-              m_aHiLight[i].m_iMarbleId = (*(it2 + 1))->m_iId;
-              m_aHiLight[i].m_iPosition = (*(it2 + 1))->m_iPosition;
             }
           }
 
@@ -911,6 +876,10 @@ namespace dustbin {
 
             m_aHiLight[i].m_bFinished = true;
           }
+        }
+        else {
+          m_aHiLight[i].m_pArrow   ->setVisible(false);
+          m_aHiLight[i].m_pPosition->setVisible(false);
         }
       }
     }
@@ -947,8 +916,8 @@ namespace dustbin {
         if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end())
           b = l_cPlane.classifyPointRelation(m_mMarblePositions[m_aHiLight[i].m_iMarbleId]) == irr::core::ISREL3D_FRONT;
 
-        m_aHiLight[i].m_pArrow   ->setVisible(!m_aHiLight[i].m_bFinished && b);
-        m_aHiLight[i].m_pPosition->setVisible(!m_aHiLight[i].m_bFinished && b);
+        m_aHiLight[i].m_pArrow   ->setVisible(!m_aHiLight[i].m_bFinished && b && m_aHiLight[i].m_iMarbleId >= 10000 && m_aHiLight[i].m_iMarbleId < 10016);
+        m_aHiLight[i].m_pPosition->setVisible(!m_aHiLight[i].m_bFinished && b && m_aHiLight[i].m_iMarbleId >= 10000 && m_aHiLight[i].m_iMarbleId < 10016);
 
         m_aHiLight[i].m_bViewport = true;
       }
