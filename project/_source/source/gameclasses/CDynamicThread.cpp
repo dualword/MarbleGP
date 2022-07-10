@@ -381,13 +381,13 @@ namespace dustbin {
             if (p->m_iWithdraw != -1 && m_pWorld->m_iWorldStep > p->m_iWithdraw)
               p->m_iWithdraw = -1;
 
-            const dReal* l_aPos    = dBodyGetPosition(p->m_cBody),
-                       * l_aRot    = dBodyGetQuaternion(p->m_cBody),
-                       * l_aLinVel = dBodyGetLinearVel(p->m_cBody),
-                       * l_aAngVel = dBodyGetAngularVel(p->m_cBody);
+            const dReal *l_aPos    = dBodyGetPosition(p->m_cBody);
+            const dReal *l_aRot    = dBodyGetQuaternion(p->m_cBody);
+            const dReal *l_aLinVel = dBodyGetLinearVel(p->m_cBody);
+            const dReal *l_aAngVel = dBodyGetAngularVel(p->m_cBody);
 
-            irr::core::vector3df l_vLinVel = vectorOdeToIrr(l_aLinVel),
-                                 l_vAngVel = vectorOdeToIrr(l_aAngVel);
+            irr::core::vector3df l_vLinVel = vectorOdeToIrr(l_aLinVel);
+            irr::core::vector3df l_vAngVel = vectorOdeToIrr(l_aAngVel);
 
             if (p->m_eState == CObjectMarble::enMarbleState::Rolling) {
               irr::core::vector3df l_vDiff = l_vLinVel - p->m_vVelocity;
@@ -535,7 +535,6 @@ namespace dustbin {
               p->m_bRearView,
               false,
               m_pOutputQueue);
-
 
             if (m_pRostrumNode != nullptr && (p->m_eState == CObjectMarble::enMarbleState::Finished || p->m_eState == CObjectMarble::enMarbleState::Withdrawn) && p->m_iFinishTime > 0) {
               if (m_pWorld->m_iWorldStep > p->m_iFinishTime + 240) {
@@ -854,6 +853,8 @@ namespace dustbin {
 
       if (m_pGameLogic != nullptr)
         delete m_pGameLogic;
+
+      // Measured average breaking: 1.0f
     }
 
     /**
