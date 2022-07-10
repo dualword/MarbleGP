@@ -223,6 +223,10 @@ namespace dustbin {
       m_bPaused = a_Paused;
       if (m_pRankParent != nullptr && !m_bFinished)
         m_pRankParent->setVisible(a_Paused);
+
+      for (int i = 0; i < 16; i++) {
+        m_aRanking[i]->setVisible(a_Paused || m_aRostrum[i]);
+      }
     }
 
     /**
