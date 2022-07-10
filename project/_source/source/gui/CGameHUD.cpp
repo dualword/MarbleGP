@@ -92,13 +92,6 @@ namespace dustbin {
         m_bFinished  = true;
         m_bRespawn   = false;
         m_bStunned   = false;
-
-        for (int i = 0; i < 16; i++) {
-          if (m_aRanking[i] != nullptr)
-            m_aRanking[i]->setVisible(m_aFinished[i]);
-
-          printf("%2i finished: %s\n", i, m_aFinished[i] ? "true" : "false");
-        }
       }
       else {
         for (int i = 0; i < 3; i++) {
@@ -163,6 +156,7 @@ namespace dustbin {
       int l_iIndex = a_MarbleId - 10000;
 
       if (l_iIndex >= 0 && l_iIndex < 16) {
+        printf("Rostrum: %i (%i)\n", l_iIndex, a_MarbleId);
         m_aRostrum[l_iIndex] = true;
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
           if ((*it)->m_iId == a_MarbleId) {
@@ -194,17 +188,14 @@ namespace dustbin {
         m_cRankBack = irr::video::SColor(96, 192, 192, 192);
 
         for (int i = 0; i < 16; i++) {
-          if (m_aRanking[i] != nullptr)
-            m_aRanking[i]->setAlpha(1.0f);
-        }
-
-        m_bShowSpeed = true;
-
-        for (int i = 0; i < 16; i++)
           if (m_aRanking[i] != nullptr) {
+            m_aRanking[i]->setAlpha(1.0f);
             m_aRanking[i]->highlight (false);
             m_aRanking[i]->setVisible(false);
           }
+        }
+
+        m_bShowSpeed = true;
 
         m_iGoStep = m_iStep;
       }
