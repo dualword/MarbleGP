@@ -122,13 +122,15 @@ namespace dustbin {
       m_fSfxMenu     (1.0f),
       m_fSfxGame     (1.0f),
       m_bFullscreen  (false),
-      m_bUseMenuCtrl (false),
       m_bGfxChange   (false),
       m_bTouchControl(true),
-      m_sController  (""),
 #ifdef _ANDROID
+      m_bUseMenuCtrl (true),
+      m_sController("DustbinController;control;JoyPov;Up;Gamepad;M;a;a;a;a;b;control;JoyPov;Down;Gamepad;O;a;a;a;qze;b;control;JoyPov;Left;Gamepad;L;a;a;a;4Lg;b;control;JoyPov;Right;Gamepad;N;a;a;a;Omc;b;control;JoyButton;Enter;Gamepad;G;a;a;a;a;b;control;JoyButton;Ok;Gamepad;n;a;m;a;a;b;control;JoyButton;Cancel;Gamepad;B;a;n;a;a;b"),
       m_bVirtualKeys (true)
 #else
+      m_bUseMenuCtrl (false),
+      m_sController  (""),
       m_bVirtualKeys (false) 
 #endif
     {
@@ -228,8 +230,12 @@ namespace dustbin {
       m_sTexture (""),
       m_sControls("")
     {
+#ifdef _ANDROID
+      m_sControls = "DustbinController;control;JoyButton;Forward;Gamepad;M;a;j;a;-0md;b;control;JoyButton;Backward;Gamepad;O;a;i;c;-0md;b;control;JoyAxis;Left;Gamepad;L;a;a;a;-0md;-b;control;JoyAxis;Right;Gamepad;N;a;a;a;-0md;b;control;JoyButton;Brake;Gamepad;G;a;a;a;-0md;b;control;JoyButton;Rearview;Gamepad;j;a;g;a;-0md;b;control;JoyButton;Respawn;Gamepad;n;a;h;a;-0md;b;control;JoyButton;Pause;Gamepad;t;a;m;a;-SN;b;control;JoyButton;Cancel%20Race;Gamepad;B;a;n;a;-SN;b";
+#else
       // Default controls for new player
       m_sControls = "DustbinController;control;Key;Forward;Controller%20%28GAME%20FOR%20WINDOWS%29;M;a;a;a;-0md;b;control;Key;Backward;Controller%20%28GAME%20FOR%20WINDOWS%29;O;a;a;c;-0md;b;control;Key;Left;Controller%20%28GAME%20FOR%20WINDOWS%29;L;a;a;a;-0md;-b;control;Key;Right;Controller%20%28GAME%20FOR%20WINDOWS%29;N;a;a;a;-0md;b;control;Key;Brake;Controller%20%28GAME%20FOR%20WINDOWS%29;G;a;a;a;-0md;b;control;Key;Rearview;Controller%20%28GAME%20FOR%20WINDOWS%29;j;a;e;a;-0md;b;control;Key;Respawn;Controller%20%28GAME%20FOR%20WINDOWS%29;n;a;f;a;-0md;b";
+#endif
     }
 
     void SPlayerData::reset() {
@@ -307,7 +313,7 @@ namespace dustbin {
           switch (l_iToken) {
             case c_iPlayerType    : m_eType         = (enPlayerType)l_cSerializer.getS32   ()     ; break;
             case c_iPlayerName    : m_sName         =               l_cSerializer.getString()     ; break;
-            case c_iPlayerControls: m_sControls     =               l_cSerializer.getString()     ; break;
+            case c_iPlayerControls: m_sControls     =               l_cSerializer.getString()     ; printf("\n\n\n%s\n\n\n", m_sControls.c_str());break;
             case c_iPlayerTexture : m_sTexture      =               l_cSerializer.getString()     ; break;
             case c_iPlayerAiHelp  : m_eAiHelp       = (enAiHelp    )l_cSerializer.getS32   ()     ; break;
             case c_iPlayerGridPos : m_iGridPos      =               l_cSerializer.getS32   ()     ; break;
@@ -385,7 +391,7 @@ namespace dustbin {
     SGameSettings::SGameSettings() :
       m_iRaceClass      (0),
       m_iGridPos        (1),
-      m_iGridSize       (16),
+      m_iGridSize       (2),
       m_iAutoFinish     (0),
       m_bReverseGrid    (false),
       m_bRandomFirstRace(true),

@@ -241,7 +241,7 @@ void android_main(struct android_app* a_pApp) {
     std::string l_sSettings = "";
 
     std::string l_sPath = a_pApp->activity->internalDataPath;
-    l_sPath += "MarbleGP_Setup.xml";
+    l_sPath += "/MarbleGP_Setup.xml";
 
     std::ifstream l_cFile(l_sPath.c_str());
     if (l_cFile.is_open()) {
@@ -291,14 +291,14 @@ void android_main(struct android_app* a_pApp) {
     }
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
 
-    l_pDevice->closeDevice();
-    l_pDevice->drop();
-
     {
       std::ofstream l_cFile(l_sPath);
       l_cFile << l_pMainClass->getSettings();
       l_cFile.close();
     }
+
+    l_pDevice->closeDevice();
+    l_pDevice->drop();
 
     delete l_pMainClass;
     l_pMainClass = nullptr;
