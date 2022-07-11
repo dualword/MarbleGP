@@ -124,8 +124,8 @@ namespace dustbin {
       // Hacky memory leak: Why does the game crash if the
       // Sound interface is dropped????
       // 
-      // delete m_pSoundInterface;
       m_pSoundInterface->startSoundtrack(enSoundTrack::enStNone);
+      // delete m_pSoundInterface;
       m_pSoundInterface = nullptr;
     }
 

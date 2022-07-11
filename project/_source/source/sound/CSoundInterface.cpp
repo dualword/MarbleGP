@@ -14,6 +14,80 @@
 
 namespace dustbin {
   namespace sound {
+    /**
+    * @class CDatFileReader
+    * @author Christian Keimel
+    * For Irrklang we need to wrap the Irrlicht file reader
+    */
+    class CDatFileReader : public irrklang::IFileReader {
+      private:
+        irr::io::IFileSystem *m_pFs;
+        irr::io::IReadFile   *m_pFile;
+        std::string           m_sName;
+
+      public:
+        CDatFileReader(const std::string& a_sName, irr::io::IFileSystem* a_pFs) : m_pFs(a_pFs), m_pFile(nullptr), m_sName(a_sName) {
+          m_pFile = m_pFs->createAndOpenFile(m_sName.c_str());
+        }
+
+        virtual ~CDatFileReader() {
+          m_pFile->drop();
+        }
+
+        virtual irrklang::ik_s32 read(void *a_pBuffer, irrklang::ik_u32 a_iSizeToRead) override {
+          if (m_pFile != nullptr)
+            return (irrklang::ik_s32)m_pFile->read(a_pBuffer, a_iSizeToRead);
+          else
+            return 0;
+        }
+
+        virtual bool seek(irrklang::ik_s32 a_iFinalPos, bool a_bRelativeMovement = false) override {
+          if (m_pFile != nullptr)
+            return m_pFile->seek(a_iFinalPos, a_bRelativeMovement);
+          else
+            return false;
+        }
+
+        virtual irrklang::ik_s32 getSize() override {
+          if (m_pFile != nullptr)
+            return (irrklang::ik_s32)m_pFile->getSize();
+          else
+            return 0;
+        }
+
+        virtual irrklang::ik_s32 getPos() override {
+          if (m_pFile != nullptr)
+            return (irrklang::ik_s32)m_pFile->getPos();
+          else
+            return 0;
+        }
+
+        virtual const irrklang::ik_c8 *getFileName() override {
+          return (irrklang::ik_c8 *)m_sName.c_str();
+        }
+    };
+
+    /**
+    * @class CDatFileReaderFactor
+    * @author Christian Keimel
+    * The file factory for Irrklang so that we can read files from the archive(s)
+    */
+    class CDatFileReaderFactory : public irrklang::IFileFactory {
+      private:
+        irr::io::IFileSystem *m_pFs;
+
+      public:
+        CDatFileReaderFactory(irr::io::IFileSystem* a_pFs) : m_pFs(a_pFs) {
+        }
+
+        virtual ~CDatFileReaderFactory() {
+        }
+
+        virtual irrklang::IFileReader* createFileReader(const irrklang::ik_c8 *a_sFilename) override {
+          return new CDatFileReader(a_sFilename, m_pFs);
+        }
+    };
+
     class CSoundInterface : public IAudioBuffer::IDeletionListener, public ISoundInterface {
       private:
         struct SMarbleSound {
@@ -64,6 +138,10 @@ namespace dustbin {
       public:
         CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true) {
           m_pEngine = irrklang::createIrrKlangDevice();
+
+          CDatFileReaderFactory *l_pFactory = new CDatFileReaderFactory(a_pFs);
+          m_pEngine->addFileFactory(l_pFactory);
+          l_pFactory->drop();
 
           m_vVelListener = irr::core::vector3df(0.0f, 0.0f, 0.0f);
           m_eSoundTrack  = enSoundTrack::enStNone;
@@ -198,27 +276,10 @@ namespace dustbin {
         }
 
         virtual ~CSoundInterface() {
-          for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
-              if (m_aMarbles[i].m_aSounds[j] != nullptr) m_aMarbles[i].m_aSounds[j]->setIsPaused(true);
-            }
-            m_aMarbles[i].m_bViewport = false;
-          }
-
-          for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
-              if (m_aMarbles[i].m_aSounds[j] != nullptr) m_aMarbles[i].m_aSounds[j]->drop();
-            }
-          }
-
-          for (int i = 0; i < (int)enOneShots::Count; i++)
-            if (m_aOneShots[i] != nullptr)
-              m_aOneShots[i]->drop();
-
-          m_mSoundTracks    .clear();
-          m_mSoundParameters.clear();
-
-          m_pEngine->drop();
+          irrklang::ISoundEngine *p = m_pEngine;
+          m_pEngine = nullptr;
+          p->drop();
+          printf("Sound Interface deleted.\n");
         }
 
         virtual void preloadSound(const std::wstring& a_sName, bool a_bMenuSound) override {
