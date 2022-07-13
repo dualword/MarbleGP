@@ -359,9 +359,9 @@ namespace dustbin {
           }
         }
 
-        void renderAudio(float *a_pTargetData, int32_t a_iNumFrames) {
+        oboe::DataCallbackResult renderAudio(float *a_pTargetData, int32_t a_iNumFrames) {
           if (m_pSource == nullptr || m_pSource->getData() == nullptr)
-            return;
+            return oboe::DataCallbackResult::Stop;
 
           const CAssetDataSource::SAudioProperties properties = m_pSource->getProperties();
 
@@ -382,17 +382,23 @@ namespace dustbin {
               }
 
               // Increment and handle wraparound
-              if (++m_iReadFrameIndex >= l_iTotalSourceFrames) m_iReadFrameIndex = 0;
+              if (++m_iReadFrameIndex >= l_iTotalSourceFrames) {
+                if (!m_bLooped)
+                  return oboe::DataCallbackResult::Stop;
+                else
+                  m_iReadFrameIndex = 0;
+              }
             }
 
             if (l_iFramesToRenderFromData < a_iNumFrames){
               // fill the rest of the buffer with silence
               renderSilence(&a_pTargetData[l_iFramesToRenderFromData], a_iNumFrames * properties.m_iChannelCount);
             }
-
           } else {
             renderSilence(a_pTargetData, a_iNumFrames * properties.m_iChannelCount);
           }
+
+          return oboe::DataCallbackResult::Continue;
         }
 
         void resetPlayHead() { 
@@ -423,6 +429,9 @@ namespace dustbin {
         }
 
         oboe::DataCallbackResult onAudioReady(oboe::AudioStream* a_pStream, void* a_pAudioData, int32_t a_iNumFrames) {
+          if (m_pSource == nullptr || m_pSource->getData() == nullptr)
+            return oboe::DataCallbackResult::Stop;
+
           renderAudio(static_cast<float *>(a_pAudioData), a_iNumFrames);
           return oboe::DataCallbackResult::Continue;
         }
@@ -472,8 +481,8 @@ namespace dustbin {
 
         int m_iPlayerMarble;
 
-        CAudioPlayer *m_aSounds[(int)en2dSounds    ::Count];
-        CAudioPlayer *m_aShots [(int)enOneShots    ::Count];
+        CAudioPlayer *m_aSounds2d[(int)en2dSounds::Count];
+        CAudioPlayer *m_aShots   [(int)enOneShots::Count];
 
         std::map<enSoundTrack  , CAudioPlayer *> m_mSoundTracks;
         std::map<std::wstring  , irr::f32      > m_mParameters;
@@ -514,7 +523,7 @@ namespace dustbin {
           };
 
           for (int i = 0; l_a2dSounds[i] != ""; i++) {
-            m_aSounds[i] = new CAudioPlayer(l_a2dSounds[i], false);
+            m_aSounds2d[i] = new CAudioPlayer(l_a2dSounds[i], false);
           }
 
           if (CGlobal::getInstance()->getFileSystem()->existFile("data/marblesounds.xml")) {
@@ -765,9 +774,9 @@ namespace dustbin {
         }
 
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
-          if (m_aSounds[(int)a_eSound] != nullptr) {
-            m_aSounds[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
-            m_aSounds[(int)a_eSound]->setVolume(a_fVolume);
+          if (m_aSounds2d[(int)a_eSound] != nullptr) {
+            m_aSounds2d[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
+            m_aSounds2d[(int)a_eSound]->setVolume(a_fVolume);
           }
         }
 
