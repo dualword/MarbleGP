@@ -17,10 +17,6 @@
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "MarbleGP.NativeActivity", __VA_ARGS__))
 
 
-class CAndroidVirtualKeyboard {
-
-};
-
 class CAndroidMenuEventHandler : public dustbin::controller::ICustomEventReceiver {
   private:
     irr::s32 m_iTouchID;
@@ -43,7 +39,7 @@ class CAndroidMenuEventHandler : public dustbin::controller::ICustomEventReceive
         buttons. That workaround does ignore multi-touch events - if you need several buttons pressed at the same
         time you have to handle that yourself.
         */
-        irr::SEvent a_cFakeMouseEvent;
+        irr::SEvent a_cFakeMouseEvent{};
         a_cFakeMouseEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
         a_cFakeMouseEvent.MouseInput.X = a_cEvent.TouchInput.X;
         a_cFakeMouseEvent.MouseInput.Y = a_cEvent.TouchInput.Y;
@@ -99,7 +95,7 @@ struct SJoystickInput {
 
   irr::IrrlichtDevice *m_pDevice;
 
-  SJoystickInput() {
+  SJoystickInput() : m_pDevice(nullptr) {
     m_cJoypadEvent.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 
     for (int i = 0; i < 18; i++)
@@ -133,8 +129,6 @@ struct SJoystickInput {
 
           for (int i = 0; m_aAxes[i] != -1; i++) {
             float f = AMotionEvent_getAxisValue(a_pEvent, m_aAxes[i], 0);
-            if (abs(f) > 0.5)
-              printf("Blub\n");
             m_cJoypadEvent.JoystickEvent.Axis[i] = (irr::s16)(32767.0 * f);
           }
 
@@ -177,7 +171,7 @@ struct SJoystickInput {
       // event handler does never return
       // 1 on key events
       if (l_iKeyCode == 4) {
-        irr::SEvent l_cEvent;
+        irr::SEvent l_cEvent{};
         l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
         l_cEvent.KeyInput.Key = irr::KEY_BACK;
         l_cEvent.KeyInput.Char = l_iKeyCode;
@@ -235,7 +229,7 @@ void android_main(struct android_app* a_pApp) {
   }*/
 
   dustbin::CMainClass *l_pMainClass = nullptr;
-  dustbin::state::enState l_eState;
+  dustbin::state::enState l_eState{};
 
   do {
     std::string l_sSettings = "";
@@ -283,7 +277,7 @@ void android_main(struct android_app* a_pApp) {
     do {
       l_eState = l_pMainClass->run();
 
-      irr::SEvent l_cEvent;
+      irr::SEvent l_cEvent{};
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iEventNewFrame;
       l_cEvent.UserEvent.UserData2 = c_iEventNewFrame;
