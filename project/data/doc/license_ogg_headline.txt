@@ -1,1 +1,0 @@
-MarbleGP uses ogg/vorbis sound files

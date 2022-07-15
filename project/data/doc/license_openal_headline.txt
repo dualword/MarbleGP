@@ -1,1 +1,0 @@
-MarbleGP uses OpenAL for audio

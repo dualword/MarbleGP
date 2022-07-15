@@ -46,47 +46,26 @@
       
       <element type="MenuButton" rect="relative: 1, 17, 15, 19">
         <attributes>
-          <attribute key="Caption" value="OpenAL" />
-          <attribute key="Name" value="license_openal" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="relative: 1, 20, 15, 22">
-        <attributes>
           <attribute key="Caption" value="LibJPEG" />
           <attribute key="Name" value="license_libjpeg" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 23, 15, 25">
+      <element type="MenuButton" rect="relative: 1, 20, 15, 22">
         <attributes>
           <attribute key="Caption" value="LibPNG" />
           <attribute key="Name" value="license_libpng" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 26, 15, 28">
+      <element type="MenuButton" rect="relative: 1, 23, 15, 25">
         <attributes>
           <attribute key="Caption" value="ZLib" />
           <attribute key="Name" value="license_zlib" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 29, 15, 31">
-        <attributes>
-          <attribute key="Caption" value="Ogg" />
-          <attribute key="Name" value="license_ogg" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="relative: 1, 32, 15, 34">
-        <attributes>
-          <attribute key="Caption" value="Vorbis" />
-          <attribute key="Name" value="license_vorbis" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="relative: 1, 35, 15, 37">
+      <element type="MenuButton" rect="relative: 1, 26, 15, 28">
         <attributes>
           <attribute key="Caption" value="XEffects" />
           <attribute key="Name" value="license_xeffects" />
