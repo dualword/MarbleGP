@@ -58,9 +58,10 @@ namespace dustbin {
           NextCategory = 3
         };
 
-        irr::gui::IGUIEnvironment *m_pGui;  /**< The Irrlicht gui environment */
-        irr::video::IVideoDriver  *m_pDrv;  /**< The Irrlicht video driver */
-        irr::io::IFileSystem      *m_pFs;   /**< The Irrlicht file system */
+        irr::gui::IGUIEnvironment *m_pGui;    /**< The Irrlicht gui environment */
+        irr::video::IVideoDriver  *m_pDrv;    /**< The Irrlicht video driver */
+        irr::io::IFileSystem      *m_pFs;     /**< The Irrlicht file system */
+        irr::gui::ICursorControl  *m_pCursor; /**< The cursor control */
 
         int m_iRows;        /**< The number of rows of the list */
         int m_iPos;         /**< The scroll position */
@@ -85,8 +86,6 @@ namespace dustbin {
         bool m_bShowSelected; /**< Add a headline showing the name of the selected item */
         bool m_bOneCatPage;   /**< Categories fit on one page */
         bool m_bScrollTrack;  /**< Scroll the track list (true) or the categories (false)? */
-        bool m_bSelected;     /**< Are we currently selected by Game-Pad menu control? */
-        bool m_bInCategories; /**< Is the game-pad control currently in the categories (if available) */
         bool m_bImgChangeEv;  /**< Send image change events */
 
         bool m_aBtnHover[4];    /**< Is any of the internal buttons hovered? */

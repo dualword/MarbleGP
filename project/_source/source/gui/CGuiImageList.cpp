@@ -12,6 +12,7 @@ namespace dustbin {
       m_pGui           (nullptr),
       m_pDrv           (nullptr),
       m_pFs            (nullptr),
+      m_pCursor        (nullptr),
       m_iRows          (1),
       m_iPos           (0),
       m_iOffset        (-1),
@@ -23,8 +24,6 @@ namespace dustbin {
       m_bShowSelected  (false),
       m_bOneCatPage    (false),
       m_bScrollTrack   (true),
-      m_bSelected      (false),
-      m_bInCategories  (false),
       m_bImgChangeEv   (false),
       m_pFontSelected  (nullptr),
       m_pFontCategory  (nullptr),
@@ -35,6 +34,8 @@ namespace dustbin {
       m_pDrv = CGlobal::getInstance()->getVideoDriver   ();
       m_pGui = CGlobal::getInstance()->getGuiEnvironment();
       m_pFs  = CGlobal::getInstance()->getFileSystem    ();
+
+      m_pCursor = CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl();
 
       m_cImageSrc = irr::core::rectf(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -509,49 +510,73 @@ namespace dustbin {
         if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
           if (!std::get<0>(m_aButtons[(int)enInternalButtons::NextImage]).isPointInside(m_cMouse) && !std::get<0>(m_aButtons[(int)enInternalButtons::PrevImage]).isPointInside(m_cMouse)) {
             if (a_cEvent.UserEvent.UserData2 != 0) {
-              m_bSelected = !m_bSelected;
-              m_bInCategories = false;
-
-              if (m_bImgChangeEv && !m_bSelected)
+              if (m_bImgChangeEv)
                 sendImageSelected();
             }
             l_bRet = true;
           }
         }
-        else if (m_bSelected) {
-          if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
-            switch (a_cEvent.UserEvent.UserData2) {
-              case 0:
-                if (m_bCategories)
-                  m_bInCategories = true;
-                l_bRet = true;
-                break;
-                
-              case 1:
-                if (m_bCategories)
-                  m_bInCategories = false;
-                l_bRet = true;
-                break;
+        else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
+          if (m_cImages.isPointInside(m_cMouse)) {
+            if (a_cEvent.UserEvent.UserData2 == 2) {
+              selectPrevImage();
+              l_bRet = true;
+            }
+            else if (a_cEvent.UserEvent.UserData2 == 3) {
+              selectNextImage();
+              l_bRet = true;
+            }
+            else if (a_cEvent.UserEvent.UserData2 == 0) {
+              if (m_bCategories) {
+                irr::SEvent l_cEvent{};
 
-              case 2:
-                if (m_bInCategories) {
-                  selectPrevCategory();
-                }
-                else {
-                  selectPrevImage();
-                }
-                l_bRet = true;
-                break;
+                l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+                l_cEvent.MouseInput.Event   = irr::EMIE_MOUSE_MOVED;
+                l_cEvent.MouseInput.X       = m_cCategoryOuter.getCenter().X;
+                l_cEvent.MouseInput.Y       = m_cCategoryOuter.getCenter().Y;
+                l_cEvent.MouseInput.Control = false;
+                l_cEvent.MouseInput.Shift   = false;
+                l_cEvent.MouseInput.Wheel   = 0;
 
-              case 3: 
-                if (m_bInCategories) {
-                  selectNextCategory();
+                CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
+
+                if (m_pCursor != nullptr) {
+                  m_pCursor->setPosition(m_cCategoryOuter.getCenter());
                 }
-                else {
-                  selectNextImage();
-                }
+
                 l_bRet = true;
-                break;
+              }
+            }
+          }
+          else if (m_bCategories) {
+            if (m_cCategoryOuter.isPointInside(m_cMouse)) {
+              if (a_cEvent.UserEvent.UserData2 == 2) {
+                selectPrevCategory();
+                l_bRet = true;
+              }
+              else if (a_cEvent.UserEvent.UserData2 == 3) {
+                selectNextCategory();
+                l_bRet = true;
+              }
+              else if (a_cEvent.UserEvent.UserData2 == 1) {
+                irr::SEvent l_cEvent{};
+
+                l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+                l_cEvent.MouseInput.Event   = irr::EMIE_MOUSE_MOVED;
+                l_cEvent.MouseInput.X       = m_cImages.getCenter().X;
+                l_cEvent.MouseInput.Y       = m_cImages.getCenter().Y;
+                l_cEvent.MouseInput.Control = false;
+                l_cEvent.MouseInput.Shift   = false;
+                l_cEvent.MouseInput.Wheel   = 0;
+
+                CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
+
+                if (m_pCursor != nullptr) {
+                  m_pCursor->setPosition(m_cImages.getCenter());
+                }
+
+                l_bRet = true;
+              }
             }
           }
         }
@@ -578,17 +603,7 @@ namespace dustbin {
       }
 
       if (m_bCategories) {
-        if (m_bSelected) {
-          if (m_bInCategories) {
-            m_pDrv->draw2DRectangleOutline(m_cCategoryInner, irr::video::SColor(0xFF, 0xFF, 0, 0));
-          }
-          else {
-            m_pDrv->draw2DRectangleOutline(m_cImages, irr::video::SColor(0xFF, 0xFF, 0, 0));
-          }
-        }
-
         m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cCategoryInner);
-
  
         for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
           irr::core::recti l_cRect = std::get<1>(*it);
