@@ -190,15 +190,21 @@ namespace dustbin {
               m_pTextureMode->setSelected(1);
               if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(true);
               if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(false);
+
+              if (m_pMore != nullptr) m_pMore->setVisible(true);
             }
             else if (l_sType == "imported") {
               m_pTextureMode->setSelected(2);
               if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(false);
               if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(true);
+
+              if (m_pMore != nullptr) m_pMore->setVisible(false);
             }
             else {
               if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(false);
               if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(false);
+
+              if (m_pMore != nullptr) m_pMore->setVisible(false);
             }
 
             std::map<std::string, std::string> l_mParamMap{
@@ -952,9 +958,13 @@ namespace dustbin {
                       buttonColorCancelClicked();
                     else if (m_pPatternDialog != nullptr && m_pPatternDialog->isVisible())
                       buttonPatternCloseClicked();
+                    else if (m_pButtonTab != nullptr && m_pButtonTab->isVisible()) {
+                      m_pButtonTab->setVisible(false);
+                      changeZLayer(10);
+                    }
                     else if (m_pTextureDialog != nullptr && m_pTextureDialog->isVisible())
                       buttonTextureCancelClicked();
-                    else
+                    else 
                       buttonCancelClicked();
                     l_bRet = true;
                   }
@@ -1109,8 +1119,10 @@ namespace dustbin {
                     buttonControlsCancelClicked();
                   }
                   else if (l_sSender == "btn_more") {
-                    if (m_pButtonTab != nullptr)
+                    if (m_pButtonTab != nullptr) {
                       m_pButtonTab->setVisible(!m_pButtonTab->isVisible());
+                      changeZLayer(m_pButtonTab->isVisible() ? 69 : 10);
+                    }
                   }
                   else if (l_sSender == "btn_pattern_select") {
                   irr::SEvent l_cEvent{};
