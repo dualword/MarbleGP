@@ -44,10 +44,21 @@ namespace dustbin {
           irr::scene::IMeshSceneNode *l_pSilver = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("silver_name"));
           irr::scene::IMeshSceneNode *l_pBronze = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("bronze_name"));
 
+          irr::scene::IMeshSceneNode *l_pMarble1 = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("marble1"));
+          irr::scene::IMeshSceneNode *l_pMarble2 = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("marble2"));
+          irr::scene::IMeshSceneNode *l_pMarble3 = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("marble3"));
+
           irr::scene::ISceneNode *l_pSilverRoot = m_pSmgr->getSceneNodeFromName("silver_root");
           irr::scene::ISceneNode *l_pBronzeRoot = m_pSmgr->getSceneNodeFromName("bronze_root");
 
+          irr::scene::ISceneNode *l_pRank2 = m_pSmgr->getSceneNodeFromName("second_marble");
+          irr::scene::ISceneNode *l_pRank3 = m_pSmgr->getSceneNodeFromName("third_marble" );
+
           data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+
+          std::string l_sPlayers = m_pState->getGlobal()->getGlobal("raceplayers");
+          data::SRacePlayers l_cPlayers;
+          l_cPlayers.deserialize(l_sPlayers);
 
           std::vector<data::SChampionshipPlayer> l_vStandings = l_cChampionship.getStandings();
 
@@ -67,6 +78,15 @@ namespace dustbin {
 
               if (l_pTrophy->getMaterialCount() > 1)
                 l_pTrophy->getMaterial(1).setTexture(0, p);
+
+              if (l_pMarble1 != nullptr) {
+                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
+                    l_pMarble1->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
+                    break;
+                  }
+                }
+              }
             }
 
             if (l_vStandings.size() > 1 && l_pSilver != nullptr) {
@@ -81,8 +101,20 @@ namespace dustbin {
 
               if (l_pSilver->getMaterialCount() > 0)
                 l_pSilver->getMaterial(0).setTexture(0, p);
+
+              if (l_pMarble2 != nullptr) {
+                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
+                    l_pMarble2->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
+                    break;
+                  }
+                }
+              }
             }
-            else if (l_pSilverRoot != nullptr) l_pSilverRoot->setVisible(false);
+            else {
+              if (l_pSilverRoot != nullptr) l_pSilverRoot->setVisible(false);
+              if (l_pRank2      != nullptr) l_pRank2     ->setVisible(false);
+            }
 
             if (l_vStandings.size() > 2 && l_pBronze != nullptr) {
               data::SChampionshipPlayer l_cPlayer = l_vStandings[2];
@@ -96,8 +128,20 @@ namespace dustbin {
 
               if (l_pBronze->getMaterialCount() > 0)
                 l_pBronze->getMaterial(0).setTexture(0, p);
+
+              if (l_pMarble3 != nullptr) {
+                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
+                    l_pMarble3->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
+                    break;
+                  }
+                }
+              }
             }
-            else if (l_pBronzeRoot != nullptr) l_pBronzeRoot->setVisible(false);
+            else {
+              if (l_pBronzeRoot != nullptr) l_pBronzeRoot->setVisible(false);
+              if (l_pRank3      != nullptr) l_pRank3     ->setVisible(false);
+            }
           }
 
           printf("Ready.\n");

@@ -43,8 +43,6 @@ namespace dustbin {
           data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
           data::SChampionshipRace *l_pRace = l_cChampionship.getLastRace();
 
-          printf("\n\n%s\n\n", l_cChampionship.to_string().c_str());
-
           irr::gui::IGUIStaticText *l_pTrack = reinterpret_cast<irr::gui::IGUIStaticText*>(findElementByNameAndType("label_trackname", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pTrack != nullptr) {
