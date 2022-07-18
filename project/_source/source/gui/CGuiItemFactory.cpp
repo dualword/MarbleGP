@@ -13,6 +13,8 @@
 
 #ifdef _TOUCH_CONTROL
 #include <gui/CGuiTouchControl.h>
+#include <data/CDataStructs.h>
+#include <CGlobal.h>
 #endif
 
 namespace dustbin {
@@ -91,9 +93,21 @@ namespace dustbin {
       }
 #ifdef _TOUCH_CONTROL
       else if (l_sTypeName == g_TouchControlName) {
-        irr::gui::IGUIElement *p = new gui::CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
-        p->drop();
-        return p;
+        enTouchCtrlType l_eType = (enTouchCtrlType)CGlobal::getInstance()->getSettingData().m_iTouchType;
+
+        if (l_eType == enTouchCtrlType::ControlLeft || l_eType == enTouchCtrlType::ControlRight) {
+          irr::gui::IGUIElement *p = new gui::CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+          p->drop();
+          return p;
+        }
+        else if (l_eType == enTouchCtrlType::SteerLeft || l_eType == enTouchCtrlType::SteerRIght) {
+          irr::gui::IGUIElement *p = new gui::CGuiTouchControl_Split(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+          p->drop();
+          return p;
+        }
+
+        printf("Unknown Touch Controller Type: %i\n", (int)l_eType);
+        return nullptr;
       }
 #endif
 

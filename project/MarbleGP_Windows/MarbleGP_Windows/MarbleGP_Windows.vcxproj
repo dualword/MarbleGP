@@ -45,6 +45,7 @@
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CGuiTouchControl.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CVirtualKeyboard.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />

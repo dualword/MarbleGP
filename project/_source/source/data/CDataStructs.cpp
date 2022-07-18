@@ -116,7 +116,7 @@ namespace dustbin {
       m_iResolutionH (1080), 
       m_iShadows     (2), 
       m_iAmbient     (2),
-      m_iTouchType   (1),
+      m_iTouchType   (0),
       m_fSfxMaster   (1.0f),
       m_fSoundTrack  (1.0f),
       m_fSfxMenu     (1.0f),

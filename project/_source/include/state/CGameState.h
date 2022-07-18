@@ -200,7 +200,7 @@ namespace dustbin {
         // irr::gui::IGUIStaticText *m_pStepLabel;
 
 #ifdef _TOUCH_CONTROL
-        gui::CGuiTouchControl *m_pTouchControl;
+        gui::IGuiTouchControl *m_pTouchControl;
 #endif
 
         /**

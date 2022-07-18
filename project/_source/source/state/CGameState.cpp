@@ -568,7 +568,7 @@ namespace dustbin {
 
 #ifdef _TOUCH_CONTROL
       if (m_pGlobal->getSettingData().m_bTouchControl && m_pCamAnimator == nullptr) {
-        m_pTouchControl = reinterpret_cast<gui::CGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
+        m_pTouchControl = reinterpret_cast<gui::IGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
       }
 #endif
     }

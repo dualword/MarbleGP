@@ -98,6 +98,26 @@
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
+      
+      <element type="staticText" rect="center: -14, 8, 3, 10">
+        <attributes>
+          <attribute key="Name" value="label_touchctrl" />
+          <attribute key="Caption" value="Touch Controller Type:" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="HTextAlign" value="lowerRight" />
+        </attributes>
+      </element>
+
+      <element type="Selector" rect="center: 4, 8, 23 , 10">
+        <attributes>
+          <attribute key="Name" value="selector_touchctrl" />
+          <attribute key="Id" value="25000" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="Steer Left, Throttle Right;Steer Right, Throttle Left;All Controls Left;All Controls Right" />
+        </custom>
+      </element>          
     </children>
   </element>
   
