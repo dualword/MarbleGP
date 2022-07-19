@@ -5,6 +5,7 @@
 #include <controller/ICustomEventReceiver.h>
 // #include <paddleboat/paddleboat.h>
 #include <sys/system_properties.h>
+#include <data/CDataStructs.h>
 #include <state/IState.h>
 #include <Defines.h>
 #include <CGlobal.h>
@@ -92,10 +93,11 @@ struct SJoystickInput {
   irr::SEvent m_cJoypadEvent;
 
   int32_t m_aAxes[7];
+  bool    m_bEventHandled;   /**< Was there a gamepad event? If so we deactivate the "touch control" setting */
 
   irr::IrrlichtDevice *m_pDevice;
 
-  SJoystickInput() : m_pDevice(nullptr) {
+  SJoystickInput() : m_bEventHandled(false), m_pDevice(nullptr) {
     m_cJoypadEvent.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 
     for (int i = 0; i < 18; i++)
@@ -118,6 +120,7 @@ struct SJoystickInput {
     int32_t l_iSource = AInputEvent_getSource(a_pEvent);
 
     bool l_bRet = false;
+    bool l_bPad = false;    // Was this a joypad event?
 
     if ((l_iSource & AINPUT_SOURCE_JOYSTICK) == AINPUT_SOURCE_JOYSTICK) {  
       int32_t l_iEvent = AInputEvent_getType(a_pEvent);
@@ -144,6 +147,7 @@ struct SJoystickInput {
             m_cJoypadEvent.JoystickEvent.POV = 65535;
 
           l_bRet = true;
+          l_bPad = true;
           break;
         }
 
@@ -165,6 +169,7 @@ struct SJoystickInput {
           m_cJoypadEvent.JoystickEvent.ButtonStates &= ~(l_iFlag);
 
         l_bRet = true;
+        l_bPad = true;
       }
 
       // Hacky, but the Irrlicht Android
@@ -186,6 +191,11 @@ struct SJoystickInput {
 
     if (l_bRet && m_pDevice)
       m_pDevice->postEventFromUser(m_cJoypadEvent);
+
+    if (l_bPad && !m_bEventHandled) {
+      dustbin::CGlobal::getInstance()->getSettingData().m_bMenuPad = true;
+      m_bEventHandled = true;
+    }
 
     return l_bRet;
   }

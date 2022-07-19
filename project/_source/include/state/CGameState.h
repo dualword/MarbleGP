@@ -49,7 +49,7 @@ namespace dustbin {
 
   namespace gui {
 #ifdef _TOUCH_CONTROL
-    class CGuiTouchControl;
+    class IGuiTouchControl;
 #endif
   }
 

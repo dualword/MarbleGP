@@ -44,6 +44,41 @@ namespace dustbin {
     * power controls on one side and the steering controls on the other
     */
     class CGuiTouchControl_Split : public IGuiTouchControl {
+      protected:
+        /**
+        * @class STouchItem
+        * @author Christian Keimel
+        * This data structure holds all necessary information
+        * for the touch marble controls
+        */
+        struct STouchItem {
+          bool m_bTouched;    /**< Is the item currently touched? */
+
+          irr::core::recti m_cButton;   /**< The actual button the image is drawn to */
+          irr::core::recti m_cTouch;    /**< The touch area which might be bigger than the drawn area */
+          irr::core::recti m_cSource;   /**< The source area of the image, necessary for drawing scaled images */
+
+          irr::video::SColor    m_cColor;     /**< The background color if the item is touched */
+          irr::video::ITexture *m_pTexture;   /**< The texture of the item */
+
+          STouchItem();
+          STouchItem(const STouchItem &a_cOther);   /**< Copy constructor */
+
+          /**
+          * Set the texture and initialize the source rect
+          * @param a_pTexture the texture
+          */
+          void setTexture(irr::video::ITexture *a_pTexture);
+
+          /**
+          * Set the rectangles and the touch color
+          * @param a_cButton the button rectangle on the screen
+          * @param a_cTouch the touch rectangle on the screen
+          * @param a_cColor the touched color of the item
+          */
+          void setRectAndColor(const irr::core::recti &a_cButton, const irr::core::recti &a_cTouch, const irr::video::SColor &a_cColor);
+        };
+
       private:
         /**
         * This enumeration holds the indices for the textures of all control items
@@ -78,13 +113,7 @@ namespace dustbin {
         irr::core::recti m_cPwrItems[3];  /**< The three items for the speed (foreward, neutral, backward) */
         irr::core::recti m_cStrItems[3];  /**< The three items for steering (left, neutral, right) */
 
-        irr::core::recti   m_aItems [enItemIndex::ItemCount];   /**< The rects of all items of the touch controller */
-        irr::core::recti   m_aSource[enItemIndex::ItemCount];   /**< The source rects of the textures */
-        irr::video::SColor m_aColors[enItemIndex::ItemCount];   /**< The background colors if an item is touched */
-
-        bool m_aTouched[enItemIndex::ItemCount];    /**< Is the item touched? */
-
-        irr::video::ITexture *m_aTextures[enItemIndex::ItemCount];  /**< All the images of the control items */
+        STouchItem m_aItems[enItemIndex::ItemCount];  /**< The touch items */
 
         std::vector<enItemIndex> m_aItemMap[enTouchId::IdCount];    /**< Map that controls which touch ID controls which item */
 
@@ -113,8 +142,6 @@ namespace dustbin {
     */
     class CGuiTouchControl : public IGuiTouchControl {
       private:
-        enTouchCtrlType  m_eType;
-        CGlobal         *m_pGlobal;
         int              m_iTouchIdTh;    /**< Throttle touch ID (in digital control this is for both throttle and steer) */
         int              m_iTouchIdBk;    /**< Brake touch ID (only used in the digital control versions) */
         int              m_iTouchIdRs;    /**< Respawn control */

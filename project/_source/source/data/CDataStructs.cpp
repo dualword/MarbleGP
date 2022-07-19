@@ -124,6 +124,7 @@ namespace dustbin {
       m_bFullscreen  (false),
       m_bGfxChange   (false),
       m_bTouchControl(true),
+      m_bMenuPad     (false),
 #ifdef _ANDROID
       m_bUseMenuCtrl (true),
       m_bVirtualKeys (true),

@@ -202,7 +202,7 @@ namespace dustbin {
 
           gui::CDustbinCheckbox *l_pTouch = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
           if (l_pTouch != nullptr)
-            l_pTouch->setChecked(CGlobal::getInstance()->getSettingData().m_bTouchControl);
+            l_pTouch->setChecked(CGlobal::getInstance()->getSettingData().m_bTouchControl && !CGlobal::getInstance()->getSettingData().m_bMenuPad);
 
           updateSelectedPlayers();
           m_pState->setZLayer(1);

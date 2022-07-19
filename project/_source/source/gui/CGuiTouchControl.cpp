@@ -13,13 +13,51 @@ namespace dustbin {
         -1, 
         irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize())
       ),
-      m_pGlobal(CGlobal::getInstance()),
       m_eType  ((enTouchCtrlType)CGlobal::getInstance()->getSettingData().m_iTouchType),
+      m_pGlobal(CGlobal::getInstance()),
       m_pDrv   (CGlobal::getInstance()->getVideoDriver())
     {
     }
 
     IGuiTouchControl::~IGuiTouchControl() {
+    }
+
+
+    CGuiTouchControl_Split::STouchItem::STouchItem() : m_bTouched(false), m_pTexture(nullptr) {
+    }
+
+    CGuiTouchControl_Split::STouchItem::STouchItem(const STouchItem& a_cOther) :
+      m_bTouched(a_cOther.m_bTouched),
+      m_cButton (a_cOther.m_cButton),
+      m_cTouch  (a_cOther.m_cTouch),
+      m_cSource (a_cOther.m_cSource),
+      m_cColor  (a_cOther.m_cColor),
+      m_pTexture(a_cOther.m_pTexture)
+    {
+    }
+
+    /**
+    * Set the texture and initialize the source rect
+    * @param a_pTexture the texture
+    */
+    void CGuiTouchControl_Split::STouchItem::setTexture(irr::video::ITexture* a_pTexture) {
+      m_pTexture = a_pTexture;
+
+      if (m_pTexture != nullptr) {
+        m_cSource = irr::core::recti(irr::core::position2di(0, 0), m_pTexture->getSize());
+      }
+    }
+
+    /**
+    * Set the rectangles and the touch color
+    * @param a_cButton the button rectangle on the screen
+    * @param a_cTouch the touch rectangle on the screen
+    * @param a_cColor the touched color of the item
+    */
+    void CGuiTouchControl_Split::STouchItem::setRectAndColor(const irr::core::recti& a_cButton, const irr::core::recti& a_cTouch, const irr::video::SColor& a_cColor) {
+      m_cButton = a_cButton;
+      m_cTouch  = a_cTouch;
+      m_cColor  = a_cColor;
     }
 
 
@@ -51,9 +89,7 @@ namespace dustbin {
       };
 
       for (int i = 0; l_aTextures[i] != ""; i++) {
-        m_aTextures[i] = m_pGlobal->getVideoDriver()->getTexture(l_aTextures[i].c_str());
-        m_aSource  [i] = irr::core::recti(irr::core::position2di(0, 0), m_aTextures[i]->getSize());
-        m_aTouched [i] = false;
+        m_aItems[i].setTexture(m_pGlobal->getVideoDriver()->getTexture(l_aTextures[i].c_str()));
       }
 
       // The total size of the steering items
@@ -63,7 +99,7 @@ namespace dustbin {
       );
 
       // The position of the steer items
-      irr::core::position2di l_cSteerPos = irr::core::position2di(
+      irr::core::position2di l_cSteerPosOuter = irr::core::position2di(
         m_eType == enTouchCtrlType::SteerLeft ? l_iOffset : a_cRect.getWidth() - l_cSteerSize.Width - l_iOffset,
         a_cRect.getHeight() - l_cSteerSize.Height - l_iOffset
       );
@@ -75,52 +111,64 @@ namespace dustbin {
       );
 
       // The position of the power items
-      irr::core::position2di l_cPowerPos = irr::core::position2di(
+      irr::core::position2di l_cPowerPosOuter = irr::core::position2di(
         m_eType == enTouchCtrlType::SteerLeft ? a_cRect.getWidth() - l_cPowerSize.Width - l_iOffset : l_iOffset,
         a_cRect.getHeight() - l_cPowerSize.Height - l_iOffset
       );
 
-      m_cSteer = irr::core::recti(l_cSteerPos, l_cSteerSize);
-      m_cPower = irr::core::recti(l_cPowerPos, l_cPowerSize);
+      m_cSteer = irr::core::recti(l_cSteerPosOuter, l_cSteerSize);
+      m_cPower = irr::core::recti(l_cPowerPosOuter, l_cPowerSize);
 
-      irr::core::position2di l_cPwr = irr::core::position2di(
+      irr::core::position2di l_cPowerPos = irr::core::position2di(
         m_cPower.getCenter().X - l_iSize / 2 - l_iOffset,
         m_cPower.UpperLeftCorner.Y + l_iOffset
       );
 
-      irr::core::position2di l_cStr = irr::core::position2di(
+      irr::core::position2di l_cPowerTch = irr::core::position2di(
+        m_cPower.getCenter().X - 3 * l_iSize / 2 - l_iOffset,
+        m_cPower.UpperLeftCorner.Y + l_iOffset
+      );
+
+      irr::core::position2di l_cSteerPos = irr::core::position2di(
         m_cSteer.UpperLeftCorner.X + l_iOffset,
         m_cSteer.getCenter().Y - l_iSize / 2 - l_iOffset
       );
 
-      irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
+      irr::core::position2di l_cSteerTch = irr::core::position2di(
+        m_cSteer.UpperLeftCorner.X + l_iOffset,
+        m_cSteer.getCenter().Y - 3 * l_iSize / 2 - l_iOffset
+      );
 
-      m_aItems[enItemIndex::ItemForeward] = irr::core::recti(l_cPwr, l_cSize); l_cPwr.Y += l_iSize + l_iOffset;
-      m_aItems[enItemIndex::ItemNeutralP] = irr::core::recti(l_cPwr, l_cSize); l_cPwr.Y += l_iSize + l_iOffset;
-      m_aItems[enItemIndex::ItemBackward] = irr::core::recti(l_cPwr, l_cSize); l_cPwr.Y += l_iSize + l_iOffset; l_cPwr.X = m_cPower.UpperLeftCorner.X + l_iOffset; l_cSize.Width = 3 * l_iSize;
-      m_aItems[enItemIndex::ItemBrake   ] = irr::core::recti(l_cPwr, l_cSize);                                                                                     l_cSize.Width =     l_iSize;
-      m_aItems[enItemIndex::ItemLeft    ] = irr::core::recti(l_cStr, l_cSize); l_cStr.X += l_iSize + l_iOffset;
-      m_aItems[enItemIndex::ItemNeutralS] = irr::core::recti(l_cStr, l_cSize); l_cStr.X += l_iSize + l_iOffset;
-      m_aItems[enItemIndex::ItemRight   ] = irr::core::recti(l_cStr, l_cSize);
+      irr::core::dimension2du l_cSize  = irr::core::dimension2du(    l_iSize, l_iSize);
+      irr::core::dimension2du l_cTouch = irr::core::dimension2du(3 * l_iSize, l_iSize);
+      irr::core::position2di  l_cStep  = irr::core::position2di (          0, l_iSize + l_iOffset);
+
+      m_aItems[enItemIndex::ItemForeward].setRectAndColor(irr::core::recti(l_cPowerPos, l_cSize ), irr::core::recti(l_cPowerTch, l_cTouch), irr::video::SColor(128,   0, 255,   0)); l_cPowerPos += l_cStep; l_cPowerTch += l_cStep;
+      m_aItems[enItemIndex::ItemNeutralP].setRectAndColor(irr::core::recti(l_cPowerPos, l_cSize ), irr::core::recti(l_cPowerTch, l_cTouch), irr::video::SColor(128,  96,  96,  96)); l_cPowerPos += l_cStep; l_cPowerTch += l_cStep;
+      m_aItems[enItemIndex::ItemBackward].setRectAndColor(irr::core::recti(l_cPowerPos, l_cSize ), irr::core::recti(l_cPowerTch, l_cTouch), irr::video::SColor(128, 255, 255,   0)); l_cPowerPos += l_cStep; l_cPowerTch += l_cStep;
+      m_aItems[enItemIndex::ItemBrake   ].setRectAndColor(irr::core::recti(l_cPowerTch, l_cTouch), irr::core::recti(l_cPowerTch, l_cTouch), irr::video::SColor(128, 225,   0,   0)); l_cPowerPos += l_cStep; l_cPowerTch += l_cStep;
+
+      l_cTouch = irr::core::dimension2du(l_iSize, 3 * l_iSize);
+      l_cStep  = irr::core::position2di (l_iSize + l_iOffset, 0);
+
+      m_aItems[enItemIndex::ItemLeft    ].setRectAndColor(irr::core::recti(l_cSteerPos, l_cSize ), irr::core::recti(l_cSteerTch, l_cTouch), irr::video::SColor(128,   0, 255,   0)); l_cSteerPos += l_cStep; l_cSteerTch += l_cStep;
+      m_aItems[enItemIndex::ItemNeutralS].setRectAndColor(irr::core::recti(l_cSteerPos, l_cSize ), irr::core::recti(l_cSteerTch, l_cTouch), irr::video::SColor(128,   0, 255,   0)); l_cSteerPos += l_cStep; l_cSteerTch += l_cStep;
+      m_aItems[enItemIndex::ItemRight   ].setRectAndColor(irr::core::recti(l_cSteerPos, l_cSize ), irr::core::recti(l_cSteerTch, l_cTouch), irr::video::SColor(128,   0, 255,   0)); l_cSteerPos += l_cStep; l_cSteerTch += l_cStep;
+
+      irr::core::recti l_cRespawn;
+      irr::core::recti l_cRearView;
 
       if (m_eType == enTouchCtrlType::SteerLeft) {
-        m_aItems[enItemIndex::ItemRespawn ] = irr::core::recti(l_iOffset                               , l_iOffset, l_iOffset + l_iSize           , l_iOffset + l_iSize);
-        m_aItems[enItemIndex::ItemRearview] = irr::core::recti(a_cRect.getWidth() - l_iSize - l_iOffset, l_iOffset, a_cRect.getWidth() - l_iOffset, l_iOffset + l_iSize);
+        l_cRespawn  = irr::core::recti(l_iOffset                               , l_iOffset, l_iOffset + l_iSize           , l_iOffset + l_iSize);
+        l_cRearView = irr::core::recti(a_cRect.getWidth() - l_iSize - l_iOffset, l_iOffset, a_cRect.getWidth() - l_iOffset, l_iOffset + l_iSize);
       }
       else {
-        m_aItems[enItemIndex::ItemRearview] = irr::core::recti(l_iOffset                               , l_iOffset, l_iOffset + l_iSize           , l_iOffset + l_iSize);
-        m_aItems[enItemIndex::ItemRespawn ] = irr::core::recti(a_cRect.getWidth() - l_iSize - l_iOffset, l_iOffset, a_cRect.getWidth() - l_iOffset, l_iOffset + l_iSize);
+        l_cRearView = irr::core::recti(l_iOffset                               , l_iOffset, l_iOffset + l_iSize           , l_iOffset + l_iSize);
+        l_cRespawn  = irr::core::recti(a_cRect.getWidth() - l_iSize - l_iOffset, l_iOffset, a_cRect.getWidth() - l_iOffset, l_iOffset + l_iSize);
       }
 
-      m_aColors[enItemIndex::ItemLeft    ] = irr::video::SColor(128,   0,   0, 255);
-      m_aColors[enItemIndex::ItemRight   ] = irr::video::SColor(128,   0,   0, 255);
-      m_aColors[enItemIndex::ItemNeutralS] = irr::video::SColor(128, 128, 128, 255);
-      m_aColors[enItemIndex::ItemForeward] = irr::video::SColor(128,   0, 255,   0);
-      m_aColors[enItemIndex::ItemBrake   ] = irr::video::SColor(128, 225,   0,   0);
-      m_aColors[enItemIndex::ItemBackward] = irr::video::SColor(128, 255, 255,   0);
-      m_aColors[enItemIndex::ItemNeutralP] = irr::video::SColor(128,   0, 128,   0);
-      m_aColors[enItemIndex::ItemRearview] = irr::video::SColor(128, 224, 224, 224);
-      m_aColors[enItemIndex::ItemRespawn ] = irr::video::SColor(128, 224, 224, 224);
+      m_aItems[enItemIndex::ItemRespawn ].setRectAndColor(l_cRespawn , l_cRespawn , irr::video::SColor(128, 192, 192,  64));
+      m_aItems[enItemIndex::ItemRearview].setRectAndColor(l_cRearView, l_cRearView, irr::video::SColor(128,  64,  64, 192));
 
       m_aItemMap[enTouchId::IdPower   ] = { enItemIndex::ItemForeward , enItemIndex::ItemBackward, enItemIndex::ItemNeutralP, enItemIndex::ItemBrake };
       m_aItemMap[enTouchId::IdSteer   ] = { enItemIndex::ItemLeft     , enItemIndex::ItemRight   , enItemIndex::ItemNeutralS };
@@ -132,12 +180,10 @@ namespace dustbin {
     void CGuiTouchControl_Split::draw() {
       if (IsVisible) {
         for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
-          m_pDrv->draw2DRectangleOutline(m_aItems[i], irr::video::SColor(0xFF, 0xFF, 0, 0));
-
-          m_pDrv->draw2DRectangle(m_aTouched[i] ? m_aColors[i] : irr::video::SColor(224, 192, 192, 192), m_aItems[i]);
-
-          if (m_aTextures[i] != nullptr) {
-            m_pDrv->draw2DImage(m_aTextures[i], m_aItems[i], m_aSource[i], nullptr, nullptr, true);
+          m_pDrv->draw2DRectangleOutline(m_aItems[i].m_cButton, irr::video::SColor(0xFF, 0xFF, 0, 0));
+          m_pDrv->draw2DRectangle(m_aItems[i].m_bTouched ? m_aItems[i].m_cColor : irr::video::SColor(224, 192, 192, 192), m_aItems[i].m_cButton);
+          if (m_aItems[i].m_pTexture != nullptr) {
+            m_pDrv->draw2DImage(m_aItems[i].m_pTexture, m_aItems[i].m_cButton, m_aItems[i].m_cSource, nullptr, nullptr, true);
           }
         }
       }
@@ -155,7 +201,7 @@ namespace dustbin {
               m_aTouchIDs[enTouchId::IdPower] = (int)a_cEvent.TouchInput.ID;
 
               for (std::vector<enItemIndex>::iterator it = m_aItemMap[enTouchId::IdPower].begin(); it != m_aItemMap[enTouchId::IdPower].end(); it++) {
-                m_aTouched[*it] = m_aItems[*it].isPointInside(l_cPos);
+                m_aItems[*it].m_bTouched = m_aItems[*it].m_cTouch.isPointInside(l_cPos);
               }
             }
           }
@@ -164,29 +210,30 @@ namespace dustbin {
               m_aTouchIDs[enTouchId::IdSteer] = (int)a_cEvent.TouchInput.ID;
 
               for (std::vector<enItemIndex>::iterator it = m_aItemMap[enTouchId::IdSteer].begin(); it != m_aItemMap[enTouchId::IdSteer].end(); it++) {
-                m_aTouched[*it] = m_aItems[*it].isPointInside(l_cPos);
+                m_aItems[*it].m_bTouched = m_aItems[*it].m_cTouch.isPointInside(l_cPos);
               }
             }
           }
-          else if (m_aItems[enItemIndex::ItemBrake].isPointInside(l_cPos)) {
+          else if (m_aItems[enItemIndex::ItemBrake].m_cTouch.isPointInside(l_cPos)) {
             if (m_aTouchIDs[enTouchId::IdBrake] == -1) {
               m_aTouchIDs[enTouchId::IdBrake] = (int)a_cEvent.TouchInput.ID;
 
-              m_aTouched [enItemIndex::ItemBrake] = true;
+              m_aItems[enItemIndex::ItemBrake   ].m_bTouched = true;
+              m_aItems[enItemIndex::ItemBackward].m_bTouched = true;
             }
           }
-          else if (m_aItems[enItemIndex::ItemRearview].isPointInside(l_cPos)) {
+          else if (m_aItems[enItemIndex::ItemRearview].m_cTouch.isPointInside(l_cPos)) {
             if (m_aTouchIDs[enTouchId::IdRearView] == -1) {
               m_aTouchIDs[enTouchId::IdRearView] = (int)a_cEvent.TouchInput.ID;
 
-              m_aTouched [enItemIndex::ItemRearview] = true;
+              m_aItems[enItemIndex::ItemRearview].m_bTouched = true;
             }
           }
-          else if (m_aItems[enItemIndex::ItemRespawn].isPointInside(l_cPos)) {
+          else if (m_aItems[enItemIndex::ItemRespawn].m_cTouch.isPointInside(l_cPos)) {
             if (m_aTouchIDs[enTouchId::IdRespawn] == -1) {
               m_aTouchIDs[enTouchId::IdRespawn] = (int)a_cEvent.TouchInput.ID;
 
-              m_aTouched [enItemIndex::ItemRespawn] = true;
+              m_aItems[enItemIndex::ItemRespawn].m_bTouched = true;
             }
           }
         }
@@ -194,7 +241,10 @@ namespace dustbin {
           for (int i = 0; i < enTouchId::IdCount; i++) {
             if ((int)a_cEvent.TouchInput.ID == m_aTouchIDs[i]) {
               for (std::vector<enItemIndex>::iterator it2 = m_aItemMap[i].begin(); it2 != m_aItemMap[i].end(); it2++) {
-                m_aTouched[*it2] = m_aItems[*it2].isPointInside(l_cPos);
+                m_aItems[*it2].m_bTouched = m_aItems[*it2].m_cTouch.isPointInside(l_cPos);
+
+                if (*it2 == enItemIndex::ItemBrake)
+                  m_aItems[enItemIndex::ItemBackward].m_bTouched = m_aItems[*it2].m_cTouch.isPointInside(l_cPos);
               }
             }
           }
@@ -203,7 +253,7 @@ namespace dustbin {
           for (int i = 0; i < enTouchId::IdCount; i++) {
             if ((int)a_cEvent.TouchInput.ID == m_aTouchIDs[i]) {
               for (std::vector<enItemIndex>::iterator it2 = m_aItemMap[i].begin(); it2 != m_aItemMap[i].end(); it2++) {
-                m_aTouched[*it2] = false;
+                m_aItems[*it2].m_bTouched = false;
               }
               m_aTouchIDs[i] = -1;
             }
@@ -221,6 +271,12 @@ namespace dustbin {
     }
 
     void CGuiTouchControl_Split::getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) {
+      a_iCtrlX = (m_aItems[enItemIndex::ItemLeft    ].m_bTouched ? -127 : 0) + (m_aItems[enItemIndex::ItemRight   ].m_bTouched ? 127 : 0);
+      a_iCtrlY = (m_aItems[enItemIndex::ItemBackward].m_bTouched ? -127 : 0) + (m_aItems[enItemIndex::ItemForeward].m_bTouched ? 127 : 0);
+
+      a_bBrake    = m_aItems[enItemIndex::ItemBrake   ].m_bTouched;
+      a_bRespawn  = m_aItems[enItemIndex::ItemRespawn ].m_bTouched;
+      a_bRearView = m_aItems[enItemIndex::ItemRearview].m_bTouched;
     }
 
     CGuiTouchControl::CGuiTouchControl(irr::gui::IGUIElement* a_pParent) : IGuiTouchControl(a_pParent),
