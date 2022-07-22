@@ -29,6 +29,8 @@ namespace dustbin {
 
         shader::CShaderHandlerBase* m_pShader;  /**< The shader to use */
 
+        irr::core::recti m_cViewport;   /**< The viewport */
+
       public:
         CMenuFinalResult(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
@@ -154,9 +156,59 @@ namespace dustbin {
             }
           }
 
-          data::SSettings  l_cSettings = CGlobal::getInstance()->getSettingData();
+          CGlobal *l_pGlobal = CGlobal::getInstance();
+
+          data::SSettings l_cSettings = l_pGlobal->getSettingData();
+
+          irr::u32 l_iAmbient = 196;
+
+          switch (l_cSettings.m_iAmbient) {
+            case 0: l_iAmbient = 32; break;
+            case 1: l_iAmbient = 64; break;
+            case 2: l_iAmbient = 96; break;
+            case 3: l_iAmbient = 128; break;
+            case 4: l_iAmbient = 160; break;
+          }
+
+          irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
+
+#ifndef NO_XEFFECT
+          switch (l_cSettings.m_iShadows) {
+            case 3:
+              m_pShader = new shader::CShaderHandleXEffectSplitscreen(l_pGlobal->getIrrlichtDevice(), l_cScreen, 8096, l_cSettings.m_iAmbient);
+              break;
+
+            case 2:
+              m_pShader = new shader::CShaderHandleXEffectSplitscreen(l_pGlobal->getIrrlichtDevice(), l_cScreen, 4096, l_cSettings.m_iAmbient);
+              break;
+            case 1:
+              m_pShader = new shader::CShaderHandleXEffectSplitscreen(l_pGlobal->getIrrlichtDevice(), l_cScreen, 2048, l_cSettings.m_iAmbient);
+              break;
+
+            case 0:
+              m_pShader = new shader::CShaderHandlerNone(l_pGlobal->getIrrlichtDevice(), l_cScreen);
+              break;
+          }
+#else
+          m_pShader = new shader::CShaderHandlerNone(l_pGlobal->getIrrlichtDevice(), l_cScreen);
+#endif
+
+          if (m_pShader != nullptr) {
+            m_pShader->initialize();
+          }
+
+          m_cViewport = irr::core::recti(irr::core::position2di(0, 0), l_cScreen);
 
           printf("Ready.\n");
+        }
+
+        virtual bool run() override {
+          m_pShader->beginScene();
+          m_pShader->renderScene(m_cViewport);
+          m_pGui->drawAll();
+          m_pDrv->endScene();
+
+          return true;
         }
 
         virtual ~CMenuFinalResult() {

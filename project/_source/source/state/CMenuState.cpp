@@ -179,18 +179,21 @@ namespace dustbin {
     */
     enState CMenuState::run() {
       if (m_pDevice->run()) {
-        m_pDrv->beginScene(true, true);
-        m_pSmgr->drawAll();
-
-        m_pGui->drawAll();
+        bool b = false;
 
         if (m_pMenu != nullptr)
-          m_pMenu->run();
+          b = m_pMenu->run();
 
-        if (m_pController != nullptr)
-          m_pController->draw();
+        if (!b) {
+          m_pDrv->beginScene(true, true);
+          m_pSmgr->drawAll();
+          m_pGui->drawAll();
 
-        m_pDrv->endScene();
+          if (m_pController != nullptr)
+            m_pController->draw();
+
+          m_pDrv->endScene();
+        }
       }
       else m_eState = enState::Quit;
 
