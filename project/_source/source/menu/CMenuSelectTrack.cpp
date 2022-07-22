@@ -351,7 +351,7 @@ namespace dustbin {
         /**
         * This method is called every frame after "scenemanager::drawall" is called
         */
-        virtual void run() { 
+        virtual bool run() override { 
           if (m_pServer != nullptr) {
             if (m_iClientState == 1) {
               if (m_pServer->allClientsAreInState("gamedata")) {
@@ -371,6 +371,8 @@ namespace dustbin {
               }
             }
           }
+
+          return false;
         }
     };
 

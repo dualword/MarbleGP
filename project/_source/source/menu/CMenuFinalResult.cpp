@@ -1,5 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#ifndef NO_XEFFECT
+#include <shader/CShaderHandleXEffectSplitscreen.h>
+#include <shader/CShaderHandlerXEffect.h>
+#endif
+
+#include <shader/CShaderHandlerBase.h>
 #include <helpers/CStringHelpers.h>
+#include <shader/CMyShaderNone.h>
 #include <helpers/CMenuLoader.h>
 #include <menu/IMenuHandler.h>
 #include <state/IState.h>
@@ -20,12 +27,15 @@ namespace dustbin {
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
+        shader::CShaderHandlerBase* m_pShader;  /**< The shader to use */
+
       public:
         CMenuFinalResult(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_sNewState(""), 
-          m_pServer(a_pState->getGlobal()->getGameServer()),
-          m_pClient(a_pState->getGlobal()->getGameClient())
+          m_pServer  (a_pState->getGlobal()->getGameServer()),
+          m_pClient  (a_pState->getGlobal()->getGameClient()),
+          m_pShader  (nullptr)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -143,6 +153,8 @@ namespace dustbin {
               if (l_pRank3      != nullptr) l_pRank3     ->setVisible(false);
             }
           }
+
+          data::SSettings  l_cSettings = CGlobal::getInstance()->getSettingData();
 
           printf("Ready.\n");
         }

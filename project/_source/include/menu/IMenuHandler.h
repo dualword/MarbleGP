@@ -37,8 +37,9 @@ namespace dustbin {
 
         /**
         * This method is called every frame after "scenemanager::drawall" is called
+        * @return true if drawing was done by the menu, false otherwise
         */
-        virtual void run() { }
+        virtual bool run();
 
         /**
         * This static method creates the requested menu handler

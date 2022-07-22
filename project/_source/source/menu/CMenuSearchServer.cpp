@@ -111,7 +111,7 @@ namespace dustbin {
         /**
         * This method is called every frame after "scenemanager::drawall" is called
         */
-        virtual void run() {
+        virtual bool run() override {
           messages::IMessage *l_pMsg = m_pQueue->popMessage();
 
           while (l_pMsg != nullptr) {
@@ -142,6 +142,8 @@ namespace dustbin {
             delete l_pMsg;
             l_pMsg = m_pQueue->popMessage();
           }
+
+          return false;
         }
     };
 

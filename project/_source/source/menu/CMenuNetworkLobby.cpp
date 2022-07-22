@@ -46,11 +46,6 @@ namespace dustbin {
 
         virtual ~CMenuNetworkLobby() {
         }
-        /**
-        * This method is called every frame after "scenemanager::drawall" is called
-        */
-        virtual void run() { 
-        }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
           bool l_bRet = false;

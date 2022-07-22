@@ -1234,10 +1234,12 @@ namespace dustbin {
           /**
           * This method is called every frame after "scenemanager::drawall" is called
           */
-          virtual void run() {
+          virtual bool run() override {
             m_pDrv->setRenderTarget(m_pMyRtt, true, true);
             m_pMySmgr->drawAll();
             m_pDrv->setRenderTarget(nullptr, false, false);
+
+            return false;
           }
     };
 

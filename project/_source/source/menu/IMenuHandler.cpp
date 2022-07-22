@@ -94,6 +94,14 @@ namespace dustbin {
     }
 
     /**
+    * This method is called every frame after "scenemanager::drawall" is called
+    * @return true if drawing was done by the menu, false otherwise
+    */
+    bool IMenuHandler::run() {
+      return false;
+    }
+
+    /**
     * This static method creates the requested menu handler
     * @param a_sName string identifier of the menu
     * @param a_pDevice the Irrlicht device
