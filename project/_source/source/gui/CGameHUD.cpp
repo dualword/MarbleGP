@@ -279,24 +279,6 @@ namespace dustbin {
       m_mMarblePositions[a_ObjectId] = a_Position + 1.5f * a_CameraUp;
 
       if (a_ObjectId == m_iMarble) {
-        if (a_ControlBrake) {
-          irr::f32 l_fVelNew = std::abs(a_LinearVelocity.getLength() - m_fVel);
-
-          if (m_mBrakeMap.find(m_fVel) == m_mBrakeMap.end() || m_mBrakeMap[m_fVel] < l_fVelNew)
-            m_mBrakeMap[m_fVel] = l_fVelNew;
-        }
-
-        if (a_ControlX != 0) {
-          irr::core::vector2df v1 = irr::core::vector2df(m_vVel.X, m_vVel.Z);
-          irr::core::vector2df v2 = irr::core::vector2df(a_LinearVelocity.X, a_LinearVelocity.Z);
-
-          irr::f32 a = (irr::f32)v1.getAngleWith(v2);
-
-          if (m_mSteerMap.find(m_fVel) == m_mSteerMap.end() || m_mSteerMap[m_fVel] < a)
-            m_mSteerMap[m_fVel] = a;
-        }
-
-        m_vVel      = a_LinearVelocity;
         m_fVel      = a_LinearVelocity.getLength();
         m_cUpVector = a_CameraUp;
         m_fSteer    = ((irr::f32)a_ControlX) / 127.0f;
@@ -626,21 +608,6 @@ namespace dustbin {
     }
 
     CGameHUD::~CGameHUD() {
-      printf("\n**** Brake Measurement ****\n");
-
-      for (std::map<irr::s32, irr::f32>::iterator it = m_mBrakeMap.begin(); it != m_mBrakeMap.end(); it++) {
-        printf("%3i: %3.2f\n", it->first, it->second);
-      }
-
-      printf("\n***************************\n");
-
-      printf("\n**** Steer Measurement ****\n");
-
-      for (std::map<irr::s32, irr::f32>::iterator it = m_mSteerMap.begin(); it != m_mSteerMap.end(); it++) {
-        printf("%3i: %3.2f\n", it->first, it->second);
-      }
-
-      printf("\n***************************\n");
     }
 
     void CGameHUD::draw() {

@@ -148,10 +148,6 @@ namespace dustbin {
         SHighLight                 m_aHiLight[3];   /**< Data for the highlighted marbles */
         irr::scene::ISceneManager *m_pSmgr;         /**< The Irrlicht scene manager */
 
-        std::map<irr::s32, irr::f32> m_mBrakeMap;
-        std::map<irr::s32, irr::f32> m_mSteerMap;
-        irr::core::vector3df m_vVel;
-
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The Irrlicht scene collision manager */
 
         std::map<enTextElements, STextElement> m_mTextElements;   /**< The text elements of the HUD */

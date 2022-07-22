@@ -278,13 +278,17 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sCaller == "cancel") {
+                data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+
+                std::string l_sNext = l_cChampionship.m_vRaces.size() > 0 ? "menu_finalresult" : "menu_main";
+
                 if (m_pServer != nullptr) {
-                  m_pServer->changeState("menu_finalresult");
-                  createMenu("menu_finalresult", m_pDevice, m_pManager, m_pState);
+                  m_pServer->changeState(l_sNext);
+                  createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
                 }
                 else {
                   m_pManager->clearMenuStack();
-                  createMenu("menu_finalresult", m_pDevice, m_pManager, m_pState);
+                  createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
                 }
               }
               else if (l_sCaller == "ok" && (m_pOk == nullptr || m_pOk->isVisible())) {
