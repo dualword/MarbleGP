@@ -24,7 +24,7 @@ namespace dustbin {
     * are stored in an array to separate settings for each
     * splitscreen possibility
     */
-    struct SGameGFX {
+    typedef struct SGameGFX {
       bool m_bHightlight;   /**< Highlight the leader and the marble ahead*/
       bool m_bShowControls; /**< Show the marble controls */
       bool m_bShowRanking;  /**< Show the race ranking */
@@ -32,14 +32,14 @@ namespace dustbin {
       SGameGFX();
 
       void copyFrom(const SGameGFX &a_cOther);
-    };
+    } SGameGFX;
 
     /**
     * @class SSettings
     * @author Christian Keimel
     * This data structure holds all settings data, e.g. resolution and sound volume
     */
-    struct SSettings {
+    typedef struct SSettings {
       int m_iResolutionW;   /**< Selected window width */
       int m_iResolutionH;   /**< Selected window height */
       int m_iShadows;       /**< Shadow details */
@@ -68,14 +68,14 @@ namespace dustbin {
       void saveSettings(      std::map<std::string, std::string> &a_mData);   /**< Save the settings to a string-string map */
 
       void copyFrom(const SSettings &a_cOther);
-    };
+    } SSettings;
 
     /**
     * @class SPlayerData
     * @author Christian Keimel
     * This data structure holds the players' data
     */
-    struct SPlayerData {
+    typedef struct SPlayerData {
       /**
       * Enumeration for the AI help level of the player
       */
@@ -112,14 +112,14 @@ namespace dustbin {
       std::string toString();
 
       static std::vector<SPlayerData> createPlayerVector(const std::string a_sSerialized);
-    };
+    } SPlayerData;
 
     /**
     * @class SGameSettings
     * @author Christian Keimel
     * A class for the general game settings
     */
-    struct SGameSettings {
+    typedef struct SGameSettings {
       int m_iRaceClass;   /**< The race class (0 == Marbles3, 1 = Marbles2, 2 = MarbleGP) */
       int m_iGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
       int m_iGridSize;    /**< The grid size, filled with AI players */
@@ -133,14 +133,14 @@ namespace dustbin {
 
       std::string serialize();
       bool deserialize(const std::string &a_sSerialized);
-    };
+    } SGameSettings;
 
     /**
     * @class SGameData
     * @author Christian Keimel
     * This struct holds the data for the upcoming race
     */
-    struct SGameData {
+    typedef struct SGameData {
       /**
       * The type of race for this instance of the application
       */
@@ -161,21 +161,21 @@ namespace dustbin {
       SGameData(const std::string &a_sData);
 
       std::string serialize();
-    };
+    } SGameData;
 
     /**
     * @class SRacePlayers
     * @author Christian Keimel
     * This data struct holds the players of a race / championship 
     */
-    struct SRacePlayers {
+    typedef struct SRacePlayers {
       std::vector<SPlayerData> m_vPlayers;  /**< The players of the race / championship */
 
       std::string serialize();
       bool deserialize(const std::string &a_sSerialized);
 
       std::string toString();
-    };
+    } SRacePlayers;
 
     /**
     * @class SRacePlayer
@@ -183,7 +183,7 @@ namespace dustbin {
     * This data structure holds all data to keep up with
     * a player during a race in the dynamics thread
     */
-    struct SRacePlayer {
+    typedef struct SRacePlayer {
       int m_iId;          /**< Marble ID */
       int m_iCpCount;     /**< Number of passed checkpoints*/
       int m_iStunned;     /**< Stunned counter */
@@ -211,14 +211,14 @@ namespace dustbin {
       std::string to_string();
 
       std::string to_xml() const;
-    };
+    } SRacePlayer;
 
     /**
     * @class SChampionshipPlayer
     * @author Christian Keimel
     * This data struct stores the data of a player during a championship
     */
-    struct SChampionshipPlayer {
+    typedef struct SChampionshipPlayer {
       int         m_iPlayerId;      /**< The player ID (0..16) */
       std::string m_sName;          /**< Name */
       int         m_aResult[16];    /**< The race positions */
@@ -237,14 +237,14 @@ namespace dustbin {
       std::string to_xml() const;
 
       std::string to_string();
-    };
+    } SChampionshipPlayer;
 
     /**
     * @class SChampionshipRace
     * @author Christian Keimel
     * Used to store the races of a championship
     */
-    struct SChampionshipRace {
+    typedef struct SChampionshipRace {
       std::string m_sTrack;       /**< The track of the race */
       int         m_iPlayers;     /**< The number of players of the race*/
       int         m_iLaps;        /**< The number of laps of the race */
@@ -263,14 +263,14 @@ namespace dustbin {
       std::string to_xml() const;
 
       std::string to_string();
-    };
+    } SChampionshipRace;
 
     /**
     * @class SChampionship
     * @author Christian Keimel
     * This data structure stores
     */
-    struct SChampionship {
+    typedef struct SChampionship {
       std::vector<SChampionshipPlayer> m_vPlayers;  /**< The players of the championship */
       std::vector<SChampionshipRace  > m_vRaces;    /**< The races of the championship */
 
@@ -300,12 +300,12 @@ namespace dustbin {
       void saveToXML(const std::string &a_sPath);
 
       std::string to_string();
-    };
+    } SChampionship;
 
     /**
     * A little struct for storing the available free game slots in the globals
     */
-    struct SFreeGameSlots {
+    typedef struct SFreeGameSlots {
       std::vector<int> m_vSlots;
 
       SFreeGameSlots();
@@ -313,7 +313,7 @@ namespace dustbin {
       SFreeGameSlots(const std::string &a_sData);
 
       std::string serialize();
-    };
+    } SFreeGameSlots;
   }
 }
 

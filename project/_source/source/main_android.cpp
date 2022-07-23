@@ -188,7 +188,7 @@ struct SJoystickInput {
         l_bRet = true;
       }
     }
-
+    
     if (l_bRet && m_pDevice)
       m_pDevice->postEventFromUser(m_cJoypadEvent);
 

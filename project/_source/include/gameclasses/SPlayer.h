@@ -16,7 +16,7 @@ namespace dustbin {
     * @author Christian Keimel
     * This is the struct for the players
     */
-    struct SPlayer {
+    typedef struct SPlayer {
       int          m_iPlayer;           /**< The player id */
       int          m_iId;               /**< The Marble id */
       int          m_iPosition;         /**< Position in the race */
@@ -101,6 +101,6 @@ namespace dustbin {
           m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));
         }
       }
-    };
+    } SPlayer;
   }
 }
