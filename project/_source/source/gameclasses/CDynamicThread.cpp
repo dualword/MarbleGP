@@ -928,7 +928,7 @@ namespace dustbin {
       irr::s32 l_iIndex = a_MarbleId - 10000;
 
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Finished) {
+        if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Finished || m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Withdrawn) {
           sendRacefinished(1, m_pOutputQueue);
         }
         else if (m_aMarbles[l_iIndex]->m_iWithdraw == -1) {
