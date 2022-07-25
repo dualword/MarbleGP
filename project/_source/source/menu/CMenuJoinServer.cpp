@@ -124,7 +124,7 @@ namespace dustbin {
           delete m_pInputQueue;
         }
 
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
           if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
@@ -279,7 +279,7 @@ namespace dustbin {
         * Might me necessary if some data needs to be written to a global
         * @return true it this menu handle the state change network message itself
         */
-        virtual bool handlesNetworkStateChange() {
+        virtual bool handlesNetworkStateChange() override {
           return true;
         }
 

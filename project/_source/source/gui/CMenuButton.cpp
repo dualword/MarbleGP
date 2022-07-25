@@ -136,7 +136,7 @@ namespace dustbin {
             l_bRet = true;
           }
         
-          if (l_bWasDown && !m_bLDown && m_bHovered && Parent != nullptr) {
+          if (l_bWasDown && !m_bLDown && Parent != nullptr) {
             buttonClicked();
             l_bRet = true;
           }

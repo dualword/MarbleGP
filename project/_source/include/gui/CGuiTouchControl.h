@@ -79,6 +79,18 @@ namespace dustbin {
           void setRectAndColor(const irr::core::recti &a_cButton, const irr::core::recti &a_cTouch, const irr::video::SColor &a_cColor);
         };
 
+        /**
+        * @class STouch
+        * @author Christian Keimel
+        * This structure tracks all the touches on the display
+        */
+        typedef struct STouch {
+          int  m_iIndex;                  /**< ID of the touch */
+          irr::core::position2di m_cPos;  /**< The current position */
+
+          STouch();
+        } STouch;
+
       private:
         /**
         * This enumeration holds the indices for the textures of all control items
@@ -108,18 +120,21 @@ namespace dustbin {
           IdCount    = 5
         };
 
+        STouch m_aTouch[5];   /**< The current touches */
+
         irr::core::recti m_cPower;        /**< The rect which contains all power items */
         irr::core::recti m_cSteer;        /**< The rect which contains all steering items */
         irr::core::recti m_cPwrItems[3];  /**< The three items for the speed (foreward, neutral, backward) */
         irr::core::recti m_cStrItems[3];  /**< The three items for steering (left, neutral, right) */
 
+        irr::gui::IGUIFont *m_pFont;
+
         STouchItem m_aItems[enItemIndex::ItemCount];  /**< The touch items */
 
         std::vector<enItemIndex> m_aItemMap[enTouchId::IdCount];    /**< Map that controls which touch ID controls which item */
 
-        int m_aTouchIDs[enTouchId::IdCount];
-
         void initialize(const irr::core::recti &a_cRect);
+        void handleTouchEvent();
 
       public:
         CGuiTouchControl_Split(irr::gui::IGUIElement *a_pParent);

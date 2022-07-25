@@ -62,6 +62,8 @@ namespace dustbin {
 
       std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> m_vLogMessages;   /**< The Irrlicht log messages */
 
+      std::map<int, int> m_mBrake;    /**< The brake efficiency map */
+
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
 #endif
@@ -320,6 +322,14 @@ namespace dustbin {
       * @return the recorded log messages
       */
       virtual const std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> &getLogMessages() override;
+
+      /**
+      * Get the brake map (key = velocity, value = number of steps to reach). For usage:
+      * find the correct entry in the map for the current and the desired velocity and
+      * use the difference of the values to know the number of steps to reach the speed
+      * @return map of the measured braking efficiency
+      */
+      virtual const std::map<int, int> &getBrakeEfficiency() override;
 
 #ifdef _ANDROID
       /**

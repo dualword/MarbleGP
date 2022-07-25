@@ -920,7 +920,7 @@ namespace dustbin {
             if (m_pMySmgr) m_pMySmgr->drop();
           }
 
-          virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+          virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
             bool l_bRet = false;
 
             if (m_pControlDialog != nullptr && m_pControllerUI != nullptr && m_pControlDialog->isVisible())

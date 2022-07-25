@@ -60,12 +60,11 @@ namespace dustbin {
       m_cColor  = a_cColor;
     }
 
+    CGuiTouchControl_Split::STouch::STouch() : m_iIndex(-1) {
+    }
 
-    CGuiTouchControl_Split::CGuiTouchControl_Split(irr::gui::IGUIElement* a_pParent) : IGuiTouchControl(a_pParent) {
+    CGuiTouchControl_Split::CGuiTouchControl_Split(irr::gui::IGUIElement* a_pParent) : IGuiTouchControl(a_pParent), m_pFont(CGlobal::getInstance()->getFontBySize(48)) {
       initialize(irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize()));
-
-      for (int i = 0; i < (int)enTouchId::IdCount; i++)
-        m_aTouchIDs[i] = -1;
     }
 
     CGuiTouchControl_Split::~CGuiTouchControl_Split() {
@@ -189,6 +188,21 @@ namespace dustbin {
       }
     }
 
+    void CGuiTouchControl_Split::handleTouchEvent() {
+      for (int i = 0; i < enItemIndex::ItemCount; i++)
+        m_aItems[i].m_bTouched = false;
+
+      for (int i = 0; i < 5; i++) {
+        if (m_aTouch[i].m_iIndex != -1) {
+          for (int j = 0; j < enItemIndex::ItemCount; j++) {
+            if (m_aItems[j].m_cTouch.isPointInside(m_aTouch[i].m_cPos)) {
+              m_aItems[j].m_bTouched = true;
+            }
+          }
+        }
+      }
+    }
+
     bool CGuiTouchControl_Split::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
@@ -196,66 +210,31 @@ namespace dustbin {
         irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
 
         if (a_cEvent.TouchInput.Event == irr::ETIE_PRESSED_DOWN) {
-          if (m_cPower.isPointInside(l_cPos)) {
-            if (m_aTouchIDs[enTouchId::IdPower] == -1) {
-              m_aTouchIDs[enTouchId::IdPower] = (int)a_cEvent.TouchInput.ID;
+          for (int i = 0; i < 5; i++) {
+            if (m_aTouch[i].m_iIndex == -1) {
+              m_aTouch[i].m_iIndex = (int)a_cEvent.TouchInput.ID;
+              m_aTouch[i].m_cPos   = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
 
-              for (std::vector<enItemIndex>::iterator it = m_aItemMap[enTouchId::IdPower].begin(); it != m_aItemMap[enTouchId::IdPower].end(); it++) {
-                m_aItems[*it].m_bTouched = m_aItems[*it].m_cTouch.isPointInside(l_cPos);
-              }
-            }
-          }
-          else if (m_cSteer.isPointInside(l_cPos)) {
-            if (m_aTouchIDs[enTouchId::IdSteer] == -1) {
-              m_aTouchIDs[enTouchId::IdSteer] = (int)a_cEvent.TouchInput.ID;
-
-              for (std::vector<enItemIndex>::iterator it = m_aItemMap[enTouchId::IdSteer].begin(); it != m_aItemMap[enTouchId::IdSteer].end(); it++) {
-                m_aItems[*it].m_bTouched = m_aItems[*it].m_cTouch.isPointInside(l_cPos);
-              }
-            }
-          }
-          else if (m_aItems[enItemIndex::ItemBrake].m_cTouch.isPointInside(l_cPos)) {
-            if (m_aTouchIDs[enTouchId::IdBrake] == -1) {
-              m_aTouchIDs[enTouchId::IdBrake] = (int)a_cEvent.TouchInput.ID;
-
-              m_aItems[enItemIndex::ItemBrake   ].m_bTouched = true;
-              m_aItems[enItemIndex::ItemBackward].m_bTouched = true;
-            }
-          }
-          else if (m_aItems[enItemIndex::ItemRearview].m_cTouch.isPointInside(l_cPos)) {
-            if (m_aTouchIDs[enTouchId::IdRearView] == -1) {
-              m_aTouchIDs[enTouchId::IdRearView] = (int)a_cEvent.TouchInput.ID;
-
-              m_aItems[enItemIndex::ItemRearview].m_bTouched = true;
-            }
-          }
-          else if (m_aItems[enItemIndex::ItemRespawn].m_cTouch.isPointInside(l_cPos)) {
-            if (m_aTouchIDs[enTouchId::IdRespawn] == -1) {
-              m_aTouchIDs[enTouchId::IdRespawn] = (int)a_cEvent.TouchInput.ID;
-
-              m_aItems[enItemIndex::ItemRespawn].m_bTouched = true;
+              handleTouchEvent();
+              break;
             }
           }
         }
         else if (a_cEvent.TouchInput.Event == irr::ETIE_MOVED) {
-          for (int i = 0; i < enTouchId::IdCount; i++) {
-            if ((int)a_cEvent.TouchInput.ID == m_aTouchIDs[i]) {
-              for (std::vector<enItemIndex>::iterator it2 = m_aItemMap[i].begin(); it2 != m_aItemMap[i].end(); it2++) {
-                m_aItems[*it2].m_bTouched = m_aItems[*it2].m_cTouch.isPointInside(l_cPos);
-
-                if (*it2 == enItemIndex::ItemBrake)
-                  m_aItems[enItemIndex::ItemBackward].m_bTouched = m_aItems[*it2].m_cTouch.isPointInside(l_cPos);
-              }
+          for (int i = 0; i < 5; i++) {
+            if (m_aTouch[i].m_iIndex == a_cEvent.TouchInput.ID) {
+              m_aTouch[i].m_cPos = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
+              handleTouchEvent();
+              break;
             }
           }
         }
         else if (a_cEvent.TouchInput.Event == irr::ETIE_LEFT_UP) {
-          for (int i = 0; i < enTouchId::IdCount; i++) {
-            if ((int)a_cEvent.TouchInput.ID == m_aTouchIDs[i]) {
-              for (std::vector<enItemIndex>::iterator it2 = m_aItemMap[i].begin(); it2 != m_aItemMap[i].end(); it2++) {
-                m_aItems[*it2].m_bTouched = false;
-              }
-              m_aTouchIDs[i] = -1;
+          for (int i = 0; i < 5; i++) {
+            if (m_aTouch[i].m_iIndex == a_cEvent.TouchInput.ID) {
+              m_aTouch[i].m_iIndex = -1;
+              handleTouchEvent();
+              break;
             }
           }
         }

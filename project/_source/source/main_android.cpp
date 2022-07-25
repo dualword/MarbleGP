@@ -12,6 +12,8 @@
 
 #include "android_native_app_glue.h"
 
+#include <android/sensor.h>
+
 #include <CMainClass.h>
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "MarbleGP.NativeActivity", __VA_ARGS__))

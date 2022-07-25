@@ -113,7 +113,7 @@ namespace dustbin {
           delete m_pInputQueue;
         }
 
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
 
