@@ -12,10 +12,13 @@ namespace dustbin {
     const irr::c8 g_TouchControlName[] = "TouchControl";
 
     enum class enTouchCtrlType {
-      SteerLeft    = 0,
-      SteerRIght   = 1,
-      ControlLeft  = 2,
-      ControlRight = 3
+      Gamepad      = 0,
+      Gyroscope    = 1,
+      MarbleTouch  = 2,
+      SteerLeft    = 3,
+      SteerRIght   = 4,
+      ControlLeft  = 5,
+      ControlRight = 6
     };
 
     /**
@@ -23,27 +26,7 @@ namespace dustbin {
     * @author Christian Keime
     * The interface for the two implementations of the touch marble controller
     */
-    class IGuiTouchControl : public irr::gui::IGUIElement {
-      protected:
-        enTouchCtrlType  m_eType;
-        CGlobal         *m_pGlobal;
-
-        irr::video::IVideoDriver *m_pDrv;
-
-      public:
-        IGuiTouchControl(irr::gui::IGUIElement *a_pParent);
-        virtual ~IGuiTouchControl();
-
-        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) = 0;
-    };
-
-    /**
-    * @class CGuiTouchControl_Split
-    * @authro Christian Keimel
-    * This class implements the touch control interface with the
-    * power controls on one side and the steering controls on the other
-    */
-    class CGuiTouchControl_Split : public IGuiTouchControl {
+    class IGuiMarbleControl : public irr::gui::IGUIElement {
       protected:
         /**
         * @class STouchItem
@@ -53,6 +36,7 @@ namespace dustbin {
         */
         struct STouchItem {
           bool m_bTouched;    /**< Is the item currently touched? */
+          bool m_bActive;     /**< Can this item be touched? */
 
           irr::core::recti m_cButton;   /**< The actual button the image is drawn to */
           irr::core::recti m_cTouch;    /**< The touch area which might be bigger than the drawn area */
@@ -80,6 +64,27 @@ namespace dustbin {
         };
 
         /**
+        * This enumeration holds the indices for the textures of all control items
+        */
+        enum class enItemIndex {
+          ItemForeward  = 0,
+          ItemBackward  = 1,
+          ItemLeft      = 2,
+          ItemRight     = 3,
+          ItemForeLeft  = 4,
+          ItemForeRight = 5,
+          ItemBackLeft  = 6,
+          ItemBackRight = 7,
+          ItemNeutralP  = 8,
+          ItemNeutralS  = 9,
+          ItemBrake     = 10,
+          ItemRespawn   = 11,
+          ItemRearview  = 12,
+          ItemResetGyro = 13,
+          ItemCount     = 14
+        };
+
+        /**
         * @class STouch
         * @author Christian Keimel
         * This structure tracks all the touches on the display
@@ -91,27 +96,74 @@ namespace dustbin {
           STouch();
         } STouch;
 
-      private:
-        /**
-        * This enumeration holds the indices for the textures of all control items
-        */
-        enum enItemIndex {
-          ItemForeward = 0,
-          ItemBackward = 1,
-          ItemLeft     = 2,
-          ItemRight    = 3,
-          ItemNeutralP = 4,
-          ItemNeutralS = 5,
-          ItemBrake    = 6,
-          ItemRespawn  = 7,
-          ItemRearview = 8,
-          ItemCount    = 9
-        };
+        enTouchCtrlType  m_eType;
+        CGlobal         *m_pGlobal;
 
+        irr::video::IVideoDriver *m_pDrv;
+
+        std::vector<STouchItem *> m_vItems[(int)enItemIndex::ItemCount];
+
+      public:
+        IGuiMarbleControl(irr::gui::IGUIElement *a_pParent);
+        virtual ~IGuiMarbleControl();
+
+        enTouchCtrlType getType();
+
+        /**
+        * This callback gets called from the game state to get the
+        * current controller state
+        * @param a_iCtrlX steering output
+        * @param a_iCtrlY throttle output
+        * @param a_bBrake is the brake currently active?
+        * @param a_bRespawn is the "respawn" button currently pressed?
+        * @param a_bRearView is the "rearview" button currently pressed?
+        */
+        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) = 0;
+
+        /**
+        * Implementation of the serialization method which does nothing in this case
+        */
+        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
+
+        /**
+        * Implementation of the deserialization method which does nothing in this case
+        */
+        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
+
+        virtual void draw() override;
+    };
+
+    /**
+    * @class CGuiGyroControl
+    * @author Christian Keimel
+    * This class implements the gyroscopic control of the marble
+    */
+    class CGuiGyroControl : public IGuiMarbleControl {
+      private:
+        float m_fX;   /**< X Component of the rotation vector */
+        float m_fY;   /**< Y Component of the rotation vector */
+        float m_fZ;   /**< Z Component of the rotation vector */
+
+      public:
+        CGuiGyroControl(irr::gui::IGUIElement *a_pParent);
+        virtual ~CGuiGyroControl();
+
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
+        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
+    };
+
+    /**
+    * @class CGuiTouchControl_Split
+    * @authro Christian Keimel
+    * This class implements the touch control interface with the
+    * power controls on one side and the steering controls on the other
+    */
+    class CGuiTouchControl_Split : public IGuiMarbleControl {
+      private:
         /**
         * This enumeration holds the indices for the touch IDs
         */
-        enum enTouchId {
+        enum class enTouchId {
           IdPower    = 0,
           IdSteer    = 1,
           IdBrake    = 2,
@@ -122,16 +174,12 @@ namespace dustbin {
 
         STouch m_aTouch[5];   /**< The current touches */
 
-        irr::core::recti m_cPower;        /**< The rect which contains all power items */
-        irr::core::recti m_cSteer;        /**< The rect which contains all steering items */
         irr::core::recti m_cPwrItems[3];  /**< The three items for the speed (foreward, neutral, backward) */
         irr::core::recti m_cStrItems[3];  /**< The three items for steering (left, neutral, right) */
 
         irr::gui::IGUIFont *m_pFont;
 
-        STouchItem m_aItems[enItemIndex::ItemCount];  /**< The touch items */
-
-        std::vector<enItemIndex> m_aItemMap[enTouchId::IdCount];    /**< Map that controls which touch ID controls which item */
+        std::vector<enItemIndex> m_aItemMap[(int)enTouchId::IdCount];    /**< Map that controls which touch ID controls which item */
 
         void initialize(const irr::core::recti &a_cRect);
         void handleTouchEvent();
@@ -139,13 +187,6 @@ namespace dustbin {
       public:
         CGuiTouchControl_Split(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl_Split();
-
-        virtual void draw() override;
-
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
-
-        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
-        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
 
         virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
     };
@@ -155,49 +196,13 @@ namespace dustbin {
     * @author Christian Keimel
     * This class receives touch controls and turns them into marble controls
     */
-    class CGuiTouchControl : public IGuiTouchControl {
+    class CGuiTouchControl : public IGuiMarbleControl {
       private:
-        int              m_iTouchIdTh;    /**< Throttle touch ID (in digital control this is for both throttle and steer) */
-        int              m_iTouchIdBk;    /**< Brake touch ID (only used in the digital control versions) */
-        int              m_iTouchIdRs;    /**< Respawn control */
-        int              m_iTouchIdRv;    /**< Rearview control */
-
-        irr::s8 m_iCtrlX;       /**< X (Steer) control */
-        irr::s8 m_iCtrlY;       /**< Y (Throttle) control */
-        irr::s8 m_aCtrl[9][2];  /**< The steer / throttle controls for the nine digital fields */
-
-        bool m_bBrake;
-        bool m_bRespawn;
-        bool m_bRearView;
-        bool m_bOneSide;    /**< Is the one-sided control active, i.e. 9 buttons for controlling the marble */
-
-        irr::video::ITexture *m_aControl[9];  /**< The icons for the 9 control rects */
-        irr::video::ITexture *m_pRespawn;     /**< The respawn control icon */
-        irr::video::ITexture *m_pRearView;    /**< An icon for the rearview control */
-        irr::video::ITexture *m_pBrake;       /**< Brake icon */
-
-        irr::core::recti m_cDigital[9];   /**< Nine fields for digial control options */
-        irr::core::recti m_cTotal;        /**< The total control rect for digital */
-        irr::core::recti m_cThrottle;     /**< Throttle control (not used in the digital versions) */
-        irr::core::recti m_cSteer;        /**< Steer control (not used in the digital versions) */
-        irr::core::recti m_cBrake;        /**< Brake control (only used in the digital versions) */
-        irr::core::recti m_cRespawn;      /**< Respawn control */
-        irr::core::recti m_cRearView;     /**< Rearview control */
-
-        irr::core::position2di m_cTouchPos[4];  /**< The touch positions (0 == marble control, 1 == brake, 2 == respawn, 3 == rearview) */
-
         void initialize(const irr::core::recti &a_cRect);
 
       public:
         CGuiTouchControl(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl();
-
-        virtual void draw() override;
-
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
-
-        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
-        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
 
         virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
     };

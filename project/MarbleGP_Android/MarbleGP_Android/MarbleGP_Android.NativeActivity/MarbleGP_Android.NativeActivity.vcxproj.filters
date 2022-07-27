@@ -294,6 +294,12 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGuiTextField.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\CGyroControl.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\IGyroCallback.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />

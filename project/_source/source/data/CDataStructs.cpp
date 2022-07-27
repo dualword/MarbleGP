@@ -116,14 +116,13 @@ namespace dustbin {
       m_iResolutionH (1080), 
       m_iShadows     (2), 
       m_iAmbient     (2),
-      m_iTouchType   (0),
+      m_iTouchControl(0),
       m_fSfxMaster   (1.0f),
       m_fSoundTrack  (1.0f),
       m_fSfxMenu     (1.0f),
       m_fSfxGame     (1.0f),
       m_bFullscreen  (false),
       m_bGfxChange   (false),
-      m_bTouchControl(true),
       m_bMenuPad     (false),
 #ifdef _ANDROID
       m_bUseMenuCtrl (true),
@@ -138,15 +137,14 @@ namespace dustbin {
     }
 
     void SSettings::loadSettings(const std::map<std::string, std::string>& a_mData) {
-      if (a_mData.find("resolution_w") != a_mData.end()) m_iResolutionW = std::atoi(a_mData.at("resolution_w").c_str());
-      if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH = std::atoi(a_mData.at("resolution_h").c_str());
-      if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows     = std::atoi(a_mData.at("shadows"     ).c_str());
-      if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient     = std::atoi(a_mData.at("ambient"     ).c_str());
-      if (a_mData.find("touchtype"   ) != a_mData.end()) m_iTouchType   = std::atoi(a_mData.at("touchtype"   ).c_str());
+      if (a_mData.find("resolution_w") != a_mData.end()) m_iResolutionW  = std::atoi(a_mData.at("resolution_w").c_str());
+      if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH  = std::atoi(a_mData.at("resolution_h").c_str());
+      if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
+      if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
+      if (a_mData.find("touchtype"   ) != a_mData.end()) m_iTouchControl = std::atoi(a_mData.at("touchtype"   ).c_str());
 
       if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen"  ) == "true";
       if (a_mData.find("usemenuctrl" ) != a_mData.end()) m_bUseMenuCtrl  = a_mData.at("usemenuctrl" ) == "true";
-      if (a_mData.find("touchcontrol") != a_mData.end()) m_bTouchControl = a_mData.at("touchcontrol") == "true";
 
       if (a_mData.find("sfx_master") != a_mData.end()) m_fSfxMaster  = (float)std::atof(a_mData.at("sfx_master").c_str());
       if (a_mData.find("soundtrack") != a_mData.end()) m_fSoundTrack = (float)std::atof(a_mData.at("soundtrack").c_str());
@@ -173,11 +171,10 @@ namespace dustbin {
       a_mData["resolution_h"] = std::to_string(m_iResolutionH);
       a_mData["shadows"     ] = std::to_string(m_iShadows    );
       a_mData["ambient"     ] = std::to_string(m_iAmbient    );
-      a_mData["touchtype"   ] = std::to_string(m_iTouchType  );
+      a_mData["touchcontrol"] = std::to_string(m_iTouchControl);
 
       a_mData["fullscreen"  ] = m_bFullscreen   ? "true" : "false";
       a_mData["usemenuctrl" ] = m_bUseMenuCtrl  ? "true" : "false";
-      a_mData["touchcontrol"] = m_bTouchControl ? "true" : "false";
 
 #ifdef _ANDROID
       a_mData["virtualkeys"] = "true";
@@ -206,14 +203,13 @@ namespace dustbin {
       m_iResolutionH  = a_cOther.m_iResolutionH;
       m_iShadows      = a_cOther.m_iShadows;
       m_iAmbient      = a_cOther.m_iAmbient;
-      m_iTouchType    = a_cOther.m_iTouchType;
+      m_iTouchControl = a_cOther.m_iTouchControl;
       m_bFullscreen   = a_cOther.m_bFullscreen;
       m_fSfxMaster    = a_cOther.m_fSfxMaster;
       m_fSoundTrack   = a_cOther.m_fSoundTrack;
       m_fSfxMenu      = a_cOther.m_fSfxMenu;
       m_fSfxGame      = a_cOther.m_fSfxGame;
       m_bUseMenuCtrl  = a_cOther.m_bUseMenuCtrl;
-      m_bTouchControl = a_cOther.m_bTouchControl;
       m_sController   = a_cOther.m_sController;
       m_bVirtualKeys  = a_cOther.m_bVirtualKeys;
 

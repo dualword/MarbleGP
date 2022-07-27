@@ -27,7 +27,6 @@ namespace dustbin {
       private:
         gui::CSelector       *m_pResolution;
         gui::CSelector       *m_pSplitScreen;
-        gui::CSelector       *m_pTouchType;
         gui::CMenuBackground *m_pGfxG;
         gui::CMenuBackground *m_pGfxM;
         gui::CMenuBackground *m_pSfx;
@@ -124,7 +123,6 @@ namespace dustbin {
           IMenuHandler(a_pDevice, a_pManager, a_pState),
           m_pResolution (nullptr),
           m_pSplitScreen(nullptr),
-          m_pTouchType  (nullptr),
           m_pController (nullptr),
           m_iSplitIdx   (-1)
         {
@@ -138,7 +136,6 @@ namespace dustbin {
 
           m_pResolution  = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23010, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           m_pSplitScreen = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23042, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-          m_pTouchType   = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(25000, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
           m_pGfxG = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23050, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
           m_pGfxM = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23051, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
@@ -210,10 +207,6 @@ namespace dustbin {
             for (std::vector<std::tuple<irr::ELOG_LEVEL, std::string>>::const_iterator it = l_vLog.begin(); it != l_vLog.end(); it++) {
               l_pLog->addLogLine(std::get<0>(*it), helpers::s2ws(std::get<1>(*it)));
             }
-          }
-
-          if (m_pTouchType != nullptr) {
-            m_pTouchType->setSelected(m_cSettings.m_iTouchType);
           }
 
           m_pState->setZLayer(1);
@@ -292,9 +285,6 @@ namespace dustbin {
               else if (l_sSender == "ok") {
                 if (m_pController != nullptr)
                   m_cSettings.m_sController = m_pController->serialize();
-
-                if (m_pTouchType != nullptr)
-                  m_cSettings.m_iTouchType = m_pTouchType->getSelected();
 
                 m_pState->getGlobal()->getSettingData().copyFrom(m_cSettings);
 

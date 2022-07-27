@@ -93,21 +93,41 @@ namespace dustbin {
       }
 #ifdef _TOUCH_CONTROL
       else if (l_sTypeName == g_TouchControlName) {
-        enTouchCtrlType l_eType = (enTouchCtrlType)CGlobal::getInstance()->getSettingData().m_iTouchType;
+        int l_iType = CGlobal::getInstance()->getSettingData().m_iTouchControl;
 
-        if (l_eType == enTouchCtrlType::ControlLeft || l_eType == enTouchCtrlType::ControlRight) {
-          irr::gui::IGUIElement *p = new gui::CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
-          p->drop();
-          return p;
-        }
-        else if (l_eType == enTouchCtrlType::SteerLeft || l_eType == enTouchCtrlType::SteerRIght) {
-          irr::gui::IGUIElement *p = new gui::CGuiTouchControl_Split(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
-          p->drop();
-          return p;
+        irr::gui::IGUIElement *p = nullptr;
+
+        switch (l_iType) {
+          case 0:
+            // Gamepad, nothing to do here
+            break;
+
+          case 1:
+            p = new gui::CGuiGyroControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+            break;
+
+          case 2:
+            // Marble Touch control needs to be implemented
+            break;
+
+          case 3:
+          case 4:
+            // Steer Left, Throttle Right or Steer Right, Throttle Left
+            p = new gui::CGuiTouchControl_Split(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+            break;
+
+          case 5:
+          case 6:
+            // All Controls Left or all Controls Right
+            p = new CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+            break;
+            
         }
 
-        printf("Unknown Touch Controller Type: %i\n", (int)l_eType);
-        return nullptr;
+        if (p != nullptr) {
+          p->drop();
+        }
+        return p;
       }
 #endif
 

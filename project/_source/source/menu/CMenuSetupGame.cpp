@@ -200,9 +200,13 @@ namespace dustbin {
               m_vSelectPlayer.push_back(p);
           }
 
-          gui::CDustbinCheckbox *l_pTouch = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
-          if (l_pTouch != nullptr)
-            l_pTouch->setChecked(CGlobal::getInstance()->getSettingData().m_bTouchControl && !CGlobal::getInstance()->getSettingData().m_bMenuPad);
+          gui::CSelector *l_pTouch = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          if (l_pTouch != nullptr) {
+            if (!CGlobal::getInstance()->getSettingData().m_bMenuPad)
+              l_pTouch->setSelected(CGlobal::getInstance()->getSettingData().m_iTouchControl);
+            else
+              l_pTouch->setSelected(0);
+          }
 
           updateSelectedPlayers();
           m_pState->setZLayer(1);
@@ -288,9 +292,9 @@ namespace dustbin {
                 l_cSlots.m_vSlots = l_vGrid;
                 m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
-                gui::CDustbinCheckbox *l_pTouch = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+                gui::CSelector *l_pTouch = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
                 if (l_pTouch != nullptr)
-                  CGlobal::getInstance()->getSettingData().m_bTouchControl = l_pTouch->isChecked();
+                  CGlobal::getInstance()->getSettingData().m_iTouchControl = l_pTouch->getSelected();
 
                 gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 

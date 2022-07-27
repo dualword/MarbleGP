@@ -785,6 +785,9 @@
     <ClInclude Include="resource.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiTouchControl.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MarbleGP_Windows.rc">

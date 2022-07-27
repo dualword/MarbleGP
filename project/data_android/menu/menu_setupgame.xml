@@ -126,7 +126,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 0, 18, 25, 20" tooltip="Select the Class of the AI Opponents">
+          <element type="staticText" rect="relative: 0, 18, 20, 20" tooltip="When do you want the race to end?">
             <attributes>
               <attribute key="Caption" value="Race Auto Finish:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -134,7 +134,7 @@
             </attributes>
           </element> 
           
-          <element type="Selector" rect="relative: 26, 18, 47, 20">
+          <element type="Selector" rect="relative: 21, 18, 47, 20">
             <attributes>
               <attribute key="Name" value="race_finish" />
               <attribute key="Selected" value="0" />
@@ -144,18 +144,22 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 0, 12, 20, 14"/>
+          <element type="staticText" rect="relative: 0, 15, 20, 17"/>
             <attributes>
-              <attribute key="Caption" value="Enable touch control:">
+              <attribute key="Caption" value="Marble Controller:">
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>
           
-          <element type="DustbinCheckbox" rect="relative: 21, 12, 23, 14">
+          <element type="Selector" rect="relative: 21, 15, 47, 17">
             <attributes>
               <attribute key="Name" value="touchcontrol" />
+              <attribute key="Selected" value="0" />
             </attributes>
+            <custom>
+              <attribute key="options" value="Gamepad;Gyroscope;Touch: Marble;Touch: Steer Left, Throttle Right;Touch: Steer Right, Throttle Left;Touch: All Controls Left;Touch: All Controls Right" />
+            </custom>
           </element>
           
           <element type="staticText" rect="relative: 26, 12, 35, 14" tooltip="Network Game">

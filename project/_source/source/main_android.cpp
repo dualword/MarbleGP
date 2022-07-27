@@ -7,6 +7,7 @@
 #include <sys/system_properties.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
+#include <android/log.h>
 #include <Defines.h>
 #include <CGlobal.h>
 
@@ -275,6 +276,7 @@ void android_main(struct android_app* a_pApp) {
     l_cParams.EventReceiver    = l_pMainClass;
 
     irr::IrrlichtDevice *l_pDevice = irr::createDeviceEx(l_cParams);
+    l_pDevice->activateGyroscope();
 
     dustbin::controller::ICustomEventReceiver *l_pMenuHandler = new CAndroidMenuEventHandler(l_pDevice, l_pMainClass);
 

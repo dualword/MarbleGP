@@ -567,8 +567,16 @@ namespace dustbin {
 #endif
 
 #ifdef _TOUCH_CONTROL
-      if (m_pGlobal->getSettingData().m_bTouchControl && m_pCamAnimator == nullptr) {
-        m_pTouchControl = reinterpret_cast<gui::IGuiTouchControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
+      if (m_pCamAnimator == nullptr) {
+        switch (m_pGlobal->getSettingData().m_iTouchControl) {
+          case 0:
+            // Nothing to do, gamepade will be handled normally
+            break;
+
+          default:
+            m_pTouchControl = reinterpret_cast<gui::IGuiMarbleControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
+            break;
+        }
       }
 #endif
     }
@@ -720,8 +728,8 @@ namespace dustbin {
       }
 
 #ifdef _TOUCH_CONTROL
-      if (m_pTouchControl != nullptr)
-        l_bRet = m_pTouchControl->OnEvent(a_cEvent);
+      // if (m_pTouchControl != nullptr)
+      //   l_bRet = m_pTouchControl->OnEvent(a_cEvent);
 #endif
 
       if (!l_bRet && a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {

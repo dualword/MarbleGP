@@ -97,7 +97,8 @@ namespace dustbin {
     bool CMenuState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
-      l_bRet = m_pController->update(a_cEvent);
+      if (m_pController != nullptr)
+        l_bRet = m_pController->update(a_cEvent);
 
       if (!l_bRet && m_pTouchCtrl != nullptr)
         l_bRet = m_pTouchCtrl->handleEvent(a_cEvent);

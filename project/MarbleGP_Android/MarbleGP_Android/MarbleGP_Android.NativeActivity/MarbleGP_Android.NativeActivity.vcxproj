@@ -68,14 +68,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-24</AndroidAPILevel>
+    <AndroidAPILevel>android-29</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-24</AndroidAPILevel>
+    <AndroidAPILevel>android-29</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -242,6 +242,7 @@
     <ClInclude Include="..\..\..\_source\include\controller\CMarbleController.h" />
     <ClInclude Include="..\..\..\_source\include\controller\IController.h" />
     <ClInclude Include="..\..\..\_source\include\controller\ICustomEventReceiver.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\IGyroCallback.h" />
     <ClInclude Include="..\..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\..\_source\include\Defines.h" />
@@ -265,6 +266,7 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGuiLogDisplay.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGuiTextField.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGuiTouchControl.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\CGyroControl.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CMenuBackground.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CMenuButton.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CRankingElement.h" />

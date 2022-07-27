@@ -49,7 +49,7 @@ namespace dustbin {
 
   namespace gui {
 #ifdef _TOUCH_CONTROL
-    class IGuiTouchControl;
+    class IGuiMarbleControl;
 #endif
   }
 
@@ -200,7 +200,7 @@ namespace dustbin {
         // irr::gui::IGUIStaticText *m_pStepLabel;
 
 #ifdef _TOUCH_CONTROL
-        gui::IGuiTouchControl *m_pTouchControl;
+        gui::IGuiMarbleControl *m_pTouchControl;
 #endif
 
         /**

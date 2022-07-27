@@ -32,7 +32,10 @@ namespace dustbin {
           m_pState->getGlobal()->stopGameClient();
         }
 
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+        virtual ~CMenuMain() {
+        }
+
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
           if (a_cEvent.EventType == irr::EET_GUI_EVENT && a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
