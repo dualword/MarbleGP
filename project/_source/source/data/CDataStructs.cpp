@@ -141,7 +141,7 @@ namespace dustbin {
       if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH  = std::atoi(a_mData.at("resolution_h").c_str());
       if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
       if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
-      if (a_mData.find("touchtype"   ) != a_mData.end()) m_iTouchControl = std::atoi(a_mData.at("touchtype"   ).c_str());
+      if (a_mData.find("touchcontrol") != a_mData.end()) m_iTouchControl = std::atoi(a_mData.at("touchcontrol").c_str());
 
       if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen"  ) == "true";
       if (a_mData.find("usemenuctrl" ) != a_mData.end()) m_bUseMenuCtrl  = a_mData.at("usemenuctrl" ) == "true";
