@@ -6,6 +6,198 @@
 
 namespace dustbin {
   namespace gui {
+    /**
+    * @class CControlLayout
+    * @author Christian Keimel
+    * This is an extra class that allows the layout
+    * of the controls. Only used here
+    */
+    class CControlLayout {
+      public:
+        typedef struct SItem {
+          IGuiMarbleControl::enItemIndex m_eIndex;
+
+          irr::core::dimension2du m_cOuter;   /**< The outer size of the item (touchable) */
+          irr::core::dimension2du m_cInner;   /**< The inner size of the item (at least the outer size + offset) */
+
+          irr::core::recti m_cOuterRect;      /**< The outer rectangle that will be calculated */
+          irr::core::recti m_cInnerRect;      /**< The inner rectangle that will be calculated */
+
+          SItem() : m_eIndex(IGuiMarbleControl::enItemIndex::ItemCount) {
+          }
+
+          SItem(const SItem& a_cOther) : m_eIndex(a_cOther.m_eIndex), m_cOuter(a_cOther.m_cOuter), m_cInner(a_cOther.m_cInner), m_cOuterRect(a_cOther.m_cOuterRect), m_cInnerRect(a_cOther.m_cInnerRect) {
+          }
+        } SItem;
+
+        typedef struct SLine {
+          std::vector<SItem> m_vItems;
+          irr::core::dimension2du m_cSize;
+
+          SLine() {
+          }
+
+        } SLine;
+
+        enum class enPosition {
+          UpperLeft,
+          Upper,
+          UpperRight,
+          Left,
+          Center,
+          Right,
+          LowerLeft,
+          Lower,
+          LowerRight,
+          Count
+        };
+
+        int m_iBtnSize;
+        int m_iOffset;
+
+        enPosition m_eCurrent;
+
+        /**
+        * This map holds data for every possible layout position.
+        */
+        std::map<enPosition, std::vector<SLine>> m_mLayout;
+
+        /**
+        * A vector with all the items, filled when calculating the layout
+        */
+        std::vector<SItem> m_vItems;
+
+        /**
+        * Iterator of the item
+        */
+        std::vector<SItem>::iterator m_itItem;
+
+        std::vector<SLine>::iterator m_itCurrentLine;
+
+      public:
+        CControlLayout(int a_iBtnSize, int a_iOffset) : m_iBtnSize(a_iBtnSize), m_iOffset(a_iOffset), m_eCurrent(enPosition::Count) {
+        }
+
+        ~CControlLayout() {
+        }
+
+        /**
+        * Adds a new container which will be used to add all
+        * layout elements until a new container is added. Acess
+        * to already available containers can be given if an
+        * already added position is added again
+        * @param a_ePosition the position of the new container
+        */
+        void addContainer(enPosition a_ePosition) {
+          if (m_mLayout.find(a_ePosition) == m_mLayout.end()) {
+            m_mLayout[a_ePosition] = std::vector<SLine>();
+          }
+
+          m_itCurrentLine = m_mLayout[a_ePosition].begin();
+          m_eCurrent = a_ePosition;
+        }
+
+        /**
+        * Start a new row in the container
+        */
+        void addRow() {
+          if (m_eCurrent != enPosition::Count) {
+            m_mLayout[m_eCurrent].push_back(SLine());
+            m_itCurrentLine = m_mLayout[m_eCurrent].end() - 1;
+          }
+        }
+
+        /**
+        * Add a new item
+        */
+        void addItem(IGuiMarbleControl::enItemIndex a_eIndex, const irr::core::dimension2du& a_cOuter, const irr::core::dimension2du& a_cInner) {
+          if (m_eCurrent != enPosition::Count && m_mLayout.find(m_eCurrent) != m_mLayout.end() && m_mLayout[m_eCurrent].size() > 0) {
+            SItem l_cNewItem;
+            l_cNewItem.m_eIndex = a_eIndex;
+            l_cNewItem.m_cOuter = a_cOuter;
+            l_cNewItem.m_cInner = a_cInner;
+            (*m_itCurrentLine).m_vItems.push_back(l_cNewItem);
+
+            if ((int)a_cOuter.Height > (*m_itCurrentLine).m_cSize.Height)
+              (*m_itCurrentLine).m_cSize.Height = a_cOuter.Height;
+
+            (*m_itCurrentLine).m_cSize.Width += a_cOuter.Width;
+          }
+        }
+
+        /**
+        * Calculate the layout
+        */
+        void calculateLayout(const irr::core::dimension2du &a_cViewport) {
+          for (std::map<enPosition, std::vector<SLine>>::iterator it = m_mLayout.begin(); it != m_mLayout.end(); it++) {
+            if (it->second.size() > 0) {
+              irr::core::position2di  l_cStart;
+              irr::core::dimension2du l_cTotal;
+
+              // Calculate the dimensions of the layout position
+              for (std::vector<SLine>::iterator l_itLine = it->second.begin(); l_itLine != it->second.end(); l_itLine++) {
+                l_cTotal.Height += (*l_itLine).m_cSize.Height;
+              
+                if ((*l_itLine).m_cSize.Width > l_cTotal.Width)
+                  l_cTotal.Width = (*l_itLine).m_cSize.Width;
+              }
+
+              switch (it->first) {
+                case enPosition::UpperLeft : l_cStart = irr::core::position2di(0                                         ,                                            0); break;
+                case enPosition::Upper     : l_cStart = irr::core::position2di(a_cViewport.Width / 2 - l_cTotal.Width / 2, 0                                           ); break;
+                case enPosition::UpperRight: l_cStart = irr::core::position2di(a_cViewport.Width     - l_cTotal.Width    , 0                                           ); break;
+                case enPosition::Left      : l_cStart = irr::core::position2di(0                                         , a_cViewport.Height / 2 - l_cTotal.Height / 2); break;
+                case enPosition::Center    : l_cStart = irr::core::position2di(a_cViewport.Width / 2 - l_cTotal.Width / 2, a_cViewport.Height / 2 - l_cTotal.Height / 2); break;
+                case enPosition::Right     : l_cStart = irr::core::position2di(a_cViewport.Width     - l_cTotal.Width    , a_cViewport.Height / 2 - l_cTotal.Height / 2); break;
+                case enPosition::LowerLeft : l_cStart = irr::core::position2di(0                                         , a_cViewport.Height     - l_cTotal.Height    ); break;
+                case enPosition::Lower     : l_cStart = irr::core::position2di(a_cViewport.Width / 2 - l_cTotal.Width / 2, a_cViewport.Height     - l_cTotal.Height    ); break;
+                case enPosition::LowerRight: l_cStart = irr::core::position2di(a_cViewport.Width     - l_cTotal.Width    , a_cViewport.Height     - l_cTotal.Height    ); break;
+              }
+
+              irr::core::position2di l_cPos = l_cStart;
+
+              for (std::vector<SLine>::iterator l_itLine = it->second.begin(); l_itLine != it->second.end(); l_itLine++) {
+                for (std::vector<SItem>::iterator l_itItem = (*l_itLine).m_vItems.begin(); l_itItem != (*l_itLine).m_vItems.end(); l_itItem++) {
+                  (*l_itItem).m_cOuterRect = irr::core::recti(l_cPos, (*l_itItem).m_cOuter);
+
+                  irr::core::dimension2du l_cInnerOffset = ((*l_itItem).m_cOuter - (*l_itItem).m_cInner) / 2;
+                  (*l_itItem).m_cInnerRect = irr::core::recti(l_cPos + irr::core::position2di(l_cInnerOffset.Width, l_cInnerOffset.Height), (*l_itItem).m_cInner);
+
+                  m_vItems.push_back(*l_itItem);
+
+                  l_cPos.X += (*l_itItem).m_cOuter.Width;
+                }
+
+                l_cPos.X = l_cStart.X;
+                l_cPos.Y += (*l_itLine).m_cSize.Height;
+              }
+            }
+          }
+          m_itItem = m_vItems.size() > 0 ? m_vItems.begin() : m_vItems.end();
+        }
+
+        /**
+        * Use this method to get the data
+        * @param a_eIndex the item index
+        * @param a_cInner the inner rect
+        * @param a_cOuter the outer rect
+        * @return true if the end of items is not yet reached, false otherwise
+        */
+        bool getNextItem(IGuiMarbleControl::enItemIndex &a_eIndex, irr::core::recti &a_cInner, irr::core::recti &a_cOuter) {
+          if (m_itItem == m_vItems.end())
+            return false;
+
+          a_eIndex = (*m_itItem).m_eIndex;
+          a_cInner = (*m_itItem).m_cInnerRect;
+          a_cOuter = (*m_itItem).m_cOuterRect;
+
+          m_itItem++;
+
+          return true;
+        }
+    };
+
+
     IGuiMarbleControl::IGuiMarbleControl(irr::gui::IGUIElement* a_pParent) :irr::gui::IGUIElement(
         (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId,
         CGlobal::getInstance()->getGuiEnvironment(), 
@@ -26,6 +218,61 @@ namespace dustbin {
           m_vItems[i].erase(m_vItems[i].begin());
           if (p != nullptr)
             delete p;
+        }
+      }
+    }
+    /**
+    * Build the UI
+    * @param a_pLayout the layout
+    * @param a_cScreen the screen size
+    */
+    void IGuiMarbleControl::buildUI(CControlLayout *a_pLayout, irr::core::dimension2du a_cScreen) {
+      a_pLayout->calculateLayout(a_cScreen);
+
+      IGuiMarbleControl::enItemIndex l_eIndex;
+
+      irr::core::recti l_cInnerRect;
+      irr::core::recti l_cOuterRect;
+
+      while (a_pLayout->getNextItem(l_eIndex, l_cInnerRect, l_cOuterRect)) {
+        irr::video::SColor l_cColor = irr::video::SColor(128, 128, 128, 128);
+        std::string        l_sPath  = "";
+
+        switch (l_eIndex) {
+          case enItemIndex::ItemForeward : l_cColor = irr::video::SColor(128, 128, 255, 128); l_sPath  = "data/images/control1.png"  ; break;
+          case enItemIndex::ItemBackward : l_cColor = irr::video::SColor(128, 255, 255, 128); l_sPath  = "data/images/control7.png"  ; break;
+          case enItemIndex::ItemLeft     : l_cColor = irr::video::SColor(128, 128, 128, 255); l_sPath  = "data/images/control3.png"  ; break;
+          case enItemIndex::ItemRight    : l_cColor = irr::video::SColor(128, 128, 128, 255); l_sPath  = "data/images/control5.png"  ; break;
+          case enItemIndex::ItemForeLeft : l_cColor = irr::video::SColor(128, 128, 255, 255); l_sPath  = "data/images/control0.png"  ; break;
+          case enItemIndex::ItemForeRight: l_cColor = irr::video::SColor(128, 128, 255, 255); l_sPath  = "data/images/control2.png"  ; break;
+          case enItemIndex::ItemBackLeft : l_cColor = irr::video::SColor(128, 128, 255, 255); l_sPath  = "data/images/control6.png"  ; break;
+          case enItemIndex::ItemBackRight: l_cColor = irr::video::SColor(128, 128, 255, 255); l_sPath  = "data/images/control8.png"  ; break;
+          case enItemIndex::ItemNeutralP :
+          case enItemIndex::ItemNeutralS : l_cColor = irr::video::SColor(128, 192, 192, 192); l_sPath  = "data/images/control4.png"  ; break;
+          case enItemIndex::ItemBrake    : l_cColor = irr::video::SColor(128, 255, 128, 128); l_sPath  = "data/images/brake.png"     ; break;
+          case enItemIndex::ItemRespawn  : l_cColor = irr::video::SColor(128, 255, 255, 128); l_sPath  = "data/images/respawn.png"   ; break;
+          case enItemIndex::ItemRearview : l_cColor = irr::video::SColor(128, 192, 192, 192); l_sPath  = "data/images/rearview.png"  ; break;
+          case enItemIndex::ItemResetGyro: l_cColor = irr::video::SColor(128, 192, 192, 255); l_sPath  = "data/images/gyro_reset.png"; break;
+
+        }
+
+        if (l_sPath != "") {
+          printf("New Touch Item: (%4i, %4i) - (%4i, %4i), (%4i, %4i) - (%4i, %4i): %s\n", 
+            l_cInnerRect.UpperLeftCorner.X, 
+            l_cInnerRect.UpperLeftCorner.Y,
+            l_cInnerRect.LowerRightCorner.X,
+            l_cInnerRect.LowerRightCorner.Y,
+            l_cOuterRect.UpperLeftCorner.X, 
+            l_cOuterRect.UpperLeftCorner.Y,
+            l_cOuterRect.LowerRightCorner.X,
+            l_cOuterRect.LowerRightCorner.Y,
+            l_sPath.c_str()
+          );
+          STouchItem *l_pItem = new STouchItem();
+          l_pItem->setRectAndColor(l_cInnerRect, l_cOuterRect, l_cColor);
+          l_pItem->setTexture(m_pDrv->getTexture(l_sPath.c_str()));
+
+          m_vItems[(int)l_eIndex].push_back(l_pItem);
         }
       }
     }
@@ -73,29 +320,29 @@ namespace dustbin {
       irr::s32 l_iSize   = AbsoluteClippingRect.getWidth() / 16;
       irr::s32 l_iOffset = AbsoluteClippingRect.getWidth() / 256;
 
-      irr::core::dimension2du l_cDim = irr::core::dimension2du(l_iSize, l_iSize);
+      CControlLayout l_cLayout = CControlLayout(l_iSize, l_iOffset);
 
-      irr::core::position2di l_cPos[2] = {
-        irr::core::position2di(                                            l_iOffset, l_iOffset),
-        irr::core::position2di(AbsoluteClippingRect.getWidth() - l_iSize - l_iOffset, l_iOffset)
-      };
+      // Button size
+      irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
+      // Outer size of single buttons
+      irr::core::dimension2du l_cOuter = irr::core::dimension2du(l_iSize + l_iOffset, l_iSize + l_iOffset);
 
       for (int i = 0; i < 2; i++) {
-        STouchItem *p = new STouchItem();
-        p->setRectAndColor(irr::core::recti(l_cPos[i], l_cDim), irr::core::recti(l_cPos[i], l_cDim), irr::video::SColor(128, 255, 255, 128)); l_cPos[i].Y += l_iSize;
-        p->setTexture(m_pDrv->getTexture("data/images/gyro_reset.png"));
-        m_vItems[(int)enItemIndex::ItemResetGyro].push_back(p);
-        
-        p = new STouchItem();
-        p->setRectAndColor(irr::core::recti(l_cPos[i], l_cDim), irr::core::recti(l_cPos[i], l_cDim), irr::video::SColor(128, 255, 128, 128)); l_cPos[i].Y += l_iSize;
-        p->setTexture(m_pDrv->getTexture("data/images/respawn.png"   ));
-        m_vItems[(int)enItemIndex::ItemRespawn].push_back(p);
+        l_cLayout.addContainer(i == 0 ? CControlLayout::enPosition::UpperLeft : CControlLayout::enPosition::UpperRight);
+        l_cLayout.addRow();
+        l_cLayout.addItem(enItemIndex::ItemResetGyro, l_cOuter, l_cSize);
 
-        p = new STouchItem();
-        p->setRectAndColor(irr::core::recti(l_cPos[i], l_cDim), irr::core::recti(l_cPos[i], l_cDim), irr::video::SColor(128, 128, 128, 255));
-        p->setTexture(m_pDrv->getTexture("data/images/rearview.png"  ));
-        m_vItems[(int)enItemIndex::ItemRearview].push_back(p);
+        l_cLayout.addContainer(i == 0 ? CControlLayout::enPosition::LowerLeft : CControlLayout::enPosition::LowerRight);
+        l_cLayout.addRow();
+        l_cLayout.addItem(enItemIndex::ItemRespawn, l_cOuter, l_cSize);
+
+        l_cLayout.addContainer(i == 0 ? CControlLayout::enPosition::Left : CControlLayout::enPosition::Right);
+        l_cLayout.addRow();
+        l_cLayout.addItem(enItemIndex::ItemRearview, l_cOuter, l_cSize);
       }
+      irr::core::dimension2du l_cScreen = irr::core::dimension2du(AbsoluteClippingRect.getWidth(), AbsoluteClippingRect.getHeight());
+
+      buildUI(&l_cLayout, l_cScreen);
     }
 
     CGuiGyroControl::~CGuiGyroControl() {
@@ -171,64 +418,41 @@ namespace dustbin {
       irr::s32 l_iSize   = a_cRect.getWidth() / 16;
       irr::s32 l_iOffset = a_cRect.getWidth() / 256;
 
-      // The size of the buttons
-      irr::core::dimension2du d = irr::core::dimension2du(l_iSize, l_iSize);
+      CControlLayout l_cLayout = CControlLayout(l_iSize, l_iOffset);
 
-      // The outer (touch) position of the steering items (_1 == Left, _2 == Neutral, _3 == Right)
-      irr::core::position2di ps1_1 = irr::core::position2di(m_eType == enTouchCtrlType::SteerLeft ? l_iOffset : a_cRect.getWidth() - 3 * (l_iOffset + l_iSize) - l_iOffset, a_cRect.getHeight() - 3 * (l_iOffset + l_iSize));
-      irr::core::position2di ps1_2 = ps1_1 + irr::core::position2di(l_iSize + l_iOffset, 0);
-      irr::core::position2di ps1_3 = ps1_2 + irr::core::position2di(l_iSize + l_iOffset, 0);
+      // Button size
+      irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
+      // Outer size of single buttons
+      irr::core::dimension2du l_cOuter = irr::core::dimension2du(l_iSize + l_iOffset, l_iSize + l_iOffset);
+      // Outer size of the steering items
+      irr::core::dimension2du l_cSteerOuter = irr::core::dimension2du(l_iSize + l_iOffset, 3 * (l_iSize + l_iOffset));
+      // Outer size of the throttle items
+      irr::core::dimension2du l_cThrottleOuter = irr::core::dimension2du(3 * (l_iSize + l_iOffset), l_iSize + l_iOffset);
 
-      // The inner (button) position of the steering items (_1 == Left, _2 == Neutral, _3 == Right)
-      irr::core::position2di ps2_1 = ps1_1 + irr::core::position2di(l_iOffset, l_iSize + l_iOffset);
-      irr::core::position2di ps2_2 = ps1_2 + irr::core::position2di(l_iOffset, l_iSize + l_iOffset);
-      irr::core::position2di ps2_3 = ps1_3 + irr::core::position2di(l_iOffset, l_iSize + l_iOffset);
+      // Add the steering items
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::SteerLeft ? CControlLayout::enPosition::LowerLeft : CControlLayout::enPosition::LowerRight);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemLeft    , l_cSteerOuter, l_cSize);
+                          l_cLayout.addItem(enItemIndex::ItemNeutralS, l_cSteerOuter, l_cSize);
+                          l_cLayout.addItem(enItemIndex::ItemRight   , l_cSteerOuter, l_cSize);
 
-      // The outer (touch) size of the steering items
-      irr::core::dimension2du ds = irr::core::dimension2du(l_iSize, 3 * l_iSize);
+      // Add the throttle items
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::SteerLeft ? CControlLayout::enPosition::LowerRight : CControlLayout::enPosition::LowerLeft);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemForeward, l_cThrottleOuter, l_cSize);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemNeutralP, l_cThrottleOuter, l_cSize);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemBackward, l_cThrottleOuter, l_cSize);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemBrake   , l_cThrottleOuter, irr::core::dimension2du(3 * l_iSize, l_iSize));
 
-      // The outer (touch) position of the first items (_1 == Forward, _2 == Neutral, _3 == Backward)
-      irr::core::position2di pt1_1 = irr::core::position2di(m_eType == enTouchCtrlType::SteerLeft ? a_cRect.getWidth() - 3 * (l_iOffset + l_iSize) : l_iOffset, a_cRect.getHeight() - 5 * (l_iOffset + l_iSize));
-      irr::core::position2di pt1_2 = pt1_1 + irr::core::position2di(0, l_iSize + l_iOffset);
-      irr::core::position2di pt1_3 = pt1_2 + irr::core::position2di(0, l_iSize + l_iOffset);
+      // Add the rearview item
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::SteerLeft ? CControlLayout::enPosition::UpperLeft : CControlLayout::enPosition::UpperRight);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemRearview, l_cOuter, l_cSize);
 
-      // The brake position
-      irr::core::position2di brk = pt1_3 + irr::core::position2di(0, 2 * (l_iSize + l_iOffset));
+      // Add the respawn item
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::SteerLeft ? CControlLayout::enPosition::UpperRight : CControlLayout::enPosition::UpperLeft);
+      l_cLayout.addRow(); l_cLayout.addItem(enItemIndex::ItemRespawn, l_cOuter, l_cSize);
 
-      // The inner (button) position of the throttle items (_1 == Forward, _2 == Neutral, _3 == Backward)
-      irr::core::position2di pt2_1 = pt1_1 + irr::core::position2di(l_iSize, l_iSize);
-      irr::core::position2di pt2_2 = pt1_2 + irr::core::position2di(l_iSize, l_iSize);
-      irr::core::position2di pt2_3 = pt1_3 + irr::core::position2di(l_iSize, l_iSize);
+      irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
 
-      // The outer (touch) size of the throttle items
-      irr::core::dimension2du dt = irr::core::dimension2du(3 * l_iSize, l_iSize);
-
-      // Position of the rearview button
-      irr::core::position2di prv = irr::core::position2di(m_eType == enTouchCtrlType::SteerLeft ? l_iOffset : a_cRect.getWidth() - l_iOffset - l_iSize, l_iOffset);
-
-      // Position of the respawn button
-      irr::core::position2di prs = irr::core::position2di(m_eType == enTouchCtrlType::SteerLeft ? a_cRect.getWidth() - l_iOffset - l_iSize : l_iOffset, l_iOffset);
-
-      // 0 == index, 1 == texture file, 2 == button rect, 3 == touch rect, 4 == touch color
-      std::tuple<int, std::string, irr::core::recti, irr::core::recti, irr::video::SColor> l_aTextures[] = {
-        std::make_tuple((int)enItemIndex::ItemForeward, "data/images/control1.png", irr::core::recti(pt2_1,  d), irr::core::recti(pt1_1, dt), irr::video::SColor(128,   0, 255,   0)),
-        std::make_tuple((int)enItemIndex::ItemBackward, "data/images/control7.png", irr::core::recti(pt2_3,  d), irr::core::recti(pt1_3, dt), irr::video::SColor(128, 255,   0,   0)),
-        std::make_tuple((int)enItemIndex::ItemLeft    , "data/images/control3.png", irr::core::recti(ps2_1,  d), irr::core::recti(ps1_1, ds), irr::video::SColor(128,   0,   0, 255)),
-        std::make_tuple((int)enItemIndex::ItemRight   , "data/images/control5.png", irr::core::recti(ps2_3,  d), irr::core::recti(ps1_3, ds), irr::video::SColor(128,   0,   0, 255)),
-        std::make_tuple((int)enItemIndex::ItemNeutralP, "data/images/control4.png", irr::core::recti(pt2_2,  d), irr::core::recti(pt1_2, dt), irr::video::SColor(128, 255,   0,   0)),
-        std::make_tuple((int)enItemIndex::ItemNeutralS, "data/images/control4.png", irr::core::recti(ps2_2,  d), irr::core::recti(ps1_2, dt), irr::video::SColor(128,   0,   0, 255)),
-        std::make_tuple((int)enItemIndex::ItemBrake   , "data/images/brake.png"   , irr::core::recti(brk  , dt), irr::core::recti(brk  , dt), irr::video::SColor(128, 255,   0,   0)),
-        std::make_tuple((int)enItemIndex::ItemRespawn , "data/images/respawn.png" , irr::core::recti(prs  ,  d), irr::core::recti(prs  ,  d), irr::video::SColor(128, 255, 255,   0)),
-        std::make_tuple((int)enItemIndex::ItemRearview, "data/images/rearview.png", irr::core::recti(prv  ,  d), irr::core::recti(prv  ,  d), irr::video::SColor(128, 255, 255,   0)),
-        std::make_tuple((int)enItemIndex::ItemCount   , ""                        , irr::core::recti(         ), irr::core::recti(         ), irr::video::SColor(255, 255, 255, 255))
-      };
-
-      for (int i = 0; std::get<0>(l_aTextures[i]) != (int)enItemIndex::ItemCount; i++) {
-        STouchItem *p = new STouchItem;
-        p->setTexture(m_pDrv->getTexture(std::get<1>(l_aTextures[i]).c_str()));
-        p->setRectAndColor(std::get<2>(l_aTextures[i]), std::get<3>(l_aTextures[i]), std::get<4>(l_aTextures[i]));
-        m_vItems[i].push_back(p);
-      }
+      buildUI(&l_cLayout, l_cScreen);
 
       m_aItemMap[(int)enTouchId::IdPower   ] = { enItemIndex::ItemForeward , enItemIndex::ItemBackward, enItemIndex::ItemNeutralP, enItemIndex::ItemBrake };
       m_aItemMap[(int)enTouchId::IdSteer   ] = { enItemIndex::ItemLeft     , enItemIndex::ItemRight   , enItemIndex::ItemNeutralS };
@@ -252,75 +476,46 @@ namespace dustbin {
       irr::s32 l_iSize   = a_cRect.getWidth() / 16;
       irr::s32 l_iOffset = a_cRect.getWidth() / 256;
 
+      CControlLayout l_cLayout = CControlLayout(l_iSize, l_iOffset);
+
+      // Button size
       irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
-
-      irr::core::recti l_cRespawn = irr::core::recti(
-        m_eType == enTouchCtrlType::ControlRight || m_eType == enTouchCtrlType::SteerRIght ? irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, l_iOffset) : irr::core::position2di(l_iOffset, l_iOffset),
-        l_cSize
-      );
-
-      irr::core::recti l_cRearView = irr::core::recti(
-        m_eType == enTouchCtrlType::ControlLeft || m_eType == enTouchCtrlType::SteerLeft ? irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, l_iOffset) : irr::core::position2di(l_iOffset, l_iOffset),
-        l_cSize
-      );
-
-      STouchItem *p = new STouchItem();
-      p->setRectAndColor(l_cRespawn, l_cRespawn, irr::video::SColor(128, 255, 255, 0));
-      p->setTexture(m_pDrv->getTexture("data/images/respawn.png"));
-      m_vItems[(int)enItemIndex::ItemRespawn].push_back(p);
-
-      p = new STouchItem();
-      p->setRectAndColor(l_cRearView, l_cRearView, irr::video::SColor(128, 255, 255, 0));
-      p->setTexture(m_pDrv->getTexture("data/images/rearview.png"));
-      m_vItems[(int)enItemIndex::ItemRearview].push_back(p);
-
-      // Adjust the size for the brake item
-      l_cSize.Width = 3 * l_cSize.Width;
-
-      irr::core::recti l_cBrake = irr::core::recti(
-        m_eType == enTouchCtrlType::ControlLeft || m_eType == enTouchCtrlType::SteerLeft ? 
-          irr::core::position2di(a_cRect.getWidth() - l_cSize.Width - l_iOffset, a_cRect.getHeight() - l_cSize.Height - l_iOffset)
-        :
-          irr::core::position2di(l_iOffset                                     , a_cRect.getHeight() - l_cSize.Height - l_iOffset), l_cSize
-      );
-
-      p = new STouchItem();
-      p->setRectAndColor(l_cBrake, l_cBrake, irr::video::SColor(128, 255, 0, 0));
-      p->setTexture(m_pDrv->getTexture("data/images/brake.png"));
-      m_vItems[(int)enItemIndex::ItemBrake].push_back(p);
-
-      irr::core::position2di  l_cPosO  = irr::core::position2di (m_eType == enTouchCtrlType::ControlLeft ? 0 : a_cRect.getWidth() - 3 * (l_iSize + l_iOffset) - l_iOffset, a_cRect.getHeight() - 3 * (l_iSize + l_iOffset) - l_iOffset);
-      irr::core::position2di  l_cPosI  = l_cPosO + irr::core::position2di(l_iOffset, l_iOffset);
+      // Outer size of single buttons
       irr::core::dimension2du l_cOuter = irr::core::dimension2du(l_iSize + l_iOffset, l_iSize + l_iOffset);
-      irr::core::dimension2du l_cInner = irr::core::dimension2du(l_iSize            , l_iSize            );
+      // Outer size of the brake item
+      irr::core::dimension2du l_cBrakeOuter = irr::core::dimension2du(3 * (l_iSize + l_iOffset), l_iSize + l_iOffset);
+      // Inner size of the brake item
+      irr::core::dimension2du l_cBrakeInner = irr::core::dimension2du(3 * l_iSize, l_iSize);
 
-      enItemIndex l_aIndex[] = {
-        enItemIndex::ItemForeLeft,
-        enItemIndex::ItemForeward,
-        enItemIndex::ItemForeRight,
-        enItemIndex::ItemLeft,
-        enItemIndex::ItemNeutralS,
-        enItemIndex::ItemRight,
-        enItemIndex::ItemBackLeft,
-        enItemIndex::ItemBackward,
-        enItemIndex::ItemBackRight
-      };
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::ControlLeft ? CControlLayout::enPosition::LowerLeft : CControlLayout::enPosition::LowerRight);
+      l_cLayout.addRow();
+      l_cLayout.addItem(enItemIndex::ItemForeLeft , l_cOuter, l_cSize);
+      l_cLayout.addItem(enItemIndex::ItemForeward , l_cOuter, l_cSize);
+      l_cLayout.addItem(enItemIndex::ItemForeRight, l_cOuter, l_cSize);
+      l_cLayout.addRow();
+      l_cLayout.addItem(enItemIndex::ItemLeft    , l_cOuter, l_cSize);
+      l_cLayout.addItem(enItemIndex::ItemNeutralS, l_cOuter, l_cSize);
+      l_cLayout.addItem(enItemIndex::ItemRight   , l_cOuter, l_cSize);
+      l_cLayout.addRow();
+      l_cLayout.addItem(enItemIndex::ItemBackLeft , l_cOuter, l_cSize);
+      l_cLayout.addItem(enItemIndex::ItemBackward , l_cOuter, l_cSize);
+      l_cLayout.addItem(enItemIndex::ItemBackRight, l_cOuter, l_cSize);
 
-      for (int y = 0; y < 3; y++) {
-        irr::core::position2di l_cOffset = irr::core::position2di(0, y * (l_iSize + l_iOffset));
-        for (int x = 0; x < 3; x++) {
-          STouchItem *p = new STouchItem();
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::ControlLeft ? CControlLayout::enPosition::LowerRight : CControlLayout::enPosition::LowerLeft);
+      l_cLayout.addRow();
+      l_cLayout.addItem(enItemIndex::ItemBrake, l_cBrakeOuter, l_cBrakeInner);
 
-          std::string s = "data/images/control" + std::to_string(x + 3 * y) + ".png";
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::ControlLeft ? CControlLayout::enPosition::UpperLeft : CControlLayout::enPosition::UpperRight);
+      l_cLayout.addRow();
+      l_cLayout.addItem(enItemIndex::ItemRespawn, l_cOuter, l_cSize);
 
-          p->setRectAndColor(irr::core::recti(l_cPosI + l_cOffset, l_cInner), irr::core::rect(l_cPosO + l_cOffset, l_cOuter), irr::video::SColor(128, 0, 0, 255));
-          p->setTexture(m_pDrv->getTexture(s.c_str()));
+      l_cLayout.addContainer(m_eType == enTouchCtrlType::ControlLeft ? CControlLayout::enPosition::UpperRight : CControlLayout::enPosition::UpperLeft);
+      l_cLayout.addRow();
+      l_cLayout.addItem(enItemIndex::ItemRearview, l_cOuter, l_cSize);
 
-          m_vItems[(int)l_aIndex[x + 3 * y]].push_back(p);
+      irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
 
-          l_cOffset.X += l_iSize + l_iOffset;
-        }
-      }
+      buildUI(&l_cLayout, l_cScreen);
     }
 
     CGuiTouchControl::~CGuiTouchControl() {

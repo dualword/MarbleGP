@@ -11,6 +11,8 @@ namespace dustbin {
     const int g_TouchControlId = MAKE_IRR_ID('t', 'o', 'c', 'h');
     const irr::c8 g_TouchControlName[] = "TouchControl";
 
+    class CControlLayout;
+
     enum class enTouchCtrlType {
       Gamepad      = 0,
       Gyroscope    = 1,
@@ -27,6 +29,28 @@ namespace dustbin {
     * The interface for the two implementations of the touch marble controller
     */
     class IGuiMarbleControl : public irr::gui::IGUIElement {
+      public:
+        /**
+        * This enumeration holds the indices for the textures of all control items
+        */
+        enum class enItemIndex {
+          ItemForeward  = 0,
+          ItemBackward  = 1,
+          ItemLeft      = 2,
+          ItemRight     = 3,
+          ItemForeLeft  = 4,
+          ItemForeRight = 5,
+          ItemBackLeft  = 6,
+          ItemBackRight = 7,
+          ItemNeutralP  = 8,
+          ItemNeutralS  = 9,
+          ItemBrake     = 10,
+          ItemRespawn   = 11,
+          ItemRearview  = 12,
+          ItemResetGyro = 13,
+          ItemCount     = 14
+        };
+
       protected:
         /**
         * @class STouchItem
@@ -64,27 +88,6 @@ namespace dustbin {
         };
 
         /**
-        * This enumeration holds the indices for the textures of all control items
-        */
-        enum class enItemIndex {
-          ItemForeward  = 0,
-          ItemBackward  = 1,
-          ItemLeft      = 2,
-          ItemRight     = 3,
-          ItemForeLeft  = 4,
-          ItemForeRight = 5,
-          ItemBackLeft  = 6,
-          ItemBackRight = 7,
-          ItemNeutralP  = 8,
-          ItemNeutralS  = 9,
-          ItemBrake     = 10,
-          ItemRespawn   = 11,
-          ItemRearview  = 12,
-          ItemResetGyro = 13,
-          ItemCount     = 14
-        };
-
-        /**
         * @class STouch
         * @author Christian Keimel
         * This structure tracks all the touches on the display
@@ -102,6 +105,13 @@ namespace dustbin {
         irr::video::IVideoDriver *m_pDrv;
 
         std::vector<STouchItem *> m_vItems[(int)enItemIndex::ItemCount];
+
+        /**
+        * Build the UI
+        * @param a_pLayout the layout
+        * @param a_cScreen the screen size
+        */
+        void buildUI(CControlLayout *a_pLayout, irr::core::dimension2du a_cScreen);
 
       public:
         IGuiMarbleControl(irr::gui::IGUIElement *a_pParent);
