@@ -103,11 +103,12 @@ namespace dustbin {
             break;
 
           case 1:
-            p = new gui::CGuiGyroControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+            p = new gui::CGuiGyroControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement()); 
             break;
 
           case 2:
-            // Marble Touch control needs to be implemented
+            // Marble Touch control
+            p = new gui::CGuiMarbleTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;
 
           case 3:

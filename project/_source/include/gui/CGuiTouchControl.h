@@ -198,6 +198,33 @@ namespace dustbin {
     };
 
     /**
+    * @class CGuiMarbleTouchControl
+    * @author Christian Keimel
+    * This class implements a very intuitive version: touch the
+    * marble and move up, down, left and right for control
+    */
+    class CGuiMarbleTouchControl : public IGuiMarbleControl {
+      private:
+        irr::core::recti       m_cCenter;     /**< The central rect which needs to be touched for marble control */
+        int                    m_iControl;    /**< The marble touch control id */
+        int                    m_iLine;       /**< Half the line width */
+        int                    m_iBrakeY;     /**< The Y coordinate above which brake is triggered */
+        int                    m_iThickness;  /**< Thickness of the rects to help with controls */
+        irr::core::position2di m_cPos;        /**< The current touch position */
+
+        void drawControlRectangle(const irr::video::SColor &a_cColor, const irr::core::vector2di &a_cCenter, const irr::core::vector2di &a_cSize);
+
+      public:
+        CGuiMarbleTouchControl(irr::gui::IGUIElement *a_pParent);
+        virtual ~CGuiMarbleTouchControl();
+
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
+        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
+
+        virtual void draw() override;
+    };
+
+    /**
     * @class CGuiTouchControl_Split
     * @authro Christian Keimel
     * This class implements the touch control interface with the
