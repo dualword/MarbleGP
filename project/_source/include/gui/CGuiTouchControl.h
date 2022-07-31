@@ -31,7 +31,8 @@ namespace dustbin {
     class IGuiMarbleControl : public irr::gui::IGUIElement {
       public:
         /**
-        * This enumeration holds the indices for the textures of all control items
+        * This enumeration holds the indices for the textures of all control items.
+        * Keep the touch-to-activate (rearview, respawn, reset gyro) at the end!!
         */
         enum class enItemIndex {
           ItemForeward  = 0,
@@ -93,8 +94,9 @@ namespace dustbin {
         * This structure tracks all the touches on the display
         */
         typedef struct STouch {
-          int  m_iIndex;                  /**< ID of the touch */
-          irr::core::position2di m_cPos;  /**< The current position */
+          int                    m_iIndex;  /**< ID of the touch */
+          irr::core::position2di m_cPos;    /**< The current position */
+          irr::core::position2di m_cDown;   /**< The position of the touch-down event */
 
           STouch();
         } STouch;
@@ -102,9 +104,26 @@ namespace dustbin {
         enTouchCtrlType  m_eType;
         CGlobal         *m_pGlobal;
 
+        /**
+        * The touch input IDs for click-on control items,
+        * i.e. Rearview, Respawn and Gyro Reset
+        */
+        int m_aTouchIDs[5];
+
+        /**
+        * The touch input IDs for items that can also
+        * be slided on, i.e. controls and brake
+        */
+        int m_aCtrlIDs[5];
+
         irr::video::IVideoDriver *m_pDrv;
 
         std::vector<STouchItem *> m_vItems[(int)enItemIndex::ItemCount];
+
+        /**
+        * The array to detect and trace touch events
+        */
+        STouch m_aTouch[5];
 
         /**
         * Build the UI
@@ -112,6 +131,8 @@ namespace dustbin {
         * @param a_cScreen the screen size
         */
         void buildUI(CControlLayout *a_pLayout, irr::core::dimension2du a_cScreen);
+
+        void handleTouchEvent();
 
       public:
         IGuiMarbleControl(irr::gui::IGUIElement *a_pParent);
@@ -128,7 +149,7 @@ namespace dustbin {
         * @param a_bRespawn is the "respawn" button currently pressed?
         * @param a_bRearView is the "rearview" button currently pressed?
         */
-        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) = 0;
+        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView);
 
         /**
         * Implementation of the serialization method which does nothing in this case
@@ -139,6 +160,12 @@ namespace dustbin {
         * Implementation of the deserialization method which does nothing in this case
         */
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
+
+        /**
+        * handle Irrlicht events
+        * @param a_cEvent the Irrlicht event to handle
+        */
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
         virtual void draw() override;
     };
@@ -192,13 +219,10 @@ namespace dustbin {
         std::vector<enItemIndex> m_aItemMap[(int)enTouchId::IdCount];    /**< Map that controls which touch ID controls which item */
 
         void initialize(const irr::core::recti &a_cRect);
-        void handleTouchEvent();
 
       public:
         CGuiTouchControl_Split(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl_Split();
-
-        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
     };
 
     /**
@@ -213,8 +237,6 @@ namespace dustbin {
       public:
         CGuiTouchControl(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl();
-
-        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
     };
   }
 }

@@ -194,9 +194,10 @@ namespace dustbin {
       if (m_iNumOfViewports > 0) {
         l_cViewportSize.Width  /= m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns;
         l_cViewportSize.Height /= m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows;
-
+#ifndef _TOUCH_CONTROL
         if (m_pDevice->getCursorControl() != nullptr)
           m_pDevice->getCursorControl()->setVisible(false);
+#endif
       }
 
       irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
@@ -728,8 +729,8 @@ namespace dustbin {
       }
 
 #ifdef _TOUCH_CONTROL
-      // if (m_pTouchControl != nullptr)
-      //   l_bRet = m_pTouchControl->OnEvent(a_cEvent);
+      if (m_pTouchControl != nullptr)
+        l_bRet = m_pTouchControl->OnEvent(a_cEvent);
 #endif
 
       if (!l_bRet && a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {

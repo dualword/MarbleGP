@@ -310,6 +310,134 @@ namespace dustbin {
       // Nothing to do
     }
 
+    void IGuiMarbleControl::handleTouchEvent() {
+      for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
+        for (std::vector<STouchItem*>::iterator l_itItem = m_vItems[i].begin(); l_itItem != m_vItems[i].end(); l_itItem++) {
+          (*l_itItem)->m_bTouched = false;
+        }
+      }
+
+      for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
+        for (std::vector<STouchItem*>::iterator l_itItem = m_vItems[i].begin(); l_itItem != m_vItems[i].end(); l_itItem++) {
+          for (int j = 0; j < 5; j++) {
+            if (m_aTouch[j].m_iIndex != -1 && (*l_itItem)->m_cTouch.isPointInside(m_aTouch[j].m_cPos)) {
+              (*l_itItem)->m_bTouched = (i < (int)enItemIndex::ItemRespawn || (*l_itItem)->m_cTouch.isPointInside(m_aTouch[j].m_cDown)) ? true : false;
+            }
+          }
+        }
+      }
+    }
+
+    void IGuiMarbleControl::getControl(irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool &a_bRespawn, bool &a_bRearView) {
+      bool l_bXPlus    = false;
+      bool l_bXMinus   = false;
+      bool l_bYPlus    = false;
+      bool l_bYMinus   = false;
+      bool l_bGyro     = false;
+
+
+      a_bBrake    = false;
+      a_bRespawn  = false;
+      a_bRearView = false;
+
+      for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
+        for (std::vector<STouchItem*>::iterator l_itItem = m_vItems[i].begin(); l_itItem != m_vItems[i].end(); l_itItem++) {
+          if ((*l_itItem)->m_bTouched) {
+            switch ((enItemIndex)i) {
+              case enItemIndex::ItemForeward : l_bYPlus    = true; break;
+              case enItemIndex::ItemBackward : l_bYMinus   = true; break;
+              case enItemIndex::ItemLeft     : l_bXMinus   = true; break;
+              case enItemIndex::ItemRight    : l_bXPlus    = true; break;
+              case enItemIndex::ItemForeLeft : l_bYPlus    = true; l_bXMinus = true; break;
+              case enItemIndex::ItemForeRight: l_bYPlus    = true; l_bXPlus  = true; break;
+              case enItemIndex::ItemBackLeft : l_bYMinus   = true; l_bXMinus = true; break;
+              case enItemIndex::ItemBackRight: l_bYMinus   = true; l_bXPlus  = true; break;
+              case enItemIndex::ItemBrake    : a_bBrake    = true; break;
+              case enItemIndex::ItemRespawn  : a_bRespawn  = true; break;
+              case enItemIndex::ItemRearview : a_bRearView = true; break;
+              case enItemIndex::ItemResetGyro: l_bGyro     = true; break;
+              default: break;
+            }
+          }
+        }
+      }
+
+      if (l_bXPlus && !l_bXMinus) a_iCtrlX = 127; else if (!l_bXPlus && l_bXMinus) a_iCtrlX = -127;
+      if (l_bYPlus && !l_bYMinus) a_iCtrlY = 127; else if (!l_bYPlus && l_bYMinus) a_iCtrlY = -127;
+
+      if (a_bBrake) {
+        if (l_bYPlus) a_iCtrlY = 0; else a_iCtrlY = -127;
+      }
+    }
+
+    /**
+    * handle Irrlicht events
+    * @param a_cEvent the Irrlicht event to handle
+    */
+    bool IGuiMarbleControl::OnEvent(const irr::SEvent &a_cEvent) {
+      bool l_bRet = false;
+
+#ifdef _ANDROID
+      if (a_cEvent.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+        irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
+
+        if (a_cEvent.TouchInput.Event == irr::ETIE_PRESSED_DOWN) {
+          for (int i = 0; i < 5; i++) {
+            if (m_aTouch[i].m_iIndex == -1) {
+              m_aTouch[i].m_iIndex = a_cEvent.TouchInput.ID;
+              m_aTouch[i].m_cDown  = l_cPos;
+              m_aTouch[i].m_cPos   = l_cPos;
+
+              handleTouchEvent();
+              break;
+            }
+          }
+        }
+        else if (a_cEvent.TouchInput.Event == irr::ETIE_MOVED) {
+          for (int i = 0; i < 5; i++) {
+            if (m_aTouch[i].m_iIndex == a_cEvent.TouchInput.ID) {
+              m_aTouch[i].m_cPos = l_cPos;
+              handleTouchEvent();
+              break;
+            }
+          }
+        }
+        else if (a_cEvent.TouchInput.Event == irr::ETIE_LEFT_UP) {
+          for (int i = 0; i < 5; i++) {
+            if (m_aTouch[i].m_iIndex == a_cEvent.TouchInput.ID) {
+              m_aTouch[i].m_iIndex = -1;
+              handleTouchEvent();
+              break;
+            }
+          }
+        }
+      }
+#else
+      if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
+        if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          m_aTouch[0].m_cDown  = l_cPos;
+          m_aTouch[0].m_cPos   = l_cPos;
+          m_aTouch[0].m_iIndex = 0;
+
+          handleTouchEvent();
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+          if (m_aTouch[0].m_iIndex != -1) 
+            m_aTouch[0].m_cPos = l_cPos;
+
+          handleTouchEvent();
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          m_aTouch[0].m_iIndex = -1;
+          handleTouchEvent();
+        }
+      }
+#endif
+
+      return l_bRet;
+    }
+
     CGuiGyroControl::CGuiGyroControl(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent),
       m_fX(0.0),
       m_fY(0.0),
@@ -350,11 +478,14 @@ namespace dustbin {
 
     bool CGuiGyroControl::OnEvent(const irr::SEvent& a_cEvent) {
 #ifdef _ANDROID
-      if (a_cEvent.EventType == irr::EET_GYROSCOPE_EVENT) {
-        m_fX += a_cEvent.GyroscopeEvent.X;
-        m_fY += a_cEvent.GyroscopeEvent.Y;
-        m_fZ += a_cEvent.GyroscopeEvent.Z;
+      if (!IGuiMarbleControl::OnEvent(a_cEvent)) {
+        if (a_cEvent.EventType == irr::EET_GYROSCOPE_EVENT) {
+          m_fX += a_cEvent.GyroscopeEvent.X;
+          m_fY += a_cEvent.GyroscopeEvent.Y;
+          m_fZ += a_cEvent.GyroscopeEvent.Z;
+        }
       }
+      else return true;
 #endif
       return false;
     }
@@ -461,12 +592,6 @@ namespace dustbin {
       m_aItemMap[(int)enTouchId::IdRespawn ] = { enItemIndex::ItemRespawn  };
     }
 
-    void CGuiTouchControl_Split::handleTouchEvent() {
-    }
-
-    void CGuiTouchControl_Split::getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) {
-    }
-
     CGuiTouchControl::CGuiTouchControl(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent)
     {
       initialize(irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize()));
@@ -519,9 +644,6 @@ namespace dustbin {
     }
 
     CGuiTouchControl::~CGuiTouchControl() {
-    }
-
-    void CGuiTouchControl::getControl(irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool &a_bRespawn, bool &a_bRearView) {
     }
   }
 }
