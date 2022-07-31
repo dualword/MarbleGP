@@ -134,6 +134,11 @@ namespace dustbin {
 
         void handleTouchEvent();
 
+        /**
+        * Implementation necessary for the gyro control
+        */
+        virtual void resetGyro();
+
       public:
         IGuiMarbleControl(irr::gui::IGUIElement *a_pParent);
         virtual ~IGuiMarbleControl();
@@ -180,6 +185,9 @@ namespace dustbin {
         float m_fX;   /**< X Component of the rotation vector */
         float m_fY;   /**< Y Component of the rotation vector */
         float m_fZ;   /**< Z Component of the rotation vector */
+
+      protected:
+        virtual void resetGyro() override;
 
       public:
         CGuiGyroControl(irr::gui::IGUIElement *a_pParent);

@@ -281,6 +281,9 @@ namespace dustbin {
       return m_eType;
     }
 
+    void IGuiMarbleControl::resetGyro() {
+    }
+
     void IGuiMarbleControl::draw() {
       for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
         for (std::vector<STouchItem*>::iterator it = m_vItems[i].begin(); it != m_vItems[i].end(); it++) {
@@ -333,8 +336,6 @@ namespace dustbin {
       bool l_bXMinus   = false;
       bool l_bYPlus    = false;
       bool l_bYMinus   = false;
-      bool l_bGyro     = false;
-
 
       a_bBrake    = false;
       a_bRespawn  = false;
@@ -355,7 +356,7 @@ namespace dustbin {
               case enItemIndex::ItemBrake    : a_bBrake    = true; break;
               case enItemIndex::ItemRespawn  : a_bRespawn  = true; break;
               case enItemIndex::ItemRearview : a_bRearView = true; break;
-              case enItemIndex::ItemResetGyro: l_bGyro     = true; break;
+              case enItemIndex::ItemResetGyro: resetGyro()       ; break;
               default: break;
             }
           }
@@ -477,24 +478,33 @@ namespace dustbin {
     }
 
     bool CGuiGyroControl::OnEvent(const irr::SEvent& a_cEvent) {
-#ifdef _ANDROID
       if (!IGuiMarbleControl::OnEvent(a_cEvent)) {
+#ifdef _ANDROID
         if (a_cEvent.EventType == irr::EET_GYROSCOPE_EVENT) {
           m_fX += a_cEvent.GyroscopeEvent.X;
           m_fY += a_cEvent.GyroscopeEvent.Y;
           m_fZ += a_cEvent.GyroscopeEvent.Z;
         }
+#endif
       }
       else return true;
-#endif
+
       return false;
     }
 
     void CGuiGyroControl::getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) {
+      IGuiMarbleControl::getControl(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRespawn, a_bRearView);
+
       a_iCtrlX = m_fZ > 5.0 ? -127 : m_fZ < -5.0 ?  127 : 0;
       a_iCtrlY = m_fY > 7.5 ?  127 : m_fY < -7.5 ? -127 : 0;
 
       a_bBrake = m_fY < -12.5;
+    }
+
+    void CGuiGyroControl::resetGyro() {
+      m_fX = 0.0;
+      m_fY = 0.0;
+      m_fZ = 0.0;
     }
 
     IGuiMarbleControl::STouchItem::STouchItem() : m_bTouched(false), m_bActive(true), m_pTexture(nullptr) {
