@@ -105,20 +105,24 @@ namespace dustbin {
           case 1:
             p = new gui::CGuiGyroControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement()); 
             break;
-
+            
           case 2:
+            p = new CGuiTouchControl_Center(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+            break;
+
+          case 3:
             // Marble Touch control
             p = new gui::CGuiMarbleTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;
 
-          case 3:
           case 4:
+          case 5:
             // Steer Left, Throttle Right or Steer Right, Throttle Left
             p = new gui::CGuiTouchControl_Split(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;
 
-          case 5:
           case 6:
+          case 7:
             // All Controls Left or all Controls Right
             p = new CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;

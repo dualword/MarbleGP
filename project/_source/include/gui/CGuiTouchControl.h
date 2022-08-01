@@ -16,11 +16,12 @@ namespace dustbin {
     enum class enTouchCtrlType {
       Gamepad      = 0,
       Gyroscope    = 1,
-      MarbleTouch  = 2,
-      SteerLeft    = 3,
-      SteerRIght   = 4,
-      ControlLeft  = 5,
-      ControlRight = 6
+      SteerCenter  = 2,
+      MarbleTouch  = 3,
+      SteerLeft    = 4,
+      SteerRIght   = 5,
+      ControlLeft  = 6,
+      ControlRight = 7
     };
 
     /**
@@ -232,32 +233,50 @@ namespace dustbin {
     */
     class CGuiTouchControl_Split : public IGuiMarbleControl {
       private:
-        /**
-        * This enumeration holds the indices for the touch IDs
-        */
-        enum class enTouchId {
-          IdPower    = 0,
-          IdSteer    = 1,
-          IdBrake    = 2,
-          IdRespawn  = 3,
-          IdRearView = 4,
-          IdCount    = 5
-        };
-
-        STouch m_aTouch[5];   /**< The current touches */
-
-        irr::core::recti m_cPwrItems[3];  /**< The three items for the speed (foreward, neutral, backward) */
-        irr::core::recti m_cStrItems[3];  /**< The three items for steering (left, neutral, right) */
-
-        irr::gui::IGUIFont *m_pFont;
-
-        std::vector<enItemIndex> m_aItemMap[(int)enTouchId::IdCount];    /**< Map that controls which touch ID controls which item */
-
         void initialize(const irr::core::recti &a_cRect);
 
       public:
         CGuiTouchControl_Split(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl_Split();
+    };
+
+    /**
+    * @class CGuiTouchControl_Center
+    * @authro Christian Keimel
+    * The touch control with steering in center and throttle on both sides
+    */
+    class CGuiTouchControl_Center : public IGuiMarbleControl {
+      private:
+        irr::core::recti m_cThrottleRects[2];   /**< The two rects for throttle control */
+        irr::core::recti m_cSteeringRect;       /**< The rect for steering control */
+        irr::core::recti m_cThrottle[8];        /**< The rects for the throttle images */
+        irr::core::recti m_cSteering[3];        /**< The rects for the steering images */
+        irr::core::recti m_cThrottleSrc[4];     /**< The throttle source rects */
+        irr::core::recti m_cSteeringSrc[3];     /**< The steering source rects */
+
+        irr::video::ITexture *m_pThrottle[4];   /**< The throttle textures */
+        irr::video::ITexture *m_pSteering[3];   /**< The steering textures */
+
+        STouch m_cThrottleTouch;    /**< Touch structure for throttle */
+        STouch m_cSteeringTouch;    /**< Touch structure for steering */
+
+    public:
+        CGuiTouchControl_Center(irr::gui::IGUIElement *a_pParent);
+        virtual ~CGuiTouchControl_Center();
+
+        virtual void draw() override;
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
+
+        /**
+        * This callback gets called from the game state to get the
+        * current controller state
+        * @param a_iCtrlX steering output
+        * @param a_iCtrlY throttle output
+        * @param a_bBrake is the brake currently active?
+        * @param a_bRespawn is the "respawn" button currently pressed?
+        * @param a_bRearView is the "rearview" button currently pressed?
+        */
+        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
     };
 
     /**

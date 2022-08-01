@@ -152,6 +152,7 @@ namespace dustbin {
                 case enPosition::LowerLeft : l_cStart = irr::core::position2di(0                                         , a_cViewport.Height     - l_cTotal.Height    ); break;
                 case enPosition::Lower     : l_cStart = irr::core::position2di(a_cViewport.Width / 2 - l_cTotal.Width / 2, a_cViewport.Height     - l_cTotal.Height    ); break;
                 case enPosition::LowerRight: l_cStart = irr::core::position2di(a_cViewport.Width     - l_cTotal.Width    , a_cViewport.Height     - l_cTotal.Height    ); break;
+                default: break;
               }
 
               irr::core::position2di l_cPos = l_cStart;
@@ -253,7 +254,7 @@ namespace dustbin {
           case enItemIndex::ItemRespawn  : l_cColor = irr::video::SColor(128, 255, 255, 128); l_sPath  = "data/images/respawn.png"   ; break;
           case enItemIndex::ItemRearview : l_cColor = irr::video::SColor(128, 192, 192, 192); l_sPath  = "data/images/rearview.png"  ; break;
           case enItemIndex::ItemResetGyro: l_cColor = irr::video::SColor(128, 192, 192, 255); l_sPath  = "data/images/gyro_reset.png"; break;
-
+          default: break;
         }
 
         if (l_sPath != "") {
@@ -285,14 +286,16 @@ namespace dustbin {
     }
 
     void IGuiMarbleControl::draw() {
-      for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
-        for (std::vector<STouchItem*>::iterator it = m_vItems[i].begin(); it != m_vItems[i].end(); it++) {
-          if (*it != nullptr) {
-            m_pDrv->draw2DRectangle((*it)->m_bTouched ? (*it)->m_cColor : irr::video::SColor(224, 192, 192, 192), (*it)->m_cButton);
-            m_pDrv->draw2DRectangleOutline((*it)->m_cButton, irr::video::SColor(0xFF, 0, 0, 0));
+      if (IsVisible) {
+        for (int i = 0; i < (int)enItemIndex::ItemCount; i++) {
+          for (std::vector<STouchItem*>::iterator it = m_vItems[i].begin(); it != m_vItems[i].end(); it++) {
+            if (*it != nullptr) {
+              m_pDrv->draw2DRectangle((*it)->m_bTouched ? (*it)->m_cColor : irr::video::SColor(224, 192, 192, 192), (*it)->m_cButton);
+              m_pDrv->draw2DRectangleOutline((*it)->m_cButton, irr::video::SColor(0xFF, 0, 0, 0));
 
-            if ((*it)->m_pTexture != nullptr) {
-              m_pDrv->draw2DImage((*it)->m_pTexture, (*it)->m_cButton, (*it)->m_cSource, nullptr, nullptr, true);
+              if ((*it)->m_pTexture != nullptr) {
+                m_pDrv->draw2DImage((*it)->m_pTexture, (*it)->m_cButton, (*it)->m_cSource, nullptr, nullptr, true);
+              }
             }
           }
         }
@@ -545,10 +548,10 @@ namespace dustbin {
       m_cColor  = a_cColor;
     }
 
-    CGuiTouchControl_Split::STouch::STouch() : m_iIndex(-1) {
+    IGuiMarbleControl::STouch::STouch() : m_iIndex(-1) {
     }
 
-    CGuiTouchControl_Split::CGuiTouchControl_Split(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent), m_pFont(CGlobal::getInstance()->getFontBySize(48)) {
+    CGuiTouchControl_Split::CGuiTouchControl_Split(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent) {
       initialize(irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize()));
     }
 
@@ -594,12 +597,6 @@ namespace dustbin {
       irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
 
       buildUI(&l_cLayout, l_cScreen);
-
-      m_aItemMap[(int)enTouchId::IdPower   ] = { enItemIndex::ItemForeward , enItemIndex::ItemBackward, enItemIndex::ItemNeutralP, enItemIndex::ItemBrake };
-      m_aItemMap[(int)enTouchId::IdSteer   ] = { enItemIndex::ItemLeft     , enItemIndex::ItemRight   , enItemIndex::ItemNeutralS };
-      m_aItemMap[(int)enTouchId::IdBrake   ] = { enItemIndex::ItemBrake    }; 
-      m_aItemMap[(int)enTouchId::IdRearView] = { enItemIndex::ItemRearview };
-      m_aItemMap[(int)enTouchId::IdRespawn ] = { enItemIndex::ItemRespawn  };
     }
 
     CGuiTouchControl::CGuiTouchControl(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent)
@@ -784,47 +781,289 @@ namespace dustbin {
     }
 
     void CGuiMarbleTouchControl::draw() {
-      IGuiMarbleControl::draw();
+      if (IsVisible) {
+        IGuiMarbleControl::draw();
 
-      irr::core::vector2di l_cCenter = m_cCenter.getCenter();
+        irr::core::vector2di l_cCenter = m_cCenter.getCenter();
 
-      if (m_iControl == -1) {
-        drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(l_cCenter.X, m_cCenter.UpperLeftCorner .Y), irr::core::vector2di(m_iLine, m_iThickness));
-        drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(l_cCenter.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
-        drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.UpperLeftCorner .X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
-        drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.LowerRightCorner.X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
-      }
-      else {
-        if (m_cCenter.isPointInside(m_cPos)) {
-          drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(l_cCenter.X, m_cCenter.UpperLeftCorner .Y), irr::core::vector2di(m_iLine, m_iThickness));
-          drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(l_cCenter.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
-          drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.UpperLeftCorner .X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
-          drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.LowerRightCorner.X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
+        if (m_iControl == -1) {
+          drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(l_cCenter.X, m_cCenter.UpperLeftCorner .Y), irr::core::vector2di(m_iLine, m_iThickness));
+          drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(l_cCenter.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
+          drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.UpperLeftCorner .X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
+          drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.LowerRightCorner.X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
         }
         else {
-          if (m_cPos.Y < m_cCenter.UpperLeftCorner.Y) {
-            drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cPos.X, m_cCenter.UpperLeftCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
-          }
-          else if (m_cPos.Y > m_cCenter.LowerRightCorner.Y) {
-            drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cPos.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
+          if (m_cCenter.isPointInside(m_cPos)) {
+            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(l_cCenter.X, m_cCenter.UpperLeftCorner .Y), irr::core::vector2di(m_iLine, m_iThickness));
+            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(l_cCenter.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
+            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.UpperLeftCorner .X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
+            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.LowerRightCorner.X, l_cCenter.Y), irr::core::vector2di(m_iThickness, m_iLine));
           }
           else {
-            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cPos.X, m_cCenter.UpperLeftCorner .Y), irr::core::vector2di(m_iLine, m_iThickness));
-            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cPos.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
-          }
+            if (m_cPos.Y < m_cCenter.UpperLeftCorner.Y) {
+              drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cPos.X, m_cCenter.UpperLeftCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
+            }
+            else if (m_cPos.Y > m_cCenter.LowerRightCorner.Y) {
+              drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cPos.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
+            }
+            else {
+              drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cPos.X, m_cCenter.UpperLeftCorner .Y), irr::core::vector2di(m_iLine, m_iThickness));
+              drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cPos.X, m_cCenter.LowerRightCorner.Y), irr::core::vector2di(m_iLine, m_iThickness));
+            }
 
-          if (m_cPos.X < m_cCenter.UpperLeftCorner.X) {
-            drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.UpperLeftCorner.X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
-          }
-          else if (m_cPos.X > m_cCenter.LowerRightCorner.X) {
-            drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.LowerRightCorner.X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
-          }
-          else {
-            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.UpperLeftCorner .X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
-            drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.LowerRightCorner.X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
+            if (m_cPos.X < m_cCenter.UpperLeftCorner.X) {
+              drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.UpperLeftCorner.X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
+            }
+            else if (m_cPos.X > m_cCenter.LowerRightCorner.X) {
+              drawControlRectangle(irr::video::SColor(224, 128, 128, 255), irr::core::vector2di(m_cCenter.LowerRightCorner.X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
+            }
+            else {
+              drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.UpperLeftCorner .X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
+              drawControlRectangle(irr::video::SColor(224, 128, 255, 128), irr::core::vector2di(m_cCenter.LowerRightCorner.X, m_cPos.Y), irr::core::vector2di(m_iThickness, m_iLine));
+            }
           }
         }
       }
+    }
+
+    CGuiTouchControl_Center::CGuiTouchControl_Center(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent) {
+      AbsoluteClippingRect = irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize());
+
+      irr::s32 l_iSize   = AbsoluteClippingRect.getWidth() / 16;
+      irr::s32 l_iOffset = AbsoluteClippingRect.getWidth() / 256;
+
+      CControlLayout l_cLayout = CControlLayout(l_iSize, l_iOffset);
+
+      // Button size
+      irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
+      // Outer size of single buttons
+      irr::core::dimension2du l_cOuter = irr::core::dimension2du(l_iSize + l_iOffset, l_iSize + l_iOffset);
+
+      l_cLayout.addContainer(CControlLayout::enPosition::UpperLeft);
+      for (int i = 0; i < 2; i++) {
+        l_cLayout.addContainer(i == 0 ? CControlLayout::enPosition::UpperLeft : CControlLayout::enPosition::UpperRight);
+        l_cLayout.addRow();
+        l_cLayout.addItem(enItemIndex::ItemRespawn, l_cOuter, l_cSize);
+        l_cLayout.addRow();
+        l_cLayout.addItem(enItemIndex::ItemRearview, l_cOuter, l_cSize);
+      }
+      buildUI(&l_cLayout, m_pDrv->getScreenSize());
+
+      m_cThrottleRects[0] = irr::core::recti(
+        irr::core::position2di(0, 2 * l_iSize + 3 * l_iOffset),
+        irr::core::dimension2du(3 * l_iSize + 3 * l_iOffset, m_pDrv->getScreenSize().Height - (2 * l_iSize + 3 * l_iOffset))
+      );
+
+      m_cThrottleRects[1] = irr::core::recti(
+        irr::core::position2di(m_pDrv->getScreenSize().Width - (3 * l_iSize + 3 * l_iOffset), 2 * l_iSize + 3 * l_iOffset),
+        irr::core::dimension2du(3 * l_iSize + 2 * l_iOffset, m_pDrv->getScreenSize().Height - (2 * l_iSize + 3 * l_iOffset))
+      );
+
+      m_cSteeringRect = irr::core::recti(
+        irr::core::vector2di(m_cThrottleRects[0].LowerRightCorner.X, m_pDrv->getScreenSize().Height - l_iSize - l_iOffset),
+        irr::core::vector2di(m_cThrottleRects[1].UpperLeftCorner .X, m_pDrv->getScreenSize().Height)
+      );
+
+      for (int i = 0; i < 8; i++) {
+        irr::core::position2di l_cPos = irr::core::position2di(
+          i < 4 ? l_iOffset : m_pDrv->getScreenSize().Width - l_iSize - l_iOffset,
+          m_cThrottleRects[0].getCenter().Y - ((3 * l_iSize + 3 * l_iOffset) / 2) + (i % 4) * (l_iSize + l_iOffset)
+        );
+        irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
+
+        if (i != 3 && i != 7) {
+          m_cThrottle[i] = irr::core::recti(l_cPos, l_cSize);
+        }
+      }
+
+      m_cThrottle[3] = irr::core::recti(irr::core::position2di(l_iOffset, m_pDrv->getScreenSize().Height - l_iOffset - l_iSize), irr::core::dimension2di(3 * l_iSize, l_iSize));
+      m_cThrottle[7] = irr::core::recti(irr::core::position2di(m_pDrv->getScreenSize().Width - 3 * l_iSize - 2 * l_iOffset, m_pDrv->getScreenSize().Height - l_iOffset - l_iSize), irr::core::dimension2di(3 * l_iSize, l_iSize));
+
+      m_pThrottle[0] = m_pDrv->getTexture("data/images/control1.png");
+      m_pThrottle[1] = m_pDrv->getTexture("data/images/control4.png");
+      m_pThrottle[2] = m_pDrv->getTexture("data/images/control7.png");
+      m_pThrottle[3] = m_pDrv->getTexture("data/images/brake.png");
+
+      for (int i = 0; i < 4; i++)
+        if (m_pThrottle[i] != nullptr)
+          m_cThrottleSrc[i] = irr::core::recti(irr::core::position2di(0, 0), m_pThrottle[i]->getOriginalSize());
+
+      for (int i = 0; i < 3; i++) {
+        irr::core::position2di l_cPos = irr::core::position2di(
+          m_cSteeringRect.getCenter().X - ((3 * l_iSize + 3 * l_iOffset) / 2) + i * (l_iSize + l_iOffset),
+          m_cSteeringRect.UpperLeftCorner.Y
+        );
+        irr::core::dimension2du l_cSize = irr::core::dimension2du(l_iSize, l_iSize);
+
+        m_cSteering[i] = irr::core::recti(l_cPos, l_cSize);
+      }
+
+      m_pSteering[0] = m_pDrv->getTexture("data/images/control3.png");
+      m_pSteering[1] = m_pDrv->getTexture("data/images/control4.png");
+      m_pSteering[2] = m_pDrv->getTexture("data/images/control5.png");
+
+      for (int i = 0; i < 3; i++)
+        if (m_pSteering[i] != nullptr)
+          m_cSteeringSrc[i] = irr::core::recti(irr::core::position2di(0, 0), m_pSteering[i]->getOriginalSize());
+    }
+
+    CGuiTouchControl_Center::~CGuiTouchControl_Center() {
+
+    }
+
+    void CGuiTouchControl_Center::draw() {
+      if (IsVisible) {
+        IGuiMarbleControl::draw();
+
+        for (int i = 0; i < 8; i++) {
+          int l_iTexture = i % 4;
+
+          bool b = m_cThrottleTouch.m_iIndex != -1 && (
+            ((i == 0 || i == 4) && m_cThrottleTouch.m_cPos.Y <= m_cThrottle[0].LowerRightCorner.Y) ||
+            ((i == 1 || i == 5) && m_cThrottleTouch.m_cPos.Y >  m_cThrottle[0].LowerRightCorner.Y && m_cThrottleTouch.m_cPos.Y < m_cThrottle[2].UpperLeftCorner.Y) ||
+            ((i == 2 || i == 6) && m_cThrottleTouch.m_cPos.Y >= m_cThrottle[2].UpperLeftCorner .Y) ||
+            ((i == 3 || i == 7) && m_cThrottleTouch.m_cPos.Y >  m_cThrottle[3].UpperLeftCorner .Y)
+          );
+
+          irr::video::SColor l_cColor = irr::video::SColor(224, 192, 192, 192);
+
+          if (b) {
+            if (i == 0 || i == 4)
+              l_cColor = irr::video::SColor(224, 96, 255, 96);
+            else if (i == 1 || i == 5)
+              l_cColor = irr::video::SColor(224, 128, 128, 128);
+            else if (i == 2 || i == 6)
+              l_cColor = irr::video::SColor(224, 255, 255, 96);
+            else
+              l_cColor = irr::video::SColor(224, 255, 96, 96);
+          }
+
+          m_pDrv->draw2DRectangle(l_cColor, m_cThrottle[i]);
+          if (m_pThrottle[l_iTexture] != nullptr) {
+            m_pDrv->draw2DImage(m_pThrottle[l_iTexture], m_cThrottle[i], m_cThrottleSrc[l_iTexture], nullptr, nullptr, true);
+          }
+          m_pDrv->draw2DRectangleOutline(m_cThrottle[i], irr::video::SColor(0xFF, 0, 0, 0));
+        }
+
+        for (int i = 0; i < 3; i++) {
+          bool b = m_cSteeringTouch.m_iIndex != -1 && (
+            (i == 0 && m_cSteeringTouch.m_cPos.X <= m_cSteering[0].LowerRightCorner.X) ||
+            (i == 1 && m_cSteeringTouch.m_cPos.X >  m_cSteering[0].LowerRightCorner.X && m_cSteeringTouch.m_cPos.X < m_cSteering[2].UpperLeftCorner.X) ||
+            (i == 2 && m_cSteeringTouch.m_cPos.X >= m_cSteering[2].UpperLeftCorner .X)
+          );
+
+
+          m_pDrv->draw2DRectangle(b ? irr::video::SColor(224, 96, 96, 255) : irr::video::SColor(224, 192, 192, 192), m_cSteering[i]);
+          if (m_pSteering[i] != nullptr) {
+            m_pDrv->draw2DImage(m_pSteering[i], m_cSteering[i], m_cSteeringSrc[i], nullptr, nullptr, true);
+          }
+          m_pDrv->draw2DRectangleOutline(m_cSteering[i], irr::video::SColor(0xFF, 0, 0, 0));
+        }
+      }
+    }
+    
+    bool CGuiTouchControl_Center::OnEvent(const irr::SEvent &a_cEvent) {
+      bool l_bRet = false;
+
+#ifdef _ANDROID
+      if (a_cEvent.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+        irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
+
+        if (a_cEvent.TouchInput.Event == irr::ETIE_PRESSED_DOWN) {
+          if (m_cSteeringTouch.m_iIndex == -1 && m_cSteeringRect.isPointInside(l_cPos)) {
+            m_cSteeringTouch.m_iIndex = a_cEvent.TouchInput.ID;
+            m_cSteeringTouch.m_cDown  = l_cPos;
+            m_cSteeringTouch.m_cPos   = l_cPos;
+
+            l_bRet = true;
+          }
+          else if (m_cThrottleTouch.m_iIndex == -1 && (m_cThrottleRects[0].isPointInside(l_cPos) || m_cThrottleRects[1].isPointInside(l_cPos))) {
+            m_cThrottleTouch.m_iIndex = a_cEvent.TouchInput.ID;
+            m_cThrottleTouch.m_cDown  = l_cPos;
+            m_cThrottleTouch.m_cPos   = l_cPos;
+
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.TouchInput.Event == irr::ETIE_MOVED) {
+          if (a_cEvent.TouchInput.ID == m_cSteeringTouch.m_iIndex) {
+            m_cSteeringTouch.m_cPos = l_cPos;
+            l_bRet = true;
+          }
+          else if (a_cEvent.TouchInput.ID == m_cThrottleTouch.m_iIndex) {
+            m_cThrottleTouch.m_cPos = l_cPos;
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.TouchInput.Event == irr::ETIE_LEFT_UP) {
+          if (a_cEvent.TouchInput.ID == m_cSteeringTouch.m_iIndex) {
+            m_cSteeringTouch.m_iIndex = -1;
+            l_bRet = true;
+          }
+          else if (a_cEvent.TouchInput.ID == m_cThrottleTouch.m_iIndex) {
+            m_cThrottleTouch.m_iIndex = -1;
+            l_bRet = true;
+          }
+        }
+      }
+#else
+      if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
+
+        if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          if (m_cSteeringRect.isPointInside(l_cPos)) {
+            m_cSteeringTouch.m_iIndex = 0;
+            m_cSteeringTouch.m_cDown  = l_cPos;
+            m_cSteeringTouch.m_cPos   = l_cPos;
+            l_bRet = true;
+          }
+          else if (m_cThrottleRects[0].isPointInside(l_cPos) || m_cThrottleRects[1].isPointInside(l_cPos)) {
+            m_cThrottleTouch.m_iIndex = 0;
+            m_cThrottleTouch.m_cDown  = l_cPos;
+            m_cThrottleTouch.m_cPos   = l_cPos;
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+          if (m_cSteeringTouch.m_iIndex != -1) {
+            m_cSteeringTouch.m_cPos = l_cPos;
+            l_bRet = true;
+          }
+          else if (m_cThrottleTouch.m_iIndex != -1) {
+            m_cThrottleTouch.m_cPos = l_cPos;
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          m_cThrottleTouch.m_iIndex = -1;
+          m_cSteeringTouch.m_iIndex = -1;
+        }
+      }
+#endif
+
+      if (!l_bRet)
+        l_bRet = IGuiMarbleControl::OnEvent(a_cEvent);
+
+      return l_bRet;
+    }
+
+
+    /**
+    * This callback gets called from the game state to get the
+    * current controller state
+    * @param a_iCtrlX steering output
+    * @param a_iCtrlY throttle output
+    * @param a_bBrake is the brake currently active?
+    * @param a_bRespawn is the "respawn" button currently pressed?
+    * @param a_bRearView is the "rearview" button currently pressed?
+    */
+    void CGuiTouchControl_Center::getControl(irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRespawn, bool& a_bRearView) {
+      IGuiMarbleControl::getControl(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRespawn, a_bRearView);
+
+      a_iCtrlX = m_cSteeringTouch.m_iIndex == -1 ? 0 : m_cSteeringTouch.m_cPos.X <= m_cSteering[0].LowerRightCorner.X ? -127 : m_cSteeringTouch.m_cPos.X >= m_cSteering[2].UpperLeftCorner.X ?  127 : 0;
+      a_iCtrlY = m_cThrottleTouch.m_iIndex == -1 ? 0 : m_cThrottleTouch.m_cPos.Y <= m_cThrottle[0].LowerRightCorner.Y ?  127 : m_cThrottleTouch.m_cPos.Y >= m_cThrottle[2].UpperLeftCorner.Y ? -127 : 0;
+
+      a_bBrake = m_cThrottleTouch.m_iIndex != -1 && m_cThrottleTouch.m_cPos.Y >= m_cThrottle[3].UpperLeftCorner.Y;
     }
   }
 }

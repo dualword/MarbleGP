@@ -1427,12 +1427,20 @@ namespace dustbin {
             p->m_iStateChange = m_iStep;
 
             m_pSoundIntf->playMarbleStunned(a_MarbleId, p->m_pPositional->getAbsolutePosition());
+#ifdef _TOUCH_CONTROL
+            if (m_pTouchControl != nullptr)
+              m_pTouchControl->setVisible(false);
+#endif
           }
           else {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
             p->m_iStateChange = -1;
 
             m_pSoundIntf->stopMarbleStunned(a_MarbleId);
+#ifdef _TOUCH_CONTROL
+            if (m_pTouchControl != nullptr)
+              m_pTouchControl->setVisible(true);
+#endif
           }
         }
       }
