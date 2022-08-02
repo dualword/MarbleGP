@@ -293,8 +293,10 @@ namespace dustbin {
                 m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
                 gui::CSelector *l_pTouch = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("touchcontrol", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                if (l_pTouch != nullptr)
-                  CGlobal::getInstance()->getSettingData().m_iTouchControl = l_pTouch->getSelected();
+                if (l_pTouch != nullptr) {
+                  if (!CGlobal::getInstance()->getSettingData().m_bMenuPad)
+                    CGlobal::getInstance()->getSettingData().m_iTouchControl = l_pTouch->getSelected();
+                }
 
                 gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
@@ -449,6 +451,10 @@ namespace dustbin {
                 else if (l_sSender == "starting_positions") {
                   m_cSettings.m_iGridPos = p->getSelected();
                   l_bRet = true;
+                }
+                else if (l_sSender == "touchcontrol") {
+                  // If a touch controller was selected we need to reset the "menu pad" flag
+                  CGlobal::getInstance()->getSettingData().m_bMenuPad = false;
                 }
                 else printf("Unkown selector \"%s\"\n", l_sSender.c_str());
               }
