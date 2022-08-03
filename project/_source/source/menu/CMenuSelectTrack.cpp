@@ -229,14 +229,14 @@ namespace dustbin {
           for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
             printf("%2i |", i + 1);
 
-          printf(" Rs | St | Fl | DNF |\n");
+          printf(" Rs | St | Bf | Fl | DNF |\n");
 
           printf("---+-----------------+-----+");
 
           for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
             printf("---+");
 
-          printf("----+----+----+\n");
+          printf("----+----+----+----+-----+\n");
 
           int l_iPos = 1;
           for (std::vector<data::SChampionshipPlayer>::iterator it = l_vStanding.begin(); it != l_vStanding.end(); it++) {
@@ -256,7 +256,7 @@ namespace dustbin {
               else
                 printf("   |");
 
-            printf(" %2i | %2i | %2i |\n", (*it).m_iRespawn, (*it).m_iStunned, (*it).m_iFastestLaps);
+            printf(" %2i | %2i | %2i | %2i | %3i |\n", (*it).m_iRespawn, (*it).m_iStunned, (*it).m_iBestFinish, (*it).m_iFastestLaps, (*it).m_iDidNotFinish);
 
             l_iPos++;
           }

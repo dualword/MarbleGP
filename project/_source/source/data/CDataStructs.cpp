@@ -49,7 +49,8 @@ namespace dustbin {
     const irr::s32 c_iChampionshipPlayerStunned      = -66;       /**< Marker for the number of stuns of a championship player */
     const irr::s32 c_iChampionshipPlayerFastest      = -67;       /**< Marker for the number of fastest race laps of a championship player */
     const irr::s32 c_iChampionshipPlayerDNF          = -68;       /**< Marker for the number of races the player didn't finish */
-    const irr::s32 c_iChampionshipPlayerFooter       = -69;       /**< Marker for the end of the dataset */
+    const irr::s32 c_iChampionshipPlayerBestFinish   = -69;       /**< Marker for the first race the player scored his best finish */
+    const irr::s32 c_iChampionshipPlayerFooter       = -70;       /**< Marker for the end of the dataset */
 
     // Championship Race
     const irr::s32 c_iChampionshipRaceHead        = -80;      /**< Marker for the beginning of a championship race */
@@ -581,7 +582,8 @@ namespace dustbin {
       m_iRespawn     (0), 
       m_iStunned     (0), 
       m_iFastestLaps (0), 
-      m_iDidNotFinish(0)
+      m_iDidNotFinish(0),
+      m_iBestFinish  (0)
     {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = 0;
@@ -594,7 +596,8 @@ namespace dustbin {
       m_iRespawn     (a_cOther.m_iRespawn),
       m_iStunned     (a_cOther.m_iStunned),
       m_iFastestLaps (a_cOther.m_iFastestLaps),
-      m_iDidNotFinish(a_cOther.m_iDidNotFinish)
+      m_iDidNotFinish(a_cOther.m_iDidNotFinish),
+      m_iBestFinish  (a_cOther.m_iBestFinish)
     {
       for (int i = 0; i < 16; i++)
         m_aResult[i] = a_cOther.m_aResult[i];
@@ -660,6 +663,10 @@ namespace dustbin {
               m_iDidNotFinish = l_cSerializer.getS32();
               break;
 
+            case c_iChampionshipPlayerBestFinish:
+              m_iBestFinish = l_cSerializer.getS32();
+              break;
+
             case c_iChampionshipPlayerFooter:
               break;
 
@@ -709,9 +716,13 @@ namespace dustbin {
       l_cSerializer.addS32(c_iChampionshipPlayerFastest);
       l_cSerializer.addS32(m_iFastestLaps);
 
-      //DNFs
+      // DNFs
       l_cSerializer.addS32(c_iChampionshipPlayerDNF);
       l_cSerializer.addS32(m_iDidNotFinish);
+
+      // First Best Finish Race
+      l_cSerializer.addS32(c_iChampionshipPlayerBestFinish);
+      l_cSerializer.addS32(m_iBestFinish);
 
       // Footer
       l_cSerializer.addS32(c_iChampionshipPlayerFooter);
@@ -723,12 +734,13 @@ namespace dustbin {
       std::string s = "    <player>\n";
 
       s += "      <playerid>" + std::to_string(m_iPlayerId) + "</playerid>\n";
-      s += "      <name>"           +                m_sName          + "</name>\n";
-      s += "      <points>"         + std::to_string(m_iPoints      ) + "</points>\n";
-      s += "      <respawn>"        + std::to_string(m_iRespawn     ) + "</respawn>\n";
-      s += "      <stunned>"        + std::to_string(m_iStunned     ) + "</stunned>\n";
-      s += "      <fastest_laps>"   + std::to_string(m_iFastestLaps ) + "</fastest_laps>\n";
-      s += "      <did_not_finish>" + std::to_string(m_iDidNotFinish) + "</did_not_finish>\n";
+      s += "      <name>"              +                m_sName          + "</name>\n";
+      s += "      <points>"            + std::to_string(m_iPoints      ) + "</points>\n";
+      s += "      <respawn>"           + std::to_string(m_iRespawn     ) + "</respawn>\n";
+      s += "      <stunned>"           + std::to_string(m_iStunned     ) + "</stunned>\n";
+      s += "      <fastest_laps>"      + std::to_string(m_iFastestLaps ) + "</fastest_laps>\n";
+      s += "      <did_not_finish>"    + std::to_string(m_iDidNotFinish) + "</did_not_finish>\n";
+      s += "      <first_best_finish>" + std::to_string(m_iBestFinish  ) + "<first_best_finish>\n";
 
       s += "      <race_results>\n";
 
@@ -1138,6 +1150,7 @@ namespace dustbin {
         int l_iMarble = a_cRace.m_aResult[i].m_iId;
         if (a_cRace.m_mAssignment.find(l_iMarble) != a_cRace.m_mAssignment.end()) {
           int l_iId = a_cRace.m_mAssignment.find(l_iMarble)->second;
+
           for (std::vector<SChampionshipPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
             if ((*it).m_iPlayerId == l_iId) {
               int l_iDiff = l_iScore[a_cRace.m_iPlayers - 1][i];
@@ -1145,6 +1158,17 @@ namespace dustbin {
               (*it).m_iPoints  += l_iDiff;
               (*it).m_iRespawn += a_cRace.m_aResult[i].m_iRespawn;
               (*it).m_iStunned += a_cRace.m_aResult[i].m_iStunned;
+
+              // Was this the player's best finish?
+              bool l_bBest = true;
+
+              for (int j = 0; j <= i; j++) {
+                if ((*it).m_aResult[j] > 0)
+                  l_bBest = false;
+              }
+
+              if (l_bBest)
+                (*it).m_iBestFinish = m_vRaces.size();
 
               (*it).m_aResult[i]++;
 
@@ -1227,6 +1251,13 @@ namespace dustbin {
           // of those is better
           if (p1.m_iDidNotFinish != p2.m_iDidNotFinish) {
             return p1.m_iDidNotFinish < p2.m_iDidNotFinish;
+          }
+
+          // If we get here we use the first race the
+          // player has scored his best finish - this
+          // should do the job
+          if (p1.m_iBestFinish != p2.m_iBestFinish) {
+            return p1.m_iBestFinish < p2.m_iBestFinish;
           }
 
           // Nothing to distinguish yet? Then we take

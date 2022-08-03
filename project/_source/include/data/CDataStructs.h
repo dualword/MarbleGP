@@ -226,6 +226,7 @@ namespace dustbin {
       int         m_iStunned;       /**< The total number of stuns */
       int         m_iFastestLaps;   /**< Race in which this player made the fastest lap */
       int         m_iDidNotFinish;  /**< Number of race a player hasn't finished */
+      int         m_iBestFinish;    /**< The first race in which the player scored it's best result */
 
       SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName);
       SChampionshipPlayer(const std::string &a_sData);
