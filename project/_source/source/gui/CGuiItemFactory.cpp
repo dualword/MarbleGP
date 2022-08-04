@@ -9,6 +9,7 @@
 #include <gui/CGuiTextField.h>
 #include <gui/CClipImage.h>
 #include <gui/CSelector.h>
+#include <Defines.h>
 #include <string>
 
 #ifdef _TOUCH_CONTROL
@@ -98,31 +99,31 @@ namespace dustbin {
         irr::gui::IGUIElement *p = nullptr;
 
         switch (l_iType) {
-          case 0:
+          case (int)enTouchCtrlType::Gamepad:
             // Gamepad, nothing to do here
             break;
 
-          case 1:
+          case (int)enTouchCtrlType::Gyroscope:
             p = new gui::CGuiGyroControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement()); 
             break;
             
-          case 2:
+          case (int)enTouchCtrlType::SteerCenter:
             p = new CGuiTouchControl_Center(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;
 
-          case 3:
+          case (int)enTouchCtrlType::MarbleTouch:
             // Marble Touch control
             p = new gui::CGuiMarbleTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;
 
-          case 4:
-          case 5:
+          case (int)enTouchCtrlType::SteerLeft:
+          case (int)enTouchCtrlType::SteerRIght:
             // Steer Left, Throttle Right or Steer Right, Throttle Left
             p = new gui::CGuiTouchControl_Split(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;
 
-          case 6:
-          case 7:
+          case (int)enTouchCtrlType::ControlLeft:
+          case (int)enTouchCtrlType::ControlRight:
             // All Controls Left or all Controls Right
             p = new CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
             break;

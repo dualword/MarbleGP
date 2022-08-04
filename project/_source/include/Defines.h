@@ -20,4 +20,15 @@ namespace dustbin {
   #define c_iAllProfileEnd 45
 
   #define c_sProfileHead "PlayerProfiles"
+
+  enum class enTouchCtrlType {
+    Gamepad      = 0,
+    Gyroscope    = 1,
+    SteerCenter  = 2,
+    MarbleTouch  = 3,
+    SteerLeft    = 4,
+    SteerRIght   = 5,
+    ControlLeft  = 6,
+    ControlRight = 7
+  };
 }

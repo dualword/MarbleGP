@@ -1168,7 +1168,7 @@ namespace dustbin {
               }
 
               if (l_bBest)
-                (*it).m_iBestFinish = m_vRaces.size();
+                (*it).m_iBestFinish = (int)m_vRaces.size();
 
               (*it).m_aResult[i]++;
 

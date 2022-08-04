@@ -2,6 +2,7 @@
 #pragma once
 
 #include <irrlicht.h>
+#include <Defines.h>
 #include <vector>
 
 namespace dustbin {
@@ -12,17 +13,6 @@ namespace dustbin {
     const irr::c8 g_TouchControlName[] = "TouchControl";
 
     class CControlLayout;
-
-    enum class enTouchCtrlType {
-      Gamepad      = 0,
-      Gyroscope    = 1,
-      SteerCenter  = 2,
-      MarbleTouch  = 3,
-      SteerLeft    = 4,
-      SteerRIght   = 5,
-      ControlLeft  = 6,
-      ControlRight = 7
-    };
 
     /**
     * @class IGuiTouchControl

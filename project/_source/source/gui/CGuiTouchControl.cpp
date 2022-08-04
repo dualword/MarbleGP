@@ -199,7 +199,7 @@ namespace dustbin {
     };
 
 
-    IGuiMarbleControl::IGuiMarbleControl(irr::gui::IGUIElement* a_pParent) :irr::gui::IGUIElement(
+    IGuiMarbleControl::IGuiMarbleControl(irr::gui::IGUIElement* a_pParent) : irr::gui::IGUIElement(
         (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId,
         CGlobal::getInstance()->getGuiEnvironment(), 
         CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), 
