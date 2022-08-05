@@ -158,7 +158,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Gamepad;Gyroscope;Touch: Steer Center;Touch: Marble;Touch: Steer Left, Throttle Right;Touch: Steer Right, Throttle Left;Touch: All Controls Left;Touch: All Controls Right" />
+              <attribute key="options" value="Gamepad;Gyroscope;Touch: Steer Center;Touch: Steer Left, Throttle Right;Touch: Steer Right, Throttle Left;Touch: All Controls Center;Touch: All Controls Left;Touch: All Controls Right" />
             </custom>
           </element>
           

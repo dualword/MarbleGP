@@ -27,16 +27,16 @@ namespace dustbin {
         */
         enum class enItemIndex {
           ItemForeward  = 0,
-          ItemBackward  = 1,
-          ItemLeft      = 2,
-          ItemRight     = 3,
-          ItemForeLeft  = 4,
-          ItemForeRight = 5,
-          ItemBackLeft  = 6,
-          ItemBackRight = 7,
-          ItemNeutralP  = 8,
-          ItemNeutralS  = 9,
-          ItemBrake     = 10,
+          ItemNeutralP  = 1,
+          ItemBackward  = 2,
+          ItemBrake     = 3,
+          ItemLeft      = 4,
+          ItemNeutralS  = 5,
+          ItemRight     = 6,
+          ItemForeLeft  = 7,
+          ItemForeRight = 8,
+          ItemBackLeft  = 9,
+          ItemBackRight = 10,
           ItemRespawn   = 11,
           ItemRearview  = 12,
           ItemResetGyro = 13,
@@ -85,9 +85,11 @@ namespace dustbin {
         * This structure tracks all the touches on the display
         */
         typedef struct STouch {
-          int                    m_iIndex;  /**< ID of the touch */
-          irr::core::position2di m_cPos;    /**< The current position */
-          irr::core::position2di m_cDown;   /**< The position of the touch-down event */
+          int                    m_iIndex;    /**< ID of the touch */
+          bool                   m_bSteering; /**< Was a steering item touched? */
+          bool                   m_bThrottle; /**< Was a throttle item touched? */
+          irr::core::position2di m_cPos;      /**< The current position */
+          irr::core::position2di m_cDown;     /**< The position of the touch-down event */
 
           STouch();
         } STouch;
@@ -124,6 +126,20 @@ namespace dustbin {
         void buildUI(CControlLayout *a_pLayout, irr::core::dimension2du a_cScreen);
 
         void handleTouchEvent();
+
+        /**
+        * Is the touched point a throttle control?
+        * @param a_cPos the position of the touch
+        * @return true if a throttle item was touched
+        */
+        bool isThrottleTouchhed(const irr::core::position2di &a_cPos);
+
+        /**
+        * Is the touched point a steering control?
+        * @param a_cPos the position of the touch
+        * @return true if a steering item was touched
+        */
+        bool isSteeringTouchhed(const irr::core::position2di &a_cPos);
 
         /**
         * Implementation necessary for the gyro control
@@ -189,33 +205,6 @@ namespace dustbin {
     };
 
     /**
-    * @class CGuiMarbleTouchControl
-    * @author Christian Keimel
-    * This class implements a very intuitive version: touch the
-    * marble and move up, down, left and right for control
-    */
-    class CGuiMarbleTouchControl : public IGuiMarbleControl {
-      private:
-        irr::core::recti       m_cCenter;     /**< The central rect which needs to be touched for marble control */
-        int                    m_iControl;    /**< The marble touch control id */
-        int                    m_iLine;       /**< Half the line width */
-        int                    m_iBrakeY;     /**< The Y coordinate above which brake is triggered */
-        int                    m_iThickness;  /**< Thickness of the rects to help with controls */
-        irr::core::position2di m_cPos;        /**< The current touch position */
-
-        void drawControlRectangle(const irr::video::SColor &a_cColor, const irr::core::vector2di &a_cCenter, const irr::core::vector2di &a_cSize);
-
-      public:
-        CGuiMarbleTouchControl(irr::gui::IGUIElement *a_pParent);
-        virtual ~CGuiMarbleTouchControl();
-
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
-        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
-
-        virtual void draw() override;
-    };
-
-    /**
     * @class CGuiTouchControl_Split
     * @authro Christian Keimel
     * This class implements the touch control interface with the
@@ -228,45 +217,12 @@ namespace dustbin {
       public:
         CGuiTouchControl_Split(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl_Split();
-    };
-
-    /**
-    * @class CGuiTouchControl_Center
-    * @authro Christian Keimel
-    * The touch control with steering in center and throttle on both sides
-    */
-    class CGuiTouchControl_Center : public IGuiMarbleControl {
-      private:
-        irr::core::recti m_cThrottleRects[2];   /**< The two rects for throttle control */
-        irr::core::recti m_cSteeringRect;       /**< The rect for steering control */
-        irr::core::recti m_cThrottle[8];        /**< The rects for the throttle images */
-        irr::core::recti m_cSteering[3];        /**< The rects for the steering images */
-        irr::core::recti m_cThrottleSrc[4];     /**< The throttle source rects */
-        irr::core::recti m_cSteeringSrc[3];     /**< The steering source rects */
-
-        irr::video::ITexture *m_pThrottle[4];   /**< The throttle textures */
-        irr::video::ITexture *m_pSteering[3];   /**< The steering textures */
-
-        STouch m_cThrottleTouch;    /**< Touch structure for throttle */
-        STouch m_cSteeringTouch;    /**< Touch structure for steering */
-
-    public:
-        CGuiTouchControl_Center(irr::gui::IGUIElement *a_pParent);
-        virtual ~CGuiTouchControl_Center();
-
-        virtual void draw() override;
-        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
         /**
-        * This callback gets called from the game state to get the
-        * current controller state
-        * @param a_iCtrlX steering output
-        * @param a_iCtrlY throttle output
-        * @param a_bBrake is the brake currently active?
-        * @param a_bRespawn is the "respawn" button currently pressed?
-        * @param a_bRearView is the "rearview" button currently pressed?
+        * handle Irrlicht events
+        * @param a_cEvent the Irrlicht event to handle
         */
-        virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
     };
 
     /**
@@ -278,9 +234,19 @@ namespace dustbin {
       private:
         void initialize(const irr::core::recti &a_cRect);
 
+        irr::core::recti m_cRects[9];
+
+        bool checkForTouchEvents();
+
       public:
         CGuiTouchControl(irr::gui::IGUIElement *a_pParent);
         virtual ~CGuiTouchControl();
+
+        /**
+        * handle Irrlicht events
+        * @param a_cEvent the Irrlicht event to handle
+        */
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
     };
   }
 }

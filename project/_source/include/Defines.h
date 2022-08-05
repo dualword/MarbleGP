@@ -22,13 +22,15 @@ namespace dustbin {
   #define c_sProfileHead "PlayerProfiles"
 
   enum class enTouchCtrlType {
-    Gamepad      = 0,
-    Gyroscope    = 1,
-    SteerCenter  = 2,
-    MarbleTouch  = 3,
-    SteerLeft    = 4,
-    SteerRIght   = 5,
-    ControlLeft  = 6,
-    ControlRight = 7
+    Gamepad       = 0,
+    Gyroscope     = 1,
+    SteerCenter   = 2,
+    SteerLeft     = 3,
+    SteerRight    = 4,
+    ControlCenter = 5,
+    ControlLeft   = 6,
+    ControlRight  = 7
   };
+
+  bool controlAllowsRanking(int a_iControl);
 }

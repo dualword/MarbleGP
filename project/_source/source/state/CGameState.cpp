@@ -32,6 +32,7 @@
 #include <CMainClass.h>
 #include <CGlobal.h>
 #include <algorithm>
+#include <Defines.h>
 #include <random>
 #include <string>
 #include <map>
@@ -1318,7 +1319,7 @@ namespace dustbin {
             bool l_bShowRanking = true;
 
 #ifdef _TOUCH_CONTROL
-            if (!m_pGlobal->getSettingData().m_bMenuPad && m_pGlobal->getSettingData().m_iTouchControl == 2) {
+            if (!m_pGlobal->getSettingData().m_bMenuPad && !controlAllowsRanking(m_pGlobal->getSettingData().m_iTouchControl)) {
               l_bShowRanking = false;
             }
 #endif
