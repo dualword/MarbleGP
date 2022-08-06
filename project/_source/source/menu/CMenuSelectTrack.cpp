@@ -280,7 +280,7 @@ namespace dustbin {
               if (l_sCaller == "cancel") {
                 data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
-                std::string l_sNext = l_cChampionship.m_vRaces.size() > 0 ? "menu_finalresult" : "menu_main";
+                std::string l_sNext = (l_cChampionship.m_vRaces.size() > 0 && l_cChampionship.m_vPlayers.size() > 1) ? "menu_finalresult" : "menu_main";
 
                 if (m_pServer != nullptr) {
                   m_pServer->changeState(l_sNext);
