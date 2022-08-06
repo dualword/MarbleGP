@@ -495,9 +495,13 @@ namespace dustbin {
     }
 
     CGuiGyroControl::CGuiGyroControl(irr::gui::IGUIElement* a_pParent) : IGuiMarbleControl(a_pParent),
-      m_fX(0.0),
-      m_fY(0.0),
-      m_fZ(0.0)
+      m_fX    (0.0),
+      m_fY    (0.0),
+      m_fZ    (0.0),
+      m_fCtrlX(0.0),
+      m_fCtrlY(0.0),
+      m_pOuter(nullptr),
+      m_pInner(nullptr)
     {
       AbsoluteClippingRect = irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize());
 
@@ -527,9 +531,46 @@ namespace dustbin {
       irr::core::dimension2du l_cScreen = irr::core::dimension2du(AbsoluteClippingRect.getWidth(), AbsoluteClippingRect.getHeight());
 
       buildUI(&l_cLayout, l_cScreen);
+
+      m_pOuter = m_pDrv->getTexture("data/images/gyro1.png");
+      m_pInner = m_pDrv->getTexture("data/images/gyro2.png");
+
+      if (m_pOuter != nullptr && m_pInner != nullptr) {
+        m_cSource = irr::core::recti(irr::core::position2di(0, 0), m_pOuter->getOriginalSize());
+        m_cOuter  = irr::core::recti(
+          l_cScreen.Width  / 2 - l_cScreen.Width / 32,
+          l_cScreen.Height / 2 - l_cScreen.Width / 32,
+          l_cScreen.Width  / 2 + l_cScreen.Width / 32,
+          l_cScreen.Height / 2 + l_cScreen.Width / 32
+        );
+
+        m_cControl = irr::core::recti(
+          l_cScreen.Width  / 2 - 2 * l_cScreen.Height / 3,
+          l_cScreen.Height / 2 - 2 * l_cScreen.Height / 3,
+          l_cScreen.Width  / 2 + 2 * l_cScreen.Height / 3,
+          l_cScreen.Height / 2 + 2 * l_cScreen.Height / 3
+        );
+
+        m_cInner  = m_cOuter.getSize();
+        m_cCenter = irr::core::position2di(l_cScreen.Width / 2 - m_cInner.Width / 2, l_cScreen.Height / 2 - m_cInner.Height / 2);
+      }
     }
 
     CGuiGyroControl::~CGuiGyroControl() {
+    }
+
+    void CGuiGyroControl::draw() {
+      if (IsVisible) {
+        IGuiMarbleControl::draw();
+
+        if (m_pOuter != nullptr && m_pInner != nullptr) {
+          m_pDrv->draw2DImage(m_pOuter, m_cOuter, m_cSource, nullptr, nullptr, true);
+
+          irr::core::position2di l_cKnob = m_cCenter + irr::core::position2di((irr::s32)((irr::f32)m_cInner.Width * -m_fCtrlX), (irr::s32)((irr::f32)m_cInner.Height * m_fCtrlY));
+
+          m_pDrv->draw2DImage(m_pInner, irr::core::recti(l_cKnob, m_cInner), m_cSource, nullptr, nullptr, true);
+        }
+      }
     }
 
     bool CGuiGyroControl::OnEvent(const irr::SEvent& a_cEvent) {
@@ -539,6 +580,32 @@ namespace dustbin {
           m_fX += a_cEvent.GyroscopeEvent.X;
           m_fY += a_cEvent.GyroscopeEvent.Y;
           m_fZ += a_cEvent.GyroscopeEvent.Z;
+
+          if (m_fZ > -1.5 && m_fZ < 1.5) {
+            m_fCtrlX = 0.0;
+          }
+          else {
+            if (m_fZ > 0.0)
+              m_fCtrlX = (m_fZ - 1.5) / 7.5;
+            else
+              m_fCtrlX = (m_fZ + 1.5) / 7.5;
+
+            if (m_fCtrlX < -1.0f) m_fCtrlX = -1.0f;
+            if (m_fCtrlX >  1.0f) m_fCtrlX =  1.0f;
+          }
+
+          if (m_fY > -1.5 && m_fY < 1.5) {
+            m_fCtrlY = 0.0;
+          }
+          else {
+            if (m_fZ > 0.0)
+              m_fCtrlY = -(m_fY - 1.5) / 7.5;
+            else
+              m_fCtrlY = -(m_fY + 1.5) / 7.5;
+
+            if (m_fCtrlY < -1.0f) m_fCtrlY = -1.0f;
+            if (m_fCtrlY >  1.0f) m_fCtrlY =  1.0f;
+          }
         }
 #endif
       }
@@ -550,10 +617,10 @@ namespace dustbin {
     void CGuiGyroControl::getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) {
       IGuiMarbleControl::getControl(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRespawn, a_bRearView);
 
-      a_iCtrlX = m_fZ > 5.0 ? -127 : m_fZ < -5.0 ?  127 : 0;
-      a_iCtrlY = m_fY > 7.5 ?  127 : m_fY < -7.5 ? -127 : 0;
+      a_iCtrlX = (irr::s8)(-127.0 * m_fCtrlX);
+      a_iCtrlY = (irr::s8)(-127.0 * m_fCtrlY);
 
-      a_bBrake = m_fY < -12.5;
+      a_bBrake = m_fCtrlY > 0.75;
     }
 
     void CGuiGyroControl::resetGyro() {

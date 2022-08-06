@@ -193,6 +193,19 @@ namespace dustbin {
         float m_fY;   /**< Y Component of the rotation vector */
         float m_fZ;   /**< Z Component of the rotation vector */
 
+        float m_fCtrlX;   /**< The steering control */
+        float m_fCtrlY;   /**< The throttle control */
+
+        irr::video::ITexture *m_pOuter;   /**< The outer (fixed) texture to indicate the controls */
+        irr::video::ITexture *m_pInner;   /**< The inner (moving) texture to indicate the controls */
+
+        irr::core::recti m_cSource;   /**< The source rect for the images */
+        irr::core::recti m_cOuter;    /**< Destination rect for the outer (fixed) image */
+        irr::core::recti m_cControl;  /**< The complete rectange to use for showing the control knob (m_pInner) */
+
+        irr::core::position2di  m_cCenter;    /**< The center of the screen */
+        irr::core::dimension2du m_cInner;     /**< Target size of the inner (moving) texture */
+
       protected:
         virtual void resetGyro() override;
 
@@ -202,6 +215,8 @@ namespace dustbin {
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
         virtual void getControl(irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRespawn, bool &a_bRearView) override;
+
+        virtual void draw() override;
     };
 
     /**
