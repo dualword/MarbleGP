@@ -322,8 +322,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\include;..\..\libs\irrlicht\include\Irrlicht;C:\Program Files (x86)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -331,8 +331,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\_source\include\enet;..\..\_source\include\xeffects;..\..\_source\include;D:\myStuff\projects\libs\irrKlang-64bit-1.6.0\include;..\..\libs\irrlicht\include\Irrlicht;..\libs\Irrlicht-1.9\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\myStuff\projects\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -402,7 +402,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=0;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=2;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
