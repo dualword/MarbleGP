@@ -12,15 +12,5 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("MarbleGP");
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Example of a call to a native method
-        TextView tv = findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
-    }
-
     public native String stringFromJNI();
 }
