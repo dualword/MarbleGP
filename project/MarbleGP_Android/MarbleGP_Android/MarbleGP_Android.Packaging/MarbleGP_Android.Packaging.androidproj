@@ -44,12 +44,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <ConfigurationType>Application</ConfigurationType>
-    <AndroidAPILevel>android-24</AndroidAPILevel>
+    <AndroidAPILevel>android-30</AndroidAPILevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <ConfigurationType>Application</ConfigurationType>
-    <AndroidAPILevel>android-24</AndroidAPILevel>
+    <AndroidAPILevel>android-30</AndroidAPILevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>

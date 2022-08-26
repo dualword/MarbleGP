@@ -283,9 +283,9 @@ void android_main(struct android_app* a_pApp) {
     l_pMainClass->setIrrlichtDevice(l_pDevice);
     l_pMainClass->setCustomEventReceivers(l_pMenuHandler, nullptr);
 
-    // g_IrrlichtInputHandler = a_pApp->onInputEvent;
+    g_IrrlichtInputHandler = a_pApp->onInputEvent;
     g_cJoystickInput.m_pDevice = l_pDevice;
-    // a_pApp->onInputEvent = &overrideInputReceiever;
+    a_pApp->onInputEvent = &overrideInputReceiever;
 
 
     do {
