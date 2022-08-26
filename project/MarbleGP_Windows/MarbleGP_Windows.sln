@@ -1,18 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32002.261
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarbleGP_Windows", "MarbleGP_Windows\MarbleGP_Windows.vcxproj", "{EE28F920-CD4D-45D6-859E-1E65759D2A03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Android-arm64-v8a = Debug|Android-arm64-v8a
 		Debug|x64 = Debug|x64
+		Release|Android-arm64-v8a = Release|Android-arm64-v8a
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Debug|Android-arm64-v8a.ActiveCfg = Debug|Android-arm64-v8a
+		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Debug|Android-arm64-v8a.Build.0 = Debug|Android-arm64-v8a
 		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Debug|x64.ActiveCfg = Debug|x64
 		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Debug|x64.Build.0 = Debug|x64
+		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Release|Android-arm64-v8a.ActiveCfg = Release|Android-arm64-v8a
+		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Release|Android-arm64-v8a.Build.0 = Release|Android-arm64-v8a
 		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Release|x64.ActiveCfg = Release|x64
 		{EE28F920-CD4D-45D6-859E-1E65759D2A03}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
