@@ -239,6 +239,21 @@
         </attributes>
       </element>
       
+      <element type="DustbinCheckbox" rect="center: 5, 11, 7, 13">
+        <attributes>
+          <attribute key="Id" value="23017" />
+          <attribute key="Name" value="show_laptimes" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 8, 11, 34, 13">
+        <attributes>
+          <attribute key="Name" value="label_laptimes" />
+          <attribute key="Caption" value="Show Laptimes" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
     </children>
   </element>
   

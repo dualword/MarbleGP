@@ -92,6 +92,7 @@ namespace dustbin {
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bHightlight  , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
 
             m_iSplitIdx = l_iIndex;
           }
@@ -115,6 +116,9 @@ namespace dustbin {
 
             if (m_cSettings.m_aGameGFX[i].m_bShowRanking == m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking)
               updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowRanking, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
+
+            if (m_cSettings.m_aGameGFX[i].m_bShowLapTimes == m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes)
+              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
           }
         }
 
@@ -370,7 +374,8 @@ namespace dustbin {
               }
               else if (a_cEvent.GUIEvent.Caller->getID() == 23014 || 
                        a_cEvent.GUIEvent.Caller->getID() == 23015 ||
-                       a_cEvent.GUIEvent.Caller->getID() == 23016) 
+                       a_cEvent.GUIEvent.Caller->getID() == 23016 ||
+                       a_cEvent.GUIEvent.Caller->getID() == 23017) 
               {
                 updateSplitscreenSettings();
               }

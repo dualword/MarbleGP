@@ -120,15 +120,6 @@ namespace dustbin {
   CMainClass::~CMainClass() {
     m_pInstance = nullptr;
 
-    if (m_pSoundInterface != nullptr) {
-      // Hacky memory leak: Why does the game crash if the
-      // Sound interface is dropped????
-      // 
-      m_pSoundInterface->startSoundtrack(enSoundTrack::enStNone);
-      // delete m_pSoundInterface;
-      m_pSoundInterface = nullptr;
-    }
-
     if (m_pActiveState != nullptr) {
       m_pActiveState->willBeDeleted();
       m_pActiveState->deactivate();
@@ -163,6 +154,15 @@ namespace dustbin {
     }
 
     m_mStates.clear();
+
+    if (m_pSoundInterface != nullptr) {
+      // Hacky memory leak: Why does the game crash if the
+      // Sound interface is dropped????
+      // 
+      m_pSoundInterface->startSoundtrack(enSoundTrack::enStNone);
+      // delete m_pSoundInterface;
+      m_pSoundInterface = nullptr;
+    }
   }
 
   /**

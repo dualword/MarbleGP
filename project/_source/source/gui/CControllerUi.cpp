@@ -264,6 +264,10 @@ namespace dustbin {
         l_cPosL += irr::core::position2di(0, 4 * l_cFont.Height / 3);
         l_cPosI += irr::core::position2di(0, 4 * l_cFont.Height / 3);
       }
+
+      m_itHover = m_vItems.end();
+      m_itClick = m_vItems.end();
+      m_itSelct = m_vItems.end();
     }
 
     bool CControllerUi::isEditing() {

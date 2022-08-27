@@ -276,9 +276,26 @@ namespace dustbin {
         }
 
         virtual ~CSoundInterface() {
-          irrklang::ISoundEngine *p = m_pEngine;
-          m_pEngine = nullptr;
-          p->drop();
+          // m_pEngine->stopAllSounds();
+
+          for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+              if (m_aMarbles[i].m_aSounds[j] != nullptr) {
+                m_aMarbles[i].m_aSounds[j]->drop();
+                m_aMarbles[i].m_aSounds[j] = nullptr;
+              }
+            }
+          }
+
+          for (int i = 0; i < (int)enOneShots::Count; i++)
+            if (m_aOneShots[i] != nullptr) {
+              m_aOneShots[i]->drop();
+              m_aOneShots[i] = nullptr;
+            }
+
+          // irrklang::ISoundEngine *p = m_pEngine;
+          // m_pEngine = nullptr;
+          // p->drop();
           printf("Sound Interface deleted.\n");
         }
 

@@ -103,13 +103,14 @@ namespace dustbin {
 
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
-    SGameGFX::SGameGFX() : m_bHightlight(true), m_bShowControls(true), m_bShowRanking(true) {
+    SGameGFX::SGameGFX() : m_bHightlight(true), m_bShowControls(true), m_bShowRanking(true), m_bShowLapTimes(true) {
     }
 
     void SGameGFX::copyFrom(const SGameGFX& a_cOther) {
       m_bHightlight   = a_cOther.m_bHightlight;
       m_bShowControls = a_cOther.m_bShowControls;
       m_bShowRanking  = a_cOther.m_bShowRanking;
+      m_bShowLapTimes = a_cOther.m_bShowLapTimes;
     }
 
     SSettings::SSettings() : 

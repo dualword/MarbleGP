@@ -79,6 +79,11 @@ namespace dustbin {
               onPausechanged(p->getPaused());
               break;
             }
+            case dustbin::messages::enMessageIDs::Checkpoint: {
+              dustbin::messages::CCheckpoint *p = reinterpret_cast<dustbin::messages::CCheckpoint *>(a_pMessage);
+              onCheckpoint(p->getMarbleId(), p->getCheckpoint());
+              break;
+            }
             default:
               break;
           }

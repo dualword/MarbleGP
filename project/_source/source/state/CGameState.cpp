@@ -1324,7 +1324,7 @@ namespace dustbin {
             }
 #endif
 
-            it->second.m_pHUD->setSettings(m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking && l_bShowRanking);
+            it->second.m_pHUD->setSettings(m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking && l_bShowRanking, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowLapTimes);
           }
         }
         it->second.m_pHUD->drop();

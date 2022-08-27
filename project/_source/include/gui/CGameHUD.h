@@ -90,6 +90,32 @@ namespace dustbin {
           TimeBehind  /**< The time difference to the marble behind */
         };
 
+        /**
+        * Struct for the laptimes
+        */
+        typedef struct SLapTime {
+          int m_iStart;   /**< Start time of the lap */
+          int m_iEnd;     /**< End time of the lap */
+          int m_iLapNo;   /**< The lap */
+          int m_iLapTime; /**< The lap time */
+
+          std::vector<int> m_vSplitTimes;   /**< The split times of the lap */
+
+          SLapTime();
+        } SLapTime;
+
+        /**
+        * Struct for a player's race time
+        */
+        typedef struct SPlayerRacetime {
+          int m_iFastest;     /**< The player's fastest lap */
+          int m_iLastSplit;   /**< Time of the last split */
+
+          std::vector<SLapTime> m_vLapTimes;
+
+          SPlayerRacetime();
+        } SPlayerRacetime;
+
         int                        m_iMarble;       /**< The marble ID of the player */
         int                        m_iLapCnt;       /**< The number of laps */
         int                        m_iPlayers;      /**< The number of players for the ranking */
@@ -157,6 +183,15 @@ namespace dustbin {
         irr::core::dimension2du getDimension(const std::wstring &s, irr::gui::IGUIFont *a_pFont);
 
         std::map<int, irr::core::vector3df> m_mMarblePositions;
+
+        std::map<int, SPlayerRacetime> m_mLapTimes;       /**< The lap times of the marbles (key == marble id, value == lap time structure vector) */
+        std::vector<int>               m_vBestSplits;     /**< The best split times */
+        int                            m_iBestLapTime;    /**< The best lap time */
+        irr::core::position2di         m_cLapTimePos;     /**< Position of the lap times */
+        irr::core::dimension2du        m_cLapTotalDim;    /**< Size of the lap times labels */
+        irr::core::dimension2du        m_cLapNoDim;       /**< Size of the lap number of the lap times display */
+        irr::s32                       m_iLapTimeOffset;  /**< Vertical offset between the lap time labels */
+        bool                           m_bShowLapTimes;   /**< Draw lap times? */
 
         std::wstring getDeficitString(int a_iDeficit);
 
@@ -254,6 +289,13 @@ namespace dustbin {
         */
         virtual void onPausechanged(bool a_Paused) override;
 
+        /**
+        * This function receives messages of type "Checkpoint"
+        * @param a_MarbleId ID of the marble
+        * @param a_Checkpoint The checkpoint ID the player has passed
+        */
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) override;
+
       public:
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);
         virtual ~CGameHUD();
@@ -262,7 +304,7 @@ namespace dustbin {
 
         void updateRanking();
 
-        void setSettings(bool a_bHightlight, bool a_bShowCtrl, bool a_bShowRanking);
+        void setSettings(bool a_bHightlight, bool a_bShowCtrl, bool a_bShowRanking, bool a_bShowLapTimes);
 
         bool isResultParentVisible();
         void showResultParent();
