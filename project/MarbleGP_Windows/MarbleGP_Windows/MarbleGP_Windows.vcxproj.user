@@ -11,6 +11,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>..\..\..</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <AndroidDebugTarget>None</AndroidDebugTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <LocalDebuggerWorkingDirectory>..\..</LocalDebuggerWorkingDirectory>
@@ -25,6 +26,6 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">
-    <AndroidDebugTarget>VOG-L29:22X0219928000894:arm64-v8a</AndroidDebugTarget>
+    <AndroidDebugTarget>None</AndroidDebugTarget>
   </PropertyGroup>
 </Project>

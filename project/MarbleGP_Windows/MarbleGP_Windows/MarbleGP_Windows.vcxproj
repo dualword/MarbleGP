@@ -95,7 +95,6 @@
     <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
-    <ClCompile Include="..\..\_source\source\main_android.cpp" />
     <ClCompile Include="..\..\_source\source\main_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
@@ -117,7 +116,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\menu\CMenuStandings_Android.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuStartServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
@@ -127,7 +125,6 @@
     <ClCompile Include="..\..\_source\source\network\CGameClient.cpp" />
     <ClCompile Include="..\..\_source\source\network\CGameServer.cpp" />
     <ClCompile Include="..\..\_source\source\network\CNetBase.cpp" />
-    <ClCompile Include="..\..\_source\source\platform\CPlatformAndroid.cpp" />
     <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
@@ -170,7 +167,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\sound\CSoundInterfaceAndroid.cpp" />
     <ClCompile Include="..\..\_source\source\state\CGameState.cpp" />
     <ClCompile Include="..\..\_source\source\state\CMenuState.cpp" />
     <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp" />
@@ -188,12 +184,6 @@
     <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameHUD.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp" />
-    <ClCompile Include="AndroidPackaging\app\src\main\cpp\JniBindings.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\callbacks.h" />
@@ -319,57 +309,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\MarbleGP_Logo.ico" />
-    <None Include="AndroidPackaging\app\build.gradle" />
-    <None Include="AndroidPackaging\app\proguard-rules.pro" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-xxxhdpi\ic_launcher_round.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-xxxhdpi\ic_launcher.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-xxhdpi\ic_launcher_round.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-xxhdpi\ic_launcher.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-xhdpi\ic_launcher_round.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-xhdpi\ic_launcher.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-mdpi\ic_launcher_round.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-mdpi\ic_launcher.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-hdpi\ic_launcher_round.png" />
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-hdpi\ic_launcher.png" />
-    <None Include="AndroidPackaging\app\src\test\java\com\example\marblegp\ExampleUnitTest.java" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\androidTest\java\com\example\marblegp\ExampleInstrumentedTest.java" />
-    <None Include="AndroidPackaging\app\src\main\java\com\example\marblegp\MainActivity.java" />
-    <None Include="AndroidPackaging\build.gradle" />
-    <None Include="AndroidPackaging\gradle.properties" />
-    <None Include="AndroidPackaging\gradlew" />
-    <None Include="AndroidPackaging\gradlew.bat" />
-    <None Include="AndroidPackaging\gradle\wrapper\gradle-wrapper.jar" />
-    <None Include="AndroidPackaging\gradle\wrapper\gradle-wrapper.properties" />
-    <None Include="AndroidPackaging\settings.gradle" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\drawable\ic_launcher_background.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\drawable-v24\ic_launcher_foreground.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\layout\activity_main.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\values\colors.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\values\strings.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\res\values\styles.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AndroidPackaging\app\src\main\AndroidManifest.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
