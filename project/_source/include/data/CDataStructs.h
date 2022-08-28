@@ -97,7 +97,7 @@ namespace dustbin {
       std::string m_sName;      /**< The player's name */
       std::string m_sTexture;   /**< The player's texture generation string */
       std::string m_sControls;  /**< The player's controls encoded as a string */
-
+      std::string m_sShortName; /**< Abbreviation of the name for ranking display */
       
 
       SPlayerData();

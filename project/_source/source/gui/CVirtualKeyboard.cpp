@@ -253,12 +253,12 @@ namespace dustbin {
 
         for (int i = 0; i < 3; i++) {
           r -= irr::core::vector2di(0, m_cChar.getHeight());
-          it--;
 
           if (it == m_vKeys.begin()) {
             it = m_vKeys.end();
-            it--;
           }
+
+          it--;
 
           s[0] = *it;
           m_pFont->draw(s, r, irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);

@@ -22,6 +22,7 @@ namespace dustbin {
     const irr::s32 c_iPlayerGridPos      = 29;  /**< Marker for the position in the grid */
     const irr::s32 c_iPlayerViewPort     = 30;  /**< The player's viewport (if any) */
     const irr::s32 c_iPlayerDataEnd      = 31;  /**< Marker for the player data to end */
+    const irr::s32 c_iPlayerShortName    = 32;  /**< Marker for the player's short name (for in-game ranking display) */
 
     // Game Settings
     const irr::s32 c_iGameSettings    = 42;   /**< Marker for the game settings */
@@ -220,14 +221,15 @@ namespace dustbin {
     }
 
     SPlayerData::SPlayerData() :
-      m_eType    (enPlayerType::Local),
-      m_eAiHelp  (enAiHelp::Off),
-      m_iPlayerId(-1),
-      m_iGridPos (0 ),
-      m_iViewPort(-1),
-      m_sName    (""),
-      m_sTexture (""),
-      m_sControls("")
+      m_eType     (enPlayerType::Local),
+      m_eAiHelp   (enAiHelp::Off),
+      m_iPlayerId (-1),
+      m_iGridPos  (0 ),
+      m_iViewPort (-1),
+      m_sName     (""),
+      m_sTexture  (""),
+      m_sControls (""),
+      m_sShortName("")
     {
 #ifdef _ANDROID
       m_sControls = "DustbinController;control;JoyButton;Forward;Gamepad;M;a;j;a;-0md;b;control;JoyButton;Backward;Gamepad;O;a;i;c;-0md;b;control;JoyAxis;Left;Gamepad;L;a;a;a;-0md;-b;control;JoyAxis;Right;Gamepad;N;a;a;a;-0md;b;control;JoyButton;Brake;Gamepad;G;a;a;a;-0md;b;control;JoyButton;Rearview;Gamepad;j;a;g;a;-0md;b;control;JoyButton;Respawn;Gamepad;n;a;h;a;-0md;b;control;JoyButton;Pause;Gamepad;t;a;m;a;-SN;b;control;JoyButton;Cancel%20Race;Gamepad;B;a;n;a;-SN;b";
@@ -245,14 +247,15 @@ namespace dustbin {
     }
 
     void SPlayerData::copyFrom(const SPlayerData& a_cOther) {
-      m_eType     = a_cOther.m_eType;
-      m_sName     = a_cOther.m_sName;
-      m_sTexture  = a_cOther.m_sTexture;
-      m_sControls = a_cOther.m_sControls;
-      m_iPlayerId = a_cOther.m_iPlayerId;
-      m_eAiHelp   = a_cOther.m_eAiHelp;
-      m_iGridPos  = a_cOther.m_iGridPos;
-      m_iViewPort = a_cOther.m_iViewPort;
+      m_eType      = a_cOther.m_eType;
+      m_sName      = a_cOther.m_sName;
+      m_sTexture   = a_cOther.m_sTexture;
+      m_sControls  = a_cOther.m_sControls;
+      m_sShortName = a_cOther.m_sShortName;
+      m_iPlayerId  = a_cOther.m_iPlayerId;
+      m_eAiHelp    = a_cOther.m_eAiHelp;
+      m_iGridPos   = a_cOther.m_iGridPos;
+      m_iViewPort  = a_cOther.m_iViewPort;
     }
 
     std::string SPlayerData::serialize() {
@@ -283,6 +286,9 @@ namespace dustbin {
         l_cSerializer.addS32(c_iPlayerViewPort);
         l_cSerializer.addS32(m_iViewPort);
 
+        l_cSerializer.addS32(c_iPlayerShortName);
+        l_cSerializer.addString(m_sShortName);
+
         l_cSerializer.addS32(c_iPlayerDataEnd);
 
         return l_cSerializer.getMessageAsString();
@@ -310,14 +316,15 @@ namespace dustbin {
           irr::s32 l_iToken = l_cSerializer.getS32();
 
           switch (l_iToken) {
-            case c_iPlayerType    : m_eType         = (enPlayerType)l_cSerializer.getS32   ()     ; break;
-            case c_iPlayerName    : m_sName         =               l_cSerializer.getString()     ; break;
-            case c_iPlayerControls: m_sControls     =               l_cSerializer.getString()     ; printf("\n\n\n%s\n\n\n", m_sControls.c_str());break;
-            case c_iPlayerTexture : m_sTexture      =               l_cSerializer.getString()     ; break;
-            case c_iPlayerAiHelp  : m_eAiHelp       = (enAiHelp    )l_cSerializer.getS32   ()     ; break;
-            case c_iPlayerGridPos : m_iGridPos      =               l_cSerializer.getS32   ()     ; break;
-            case c_iPlayerViewPort: m_iViewPort     =               l_cSerializer.getS32   ()     ; break;
-            case c_iPlayerDataEnd : return true;
+            case c_iPlayerType     : m_eType      = (enPlayerType)l_cSerializer.getS32   (); break;
+            case c_iPlayerName     : m_sName      =               l_cSerializer.getString(); break;
+            case c_iPlayerControls : m_sControls  =               l_cSerializer.getString(); break;
+            case c_iPlayerTexture  : m_sTexture   =               l_cSerializer.getString(); break;
+            case c_iPlayerAiHelp   : m_eAiHelp    = (enAiHelp    )l_cSerializer.getS32   (); break;
+            case c_iPlayerGridPos  : m_iGridPos   =               l_cSerializer.getS32   (); break;
+            case c_iPlayerViewPort : m_iViewPort  =               l_cSerializer.getS32   (); break;
+            case c_iPlayerShortName: m_sShortName =              l_cSerializer.getString(); break;
+            case c_iPlayerDataEnd  : return true;
             default:
               printf("Unknown token %i\n", l_iToken);
               return false;

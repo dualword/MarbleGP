@@ -39,7 +39,8 @@ namespace dustbin {
 
       irr::gui::IGUITab *m_pDataRoot; /**< The tab that acts as root element for all edits */
 
-      irr::gui::IGUIEditBox *m_pName; /**< The player name edit box */
+      irr::gui::IGUIEditBox *m_pName;   /**< The player name edit box */
+      irr::gui::IGUIEditBox *m_pShort;  /**< The player name abbreviation edit box */
 
       irr::gui::IGUIStaticText *m_pControl;     /**< The label for type of controls */
       irr::gui::IGUIStaticText *m_pTextureType; /**< The label for type of texture */
@@ -50,24 +51,20 @@ namespace dustbin {
       gui::CMenuButton *m_pTexture;     /**< The "edit texture" button */
       gui::CMenuButton *m_pAddProfile;  /**< The "add profile" button */
 
-      irr::gui::IGUIImage *m_pYellow;   /**< The yellow warning image */
-      irr::gui::IGUIImage *m_pRed;      /**< The red error image */
-
       data::SPlayerData m_cData;   /**< The Player Data structure linked to this profile UI */
 
       SPlayerProfileUI() :
         m_pRoot       (nullptr),
         m_pDataRoot   (nullptr),
         m_pName       (nullptr),
+        m_pShort      (nullptr),
         m_pControl    (nullptr),
         m_pTextureType(nullptr),
         m_pLblAiHelp  (nullptr),
         m_pDelete     (nullptr),
         m_pControls   (nullptr),
         m_pTexture    (nullptr),
-        m_pAddProfile (nullptr),
-        m_pYellow     (nullptr),
-        m_pRed        (nullptr)
+        m_pAddProfile (nullptr)
       {
       }
 
@@ -77,15 +74,16 @@ namespace dustbin {
                m_pDataRoot    != nullptr &&
                m_pDelete      != nullptr &&
                m_pName        != nullptr &&
-               m_pRed         != nullptr &&
                m_pRoot        != nullptr &&
                m_pTexture     != nullptr &&
-               m_pYellow      != nullptr;
+               m_pShort       != nullptr;
       }
 
       void fillUI() {
         if (isValid()) {
-          m_pName->setText(helpers::s2ws(m_cData.m_sName).c_str());
+          m_pName ->setText(helpers::s2ws(m_cData.m_sName     ).c_str());
+          m_pShort->setText(helpers::s2ws(m_cData.m_sShortName).c_str());
+
           m_pDataRoot->setVisible(true);
           m_pAddProfile->setVisible(false);
 
@@ -791,20 +789,19 @@ namespace dustbin {
               if (m_aProfiles[i].m_pRoot != nullptr) {
                 irr::gui::IGUIElement *l_pRoot = m_aProfiles[i].m_pRoot;
 
-                m_aProfiles[i].m_pDataRoot    = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("tab"           , irr::gui::EGUIET_TAB                            , l_pRoot));
-                m_aProfiles[i].m_pName        = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_name"     , irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
-                m_aProfiles[i].m_pControl     = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_controls", irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
-                m_aProfiles[i].m_pTextureType = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_texture" , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
-                m_aProfiles[i].m_pLblAiHelp   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_aihelp"  , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
-                m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_delete"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pControls    = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_controls"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pTexture     = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_texture"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pAddProfile  = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_add"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pYellow      = reinterpret_cast<irr::gui::IGUIImage      *>(findElementByNameAndType("warning_yellow", irr::gui::EGUIET_IMAGE                          , l_pRoot));
-                m_aProfiles[i].m_pRed         = reinterpret_cast<irr::gui::IGUIImage      *>(findElementByNameAndType("warning_red"   , irr::gui::EGUIET_IMAGE                          , l_pRoot));
+                m_aProfiles[i].m_pDataRoot    = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("tab"              , irr::gui::EGUIET_TAB                            , l_pRoot));
+                m_aProfiles[i].m_pName        = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_name"        , irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
+                m_aProfiles[i].m_pShort       = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_abbreviation", irr::gui::EGUIET_EDIT_BOX, l_pRoot));
+                m_aProfiles[i].m_pControl     = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_controls"   , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pTextureType = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_texture"    , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pLblAiHelp   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_aihelp"     , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_delete"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pControls    = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_controls"     , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pTexture     = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_texture"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pAddProfile  = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_add"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
 
                 if (m_aProfiles[i].isValid()) {
-                  m_aProfiles[i].m_pDataRoot ->setVisible(false);
+                  m_aProfiles[i].m_pDataRoot  ->setVisible(false);
                   m_aProfiles[i].m_pAddProfile->setVisible(i == 0);
                   m_iMaxIndex = i;
                 }
@@ -933,8 +930,19 @@ namespace dustbin {
                 if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
                   for (int i = 0; i <= m_iMaxIndex; i++) {
                     if (m_aProfiles[i].m_pName == a_cEvent.GUIEvent.Caller) {
+                      bool l_bUpdateShort = m_aProfiles[i].m_cData.m_sName.substr(0, 5) == m_aProfiles[i].m_cData.m_sShortName || m_aProfiles[i].m_cData.m_sShortName == "";
+
                       m_aProfiles[i].m_cData.m_sName = helpers::ws2s(m_aProfiles[i].m_pName->getText()).c_str();
+
+                      if (l_bUpdateShort) {
+                        m_aProfiles[i].m_cData.m_sShortName = m_aProfiles[i].m_cData.m_sName.substr(0, 5);
+                        m_aProfiles[i].m_pShort->setText(helpers::s2ws(m_aProfiles[i].m_cData.m_sShortName).c_str());
+                      }
+
                       break;
+                    }
+                    else if (m_aProfiles[i].m_pShort == a_cEvent.GUIEvent.Caller) {
+                      m_aProfiles[i].m_cData.m_sShortName = helpers::ws2s(m_aProfiles[i].m_pShort->getText()).c_str();
                     }
                   }
                 }

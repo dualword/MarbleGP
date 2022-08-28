@@ -16,13 +16,28 @@
     </attributes>
     
     <children>
-      <element type="editBox" rect="relative: 2, 1, 30, 3">
+      <element type="editBox" rect="relative: 2, 1, 20, 3">
         <attributes>
           <attribute key="Name" value="edit_name" />
           <attribute key="Caption" value="Player" />
           <attribute key="Visible" value="true" />
           <attribute key="HTextAlign" value="upperLeft" />
           <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 20, 1, 26, 3" font="small">
+        <attributes>
+          <attribute key="Caption" value="Short Name: " />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 26, 1, 33, 3">
+        <attributes>
+          <attribute key="Name" value="edit_abbreviation" />
+          <attribute key="MaxChars" value="5" />
         </attributes>
       </element>
       
@@ -85,30 +100,6 @@
           <attribute key="Name" value="label_aihelp" />
           <attribute key="Caption" value="Off" />
         </attributes>
-      </element>
-      
-      <element type="image" rect="relative: 31, 1, 33, 3" tooltip="Something's wrong">
-        <attributes>
-          <attribute key="UseAlphaChannel" value="true" />
-          <attribute key="ScaleImage" value="true" />
-          <attribute key="Name" value="warning_red" />
-          <attribute key="Visible" value="false" />
-        </attributes>
-        <custom>
-          <attribute key="src" value="file://data/images/icon_warning_red.png" />
-        </custom>
-      </element>
-        
-      <element type="image" rect="relative: 31, 1, 33, 3" tooltip="Something's not right">
-        <attributes>
-          <attribute key="UseAlphaChannel" value="true" />
-          <attribute key="ScaleImage" value="true" />
-          <attribute key="Name" value="warning_yellow" />
-          <attribute key="Visible" value="false" />
-        </attributes>
-        <custom>
-          <attribute key="src" value="file://data/images/icon_warning_yellow.png" />
-        </custom>
       </element>
     </children>
   </element>

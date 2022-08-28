@@ -760,7 +760,7 @@ namespace dustbin {
             l_cSpeed.Y += 4 * m_iCtrlHeight;
           }
 
-          if (m_bShowRanking && m_pPlayer->m_iPosition > 0) {
+          if (m_pPlayer->m_iPosition > 0) {
             irr::s32 l_iOffset = 3 * m_cDefSize.Height / 2;
 
             irr::core::position2di l_cRank = l_cSpeed;
