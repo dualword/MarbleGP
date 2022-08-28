@@ -77,6 +77,31 @@ namespace dustbin {
         m_bShowSpeed = a_State == 2;
         m_bRespawn   = a_State != 2;
       }
+
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+        if ((*it)->m_iId == a_MarbleId) {
+          if (a_State == 1)
+            (*it)->m_iState = 2;
+          else if (a_State == 2)
+            (*it)->m_iState = 0;
+          break;
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "CameraRespawn"
+    * @param a_MarbleId The ID of the marble which is respawning
+    * @param a_Position The new position of the camera
+    * @param a_Target The new target of the camera, i.e. the future position of the marble
+    */
+    void CGameHUD::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target) {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+        if ((*it)->m_iId == a_MarbleId) {
+          (*it)->m_iState = 3;
+          break;
+        }
+      }
     }
 
     /**
@@ -114,6 +139,13 @@ namespace dustbin {
       if (m_mLapTimes.find(a_MarbleId) != m_mLapTimes.end() && m_mLapTimes[a_MarbleId].m_vLapTimes.size() > 0) {
         m_mLapTimes[a_MarbleId].m_vLapTimes.erase(m_mLapTimes[a_MarbleId].m_vLapTimes.end() - 1);
       }
+
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+        if ((*it)->m_iId == a_MarbleId) {
+          (*it)->m_iState = 4;
+          break;
+        }
+      }
     }
 
     /**
@@ -125,6 +157,16 @@ namespace dustbin {
       if (a_MarbleId == m_iMarble) {
         m_bShowSpeed = a_State != 1;
         m_bStunned   = a_State == 1;
+      }
+      
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+        if ((*it)->m_iId == a_MarbleId) {
+          if (a_State == 1)
+            (*it)->m_iState = 1;
+          else
+            (*it)->m_iState = 0;
+          break;
+        }
       }
     }
 
@@ -408,6 +450,7 @@ namespace dustbin {
       m_pPlayer       (a_pPlayer),
       m_cDefSize      (irr::core::dimension2du()),
       m_pDefFont      (nullptr),
+      m_pTimeFont     (nullptr),
       m_pDrv          (a_pGui->getVideoDriver()),
       m_cScreen       (irr::core::dimension2du()),
       m_pSpeedFont    (nullptr),
@@ -451,12 +494,15 @@ namespace dustbin {
       irr::video::SColor l_cBackground = irr::video::SColor( 128, 192, 192, 192);
       irr::video::SColor l_cTextColor  = irr::video::SColor(0xFF,   0,   0,   0);
 
+      irr::gui::IGUIFont *l_pTiny    = l_pGlobal->getFont(enFont::Tiny   , l_cViewport);
       irr::gui::IGUIFont *l_pSmall   = l_pGlobal->getFont(enFont::Small  , l_cViewport);
       irr::gui::IGUIFont *l_pRegular = l_pGlobal->getFont(enFont::Regular, l_cViewport);
       irr::gui::IGUIFont *l_pBig     = l_pGlobal->getFont(enFont::Big    , l_cViewport);
       irr::gui::IGUIFont *l_pHuge    = l_pGlobal->getFont(enFont::Huge   , l_cViewport);
 
       m_pPosFont = l_pHuge;
+
+      m_pTimeFont = l_pSmall;
 
       m_pDefFont = l_pSmall;
       m_cDefSize = getDimension(L"+666.6", m_pDefFont);
@@ -670,7 +716,7 @@ namespace dustbin {
       for (int i = 0; i < 16; i++)
         m_aFinished[i] = false;
 
-      m_cLapTotalDim = m_pDefFont->getDimension(L"Lap #66: 666.66");
+      m_cLapTotalDim = m_pTimeFont->getDimension(L"Lap #66: 666.66");
       m_cLapTotalDim.Width  = 5 * m_cLapTotalDim.Width  / 4;
       m_cLapTotalDim.Height = 5 * m_cLapTotalDim.Height / 4;
       
@@ -900,12 +946,12 @@ namespace dustbin {
             else l_sTime = helpers::convertToTime(m_iStep - (*it).m_iStart);
           }
 
-          irr::core::dimension2du l_cSize = m_pDefFont->getDimension(l_sTime.c_str());
+          irr::core::dimension2du l_cSize = m_pTimeFont->getDimension(l_sTime.c_str());
 
           irr::core::recti l_cRect = irr::core::recti(l_cPos, m_cLapTotalDim);
 
           m_pDrv->draw2DRectangle(l_cColor, l_cRect, &m_cRect);
-          m_pDefFont->draw(l_sLap.c_str(), irr::core::recti(l_cPos, m_cLapNoDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+          m_pTimeFont->draw(l_sLap.c_str(), irr::core::recti(l_cPos, m_cLapTotalDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
 
           irr::core::recti l_cRectTime = irr::core::recti(
             l_cRect.LowerRightCorner.X - m_cLapTotalDim.Height / 4 - l_cSize.Width,
@@ -914,9 +960,34 @@ namespace dustbin {
             l_cRect.LowerRightCorner.Y
           );
 
-          m_pDefFont->draw(l_sTime.c_str(), l_cRectTime, l_cText, false, true);
+          m_pTimeFont->draw(l_sTime.c_str(), l_cRectTime, l_cText, false, true);
 
           l_cPos.Y += m_iLapTimeOffset;
+        }
+      }
+
+      if (m_bShowRanking) {
+        irr::core::position2di l_cPos = m_cRect.UpperLeftCorner;
+
+        int l_iPos = 1;
+        for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+          irr::video::SColor l_cColor = irr::video::SColor(128, 224, 244, 244);
+
+          if ((*it)->m_iState == 1)
+            l_cColor = irr::video::SColor(128, 0, 0, 255);
+          else if ((*it)->m_iState == 2)
+            l_cColor = irr::video::SColor(128, 255, 255, 0);
+          else if ((*it)->m_iState == 3)
+            l_cColor = irr::video::SColor(128, 255, 0, 0);
+
+          m_pDrv->draw2DRectangle(l_cColor, irr::core::recti(l_cPos, m_cLapTotalDim));
+          
+          std::wstring l_sPos = l_iPos < 10 ? L" " + std::to_wstring(l_iPos) : std::to_wstring(l_iPos);
+
+          m_pTimeFont->draw((L" " + l_sPos + L": " + helpers::s2ws((*it)->m_sShortName)).c_str(), irr::core::recti(l_cPos, m_cLapTotalDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+
+          l_cPos.Y += m_iLapTimeOffset;
+          l_iPos++;
         }
       }
 

@@ -117,6 +117,14 @@ namespace dustbin {
          */
         virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) = 0;
 
+        /**
+         * This function receives messages of type "CameraRespawn"
+         * @param a_MarbleId The ID of the marble which is respawning
+         * @param a_Position The new position of the camera
+         * @param a_Target The new target of the camera, i.e. the future position of the marble
+         */
+        virtual void onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Target) = 0;
+
 
       public:
         IGameHUD();

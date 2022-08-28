@@ -437,7 +437,8 @@
         "StepMsg",
         "ConfirmWithdraw",
         "PauseChanged",
-        "Checkpoint"
+        "Checkpoint",
+        "CameraRespawn"
       ]
     },
     {

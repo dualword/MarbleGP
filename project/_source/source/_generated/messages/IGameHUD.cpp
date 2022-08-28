@@ -84,6 +84,11 @@ namespace dustbin {
               onCheckpoint(p->getMarbleId(), p->getCheckpoint());
               break;
             }
+            case dustbin::messages::enMessageIDs::CameraRespawn: {
+              dustbin::messages::CCameraRespawn *p = reinterpret_cast<dustbin::messages::CCameraRespawn *>(a_pMessage);
+              onCamerarespawn(p->getMarbleId(), p->getPosition(), p->getTarget());
+              break;
+            }
             default:
               break;
           }

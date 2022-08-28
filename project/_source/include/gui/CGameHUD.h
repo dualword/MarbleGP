@@ -137,6 +137,7 @@ namespace dustbin {
         gameclasses::SPlayer      *m_pPlayer;       /**< This is the data of the player this HUD belongs to */
         irr::core::dimension2du    m_cDefSize;      /**< Size of the deficit display */
         irr::gui::IGUIFont        *m_pDefFont;      /**< Font of the deficit display */
+        irr::gui::IGUIFont        *m_pTimeFont;     /**< Font for laptimes and ranking */
         irr::video::IVideoDriver  *m_pDrv;          /**< The Irrlicht video driver */
         irr::core::dimension2du    m_cScreen;       /**< The screen size */
         irr::gui::IGUIFont        *m_pSpeedFont;    /**< Font for the speed text */
@@ -202,6 +203,14 @@ namespace dustbin {
         * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
         */
         virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) override;
+
+        /**
+        * This function receives messages of type "CameraRespawn"
+        * @param a_MarbleId The ID of the marble which is respawning
+        * @param a_Position The new position of the camera
+        * @param a_Target The new target of the camera, i.e. the future position of the marble
+        */
+        virtual void onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Target) override;
 
         /**
         * This function receives messages of type "PlayerFinished"

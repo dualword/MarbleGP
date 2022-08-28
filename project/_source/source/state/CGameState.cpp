@@ -1256,6 +1256,7 @@ namespace dustbin {
             (*it).m_sName,
             (*it).m_sTexture,
             (*it).m_sControls,
+            (*it).m_sShortName,
             (*it).m_eAiHelp,
             l_pMarble,
             (*it).m_eType

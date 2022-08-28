@@ -26,7 +26,9 @@ namespace dustbin {
       std::string  m_sName;             /**< The name of the player */
       std::string  m_sTexture;          /**< The texture of the player's marble */
       std::string  m_sController;       /**< The serialized controller configuration */
+      std::string  m_sShortName;        /**< The short name of the player */
       bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
+      int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
 
       data::enPlayerType m_eType;
 
@@ -49,7 +51,9 @@ namespace dustbin {
         m_sName          (""),
         m_sTexture       (""),
         m_sController    (""),
+        m_sShortName     (""),
         m_bWithdrawn     (false),
+        m_iState         (0),
         m_eType          (data::enPlayerType::Local),
         m_eAiHelp        (data::SPlayerData::enAiHelp::Off),
         m_pMarble        (nullptr),
@@ -76,7 +80,7 @@ namespace dustbin {
       * @param a_sController the controller configuration string of the player
       * @param a_pMarble the marble of the player
       */
-      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
+      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
         m_iPlayer       (a_iPlayer),
         m_iPosition     (0),
         m_iLastPosUpdate(0),
@@ -85,6 +89,7 @@ namespace dustbin {
         m_sName         (a_sName),
         m_sTexture      (a_sTexture),
         m_sController   (a_sController),
+        m_sShortName    (a_sShortName),
         m_bWithdrawn    (false),
         m_eType         (a_eType),
         m_eAiHelp       (a_eAiHelp),

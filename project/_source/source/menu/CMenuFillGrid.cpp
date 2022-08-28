@@ -92,13 +92,14 @@ namespace dustbin {
               l_iCount++;
 
               data::SPlayerData l_cData;
-              l_cData.m_eType     = data::enPlayerType::Ai;
-              l_cData.m_iGridPos  = *l_vGrid.begin();
-              l_cData.m_iPlayerId = l_iCount;
-              l_cData.m_sName     = "AI Demo Player #" + std::to_string(l_cData.m_iGridPos + 1);
-              l_cData.m_sControls = "ai_player";
-              l_cData.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
-              l_cData.m_sTexture  = "default://number=" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_eType      = data::enPlayerType::Ai;
+              l_cData.m_iGridPos   = *l_vGrid.begin();
+              l_cData.m_iPlayerId  = l_iCount;
+              l_cData.m_sName      = "AI Demo Player #" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_sControls  = "ai_player";
+              l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
+              l_cData.m_sTexture   = "default://number=" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_sShortName = "Ai#" + std::to_string(l_cData.m_iGridPos + 1);
 
               l_vGrid.erase(l_vGrid.begin());
 
