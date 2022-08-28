@@ -98,6 +98,21 @@
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
+      
+      <element type="DustbinCheckbox" rect="center: 1, 2, 3, 4">
+        <attributes>
+          <attribute key="Id" value="23017" />
+          <attribute key="Name" value="show_ranking" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 4, 2, 18, 4">
+        <attributes>
+          <attribute key="Name" value="label_laptimes" />
+          <attribute key="Caption" value="Show Laptimes" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
     </children>
   </element>
   
