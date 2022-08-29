@@ -482,7 +482,8 @@ namespace dustbin {
       m_vRanking      (a_vRanking),
       m_iBestLapTime  (-1),
       m_iLapTimeOffset(0),
-      m_bShowLapTimes (false)
+      m_bShowLapTimes (false),
+      m_pCheckered    (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -502,7 +503,11 @@ namespace dustbin {
 
       m_pPosFont = l_pHuge;
 
+#ifdef _ANDROID
+      m_pTimeFont = l_pTiny;
+#else
       m_pTimeFont = l_pSmall;
+#endif
 
       m_pDefFont = l_pSmall;
       m_cDefSize = getDimension(L"+666.6", m_pDefFont);
@@ -720,13 +725,21 @@ namespace dustbin {
       m_cLapTotalDim.Width  = 5 * m_cLapTotalDim.Width  / 4;
       m_cLapTotalDim.Height = 5 * m_cLapTotalDim.Height / 4;
       
-      m_cLapNoDim = m_pDefFont->getDimension(L" Lap 66: ");
+      m_cLapNoDim = m_pTimeFont->getDimension(L" Lap 66: ");
       m_cLapNoDim.Width  = 5 * m_cLapNoDim.Width  / 4;
       m_cLapNoDim.Height = 5 * m_cLapNoDim.Height / 4;
+
+      m_cPosNameDim = m_pTimeFont->getDimension(L"66: XXXXX");
+      m_cPosNameDim.Width  = 10 * m_cPosNameDim.Width  / 9;
+      m_cPosNameDim.Height =  5 * m_cPosNameDim.Height / 4;
+
+      m_cStartNr = irr::core::dimension2du(m_cPosNameDim.Height, m_cPosNameDim.Height);
 
       m_iLapTimeOffset = 5 * m_cLapTotalDim.Height / 4;
 
       m_cLapTimePos.X = a_cRect.LowerRightCorner.X - m_cLapTotalDim.Width;
+
+      m_pCheckered = m_pDrv->getTexture("data/images/checkered.png");
     }
 
     CGameHUD::~CGameHUD() {
@@ -822,8 +835,8 @@ namespace dustbin {
             int l_iPos[] = {
               1,
               m_pPlayer->m_iPosition == 1 ? 2 : m_pPlayer->m_iPosition == 2 ? 2 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_iPosition - 1,
-              m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == 2 ? 3 :m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
-              m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == 2 ? 4 :m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
+              m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == 2 ? 3 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
+              m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == 2 ? 4 : m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
             };
 
             for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
@@ -976,15 +989,27 @@ namespace dustbin {
           if ((*it)->m_iState == 1)
             l_cColor = irr::video::SColor(128, 0, 0, 255);
           else if ((*it)->m_iState == 2)
-            l_cColor = irr::video::SColor(128, 255, 255, 0);
-          else if ((*it)->m_iState == 3)
             l_cColor = irr::video::SColor(128, 255, 0, 0);
+          else if ((*it)->m_iState == 3)
+            l_cColor = irr::video::SColor(128, 255, 255, 0);
 
-          m_pDrv->draw2DRectangle(l_cColor, irr::core::recti(l_cPos, m_cLapTotalDim));
+          irr::core::recti l_cNameRect = irr::core::recti(l_cPos, m_cPosNameDim);
+
+          m_pDrv->draw2DRectangle(l_cColor, l_cNameRect);
           
           std::wstring l_sPos = l_iPos < 10 ? L" " + std::to_wstring(l_iPos) : std::to_wstring(l_iPos);
 
-          m_pTimeFont->draw((L" " + l_sPos + L": " + helpers::s2ws((*it)->m_sShortName)).c_str(), irr::core::recti(l_cPos, m_cLapTotalDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+          m_pTimeFont->draw((L" " + l_sPos + L": " + helpers::s2ws((*it)->m_sShortName)).c_str(), l_cNameRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+
+          irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cNameRect.LowerRightCorner.X, l_cNameRect.UpperLeftCorner.Y), m_cStartNr);
+
+          m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
+          m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
+          m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
+
+          if ((*it)->m_iState == 4 && m_pCheckered != nullptr) {
+            m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cStartNr));
+          }
 
           l_cPos.Y += m_iLapTimeOffset;
           l_iPos++;

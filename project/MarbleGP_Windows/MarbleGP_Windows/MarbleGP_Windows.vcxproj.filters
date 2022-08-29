@@ -444,6 +444,9 @@
     <ClCompile Include="..\..\_source\source\gui\CGuiTouchControl.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

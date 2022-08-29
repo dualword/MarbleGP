@@ -349,6 +349,7 @@
     <ClCompile Include="..\..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
     <ClCompile Include="..\..\..\_source\source\gameclasses\CMarbleCounter.cpp" />
     <ClCompile Include="..\..\..\_source\source\gameclasses\COdeNodes.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gameclasses\SPlayer.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CButtonRenderer.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CClipImage.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CControllerUi.cpp" />

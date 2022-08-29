@@ -75,6 +75,7 @@
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
+    <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTouchControl.cpp" />

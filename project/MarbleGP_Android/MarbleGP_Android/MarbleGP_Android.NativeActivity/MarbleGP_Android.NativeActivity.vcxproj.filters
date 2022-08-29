@@ -577,6 +577,9 @@
     <ClCompile Include="..\..\..\_source\source\menu\CMenuCredits.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gameclasses\SPlayer.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">
