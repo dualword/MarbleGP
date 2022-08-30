@@ -328,6 +328,14 @@ namespace dustbin {
               m_vBestSplits[l_iSplitIdx - 1] = l_iSplitTime;
             }
           }
+
+          if (m_mLapTimes[a_MarbleId].m_vPlayerBestSplit.size() < l_iSplitIdx) {
+            m_mLapTimes[a_MarbleId].m_vPlayerBestSplit.push_back(l_iSplitTime);
+          }
+          else {
+            if (l_iSplitTime < m_mLapTimes[a_MarbleId].m_vPlayerBestSplit[l_iSplitIdx - 1])
+              m_mLapTimes[a_MarbleId].m_vPlayerBestSplit[l_iSplitIdx - 1] = l_iSplitTime;
+          }
         }
       }
     }
@@ -954,6 +962,8 @@ namespace dustbin {
 
               if (l_iSplit == m_vBestSplits[m_mLapTimes[m_iMarble].m_vLapTimes.back().m_vSplitTimes.size() - 1])
                 l_cText = irr::video::SColor(0xFF, 255, 0, 0);
+              else if (l_iSplit == m_mLapTimes[m_iMarble].m_vPlayerBestSplit[m_mLapTimes[m_iMarble].m_vLapTimes.back().m_vSplitTimes.size() - 1])
+                l_cText = irr::video::SColor(0xFF, 255, 255, 0);
             }
             else l_sTime = helpers::convertToTime(m_iStep - (*it).m_iStart);
           }
