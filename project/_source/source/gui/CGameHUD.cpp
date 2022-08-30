@@ -927,9 +927,8 @@ namespace dustbin {
         }
       }
 
+      irr::core::position2di l_cLapTimePos = m_cLapTimePos;
       if (m_bShowLapTimes && m_mLapTimes.find(m_iMarble) != m_mLapTimes.end()) {
-        irr::core::position2di l_cPos = m_cLapTimePos;
-
         for (std::vector<SLapTime>::iterator it = m_mLapTimes[m_iMarble].m_vLapTimes.begin(); it != m_mLapTimes[m_iMarble].m_vLapTimes.end(); it++) {
           std::wstring l_sLap  = L" Lap " + std::to_wstring((*it).m_iLapNo) + L": ";
           std::wstring l_sTime = L"";
@@ -961,10 +960,10 @@ namespace dustbin {
 
           irr::core::dimension2du l_cSize = m_pTimeFont->getDimension(l_sTime.c_str());
 
-          irr::core::recti l_cRect = irr::core::recti(l_cPos, m_cLapTotalDim);
+          irr::core::recti l_cRect = irr::core::recti(l_cLapTimePos, m_cLapTotalDim);
 
           m_pDrv->draw2DRectangle(l_cColor, l_cRect, &m_cRect);
-          m_pTimeFont->draw(l_sLap.c_str(), irr::core::recti(l_cPos, m_cLapTotalDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+          m_pTimeFont->draw(l_sLap.c_str(), irr::core::recti(l_cLapTimePos, m_cLapTotalDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
 
           irr::core::recti l_cRectTime = irr::core::recti(
             l_cRect.LowerRightCorner.X - m_cLapTotalDim.Height / 4 - l_cSize.Width,
@@ -975,8 +974,26 @@ namespace dustbin {
 
           m_pTimeFont->draw(l_sTime.c_str(), l_cRectTime, l_cText, false, true);
 
-          l_cPos.Y += m_iLapTimeOffset;
+          l_cLapTimePos.Y += m_iLapTimeOffset;
         }
+      }
+
+      if (m_bShowLapTimes && !m_bFinished && m_iGoStep != 0) {
+        irr::core::recti l_cRect = irr::core::recti(l_cLapTimePos, m_cLapTotalDim);
+        m_pDrv->draw2DRectangle(irr::video::SColor(128, 224, 224, 224), l_cRect);
+        m_pTimeFont->draw(L" Race: ", l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &l_cRect);
+
+        std::wstring l_sTime = helpers::convertToTime(m_iStep - m_iGoStep);
+        irr::core::dimension2du l_cSize = m_pTimeFont->getDimension(l_sTime.c_str());
+
+        irr::core::recti l_cRectTime = irr::core::recti(
+          l_cRect.LowerRightCorner.X - m_cLapTotalDim.Height / 4 - l_cSize.Width,
+          l_cRect.UpperLeftCorner.Y,
+          l_cRect.LowerRightCorner.X,
+          l_cRect.LowerRightCorner.Y
+        );
+
+        m_pTimeFont->draw(l_sTime.c_str(), l_cRectTime, irr::video::SColor(0xFF, 0, 0, 0), false, true);
       }
 
       if (m_bShowRanking) {
