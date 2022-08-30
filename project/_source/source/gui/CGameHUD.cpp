@@ -990,7 +990,7 @@ namespace dustbin {
 
       if (m_bShowLapTimes && !m_bFinished && m_iGoStep != 0) {
         irr::core::recti l_cRect = irr::core::recti(l_cLapTimePos, m_cLapTotalDim);
-        m_pDrv->draw2DRectangle(irr::video::SColor(128, 224, 224, 224), l_cRect);
+        m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 255, 192), l_cRect);
         m_pTimeFont->draw(L" Race: ", l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &l_cRect);
 
         std::wstring l_sTime = helpers::convertToTime(m_iStep - m_iGoStep);
