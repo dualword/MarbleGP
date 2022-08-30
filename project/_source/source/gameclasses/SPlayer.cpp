@@ -9,7 +9,7 @@ namespace dustbin {
     SPlayer::SPlayer() :
       m_iPlayer        (0),
       m_iId            (-1),
-      m_iPosition      (0),
+      m_iPosition      (99),
       m_iLastPosUpdate (0),
       m_iDiffLeader    (0),
       m_iDiffAhead     (0),
@@ -51,7 +51,7 @@ namespace dustbin {
     */
     SPlayer::SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
       m_iPlayer       (a_iPlayer),
-      m_iPosition     (0),
+      m_iPosition     (99),
       m_iLastPosUpdate(0),
       m_iDiffLeader   (0),
       m_iDiffAhead    (0),

@@ -1292,7 +1292,7 @@ namespace dustbin {
       m_iDeficitL (0), 
       m_iDeficitA (0), 
       m_iLastCp   (0), 
-      m_iPos      (0), 
+      m_iPos      (99),     // Use very high initial position
       m_iFastest  (0), 
       m_iLapStart (0), 
       m_iWithdrawn(-1), 
