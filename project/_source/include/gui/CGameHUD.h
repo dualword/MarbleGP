@@ -155,6 +155,7 @@ namespace dustbin {
         int                        m_iCountDown;    /**< The current countdown state (4..0) */
         irr::f32                   m_fCdAlpha;      /**< Alpha channel of the countdown */
         int                        m_iGoStep;       /**< The step when the countdown reached 0 */
+        int                        m_iFinishStep;   /**< The simulation step when the player has finished */
         int                        m_iStep;         /**< The current simulation step */
         irr::core::recti           m_cCountDown;    /**< The rect to draw the countdown */
         irr::core::recti           m_cCntSource;    /**< The source rect for drawning the countdow */

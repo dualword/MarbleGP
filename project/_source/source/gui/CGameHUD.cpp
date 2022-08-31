@@ -119,10 +119,11 @@ namespace dustbin {
         m_aFinished[l_iId] = true;
 
       if (a_MarbleId == m_iMarble) {
-        m_bShowSpeed = false;
-        m_bFinished  = true;
-        m_bRespawn   = false;
-        m_bStunned   = false;
+        m_bShowSpeed  = false;
+        m_bFinished   = true;
+        m_bRespawn    = false;
+        m_bStunned    = false;
+        m_iFinishStep = m_iStep;
       }
       else {
         for (int i = 0; i < 3; i++) {
@@ -472,6 +473,7 @@ namespace dustbin {
       m_iCountDown    (4),
       m_fCdAlpha      (1.0f),
       m_iGoStep       (0),
+      m_iFinishStep   (0),
       m_iStep         (0),
       m_pStunned      (nullptr),
       m_pRespawn      (nullptr),
@@ -848,14 +850,24 @@ namespace dustbin {
             };
 
             for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
-              m_pDrv->draw2DRectangle(irr::video::SColor(192, 232, 232, 232), l_cRects[i], &m_cRect);
               if (l_iPos[i] == m_pPlayer->m_iPosition) {
                 std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + helpers::s2ws(m_pPlayer->m_sName);
+                m_pDrv->draw2DRectangle(
+                  irr::video::SColor(192, 232, 232, 232), 
+                  l_cRects[i], &m_cRect
+                );
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
               }
               else {
                 for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
                   if ((*it)->m_iPosition == l_iPos[i]) {
+                    m_pDrv->draw2DRectangle(
+                      (*it)->m_iState == 1 ? irr::video::SColor(192,  96,  96, 255) :
+                      (*it)->m_iState == 2 ? irr::video::SColor(192, 255,  96,  96) :
+                      (*it)->m_iState == 3 ? irr::video::SColor(192, 255, 255,  96) : irr::video::SColor(192, 232, 232, 232), 
+                      l_cRects[i], &m_cRect
+                    );
+
                     std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + helpers::s2ws((*it)->m_sName).c_str();
                     m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
                     
@@ -988,12 +1000,12 @@ namespace dustbin {
         }
       }
 
-      if (m_bShowLapTimes && !m_bFinished && m_iGoStep != 0) {
+      if (m_bShowLapTimes) {
         irr::core::recti l_cRect = irr::core::recti(l_cLapTimePos, m_cLapTotalDim);
         m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 255, 192), l_cRect);
         m_pTimeFont->draw(L" Race: ", l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &l_cRect);
 
-        std::wstring l_sTime = helpers::convertToTime(m_iStep - m_iGoStep);
+        std::wstring l_sTime = helpers::convertToTime( m_iFinishStep != 0 ? m_iFinishStep : m_iStep);
         irr::core::dimension2du l_cSize = m_pTimeFont->getDimension(l_sTime.c_str());
 
         irr::core::recti l_cRectTime = irr::core::recti(
