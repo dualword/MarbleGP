@@ -757,6 +757,11 @@ namespace dustbin {
       m_cLapTimePos.X = a_cRect.LowerRightCorner.X - m_cLapTotalDim.Width;
 
       m_pCheckered = m_pDrv->getTexture("data/images/checkered.png");
+
+      for (std::vector<gameclasses::SPlayer *>::iterator l_itRank =  a_vRanking->begin(); l_itRank != a_vRanking->end(); l_itRank++) {
+        printf("State: %i\n", (*l_itRank)->m_iState);
+        (*l_itRank)->m_iState = 0;
+      }
     }
 
     CGameHUD::~CGameHUD() {
