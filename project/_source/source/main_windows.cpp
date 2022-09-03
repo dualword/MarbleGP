@@ -1,6 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #ifdef _DEBUG
-#include <vld.h>
+// #include <vld.h>
 #endif
 
 #include <helpers/CStringHelpers.h>
