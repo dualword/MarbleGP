@@ -36,7 +36,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
       PathAppend(l_sPath, L"\\DustbinGames\\");
       if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
+
+#ifdef _DEBUG
+      PathAppend(l_sPath, L"\\MarbleGP_debug\\");
+#else
       PathAppend(l_sPath, L"\\MarbleGP\\");
+#endif
       if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
       PathAppend(l_sPath, L"MarbleGP_Setup.xml");
     }
