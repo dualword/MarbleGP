@@ -73,18 +73,20 @@ namespace dustbin {
     * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
     */
     void CGameHUD::onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) {
-      if (a_MarbleId == m_iMarble) {
-        m_bShowSpeed = a_State == 2;
-        m_bRespawn   = a_State != 2;
-      }
+      if (m_iGoStep != 0) {
+        if (a_MarbleId == m_iMarble) {
+          m_bShowSpeed = a_State == 2;
+          m_bRespawn   = a_State != 2;
+        }
 
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-        if ((*it)->m_iId == a_MarbleId) {
-          if (a_State == 1)
-            (*it)->m_iState = 2;
-          else if (a_State == 2)
-            (*it)->m_iState = 0;
-          break;
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+          if ((*it)->m_iId == a_MarbleId) {
+            if (a_State == 1)
+              (*it)->m_iState = 2;
+            else if (a_State == 2)
+              (*it)->m_iState = 0;
+            break;
+          }
         }
       }
     }
@@ -96,10 +98,12 @@ namespace dustbin {
     * @param a_Target The new target of the camera, i.e. the future position of the marble
     */
     void CGameHUD::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target) {
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-        if ((*it)->m_iId == a_MarbleId) {
-          (*it)->m_iState = 3;
-          break;
+      if (m_iGoStep != 0) {
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+          if ((*it)->m_iId == a_MarbleId) {
+            (*it)->m_iState = 3;
+            break;
+          }
         }
       }
     }
@@ -155,18 +159,20 @@ namespace dustbin {
     * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
     */
     void CGameHUD::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
-      if (a_MarbleId == m_iMarble) {
-        m_bShowSpeed = a_State != 1;
-        m_bStunned   = a_State == 1;
-      }
+      if (m_iGoStep != 0) {
+        if (a_MarbleId == m_iMarble) {
+          m_bShowSpeed = a_State != 1;
+          m_bStunned   = a_State == 1;
+        }
       
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-        if ((*it)->m_iId == a_MarbleId) {
-          if (a_State == 1)
-            (*it)->m_iState = 1;
-          else
-            (*it)->m_iState = 0;
-          break;
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+          if ((*it)->m_iId == a_MarbleId) {
+            if (a_State == 1)
+              (*it)->m_iState = 1;
+            else
+              (*it)->m_iState = 0;
+            break;
+          }
         }
       }
     }
@@ -298,11 +304,12 @@ namespace dustbin {
     */
     void CGameHUD::onPausechanged(bool a_Paused) {
       m_bPaused = a_Paused;
-      if (m_pRankParent != nullptr && !m_bFinished)
+      if (m_pRankParent != nullptr && !m_bFinished) {
         m_pRankParent->setVisible(a_Paused);
 
-      for (int i = 0; i < 16; i++) {
-        m_aRanking[i]->setVisible(a_Paused || m_aRostrum[i]);
+        for (int i = 0; i < 16; i++) {
+          m_aRanking[i]->setVisible(a_Paused || m_aRostrum[i]);
+        }
       }
     }
 

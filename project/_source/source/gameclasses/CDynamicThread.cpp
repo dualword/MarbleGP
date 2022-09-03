@@ -912,11 +912,16 @@ namespace dustbin {
 
     /**
      * This function receives messages of type "TogglePause"
+     * @param a_MarbleID ID of the marble requesting the pause change
      */
-    void CDynamicThread::onTogglepause() {
+    void CDynamicThread::onTogglepause(irr::s32 a_MarbleID) {
       if (m_eGameState == enGameState::Racing) {
-        m_bPaused = !m_bPaused;
-        sendPausechanged(m_bPaused, m_pOutputQueue);
+        irr::s32 l_iIndex = a_MarbleID - 10000;
+
+        if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Finished && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
+          m_bPaused = !m_bPaused;
+          sendPausechanged(m_bPaused, m_pOutputQueue);
+        }
       }
     }
 

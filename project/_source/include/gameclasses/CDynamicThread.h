@@ -100,8 +100,9 @@ namespace dustbin {
 
         /**
          * This function receives messages of type "TogglePause"
+         * @param a_MarbleID ID of the marble requesting the pause change
          */
-        virtual void onTogglepause() override;
+        virtual void onTogglepause(irr::s32 a_MarbleID) override;
 
         /**
         * This function receives messages of type "PlayerWithdraw"

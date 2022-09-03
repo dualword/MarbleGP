@@ -180,7 +180,9 @@
     },
     "TogglePause": {
       "comment": "This message pauses and unpauses the game",
-      "fields": [ ]
+      "fields": [ 
+        { "name": "MarbleID", "type": "irr::s32", "comment": "ID of the marble requesting the pause change" }
+      ]
     },
     "PauseChanged": {
       "comment": "The dynamic thread uses this message to notify the game thread about paused / unpaused game",

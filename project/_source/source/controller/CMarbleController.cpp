@@ -71,7 +71,7 @@ namespace dustbin {
         m_pQueue->postMessage(&l_cMessage);
 
         if (m_pController->pause()) {
-          messages::CTogglePause l_cMsg = messages::CTogglePause();
+          messages::CTogglePause l_cMsg = messages::CTogglePause(m_iMarbleId);
           m_pQueue->postMessage(&l_cMsg);
         }
 
