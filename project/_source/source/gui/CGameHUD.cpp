@@ -411,7 +411,7 @@ namespace dustbin {
           for (int i = 0; i < 3; i++) {
             if (m_aHiLight[i].m_iMarbleId == a_ObjectId) {
               if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end() && m_aHiLight[i].m_pArrow != nullptr && m_aHiLight[i].m_pPosition != nullptr) {
-                m_aHiLight[i].m_pArrow->setPosition(m_mMarblePositions[a_ObjectId]);
+                m_aHiLight[i].m_pArrow->setPosition(m_mMarblePositions[a_ObjectId] + 0.2f * m_cUpVector);
                 
                 std::wstring s = std::to_wstring(m_aHiLight[i].m_iPosition);
                 
@@ -425,7 +425,7 @@ namespace dustbin {
                   s += L"th";
 
                 m_aHiLight[i].m_pPosition->setText(s.c_str());
-                m_aHiLight[i].m_pPosition->setPosition(a_Position + 2.5f * a_CameraUp);
+                m_aHiLight[i].m_pPosition->setPosition(a_Position + 5.0f * m_cUpVector);
               }
               else {
                 m_aHiLight[i].m_pArrow   ->setVisible(false);
