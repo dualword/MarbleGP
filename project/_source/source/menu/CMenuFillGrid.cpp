@@ -74,18 +74,17 @@ namespace dustbin {
 
           int l_iCount = (int)l_cPlayers.m_vPlayers.size();
 
-          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++)
-            if ((*it).m_iGridPos > l_iCount) {
-              (*it).m_iGridPos = *l_vGrid.begin();
+          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
+            (*it).m_iGridPos = *l_vGrid.begin();
 
-              // The starting position of the first race defines the number of each marble
-              if ((*it).m_sTexture == "")
-                (*it).m_sTexture = "default://number=" + std::to_string((*it).m_iGridPos + 1);
-              else
-                (*it).m_sTexture = (*it).m_sTexture + "&number=" + std::to_string((*it).m_iGridPos + 1);
+            // The starting position of the first race defines the number of each marble
+            if ((*it).m_sTexture == "")
+              (*it).m_sTexture = "default://number=" + std::to_string((*it).m_iGridPos + 1);
+            else
+              (*it).m_sTexture = (*it).m_sTexture + "&number=" + std::to_string((*it).m_iGridPos + 1);
 
-              l_vGrid.erase(l_vGrid.begin());
-            }
+            l_vGrid.erase(l_vGrid.begin());
+          }
 
           if (l_cSettings.m_bFillGridAI) { // && m_pServer == nullptr) {
             while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
