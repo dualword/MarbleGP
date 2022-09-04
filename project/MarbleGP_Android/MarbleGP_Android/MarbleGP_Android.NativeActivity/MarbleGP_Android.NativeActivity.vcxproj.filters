@@ -300,6 +300,9 @@
     <ClInclude Include="..\..\..\_source\include\controller\IGyroCallback.h">
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\CGameHUDHelpers.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -579,6 +582,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gameclasses\SPlayer.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\CGameHUDHelpers.cpp">
+      <Filter>Quelldateien\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

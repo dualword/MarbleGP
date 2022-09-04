@@ -447,6 +447,9 @@
     <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGameHUDHelpers.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -789,6 +792,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGuiTouchControl.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
