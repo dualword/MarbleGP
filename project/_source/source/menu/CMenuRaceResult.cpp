@@ -173,7 +173,7 @@ namespace dustbin {
               std::wstring l_sDeficit = L"";
 
               if (i == 0) {
-                l_sDeficit = helpers::convertToTime(l_pRace->m_aResult[i].m_iRaceTime);
+                l_sDeficit = helpers::convertToTime(l_pRace->m_aResult[i].getRaceTime());
               }
               else {
                 if (l_pRace->m_aResult[i].m_bWithdrawn)

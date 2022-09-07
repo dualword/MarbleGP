@@ -185,31 +185,51 @@ namespace dustbin {
     */
     typedef struct SRacePlayer {
       int m_iId;          /**< Marble ID */
-      int m_iCpCount;     /**< Number of passed checkpoints*/
       int m_iStunned;     /**< Stunned counter */
       int m_iRespawn;     /**< Respawn counter */
-      int m_iLapNo;       /**< The current lap */
-      int m_iRaceTime;    /**< The race time of the player */
       int m_iDeficitL;    /**< Deficit to the leader */
       int m_iDeficitA;    /**< Deficit to the player ahead */
-      int m_iLastCp;      /**< The time of the last checkpoint */
       int m_iPos;         /**< The position of the player in the race */
       int m_iFastest;     /**< Fastest lap of the player */
-      int m_iLapStart;    /**< Start of the current lap */
       int m_iWithdrawn;   /**< The step when the player has withdrawn from the race */
       bool m_bWithdrawn;  /**< Has the player withdrawn from the race? */
       bool m_bFinished;   /**< Has the player finished the race? */
 
-      std::vector<int> m_vCpTimes;
+      std::vector<std::vector<int>> m_vLapCheckpoints;    /**< A vector that contains all checkpoint times for the laps */
 
       SRacePlayer();
       SRacePlayer(const SRacePlayer &a_cOther);
       SRacePlayer(const std::string &a_sData);
 
+      /**
+      * Get the race time of the player
+      * @return the race time of the player
+      */
+      int getRaceTime();
+
+      /**
+      * Get the current lap of the player
+      * @return the current lap of the player
+      */
+      int getLapNo();
+
+      /**
+      * Serialize the data structure to the internal data format
+      * using the 64-char serializer
+      * @return the serialized string
+      */
       std::string serialize();
 
+      /**
+      * Convert the data structure to a human-readable string
+      * @return a human-readable string
+      */
       std::string to_string();
 
+      /**
+      * Convert the data structure to a XML string
+      * @return a XML string
+      */
       std::string to_xml() const;
     } SRacePlayer;
 

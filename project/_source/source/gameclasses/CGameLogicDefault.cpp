@@ -5,7 +5,7 @@
 
 namespace dustbin {
   namespace gameclasses {
-    CGameLogicDefault::CGameLogicDefault() : m_iPlayerCount(0), m_iStepNo(0), m_iLapCount(0), m_iCpPerLap(-1), m_iLapNo(0), m_bRaceFinished(false) {
+    CGameLogicDefault::CGameLogicDefault() : m_iPlayerCount(0), m_iStepNo(0), m_iLapCount(0), m_iLapNo(0), m_bRaceFinished(false) {
     }
 
     CGameLogicDefault::~CGameLogicDefault() {
@@ -49,31 +49,22 @@ namespace dustbin {
     bool CGameLogicDefault::onLapStart(int a_iMarble) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
-        m_aPlayers[l_iId].m_iLapNo++;
-
-        if (m_iLapNo < m_aPlayers[l_iId].m_iLapNo)
-          m_iLapNo = m_aPlayers[l_iId].m_iLapNo;
-
-        // The first marble that completes a lap
-        // shows us how many checkpoints a lap has
-        if (m_iCpPerLap == -1 && m_aPlayers[l_iId].m_iLapNo > 1) {
-          m_iCpPerLap = m_aPlayers[l_iId].m_iCpCount;
-        }
-
-        if (m_aPlayers[l_iId].m_iLapNo > m_iLapCount || m_bRaceFinished) {
+        if (m_aPlayers[l_iId].m_vLapCheckpoints.size() >= m_iLapCount || m_bRaceFinished) {
           m_aPlayers[l_iId].m_bFinished = true;
-          m_aPlayers[l_iId].m_iRaceTime = m_iStepNo;
           m_bRaceFinished = true;
           return true;
         }
+        else {
+          if (m_aPlayers[l_iId].m_vLapCheckpoints.size() > 0) {
+            int l_iLapTime = m_aPlayers[l_iId].m_vLapCheckpoints.back().back() - *m_aPlayers[l_iId].m_vLapCheckpoints.back().begin();
+            if (m_aPlayers[l_iId].m_iFastest == 0 || l_iLapTime < m_aPlayers[l_iId].m_iFastest)
+              m_aPlayers[l_iId].m_iFastest = l_iLapTime;
+          }
+          m_aPlayers[l_iId].m_vLapCheckpoints.push_back(std::vector<int>());
 
-        if (m_aPlayers[l_iId].m_iLapStart > 0) {
-          irr::s32 l_iLapTime = m_iStepNo - m_aPlayers[l_iId].m_iLapStart;
-          if (m_aPlayers[l_iId].m_iFastest == 0 || l_iLapTime < m_aPlayers[l_iId].m_iFastest)
-            m_aPlayers[l_iId].m_iFastest = l_iLapTime;
+          if (m_iLapNo < m_aPlayers[l_iId].m_vLapCheckpoints.size())
+            m_iLapNo = (int)m_aPlayers[l_iId].m_vLapCheckpoints.size();
         }
-
-        m_aPlayers[l_iId].m_iLapStart = m_iStepNo;
       }
 
       return false;
@@ -85,7 +76,7 @@ namespace dustbin {
     */
     bool CGameLogicDefault::raceFinished() {
       for (int i = 0; i < m_iPlayerCount; i++)
-        if (m_aPlayers[i].m_iLapNo < m_iLapCount)
+        if (m_aPlayers[i].getLapNo() < m_iLapCount)
           return false;
 
       return true;
@@ -108,6 +99,11 @@ namespace dustbin {
       return nullptr;
     }
 
+    int CGameLogicDefault::calculateLead(data::SRacePlayer* a_pAhead, data::SRacePlayer* a_pThis) {
+      int l_iRet = a_pThis->m_vLapCheckpoints.back().back() - a_pAhead->m_vLapCheckpoints[a_pThis->m_vLapCheckpoints.size() - 1][a_pThis->m_vLapCheckpoints.back().size() - 1];
+      return l_iRet > 0 ? l_iRet : 0;
+    }
+
     /**
     * Update the positions in the race
     * @param a_iId the ID of the current player (0..15)
@@ -126,47 +122,102 @@ namespace dustbin {
         else if (p1->m_bWithdrawn == false && p2->m_bWithdrawn == true) {
           return true;
         }
-        if (p1->m_iCpCount != p2->m_iCpCount)
-          return p1->m_iCpCount > p2->m_iCpCount;
-        else
-          return p1->m_iLastCp < p2->m_iLastCp;
-        });
+        else {
+          if (p1->m_vLapCheckpoints.size() == 0 && p2->m_vLapCheckpoints.size() == 0)
+            return p1->m_iId < p2->m_iId;
+
+          // The number of laps of the players differ
+          // ==> the player with more passed laps is in front
+          if (p1->m_vLapCheckpoints.size() != p2->m_vLapCheckpoints.size())
+            return p1->m_vLapCheckpoints.size() > p2->m_vLapCheckpoints.size();
+          // The number of checkpoints the players have passed differs
+          // ==> the player with more passed checkpoints is in front
+          else if (p1->m_vLapCheckpoints.back().size() != p2->m_vLapCheckpoints.back().size())
+            return p1->m_vLapCheckpoints.back().size() > p2->m_vLapCheckpoints.back().size();
+          else
+            return p1->m_vLapCheckpoints.back().back() < p2->m_vLapCheckpoints.back().back(); // The player who has passed the checkpoint earlier is in front
+        }
+      });
 
       data::SRacePlayer *l_pLeader = *m_vPositions.begin();
 
       int l_iPos = 1;
-      for (std::vector<data::SRacePlayer*>::iterator it = m_vPositions.begin(); it != m_vPositions.end(); it++) {
-        (*it)->m_iPos = l_iPos++;
+      for (std::vector<data::SRacePlayer*>::iterator l_itPlayer = m_vPositions.begin(); l_itPlayer != m_vPositions.end(); l_itPlayer++) {
+        (*l_itPlayer)->m_iPos = l_iPos++;
 
-        if (it == m_vPositions.begin()) {
-          (*it)->m_iDeficitL = 0;
-          (*it)->m_iDeficitA = 0;
+        if (l_itPlayer == m_vPositions.begin() || (*l_itPlayer)->m_vLapCheckpoints.size() == 0) {
+          (*l_itPlayer)->m_iDeficitL = 0;
+          (*l_itPlayer)->m_iDeficitA = 0;
         }
         else {
-          int l_iLaps[] = { 0, 0 };
-
           data::SRacePlayer* l_pAhead[] = {
             l_pLeader,
-            *(it - 1)
+            *(l_itPlayer - 1)
           };
 
+          // Update the deficit times
           for (int i = 0; i < 2; i++) {
-            if (m_iCpPerLap > 0 && (*it)->m_iCpCount > 0) {
-              l_iLaps[i] = (l_pAhead[i]->m_iCpCount - (*it)->m_iCpCount) / m_iCpPerLap;
-            }
-
-            if (l_iLaps[i] == 0 && (*it)->m_iCpCount > 0) {
+            if (l_pAhead[i]->m_vLapCheckpoints.size() == (*l_itPlayer)->m_vLapCheckpoints.size()) {
+              int l_iDiff = calculateLead(l_pAhead[i], *l_itPlayer);
+              // In the same lap
               if (i == 0) {
-                if (l_pAhead[0]->m_iCpCount >= (*it)->m_iCpCount)
-                  (*it)->m_iDeficitL = (*it)->m_vCpTimes[(*it)->m_iCpCount - 1] - l_pAhead[0]->m_vCpTimes[(*it)->m_iCpCount - 1];
+                (*l_itPlayer)->m_iDeficitL = l_iDiff;
               }
               else {
-                if (l_pAhead[1]->m_iCpCount >= (*it)->m_iCpCount)
-                  (*it)->m_iDeficitA = (*it)->m_vCpTimes[(*it)->m_iCpCount - 1] - l_pAhead[1]->m_vCpTimes[(*it)->m_iCpCount - 1];
+                (*l_itPlayer)->m_iDeficitA = l_iDiff;
               }
             }
             else {
-              if (i == 0) (*it)->m_iDeficitL = -l_iLaps[i]; else (*it)->m_iDeficitA = -l_iLaps[i];
+              // Laps differ
+              int l_iLapDiff = (int)(l_pAhead[i]->m_vLapCheckpoints.size() - (*l_itPlayer)->m_vLapCheckpoints.size());
+
+              // The player ahead has not passed more checkpoints in his current lap than the current player,
+              // i.e. on lap less of difference than calculated above
+              if (l_pAhead[i]->m_vLapCheckpoints.back().size() < (*l_itPlayer)->m_vLapCheckpoints.back().size()) {
+                l_iLapDiff--;
+                // If lap diff == 0 then the player ahead has not yet lapped the current player
+                if (l_iLapDiff == 0) {
+                  int l_iDiff = calculateLead(l_pAhead[i], *l_itPlayer);;
+                  if (i == 0)
+                    (*l_itPlayer)->m_iDeficitL = l_iDiff;
+                  else
+                    (*l_itPlayer)->m_iDeficitA = l_iDiff;
+                }
+                else {
+                  if (i == 0)
+                    (*l_itPlayer)->m_iDeficitL = -l_iLapDiff;
+                  else
+                    (*l_itPlayer)->m_iDeficitA = -l_iLapDiff;
+                }
+              }
+              // If the player and the marble ahead have in their respective laps passed the same amount
+              // of checkpoints we need to check who has passed earlier, and if the player ahead passed
+              // the last checkpoint later we decrement the lap diff by one and check then
+              else if ((*l_itPlayer)->m_vLapCheckpoints.back().size() == l_pAhead[i]->m_vLapCheckpoints.back().size()) {
+                if ((*l_itPlayer)->m_vLapCheckpoints.back().back() < l_pAhead[i]->m_vLapCheckpoints.back().back()) {
+                  l_iLapDiff--;
+                  // If lap diff == 0 then the player ahead has not yet lapped the current player
+                  if (l_iLapDiff == 0) {
+                    int l_iDiff = calculateLead(l_pAhead[i], *l_itPlayer);;
+                    if (i == 0)
+                      (*l_itPlayer)->m_iDeficitL = l_iDiff;
+                    else
+                      (*l_itPlayer)->m_iDeficitA = l_iDiff;
+                  }
+                  else {
+                    if (i == 0)
+                      (*l_itPlayer)->m_iDeficitL = -l_iLapDiff;
+                    else
+                      (*l_itPlayer)->m_iDeficitA = -l_iLapDiff;
+                  }
+                }
+              }
+              else {
+                if (i == 0)
+                  (*l_itPlayer)->m_iDeficitL = -l_iLapDiff;
+                else
+                  (*l_itPlayer)->m_iDeficitA = -l_iLapDiff;
+              }
             }
           }
         }
@@ -179,31 +230,16 @@ namespace dustbin {
     * Callback for checkpoint passes of the marbles
     * @param a_iMarble the ID of the marble
     * @param a_iCheckpoint the checkpoint ID
-    * @param a_iStep the current simulation step
+    * @param a_iStep the current simulation step 
     */
-    data::SRacePlayer *CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
+    const std::vector<data::SRacePlayer *> &CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
-        m_aPlayers[l_iId].m_iCpCount++;
-        m_aPlayers[l_iId].m_vCpTimes.push_back(a_iStep);
-
-        while (m_vCpTimes.size() <= m_aPlayers[l_iId].m_iCpCount) {
-          m_vCpTimes.push_back(-1);
-        }
-
-        if (m_vCpTimes[m_aPlayers[l_iId].m_iCpCount] == -1) {
-          m_vCpTimes[m_aPlayers[l_iId].m_iCpCount] = a_iStep;
-          m_aPlayers[l_iId].m_iDeficitL = 0;
-          m_aPlayers[l_iId].m_iDeficitA = 0;
-        }
-        else {
-          m_aPlayers[l_iId].m_iDeficitL = a_iStep - m_vCpTimes[m_aPlayers[l_iId].m_iCpCount];
-        }
-
-        return updatePositions(l_iId);
+        m_aPlayers[l_iId].m_vLapCheckpoints.back().push_back(a_iStep);
+        updatePositions(l_iId);
       }
 
-      return nullptr;
+      return m_vPositions;
     }
 
     /**

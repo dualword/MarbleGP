@@ -209,6 +209,8 @@ namespace dustbin {
 
         bool canBeStunned();
         bool canRespawn();
+
+        std::string toString();
     };
 
     /**

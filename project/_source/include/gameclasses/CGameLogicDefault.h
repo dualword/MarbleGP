@@ -19,7 +19,6 @@ namespace dustbin {
         int               m_iPlayerCount;   /**< Number of players */
         int               m_iStepNo;        /**< The current simulation step */
         int               m_iLapCount;      /**< The number of laps */
-        int               m_iCpPerLap;      /**< Checkpoints per lap */
         int               m_iLapNo;         /**< The current lap (defined by the leader) */
 
         bool m_bRaceFinished;   /**< Will turn true once the first player has finished, thereafter all players will have finished when ending their lap */
@@ -35,6 +34,8 @@ namespace dustbin {
         * @see CGameLogicDefault::onCheckpoint
         */
         data::SRacePlayer *updatePositions(int a_iId);
+
+        int calculateLead(data::SRacePlayer *a_pAhead, data::SRacePlayer *a_pThis);
 
       public:
         CGameLogicDefault();
@@ -78,7 +79,7 @@ namespace dustbin {
         * @param a_iCheckpoint the checkpoint ID
         * @param a_iStep the current simulation step
         */
-        virtual data::SRacePlayer *onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) override;
+        virtual const std::vector<data::SRacePlayer *> &onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) override;
 
         /**
         * A method called when a marble is stunned

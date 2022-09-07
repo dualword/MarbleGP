@@ -386,6 +386,10 @@ namespace dustbin {
       return m_eState == enMarbleState::Rolling || m_eState == enMarbleState::Stunned;
     }
 
+    std::string CObjectMarble::toString() {
+      return std::to_string(m_iPosition) + ", " + std::to_string(m_iLapNo) + ", " + std::to_string(m_iLastCp);
+    }
+
     CWorld::CWorld(ITriggerHandler* a_pTriggerHandler) : m_cWorld(nullptr), m_cSpace(nullptr), m_cContacts(nullptr), m_pTriggerHandler(a_pTriggerHandler) {
       dInitODE2(0);
 

@@ -709,7 +709,7 @@ namespace dustbin {
 
       for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
         if (it != l_vResult.begin() && !(*it)->m_bFinished) {
-          if ((*it)->m_iDeficitL > 0 || (*it)->m_iLapNo == (*(l_vResult.begin()))->m_iLapNo - 1) {
+          if ((*it)->m_iDeficitL > 0) {
             if ((*it)->m_iDeficitL < l_iDiff) {
               l_iDiff += std::rand() % 480;
               (*it)->m_iDeficitL = l_iDiff;
@@ -951,7 +951,7 @@ namespace dustbin {
               m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
             }
 
-            sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+            sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
             sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
           }
         }
@@ -1013,13 +1013,13 @@ namespace dustbin {
     void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
       if (m_pGameLogic != nullptr) {
-        data::SRacePlayer *l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
-        if (l_pPlayer != nullptr) {
-          int l_iIndex = l_pPlayer->m_iId - 10000;
+        const std::vector<data::SRacePlayer *> l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
+        for (std::vector<data::SRacePlayer *>::const_iterator l_itPlayer = l_pPlayer.begin(); l_itPlayer != l_pPlayer.end(); l_itPlayer++) {
+          int l_iIndex = (*l_itPlayer)->m_iId - 10000;
           if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr)
-            m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
+            m_aMarbles[l_iIndex]->m_iPosition = (*l_itPlayer)->m_iPos;
 
-          sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+          sendRaceposition((*l_itPlayer)->m_iId, (*l_itPlayer)->m_iPos, (*l_itPlayer)->getLapNo(), (*l_itPlayer)->m_iDeficitA, (*l_itPlayer)->m_iDeficitL, m_pOutputQueue);
         }
       }
     }
