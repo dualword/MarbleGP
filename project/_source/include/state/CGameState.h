@@ -4,10 +4,6 @@
 #include <irrlicht.h>
 
 #include <_generated/messages/IGameState.h>
-#include <scenenodes/CTriggerTimerNode.h>
-#include <gameclasses/CMarbleCounter.h>
-#include <scenenodes/STriggerAction.h>
-#include <scenenodes/STriggerVector.h>
 #include <threads/CMessageQueue.h>
 #include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
@@ -165,10 +161,6 @@ namespace dustbin {
 
         std::map<irr::s32, irr::scene::ISceneNode*> m_mMoving;  /**< All moving non-marble objects of the track */
 
-        std::vector<scenenodes::STriggerVector> m_vTimerActions;  /**< List of timer actions */
-
-        std::vector<gameclasses::CMarbleCounter> m_vMarbleCounters; /**< A list of marble counters */
-
         scenenodes::CMyCameraAnimator *m_pCamAnimator;   /**< Camera animator for the "view track" mode */
 
         irr::scene::ICameraSceneNode* m_pCamera;     /**< The camera for the "view track" mode */
@@ -234,6 +226,13 @@ namespace dustbin {
         * @param a_pViewport the viewport that was rendered
         */
         void afterDrawScene(gfx::SViewPort* a_pViewPort);
+
+        /**
+        * Some error has happened, show to the user
+        * @param a_sHeadline the headline of the error
+        * @param a_sMessage the message of the error
+        */
+        void handleError(const std::string &a_sHeadline, const std::string &a_sMessage);
 
 #ifdef _OPENGL_ES
         /**

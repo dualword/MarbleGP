@@ -226,9 +226,9 @@ namespace dustbin {
         dSpaceID       m_cSpace;
         dJointGroupID  m_cContacts;
 
-        std::vector<CObject*> m_vObjects,
-                              m_vMoving,
-                              m_vTriggers;
+        std::vector<CObject*> m_vObjects;
+        std::vector<CObject*> m_vMoving;
+        std::vector<CObject*> m_vTriggers;
 
         int m_iWorldStep;
 

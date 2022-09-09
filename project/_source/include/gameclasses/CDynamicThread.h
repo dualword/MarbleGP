@@ -22,7 +22,12 @@ namespace dustbin {
     class CStartingGridSceneNode;
   }
 
+  namespace lua {
+    class CLuaScript_physics;   /**< Forward declaration of the LUA physics script */
+  }
+
   namespace gameclasses {
+
     /**
     * Foreward declaration of the CWorld object which
     * contains all physics objects and is defined in
@@ -72,10 +77,8 @@ namespace dustbin {
 
         scenenodes::CRostrumNode *m_pRostrumNode;
 
-        std::vector<scenenodes::STriggerVector> m_vTimerActions;
-        std::vector<gameclasses::CMarbleCounter> m_vMarbleCounters; /**< A list of marble counters */
-
-        std::map<int, std::vector<scenenodes::STriggerAction>> m_mTouchMap;    /**< A map of the trigger actions for marble touch actions */
+        lua::CLuaScript_physics *m_pLuaScript;
+        std::string              m_sLuaError;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
@@ -123,13 +126,12 @@ namespace dustbin {
 
         virtual ~CDynamicThread();
 
-        void setupGame(
+        bool setupGame(
           scenenodes::CWorldNode *a_pWorld,
           scenenodes::CStartingGridSceneNode *a_pGrid,
           const std::vector<data::SPlayerData> &a_vPlayers, 
-          int a_iLaps, 
-          std::vector<scenenodes::STriggerVector> a_vTimerActions, 
-          std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters, 
+          int a_iLaps,
+          const std::string &a_sLuaScript,
           enAutoFinish a_eAutoFinish);
 
         /**
@@ -191,6 +193,12 @@ namespace dustbin {
         * @return the world of the race
         */
         CWorld* getWorld();
+
+        /**
+        * Get the LUA error
+        * @return the LUA error
+        */
+        const std::string &getLuaError();
     };
   }
 }

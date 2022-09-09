@@ -59,6 +59,38 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lapi.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lauxlib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lbaselib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lcode.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lcorolib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lctype.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldblib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldebug.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldo.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldump.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lfunc.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lgc.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\linit.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\liolib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\llex.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lmathlib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lmem.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\loadlib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lobject.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lopcodes.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\loslib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lparser.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstate.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstring.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstrlib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltable.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltablib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltm.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lundump.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lutf8lib.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lvm.c" />
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lzio.c" />
     <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp" />
@@ -97,6 +129,10 @@
     <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_physics.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\ILuaClass.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\luawrap.cpp" />
     <ClCompile Include="..\..\_source\source\main_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
@@ -180,6 +216,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_binding.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_enums.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessages.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IAiController.cpp" />
@@ -241,6 +280,8 @@
     <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h" />
     <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />
+    <ClInclude Include="..\..\_source\include\lua\ILuaClass.h" />
+    <ClInclude Include="..\..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\..\_source\include\menu\CMenuFactory.h" />
     <ClInclude Include="..\..\_source\include\menu\IMenuHandler.h" />
     <ClInclude Include="..\..\_source\include\menu\IMenuManager.h" />
@@ -295,6 +336,10 @@
     <ClInclude Include="..\..\_source\include\xeffects\EffectHandler.h" />
     <ClInclude Include="..\..\_source\include\xeffects\EffectShaders.h" />
     <ClInclude Include="..\..\_source\include\xeffects\XEffects.h" />
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_physics.h" />
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_physics.h" />
+    <ClInclude Include="..\..\_source\include\_generated\lua\lua_enums.h" />
+    <ClInclude Include="..\..\_source\include\_generated\lua\lua_tables.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h" />
@@ -395,7 +440,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -404,7 +449,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -489,7 +534,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=2;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=2;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -511,7 +556,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;NDEBUG;_CONSOLE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;NDEBUG;_CONSOLE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

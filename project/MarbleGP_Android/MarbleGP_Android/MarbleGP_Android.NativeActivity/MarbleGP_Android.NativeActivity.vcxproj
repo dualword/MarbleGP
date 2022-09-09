@@ -124,11 +124,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\libs\lua-5.4.4\src;D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\libs\lua-5.4.4\src;D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;D:\myStuff\projects\MarbleGP_NG\project\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\MarbleGP_NG\project\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
@@ -147,7 +147,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;LUA_USE_LONGJMP;LUA_USE_LINUX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
@@ -159,7 +159,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;LUA_USE_LONGJMP;LUA_USE_LINUX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
@@ -231,6 +231,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lapi.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lauxlib.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lcode.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lctype.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ldebug.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ldo.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lfunc.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lgc.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ljumptab.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\llex.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\llimits.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lmem.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lobject.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lopcodes.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lopnames.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lparser.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lprefix.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lstate.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lstring.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ltable.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ltm.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lua.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lua.hpp" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\luaconf.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lualib.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lundump.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lvm.h" />
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lzio.h" />
     <ClInclude Include="..\..\..\_source\include\CGlobal.h" />
     <ClInclude Include="..\..\..\_source\include\CMainClass.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CAiControlThread.h" />
@@ -278,6 +306,9 @@
     <ClInclude Include="..\..\..\_source\include\helpers\CMenuLoader.h" />
     <ClInclude Include="..\..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\..\_source\include\helpers\CTextureHelpers.h" />
+    <ClInclude Include="..\..\..\_source\include\lua\ILuaClass.h" />
+    <ClInclude Include="..\..\..\_source\include\lua\LuaScript.h" />
+    <ClInclude Include="..\..\..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\..\..\_source\include\menu\CMenuFactory.h" />
     <ClInclude Include="..\..\..\_source\include\menu\IMenuHandler.h" />
     <ClInclude Include="..\..\..\_source\include\menu\IMenuManager.h" />
@@ -335,6 +366,134 @@
     <ClInclude Include="android_native_app_glue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lapi.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lauxlib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lbaselib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lcode.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lcorolib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lctype.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldblib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldebug.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldump.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lfunc.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lgc.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\linit.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\liolib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\llex.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lmathlib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lmem.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\loadlib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lobject.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lopcodes.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\loslib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lparser.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lstate.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lstring.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lstrlib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ltable.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ltablib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ltm.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lundump.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lutf8lib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lvm.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lzio.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CAiControlThread.cpp" />
@@ -372,6 +531,11 @@
     <ClCompile Include="..\..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CTextureHelpers.cpp" />
+    <ClCompile Include="..\..\..\_source\source\lua\CLuaScript_physics.cpp" />
+    <ClCompile Include="..\..\..\_source\source\lua\CLuaSingleton_physics.cpp" />
+    <ClCompile Include="..\..\..\_source\source\lua\ILuaClass.cpp" />
+    <ClCompile Include="..\..\..\_source\source\lua\LuaScript.cpp" />
+    <ClCompile Include="..\..\..\_source\source\lua\luawrap.cpp" />
     <ClCompile Include="..\..\..\_source\source\main_android.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuCredits.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuFillGrid.cpp" />
@@ -423,6 +587,9 @@
     <ClCompile Include="..\..\..\_source\source\state\CGameState.cpp" />
     <ClCompile Include="..\..\..\_source\source\state\CMenuState.cpp" />
     <ClCompile Include="..\..\..\_source\source\threads\CMessageQueue.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_binding.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_enums.cpp" />
+    <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_tables.cpp" />
     <ClCompile Include="..\..\..\_source\source\_generated\messages\CMessageFactory.cpp" />
     <ClCompile Include="..\..\..\_source\source\_generated\messages\CMessages.cpp" />
     <ClCompile Include="..\..\..\_source\source\_generated\messages\IAiController.cpp" />

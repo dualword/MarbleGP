@@ -124,6 +124,21 @@
     <Filter Include="Headerdateien\enet">
       <UniqueIdentifier>{89c0a3d5-8228-426a-83bc-8ff88393308b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\_generated\lua">
+      <UniqueIdentifier>{d61bd0a2-7da9-4985-97e5-27ce629bb8a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\lua">
+      <UniqueIdentifier>{ac7223ff-d16a-4bd2-ad43-50e048803399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\liblua">
+      <UniqueIdentifier>{1becb1b3-cc06-4b5a-ac39-3195ff855404}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\lua">
+      <UniqueIdentifier>{c105a01c-7ea1-4d5b-9579-315b6cc408f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated\lua">
+      <UniqueIdentifier>{845bc27f-15d5-4711-b50d-9721e9f03ed3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -449,6 +464,123 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\gui\CGameHUDHelpers.cpp">
       <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lapi.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lauxlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lbaselib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lcode.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lcorolib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lctype.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldblib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldebug.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldo.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldump.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lfunc.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lgc.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\linit.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\liolib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\llex.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lmathlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lmem.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\loadlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lobject.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lopcodes.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\loslib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lparser.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstate.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstring.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstrlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltable.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltablib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltm.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lundump.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lutf8lib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lvm.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lzio.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_binding.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_enums.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_tables.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\ILuaClass.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\luawrap.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_physics.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp">
+      <Filter>Quelldateien\lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -796,6 +928,24 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\lua\ILuaClass.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\lua\luawrap.hpp">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_physics.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_physics.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\lua_enums.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\lua_tables.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

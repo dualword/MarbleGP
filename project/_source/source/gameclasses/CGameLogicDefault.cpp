@@ -100,6 +100,9 @@ namespace dustbin {
     }
 
     int CGameLogicDefault::calculateLead(data::SRacePlayer* a_pAhead, data::SRacePlayer* a_pThis) {
+      if (a_pAhead->m_vLapCheckpoints.size() < a_pAhead->m_vLapCheckpoints.size() || a_pAhead->m_vLapCheckpoints[a_pThis->m_vLapCheckpoints.size() - 1].size() < a_pThis->m_vLapCheckpoints.back().size())
+        return 0;
+
       int l_iRet = a_pThis->m_vLapCheckpoints.back().back() - a_pAhead->m_vLapCheckpoints[a_pThis->m_vLapCheckpoints.size() - 1][a_pThis->m_vLapCheckpoints.back().size() - 1];
       return l_iRet > 0 ? l_iRet : 0;
     }

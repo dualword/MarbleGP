@@ -1,6 +1,8 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
+#include <_generated/lua/CLuaSingleton_physics.h>
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <_generated/lua/CLuaScript_physics.h>
 #include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
@@ -281,17 +283,6 @@ namespace dustbin {
         CObjectCheckpoint* p = new CObjectCheckpoint(reinterpret_cast<scenenodes::CCheckpointNode*>(a_pNode), m_pWorld, a_pNode->getName());
         m_pWorld->m_vObjects.push_back(p);
         m_pWorld->m_mCheckpoints[a_pNode->getID()] = p;
-      }
-      else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_MarbleTouchNodeId) {
-        scenenodes::CMarbleTouchNode *p = reinterpret_cast<scenenodes::CMarbleTouchNode *>(a_pNode);
-
-        m_mTouchMap[p->getID()] = std::vector<scenenodes::STriggerAction>();
-
-        for (std::vector<scenenodes::STriggerAction>::iterator it = p->m_vActions.begin(); it != p->m_vActions.end(); it++) {
-          if ((*it).m_eAction != scenenodes::enAction::None) {
-            m_mTouchMap[p->getParent()->getID()].push_back(*it);
-          }
-        }
       }
       else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RostrumNodeId) {
         m_pRostrumNode = reinterpret_cast<scenenodes::CRostrumNode *>(a_pNode);
@@ -609,87 +600,13 @@ namespace dustbin {
 
         sendStepmsg(m_pWorld->m_iWorldStep, m_pOutputQueue);
 
-        for (std::vector<scenenodes::STriggerVector>::iterator it = m_vTimerActions.begin(); it != m_vTimerActions.end(); it++) {
-          if ((*it).m_vActions.size() > 0) {
-            if ((*(*it).m_itAction).m_iStep <= m_pWorld->m_iWorldStep) {
-              switch ((*(*it).m_itAction).m_eAction) {
-                case scenenodes::enAction::InvertMotor: {
-                  for (std::vector<gameclasses::CObject*>::iterator it2 = m_pWorld->m_vMoving.begin(); it2 != m_pWorld->m_vMoving.end(); it2++) {
-                    if ((*it2)->m_iId == (*(*it).m_itAction).m_iNodeId) {
-                      if ((*it2)->m_cJoint != nullptr) {
-                        if ((*it2)->m_bSliderJoint) {
-                          dReal v = dJointGetSliderParam((*it2)->m_cJoint, dParamVel);
-                          dReal f = dJointGetSliderParam((*it2)->m_cJoint, dParamFMax);
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamFMax, 0.0);
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamVel, -v);
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamFMax, f);
-                        }
-                        else {
-                          dReal v = dJointGetHingeParam((*it2)->m_cJoint, dParamVel);
-                          dReal f = dJointGetHingeParam((*it2)->m_cJoint, dParamFMax);
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamFMax, 0.0);
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamVel, -v);
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamFMax, f);
-                        }
-                      }
-                    }
-                  }
-                  break;
-                }
-
-                case scenenodes::enAction::SetMotorParams: {
-                  for (std::vector<gameclasses::CObject*>::iterator it2 = m_pWorld->m_vMoving.begin(); it2 != m_pWorld->m_vMoving.end(); it2++) {
-                    if ((*it2)->m_iId == (*(*it).m_itAction).m_iNodeId) {
-                      if ((*it2)->m_cJoint != nullptr) {
-                        if ((*it2)->m_bSliderJoint) {
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamFMax, (*(*it).m_itAction).m_fForce   );
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamVel , (*(*it).m_itAction).m_fVelocity);
-                        }
-                        else {
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamFMax, (*(*it).m_itAction).m_fForce   );
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamVel , (*(*it).m_itAction).m_fVelocity);
-                        }
-                      }
-                    }
-                  }
-                  break;
-                }
-
-                case scenenodes::enAction::StopMotor:
-                  for (std::vector<gameclasses::CObject*>::iterator it2 = m_pWorld->m_vMoving.begin(); it2 != m_pWorld->m_vMoving.end(); it2++) {
-                    if ((*it2)->m_iId == (*(*it).m_itAction).m_iNodeId) {
-                      if ((*it2)->m_cJoint != nullptr) {
-                        if ((*it2)->m_bSliderJoint) {
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamFMax, 0.0);
-                          dJointSetSliderParam((*it2)->m_cJoint, dParamVel , 0.0);
-                        }
-                        else {
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamFMax, 0.0);
-                          dJointSetHingeParam((*it2)->m_cJoint, dParamVel , 0.0);
-                        }
-                      }
-                    }
-                  }
-                  break;
-
-                default:
-                  break;
-              }
-
-              (*it).m_itAction++;
-
-              if ((*it).m_itAction == (*it).m_vActions.end()) {
-                (*it).m_itAction = (*it).m_vActions.begin();
-              }
-
-              (*(*it).m_itAction).m_iStep = m_pWorld->m_iWorldStep + (*(*it).m_itAction).m_iTimer;
-            }
-          }
-        }
-
         m_pWorld->m_iWorldStep++;
+
         if (m_pGameLogic != nullptr)
           m_pGameLogic->onStep(m_pWorld->m_iWorldStep);
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onstep(m_pWorld->m_iWorldStep);
       }
 
       m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
@@ -734,17 +651,18 @@ namespace dustbin {
       m_iPlayers    (0),
       m_iHuman      (0),
       m_pGameLogic  (nullptr),
-      m_pRostrumNode(nullptr)
+      m_pRostrumNode(nullptr),
+      m_pLuaScript  (nullptr),
+      m_sLuaError   ("")
     {
     }
 
-    void CDynamicThread::setupGame(
+    bool CDynamicThread::setupGame(
       scenenodes::CWorldNode* a_pWorld, 
       scenenodes::CStartingGridSceneNode *a_pGrid,
       const std::vector<data::SPlayerData> &a_vPlayers, 
       int a_iLaps, 
-      std::vector<scenenodes::STriggerVector> a_vTimerActions, 
-      std::vector<gameclasses::CMarbleCounter> a_vMarbleCounters, 
+      const std::string &a_sLuaScript,
       enAutoFinish a_eAutoFinish
     )
     {
@@ -838,13 +756,21 @@ namespace dustbin {
           m_pGameLogic->addMarble(m_aMarbles[i]->m_iId);
         }
 
-      for (std::vector<scenenodes::STriggerVector>::iterator it = a_vTimerActions.begin(); it != a_vTimerActions.end(); it++)
-        m_vTimerActions.push_back(scenenodes::STriggerVector((*it).m_vActions));
+      if (a_sLuaScript != "") {
+        m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
-      for (std::vector<gameclasses::CMarbleCounter>::iterator it = a_vMarbleCounters.begin(); it != a_vMarbleCounters.end(); it++)
-        m_vMarbleCounters.push_back(gameclasses::CMarbleCounter(*it, m_pWorld));
+        if (m_pLuaScript->getError() == "") {
+          m_pLuaScript->setWorld(m_pWorld);
+          m_pLuaScript->initialize();
+        }
+        else {
+          m_sLuaError = m_pLuaScript->getError();
+          return false;
+        }
+      }
 
       sendRacesetupdone(m_pOutputQueue);
+      return true;
     }
 
     CDynamicThread::~CDynamicThread() {
@@ -854,7 +780,8 @@ namespace dustbin {
       if (m_pGameLogic != nullptr)
         delete m_pGameLogic;
 
-      // Measured average breaking: 1.0f
+      if (m_pLuaScript != nullptr)
+        delete m_pLuaScript;
     }
 
     /**
@@ -900,9 +827,6 @@ namespace dustbin {
           if (m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished) {
             m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Finished;
             sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
-
-            for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++)
-              (*it).marbleRespawn(m_aMarbles[i]->m_iId);
           }
         }
       }
@@ -968,13 +892,8 @@ namespace dustbin {
 
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
-      int l_iId = a_iMarble - 10000;
-
-      if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId]->m_eState != CObjectMarble::enMarbleState::Finished && m_aMarbles[l_iId]->m_eState != CObjectMarble::enMarbleState::Respawn1 && m_aMarbles[l_iId]->m_eState != CObjectMarble::enMarbleState::Respawn2) {
-        for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++) {
-          (*it).handleTrigger(a_iTrigger, a_iMarble);
-        }
-      }
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->ontrigger(a_iMarble, a_iTrigger);
     }
 
     /**
@@ -995,9 +914,6 @@ namespace dustbin {
         m_aMarbles[l_iId]->m_iRespawnStart = m_pWorld->m_iWorldStep;
 
         sendPlayerrespawn(a_iMarble, 1, m_pOutputQueue);
-
-        for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++)
-          (*it).marbleRespawn(a_iMarble);
 
         if (m_pGameLogic != nullptr) {
           m_pGameLogic->onRespawn(a_iMarble);
@@ -1022,6 +938,9 @@ namespace dustbin {
           sendRaceposition((*l_itPlayer)->m_iId, (*l_itPlayer)->m_iPos, (*l_itPlayer)->getLapNo(), (*l_itPlayer)->m_iDeficitA, (*l_itPlayer)->m_iDeficitL, m_pOutputQueue);
         }
       }
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->oncheckpoint(a_iMarbleId, a_iCheckpoint);
     }
 
     /**
@@ -1044,15 +963,6 @@ namespace dustbin {
     * @param a_iTouchId the ID of the touched trigger
     */
     void CDynamicThread::handleMarbleTouch(int a_iMarbleId, int a_iTouchId) {
-      int l_iId = a_iMarbleId - 10000;
-
-      if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr && m_mTouchMap.find(a_iTouchId) != m_mTouchMap.end()) {
-        for (std::vector<scenenodes::STriggerAction>::iterator it = m_mTouchMap[a_iTouchId].begin(); it != m_mTouchMap[a_iTouchId].end(); it++) {
-          if ((*it).m_eAction == scenenodes::enAction::CameraUpVector) {
-            m_aMarbles[l_iId]->m_vUpVector = (*it).m_vTarget;
-          }
-        }
-      }
     }
 
     /**
@@ -1069,9 +979,6 @@ namespace dustbin {
         }
 
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
-
-        for (std::vector<gameclasses::CMarbleCounter>::iterator it = m_vMarbleCounters.begin(); it != m_vMarbleCounters.end(); it++)
-          (*it).marbleRespawn(a_iMarbleId);
 
         int l_iFinished = 0;
           
@@ -1119,6 +1026,14 @@ namespace dustbin {
     */
     CWorld* CDynamicThread::getWorld() {
       return m_pWorld;
+    }
+
+    /**
+    * Get the LUA error
+    * @return the LUA error
+    */
+    const std::string& CDynamicThread::getLuaError() {
+      return m_sLuaError;
     }
   }
 }

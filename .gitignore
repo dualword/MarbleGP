@@ -1780,3 +1780,10 @@
 *.so
 /project/MarbleGP_Windows/MarbleGP_Windows/AndroidPackaging/app/build/outputs/logs/manifest-merger-debug-report.txt
 /project/MarbleGP_Windows/MarbleGP_Windows/AndroidPackaging/app/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+/project/_source/include/_generated/lua/CLuaScript_physics.h
+/project/_source/include/_generated/lua/CLuaSingleton_physics.h
+/project/_source/include/_generated/lua/lua_enums.h
+/project/_source/include/_generated/lua/lua_tables.h
+/project/_source/source/_generated/lua/lua_binding.cpp
+/project/_source/source/_generated/lua/lua_enums.cpp
+/project/_source/source/_generated/lua/lua_tables.cpp

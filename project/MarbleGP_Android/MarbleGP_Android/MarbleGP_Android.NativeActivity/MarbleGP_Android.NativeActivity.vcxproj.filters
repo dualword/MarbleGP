@@ -303,6 +303,99 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGameHUDHelpers.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\lua\ILuaClass.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\lua\LuaScript.h">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\lua\luawrap.hpp">
+      <Filter>Headerdateien\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lapi.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lauxlib.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lcode.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lctype.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ldebug.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ldo.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lfunc.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lgc.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ljumptab.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\llex.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\llimits.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lmem.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lobject.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lopcodes.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lopnames.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lparser.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lprefix.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lstate.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lstring.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ltable.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\ltm.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lua.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lua.hpp">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\luaconf.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lualib.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lundump.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lvm.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lzio.h">
+      <Filter>Headerdateien\liblua</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -586,6 +679,126 @@
     <ClCompile Include="..\..\..\_source\source\gui\CGameHUDHelpers.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lapi.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lauxlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lbaselib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lcode.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lcorolib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lctype.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldblib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldebug.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldo.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ldump.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lfunc.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lgc.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\linit.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\liolib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\llex.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lmathlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lmem.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\loadlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lobject.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lopcodes.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\loslib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lparser.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lstate.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lstring.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lstrlib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ltable.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ltablib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\ltm.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lundump.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lutf8lib.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lvm.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\lua-5.4.4\src\lzio.c">
+      <Filter>Quelldateien\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\CLuaSingleton_physics.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\ILuaClass.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\LuaScript.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\luawrap.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\CLuaScript_physics.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_binding.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_enums.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_tables.cpp">
+      <Filter>Quelldateien\_generated\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">
@@ -692,6 +905,21 @@
     </Filter>
     <Filter Include="Quelldateien\network">
       <UniqueIdentifier>{836c21c6-a6d5-4a15-9b61-ed17dcce5c40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\liblua">
+      <UniqueIdentifier>{ec6e0d26-509c-4576-aa88-2700f3433201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\lua">
+      <UniqueIdentifier>{33d8c787-f827-481a-9fed-aaf1bdccba76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\lua">
+      <UniqueIdentifier>{e7f5e139-3587-43cf-a0e4-1e420b4ff61c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\liblua">
+      <UniqueIdentifier>{03962f57-cf1a-40b0-bf12-ff31db0053af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\_generated\lua">
+      <UniqueIdentifier>{bdc355c4-b1fb-4c50-b57b-dd429159a060}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

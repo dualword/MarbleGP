@@ -102,14 +102,6 @@ namespace dustbin {
           if (!reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode)->isStatic())
             m_mMoving[a_pNode->getID()] = a_pNode->getParent();
         }
-        else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_TrigerTimerNodeId) {
-          scenenodes::CTriggerTimeNode *p = reinterpret_cast<scenenodes::CTriggerTimeNode *>(a_pNode);
-          m_vTimerActions.push_back(scenenodes::STriggerVector(p->m_vActions));
-        }
-        else if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_MarbleCountNodeId) {
-          scenenodes::CMarbleCountSceneNode *p = reinterpret_cast<scenenodes::CMarbleCountSceneNode *>(a_pNode);
-          m_vMarbleCounters.push_back(gameclasses::CMarbleCounter(p->m_iTriggerPlus, p->m_iTriggerMinus, p->m_vActions));
-        }
 
         a_pNode->setDebugDataVisible(0);
 
@@ -385,22 +377,21 @@ namespace dustbin {
       fillCheckpointList(m_pSmgr->getRootSceneNode());
 
       if (m_mCheckpoints.size() == 0) {
-        // ToDo Error Message
+        handleError("Error while starting game state.", "No Checkpoints found.");
+        return;
       }
 
       irr::scene::ISceneNode* l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId, m_pSmgr->getRootSceneNode());
 
       if (l_pNode == nullptr) {
-        m_pGlobal->setGlobal("ERROR_MESSAGE", "No Starting Grid Scene Node found.");
-        m_pGlobal->setGlobal("ERROR_HEAD", "Error while starting game state.");
-        // ToDo Error Message
+        handleError("Error while starting game state.", "No Starting Grid Scene Node found.");
+        return;
       }
 
       m_pGridNode = reinterpret_cast<scenenodes::CStartingGridSceneNode *>(l_pNode);
 
       if (m_pGridNode == nullptr) {
-        printf("Grid node not found.\n");
-        // ToDo Error Message
+        handleError("Error while starting game state.", "Starting Grid Scene Node has invalid Type.");
         return;
       }
 
@@ -527,12 +518,28 @@ namespace dustbin {
             return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
           });
 
-          m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, m_vTimerActions, m_vMarbleCounters, l_eAutoFinish);
+          std::string l_sPhysicsScript = "";
+          std::string l_sScript        = "data/levels/" + m_cGameData.m_sTrack + "/physics.lua";
+          
+          irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sScript.c_str());
+
+          if (l_pFile != nullptr) {
+            char *s = new char[l_pFile->getSize() + 1];
+            memset(s, 0, l_pFile->getSize() + 1);
+            l_pFile->read(s, l_pFile->getSize());
+            l_sPhysicsScript = s;
+            l_pFile->drop();
+            delete []s;
+          }
+
+          if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
+            handleError("LUA Error.", m_pDynamics->getLuaError());
+            return;
+          }
         }
         else {
-          m_pGlobal->setGlobal("ERROR_MESSAGE", "No world node found.");
-          m_pGlobal->setGlobal("ERROR_HEAD", "Error while initializing game physics.");
-          // throw std::exception();
+          handleError("Error while starting game state.", "No world node found..");
+          return;
         }
       }
       else {
@@ -563,7 +570,7 @@ namespace dustbin {
 #endif
 
 #ifdef _TOUCH_CONTROL
-      if (m_pCamAnimator == nullptr) {
+      if (m_pCamAnimator == nullptr && m_cPlayers.m_vPlayers.size() > 0) {
         // If the "menu pad" is set we ignore the settings
         // of the touch controller and use the gamepad
         if (!m_pGlobal->getSettingData().m_bMenuPad) {
@@ -645,8 +652,6 @@ namespace dustbin {
 
       m_pSmgr->clear();
       m_pGlobal->clearGui();
-
-      m_vTimerActions.clear();
 
       for (std::vector<messages::IMessage*>::iterator it = m_vMoveMessages.begin(); it != m_vMoveMessages.end(); it++) {
         delete* it;
@@ -776,10 +781,12 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
         if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {
           if (a_cEvent.KeyInput.PressedDown && m_mViewports.size() > 0) {
-            int l_iMarble = m_mViewports.begin()->second.m_pMarble->getID();
-            if (l_iMarble >= 10000 && l_iMarble < 10016) {
-              messages::CPlayerWithdraw l_cMessage = messages::CPlayerWithdraw(l_iMarble);
-              m_pOutputQueue->postMessage(&l_cMessage);
+            if (m_mViewports.begin()->second.m_pMarble != nullptr) {
+              int l_iMarble = m_mViewports.begin()->second.m_pMarble->getID();
+              if (l_iMarble >= 10000 && l_iMarble < 10016) {
+                messages::CPlayerWithdraw l_cMessage = messages::CPlayerWithdraw(l_iMarble);
+                m_pOutputQueue->postMessage(&l_cMessage);
+              }
             }
           }
           l_bRet = true;
@@ -907,7 +914,7 @@ namespace dustbin {
       if (m_pCamAnimator != nullptr && m_pCamera != nullptr)
         m_pCamAnimator->animateNode(m_pCamera, 0);
 
-      if (m_pTouchControl != nullptr && m_mViewports.size() > 0) {
+      if (m_pTouchControl != nullptr && m_pCamAnimator == nullptr && m_mViewports.size() > 0) {
         irr::s8 l_iCtrlX    = 0,
                 l_iCtrlY    = 0;
         bool    l_bBrake    = false,
@@ -1090,41 +1097,6 @@ namespace dustbin {
 
       // if (m_pStepLabel != nullptr)
       //   m_pStepLabel->setText((L"         " + std::to_wstring(a_StepNo)).c_str());
-
-      for (std::vector<scenenodes::STriggerVector>::iterator it = m_vTimerActions.begin(); it != m_vTimerActions.end(); it++) {
-        if ((*it).m_vActions.size() > 0) {
-          if ((*(*it).m_itAction).m_iStep <= (irr::s32)a_StepNo) {
-            switch ((*(*it).m_itAction).m_eAction) {
-              case scenenodes::enAction::RotateSceneNode: {
-                irr::scene::ISceneNode *p = m_pSmgr->getSceneNodeFromId((*(*it).m_itAction).m_iNodeId);
-                if (p != nullptr) {
-                  p->setRotation((*(*it).m_itAction).m_vTarget);
-                }
-                break;
-              }
-
-              case scenenodes::enAction::SceneNodeVisibility: {
-                irr::scene::ISceneNode *p = m_pSmgr->getSceneNodeFromId((*(*it).m_itAction).m_iNodeId);
-                if (p != nullptr) {
-                  p->setVisible((*(*it).m_itAction).m_bVisible);
-                }
-                break;
-              }
-
-              default:
-                break;
-            }
-
-            (*it).m_itAction++;
-
-            if ((*it).m_itAction == (*it).m_vActions.end()) {
-              (*it).m_itAction = (*it).m_vActions.begin();
-            }
-
-            (*(*it).m_itAction).m_iStep = a_StepNo + (*(*it).m_itAction).m_iTimer;
-          }
-        }
-      }
     }
 
     /**
@@ -1565,6 +1537,25 @@ namespace dustbin {
 
       for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
         addStaticCameras(*it);
+    }
+
+    /**
+    * Some error has happened, show to the user
+    * @param a_sHeadline the headline of the error
+    * @param a_sMessage the message of the error
+    */
+    void CGameState::handleError(const std::string& a_sHeadline, const std::string& a_sMessage) {
+      m_pGlobal->setGlobal("message_headline", a_sHeadline);
+      m_pGlobal->setGlobal("message_text"    , a_sMessage);
+
+      state::CMenuState *l_pMenu = reinterpret_cast<state::CMenuState *>(m_pGlobal->getState(state::enState::Menu));
+
+      if (l_pMenu != nullptr) {
+        l_pMenu->pushToMenuStack("menu_message");
+      }
+
+      m_iFinished = m_iStep;
+      m_bEnded    = true;
     }
 
     /**

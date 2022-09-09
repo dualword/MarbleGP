@@ -1,0 +1,120 @@
+{
+  "datatypes": [
+    { "name": "messages::IDynamicThread", "include": "_generated/messages/IDynamicThread.h"  },
+    { "name": "gameclasses::CWorld"     , "include": "gameclasses/COdeNodes.h" },
+    { "name": "gameclasses::CObject"    , "include": "gameclasses/COdeNodes.h" }
+  ],
+  "baseclasses": {
+  },
+  "basetypes": {
+    "std::string": {
+      "prefix" : "const ",
+      "postfix": "&"
+    },
+    "irr::core::vector3df": {
+      "prefix" : "const ",
+      "postfix": "&"
+    },
+    "irr::core::recti": {
+      "prefix" : "const ",
+      "postfix": "&"
+    }
+  },
+  "tables": {
+    "SVector3d": {
+      "comment": "3d vector",
+      "fields": [
+        { "name": "x", "type": "float" },
+        { "name": "y", "type": "float" },
+        { "name": "z", "type": "float" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    }
+  },
+  "enumerations": {
+  },
+  "classes": {
+  },
+  "singletons": {
+    "physics": {
+      "comment": "A physics singleton for LUA AI functions to modify the physics",
+      "globalidentifier": "worldsingleton_cinstance",
+      "members": [
+        { "name": "world" , "type": "gameclasses::CWorld *", "comment": "The physics world", "default": "nullptr" }
+      ],
+      "methods": {
+        "lua_from": {
+          "startmotor": {
+            "comment": "Start a motor in the scene by it's ID with a desired speed and force",
+            "arguments": [
+              { "name": "id", "type": "int", "comment": "ID of the motor" },
+              { "name": "speed", "type": "float", "comment": "The desired speed" },
+              { "name": "force", "type": "float", "comment": "The force used to reach to speed" }
+            ]
+          }
+        },
+        "lua_none": {
+          "setworld": {
+            "comment": "Set the ODE world this singleton can modify",
+            "arguments": [
+              { "name": "world", "type": "gameclasses::CWorld *", "comment": "The world" }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "physics": {
+      "comment": "LUA script to modify physics during a race",
+      "globalidentifier": "physicsscript_cinstance",
+      "exports": [
+      ],
+      "implements": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "physics"
+      ],
+      "methods": {
+        "lua_to": {
+          "initialize": {
+            "comment": "The LUA callback that is triggered when the script is executed"
+          },
+          "onstep": {
+            "comment": "Triggered on every simulation step",
+            "arguments": [
+              { "name": "stepno", "type": "int", "comment": "The current step number" }
+            ]
+          },
+          "ontrigger": {
+            "comment": "Triggered whenever a marble passes a trigger",
+            "arguments": [
+              { "name": "objectid" , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
+              { "name": "triggerid", "type": "int"      , "comment": "The ID of the trigger that the marble passed" }
+            ]
+          },
+          "oncheckpoint": {
+            "comment": "Called whenever a marble passes a checkpoint",
+            "arguments": [
+              { "name": "objectid"    , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
+              { "name": "checkpointid", "type": "int"      , "comment": "The ID of the checkpoint that the marble passed" }
+            ]
+          }
+        },
+        "lua_from": {
+        },
+        "lua_none": {
+          "setWorld": {
+            "comment": "Tell the script about the world it's managing",
+            "arguments": [
+              { "name": "world", "type": "gameclasses::CWorld *", "comment": "The physics world" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
