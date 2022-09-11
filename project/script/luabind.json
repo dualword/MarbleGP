@@ -102,6 +102,36 @@
               { "name": "objectid"    , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
               { "name": "checkpointid", "type": "int"      , "comment": "The ID of the checkpoint that the marble passed" }
             ]
+          },
+          "onraceposition": {
+            "comment": "Update on the race positioning",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
+              { "name": "position", "type": "int", "comment": "The new position of the marble" },
+              { "name": "laps"    , "type": "int", "comment": "The marble's current lap" },
+              { "name": "deficitA", "type": "int", "comment": "The deficit in steps to the marble ahead, negative number shows a deficit in laps" },
+              { "name": "deficitL", "type": "int", "comment": "The deficit in steps to the leading marble, negative number shows a deficit in laps" }
+            ]
+          },
+          "onracefinished": {
+            "comment": "The race has finished",
+            "arguments": [
+              { "name": "cancelled", "type": "bool", "comment": "Was the race cancelled?" }
+            ]
+          },
+          "onplayerfinished": {
+            "comment": "A player has finished the race",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" },
+              { "name": "racetime", "type": "int", "comment": "Racetime of the marble in steps" },
+              { "name": "laps"    , "type": "int", "comment": "The number of laps of the marble" }
+            ]
+          },
+          "onplayerwithdrawn": {
+            "comment": "A player has withdrawn from the race",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" }
+            ]
           }
         },
         "lua_from": {

@@ -827,11 +827,16 @@ namespace dustbin {
           if (m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished) {
             m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Finished;
             sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
+
+            if (m_pLuaScript != nullptr)
+              m_pLuaScript->onplayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo);
           }
         }
       }
 
       sendRacefinished(1, m_pOutputQueue);
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onracefinished(true);
     }
 
     /**
@@ -859,6 +864,9 @@ namespace dustbin {
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Finished || m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Withdrawn) {
           sendRacefinished(1, m_pOutputQueue);
+
+          if (m_pLuaScript != nullptr)
+            m_pLuaScript->onracefinished(true);
         }
         else if (m_aMarbles[l_iIndex]->m_iWithdraw == -1) {
           sendConfirmwithdraw(a_MarbleId, 120, m_pOutputQueue);
@@ -877,6 +885,11 @@ namespace dustbin {
 
             sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
             sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
+
+            if (m_pLuaScript != nullptr) {
+              m_pLuaScript->onraceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL);
+              m_pLuaScript->onplayerwithdrawn(a_MarbleId);
+            }
           }
         }
       }
@@ -936,6 +949,9 @@ namespace dustbin {
             m_aMarbles[l_iIndex]->m_iPosition = (*l_itPlayer)->m_iPos;
 
           sendRaceposition((*l_itPlayer)->m_iId, (*l_itPlayer)->m_iPos, (*l_itPlayer)->getLapNo(), (*l_itPlayer)->m_iDeficitA, (*l_itPlayer)->m_iDeficitL, m_pOutputQueue);
+
+          if (m_pLuaScript != nullptr)
+            m_pLuaScript->onraceposition((*l_itPlayer)->m_iId, (*l_itPlayer)->m_iPos, (*l_itPlayer)->getLapNo(), (*l_itPlayer)->m_iDeficitA, (*l_itPlayer)->m_iDeficitL);
         }
       }
 
@@ -980,6 +996,9 @@ namespace dustbin {
 
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
 
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onplayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps);
+
         int l_iFinished = 0;
           
 
@@ -1004,6 +1023,8 @@ namespace dustbin {
 
         if (l_bFinish) {
           sendRacefinished(0, m_pOutputQueue);
+          if (m_pLuaScript != nullptr)
+            m_pLuaScript->onracefinished(false);
         }
       }
     }
