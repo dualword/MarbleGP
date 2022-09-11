@@ -34,10 +34,10 @@ g_Warnings = {
   }
 }
 
+g_Finished = {
+}
+
 function adjustRotation(a_Index)
-  io.write("adjustRotation (" .. tostring(a_Index) .. "): ")
-  io.write(tostring(g_Warnings[a_Index]["checkpoint"]["count"]) .. ", "  .. tostring(g_Warnings[a_Index]["trigger"]["count"]) .. "\n")
-  
   if g_Warnings[a_Index]["trigger"]["count"] > 0 then
     g_Warnings[a_Index]["targety"] = 60
   elseif g_Warnings[a_Index]["checkpoint"]["count"] > 0 then
@@ -48,7 +48,7 @@ function adjustRotation(a_Index)
 end
 
 function addMarble(a_Dict, a_Marble, a_Index)
-  if a_Dict["marbles"][a_Marble] == nil then
+  if a_Dict["marbles"][a_Marble] == nil and g_Finished[a_Marble] == nil then
     a_Dict["marbles"][a_Marble] = true
     a_Dict["count"] = a_Dict["count"] + 1
     
@@ -67,6 +67,29 @@ function removeMarble(a_Dict, a_Marble, a_Index)
     
     adjustRotation(a_Index)
   end
+end
+
+function removeFromAll(a_Marble)
+  for i = 1, 2 do
+    removeMarble(g_Warnings[i]["checkpoint"], a_Marble, i)
+    removeMarble(g_Warnings[i]["trigger"   ], a_Marble, i)
+  end
+end
+
+function onplayerfinished(a_Marble, a_Racetime, a_Laps)
+  removeFromAll(a_Marble)
+  
+  g_Finished[a_Marble] = true
+end
+
+function onplayerrespawn(a_Marble, a_State)
+  if a_State == 1 then
+    removeFromAll(a_Marble)
+  end
+end
+
+function onplayerwithdrawn(a_Marble)
+  removeFromAll(a_Marble)
 end
 
 function oncheckpoint(a_Marble, a_Checkpoint)
