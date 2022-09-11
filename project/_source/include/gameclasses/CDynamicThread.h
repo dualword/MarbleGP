@@ -4,11 +4,7 @@
 #include <irrlicht.h>
 
 #include <_generated/messages/IDynamicThread.h>
-#include <scenenodes/CTriggerTimerNode.h>
 #include <gameclasses/ITriggerHandler.h>
-#include <gameclasses/CMarbleCounter.h>
-#include <scenenodes/STriggerAction.h>
-#include <scenenodes/STriggerVector.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/SPlayer.h>
 #include <threads/IThread.h>

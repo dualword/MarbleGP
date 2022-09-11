@@ -1,9 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <scenenodes/CStartingGridSceneNode.h>
-#include <scenenodes/CMarbleCountSceneNode.h>
-#include <scenenodes/CTriggerTimerNode.h>
-#include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CDustbinCamera.h>
 #include <scenenodes/CPhysicsNode.h>
@@ -51,18 +48,6 @@ namespace dustbin {
           p = new CJointNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
-        case (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId:
-          p = new CTriggerTimeNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
-          break;
-
-        case (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId:
-          p = new CMarbleCountSceneNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
-          break;
-
-        case (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId:
-          p = new CMarbleTouchNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
-          break;
-
         case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
           p = new CAiNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
@@ -90,7 +75,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 12;
+      return 9;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -101,12 +86,9 @@ namespace dustbin {
         case  3: return g_CheckpointName;
         case  4: return g_RespawndName;
         case  5: return g_JointNodeName;
-        case  6: return g_TriggerTimerNodeName;
-        case  7: return g_MarbleCountNodeName;
-        case  8: return g_MarbleTouchNodeName;
-        case  9: return g_AiNodeName;
-        case 10: return g_DustbinCameraNodeName;
-        case 11: return g_RostrumNodeName;
+        case  6: return g_AiNodeName;
+        case  7: return g_DustbinCameraNodeName;
+        case  8: return g_RostrumNodeName;
       }
 
       return nullptr;
@@ -120,12 +102,9 @@ namespace dustbin {
         case  3: return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
         case  4: return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
         case  5: return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
-        case  6: return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
-        case  7: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
-        case  8: return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
-        case  9: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
-        case 10: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
-        case 11: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
+        case  6: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
+        case  7: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
+        case  8: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -150,15 +129,6 @@ namespace dustbin {
 
         case (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId:
           return g_JointNodeName;
-
-        case (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId:
-          return g_TriggerTimerNodeName;
-          
-        case (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId:
-          return g_MarbleCountNodeName;
-
-        case (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId:
-          return g_MarbleTouchNodeName;
 
         case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
           return g_AiNodeName;
@@ -189,12 +159,6 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
       else if (l_sName == g_JointNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
-      else if (l_sName == g_TriggerTimerNodeName)
-        return (irr::scene::ESCENE_NODE_TYPE)g_TrigerTimerNodeId;
-      else if (l_sName == g_MarbleCountNodeName)
-        return (irr::scene::ESCENE_NODE_TYPE)g_MarbleCountNodeId;
-      else if (l_sName == g_MarbleTouchNodeName)
-        return (irr::scene::ESCENE_NODE_TYPE)g_MarbleTouchNodeId;
       else if (l_sName == g_AiNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
       else if (l_sName == g_DustbinCameraNodeName)

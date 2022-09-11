@@ -324,21 +324,6 @@
     <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\scenenodes\CTriggerTimerNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\scenenodes\STriggerAction.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp">
-      <Filter>Quelldateien\gameclasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleTouchNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
@@ -814,24 +799,6 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h">
       <Filter>Headerdateien\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\scenenodes\CTriggerTimerNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\scenenodes\STriggerAction.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\scenenodes\STriggerVector.h">
-      <Filter>Headerdateien\gameclasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleCountSceneNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\gameclasses\CMarbleCounter.h">
-      <Filter>Headerdateien\gameclasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleTouchNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\IController.h">
       <Filter>Headerdateien\controller</Filter>

@@ -6,7 +6,6 @@
 #endif
 
 #include <scenenodes/CStartingGridSceneNode.h>
-#include <scenenodes/CMarbleCountSceneNode.h>
 #include <_generated/lua/CLuaScript_scene.h>
 #include <controller/ICustomEventReceiver.h>
 #include <_generated/messages/CMessages.h>

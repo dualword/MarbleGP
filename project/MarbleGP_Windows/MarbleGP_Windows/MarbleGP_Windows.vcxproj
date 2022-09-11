@@ -105,7 +105,6 @@
     <ClCompile Include="..\..\_source\source\gameclasses\CDynamicThread.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicDefault.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
-    <ClCompile Include="..\..\_source\source\gameclasses\CMarbleCounter.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
@@ -174,10 +173,8 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp" />
-    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
-    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleTouchNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp" />
@@ -186,9 +183,7 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CSkyBoxFix.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
-    <ClCompile Include="..\..\_source\source\scenenodes\CTriggerTimerNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp" />
-    <ClCompile Include="..\..\_source\source\scenenodes\STriggerAction.cpp" />
     <ClCompile Include="..\..\_source\source\shader\CShaderHandlerBase.cpp" />
     <ClCompile Include="..\..\_source\source\shader\CShaderHandlerNone.cpp" />
     <ClCompile Include="..\..\_source\source\shader\CShaderHandlerXEffect.cpp">
@@ -257,7 +252,6 @@
     <ClInclude Include="..\..\_source\include\gameclasses\COdeNodes.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\IGameLogic.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\ITriggerHandler.h" />
-    <ClInclude Include="..\..\_source\include\gameclasses\CMarbleCounter.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h" />
     <ClInclude Include="..\..\_source\include\gfx\SViewPort.h" />
@@ -303,10 +297,8 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h" />
-    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleCountSceneNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
-    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleTouchNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h" />
@@ -315,10 +307,7 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CSkyBoxFix.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h" />
-    <ClInclude Include="..\..\_source\include\scenenodes\CTriggerTimerNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h" />
-    <ClInclude Include="..\..\_source\include\scenenodes\STriggerAction.h" />
-    <ClInclude Include="..\..\_source\include\scenenodes\STriggerVector.h" />
     <ClInclude Include="..\..\_source\include\shader\CMyShaderNone.h" />
     <ClInclude Include="..\..\_source\include\shader\CShaderHandlerBase.h" />
     <ClInclude Include="..\..\_source\include\shader\CShaderHandlerXEffect.h" />

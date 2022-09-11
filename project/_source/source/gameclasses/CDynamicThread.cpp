@@ -3,7 +3,6 @@
 #include <_generated/lua/CLuaSingleton_physics.h>
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <_generated/lua/CLuaScript_physics.h>
-#include <scenenodes/CMarbleTouchNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CRostrumNode.h>
@@ -119,9 +118,9 @@ namespace dustbin {
         if (!l_bMarbleCollision) {
           if (numc > 0) {
             CObjectMarble *p = nullptr; // The colliding marble
-            CObject       *o = nullptr, // Trigger or respawn object
-                          *c = nullptr, // Checkpoint
-                          *x = nullptr; // Any colliding object
+            CObject       *o = nullptr; // Trigger or respawn object
+            CObject       *c = nullptr; // Checkpoint
+            CObject       *x = nullptr; // Any colliding object
 
             if (l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble) {
               p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
@@ -163,7 +162,10 @@ namespace dustbin {
 
                   irr::s32 l_iId = p->m_iId - 10000;
                   if (l_iId >= 0 && l_iId < 16) {
-                    l_pWorld->handleTrigger(o->m_iTrigger, p->m_iId, p->m_vPosition);
+                    if (p->m_mStepTriggers[p->m_iSecondTrigger].find(o->m_iTrigger) == p->m_mStepTriggers[p->m_iSecondTrigger].end())
+                      l_pWorld->handleTrigger(o->m_iTrigger, p->m_iId, p->m_vPosition);
+
+                    p->m_mStepTriggers[p->m_iActiveTrigger][o->m_iTrigger] = true;
                   }
                 }
 
@@ -264,14 +266,6 @@ namespace dustbin {
           }
 
           if (l_pObject != nullptr) {
-            for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++) {
-              if ((*it)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_MarbleTouchNodeId) {
-                l_pObject->m_bMarbleTouch = true;
-                printf("%i has marble touch!\n\n", l_pObject->m_iId);
-                break;
-              }
-            }
-
             m_pWorld->m_vObjects.push_back(l_pObject);
           }
         }
@@ -559,6 +553,17 @@ namespace dustbin {
 
                 sendPlayerrostrum(p->m_iId, m_pOutputQueue);
               }
+            }
+
+            p->m_mStepTriggers[p->m_iSecondTrigger].clear();
+
+            if (p->m_iActiveTrigger == 0) {
+              p->m_iActiveTrigger = 1;
+              p->m_iSecondTrigger = 0;
+            }
+            else {
+              p->m_iActiveTrigger = 0;
+              p->m_iSecondTrigger = 1;
             }
 
             p->m_bHasContact = false;

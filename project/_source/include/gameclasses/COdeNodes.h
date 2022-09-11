@@ -186,6 +186,10 @@ namespace dustbin {
         irr::core::vector3df m_vPosition;   /**< The current position of the marble */
         irr::core::vector3df m_vVelocity;   /**< The linear velocity. This is only used to determine whether or not a marble gets stunned */
 
+        std::map<int, bool> m_mStepTriggers[2];   /**< Using this array of maps we make sure a "trigger hit" message is only sent once */
+        int                 m_iActiveTrigger;     /**< The current trigger map */
+        int                 m_iSecondTrigger;     /**< The other trigger map */
+
         dReal m_fDamp;  /**< The damping of the marble's body */
 
         int m_iCtrlX;   /**< The X-Control state updated in "onMarblecontrol" */

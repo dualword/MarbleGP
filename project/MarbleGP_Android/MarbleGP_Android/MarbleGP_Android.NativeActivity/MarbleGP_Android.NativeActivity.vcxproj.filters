@@ -207,24 +207,6 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGuiImageList.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\scenenodes\CTriggerTimerNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\gameclasses\CMarbleCounter.h">
-      <Filter>Headerdateien\gameclasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleCountSceneNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\scenenodes\STriggerAction.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\scenenodes\STriggerVector.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\scenenodes\CMarbleTouchNode.h">
-      <Filter>Headerdateien\gameclasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\scenenodes\CAiNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
@@ -396,6 +378,24 @@
     <ClInclude Include="..\..\..\libs\lua-5.4.4\src\lzio.h">
       <Filter>Headerdateien\liblua</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaScript_physics.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaScript_scene.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaSingleton_physics.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaSingleton_scene.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\lua_enums.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\lua_tables.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -564,21 +564,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gui\CGuiImageList.cpp">
       <Filter>Quelldateien\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\scenenodes\CTriggerTimerNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleCountSceneNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\scenenodes\STriggerAction.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\gameclasses\CMarbleCounter.cpp">
-      <Filter>Quelldateien\gameclasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\scenenodes\CMarbleTouchNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\scenenodes\CAiNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
@@ -799,6 +784,12 @@
     <ClCompile Include="..\..\..\_source\source\_generated\lua\lua_tables.cpp">
       <Filter>Quelldateien\_generated\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\CLuaScript_scene.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\CLuaSingleton_scene.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">
@@ -920,6 +911,9 @@
     </Filter>
     <Filter Include="Quelldateien\_generated\lua">
       <UniqueIdentifier>{bdc355c4-b1fb-4c50-b57b-dd429159a060}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated\lua">
+      <UniqueIdentifier>{25690edf-f0a6-408f-a6f1-e85141fd8e91}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

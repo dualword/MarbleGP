@@ -1,7 +1,6 @@
 /* (w) 2021 - 22 by Dustbin::Games (Christian Keimel) - This file is licensed under the terms of the zlib license */
 #pragma once
 
-#include <scenenodes/STriggerAction.h>
 #include <irrlicht.h>
 #include <vector>
 #include <string>
