@@ -7,6 +7,7 @@
 
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CMarbleCountSceneNode.h>
+#include <_generated/lua/CLuaScript_scene.h>
 #include <controller/ICustomEventReceiver.h>
 #include <_generated/messages/CMessages.h>
 #include <controller/CControllerFactory.h>
@@ -70,7 +71,8 @@ namespace dustbin {
       m_iNumOfViewports(0),
       m_pGridNode      (nullptr),
       m_fGridAngle     (0.0f),
-      m_pAiNode        (nullptr)
+      m_pAiNode        (nullptr),
+      m_pLuaScript     (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -518,23 +520,20 @@ namespace dustbin {
             return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
           });
 
-          std::string l_sPhysicsScript = "";
-          std::string l_sScript        = "data/levels/" + m_cGameData.m_sTrack + "/physics.lua";
           
-          irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sScript.c_str());
-
-          if (l_pFile != nullptr) {
-            char *s = new char[l_pFile->getSize() + 1];
-            memset(s, 0, l_pFile->getSize() + 1);
-            l_pFile->read(s, l_pFile->getSize());
-            l_sPhysicsScript = s;
-            l_pFile->drop();
-            delete []s;
-          }
+          std::string l_sPhysicsScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
 
           if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
             handleError("LUA Error.", m_pDynamics->getLuaError());
             return;
+          }
+
+          std::string l_sSceneScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/scene.lua");
+
+          if (l_sSceneScript != "") {
+            m_pLuaScript = new lua::CLuaScript_scene(l_sSceneScript);
+            m_pLuaScript->initializesingleton();
+            m_pLuaScript->initialize();
           }
         }
         else {
@@ -1097,6 +1096,9 @@ namespace dustbin {
 
       // if (m_pStepLabel != nullptr)
       //   m_pStepLabel->setText((L"         " + std::to_wstring(a_StepNo)).c_str());
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onstep(a_StepNo);
     }
 
     /**
@@ -1209,7 +1211,8 @@ namespace dustbin {
      * @param a_ObjectId ID of the marble that caused the trigger
      */
     void CGameState::onTrigger(irr::s32 a_TriggerId, irr::s32 a_ObjectId) {
-
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->ontrigger(a_ObjectId, a_TriggerId);
     }
 
     /**
@@ -1366,6 +1369,9 @@ namespace dustbin {
               (*it)->m_pController->onMarbleRespawn(a_MarbleId);
           }
         }
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onplayerrespawn(a_MarbleId, a_State == 1 ? 1 : 3);
       }
     }
 
@@ -1393,6 +1399,9 @@ namespace dustbin {
           p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Respawn2;
           p->m_iStateChange = m_iStep;
         }
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onplayerrespawn(a_MarbleId, 2);
       }
     }
 
@@ -1468,6 +1477,9 @@ namespace dustbin {
             }
           }
 #endif
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onplayerfinished(a_MarbleId, a_RaceTime, a_Laps);
       }
     }
 
@@ -1484,6 +1496,9 @@ namespace dustbin {
       if (m_iFinished == -1 || a_Cancelled != 0) {
         printf("\nCGameState::onRacefinished: %s\n", a_Cancelled != 0 ? "true" : "false");
         m_iFinished = a_Cancelled ? m_iStep - 1500 : m_iStep;
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onracefinished(a_Cancelled != 0);
       }
     }
 
@@ -1515,6 +1530,9 @@ namespace dustbin {
 
           l_pViewport->m_iLastCp = a_Checkpoint;
         }
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->oncheckpoint(a_MarbleId, a_Checkpoint);
       }
     }
 
@@ -1556,6 +1574,28 @@ namespace dustbin {
 
       m_iFinished = m_iStep;
       m_bEnded    = true;
+    }
+
+    /**
+    * Load a textfile
+    * @param a_sFile path to the file
+    * @return the content of the file as string
+    */
+    std::string CGameState::loadTextFile(const std::string& a_sFile) {
+      std::string l_sRet = "";
+
+      irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(a_sFile.c_str());
+
+      if (l_pFile != nullptr) {
+        char *s = new char[l_pFile->getSize() + 1];
+        memset(s, 0, l_pFile->getSize() + 1);
+        l_pFile->read(s, l_pFile->getSize());
+        l_sRet = s;
+        l_pFile->drop();
+        delete []s;
+      }
+
+      return l_sRet;
     }
 
     /**
@@ -1657,6 +1697,9 @@ namespace dustbin {
             it->second.m_pHUD->updateRanking();
           }
         }
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
       }
     }
 
@@ -1673,6 +1716,9 @@ namespace dustbin {
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++)
         if (it->second.m_pHUD != nullptr)
           it->second.m_pHUD->updateRanking();
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onplayerwithdrawn(a_MarbleId);
     }
 
 

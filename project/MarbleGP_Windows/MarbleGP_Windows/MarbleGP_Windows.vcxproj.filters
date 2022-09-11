@@ -582,6 +582,12 @@
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_scene.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -945,6 +951,12 @@
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\lua\lua_tables.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_scene.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_scene.h">
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
   </ItemGroup>

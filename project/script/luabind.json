@@ -1,8 +1,10 @@
 {
   "datatypes": [
-    { "name": "messages::IDynamicThread", "include": "_generated/messages/IDynamicThread.h"  },
-    { "name": "gameclasses::CWorld"     , "include": "gameclasses/COdeNodes.h" },
-    { "name": "gameclasses::CObject"    , "include": "gameclasses/COdeNodes.h" }
+    { "name": "messages::IDynamicThread" , "include": "_generated/messages/IDynamicThread.h"  },
+    { "name": "gameclasses::CWorld"      , "include": "gameclasses/COdeNodes.h" },
+    { "name": "gameclasses::CObject"     , "include": "gameclasses/COdeNodes.h" },
+    { "name": "irr::scene::ISceneManager", "include": "irrlicht.h" },
+    { "name": "irr::scene::ISceneNode"   , "include": "irrlicht.h" }
   ],
   "baseclasses": {
   },
@@ -60,6 +62,59 @@
             "arguments": [
               { "name": "world", "type": "gameclasses::CWorld *", "comment": "The world" }
             ]
+          }
+        }
+      }
+    },
+    "scene": {
+      "comment": "A LUA singleton to modify the scene during the race",
+      "globalidentifier": "scenesingleton_cinstance",
+      "members": [
+        { "name": "scenemanager", "type": "irr::scene::ISceneManager *"          , "comment": "The Irrlicht scene manager", "default": "nullptr" },
+        { "name": "scenenodes"  , "type": "std::vector<irr::scene::ISceneNode *>", "comment": "The decoration scene nodes. Filled with all scenen nodes that are not children of the world node" }
+      ],
+      "methods": {
+        "lua_from": {
+          "setrotation": {
+            "comment": "Change the rotation of a scene node",
+            "arguments": [
+              { "name": "id"      , "type": "int"      , "comment": "ID of the scene node" },
+              { "name": "rotation", "type": "SVector3d", "comment": "The new rotation" }
+            ]
+          },
+          "setposition": {
+            "comment": "Change the position of a scene node",
+            "arguments": [
+              { "name": "id"      , "type": "int"      , "comment": "ID of the scene node" },
+              { "name": "position", "type": "SVector3d", "comment": "The new position" }
+            ]
+          },
+          "setvisible": {
+            "comment": "Change the visibility of a scene node",
+            "arguments": [
+              { "name": "id"    , "type": "int" , "comment": "ID of the scene node" },
+              { "name": "visibe", "type": "bool", "comment": "The new visibility" }
+            ]
+          }
+        },
+        "lua_none": {
+          "initialize": {
+            "comment": "Get the global members from the CGlobal singleton",
+            "arguments": {
+            }
+          },
+          "fillNodeVector": {
+            "comment": "Used to fill the scene node vector",
+            "arguments": [
+              { "name": "node", "type": "irr::scene::ISceneNode *", "comment": "the current node" }
+            ]
+          },
+          "findnode": {
+            "comment": "Searches a scene node in m_scenenodes by it's ID",
+            "arguments": [
+              { "name": "ID", "type": "int", "comment": "ID of the scene node" }
+            ],
+            "return": { "type": "irr::scene::ISceneNode *", "comment": "The scene node, nullptr if no match was found" }
           }
         }
       }
@@ -132,6 +187,13 @@
             "arguments": [
               { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" }
             ]
+          },
+          "onplayerrespawn": {
+            "comment": "A player respawns",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" },
+              { "name": "state"   , "type": "int", "comment": "Respawn state (1 == respawn start, 2 == camera respawn, 3 == respawn done)" }
+            ]
           }
         },
         "lua_from": {
@@ -142,6 +204,90 @@
             "arguments": [
               { "name": "world", "type": "gameclasses::CWorld *", "comment": "The physics world" }
             ]
+          }
+        }
+      }
+    },
+    "scene": {
+      "comment": "LUA script to modify the scene during a race",
+      "globalidentifier": "scenescript_cinstance",
+      "exports": [
+      ],
+      "implements": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "scene"
+      ],
+      "methods": {
+        "lua_to": {
+          "initialize": {
+            "comment": "The LUA callback that is triggered when the script is executed"
+          },
+          "onstep": {
+            "comment": "Triggered on every simulation step",
+            "arguments": [
+              { "name": "stepno", "type": "int", "comment": "The current step number" }
+            ]
+          },
+          "ontrigger": {
+            "comment": "Triggered whenever a marble passes a trigger",
+            "arguments": [
+              { "name": "objectid" , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
+              { "name": "triggerid", "type": "int"      , "comment": "The ID of the trigger that the marble passed" }
+            ]
+          },
+          "oncheckpoint": {
+            "comment": "Called whenever a marble passes a checkpoint",
+            "arguments": [
+              { "name": "objectid"    , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
+              { "name": "checkpointid", "type": "int"      , "comment": "The ID of the checkpoint that the marble passed" }
+            ]
+          },
+          "onraceposition": {
+            "comment": "Update on the race positioning",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
+              { "name": "position", "type": "int", "comment": "The new position of the marble" },
+              { "name": "laps"    , "type": "int", "comment": "The marble's current lap" },
+              { "name": "deficitA", "type": "int", "comment": "The deficit in steps to the marble ahead, negative number shows a deficit in laps" },
+              { "name": "deficitL", "type": "int", "comment": "The deficit in steps to the leading marble, negative number shows a deficit in laps" }
+            ]
+          },
+          "onracefinished": {
+            "comment": "The race has finished",
+            "arguments": [
+              { "name": "cancelled", "type": "bool", "comment": "Was the race cancelled?" }
+            ]
+          },
+          "onplayerfinished": {
+            "comment": "A player has finished the race",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" },
+              { "name": "racetime", "type": "int", "comment": "Racetime of the marble in steps" },
+              { "name": "laps"    , "type": "int", "comment": "The number of laps of the marble" }
+            ]
+          },
+          "onplayerwithdrawn": {
+            "comment": "A player has withdrawn from the race",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" }
+            ]
+          },
+          "onplayerrespawn": {
+            "comment": "A player respawns",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" },
+              { "name": "state"   , "type": "int", "comment": "Respawn state (1 == respawn start, 2 == camera respawn, 3 == respawn done)" }
+            ]
+          }
+        },
+        "lua_from": {
+        },
+        "lua_none": {
+          "initializesingleton": {
+            "comment": "A callback for initializing the members. Just calls the initialize method of the singleton"
           }
         }
       }

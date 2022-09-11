@@ -43,6 +43,10 @@ namespace dustbin {
     class CGameServer;
   }
 
+  namespace lua {
+    class CLuaScript_scene;
+  }
+
   namespace gui {
 #ifdef _TOUCH_CONTROL
     class IGuiMarbleControl;
@@ -189,7 +193,7 @@ namespace dustbin {
 
         irr::scene::ISceneNode *m_pAiNode;    /**< The scene node with the AI data */
 
-        // irr::gui::IGUIStaticText *m_pStepLabel;
+        lua::CLuaScript_scene *m_pLuaScript;
 
 #ifdef _TOUCH_CONTROL
         gui::IGuiMarbleControl *m_pTouchControl;
@@ -234,6 +238,12 @@ namespace dustbin {
         */
         void handleError(const std::string &a_sHeadline, const std::string &a_sMessage);
 
+        /**
+        * Load a textfile
+        * @param a_sFile path to the file
+        * @return the content of the file as string
+        */
+        std::string loadTextFile(const std::string &a_sFile);
 #ifdef _OPENGL_ES
         /**
         * Adjust the materials of the node to get proper lighting when using

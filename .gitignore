@@ -1787,3 +1787,5 @@
 /project/_source/source/_generated/lua/lua_binding.cpp
 /project/_source/source/_generated/lua/lua_enums.cpp
 /project/_source/source/_generated/lua/lua_tables.cpp
+/project/_source/include/_generated/lua/CLuaScript_scene.h
+/project/_source/include/_generated/lua/CLuaSingleton_scene.h

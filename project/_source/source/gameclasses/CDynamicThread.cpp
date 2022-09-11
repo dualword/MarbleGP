@@ -348,6 +348,10 @@ namespace dustbin {
                   if (m_pGameLogic != nullptr) {
                     m_pGameLogic->onRespawn(p->m_iId);
                   }
+
+                  if (m_pLuaScript != nullptr) {
+                    m_pLuaScript->onplayerrespawn(p->m_iId, 1);
+                  }
                 }
               }
             }
@@ -466,6 +470,10 @@ namespace dustbin {
 
                 // Send message
                 sendCamerarespawn(p->m_iId, p->m_vRespawnPos + p->m_vRespawnDir + 3.0f * p->m_vUpOffset, p->m_vRespawnPos, m_pOutputQueue);
+
+                if (m_pLuaScript != nullptr) {
+                  m_pLuaScript->onplayerrespawn(p->m_iId, 2);
+                }
               }
               else if (p->m_eState == CObjectMarble::enMarbleState::Respawn2 && m_pWorld->m_iWorldStep - p->m_iRespawnStart >= 360) {
                 // We need to check for possible collisions before we continue with the respawn
@@ -503,6 +511,10 @@ namespace dustbin {
 
                   // Send message to game state
                   sendPlayerrespawn(p->m_iId, 2, m_pOutputQueue);
+
+                  if (m_pLuaScript != nullptr) {
+                    m_pLuaScript->onplayerrespawn(p->m_iId, 3);
+                  }
                 }
               }
             }
@@ -905,6 +917,8 @@ namespace dustbin {
 
 
     void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
+      sendTrigger(a_iTrigger, a_iMarble, m_pOutputQueue);
+
       if (m_pLuaScript != nullptr)
         m_pLuaScript->ontrigger(a_iMarble, a_iTrigger);
     }
@@ -930,6 +944,10 @@ namespace dustbin {
 
         if (m_pGameLogic != nullptr) {
           m_pGameLogic->onRespawn(a_iMarble);
+        }
+
+        if (m_pLuaScript != nullptr) {
+          m_pLuaScript->onplayerrespawn(a_iMarble, 1);
         }
       }
     }

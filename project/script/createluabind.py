@@ -218,11 +218,11 @@ def CreateTables(a_Json):
   
   for l_Table in l_Tables:
     l_Value = l_Tables[l_Table]
-    l_Header.write("// " + l_Value["comment"] + "\n")
-    l_Header.write("struct " + l_Table + " {\n")
+    l_Header.write("    // " + l_Value["comment"] + "\n")
+    l_Header.write("    struct " + l_Table + " {\n")
     
     for l_Field in l_Value["fields"]:
-      l_Header.write("  " + l_Field["type"])
+      l_Header.write("      " + l_Field["type"])
       
       if l_Field["type"] == "std::vector":
         l_Header.write("<" + l_Field["element"] + ">")
@@ -232,11 +232,11 @@ def CreateTables(a_Json):
       l_Header.write(" m_" + l_Field["name"] + ";\n")
     
     l_Header.write("\n")
-    l_Header.write("  " + l_Table + "();\n\n")
-    l_Header.write("  void pushToStack(lua_State *a_pState) const;\n")
-    l_Header.write("  void loadFromStack(lua_State *a_pState);\n")
-    l_Header.write("  void copyFrom(const " + l_Table + " &a_cOther);\n")
-    l_Header.write("};\n")
+    l_Header.write("      " + l_Table + "();\n\n")
+    l_Header.write("      void pushToStack(lua_State *a_pState) const;\n")
+    l_Header.write("      void loadFromStack(lua_State *a_pState);\n")
+    l_Header.write("      void copyFrom(const " + l_Table + " &a_cOther);\n")
+    l_Header.write("    };\n")
     l_Header.write("\n")
     
   for l_Table in l_Tables:
