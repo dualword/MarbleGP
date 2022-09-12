@@ -1,6 +1,4 @@
 
-io.write("\n\n**** Script started\n\n")
-
 g_Actions = {
   [1] = { step = 0, index = 0 },
   [2] = { step = 0, index = 0 },  -- 23124, 23127, 23129
@@ -8,7 +6,7 @@ g_Actions = {
 }
 
 function onstep(a_stepno)
-  if a_stepno - g_Actions[1]["step"] > 360 then
+  if a_stepno - g_Actions[1]["step"] > 600 then
     g_Actions[1]["step"] = a_stepno
     
     if g_Actions[1]["index"] == 0 then
@@ -24,7 +22,7 @@ function onstep(a_stepno)
     end
   end
   
-  if a_stepno - g_Actions[2]["step"] > 240 then
+  if a_stepno - g_Actions[2]["step"] > 480 then
     g_Actions[2]["step"] = a_stepno
     
     if g_Actions[2]["index"] == 0 then
@@ -48,7 +46,7 @@ function onstep(a_stepno)
     end
   end
   
-  if a_stepno - g_Actions[3]["step"] > 180 then
+  if a_stepno - g_Actions[3]["step"] > 360 then
     g_Actions[3]["step"] = a_stepno
     
     io.write(tostring(g_Actions[3]["index"]))
