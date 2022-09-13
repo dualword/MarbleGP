@@ -86,6 +86,11 @@ namespace dustbin {
     }
 
     CGameState::~CGameState() {
+      if (m_pLuaScript != nullptr) {
+        delete m_pLuaScript;
+        m_pLuaScript = nullptr;
+      }
+
       if (m_pInputQueue != nullptr) {
         delete m_pInputQueue;
         m_pInputQueue = nullptr;
@@ -526,14 +531,6 @@ namespace dustbin {
             handleError("LUA Error.", m_pDynamics->getLuaError());
             return;
           }
-
-          std::string l_sSceneScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/scene.lua");
-
-          if (l_sSceneScript != "") {
-            m_pLuaScript = new lua::CLuaScript_scene(l_sSceneScript);
-            m_pLuaScript->initializesingleton();
-            m_pLuaScript->initialize();
-          }
         }
         else {
           handleError("Error while starting game state.", "No world node found..");
@@ -594,6 +591,11 @@ namespace dustbin {
 
       if (m_pDevice->getCursorControl() != nullptr)
         m_pDevice->getCursorControl()->setVisible(true);
+
+      if (m_pLuaScript != nullptr) {
+        delete m_pLuaScript;
+        m_pLuaScript = nullptr;
+      }
 
       // Important: stop the AI thread
       // before the dynamics thread
@@ -1336,6 +1338,13 @@ namespace dustbin {
       if (m_pAiThread != nullptr)
         m_pAiThread->startThread();
 
+      std::string l_sSceneScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/scene.lua");
+
+      if (l_sSceneScript != "") {
+        m_pLuaScript = new lua::CLuaScript_scene(l_sSceneScript);
+        m_pLuaScript->initializesingleton();
+        m_pLuaScript->initialize();
+      }
     }
 
     /**
@@ -1622,7 +1631,10 @@ namespace dustbin {
       if (m_pRace != nullptr) {
         if (m_pRace->m_sTrack != "") {
           data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
-          m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
+
+          if (l_cPlayer.m_iPos >= 0 && l_cPlayer.m_iPos < m_pRace->m_iPlayers) {
+            m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
+          }
         }
       }
     }

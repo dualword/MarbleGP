@@ -97,9 +97,6 @@
     <Filter Include="Headerdateien\_generated">
       <UniqueIdentifier>{ad486936-4590-4050-806d-74f78a0bdd4f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\_generated\messages">
-      <UniqueIdentifier>{ee69bc3a-26b5-4ed1-a9f6-50669158fd15}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\_generated">
       <UniqueIdentifier>{486608fc-50f3-4a25-aab2-7b0a1d0b0314}</UniqueIdentifier>
     </Filter>
@@ -138,6 +135,9 @@
     </Filter>
     <Filter Include="Headerdateien\_generated\lua">
       <UniqueIdentifier>{845bc27f-15d5-4711-b50d-9721e9f03ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\controller\messages">
+      <UniqueIdentifier>{ee69bc3a-26b5-4ed1-a9f6-50669158fd15}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -573,6 +573,9 @@
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLUASingletone_system.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -762,19 +765,19 @@
       <Filter>Headerdateien\xeffects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\CControllerFactory.h">
       <Filter>Headerdateien\controller</Filter>
@@ -825,13 +828,13 @@
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CRankingElement.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IAiController.h">
-      <Filter>Headerdateien\_generated\messages</Filter>
+      <Filter>Headerdateien\controller\messages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\network\CNetBase.h">
       <Filter>Headerdateien\network</Filter>
@@ -924,6 +927,9 @@
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_scene.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_system.h">
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
   </ItemGroup>

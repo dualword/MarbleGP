@@ -130,6 +130,7 @@
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLUASingletone_system.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_scene.cpp" />
     <ClCompile Include="..\..\_source\source\lua\ILuaClass.cpp" />
@@ -331,6 +332,7 @@
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_scene.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_physics.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_scene.h" />
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_system.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\lua_enums.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\lua_tables.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h" />

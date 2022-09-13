@@ -4,7 +4,9 @@
     { "name": "gameclasses::CWorld"      , "include": "gameclasses/COdeNodes.h" },
     { "name": "gameclasses::CObject"     , "include": "gameclasses/COdeNodes.h" },
     { "name": "irr::scene::ISceneManager", "include": "irrlicht.h" },
-    { "name": "irr::scene::ISceneNode"   , "include": "irrlicht.h" }
+    { "name": "irr::scene::ISceneNode"   , "include": "irrlicht.h" },
+    { "name": "irr::io::IFileSystem"     , "include": "irrlicht.h" },
+    { "name": "irr::IrrlichtDevice"      , "include": "irrlicht.h" }
   ],
   "baseclasses": {
   },
@@ -118,6 +120,51 @@
           }
         }
       }
+    },
+    "system": {
+      "comment": "A LUA singleton that provides some (hopefully) useful methods",
+      "globalidentifier": "systemsingleton_cinstance",
+      "members": [
+        { "name": "device", "type": "irr::IrrlichtDevice *" , "comment": "The Irrlicht Device"     , "default": "nullptr" },
+        { "name": "fs"    , "type": "irr::io::IFileSystem *", "comment": "The Irrlicht file system", "default": "nullptr" }
+      ],
+      "methods": {
+        "lua_from": {
+          "executeluascript": {
+            "comment": "Executes a LUA script from the data folder",
+            "arguments": [
+              { "name": "script", "type": "std::string", "comment": "Filename of the LUA script. Must be located in the application's data folder" }
+            ],
+            "return": { "type": "std::string", "comment": "Error message, empty string if execution succeeded" }
+          },
+          "executeluastring": {
+            "comment": "Executes a LUA string",
+            "arguments": [
+              { "name": "script", "type": "std::string", "comment": "The LUA script to execute as string" }
+            ],
+            "return": { "type": "std::string", "comment": "Error message, empty string if execution succeeded" }
+          },
+          "loadtextfile": {
+            "comment": "Loads a text file from the application's roaming folder",
+            "arguments": [
+              { "name": "filename", "type": "std::string", "comment": "Name of the text file" }
+            ],
+            "return": { "type": "std::string", "comment": "The content of the text file" }
+          }
+        },
+        "lua_none": {
+          "initialize": {
+            "comment": "Inialializes the members. Must not be called from extarnal as all methods of the singleton use this method if the members are not yet initialized"
+          },
+          "doloadtextfile": {
+            "comment": "The actual code that loads text files, not path adjustment done here",
+            "arguments": [
+              { "name": "filename", "type": "std::string", "comment": "Name of the text file" }
+            ],
+            "return": { "type": "std::string", "comment": "The content of the text file" }
+          }
+        }
+      }
     }
   },
   "scripts": {
@@ -131,7 +178,8 @@
       "members": [
       ],
       "singletons": [
-        "physics"
+        "physics",
+        "system"
       ],
       "methods": {
         "lua_to": {
@@ -218,7 +266,8 @@
       "members": [
       ],
       "singletons": [
-        "scene"
+        "scene",
+        "system"
       ],
       "methods": {
         "lua_to": {
