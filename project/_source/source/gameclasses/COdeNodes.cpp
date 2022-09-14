@@ -425,9 +425,9 @@ namespace dustbin {
         m_pTriggerHandler->handleMarbleTouch(a_iMarbleId, a_iTouchId);
     }
 
-    void CWorld::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos) {
+    void CWorld::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos, bool a_bBroadcast) {
       if (m_pTriggerHandler != nullptr)
-        m_pTriggerHandler->handleTrigger(a_iTrigger, a_iMarble, a_cPos);
+        m_pTriggerHandler->handleTrigger(a_iTrigger, a_iMarble, a_cPos, a_bBroadcast);
     }
 
     CWorld::~CWorld() {

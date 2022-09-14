@@ -1,12 +1,13 @@
 {
   "datatypes": [
-    { "name": "messages::IDynamicThread" , "include": "_generated/messages/IDynamicThread.h"  },
-    { "name": "gameclasses::CWorld"      , "include": "gameclasses/COdeNodes.h" },
-    { "name": "gameclasses::CObject"     , "include": "gameclasses/COdeNodes.h" },
-    { "name": "irr::scene::ISceneManager", "include": "irrlicht.h" },
-    { "name": "irr::scene::ISceneNode"   , "include": "irrlicht.h" },
-    { "name": "irr::io::IFileSystem"     , "include": "irrlicht.h" },
-    { "name": "irr::IrrlichtDevice"      , "include": "irrlicht.h" }
+    { "name": "messages::IDynamicThread"  , "include": "_generated/messages/IDynamicThread.h"  },
+    { "name": "gameclasses::CWorld"       , "include": "gameclasses/COdeNodes.h" },
+    { "name": "gameclasses::CObject"      , "include": "gameclasses/COdeNodes.h" },
+    { "name": "gameclasses::CObjectMarble", "include": "gameclasses/COdeNodes.h" },
+    { "name": "irr::scene::ISceneManager" , "include": "irrlicht.h" },
+    { "name": "irr::scene::ISceneNode"    , "include": "irrlicht.h" },
+    { "name": "irr::io::IFileSystem"      , "include": "irrlicht.h" },
+    { "name": "irr::IrrlichtDevice"       , "include": "irrlicht.h" }
   ],
   "baseclasses": {
   },
@@ -45,7 +46,8 @@
       "comment": "A physics singleton for LUA AI functions to modify the physics",
       "globalidentifier": "worldsingleton_cinstance",
       "members": [
-        { "name": "world" , "type": "gameclasses::CWorld *", "comment": "The physics world", "default": "nullptr" }
+        { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The physics world"  , "default": "nullptr" },
+        { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "An array of marbles", "default": "nullptr" }
       ],
       "methods": {
         "lua_from": {
@@ -56,13 +58,21 @@
               { "name": "speed", "type": "float", "comment": "The desired speed" },
               { "name": "force", "type": "float", "comment": "The force used to reach to speed" }
             ]
+          },
+          "setmarblecameraup": {
+            "comment": "Modify the up-vector of a camera, useful for long jumps",
+            "arguments": [
+              { "name": "marbleid", "type": "int"      , "comment": "ID of the marble" },
+              { "name": "upvector", "type": "SVector3d", "comment": "The new up-vector of the marble's camera" }
+            ]
           }
         },
         "lua_none": {
           "setworld": {
             "comment": "Set the ODE world this singleton can modify",
             "arguments": [
-              { "name": "world", "type": "gameclasses::CWorld *", "comment": "The world" }
+              { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The world" },
+              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "Array with the marbles" }
             ]
           }
         }
@@ -250,7 +260,8 @@
           "setWorld": {
             "comment": "Tell the script about the world it's managing",
             "arguments": [
-              { "name": "world", "type": "gameclasses::CWorld *", "comment": "The physics world" }
+              { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The physics world" },
+              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "Array with the marbles" }
             ]
           }
         }

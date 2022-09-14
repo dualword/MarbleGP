@@ -534,6 +534,7 @@
     <ClCompile Include="..\..\..\_source\source\lua\CLuaScript_scene.cpp" />
     <ClCompile Include="..\..\..\_source\source\lua\CLuaSingleton_physics.cpp" />
     <ClCompile Include="..\..\..\_source\source\lua\CLuaSingleton_scene.cpp" />
+    <ClCompile Include="..\..\..\_source\source\lua\CLUASingleton_system.cpp" />
     <ClCompile Include="..\..\..\_source\source\lua\ILuaClass.cpp" />
     <ClCompile Include="..\..\..\_source\source\lua\LuaScript.cpp" />
     <ClCompile Include="..\..\..\_source\source\lua\luawrap.cpp" />

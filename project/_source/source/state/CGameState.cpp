@@ -1632,7 +1632,7 @@ namespace dustbin {
         if (m_pRace->m_sTrack != "") {
           data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
 
-          if (l_cPlayer.m_iPos >= 0 && l_cPlayer.m_iPos < m_pRace->m_iPlayers) {
+          if (l_cPlayer.m_iPos > 0 && l_cPlayer.m_iPos <= m_pRace->m_iPlayers) {
             m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
           }
         }

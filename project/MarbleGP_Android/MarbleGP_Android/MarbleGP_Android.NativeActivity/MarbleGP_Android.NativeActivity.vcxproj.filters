@@ -790,6 +790,9 @@
     <ClCompile Include="..\..\..\_source\source\lua\CLuaSingleton_scene.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\lua\CLUASingleton_system.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">

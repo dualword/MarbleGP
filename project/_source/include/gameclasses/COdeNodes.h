@@ -244,7 +244,7 @@ namespace dustbin {
 
         virtual ~CWorld();
 
-        void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos);
+        void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_cPos, bool a_bBroadcast);
         void handleRespawn(int a_iMarble);
         void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint);
         void handleLapStart(int a_iMarbleId, int a_iLapNo);

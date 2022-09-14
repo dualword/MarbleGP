@@ -162,8 +162,7 @@ namespace dustbin {
 
                   irr::s32 l_iId = p->m_iId - 10000;
                   if (l_iId >= 0 && l_iId < 16) {
-                    if (p->m_mStepTriggers[p->m_iSecondTrigger].find(o->m_iTrigger) == p->m_mStepTriggers[p->m_iSecondTrigger].end())
-                      l_pWorld->handleTrigger(o->m_iTrigger, p->m_iId, p->m_vPosition);
+                    l_pWorld->handleTrigger(o->m_iTrigger, p->m_iId, p->m_vPosition, p->m_mStepTriggers[p->m_iSecondTrigger].find(o->m_iTrigger) == p->m_mStepTriggers[p->m_iSecondTrigger].end());
 
                     p->m_mStepTriggers[p->m_iActiveTrigger][o->m_iTrigger] = true;
                   }
@@ -777,7 +776,7 @@ namespace dustbin {
         m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
         if (m_pLuaScript->getError() == "") {
-          m_pLuaScript->setWorld(m_pWorld);
+          m_pLuaScript->setWorld(m_pWorld, m_aMarbles);
           m_pLuaScript->initialize();
         }
         else {
@@ -921,8 +920,9 @@ namespace dustbin {
     }
 
 
-    void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) {
-      sendTrigger(a_iTrigger, a_iMarble, m_pOutputQueue);
+    void CDynamicThread::handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition, bool a_bBroadcast) {
+      if (a_bBroadcast)
+        sendTrigger(a_iTrigger, a_iMarble, m_pOutputQueue);
 
       if (m_pLuaScript != nullptr)
         m_pLuaScript->ontrigger(a_iMarble, a_iTrigger);
@@ -1017,6 +1017,7 @@ namespace dustbin {
           m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
         }
 
+        printf("Finished: %i\n", l_iIndex);
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
 
         if (m_pLuaScript != nullptr)

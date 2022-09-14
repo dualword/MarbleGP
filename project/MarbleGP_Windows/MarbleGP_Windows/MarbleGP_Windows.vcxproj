@@ -130,7 +130,7 @@
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp" />
-    <ClCompile Include="..\..\_source\source\lua\CLUASingletone_system.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLUASingleton_system.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_scene.cpp" />
     <ClCompile Include="..\..\_source\source\lua\ILuaClass.cpp" />

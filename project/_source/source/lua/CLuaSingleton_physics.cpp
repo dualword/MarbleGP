@@ -25,11 +25,26 @@ namespace dustbin {
     }
 
     /**
+    * Modify the up-vector of a camera, useful for long jumps
+    * @param ID of the marble
+    * @param The new up-vector of the marble's camera
+    */
+    void CLuaSingleton_physics::setmarblecameraup(int a_marbleid, const SVector3d& a_upvector) {
+      int l_iIndex = a_marbleid - 10000;
+
+      if (l_iIndex >= 0 && l_iIndex < 16 && m_marbles[l_iIndex] != nullptr)
+        m_marbles[l_iIndex]->m_vUpVector = irr::core::vector3df(a_upvector.m_x, a_upvector.m_y, a_upvector.m_z);
+    }
+
+    /**
     * Set the ODE world this singleton can modify
     * @param The world
     */
-    void CLuaSingleton_physics::setworld(gameclasses::CWorld *a_world) {
-      m_world = a_world;
+    void CLuaSingleton_physics::setworld(gameclasses::CWorld *a_world, gameclasses::CObjectMarble * a_marbles[16]) {
+      m_world   = a_world;
+      
+      for (int i = 0; i < 16; i++)
+        m_marbles[i] = a_marbles[i];
     }
   }
 }

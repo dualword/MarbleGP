@@ -135,8 +135,9 @@ namespace dustbin {
          * @param a_iTrigger trigger id
          * @param a_iMarble Id of the marble
          * @param a_vPosition position of the marble that triggered
+         * @param a_bBroadcast shall we send the trigger to the output queue?
          */
-        virtual void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition) override;
+        virtual void handleTrigger(int a_iTrigger, int a_iMarble, const irr::core::vector3df& a_vPosition, bool a_bBroadcast) override;
 
         /**
         * Callback to start respawn of a marble

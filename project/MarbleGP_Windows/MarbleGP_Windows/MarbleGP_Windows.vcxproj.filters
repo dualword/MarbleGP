@@ -573,7 +573,7 @@
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\lua\CLUASingletone_system.cpp">
+    <ClCompile Include="..\..\_source\source\lua\CLUASingleton_system.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
   </ItemGroup>
