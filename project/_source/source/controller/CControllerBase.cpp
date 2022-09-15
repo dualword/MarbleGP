@@ -145,18 +145,6 @@ namespace dustbin {
 
 
     CControllerBase::CControllerBase() {
-#ifdef _ANDROID
-      irr::SJoystickInfo l_cInfo;
-      l_cInfo.Axes = 6;
-      l_cInfo.Buttons = 32;
-      l_cInfo.Joystick = 0;
-      l_cInfo.Name = "Gamepad";
-      l_cInfo.PovHat = irr::SJoystickInfo::POV_HAT_PRESENT;
-
-      m_aJoysticks.push_back(l_cInfo);
-#else
-      CGlobal::getInstance()->getIrrlichtDevice()->activateJoysticks(m_aJoysticks);
-#endif
     }
 
     CControllerBase::~CControllerBase() {

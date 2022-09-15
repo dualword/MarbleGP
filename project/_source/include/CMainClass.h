@@ -64,6 +64,8 @@ namespace dustbin {
 
       std::map<int, int> m_mBrake;    /**< The brake efficiency map */
 
+      irr::core::array<irr::SJoystickInfo> m_aJoysticks;    /**< The Joysticks */
+
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
 #endif
@@ -330,6 +332,12 @@ namespace dustbin {
       * @return map of the measured braking efficiency
       */
       virtual const std::map<int, int> &getBrakeEfficiency() override;
+
+      /**
+      * Get the Irrlicht joystick information
+      * @return the Irrlicht joystick information
+      */
+      virtual const irr::core::array<irr::SJoystickInfo> &getJoystickInfo() const override;
 
 #ifdef _ANDROID
       /**

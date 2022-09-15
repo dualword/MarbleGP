@@ -420,13 +420,13 @@ namespace dustbin {
 
           m_vJoyStates.clear();
 
-          for (unsigned i = 0; i < m_aJoysticks.size(); i++) {
+          for (unsigned i = 0; i < m_pGlobal->getJoystickInfo().size(); i++) {
             SJoystickState l_cState;
             l_cState.m_iIndex       = i;
-            l_cState.m_sName        = m_aJoysticks[i].Name.c_str();
-            l_cState.m_iAxes        = m_aJoysticks[i].Axes;
-            l_cState.m_iButtons     = m_aJoysticks[i].Buttons;
-            l_cState.m_bHasPov      = m_aJoysticks[i].PovHat == irr::SJoystickInfo::POV_HAT_PRESENT;
+            l_cState.m_sName        = m_pGlobal->getJoystickInfo()[i].Name.c_str();
+            l_cState.m_iAxes        = m_pGlobal->getJoystickInfo()[i].Axes;
+            l_cState.m_iButtons     = m_pGlobal->getJoystickInfo()[i].Buttons;
+            l_cState.m_bHasPov      = m_pGlobal->getJoystickInfo()[i].PovHat == irr::SJoystickInfo::POV_HAT_PRESENT;
             l_cState.m_bInitialized = false;
 
             for (int i = 0; i < l_cState.m_iAxes; i++) {

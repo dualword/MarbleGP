@@ -292,6 +292,12 @@ namespace dustbin {
       */
       virtual const std::map<int, int> &getBrakeEfficiency() = 0;
 
+      /**
+      * Get the Irrlicht joystick information
+      * @return the Irrlicht joystick information
+      */
+      virtual const irr::core::array<irr::SJoystickInfo> &getJoystickInfo() const = 0;
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app

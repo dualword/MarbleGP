@@ -114,6 +114,7 @@ namespace dustbin {
 
       delete l_pFile;
     }
+
     m_cSettings.loadSettings(m_mSettings);
   }
 
@@ -175,6 +176,19 @@ namespace dustbin {
     m_pDrv    = m_pDevice->getVideoDriver   ();
     m_pGui    = m_pDevice->getGUIEnvironment();
     m_pFs     = m_pDevice->getFileSystem    ();
+
+#ifdef _ANDROID
+    irr::SJoystickInfo l_cInfo;
+    l_cInfo.Axes = 6;
+    l_cInfo.Buttons = 32;
+    l_cInfo.Joystick = 0;
+    l_cInfo.Name = "Gamepad";
+    l_cInfo.PovHat = irr::SJoystickInfo::POV_HAT_PRESENT;
+
+    m_aJoysticks.push_back(l_cInfo);
+#else
+    m_pDevice->activateJoysticks(m_aJoysticks);
+#endif
 
     if (m_pFs->existFile("marblegp.dat")) {
       bool b = m_pFs->addFileArchive("marblegp.dat", true, false, irr::io::EFAT_ZIP);
@@ -901,6 +915,14 @@ namespace dustbin {
   */
   const std::map<int, int> &CMainClass::getBrakeEfficiency() {
     return m_mBrake;
+  }
+
+  /**
+  * Get the Irrlicht joystick information
+  * @return the Irrlicht joystick information
+  */
+  const irr::core::array<irr::SJoystickInfo> &CMainClass::getJoystickInfo() const {
+    return m_aJoysticks;
   }
 
   /**

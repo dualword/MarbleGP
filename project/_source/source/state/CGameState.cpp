@@ -571,7 +571,7 @@ namespace dustbin {
         if (!m_pGlobal->getSettingData().m_bMenuPad) {
           switch (m_pGlobal->getSettingData().m_iTouchControl) {
             case 0:
-              // Nothing to do, gamepade will be handled normally
+              // Nothing to do, gamepads will be handled normally
               break;
 
             default:
