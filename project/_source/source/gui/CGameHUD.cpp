@@ -795,10 +795,10 @@ namespace dustbin {
             l_cRank.X -= m_cSpeedTotal.Width / 2;
 
             irr::core::recti l_cRects[] = {
-              irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cSpeedTotal.Width, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0,     l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0, 2 * l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0, 3 * l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width, m_cDefSize.Height)),
+              irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank + irr::core::position2di(0,     l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank + irr::core::position2di(0, 2 * l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank + irr::core::position2di(0, 3 * l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
             };
 
             int l_iPos[] = {
@@ -816,6 +816,12 @@ namespace dustbin {
                   l_cRects[i], &m_cRect
                 );
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+
+                irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
+
+                m_pDrv->draw2DRectangle(m_pPlayer->m_cBack, l_cNumber);
+                m_pDrv->draw2DRectangleOutline(l_cNumber, m_pPlayer->m_cFrme);
+                m_pTimeFont->draw(m_pPlayer->m_sNumber.c_str(), l_cNumber, m_pPlayer->m_cText, true, true);
               }
               else {
                 for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
@@ -858,6 +864,13 @@ namespace dustbin {
 
                     irr::core::dimension2du l_cSize = m_pDefFont->getDimension(l_sDeficit.c_str());
                     m_pDefFont->draw(l_sDeficit.c_str(), irr::core::recti(l_cRects[i].LowerRightCorner.X - l_cSize.Width, l_cRects[i].UpperLeftCorner.Y, l_cRects[i].LowerRightCorner.X, l_cRects[i].LowerRightCorner.Y), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
+
+                    irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
+
+                    m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
+                    m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
+                    m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
+
                     break;
                   }
                 }
@@ -1022,7 +1035,7 @@ namespace dustbin {
     }
 
     std::wstring CGameHUD::getDeficitString(int a_iDeficit) {
-      return helpers::convertToTime(a_iDeficit);
+      return helpers::convertToTime(a_iDeficit) + L" ";
     }
 
     void CGameHUD::updateRanking() {
