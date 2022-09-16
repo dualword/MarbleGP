@@ -13,6 +13,7 @@ g_Warnings = {
     trigger_inc = 1,
     trigger_dec = 3,
     sign = 23300,
+    sign_small = 25000,
     currenty = 180,
     targety = 180
   },
@@ -29,6 +30,7 @@ g_Warnings = {
     trigger_inc = 0,
     trigger_dec = 2,
     sign = 23299,
+    sign_small = 25001,
     currenty = 180,
     targety = 180
   }
@@ -120,7 +122,8 @@ function onstep(a_Step)
         g_Warnings[i]["currenty"] = g_Warnings[i]["targety"]
       end
       
-      scene:setrotation(g_Warnings[i]["sign"], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
+      scene:setrotation(g_Warnings[i]["sign"      ], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
+      scene:setrotation(g_Warnings[i]["sign_small"], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
     elseif g_Warnings[i]["currenty"] > g_Warnings[i]["targety"] then
       g_Warnings[i]["currenty"] = g_Warnings[i]["currenty"] - 5
       
@@ -128,7 +131,8 @@ function onstep(a_Step)
         g_Warnings[i]["currenty"] = g_Warnings[i]["targety"]
       end
       
-      scene:setrotation(g_Warnings[i]["sign"], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
+      scene:setrotation(g_Warnings[i]["sign"      ], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
+      scene:setrotation(g_Warnings[i]["sign_small"], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
     end
   end
 end
