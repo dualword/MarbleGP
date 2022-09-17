@@ -1,3 +1,4 @@
+#include <helpers/CStringHelpers.h>
 #include <lua/ILuaClass.h>
 
 namespace dustbin {
@@ -12,6 +13,7 @@ namespace dustbin {
     }
 
     const std::string& ILuaClass::getError() {
+      helpers::addToDebugLog("    ILuaClass::getError");
       return m_sError;
     }
 

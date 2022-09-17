@@ -619,12 +619,15 @@ namespace dustbin {
     * This method is called when the state is deactivated
     */
     void CGameState::deactivate() {
+      helpers::addToDebugLog("CGameState::deactivate() {");
       m_mMoving.clear();
 
+      helpers::addToDebugLog("Show cursor");
       if (m_pDevice->getCursorControl() != nullptr)
         m_pDevice->getCursorControl()->setVisible(true);
 
       if (m_pLuaScript != nullptr) {
+        helpers::addToDebugLog("delete LUA script");
         delete m_pLuaScript;
         m_pLuaScript = nullptr;
       }
@@ -632,33 +635,43 @@ namespace dustbin {
       // Important: stop the AI thread
       // before the dynamics thread
       if (m_pAiThread != nullptr) {
+        helpers::addToDebugLog("Stop AI thread");
         m_pAiThread->stopThread();
         m_pAiThread->join();
+        helpers::addToDebugLog("Delete AI thread");
         delete m_pAiThread;
         m_pAiThread = nullptr;
       }
 
       if (m_pDynamics != nullptr) {
+        helpers::addToDebugLog("Stop dynamics thread");
         m_pDynamics->stopThread();
         m_pDynamics->join();
 
+        helpers::addToDebugLog("Clear input queue");
         messages::IMessage *l_pMsg = nullptr;
         do {
           l_pMsg = m_pInputQueue->popMessage();
           if (l_pMsg != nullptr && !m_bWillBeDeleted) {
+            helpers::addToDebugLog("Delete message" + std::to_string((int)l_pMsg->getMessageId()));
             handleMessage(l_pMsg);
           }
         }
         while (l_pMsg != nullptr);
 
+        helpers::addToDebugLog("Queue cleared");
+
         if (m_pServer != nullptr) {
+          helpers::addToDebugLog("Remove server as listener from dynamics thread");
           m_pServer->getOutputQueue()->removeListener(m_pDynamics->getInputQueue());
         }
 
         if (m_pClient != nullptr) {
+          helpers::addToDebugLog("Remove client as listener from dynamics thread");
           m_pClient->getOutputQueue()->removeListener(m_pDynamics->getInputQueue());
         }
 
+        helpers::addToDebugLog("Delete dynamics thread");
         delete m_pDynamics;
         m_pDynamics = nullptr;
 
@@ -666,9 +679,11 @@ namespace dustbin {
         m_pServer = nullptr;
       }
 
+      helpers::addToDebugLog("Clear player objects");
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
         delete* it;
 
+      helpers::addToDebugLog("Clear vectors");
       m_vPlayers  .clear();
       m_vPosition .clear();
       m_mViewports.clear();
@@ -678,32 +693,41 @@ namespace dustbin {
 #endif
 
       if (m_pCamAnimator != nullptr) {
+        helpers::addToDebugLog("Drop camera animator");
         m_pCamAnimator->drop();
         m_pCamAnimator = nullptr;
       }
 
+      helpers::addToDebugLog("Clear scene manager");
       m_pSmgr->clear();
+      helpers::addToDebugLog("Clear GUI");
       m_pGlobal->clearGui();
 
+      helpers::addToDebugLog("Delete buffered move messages");
       for (std::vector<messages::IMessage*>::iterator it = m_vMoveMessages.begin(); it != m_vMoveMessages.end(); it++) {
         delete* it;
       }
       m_vMoveMessages.clear();
 
+      helpers::addToDebugLog("Delete shader");
       if (m_pShader != nullptr) {
         delete m_pShader;
         m_pShader = nullptr;
       }
 
+      helpers::addToDebugLog("Clear checkpoint and camera vectors");
       m_mCheckpoints.clear();
       m_vCameras    .clear();
 
       if (m_pRace != nullptr) {
+        helpers::addToDebugLog("Delete race object");
         delete m_pRace;
         m_pRace = nullptr;
       }
 
+      helpers::addToDebugLog("Stop game sounds");
       m_pSoundIntf->stopGame();
+      helpers::addToDebugLog("CGameState::deactivate() }");
     }
 
     /**

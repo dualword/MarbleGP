@@ -809,14 +809,23 @@ namespace dustbin {
     }
 
     CDynamicThread::~CDynamicThread() {
-      if (m_pWorld != nullptr)
+      helpers::addToDebugLog("CDynamicThread::~CDynamicThread() {");
+      if (m_pWorld != nullptr) {
+        helpers::addToDebugLog("Delete world");
         delete m_pWorld;
+      }
 
-      if (m_pGameLogic != nullptr)
+      if (m_pGameLogic != nullptr) {
+        helpers::addToDebugLog("Delete game logic");
         delete m_pGameLogic;
+      }
 
-      if (m_pLuaScript != nullptr)
+      if (m_pLuaScript != nullptr) {
+        helpers::addToDebugLog("Delete LUA script");
         delete m_pLuaScript;
+      }
+
+      helpers::addToDebugLog("CDynamicThread::~CDynamicThread() }");
     }
 
     /**
