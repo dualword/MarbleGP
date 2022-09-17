@@ -683,25 +683,32 @@ namespace dustbin {
       enAutoFinish a_eAutoFinish
     )
     {
+      helpers::addToDebugLog("    CDynamicThread::setupGame {");
       m_bStopThread = false;
       m_eAutoFinish = a_eAutoFinish;
       m_iPlayers    = (irr::s32)a_vPlayers.size();
 
+      helpers::addToDebugLog("    Create phyics objects");
       createPhysicsObjects(a_pWorld);
 
       std::vector<const data::SPlayerData *> l_vPlayers;
 
+      helpers::addToDebugLog("    Create player objects");
       for (std::vector<data::SPlayerData>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++)
         l_vPlayers.push_back(&(*it));
 
+      helpers::addToDebugLog("    Sort players");
       std::sort(l_vPlayers.begin(), l_vPlayers.end(), [](const data::SPlayerData *p1, const data::SPlayerData *p2) {
         return p1->m_iGridPos < p2->m_iGridPos;
       });
 
+      helpers::addToDebugLog("    clear marble object array");
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
       if (m_pWorld != nullptr) {
+        helpers::addToDebugLog("    Fill marble object array");
+
         int l_iIndex = 0;
         for (std::vector<const data::SPlayerData *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
           if ((*it)->m_eType != data::enPlayerType::Ai)
@@ -759,14 +766,17 @@ namespace dustbin {
         }
       }
 
+      helpers::addToDebugLog("    Check auto finish");
       if (m_eAutoFinish == enAutoFinish::SecondToLast && m_iHuman <= 2)
         m_eAutoFinish = enAutoFinish::FirstPlayer;
 
+      helpers::addToDebugLog("    Create game logic");
       std::vector<int> l_vMarbleIDs;
 
       m_pGameLogic = createGameLogic("");
       m_pGameLogic->setNumberOfLaps(a_iLaps);
 
+      helpers::addToDebugLog("    Save marble IDs");
       for (int i = 0; i < 16; i++)
         if (m_aMarbles[i] != nullptr) {
           l_vMarbleIDs.push_back (m_aMarbles[i]->m_iId);
@@ -774,11 +784,16 @@ namespace dustbin {
         }
 
       if (a_sLuaScript != "") {
+        helpers::addToDebugLog("    Create LUA script");
         m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
+        helpers::addToDebugLog("      1");
         if (m_pLuaScript->getError() == "") {
+          helpers::addToDebugLog("      2");
           m_pLuaScript->setWorld(m_pWorld, m_aMarbles);
+          helpers::addToDebugLog("      3");
           m_pLuaScript->initialize();
+          helpers::addToDebugLog("      4");
         }
         else {
           m_sLuaError = m_pLuaScript->getError();
@@ -786,7 +801,10 @@ namespace dustbin {
         }
       }
 
+      helpers::addToDebugLog("    Send race setup done");
       sendRacesetupdone(m_pOutputQueue);
+
+      helpers::addToDebugLog("    CDynamicThread::setupGame }");
       return true;
     }
 

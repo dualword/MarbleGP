@@ -1,6 +1,8 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
+#include <platform/CPlatform.h>
 #include <stdlib.h>
+#include <fstream>
 #include <cstring>
 #include <codecvt>
 #include <stdio.h>
@@ -108,6 +110,29 @@ namespace dustbin {
       else {
         return std::to_wstring(abs(a_iSteps)) + L" Laps";
       }
+    }
+
+    /**
+    * Add a string to a %APPDATA%\DustbinGames\MarbleGP\debug.log
+    * @param a_sInput the string to add
+    */
+    void addToDebugLog(const std::string& a_sInput) {
+      std::string l_sFile = ws2s(platform::portableGetDataPath()) + "debug.log";
+      std::ofstream l_cFile;
+      l_cFile.open(l_sFile, std::ios::app);
+      l_cFile << a_sInput << std::endl;
+      l_cFile.close();
+    }
+
+    /**
+    * Clear the debug log (at startup)
+    */
+    void clearDebugLog() {
+      std::string l_sFile = ws2s(platform::portableGetDataPath()) + "debug.log";
+      std::ofstream l_cFile;
+      l_cFile.open(l_sFile, std::ios::trunc);
+      l_cFile << "MarbleGP Starting." << std::endl;
+      l_cFile.close();
     }
   }
 }

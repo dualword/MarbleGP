@@ -327,6 +327,8 @@ namespace dustbin {
      * This method is called when the state is activated
      */
     void CGameState::activate() {
+      helpers::addToDebugLog("CGameState::activate {");
+
       m_iStep           = 0;
       m_iFadeOut        = -1;
       m_iFinished       = -1;
@@ -339,6 +341,7 @@ namespace dustbin {
       m_pGlobal->drawNextRaceScreen(1.0f);
       m_pDrv->endScene();
 
+      helpers::addToDebugLog("Load sounds...");
       m_pSoundIntf->preloadSound(L"data/sounds/hit.ogg"          , false);
       m_pSoundIntf->preloadSound(L"data/sounds/respawn_start.ogg", false);
       m_pSoundIntf->preloadSound(L"data/sounds/respawn.ogg"      , false);
@@ -347,19 +350,27 @@ namespace dustbin {
       m_pSoundIntf->preloadSound(L"data/sounds/skid.ogg"         , false);
       m_pSoundIntf->preloadSound(L"data/sounds/wind.ogg"         , false);
 
+      helpers::addToDebugLog("Initialize GUI...");
       m_pGlobal->clearGui();
 
       // m_pStepLabel = m_pGui->addStaticText(L"Step", irr::core::recti(0, 0, 1000, 200));
 
+      helpers::addToDebugLog("Check for network game...");
       m_pClient = m_pGlobal->getGameClient();
       m_pServer = m_pGlobal->getGameServer();
+
+      helpers::addToDebugLog("Load settings...");
 
       m_cGameData = data::SGameData(m_pGlobal->getGlobal("gamedata"));
       m_cSettings = m_pGlobal->getSettingData();
 
+      helpers::addToDebugLog("Initialize marbles...");
+
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
+
+      helpers::addToDebugLog("Load track...");
       // Load the track, and don't forget to run the skybox fix beforehands
       std::string l_sTrack = "data/levels/" + m_cGameData.m_sTrack + "/track.xml";
 
@@ -380,6 +391,7 @@ namespace dustbin {
       adjustNodeMaterials(m_pSmgr->getRootSceneNode());
 #endif
 
+      helpers::addToDebugLog("Fill Checkpoint List...");
       fillCheckpointList(m_pSmgr->getRootSceneNode());
 
       if (m_mCheckpoints.size() == 0) {
@@ -387,6 +399,7 @@ namespace dustbin {
         return;
       }
 
+      helpers::addToDebugLog("Find starting grid...");
       irr::scene::ISceneNode* l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId, m_pSmgr->getRootSceneNode());
 
       if (l_pNode == nullptr) {
@@ -401,6 +414,7 @@ namespace dustbin {
         return;
       }
 
+      helpers::addToDebugLog("Setup grid...");
       m_fGridAngle = m_pGridNode->getAngle();
 
       int  l_iGridOrder  = 0;
@@ -416,6 +430,7 @@ namespace dustbin {
         l_iAutoFinish = l_cSettings.m_iAutoFinish;
       }
 
+      helpers::addToDebugLog("Load Championship...");
       data::SChampionship      l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
       data::SChampionshipRace *l_pLastRace     = l_cChampionship.getLastRace();
 
@@ -426,12 +441,14 @@ namespace dustbin {
       printf("%s", m_cPlayers.toString().c_str());
       printf("\n**********\n");
 
+      helpers::addToDebugLog("Determine viewports...");
       // Find out how many viewports we need to create
       for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
         if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1)
           m_iNumOfViewports++;
       }
 
+      helpers::addToDebugLog("Check grid order...");
       if (l_pLastRace != nullptr && l_iGridOrder != 0) {
         // Grid order: Result of last race
         if (l_iGridOrder == 1) {
@@ -480,6 +497,7 @@ namespace dustbin {
         }
       }
 
+      helpers::addToDebugLog("Apply grid order...");
       // First we sort the player vector by the grid position as the first step will be marble assignment ..
       std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
         return a_cPlayer1.m_iGridPos < a_cPlayer2.m_iGridPos;
@@ -488,8 +506,10 @@ namespace dustbin {
       if (l_bGridRevert && l_iGridOrder != 0 && l_pLastRace != nullptr)
         std::reverse(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end());
 
+      helpers::addToDebugLog("Create championship race struct...");
       m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
 
+      helpers::addToDebugLog("Fill object maps...");
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
 
       if (m_pInputQueue  == nullptr) m_pInputQueue  = new threads::CInputQueue ();
@@ -497,12 +517,16 @@ namespace dustbin {
 
       hideAiNode();
 
+      helpers::addToDebugLog("Start physics thread...");
       if (m_pClient == nullptr) {
+        helpers::addToDebugLog("  Find world node");
         l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
       
         if (l_pNode != nullptr) {
+          helpers::addToDebugLog("  World node found");
           gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
 
+          helpers::addToDebugLog("  Check auto finish");
           switch (l_iAutoFinish) {
             case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
             case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
@@ -510,8 +534,10 @@ namespace dustbin {
             case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
           }
 
+          helpers::addToDebugLog("  Create dynamics thread");
           m_pDynamics = new gameclasses::CDynamicThread();
 
+          helpers::addToDebugLog("  Add queues and listeners");
           m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
           m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
 
@@ -520,13 +546,15 @@ namespace dustbin {
             m_pServer->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
           }
 
+          helpers::addToDebugLog("  sort players");
           std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
             return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
           });
 
-          
+          helpers::addToDebugLog("  Load physics script");
           std::string l_sPhysicsScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
 
+          helpers::addToDebugLog("  Setup game");
           if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
             handleError("LUA Error.", m_pDynamics->getLuaError());
             return;
@@ -542,6 +570,8 @@ namespace dustbin {
         m_pClient->getOutputQueue()->addListener(m_pInputQueue);
         m_pClient->stateChanged("state_game");
       }
+
+      helpers::addToDebugLog("Initialize sounds...");
 
 #ifndef _ANDROID
       for (int l_iMarble = 10000; l_iMarble < 10016; l_iMarble++) {
@@ -559,6 +589,7 @@ namespace dustbin {
           };
 
         for (int i = 0; std::get<0>(l_sSounds[i]) != L""; i++) {
+          helpers::addToDebugLog("Preload sound #" + std::to_string(i) + " (" + helpers::ws2s(std::get<0>(l_sSounds[i])));
           m_pSoundIntf->preloadSound(std::get<0>(l_sSounds[i]), false);
         }
       }
@@ -581,6 +612,7 @@ namespace dustbin {
         }
       }
 #endif
+      helpers::addToDebugLog("CGameState::activate }\n");
     }
 
     /**

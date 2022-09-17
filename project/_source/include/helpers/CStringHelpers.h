@@ -44,5 +44,16 @@ namespace dustbin {
     * @return a string with the steps converted to a readable time
     */
     std::wstring convertToTime(irr::s32 a_iSteps);
+
+    /**
+    * Add a string to a %APPDATA%\DustbinGames\MarbleGP\debug.log
+    * @param a_sInput the string to add
+    */
+    void addToDebugLog(const std::string &a_sInput);
+
+    /**
+    * Clear the debug log (at startup)
+    */
+    void clearDebugLog();
   }
 }
