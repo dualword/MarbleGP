@@ -46,8 +46,8 @@
       "comment": "A physics singleton for LUA AI functions to modify the physics",
       "globalidentifier": "worldsingleton_cinstance",
       "members": [
-        { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The physics world"  , "default": "nullptr" },
-        { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "An array of marbles" }
+        { "name": "world"  , "type": "gameclasses::CWorld *"       , "comment": "The physics world"  , "default": "nullptr" },
+        { "name": "marbles", "type": "gameclasses::CObjectMarble *", "comment": "An array of marbles", "default": "nullptr", "arraysize": "16" }
       ],
       "methods": {
         "lua_from": {

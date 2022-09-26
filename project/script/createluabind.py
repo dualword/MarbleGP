@@ -503,7 +503,12 @@ def CreateHeader(a_FilePath, a_Name, a_Class, a_Type, a_Json):
   
   if "members" in a_Class:
     for l_Member in a_Class["members"]:
-      l_Header.write("        " + l_Member["type"] + " m_" + l_Member["name"] + ";")
+      l_Header.write("        " + l_Member["type"] + " m_" + l_Member["name"])
+      
+      if "arraysize" in l_Member:
+        l_Header.write("[" + l_Member["arraysize"] + "]")
+      
+      l_Header.write(";")
       if "comment" in l_Member:
         l_Header.write("  /**< " + l_Member["comment"] + " */")
         
@@ -877,7 +882,10 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
         a_Source.write("\n")
         for l_Member in a_Class["members"]:
           if "default" in l_Member:
-            a_Source.write("      m_" + l_Member["name"] + " = " + l_Member["default"] + ";\n")
+            if "arraysize" in l_Member:
+              a_Source.write("      for (int i = 0; i < " + l_Member["arraysize"] + "; i++) m_" + l_Member["name"] + "[i] = " + l_Member["default"] + ";\n")
+            else:
+              a_Source.write("      m_" + l_Member["name"] + " = " + l_Member["default"] + ";\n")
         
       a_Source.write("    }\n\n")
       
@@ -890,7 +898,10 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
         a_Source.write("\n")
         for l_Member in a_Class["members"]:
           if "default" in l_Member and l_Member["default"] != "":
-            a_Source.write("      m_" + l_Member["name"] + " = " + l_Member["default"] + ";\n")
+            if "arraysize" in l_Member:
+              a_Source.write("      for (int i = 0; i < " + l_Member["arraysize"] + "; i++) m_" + l_Member["name"] + "[i] = " + l_Member["default"] + ";\n")
+            else:
+              a_Source.write("      m_" + l_Member["name"] + " = " + l_Member["default"] + ";\n")
         
       a_Source.write("      // Create LUA State\n")
       a_Source.write("      m_pState = luaL_newstate();\n")
