@@ -4,7 +4,7 @@
 namespace dustbin {
   namespace lua {
 
-    ILuaClass::ILuaClass() {
+    ILuaClass::ILuaClass() : m_sError("") {
       m_pState = nullptr;
     }
 

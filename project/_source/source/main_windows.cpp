@@ -109,5 +109,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
   }
   while (l_eState != dustbin::state::enState::Quit);
 
+  dustbin::helpers::clearDebugLog();
   return 0;
 }

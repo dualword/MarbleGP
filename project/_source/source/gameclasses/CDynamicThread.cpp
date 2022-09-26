@@ -10,6 +10,7 @@
 #include <gameclasses/IGameLogic.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/COdeNodes.h>
+#include <helpers/CStringHelpers.h>
 #include <gfx/SViewPort.h>
 #include <exception>
 #include <CGlobal.h>
@@ -787,7 +788,7 @@ namespace dustbin {
         helpers::addToDebugLog("    Create LUA script");
         m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
-        helpers::addToDebugLog("      1");
+        helpers::addToDebugLog("      1" + std::to_string((unsigned long long)m_pLuaScript));
         if (m_pLuaScript->getError() == "") {
           helpers::addToDebugLog("      2");
           m_pLuaScript->setWorld(m_pWorld, m_aMarbles);

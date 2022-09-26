@@ -65,6 +65,15 @@ namespace dustbin {
     std::string CLuaSingleton_system::loadtextfile(const std::string& a_filename) {
       return doloadtextfile(helpers::ws2s(platform::portableGetDataPath()) + a_filename);
     }
+
+    /**
+    * Add a string to the debug log
+    * @param The text to add to the debug log
+    */
+    void CLuaSingleton_system::addtodebuglog(const std::string& a_input) {
+      helpers::addToDebugLog(a_input);
+    }
+
     /**
     * The actual code that loads text files, not path adjustment done here
     * @param Name of the text file

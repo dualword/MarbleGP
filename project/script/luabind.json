@@ -47,7 +47,7 @@
       "globalidentifier": "worldsingleton_cinstance",
       "members": [
         { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The physics world"  , "default": "nullptr" },
-        { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "An array of marbles", "default": "nullptr" }
+        { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "An array of marbles" }
       ],
       "methods": {
         "lua_from": {
@@ -160,6 +160,12 @@
               { "name": "filename", "type": "std::string", "comment": "Name of the text file" }
             ],
             "return": { "type": "std::string", "comment": "The content of the text file" }
+          },
+          "addtodebuglog": {
+            "comment": "Add a string to the debug log",
+            "arguments": [
+              { "name": "input", "type": "std::string", "comment": "The text to add to the debug log" }
+            ]
           }
         },
         "lua_none": {
