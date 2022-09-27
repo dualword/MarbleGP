@@ -28,7 +28,7 @@ def copyContent(a_Folder, a_Target):
       else:
         print("Copy file \"" + l_File + "\" to \"" + a_Target + "\"...")
         shutil.copyfile(l_File, a_Target + "/" + l_Entry)
-        g_CopyiedItems["files"][l_File] = calendar.timegm(time.gmtime())
+        g_CopyiedItems["files"][a_Target + "/" + l_Entry] = calendar.timegm(time.gmtime())
 
 def saveFileList():
   with open("copydata_files.dict", "wb") as l_File:
