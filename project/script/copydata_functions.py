@@ -1,13 +1,15 @@
-import sys, os, shutil
+import sys, os, shutil, time, calendar, pickle
 
-g_CopyiedItems = { }
+g_CopyiedItems = {
+  "rootfolder": "",
+  "files": {
+  }
+}
 
 def createIfNotExisting(a_Folder):
   if not os.path.exists(a_Folder):
     print("Creating folder \"" + a_Folder + "\" ...")
     os.makedirs(a_Folder)
-
-g_TexturesCopied = False
 
 def copyContent(a_Folder, a_Target):
   print(a_Target[-11:])
@@ -18,9 +20,16 @@ def copyContent(a_Folder, a_Target):
   
   for l_Entry in l_Content:
     if l_Entry != "." and l_Entry != "..":
-      if os.path.isdir(a_Folder + "/" + l_Entry):
+      l_File = a_Folder + "/" + l_Entry
+      
+      if os.path.isdir(l_File):
         print(l_Entry)
-        copyContent(a_Folder + "/" + l_Entry, a_Target + "/" + l_Entry)
+        copyContent(l_File, a_Target + "/" + l_Entry)
       else:
-        print("Copy file \"" + a_Folder + "/" + l_Entry + "\" to \"" + a_Target + "\"...")
-        shutil.copyfile(a_Folder + "/" + l_Entry, a_Target + "/" + l_Entry)
+        print("Copy file \"" + l_File + "\" to \"" + a_Target + "\"...")
+        shutil.copyfile(l_File, a_Target + "/" + l_Entry)
+        g_CopyiedItems["files"][l_File] = calendar.timegm(time.gmtime())
+
+def saveFileList():
+  with open("copydata_files.dict", "wb") as l_File:
+    pickle.dump(g_CopyiedItems, l_File)

@@ -7,3 +7,4 @@ if os.path.exists("../../data"):
 copydata_functions.copyContent("../../project/data"        , "../../data")
 copydata_functions.copyContent("../../project/data_es"     , "../../data")
 copydata_functions.copyContent("../../project/data_android", "../../data")
+copydata_functions.saveFileList()
