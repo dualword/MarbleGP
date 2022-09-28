@@ -50,6 +50,8 @@ if os.path.exists(g_AndroidPath):
 
 print("Copy marblegp.dat for Android ...")
 shutil.copyfile("temp_android/marblegp.dat", g_AndroidPath)
+print("Copy marblegp.dat for Windows ...")
+shutil.copyfile("temp_gl/marblegp.dat", "../../MarbleGP/marblegp.dat")
 print("Ready.")
 
 shutil.rmtree("temp_es/data")
