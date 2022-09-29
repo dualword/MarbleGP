@@ -74,6 +74,7 @@ namespace dustbin {
       if (m_sTexture != "" && m_pMarble != nullptr) {
         m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));
       }
+      else printf("Empty texture string.\n");
 
       std::string l_sType = "";
 

@@ -52,7 +52,8 @@
     [ "DiscoverServerRequest" , "41" ],
     [ "DiscoverServerResponse", "42" ],
     [ "DiscoveryStep"         , "43" ],
-    [ "GameServerFound"       , "44" ]
+    [ "GameServerFound"       , "44" ],
+    [ "SetTexture"            , "45" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -234,9 +235,10 @@
     "RegisterPlayer": {
       "comment": "Register a player via a network connection",
       "fields": [
-        { "name": "name"   , "type": "std::string", "comment": "name of the player" },
-        { "name": "texture", "type": "std::string", "comment": "texture of the player" },
-        { "name": "ident"  , "type": "irr::s32"   , "comment": "The original player ID on the client" }
+        { "name": "name"     , "type": "std::string", "comment": "name of the player" },
+        { "name": "texture"  , "type": "std::string", "comment": "texture of the player" },
+        { "name": "ident"    , "type": "irr::s32"   , "comment": "The original player ID on the client" },
+        { "name": "shortname", "type": "std::string", "comment": "Short name of the player for the HUD ranking display" }
       ]
     },
     "UpdatePlayerId": {
@@ -274,7 +276,8 @@
       "fields": [
         { "name": "playerid", "type": "irr::s32"   , "comment": "ID of the player" },
         { "name": "name"    , "type": "std::string", "comment": "Name of the player" },
-        { "name": "texture" , "type": "std::string", "comment": "Texture of the player" }
+        { "name": "texture" , "type": "std::string", "comment": "Texture of the player" },
+        { "name": "shortname", "type": "std::string", "comment": "Short name of the player for the HUD ranking display" }
       ]
     },
     "PlayerRemoved": {
@@ -353,6 +356,13 @@
         { "name": "server", "type": "irr::u32"   , "comment": "The IP address of the server" },
         { "name": "portno", "type": "irr::u32"   , "comment": "The port the server is listening to" },
         { "name": "name"  , "type": "std::string", "comment": "Humand-readable name of the server" }
+      ]
+    },
+    "SetTexture": {
+      "comment": "Set the starting number of a player, necessary for network games",
+      "fields": [
+        { "name": "playerid", "type": "irr::u32"   , "comment": "The Player's ID" },
+        { "name": "texture" , "type": "std::string", "comment": "The marble texture" }
       ]
     }
   },

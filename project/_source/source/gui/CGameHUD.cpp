@@ -266,7 +266,7 @@ namespace dustbin {
     * @param a_Checkpoint The checkpoint ID the player has passed
     */
     void CGameHUD::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
-      if (m_mLapTimes.find(a_MarbleId) != m_mLapTimes.end()) {
+      if (m_mLapTimes.find(a_MarbleId) != m_mLapTimes.end() && m_mLapTimes[a_MarbleId].m_vLapTimes.size() > 0) {
         int l_iSplitTime = m_iStep - m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iStart;
 
         if (l_iSplitTime != 0) {

@@ -125,7 +125,7 @@ namespace dustbin {
             while (l_iSlots > 0 && it != m_cPlayers.m_vPlayers.end()) {
               printf("Register player \"%s\"...\n", (*it).m_sName.c_str());
 
-              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture, (*it).m_iPlayerId);
+              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture, (*it).m_iPlayerId, (*it).m_sShortName);
               sendMessage(a_pPeer, &l_cPlayer);
               it++;
               l_iSlots--;

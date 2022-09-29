@@ -238,9 +238,10 @@ namespace dustbin {
 
                   data::SPlayerData l_cPlayer;
 
-                  l_cPlayer.m_sName     = p->getname   ();
-                  l_cPlayer.m_sTexture  = p->gettexture();
-                  l_cPlayer.m_iPlayerId = l_iNextPlayerId;
+                  l_cPlayer.m_sName      = p->getname   ();
+                  l_cPlayer.m_sTexture   = p->gettexture();
+                  l_cPlayer.m_iPlayerId  = l_iNextPlayerId;
+                  l_cPlayer.m_sShortName = p->getshortname();
 
                   m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
@@ -250,7 +251,7 @@ namespace dustbin {
 
                   m_mPlayerMap[a_pPeer].push_back(l_iNextPlayerId);
 
-                  messages::CRegisterPlayer l_cNewMsg = messages::CRegisterPlayer(p->getname(), p->gettexture(), l_iNextPlayerId);
+                  messages::CRegisterPlayer l_cNewMsg = messages::CRegisterPlayer(p->getname(), p->gettexture(), l_iNextPlayerId, p->getshortname());
 
                   // ToDo: Maybe create a new message with further information
                   m_pOutputQueue->postMessage(&l_cNewMsg);
@@ -269,7 +270,7 @@ namespace dustbin {
 
           case messages::enMessageIDs::PlayerListEnd: {
             for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-              messages::CRacePlayer l_cPlayer = messages::CRacePlayer((*it).m_iPlayerId, (*it).m_sName, (*it).m_sTexture);
+              messages::CRacePlayer l_cPlayer = messages::CRacePlayer((*it).m_iPlayerId, (*it).m_sName, (*it).m_sTexture, (*it).m_sShortName);
               broadcastMessage(&l_cPlayer, true);
             }
 

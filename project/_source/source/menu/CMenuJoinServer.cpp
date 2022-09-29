@@ -156,11 +156,12 @@ namespace dustbin {
 
                 data::SPlayerData l_cPlayer = data::SPlayerData();
 
-                l_cPlayer.m_sName     = p->getname   ();
-                l_cPlayer.m_sTexture  = p->gettexture();
-                l_cPlayer.m_iPlayerId = p->getident();
-                l_cPlayer.m_eType     = data::enPlayerType::Network;
-                l_cPlayer.m_sControls = "Network";
+                l_cPlayer.m_sName      = p->getname     ();
+                l_cPlayer.m_sTexture   = p->gettexture  ();
+                l_cPlayer.m_iPlayerId  = p->getident    ();
+                l_cPlayer.m_sShortName = p->getshortname();
+                l_cPlayer.m_eType      = data::enPlayerType::Network;
+                l_cPlayer.m_sControls  = "Network";
 
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
@@ -208,12 +209,13 @@ namespace dustbin {
 
                 if (l_bAdd) {
                   data::SPlayerData l_cNewPlayer;
-                  l_cNewPlayer.m_eAiHelp   = data::SPlayerData::enAiHelp::Off;
-                  l_cNewPlayer.m_eType     = data::enPlayerType::Network;
-                  l_cNewPlayer.m_iPlayerId = p->getplayerid();
-                  l_cNewPlayer.m_sControls = "Network";
-                  l_cNewPlayer.m_sName     = p->getname();
-                  l_cNewPlayer.m_sTexture  = p->gettexture();
+                  l_cNewPlayer.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
+                  l_cNewPlayer.m_eType      = data::enPlayerType::Network;
+                  l_cNewPlayer.m_iPlayerId  = p->getplayerid ();
+                  l_cNewPlayer.m_sName      = p->getname     ();
+                  l_cNewPlayer.m_sTexture   = p->gettexture  ();
+                  l_cNewPlayer.m_sShortName = p->getshortname();
+                  l_cNewPlayer.m_sControls  = "Network";
 
                   m_cPlayers.m_vPlayers.push_back(l_cNewPlayer);
 
@@ -265,6 +267,19 @@ namespace dustbin {
                 printf("\n\n%s\n\n", m_cChampionship.to_string().c_str());
 
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::SetTexture) {
+                messages::CSetTexture *p = reinterpret_cast<messages::CSetTexture *>(l_pMsg);
+
+                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+                  if ((*it).m_iPlayerId == p->getplayerid() && (*it).m_sTexture.find("number=") == std::string::npos) {
+                    (*it).m_sTexture = p->gettexture();
+                    printf("Texture of player %s set: %s\n", (*it).m_sName.c_str(), (*it).m_sTexture.c_str());
+                    break;
+                  }
+                }
+
+                return true;
               }
 
               delete l_pMsg;

@@ -1724,6 +1724,7 @@ namespace dustbin {
             // Message needs to be posted twice, request and confirm withdraw
             m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
             m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
+            return;
           }
         }
       }

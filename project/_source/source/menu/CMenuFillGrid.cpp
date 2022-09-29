@@ -83,6 +83,11 @@ namespace dustbin {
             else
               (*it).m_sTexture = (*it).m_sTexture + "&number=" + std::to_string((*it).m_iGridPos + 1);
 
+            if (m_pServer != nullptr) {
+              messages::CSetTexture l_cNumber = messages::CSetTexture((*it).m_iPlayerId, (*it).m_sTexture);
+              m_pServer->getInputQueue()->postMessage(&l_cNumber);
+            }
+
             l_vGrid.erase(l_vGrid.begin());
           }
 
@@ -105,7 +110,7 @@ namespace dustbin {
               l_cPlayers.m_vPlayers.push_back(l_cData);
 
               if (m_pServer != nullptr) {
-                messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer(l_cData.m_sName, l_cData.m_sTexture, l_cData.m_iPlayerId);
+                messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer(l_cData.m_sName, l_cData.m_sTexture, l_cData.m_iPlayerId, l_cData.m_sShortName);
                 m_pServer->getInputQueue()->postMessage(&l_cPlayer);
               }
             }
