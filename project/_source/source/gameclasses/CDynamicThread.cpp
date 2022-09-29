@@ -892,9 +892,11 @@ namespace dustbin {
       if (m_eGameState == enGameState::Racing) {
         irr::s32 l_iIndex = a_MarbleID - 10000;
 
-        if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Finished && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
-          m_bPaused = !m_bPaused;
-          sendPausechanged(m_bPaused, m_pOutputQueue);
+        if (l_iIndex >= 0 && l_iIndex < 16) {
+          if (m_aMarbles[l_iIndex] != nullptr && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Finished && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
+            m_bPaused = !m_bPaused;
+            sendPausechanged(m_bPaused, m_pOutputQueue);
+          }
         }
       }
     }
