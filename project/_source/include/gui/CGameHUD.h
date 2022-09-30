@@ -103,6 +103,7 @@ namespace dustbin {
         irr::core::dimension2du        m_cLapNoDim;       /**< Size of the lap number of the lap times display */
         irr::core::dimension2du        m_cPosNameDim;     /**< Size of the position display (upper left) */
         irr::core::dimension2du        m_cStartNr;        /**< Size of the starting number */
+        irr::core::dimension2du        m_cCheckered;      /**< Size of the checkered flag texture */
         irr::s32                       m_iLapTimeOffset;  /**< Vertical offset between the lap time labels */
         bool                           m_bShowLapTimes;   /**< Draw lap times? */
         irr::video::ITexture          *m_pCheckered;      /**< The checkered flag texture */

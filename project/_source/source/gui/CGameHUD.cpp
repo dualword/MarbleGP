@@ -704,6 +704,7 @@ namespace dustbin {
       m_cLapTimePos.X = a_cRect.LowerRightCorner.X - m_cLapTotalDim.Width;
 
       m_pCheckered = m_pDrv->getTexture("data/images/checkered.png");
+      m_cCheckered = m_pCheckered->getOriginalSize();
 
       for (std::vector<gameclasses::SPlayer *>::iterator l_itRank =  a_vRanking->begin(); l_itRank != a_vRanking->end(); l_itRank++) {
         printf("State: %i\n", (*l_itRank)->m_iState);
@@ -1019,7 +1020,7 @@ namespace dustbin {
           m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
 
           if ((*it)->m_iState == 4 && m_pCheckered != nullptr) {
-            m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cStartNr));
+            m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cCheckered), nullptr, nullptr, false);
           }
 
           l_cPos.Y += m_iLapTimeOffset;
