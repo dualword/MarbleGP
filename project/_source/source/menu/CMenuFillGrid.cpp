@@ -47,16 +47,18 @@ namespace dustbin {
 
           int l_iGridSize = 1;
 
-          if (l_cSettings.m_iGridSize == 0)
-            l_iGridSize = 2;
-          else if (l_cSettings.m_iGridSize == 1)
-            l_iGridSize = 4;
-          else if (l_cSettings.m_iGridSize == 2)
-            l_iGridSize = 8;
-          else if (l_cSettings.m_iGridSize == 3)
-            l_iGridSize = 12;
-          else if (l_cSettings.m_iGridSize == 4)
-            l_iGridSize = 16;
+          if (l_cSettings.m_bFillGridAI) {
+            if (l_cSettings.m_iGridSize == 0)
+              l_iGridSize = 2;
+            else if (l_cSettings.m_iGridSize == 1)
+              l_iGridSize = 4;
+            else if (l_cSettings.m_iGridSize == 2)
+              l_iGridSize = 8;
+            else if (l_cSettings.m_iGridSize == 3)
+              l_iGridSize = 12;
+            else if (l_cSettings.m_iGridSize == 4)
+              l_iGridSize = 16;
+          }
 
           // We fill a vector with the grid positions and ..
           std::vector<int> l_vGrid;
