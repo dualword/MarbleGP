@@ -103,5 +103,14 @@ namespace dustbin {
       if (m_pAiControls != nullptr)
         m_pAiControls->onMarbleRespawn(a_iMarbleId);
     }
+
+    /**
+    * For debuggin purposes: Draw the data used to control the marble (2d)
+    * @param a_pDrv the video driver
+    */
+    void CMarbleController::drawDebugData2d(irr::video::IVideoDriver* a_pDrv) {
+      if (m_pAiControls != nullptr)
+        m_pAiControls->drawDebugData2d(a_pDrv);
+    }
   }
 }

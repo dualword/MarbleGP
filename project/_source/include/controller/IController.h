@@ -40,6 +40,12 @@ namespace dustbin {
         virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) = 0;
 
         virtual void onMarbleRespawn(int a_iMarbleId) = 0;
+
+        /**
+        * For debuggin purposes: Draw the data used to control the marble (2d)
+        * @param a_pDrv the video driver
+        */
+        virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) { }
     };
   }
 }
