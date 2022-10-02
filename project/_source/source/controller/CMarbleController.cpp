@@ -2,7 +2,7 @@
 
 #include <_generated/messages/CMessages.h>
 #include <controller/CMarbleController.h>
-#include <controller/CControllerAI.h>
+#include <controller/CControllerAi_V2.h>
 #include <messages/CSerializer64.h>
 
 namespace dustbin {
@@ -25,7 +25,7 @@ namespace dustbin {
       }
 
       if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
-        m_pAiControls = new CControllerAI(a_iMarbleId, "", a_pQueue, a_pAiNode);
+        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "");
       }
     }
 

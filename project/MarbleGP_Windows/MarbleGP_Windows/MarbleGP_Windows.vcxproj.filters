@@ -579,6 +579,9 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CAiPathNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerAi_V2.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -939,6 +942,9 @@
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\IControllerAI.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerAi_V2.h">
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
   </ItemGroup>
