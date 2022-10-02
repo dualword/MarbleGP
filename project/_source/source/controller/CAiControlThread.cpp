@@ -2,6 +2,7 @@
 
 #include <_generated/messages/CMessages.h>
 #include <controller/CAiControlThread.h>
+#include <controller/CControllerAI.h>
 
 namespace dustbin {
   namespace controller {

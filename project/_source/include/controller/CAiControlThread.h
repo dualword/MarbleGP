@@ -2,7 +2,7 @@
 #pragma once
 
 #include <_generated/messages/IAiController.h>
-#include <controller/CControllerAI.h>
+#include <controller/IControllerAI.h>
 #include <threads/IThread.h>
 #include <irrlicht.h>
 
@@ -19,7 +19,7 @@ namespace dustbin {
     */
     class CAiControlThread : public threads::IThread, public messages::IAiController {
       private:
-        controller::CControllerAI *m_aControllers[17];    /**< The AI controllers, one more than possible to have a terminating "nullptr" */
+        controller::IControllerAI *m_aControllers[17];    /**< The AI controllers, one more than possible to have a terminating "nullptr" */
         scenenodes::CAiNode       *m_pAiNode;
         threads::COutputQueue     *m_pDynamicsOut;
         threads::CInputQueue      *m_pDynamicsIn;

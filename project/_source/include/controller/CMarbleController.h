@@ -15,7 +15,7 @@ namespace dustbin {
   }
   namespace controller {
 
-    class CControllerAI;
+    class IControllerAI;
 
     /**
     * @class CMarbleController
@@ -25,7 +25,7 @@ namespace dustbin {
     class CMarbleController : public IController {
       protected:
         CControllerGame *m_pController;
-        CControllerAI   *m_pAiControls;
+        IControllerAI   *m_pAiControls;
         int              m_iMarbleId;
         
         data::SPlayerData::enAiHelp  m_eAiHelp;
