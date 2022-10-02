@@ -92,8 +92,6 @@ namespace dustbin {
     }
 
     void CMarbleController::onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos) { 
-      if (m_pAiControls != nullptr)
-        m_pAiControls->onObjectMoved(a_iObjectId, a_cNewPos);
     }
 
     void CMarbleController::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) { 

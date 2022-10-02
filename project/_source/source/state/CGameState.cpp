@@ -637,6 +637,7 @@ namespace dustbin {
       if (m_pAiThread != nullptr) {
         helpers::addToDebugLog("Stop AI thread");
         m_pAiThread->stopThread();
+        helpers::addToDebugLog("Wait for AI thread to stop");
         m_pAiThread->join();
         helpers::addToDebugLog("Delete AI thread");
         delete m_pAiThread;
@@ -1183,11 +1184,6 @@ namespace dustbin {
      */
     void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity) {
       if (m_mMoving.find(a_ObjectId) != m_mMoving.end()) {
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-          if ((*it)->m_pController != nullptr)
-            (*it)->m_pController->onObjectMoved(a_ObjectId, a_Position);
-        }
-
         m_mMoving[a_ObjectId]->setPosition(a_Position);
 
         if (a_Rotation.X == a_Rotation.X && a_Rotation.Y == a_Rotation.Y && a_Rotation.Z == a_Rotation.Z)

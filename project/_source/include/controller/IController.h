@@ -37,8 +37,6 @@ namespace dustbin {
         */
         virtual void update(const irr::SEvent& a_cEvent) = 0;
 
-        virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos) = 0;
-
         virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) = 0;
 
         virtual void onMarbleRespawn(int a_iMarbleId) = 0;

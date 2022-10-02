@@ -6,6 +6,7 @@
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CRespawnNode.h>
 #include <scenenodes/CRostrumNode.h>
+#include <scenenodes/CAiPathNode.h>
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CJointNode.h>
 #include <scenenodes/CDustbinId.h>
@@ -60,6 +61,10 @@ namespace dustbin {
           p = new CRostrumNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId:
+          p = new CAiPathNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
+          break;
+
         default:
           break;
       }
@@ -75,7 +80,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 9;
+      return 10;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -89,6 +94,7 @@ namespace dustbin {
         case  6: return g_AiNodeName;
         case  7: return g_DustbinCameraNodeName;
         case  8: return g_RostrumNodeName;
+        case  9: return g_AiPathNodeName;
       }
 
       return nullptr;
@@ -105,6 +111,7 @@ namespace dustbin {
         case  6: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
         case  7: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
         case  8: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
+        case  9: return (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -139,6 +146,9 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId:
           return g_RostrumNodeName;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId:
+          return g_AiPathNodeName;
+
         default:
           return nullptr;
       }
@@ -165,6 +175,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
       else if (l_sName == g_RostrumNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
+      else if (l_sName == g_AiPathNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }

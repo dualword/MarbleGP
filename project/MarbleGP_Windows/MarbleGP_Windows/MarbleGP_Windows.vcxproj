@@ -170,6 +170,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiPathNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="..\..\_source\include\controller\CControllerMenu.h" />
     <ClInclude Include="..\..\_source\include\controller\CMarbleController.h" />
     <ClInclude Include="..\..\_source\include\controller\IController.h" />
+    <ClInclude Include="..\..\_source\include\controller\IControllerAI.h" />
     <ClInclude Include="..\..\_source\include\controller\ICustomEventReceiver.h" />
     <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />
@@ -294,6 +296,7 @@
     <ClInclude Include="..\..\_source\include\network\CNetworkDefines.h" />
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiPathNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />

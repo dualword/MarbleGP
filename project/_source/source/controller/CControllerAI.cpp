@@ -86,9 +86,6 @@ namespace dustbin {
       return irr::core::vector3df(0.0f);
     }
 
-    void CControllerAI::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cNewPos) {
-    }
-
     void CControllerAI::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) {
       if (a_iMarbleId == m_iMarbleId) {
         m_cPos    = a_cNewPos;
