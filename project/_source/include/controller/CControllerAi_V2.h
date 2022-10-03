@@ -27,13 +27,27 @@ namespace dustbin {
           irr::core::line2df m_cLine2d;     /**< This line is the 2d representation of m_cLine3d */
           irr::core::line2df m_cEdges[2];   /**< The 2d lines that define the borders of this section */
 
+          irr::core::vector3df m_cNormal;   /**< The normal of the section */
+
           std::vector<SAiPathSection *> m_vNext;    /**< The next options after this section */
         }
         SAiPathSection;
 
         int m_iMarbleId;
 
+        SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
+
+        irr::core::vector3df m_cPosition;   /**< The marble's position */
+        irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
+
         std::vector<SAiPathSection *> m_vAiPath;  /**< A list of all ai path sections */
+
+        /**
+        * Select the closest AI path section to the position. Will be called
+        * when the race is started, after respawn and stun
+        * @param a_cPosition the position of the marble
+        */
+        SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions);
 
       public:
         /**

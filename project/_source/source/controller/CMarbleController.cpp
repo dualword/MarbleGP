@@ -55,15 +55,21 @@ namespace dustbin {
         bool l_bRespawn  = m_pController->getRespawn();
 
         if (m_pAiControls != nullptr) {
-          switch (m_eAiHelp) {
-            case data::SPlayerData::enAiHelp::Bot: {
-              irr::s32 i = 0;
-              m_pAiControls->getControlMessage(i, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
-              break;
-            }
+          irr::s32 i = 0;
+          irr::s8  l_iBotX = 0;
+          irr::s8  l_iBotY = 0;
+          bool     l_bBrakeBot = false;
+          bool     l_bRearBot  = false;
+          bool     l_bRspnBot  = false;
 
-            default:
-              break;
+          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot);
+
+          if (m_eAiHelp == data::SPlayerData::enAiHelp::Bot) {
+            l_iCtrlX    = l_iBotX;
+            l_iCtrlY    = l_iBotY;
+            l_bBrake    = l_bBrake;
+            l_bRearView = l_bRearBot;
+            l_bRespawn  = l_bRspnBot;
           }
         }
 
