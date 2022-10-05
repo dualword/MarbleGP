@@ -24,12 +24,28 @@ namespace dustbin {
         */
         typedef struct SAiPathSection {
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
-          irr::core::line2df m_cLine2d;     /**< This line is the 2d representation of m_cLine3d */
-          irr::core::line2df m_cEdges[2];   /**< The 2d lines that define the borders of this section */
+          irr::core::line3df m_cEdges[2];   /**< The side edges of the section */
 
           irr::core::vector3df m_cNormal;   /**< The normal of the section */
 
           std::vector<SAiPathSection *> m_vNext;    /**< The next options after this section */
+
+          std::vector<irr::core::vector3df> m_vLinePoints;    /**< The central line for the next 500+ meters, transformed to the plane of the section */
+          std::vector<irr::core::vector3df> m_vEdgePoints[2]; /**< The broder lines for the next 500+ meters, transformed to the plane of the section */
+
+          /**
+          * Fill the vectors of the points for the next 500+ meters
+          * with Irrlicht vectors transformed to the section plane
+          */
+          void fillLineVectors();
+
+          /**
+          * Check whether or not the two passed lines (for edges) may overlap
+          * @param a_cLine1 the first line
+          * @param a_cLine2 the second line
+          * @return true if the lines may overlap, false otherwise
+          */
+          bool doLinesOverlap(const irr::core::line3df &a_cLine1, const irr::core::line3df &a_cLine2);
         }
         SAiPathSection;
 
@@ -39,6 +55,9 @@ namespace dustbin {
 
         irr::core::vector3df m_cPosition;   /**< The marble's position */
         irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
+        irr::core::vector3df m_cContact;    /**< The contact point of the marble */
+        irr::core::vector3df m_cDirection;  /**< The camera direction */
+        irr::core::vector3df m_cCameraUp;   /**< The camera up vector */
 
         std::vector<SAiPathSection *> m_vAiPath;  /**< A list of all ai path sections */
 

@@ -36,7 +36,9 @@ namespace dustbin {
     * @return the steer state
     */
     irr::f32 CControllerGame::getSteer() {
-      return m_vControls[3].m_fValue - m_vControls[2].m_fValue;
+      irr::f32 l_fSteer = m_vControls[3].m_fValue - m_vControls[2].m_fValue;
+
+      return abs(l_fSteer) > 0.1f ? l_fSteer : 0.0f;
     }
 
     /**
