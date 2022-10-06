@@ -30,8 +30,11 @@ namespace dustbin {
 
           std::vector<SAiPathSection *> m_vNext;    /**< The next options after this section */
 
-          std::vector<irr::core::vector3df> m_vLinePoints;    /**< The central line for the next 500+ meters, transformed to the plane of the section */
-          std::vector<irr::core::vector3df> m_vEdgePoints[2]; /**< The broder lines for the next 500+ meters, transformed to the plane of the section */
+          std::vector<irr::core::line3df> m_vLinesCentral;    /**< The central lines defining the path */
+          std::vector<irr::core::line3df> m_vLinesBorder[2];  /**< The border lines defining the edge of the track */
+
+          // std::vector<irr::core::vector3df> m_vLinePoints;    /**< The central line for the next 500+ meters, transformed to the plane of the section */
+          // std::vector<irr::core::vector3df> m_vEdgePoints[2]; /**< The broder lines for the next 500+ meters, transformed to the plane of the section */
 
           /**
           * Fill the vectors of the points for the next 500+ meters

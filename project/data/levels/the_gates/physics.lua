@@ -1,5 +1,3 @@
-io.write("\n\n**** LUA script started\n\n")
-
 -- trigger 0 / 2
 -- trigger 1 / 3
 
@@ -55,4 +53,14 @@ function ontrigger(a_Marble, a_Trigger)
       end
     end
   end
+end
+
+function onplayerwithdrawn(a_Marble)
+  ontrigger(a_Marble, 2)
+  ontrigger(a_Marble, 3)
+end
+
+function onplayerrespawn(a_Marble)
+  ontrigger(a_Marble, 2)
+  ontrigger(a_Marble, 3)
 end

@@ -91,7 +91,7 @@ namespace dustbin {
               l_cEdges[3].getMiddle()
             };
 
-            if (l_cMiddle[0].getDistanceFromSQ(l_cMiddle[1]) > l_cMiddle[2].getDistanceFromSQ(l_cMiddle[3])) {
+            if (l_cMiddle[0].getDistanceFromSQ(l_cMiddle[1]) < l_cMiddle[2].getDistanceFromSQ(l_cMiddle[3])) {
               p->m_cEdges[0] = l_cEdges[0];
               p->m_cEdges[1] = l_cEdges[1];
             }
@@ -283,34 +283,29 @@ namespace dustbin {
         irr::core::matrix4 l_cMatrix;
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition - m_pCurrent->m_cNormal, m_cDirection);
 
-        irr::core::vector3df l_cLast;
-
         irr::core::dimension2du l_cSize = a_pDrv->getScreenSize();
         irr::core::vector2di l_cOffset = irr::core::vector2di(l_cSize.Width / 2, l_cSize.Height / 2);
 
-        for (std::vector<irr::core::vector3df>::iterator l_itPoint = m_pCurrent->m_vLinePoints.begin(); l_itPoint != m_pCurrent->m_vLinePoints.end(); l_itPoint++) {
-          irr::core::vector3df v;
-          l_cMatrix.transformVect(v, *l_itPoint);
-          
-          if (l_itPoint != m_pCurrent->m_vLinePoints.begin()) {
-            a_pDrv->draw2DLine(irr::core::vector2di((irr::s32)(2.0f * v.X + l_cOffset.X), (irr::s32)(2.0f * v.Y + l_cOffset.Y)), irr::core::vector2di((irr::s32)(2.0f * l_cLast.X + l_cOffset.X), (irr::s32)(2.0f * l_cLast.Y + l_cOffset.Y)), irr::video::SColor(0xFF, 0, 0, 0));
-          }
+        for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesCentral.begin(); l_itPoint != m_pCurrent->m_vLinesCentral.end(); l_itPoint++) {
+          irr::core::vector3df vs;
+          irr::core::vector3df ve;
 
-          l_cLast = v;
+          l_cMatrix.transformVect(vs, (*l_itPoint).start);
+          l_cMatrix.transformVect(ve, (*l_itPoint).end  );
+          
+          a_pDrv->draw2DLine(irr::core::vector2di((irr::s32)(2.0f * vs.X + l_cOffset.X), (irr::s32)(2.0f * vs.Y + l_cOffset.Y)), irr::core::vector2di((irr::s32)(2.0f * ve.X + l_cOffset.X), (irr::s32)(2.0f * ve.Y + l_cOffset.Y)), irr::video::SColor(0xFF, 0, 0, 0));
         }
 
         std::vector<irr::core::line2di> l_vEdgeLines[2];
 
         for (int i = 0; i < 2; i++) {
-          for (std::vector<irr::core::vector3df>::iterator l_itPoint = m_pCurrent->m_vEdgePoints[i].begin(); l_itPoint != m_pCurrent->m_vEdgePoints[i].end(); l_itPoint++) {
-            irr::core::vector3df v;
-            l_cMatrix.transformVect(v, *l_itPoint);
+          for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesBorder[i].begin(); l_itPoint != m_pCurrent->m_vLinesBorder[i].end(); l_itPoint++) {
+            irr::core::vector3df vs;
+            irr::core::vector3df ve;
+            l_cMatrix.transformVect(vs, (*l_itPoint).start);
+            l_cMatrix.transformVect(ve, (*l_itPoint).end  );
 
-            if (l_itPoint != m_pCurrent->m_vEdgePoints[i].begin()) {
-              l_vEdgeLines[i].push_back(irr::core::line2di(irr::core::vector2di((irr::s32)(2.0f * v.X + l_cOffset.X), (irr::s32)(2.0f * v.Y + l_cOffset.Y)), irr::core::vector2di((irr::s32)(2.0f * l_cLast.X + l_cOffset.X), (irr::s32)(2.0f * l_cLast.Y + l_cOffset.Y))));
-            }
-
-            l_cLast = v;
+            l_vEdgeLines[i].push_back(irr::core::line2di(irr::core::vector2di((irr::s32)(2.0f * vs.X + l_cOffset.X), (irr::s32)(2.0f * vs.Y + l_cOffset.Y)), irr::core::vector2di((irr::s32)(2.0f * ve.X + l_cOffset.X), (irr::s32)(2.0f * ve.Y + l_cOffset.Y))));
           }
         }
 
@@ -375,17 +370,16 @@ namespace dustbin {
         l_pSection = *l_pSection->m_vNext.begin();
       }
 
-      std::vector<irr::core::vector3df> l_vPath;
-      std::vector<irr::core::vector3df> l_vTranslatedPath;
+      std::vector<irr::core::line3df> l_vPath;
+      std::vector<irr::core::line3df> l_vTranslatedPath;
 
-      std::vector<irr::core::vector3df> l_vEdges[2];
-      std::vector<irr::core::vector3df> l_vTranslatedEdges[2];
+      std::vector<irr::core::line3df> l_vEdges[2];
+      std::vector<irr::core::line3df> l_vTranslatedEdges[2];
 
       SAiPathSection *l_pLast = l_vStack.back();
       l_vStack.pop_back();
 
       bool l_bFirst = true;
-      irr::core::vector3df l_cLast[2];
 
       // In this step we go through the stack from it's end,
       // all points are transformed to be in the plane of
@@ -401,41 +395,32 @@ namespace dustbin {
         SAiPathSection *l_pThis = l_vStack.back();
 
         irr::core::plane3df l_cPlane = irr::core::plane3df(l_pThis->m_cLine3d.start, l_pThis->m_cNormal);
-        irr::core::vector3df l_cOut;
+        irr::core::vector3df l_cOutStart;
+        irr::core::vector3df l_cOutEnd;
 
-        l_vPath.push_back(l_pLast->m_cLine3d.end);
+        l_vPath.push_back(l_pLast->m_cLine3d);
 
         if (l_bFirst) {
-          l_vEdges[0].push_back(l_pLast->m_cEdges[0].end);
-          l_vEdges[1].push_back(l_pLast->m_cEdges[1].end);
-
-          l_cLast[0] = l_pLast->m_cEdges[0].end;
-          l_cLast[1] = l_pLast->m_cEdges[1].end;
+          l_vEdges[0].push_back(l_pLast->m_cEdges[0]);
+          l_vEdges[1].push_back(l_pLast->m_cEdges[1]);
         }
         else {
-          if (!doLinesOverlap(irr::core::line3df(l_cLast[0], l_pLast->m_cEdges[0].end), irr::core::line3df(l_cLast[1], l_pLast->m_cEdges[1].end))) {
-            l_cLast[0] = l_pLast->m_cEdges[0].end;
-            l_cLast[1] = l_pLast->m_cEdges[1].end;
-
-          }
-          else {
-            l_cLast[0] = l_pLast->m_cEdges[1].end;
-            l_cLast[1] = l_pLast->m_cEdges[0].end;
-          }
-          l_vEdges[0].push_back(l_cLast[0]);
-          l_vEdges[1].push_back(l_cLast[1]);
+          l_vEdges[0].push_back(l_pLast->m_cEdges[0]);
+          l_vEdges[1].push_back(l_pLast->m_cEdges[1]);
         }
 
-        for (std::vector<irr::core::vector3df>::iterator l_itPoint = l_vPath.begin(); l_itPoint != l_vPath.end(); l_itPoint++) {
-          if (l_cPlane.getIntersectionWithLine(*l_itPoint, l_pLast->m_cNormal, l_cOut)) {
-            l_vTranslatedPath.push_back(l_cOut);
+        for (std::vector<irr::core::line3df>::iterator l_itPoint = l_vPath.begin(); l_itPoint != l_vPath.end(); l_itPoint++) {
+          if (l_cPlane.getIntersectionWithLine((*l_itPoint).end  , l_pLast->m_cNormal, l_cOutEnd  ) &&
+              l_cPlane.getIntersectionWithLine((*l_itPoint).start, l_pLast->m_cNormal, l_cOutStart)) {
+            l_vTranslatedPath.push_back(irr::core::line3df(l_cOutStart, l_cOutEnd));
           }
         }
 
         for (int i = 0; i < 2; i++) {
-          for (std::vector<irr::core::vector3df>::iterator l_itPoint = l_vEdges[i].begin(); l_itPoint != l_vEdges[i].end(); l_itPoint++) {
-            if (l_cPlane.getIntersectionWithLine(*l_itPoint, l_pLast->m_cNormal, l_cOut)) {
-              l_vTranslatedEdges[i].push_back(l_cOut);
+          for (std::vector<irr::core::line3df>::iterator l_itPoint = l_vEdges[i].begin(); l_itPoint != l_vEdges[i].end(); l_itPoint++) {
+            if (l_cPlane.getIntersectionWithLine((*l_itPoint).end  , l_pLast->m_cNormal, l_cOutEnd  ) &&
+                l_cPlane.getIntersectionWithLine((*l_itPoint).start, l_pLast->m_cNormal, l_cOutStart)) {
+              l_vTranslatedEdges[i].push_back(irr::core::line3df(l_cOutStart, l_cOutEnd));
             }
           }
         }
@@ -450,20 +435,14 @@ namespace dustbin {
         l_bFirst = false;
       }
 
-      l_vTranslatedPath.push_back(m_cLine3d.start);
-      m_vLinePoints = l_vTranslatedPath;
+      l_vTranslatedPath.push_back(m_cLine3d);
+      m_vLinesCentral = l_vTranslatedPath;
 
-      if (!doLinesOverlap(irr::core::line3df(l_cLast[0], m_cEdges[0].start), irr::core::line3df(l_cLast[1], m_cEdges[1].start))) {
-        l_vTranslatedEdges[0].push_back(m_cEdges[0].start);
-        l_vTranslatedEdges[1].push_back(m_cEdges[1].start);
-      }
-      else {
-        l_vTranslatedEdges[0].push_back(m_cEdges[1].start);
-        l_vTranslatedEdges[1].push_back(m_cEdges[0].start);
-      }
+      l_vTranslatedEdges[0].push_back(m_cEdges[0]);
+      l_vTranslatedEdges[1].push_back(m_cEdges[1]);
 
       for (int i = 0; i < 2; i++) {
-        m_vEdgePoints[i] = l_vTranslatedEdges[i];
+        m_vLinesBorder[i] = l_vTranslatedEdges[i];
       }
 
     }
