@@ -108,6 +108,14 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Notify the controller about a passed checkpoint
+    * @param a_iMarbleId the marble that passed the checkpoint
+    * @param a_iCheckpoint the passed checkpoint
+    */
+    void CControllerAI::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
+    }
+
     bool CControllerAI::getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) { 
       bool l_bRespawn = false;
 

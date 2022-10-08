@@ -4,6 +4,7 @@
 #include <controller/IControllerAI.h>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace dustbin {
   namespace controller {
@@ -23,18 +24,32 @@ namespace dustbin {
         * read from the scene
         */
         typedef struct SAiPathSection {
+          int m_iIndex;         /**< Index for debugging */
+          int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
+          bool m_bStartup;      /**< Is this a startup section? */
+
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
           irr::core::line3df m_cEdges[2];   /**< The side edges of the section */
 
           irr::core::vector3df m_cNormal;   /**< The normal of the section */
 
-          std::vector<SAiPathSection *> m_vNext;    /**< The next options after this section */
+          std::vector<SAiPathSection *> m_vNext;          /**< The next options after this section */
+          std::vector<int             > m_vCheckpoints;   /**< Vector with the next indices of the checkpoint */
 
           std::vector<irr::core::line3df> m_vLinesCentral;    /**< The central lines defining the path */
           std::vector<irr::core::line3df> m_vLinesBorder[2];  /**< The border lines defining the edge of the track */
 
-          // std::vector<irr::core::vector3df> m_vLinePoints;    /**< The central line for the next 500+ meters, transformed to the plane of the section */
-          // std::vector<irr::core::vector3df> m_vEdgePoints[2]; /**< The broder lines for the next 500+ meters, transformed to the plane of the section */
+          /**
+          * Prepare the 3d line data for storing them in the next and border line vectors. To do
+          * so we need to transform the nodes to lie in a plane defined by the position and normal
+          * of this section. Starting from the end (when a distance of 500 meters is exceeded) we
+          * need to traverse backwards and transform the points of the next line to lie in the plane
+          * of the previous section. Complicated but it somehow works
+          * @param a_fLength the length that has alreaddy been exceeded
+          * @param a_iLineIdx the index of the line to process (0 == m_cLine3d, 1 == m_cEdges[0], 2 == m_cEdges[1])
+          * @param a_vOutput [out] the vector that will be filled with all the 3d points lying in the plane
+          */
+          bool prepareTransformedData(irr::f32 a_fLength, int a_iLineIdx, std::vector<irr::core::line3df> &a_vOutput, std::vector<int> &a_vStack);
 
           /**
           * Fill the vectors of the points for the next 500+ meters
@@ -52,7 +67,8 @@ namespace dustbin {
         }
         SAiPathSection;
 
-        int m_iMarbleId;
+        int m_iMarbleId;          /**< ID of the marble this instance controls */
+        int m_iLastCheckpoint;    /**< The last passed checkpoint */
 
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
 
@@ -68,8 +84,10 @@ namespace dustbin {
         * Select the closest AI path section to the position. Will be called
         * when the race is started, after respawn and stun
         * @param a_cPosition the position of the marble
+        * @param a_bSelectStartupPath select a path marked as "startup"
+        * @return the closest matching AI path section
         */
-        SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions);
+        SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath);
 
       public:
         /**
@@ -102,6 +120,13 @@ namespace dustbin {
         * @param a_iMarbleId the respawning marble
         */
         virtual void onMarbleRespawn(int a_iMarbleId) override;
+
+        /**
+        * Notify the controller about a passed checkpoint
+        * @param a_iMarbleId the marble that passed the checkpoint
+        * @param a_iCheckpoint the passed checkpoint
+        */
+        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint);
 
         /**
         * Get the control values for the marble

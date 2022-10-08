@@ -69,6 +69,13 @@ namespace dustbin {
         virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) override;
 
         /**
+        * This function receives messages of type "Checkpoint"
+        * @param a_MarbleId ID of the marble
+        * @param a_Checkpoint The checkpoint ID the player has passed
+        */
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint);
+
+        /**
         * The implementing object must implement this method. It is called when the thread start working
         */
         virtual void execute() override;

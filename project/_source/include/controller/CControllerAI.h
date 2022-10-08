@@ -78,6 +78,13 @@ namespace dustbin {
         virtual void onMarbleRespawn(int a_iMarbleId) override;
 
         /**
+        * Notify the controller about a passed checkpoint
+        * @param a_iMarbleId the marble that passed the checkpoint
+        * @param a_iCheckpoint the passed checkpoint
+        */
+        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+
+        /**
         * Get the control values for the marble
         * @param a_iMarbleId [out] ID of the marble this controller controls
         * @param a_iCtrlX [out] the steering value 

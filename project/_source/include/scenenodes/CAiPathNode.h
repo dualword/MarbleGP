@@ -75,6 +75,7 @@ namespace dustbin {
 
         irr::core::aabbox3df      m_cBox;
         irr::video::IVideoDriver *m_pDrv;
+        bool                      m_bStartNode;   /**< Is this the node for the race start? Only necessary if more nodes overlap */
 
       public:
         CAiPathNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId);
@@ -92,6 +93,12 @@ namespace dustbin {
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
 
         void addPathSection(CAiPathNode::SAiPathSection *a_pNew);
+
+        /**
+        * Is this a starting path? Only necessary for the start if two paths overlap
+        * @return true if this section is marked as a startup section
+        */
+        bool isStartupPath() const;
     };
   }
 }

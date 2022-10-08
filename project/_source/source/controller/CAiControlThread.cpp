@@ -71,6 +71,16 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "Checkpoint"
+    * @param a_MarbleId ID of the marble
+    * @param a_Checkpoint The checkpoint ID the player has passed
+    */
+    void CAiControlThread::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
+      for (int i = 0; m_aControllers[i] != nullptr; i++)
+        m_aControllers[i]->onCheckpoint(a_MarbleId, a_Checkpoint);
+    }
+
+    /**
     * The implementing object must implement this method. It is called when the thread start working
     */
     void CAiControlThread::execute() {

@@ -462,7 +462,8 @@
         "StepMsg",
         "ObjectMoved",
         "MarbleMoved",
-        "PlayerRespawn"
+        "PlayerRespawn",
+        "Checkpoint"
       ]
     }
   ]
