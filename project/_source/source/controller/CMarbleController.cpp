@@ -111,6 +111,16 @@ namespace dustbin {
     }
 
     /**
+    * Notify the controller about a passed checkpoint
+    * @param a_iMarbleId the marble that passed the checkpoint
+    * @param a_iCheckpoint the passed checkpoint
+    */
+    void CMarbleController::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
+      if (m_pAiControls != nullptr)
+        m_pAiControls->onCheckpoint(a_iMarbleId, a_iCheckpoint);
+    }
+
+    /**
     * For debuggin purposes: Draw the data used to control the marble (2d)
     * @param a_pDrv the video driver
     */

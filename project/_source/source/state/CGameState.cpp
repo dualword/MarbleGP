@@ -1597,6 +1597,11 @@ namespace dustbin {
 
         if (m_pLuaScript != nullptr)
           m_pLuaScript->oncheckpoint(a_MarbleId, a_Checkpoint);
+
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+          if ((*it)->m_pController != nullptr)
+            (*it)->m_pController->onCheckpoint(a_MarbleId, a_Checkpoint);
+        }
       }
     }
 

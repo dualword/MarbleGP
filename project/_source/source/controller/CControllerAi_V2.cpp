@@ -40,10 +40,17 @@ namespace dustbin {
         irr::core::vector3df l_cOption = (*l_itPath)->m_cLine3d.getClosestPoint(a_cPosition);
         irr::f32 l_fOption = l_cOption.getDistanceFromSQ(a_cPosition);
 
-        if ((l_fDistance == -1.0f || l_fOption < l_fDistance) && (!a_bSelectStartupPath || (*l_itPath)->m_bStartup)) {
+        if ((l_fDistance == -1.0f || l_fOption < l_fDistance) && (!a_bSelectStartupPath || (*l_itPath)->m_bStartup) && (m_iLastCheckpoint == -1 || (*l_itPath)->m_iCheckpoint == m_iLastCheckpoint)) {
           l_pCurrent = *l_itPath;
           l_fDistance = l_fOption;
         }
+      }
+
+      if (l_pCurrent != nullptr) {
+        printf("Section selected: index = %i, checkpoint = %i, last cp = %i\n", l_pCurrent->m_iIndex, l_pCurrent->m_iCheckpoint, m_iLastCheckpoint);
+
+        if (l_pCurrent->m_iIndex == 320)
+          printf("*");
       }
 
       return l_pCurrent;
@@ -242,8 +249,10 @@ namespace dustbin {
 
         do {
           if (l_cClosest == m_pCurrent->m_cLine3d.end) {
-            printf("Next section: %.2f, %.2f, %.2f.\n", m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
-            m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
+            if (m_pCurrent->m_vNext.size() == 1)
+              m_pCurrent = *m_pCurrent->m_vNext.begin();
+            else
+              m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
 
             if (m_pCurrent != nullptr)
               l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
@@ -268,6 +277,7 @@ namespace dustbin {
     */
     void CControllerAi_V2::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       if (a_iMarbleId == m_iMarbleId) {
+        printf("Checkpoint %i passed.\n", a_iCheckpoint);
         m_iLastCheckpoint = a_iCheckpoint;
       }
     }

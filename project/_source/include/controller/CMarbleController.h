@@ -55,6 +55,13 @@ namespace dustbin {
         virtual void onMarbleRespawn(int a_iMarbleId);
 
         /**
+        * Notify the controller about a passed checkpoint
+        * @param a_iMarbleId the marble that passed the checkpoint
+        * @param a_iCheckpoint the passed checkpoint
+        */
+        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+
+        /**
         * For debuggin purposes: Draw the data used to control the marble (2d)
         * @param a_pDrv the video driver
         */
