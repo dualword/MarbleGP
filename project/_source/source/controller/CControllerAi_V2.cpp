@@ -129,7 +129,7 @@ namespace dustbin {
                 l_cEdges[3].getMiddle()
               };
 
-              if (l_cMiddle[0].getDistanceFromSQ(l_cMiddle[1]) < l_cMiddle[2].getDistanceFromSQ(l_cMiddle[3])) {
+              if (l_cMiddle[0].getDistanceFromSQ(l_cMiddle[1]) > l_cMiddle[2].getDistanceFromSQ(l_cMiddle[3])) {
                 p->m_cEdges[0] = l_cEdges[0];
                 p->m_cEdges[1] = l_cEdges[1];
               }
@@ -262,11 +262,38 @@ namespace dustbin {
             else
               m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
 
-            if (m_pCurrent != nullptr)
-              l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
+            l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
           }
         }
         while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
+
+        irr::core::matrix4 l_cMatrix;
+        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition - m_pCurrent->m_cNormal, m_cDirection);
+
+        m_v2dLinesCentral   .clear();
+        m_v2dLinesBorder [0].clear();
+        m_v2dLinesBorder [1].clear();
+
+        for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesCentral.begin(); l_itPoint != m_pCurrent->m_vLinesCentral.end(); l_itPoint++) {
+          irr::core::vector3df vs;
+          irr::core::vector3df ve;
+
+          l_cMatrix.transformVect(vs, (*l_itPoint).start);
+          l_cMatrix.transformVect(ve, (*l_itPoint).end  );
+
+          m_v2dLinesCentral.push_back(irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y));
+        }
+
+        for (int i = 0; i < 2; i++) {
+          for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesBorder[i].begin(); l_itPoint != m_pCurrent->m_vLinesBorder[i].end(); l_itPoint++) {
+            irr::core::vector3df vs;
+            irr::core::vector3df ve;
+            l_cMatrix.transformVect(vs, (*l_itPoint).start);
+            l_cMatrix.transformVect(ve, (*l_itPoint).end  );
+
+            m_v2dLinesBorder[i].push_back(irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y));
+          }
+        }
       }
     }
 
@@ -331,56 +358,28 @@ namespace dustbin {
         l_cMaterial.Wireframe       = true;
         l_cMaterial.BackfaceCulling = false;
 
-        // a_pDrv->setMaterial(l_cMaterial);
-        // a_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
-        // a_pDrv->draw3DLine(m_pCurrent->m_cLine3d.start + 2.0f * m_pCurrent->m_cNormal, m_pCurrent->m_cLine3d.end + 2.0f * m_pCurrent->m_cNormal, irr::video::SColor(0xFF, 0xFF, 0xFF, 0));
-
-
-        irr::core::matrix4 l_cMatrix;
-        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition - m_pCurrent->m_cNormal, m_cDirection);
-
         irr::core::dimension2du l_cSize = a_pDrv->getScreenSize();
         irr::core::vector2di l_cOffset = irr::core::vector2di(l_cSize.Width / 2, l_cSize.Height / 2);
 
-        for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesCentral.begin(); l_itPoint != m_pCurrent->m_vLinesCentral.end(); l_itPoint++) {
-          irr::core::vector3df vs;
-          irr::core::vector3df ve;
+        for (std::vector<irr::core::line2df>::iterator l_itLine = m_v2dLinesCentral.begin(); l_itLine != m_v2dLinesCentral.end(); l_itLine++) {
+          irr::core::vector2di s = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).start.X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).start.Y) + l_cOffset.Y);
+          irr::core::vector2di e = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).end  .X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).end  .Y) + l_cOffset.Y);
 
-          l_cMatrix.transformVect(vs, (*l_itPoint).start);
-          l_cMatrix.transformVect(ve, (*l_itPoint).end  );
-          
-          a_pDrv->draw2DLine(irr::core::vector2di((irr::s32)(2.0f * vs.X + l_cOffset.X), (irr::s32)(2.0f * vs.Y + l_cOffset.Y)), irr::core::vector2di((irr::s32)(2.0f * ve.X + l_cOffset.X), (irr::s32)(2.0f * ve.Y + l_cOffset.Y)), irr::video::SColor(0xFF, 0, 0, 0));
+          a_pDrv->draw2DLine(s, e, irr::video::SColor(0xFF, 0, 0, 0));
         }
 
-        std::vector<irr::core::line2di> l_vEdgeLines[2];
-
         for (int i = 0; i < 2; i++) {
-          for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesBorder[i].begin(); l_itPoint != m_pCurrent->m_vLinesBorder[i].end(); l_itPoint++) {
-            irr::core::vector3df vs;
-            irr::core::vector3df ve;
-            l_cMatrix.transformVect(vs, (*l_itPoint).start);
-            l_cMatrix.transformVect(ve, (*l_itPoint).end  );
+          for (std::vector<irr::core::line2df>::iterator l_itLine = m_v2dLinesBorder[i].begin(); l_itLine != m_v2dLinesBorder[i].end(); l_itLine++) {
+            irr::core::vector2di s = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).start.X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).start.Y) + l_cOffset.Y);
+            irr::core::vector2di e = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).end  .X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).end  .Y) + l_cOffset.Y);
 
-            l_vEdgeLines[i].push_back(irr::core::line2di(irr::core::vector2di((irr::s32)(2.0f * vs.X + l_cOffset.X), (irr::s32)(2.0f * vs.Y + l_cOffset.Y)), irr::core::vector2di((irr::s32)(2.0f * ve.X + l_cOffset.X), (irr::s32)(2.0f * ve.Y + l_cOffset.Y))));
+            a_pDrv->draw2DLine(s, e, irr::video::SColor(0xFF, 0, 0, 0xFF));
           }
         }
 
-        std::vector<irr::core::line2di>::iterator l_itLine1 = l_vEdgeLines[0].begin();
-        std::vector<irr::core::line2di>::iterator l_itLine2 = l_vEdgeLines[1].begin();
-
-        while (l_itLine1 != l_vEdgeLines[0].end() && l_itLine2 != l_vEdgeLines[1].end()) {
-          irr::core::vector2di v;
-
-          a_pDrv->draw2DLine((*l_itLine1).start, (*l_itLine2).end, irr::video::SColor(0xFF, 0, 0, 0xFF));
-          a_pDrv->draw2DLine((*l_itLine2).start, (*l_itLine1).end, irr::video::SColor(0xFF, 0, 0, 0xFF));
-
-          l_itLine1++;
-          l_itLine2++;
-        }
-
         for (int i = 0; i < 2; i++) {
-          irr::core::vector2di v1 = l_vEdgeLines[i].back().start;
-          a_pDrv->draw2DRectangleOutline(irr::core::recti(v1.X - 15, v1.Y - 15, v1.X + 15, v1.Y + 15));
+          irr::core::vector2df v1 = m_v2dLinesBorder[i].back().start;
+          a_pDrv->draw2DRectangleOutline(irr::core::recti((irr::s32)v1.X - 15, (irr::s32)v1.Y - 15, (irr::s32)v1.X + 15, (irr::s32)v1.Y + 15));
         }
 
         a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cSize.Width / 2 - 15, l_cSize.Height / 2 - 15, l_cSize.Width / 2 + 15, l_cSize.Height / 2 + 15), irr::video::SColor(0xFF, 0, 0, 0xFF));
@@ -429,8 +428,8 @@ namespace dustbin {
 
       a_vStack.push_back(m_iIndex);
 
-      // Only process if 500 meters are not yet exceeded
-      if (a_fLength <= 500.0f) {
+      // Only process if 750 meters are not yet exceeded
+      if (a_fLength <= 750.0f) {
         // Add the length of this segment to the processed length
         a_fLength += m_cLine3d.getLength();
 

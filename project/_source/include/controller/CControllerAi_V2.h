@@ -81,6 +81,9 @@ namespace dustbin {
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
+        std::vector<irr::core::line2df> m_v2dLinesCentral;    /**< The central lines defining the path in 2d */
+        std::vector<irr::core::line2df> m_v2dLinesBorder[2];  /**< The border lines defining the edge of the track in 2d */
+
         /**
         * Select the closest AI path section to the position. Will be called
         * when the race is started, after respawn and stun
