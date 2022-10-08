@@ -62,153 +62,161 @@ namespace dustbin {
     * @param a_sControls details about the skills of the controller
     */
     CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls) : m_iMarbleId(a_iMarbleId), m_iLastCheckpoint(-1), m_pCurrent(nullptr) {
-      CGlobal *l_pGlobal = CGlobal::getInstance();
+      if (m_iInstances == 0) {
+        CGlobal *l_pGlobal = CGlobal::getInstance();
 
-      std::vector<const scenenodes::CAiPathNode *> l_vAiNodes;
+        std::vector<const scenenodes::CAiPathNode *> l_vAiNodes;
 
-      findAiPathNodes(l_pGlobal->getSceneManager()->getRootSceneNode(), l_vAiNodes);
+        findAiPathNodes(l_pGlobal->getSceneManager()->getRootSceneNode(), l_vAiNodes);
 
-      printf("%i AI path nodes found.\n", (int)l_vAiNodes.size());
+        printf("%i AI path nodes found.\n", (int)l_vAiNodes.size());
 
-      int l_iIndex = 0;
+        int l_iIndex = 0;
 
-      // Iterate over all found AI Path Nodes
-      for (std::vector<const scenenodes::CAiPathNode*>::iterator l_itPath = l_vAiNodes.begin(); l_itPath != l_vAiNodes.end(); l_itPath++) {
-        scenenodes::CCheckpointNode *l_pParent = nullptr;
+        // Iterate over all found AI Path Nodes
+        for (std::vector<const scenenodes::CAiPathNode*>::iterator l_itPath = l_vAiNodes.begin(); l_itPath != l_vAiNodes.end(); l_itPath++) {
+          scenenodes::CCheckpointNode *l_pParent = nullptr;
 
-        if ((*l_itPath)->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_CheckpointNodeId)
-          l_pParent = reinterpret_cast<scenenodes::CCheckpointNode *>((*l_itPath)->getParent());
-        else
-          printf("Parent is not a checkpoint!\n");
+          if ((*l_itPath)->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_CheckpointNodeId)
+            l_pParent = reinterpret_cast<scenenodes::CCheckpointNode *>((*l_itPath)->getParent());
+          else
+            printf("Parent is not a checkpoint!\n");
 
-        // Iterate the AI Path sections stored in the AI path nodes
-        for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itSection = (*l_itPath)->m_vSections.begin(); l_itSection != (*l_itPath)->m_vSections.end(); l_itSection++) {
-          // Create one SAiPathSection for each link between the current section and it's successors
-          for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
-            SAiPathSection *p = new SAiPathSection();
-            p->m_cLine3d     = irr::core::line3df((*l_itSection)->m_cPosition, (*l_itNext)->m_cPosition);
-            p->m_iIndex      = ++l_iIndex;
-            p->m_iCheckpoint = -1;
-            p->m_bStartup    = (*l_itPath)->isStartupPath();
+          // Iterate the AI Path sections stored in the AI path nodes
+          for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itSection = (*l_itPath)->m_vSections.begin(); l_itSection != (*l_itPath)->m_vSections.end(); l_itSection++) {
+            // Create one SAiPathSection for each link between the current section and it's successors
+            for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
+              SAiPathSection *p = new SAiPathSection();
+              p->m_cLine3d     = irr::core::line3df((*l_itSection)->m_cPosition, (*l_itNext)->m_cPosition);
+              p->m_iIndex      = ++l_iIndex;
+              p->m_iCheckpoint = -1;
+              p->m_bStartup    = (*l_itPath)->isStartupPath();
 
-            if (l_pParent != nullptr) {
-              p->m_iCheckpoint = l_pParent->getID();
+              if (l_pParent != nullptr) {
+                p->m_iCheckpoint = l_pParent->getID();
               
-              for (std::vector<int>::iterator l_itLinks = l_pParent->m_vLinks.begin(); l_itLinks != l_pParent->m_vLinks.end(); l_itLinks++) {
-                bool b = true;
+                for (std::vector<int>::iterator l_itLinks = l_pParent->m_vLinks.begin(); l_itLinks != l_pParent->m_vLinks.end(); l_itLinks++) {
+                  bool b = true;
 
-                for (std::vector<int>::iterator it = p->m_vCheckpoints.begin(); it != p->m_vCheckpoints.end(); it++)
-                  if (*it == *l_itLinks)
-                    b = false;
+                  for (std::vector<int>::iterator it = p->m_vCheckpoints.begin(); it != p->m_vCheckpoints.end(); it++)
+                    if (*it == *l_itLinks)
+                      b = false;
 
-                if (b)
-                  p->m_vCheckpoints.push_back(*l_itLinks);
-              }
-            }
-            
-
-            irr::core::vector3df l_cEdgePoints[] = {
-              (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_cSideVector,   // Start point 1
-              (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_cSideVector,   // End point 1
-              (*l_itSection)->m_cPosition + (*l_itSection)->m_fWidth * (*l_itSection)->m_cSideVector,   // Start point 2
-              (*l_itNext   )->m_cPosition + (*l_itNext   )->m_fWidth * (*l_itNext   )->m_cSideVector    // End point 2
-            };
-
-            irr::core::line3df l_cEdges[] = {
-              irr::core::line3df(l_cEdgePoints[0], l_cEdgePoints[1]),   // Line start 1 --> end 1
-              irr::core::line3df(l_cEdgePoints[2], l_cEdgePoints[3]),   // Line start 2 --> end 2
-              irr::core::line3df(l_cEdgePoints[0], l_cEdgePoints[3]),   // Line start 1 --> end 2
-              irr::core::line3df(l_cEdgePoints[2], l_cEdgePoints[1])    // Line start 2 --> end 1
-            };
-
-            irr::core::vector3df l_cMiddle[] = {
-              l_cEdges[0].getMiddle(),
-              l_cEdges[1].getMiddle(),
-              l_cEdges[2].getMiddle(),
-              l_cEdges[3].getMiddle()
-            };
-
-            if (l_cMiddle[0].getDistanceFromSQ(l_cMiddle[1]) < l_cMiddle[2].getDistanceFromSQ(l_cMiddle[3])) {
-              p->m_cEdges[0] = l_cEdges[0];
-              p->m_cEdges[1] = l_cEdges[1];
-            }
-            else {
-              p->m_cEdges[0] = l_cEdges[2];
-              p->m_cEdges[1] = l_cEdges[3];
-            }
-            
-            p->m_cNormal = (*l_itSection)->m_cNormal;
-
-            m_vAiPath.push_back(p);
-          }
-        }
-      }
-
-      // Now that we have a filled vector of the path sections we need to link them
-      for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
-        irr::core::vector3df l_cThis = (*l_itThis)->m_cLine3d.end;
-
-        for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath.begin(); l_itNext != m_vAiPath.end(); l_itNext++) {
-          irr::core::vector3df l_cNext = (*l_itNext)->m_cLine3d.start;
-
-          // Now we check if the end of this line matches the start of the next line.
-          // We use a certain threshold as the serialization is not 100% accurate
-          if (abs(l_cThis.X - l_cNext.X) < 0.01f && abs(l_cThis.Y - l_cNext.Y) < 0.01f && abs(l_cThis.Z - l_cNext.Z) < 0.01f) {
-            bool l_bAdd = (*l_itThis)->m_iCheckpoint == (*l_itNext)->m_iCheckpoint;
-
-            if (!l_bAdd) {
-              for (std::vector<int>::iterator it = (*l_itThis)->m_vCheckpoints.begin(); it != (*l_itThis)->m_vCheckpoints.end(); it++) {
-                if ((*it) == (*l_itNext)->m_iCheckpoint) {
-                  l_bAdd = true;
-                  break;
+                  if (b)
+                    p->m_vCheckpoints.push_back(*l_itLinks);
                 }
               }
-            }
+            
 
-            if (l_bAdd)
-              (*l_itThis)->m_vNext.push_back(*l_itNext);
+              irr::core::vector3df l_cEdgePoints[] = {
+                (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_cSideVector,   // Start point 1
+                (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_cSideVector,   // End point 1
+                (*l_itSection)->m_cPosition + (*l_itSection)->m_fWidth * (*l_itSection)->m_cSideVector,   // Start point 2
+                (*l_itNext   )->m_cPosition + (*l_itNext   )->m_fWidth * (*l_itNext   )->m_cSideVector    // End point 2
+              };
+
+              irr::core::line3df l_cEdges[] = {
+                irr::core::line3df(l_cEdgePoints[0], l_cEdgePoints[1]),   // Line start 1 --> end 1
+                irr::core::line3df(l_cEdgePoints[2], l_cEdgePoints[3]),   // Line start 2 --> end 2
+                irr::core::line3df(l_cEdgePoints[0], l_cEdgePoints[3]),   // Line start 1 --> end 2
+                irr::core::line3df(l_cEdgePoints[2], l_cEdgePoints[1])    // Line start 2 --> end 1
+              };
+
+              irr::core::vector3df l_cMiddle[] = {
+                l_cEdges[0].getMiddle(),
+                l_cEdges[1].getMiddle(),
+                l_cEdges[2].getMiddle(),
+                l_cEdges[3].getMiddle()
+              };
+
+              if (l_cMiddle[0].getDistanceFromSQ(l_cMiddle[1]) < l_cMiddle[2].getDistanceFromSQ(l_cMiddle[3])) {
+                p->m_cEdges[0] = l_cEdges[0];
+                p->m_cEdges[1] = l_cEdges[1];
+              }
+              else {
+                p->m_cEdges[0] = l_cEdges[2];
+                p->m_cEdges[1] = l_cEdges[3];
+              }
+            
+              p->m_cNormal = (*l_itSection)->m_cNormal;
+
+              m_vAiPath.push_back(p);
+            }
           }
         }
-      }
 
-      printf("%i AI path sections found.\n", (int)m_vAiPath.size());
+        // Now that we have a filled vector of the path sections we need to link them
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
+          irr::core::vector3df l_cThis = (*l_itThis)->m_cLine3d.end;
 
-      // Now we calculate the next 500+ meters for all AI path sections
-      for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
-        (*l_itThis)->fillLineVectors();
-      }
+          for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath.begin(); l_itNext != m_vAiPath.end(); l_itNext++) {
+            irr::core::vector3df l_cNext = (*l_itNext)->m_cLine3d.start;
 
-      int l_iZeroLinks = 0;
+            // Now we check if the end of this line matches the start of the next line.
+            // We use a certain threshold as the serialization is not 100% accurate
+            if (abs(l_cThis.X - l_cNext.X) < 0.01f && abs(l_cThis.Y - l_cNext.Y) < 0.01f && abs(l_cThis.Z - l_cNext.Z) < 0.01f) {
+              bool l_bAdd = (*l_itThis)->m_iCheckpoint == (*l_itNext)->m_iCheckpoint;
 
-      // For debugging: show how many links each section has
-      for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
-        if ((*l_itThis)->m_vNext.size() == 0)
-          l_iZeroLinks++;
-        else {
-          std::vector<SAiPathSection *>::iterator l_itNext = (*l_itThis)->m_vNext.begin();
+              if (!l_bAdd) {
+                for (std::vector<int>::iterator it = (*l_itThis)->m_vCheckpoints.begin(); it != (*l_itThis)->m_vCheckpoints.end(); it++) {
+                  if ((*it) == (*l_itNext)->m_iCheckpoint) {
+                    l_bAdd = true;
+                    break;
+                  }
+                }
+              }
 
-          irr::core::plane3df  l_cPlane = irr::core::plane3df((*l_itThis)->m_cLine3d.start, (*l_itThis)->m_cNormal);
-          irr::core::vector3df l_cOther;
-          irr::core::vector3df l_cThis;
-
-          l_cPlane.getIntersectionWithLine((*l_itThis)->m_cLine3d.end  , (*l_itThis)->m_cNormal, l_cThis );
-          l_cPlane.getIntersectionWithLine((*l_itNext)->m_cLine3d.start, (*l_itNext)->m_cNormal, l_cOther);
-
-          irr::core::vector3df l_cV1 = (*l_itThis)->m_cLine3d.end;
-          irr::core::vector3df l_cV2 = (*l_itThis)->m_cLine3d.end + ((*l_itThis)->m_cLine3d.start - (*l_itThis)->m_cLine3d.end);
-          irr::core::vector3df l_cV3 = (*l_itThis)->m_cLine3d.end + (l_cOther - (*l_itThis)->m_cLine3d.end);
+              if (l_bAdd)
+                (*l_itThis)->m_vNext.push_back(*l_itNext);
+            }
+          }
         }
-      }
 
-      printf("%i unlinked sections found.\n", l_iZeroLinks);
-      printf("Ready.");
+        printf("%i AI path sections found.\n", (int)m_vAiPath.size());
+
+        // Now we calculate the next 500+ meters for all AI path sections
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
+          (*l_itThis)->fillLineVectors();
+        }
+
+        int l_iZeroLinks = 0;
+
+        // For debugging: show how many links each section has
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
+          if ((*l_itThis)->m_vNext.size() == 0)
+            l_iZeroLinks++;
+          else {
+            std::vector<SAiPathSection *>::iterator l_itNext = (*l_itThis)->m_vNext.begin();
+
+            irr::core::plane3df  l_cPlane = irr::core::plane3df((*l_itThis)->m_cLine3d.start, (*l_itThis)->m_cNormal);
+            irr::core::vector3df l_cOther;
+            irr::core::vector3df l_cThis;
+
+            l_cPlane.getIntersectionWithLine((*l_itThis)->m_cLine3d.end  , (*l_itThis)->m_cNormal, l_cThis );
+            l_cPlane.getIntersectionWithLine((*l_itNext)->m_cLine3d.start, (*l_itNext)->m_cNormal, l_cOther);
+
+            irr::core::vector3df l_cV1 = (*l_itThis)->m_cLine3d.end;
+            irr::core::vector3df l_cV2 = (*l_itThis)->m_cLine3d.end + ((*l_itThis)->m_cLine3d.start - (*l_itThis)->m_cLine3d.end);
+            irr::core::vector3df l_cV3 = (*l_itThis)->m_cLine3d.end + (l_cOther - (*l_itThis)->m_cLine3d.end);
+          }
+        }
+
+        printf("%i unlinked sections found.\n", l_iZeroLinks);
+        printf("Ready.");
+      }
+      m_iInstances++;
     }
 
     CControllerAi_V2::~CControllerAi_V2() {
-      while (m_vAiPath.size() > 0) {
-        SAiPathSection *p = *m_vAiPath.begin();
-        m_vAiPath.erase(m_vAiPath.begin());
-        delete p;
+      m_iInstances--;
+
+      if (m_iInstances == 0) {
+        printf("Deleting AI data.\n");
+        while (m_vAiPath.size() > 0) {
+          SAiPathSection *p = *m_vAiPath.begin();
+          m_vAiPath.erase(m_vAiPath.begin());
+          delete p;
+        }
       }
     }
 
@@ -476,5 +484,8 @@ namespace dustbin {
       prepareTransformedData(0.0f, 1, m_vLinesBorder[0], l_vStack); l_vStack.clear();
       prepareTransformedData(0.0f, 2, m_vLinesBorder[1], l_vStack);
     }
+
+    int CControllerAi_V2::m_iInstances = 0;
+    std::vector<CControllerAi_V2::SAiPathSection *> CControllerAi_V2::m_vAiPath = std::vector<CControllerAi_V2::SAiPathSection *>();
   }
 }

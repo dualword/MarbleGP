@@ -78,7 +78,8 @@ namespace dustbin {
         irr::core::vector3df m_cDirection;  /**< The camera direction */
         irr::core::vector3df m_cCameraUp;   /**< The camera up vector */
 
-        std::vector<SAiPathSection *> m_vAiPath;  /**< A list of all ai path sections */
+        static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
+        static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
         /**
         * Select the closest AI path section to the position. Will be called
