@@ -293,26 +293,15 @@ namespace dustbin {
         }
         while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
 
-        irr::core::matrix4 l_cMatrix;
-        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition - m_pCurrent->m_cNormal, m_cDirection);
+        if (m_pCurrent->m_pAiPath != nullptr) {
+          if (m_p2dPath != nullptr)
+            delete m_p2dPath;
 
-        m_v2dPath.clear();
+          irr::core::matrix4 l_cMatrix;
+          l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
 
-        for (std::vector<SPathLine3d>::iterator l_itPoint = m_pCurrent->m_vAiPath.begin(); l_itPoint != m_pCurrent->m_vAiPath.end(); l_itPoint++) {
-          SPathLine2d l_cPathLine;
-
-          for (int i = 0; i < 3; i++) {
-            irr::core::vector3df vs;
-            irr::core::vector3df ve;
-
-            l_cMatrix.transformVect(vs, (*l_itPoint).m_cLines[i].start);
-            l_cMatrix.transformVect(ve, (*l_itPoint).m_cLines[i].end  );
-
-            l_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
-          }
-
-          m_v2dPath.push_back(l_cPathLine);
-        }
+          m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix);
+        }        
       }
     }
 
@@ -380,15 +369,10 @@ namespace dustbin {
         irr::core::dimension2du l_cSize = a_pDrv->getScreenSize();
         irr::core::vector2di l_cOffset = irr::core::vector2di(l_cSize.Width / 2, l_cSize.Height / 2);
 
-        for (std::vector<SPathLine2d>::iterator l_itLine = m_v2dPath.begin(); l_itLine != m_v2dPath.end(); l_itLine++) {
-          draw2dDebugLineFloat(a_pDrv, (*l_itLine).m_cLines[0], 2.0f, irr::video::SColor(0xFF, 0, 0, 0), l_cOffset);
+        a_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
 
-          for (int i = 1; i < 3; i++)
-            draw2dDebugLineFloat(a_pDrv, (*l_itLine).m_cLines[i], 2.0f, irr::video::SColor(0xFF, 0, 0, 0xFF), l_cOffset);
-        }
-
-        irr::core::vector2df l_cClosest = m_v2dPath.back().m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f, 0.0f));
-        draw2dDebugLineFloat(a_pDrv, irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cClosest), 2.0f, irr::video::SColor(0xFF, 0xFF, 0, 0xFF), l_cOffset);
+        if (m_p2dPath != nullptr)
+          m_p2dPath->debugDraw(a_pDrv, l_cOffset, 2.0f);
 
         a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cOffset - irr::core::vector2di(15, 15), l_cOffset + irr::core::vector2di(15, 15)), irr::video::SColor(0xFF, 0, 0, 0xFF));
       }
@@ -424,28 +408,34 @@ namespace dustbin {
     * of the previous section. Complicated but it somehow works
     * @param a_fLength the length that has alreaddy been exceeded
     * @param a_cPlane the plane of the previous sections (0 == m_cLine3d, 1 == m_cEdges[0], 2 == m_cEdges[1])
-    * @param a_vStack stack of indices to prevent cyclic processing
+    * @param a_pPrevious the previous line item
     */
-    bool CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, std::vector<SPathLine3d> &a_vOutput, std::vector<int> &a_vStack) {
+    CControllerAi_V2::SPathLine3d *CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, std::vector<int> &a_vStack, SPathLine3d *a_pPrevious) {
 
       for (std::vector<int>::iterator it = a_vStack.begin(); it != a_vStack.end(); it++)
         if ((*it) == m_iIndex) {
           printf("Section %i already in.\n", m_iIndex);
-          return false;
+          return nullptr;
         }
 
       a_vStack.push_back(m_iIndex);
+
+      SPathLine3d *l_pThis = new SPathLine3d(m_cLine3d, m_cEdges[0], m_cEdges[1]);
+      
+      if (a_pPrevious != nullptr)
+        a_pPrevious->m_vNext.push_back(l_pThis);
 
       // Only process if 750 meters are not yet exceeded
       if (a_fLength <= 750.0f) {
         // Add the length of this segment to the processed length
         a_fLength += m_cLine3d.getLength();
 
-        irr::core::plane3df l_cPlane = irr::core::plane3df(m_cLine3d.start, m_cNormal);
-
         // Now let all succeeding sections process their data with this section's plane
         for (std::vector<SAiPathSection*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
           bool l_bAdd = true;
+
+          if (m_iCheckpoint == 23004)
+            printf("*\n");
 
           if ((*l_itNext)->m_iCheckpoint != m_iCheckpoint) {
             l_bAdd = false;
@@ -457,29 +447,21 @@ namespace dustbin {
             }
           }
 
-          if (l_bAdd)
-            if (!(*l_itNext)->prepareTransformedData(a_fLength, a_vOutput, a_vStack))
+          if (l_bAdd) {
+            SPathLine3d *l_pNew = (*l_itNext)->prepareTransformedData(a_fLength, a_vStack, l_pThis);
+            if (l_pNew == nullptr)
               break;
-        }
-
-        // Add our own line to the output vector
-        a_vOutput.push_back(SPathLine3d(m_cLine3d, m_cEdges[0], m_cEdges[1]));
-
-        // Now transform all points of the lines in the vector to lie in this section's plane
-        for (std::vector<SPathLine3d>::iterator l_itLine = a_vOutput.begin(); l_itLine != a_vOutput.end(); l_itLine++) {
-          for (int i = 0; i < 3; i++) {
-            irr::core::vector3df l_cOut;
-
-            if (l_cPlane.getIntersectionWithLine((*l_itLine).m_cLines[i].start, m_cNormal, l_cOut))
-              (*l_itLine).m_cLines[i].start = l_cOut;
-
-            if (l_cPlane.getIntersectionWithLine((*l_itLine).m_cLines[i].end, m_cNormal, l_cOut))
-              (*l_itLine).m_cLines[i].end = l_cOut;
           }
         }
+
+        irr::core::plane3df l_cPlane = irr::core::plane3df(m_cLine3d.start, m_cNormal);
+
+        // Now transform all points of the lines in the vector to lie in this section's plane
+        for (std::vector<SPathLine3d *>::iterator it = l_pThis->m_vNext.begin(); it != l_pThis->m_vNext.end(); it++)
+          (*it)->transformLinesToPlane(l_cPlane, m_cNormal);
       }
 
-      return true;
+      return l_pThis;
     }
 
     /**
@@ -489,7 +471,7 @@ namespace dustbin {
     void CControllerAi_V2::SAiPathSection::fillLineVectors() {
       std::vector<int> l_vStack;
 
-      prepareTransformedData(0.0f, m_vAiPath, l_vStack); l_vStack.clear();
+      m_pAiPath = prepareTransformedData(0.0f, l_vStack, nullptr);
     }
 
     CControllerAi_V2::SPathLine2d::SPathLine2d() {
@@ -506,6 +488,42 @@ namespace dustbin {
       m_cLines[2] = a_cLine3;
     }
 
+    CControllerAi_V2::SPathLine2d::~SPathLine2d() {
+      for (std::vector<SPathLine2d*>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++) {
+        delete *it;
+      }
+      m_vNext.clear();
+    }
+
+    /**
+    * Debug draw this 2d line instance
+    * @param a_pDrv the Irrlicht video driver
+    * @param a_cOffset the offset to draw
+    * @param a_fScale the scale to use for drawing
+    */
+    void CControllerAi_V2::SPathLine2d::debugDraw(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2di& a_cOffset, irr::f32 a_fScale) {
+      for (int i = 0; i < 3; i++)
+        a_pDrv->draw2DLine(
+          irr::core::vector2di((irr::s32)(a_fScale * m_cLines[i].start.X) + a_cOffset.X, (irr::s32)(a_fScale * m_cLines[i].start.Y) + a_cOffset.Y),
+          irr::core::vector2di((irr::s32)(a_fScale * m_cLines[i].end  .X) + a_cOffset.X, (irr::s32)(a_fScale * m_cLines[i].end  .Y) + a_cOffset.Y),
+          i == 0 ? irr::video::SColor(0xFF, 0, 0, 0) : irr::video::SColor(0xFF, 0, 0, 0xFF)
+        );
+
+      if (m_vNext.size() > 1)
+        a_pDrv->draw2DRectangle(
+          irr::video::SColor(0xFF, 0xFF, 0xFF, 0),
+          irr::core::recti(
+            a_fScale * m_cLines[0].end.X + a_cOffset.X - 15, 
+            a_fScale * m_cLines[0].end.Y + a_cOffset.Y - 15,
+            a_fScale * m_cLines[0].end.X + a_cOffset.X + 15,
+            a_fScale * m_cLines[0].end.Y + a_cOffset.Y + 15
+          )
+        );
+
+      for (std::vector<SPathLine2d *>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++)
+        (*it)->debugDraw(a_pDrv, a_cOffset, a_fScale);
+    }
+
     CControllerAi_V2::SPathLine3d::SPathLine3d() {
     }
 
@@ -518,6 +536,65 @@ namespace dustbin {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
+    }
+
+    CControllerAi_V2::SPathLine3d::~SPathLine3d() {
+      for (std::vector<SPathLine3d*>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++) {
+        delete *it;
+      }
+      m_vNext.clear();
+    }
+
+    /**
+    * Transform the lines to lie in the given plane
+    * @param a_cPlane the plane to place the points on
+    */
+    void CControllerAi_V2::SPathLine3d::transformLinesToPlane(const irr::core::plane3df& a_cPlane, const irr::core::vector3df &a_cNormal) {
+      for (int i = 0; i < 3; i++) {
+        irr::core::vector3df l_cOut;
+
+        if (a_cPlane.getIntersectionWithLine(m_cLines[i].start, a_cNormal, l_cOut))
+          m_cLines[i].start = l_cOut;
+
+        if (a_cPlane.getIntersectionWithLine(m_cLines[i].end, a_cNormal, l_cOut))
+          m_cLines[i].end = l_cOut;
+      }
+
+      for (std::vector<SPathLine3d *>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++)
+        (*l_itNext)->transformLinesToPlane(a_cPlane, a_cNormal);
+    }
+
+    /**
+    * Create 2d path lines out of the list of 3d path lines
+    * @param a_cMatrix the camera matrix to use for the transformation
+    */
+    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4& a_cMatrix) {
+      SPathLine2d *l_pRet = new SPathLine2d();
+
+      for (std::vector<SPathLine3d*>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++) {
+        SPathLine2d *l_pChild = (*it)->transformTo2d(a_cMatrix);
+        l_pRet->m_vNext.push_back(l_pChild);
+      }
+
+      for (int i = 0; i < 3; i++) {
+        irr::core::vector3df vs;
+        irr::core::vector3df ve;
+
+        a_cMatrix.transformVect(vs, m_cLines[i].start);
+        a_cMatrix.transformVect(ve, m_cLines[i].end  );
+
+        l_pRet->m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
+      }
+
+      return l_pRet;
+    }
+
+    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_bStartup(false), m_pAiPath(nullptr) {
+    }
+
+    CControllerAi_V2::SAiPathSection::~SAiPathSection() {
+      if (m_pAiPath != nullptr)
+        delete m_pAiPath;
     }
 
     int CControllerAi_V2::m_iInstances = 0;

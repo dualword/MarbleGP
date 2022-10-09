@@ -31,7 +31,17 @@ namespace dustbin {
           SPathLine2d(const SPathLine2d &a_cOther);
           SPathLine2d(irr::core::line2df &a_cLine1, irr::core::line2df &a_cLine2, irr::core::line2df &a_cLine3);
 
-          SAiPathSection *m_pSection;   /**< The path section */
+          ~SPathLine2d();
+
+          std::vector<SPathLine2d *> m_vNext;   /**< The next lines*/
+
+          /**
+          * Debug draw this 2d line instance
+          * @param a_pDrv the Irrlicht video driver
+          * @param a_cOffset the offset to draw
+          * @param a_fScale the scale to use for drawing
+          */
+          void debugDraw(irr::video::IVideoDriver *a_pDrv, const irr::core::vector2di &a_cOffset, irr::f32 a_fScale);
         }
         SPathLine2d;
 
@@ -47,7 +57,22 @@ namespace dustbin {
           SPathLine3d(const SPathLine3d &a_cOther);
           SPathLine3d(irr::core::line3df &a_cLine1, irr::core::line3df &a_cLine2, irr::core::line3df &a_cLine3);
 
-          SAiPathSection *m_pSection;   /**< The path section */
+          ~SPathLine3d();
+
+          std::vector<SPathLine3d *> m_vNext;   /**< The next lines*/
+
+          /**
+          * Create 2d path lines out of the list of 3d path lines
+          * @param a_cMatrix the camera matrix to use for the transformation
+          */
+          SPathLine2d *transformTo2d(const irr::core::matrix4 &a_cMatrix);
+
+          /**
+          * Transform the lines to lie in the given plane
+          * @param a_cPlane the plane to place the points on
+          * @param a_cNormal the normal of the path section
+          */
+          void transformLinesToPlane(const irr::core::plane3df &a_cPlane, const irr::core::vector3df &a_cNormal);
         }
         SPathLine3d;
 
@@ -70,7 +95,10 @@ namespace dustbin {
           std::vector<SAiPathSection *> m_vNext;          /**< The next options after this section */
           std::vector<int             > m_vCheckpoints;   /**< Vector with the next indices of the checkpoint */
 
-          std::vector<SPathLine3d> m_vAiPath;
+          SPathLine3d *m_pAiPath;
+
+          SAiPathSection();
+          ~SAiPathSection();
 
           /**
           * Prepare the 3d line data for storing them in the next and border line vectors. To do
@@ -79,10 +107,10 @@ namespace dustbin {
           * need to traverse backwards and transform the points of the next line to lie in the plane
           * of the previous section. Complicated but it somehow works
           * @param a_fLength the length that has alreaddy been exceeded
-          * @param a_vOutput [out] the vector that will be filled with all the 3d points lying in the plane
           * @param a_vStack stack of indices to prevent cyclic processing
+          * @param a_pPrevious the previous line item
           */
-          bool prepareTransformedData(irr::f32 a_fLength, std::vector<SPathLine3d> &a_vOutput, std::vector<int> &a_vStack);
+          SPathLine3d *prepareTransformedData(irr::f32 a_fLength, std::vector<int> &a_vStack, SPathLine3d *a_pPrevious);
 
           /**
           * Fill the vectors of the points for the next 500+ meters
@@ -114,7 +142,7 @@ namespace dustbin {
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
-        std::vector<SPathLine2d> m_v2dPath;   /**< The 2d path for the control calculation */
+        SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
 
         /**
         * Select the closest AI path section to the position. Will be called
