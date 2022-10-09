@@ -57,6 +57,32 @@ namespace dustbin {
     }
 
     /**
+    * Draw a debug line
+    * @param a_pDrv the Irrlicht video driver
+    * @param a_cLine the line to draw
+    * @param a_cColor the color of the line
+    */
+    void CControllerAi_V2::draw2dDebugLine(irr::video::IVideoDriver *a_pDrv, const irr::core::line2di& a_cLine, const irr::video::SColor& a_cColor) {
+      a_pDrv->draw2DLine(a_cLine.start, a_cLine.end, a_cColor);
+    }
+
+    /**
+    * Draw a debug line with factor
+    * @param a_pDrv the Irrlicht video driver
+    * @param a_cLine the line to draw
+    * @param a_fFactor the factor to scale the line
+    * @param a_cColor the color of the line
+    * @param a_cOffset offset of the line
+    */
+    void CControllerAi_V2::draw2dDebugLineFloat(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
+      draw2dDebugLine(a_pDrv, irr::core::line2di(
+        (irr::s32)(a_fFactor * a_cLine.start.X) + a_cOffset.X, 
+        (irr::s32)(a_fFactor * a_cLine.start.Y) + a_cOffset.Y, 
+        (irr::s32)(a_fFactor * a_cLine.end  .X) + a_cOffset.X,
+        (irr::s32)(a_fFactor * a_cLine.end  .Y) + a_cOffset.Y), a_cColor);
+    }
+
+    /**
     * The constructor
     * @param a_iMarbleId the marble ID for this controller
     * @param a_sControls details about the skills of the controller
@@ -270,29 +296,22 @@ namespace dustbin {
         irr::core::matrix4 l_cMatrix;
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition - m_pCurrent->m_cNormal, m_cDirection);
 
-        m_v2dLinesCentral   .clear();
-        m_v2dLinesBorder [0].clear();
-        m_v2dLinesBorder [1].clear();
+        m_v2dPath.clear();
 
-        for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesCentral.begin(); l_itPoint != m_pCurrent->m_vLinesCentral.end(); l_itPoint++) {
-          irr::core::vector3df vs;
-          irr::core::vector3df ve;
+        for (std::vector<SPathLine3d>::iterator l_itPoint = m_pCurrent->m_vAiPath.begin(); l_itPoint != m_pCurrent->m_vAiPath.end(); l_itPoint++) {
+          SPathLine2d l_cPathLine;
 
-          l_cMatrix.transformVect(vs, (*l_itPoint).start);
-          l_cMatrix.transformVect(ve, (*l_itPoint).end  );
-
-          m_v2dLinesCentral.push_back(irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y));
-        }
-
-        for (int i = 0; i < 2; i++) {
-          for (std::vector<irr::core::line3df>::iterator l_itPoint = m_pCurrent->m_vLinesBorder[i].begin(); l_itPoint != m_pCurrent->m_vLinesBorder[i].end(); l_itPoint++) {
+          for (int i = 0; i < 3; i++) {
             irr::core::vector3df vs;
             irr::core::vector3df ve;
-            l_cMatrix.transformVect(vs, (*l_itPoint).start);
-            l_cMatrix.transformVect(ve, (*l_itPoint).end  );
 
-            m_v2dLinesBorder[i].push_back(irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y));
+            l_cMatrix.transformVect(vs, (*l_itPoint).m_cLines[i].start);
+            l_cMatrix.transformVect(ve, (*l_itPoint).m_cLines[i].end  );
+
+            l_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
           }
+
+          m_v2dPath.push_back(l_cPathLine);
         }
       }
     }
@@ -361,26 +380,46 @@ namespace dustbin {
         irr::core::dimension2du l_cSize = a_pDrv->getScreenSize();
         irr::core::vector2di l_cOffset = irr::core::vector2di(l_cSize.Width / 2, l_cSize.Height / 2);
 
-        for (std::vector<irr::core::line2df>::iterator l_itLine = m_v2dLinesCentral.begin(); l_itLine != m_v2dLinesCentral.end(); l_itLine++) {
-          irr::core::vector2di s = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).start.X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).start.Y) + l_cOffset.Y);
-          irr::core::vector2di e = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).end  .X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).end  .Y) + l_cOffset.Y);
+        for (std::vector<SPathLine2d>::iterator l_itLine = m_v2dPath.begin(); l_itLine != m_v2dPath.end(); l_itLine++) {
+          draw2dDebugLineFloat(a_pDrv, (*l_itLine).m_cLines[0], 2.0f, irr::video::SColor(0xFF, 0, 0, 0), l_cOffset);
 
-          a_pDrv->draw2DLine(s, e, irr::video::SColor(0xFF, 0, 0, 0));
+          for (int i = 1; i < 3; i++)
+            draw2dDebugLineFloat(a_pDrv, (*l_itLine).m_cLines[i], 2.0f, irr::video::SColor(0xFF, 0, 0, 0xFF), l_cOffset);
         }
 
-        for (int i = 0; i < 2; i++) {
-          for (std::vector<irr::core::line2df>::iterator l_itLine = m_v2dLinesBorder[i].begin(); l_itLine != m_v2dLinesBorder[i].end(); l_itLine++) {
-            irr::core::vector2di s = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).start.X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).start.Y) + l_cOffset.Y);
-            irr::core::vector2di e = irr::core::vector2di((irr::s32)(2.0f * (*l_itLine).end  .X) + l_cOffset.X, (irr::s32)(2.0f * (*l_itLine).end  .Y) + l_cOffset.Y);
-
-            a_pDrv->draw2DLine(s, e, irr::video::SColor(0xFF, 0, 0, 0xFF));
-          }
-        }
-
-        for (int i = 0; i < 2; i++) {
-          irr::core::vector2df v1 = m_v2dLinesBorder[i].back().start;
+        for (int i = 1; i < 3; i++) {
+          irr::core::vector2df v1 = m_v2dPath.back().m_cLines[i].start;
           a_pDrv->draw2DRectangleOutline(irr::core::recti((irr::s32)v1.X - 15, (irr::s32)v1.Y - 15, (irr::s32)v1.X + 15, (irr::s32)v1.Y + 15));
         }
+
+        irr::core::vector2df l_cClosest = m_v2dPath.back().m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f, 0.0f));
+        draw2dDebugLineFloat(a_pDrv, irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cClosest), 2.0f, irr::video::SColor(0xFF, 0xFF, 0, 0xFF), l_cOffset);
+
+        irr::f32 l_fDist = 0.0f;
+
+        std::vector<SPathLine2d>::iterator l_itCheck = m_v2dPath.end();
+        irr::core::vector2df l_cPoint = l_cClosest;
+        irr::core::line2df l_cLine = irr::core::line2df(0.0f, 0.0f, m_v2dPath.back().m_cLines[0].end.X, m_v2dPath.back().m_cLines[0].end.Y);
+
+        // Calculate the point in a distance of 200 meters
+        while (l_fDist < 200.0f && l_itCheck != m_v2dPath.begin()) {
+          l_itCheck--;
+
+          irr::f32 l_fNewDist = l_fDist + irr::core::line2df(l_cClosest, (*l_itCheck).m_cLines[0].end).getLength();
+          l_cClosest = (*l_itCheck).m_cLines[0].end;
+          
+          if (l_fNewDist >= 200.0f) {
+            l_cLine.end = (*l_itCheck).m_cLines[0].start + (200.0f - l_fDist) * ((*l_itCheck).m_cLines[0].end - (*l_itCheck).m_cLines[0].start).normalize();
+
+            l_fDist = 200.0f;
+          }
+          else l_fDist = l_fNewDist;
+        }
+
+        draw2dDebugLineFloat(a_pDrv, l_cLine, 2.0f, irr::video::SColor(0xFF, 0xFF, 0, 0), l_cOffset);
+
+        std::vector<irr::core::line2df> l_vPath;
+        
 
         a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cSize.Width / 2 - 15, l_cSize.Height / 2 - 15, l_cSize.Width / 2 + 15, l_cSize.Height / 2 + 15), irr::video::SColor(0xFF, 0, 0, 0xFF));
       }
@@ -416,13 +455,13 @@ namespace dustbin {
     * of the previous section. Complicated but it somehow works
     * @param a_fLength the length that has alreaddy been exceeded
     * @param a_cPlane the plane of the previous sections (0 == m_cLine3d, 1 == m_cEdges[0], 2 == m_cEdges[1])
-    * @param a_vOutput [out] the vector that will be filled with all the 3d points lying in the plane
+    * @param a_vStack stack of indices to prevent cyclic processing
     */
-    bool CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, int a_iLineIdx, std::vector<irr::core::line3df> &a_vOutput, std::vector<int> &a_vStack) {
+    bool CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, std::vector<SPathLine3d> &a_vOutput, std::vector<int> &a_vStack) {
 
       for (std::vector<int>::iterator it = a_vStack.begin(); it != a_vStack.end(); it++)
         if ((*it) == m_iIndex) {
-          printf("Section %i already in (%i).\n", m_iIndex, a_iLineIdx);
+          printf("Section %i already in.\n", m_iIndex);
           return false;
         }
 
@@ -450,22 +489,24 @@ namespace dustbin {
           }
 
           if (l_bAdd)
-            if (!(*l_itNext)->prepareTransformedData(a_fLength, a_iLineIdx, a_vOutput, a_vStack))
+            if (!(*l_itNext)->prepareTransformedData(a_fLength, a_vOutput, a_vStack))
               break;
         }
 
         // Add our own line to the output vector
-        a_vOutput.push_back(a_iLineIdx == 0 ? m_cLine3d : a_iLineIdx == 1 ? m_cEdges[0] : m_cEdges[1]);
+        a_vOutput.push_back(SPathLine3d(m_cLine3d, m_cEdges[0], m_cEdges[1]));
 
         // Now transform all points of the lines in the vector to lie in this section's plane
-        for (std::vector<irr::core::line3df>::iterator l_itLine = a_vOutput.begin(); l_itLine != a_vOutput.end(); l_itLine++) {
-          irr::core::vector3df l_cOut;
+        for (std::vector<SPathLine3d>::iterator l_itLine = a_vOutput.begin(); l_itLine != a_vOutput.end(); l_itLine++) {
+          for (int i = 0; i < 3; i++) {
+            irr::core::vector3df l_cOut;
 
-          if (l_cPlane.getIntersectionWithLine((*l_itLine).start, m_cNormal, l_cOut))
-            (*l_itLine).start = l_cOut;
+            if (l_cPlane.getIntersectionWithLine((*l_itLine).m_cLines[i].start, m_cNormal, l_cOut))
+              (*l_itLine).m_cLines[i].start = l_cOut;
 
-          if (l_cPlane.getIntersectionWithLine((*l_itLine).end, m_cNormal, l_cOut))
-            (*l_itLine).end = l_cOut;
+            if (l_cPlane.getIntersectionWithLine((*l_itLine).m_cLines[i].end, m_cNormal, l_cOut))
+              (*l_itLine).m_cLines[i].end = l_cOut;
+          }
         }
       }
 
@@ -479,9 +520,35 @@ namespace dustbin {
     void CControllerAi_V2::SAiPathSection::fillLineVectors() {
       std::vector<int> l_vStack;
 
-      prepareTransformedData(0.0f, 0, m_vLinesCentral  , l_vStack); l_vStack.clear();
-      prepareTransformedData(0.0f, 1, m_vLinesBorder[0], l_vStack); l_vStack.clear();
-      prepareTransformedData(0.0f, 2, m_vLinesBorder[1], l_vStack);
+      prepareTransformedData(0.0f, m_vAiPath, l_vStack); l_vStack.clear();
+    }
+
+    CControllerAi_V2::SPathLine2d::SPathLine2d() {
+    }
+
+    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) {
+      for (int i = 0; i < 3; i++)
+        m_cLines[i] = a_cOther.m_cLines[i];
+    }
+
+    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) {
+      m_cLines[0] = a_cLine1;
+      m_cLines[1] = a_cLine2;
+      m_cLines[2] = a_cLine3;
+    }
+
+    CControllerAi_V2::SPathLine3d::SPathLine3d() {
+    }
+
+    CControllerAi_V2::SPathLine3d::SPathLine3d(const SPathLine3d& a_cOther) {
+      for (int i = 0; i < 3; i++)
+        m_cLines[i] = a_cOther.m_cLines[i];
+    }
+
+    CControllerAi_V2::SPathLine3d::SPathLine3d(irr::core::line3df& a_cLine1, irr::core::line3df& a_cLine2, irr::core::line3df& a_cLine3) {
+      m_cLines[0] = a_cLine1;
+      m_cLines[1] = a_cLine2;
+      m_cLines[2] = a_cLine3;
     }
 
     int CControllerAi_V2::m_iInstances = 0;

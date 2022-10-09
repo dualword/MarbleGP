@@ -18,6 +18,34 @@ namespace dustbin {
     class CControllerAi_V2 : public IControllerAI {
       private:
         /**
+        * @class SPathLine2d
+        * @autor Christian Keimel
+        * This struct holds 3 2d lines for the path calculation: the central line and two borders
+        */
+        typedef struct SPathLine2d {
+          irr::core::line2df m_cLines[3];   /**< The path lines (index 0 == central, 1 == border, 2 == border) */
+
+          SPathLine2d();
+          SPathLine2d(const SPathLine2d &a_cOther);
+          SPathLine2d(irr::core::line2df &a_cLine1, irr::core::line2df &a_cLine2, irr::core::line2df &a_cLine3);
+        }
+        SPathLine2d;
+
+        /**
+        * @class SPathLine3d
+        * @author Christian Keimel
+        * This struct holds 3 3d lines for the path calculation: the central line and two borders
+        */
+        typedef struct SPathLine3d {
+          irr::core::line3df m_cLines[3];   /**< The path lines (index 0 == central, 1 == border, 2 == border) */
+
+          SPathLine3d();
+          SPathLine3d(const SPathLine3d &a_cOther);
+          SPathLine3d(irr::core::line3df &a_cLine1, irr::core::line3df &a_cLine2, irr::core::line3df &a_cLine3);
+        }
+        SPathLine3d;
+
+        /**
         * @class SAiPathSection
         * @author Christian Keimel
         * This struct is used to store the AI path data
@@ -36,8 +64,7 @@ namespace dustbin {
           std::vector<SAiPathSection *> m_vNext;          /**< The next options after this section */
           std::vector<int             > m_vCheckpoints;   /**< Vector with the next indices of the checkpoint */
 
-          std::vector<irr::core::line3df> m_vLinesCentral;    /**< The central lines defining the path */
-          std::vector<irr::core::line3df> m_vLinesBorder[2];  /**< The border lines defining the edge of the track */
+          std::vector<SPathLine3d> m_vAiPath;
 
           /**
           * Prepare the 3d line data for storing them in the next and border line vectors. To do
@@ -46,10 +73,10 @@ namespace dustbin {
           * need to traverse backwards and transform the points of the next line to lie in the plane
           * of the previous section. Complicated but it somehow works
           * @param a_fLength the length that has alreaddy been exceeded
-          * @param a_iLineIdx the index of the line to process (0 == m_cLine3d, 1 == m_cEdges[0], 2 == m_cEdges[1])
           * @param a_vOutput [out] the vector that will be filled with all the 3d points lying in the plane
+          * @param a_vStack stack of indices to prevent cyclic processing
           */
-          bool prepareTransformedData(irr::f32 a_fLength, int a_iLineIdx, std::vector<irr::core::line3df> &a_vOutput, std::vector<int> &a_vStack);
+          bool prepareTransformedData(irr::f32 a_fLength, std::vector<SPathLine3d> &a_vOutput, std::vector<int> &a_vStack);
 
           /**
           * Fill the vectors of the points for the next 500+ meters
@@ -81,17 +108,33 @@ namespace dustbin {
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
-        std::vector<irr::core::line2df> m_v2dLinesCentral;    /**< The central lines defining the path in 2d */
-        std::vector<irr::core::line2df> m_v2dLinesBorder[2];  /**< The border lines defining the edge of the track in 2d */
+        std::vector<SPathLine2d> m_v2dPath;   /**< The 2d path for the control calculation */
 
         /**
         * Select the closest AI path section to the position. Will be called
         * when the race is started, after respawn and stun
-        * @param a_cPosition the position of the marble
         * @param a_bSelectStartupPath select a path marked as "startup"
         * @return the closest matching AI path section
         */
         SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath);
+
+        /**
+        * Draw a debug line
+        * @param a_pDrv the Irrlicht video driver
+        * @param a_cLine the line to draw
+        * @param a_cColor the color of the line
+        */
+        void draw2dDebugLine(irr::video::IVideoDriver *a_pDrv, const irr::core::line2di &a_cLine, const irr::video::SColor &a_cColor);
+
+        /**
+        * Draw a debug line with factor
+        * @param a_pDrv the Irrlicht video driver
+        * @param a_cLine the line to draw
+        * @param a_fFactor the factor to scale the line
+        * @param a_cColor the color of the line
+        * @param a_cOffset offset of the line
+        */
+        void draw2dDebugLineFloat(irr::video::IVideoDriver *a_pDrv, const irr::core::line2df &a_cLine, irr::f32 a_fFactor, const irr::video::SColor &a_cColor, const irr::core::vector2di &a_cOffset);
 
       public:
         /**
