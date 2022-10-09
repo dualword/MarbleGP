@@ -387,11 +387,6 @@ namespace dustbin {
             draw2dDebugLineFloat(a_pDrv, (*l_itLine).m_cLines[i], 2.0f, irr::video::SColor(0xFF, 0, 0, 0xFF), l_cOffset);
         }
 
-        for (int i = 1; i < 3; i++) {
-          irr::core::vector2df v1 = m_v2dPath.back().m_cLines[i].start;
-          a_pDrv->draw2DRectangleOutline(irr::core::recti((irr::s32)v1.X - 15, (irr::s32)v1.Y - 15, (irr::s32)v1.X + 15, (irr::s32)v1.Y + 15));
-        }
-
         irr::core::vector2df l_cClosest = m_v2dPath.back().m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f, 0.0f));
         draw2dDebugLineFloat(a_pDrv, irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cClosest), 2.0f, irr::video::SColor(0xFF, 0xFF, 0, 0xFF), l_cOffset);
 
@@ -421,7 +416,7 @@ namespace dustbin {
         std::vector<irr::core::line2df> l_vPath;
         
 
-        a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cSize.Width / 2 - 15, l_cSize.Height / 2 - 15, l_cSize.Width / 2 + 15, l_cSize.Height / 2 + 15), irr::video::SColor(0xFF, 0, 0, 0xFF));
+        a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cOffset - irr::core::vector2di(15, 15), l_cOffset + irr::core::vector2di(15, 15)), irr::video::SColor(0xFF, 0, 0, 0xFF));
       }
     }
 
