@@ -17,6 +17,8 @@ namespace dustbin {
     */
     class CControllerAi_V2 : public IControllerAI {
       private:
+        struct SAiPathSection;
+
         /**
         * @class SPathLine2d
         * @autor Christian Keimel
@@ -28,6 +30,8 @@ namespace dustbin {
           SPathLine2d();
           SPathLine2d(const SPathLine2d &a_cOther);
           SPathLine2d(irr::core::line2df &a_cLine1, irr::core::line2df &a_cLine2, irr::core::line2df &a_cLine3);
+
+          SAiPathSection *m_pSection;   /**< The path section */
         }
         SPathLine2d;
 
@@ -42,6 +46,8 @@ namespace dustbin {
           SPathLine3d();
           SPathLine3d(const SPathLine3d &a_cOther);
           SPathLine3d(irr::core::line3df &a_cLine1, irr::core::line3df &a_cLine2, irr::core::line3df &a_cLine3);
+
+          SAiPathSection *m_pSection;   /**< The path section */
         }
         SPathLine3d;
 
