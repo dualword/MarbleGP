@@ -33,7 +33,9 @@ namespace dustbin {
 
           ~SPathLine2d();
 
-          std::vector<SPathLine2d *> m_vNext;   /**< The next lines*/
+          std::vector<SPathLine2d *> m_vNext;   /**< The next lines */
+
+          SPathLine2d *m_pPrevious;   /**< The previous path line */
 
           /**
           * Debug draw this 2d line instance
@@ -60,6 +62,10 @@ namespace dustbin {
           ~SPathLine3d();
 
           std::vector<SPathLine3d *> m_vNext;   /**< The next lines*/
+
+          int m_iSectionIndex;        /**< Index of the section this path line belongs to */
+
+          SPathLine3d *m_pPrevious;   /**< The previous path line */
 
           /**
           * Create 2d path lines out of the list of 3d path lines
@@ -143,6 +149,8 @@ namespace dustbin {
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
         SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
+
+        void findEnds(std::vector<SPathLine2d *> &a_vEnds, SPathLine2d *a_pLine);
 
         /**
         * Select the closest AI path section to the position. Will be called

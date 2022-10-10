@@ -288,15 +288,16 @@ namespace dustbin {
             else
               m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
 
-            l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
+            if (m_pCurrent != nullptr)
+              l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
           }
         }
         while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
 
-        if (m_pCurrent->m_pAiPath != nullptr) {
-          if (m_p2dPath != nullptr)
-            delete m_p2dPath;
+        if (m_p2dPath != nullptr)
+          delete m_p2dPath;
 
+        if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
           irr::core::matrix4 l_cMatrix;
           l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
 
@@ -371,10 +372,49 @@ namespace dustbin {
 
         a_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
 
-        if (m_p2dPath != nullptr)
+        if (m_p2dPath != nullptr) {
           m_p2dPath->debugDraw(a_pDrv, l_cOffset, 2.0f);
 
+          std::vector<SPathLine2d *> l_vEnds;
+          findEnds(l_vEnds, m_p2dPath);
+
+          irr::video::SColor l_cColors[] = {
+            irr::video::SColor(0xFF, 0xFF, 0, 0),
+            irr::video::SColor(0xFF, 0xFF, 0xFF, 0),
+            irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
+          };
+
+          int l_iIdx = 0;
+          for (std::vector<SPathLine2d*>::iterator it = l_vEnds.begin(); it != l_vEnds.end(); it++) {
+            SPathLine2d *p = *it;
+
+            while (p != nullptr) {
+              draw2dDebugLineFloat(a_pDrv, p->m_cLines[0], 2.0f, l_cColors[l_iIdx], l_cOffset);
+
+              if (p == m_p2dPath)
+                break;
+              else
+                p = p->m_pPrevious;
+            }
+
+            l_iIdx++;
+            if (l_iIdx > 2)
+              l_iIdx = 0;
+          }
+        }
+
         a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cOffset - irr::core::vector2di(15, 15), l_cOffset + irr::core::vector2di(15, 15)), irr::video::SColor(0xFF, 0, 0, 0xFF));
+      }
+    }
+
+    void CControllerAi_V2::findEnds(std::vector<SPathLine2d *>& a_vEnds, SPathLine2d* a_pLine) {
+      if (a_pLine->m_vNext.size() == 0) {
+        a_vEnds.push_back(a_pLine);
+      }
+      else {
+        for (std::vector<SPathLine2d*>::iterator it = a_pLine->m_vNext.begin(); it != a_pLine->m_vNext.end(); it++) {
+          findEnds(a_vEnds, *it);
+        }
       }
     }
 
@@ -412,18 +452,31 @@ namespace dustbin {
     */
     CControllerAi_V2::SPathLine3d *CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, std::vector<int> &a_vStack, SPathLine3d *a_pPrevious) {
 
-      for (std::vector<int>::iterator it = a_vStack.begin(); it != a_vStack.end(); it++)
+      /*for (std::vector<int>::iterator it = a_vStack.begin(); it != a_vStack.end(); it++)
         if ((*it) == m_iIndex) {
           printf("Section %i already in.\n", m_iIndex);
           return nullptr;
-        }
+        }*/
 
       a_vStack.push_back(m_iIndex);
+
+      SPathLine3d *p = a_pPrevious;
+
+      while (p != nullptr) {
+        if (m_iIndex == p->m_iSectionIndex) {
+          printf("%i already in path, aborting.\n", p->m_iSectionIndex);
+          return nullptr;
+        }
+        p = p->m_pPrevious;
+      }
 
       SPathLine3d *l_pThis = new SPathLine3d(m_cLine3d, m_cEdges[0], m_cEdges[1]);
       
       if (a_pPrevious != nullptr)
         a_pPrevious->m_vNext.push_back(l_pThis);
+
+      l_pThis->m_pPrevious     = a_pPrevious;
+      l_pThis->m_iSectionIndex = m_iIndex;
 
       // Only process if 750 meters are not yet exceeded
       if (a_fLength <= 750.0f) {
@@ -433,9 +486,6 @@ namespace dustbin {
         // Now let all succeeding sections process their data with this section's plane
         for (std::vector<SAiPathSection*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
           bool l_bAdd = true;
-
-          if (m_iCheckpoint == 23004)
-            printf("*\n");
 
           if ((*l_itNext)->m_iCheckpoint != m_iCheckpoint) {
             l_bAdd = false;
@@ -474,15 +524,15 @@ namespace dustbin {
       m_pAiPath = prepareTransformedData(0.0f, l_vStack, nullptr);
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d() {
+    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_pPrevious(nullptr) {
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_pPrevious(nullptr) {
       for (int i = 0; i < 3; i++)
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_pPrevious(nullptr) {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -513,10 +563,10 @@ namespace dustbin {
         a_pDrv->draw2DRectangle(
           irr::video::SColor(0xFF, 0xFF, 0xFF, 0),
           irr::core::recti(
-            a_fScale * m_cLines[0].end.X + a_cOffset.X - 15, 
-            a_fScale * m_cLines[0].end.Y + a_cOffset.Y - 15,
-            a_fScale * m_cLines[0].end.X + a_cOffset.X + 15,
-            a_fScale * m_cLines[0].end.Y + a_cOffset.Y + 15
+            (irr::s32)(a_fScale * m_cLines[0].end.X) + a_cOffset.X - 15, 
+            (irr::s32)(a_fScale * m_cLines[0].end.Y) + a_cOffset.Y - 15,
+            (irr::s32)(a_fScale * m_cLines[0].end.X) + a_cOffset.X + 15,
+            (irr::s32)(a_fScale * m_cLines[0].end.Y) + a_cOffset.Y + 15
           )
         );
 
@@ -524,15 +574,15 @@ namespace dustbin {
         (*it)->debugDraw(a_pDrv, a_cOffset, a_fScale);
     }
 
-    CControllerAi_V2::SPathLine3d::SPathLine3d() {
+    CControllerAi_V2::SPathLine3d::SPathLine3d() : m_iSectionIndex(-1), m_pPrevious(nullptr) {
     }
 
-    CControllerAi_V2::SPathLine3d::SPathLine3d(const SPathLine3d& a_cOther) {
+    CControllerAi_V2::SPathLine3d::SPathLine3d(const SPathLine3d& a_cOther) : m_iSectionIndex(-1), m_pPrevious(nullptr) {
       for (int i = 0; i < 3; i++)
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine3d::SPathLine3d(irr::core::line3df& a_cLine1, irr::core::line3df& a_cLine2, irr::core::line3df& a_cLine3) {
+    CControllerAi_V2::SPathLine3d::SPathLine3d(irr::core::line3df& a_cLine1, irr::core::line3df& a_cLine2, irr::core::line3df& a_cLine3) : m_iSectionIndex(-1), m_pPrevious(nullptr) {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -573,6 +623,7 @@ namespace dustbin {
 
       for (std::vector<SPathLine3d*>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++) {
         SPathLine2d *l_pChild = (*it)->transformTo2d(a_cMatrix);
+        l_pChild->m_pPrevious = l_pRet;
         l_pRet->m_vNext.push_back(l_pChild);
       }
 
