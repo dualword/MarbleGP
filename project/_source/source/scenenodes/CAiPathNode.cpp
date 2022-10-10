@@ -79,6 +79,11 @@ namespace dustbin {
       int l_iIndex = 0;
       std::string l_sName = "AISection_" + std::to_string(l_iIndex);
 
+      for (std::vector<SAiPathSection *>::iterator it = m_vSections.begin(); it != m_vSections.end(); it++)
+        delete *it;
+
+      m_vSections.clear();
+
       // Read all AI path sections
       while (a_pIn->existsAttribute(l_sName.c_str())) {
         std::string l_sData = a_pIn->getAttributeAsString(l_sName.c_str()).c_str();
