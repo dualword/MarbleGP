@@ -375,8 +375,12 @@ namespace dustbin {
         if (m_p2dPath != nullptr) {
           m_p2dPath->debugDraw(a_pDrv, l_cOffset, 2.0f);
 
+          irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
+
+          irr::f32 l_fFactor = (irr::core::line2df(m_p2dPath->m_cLines[0].end, l_cClosest).getLengthSQ() / m_p2dPath->m_cLines[0].getLengthSQ());
+
           std::vector<SPathLine2d *> l_vEnds;
-          findEnds(l_vEnds, m_p2dPath);
+          findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
 
           irr::video::SColor l_cColors[] = {
             irr::video::SColor(0xFF, 0xFF, 0, 0),
@@ -407,14 +411,28 @@ namespace dustbin {
       }
     }
 
-    void CControllerAi_V2::findEnds(std::vector<SPathLine2d *>& a_vEnds, SPathLine2d* a_pLine) {
+    /**
+    * Find all ends of a path and store them in the given vector. If a path splits this will produce two
+    * ends, not matter if the two paths are re-united within the look-ahead distance
+    * @param a_vEnds [out] the vector to store the ends in
+    * @param a_pLine the line to check
+    * @param a_fLength the length that has already been processed
+    * @param a_fFactor factor to multiply the length of the line (a_pLine) with. Necessary for the first call as a portion of the line 
+    * is already done, all later calls just get "1.0"
+    */
+    void CControllerAi_V2::findEnds(std::vector<SPathLine2d *>& a_vEnds, SPathLine2d* a_pLine, irr::f32 a_fLength, irr::f32 a_fFactor) {
+      a_fLength += a_pLine->m_cLines[0].getLength() * a_fFactor;
+
       if (a_pLine->m_vNext.size() == 0) {
         a_vEnds.push_back(a_pLine);
       }
       else {
-        for (std::vector<SPathLine2d*>::iterator it = a_pLine->m_vNext.begin(); it != a_pLine->m_vNext.end(); it++) {
-          findEnds(a_vEnds, *it);
+        if (a_fLength < 300.0f) {
+          for (std::vector<SPathLine2d*>::iterator it = a_pLine->m_vNext.begin(); it != a_pLine->m_vNext.end(); it++) {
+            findEnds(a_vEnds, *it, a_fLength, 1.0f);
+          }
         }
+        else a_vEnds.push_back(a_pLine);
       }
     }
 
@@ -447,19 +465,9 @@ namespace dustbin {
     * need to traverse backwards and transform the points of the next line to lie in the plane
     * of the previous section. Complicated but it somehow works
     * @param a_fLength the length that has alreaddy been exceeded
-    * @param a_cPlane the plane of the previous sections (0 == m_cLine3d, 1 == m_cEdges[0], 2 == m_cEdges[1])
     * @param a_pPrevious the previous line item
     */
-    CControllerAi_V2::SPathLine3d *CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, std::vector<int> &a_vStack, SPathLine3d *a_pPrevious) {
-
-      /*for (std::vector<int>::iterator it = a_vStack.begin(); it != a_vStack.end(); it++)
-        if ((*it) == m_iIndex) {
-          printf("Section %i already in.\n", m_iIndex);
-          return nullptr;
-        }*/
-
-      a_vStack.push_back(m_iIndex);
-
+    CControllerAi_V2::SPathLine3d *CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, SPathLine3d *a_pPrevious) {
       SPathLine3d *p = a_pPrevious;
 
       while (p != nullptr) {
@@ -498,7 +506,7 @@ namespace dustbin {
           }
 
           if (l_bAdd) {
-            SPathLine3d *l_pNew = (*l_itNext)->prepareTransformedData(a_fLength, a_vStack, l_pThis);
+            SPathLine3d *l_pNew = (*l_itNext)->prepareTransformedData(a_fLength, l_pThis);
             if (l_pNew == nullptr)
               break;
           }
@@ -519,9 +527,7 @@ namespace dustbin {
     * with Irrlicht vectors transformed to the section plane
     */
     void CControllerAi_V2::SAiPathSection::fillLineVectors() {
-      std::vector<int> l_vStack;
-
-      m_pAiPath = prepareTransformedData(0.0f, l_vStack, nullptr);
+      m_pAiPath = prepareTransformedData(0.0f, nullptr);
     }
 
     CControllerAi_V2::SPathLine2d::SPathLine2d() : m_pPrevious(nullptr) {

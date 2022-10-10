@@ -113,10 +113,9 @@ namespace dustbin {
           * need to traverse backwards and transform the points of the next line to lie in the plane
           * of the previous section. Complicated but it somehow works
           * @param a_fLength the length that has alreaddy been exceeded
-          * @param a_vStack stack of indices to prevent cyclic processing
           * @param a_pPrevious the previous line item
           */
-          SPathLine3d *prepareTransformedData(irr::f32 a_fLength, std::vector<int> &a_vStack, SPathLine3d *a_pPrevious);
+          SPathLine3d *prepareTransformedData(irr::f32 a_fLength, SPathLine3d *a_pPrevious);
 
           /**
           * Fill the vectors of the points for the next 500+ meters
@@ -150,7 +149,16 @@ namespace dustbin {
 
         SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
 
-        void findEnds(std::vector<SPathLine2d *> &a_vEnds, SPathLine2d *a_pLine);
+        /**
+        * Find all ends of a path and store them in the given vector. If a path splits this will produce two
+        * ends, not matter if the two paths are re-united within the look-ahead distance
+        * @param a_vEnds [out] the vector to store the ends in
+        * @param a_pLine the line to check
+        * @param a_fLength the length that has already been processed
+        * @param a_fFactor factor to multiply the length of the line (a_pLine) with. Necessary for the first call as a portion of the line 
+        * is already done, all later calls just get "1.0"
+        */
+        void findEnds(std::vector<SPathLine2d *> &a_vEnds, SPathLine2d *a_pLine, irr::f32 a_fLength, irr::f32 a_fFactor);
 
         /**
         * Select the closest AI path section to the position. Will be called
