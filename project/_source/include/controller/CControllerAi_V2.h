@@ -44,6 +44,13 @@ namespace dustbin {
           * @param a_fScale the scale to use for drawing
           */
           void debugDraw(irr::video::IVideoDriver *a_pDrv, const irr::core::vector2di &a_cOffset, irr::f32 a_fScale);
+
+          /**
+          * Check if a given line intersects with on of the borders (m_cLine indices 1 and 2)
+          * @param a_cLine the line to test
+          * @return true if the line intersects with a border, false otherwise
+          */
+          bool doesLineIntersectBorder(const irr::core::line2df &a_cLine);
         }
         SPathLine2d;
 
@@ -168,23 +175,7 @@ namespace dustbin {
         */
         SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath);
 
-        /**
-        * Draw a debug line
-        * @param a_pDrv the Irrlicht video driver
-        * @param a_cLine the line to draw
-        * @param a_cColor the color of the line
-        */
-        void draw2dDebugLine(irr::video::IVideoDriver *a_pDrv, const irr::core::line2di &a_cLine, const irr::video::SColor &a_cColor);
-
-        /**
-        * Draw a debug line with factor
-        * @param a_pDrv the Irrlicht video driver
-        * @param a_cLine the line to draw
-        * @param a_fFactor the factor to scale the line
-        * @param a_cColor the color of the line
-        * @param a_cOffset offset of the line
-        */
-        void draw2dDebugLineFloat(irr::video::IVideoDriver *a_pDrv, const irr::core::line2df &a_cLine, irr::f32 a_fFactor, const irr::video::SColor &a_cColor, const irr::core::vector2di &a_cOffset);
+        void getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd);
 
       public:
         /**

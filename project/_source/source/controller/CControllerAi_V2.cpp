@@ -12,6 +12,42 @@
 namespace dustbin {
   namespace controller {
     /**
+    * Draw a debug line with factor
+    * @param a_pDrv the Irrlicht video driver
+    * @param a_cLine the line to draw
+    * @param a_fFactor the factor to scale the line
+    * @param a_cColor the color of the line
+    * @param a_cOffset offset of the line
+    */
+    void draw2dDebugLine(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
+      a_pDrv->draw2DLine(
+        irr::core::vector2di(
+          (irr::s32)(a_fFactor * a_cLine.start.X) + a_cOffset.X, 
+          (irr::s32)(a_fFactor * a_cLine.start.Y) + a_cOffset.Y
+        ),
+        irr::core::vector2di(
+          (irr::s32)(a_fFactor * a_cLine.end  .X) + a_cOffset.X,
+          (irr::s32)(a_fFactor * a_cLine.end  .Y) + a_cOffset.Y
+        ),
+        a_cColor
+      );
+    }
+
+    /**
+    * Draws a debug rectangle
+    * @param a_pDrv the Irrlicht video driver
+    * @param a_cPos the center position
+    * @param a_cColor the rectangle color
+    * @param a_iSize the size of the rectangle
+    * @param a_fScale the scale factor
+    * @param a_cOffset the offset of the rectangle
+    */
+    void draw2dDebugRectangle(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset) {
+      irr::core::vector2di l_cUpperLeft = irr::core::vector2di((irr::s32)(a_fScale * a_cPos.X) + a_cOffset.X - a_iSize / 2, (irr::s32)(a_fScale * a_cPos.Y) + a_cOffset.Y - a_iSize / 2);
+      a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cUpperLeft, irr::core::dimension2du(a_iSize, a_iSize)), a_cColor);
+    }
+
+    /**
     * Find all AI path nodes in the scene tree
     * @param a_pNode the node to check
     * @param a_vNodes [out] the vector of nodes that will be filled
@@ -54,32 +90,6 @@ namespace dustbin {
       }
 
       return l_pCurrent;
-    }
-
-    /**
-    * Draw a debug line
-    * @param a_pDrv the Irrlicht video driver
-    * @param a_cLine the line to draw
-    * @param a_cColor the color of the line
-    */
-    void CControllerAi_V2::draw2dDebugLine(irr::video::IVideoDriver *a_pDrv, const irr::core::line2di& a_cLine, const irr::video::SColor& a_cColor) {
-      a_pDrv->draw2DLine(a_cLine.start, a_cLine.end, a_cColor);
-    }
-
-    /**
-    * Draw a debug line with factor
-    * @param a_pDrv the Irrlicht video driver
-    * @param a_cLine the line to draw
-    * @param a_fFactor the factor to scale the line
-    * @param a_cColor the color of the line
-    * @param a_cOffset offset of the line
-    */
-    void CControllerAi_V2::draw2dDebugLineFloat(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
-      draw2dDebugLine(a_pDrv, irr::core::line2di(
-        (irr::s32)(a_fFactor * a_cLine.start.X) + a_cOffset.X, 
-        (irr::s32)(a_fFactor * a_cLine.start.Y) + a_cOffset.Y, 
-        (irr::s32)(a_fFactor * a_cLine.end  .X) + a_cOffset.X,
-        (irr::s32)(a_fFactor * a_cLine.end  .Y) + a_cOffset.Y), a_cColor);
     }
 
     /**
@@ -388,26 +398,42 @@ namespace dustbin {
             irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
           };
 
-          int l_iIdx = 0;
-          for (std::vector<SPathLine2d*>::iterator it = l_vEnds.begin(); it != l_vEnds.end(); it++) {
-            SPathLine2d *p = *it;
+          for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
+            irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
 
-            while (p != nullptr) {
-              draw2dDebugLineFloat(a_pDrv, p->m_cLines[0], 2.0f, l_cColors[l_iIdx], l_cOffset);
+            draw2dDebugRectangle(a_pDrv, (*l_itEnd)->m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 30, 2.0f, l_cOffset);
 
-              if (p == m_p2dPath)
-                break;
-              else
-                p = p->m_pPrevious;
-            }
+            getBestLine(l_cLine, *l_itEnd);
+            draw2dDebugLine(a_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), l_cOffset);
 
-            l_iIdx++;
-            if (l_iIdx > 2)
-              l_iIdx = 0;
+            irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
+            getBestLine(l_cOther, *l_itEnd);
+            draw2dDebugLine(a_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), l_cOffset);
           }
         }
 
-        a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cOffset - irr::core::vector2di(15, 15), l_cOffset + irr::core::vector2di(15, 15)), irr::video::SColor(0xFF, 0, 0, 0xFF));
+        draw2dDebugRectangle(a_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, l_cOffset);
+      }
+    }
+
+    void CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd) {
+      while (a_pEnd != nullptr) {
+        bool l_bReturn = true;
+        a_cLine.end = a_pEnd->m_cLines[0].end;
+
+        SPathLine2d *l_pOther = a_pEnd;
+        while (l_pOther != nullptr) {
+          if (l_pOther->doesLineIntersectBorder(a_cLine)) {
+            l_bReturn = false;
+            break;
+          }
+
+          l_pOther = l_pOther->m_pPrevious;
+        }
+        a_pEnd = a_pEnd->m_pPrevious;
+
+        if (l_bReturn)
+          return;
       }
     }
 
@@ -530,6 +556,15 @@ namespace dustbin {
       m_pAiPath = prepareTransformedData(0.0f, nullptr);
     }
 
+    bool CControllerAi_V2::SPathLine2d::doesLineIntersectBorder(const irr::core::line2df& a_cLine) {
+      irr::core::vector2df v;
+      for (int i = 1; i < 3; i++)
+        if (m_cLines[i].intersectWith(a_cLine, v))
+          return true;
+
+      return false;
+    }
+
     CControllerAi_V2::SPathLine2d::SPathLine2d() : m_pPrevious(nullptr) {
     }
 
@@ -566,15 +601,7 @@ namespace dustbin {
         );
 
       if (m_vNext.size() > 1)
-        a_pDrv->draw2DRectangle(
-          irr::video::SColor(0xFF, 0xFF, 0xFF, 0),
-          irr::core::recti(
-            (irr::s32)(a_fScale * m_cLines[0].end.X) + a_cOffset.X - 15, 
-            (irr::s32)(a_fScale * m_cLines[0].end.Y) + a_cOffset.Y - 15,
-            (irr::s32)(a_fScale * m_cLines[0].end.X) + a_cOffset.X + 15,
-            (irr::s32)(a_fScale * m_cLines[0].end.Y) + a_cOffset.Y + 15
-          )
-        );
+        draw2dDebugRectangle(a_pDrv, m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 20, 2.0f, a_cOffset);
 
       for (std::vector<SPathLine2d *>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++)
         (*it)->debugDraw(a_pDrv, a_cOffset, a_fScale);
