@@ -47,6 +47,23 @@ namespace dustbin {
       a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cUpperLeft, irr::core::dimension2du(a_iSize, a_iSize)), a_cColor);
     }
 
+    void drawDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition, const irr::core::vector2di &a_cOffset, irr::f32 a_fFactor) {
+      irr::core::dimension2du l_cDim = a_pFont->getDimension(a_sText);
+      l_cDim.Width  = 6 * l_cDim.Width  / 5;
+      l_cDim.Height = 6 * l_cDim.Height / 5;
+
+      irr::core::recti l_cRect = irr::core::recti(
+        irr::core::vector2di(
+          (irr::s32)(a_fFactor * a_cPosition.X) + a_cOffset.X,
+          (irr::s32)(a_fFactor * a_cPosition.Y) + a_cOffset.Y
+        ),
+        l_cDim
+      );
+
+      a_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 192, 192, 192), l_cRect);
+      a_pFont->draw(a_sText, l_cRect, irr::video::SColor(0xFF, 0, 0, 0));
+    }
+
     /**
     * Find all AI path nodes in the scene tree
     * @param a_pNode the node to check
@@ -312,6 +329,11 @@ namespace dustbin {
           l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
 
           m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix);
+          irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
+          l_cMatrix.transformVect(l_vDummy);
+
+          m_cVelocity2d.X = l_vDummy.X;
+          m_cVelocity2d.Y = l_vDummy.Y;
         }        
       }
     }
@@ -398,6 +420,8 @@ namespace dustbin {
             irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
           };
 
+          irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Small, a_pDrv->getScreenSize());
+
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
             irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
 
@@ -409,13 +433,39 @@ namespace dustbin {
             irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
             getBestLine(l_cOther, *l_itEnd);
             draw2dDebugLine(a_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), l_cOffset);
+
+            irr::f64 l_fAngle = l_cLine.getAngleWith(l_cOther);
+            irr::f64 l_fSpeedSteer = 120.0 - (l_fAngle * 3.0 / 8.0);
+
+            wchar_t s[0xFF];
+            swprintf(s, L"%.1f | %.1f", l_fAngle, l_fSpeedSteer);
+
+            drawDebugText(a_pDrv, s, l_pFont, l_cLine.end, l_cOffset, 2.0f);
+
+            if (m_cVelocity2d.getLengthSQ() > 0.01) {
+              l_fAngle = l_cLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d));
+              if (m_cVelocity2d.X < 0.0)
+                l_fAngle = -l_fAngle;
+
+              swprintf(s, L"%.1f", l_fAngle);
+
+              drawDebugText(a_pDrv, s, l_pFont, irr::core::vector2df(), l_cOffset, 2.0f);
+            }
           }
         }
 
+        draw2dDebugLine(a_pDrv, irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), l_cOffset);
         draw2dDebugRectangle(a_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, l_cOffset);
       }
     }
 
+
+    /**
+    * Get the best, i.e. not colliding with a border line, line in the path starting
+    * from the startpoint of the "a_cLine" parameter
+    * @param a_cLine [out] the best line, start is used as input
+    * @param a_pEnd the 2d path lines to search
+    */
     void CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd) {
       while (a_pEnd != nullptr) {
         bool l_bReturn = true;

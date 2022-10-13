@@ -151,6 +151,8 @@ namespace dustbin {
         irr::core::vector3df m_cDirection;  /**< The camera direction */
         irr::core::vector3df m_cCameraUp;   /**< The camera up vector */
 
+        irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
+
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
@@ -175,6 +177,12 @@ namespace dustbin {
         */
         SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath);
 
+        /**
+        * Get the best, i.e. not colliding with a border line, line in the path starting
+        * from the startpoint of the "a_cLine" parameter
+        * @param a_cLine [out] the best line, start is used as input
+        * @param a_pEnd the 2d path lines to search
+        */
         void getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd);
 
       public:
