@@ -435,7 +435,7 @@ namespace dustbin {
             draw2dDebugLine(a_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), l_cOffset);
 
             irr::f64 l_fAngle = l_cLine.getAngleWith(l_cOther);
-            irr::f64 l_fSpeedSteer = 120.0 - (l_fAngle * 3.0 / 8.0);
+            irr::f64 l_fSpeedSteer = l_fAngle != 0.0 ? 120.0 * (16.0 / l_fAngle) : 200.0;
 
             wchar_t s[0xFF];
             swprintf(s, L"%.1f | %.1f", l_fAngle, l_fSpeedSteer);
@@ -443,11 +443,18 @@ namespace dustbin {
             drawDebugText(a_pDrv, s, l_pFont, l_cLine.end, l_cOffset, 2.0f);
 
             if (m_cVelocity2d.getLengthSQ() > 0.01) {
+              irr::core::vector2df x = l_cLine.end - l_cLine.start;
+              x = x.normalize();
+
               l_fAngle = l_cLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d));
               if (m_cVelocity2d.X < 0.0)
                 l_fAngle = -l_fAngle;
 
-              swprintf(s, L"%.1f", l_fAngle);
+              if (l_fAngle < 90.0 && l_fAngle > -90.0) {
+                l_fFactor = (irr::f32)(1.0 - std::abs(l_fAngle / 90.0));
+                l_fFactor *= l_fFactor;
+                printf("Factor: %.2f\n", l_fFactor);
+              }
 
               drawDebugText(a_pDrv, s, l_pFont, irr::core::vector2df(), l_cOffset, 2.0f);
             }
