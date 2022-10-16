@@ -174,10 +174,10 @@ namespace dustbin {
             
 
               irr::core::vector3df l_cEdgePoints[] = {
-                (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_cSideVector,   // Start point 1
-                (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_cSideVector,   // End point 1
-                (*l_itSection)->m_cPosition + (*l_itSection)->m_fWidth * (*l_itSection)->m_cSideVector,   // Start point 2
-                (*l_itNext   )->m_cPosition + (*l_itNext   )->m_fWidth * (*l_itNext   )->m_cSideVector    // End point 2
+                (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector,   // Start point 1
+                (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector,   // End point 1
+                (*l_itSection)->m_cPosition + (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector,   // Start point 2
+                (*l_itNext   )->m_cPosition + (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector    // End point 2
               };
 
               irr::core::line3df l_cEdges[] = {
@@ -305,52 +305,54 @@ namespace dustbin {
     * @param a_cCameraUp the up-vector of the camera
     */
     void CControllerAi_V2::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df& a_cCameraPos, const irr::core::vector3df& a_cCameraUp) {
-      m_cPosition  = a_cNewPos;
-      m_cVelocity  = a_cVelocity;
-      m_cDirection = a_cCameraPos - m_cPosition;
-      m_cContact   = m_cPosition - a_cCameraUp;
-      m_cCameraUp  = a_cCameraUp;
+      if (a_iMarbleId == m_iMarbleId) {
+        m_cPosition  = a_cNewPos;
+        m_cVelocity  = a_cVelocity;
+        m_cDirection = a_cCameraPos - m_cPosition;
+        m_cContact   = m_cPosition - a_cCameraUp;
+        m_cCameraUp  = a_cCameraUp;
 
-      if (m_pCurrent == nullptr) {
-        m_pCurrent = selectClosest(m_cPosition, m_vAiPath, m_iLastCheckpoint == -1);
+        if (m_pCurrent == nullptr) {
+          m_pCurrent = selectClosest(m_cPosition, m_vAiPath, m_iLastCheckpoint == -1);
 
-        if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-          m_pCurrent = selectClosest(m_cPosition, m_vAiPath, false);
+          if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
+            m_pCurrent = selectClosest(m_cPosition, m_vAiPath, false);
 
-        // if (m_pCurrent != nullptr)
-        //   printf("AI Path section selected: %.2f, %.2f, %.2f\n", m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
-      }
-
-      if (m_pCurrent != nullptr) {
-        irr::core::vector3df l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
-
-        do {
-          if (l_cClosest == m_pCurrent->m_cLine3d.end) {
-            if (m_pCurrent->m_vNext.size() == 1)
-              m_pCurrent = *m_pCurrent->m_vNext.begin();
-            else
-              m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
-
-            if (m_pCurrent != nullptr)
-              l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
-          }
+          // if (m_pCurrent != nullptr)
+          //   printf("AI Path section selected: %.2f, %.2f, %.2f\n", m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
         }
-        while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
 
-        if (m_p2dPath != nullptr)
-          delete m_p2dPath;
+        if (m_pCurrent != nullptr) {
+          irr::core::vector3df l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
 
-        if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
-          irr::core::matrix4 l_cMatrix;
-          l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
+          do {
+            if (l_cClosest == m_pCurrent->m_cLine3d.end) {
+              if (m_pCurrent->m_vNext.size() == 1)
+                m_pCurrent = *m_pCurrent->m_vNext.begin();
+              else
+                m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
 
-          m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix);
-          irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
-          l_cMatrix.transformVect(l_vDummy);
+              if (m_pCurrent != nullptr)
+                l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
+            }
+          }
+          while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
 
-          m_cVelocity2d.X = l_vDummy.X;
-          m_cVelocity2d.Y = l_vDummy.Y;
-        }        
+          if (m_p2dPath != nullptr)
+            delete m_p2dPath;
+
+          if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
+            irr::core::matrix4 l_cMatrix;
+            l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
+
+            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix);
+            irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
+            l_cMatrix.transformVect(l_vDummy);
+
+            m_cVelocity2d.X = l_vDummy.X;
+            m_cVelocity2d.Y = l_vDummy.Y;
+          }        
+        }
       }
     }
 
@@ -385,6 +387,7 @@ namespace dustbin {
     */
     bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn) {
       if (m_pCurrent != nullptr) {
+        a_iMarbleId = m_iMarbleId;
         a_iCtrlX    = m_iCtrlX;
         a_iCtrlY    = m_iCtrlY;
         a_bBrake    = m_bBrake;
