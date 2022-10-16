@@ -14,7 +14,6 @@ namespace dustbin {
     class CAiNode;
   }
   namespace controller {
-
     class IControllerAI;
 
     /**
@@ -66,6 +65,12 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) override;
+
+        /**
+        * Get the AI controller (if any)
+        * @return the AI controller
+        */
+        virtual IControllerAI *getAiController();
     };
   }
 }

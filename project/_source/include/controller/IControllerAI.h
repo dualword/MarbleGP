@@ -4,6 +4,10 @@
 #include <irrlicht.h>
 
 namespace dustbin {
+  namespace gui {
+    class CGameHUD;
+  }
+
   namespace controller {
     /**
     * @class IControllerAI
@@ -66,6 +70,18 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) { }
+
+        /**
+        * Get the speed calculated by the AI
+        * @return the speed calculated by the AI
+        */
+        virtual irr::f32 getCalculatedSpeed() = 0;
+
+        /**
+        * Tell the controller about it's HUD
+        * @param a_pHUD the HUD
+        */
+        virtual void setHUD(gui::CGameHUD *a_pHUD) = 0;
     };
   }
 }

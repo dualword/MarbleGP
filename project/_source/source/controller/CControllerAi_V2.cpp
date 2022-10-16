@@ -2,6 +2,7 @@
 #include <controller/CControllerAi_V2.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CAiPathNode.h>
+#include <gui/CGameHUD.h>
 #include <CGlobal.h>
 #include <cmath>
 
@@ -114,7 +115,18 @@ namespace dustbin {
     * @param a_iMarbleId the marble ID for this controller
     * @param a_sControls details about the skills of the controller
     */
-    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls) : m_iMarbleId(a_iMarbleId), m_iLastCheckpoint(-1), m_pCurrent(nullptr) {
+    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls) : 
+      m_iMarbleId      (a_iMarbleId), 
+      m_iLastCheckpoint(-1), 
+      m_fVCalc         (0.0f), 
+      m_pCurrent       (nullptr), 
+      m_pHUD           (nullptr), 
+      m_iCtrlX         (0), 
+      m_iCtrlY         (0),
+      m_bBrake         (false),
+      m_bRespawn       (false),
+      m_fOldAngle      (0.0)
+    {
       if (m_iInstances == 0) {
         CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -271,6 +283,10 @@ namespace dustbin {
           delete p;
         }
       }
+
+      if (m_pHUD != nullptr) {
+        m_pHUD->setAiController(nullptr);
+      }
     }
 
     /**
@@ -369,7 +385,11 @@ namespace dustbin {
     */
     bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn) {
       if (m_pCurrent != nullptr) {
-
+        a_iCtrlX    = m_iCtrlX;
+        a_iCtrlY    = m_iCtrlY;
+        a_bBrake    = m_bBrake;
+        a_bRearView = false;
+        a_bRespawn  = m_bRespawn;
       }
 
       return true;
@@ -383,10 +403,34 @@ namespace dustbin {
     }
 
     /**
+    * Get the speed calculated by the AI
+    * @return the speed calculated by the AI
+    */
+    irr::f32 CControllerAi_V2::getCalculatedSpeed() {
+      return m_fVCalc;
+    }
+
+    /**
+    * Tell the controller about it's HUD
+    * @param a_pHUD the HUD
+    */
+    void CControllerAi_V2::setHUD(gui::CGameHUD* a_pHUD) {
+      if (m_pHUD != a_pHUD) {
+        m_pHUD = a_pHUD;
+        if (m_pHUD != nullptr)
+          m_pHUD->setAiController(this);
+      }
+    }
+
+    /**
     * For debuggin purposes: Draw the data used to control the marble (2d)
     * @param a_pDrv the video driver
     */
     void CControllerAi_V2::drawDebugData2d(irr::video::IVideoDriver* a_pDrv) {
+      m_iCtrlX = 0;
+      m_iCtrlY = 0;
+      m_bBrake = false;
+
       if (m_pCurrent != nullptr) {
         irr::video::SMaterial l_cMaterial;
         l_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -422,6 +466,8 @@ namespace dustbin {
 
           irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Small, a_pDrv->getScreenSize());
 
+          irr::core::line2df l_cCtrlLine;
+
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
             irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
 
@@ -429,35 +475,61 @@ namespace dustbin {
 
             getBestLine(l_cLine, *l_itEnd);
             draw2dDebugLine(a_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), l_cOffset);
+            l_cCtrlLine = l_cLine;
 
             irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
-            getBestLine(l_cOther, *l_itEnd);
-            draw2dDebugLine(a_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), l_cOffset);
+            if (getBestLine(l_cOther, *l_itEnd))
+              draw2dDebugLine(a_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), l_cOffset);
 
-            irr::f64 l_fAngle = l_cLine.getAngleWith(l_cOther);
-            irr::f64 l_fSpeedSteer = l_fAngle != 0.0 ? 120.0 * (16.0 / l_fAngle) : 200.0;
+            irr::f32 l_fVel = m_cVelocity2d.getLength();
+            if (l_fVel > 10.0f) {
+              irr::f32 l_fCtrlLen = l_cCtrlLine.getLength();
 
-            wchar_t s[0xFF];
-            swprintf(s, L"%.1f | %.1f", l_fAngle, l_fSpeedSteer);
+              irr::f64 l_fAngle1 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(l_cLine);
 
-            drawDebugText(a_pDrv, s, l_pFont, l_cLine.end, l_cOffset, 2.0f);
+              irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
 
-            if (m_cVelocity2d.getLengthSQ() > 0.01) {
-              irr::core::vector2df x = l_cLine.end - l_cLine.start;
-              x = x.normalize();
+              irr::core::vector2df l_cPoint1 = (l_cCtrlLine.end - l_cCtrlLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
 
-              l_fAngle = l_cLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d));
-              if (m_cVelocity2d.X < 0.0)
-                l_fAngle = -l_fAngle;
+              if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
+                irr::f64 l_fAngle2 = l_cLine.getAngleWith(l_cOther);
+                irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.1;
 
-              if (l_fAngle < 90.0 && l_fAngle > -90.0) {
-                l_fFactor = (irr::f32)(1.0 - std::abs(l_fAngle / 90.0));
-                l_fFactor *= l_fFactor;
-                printf("Factor: %.2f\n", l_fFactor);
+                l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
               }
 
-              drawDebugText(a_pDrv, s, l_pFont, irr::core::vector2df(), l_cOffset, 2.0f);
+              irr::f64 l_fAngle3 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
+
+              l_fFactor = l_fAngle3 / 90.0;
+
+              m_fVCalc = l_fVel * (1.0 - l_fFactor + 0.15);
+
+              if (m_fVCalc > l_fVel)
+                m_iCtrlY = 127;
+              else {
+                m_iCtrlY = -127;
+                m_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f;
+              }
+
+              m_iCtrlX = l_fFactor > 0.25 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25));
+
+              if (l_cPoint1.X < 0.0f)
+                m_iCtrlX = -m_iCtrlX;
+
+              if (m_fOldAngle != 0.0) {
+                irr::f64 l_fTurnSpeed = m_fOldAngle - l_fAngle3;
+                if (l_fAngle3 - 3.0 * l_fTurnSpeed < 0.0)
+                  m_iCtrlX = 0;
+              }
+
+              if (l_cPoint1.Y > 0.0)
+                m_iCtrlY = -127;
+
+              draw2dDebugRectangle(a_pDrv, l_cPoint1, irr::video::SColor(0xFF, 0xFF, 0, 0xFF), 20, 2.0f, l_cOffset);
+
+              m_fOldAngle = l_fAngle3;
             }
+            else m_iCtrlY = 127;
           }
         }
 
@@ -473,7 +545,7 @@ namespace dustbin {
     * @param a_cLine [out] the best line, start is used as input
     * @param a_pEnd the 2d path lines to search
     */
-    void CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd) {
+    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd) {
       while (a_pEnd != nullptr) {
         bool l_bReturn = true;
         a_cLine.end = a_pEnd->m_cLines[0].end;
@@ -490,8 +562,9 @@ namespace dustbin {
         a_pEnd = a_pEnd->m_pPrevious;
 
         if (l_bReturn)
-          return;
+          return true;
       }
+      return false;
     }
 
     /**

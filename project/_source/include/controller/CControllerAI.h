@@ -100,6 +100,19 @@ namespace dustbin {
         * @param a_bDebug the new debug flag
         */
         virtual void setDebug(bool a_bDebug) override;
+
+        /**
+        * Get the speed calculated by the AI
+        * @return the speed calculated by the AI
+        */
+        virtual irr::f32 getCalculatedSpeed() { return 0.0f; }
+
+        /**
+        * Tell the controller about it's HUD
+        * @param a_pHUD the HUD
+        */
+        virtual void setHUD(gui::CGameHUD* a_pHUD) {
+        }
     };
   }
 }

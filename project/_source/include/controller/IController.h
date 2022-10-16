@@ -7,6 +7,8 @@
 
 namespace dustbin {
   namespace controller {
+    class IControllerAI;
+
     /**
     * @class IController
     * @author Christian Keimel
@@ -53,6 +55,12 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) { }
+
+        /**
+        * Get the AI controller (if any)
+        * @return the AI controller
+        */
+        virtual IControllerAI *getAiController() = 0;
     };
   }
 }

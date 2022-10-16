@@ -14,6 +14,10 @@ namespace dustbin {
     struct SPlayer;
   }
 
+  namespace controller {
+    class IControllerAI;
+  }
+
   namespace gui {
     class CRankingElement;  /**< Forward declaration of the ranking element */
 
@@ -107,6 +111,7 @@ namespace dustbin {
         irr::s32                       m_iLapTimeOffset;  /**< Vertical offset between the lap time labels */
         bool                           m_bShowLapTimes;   /**< Draw lap times? */
         irr::video::ITexture          *m_pCheckered;      /**< The checkered flag texture */
+        controller::IControllerAI     *m_pAiController;   /**< AI controller to show the user control hints */
 
         std::wstring getDeficitString(int a_iDeficit);
 
@@ -243,6 +248,12 @@ namespace dustbin {
         * hide all highlight nodes of this HUD
         */
         void afterDrawScene();
+
+        /**
+        * This method is only used to tell the HUD that it shall display AI help
+        * @param a_pController the controller
+        */
+        void setAiController(controller::IControllerAI *a_pController);
     };
   }
 }

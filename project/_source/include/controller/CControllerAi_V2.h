@@ -143,7 +143,18 @@ namespace dustbin {
         int m_iMarbleId;          /**< ID of the marble this instance controls */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
 
+        irr::f32 m_fVCalc;    /**< The calculated speed */
+
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
+        gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
+
+        irr::s8 m_iCtrlX;
+        irr::s8 m_iCtrlY;
+
+        bool m_bBrake;
+        bool m_bRespawn;
+
+        irr::f64 m_fOldAngle;
 
         irr::core::vector3df m_cPosition;   /**< The marble's position */
         irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
@@ -183,7 +194,7 @@ namespace dustbin {
         * @param a_cLine [out] the best line, start is used as input
         * @param a_pEnd the 2d path lines to search
         */
-        void getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd);
+        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd);
 
       public:
         /**
@@ -246,6 +257,18 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) override;
+
+        /**
+        * Get the speed calculated by the AI
+        * @return the speed calculated by the AI
+        */
+        virtual irr::f32 getCalculatedSpeed();
+
+        /**
+        * Tell the controller about it's HUD
+        * @param a_pHUD the HUD
+        */
+        virtual void setHUD(gui::CGameHUD *a_pHUD);
     };
   }
 }

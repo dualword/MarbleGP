@@ -1347,6 +1347,13 @@ namespace dustbin {
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
         it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+
+        controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();
+        if (l_pCtrl != nullptr) {
+          it->second.m_pHUD->setAiController(l_pCtrl);
+          l_pCtrl->setHUD(it->second.m_pHUD);
+        }
+
         for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
           if (it->second.m_pHUD != nullptr) {
             bool l_bShowRanking = true;

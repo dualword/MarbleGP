@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CMyTextSceneNode.h>
+#include <controller/IControllerAI.h>
 #include <scenenodes/CMyBillboard.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
@@ -447,7 +448,8 @@ namespace dustbin {
       m_iBestLapTime  (-1),
       m_iLapTimeOffset(0),
       m_bShowLapTimes (false),
-      m_pCheckered    (nullptr)
+      m_pCheckered    (nullptr),
+      m_pAiController (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -713,6 +715,8 @@ namespace dustbin {
     }
 
     CGameHUD::~CGameHUD() {
+      if (m_pAiController != nullptr)
+        m_pAiController->setHUD(nullptr);
     }
 
     void CGameHUD::draw() {
@@ -750,6 +754,13 @@ namespace dustbin {
           wchar_t s[0xFF];
           swprintf(s, 0xFF, L"%.0f", m_fVel);
           m_pSpeedFont->draw(s, irr::core::recti(l_cTotal.UpperLeftCorner, m_cSpeedText), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
+
+          if (m_pAiController != nullptr) {
+            irr::core::recti l_cAiSpeed = irr::core::recti(l_cTotal.UpperLeftCorner - irr::core::vector2di(0, m_cSpeedText.Height), m_cSpeedText);
+            m_pDrv->draw2DRectangle(irr::video::SColor(160, 192, 192, 192), l_cAiSpeed, &m_cRect);
+            swprintf(s, 0xFF, L"%.0f", m_pAiController->getCalculatedSpeed());
+            m_pSpeedFont->draw(s, l_cAiSpeed, irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
+          }
 
           int l_iVel = m_fVel > 150.0f ? 150 : (int)m_fVel;
 
@@ -1163,6 +1174,18 @@ namespace dustbin {
         m_aHiLight[i].m_pPosition->setVisible(false);
 
         m_aHiLight[i].m_bViewport = false;
+      }
+    }
+
+    /**
+    * This method is only used to tell the HUD that it shall display AI help
+    * @param a_pController the controller
+    */
+    void CGameHUD::setAiController(controller::IControllerAI* a_pController) {
+      if (m_pAiController != a_pController) {
+        m_pAiController = a_pController;
+        if (m_pAiController != nullptr)
+          m_pAiController->setHUD(this);
       }
     }
   }

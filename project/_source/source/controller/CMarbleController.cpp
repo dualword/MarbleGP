@@ -43,8 +43,8 @@ namespace dustbin {
     */
     void CMarbleController::postControlMessage() {
       if (m_pQueue != nullptr && m_pController != nullptr) {
-        irr::f32 l_fCtrlX = m_pController->getSteer(),
-                 l_fCtrlY = m_pController->getThrottle();
+        irr::f32 l_fCtrlX = m_pController->getSteer();
+        irr::f32 l_fCtrlY = m_pController->getThrottle();
 
         irr::s8 l_iCtrlX = (irr::s8)(127.0f * (l_fCtrlX > 1.0f ? 1.0f : l_fCtrlX < -1.0f ? -1.0f : l_fCtrlX));
         irr::s8 l_iCtrlY = (irr::s8)(127.0f * (l_fCtrlY > 1.0f ? 1.0f : l_fCtrlY < -1.0f ? -1.0f : l_fCtrlY));
@@ -67,7 +67,7 @@ namespace dustbin {
           if (m_eAiHelp == data::SPlayerData::enAiHelp::Bot) {
             l_iCtrlX    = l_iBotX;
             l_iCtrlY    = l_iBotY;
-            l_bBrake    = l_bBrake;
+            l_bBrake    = l_bBrakeBot;
             l_bRearView = l_bRearBot;
             l_bRespawn  = l_bRspnBot;
           }
@@ -127,6 +127,14 @@ namespace dustbin {
     void CMarbleController::drawDebugData2d(irr::video::IVideoDriver* a_pDrv) {
       if (m_pAiControls != nullptr)
         m_pAiControls->drawDebugData2d(a_pDrv);
+    }
+
+    /**
+    * Get the AI controller (if any)
+    * @return the AI controller
+    */
+    IControllerAI* CMarbleController::getAiController() {
+      return m_pAiControls;
     }
   }
 }
