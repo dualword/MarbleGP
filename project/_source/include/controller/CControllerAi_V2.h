@@ -100,6 +100,7 @@ namespace dustbin {
           int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
           bool m_bStartup;      /**< Is this a startup section? */
 
+          irr::core::line3df m_cRealLine;   /**< The real (not adjusted) 3d line of the section */
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
           irr::core::line3df m_cEdges[2];   /**< The side edges of the section */
 
@@ -148,13 +149,12 @@ namespace dustbin {
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
 
-        irr::s8 m_iCtrlX;
-        irr::s8 m_iCtrlY;
-
-        bool m_bBrake;
-        bool m_bRespawn;
-
         irr::f64 m_fOldAngle;
+
+        irr::video::IVideoDriver *m_pDrv;       /**< The Irrlicht video driver for debug rendering */
+        irr::video::ITexture     *m_pDebugRTT;  /**< Render target texture for debugging */
+        irr::core::dimension2du   m_cRttSize;   /**< Size of the debug RTT */
+        irr::core::vector2di      m_cOffset;    /**< Offset for debug rendering */
 
         irr::core::vector3df m_cPosition;   /**< The marble's position */
         irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
@@ -233,7 +233,7 @@ namespace dustbin {
         * @param a_iMarbleId the marble that passed the checkpoint
         * @param a_iCheckpoint the passed checkpoint
         */
-        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint) override;
 
         /**
         * Get the control values for the marble
@@ -262,13 +262,19 @@ namespace dustbin {
         * Get the speed calculated by the AI
         * @return the speed calculated by the AI
         */
-        virtual irr::f32 getCalculatedSpeed();
+        virtual irr::f32 getCalculatedSpeed() override;
 
         /**
         * Tell the controller about it's HUD
         * @param a_pHUD the HUD
         */
-        virtual void setHUD(gui::CGameHUD *a_pHUD);
+        virtual void setHUD(gui::CGameHUD *a_pHUD) override;
+
+        /**
+        * Get the render target texture for debugging
+        * @return the render target texture for debugging
+        */
+        virtual irr::video::ITexture *getDebugTexture() override;
     };
   }
 }

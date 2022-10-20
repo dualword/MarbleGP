@@ -105,13 +105,21 @@ namespace dustbin {
         * Get the speed calculated by the AI
         * @return the speed calculated by the AI
         */
-        virtual irr::f32 getCalculatedSpeed() { return 0.0f; }
+        virtual irr::f32 getCalculatedSpeed() override { return 0.0f; }
 
         /**
         * Tell the controller about it's HUD
         * @param a_pHUD the HUD
         */
-        virtual void setHUD(gui::CGameHUD* a_pHUD) {
+        virtual void setHUD(gui::CGameHUD* a_pHUD) override {
+        }
+
+        /**
+        * Get the render target texture for debugging
+        * @return the render target texture for debugging
+        */
+        virtual irr::video::ITexture* getDebugTexture() override {
+          return nullptr;
         }
     };
   }

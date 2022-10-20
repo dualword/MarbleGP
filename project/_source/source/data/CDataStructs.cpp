@@ -137,6 +137,7 @@ namespace dustbin {
 #else
       m_bUseMenuCtrl (false),
       m_bVirtualKeys (false),
+      m_bDebugAI     (false),
       m_sController  ("")
 #endif
     {
@@ -149,8 +150,9 @@ namespace dustbin {
       if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
       if (a_mData.find("touchcontrol") != a_mData.end()) m_iTouchControl = std::atoi(a_mData.at("touchcontrol").c_str());
 
-      if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen"  ) == "true";
-      if (a_mData.find("usemenuctrl" ) != a_mData.end()) m_bUseMenuCtrl  = a_mData.at("usemenuctrl" ) == "true";
+      if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen" ) == "true";
+      if (a_mData.find("usemenuctrl" ) != a_mData.end()) m_bUseMenuCtrl  = a_mData.at("usemenuctrl") == "true";
+      if (a_mData.find("debugai"     ) != a_mData.end()) m_bDebugAI      = a_mData.at("debugai"    ) == "true";
 
       if (a_mData.find("sfx_master") != a_mData.end()) m_fSfxMaster  = (float)std::atof(a_mData.at("sfx_master").c_str());
       if (a_mData.find("soundtrack") != a_mData.end()) m_fSoundTrack = (float)std::atof(a_mData.at("soundtrack").c_str());
@@ -181,6 +183,7 @@ namespace dustbin {
 
       a_mData["fullscreen"  ] = m_bFullscreen   ? "true" : "false";
       a_mData["usemenuctrl" ] = m_bUseMenuCtrl  ? "true" : "false";
+      a_mData["debugai"     ] = m_bDebugAI      ? "true" : "false";
 
 #ifdef _ANDROID
       a_mData["virtualkeys"] = "true";
@@ -218,6 +221,7 @@ namespace dustbin {
       m_bUseMenuCtrl  = a_cOther.m_bUseMenuCtrl;
       m_sController   = a_cOther.m_sController;
       m_bVirtualKeys  = a_cOther.m_bVirtualKeys;
+      m_bDebugAI      = a_cOther.m_bDebugAI;
 
       for (int i = 0; i < 8; i++)
         m_aGameGFX[i].copyFrom(a_cOther.m_aGameGFX[i]);

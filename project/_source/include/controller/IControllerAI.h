@@ -82,6 +82,12 @@ namespace dustbin {
         * @param a_pHUD the HUD
         */
         virtual void setHUD(gui::CGameHUD *a_pHUD) = 0;
+
+        /**
+        * Get the render target texture for debugging
+        * @return the render target texture for debugging
+        */
+        virtual irr::video::ITexture *getDebugTexture() = 0;
     };
   }
 }

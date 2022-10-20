@@ -121,11 +121,9 @@ namespace dustbin {
       m_fVCalc         (0.0f), 
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
-      m_iCtrlX         (0), 
-      m_iCtrlY         (0),
-      m_bBrake         (false),
-      m_bRespawn       (false),
-      m_fOldAngle      (0.0)
+      m_fOldAngle      (0.0),
+      m_pDebugRTT      (nullptr),
+      m_pDrv           (CGlobal::getInstance()->getVideoDriver())
     {
       if (m_iInstances == 0) {
         CGlobal *l_pGlobal = CGlobal::getInstance();
@@ -152,7 +150,17 @@ namespace dustbin {
             // Create one SAiPathSection for each link between the current section and it's successors
             for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
               SAiPathSection *p = new SAiPathSection();
-              p->m_cLine3d     = irr::core::line3df((*l_itSection)->m_cPosition, (*l_itNext)->m_cPosition);
+
+              irr::core::vector3df l_cStart = (*l_itSection)->m_cPosition;
+              irr::core::vector3df l_cEnd   = (*l_itNext   )->m_cPosition;
+
+              irr::core::vector3df l_cDir = ((*l_itNext)->m_cPosition - (*l_itSection)->m_cPosition).normalize();
+
+              l_cStart -= 0.5f * l_cDir;
+              l_cEnd   += 0.5f * l_cDir;
+
+              p->m_cRealLine   = irr::core::line3df((*l_itSection)->m_cPosition, (*l_itNext)->m_cPosition);
+              p->m_cLine3d     = irr::core::line3df(l_cStart, l_cEnd);
               p->m_iIndex      = ++l_iIndex;
               p->m_iCheckpoint = -1;
               p->m_bStartup    = (*l_itPath)->isStartupPath();
@@ -212,10 +220,10 @@ namespace dustbin {
 
         // Now that we have a filled vector of the path sections we need to link them
         for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
-          irr::core::vector3df l_cThis = (*l_itThis)->m_cLine3d.end;
+          irr::core::vector3df l_cThis = (*l_itThis)->m_cRealLine.end;
 
           for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath.begin(); l_itNext != m_vAiPath.end(); l_itNext++) {
-            irr::core::vector3df l_cNext = (*l_itNext)->m_cLine3d.start;
+            irr::core::vector3df l_cNext = (*l_itNext)->m_cRealLine.start;
 
             // Now we check if the end of this line matches the start of the next line.
             // We use a certain threshold as the serialization is not 100% accurate
@@ -286,6 +294,10 @@ namespace dustbin {
 
       if (m_pHUD != nullptr) {
         m_pHUD->setAiController(nullptr);
+      }
+
+      if (m_pDebugRTT != nullptr) {
+        m_pDebugRTT = nullptr;
       }
     }
 
@@ -386,13 +398,131 @@ namespace dustbin {
     * @param a_bRespawn [out] does the marble want a manual respawn?
     */
     bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn) {
+      a_iMarbleId = m_iMarbleId;
+      a_iCtrlX    = 0;
+      a_iCtrlY    = 0;
+      a_bBrake    = false;
+      a_bRearView = false;
+      a_bRespawn  = false;
+
+      if (m_pDebugRTT != nullptr) {
+        m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
+      }
+
       if (m_pCurrent != nullptr) {
-        a_iMarbleId = m_iMarbleId;
-        a_iCtrlX    = m_iCtrlX;
-        a_iCtrlY    = m_iCtrlY;
-        a_bBrake    = m_bBrake;
-        a_bRearView = false;
-        a_bRespawn  = m_bRespawn;
+        irr::video::SMaterial l_cMaterial;
+        l_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+        l_cMaterial.EmissiveColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+        l_cMaterial.DiffuseColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+        l_cMaterial.SpecularColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+
+        l_cMaterial.Lighting        = false;
+        l_cMaterial.Thickness       = 5.0f;
+        l_cMaterial.Wireframe       = true;
+        l_cMaterial.BackfaceCulling = false;
+
+        m_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
+
+        if (m_p2dPath != nullptr) {
+          if (m_pDebugRTT != nullptr)
+            m_p2dPath->debugDraw(m_pDrv, m_cOffset, 2.0f);
+
+          irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
+
+          irr::f32 l_fFactor = (irr::core::line2df(m_p2dPath->m_cLines[0].end, l_cClosest).getLengthSQ() / m_p2dPath->m_cLines[0].getLengthSQ());
+
+          std::vector<SPathLine2d *> l_vEnds;
+          findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
+
+          irr::video::SColor l_cColors[] = {
+            irr::video::SColor(0xFF, 0xFF, 0, 0),
+            irr::video::SColor(0xFF, 0xFF, 0xFF, 0),
+            irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
+          };
+
+          irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Small, m_cRttSize);
+
+          irr::core::line2df l_cCtrlLine;
+
+          for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
+            irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
+
+            if (m_pDebugRTT != nullptr)
+              draw2dDebugRectangle(m_pDrv, (*l_itEnd)->m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 30, 2.0f, m_cOffset);
+
+            getBestLine(l_cLine, *l_itEnd);
+
+            if (m_pDebugRTT != nullptr)
+              draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
+
+            l_cCtrlLine = l_cLine;
+
+            irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
+            if (getBestLine(l_cOther, *l_itEnd))
+              if (m_pDebugRTT != nullptr)
+                draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+
+            irr::f32 l_fVel = m_cVelocity2d.getLength();
+            if (l_fVel > 10.0f) {
+              irr::f32 l_fCtrlLen = l_cCtrlLine.getLength();
+
+              irr::f64 l_fAngle1 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(l_cLine);
+
+              irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
+
+              irr::core::vector2df l_cPoint1 = (l_cCtrlLine.end - l_cCtrlLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
+
+              if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
+                irr::f64 l_fAngle2 = l_cLine.getAngleWith(l_cOther);
+                irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.1;
+
+                l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
+              }
+
+              irr::f64 l_fAngle3 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
+
+              l_fFactor = l_fAngle3 / 90.0;
+
+              m_fVCalc = l_fVel * (irr::f32)(1.0 - l_fFactor + 0.15);
+
+              if (m_fVCalc > l_fVel)
+                a_iCtrlY = 127;
+              else {
+                a_iCtrlY = -127;
+                a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f;
+              }
+
+              a_iCtrlX = l_fFactor > 0.25 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25));
+
+              if (l_cPoint1.X < 0.0f)
+                a_iCtrlX = -a_iCtrlX;
+
+              if (m_fOldAngle != 0.0) {
+                irr::f64 l_fTurnSpeed = m_fOldAngle - l_fAngle3;
+                if (l_fAngle3 - 3.0 * l_fTurnSpeed < 0.0)
+                  a_iCtrlX = 0;
+              }
+
+              if (l_cPoint1.Y > 0.0)
+                a_iCtrlY = -127;
+
+              if (m_pDebugRTT != nullptr)
+                draw2dDebugRectangle(m_pDrv, l_cPoint1, irr::video::SColor(0xFF, 0xFF, 0, 0xFF), 20, 2.0f, m_cOffset);
+
+              m_fOldAngle = l_fAngle3;
+            }
+            else a_iCtrlY = 127;
+          }
+        }
+
+        if (m_pDebugRTT != nullptr) {
+          draw2dDebugLine(m_pDrv, irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
+          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, m_cOffset);
+        }
+      }
+
+      if (m_pDebugRTT != nullptr) {
+        m_pDrv->setRenderTarget(nullptr);
       }
 
       return true;
@@ -403,6 +533,20 @@ namespace dustbin {
     * @param a_bDebug the new debug flag
     */
     void CControllerAi_V2::setDebug(bool a_bDebug) {
+      if (a_bDebug) {
+        m_cRttSize = m_pDrv->getScreenSize();
+
+        m_cRttSize.Width  /= 3;
+        m_cRttSize.Height /= 3;
+
+        m_pDebugRTT = m_pDrv->getTexture("ai_debug_rtt");
+
+        if (m_pDebugRTT == nullptr)
+          m_pDebugRTT = m_pDrv->addRenderTargetTexture(m_cRttSize, "ai_debug_rtt");
+
+        m_cOffset.X = m_cRttSize.Width / 2;
+        m_cOffset.Y = m_cRttSize.Height;
+      }
     }
 
     /**
@@ -426,119 +570,18 @@ namespace dustbin {
     }
 
     /**
+    * Get the render target texture for debugging
+    * @return the render target texture for debugging
+    */
+    irr::video::ITexture* CControllerAi_V2::getDebugTexture() {
+      return m_pDebugRTT;
+    }
+
+    /**
     * For debuggin purposes: Draw the data used to control the marble (2d)
     * @param a_pDrv the video driver
     */
     void CControllerAi_V2::drawDebugData2d(irr::video::IVideoDriver* a_pDrv) {
-      m_iCtrlX = 0;
-      m_iCtrlY = 0;
-      m_bBrake = false;
-
-      if (m_pCurrent != nullptr) {
-        irr::video::SMaterial l_cMaterial;
-        l_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.EmissiveColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.DiffuseColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.SpecularColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-
-        l_cMaterial.Lighting        = false;
-        l_cMaterial.Thickness       = 5.0f;
-        l_cMaterial.Wireframe       = true;
-        l_cMaterial.BackfaceCulling = false;
-
-        irr::core::dimension2du l_cSize = a_pDrv->getScreenSize();
-        irr::core::vector2di l_cOffset = irr::core::vector2di(l_cSize.Width / 2, l_cSize.Height / 2);
-
-        a_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
-
-        if (m_p2dPath != nullptr) {
-          m_p2dPath->debugDraw(a_pDrv, l_cOffset, 2.0f);
-
-          irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
-
-          irr::f32 l_fFactor = (irr::core::line2df(m_p2dPath->m_cLines[0].end, l_cClosest).getLengthSQ() / m_p2dPath->m_cLines[0].getLengthSQ());
-
-          std::vector<SPathLine2d *> l_vEnds;
-          findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
-
-          irr::video::SColor l_cColors[] = {
-            irr::video::SColor(0xFF, 0xFF, 0, 0),
-            irr::video::SColor(0xFF, 0xFF, 0xFF, 0),
-            irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
-          };
-
-          irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Small, a_pDrv->getScreenSize());
-
-          irr::core::line2df l_cCtrlLine;
-
-          for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-            irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
-
-            draw2dDebugRectangle(a_pDrv, (*l_itEnd)->m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 30, 2.0f, l_cOffset);
-
-            getBestLine(l_cLine, *l_itEnd);
-            draw2dDebugLine(a_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), l_cOffset);
-            l_cCtrlLine = l_cLine;
-
-            irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
-            if (getBestLine(l_cOther, *l_itEnd))
-              draw2dDebugLine(a_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), l_cOffset);
-
-            irr::f32 l_fVel = m_cVelocity2d.getLength();
-            if (l_fVel > 10.0f) {
-              irr::f32 l_fCtrlLen = l_cCtrlLine.getLength();
-
-              irr::f64 l_fAngle1 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(l_cLine);
-
-              irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
-
-              irr::core::vector2df l_cPoint1 = (l_cCtrlLine.end - l_cCtrlLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
-
-              if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
-                irr::f64 l_fAngle2 = l_cLine.getAngleWith(l_cOther);
-                irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.1;
-
-                l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
-              }
-
-              irr::f64 l_fAngle3 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
-
-              l_fFactor = l_fAngle3 / 90.0;
-
-              m_fVCalc = l_fVel * (1.0 - l_fFactor + 0.15);
-
-              if (m_fVCalc > l_fVel)
-                m_iCtrlY = 127;
-              else {
-                m_iCtrlY = -127;
-                m_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f;
-              }
-
-              m_iCtrlX = l_fFactor > 0.25 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25));
-
-              if (l_cPoint1.X < 0.0f)
-                m_iCtrlX = -m_iCtrlX;
-
-              if (m_fOldAngle != 0.0) {
-                irr::f64 l_fTurnSpeed = m_fOldAngle - l_fAngle3;
-                if (l_fAngle3 - 3.0 * l_fTurnSpeed < 0.0)
-                  m_iCtrlX = 0;
-              }
-
-              if (l_cPoint1.Y > 0.0)
-                m_iCtrlY = -127;
-
-              draw2dDebugRectangle(a_pDrv, l_cPoint1, irr::video::SColor(0xFF, 0xFF, 0, 0xFF), 20, 2.0f, l_cOffset);
-
-              m_fOldAngle = l_fAngle3;
-            }
-            else m_iCtrlY = 127;
-          }
-        }
-
-        draw2dDebugLine(a_pDrv, irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), l_cOffset);
-        draw2dDebugRectangle(a_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, l_cOffset);
-      }
     }
 
 
@@ -730,7 +773,7 @@ namespace dustbin {
         a_pDrv->draw2DLine(
           irr::core::vector2di((irr::s32)(a_fScale * m_cLines[i].start.X) + a_cOffset.X, (irr::s32)(a_fScale * m_cLines[i].start.Y) + a_cOffset.Y),
           irr::core::vector2di((irr::s32)(a_fScale * m_cLines[i].end  .X) + a_cOffset.X, (irr::s32)(a_fScale * m_cLines[i].end  .Y) + a_cOffset.Y),
-          i == 0 ? irr::video::SColor(0xFF, 0, 0, 0) : irr::video::SColor(0xFF, 0, 0, 0xFF)
+          i == 0 ? irr::video::SColor(0xFF, 128, 128, 128) : irr::video::SColor(0xFF, 0, 0, 0xFF)
         );
 
       if (m_vNext.size() > 1)

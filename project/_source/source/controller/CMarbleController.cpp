@@ -4,6 +4,7 @@
 #include <controller/CMarbleController.h>
 #include <controller/CControllerAi_V2.h>
 #include <messages/CSerializer64.h>
+#include <CGlobal.h>
 
 namespace dustbin {
   namespace controller {
@@ -26,6 +27,25 @@ namespace dustbin {
 
       if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
         m_pAiControls = new CControllerAi_V2(a_iMarbleId, "");
+        
+        if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
+          m_pAiControls->setDebug(true);
+
+          irr::video::ITexture *l_pTexture = m_pAiControls->getDebugTexture();
+
+          if (l_pTexture != nullptr) {
+            irr::core::dimension2du l_cScreen = CGlobal::getInstance()->getVideoDriver()->getScreenSize();
+            irr::core::dimension2du l_cSize   = l_cScreen;
+
+            l_cSize.Width  /= 3;
+            l_cSize.Height /= 3;
+
+            CGlobal::getInstance()->getGuiEnvironment()->addImage(
+              l_pTexture,
+              irr::core::vector2di(0, l_cScreen.Height - l_cSize.Height)
+            );
+          }
+        }
       }
     }
 
