@@ -164,6 +164,8 @@ namespace dustbin {
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
+        std::map<irr::core::vector3df, int> m_mSplitSelections;   /**< Selections of split roads */
+
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 

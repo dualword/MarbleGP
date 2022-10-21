@@ -405,6 +405,8 @@ namespace dustbin {
       a_bRearView = false;
       a_bRespawn  = false;
 
+      irr::s16 l_iCtrlX = 0;
+
       if (m_pDebugRTT != nullptr) {
         m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
       }
@@ -422,6 +424,8 @@ namespace dustbin {
         l_cMaterial.BackfaceCulling = false;
 
         m_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
+
+        irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
 
         if (m_p2dPath != nullptr) {
           if (m_pDebugRTT != nullptr)
@@ -466,24 +470,40 @@ namespace dustbin {
             if (l_fVel > 10.0f) {
               irr::f32 l_fCtrlLen = l_cCtrlLine.getLength();
 
-              irr::f64 l_fAngle1 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(l_cLine);
-
+              irr::f64 l_fAngle1 = l_cVelocityLine.getAngleWith(l_cLine);
               irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
 
               irr::core::vector2df l_cPoint1 = (l_cCtrlLine.end - l_cCtrlLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
 
-              if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
-                irr::f64 l_fAngle2 = l_cLine.getAngleWith(l_cOther);
-                irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.1;
+              irr::f64 l_fAngle2  = l_cLine.getAngleWith(l_cOther);
+              irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.15;
 
+              if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
                 l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
               }
 
-              irr::f64 l_fAngle3 = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d).getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
+              irr::f64 l_fAngle3 = l_cVelocityLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
 
               l_fFactor = l_fAngle3 / 90.0;
 
-              m_fVCalc = l_fVel * (irr::f32)(1.0 - l_fFactor + 0.15);
+              irr::f64 l_fSpeedFactor = (1.0 - l_fFactor);
+
+              m_fVCalc = l_fSpeedFactor * l_fSpeedFactor * 75.0;
+
+              if (l_fSpeedFactor > 0.85) {
+                m_fVCalc += 80.0 * (l_fSpeedFactor / 0.85);
+              }
+
+              irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
+              irr::f64 l_fSpeed2 = l_fSpeedFact2 * l_fSpeedFact2 * 75.0f;
+
+              if (l_fSpeedFact2 > 0.85) {
+                l_fSpeed2 += 80.0 * (l_fSpeedFact2 / 0.85);
+              }
+              
+              if (l_fVel > 1.8 * l_cLine.getLength()) {
+                m_fVCalc = l_fSpeed2;
+              }
 
               if (m_fVCalc > l_fVel)
                 a_iCtrlY = 127;
@@ -492,16 +512,29 @@ namespace dustbin {
                 a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f;
               }
 
-              a_iCtrlX = l_fFactor > 0.25 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25));
+              irr::core::vector2df l_cPos = irr::core::vector2df();
+
+              draw2dDebugRectangle(m_pDrv, l_cOther.end, irr::video::SColor(0xFF, 0xFF, 0, 0), 20, 2.0f, m_cOffset);
+
+              l_iCtrlX = (std::abs(l_fAngle3) > 2.5 || (l_cOther.end.X > 0.0f != m_cVelocity2d.X > 0.0f)) ? l_fFactor > 0.05 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25)) : 0;
 
               if (l_cPoint1.X < 0.0f)
-                a_iCtrlX = -a_iCtrlX;
+                l_iCtrlX = -l_iCtrlX;
 
               if (m_fOldAngle != 0.0) {
                 irr::f64 l_fTurnSpeed = m_fOldAngle - l_fAngle3;
                 if (l_fAngle3 - 3.0 * l_fTurnSpeed < 0.0)
-                  a_iCtrlX = 0;
+                  l_iCtrlX = 0;
               }
+
+              for (int i = 1; i < 3; i++) {
+                irr::core::vector2df p = m_p2dPath->m_cLines[i].getClosestPoint(l_cPos);
+                if (std::abs(p.X) < 3.0f) {
+                  l_iCtrlX += (irr::s8)(-40.0 * (p.X));
+                }
+              }
+
+              a_iCtrlX = (irr::s8)(std::max((irr::s16)-127, std::min((irr::s16)127, l_iCtrlX)));
 
               if (l_cPoint1.Y > 0.0)
                 a_iCtrlY = -127;
@@ -516,7 +549,7 @@ namespace dustbin {
         }
 
         if (m_pDebugRTT != nullptr) {
-          draw2dDebugLine(m_pDrv, irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
+          draw2dDebugLine(m_pDrv, l_cVelocityLine, 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
           draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, m_cOffset);
         }
       }
@@ -830,12 +863,6 @@ namespace dustbin {
     CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4& a_cMatrix) {
       SPathLine2d *l_pRet = new SPathLine2d();
 
-      for (std::vector<SPathLine3d*>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++) {
-        SPathLine2d *l_pChild = (*it)->transformTo2d(a_cMatrix);
-        l_pChild->m_pPrevious = l_pRet;
-        l_pRet->m_vNext.push_back(l_pChild);
-      }
-
       for (int i = 0; i < 3; i++) {
         irr::core::vector3df vs;
         irr::core::vector3df ve;
@@ -844,6 +871,21 @@ namespace dustbin {
         a_cMatrix.transformVect(ve, m_cLines[i].end  );
 
         l_pRet->m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
+      }
+
+      if (m_vNext.size() == 1) {
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix);
+        l_pChild->m_pPrevious = l_pRet;
+        l_pRet->m_vNext.push_back(l_pChild);
+      }
+      else if (m_vNext.size() > 0) {
+        SPathLine2d *l_pChild = m_vNext[0]->transformTo2d(a_cMatrix);
+        l_pChild->m_pPrevious = l_pRet;
+        l_pRet->m_vNext.push_back(l_pChild);
+
+        // if (l_pRet->m_cLines[0].start.Y > 0) {
+        //   m_iSelection = -1;
+        // }
       }
 
       return l_pRet;
