@@ -100,13 +100,6 @@ namespace dustbin {
         }
       }
 
-      if (l_pCurrent != nullptr) {
-        printf("Section selected: index = %i, checkpoint = %i, last cp = %i\n", l_pCurrent->m_iIndex, l_pCurrent->m_iCheckpoint, m_iLastCheckpoint);
-
-        if (l_pCurrent->m_iIndex == 320)
-          printf("*");
-      }
-
       return l_pCurrent;
     }
 
@@ -383,7 +376,6 @@ namespace dustbin {
     */
     void CControllerAi_V2::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       if (a_iMarbleId == m_iMarbleId) {
-        printf("Checkpoint %i passed.\n", a_iCheckpoint);
         m_iLastCheckpoint = a_iCheckpoint;
       }
     }
@@ -488,21 +480,21 @@ namespace dustbin {
 
               irr::f64 l_fSpeedFactor = (1.0 - l_fFactor);
 
-              m_fVCalc = l_fSpeedFactor * l_fSpeedFactor * 75.0;
+              m_fVCalc = (irr::f32)(l_fSpeedFactor * l_fSpeedFactor * 75.0);
 
               if (l_fSpeedFactor > 0.85) {
-                m_fVCalc += 80.0 * (l_fSpeedFactor / 0.85);
+                m_fVCalc += (irr::f32)(80.0 * (l_fSpeedFactor / 0.85));
               }
 
               irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
-              irr::f64 l_fSpeed2 = l_fSpeedFact2 * l_fSpeedFact2 * 75.0f;
+              irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * 75.0f);
 
               if (l_fSpeedFact2 > 0.85) {
                 l_fSpeed2 += 80.0 * (l_fSpeedFact2 / 0.85);
               }
               
               if (l_fVel > 1.8 * l_cLine.getLength()) {
-                m_fVCalc = l_fSpeed2;
+                m_fVCalc = (irr::f32)l_fSpeed2;
               }
 
               if (m_fVCalc > l_fVel)
@@ -529,8 +521,9 @@ namespace dustbin {
 
               for (int i = 1; i < 3; i++) {
                 irr::core::vector2df p = m_p2dPath->m_cLines[i].getClosestPoint(l_cPos);
-                if (std::abs(p.X) < 3.0f) {
-                  l_iCtrlX += (irr::s8)(-40.0 * (p.X));
+                irr::f32 f = p.getLengthSQ();
+                if (f < 9.0f) {
+                  l_iCtrlX += (irr::s8)(-100.0 * f / 5.0f);
                 }
               }
 
@@ -707,7 +700,6 @@ namespace dustbin {
 
       while (p != nullptr) {
         if (m_iIndex == p->m_iSectionIndex) {
-          printf("%i already in path, aborting.\n", p->m_iSectionIndex);
           return nullptr;
         }
         p = p->m_pPrevious;
