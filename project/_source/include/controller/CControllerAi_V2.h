@@ -77,8 +77,9 @@ namespace dustbin {
           /**
           * Create 2d path lines out of the list of 3d path lines
           * @param a_cMatrix the camera matrix to use for the transformation
+          * @param a_mSplitSelections a map with all the already selected directions on road splits
           */
-          SPathLine2d *transformTo2d(const irr::core::matrix4 &a_cMatrix);
+          SPathLine2d *transformTo2d(const irr::core::matrix4 &a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections);
 
           /**
           * Transform the lines to lie in the given plane

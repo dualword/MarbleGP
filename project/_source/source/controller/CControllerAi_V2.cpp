@@ -350,7 +350,7 @@ namespace dustbin {
             irr::core::matrix4 l_cMatrix;
             l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
 
-            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix);
+            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections);
             irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
             l_cMatrix.transformVect(l_vDummy);
 
@@ -436,10 +436,6 @@ namespace dustbin {
             irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
           };
 
-          irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Small, m_cRttSize);
-
-          irr::core::line2df l_cCtrlLine;
-
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
             irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
 
@@ -451,8 +447,6 @@ namespace dustbin {
             if (m_pDebugRTT != nullptr)
               draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
 
-            l_cCtrlLine = l_cLine;
-
             irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
             if (getBestLine(l_cOther, *l_itEnd))
               if (m_pDebugRTT != nullptr)
@@ -460,12 +454,12 @@ namespace dustbin {
 
             irr::f32 l_fVel = m_cVelocity2d.getLength();
             if (l_fVel > 10.0f) {
-              irr::f32 l_fCtrlLen = l_cCtrlLine.getLength();
+              irr::f32 l_fCtrlLen = l_cLine.getLength();
 
               irr::f64 l_fAngle1 = l_cVelocityLine.getAngleWith(l_cLine);
               irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
 
-              irr::core::vector2df l_cPoint1 = (l_cCtrlLine.end - l_cCtrlLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
+              irr::core::vector2df l_cPoint1 = (l_cLine.end - l_cLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
 
               irr::f64 l_fAngle2  = l_cLine.getAngleWith(l_cOther);
               irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.15;
@@ -519,13 +513,14 @@ namespace dustbin {
                   l_iCtrlX = 0;
               }
 
-              for (int i = 1; i < 3; i++) {
+              // Maybe re-add this depending on the class or time mode
+              /* for (int i = 1; i < 3; i++) {
                 irr::core::vector2df p = m_p2dPath->m_cLines[i].getClosestPoint(l_cPos);
                 irr::f32 f = p.getLengthSQ();
-                if (f < 9.0f) {
-                  l_iCtrlX += (irr::s8)(-100.0 * f / 5.0f);
+                if (f < 4.0f) {
+                  l_iCtrlX += (irr::s8)(-100.0 * f / 2.0f);
                 }
-              }
+              } */
 
               a_iCtrlX = (irr::s8)(std::max((irr::s16)-127, std::min((irr::s16)127, l_iCtrlX)));
 
@@ -852,7 +847,7 @@ namespace dustbin {
     * Create 2d path lines out of the list of 3d path lines
     * @param a_cMatrix the camera matrix to use for the transformation
     */
-    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4& a_cMatrix) {
+    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4& a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections) {
       SPathLine2d *l_pRet = new SPathLine2d();
 
       for (int i = 0; i < 3; i++) {
@@ -866,18 +861,20 @@ namespace dustbin {
       }
 
       if (m_vNext.size() == 1) {
-        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix);
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections);
         l_pChild->m_pPrevious = l_pRet;
         l_pRet->m_vNext.push_back(l_pChild);
       }
       else if (m_vNext.size() > 0) {
-        SPathLine2d *l_pChild = m_vNext[0]->transformTo2d(a_cMatrix);
+        irr::core::vector3df v = m_cLines[0].start;
+
+        if (a_mSplitSelections.find(v) == a_mSplitSelections.end() || a_mSplitSelections[v] < 0 || a_mSplitSelections[v] >= m_vNext.size()) {
+          a_mSplitSelections[v] = std::rand() % m_vNext.size();
+        }
+
+        SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections);
         l_pChild->m_pPrevious = l_pRet;
         l_pRet->m_vNext.push_back(l_pChild);
-
-        // if (l_pRet->m_cLines[0].start.Y > 0) {
-        //   m_iSelection = -1;
-        // }
       }
 
       return l_pRet;
