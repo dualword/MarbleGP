@@ -145,8 +145,10 @@ namespace dustbin {
         SAiPathSection;
 
         enum class enMarbleMode {
-          Rolling,
-          Respawn
+          OffTrack,
+          Default,
+          Cruise,
+          TimeAttack
         };
 
         int m_iMarbleId;          /**< ID of the marble this instance controls */
@@ -235,6 +237,15 @@ namespace dustbin {
         * @return the number of calculated lines (1 or 2)
         */
         int getControlLines_TimeAttack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+
+        /**
+        * Get the 2d lines for calculating the marble controls after the marble has respawned
+        * @param a_cLineOne [out] the first control line
+        * @param a_cLineTwo [out] the second control line
+        * @param a_pPath the AI path data for calculating the two lines
+        * @return the number of calculated lines (1 or 2)
+        */
+        int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
       public:
         /**

@@ -115,7 +115,7 @@ namespace dustbin {
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
-      m_eMode          (enMarbleMode::Rolling),
+      m_eMode          (enMarbleMode::Default),
       m_pDebugRTT      (nullptr),
       m_pDrv           (CGlobal::getInstance()->getVideoDriver())
     {
@@ -352,6 +352,11 @@ namespace dustbin {
             irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
             l_cMatrix.transformVect(l_vDummy);
 
+            if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
+              m_eMode = enMarbleMode::OffTrack;
+            else if (m_eMode == enMarbleMode::OffTrack)
+              m_eMode = enMarbleMode::Default;
+
             m_cVelocity2d.X = l_vDummy.X;
             m_cVelocity2d.Y = l_vDummy.Y;
           }        
@@ -364,7 +369,10 @@ namespace dustbin {
     * @param a_iMarbleId the respawning marble
     */
     void CControllerAi_V2::onMarbleRespawn(int a_iMarbleId) {
-      m_pCurrent = nullptr;
+      if (a_iMarbleId == m_iMarbleId) {
+        m_pCurrent = nullptr;
+        m_eMode = enMarbleMode::OffTrack;
+      }
     }
 
     /**
@@ -422,7 +430,6 @@ namespace dustbin {
           };
 
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-
             if (m_pDebugRTT != nullptr)
               draw2dDebugRectangle(m_pDrv, (*l_itEnd)->m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 30, 2.0f, m_cOffset);
 
@@ -430,8 +437,25 @@ namespace dustbin {
             irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
             irr::core::line2df l_cOther;
 
-            int l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
-            // int l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd);
+            int l_iLines = 0;
+
+            switch (m_eMode) {
+              case enMarbleMode::OffTrack:
+                l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr);
+                break;
+                
+              case enMarbleMode::Default:
+                l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd);
+                break;
+
+              case enMarbleMode::Cruise:
+                l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd);
+                break;
+
+              case enMarbleMode::TimeAttack:
+                l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
+                break;
+            }
 
             if (m_pDebugRTT != nullptr)
               draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
@@ -682,6 +706,26 @@ namespace dustbin {
         l_iRet++;
 
       a_cLineOne.end += 15.0f * (a_cLineOne.end - a_cLineOne.start).normalize();
+
+      a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
+        l_iRet++;
+      }
+      
+      return l_iRet;
+    }
+
+    /**
+    * Get the 2d lines for calculating the marble controls for Cruise mode
+    * @param a_cLineOne [out] the first control line
+    * @param a_cLineTwo [out] the second control line
+    * @param a_pPath the AI path data for calculating the two lines
+    * @return the number of calculated lines (1 or 2)
+    */
+    int CControllerAi_V2::getControlLines_Offtrack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+      int l_iRet = 0;
+
+      a_cLineOne.end =  m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df());
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
       if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
