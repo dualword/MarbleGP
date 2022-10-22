@@ -72,12 +72,6 @@ namespace dustbin {
         virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) { }
 
         /**
-        * Get the speed calculated by the AI
-        * @return the speed calculated by the AI
-        */
-        virtual irr::f32 getCalculatedSpeed() = 0;
-
-        /**
         * Tell the controller about it's HUD
         * @param a_pHUD the HUD
         */

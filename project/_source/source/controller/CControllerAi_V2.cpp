@@ -115,6 +115,7 @@ namespace dustbin {
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
+      m_eMode          (enMarbleMode::Rolling),
       m_pDebugRTT      (nullptr),
       m_pDrv           (CGlobal::getInstance()->getVideoDriver())
     {
@@ -404,19 +405,6 @@ namespace dustbin {
       }
 
       if (m_pCurrent != nullptr) {
-        irr::video::SMaterial l_cMaterial;
-        l_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.EmissiveColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.DiffuseColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.SpecularColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-
-        l_cMaterial.Lighting        = false;
-        l_cMaterial.Thickness       = 5.0f;
-        l_cMaterial.Wireframe       = true;
-        l_cMaterial.BackfaceCulling = false;
-
-        m_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
-
         irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
 
         if (m_p2dPath != nullptr) {
@@ -570,14 +558,6 @@ namespace dustbin {
         m_cOffset.X = m_cRttSize.Width / 2;
         m_cOffset.Y = m_cRttSize.Height;
       }
-    }
-
-    /**
-    * Get the speed calculated by the AI
-    * @return the speed calculated by the AI
-    */
-    irr::f32 CControllerAi_V2::getCalculatedSpeed() {
-      return m_fVCalc;
     }
 
     /**

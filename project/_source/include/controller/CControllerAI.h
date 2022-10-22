@@ -102,12 +102,6 @@ namespace dustbin {
         virtual void setDebug(bool a_bDebug) override;
 
         /**
-        * Get the speed calculated by the AI
-        * @return the speed calculated by the AI
-        */
-        virtual irr::f32 getCalculatedSpeed() override { return 0.0f; }
-
-        /**
         * Tell the controller about it's HUD
         * @param a_pHUD the HUD
         */

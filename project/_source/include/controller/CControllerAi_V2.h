@@ -143,6 +143,11 @@ namespace dustbin {
         }
         SAiPathSection;
 
+        enum class enMarbleMode {
+          Rolling,
+          Respawn
+        };
+
         int m_iMarbleId;          /**< ID of the marble this instance controls */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
 
@@ -152,6 +157,8 @@ namespace dustbin {
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
 
         irr::f64 m_fOldAngle;
+
+        enMarbleMode m_eMode;   /**< The marble's current mode */
 
         irr::video::IVideoDriver *m_pDrv;       /**< The Irrlicht video driver for debug rendering */
         irr::video::ITexture     *m_pDebugRTT;  /**< Render target texture for debugging */
@@ -289,12 +296,6 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) override;
-
-        /**
-        * Get the speed calculated by the AI
-        * @return the speed calculated by the AI
-        */
-        virtual irr::f32 getCalculatedSpeed() override;
 
         /**
         * Tell the controller about it's HUD

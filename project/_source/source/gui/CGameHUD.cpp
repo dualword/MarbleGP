@@ -755,13 +755,6 @@ namespace dustbin {
           swprintf(s, 0xFF, L"%.0f", m_fVel);
           m_pSpeedFont->draw(s, irr::core::recti(l_cTotal.UpperLeftCorner, m_cSpeedText), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
 
-          if (m_pAiController != nullptr) {
-            irr::core::recti l_cAiSpeed = irr::core::recti(l_cTotal.UpperLeftCorner - irr::core::vector2di(0, m_cSpeedText.Height), m_cSpeedText);
-            m_pDrv->draw2DRectangle(irr::video::SColor(160, 192, 192, 192), l_cAiSpeed, &m_cRect);
-            swprintf(s, 0xFF, L"%.0f", m_pAiController->getCalculatedSpeed());
-            m_pSpeedFont->draw(s, l_cAiSpeed, irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
-          }
-
           int l_iVel = m_fVel > 150.0f ? 150 : (int)m_fVel;
 
           irr::f32 l_fRd = m_fVel < 75.0f ? 0.0f : m_fVel > 125.0f ? 1.0f :        (m_fVel - 75.0f) / 50.0f;
