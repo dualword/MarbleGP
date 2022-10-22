@@ -344,9 +344,6 @@ namespace dustbin {
           }
           while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
 
-          if (m_p2dPath != nullptr)
-            delete m_p2dPath;
-
           if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
             irr::core::matrix4 l_cMatrix;
             l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
@@ -836,9 +833,6 @@ namespace dustbin {
     }
 
     CControllerAi_V2::SPathLine2d::~SPathLine2d() {
-      for (std::vector<SPathLine2d*>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++) {
-        delete *it;
-      }
       m_vNext.clear();
     }
 
@@ -908,7 +902,7 @@ namespace dustbin {
     * @param a_cMatrix the camera matrix to use for the transformation
     */
     CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4& a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections) {
-      SPathLine2d *l_pRet = new SPathLine2d();
+      m_cPathLine.m_vNext.clear();
 
       for (int i = 0; i < 3; i++) {
         irr::core::vector3df vs;
@@ -917,15 +911,15 @@ namespace dustbin {
         a_cMatrix.transformVect(vs, m_cLines[i].start);
         a_cMatrix.transformVect(ve, m_cLines[i].end  );
 
-        l_pRet->m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
+        m_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
       }
 
-      l_pRet->m_fWidth = (l_pRet->m_cLines[1].start - l_pRet->m_cLines[2].start).getLength();
+      m_cPathLine.m_fWidth = (m_cPathLine.m_cLines[1].start - m_cPathLine.m_cLines[2].start).getLength();
 
       if (m_vNext.size() == 1) {
         SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections);
-        l_pChild->m_pPrevious = l_pRet;
-        l_pRet->m_vNext.push_back(l_pChild);
+        l_pChild->m_pPrevious = &m_cPathLine;
+        m_cPathLine.m_vNext.push_back(l_pChild);
       }
       else if (m_vNext.size() > 0) {
         irr::core::vector3df v = m_cLines[0].start;
@@ -935,11 +929,11 @@ namespace dustbin {
         }
 
         SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections);
-        l_pChild->m_pPrevious = l_pRet;
-        l_pRet->m_vNext.push_back(l_pChild);
+        l_pChild->m_pPrevious = &m_cPathLine;
+        m_cPathLine.m_vNext.push_back(l_pChild);
       }
 
-      return l_pRet;
+      return &m_cPathLine;
     }
 
     CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_bStartup(false), m_pAiPath(nullptr) {

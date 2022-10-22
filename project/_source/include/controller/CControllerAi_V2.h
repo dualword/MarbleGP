@@ -74,6 +74,7 @@ namespace dustbin {
           int m_iSectionIndex;        /**< Index of the section this path line belongs to */
 
           SPathLine3d *m_pPrevious;   /**< The previous path line */
+          SPathLine2d  m_cPathLine;   /**< The 2d path line */
 
           /**
           * Create 2d path lines out of the list of 3d path lines
