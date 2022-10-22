@@ -113,12 +113,14 @@ namespace dustbin {
       m_iLastCheckpoint(-1), 
       m_iMyPosition    (0),
       m_fVCalc         (0.0f), 
+      m_fScale         (1.0f),
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
       m_eMode          (enMarbleMode::Default),
+      m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
       m_pDebugRTT      (nullptr),
-      m_pDrv           (CGlobal::getInstance()->getVideoDriver())
+      m_p2dPath        (nullptr)
     {
       if (m_iInstances == 0) {
         CGlobal *l_pGlobal = CGlobal::getInstance();
@@ -503,10 +505,6 @@ namespace dustbin {
           };
 
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-            if (m_pDebugRTT != nullptr)
-              draw2dDebugRectangle(m_pDrv, (*l_itEnd)->m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 30, 2.0f, m_cOffset);
-
-            
             irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
             irr::core::line2df l_cOther;
 
@@ -644,6 +642,9 @@ namespace dustbin {
         m_cRttSize.Width  /= 3;
         m_cRttSize.Height /= 3;
 
+        m_fScale = ((irr::f32)m_cRttSize.Height) / 1000.0f;
+        m_fScale = 1.0f / m_fScale;
+
         m_pDebugRTT = m_pDrv->getTexture("ai_debug_rtt");
 
         if (m_pDebugRTT == nullptr)
@@ -673,14 +674,6 @@ namespace dustbin {
     irr::video::ITexture* CControllerAi_V2::getDebugTexture() {
       return m_pDebugRTT;
     }
-
-    /**
-    * For debuggin purposes: Draw the data used to control the marble (2d)
-    * @param a_pDrv the video driver
-    */
-    void CControllerAi_V2::drawDebugData2d(irr::video::IVideoDriver* a_pDrv) {
-    }
-
 
     /**
     * Get the best, i.e. not colliding with a border line, line in the path starting

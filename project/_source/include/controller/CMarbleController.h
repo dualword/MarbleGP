@@ -71,12 +71,6 @@ namespace dustbin {
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
 
         /**
-        * For debuggin purposes: Draw the data used to control the marble (2d)
-        * @param a_pDrv the video driver
-        */
-        virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) override;
-
-        /**
         * Get the AI controller (if any)
         * @return the AI controller
         */

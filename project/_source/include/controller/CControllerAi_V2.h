@@ -171,6 +171,7 @@ namespace dustbin {
         int m_iMyPosition;        /**< My position in the race */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
+        irr::f32 m_fScale;    /**< The scaling factor for the debug image */
 
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
@@ -337,12 +338,6 @@ namespace dustbin {
         * @param a_bDebug the new debug flag
         */
         virtual void setDebug(bool a_bDebug) override;
-
-        /**
-        * For debuggin purposes: Draw the data used to control the marble (2d)
-        * @param a_pDrv the video driver
-        */
-        virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) override;
 
         /**
         * Tell the controller about it's HUD

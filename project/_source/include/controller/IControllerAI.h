@@ -76,12 +76,6 @@ namespace dustbin {
         virtual void setDebug(bool a_bDebug) = 0;
 
         /**
-        * For debuggin purposes: Draw the data used to control the marble (2d)
-        * @param a_pDrv the video driver
-        */
-        virtual void drawDebugData2d(irr::video::IVideoDriver *a_pDrv) { }
-
-        /**
         * Tell the controller about it's HUD
         * @param a_pHUD the HUD
         */

@@ -1137,11 +1137,6 @@ namespace dustbin {
         m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f - l_fFade);
       }
 
-      // if (m_vPlayers.size() == 1) {
-      if ((*m_vPlayers.begin())->m_pController != nullptr)
-        (*m_vPlayers.begin())->m_pController->drawDebugData2d(m_pDrv);
-        // }
-
       m_pDrv->endScene();
       m_pDrv->setRenderTarget(0, false, false);
 
