@@ -26,6 +26,7 @@ namespace dustbin {
         */
         typedef struct SPathLine2d {
           irr::core::line2df m_cLines[3];   /**< The path lines (index 0 == central, 1 == border, 2 == border) */
+          irr::f32           m_fWidth;      /**< Width of the path */
 
           SPathLine2d();
           SPathLine2d(const SPathLine2d &a_cOther);
@@ -196,8 +197,36 @@ namespace dustbin {
         * from the startpoint of the "a_cLine" parameter
         * @param a_cLine [out] the best line, start is used as input
         * @param a_pEnd the 2d path lines to search
+        * @param a_pCollide [out] the 2d line path where the collision was detected (can be nullptr)
         */
-        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd);
+        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd, SPathLine2d **a_pCollide);
+
+        /**
+        * Get the 2d lines for calculating the marble controls for Default mode
+        * @param a_cLineOne [out] the first control line
+        * @param a_cLineTwo [out] the second control line
+        * @param a_pPath the AI path data for calculating the two lines
+        * @return the number of calculated lines (1 or 2)
+        */
+        int getControlLines_Default(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+
+        /**
+        * Get the 2d lines for calculating the marble controls for Cruise mode
+        * @param a_cLineOne [out] the first control line
+        * @param a_cLineTwo [out] the second control line
+        * @param a_pPath the AI path data for calculating the two lines
+        * @return the number of calculated lines (1 or 2)
+        */
+        int getControlLines_Cruise(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+
+        /**
+        * Get the 2d lines for calculating the marble controls for Time Attack mode
+        * @param a_cLineOne [out] the first control line
+        * @param a_cLineTwo [out] the second control line
+        * @param a_pPath the AI path data for calculating the two lines
+        * @return the number of calculated lines (1 or 2)
+        */
+        int getControlLines_TimeAttack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
       public:
         /**

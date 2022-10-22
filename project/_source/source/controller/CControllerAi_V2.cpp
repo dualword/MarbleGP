@@ -437,20 +437,22 @@ namespace dustbin {
           };
 
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-            irr::core::line2df l_cLine = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
 
             if (m_pDebugRTT != nullptr)
               draw2dDebugRectangle(m_pDrv, (*l_itEnd)->m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 30, 2.0f, m_cOffset);
 
-            getBestLine(l_cLine, *l_itEnd);
+            
+            irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
+            irr::core::line2df l_cOther;
+
+            int l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
+            // int l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd);
 
             if (m_pDebugRTT != nullptr)
               draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
 
-            irr::core::line2df l_cOther = irr::core::line2df(l_cLine.end, l_cLine.end);
-            if (getBestLine(l_cOther, *l_itEnd))
-              if (m_pDebugRTT != nullptr)
-                draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+            if (l_iLines > 1 && m_pDebugRTT != nullptr)
+              draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
 
             irr::f32 l_fVel = m_cVelocity2d.getLength();
             if (l_fVel > 10.0f) {
@@ -612,7 +614,7 @@ namespace dustbin {
     * @param a_cLine [out] the best line, start is used as input
     * @param a_pEnd the 2d path lines to search
     */
-    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd) {
+    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd, SPathLine2d **a_pCollide) {
       while (a_pEnd != nullptr) {
         bool l_bReturn = true;
         a_cLine.end = a_pEnd->m_cLines[0].end;
@@ -628,10 +630,88 @@ namespace dustbin {
         }
         a_pEnd = a_pEnd->m_pPrevious;
 
-        if (l_bReturn)
+        if (l_bReturn) {
+          if (a_pCollide != nullptr)
+            *a_pCollide = a_pEnd;
+
           return true;
+        }
       }
       return false;
+    }
+
+    /**
+    * Get the 2d lines for calculating the marble controls for Default mode
+    * @param a_cLineOne [out] the first control line
+    * @param a_cLineTwo [out] the second control line
+    * @param a_pPath the AI path data for calculating the two lines
+    * @return the number of calculated lines (1 or 2)
+    */
+    int CControllerAi_V2::getControlLines_Default(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+      int l_iRet = 0;
+
+      if (getBestLine(a_cLineOne, a_pPath, nullptr))
+        l_iRet++;
+
+      a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr))
+        l_iRet++;
+      
+      return l_iRet;
+    }
+
+    /**
+    * Get the 2d lines for calculating the marble controls for Cruise mode
+    * @param a_cLineOne [out] the first control line
+    * @param a_cLineTwo [out] the second control line
+    * @param a_pPath the AI path data for calculating the two lines
+    * @return the number of calculated lines (1 or 2)
+    */
+    int CControllerAi_V2::getControlLines_Cruise(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+      int l_iRet = 0;
+
+      if (getBestLine(a_cLineOne, a_pPath, nullptr))
+        l_iRet++;
+
+
+      SPathLine2d *l_pPath = nullptr;
+
+      a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
+      if (getBestLine(a_cLineTwo, a_pPath, &l_pPath)) {
+        l_iRet++;
+
+        if (l_pPath != nullptr) {
+          irr::core::vector2df l_cDirection = (l_pPath->m_cLines[0].end - l_pPath->m_cLines[0].start).normalize();
+
+          a_cLineOne.end -= (l_pPath->m_fWidth / 2.0f) * (a_cLineTwo.end - a_cLineTwo.start).normalize();
+          a_cLineTwo.start = a_cLineOne.end;
+        }
+      }
+
+      return l_iRet;
+    }
+
+    /**
+    * Get the 2d lines for calculating the marble controls for Cruise mode
+    * @param a_cLineOne [out] the first control line
+    * @param a_cLineTwo [out] the second control line
+    * @param a_pPath the AI path data for calculating the two lines
+    * @return the number of calculated lines (1 or 2)
+    */
+    int CControllerAi_V2::getControlLines_TimeAttack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+      int l_iRet = 0;
+
+      if (getBestLine(a_cLineOne, a_pPath, nullptr))
+        l_iRet++;
+
+      a_cLineOne.end += 15.0f * (a_cLineOne.end - a_cLineOne.start).normalize();
+
+      a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
+        l_iRet++;
+      }
+      
+      return l_iRet;
     }
 
     /**
@@ -761,15 +841,15 @@ namespace dustbin {
       return false;
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_fWidth(0.0f), m_pPrevious(nullptr) {
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_fWidth(a_cOther.m_fWidth), m_pPrevious(nullptr) {
       for (int i = 0; i < 3; i++)
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_pPrevious(nullptr) {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -859,6 +939,8 @@ namespace dustbin {
 
         l_pRet->m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
       }
+
+      l_pRet->m_fWidth = (l_pRet->m_cLines[1].start - l_pRet->m_cLines[2].start).getLength();
 
       if (m_vNext.size() == 1) {
         SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections);
