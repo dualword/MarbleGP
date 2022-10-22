@@ -1781,6 +1781,11 @@ namespace dustbin {
 
         if (m_pLuaScript != nullptr)
           m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
+
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+          if ((*it)->m_pController != nullptr)
+            (*it)->m_pController->onRaceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
+        }
       }
     }
 

@@ -81,6 +81,19 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "RacePosition"
+    * @param a_MarbleId ID of the marble
+    * @param a_Position Position of the marble
+    * @param a_Laps The current lap of the marble
+    * @param a_DeficitAhead Deficit of the marble on the marble ahead in steps
+    * @param a_DeficitLeader Deficit of the marble on the leader in steps
+    */
+    void CAiControlThread::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
+      for (int i = 0; m_aControllers[i] != nullptr; i++)
+        m_aControllers[i]->onRaceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
+    }
+
+    /**
     * The implementing object must implement this method. It is called when the thread start working
     */
     void CAiControlThread::execute() {

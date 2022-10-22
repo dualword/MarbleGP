@@ -116,6 +116,17 @@ namespace dustbin {
     void CControllerAI::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
     }
 
+    /**
+    * This function receives messages of type "RacePosition"
+    * @param a_MarbleId ID of the marble
+    * @param a_Position Position of the marble
+    * @param a_Laps The current lap of the marble
+    * @param a_DeficitAhead Deficit of the marble on the marble ahead in steps
+    * @param a_DeficitLeader Deficit of the marble on the leader in steps
+    */
+    void CControllerAI::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
+    }
+
     bool CControllerAI::getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) { 
       bool l_bRespawn = false;
 

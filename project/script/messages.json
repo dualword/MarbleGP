@@ -463,7 +463,8 @@
         "ObjectMoved",
         "MarbleMoved",
         "PlayerRespawn",
-        "Checkpoint"
+        "Checkpoint",
+        "RacePosition"
       ]
     }
   ]

@@ -144,6 +144,21 @@ namespace dustbin {
         }
         SAiPathSection;
 
+        /**
+        * @class SRacePosition
+        * @author Christian Keimel
+        * A structure to hold information about the race position of the marbles
+        */
+        typedef struct SRacePosition {
+          int m_iMarble;
+          int m_iPosition;
+          int m_iDeficitAhead;
+          int m_iDeficitLeader;
+
+          SRacePosition();
+        }
+        SRacePosition;
+
         enum class enMarbleMode {
           OffTrack,
           Default,
@@ -153,6 +168,7 @@ namespace dustbin {
 
         int m_iMarbleId;          /**< ID of the marble this instance controls */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
+        int m_iMyPosition;        /**< My position in the race */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
 
@@ -178,10 +194,19 @@ namespace dustbin {
 
         std::map<irr::core::vector3df, int> m_mSplitSelections;   /**< Selections of split roads */
 
+        SRacePosition m_aRacePositions[16];
+
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
         SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
+
+        /**
+        * Switch this AI marble to another mode
+        * @param a_eMode the new mode
+        * @param a_iCall ID of the calling code portion
+        */
+        void switchMarbleMode(enMarbleMode a_eMode, int a_iCall);
 
         /**
         * Find all ends of a path and store them in the given vector. If a path splits this will produce two
@@ -285,6 +310,16 @@ namespace dustbin {
         * @param a_iCheckpoint the passed checkpoint
         */
         virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint) override;
+
+        /**
+        * This function receives messages of type "RacePosition"
+        * @param a_MarbleId ID of the marble
+        * @param a_Position Position of the marble
+        * @param a_Laps The current lap of the marble
+        * @param a_DeficitAhead Deficit of the marble on the marble ahead in steps
+        * @param a_DeficitLeader Deficit of the marble on the leader in steps
+        */
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
 
         /**
         * Get the control values for the marble

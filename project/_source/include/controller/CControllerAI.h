@@ -82,7 +82,17 @@ namespace dustbin {
         * @param a_iMarbleId the marble that passed the checkpoint
         * @param a_iCheckpoint the passed checkpoint
         */
-        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint) override;
+
+        /**
+        * This function receives messages of type "RacePosition"
+        * @param a_MarbleId ID of the marble
+        * @param a_Position Position of the marble
+        * @param a_Laps The current lap of the marble
+        * @param a_DeficitAhead Deficit of the marble on the marble ahead in steps
+        * @param a_DeficitLeader Deficit of the marble on the leader in steps
+        */
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
 
         /**
         * Get the control values for the marble

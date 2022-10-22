@@ -73,7 +73,17 @@ namespace dustbin {
         * @param a_MarbleId ID of the marble
         * @param a_Checkpoint The checkpoint ID the player has passed
         */
-        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint);
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) override;
+
+        /**
+        * This function receives messages of type "RacePosition"
+        * @param a_MarbleId ID of the marble
+        * @param a_Position Position of the marble
+        * @param a_Laps The current lap of the marble
+        * @param a_DeficitAhead Deficit of the marble on the marble ahead in steps
+        * @param a_DeficitLeader Deficit of the marble on the leader in steps
+        */
+        virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
 
         /**
         * The implementing object must implement this method. It is called when the thread start working

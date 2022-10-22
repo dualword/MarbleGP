@@ -111,6 +111,7 @@ namespace dustbin {
     CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls) : 
       m_iMarbleId      (a_iMarbleId), 
       m_iLastCheckpoint(-1), 
+      m_iMyPosition    (0),
       m_fVCalc         (0.0f), 
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
@@ -353,9 +354,33 @@ namespace dustbin {
             l_cMatrix.transformVect(l_vDummy);
 
             if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
-              m_eMode = enMarbleMode::OffTrack;
-            else if (m_eMode == enMarbleMode::OffTrack)
-              m_eMode = enMarbleMode::Default;
+              switchMarbleMode(enMarbleMode::OffTrack, 1);
+            else {
+              if (m_eMode == enMarbleMode::OffTrack)
+                switchMarbleMode(enMarbleMode::Default, 1);
+              else {
+                if (m_iMyPosition > 1) {
+                  if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead > 0) {
+                    if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 360)
+                      switchMarbleMode(enMarbleMode::TimeAttack, 2);
+                    else if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 480)
+                      switchMarbleMode(enMarbleMode::Default, 2);
+                    else
+                      switchMarbleMode(enMarbleMode::Cruise, 2);
+                  }
+                }
+                else if (m_iMyPosition == 1) {
+                  if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead > 0) {
+                    if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 240)
+                      switchMarbleMode(enMarbleMode::TimeAttack, 2);
+                    else if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 360)
+                      switchMarbleMode(enMarbleMode::Default, 2);
+                    else
+                      switchMarbleMode(enMarbleMode::Cruise, 2);
+                  }
+                }
+              }
+            }
 
             m_cVelocity2d.X = l_vDummy.X;
             m_cVelocity2d.Y = l_vDummy.Y;
@@ -371,7 +396,7 @@ namespace dustbin {
     void CControllerAi_V2::onMarbleRespawn(int a_iMarbleId) {
       if (a_iMarbleId == m_iMarbleId) {
         m_pCurrent = nullptr;
-        m_eMode = enMarbleMode::OffTrack;
+        switchMarbleMode(enMarbleMode::OffTrack, 0);
       }
     }
 
@@ -383,6 +408,54 @@ namespace dustbin {
     void CControllerAi_V2::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       if (a_iMarbleId == m_iMarbleId) {
         m_iLastCheckpoint = a_iCheckpoint;
+      }
+    }
+
+    /**
+    * Switch this AI marble to another mode
+    * @param a_eMode the new mode
+    */
+    void CControllerAi_V2::switchMarbleMode(enMarbleMode a_eMode, int a_iCall) {
+      if (a_eMode != m_eMode) {
+        m_eMode = a_eMode;
+
+        switch (a_eMode) {
+          case enMarbleMode::OffTrack:
+            printf("New Mode: Off Track (%i)\n", a_iCall);
+            break;
+
+          case enMarbleMode::Default:
+            printf("New Mode: Default (%i)\n", a_iCall);
+            break;
+
+          case enMarbleMode::Cruise:
+            printf("New Mode: Cruise (%i)\n", a_iCall);
+            break;
+
+          case enMarbleMode::TimeAttack:
+            printf("New Mode: Time Attack (%i)\n", a_iCall);
+            break;
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "RacePosition"
+    * @param a_MarbleId ID of the marble
+    * @param a_Position Position of the marble
+    * @param a_Laps The current lap of the marble
+    * @param a_DeficitAhead Deficit of the marble on the marble ahead in steps
+    * @param a_DeficitLeader Deficit of the marble on the leader in steps
+    */
+    void CControllerAi_V2::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
+      if (a_Position > 0 && a_Position <= 16) {
+        m_aRacePositions[a_Position - 1].m_iMarble        = a_MarbleId;
+        m_aRacePositions[a_Position - 1].m_iPosition      = a_Position;
+        m_aRacePositions[a_Position - 1].m_iDeficitAhead  = a_DeficitAhead;
+        m_aRacePositions[a_Position - 1].m_iDeficitLeader = a_DeficitLeader;
+
+        if (a_MarbleId == m_iMarbleId)
+          m_iMyPosition = a_Position;
       }
     }
 
@@ -986,6 +1059,9 @@ namespace dustbin {
     CControllerAi_V2::SAiPathSection::~SAiPathSection() {
       if (m_pAiPath != nullptr)
         delete m_pAiPath;
+    }
+
+    CControllerAi_V2::SRacePosition::SRacePosition() : m_iMarble(0), m_iPosition(0), m_iDeficitAhead(0), m_iDeficitLeader(0) {
     }
 
     int CControllerAi_V2::m_iInstances = 0;
