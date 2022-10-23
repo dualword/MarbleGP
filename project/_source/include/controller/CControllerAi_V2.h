@@ -18,6 +18,7 @@ namespace dustbin {
     class CControllerAi_V2 : public IControllerAI {
       private:
         struct SAiPathSection;
+        struct SPathLine3d;
 
         /**
         * @class SPathLine2d
@@ -26,7 +27,15 @@ namespace dustbin {
         */
         typedef struct SPathLine2d {
           irr::core::line2df m_cLines[3];   /**< The path lines (index 0 == central, 1 == border, 2 == border) */
+          irr::core::line3df m_cOriginal;   /**< The original 3d line (central) */
           irr::f32           m_fWidth;      /**< Width of the path */
+          irr::core::matrix4 m_cMatrix;
+
+          irr::core::vector3df m_cNormal;
+
+          irr::core::plane3df m_cPlane;
+
+          SPathLine3d *m_pParent;   /**< The 3d path line this 2d path line belongs to */
 
           SPathLine2d();
           SPathLine2d(const SPathLine2d &a_cOther);
@@ -76,6 +85,8 @@ namespace dustbin {
           SPathLine3d *m_pPrevious;   /**< The previous path line */
           SPathLine2d  m_cPathLine;   /**< The 2d path line */
 
+          SAiPathSection *m_pParent;  /**< The AI path section this path line belongs to */
+
           /**
           * Create 2d path lines out of the list of 3d path lines
           * @param a_cMatrix the camera matrix to use for the transformation
@@ -106,6 +117,8 @@ namespace dustbin {
           irr::core::line3df m_cRealLine;   /**< The real (not adjusted) 3d line of the section */
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
           irr::core::line3df m_cEdges[2];   /**< The side edges of the section */
+
+          irr::core::plane3df m_cPlane;     /**< This section's 3d plane */
 
           irr::core::vector3df m_cNormal;   /**< The normal of the section */
 
@@ -159,6 +172,20 @@ namespace dustbin {
         }
         SRacePosition;
 
+        /**
+        * @class SMarblePosition
+        * @author Christian Keimel
+        * This struct helps the AI to keep track of the other marbles
+        */
+        typedef struct SMarblePosition {
+          int                  m_iMarbleId;   /**< The ID of the marble */
+          irr::core::vector3df m_cPosition;   /**< The marble's position */
+          irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
+
+          SMarblePosition();
+        }
+        SMarblePosition;
+
         enum class enMarbleMode {
           OffTrack,
           Default,
@@ -195,7 +222,8 @@ namespace dustbin {
 
         std::map<irr::core::vector3df, int> m_mSplitSelections;   /**< Selections of split roads */
 
-        SRacePosition m_aRacePositions[16];
+        SRacePosition   m_aRacePositions[16];   /**< The positions in the race */
+        SMarblePosition m_aMarbles      [16];   /**< Data of the marbles */
 
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
@@ -227,6 +255,14 @@ namespace dustbin {
         * @return the closest matching AI path section
         */
         SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath);
+
+        /**
+        * Select the new current AI path section
+        * @param a_cPosition the marble's position
+        * @param a_pCurrent the current section
+        * @return the new current AI path section
+        */
+        SAiPathSection *selectCurrentSection(const irr::core::vector3df &a_cPosition, SAiPathSection *a_pCurrent);
 
         /**
         * Get the best, i.e. not colliding with a border line, line in the path starting

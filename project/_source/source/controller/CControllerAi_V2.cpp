@@ -48,7 +48,7 @@ namespace dustbin {
       a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cUpperLeft, irr::core::dimension2du(a_iSize, a_iSize)), a_cColor);
     }
 
-    void drawDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition, const irr::core::vector2di &a_cOffset, irr::f32 a_fFactor) {
+    void draw2dDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition, const irr::core::vector2di &a_cOffset, irr::f32 a_fFactor) {
       irr::core::dimension2du l_cDim = a_pFont->getDimension(a_sText);
       l_cDim.Width  = 6 * l_cDim.Width  / 5;
       l_cDim.Height = 6 * l_cDim.Height / 5;
@@ -101,6 +101,31 @@ namespace dustbin {
       }
 
       return l_pCurrent;
+    }
+
+    /**
+    * Select the new current AI path section
+    * @param a_cPosition the marble's position
+    * @param a_pCurrent the current section
+    * @return the new current AI path section
+    */
+    CControllerAi_V2::SAiPathSection *CControllerAi_V2::selectCurrentSection(const irr::core::vector3df& a_cPosition, SAiPathSection* a_pCurrent) {
+      irr::core::vector3df l_cClosest = a_pCurrent->m_cLine3d.getClosestPoint(a_cPosition);
+
+      do {
+        if (l_cClosest == a_pCurrent->m_cLine3d.end) {
+          if (a_pCurrent->m_vNext.size() == 1)
+            a_pCurrent = *a_pCurrent->m_vNext.begin();
+          else
+            a_pCurrent = selectClosest(m_cPosition, a_pCurrent->m_vNext, false);
+
+          if (a_pCurrent != nullptr)
+            l_cClosest = a_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
+        }
+      }
+      while (a_pCurrent != nullptr && l_cClosest == a_pCurrent->m_cLine3d.end);
+
+      return a_pCurrent;
     }
 
     /**
@@ -314,6 +339,14 @@ namespace dustbin {
     * @param a_cCameraUp the up-vector of the camera
     */
     void CControllerAi_V2::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df& a_cCameraPos, const irr::core::vector3df& a_cCameraUp) {
+      int l_iIndex = a_iMarbleId - 10000;
+
+      if (l_iIndex >= 0 && l_iIndex < 16) {
+        m_aMarbles[l_iIndex].m_iMarbleId = a_iMarbleId;
+        m_aMarbles[l_iIndex].m_cPosition = a_cNewPos;
+        m_aMarbles[l_iIndex].m_cVelocity = a_cVelocity;
+      }
+
       if (a_iMarbleId == m_iMarbleId) {
         m_cPosition  = a_cNewPos;
         m_cVelocity  = a_cVelocity;
@@ -332,20 +365,7 @@ namespace dustbin {
         }
 
         if (m_pCurrent != nullptr) {
-          irr::core::vector3df l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
-
-          do {
-            if (l_cClosest == m_pCurrent->m_cLine3d.end) {
-              if (m_pCurrent->m_vNext.size() == 1)
-                m_pCurrent = *m_pCurrent->m_vNext.begin();
-              else
-                m_pCurrent = selectClosest(m_cPosition, m_pCurrent->m_vNext, false);
-
-              if (m_pCurrent != nullptr)
-                l_cClosest = m_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
-            }
-          }
-          while (m_pCurrent != nullptr && l_cClosest == m_pCurrent->m_cLine3d.end);
+          m_pCurrent = selectCurrentSection(m_cPosition, m_pCurrent);
 
           if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
             irr::core::matrix4 l_cMatrix;
@@ -354,6 +374,9 @@ namespace dustbin {
             m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections);
             irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
             l_cMatrix.transformVect(l_vDummy);
+
+            m_cVelocity2d.X = l_vDummy.X;
+            m_cVelocity2d.Y = l_vDummy.Y;
 
             if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
               switchMarbleMode(enMarbleMode::OffTrack, 1);
@@ -383,9 +406,6 @@ namespace dustbin {
                 }
               }
             }
-
-            m_cVelocity2d.X = l_vDummy.X;
-            m_cVelocity2d.Y = l_vDummy.Y;
           }        
         }
       }
@@ -423,19 +443,19 @@ namespace dustbin {
 
         switch (a_eMode) {
           case enMarbleMode::OffTrack:
-            printf("New Mode: Off Track (%i)\n", a_iCall);
+            // printf("New Mode: Off Track (%i)\n", a_iCall);
             break;
 
           case enMarbleMode::Default:
-            printf("New Mode: Default (%i)\n", a_iCall);
+            // printf("New Mode: Default (%i)\n", a_iCall);
             break;
 
           case enMarbleMode::Cruise:
-            printf("New Mode: Cruise (%i)\n", a_iCall);
+            // printf("New Mode: Cruise (%i)\n", a_iCall);
             break;
 
           case enMarbleMode::TimeAttack:
-            printf("New Mode: Time Attack (%i)\n", a_iCall);
+            // printf("New Mode: Time Attack (%i)\n", a_iCall);
             break;
         }
       }
@@ -621,6 +641,59 @@ namespace dustbin {
         if (m_pDebugRTT != nullptr) {
           draw2dDebugLine(m_pDrv, l_cVelocityLine, 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
           draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, m_cOffset);
+
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId) {
+              SPathLine2d *l_pLine  = m_p2dPath;
+              SPathLine2d *l_pOther = nullptr;
+
+              irr::core::vector3df l_cPoint;
+
+              irr::f32 l_fDist = 0.0f;
+
+              while (l_pLine != nullptr) {
+                irr::core::vector3df l_cOption = l_pLine->m_cOriginal.getClosestPoint(m_aMarbles[i].m_cPosition);
+                irr::f32 l_fNewDist = l_cOption.getDistanceFromSQ(m_aMarbles[i].m_cPosition);
+
+                if (l_fDist == 0.0f || l_fNewDist < l_fDist) {
+                  l_fDist  = l_fNewDist;
+                  l_cPoint = l_cOption;
+                  l_pOther = l_pLine;
+                }
+
+                if (l_pLine->m_vNext.size() == 0)
+                  l_pLine = nullptr;
+                else {
+                  l_pLine = *(l_pLine->m_vNext).begin();
+                }
+              }
+
+              if (l_pOther != nullptr && l_fDist < l_pOther->m_fWidth * l_pOther->m_fWidth + 0.5f) {
+                irr::core::vector3df l_cPos = m_aMarbles[i].m_cPosition;
+                irr::core::vector3df l_cVel = m_aMarbles[i].m_cPosition + m_aMarbles[i].m_cVelocity;
+
+                l_pLine = l_pOther;
+                while (l_pLine != nullptr) {
+                  l_pLine->m_cPlane.getIntersectionWithLine(l_cPos, l_pLine->m_cNormal, l_cPos);
+                  l_pLine->m_cPlane.getIntersectionWithLine(l_cVel, l_pLine->m_cNormal, l_cVel);
+                  l_pLine = l_pLine->m_pPrevious;
+                }
+
+                l_pOther->m_cMatrix.transformVect(l_cPos);
+                l_pOther->m_cMatrix.transformVect(l_cVel);
+
+                irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
+                irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
+
+                bool l_bIncoming = l_cPos2d.Y < 0.0f && l_cVelocityLine.start.getDistanceFromSQ(l_cPos2d) > l_cVelocityLine.start.getDistanceFromSQ(l_cVel2d);
+
+                irr::video::SColor l_cColor = l_bIncoming ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
+
+                draw2dDebugRectangle(m_pDrv, l_cPos2d, l_cColor, 20, m_fScale, m_cOffset);
+                draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, l_cColor, m_cOffset);
+              }
+            }
+          }
         }
       }
 
@@ -874,6 +947,9 @@ namespace dustbin {
 
       l_pThis->m_pPrevious     = a_pPrevious;
       l_pThis->m_iSectionIndex = m_iIndex;
+      l_pThis->m_pParent       = this;
+
+      l_pThis->m_cPathLine.m_cOriginal = m_cLine3d;
 
       // Only process if 750 meters are not yet exceeded
       if (a_fLength <= 750.0f) {
@@ -901,11 +977,13 @@ namespace dustbin {
           }
         }
 
-        irr::core::plane3df l_cPlane = irr::core::plane3df(m_cLine3d.start, m_cNormal);
+        m_cPlane = irr::core::plane3df(m_cLine3d.start, m_cNormal);
+        l_pThis->m_cPathLine.m_cPlane  = m_cPlane;
+        l_pThis->m_cPathLine.m_cNormal = m_cNormal;
 
         // Now transform all points of the lines in the vector to lie in this section's plane
         for (std::vector<SPathLine3d *>::iterator it = l_pThis->m_vNext.begin(); it != l_pThis->m_vNext.end(); it++)
-          (*it)->transformLinesToPlane(l_cPlane, m_cNormal);
+          (*it)->transformLinesToPlane(m_cPlane, m_cNormal);
       }
 
       return l_pThis;
@@ -928,15 +1006,15 @@ namespace dustbin {
       return false;
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_fWidth(0.0f), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_fWidth(0.0f), m_pParent(nullptr), m_pPrevious(nullptr) {
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_fWidth(a_cOther.m_fWidth), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_fWidth(a_cOther.m_fWidth), m_pParent(a_cOther.m_pParent), m_pPrevious(nullptr) {
       for (int i = 0; i < 3; i++)
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_pParent(nullptr), m_pPrevious(nullptr) {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -967,15 +1045,20 @@ namespace dustbin {
         (*it)->debugDraw(a_pDrv, a_cOffset, a_fScale);
     }
 
-    CControllerAi_V2::SPathLine3d::SPathLine3d() : m_iSectionIndex(-1), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine3d::SPathLine3d() : m_iSectionIndex(-1), m_pPrevious(nullptr), m_pParent(nullptr) {
+      m_cPathLine.m_pParent = this;
     }
 
-    CControllerAi_V2::SPathLine3d::SPathLine3d(const SPathLine3d& a_cOther) : m_iSectionIndex(-1), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine3d::SPathLine3d(const SPathLine3d& a_cOther) : m_iSectionIndex(-1), m_pPrevious(nullptr), m_pParent(a_cOther.m_pParent) {
+      m_cPathLine.m_pParent = this;
+
       for (int i = 0; i < 3; i++)
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine3d::SPathLine3d(irr::core::line3df& a_cLine1, irr::core::line3df& a_cLine2, irr::core::line3df& a_cLine3) : m_iSectionIndex(-1), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine3d::SPathLine3d(irr::core::line3df& a_cLine1, irr::core::line3df& a_cLine2, irr::core::line3df& a_cLine3) : m_iSectionIndex(-1), m_pPrevious(nullptr), m_pParent(nullptr) {
+      m_cPathLine.m_pParent = this;
+
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -1024,7 +1107,8 @@ namespace dustbin {
         m_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
       }
 
-      m_cPathLine.m_fWidth = (m_cPathLine.m_cLines[1].start - m_cPathLine.m_cLines[2].start).getLength();
+      m_cPathLine.m_fWidth  = (m_cPathLine.m_cLines[1].start - m_cPathLine.m_cLines[2].start).getLength();
+      m_cPathLine.m_cMatrix = a_cMatrix;
 
       if (m_vNext.size() == 1) {
         SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections);
@@ -1055,6 +1139,9 @@ namespace dustbin {
     }
 
     CControllerAi_V2::SRacePosition::SRacePosition() : m_iMarble(0), m_iPosition(0), m_iDeficitAhead(0), m_iDeficitLeader(0) {
+    }
+
+    CControllerAi_V2::SMarblePosition::SMarblePosition() : m_iMarbleId(-1) {
     }
 
     int CControllerAi_V2::m_iInstances = 0;
