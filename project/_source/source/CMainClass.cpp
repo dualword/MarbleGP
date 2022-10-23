@@ -276,34 +276,6 @@ namespace dustbin {
       }
     );
 
-    irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile("data/brake.txt");
-
-    if (l_pFile) {
-      long l_iSize = l_pFile->getSize();
-      char *s = new char[l_iSize + 1];
-      memset(s, 0, static_cast<size_t>(l_iSize) + 1);
-      l_pFile->read(s, l_iSize);
-      std::vector<std::string> l_vLines = helpers::splitString(s, '\n');
-      delete []s;
-
-      for (std::vector<std::string>::iterator it = l_vLines.begin(); it != l_vLines.end(); it++) {
-        std::vector<std::string> l_sSplit = helpers::splitString(*it, ';');
-
-        if (l_sSplit.size() > 1) {
-          printf("%s ==> %s\n", l_sSplit[0].c_str(), l_sSplit[1].c_str());
-        }
-      }
-
-      l_pFile->drop();
-    }
-    else {
-      irr::SEvent l_cLog{};
-      l_cLog.EventType = irr::EET_LOG_TEXT_EVENT;
-      l_cLog.LogEvent.Level = irr::ELL_WARNING;
-      l_cLog.LogEvent.Text = "Cannot open data/brake.txt!";
-      m_pDevice->postEventFromUser(l_cLog);
-    }
-
     m_pSoundInterface->setSoundtrackVolume(m_cSettings.m_fSoundTrack);
     m_pSoundInterface->setSfxVolumeMenu   (m_cSettings.m_fSfxMenu   );
     m_pSoundInterface->setSfxVolumeGame   (m_cSettings.m_fSfxGame   );
