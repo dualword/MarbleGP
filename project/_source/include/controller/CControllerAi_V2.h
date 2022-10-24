@@ -91,8 +91,9 @@ namespace dustbin {
           * Create 2d path lines out of the list of 3d path lines
           * @param a_cMatrix the camera matrix to use for the transformation
           * @param a_mSplitSelections a map with all the already selected directions on road splits
+          * @param a_mLastStepSelections the selection map used in the last step
           */
-          SPathLine2d *transformTo2d(const irr::core::matrix4 &a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections);
+          SPathLine2d *transformTo2d(const irr::core::matrix4 &a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections, std::map<irr::core::vector3df, int> &a_mLastStepSelections);
 
           /**
           * Transform the lines to lie in the given plane
@@ -196,6 +197,7 @@ namespace dustbin {
         int m_iMarbleId;          /**< ID of the marble this instance controls */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
         int m_iMyPosition;        /**< My position in the race */
+        int m_iPathSelection;     /**< The index of the path selection maps */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */
@@ -220,7 +222,7 @@ namespace dustbin {
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
-        std::map<irr::core::vector3df, int> m_mSplitSelections;   /**< Selections of split roads */
+        std::map<irr::core::vector3df, int> m_mSplitSelections[2];    /**< Selections of split roads */
 
         SRacePosition   m_aRacePositions[16];   /**< The positions in the race */
         SMarblePosition m_aMarbles      [16];   /**< Data of the marbles */

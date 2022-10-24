@@ -137,6 +137,7 @@ namespace dustbin {
       m_iMarbleId      (a_iMarbleId), 
       m_iLastCheckpoint(-1), 
       m_iMyPosition    (0),
+      m_iPathSelection (0),
       m_fVCalc         (0.0f), 
       m_fScale         (1.0f),
       m_pCurrent       (nullptr), 
@@ -371,9 +372,12 @@ namespace dustbin {
             irr::core::matrix4 l_cMatrix;
             l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
 
-            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections);
+            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections[m_iPathSelection], m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0]);
             irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
             l_cMatrix.transformVect(l_vDummy);
+
+            m_iPathSelection = m_iPathSelection == 0 ? 1 : 0;
+            m_mSplitSelections[m_iPathSelection].clear();
 
             m_cVelocity2d.X = l_vDummy.X;
             m_cVelocity2d.Y = l_vDummy.Y;
@@ -548,6 +552,8 @@ namespace dustbin {
                 break;
             }
 
+            bool l_bIncoming = false;
+
             for (int i = 0; i < 16; i++) {
               if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId) {
                 SPathLine2d *l_pLine  = m_p2dPath;
@@ -591,7 +597,7 @@ namespace dustbin {
                   irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
                   irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
 
-                  bool l_bIncoming = l_cPos2d.Y < 0.0f && l_cVelocityLine.start.getDistanceFromSQ(l_cPos2d) > l_cVelocityLine.start.getDistanceFromSQ(l_cVel2d);
+                  l_bIncoming = l_cPos2d.Y < 0.0f && l_cVelocityLine.start.getDistanceFromSQ(l_cPos2d) > l_cVelocityLine.start.getDistanceFromSQ(l_cVel2d);
 
                   if (l_bIncoming) {
                     irr::core::vector2df l_cOnLine = l_cLine.getClosestPoint(l_cPos2d);
@@ -691,8 +697,6 @@ namespace dustbin {
 
               irr::core::vector2df l_cPos = irr::core::vector2df();
 
-              draw2dDebugRectangle(m_pDrv, l_cOther.end, irr::video::SColor(0xFF, 0xFF, 0, 0), 20, 2.0f, m_cOffset);
-
               l_iCtrlX = (std::abs(l_fAngle3) > 2.5 || (l_cOther.end.X > 0.0f != m_cVelocity2d.X > 0.0f)) ? l_fFactor > 0.05 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25)) : 0;
 
               if (l_cPoint1.X < 0.0f)
@@ -705,13 +709,15 @@ namespace dustbin {
               }
 
               // Maybe re-add this depending on the class or time mode
-              /* for (int i = 1; i < 3; i++) {
-                irr::core::vector2df p = m_p2dPath->m_cLines[i].getClosestPoint(l_cPos);
-                irr::f32 f = p.getLengthSQ();
-                if (f < 4.0f) {
-                  l_iCtrlX += (irr::s8)(-100.0 * f / 2.0f);
+              
+              if (l_bIncoming)
+                for (int i = 1; i < 3; i++) {
+                  irr::core::vector2df p = m_p2dPath->m_cLines[i].getClosestPoint(l_cPos);
+                  irr::f32 f = p.getLengthSQ();
+                  if (f < 4.0f) {
+                    l_iCtrlX += (irr::s8)(-100.0 * f / 2.0f);
+                  }
                 }
-              } */
 
               a_iCtrlX = (irr::s8)(std::max((irr::s16)-127, std::min((irr::s16)127, l_iCtrlX)));
 
@@ -1129,8 +1135,10 @@ namespace dustbin {
     /**
     * Create 2d path lines out of the list of 3d path lines
     * @param a_cMatrix the camera matrix to use for the transformation
+    * @param a_mSplitSelections a map with all the already selected directions on road splits
+    * @param a_mLastStepSelections the selection map used in the last step
     */
-    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4& a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections) {
+    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4 &a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections, std::map<irr::core::vector3df, int> &a_mLastStepSelections) {
       m_cPathLine.m_vNext.clear();
 
       for (int i = 0; i < 3; i++) {
@@ -1147,18 +1155,21 @@ namespace dustbin {
       m_cPathLine.m_cMatrix = a_cMatrix;
 
       if (m_vNext.size() == 1) {
-        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections);
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
       else if (m_vNext.size() > 0) {
         irr::core::vector3df v = m_cLines[0].start;
 
-        if (a_mSplitSelections.find(v) == a_mSplitSelections.end() || a_mSplitSelections[v] < 0 || a_mSplitSelections[v] >= m_vNext.size()) {
+        if (a_mLastStepSelections.find(v) == a_mLastStepSelections.end() || a_mLastStepSelections[v] < 0 || a_mLastStepSelections[v] >= m_vNext.size()) {
           a_mSplitSelections[v] = std::rand() % m_vNext.size();
         }
+        else {
+          a_mSplitSelections[v] = a_mLastStepSelections[v];
+        }
 
-        SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections);
+        SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
