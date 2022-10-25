@@ -61,6 +61,12 @@ namespace dustbin {
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) = 0;
 
         /**
+        * Draw 3d AI debug data (if wanted and necessary)
+        * @param a_pDrv the video driver
+        */
+        virtual void draw3dDebugData(irr::video::IVideoDriver *a_pDrv) = 0;
+
+        /**
         * Get the AI controller (if any)
         * @return the AI controller
         */

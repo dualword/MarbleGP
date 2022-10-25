@@ -113,6 +113,13 @@ namespace dustbin {
         virtual irr::video::ITexture* getDebugTexture() override {
           return nullptr;
         }
+
+        /**
+        * Draw 3d AI debug data (if wanted and necessary)
+        * @param a_pDrv the video driver
+        */
+        virtual void draw3dDebugData(irr::video::IVideoDriver* a_pDrv) {
+        }
     };
   }
 }

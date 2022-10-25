@@ -274,7 +274,7 @@ namespace dustbin {
 
         // Now we calculate the next 500+ meters for all AI path sections
         for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
-          (*l_itThis)->fillLineVectors();
+          (*l_itThis)->fillLineVectors(a_pMarbles, m_iMarbleId);
         }
 
         int l_iZeroLinks = 0;
@@ -761,6 +761,15 @@ namespace dustbin {
     }
 
     /**
+    * Draw 3d AI debug data (if wanted and necessary)
+    * @param a_pDrv the video driver
+    */
+    void CControllerAi_V2::draw3dDebugData(irr::video::IVideoDriver* a_pDrv) {
+      if (m_p2dPath != nullptr)
+        m_p2dPath->draw3dDebugData(a_pDrv, 0.0f);
+    }
+
+    /**
     * Get the render target texture for debugging
     * @return the render target texture for debugging
     */
@@ -949,8 +958,10 @@ namespace dustbin {
     * of the previous section. Complicated but it somehow works
     * @param a_fLength the length that has alreaddy been exceeded
     * @param a_pPrevious the previous line item
+    * @param a_pMarbles the marble data (for debugging)
+    * @param a_iMarbleId ID of the AI controlled marble (for debugging)
     */
-    CControllerAi_V2::SPathLine3d *CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, SPathLine3d *a_pPrevious) {
+    CControllerAi_V2::SPathLine3d *CControllerAi_V2::SAiPathSection::prepareTransformedData(irr::f32 a_fLength, SPathLine3d *a_pPrevious, data::SMarblePosition *a_pMarbles, int a_iMarbleId) {
       SPathLine3d *p = a_pPrevious;
 
       while (p != nullptr) {
@@ -961,6 +972,18 @@ namespace dustbin {
       }
 
       SPathLine3d *l_pThis = new SPathLine3d(m_cLine3d, m_cEdges[0], m_cEdges[1]);
+
+      l_pThis->m_cBBox.reset(m_cLine3d.start);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.start + 5.0f * m_cNormal);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end   + 5.0f * m_cNormal);
+
+      for (int i = 0; i < 2; i++) {
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start + 5.0f * m_cNormal);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end   + 5.0f * m_cNormal);
+      }
       
       if (a_pPrevious != nullptr)
         a_pPrevious->m_vNext.push_back(l_pThis);
@@ -970,6 +993,8 @@ namespace dustbin {
       l_pThis->m_pParent       = this;
 
       l_pThis->m_cPathLine.m_cOriginal = m_cLine3d;
+      l_pThis->m_cPathLine.m_pMarbles  = a_pMarbles;
+      l_pThis->m_cPathLine.m_iMarbleId = a_iMarbleId;
 
       // Only process if 750 meters are not yet exceeded
       if (a_fLength <= 750.0f) {
@@ -991,7 +1016,7 @@ namespace dustbin {
           }
 
           if (l_bAdd) {
-            SPathLine3d *l_pNew = (*l_itNext)->prepareTransformedData(a_fLength, l_pThis);
+            SPathLine3d *l_pNew = (*l_itNext)->prepareTransformedData(a_fLength, l_pThis, a_pMarbles, a_iMarbleId);
             if (l_pNew == nullptr)
               break;
           }
@@ -1012,9 +1037,11 @@ namespace dustbin {
     /**
     * Fill the vectors of the points for the next 500+ meters
     * with Irrlicht vectors transformed to the section plane
+    * @param a_pMarbles the marble data (for debugging)
+    * @param a_iMarbleId ID of the AI controlled marble (for debugging)
     */
-    void CControllerAi_V2::SAiPathSection::fillLineVectors() {
-      m_pAiPath = prepareTransformedData(0.0f, nullptr);
+    void CControllerAi_V2::SAiPathSection::fillLineVectors(data::SMarblePosition *a_pMarbles, int a_iMarbleId) {
+      m_pAiPath = prepareTransformedData(0.0f, nullptr, a_pMarbles, a_iMarbleId);
     }
 
     bool CControllerAi_V2::SPathLine2d::doesLineIntersectBorder(const irr::core::line2df& a_cLine) {
@@ -1026,15 +1053,15 @@ namespace dustbin {
       return false;
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_fWidth(0.0f), m_pParent(nullptr), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d() : m_fWidth(0.0f), m_iMarbleId(-1), m_pMarbles(nullptr), m_pParent(nullptr), m_pPrevious(nullptr) {
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_fWidth(a_cOther.m_fWidth), m_pParent(a_cOther.m_pParent), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(const SPathLine2d& a_cOther) : m_fWidth(a_cOther.m_fWidth), m_iMarbleId(a_cOther.m_iMarbleId), m_pMarbles(a_cOther.m_pMarbles), m_pParent(a_cOther.m_pParent), m_pPrevious(nullptr) {
       for (int i = 0; i < 3; i++)
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_pParent(nullptr), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_iMarbleId(-1), m_pParent(nullptr), m_pMarbles(nullptr), m_pPrevious(nullptr) {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -1042,6 +1069,42 @@ namespace dustbin {
 
     CControllerAi_V2::SPathLine2d::~SPathLine2d() {
       m_vNext.clear();
+    }
+
+    /**
+    * Draw 3d AI debug data (if wanted and necessary)
+    * @param a_pDrv the video driver
+    * @param a_fLength the length already drawn (stop after 300 meters)
+    */
+    void CControllerAi_V2::SPathLine2d::draw3dDebugData(irr::video::IVideoDriver* a_pDrv, irr::f32 a_fLength) {
+      if (m_pMarbles != nullptr && a_fLength < 300) {
+        irr::video::SMaterial l_cMaterial;
+        l_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+        l_cMaterial.EmissiveColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+        l_cMaterial.DiffuseColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+        l_cMaterial.SpecularColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+
+        l_cMaterial.Lighting        = false;
+        l_cMaterial.Thickness       = 5.0f;
+        l_cMaterial.Wireframe       = true;
+        l_cMaterial.BackfaceCulling = false;
+
+        a_pDrv->setMaterial(l_cMaterial);
+        a_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
+
+        irr::video::SColor l_cColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+
+        for (int i = 0; i < 16; i++) {
+          if (m_pMarbles[i].m_iMarbleId != -1 && m_pMarbles[i].m_iMarbleId != m_iMarbleId && m_pParent->m_cBBox.isPointInside(m_pMarbles[i].m_cPosition)) {
+            l_cColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
+            a_pDrv->draw3DBox(m_pParent->m_cBBox, l_cColor);
+          }
+        }
+
+        for (std::vector<SPathLine2d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
+          (*l_itNext)->draw3dDebugData(a_pDrv, a_fLength + m_cLines[0].getLength());
+        }
+      }
     }
 
     /**

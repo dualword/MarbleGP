@@ -58,6 +58,7 @@ namespace dustbin {
       bool m_bUseMenuCtrl;  /**< Use the controller for the menu */
       bool m_bVirtualKeys;  /**< Use virtual keyboard (always true for Android) */
       bool m_bDebugAI;      /**< Show the AI debug image (lower left) */
+      bool m_bDebugAI3d;    /**< Show 3d AI debug information */
 
       std::string m_sController;  /**< The serialized menu controller configuration */
 

@@ -30,11 +30,14 @@ namespace dustbin {
           irr::core::line2df m_cLines[3];   /**< The path lines (index 0 == central, 1 == border, 2 == border) */
           irr::core::line3df m_cOriginal;   /**< The original 3d line (central) */
           irr::f32           m_fWidth;      /**< Width of the path */
+          irr::s32           m_iMarbleId;   /**< ID of the AI controlled marble */
           irr::core::matrix4 m_cMatrix;
 
           irr::core::vector3df m_cNormal;
 
           irr::core::plane3df m_cPlane;
+
+          data::SMarblePosition *m_pMarbles;    /**< The marble data (for debugging) */
 
           SPathLine3d *m_pParent;   /**< The 3d path line this 2d path line belongs to */
 
@@ -55,6 +58,13 @@ namespace dustbin {
           * @param a_fScale the scale to use for drawing
           */
           void debugDraw(irr::video::IVideoDriver *a_pDrv, const irr::core::vector2di &a_cOffset, irr::f32 a_fScale);
+
+          /**
+          * Draw 3d AI debug data (if wanted and necessary)
+          * @param a_pDrv the video driver
+          * @param a_fLength the length already drawn (stop after 500 meters)
+          */
+          virtual void draw3dDebugData(irr::video::IVideoDriver *a_pDrv, irr::f32 a_fLength);
 
           /**
           * Check if a given line intersects with on of the borders (m_cLine indices 1 and 2)
@@ -87,6 +97,8 @@ namespace dustbin {
           SPathLine2d  m_cPathLine;   /**< The 2d path line */
 
           SAiPathSection *m_pParent;  /**< The AI path section this path line belongs to */
+
+          irr::core::aabbox3df m_cBBox;   /**< The 3d axis aligned bounding box of this line */
 
           /**
           * Create 2d path lines out of the list of 3d path lines
@@ -140,14 +152,18 @@ namespace dustbin {
           * of the previous section. Complicated but it somehow works
           * @param a_fLength the length that has alreaddy been exceeded
           * @param a_pPrevious the previous line item
+          * @param a_pMarbles the marble data (for debugging)
+          * @param a_iMarbleId ID of the AI controlled marble (for debugging)
           */
-          SPathLine3d *prepareTransformedData(irr::f32 a_fLength, SPathLine3d *a_pPrevious);
+          SPathLine3d *prepareTransformedData(irr::f32 a_fLength, SPathLine3d *a_pPrevious, data::SMarblePosition *a_pMarbles, int a_iMarbleId);
 
           /**
           * Fill the vectors of the points for the next 500+ meters
           * with Irrlicht vectors transformed to the section plane
+          * @param a_pMarbles the marble data (for debugging)
+          * @param a_iMarbleId ID of the AI controlled marble (for debugging)
           */
-          void fillLineVectors();
+          void fillLineVectors(data::SMarblePosition *a_pMarbles, int a_iMarbleId);
 
           /**
           * Check whether or not the two passed lines (for edges) may overlap
@@ -360,6 +376,12 @@ namespace dustbin {
         * @return the render target texture for debugging
         */
         virtual irr::video::ITexture *getDebugTexture() override;
+
+        /**
+        * Draw 3d AI debug data (if wanted and necessary)
+        * @param a_pDrv the video driver
+        */
+        virtual void draw3dDebugData(irr::video::IVideoDriver *a_pDrv) override;
     };
   }
 }
