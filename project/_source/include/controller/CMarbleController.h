@@ -27,6 +27,7 @@ namespace dustbin {
         IControllerAI   *m_pAiControls;
         int              m_iMarbleId;
         
+        data::SMarblePosition        m_aMarbles[16];
         data::SPlayerData::enAiHelp  m_eAiHelp;
         scenenodes::CAiNode         *m_pAiNode;
 

@@ -117,10 +117,10 @@ namespace dustbin {
           if (a_pCurrent->m_vNext.size() == 1)
             a_pCurrent = *a_pCurrent->m_vNext.begin();
           else
-            a_pCurrent = selectClosest(m_cPosition, a_pCurrent->m_vNext, false);
+            a_pCurrent = selectClosest(a_cPosition, a_pCurrent->m_vNext, false);
 
           if (a_pCurrent != nullptr)
-            l_cClosest = a_pCurrent->m_cLine3d.getClosestPoint(m_cPosition);
+            l_cClosest = a_pCurrent->m_cLine3d.getClosestPoint(a_cPosition);
         }
       }
       while (a_pCurrent != nullptr && l_cClosest == a_pCurrent->m_cLine3d.end);
@@ -133,8 +133,9 @@ namespace dustbin {
     * @param a_iMarbleId the marble ID for this controller
     * @param a_sControls details about the skills of the controller
     */
-    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls) : 
+    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles) : 
       m_iMarbleId      (a_iMarbleId), 
+      m_iIndex         (a_iMarbleId - 10000),
       m_iLastCheckpoint(-1), 
       m_iMyPosition    (0),
       m_iPathSelection (0),
@@ -146,6 +147,7 @@ namespace dustbin {
       m_eMode          (enMarbleMode::Default),
       m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
       m_pDebugRTT      (nullptr),
+      m_aMarbles       (a_pMarbles),
       m_p2dPath        (nullptr)
     {
       if (m_iInstances == 0) {
@@ -340,78 +342,8 @@ namespace dustbin {
     * @param a_cCameraUp the up-vector of the camera
     */
     void CControllerAi_V2::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df& a_cCameraPos, const irr::core::vector3df& a_cCameraUp) {
-      int l_iIndex = a_iMarbleId - 10000;
-
-      if (l_iIndex >= 0 && l_iIndex < 16) {
-        m_aMarbles[l_iIndex].m_iMarbleId = a_iMarbleId;
-        m_aMarbles[l_iIndex].m_cPosition = a_cNewPos;
-        m_aMarbles[l_iIndex].m_cVelocity = a_cVelocity;
-      }
-
       if (a_iMarbleId == m_iMarbleId) {
-        m_cPosition  = a_cNewPos;
-        m_cVelocity  = a_cVelocity;
-        m_cDirection = a_cCameraPos - m_cPosition;
-        m_cContact   = m_cPosition - a_cCameraUp;
-        m_cCameraUp  = a_cCameraUp;
-
-        if (m_pCurrent == nullptr) {
-          m_pCurrent = selectClosest(m_cPosition, m_vAiPath, m_iLastCheckpoint == -1);
-
-          if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-            m_pCurrent = selectClosest(m_cPosition, m_vAiPath, false);
-
-          // if (m_pCurrent != nullptr)
-          //   printf("AI Path section selected: %.2f, %.2f, %.2f\n", m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
-        }
-
-        if (m_pCurrent != nullptr) {
-          m_pCurrent = selectCurrentSection(m_cPosition, m_pCurrent);
-
-          if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
-            irr::core::matrix4 l_cMatrix;
-            l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_cPosition + m_pCurrent->m_cNormal, m_cPosition, m_cDirection);
-
-            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections[m_iPathSelection], m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0]);
-            irr::core::vector3df l_vDummy = m_cPosition + m_cVelocity;
-            l_cMatrix.transformVect(l_vDummy);
-
-            m_iPathSelection = m_iPathSelection == 0 ? 1 : 0;
-            m_mSplitSelections[m_iPathSelection].clear();
-
-            m_cVelocity2d.X = l_vDummy.X;
-            m_cVelocity2d.Y = l_vDummy.Y;
-
-            if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
-              switchMarbleMode(enMarbleMode::OffTrack, 1);
-            else {
-              if (m_eMode == enMarbleMode::OffTrack)
-                switchMarbleMode(enMarbleMode::Default, 1);
-              else {
-                if (m_iMyPosition > 1) {
-                  if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead > 0) {
-                    if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 360)
-                      switchMarbleMode(enMarbleMode::TimeAttack, 2);
-                    else if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 480)
-                      switchMarbleMode(enMarbleMode::Default, 2);
-                    else
-                      switchMarbleMode(enMarbleMode::Cruise, 2);
-                  }
-                }
-                else if (m_iMyPosition == 1) {
-                  if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead > 0) {
-                    if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 240)
-                      switchMarbleMode(enMarbleMode::TimeAttack, 2);
-                    else if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 360)
-                      switchMarbleMode(enMarbleMode::Default, 2);
-                    else
-                      switchMarbleMode(enMarbleMode::Cruise, 2);
-                  }
-                }
-              }
-            }
-          }        
-        }
+ 
       }
     }
 
@@ -495,6 +427,9 @@ namespace dustbin {
     * @param a_bRespawn [out] does the marble want a manual respawn?
     */
     bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn) {
+      if (m_aMarbles[m_iIndex].m_iMarbleId == -1)
+        return false;
+
       a_iMarbleId = m_iMarbleId;
       a_iCtrlX    = 0;
       a_iCtrlY    = 0;
@@ -502,6 +437,63 @@ namespace dustbin {
       a_bRearView = false;
       a_bRespawn  = false;
 
+      if (m_pCurrent == nullptr) {
+        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, m_iLastCheckpoint == -1);
+
+        if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
+          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false);
+
+        // if (m_pCurrent != nullptr)
+        //   printf("AI Path section selected: %.2f, %.2f, %.2f\n", m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
+      }
+
+      if (m_pCurrent != nullptr) {
+        m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent);
+
+        if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
+          irr::core::matrix4 l_cMatrix;
+          l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
+
+          m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections[m_iPathSelection], m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0]);
+          irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
+          l_cMatrix.transformVect(l_vDummy);
+
+          m_iPathSelection = m_iPathSelection == 0 ? 1 : 0;
+          m_mSplitSelections[m_iPathSelection].clear();
+
+          m_cVelocity2d.X = l_vDummy.X;
+          m_cVelocity2d.Y = l_vDummy.Y;
+
+          if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
+            switchMarbleMode(enMarbleMode::OffTrack, 1);
+          else {
+            if (m_eMode == enMarbleMode::OffTrack)
+              switchMarbleMode(enMarbleMode::Default, 1);
+            else {
+              if (m_iMyPosition > 1) {
+                if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead > 0) {
+                  if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 360)
+                    switchMarbleMode(enMarbleMode::TimeAttack, 2);
+                  else if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 480)
+                    switchMarbleMode(enMarbleMode::Default, 2);
+                  else
+                    switchMarbleMode(enMarbleMode::Cruise, 2);
+                }
+              }
+              else if (m_iMyPosition == 1) {
+                if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead > 0) {
+                  if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 240)
+                    switchMarbleMode(enMarbleMode::TimeAttack, 2);
+                  else if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 360)
+                    switchMarbleMode(enMarbleMode::Default, 2);
+                  else
+                    switchMarbleMode(enMarbleMode::Cruise, 2);
+                }
+              }
+            }
+          }
+        }        
+      }
       irr::s16 l_iCtrlX = 0;
 
       if (m_pDebugRTT != nullptr) {
@@ -1186,9 +1178,6 @@ namespace dustbin {
     }
 
     CControllerAi_V2::SRacePosition::SRacePosition() : m_iMarble(0), m_iPosition(0), m_iDeficitAhead(0), m_iDeficitLeader(0) {
-    }
-
-    CControllerAi_V2::SMarblePosition::SMarblePosition() : m_iMarbleId(-1) {
     }
 
     int CControllerAi_V2::m_iInstances = 0;

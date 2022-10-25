@@ -1549,5 +1549,8 @@ namespace dustbin {
 
       return l_cSerializer.getMessageAsString();
     }
+
+    SMarblePosition::SMarblePosition() : m_iMarbleId(-1) {
+    }
   }
 }

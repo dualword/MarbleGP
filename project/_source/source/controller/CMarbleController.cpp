@@ -26,7 +26,7 @@ namespace dustbin {
       }
 
       if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
-        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "");
+        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles);
         
         if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
           m_pAiControls->setDebug(true);
@@ -121,6 +121,15 @@ namespace dustbin {
     }
 
     void CMarbleController::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) { 
+      int l_iIndex = a_iMarbleId - 10000;
+
+      if (l_iIndex >= 0 && l_iIndex < 16) {
+        m_aMarbles[l_iIndex].m_iMarbleId  = a_iMarbleId;
+        m_aMarbles[l_iIndex].m_cPosition  = a_cNewPos;
+        m_aMarbles[l_iIndex].m_cVelocity  = a_cVelocity;
+        m_aMarbles[l_iIndex].m_cDirection = a_cCameraPos - a_cNewPos;
+      }
+
       if (m_pAiControls != nullptr)
         m_pAiControls->onMarbleMoved(a_iMarbleId, a_cNewPos, a_cVelocity, a_cCameraPos, a_cCameraUp);
     }

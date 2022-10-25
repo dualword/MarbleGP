@@ -2,6 +2,7 @@
 #pragma once
 
 #include <controller/IControllerAI.h>
+#include <data/CDataStructs.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -173,20 +174,6 @@ namespace dustbin {
         }
         SRacePosition;
 
-        /**
-        * @class SMarblePosition
-        * @author Christian Keimel
-        * This struct helps the AI to keep track of the other marbles
-        */
-        typedef struct SMarblePosition {
-          int                  m_iMarbleId;   /**< The ID of the marble */
-          irr::core::vector3df m_cPosition;   /**< The marble's position */
-          irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
-
-          SMarblePosition();
-        }
-        SMarblePosition;
-
         enum class enMarbleMode {
           OffTrack,
           Default,
@@ -195,6 +182,7 @@ namespace dustbin {
         };
 
         int m_iMarbleId;          /**< ID of the marble this instance controls */
+        int m_iIndex;             /**< Index of the marble in the marble data array */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
         int m_iMyPosition;        /**< My position in the race */
         int m_iPathSelection;     /**< The index of the path selection maps */
@@ -214,18 +202,12 @@ namespace dustbin {
         irr::core::dimension2du   m_cRttSize;   /**< Size of the debug RTT */
         irr::core::vector2di      m_cOffset;    /**< Offset for debug rendering */
 
-        irr::core::vector3df m_cPosition;   /**< The marble's position */
-        irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
-        irr::core::vector3df m_cContact;    /**< The contact point of the marble */
-        irr::core::vector3df m_cDirection;  /**< The camera direction */
-        irr::core::vector3df m_cCameraUp;   /**< The camera up vector */
-
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
         std::map<irr::core::vector3df, int> m_mSplitSelections[2];    /**< Selections of split roads */
 
-        SRacePosition   m_aRacePositions[16];   /**< The positions in the race */
-        SMarblePosition m_aMarbles      [16];   /**< Data of the marbles */
+        SRacePosition          m_aRacePositions[16];    /**< The positions in the race */
+        const data::SMarblePosition *m_aMarbles      ;    /**< Data of the marbles */
 
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
@@ -317,7 +299,7 @@ namespace dustbin {
         * @param a_iMarbleId the marble ID for this controller
         * @param a_sControls details about the skills of the controller
         */
-        CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls);
+        CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls, data::SMarblePosition *a_pMarbles);
 
         virtual ~CControllerAi_V2();
 

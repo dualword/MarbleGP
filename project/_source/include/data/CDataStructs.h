@@ -336,6 +336,22 @@ namespace dustbin {
 
       std::string serialize();
     } SFreeGameSlots;
+
+
+    /**
+    * @class SMarblePosition
+    * @author Christian Keimel
+    * This struct helps the AI to keep track of the other marbles
+    */
+    typedef struct SMarblePosition {
+      int                  m_iMarbleId;   /**< The ID of the marble */
+      irr::core::vector3df m_cPosition;   /**< The marble's position */
+      irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
+      irr::core::vector3df m_cDirection;  /**< Camera direction */
+
+      SMarblePosition();
+    }
+    SMarblePosition;
   }
 }
 
