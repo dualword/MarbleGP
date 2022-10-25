@@ -334,20 +334,6 @@ namespace dustbin {
     }
 
     /**
-    * Notify the controller about marble movement
-    * @param a_iMarbleId ID of the moving marble
-    * @param a_cNewPos the new position of the marble
-    * @param a_cVelocity the velocity of the marble
-    * @param a_cCameraPos the position of the camera
-    * @param a_cCameraUp the up-vector of the camera
-    */
-    void CControllerAi_V2::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df& a_cCameraPos, const irr::core::vector3df& a_cCameraUp) {
-      if (a_iMarbleId == m_iMarbleId) {
- 
-      }
-    }
-
-    /**
     * Notify the controller about a marble respawn
     * @param a_iMarbleId the respawning marble
     */

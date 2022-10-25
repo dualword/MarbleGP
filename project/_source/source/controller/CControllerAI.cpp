@@ -7,12 +7,13 @@
 
 namespace dustbin {
   namespace controller {
-    CControllerAI::CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode) : 
+    CControllerAI::CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode, data::SMarblePosition *a_pMarbles) : 
       m_iMarbleId  (a_iMarbleId),
-      m_fVel       (0.0f),
+      m_iIndex     (a_iMarbleId - 10000),
       m_iLastChange(0),
       m_fLastOffset(0.0f),
-      m_pNode      (a_pNode),  
+      m_pNode      (a_pNode),
+      m_pMarbles   (a_pMarbles),
       m_pCurrent   (nullptr),
       m_bBrake     (false),
       m_bDebug     (false)
@@ -29,8 +30,8 @@ namespace dustbin {
 
       for (std::vector<scenenodes::CAiNode::SAiPathNode*>::iterator it = m_vPath.begin(); it != m_vPath.end(); it++) {
         for (std::vector<scenenodes::CAiNode::SAiLink*>::iterator it2 = (*it)->m_vNext.begin(); it2 != (*it)->m_vNext.end(); it2++) {
-          irr::core::vector3df l_cPoint = (*it2)->m_cLinkLine.getClosestPoint(m_cPos);
-          irr::f32 l_fDummy = m_cPos.getDistanceFrom(l_cPoint);
+          irr::core::vector3df l_cPoint = (*it2)->m_cLinkLine.getClosestPoint(m_pMarbles[m_iIndex].m_cPosition);
+          irr::f32 l_fDummy = m_pMarbles[m_iIndex].m_cPosition.getDistanceFrom(l_cPoint);
 
           if ((it == m_vPath.begin() && it2 == (*it)->m_vNext.begin()) || l_fDummy < l_fDist) {
             m_pCurrent = *it2;
@@ -46,7 +47,7 @@ namespace dustbin {
       if (m_pCurrent != nullptr) {
         scenenodes::CAiNode::SAiLink *p = m_pCurrent;
 
-        irr::core::vector3df l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
+        irr::core::vector3df l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_pMarbles[m_iIndex].m_cPosition);
 
         while (l_cPoint == m_pCurrent->m_cLinkLine.end) {
           if (m_mChoices.find(m_pCurrent->m_pThis->m_iIndex) == m_mChoices.end()) {
@@ -54,7 +55,7 @@ namespace dustbin {
           }
 
           m_pCurrent = m_pCurrent->m_pNext->m_vNext[m_mChoices[m_pCurrent->m_pThis->m_iIndex]];
-          l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_cPos);
+          l_cPoint = m_pCurrent->m_cLinkLine.getClosestPoint(m_pMarbles[m_iIndex].m_cPosition);
           m_iLastChange = 0;
         }
 
@@ -86,22 +87,6 @@ namespace dustbin {
       return irr::core::vector3df(0.0f);
     }
 
-    void CControllerAI::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df& a_cNewPos, const irr::core::vector3df& a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) {
-      if (a_iMarbleId == m_iMarbleId) {
-        m_cPos    = a_cNewPos;
-        m_cVel    = a_cVelocity;
-        m_cCamPos = a_cCameraPos;
-        m_cCamUp  = a_cCameraUp;
-        
-        m_fVel = a_cVelocity.getLength();
-
-        if (m_pCurrent == nullptr) {
-          selectClosestLink();
-          m_iLastChange = 0;
-        }
-      }
-    }
-
     void CControllerAI::onMarbleRespawn(int a_iMarbleId) {
       if (a_iMarbleId == m_iMarbleId) {
         m_pCurrent = nullptr;
@@ -130,6 +115,11 @@ namespace dustbin {
     bool CControllerAI::getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) { 
       bool l_bRespawn = false;
 
+      if (m_pCurrent == nullptr) {
+        selectClosestLink();
+        m_iLastChange = 0;
+      }
+
       if (m_iLastChange > 1200) {
         m_pCurrent = nullptr;
         // printf("Search for new AI path!\n");
@@ -140,16 +130,18 @@ namespace dustbin {
         return false;
 
       if (m_pCurrent != nullptr) {
+        irr::f32 l_fVelocity = m_pMarbles[m_iIndex].m_cVelocity.getLength();
+
         std::vector<irr::core::line3df> l_vDebug;
 
         irr::core::matrix4 l_cMatrix;
-        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_cCamPos, m_cPos + 1.5f * m_cCamUp, m_cCamUp);
+        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_pMarbles[m_iIndex].m_cCamera, m_pMarbles[m_iIndex].m_cPosition + 1.5f * m_pMarbles[m_iIndex].m_cCameraUp, m_pMarbles[m_iIndex].m_cCameraUp);
 
         irr::core::vector3df l_cPoint = getLookAhead(0.0f);
-        l_bRespawn = l_cPoint.getDistanceFromSQ(m_cPos) > 10000;
+        l_bRespawn = l_cPoint.getDistanceFromSQ(m_pMarbles[m_iIndex].m_cPosition) > 10000;
         l_cMatrix.transformVect(l_cPoint);
 
-        irr::core::vector3df l_cOffset = getLookAhead(m_fVel);
+        irr::core::vector3df l_cOffset = getLookAhead(l_fVelocity);
         l_cMatrix.transformVect(l_cOffset);
 
         irr::f32 l_fOffset = std::abs(l_cPoint.X / 2.0f);
@@ -166,8 +158,8 @@ namespace dustbin {
         l_fOffset = 1.0f - std::fmin(1.0f, l_fOffset);
 
 
-        irr::f32 l_fLookAhead1 = 1.5f * l_fOffset * m_fVel;
-        irr::f32 l_fLookAhead2 = 2.5f * l_fOffset * m_fVel;
+        irr::f32 l_fLookAhead1 = 1.5f * l_fOffset * l_fVelocity;
+        irr::f32 l_fLookAhead2 = 2.5f * l_fOffset * l_fVelocity;
 
         l_fLookAhead1 = std::fmax(l_fLookAhead1, 15.0f);
         l_fLookAhead2 = std::fmax(l_fLookAhead2, 25.0f);
@@ -176,7 +168,7 @@ namespace dustbin {
         irr::core::vector3df l_cAhead2 = getLookAhead(l_fLookAhead2);
 
         if (m_bDebug) {
-          l_vDebug.push_back(irr::core::line3df(m_cPos   , l_cAhead1));
+          l_vDebug.push_back(irr::core::line3df(m_pMarbles[m_iIndex].m_cPosition, l_cAhead1));
           l_vDebug.push_back(irr::core::line3df(l_cAhead1, l_cAhead2));
         }
 
@@ -191,10 +183,10 @@ namespace dustbin {
         irr::f32 l_fFactor = 2.0f - (irr::f32)(std::fmin(90.0, l_fAngleNew) / 45.0);
         l_fFactor = std::fmax(0.5f, l_fFactor);
 
-        irr::core::vector3df l_cNewPoint = getLookAhead(std::fmax(15.0f, l_fFactor * l_fOffset * m_fVel));
+        irr::core::vector3df l_cNewPoint = getLookAhead(std::fmax(15.0f, l_fFactor * l_fOffset * l_fVelocity));
 
         if (m_bDebug) {
-          l_vDebug.push_back(irr::core::line3df(m_cPos, l_cNewPoint));
+          l_vDebug.push_back(irr::core::line3df(m_pMarbles[m_iIndex].m_cPosition, l_cNewPoint));
         }
 
         l_cMatrix.transformVect(l_cNewPoint);
@@ -221,12 +213,12 @@ namespace dustbin {
             l_fVel = m_pCurrent->m_pNext->m_fMinVel;
         }
 
-        m_fThrottle = m_fVel < l_fVel ? 1.0f : -1.0f;
+        m_fThrottle = l_fVelocity < l_fVel ? 1.0f : -1.0f;
 
         m_iCtrlX = (irr::s8)(127.0f * l_fSteer * l_fSteer * (l_fSteer < 0.0f ? -1.0f : 1.0f));
         m_iCtrlY = (irr::s8)(127.0f * m_fThrottle);
 
-        m_bBrake = m_fVel > 1.1f * l_fVel && (!l_bRoll || m_fVel > 1.15f * l_fVel);
+        m_bBrake = l_fVelocity > 1.1f * l_fVel && (!l_bRoll || l_fVelocity > 1.15f * l_fVel);
 
         if (m_bDebug) m_pNode->setDebugLines(m_iMarbleId, l_vDebug);
         m_iLastChange++;

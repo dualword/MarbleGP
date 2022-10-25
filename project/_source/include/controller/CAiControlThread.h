@@ -3,6 +3,7 @@
 
 #include <_generated/messages/IAiController.h>
 #include <controller/IControllerAI.h>
+#include <data/CDataStructs.h>
 #include <threads/IThread.h>
 #include <irrlicht.h>
 
@@ -23,6 +24,8 @@ namespace dustbin {
         scenenodes::CAiNode       *m_pAiNode;
         threads::COutputQueue     *m_pDynamicsOut;
         threads::CInputQueue      *m_pDynamicsIn;
+
+        data::SMarblePosition m_aMarbles[16];   /**< All necessary marble data */
 
         int m_iNumberOfBots;
 

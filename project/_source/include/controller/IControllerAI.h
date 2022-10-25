@@ -26,16 +26,6 @@ namespace dustbin {
         virtual void update(const irr::SEvent& a_cEvent) = 0;
 
         /**
-        * Notify the controller about marble movement
-        * @param a_iMarbleId ID of the moving marble
-        * @param a_cNewPos the new position of the marble
-        * @param a_cVelocity the velocity of the marble
-        * @param a_cCameraPos the position of the camera
-        * @param a_cCameraUp the up-vector of the camera
-        */
-        virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) = 0;
-
-        /**
         * Notify the controller about a marble respawn
         * @param a_iMarbleId the respawning marble
         */

@@ -348,6 +348,8 @@ namespace dustbin {
       irr::core::vector3df m_cPosition;   /**< The marble's position */
       irr::core::vector3df m_cVelocity;   /**< The marble's velocity */
       irr::core::vector3df m_cDirection;  /**< Camera direction */
+      irr::core::vector3df m_cCamera;     /**< Camera position */
+      irr::core::vector3df m_cCameraUp;   /**< Up-vector of the camera */
 
       SMarblePosition();
     }

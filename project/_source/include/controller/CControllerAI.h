@@ -3,6 +3,7 @@
 
 #include <controller/IControllerAI.h>
 #include <scenenodes/CAiNode.h>
+#include <data/CDataStructs.h>
 #include <vector>
 
 namespace dustbin {
@@ -22,13 +23,8 @@ namespace dustbin {
     */
     class CControllerAI : public IControllerAI {
       private:
-        irr::core::vector3df m_cPos;
-        irr::core::vector3df m_cVel;
-        irr::core::vector3df m_cCamPos;
-        irr::core::vector3df m_cCamUp;
-
         irr::s32 m_iMarbleId;
-        irr::f32 m_fVel;
+        irr::s32 m_iIndex;
         irr::s32 m_iLastChange;
         irr::f32 m_fLastOffset;
 
@@ -48,11 +44,13 @@ namespace dustbin {
 
         std::vector<scenenodes::CAiNode::SAiPathNode *> m_vPath;
 
+        data::SMarblePosition *m_pMarbles;
+
         void selectClosestLink();
         irr::core::vector3df getLookAhead(irr::f32 a_fDistance);
 
       public:
-        CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode);
+        CControllerAI(int a_iMarbleId, const std::string& a_sControls, threads::IQueue* a_pQueue, scenenodes::CAiNode *a_pNode, data::SMarblePosition *a_pMarbles);
         virtual ~CControllerAI();
 
         /**
@@ -60,16 +58,6 @@ namespace dustbin {
         * @param a_cEvent the Irrlicht event
         */
         virtual void update(const irr::SEvent& a_cEvent) override { }
-
-        /**
-        * Notify the controller about marble movement
-        * @param a_iMarbleId ID of the moving marble
-        * @param a_cNewPos the new position of the marble
-        * @param a_cVelocity the velocity of the marble
-        * @param a_cCameraPos the position of the camera
-        * @param a_cCameraUp the up-vector of the camera
-        */
-        virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) override;
 
         /**
         * Notify the controller about a marble respawn

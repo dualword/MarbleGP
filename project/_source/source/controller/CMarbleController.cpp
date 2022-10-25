@@ -128,10 +128,9 @@ namespace dustbin {
         m_aMarbles[l_iIndex].m_cPosition  = a_cNewPos;
         m_aMarbles[l_iIndex].m_cVelocity  = a_cVelocity;
         m_aMarbles[l_iIndex].m_cDirection = a_cCameraPos - a_cNewPos;
+        m_aMarbles[l_iIndex].m_cCamera    = a_cCameraPos;
+        m_aMarbles[l_iIndex].m_cCameraUp  = a_cCameraUp;
       }
-
-      if (m_pAiControls != nullptr)
-        m_pAiControls->onMarbleMoved(a_iMarbleId, a_cNewPos, a_cVelocity, a_cCameraPos, a_cCameraUp);
     }
 
     void CMarbleController::onMarbleRespawn(int a_iMarbleId) { 

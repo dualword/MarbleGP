@@ -54,8 +54,16 @@ namespace dustbin {
     * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed 
     */
     void CAiControlThread::onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df &a_CameraPosition, const irr::core::vector3df &a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) {
-      for (int i = 0; m_aControllers[i] != nullptr; i++)
-        m_aControllers[i]->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_CameraPosition, a_CameraUp);
+      int l_iIndex = a_ObjectId - 10000;
+
+      if (l_iIndex >= 0 && l_iIndex < 16) {
+        m_aMarbles[l_iIndex].m_iMarbleId  = a_ObjectId;
+        m_aMarbles[l_iIndex].m_cPosition  = a_Position;
+        m_aMarbles[l_iIndex].m_cVelocity  = a_LinearVelocity;
+        m_aMarbles[l_iIndex].m_cDirection = a_CameraPosition - a_Position;
+        m_aMarbles[l_iIndex].m_cCamera    = a_CameraPosition;
+        m_aMarbles[l_iIndex].m_cCameraUp  = a_CameraUp;
+      }
     }
 
     /**
@@ -131,7 +139,7 @@ namespace dustbin {
 
     void CAiControlThread::addAiMarble(int a_iMarbleId, const std::string& a_sControls) {
       if (m_iNumberOfBots < 16) {
-        m_aControllers[m_iNumberOfBots] = new controller::CControllerAI(a_iMarbleId, a_sControls, nullptr, m_pAiNode);
+        m_aControllers[m_iNumberOfBots] = new controller::CControllerAI(a_iMarbleId, a_sControls, nullptr, m_pAiNode, m_aMarbles);
         m_iNumberOfBots++;
       }
       else printf("Too many bots!\n");
