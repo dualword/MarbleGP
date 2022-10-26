@@ -5,6 +5,7 @@
 #include <data/CDataStructs.h>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <map>
 
 namespace dustbin {
@@ -60,13 +61,6 @@ namespace dustbin {
           void debugDraw(irr::video::IVideoDriver *a_pDrv, const irr::core::vector2di &a_cOffset, irr::f32 a_fScale);
 
           /**
-          * Draw 3d AI debug data (if wanted and necessary)
-          * @param a_pDrv the video driver
-          * @param a_fLength the length already drawn (stop after 500 meters)
-          */
-          virtual void draw3dDebugData(irr::video::IVideoDriver *a_pDrv, irr::f32 a_fLength);
-
-          /**
           * Check if a given line intersects with on of the borders (m_cLine indices 1 and 2)
           * @param a_cLine the line to test
           * @return true if the line intersects with a border, false otherwise
@@ -105,8 +99,16 @@ namespace dustbin {
           * @param a_cMatrix the camera matrix to use for the transformation
           * @param a_mSplitSelections a map with all the already selected directions on road splits
           * @param a_mLastStepSelections the selection map used in the last step
+          * @param a_vMarbles the current positions of the marbles
+          * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
           */
-          SPathLine2d *transformTo2d(const irr::core::matrix4 &a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections, std::map<irr::core::vector3df, int> &a_mLastStepSelections);
+          SPathLine2d *transformTo2d(
+            const irr::core::matrix4 &a_cMatrix, 
+            std::map<irr::core::vector3df, int> &a_mSplitSelections, 
+            std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
+            std::vector<const data::SMarblePosition *> &a_vMarbles,
+            std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+          );
 
           /**
           * Transform the lines to lie in the given plane
@@ -376,12 +378,6 @@ namespace dustbin {
         * @return the render target texture for debugging
         */
         virtual irr::video::ITexture *getDebugTexture() override;
-
-        /**
-        * Draw 3d AI debug data (if wanted and necessary)
-        * @param a_pDrv the video driver
-        */
-        virtual void draw3dDebugData(irr::video::IVideoDriver *a_pDrv) override;
     };
   }
 }

@@ -162,15 +162,6 @@ namespace dustbin {
     }
 
     /**
-    * Draw 3d AI debug data (if wanted and necessary)
-    * @param a_pDrv the video driver
-    */
-    void CMarbleController::draw3dDebugData(irr::video::IVideoDriver* a_pDrv) {
-      if (m_pAiControls != nullptr)
-        m_pAiControls->draw3dDebugData(a_pDrv);
-    }
-
-    /**
     * Get the AI controller (if any)
     * @return the AI controller
     */

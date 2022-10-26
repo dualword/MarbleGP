@@ -76,12 +76,6 @@ namespace dustbin {
         * @return the render target texture for debugging
         */
         virtual irr::video::ITexture *getDebugTexture() = 0;
-
-        /**
-        * Draw 3d AI debug data (if wanted and necessary)
-        * @param a_pDrv the video driver
-        */
-        virtual void draw3dDebugData(irr::video::IVideoDriver *a_pDrv) = 0;
     };
   }
 }

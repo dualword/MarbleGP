@@ -436,11 +436,20 @@ namespace dustbin {
       if (m_pCurrent != nullptr) {
         m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent);
 
-        if (m_pCurrent != nullptr && m_pCurrent->m_pAiPath != nullptr) {
+        // transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
+        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
+
+        if (m_pCurrent->m_pAiPath != nullptr) {
           irr::core::matrix4 l_cMatrix;
           l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
 
-          m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections[m_iPathSelection], m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0]);
+          std::vector<const data::SMarblePosition *> l_vMarbles;
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId)
+              l_vMarbles.push_back(&m_aMarbles[i]);
+          }
+
+          m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(l_cMatrix, m_mSplitSelections[m_iPathSelection], m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0], l_vMarbles, l_vMarblePosVel);
           irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
           l_cMatrix.transformVect(l_vDummy);
 
@@ -479,14 +488,13 @@ namespace dustbin {
             }
           }
         }        
-      }
-      irr::s16 l_iCtrlX = 0;
 
-      if (m_pDebugRTT != nullptr) {
-        m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
-      }
+        irr::s16 l_iCtrlX = 0;
 
-      if (m_pCurrent != nullptr) {
+        if (m_pDebugRTT != nullptr) {
+          m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
+        }
+
         irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
 
         if (m_p2dPath != nullptr) {
@@ -531,95 +539,6 @@ namespace dustbin {
             }
 
             bool l_bIncoming = false;
-
-            for (int i = 0; i < 16; i++) {
-              if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId) {
-                SPathLine2d *l_pLine  = m_p2dPath;
-                SPathLine2d *l_pOther = nullptr;
-
-                irr::core::vector3df l_cPoint;
-
-                irr::f32 l_fDist = 0.0f;
-
-                while (l_pLine != nullptr) {
-                  irr::core::vector3df l_cOption = l_pLine->m_cOriginal.getClosestPoint(m_aMarbles[i].m_cPosition);
-                  irr::f32 l_fNewDist = l_cOption.getDistanceFromSQ(m_aMarbles[i].m_cPosition);
-
-                  if (l_fDist == 0.0f || l_fNewDist < l_fDist) {
-                    l_fDist  = l_fNewDist;
-                    l_cPoint = l_cOption;
-                    l_pOther = l_pLine;
-                  }
-
-                  if (l_pLine->m_vNext.size() == 0)
-                    l_pLine = nullptr;
-                  else {
-                    l_pLine = *(l_pLine->m_vNext).begin();
-                  }
-                }
-
-                if (l_pOther != nullptr && l_fDist < l_pOther->m_fWidth * l_pOther->m_fWidth + 0.5f) {
-                  irr::core::vector3df l_cPos = m_aMarbles[i].m_cPosition;
-                  irr::core::vector3df l_cVel = m_aMarbles[i].m_cPosition + m_aMarbles[i].m_cVelocity;
-
-                  l_pLine = l_pOther;
-                  while (l_pLine != nullptr) {
-                    l_pLine->m_cPlane.getIntersectionWithLine(l_cPos, l_pLine->m_cNormal, l_cPos);
-                    l_pLine->m_cPlane.getIntersectionWithLine(l_cVel, l_pLine->m_cNormal, l_cVel);
-                    l_pLine = l_pLine->m_pPrevious;
-                  }
-
-                  l_pOther->m_cMatrix.transformVect(l_cPos);
-                  l_pOther->m_cMatrix.transformVect(l_cVel);
-
-                  irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
-                  irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
-
-                  l_bIncoming = l_cPos2d.Y < 0.0f && l_cVelocityLine.start.getDistanceFromSQ(l_cPos2d) > l_cVelocityLine.start.getDistanceFromSQ(l_cVel2d);
-
-                  if (l_bIncoming) {
-                    irr::core::vector2df l_cOnLine = l_cLine.getClosestPoint(l_cPos2d);
-                    irr::f32 l_fDist = l_cOnLine.getDistanceFromSQ(l_cPos2d);
-
-                    if (l_fDist < 9.0f) {
-                      irr::core::vector2df l_cEnd = l_cLine.end - l_cLine.start;
-
-                      irr::core::vector2df l_cNormal = irr::core::vector2df(-(l_cEnd.Y), l_cEnd.X).normalize();
-
-                      l_cLine.end     = l_cOnLine + 20.0f * l_cNormal;
-                      l_cOther.start  = l_cLine.end;
-                      l_cOther.end   += 25.0f * l_cNormal;
-
-                      draw2dDebugRectangle(m_pDrv, l_cLine.getMiddle() + 25.0f * l_cNormal, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 20, m_fScale, m_cOffset);
-                    }
-                    else if (l_iLines > 1) {
-                      l_cOnLine = l_cOther.getClosestPoint(l_cPos2d);
-
-                      if (l_cOnLine.getDistanceFromSQ(l_cPos2d) < 9.0f) {
-                        irr::core::vector2df l_cEnd = l_cOther.end - l_cOther.start;
-
-                        irr::core::vector2df l_cNormal = irr::core::vector2df(-(l_cEnd.Y), l_cEnd.X).normalize();
-
-                        l_cOther.end    = l_cOnLine + 20.0f * l_cNormal;
-                        l_cOther.start += 20.0f * l_cNormal;
-                        l_cLine .end    = l_cOther.start;
-
-                        draw2dDebugRectangle(m_pDrv, l_cOther.getMiddle() + 25.0f * l_cNormal, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), 20, m_fScale, m_cOffset);
-                      }
-                      else l_bIncoming = false;
-                    }
-                    else l_bIncoming = false;
-                  }
-
-                  irr::video::SColor l_cColor = l_bIncoming ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
-
-                  if (m_pDebugRTT != nullptr) {
-                    draw2dDebugRectangle(m_pDrv, l_cPos2d, l_cColor, 20, m_fScale, m_cOffset);
-                    draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, l_cColor, m_cOffset);
-                  }
-                }
-              }
-            }
 
             if (m_pDebugRTT != nullptr)
               draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
@@ -712,8 +631,19 @@ namespace dustbin {
         }
 
         if (m_pDebugRTT != nullptr) {
-          draw2dDebugLine(m_pDrv, l_cVelocityLine, 2.0f, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
-          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, 2.0f, m_cOffset);
+          draw2dDebugLine(m_pDrv, l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
+          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, m_fScale, m_cOffset);
+
+          for (std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>>::iterator l_itOthers = l_vMarblePosVel.begin(); l_itOthers != l_vMarblePosVel.end(); l_itOthers++) {
+            irr::core::vector3df l_cPos = std::get<0>(*l_itOthers);
+            irr::core::vector3df l_cVel = std::get<1>(*l_itOthers);
+
+            irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
+            irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
+
+            draw2dDebugRectangle(m_pDrv, l_cPos2d, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 20, m_fScale, m_cOffset);
+            draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+          }
         }
       }
 
@@ -758,15 +688,6 @@ namespace dustbin {
         if (m_pHUD != nullptr)
           m_pHUD->setAiController(this);
       }
-    }
-
-    /**
-    * Draw 3d AI debug data (if wanted and necessary)
-    * @param a_pDrv the video driver
-    */
-    void CControllerAi_V2::draw3dDebugData(irr::video::IVideoDriver* a_pDrv) {
-      if (m_p2dPath != nullptr)
-        m_p2dPath->draw3dDebugData(a_pDrv, 0.0f);
     }
 
     /**
@@ -1072,42 +993,6 @@ namespace dustbin {
     }
 
     /**
-    * Draw 3d AI debug data (if wanted and necessary)
-    * @param a_pDrv the video driver
-    * @param a_fLength the length already drawn (stop after 300 meters)
-    */
-    void CControllerAi_V2::SPathLine2d::draw3dDebugData(irr::video::IVideoDriver* a_pDrv, irr::f32 a_fLength) {
-      if (m_pMarbles != nullptr && a_fLength < 300) {
-        irr::video::SMaterial l_cMaterial;
-        l_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.EmissiveColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.DiffuseColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-        l_cMaterial.SpecularColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-
-        l_cMaterial.Lighting        = false;
-        l_cMaterial.Thickness       = 5.0f;
-        l_cMaterial.Wireframe       = true;
-        l_cMaterial.BackfaceCulling = false;
-
-        a_pDrv->setMaterial(l_cMaterial);
-        a_pDrv->setTransform(irr::video::ETS_WORLD, irr::core::matrix4());
-
-        irr::video::SColor l_cColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
-
-        for (int i = 0; i < 16; i++) {
-          if (m_pMarbles[i].m_iMarbleId != -1 && m_pMarbles[i].m_iMarbleId != m_iMarbleId && m_pParent->m_cBBox.isPointInside(m_pMarbles[i].m_cPosition)) {
-            l_cColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
-            a_pDrv->draw3DBox(m_pParent->m_cBBox, l_cColor);
-          }
-        }
-
-        for (std::vector<SPathLine2d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
-          (*l_itNext)->draw3dDebugData(a_pDrv, a_fLength + m_cLines[0].getLength());
-        }
-      }
-    }
-
-    /**
     * Debug draw this 2d line instance
     * @param a_pDrv the Irrlicht video driver
     * @param a_cOffset the offset to draw
@@ -1178,8 +1063,16 @@ namespace dustbin {
     * @param a_cMatrix the camera matrix to use for the transformation
     * @param a_mSplitSelections a map with all the already selected directions on road splits
     * @param a_mLastStepSelections the selection map used in the last step
+    * @param a_vMarbles the current positions of the marbles
+    * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
     */
-    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(const irr::core::matrix4 &a_cMatrix, std::map<irr::core::vector3df, int> &a_mSplitSelections, std::map<irr::core::vector3df, int> &a_mLastStepSelections) {
+    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(
+      const irr::core::matrix4 &a_cMatrix, 
+      std::map<irr::core::vector3df, int> &a_mSplitSelections, 
+      std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
+      std::vector<const data::SMarblePosition *> &a_vMarbles,
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+    ) {
       m_cPathLine.m_vNext.clear();
 
       for (int i = 0; i < 3; i++) {
@@ -1192,11 +1085,25 @@ namespace dustbin {
         m_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
       }
 
+      for (std::vector<const data::SMarblePosition *>::iterator l_itMarble = a_vMarbles.begin(); l_itMarble != a_vMarbles.end(); l_itMarble++) {
+        if (m_cBBox.isPointInside((*l_itMarble)->m_cPosition)) {
+          std::vector<const data::SMarblePosition *>::iterator l_itDelete = l_itMarble;
+
+          irr::core::vector3df l_cPos = (*l_itMarble)->m_cPosition;
+          irr::core::vector3df l_cVel = (*l_itMarble)->m_cVelocity + l_cPos;
+          
+          a_cMatrix.transformVect(l_cPos);
+          a_cMatrix.transformVect(l_cVel);
+
+          a_vMarblePosVel.push_back(std::make_tuple(l_cPos, l_cVel));
+        }
+      }
+
       m_cPathLine.m_fWidth  = (m_cPathLine.m_cLines[1].start - m_cPathLine.m_cLines[2].start).getLength();
       m_cPathLine.m_cMatrix = a_cMatrix;
 
       if (m_vNext.size() == 1) {
-        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections);
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
@@ -1210,7 +1117,7 @@ namespace dustbin {
           a_mSplitSelections[v] = a_mLastStepSelections[v];
         }
 
-        SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections);
+        SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }

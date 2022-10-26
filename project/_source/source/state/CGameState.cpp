@@ -1062,14 +1062,6 @@ namespace dustbin {
         }
       }
 
-      if (m_cSettings.m_bDebugAI) {
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-          if ((*it)->m_pController != nullptr) {
-            (*it)->m_pController->draw3dDebugData(m_pDrv);
-          }
-        }
-      }
-
       m_pGui->drawAll();
 
       // Fade-out of the HUD after the race must be drawn after the rest of the GUI so that the gray rectangle
