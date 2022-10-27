@@ -196,7 +196,8 @@ namespace dustbin {
           OffTrack,
           Default,
           Cruise,
-          TimeAttack
+          TimeAttack,
+          Evade
         };
 
         int m_iMarbleId;          /**< ID of the marble this instance controls */
@@ -207,6 +208,7 @@ namespace dustbin {
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */
+        irr::s32 m_iMode;     /**< Mode change counter, used for evade mode */
 
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
@@ -219,13 +221,14 @@ namespace dustbin {
         irr::video::ITexture     *m_pDebugRTT;  /**< Render target texture for debugging */
         irr::core::dimension2du   m_cRttSize;   /**< Size of the debug RTT */
         irr::core::vector2di      m_cOffset;    /**< Offset for debug rendering */
+        irr::gui::IGUIFont       *m_pFont;      /**< Font for debug output */
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
         std::map<irr::core::vector3df, int> m_mSplitSelections[2];    /**< Selections of split roads */
 
-        SRacePosition          m_aRacePositions[16];    /**< The positions in the race */
-        const data::SMarblePosition *m_aMarbles      ;    /**< Data of the marbles */
+        SRacePosition                m_aRacePositions[16];    /**< The positions in the race */
+        const data::SMarblePosition *m_aMarbles      ;        /**< Data of the marbles */
 
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
@@ -237,7 +240,7 @@ namespace dustbin {
         * @param a_eMode the new mode
         * @param a_iCall ID of the calling code portion
         */
-        void switchMarbleMode(enMarbleMode a_eMode, int a_iCall);
+        void switchMarbleMode(enMarbleMode a_eMode);
 
         /**
         * Find all ends of a path and store them in the given vector. If a path splits this will produce two
@@ -310,6 +313,16 @@ namespace dustbin {
         * @return the number of calculated lines (1 or 2)
         */
         int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+
+        /**
+        * Get the 2d lines for calculating the marble controls when an incoming marble was detected and evasise steps must be taken
+        * @param a_cLineOne [out] the first control line
+        * @param a_cLineTwo [out] the second control line
+        * @param a_pPath the AI path data for calculating the two lines
+        * @param a_fDistance the distance used for the "incoming" calculation
+        * @return the number of calculated lines (1 or 2)
+        */
+        int getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance);
 
       public:
         /**
