@@ -415,8 +415,7 @@ namespace dustbin {
                 p->m_vSideVector = p->m_vOffset.crossProduct(p->m_vUpOffset);
                 p->m_vSideVector.normalize();
 
-                p->m_vCamera   = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
-                p->m_vRearview = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
+                p->m_vCamera = p->m_vOffset;
 
                 if (p->m_bHasContact) {
                   p->m_iLastContact = m_pWorld->m_iWorldStep;
@@ -445,8 +444,7 @@ namespace dustbin {
               else p->m_fDamp = (dReal)0.0015;
             }
             else {
-              p->m_vCamera     = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
-              p->m_vRearview   = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
+              p->m_vCamera     = p->m_vOffset;
               p->m_vSideVector = p->m_vOffset.crossProduct(p->m_vUpOffset);
               p->m_vSideVector.normalize();
 
@@ -497,8 +495,7 @@ namespace dustbin {
                   p->m_vVelocity     = irr::core::vector3df(0.0f);
                   p->m_vUpVector     = irr::core::vector3df(0.0f, 1.0f, 0.0f);
                   p->m_vUpOffset     = irr::core::vector3df(0.0f, 1.0f, 0.0f);
-                  p->m_vCamera       = p->m_vPosition + p->m_vOffset + 3.0f * p->m_vUpOffset;
-                  p->m_vRearview     = p->m_vPosition - p->m_vOffset + 3.0f * p->m_vUpOffset;
+                  p->m_vCamera       = p->m_vOffset;
                   p->m_vSideVector   = p->m_vOffset.crossProduct(p->m_vUpOffset);
                   p->m_vSideVector.normalize();
 
@@ -526,7 +523,7 @@ namespace dustbin {
               quaternionToEuler(l_aRot), 
               l_vLinVel, 
               vectorOdeToIrr(l_aAngVel).getLength(), 
-              p->m_bRearView ? p->m_vRearview : p->m_vCamera,
+              p->m_vCamera,
               p->m_vUpOffset, 
               p->m_iCtrlX,
               p->m_iCtrlY, 
@@ -729,8 +726,7 @@ namespace dustbin {
           l_pMarble->m_vContact    = irr::core::vector3df();
           l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
           l_pMarble->m_vOffset     = l_vOffset;
-          l_pMarble->m_vCamera     = l_pMarbleNode->getAbsolutePosition() - l_vOffset + 3.0f * l_pMarble->m_vUpVector;
-          l_pMarble->m_vRearview   = l_pMarbleNode->getAbsolutePosition() + l_vOffset + 3.0f * l_pMarble->m_vUpVector;
+          l_pMarble->m_vCamera     = l_vOffset;
           l_pMarble->m_bAiPlayer   = (*it)->m_eType == data::enPlayerType::Ai;
 
           l_pMarble->m_vSideVector.normalize();

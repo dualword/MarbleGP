@@ -176,7 +176,6 @@ namespace dustbin {
         bool m_bAiPlayer;   /**< Is this an AI player? */
 
         irr::core::vector3df m_vCamera;     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
-        irr::core::vector3df m_vRearview;   /**< The camera position for the rearview. Depending on the "rearview" flag this or "m_vCamera" is sent */
         irr::core::vector3df m_vOffset;
         irr::core::vector3df m_vUpVector;   /**< The camera up-vector */
         irr::core::vector3df m_vUpOffset;   /**< This is generally the same as m_vUpVector, but when the marble has no contact this is not interpolated to keep an up-offset for the camera */

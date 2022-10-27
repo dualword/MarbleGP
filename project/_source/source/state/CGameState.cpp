@@ -1216,7 +1216,7 @@ namespace dustbin {
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
           if ((*it)->m_pController != nullptr)
-            (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_CameraPosition, a_CameraUp);
+            (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_Position + a_CameraPosition + 3.0f * a_CameraUp, a_CameraUp);
         }
 
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
@@ -1234,7 +1234,7 @@ namespace dustbin {
             p->m_pPositional->setRotation(a_Rotation);
 
           if (p->m_pViewport != nullptr && p->m_bCamLink) {
-            p->m_pViewport->m_pCamera->setPosition(a_CameraPosition);
+            p->m_pViewport->m_pCamera->setPosition(a_ControlRearView ? a_Position - a_CameraPosition + 3.0f * a_CameraUp : a_Position + a_CameraPosition + 3.0f * a_CameraUp);
             p->m_pViewport->m_pCamera->setTarget  (a_Position + 1.5f * a_CameraUp);
             p->m_pViewport->m_pCamera->setUpVector(a_CameraUp);
             p->m_pViewport->m_pCamera->updateAbsolutePosition();
