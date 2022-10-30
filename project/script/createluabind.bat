@@ -1,0 +1,2 @@
+python createluabind.py
+@pause
