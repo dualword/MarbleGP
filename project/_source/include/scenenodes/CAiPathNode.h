@@ -36,6 +36,7 @@ namespace dustbin {
           irr::f32             m_fMinSpeed;   /**< Minimum speed (for jumps only) */
           irr::f32             m_fMaxSpeed;   /**< Maximum speed (for jumps only) */
           irr::f32             m_fBestSpeed;  /**< Best speed (for jumps only) */
+          irr::s32             m_iTag;        /**< A tag for turnoffs and blockers */
           enSegmentType        m_eType;       /**< The type of this segment */
 
           std::vector<irr::s32        > m_vNextIndices;   /**< Indices of the next segments (for de-serialization only) */

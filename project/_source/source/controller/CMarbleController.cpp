@@ -117,10 +117,7 @@ namespace dustbin {
         m_pController->update(a_cEvent);
     }
 
-    void CMarbleController::onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos) { 
-    }
-
-    void CMarbleController::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp) { 
+    void CMarbleController::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp, bool a_bHasContact) { 
       int l_iIndex = a_iMarbleId - 10000;
 
       if (l_iIndex >= 0 && l_iIndex < 16) {
@@ -130,6 +127,7 @@ namespace dustbin {
         m_aMarbles[l_iIndex].m_cDirection = a_cCameraPos - a_cNewPos;
         m_aMarbles[l_iIndex].m_cCamera    = a_cCameraPos;
         m_aMarbles[l_iIndex].m_cCameraUp  = a_cCameraUp;
+        m_aMarbles[l_iIndex].m_bContact   = a_bHasContact;
       }
     }
 

@@ -40,26 +40,24 @@ namespace dustbin {
         * This message must be implemented by all descendants. If called
         * it posts a control message to the queue.
         */
-        virtual void postControlMessage();
+        virtual void postControlMessage() override;
 
         /**
         * Update the controller with the Irrlicht event
         * @param a_cEvent the Irrlicht event
         */
-        virtual void update(const irr::SEvent& a_cEvent);
+        virtual void update(const irr::SEvent& a_cEvent) override;
 
-        virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cNewPos);
+        virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp, bool a_bHasContact) override;
 
-        virtual void onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp);
-
-        virtual void onMarbleRespawn(int a_iMarbleId);
+        virtual void onMarbleRespawn(int a_iMarbleId) override;
 
         /**
         * Notify the controller about a passed checkpoint
         * @param a_iMarbleId the marble that passed the checkpoint
         * @param a_iCheckpoint the passed checkpoint
         */
-        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint);
+        virtual void onCheckpoint(int a_iMarbleId, int a_iCheckpoint) override;
 
         /**
         * This function receives messages of type "RacePosition"

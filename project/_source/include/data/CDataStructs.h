@@ -350,6 +350,7 @@ namespace dustbin {
       irr::core::vector3df m_cDirection;  /**< Camera direction */
       irr::core::vector3df m_cCamera;     /**< Camera position */
       irr::core::vector3df m_cCameraUp;   /**< Up-vector of the camera */
+      bool                 m_bContact;    /**< Does the marble touch the ground? */
 
       SMarblePosition();
     }

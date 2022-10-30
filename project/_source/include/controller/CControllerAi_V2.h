@@ -2,6 +2,7 @@
 #pragma once
 
 #include <controller/IControllerAI.h>
+#include <scenenodes/CAiPathNode.h>
 #include <data/CDataStructs.h>
 #include <string>
 #include <vector>
@@ -130,9 +131,14 @@ namespace dustbin {
           int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
           bool m_bStartup;      /**< Is this a startup section? */
 
+          irr::f32 m_fMinVel;   /**< Minimum velocity for jumps */
+          irr::f32 m_fMaxVel;   /**< Maximum velocity for jumps */
+
           irr::core::line3df m_cRealLine;   /**< The real (not adjusted) 3d line of the section */
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
           irr::core::line3df m_cEdges[2];   /**< The side edges of the section */
+
+          scenenodes::CAiPathNode::enSegmentType m_eType;       /**< The type of this segment */
 
           irr::core::plane3df m_cPlane;     /**< This section's 3d plane */
 
@@ -197,7 +203,9 @@ namespace dustbin {
           Default,
           Cruise,
           TimeAttack,
-          Evade
+          Jump,
+          Evade,
+          Respawn
         };
 
         int m_iMarbleId;          /**< ID of the marble this instance controls */
@@ -234,6 +242,30 @@ namespace dustbin {
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
         SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
+
+        /**
+        * Search for "special" path lines, i.e. jumps or blocks
+        * @param a_pInput the path end
+        * @return the first "special" path line in the list, nullptr if nothing special was found
+        */
+        SPathLine2d *findNextSpecial(SPathLine2d *a_pInput);
+
+        /**
+        * Determine whether or not a line collides with an AI path line
+        * @param a_cLine the line to verify
+        * @param a_pPath the path to check against
+        * @return true if there is a collision, false otherwise
+        */
+        bool doesLineCollide(const irr::core::line2df &a_cLine, SPathLine2d *a_pPath);
+
+        /**
+        * Check if one of the two given lines collide with the AI path borders
+        * @param a_cLine1 the first line to verify
+        * @param a_cLine2 the second line to verify
+        * @param a_pPath the path to check against
+        * @return true if there is a collision, false otherwise
+        */
+        bool doLinesCollide(const irr::core::line2df &a_cLine1, const irr::core::line2df &a_cLine2, SPathLine2d *a_pPath);
 
         /**
         * Switch this AI marble to another mode

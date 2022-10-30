@@ -1216,7 +1216,7 @@ namespace dustbin {
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
           if ((*it)->m_pController != nullptr)
-            (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_Position + a_CameraPosition + 3.0f * a_CameraUp, a_CameraUp);
+            (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_Position + a_CameraPosition + 3.0f * a_CameraUp, a_CameraUp, a_Contact);
         }
 
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];

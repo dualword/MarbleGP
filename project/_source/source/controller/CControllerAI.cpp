@@ -135,7 +135,11 @@ namespace dustbin {
         std::vector<irr::core::line3df> l_vDebug;
 
         irr::core::matrix4 l_cMatrix;
-        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(m_pMarbles[m_iIndex].m_cCamera, m_pMarbles[m_iIndex].m_cPosition + 1.5f * m_pMarbles[m_iIndex].m_cCameraUp, m_pMarbles[m_iIndex].m_cCameraUp);
+        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixLH(
+          m_pMarbles[m_iIndex].m_cCamera + m_pMarbles[m_iIndex].m_cPosition + 3.0f * m_pMarbles[m_iIndex].m_cCameraUp,
+          m_pMarbles[m_iIndex].m_cPosition + 1.5f * m_pMarbles[m_iIndex].m_cCameraUp, 
+          m_pMarbles[m_iIndex].m_cCameraUp
+        );
 
         irr::core::vector3df l_cPoint = getLookAhead(0.0f);
         l_bRespawn = l_cPoint.getDistanceFromSQ(m_pMarbles[m_iIndex].m_cPosition) > 10000;

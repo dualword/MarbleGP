@@ -25,6 +25,7 @@ namespace dustbin {
     const int c_iNext       = 93;
     const int c_iNextEnd    = 94;
     const int c_iVBest      = 95;
+    const int c_iTag        = 96;
     const int c_iEnd        = 99;
     
 
@@ -149,7 +150,8 @@ namespace dustbin {
       m_fFactor   (0.75f),
       m_fMinSpeed (-1.0f),
       m_fMaxSpeed (-1.0f),
-      m_fBestSpeed(-1.0f)
+      m_fBestSpeed(-1.0f),
+      m_iTag      (0)
     {
     }
 
@@ -161,7 +163,8 @@ namespace dustbin {
       m_fFactor   (0.75f),
       m_fMinSpeed (-1.0f),
       m_fMaxSpeed (-1.0f),
-      m_fBestSpeed(-1.0f)
+      m_fBestSpeed(-1.0f),
+      m_iTag      (0)
     {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
@@ -179,6 +182,7 @@ namespace dustbin {
             case c_iVMin     : m_fMinSpeed   =                l_cSerializer.getF32      (); break;
             case c_iVMax     : m_fMaxSpeed   =                l_cSerializer.getF32      (); break;
             case c_iVBest    : m_fBestSpeed  =                l_cSerializer.getF32      (); break;
+            case c_iTag      : m_iTag        =                l_cSerializer.getS32      (); break;
             case c_iType     : m_eType       = (enSegmentType)l_cSerializer.getS32      (); break;
             case c_iNextStart: {
               while (l_cSerializer.hasMoreMessages()) {
@@ -297,6 +301,11 @@ namespace dustbin {
 
         l_cSerializer.addS32(c_iVBest);
         l_cSerializer.addF32(m_fBestSpeed);
+      }
+
+      if (m_eType == enSegmentType::Jump || m_vNextSegments.size() > 1) {
+        l_cSerializer.addS32(c_iTag);
+        l_cSerializer.addS32(m_iTag);
       }
 
       l_cSerializer.addS32(c_iType);

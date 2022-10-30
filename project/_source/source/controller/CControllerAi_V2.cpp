@@ -172,6 +172,13 @@ namespace dustbin {
             for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
               SAiPathSection *p = new SAiPathSection();
 
+              p->m_eType = (*l_itSection)->m_eType;
+
+              if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                p->m_fMinVel = (*l_itSection)->m_fMinSpeed;
+                p->m_fMaxVel = (*l_itSection)->m_fMaxSpeed;
+              }
+
               irr::core::vector3df l_cStart = (*l_itSection)->m_cPosition;
               irr::core::vector3df l_cEnd   = (*l_itNext   )->m_cPosition;
 
@@ -336,6 +343,7 @@ namespace dustbin {
     void CControllerAi_V2::onMarbleRespawn(int a_iMarbleId) {
       if (a_iMarbleId == m_iMarbleId) {
         m_pCurrent = nullptr;
+        m_iMode    = 0;
         switchMarbleMode(enMarbleMode::OffTrack);
       }
     }
@@ -349,6 +357,66 @@ namespace dustbin {
       if (a_iMarbleId == m_iMarbleId) {
         m_iLastCheckpoint = a_iCheckpoint;
       }
+    }
+
+    /**
+    * Search for "special" path lines, i.e. jumps or blocks
+    * @param a_pInput the path end
+    * @return the first "special" path line in the list, nullptr if nothing special was found
+    */
+    CControllerAi_V2::SPathLine2d *CControllerAi_V2::findNextSpecial(SPathLine2d* a_pInput) {
+      if (a_pInput->m_pParent->m_pParent->m_eType != scenenodes::CAiPathNode::Default) {
+        return a_pInput;
+      }
+
+      if (a_pInput->m_vNext.size() > 0) {
+        SPathLine2d *l_pRet = findNextSpecial(*a_pInput->m_vNext.begin());
+        if (l_pRet != nullptr)
+          return l_pRet;
+        else
+          return nullptr;
+      }
+      else return nullptr;
+    }
+
+    /**
+    * Determine whether or not a line collides with an AI path line
+    * @param a_cLine the line to verify
+    * @param a_pPath the path to check against
+    * @return true if there is a collision, false otherwise
+    */
+    bool CControllerAi_V2::doesLineCollide(const irr::core::line2df& a_cLine, SPathLine2d* a_pPath) {
+      irr::core::vector2df v;
+
+      if (a_pPath->m_cLines[1].intersectWith(a_cLine, v) || a_pPath->m_cLines[2].intersectWith(a_cLine, v))
+        return true;
+
+      if (a_pPath->m_vNext.size() > 0) {
+        return doesLineCollide(a_cLine, *a_pPath->m_vNext.begin());
+      }
+
+      return false;
+    }
+
+    /**
+    * Check if one of the two given lines collide with the AI path borders
+    * @param a_cLine1 the first line to verify
+    * @param a_cLine2 the second line to verify
+    * @param a_pPath the path to check against
+    * @return true if there is a collision, false otherwise
+    */
+    bool CControllerAi_V2::doLinesCollide(const irr::core::line2df& a_cLine1, const irr::core::line2df& a_cLine2, SPathLine2d* a_pPath) {
+      irr::core::vector2df v;
+
+      if (a_pPath->m_cLines[1].intersectWith(a_cLine1, v) || a_pPath->m_cLines[2].intersectWith(a_cLine1, v) ||
+          a_pPath->m_cLines[1].intersectWith(a_cLine2, v) || a_pPath->m_cLines[2].intersectWith(a_cLine2, v))
+        return true;
+
+      if (a_pPath->m_vNext.size() > 0) {
+        return doLinesCollide(a_cLine1, a_cLine2, *a_pPath->m_vNext.begin());
+      }
+
+      return false;
     }
 
     /**
@@ -434,6 +502,8 @@ namespace dustbin {
         // transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
         std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
 
+        SPathLine2d *l_pSpecial = nullptr;
+
         if (m_pCurrent->m_pAiPath != nullptr) {
           irr::core::matrix4 l_cMatrix;
           l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
@@ -461,12 +531,33 @@ namespace dustbin {
           m_cVelocity2d.X = l_vDummy.X;
           m_cVelocity2d.Y = l_vDummy.Y;
 
+          if (m_p2dPath->m_vNext.size() > 0)
+            l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
+
           if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
             switchMarbleMode(enMarbleMode::OffTrack);
           else {
+            if (l_pSpecial != nullptr && l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+              irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
+              irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
+
+              l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
+              l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
+
+              if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
+                switchMarbleMode(enMarbleMode::Jump);
+              else 
+                if (m_eMode == enMarbleMode::Jump)
+                  switchMarbleMode(enMarbleMode::Default);
+            }
+            else {
+              if (m_eMode == enMarbleMode::Jump)
+                switchMarbleMode(enMarbleMode::Default);
+            }
+
             if (m_eMode == enMarbleMode::OffTrack)
               switchMarbleMode(enMarbleMode::Default);
-            else {
+            else if (m_eMode != enMarbleMode::Jump) {
               if (m_iMyPosition > 1) {
                 if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead > 0) {
                   if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 360)
@@ -495,6 +586,21 @@ namespace dustbin {
 
         if (m_pDebugRTT != nullptr) {
           m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
+          if (l_pSpecial != nullptr) {
+            if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+              irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
+              irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
+
+              l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
+              l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
+
+              bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
+              bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
+
+              draw2dDebugLine(m_pDrv, l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+              draw2dDebugLine(m_pDrv, l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+            }
+          }
         }
 
         irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
@@ -536,16 +642,23 @@ namespace dustbin {
             }
           }
 
+          int l_iLines = 0;
+
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
+            m_fVCalc = -1.0f;
+
             irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
             irr::core::line2df l_cOther;
 
-            int l_iLines = 0;
-
             switch (m_eMode) {
-              case enMarbleMode::OffTrack:
+              case enMarbleMode::OffTrack: {
                 l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr);
+                irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
+                irr::f32 l_fDist = v.getDistanceFrom(l_cLine.start);
+                if (l_fDist > 2.5f * m_p2dPath->m_fWidth)
+                  m_eMode = enMarbleMode::Respawn;
                 break;
+              }
                 
               case enMarbleMode::Default:
                 l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd);
@@ -561,6 +674,50 @@ namespace dustbin {
 
               case enMarbleMode::Evade:
                 l_iLines = getControlLines_Evade(l_cLine, l_cOther, *l_itEnd, 2.0f * l_fVel);
+                break;
+
+              case enMarbleMode::Jump: {
+                l_iLines = 2;
+                l_cLine.start = irr::core::vector2df();
+                
+                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                  irr::core::vector2df l_cDirection = l_pSpecial->m_cLines[0].end - l_pSpecial->m_cLines[0].start;
+                  l_cDirection = l_cDirection.normalize();
+
+                  irr::f32 l_fMin = l_pSpecial->m_pParent->m_pParent->m_fMinVel;
+                  irr::f32 l_fMax = l_pSpecial->m_pParent->m_pParent->m_fMaxVel;
+
+                  if (l_fMin <= 0.0f) l_fMin = l_fVel;
+                  if (l_fMax <= 0.0f) l_fMax = l_fVel * 1.25f;
+
+                  l_cLine .end   = l_fMin * l_cDirection;
+                  l_cOther.start = l_cLine.end;
+                  l_cOther.end   = l_cOther.start + l_fMax * l_cDirection;
+
+                  irr::core::line2df l_cJumpLine = irr::core::line2df(l_pSpecial->m_cLines[1].start, l_pSpecial->m_cLines[2].start);
+
+                  irr::core::vector2df v;
+
+                  if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v)) {
+                    m_fVCalc = l_fMax;
+                    if (m_pDebugRTT != nullptr) {
+                      draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
+                    }
+                  }
+                  else {
+                    if (m_pDebugRTT != nullptr) {
+                      draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                    }
+                  }
+
+                  break;
+                }
+
+                break;
+              }
+
+              case enMarbleMode::Respawn:
+                a_bRespawn = true;
                 break;
             }
               
@@ -590,23 +747,25 @@ namespace dustbin {
 
               l_fFactor = l_fAngle3 / 90.0;
 
-              irr::f64 l_fSpeedFactor = (1.0 - l_fFactor);
+              if (m_fVCalc == -1.0f) {
+                irr::f64 l_fSpeedFactor = (1.0 - l_fFactor);
 
-              m_fVCalc = (irr::f32)(l_fSpeedFactor * l_fSpeedFactor * 75.0);
+                m_fVCalc = (irr::f32)(l_fSpeedFactor * l_fSpeedFactor * 75.0);
 
-              if (l_fSpeedFactor > 0.85) {
-                m_fVCalc += (irr::f32)(80.0 * (l_fSpeedFactor / 0.85));
-              }
+                if (l_fSpeedFactor > 0.85) {
+                  m_fVCalc += (irr::f32)(80.0 * (l_fSpeedFactor / 0.85));
+                }
 
-              irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
-              irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * 75.0f);
+                irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
+                irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * 75.0f);
 
-              if (l_fSpeedFact2 > 0.85) {
-                l_fSpeed2 += 80.0 * (l_fSpeedFact2 / 0.85);
-              }
+                if (l_fSpeedFact2 > 0.85) {
+                  l_fSpeed2 += 80.0 * (l_fSpeedFact2 / 0.85);
+                }
               
-              if (l_fVel > 1.8 * l_cLine.getLength()) {
-                m_fVCalc = (irr::f32)l_fSpeed2;
+                if (l_fVel > 1.8 * l_cLine.getLength()) {
+                  m_fVCalc = (irr::f32)l_fSpeed2;
+                }
               }
 
               if (m_fVCalc > l_fVel)
@@ -631,6 +790,17 @@ namespace dustbin {
 
               a_iCtrlX = (irr::s8)(std::max((irr::s16)-127, std::min((irr::s16)127, l_iCtrlX)));
 
+              if (m_eMode == enMarbleMode::Jump) {
+                if (!m_aMarbles[m_iIndex].m_bContact) {
+                  if (doesLineCollide(l_cVelocityLine, m_p2dPath)) {
+                    a_iCtrlX = a_iCtrlX > 64 ? 64 : a_iCtrlX < -64 ? -64 : a_iCtrlX;
+                  }
+                  else {
+                    a_iCtrlX = 0;
+                  }
+                }
+              }
+
               if (l_cPoint1.Y > 0.0)
                 a_iCtrlY = -127;
 
@@ -648,23 +818,31 @@ namespace dustbin {
 
           switch (m_eMode) {
             case enMarbleMode::OffTrack:
-              s = L"Mode: Off Track";
+              s = L"Ai Mode: Off Track";
               break;
 
             case enMarbleMode::Default:
-              s = L"Mode: Default";
+              s = L"Ai Mode: Default";
               break;
 
             case enMarbleMode::Cruise:
-              s = L"Mode: Cruise";
+              s = L"Ai Mode: Cruise";
               break;
 
             case enMarbleMode::TimeAttack:
-              s = L"Mode: Time Attack";
+              s = L"Ai Mode: Time Attack";
               break;
               
             case enMarbleMode::Evade:
-              s = L"Mode: Evade";
+              s = L"Ai Mode: Evade";
+              break;
+
+            case enMarbleMode::Jump:
+              s = L"Ai Mode: Jump";
+              break;
+
+            case enMarbleMode::Respawn:
+              s = L"Ai Mode: Respawn";
               break;
           }
           draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df());
@@ -1065,6 +1243,8 @@ namespace dustbin {
     * @param a_fScale the scale to use for drawing
     */
     void CControllerAi_V2::SPathLine2d::debugDraw(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2di& a_cOffset, irr::f32 a_fScale) {
+      irr::core::vector2df l_cOffset = irr::core::vector2df((irr::f32)a_cOffset.X, (irr::f32)a_cOffset.Y);
+
       for (int i = 0; i < 3; i++)
         a_pDrv->draw2DLine(
           irr::core::vector2di((irr::s32)(a_fScale * m_cLines[i].start.X) + a_cOffset.X, (irr::s32)(a_fScale * m_cLines[i].start.Y) + a_cOffset.Y),
@@ -1191,7 +1371,7 @@ namespace dustbin {
       return &m_cPathLine;
     }
 
-    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_bStartup(false), m_pAiPath(nullptr) {
+    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_fMinVel(-1.0f), m_fMaxVel(-1.0f), m_bStartup(false), m_pAiPath(nullptr) {
     }
 
     CControllerAi_V2::SAiPathSection::~SAiPathSection() {

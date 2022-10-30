@@ -1550,7 +1550,7 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
-    SMarblePosition::SMarblePosition() : m_iMarbleId(-1) {
+    SMarblePosition::SMarblePosition() : m_iMarbleId(-1), m_bContact(false) {
     }
   }
 }
