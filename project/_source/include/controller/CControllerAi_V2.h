@@ -10,6 +10,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace lua {
+    class CLuaScript_ai;
+  }
+
   namespace controller {
     /**
     * @class CControllerAi_V2
@@ -108,7 +112,8 @@ namespace dustbin {
             std::map<irr::core::vector3df, int> &a_mSplitSelections, 
             std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
             std::vector<const data::SMarblePosition *> &a_vMarbles,
-            std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+            std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
+            lua::CLuaScript_ai *a_pLuaScript
           );
 
           /**
@@ -129,7 +134,9 @@ namespace dustbin {
         typedef struct SAiPathSection {
           int m_iIndex;         /**< Index for debugging */
           int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
+          int m_iTag;           /**< The tag passed to the script for split-offs and blocks */
           bool m_bStartup;      /**< Is this a startup section? */
+          bool m_bSelected;     /**< Is this section selected if multiple sections exist? */
 
           irr::f32 m_fMinVel;   /**< Minimum velocity for jumps */
           irr::f32 m_fMaxVel;   /**< Maximum velocity for jumps */
@@ -230,6 +237,7 @@ namespace dustbin {
         irr::core::dimension2du   m_cRttSize;   /**< Size of the debug RTT */
         irr::core::vector2di      m_cOffset;    /**< Offset for debug rendering */
         irr::gui::IGUIFont       *m_pFont;      /**< Font for debug output */
+        lua::CLuaScript_ai       *m_pLuaScript; /**< AI LUA script for decisions */
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
@@ -240,6 +248,8 @@ namespace dustbin {
 
         static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
         static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
+
+        std::vector<std::wstring> m_vDebugText;   /**< Additional debug text (lower left) */
 
         SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
 
@@ -289,17 +299,19 @@ namespace dustbin {
         * Select the closest AI path section to the position. Will be called
         * when the race is started, after respawn and stun
         * @param a_bSelectStartupPath select a path marked as "startup"
+        * @param a_bOverrideSelected ignore the selected flag if true
         * @return the closest matching AI path section
         */
-        SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath);
+        SAiPathSection *selectClosest(const irr::core::vector3df &a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath, bool a_bOverrideSelected);
 
         /**
         * Select the new current AI path section
         * @param a_cPosition the marble's position
         * @param a_pCurrent the current section
+        * @param a_bOverrideSelected ignore the selected flag if true
         * @return the new current AI path section
         */
-        SAiPathSection *selectCurrentSection(const irr::core::vector3df &a_cPosition, SAiPathSection *a_pCurrent);
+        SAiPathSection *selectCurrentSection(const irr::core::vector3df &a_cPosition, SAiPathSection *a_pCurrent, bool a_bOverrideSelected);
 
         /**
         * Get the best, i.e. not colliding with a border line, line in the path starting
@@ -361,8 +373,9 @@ namespace dustbin {
         * The constructor
         * @param a_iMarbleId the marble ID for this controller
         * @param a_sControls details about the skills of the controller
+        * @param a_pLuaScript an optional LUA script to help the C++ code make decirions
         */
-        CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls, data::SMarblePosition *a_pMarbles);
+        CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript);
 
         virtual ~CControllerAi_V2();
 

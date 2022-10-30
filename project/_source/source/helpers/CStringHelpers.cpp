@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
+#include <CGlobal.h>
 #include <stdlib.h>
 #include <fstream>
 #include <cstring>
@@ -133,6 +134,28 @@ namespace dustbin {
       l_cFile.open(l_sFile, std::ios::trunc);
       l_cFile << "MarbleGP Starting." << std::endl;
       l_cFile.close();
+    }
+
+    /**
+    * Load a textfile
+    * @param a_sFile path to the file
+    * @return the content of the file as string
+    */
+    std::string loadTextFile(const std::string& a_sFile) {
+      std::string l_sRet = "";
+
+      irr::io::IReadFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile(a_sFile.c_str());
+
+      if (l_pFile != nullptr) {
+        char *s = new char[l_pFile->getSize() + 1];
+        memset(s, 0, l_pFile->getSize() + 1);
+        l_pFile->read(s, l_pFile->getSize());
+        l_sRet = s;
+        l_pFile->drop();
+        delete []s;
+      }
+
+      return l_sRet;
     }
   }
 }

@@ -17,6 +17,7 @@
 #include <shader/CShaderHandlerBase.h>
 #include <controller/CControllerAI.h>
 #include <scenenodes/CRostrumNode.h>
+#include <helpers/CStringHelpers.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
 #include <sound/ISoundInterface.h>
@@ -552,7 +553,7 @@ namespace dustbin {
           });
 
           helpers::addToDebugLog("  Load physics script");
-          std::string l_sPhysicsScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
+          std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
 
           helpers::addToDebugLog("  Setup game");
           if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
@@ -1157,6 +1158,11 @@ namespace dustbin {
 
       if (m_pLuaScript != nullptr)
         m_pLuaScript->onstep(a_StepNo);
+
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        if ((*it)->m_pController != nullptr)
+          (*it)->m_pController->onStep(a_StepNo);
+      }
     }
 
     /**
@@ -1266,6 +1272,11 @@ namespace dustbin {
     void CGameState::onTrigger(irr::s32 a_TriggerId, irr::s32 a_ObjectId) {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->ontrigger(a_ObjectId, a_TriggerId);
+
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        if ((*it)->m_pController != nullptr)
+          (*it)->m_pController->onTrigger(a_TriggerId, a_ObjectId);
+      }
     }
 
     /**
@@ -1317,7 +1328,13 @@ namespace dustbin {
             controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pTheInputQueue);
 
             if ((*it).m_eType == data::enPlayerType::Local) {
-              l_pPlayer->m_pController = l_pFactory->createController(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, l_pPlayer->m_eAiHelp, reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
+              l_pPlayer->m_pController = l_pFactory->createController(
+                l_pPlayer->m_pMarble->m_pPositional->getID(), 
+                l_pPlayer->m_sController, 
+                l_pPlayer->m_eAiHelp, 
+                reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
+                "data/levels/" + m_cGameData.m_sTrack + "/ai.lua"
+              );
             }
             else if ((*it).m_eType == data::enPlayerType::Ai) {
               if (m_pAiThread == nullptr) {
@@ -1397,7 +1414,7 @@ namespace dustbin {
       if (m_pAiThread != nullptr)
         m_pAiThread->startThread();
 
-      std::string l_sSceneScript = loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/scene.lua");
+      std::string l_sSceneScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/scene.lua");
 
       if (l_sSceneScript != "") {
         m_pLuaScript = new lua::CLuaScript_scene(l_sSceneScript);
@@ -1646,28 +1663,6 @@ namespace dustbin {
 
       m_iFinished = m_iStep;
       m_bEnded    = true;
-    }
-
-    /**
-    * Load a textfile
-    * @param a_sFile path to the file
-    * @return the content of the file as string
-    */
-    std::string CGameState::loadTextFile(const std::string& a_sFile) {
-      std::string l_sRet = "";
-
-      irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(a_sFile.c_str());
-
-      if (l_pFile != nullptr) {
-        char *s = new char[l_pFile->getSize() + 1];
-        memset(s, 0, l_pFile->getSize() + 1);
-        l_pFile->read(s, l_pFile->getSize());
-        l_sRet = s;
-        l_pFile->drop();
-        delete []s;
-      }
-
-      return l_sRet;
     }
 
     /**

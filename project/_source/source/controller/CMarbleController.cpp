@@ -2,19 +2,22 @@
 
 #include <_generated/messages/CMessages.h>
 #include <controller/CMarbleController.h>
+#include <_generated/lua/CLuaScript_ai.h>
 #include <controller/CControllerAi_V2.h>
+#include <helpers/CStringHelpers.h>
 #include <messages/CSerializer64.h>
 #include <CGlobal.h>
 
 namespace dustbin {
   namespace controller {
-    CMarbleController::CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue) : 
+    CMarbleController::CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue, const std::string &a_sAiScript) : 
       IController  (a_pQueue), 
       m_pController(nullptr), 
       m_pAiControls(nullptr), 
       m_iMarbleId  (a_iMarbleId),
       m_eAiHelp    (a_eAiHelp),
-      m_pAiNode    (a_pAiNode)
+      m_pAiNode    (a_pAiNode),
+      m_pLuaScript (nullptr)
     {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sControls.c_str());
 
@@ -26,9 +29,25 @@ namespace dustbin {
       }
 
       if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
-        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles);
+        irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+        if (l_pFs->existFile(a_sAiScript.c_str())) {
+          std::string l_sScript = helpers::loadTextFile(a_sAiScript);
+          m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
+
+          if (m_pLuaScript->getError() == "") {
+          }
+          else {
+            printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
+            delete m_pLuaScript;
+            m_pLuaScript = nullptr;
+          }
+        }
+
+        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles, m_pLuaScript);
         
         if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
+
           m_pAiControls->setDebug(true);
 
           irr::video::ITexture *l_pTexture = m_pAiControls->getDebugTexture();
@@ -134,6 +153,9 @@ namespace dustbin {
     void CMarbleController::onMarbleRespawn(int a_iMarbleId) { 
       if (m_pAiControls != nullptr)
         m_pAiControls->onMarbleRespawn(a_iMarbleId);
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onplayerrespawn(a_iMarbleId, 3);
     }
 
     /**
@@ -144,6 +166,9 @@ namespace dustbin {
     void CMarbleController::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       if (m_pAiControls != nullptr)
         m_pAiControls->onCheckpoint(a_iMarbleId, a_iCheckpoint);
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->oncheckpoint(a_iMarbleId, a_iCheckpoint);
     }
 
     /**
@@ -157,6 +182,9 @@ namespace dustbin {
     void CMarbleController::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
       if (m_pAiControls != nullptr)
         m_pAiControls->onRaceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
     }
 
     /**
@@ -165,6 +193,26 @@ namespace dustbin {
     */
     IControllerAI* CMarbleController::getAiController() {
       return m_pAiControls;
+    }
+
+
+    /**
+    * Callback called for every simulation step
+    * @param a_iStep the current simulation step
+    */
+    void CMarbleController::onStep(int a_iStep) {
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onstep(a_iStep);
+    }
+
+    /**
+    * This function receives messages of type "Trigger"
+    * @param a_TriggerId ID of the trigger
+    * @param a_ObjectId ID of the marble that caused the trigger
+    */
+    void CMarbleController::onTrigger(irr::s32 a_iTriggerId, irr::s32 a_iObjectId) {
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->ontrigger(a_iObjectId, a_iTriggerId);
     }
   }
 }

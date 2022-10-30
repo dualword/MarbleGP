@@ -45,7 +45,6 @@ function onstep(a_stepno)
   end
   
   if getCrushStep(a_stepno, 1) == 0 then
-    io.write(tostring(g_Actions[3]))
     if g_Actions[3] == 0 then
       physics:startmotor(23133, -25, 750)
       physics:startmotor(23138,  25, 750)

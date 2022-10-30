@@ -625,6 +625,7 @@ namespace dustbin {
       }
 
       m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
+      // m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(6);
       std::this_thread::sleep_until(m_cNextStep);
     }
 
@@ -784,13 +785,9 @@ namespace dustbin {
         helpers::addToDebugLog("    Create LUA script");
         m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
-        helpers::addToDebugLog("      1" + std::to_string((unsigned long long)m_pLuaScript));
         if (m_pLuaScript->getError() == "") {
-          helpers::addToDebugLog("      2");
           m_pLuaScript->setWorld(m_pWorld, m_aMarbles);
-          helpers::addToDebugLog("      3");
           m_pLuaScript->initialize();
-          helpers::addToDebugLog("      4");
         }
         else {
           m_sLuaError = m_pLuaScript->getError();

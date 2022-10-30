@@ -55,5 +55,12 @@ namespace dustbin {
     * Clear the debug log (at startup)
     */
     void clearDebugLog();
+
+    /**
+    * Load a textfile
+    * @param a_sFile path to the file
+    * @return the content of the file as string
+    */
+    std::string loadTextFile(const std::string& a_sFile);
   }
 }

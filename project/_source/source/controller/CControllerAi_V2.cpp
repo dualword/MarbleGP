@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <_generated/lua/CLuaScript_ai.h>
 #include <controller/CControllerAi_V2.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CAiPathNode.h>
@@ -78,8 +79,9 @@ namespace dustbin {
     * when the race is started, after respawn and stun
     * @param a_cPosition the position of the marble
     * @param a_bSelectStartupPath select a path marked as "startup"
+    * @param a_bOverrideSelected ignore the selected flag if true
     */
-    CControllerAi_V2::SAiPathSection *CControllerAi_V2::selectClosest(const irr::core::vector3df& a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath) {
+    CControllerAi_V2::SAiPathSection *CControllerAi_V2::selectClosest(const irr::core::vector3df& a_cPosition, std::vector<SAiPathSection *> &a_vOptions, bool a_bSelectStartupPath, bool a_bOverrideSelected) {
       SAiPathSection *l_pCurrent = nullptr;
 
       irr::f32 l_fDistance = -1.0f;
@@ -87,6 +89,11 @@ namespace dustbin {
       for (std::vector<SAiPathSection*>::iterator l_itPath = a_vOptions.begin(); l_itPath != a_vOptions.end(); l_itPath++) {
         irr::core::vector3df l_cOption = (*l_itPath)->m_cLine3d.getClosestPoint(a_cPosition);
         irr::f32 l_fOption = l_cOption.getDistanceFromSQ(a_cPosition);
+
+        if (!a_bOverrideSelected && (*l_itPath)->m_bSelected) {
+          l_pCurrent = *l_itPath;
+          break;
+        }
 
         if ((l_fDistance == -1.0f || l_fOption < l_fDistance) && (!a_bSelectStartupPath || (*l_itPath)->m_bStartup) && (m_iLastCheckpoint == -1 || (*l_itPath)->m_iCheckpoint == m_iLastCheckpoint)) {
           l_pCurrent = *l_itPath;
@@ -103,15 +110,16 @@ namespace dustbin {
     * @param a_pCurrent the current section
     * @return the new current AI path section
     */
-    CControllerAi_V2::SAiPathSection *CControllerAi_V2::selectCurrentSection(const irr::core::vector3df& a_cPosition, SAiPathSection* a_pCurrent) {
-      irr::core::vector3df l_cClosest = a_pCurrent->m_cLine3d.getClosestPoint(a_cPosition);
+    CControllerAi_V2::SAiPathSection *CControllerAi_V2::selectCurrentSection(const irr::core::vector3df& a_cPosition, SAiPathSection* a_pCurrent, bool a_bOverrideSelected) {
+      irr::core::vector3df  l_cClosest  = a_pCurrent->m_cLine3d.getClosestPoint(a_cPosition);
+      SAiPathSection       *l_pSelected = nullptr;
 
       do {
         if (l_cClosest == a_pCurrent->m_cLine3d.end) {
           if (a_pCurrent->m_vNext.size() == 1)
             a_pCurrent = *a_pCurrent->m_vNext.begin();
           else
-            a_pCurrent = selectClosest(a_cPosition, a_pCurrent->m_vNext, false);
+            a_pCurrent = selectClosest(a_cPosition, a_pCurrent->m_vNext, false, a_bOverrideSelected);
 
           if (a_pCurrent != nullptr)
             l_cClosest = a_pCurrent->m_cLine3d.getClosestPoint(a_cPosition);
@@ -127,7 +135,7 @@ namespace dustbin {
     * @param a_iMarbleId the marble ID for this controller
     * @param a_sControls details about the skills of the controller
     */
-    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles) : 
+    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript) : 
       m_iMarbleId      (a_iMarbleId), 
       m_iIndex         (a_iMarbleId - 10000),
       m_iLastCheckpoint(-1), 
@@ -143,6 +151,7 @@ namespace dustbin {
       m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
       m_pDebugRTT      (nullptr),
       m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, CGlobal::getInstance()->getVideoDriver()->getScreenSize())),
+      m_pLuaScript     (a_pLuaScript),
       m_aMarbles       (a_pMarbles),
       m_p2dPath        (nullptr)
     {
@@ -173,6 +182,7 @@ namespace dustbin {
               SAiPathSection *p = new SAiPathSection();
 
               p->m_eType = (*l_itSection)->m_eType;
+              p->m_iTag  = (*l_itSection)->m_iTag;
 
               if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
                 p->m_fMinVel = (*l_itSection)->m_fMinSpeed;
@@ -342,6 +352,14 @@ namespace dustbin {
     */
     void CControllerAi_V2::onMarbleRespawn(int a_iMarbleId) {
       if (a_iMarbleId == m_iMarbleId) {
+        if (m_pCurrent != nullptr) {
+          m_pCurrent->m_bSelected = false;
+
+          for (std::vector<SAiPathSection*>::iterator l_itNext = m_pCurrent->m_vNext.begin(); l_itNext != m_pCurrent->m_vNext.end(); l_itNext++) {
+            (*l_itNext)->m_bSelected = false;
+          }
+        }
+
         m_pCurrent = nullptr;
         m_iMode    = 0;
         switchMarbleMode(enMarbleMode::OffTrack);
@@ -486,18 +504,23 @@ namespace dustbin {
       a_bRearView = false;
       a_bRespawn  = false;
 
+      m_vDebugText.clear();
+
       if (m_pCurrent == nullptr) {
-        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, m_iLastCheckpoint == -1);
+        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, m_iLastCheckpoint == -1, true);
 
         if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false);
+          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false, true);
 
         // if (m_pCurrent != nullptr)
         //   printf("AI Path section selected: %.2f, %.2f, %.2f\n", m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
       }
 
       if (m_pCurrent != nullptr) {
-        m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent);
+        m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent, false);
+
+        irr::f32 l_fVel = m_cVelocity2d.getLength();
+        m_fVCalc = -1.0f;
 
         // transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
         std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
@@ -519,7 +542,8 @@ namespace dustbin {
             m_mSplitSelections[m_iPathSelection], 
             m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0], 
             l_vMarbles, 
-            l_vMarblePosVel
+            l_vMarblePosVel,
+            m_pLuaScript
           );
 
           irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
@@ -534,21 +558,41 @@ namespace dustbin {
           if (m_p2dPath->m_vNext.size() > 0)
             l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
 
-          if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0)
-            switchMarbleMode(enMarbleMode::OffTrack);
+          if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
+            if (m_eMode != enMarbleMode::Respawn)
+              switchMarbleMode(enMarbleMode::OffTrack);
+          }
           else {
-            if (l_pSpecial != nullptr && l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
-              irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
-              irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
+            if (l_pSpecial != nullptr) {
+              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
+                irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
 
-              l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
-              l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
+                l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
+                l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
 
-              if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
-                switchMarbleMode(enMarbleMode::Jump);
-              else 
+                if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
+                  switchMarbleMode(enMarbleMode::Jump);
+                else 
+                  if (m_eMode == enMarbleMode::Jump)
+                    switchMarbleMode(enMarbleMode::Default);
+              }
+              else if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
+                irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
+                if (l_fDist < l_fVel) {
+                  if (m_pLuaScript != nullptr) {
+                    int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, l_pSpecial->m_pParent->m_pParent->m_iTag);
+
+                    if (!l_bBlock) {
+                      m_fVCalc = 0.0f;
+                    }
+                  }
+                }
+              }
+              else {
                 if (m_eMode == enMarbleMode::Jump)
                   switchMarbleMode(enMarbleMode::Default);
+              }
             }
             else {
               if (m_eMode == enMarbleMode::Jump)
@@ -616,8 +660,6 @@ namespace dustbin {
           std::vector<SPathLine2d *> l_vEnds;
           findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
 
-          irr::f32 l_fVel = m_cVelocity2d.getLength();
-
           for (std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>>::iterator l_itOthers = l_vMarblePosVel.begin(); l_itOthers != l_vMarblePosVel.end(); l_itOthers++) {
             irr::core::vector3df l_cPos = std::get<0>(*l_itOthers);
             irr::core::vector3df l_cVel = std::get<1>(*l_itOthers);
@@ -645,8 +687,6 @@ namespace dustbin {
           int l_iLines = 0;
 
           for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-            m_fVCalc = -1.0f;
-
             irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
             irr::core::line2df l_cOther;
 
@@ -767,12 +807,11 @@ namespace dustbin {
                   m_fVCalc = (irr::f32)l_fSpeed2;
                 }
               }
-
               if (m_fVCalc > l_fVel)
                 a_iCtrlY = 127;
               else {
                 a_iCtrlY = -127;
-                a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f;
+                a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f || m_fVCalc == 0.0f;
               }
 
               irr::core::vector2df l_cPos = irr::core::vector2df();
@@ -805,6 +844,10 @@ namespace dustbin {
                 a_iCtrlY = -127;
 
               m_fOldAngle = l_fAngle3;
+            }
+            else if (m_fVCalc == 0.0f) {
+              a_iCtrlY = 0;
+              a_bBrake = true;
             }
             else a_iCtrlY = 127;
           }
@@ -1252,9 +1295,6 @@ namespace dustbin {
           i == 0 ? irr::video::SColor(0xFF, 128, 128, 128) : irr::video::SColor(0xFF, 0, 0, 0xFF)
         );
 
-      if (m_vNext.size() > 1)
-        draw2dDebugRectangle(a_pDrv, m_cLines[0].end, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 20, 2.0f, a_cOffset);
-
       for (std::vector<SPathLine2d *>::iterator it = m_vNext.begin(); it != m_vNext.end(); it++)
         (*it)->debugDraw(a_pDrv, a_cOffset, a_fScale);
     }
@@ -1317,7 +1357,8 @@ namespace dustbin {
       std::map<irr::core::vector3df, int> &a_mSplitSelections, 
       std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
       std::vector<const data::SMarblePosition *> &a_vMarbles,
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
+      lua::CLuaScript_ai *a_pLuaScript
     ) {
       m_cPathLine.m_vNext.clear();
 
@@ -1349,21 +1390,43 @@ namespace dustbin {
       m_cPathLine.m_cMatrix = a_cMatrix;
 
       if (m_vNext.size() == 1) {
-        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel);
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
       else if (m_vNext.size() > 0) {
         irr::core::vector3df v = m_cLines[0].start;
+        int l_iSplit = -1;
 
-        if (a_mLastStepSelections.find(v) == a_mLastStepSelections.end() || a_mLastStepSelections[v] < 0 || a_mLastStepSelections[v] >= m_vNext.size()) {
-          a_mSplitSelections[v] = std::rand() % m_vNext.size();
-        }
-        else {
-          a_mSplitSelections[v] = a_mLastStepSelections[v];
+        if (a_pLuaScript != nullptr) {
+          l_iSplit = a_pLuaScript->decide_roadsplit(-1, this->m_iSectionIndex);
+
+          if (l_iSplit != -1) {
+            a_mSplitSelections[v] = l_iSplit;
+          }
         }
 
-        SPathLine2d *l_pChild = m_vNext[a_mSplitSelections[v]]->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel);
+        if (l_iSplit == -1) {
+          if (a_mLastStepSelections.find(v) == a_mLastStepSelections.end() || a_mLastStepSelections[v] < 0 || a_mLastStepSelections[v] >= m_vNext.size()) {
+            a_mSplitSelections[v] = std::rand() % m_vNext.size();
+          }
+          else {
+            a_mSplitSelections[v] = a_mLastStepSelections[v];
+          }
+        }
+
+        for (std::vector<SPathLine3d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
+          (*l_itNext)->m_pParent->m_bSelected = false;
+        }
+
+        SPathLine3d *l_pNext = m_vNext[a_mSplitSelections[v]];
+        l_pNext->m_pParent->m_bSelected = true;
+
+        // 0 == -338
+        // 1 == -315
+        // 2 == -361
+
+        SPathLine2d *l_pChild = l_pNext->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
@@ -1371,7 +1434,7 @@ namespace dustbin {
       return &m_cPathLine;
     }
 
-    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_fMinVel(-1.0f), m_fMaxVel(-1.0f), m_bStartup(false), m_pAiPath(nullptr) {
+    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_iTag(0), m_fMinVel(-1.0f), m_fMaxVel(-1.0f), m_bStartup(false), m_bSelected(false), m_pAiPath(nullptr) {
     }
 
     CControllerAi_V2::SAiPathSection::~SAiPathSection() {

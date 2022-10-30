@@ -13,6 +13,11 @@ namespace dustbin {
   namespace scenenodes {
     class CAiNode;
   }
+
+  namespace lua {
+    class CLuaScript_ai;
+  }
+
   namespace controller {
     class IControllerAI;
 
@@ -29,10 +34,11 @@ namespace dustbin {
         
         data::SMarblePosition        m_aMarbles[16];
         data::SPlayerData::enAiHelp  m_eAiHelp;
-        scenenodes::CAiNode         *m_pAiNode;
+        scenenodes::CAiNode         *m_pAiNode;       
+        lua::CLuaScript_ai          *m_pLuaScript;    /**< AI LUA script for decisions */
 
       public:
-        CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue);
+        CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue, const std::string &a_sAiScript);
 
         virtual ~CMarbleController();
 
@@ -74,6 +80,19 @@ namespace dustbin {
         * @return the AI controller
         */
         virtual IControllerAI *getAiController() override;
+
+        /**
+        * Callback called for every simulation step
+        * @param a_iStep the current simulation step
+        */
+        virtual void onStep(int a_iStep) override;
+
+        /**
+        * This function receives messages of type "Trigger"
+        * @param a_TriggerId ID of the trigger
+        * @param a_ObjectId ID of the marble that caused the trigger
+        */
+        virtual void onTrigger(irr::s32 a_iTriggerId, irr::s32 a_iObjectId) override;
     };
   }
 }

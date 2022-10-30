@@ -181,66 +181,6 @@
           }
         }
       }
-    },
-    "ai": {
-      "comment": "A LUA singleton to help the AI make decitions",
-      "globalidentifier": "aisingleton_cintance",
-      "members": [
-      ],
-      "methods": {
-        "lua_from": {
-        },
-        "lua_to": {
-          "onstep": {
-            "comment": "Triggered on every simulation step",
-            "arguments": [
-              { "name": "stepno", "type": "int", "comment": "The current step number" }
-            ]
-          },
-          "ontrigger": {
-            "comment": "Triggered whenever a marble passes a trigger",
-            "arguments": [
-              { "name": "objectid" , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
-              { "name": "triggerid", "type": "int"      , "comment": "The ID of the trigger that the marble passed" }
-            ]
-          },
-          "oncheckpoint": {
-            "comment": "Called whenever a marble passes a checkpoint",
-            "arguments": [
-              { "name": "objectid"    , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
-              { "name": "checkpointid", "type": "int"      , "comment": "The ID of the checkpoint that the marble passed" }
-            ]
-          },
-          "onraceposition": {
-            "comment": "Update on the race positioning",
-            "arguments": [
-              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
-              { "name": "position", "type": "int", "comment": "The new position of the marble" },
-              { "name": "laps"    , "type": "int", "comment": "The marble's current lap" },
-              { "name": "deficitA", "type": "int", "comment": "The deficit in steps to the marble ahead, negative number shows a deficit in laps" },
-              { "name": "deficitL", "type": "int", "comment": "The deficit in steps to the leading marble, negative number shows a deficit in laps" }
-            ]
-          },
-          "decide_roadsplit": {
-            "comment": "Called when a road split is ahead of the marble",
-            "arguments": [
-              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
-              { "name": "tag"     , "type": "int", "comment": "Tag defined in the track file to identify the split" }
-            ],
-            "return": { "type": "int", "comment": "-1 to have random decision, otherwise the index of the used direction" }
-          },
-          "decide_blocker": {
-            "comment": "Called when a block is ahead of the marble",
-            "arguments": [
-              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
-              { "name": "tag"     , "type": "int", "comment": "Tag defined in the track file to identify the split" }
-            ],
-            "return": { "type": "bool", "comment": "true if the block can be passed, false otherwise" }
-          }
-        },
-        "lua_none": {
-        }
-      }
     }
   },
   "scripts": {
@@ -415,6 +355,80 @@
           "initializesingleton": {
             "comment": "A callback for initializing the members. Just calls the initialize method of the singleton"
           }
+        }
+      }
+    },
+    "ai": {
+      "comment": "A LUA script to help the AI make decisions",
+      "globalidentifier": "aiscript_cinstance",
+      "exports": [
+      ],
+      "implements": [
+      ],
+      "members": [
+      ],
+      "singletons": [
+        "system"
+      ],
+      "methods": {
+        "lua_to": {
+           "onstep": {
+            "comment": "Triggered on every simulation step",
+            "arguments": [
+              { "name": "stepno", "type": "int", "comment": "The current step number" }
+            ]
+          },
+          "ontrigger": {
+            "comment": "Triggered whenever a marble passes a trigger",
+            "arguments": [
+              { "name": "objectid" , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
+              { "name": "triggerid", "type": "int"      , "comment": "The ID of the trigger that the marble passed" }
+            ]
+          },
+          "oncheckpoint": {
+            "comment": "Called whenever a marble passes a checkpoint",
+            "arguments": [
+              { "name": "objectid"    , "type": "int"      , "comment": "The ID of the marble that passed the trigger" },
+              { "name": "checkpointid", "type": "int"      , "comment": "The ID of the checkpoint that the marble passed" }
+            ]
+          },
+          "onraceposition": {
+            "comment": "Update on the race positioning",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
+              { "name": "position", "type": "int", "comment": "The new position of the marble" },
+              { "name": "laps"    , "type": "int", "comment": "The marble's current lap" },
+              { "name": "deficitA", "type": "int", "comment": "The deficit in steps to the marble ahead, negative number shows a deficit in laps" },
+              { "name": "deficitL", "type": "int", "comment": "The deficit in steps to the leading marble, negative number shows a deficit in laps" }
+            ]
+          },
+          "onplayerrespawn": {
+            "comment": "A player respawns",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" },
+              { "name": "state"   , "type": "int", "comment": "Respawn state (1 == respawn start, 2 == camera respawn, 3 == respawn done)" }
+            ]
+          },
+          "decide_roadsplit": {
+            "comment": "Called when a road split is ahead of the marble",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
+              { "name": "tag"     , "type": "int", "comment": "Tag defined in the track file to identify the split" }
+            ],
+            "return": { "type": "int", "comment": "-1 to have random decision, otherwise the index of the used direction", "default": "-1" }
+          },
+          "decide_blocker": {
+            "comment": "Called when a block is ahead of the marble",
+            "arguments": [
+              { "name": "marbleid", "type": "int", "comment": "The marble of the updated position" },
+              { "name": "tag"     , "type": "int", "comment": "Tag defined in the track file to identify the split" }
+            ],
+            "return": { "type": "bool", "comment": "true if the block can be passed, false otherwise", "default": "true" }
+          }
+        },
+        "lua_from": {
+        },
+        "lua_none": {
         }
       }
     }

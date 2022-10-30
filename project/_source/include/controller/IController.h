@@ -61,6 +61,19 @@ namespace dustbin {
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) = 0;
 
         /**
+        * Callback called for every simulation step
+        * @param a_iStep the current simulation step
+        */
+        virtual void onStep(int a_iStep) = 0;
+
+        /**
+        * This function receives messages of type "Trigger"
+        * @param a_TriggerId ID of the trigger
+        * @param a_ObjectId ID of the marble that caused the trigger
+        */
+        virtual void onTrigger(irr::s32 a_iTriggerId, irr::s32 a_iObjectId) = 0;
+
+        /**
         * Get the AI controller (if any)
         * @return the AI controller
         */

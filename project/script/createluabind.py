@@ -808,6 +808,7 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
           
           if "return" in l_Method:
             a_Source.write("      " + l_Method["return"]["type"] + " l_Ret")
+            
             l_Ret = ""
             if "default" in l_Method["return"]:
               a_Source.write(" = " + l_Method["return"]["default"])

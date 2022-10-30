@@ -333,6 +333,7 @@
     <ClInclude Include="..\..\_source\include\xeffects\EffectHandler.h" />
     <ClInclude Include="..\..\_source\include\xeffects\EffectShaders.h" />
     <ClInclude Include="..\..\_source\include\xeffects\XEffects.h" />
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_ai.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_physics.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_scene.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_physics.h" />
