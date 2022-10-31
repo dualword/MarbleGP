@@ -183,8 +183,6 @@ namespace dustbin {
 
               p->m_eType = (*l_itSection)->m_eType;
               p->m_iTag  = (*l_itSection)->m_iTag;
-              if (p->m_iTag != 0)
-                printf("%i\n", p->m_iTag);
 
               if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
                 p->m_fMinVel = (*l_itSection)->m_fMinSpeed;
@@ -579,7 +577,12 @@ namespace dustbin {
                   if (m_eMode == enMarbleMode::Jump)
                     switchMarbleMode(enMarbleMode::Default);
               }
-              else if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
+              else {
+                if (m_eMode == enMarbleMode::Jump)
+                  switchMarbleMode(enMarbleMode::Default);
+              }
+            
+              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
                 irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
                 if (l_fDist < l_fVel) {
                   if (m_pLuaScript != nullptr) {
@@ -590,10 +593,6 @@ namespace dustbin {
                     }
                   }
                 }
-              }
-              else {
-                if (m_eMode == enMarbleMode::Jump)
-                  switchMarbleMode(enMarbleMode::Default);
               }
             }
             else {
