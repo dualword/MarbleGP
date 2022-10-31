@@ -263,6 +263,7 @@
     <ClInclude Include="..\..\..\_source\include\CMainClass.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CAiControlThread.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerAI.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerAi_V2.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerBase.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerFactory.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerGame.h" />
@@ -323,6 +324,7 @@
     <ClInclude Include="..\..\..\_source\include\network\CNetworkDefines.h" />
     <ClInclude Include="..\..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CAiNode.h" />
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CAiPathNode.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CCameraTouchAnimator.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CCheckpointNode.h" />
     <ClInclude Include="..\..\..\_source\include\scenenodes\CDustbinCamera.h" />
@@ -351,6 +353,7 @@
     <ClInclude Include="..\..\..\_source\include\threads\IThread.h" />
     <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaScript_physics.h" />
     <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaScript_scene.h" />
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaSingleton_ai.h" />
     <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaSingleton_physics.h" />
     <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaSingleton_scene.h" />
     <ClInclude Include="..\..\..\_source\include\_generated\lua\lua_enums.h" />
@@ -498,6 +501,7 @@
     <ClCompile Include="..\..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CAiControlThread.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerAI.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerAi_V2.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerBase.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerFactory.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerGame.cpp" />
@@ -564,6 +568,7 @@
     <ClCompile Include="..\..\..\_source\source\network\CNetBase.cpp" />
     <ClCompile Include="..\..\..\_source\source\platform\CPlatformAndroid.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CAiNode.cpp" />
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CAiPathNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CCameraTouchAnimator.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\..\_source\source\scenenodes\CDustbinCamera.cpp" />

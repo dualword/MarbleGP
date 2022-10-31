@@ -396,6 +396,15 @@
     <ClInclude Include="..\..\..\_source\include\_generated\lua\lua_tables.h">
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerAi_V2.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\_generated\lua\CLuaSingleton_ai.h">
+      <Filter>Headerdateien\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\scenenodes\CAiPathNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -793,6 +802,12 @@
     <ClCompile Include="..\..\..\_source\source\lua\CLUASingleton_system.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerAi_V2.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\scenenodes\CAiPathNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headerdateien">
@@ -879,9 +894,6 @@
     <Filter Include="Quelldateien\gameclasses">
       <UniqueIdentifier>{100b1174-1eff-4c4e-87bd-8a0e5842f065}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\scenenodes">
-      <UniqueIdentifier>{a026ee08-e417-4cec-977d-223ae6f97dfd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\shader">
       <UniqueIdentifier>{df67cec3-9ab0-4782-9d1d-56bf97735cb8}</UniqueIdentifier>
     </Filter>
@@ -917,6 +929,9 @@
     </Filter>
     <Filter Include="Headerdateien\_generated\lua">
       <UniqueIdentifier>{25690edf-f0a6-408f-a6f1-e85141fd8e91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\scenenodes">
+      <UniqueIdentifier>{a026ee08-e417-4cec-977d-223ae6f97dfd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

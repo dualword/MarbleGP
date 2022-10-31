@@ -4,6 +4,7 @@
     <AdditionalSourceSearchPaths>
     </AdditionalSourceSearchPaths>
     <DebuggerFlavor>AndroidDebugger</DebuggerFlavor>
+    <AndroidDeviceID>22X0219928000894;VOG-L29EEA</AndroidDeviceID>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <AdditionalSourceSearchPaths>
