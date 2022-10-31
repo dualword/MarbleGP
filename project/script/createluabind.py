@@ -838,6 +838,7 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
 
           a_Source.write("        if (lua_pcall(m_pState, " + str(l_Args) + ", " + str(l_Return) + ", 0) != 0) {\n")
           a_Source.write("          std::string l_sMessage = std::string(\"ERROR: function \\\"" + l_Name + "\\\" failed: \\\"\") + std::string(lua_tostring(m_pState, -1)) + std::string(\"\\\"\");\n")
+          a_Source.write("          printf(\"%s\\n\", l_sMessage.c_str());\n")
           a_Source.write("        }\n")
           
           if "return" in l_Method:

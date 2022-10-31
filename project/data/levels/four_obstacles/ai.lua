@@ -53,8 +53,15 @@ end
 function decide_blocker(a_MarbleId, a_Blocker)
   local l_Ret = true
   
-  if a_Blocker == 10 then
-    l_Ret = getBlockStep(g_Step, 1) < 420
+  if a_Blocker == 8 then
+    local l_Block = getBlockStep(g_Step, 1)
+    l_Ret = (l_Block < 460 and l_Block > 20) or (g_Actions[2] ~= 0 and g_Actions[2] ~= 3)
+  elseif a_Blocker == 9 then
+    local l_Block = getBlockStep(g_Step, 1)
+    l_Ret = (l_Block < 460 and l_Block > 20) or (g_Actions[2] ~= 1 and g_Actions[2] ~= 4)
+  elseif a_Blocker == 10 then
+    local l_Block = getBlockStep(g_Step, 1)
+    l_Ret = (l_Block < 460 and l_Block > 20) or (g_Actions[2] ~= 2 and g_Actions[2] ~= 5)
   elseif a_Blocker == 11 then
     l_Ret = g_Actions[3] ~= 1
   elseif a_Blocker == 12 then
@@ -75,7 +82,7 @@ g_Side = -1
 function decide_roadsplit(a_MarbleId, a_Split)
   local l_Ret = -1
   
-  if a_Split == 79 then
+  if a_Split == 22 then
     g_Side = -1
     if g_Actions[3] == 0 then
       l_Ret = 2
@@ -84,7 +91,7 @@ function decide_roadsplit(a_MarbleId, a_Split)
     elseif g_Actions[3] == 2 then
       l_Ret = 1
     end
-  elseif a_Split == 100 then
+  elseif a_Split == 23 then
     if g_Actions[1] == 0 then
       if getGateStep(g_Step) < 520 then
         if g_Side == -1 then

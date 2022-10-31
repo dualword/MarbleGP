@@ -183,6 +183,8 @@ namespace dustbin {
 
               p->m_eType = (*l_itSection)->m_eType;
               p->m_iTag  = (*l_itSection)->m_iTag;
+              if (p->m_iTag != 0)
+                printf("%i\n", p->m_iTag);
 
               if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
                 p->m_fMinVel = (*l_itSection)->m_fMinSpeed;
@@ -1394,12 +1396,12 @@ namespace dustbin {
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
-      else if (m_vNext.size() > 0) {
+      else if (m_vNext.size() > 1) {
         irr::core::vector3df v = m_cLines[0].start;
         int l_iSplit = -1;
 
         if (a_pLuaScript != nullptr) {
-          l_iSplit = a_pLuaScript->decide_roadsplit(-1, this->m_iSectionIndex);
+          l_iSplit = a_pLuaScript->decide_roadsplit(-1, (*this->m_pParent->m_vNext.begin())->m_iTag);
 
           if (l_iSplit != -1) {
             a_mSplitSelections[v] = l_iSplit;
