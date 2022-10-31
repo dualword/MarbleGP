@@ -624,8 +624,8 @@ namespace dustbin {
           m_pLuaScript->onstep(m_pWorld->m_iWorldStep);
       }
 
-      // m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
-      m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(6);
+      m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(8);
+      // m_cNextStep = m_cNextStep + std::chrono::duration<int, std::ratio<1, 1000>>(6);
       std::this_thread::sleep_until(m_cNextStep);
     }
 
