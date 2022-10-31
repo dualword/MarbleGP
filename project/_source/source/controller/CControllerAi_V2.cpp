@@ -769,7 +769,7 @@ namespace dustbin {
             if (l_iLines > 1 && m_pDebugRTT != nullptr)
               draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
 
-            if (l_fVel > 10.0f) {
+            if (l_fVel > 5.0f) {
               irr::f32 l_fCtrlLen = l_cLine.getLength();
 
               irr::f64 l_fAngle1 = l_cVelocityLine.getAngleWith(l_cLine);
