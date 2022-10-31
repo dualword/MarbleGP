@@ -1,6 +1,6 @@
 system:executeluascript("levels/the_gates/track_functions.lua")
 
-function decide_blocker(a_MarbleId, a_Blocker)  
+function decide_blocker(a_MarbleId, a_Blocker)
   local l_Ret = true
   
   -- Left block == 10, Right Block == 11
