@@ -665,6 +665,8 @@ namespace dustbin {
           std::vector<SPathLine2d *> l_vEnds;
           findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
 
+          bool l_bIncoming = false;
+
           for (std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>>::iterator l_itOthers = l_vMarblePosVel.begin(); l_itOthers != l_vMarblePosVel.end(); l_itOthers++) {
             irr::core::vector3df l_cPos = std::get<0>(*l_itOthers);
             irr::core::vector3df l_cVel = std::get<1>(*l_itOthers);
@@ -672,13 +674,13 @@ namespace dustbin {
             irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
             irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
 
-            if (l_cPos2d.Y < 0.0f && irr::core::vector2df().getDistanceFromSQ(l_cPos2d) > irr::core::vector2df().getDistanceFromSQ(l_cVel2d)) {
+            if (l_cPos2d.Y < 0.0f && l_cVel2d.Y > 0.0f && (l_cVel2d.X - l_cPos2d.X > 0) != l_cPos.X > 0) {
               irr::core::line2df l_cVelLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
 
               irr::core::vector2df l_cDist = l_cVelLine.getClosestPoint(l_cPos2d) - l_cPos2d;
 
               if (l_cDist.getLengthSQ() < l_fVel * l_fVel) {
-                switchMarbleMode(enMarbleMode::Evade);
+                l_bIncoming = true;
                 break;
               }
             }
@@ -687,6 +689,13 @@ namespace dustbin {
               draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), (int)(5.0f * m_fScale), m_fScale, m_cOffset);
               draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
             }
+          }
+
+          if (l_bIncoming) {
+            switchMarbleMode(enMarbleMode::Evade);
+          }
+          else if (m_eMode == enMarbleMode::Evade) {
+            switchMarbleMode(enMarbleMode::Default);
           }
 
           int l_iLines = 0;

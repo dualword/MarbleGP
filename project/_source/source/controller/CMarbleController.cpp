@@ -187,11 +187,11 @@ namespace dustbin {
     * @param a_DeficitLeader Deficit of the marble on the leader in steps
     */
     void CMarbleController::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
-      /*if (m_pAiControls != nullptr)
+      if (m_pAiControls != nullptr)
         m_pAiControls->onRaceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
 
       if (m_pLuaScript != nullptr)
-        m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);*/
+        m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
     }
 
     /**
