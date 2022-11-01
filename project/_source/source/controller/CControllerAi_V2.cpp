@@ -153,7 +153,7 @@ namespace dustbin {
       m_eMode          (enMarbleMode::Default),
       m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
       m_pDebugRTT      (nullptr),
-      m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, CGlobal::getInstance()->getVideoDriver()->getScreenSize())),
+      m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight()))),
       m_pLuaScript     (a_pLuaScript),
       m_cViewport      (a_cViewport),
       m_aMarbles       (a_pMarbles),
@@ -715,7 +715,7 @@ namespace dustbin {
             }
 
             if (m_pDebugRTT != nullptr) {
-              draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), (int)(5.0f * m_fScale), m_fScale, m_cOffset);
+              draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 15, m_fScale, m_cOffset);
               draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
             }
           }
@@ -947,7 +947,7 @@ namespace dustbin {
 
         if (m_pDebugRTT != nullptr) {
           draw2dDebugLine(m_pDrv, l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
-          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), (int)(7.5f * m_fScale), m_fScale, m_cOffset);
+          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 10, m_fScale, m_cOffset);
 
           std::wstring s; 
 
