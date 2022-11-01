@@ -1303,7 +1303,7 @@ namespace dustbin {
 
           l_pMarble->m_pPlayer = l_pPlayer; 
 
-          printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
+          // printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
 
           m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
 
@@ -1333,7 +1333,8 @@ namespace dustbin {
                 l_pPlayer->m_sController, 
                 l_pPlayer->m_eAiHelp, 
                 reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
-                "data/levels/" + m_cGameData.m_sTrack + "/ai.lua"
+                "data/levels/" + m_cGameData.m_sTrack + "/ai.lua",
+                l_pPlayer->m_pMarble->m_pViewport->m_cRect
               );
             }
             else if ((*it).m_eType == data::enPlayerType::Ai) {
@@ -1756,7 +1757,7 @@ namespace dustbin {
         m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffAhead     = a_DeficitAhead;
         m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffLeader    = a_DeficitLeader;
 
-        std::sort(m_vPosition.begin(), m_vPosition.end(), [](gameclasses::SPlayer *p1, gameclasses::SPlayer *p2) {
+        std::sort(m_vPosition.begin(), m_vPosition.end(), [](gameclasses::SPlayer* p1, gameclasses::SPlayer* p2) {
           if (p1->m_iPosition != p2->m_iPosition)
             return p1->m_iPosition < p2->m_iPosition;
           else

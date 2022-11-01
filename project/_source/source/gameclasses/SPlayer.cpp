@@ -56,6 +56,7 @@ namespace dustbin {
       m_iDiffLeader   (0),
       m_iDiffAhead    (0),
       m_sName         (a_sName),
+      m_sWName        (helpers::s2ws(a_sName)),
       m_sTexture      (a_sTexture),
       m_sController   (a_sController),
       m_sShortName    (a_sShortName),
@@ -91,6 +92,11 @@ namespace dustbin {
 
       m_cBack.setAlpha(0x80);
       m_cFrme.setAlpha(0x80);
+    }
+
+    void SPlayer::setName(const std::string& a_sName) {
+      m_sName  =                       a_sName;
+      m_sWName = helpers::s2ws(a_sName);
     }
   }
 }

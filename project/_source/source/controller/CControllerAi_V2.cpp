@@ -134,8 +134,11 @@ namespace dustbin {
     * The constructor
     * @param a_iMarbleId the marble ID for this controller
     * @param a_sControls details about the skills of the controller
+    * @param a_pMarbles an array of the 16 possible marbles, ID of -1 is not used
+    * @param a_pLuaScript an optional LUA script to help the C++ code make decirions
+    * @param a_cViewport the viewport of the player, necessary for debug data output
     */
-    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript) : 
+    CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport) : 
       m_iMarbleId      (a_iMarbleId), 
       m_iIndex         (a_iMarbleId - 10000),
       m_iLastCheckpoint(-1), 
@@ -152,6 +155,7 @@ namespace dustbin {
       m_pDebugRTT      (nullptr),
       m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, CGlobal::getInstance()->getVideoDriver()->getScreenSize())),
       m_pLuaScript     (a_pLuaScript),
+      m_cViewport      (a_cViewport),
       m_aMarbles       (a_pMarbles),
       m_p2dPath        (nullptr)
     {
@@ -680,7 +684,7 @@ namespace dustbin {
             }
 
             if (m_pDebugRTT != nullptr) {
-              draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 20, m_fScale, m_cOffset);
+              draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), (int)(5.0f * m_fScale), m_fScale, m_cOffset);
               draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
             }
           }
@@ -856,9 +860,9 @@ namespace dustbin {
 
         if (m_pDebugRTT != nullptr) {
           draw2dDebugLine(m_pDrv, l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
-          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 30, m_fScale, m_cOffset);
+          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), (int)(7.5f * m_fScale), m_fScale, m_cOffset);
 
-          std::wstring s;
+          std::wstring s; 
 
           switch (m_eMode) {
             case enMarbleMode::OffTrack:
@@ -906,7 +910,7 @@ namespace dustbin {
     */
     void CControllerAi_V2::setDebug(bool a_bDebug) {
       if (a_bDebug) {
-        m_cRttSize = m_pDrv->getScreenSize();
+        m_cRttSize = irr::core::dimension2du(m_cViewport.getWidth(), m_cViewport.getHeight());
 
         m_cRttSize.Width  /= 3;
         m_cRttSize.Height /= 3;
@@ -914,7 +918,7 @@ namespace dustbin {
         m_fScale = ((irr::f32)m_cRttSize.Height) / 1000.0f;
         m_fScale = 1.0f / m_fScale;
 
-        m_pDebugRTT = m_pDrv->getTexture("ai_debug_rtt");
+        m_pDebugRTT = m_pDrv->getTexture((std::string("ai_debug_rtt_") + std::to_string(m_iMarbleId)).c_str());
 
         if (m_pDebugRTT == nullptr)
           m_pDebugRTT = m_pDrv->addRenderTargetTexture(m_cRttSize, "ai_debug_rtt");

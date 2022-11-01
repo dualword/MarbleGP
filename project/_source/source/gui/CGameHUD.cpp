@@ -517,7 +517,7 @@ namespace dustbin {
       else
         l_cSizeBot.Width = l_cSizeTop.Width;
 
-      std::wstring l_sName = helpers::s2ws(a_pPlayer->m_sName);
+      std::wstring l_sName = a_pPlayer->m_sWName;
       irr::core::dimension2du l_cSizeName = getDimension(l_sName, l_pRegular);
 
       irr::core::position2di l_cLapHead = irr::core::position2di(a_cRect.UpperLeftCorner .X                   , a_cRect.UpperLeftCorner.Y                    );
@@ -596,7 +596,7 @@ namespace dustbin {
         if ((*m_vRanking)[i]->m_iId == m_iMarble)
           m_aRanking[i]->highlight(true);
 
-        m_aRanking[i]->setData(helpers::s2ws((*m_vRanking)[i]->m_sName), 0, (*m_vRanking)[i]->m_bWithdrawn);
+        m_aRanking[i]->setData((*m_vRanking)[i]->m_sWName, 0, (*m_vRanking)[i]->m_bWithdrawn);
         m_aRanking[i]->drop();
 
         if (i == (m_iPlayers / 2) - 1)
@@ -628,8 +628,6 @@ namespace dustbin {
         irr::core::position2di  l_cPos    = a_cRect.UpperLeftCorner;
 
         irr::f32 l_fRatio = ((irr::f32)l_cScreen.Width) / ((irr::f32)l_cScreen.Height);
-
-        printf("Ratio: %.2f\n", l_fRatio);
 
         irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
           l_cSize.Width  * l_cScreen.Width  / 3840,
@@ -710,7 +708,6 @@ namespace dustbin {
       m_cCheckered = m_pCheckered->getOriginalSize();
 
       for (std::vector<gameclasses::SPlayer *>::iterator l_itRank =  a_vRanking->begin(); l_itRank != a_vRanking->end(); l_itRank++) {
-        printf("State: %i\n", (*l_itRank)->m_iState);
         (*l_itRank)->m_iState = 0;
       }
     }
@@ -816,7 +813,7 @@ namespace dustbin {
 
             for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
               if (l_iPos[i] == m_pPlayer->m_iPosition) {
-                std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + helpers::s2ws(m_pPlayer->m_sName);
+                std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + m_pPlayer->m_sWName;
                 m_pDrv->draw2DRectangle(
                   irr::video::SColor(192, 232, 232, 232), 
                   l_cRects[i], &m_cRect
@@ -839,7 +836,7 @@ namespace dustbin {
                       l_cRects[i], &m_cRect
                     );
 
-                    std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + helpers::s2ws((*it)->m_sName).c_str();
+                    std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + (*it)->m_sWName;
                     m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
                     
                     std::wstring l_sDeficit;
@@ -1096,7 +1093,7 @@ namespace dustbin {
       int l_iIndex = 0;
       for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         if (m_aRanking[l_iIndex] != nullptr) {
-          m_aRanking[l_iIndex]->setData(helpers::s2ws((*it)->m_sName), (*it)->m_iDiffLeader, (*it)->m_bWithdrawn);
+          m_aRanking[l_iIndex]->setData((*it)->m_sWName, (*it)->m_iDiffLeader, (*it)->m_bWithdrawn);
         }
         l_iIndex++;
       }

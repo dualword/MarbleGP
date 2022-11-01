@@ -30,7 +30,14 @@ namespace dustbin {
         * Create a controller from the configuration string
         * @returns a new controller instance
         */
-        IController* createController(int a_iMarbleId, const std::string& a_sControls, data::SPlayerData::enAiHelp a_eAiHelp, scenenodes::CAiNode *a_pAiNode, const std::string &a_sAiScript);
+        IController* createController(
+          int                          a_iMarbleId, 
+          const std::string           &a_sControls, 
+          data::SPlayerData::enAiHelp  a_eAiHelp, 
+          scenenodes::CAiNode         *a_pAiNode, 
+          const std::string           &a_sAiScript,
+          const irr::core::recti      &a_cViewport
+        );
     };
   }
 }

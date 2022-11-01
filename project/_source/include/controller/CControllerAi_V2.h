@@ -238,6 +238,7 @@ namespace dustbin {
         irr::core::vector2di      m_cOffset;    /**< Offset for debug rendering */
         irr::gui::IGUIFont       *m_pFont;      /**< Font for debug output */
         lua::CLuaScript_ai       *m_pLuaScript; /**< AI LUA script for decisions */
+        irr::core::recti          m_cViewport;  /**< The viewport for optional debug output */
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
@@ -373,9 +374,11 @@ namespace dustbin {
         * The constructor
         * @param a_iMarbleId the marble ID for this controller
         * @param a_sControls details about the skills of the controller
+        * @param a_pMarbles an array of the 16 possible marbles, ID of -1 is not used
         * @param a_pLuaScript an optional LUA script to help the C++ code make decirions
+        * @param a_cViewport the viewport of the player, necessary for debug data output
         */
-        CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript);
+        CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport);
 
         virtual ~CControllerAi_V2();
 

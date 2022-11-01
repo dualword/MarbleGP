@@ -26,6 +26,7 @@ namespace dustbin {
       int          m_iDiffLeader;       /**< Deficit to the leader */
       int          m_iDiffAhead;        /**< Deficit to the marble ahead */
       std::string  m_sName;             /**< The name of the player */
+      std::wstring m_sWName;            /**< The player's name as wide string */
       std::string  m_sTexture;          /**< The texture of the player's marble */
       std::string  m_sController;       /**< The serialized controller configuration */
       std::string  m_sShortName;        /**< The short name of the player */
@@ -64,6 +65,8 @@ namespace dustbin {
       * @param a_pMarble the marble of the player
       */
       SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType);
-    } SPlayer;
+
+      void setName(const std::string &a_sName);
+   } SPlayer;
   }
 }

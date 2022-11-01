@@ -38,7 +38,15 @@ namespace dustbin {
         lua::CLuaScript_ai          *m_pLuaScript;    /**< AI LUA script for decisions */
 
       public:
-        CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue, const std::string &a_sAiScript);
+        CMarbleController(
+          int                          a_iMarbleId, 
+          const std::string           &a_sControls, 
+          scenenodes::CAiNode         *a_pAiNode, 
+          data::SPlayerData::enAiHelp  a_eAiHelp, 
+          threads::IQueue             *a_pQueue, 
+          const std::string            &a_sAiScript,
+          const irr::core::recti       &a_cViewport
+        );
 
         virtual ~CMarbleController();
 

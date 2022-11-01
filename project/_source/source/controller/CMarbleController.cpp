@@ -10,7 +10,15 @@
 
 namespace dustbin {
   namespace controller {
-    CMarbleController::CMarbleController(int a_iMarbleId, const std::string& a_sControls, scenenodes::CAiNode *a_pAiNode, data::SPlayerData::enAiHelp a_eAiHelp, threads::IQueue* a_pQueue, const std::string &a_sAiScript) : 
+    CMarbleController::CMarbleController(
+      int                          a_iMarbleId, 
+      const std::string           &a_sControls, 
+      scenenodes::CAiNode         *a_pAiNode, 
+      data::SPlayerData::enAiHelp  a_eAiHelp, 
+      threads::IQueue             *a_pQueue, 
+      const std::string           &a_sAiScript,
+      const irr::core::recti      &a_cViewport
+    ) : 
       IController  (a_pQueue), 
       m_pController(nullptr), 
       m_pAiControls(nullptr), 
@@ -44,16 +52,15 @@ namespace dustbin {
           }
         }
 
-        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles, m_pLuaScript);
+        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles, m_pLuaScript, a_cViewport);
         
         if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
-
           m_pAiControls->setDebug(true);
 
           irr::video::ITexture *l_pTexture = m_pAiControls->getDebugTexture();
 
           if (l_pTexture != nullptr) {
-            irr::core::dimension2du l_cScreen = CGlobal::getInstance()->getVideoDriver()->getScreenSize();
+            irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight());
             irr::core::dimension2du l_cSize   = l_cScreen;
 
             l_cSize.Width  /= 3;
@@ -61,7 +68,7 @@ namespace dustbin {
 
             CGlobal::getInstance()->getGuiEnvironment()->addImage(
               l_pTexture,
-              irr::core::vector2di(0, l_cScreen.Height - l_cSize.Height)
+              irr::core::vector2di(a_cViewport.UpperLeftCorner.X, a_cViewport.LowerRightCorner.Y - l_cSize.Height)
             );
           }
         }
@@ -180,11 +187,11 @@ namespace dustbin {
     * @param a_DeficitLeader Deficit of the marble on the leader in steps
     */
     void CMarbleController::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
-      if (m_pAiControls != nullptr)
+      /*if (m_pAiControls != nullptr)
         m_pAiControls->onRaceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
 
       if (m_pLuaScript != nullptr)
-        m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
+        m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);*/
     }
 
     /**
