@@ -304,14 +304,17 @@ namespace dustbin {
 
                   printf("Laps: %i\n", l_iLaps);
 
+                  data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+
                   m_pManager->pushToMenuStack("menu_selecttrack");
-                  m_pManager->pushToMenuStack("menu_standings"  );
-                  m_pManager->pushToMenuStack("menu_raceresult" );
+
+                  if (l_cChampionship.m_vPlayers.size() > 1) {
+                    m_pManager->pushToMenuStack("menu_standings"  );
+                    m_pManager->pushToMenuStack("menu_raceresult" );
+                  }
 
                   m_pState->getGlobal()->setSetting("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
-
-                  data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
                   data::SGameData l_cData(data::SGameData::enType::Local, m_pTrackList->getSelectedData(), l_iLaps, l_cChampionship.m_iClass);
                   m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
