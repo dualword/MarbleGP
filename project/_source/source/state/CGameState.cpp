@@ -123,7 +123,7 @@ namespace dustbin {
 
       SGameViewports::SViewportDistribution l_cTwoPlayers = SGameViewports::SViewportDistribution(1, 2);
       l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
-      l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
+      l_cTwoPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player));
       m_cViewports.m_mDistribution[2] = l_cTwoPlayers;
 
       SGameViewports::SViewportDistribution l_cThreePlayers = SGameViewports::SViewportDistribution(2, 2);
@@ -143,19 +143,19 @@ namespace dustbin {
       SGameViewports::SViewportDistribution l_cFivePlayers = SGameViewports::SViewportDistribution(2, 3);
       l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player  ));
       l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
-      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
       l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
-      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
-      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
+      l_cFivePlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Racedata));
       m_cViewports.m_mDistribution[5] = l_cFivePlayers;
 
       SGameViewports::SViewportDistribution l_cSixPlayers = SGameViewports::SViewportDistribution(2, 3);
       l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 0, SGameViewports::enType::Player));
       l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player));
-      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player));
       l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player));
       l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Player));
-      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player));
+      l_cSixPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Player));
       m_cViewports.m_mDistribution[6] = l_cSixPlayers;
 
       SGameViewports::SViewportDistribution l_cSevenPlayers = SGameViewports::SViewportDistribution(3, 3);
@@ -163,11 +163,11 @@ namespace dustbin {
       l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 0, SGameViewports::enType::Player  ));
       l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
       l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
-      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
       l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
       l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
-      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Logo    ));
       l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 2, SGameViewports::enType::Player  ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Logo    ));
+      l_cSevenPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
       m_cViewports.m_mDistribution[7] = l_cSevenPlayers;
 
       SGameViewports::SViewportDistribution l_cEightPlayers = SGameViewports::SViewportDistribution(3, 3);
@@ -176,10 +176,10 @@ namespace dustbin {
       l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 0, SGameViewports::enType::Player  ));
       l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 1, SGameViewports::enType::Player  ));
       l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 1, SGameViewports::enType::Player  ));
-      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Racedata));
       l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(0, 2, SGameViewports::enType::Player  ));
       l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 2, SGameViewports::enType::Player  ));
       l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(2, 2, SGameViewports::enType::Player  ));
+      l_cEightPlayers.m_vViewports.push_back(SGameViewports::SViewportDef(1, 1, SGameViewports::enType::Racedata));
       m_cViewports.m_mDistribution[8] = l_cEightPlayers;
     }
 
