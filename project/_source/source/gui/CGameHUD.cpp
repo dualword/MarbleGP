@@ -704,6 +704,7 @@ namespace dustbin {
       m_iLapTimeOffset = 5 * m_cLapTotalDim.Height / 4;
 
       m_cLapTimePos.X = a_cRect.LowerRightCorner.X - m_cLapTotalDim.Width;
+      m_cLapTimePos.Y = a_cRect.UpperLeftCorner.Y;
 
       m_pCheckered = m_pDrv->getTexture("data/images/checkered.png");
       m_cCheckered = m_pCheckered->getOriginalSize();
