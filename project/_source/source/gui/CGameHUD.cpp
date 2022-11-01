@@ -197,6 +197,10 @@ namespace dustbin {
             break;
           }
         }
+
+        if (a_MarbleId == m_iMarble) {
+          m_cUpVector = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+        }
       }
     }
 
@@ -347,12 +351,18 @@ namespace dustbin {
 
       if (a_ObjectId == m_iMarble) {
         m_fVel      = a_LinearVelocity.getLength();
-        m_cUpVector = a_CameraUp;
         m_fSteer    = ((irr::f32)a_ControlX) / 127.0f;
         m_fThrottle = ((irr::f32)a_ControlY) / 127.0f;
         m_bBrake    = a_ControlBrake;
 
-        m_cUpVector.normalize();
+        int l_iIndex = a_ObjectId - 10000;
+
+        if (l_iIndex >= 0 && l_iIndex < 16) {
+          if (!m_aRostrum[l_iIndex]) {
+            m_cUpVector = a_CameraUp;
+            m_cUpVector.normalize();
+          }
+        }
       }
       else {
         if (m_bHightlight) {
