@@ -964,8 +964,20 @@ namespace dustbin {
       messages::IMessage* l_pMsg = nullptr;
 
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
-        if ((*it)->m_pController != nullptr)
-          (*it)->m_pController->postControlMessage();
+        if ((*it)->m_pController != nullptr) {
+          bool l_bLeft      = false;
+          bool l_bRight     = false;
+          bool l_bForward   = false;
+          bool l_bBackward  = false;
+          bool l_bBrake     = false;
+          bool l_bRespawn   = false;
+          bool l_bAutomatic = false;
+
+          (*it)->m_pController->postControlMessage(l_bLeft, l_bRight, l_bForward, l_bBackward, l_bBrake, l_bRespawn, l_bAutomatic);
+
+          if ((*it)->m_pMarble->m_pViewport->m_pHUD != nullptr)
+            (*it)->m_pMarble->m_pViewport->m_pHUD->updateAiHelp(l_bLeft, l_bRight, l_bForward, l_bBackward, l_bBrake, l_bRespawn, l_bAutomatic);
+        }
       }
 
 #ifdef _TOUCH_CONTROL

@@ -85,9 +85,17 @@ namespace dustbin {
 
     /**
     * This message must be implemented by all descendants. If called
-    * it posts a control message to the queue.
+    * it posts a control message to the queue. The parameters are used
+    * to update the HUD if AI help is in use
+    * @param a_bLeft [out] does the marble steer left?
+    * @param a_bRight [out] does the marble steer right?
+    * @param a_bForward [out] does the marble accelerate?
+    * @param a_bBackward [out] does the marble decelerate?
+    * @param a_bBrake [out] is the marble braking?
+    * @param a_bRespawn [out] does the marble request manual respawn?
+    * @param a_bAutomatic [out] is the automatic control active?
     */
-    void CMarbleController::postControlMessage() {
+    void CMarbleController::postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic) {
       if (m_pQueue != nullptr && m_pController != nullptr) {
         irr::f32 l_fCtrlX = m_pController->getSteer();
         irr::f32 l_fCtrlY = m_pController->getThrottle();
@@ -117,6 +125,23 @@ namespace dustbin {
             l_bRearView = l_bRearBot;
             l_bRespawn  = l_bRspnBot;
           }
+
+          a_bLeft      = l_iBotX < -32;
+          a_bRight     = l_iBotX >  32;
+          a_bForward   = l_iBotY > 0;
+          a_bBackward  = l_iBotY < 0;
+          a_bBrake     = l_bBrakeBot;
+          a_bRespawn   = l_bRspnBot;
+          a_bAutomatic = m_eAiHelp == data::SPlayerData::enAiHelp::Bot;
+        }
+        else {
+          a_bLeft      = false;
+          a_bRight     = false;
+          a_bForward   = false;
+          a_bBackward  = false;
+          a_bBrake     = false;
+          a_bRespawn   = false;
+          a_bAutomatic = false;
         }
 
         messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);

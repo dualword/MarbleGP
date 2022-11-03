@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CMyTextSceneNode.h>
+#include <gui/hud_items/CHudAiHelp.h>
 #include <controller/IControllerAI.h>
 #include <scenenodes/CMyBillboard.h>
 #include <helpers/CTextureHelpers.h>
@@ -459,7 +460,8 @@ namespace dustbin {
       m_iLapTimeOffset(0),
       m_bShowLapTimes (false),
       m_pCheckered    (nullptr),
-      m_pAiController (nullptr)
+      m_pAiController (nullptr),
+      m_pAiHelp       (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -637,8 +639,6 @@ namespace dustbin {
         irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
         irr::core::position2di  l_cPos    = a_cRect.UpperLeftCorner;
 
-        irr::f32 l_fRatio = ((irr::f32)l_cScreen.Width) / ((irr::f32)l_cScreen.Height);
-
         irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
           l_cSize.Width  * l_cScreen.Width  / 3840,
           l_cSize.Height * l_cScreen.Height / 2160
@@ -720,11 +720,19 @@ namespace dustbin {
       for (std::vector<gameclasses::SPlayer *>::iterator l_itRank =  a_vRanking->begin(); l_itRank != a_vRanking->end(); l_itRank++) {
         (*l_itRank)->m_iState = 0;
       }
+
+      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off)
+        m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
     }
 
     CGameHUD::~CGameHUD() {
       if (m_pAiController != nullptr)
         m_pAiController->setHUD(nullptr);
+
+      if (m_pAiHelp != nullptr) {
+        delete m_pAiHelp;
+        m_pAiHelp = nullptr;
+      }
     }
 
     void CGameHUD::draw() {
@@ -745,6 +753,10 @@ namespace dustbin {
           ;
 
           irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
+
+          if (m_pAiHelp != nullptr)
+            m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cSpeedTotal.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+
           l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
           l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
 
@@ -1187,6 +1199,28 @@ namespace dustbin {
         m_pAiController = a_pController;
         if (m_pAiController != nullptr)
           m_pAiController->setHUD(this);
+      }
+    }
+
+    /**
+    * Update the AI help display of the HUD
+    * @param a_bLeft does the marble steer left?
+    * @param a_bRight does the marble steer right?
+    * @param a_bForward does the marble accelerate?
+    * @param a_bBackward does the marble decelerate?
+    * @param a_bBrake is the marble braking?
+    * @param a_bRespawn does the marble request manual respawn?
+    * @param a_bAutomatic is the automatic control active?
+    */
+    void CGameHUD::updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic) {
+      if (m_pAiHelp != nullptr) {
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Left     , a_bLeft      ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Right    , a_bRight     ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Forward  , a_bForward   ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Backward , a_bBackward  ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Brake    , a_bBrake     ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Respawn  , a_bRespawn   ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+        m_pAiHelp->setIconState(CHudAiHelp::enIcons::Automatic, a_bAutomatic ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
       }
     }
   }

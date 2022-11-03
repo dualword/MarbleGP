@@ -10,6 +10,8 @@
 #include <map>
 
 namespace dustbin {
+  class CHudAiHelp;
+
   namespace gameclasses {
     struct SPlayer;
   }
@@ -112,6 +114,7 @@ namespace dustbin {
         bool                           m_bShowLapTimes;   /**< Draw lap times? */
         irr::video::ITexture          *m_pCheckered;      /**< The checkered flag texture */
         controller::IControllerAI     *m_pAiController;   /**< AI controller to show the user control hints */
+        CHudAiHelp                    *m_pAiHelp;         /**< The AI help display */
 
         std::wstring getDeficitString(int a_iDeficit);
 
@@ -254,6 +257,18 @@ namespace dustbin {
         * @param a_pController the controller
         */
         void setAiController(controller::IControllerAI *a_pController);
+
+        /**
+        * Update the AI help display of the HUD
+        * @param a_bLeft does the marble steer left?
+        * @param a_bRight does the marble steer right?
+        * @param a_bForward does the marble accelerate?
+        * @param a_bBackward does the marble decelerate?
+        * @param a_bBrake is the marble braking?
+        * @param a_bRespawn does the marble request manual respawn?
+        * @param a_bAutomatic is the automatic control active?
+        */
+        void updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic);
     };
   }
 }

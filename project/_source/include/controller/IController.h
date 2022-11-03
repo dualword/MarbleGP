@@ -29,9 +29,17 @@ namespace dustbin {
 
         /**
         * This message must be implemented by all descendants. If called
-        * it posts a control message to the queue.
+        * it posts a control message to the queue. The parameters are used
+        * to update the HUD if AI help is in use
+        * @param a_bLeft [out] does the marble steer left?
+        * @param a_bRight [out] does the marble steer right?
+        * @param a_bForward [out] does the marble accelerate?
+        * @param a_bBackward [out] does the marble decelerate?
+        * @param a_bBrake [out] is the marble braking?
+        * @param a_bRespawn [out] does the marble request manual respawn?
+        * @param a_bAutomatic [out] is the automatic control active?
         */
-        virtual void postControlMessage() = 0;
+        virtual void postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic) = 0;
 
         /**
         * Update the controller with the Irrlicht event
