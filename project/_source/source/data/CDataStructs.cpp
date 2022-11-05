@@ -102,6 +102,10 @@ namespace dustbin {
     const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
     const irr::s32 c_iGameClass = -154;   /**< The class of the race */
 
+    // Marble Class
+    const irr::s32 c_iMarbleData  = -170;   /**< Header for the Marble AI data */
+    const irr::s32 c_iMarbleClass = -171;   /**< Marker for the marble class */
+
     // Free Game Slots
     const irr::s32 c_iFreeGameSlots = -180; /**< Marker for free game slots */
 
@@ -1551,6 +1555,48 @@ namespace dustbin {
     }
 
     SMarblePosition::SMarblePosition() : m_iMarbleId(-1), m_bContact(false) {
+    }
+
+    SMarbleAiData::SMarbleAiData() : m_iMarbleClass(2) {
+    }
+
+    SMarbleAiData::SMarbleAiData(SPlayerData::enAiHelp a_eHelp) : m_iMarbleClass(2) {
+      switch (a_eHelp) {
+        case data::SPlayerData::enAiHelp::Off    : m_iMarbleClass = 0; break;   // Help off    : AI is MarbleGP class (never called)
+        case data::SPlayerData::enAiHelp::Display: m_iMarbleClass = 0; break;   // Help Display: AI is MarbleGP class
+        case data::SPlayerData::enAiHelp::Low    : m_iMarbleClass = 0; break;   // Help Low    : AI is MarbleGP class
+        case data::SPlayerData::enAiHelp::Medium : m_iMarbleClass = 1; break;   // Help Medium : AI is Marble2 class
+        case data::SPlayerData::enAiHelp::High   : m_iMarbleClass = 2; break;   // Help High   : AI is Marble3  class
+        case data::SPlayerData::enAiHelp::Bot    : m_iMarbleClass = 0; break;   // Help Bot    : AI is MarbleGP class
+      }
+    }
+
+    SMarbleAiData::SMarbleAiData(const std::string& a_sData) : m_iMarbleClass(0) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      irr::s32 l_iHead = l_cSerializer.getS32();
+
+      if (l_iHead == c_iMarbleData) {
+        while (l_cSerializer.hasMoreMessages()) {
+          irr::s32 l_iMarker = l_cSerializer.getS32();
+
+          switch (l_iMarker) {
+            case c_iMarbleClass:
+              m_iMarbleClass = l_cSerializer.getS32();
+              break;
+          }
+        }
+      }
+    }
+
+    std::string SMarbleAiData::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      l_cSerializer.addS32(c_iMarbleData);
+      l_cSerializer.addS32(c_iMarbleClass);
+      l_cSerializer.addS32(m_iMarbleClass);
+
+      return l_cSerializer.getMessageAsString();
     }
   }
 }

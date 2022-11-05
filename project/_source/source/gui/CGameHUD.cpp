@@ -721,7 +721,7 @@ namespace dustbin {
         (*l_itRank)->m_iState = 0;
       }
 
-      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off)
+      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Bot)
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
     }
 

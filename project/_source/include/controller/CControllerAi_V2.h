@@ -205,16 +205,6 @@ namespace dustbin {
         }
         SRacePosition;
 
-        enum class enMarbleMode {
-          OffTrack,
-          Default,
-          Cruise,
-          TimeAttack,
-          Jump,
-          Evade,
-          Respawn
-        };
-
         int m_iMarbleId;          /**< ID of the marble this instance controls */
         int m_iIndex;             /**< Index of the marble in the marble data array */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
@@ -227,6 +217,8 @@ namespace dustbin {
 
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
+
+        data::SMarbleAiData m_cAiData;    /**< Struct with the AI data */
 
         irr::f64 m_fOldAngle;
 
@@ -245,10 +237,10 @@ namespace dustbin {
         std::map<irr::core::vector3df, int> m_mSplitSelections[2];    /**< Selections of split roads */
 
         SRacePosition                m_aRacePositions[16];    /**< The positions in the race */
-        const data::SMarblePosition *m_aMarbles      ;        /**< Data of the marbles */
+        const data::SMarblePosition *m_aMarbles          ;    /**< Data of the marbles */
 
-        static std::vector<SAiPathSection *> m_vAiPath;     /**< A list of all ai path sections */
-        static int                           m_iInstances;  /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
+        static std::vector<SAiPathSection *> m_vAiPath   [3];   /**< A list of all ai path sections for the three classes */
+        static int                           m_iInstances[3];   /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
         std::vector<std::wstring> m_vDebugText;   /**< Additional debug text (lower left) */
 
@@ -419,8 +411,9 @@ namespace dustbin {
         * @param a_bBrake [out] is the brake active?
         * @param a_bRearView [out] does the marble look to the back?
         * @param a_bRespawn [out] does the marble want a manual respawn?
+        * @param a_eMode [out] the AI mode the marble is currently in
         */
-        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) override;
+        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn, enMarbleMode &a_eMode) override;
 
         /**
         * Set the controller to debug mode

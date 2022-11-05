@@ -52,6 +52,8 @@ namespace dustbin {
           }
         }
 
+        data::SMarbleAiData l_cAiData = data::SMarbleAiData(m_eAiHelp);
+
         m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles, m_pLuaScript, a_cViewport);
         
         if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
@@ -116,14 +118,71 @@ namespace dustbin {
           bool     l_bRearBot  = false;
           bool     l_bRspnBot  = false;
 
-          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot);
+          IControllerAI::enMarbleMode l_eMode = IControllerAI::enMarbleMode::Default;
 
-          if (m_eAiHelp == data::SPlayerData::enAiHelp::Bot) {
-            l_iCtrlX    = l_iBotX;
-            l_iCtrlY    = l_iBotY;
-            l_bBrake    = l_bBrakeBot;
-            l_bRearView = l_bRearBot;
-            l_bRespawn  = l_bRspnBot;
+          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot, l_eMode);
+
+          switch (m_eAiHelp) {
+            // Bot: marble is always controlled by AI
+            case data::SPlayerData::enAiHelp::Bot:
+              l_iCtrlX    = l_iBotX;
+              l_iCtrlY    = l_iBotY;
+              l_bBrake    = l_bBrakeBot;
+              l_bRespawn  = l_bRspnBot;
+              a_bAutomatic = true;
+              break;
+
+            // High: Player needs to steer the marble, only in modes "jump" and "off-track"
+            //       does the AI take complete control
+            case data::SPlayerData::enAiHelp::High:
+              if (l_eMode == IControllerAI::enMarbleMode::Jump || l_eMode == IControllerAI::enMarbleMode::OffTrack) {
+                l_iCtrlX     = l_iBotX;
+                a_bAutomatic = true;
+              }
+              else {
+                if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
+                if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
+              }
+              l_iCtrlY     = l_iBotY;
+              l_bBrake     = l_bBrakeBot;
+              l_bRespawn   = l_bRspnBot;
+              break;
+
+            // Medium: The marble is controlled by the player unless in the modes "Jump" and "Off-Track"
+            case data::SPlayerData::enAiHelp::Medium:
+              if (l_eMode == IControllerAI::enMarbleMode::Jump || l_eMode == IControllerAI::enMarbleMode::OffTrack) {
+                l_iCtrlX     = l_iBotX;
+                l_iCtrlY     = l_iBotY;
+                l_bBrake     = l_bBrakeBot;
+                a_bAutomatic = true;
+              }
+              else {
+                if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
+                if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
+              }
+              l_bRespawn   = l_bRspnBot;
+              break;
+
+            // Low: The marbles is controlled by the player, in mode "Jump" the velocity is adjusted by the AI,
+            //      and in mode "Off-Track" control is completely taken over by AI
+            case data::SPlayerData::enAiHelp::Low:
+              if (l_eMode == IControllerAI::enMarbleMode::Jump) {
+                l_iCtrlY     = l_iBotY;
+                l_bBrake     = l_bBrakeBot;
+                a_bAutomatic = true;
+              }
+              else if (l_eMode == IControllerAI::enMarbleMode::OffTrack) {
+                l_iCtrlX     = l_iBotX;
+                l_iCtrlY     = l_iBotY;
+                l_bBrake     = l_bBrakeBot;
+                a_bAutomatic = true;
+              }
+              l_bRespawn   = l_bRspnBot;
+              break;
+
+            case data::SPlayerData::enAiHelp::Display:
+            case data::SPlayerData::enAiHelp::Off:
+              break;
           }
 
           a_bLeft      = l_iBotX < -32;
@@ -132,16 +191,6 @@ namespace dustbin {
           a_bBackward  = l_iBotY < 0;
           a_bBrake     = l_bBrakeBot;
           a_bRespawn   = l_bRspnBot;
-          a_bAutomatic = m_eAiHelp == data::SPlayerData::enAiHelp::Bot;
-        }
-        else {
-          a_bLeft      = false;
-          a_bRight     = false;
-          a_bForward   = false;
-          a_bBackward  = false;
-          a_bBrake     = false;
-          a_bRespawn   = false;
-          a_bAutomatic = false;
         }
 
         messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);

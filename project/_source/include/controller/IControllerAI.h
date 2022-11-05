@@ -16,6 +16,19 @@ namespace dustbin {
     */
     class IControllerAI {
       public:
+        /**
+        * An enumeration for the marble modes
+        */
+        enum class enMarbleMode {
+          OffTrack,     /**< The marble is off-track, hard steering necessary to get back on */
+          Default,      /**< The default mode, good balance between safety and lap time */
+          Cruise,       /**< Cruise mode, more safety, lap time not as good */
+          TimeAttack,   /**< Time Attack mode, sacrifice some safety for better lap time */
+          Jump,         /**< We are approaching a jump so we need to handle things differently */
+          Evade,        /**< Evade an incoming marble */
+          Respawn       /**< The marble wants to respawn */
+        };
+
         IControllerAI() { }
         virtual ~IControllerAI() { }
 
@@ -56,8 +69,9 @@ namespace dustbin {
         * @param a_bBrake [out] is the brake active?
         * @param a_bRearView [out] does the marble look to the back?
         * @param a_bRespawn [out] does the marble want a manual respawn?
+        * @param a_eMode [out] the AI mode the marble is currently in
         */
-        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) = 0;
+        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn, enMarbleMode &a_eMode) = 0;
 
         /**
         * Set the controller to debug mode

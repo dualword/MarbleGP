@@ -19,7 +19,9 @@ namespace dustbin {
         bool     l_bRearView = false;
         bool     l_bRespawn  = false;
 
-        if (m_aControllers[i]->getControlMessage(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn)) {
+        IControllerAI::enMarbleMode l_eMode;
+
+        if (m_aControllers[i]->getControlMessage(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn, l_eMode)) {
           messages::CMarbleControl p = messages::CMarbleControl(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
           m_pDynamicsIn->postMessage(&p);
         }

@@ -355,6 +355,28 @@ namespace dustbin {
       SMarblePosition();
     }
     SMarblePosition;
+
+    /**
+    * @class SMarbleAiData
+    * @author Christian Keimel
+    * This struct holds all data for the AI
+    */
+    typedef struct SMarbleAiData {
+      int    m_iMarbleClass;    /**< The marble class (0 == MarbleGP, 1 == Marble2, 2 == Marble3) */
+
+      SMarbleAiData();
+
+      /**
+      * Constructor with the AI help class. Values will be
+      * filled with the class defaults
+      */
+      SMarbleAiData(SPlayerData::enAiHelp a_eHelp);
+
+      SMarbleAiData(const std::string &a_sData);
+
+      std::string serialize();
+    }
+    SMarbleAiData;
   }
 }
 

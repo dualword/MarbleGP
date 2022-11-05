@@ -159,7 +159,7 @@ namespace dustbin {
       m_aMarbles       (a_pMarbles),
       m_p2dPath        (nullptr)
     {
-      if (m_iInstances == 0) {
+      if (m_iInstances[m_cAiData.m_iMarbleClass] == 0) {
         CGlobal *l_pGlobal = CGlobal::getInstance();
 
         std::vector<const scenenodes::CAiPathNode *> l_vAiNodes;
@@ -221,13 +221,14 @@ namespace dustbin {
                     p->m_vCheckpoints.push_back(*l_itLinks);
                 }
               }
-            
+              
+              irr::f32 l_fClass =  m_cAiData.m_iMarbleClass == 0 ? 1.0f : m_cAiData.m_iMarbleClass == 1 ? 0.95f : 0.9f;
 
               irr::core::vector3df l_cEdgePoints[] = {
-                (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector,   // Start point 1
-                (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector,   // End point 1
-                (*l_itSection)->m_cPosition + (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector,   // Start point 2
-                (*l_itNext   )->m_cPosition + (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector    // End point 2
+                (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector * l_fClass,   // Start point 1
+                (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector * l_fClass,   // End point 1
+                (*l_itSection)->m_cPosition + (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector * l_fClass,   // Start point 2
+                (*l_itNext   )->m_cPosition + (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector * l_fClass    // End point 2
               };
 
               irr::core::line3df l_cEdges[] = {
@@ -255,16 +256,16 @@ namespace dustbin {
             
               p->m_cNormal = (*l_itSection)->m_cNormal;
 
-              m_vAiPath.push_back(p);
+              m_vAiPath[m_cAiData.m_iMarbleClass].push_back(p);
             }
           }
         }
 
         // Now that we have a filled vector of the path sections we need to link them
-        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itThis != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itThis++) {
           irr::core::vector3df l_cThis = (*l_itThis)->m_cRealLine.end;
 
-          for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath.begin(); l_itNext != m_vAiPath.end(); l_itNext++) {
+          for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itNext != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itNext++) {
             irr::core::vector3df l_cNext = (*l_itNext)->m_cRealLine.start;
 
             // Now we check if the end of this line matches the start of the next line.
@@ -287,17 +288,17 @@ namespace dustbin {
           }
         }
 
-        printf("%i AI path sections found.\n", (int)m_vAiPath.size());
+        printf("%i AI path sections found.\n", (int)m_vAiPath[m_cAiData.m_iMarbleClass].size());
 
         // Now we calculate the next 500+ meters for all AI path sections
-        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itThis != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itThis++) {
           (*l_itThis)->fillLineVectors(a_pMarbles, m_iMarbleId);
         }
 
         int l_iZeroLinks = 0;
 
         // For debugging: show how many links each section has
-        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itThis != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itThis++) {
           if ((*l_itThis)->m_vNext.size() == 0)
             l_iZeroLinks++;
           else {
@@ -319,17 +320,17 @@ namespace dustbin {
         printf("%i unlinked sections found.\n", l_iZeroLinks);
         printf("Ready.");
       }
-      m_iInstances++;
+      m_iInstances[m_cAiData.m_iMarbleClass]++;
     }
 
     CControllerAi_V2::~CControllerAi_V2() {
-      m_iInstances--;
+      m_iInstances[m_cAiData.m_iMarbleClass]--;
 
       if (m_iInstances == 0) {
         printf("Deleting AI data.\n");
-        while (m_vAiPath.size() > 0) {
-          SAiPathSection *p = *m_vAiPath.begin();
-          m_vAiPath.erase(m_vAiPath.begin());
+        while (m_vAiPath[m_cAiData.m_iMarbleClass].size() > 0) {
+          SAiPathSection *p = *m_vAiPath[m_cAiData.m_iMarbleClass].begin();
+          m_vAiPath[m_cAiData.m_iMarbleClass].erase(m_vAiPath[m_cAiData.m_iMarbleClass].begin());
           delete p;
         }
       }
@@ -496,8 +497,9 @@ namespace dustbin {
     * @param a_bBrake [out] is the brake active?
     * @param a_bRearView [out] does the marble look to the back?
     * @param a_bRespawn [out] does the marble want a manual respawn?
+    * @param a_eMode [out] the AI mode the marble is currently in
     */
-    bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn) {
+    bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn, enMarbleMode &a_eMode) {
       if (m_aMarbles[m_iIndex].m_iMarbleId == -1)
         return false;
 
@@ -507,15 +509,16 @@ namespace dustbin {
       a_bBrake    = false;
       a_bRearView = false;
       a_bRespawn  = false;
+      a_eMode     = m_eMode;
 
       m_vDebugText.clear();
 
       // If we do not yet know where we are we have a look
       if (m_pCurrent == nullptr) {
-        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, m_iLastCheckpoint == -1, true);
+        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath[m_cAiData.m_iMarbleClass], m_iLastCheckpoint == -1, true);
 
         if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false, true);
+          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath[m_cAiData.m_iMarbleClass], false, true);
       }
 
       if (m_pCurrent != nullptr) {
@@ -1537,7 +1540,11 @@ namespace dustbin {
     CControllerAi_V2::SRacePosition::SRacePosition() : m_iMarble(0), m_iPosition(0), m_iDeficitAhead(0), m_iDeficitLeader(0) {
     }
 
-    int CControllerAi_V2::m_iInstances = 0;
-    std::vector<CControllerAi_V2::SAiPathSection *> CControllerAi_V2::m_vAiPath = std::vector<CControllerAi_V2::SAiPathSection *>();
+    int CControllerAi_V2::m_iInstances[3] = {0, 0, 0 };
+    std::vector<CControllerAi_V2::SAiPathSection *> CControllerAi_V2::m_vAiPath[3] = { 
+      std::vector<CControllerAi_V2::SAiPathSection*>(),
+      std::vector<CControllerAi_V2::SAiPathSection*>(),
+      std::vector<CControllerAi_V2::SAiPathSection*>()
+    };
   }
 }

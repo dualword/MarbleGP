@@ -112,7 +112,17 @@ namespace dustbin {
     void CControllerAI::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
     }
 
-    bool CControllerAI::getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn) { 
+    /**
+    * Get the control values for the marble
+    * @param a_iMarbleId [out] ID of the marble this controller controls
+    * @param a_iCtrlX [out] the steering value 
+    * @param a_iCtrlY [out] the throttle value
+    * @param a_bBrake [out] is the brake active?
+    * @param a_bRearView [out] does the marble look to the back?
+    * @param a_bRespawn [out] does the marble want a manual respawn?
+    * @param a_eMode [out] the AI mode the marble is currently in
+    */
+    bool CControllerAI::getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn, enMarbleMode &a_eMode) { 
       bool l_bRespawn = false;
 
       if (m_pCurrent == nullptr) {
