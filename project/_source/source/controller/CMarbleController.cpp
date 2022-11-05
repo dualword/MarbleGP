@@ -54,7 +54,7 @@ namespace dustbin {
 
         data::SMarbleAiData l_cAiData = data::SMarbleAiData(m_eAiHelp);
 
-        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "", m_aMarbles, m_pLuaScript, a_cViewport);
+        m_pAiControls = new CControllerAi_V2(a_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
         
         if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
           m_pAiControls->setDebug(true);
@@ -126,7 +126,9 @@ namespace dustbin {
 
           switch (m_eAiHelp) {
             // Bot: marble is always controlled by AI
-            case data::SPlayerData::enAiHelp::Bot:
+            case data::SPlayerData::enAiHelp::BotMgp:
+            case data::SPlayerData::enAiHelp::BotMb2:
+            case data::SPlayerData::enAiHelp::BotMb3:
               l_iCtrlX    = l_iBotX;
               l_iCtrlY    = l_iBotY;
               l_bBrake    = l_bBrakeBot;

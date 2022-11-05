@@ -67,6 +67,7 @@ namespace dustbin {
       SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType);
 
       void setName(const std::string &a_sName);
+      bool isBot();
    } SPlayer;
   }
 }

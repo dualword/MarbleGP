@@ -86,7 +86,9 @@ namespace dustbin {
         Low,      /**< Display + adjust speed before jumps */
         Medium,   /**< Low + adjust steering to the correct value */
         High,     /**< Medium + try to make sure marble does not fall off the track */
-        Bot       /**< Complete AI control */
+        BotMgp,   /**< Complete AI control (MarbleGP) */
+        BotMb2,   /**< Complete AI control (Marble2) */
+        BotMb3    /**< Complete AI control (Marble3) */
       };
 
       enPlayerType m_eType;     /**< The type of player */
@@ -111,6 +113,12 @@ namespace dustbin {
       bool deserialize(const std::string &a_sSerialized);
 
       std::string toString();
+
+      /**
+      * Is this player a bot?
+      * @return "true" if this is a bot, "false" otherwise
+      */
+      bool isBot();
 
       static std::vector<SPlayerData> createPlayerVector(const std::string a_sSerialized);
     } SPlayerData;
@@ -362,8 +370,22 @@ namespace dustbin {
     * This struct holds all data for the AI
     */
     typedef struct SMarbleAiData {
-      int    m_iMarbleClass;    /**< The marble class (0 == MarbleGP, 1 == Marble2, 2 == Marble3) */
+      /**
+      * Enum for all the AI mode flags. Evade and Off-Track are always possible
+      */
+      enum class enAiMode {
+        Default = 0,    /**< Default mode is zero, always possible */
+        Cruise = 1,
+        TimeAttack = 2
+      };
 
+      int m_iMarbleClass;   /**< The marble class (0 == MarbleGP, 1 == Marble2, 2 == Marble3) */
+      int m_iModeMap;       /**< Bit field of the available modes */
+ 
+      float m_fSpeedFactor1;    /**< The first factor for calculating the wanted velocity */
+      float m_fSpeedFactor2;    /**< The second factor for calculating the wanted velocity */
+      float m_fSpeedThreshold;  /**< Threshold for using the second calculated point  */
+      
       SMarbleAiData();
 
       /**
@@ -372,7 +394,13 @@ namespace dustbin {
       */
       SMarbleAiData(SPlayerData::enAiHelp a_eHelp);
 
+      /**
+      * Constructor with serialized data
+      * @param a_sData data to deserialize
+      */
       SMarbleAiData(const std::string &a_sData);
+
+      void setDefaults();
 
       std::string serialize();
     }

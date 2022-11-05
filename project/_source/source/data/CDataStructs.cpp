@@ -102,9 +102,10 @@ namespace dustbin {
     const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
     const irr::s32 c_iGameClass = -154;   /**< The class of the race */
 
-    // Marble Class
+    // Marble AI Class
     const irr::s32 c_iMarbleData  = -170;   /**< Header for the Marble AI data */
     const irr::s32 c_iMarbleClass = -171;   /**< Marker for the marble class */
+    const irr::s32 c_iMarbleModes = -172;   /**< Marker for the AI mode flags */
 
     // Free Game Slots
     const irr::s32 c_iFreeGameSlots = -180; /**< Marker for free game slots */
@@ -372,10 +373,20 @@ namespace dustbin {
         case enAiHelp::Low    : s += "\"Low\"\n"    ; break;
         case enAiHelp::Medium : s += "\"Medium\"\n" ; break;
         case enAiHelp::High   : s += "\"High\"\n"   ; break;
-        case enAiHelp::Bot    : s += "\"Ai Bot\"\n" ; break;
+        case enAiHelp::BotMgp : s += "\"Ai Bot (MarbleGP)\"\n" ; break;
+        case enAiHelp::BotMb2 : s += "\"Ai Bot (Marble2)\"\n" ; break;
+        case enAiHelp::BotMb3 : s += "\"Ai Bot (Marble3)\"\n" ; break;
       }
 
       return s;
+    }
+
+    /**
+    * Is this player a bot?
+    * @return "true" if this is a bot, "false" otherwise
+    */
+    bool SPlayerData::isBot() {
+      return m_eAiHelp == enAiHelp::BotMgp || m_eAiHelp == enAiHelp::BotMb2 || m_eAiHelp == enAiHelp::BotMb3;
     }
 
     std::vector<SPlayerData> SPlayerData::createPlayerVector(const std::string a_sSerialized) {
@@ -1557,21 +1568,26 @@ namespace dustbin {
     SMarblePosition::SMarblePosition() : m_iMarbleId(-1), m_bContact(false) {
     }
 
-    SMarbleAiData::SMarbleAiData() : m_iMarbleClass(2) {
+    SMarbleAiData::SMarbleAiData() : m_iMarbleClass(2), m_iModeMap(0) {
+      setDefaults();
     }
 
-    SMarbleAiData::SMarbleAiData(SPlayerData::enAiHelp a_eHelp) : m_iMarbleClass(2) {
+    SMarbleAiData::SMarbleAiData(SPlayerData::enAiHelp a_eHelp) : m_iMarbleClass(2), m_iModeMap(0) {
       switch (a_eHelp) {
         case data::SPlayerData::enAiHelp::Off    : m_iMarbleClass = 0; break;   // Help off    : AI is MarbleGP class (never called)
         case data::SPlayerData::enAiHelp::Display: m_iMarbleClass = 0; break;   // Help Display: AI is MarbleGP class
         case data::SPlayerData::enAiHelp::Low    : m_iMarbleClass = 0; break;   // Help Low    : AI is MarbleGP class
         case data::SPlayerData::enAiHelp::Medium : m_iMarbleClass = 1; break;   // Help Medium : AI is Marble2 class
         case data::SPlayerData::enAiHelp::High   : m_iMarbleClass = 2; break;   // Help High   : AI is Marble3  class
-        case data::SPlayerData::enAiHelp::Bot    : m_iMarbleClass = 0; break;   // Help Bot    : AI is MarbleGP class
+        case data::SPlayerData::enAiHelp::BotMgp : m_iMarbleClass = 3; break;   // Help Bot    : AI is MarbleGP class
+        case data::SPlayerData::enAiHelp::BotMb2 : m_iMarbleClass = 4; break;   // Help Bot    : AI is Marble2 class
+        case data::SPlayerData::enAiHelp::BotMb3 : m_iMarbleClass = 5; break;   // Help Bot    : AI is Marble3 class
       }
+
+      setDefaults();
     }
 
-    SMarbleAiData::SMarbleAiData(const std::string& a_sData) : m_iMarbleClass(0) {
+    SMarbleAiData::SMarbleAiData(const std::string& a_sData) : m_iMarbleClass(0), m_iModeMap(0) {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
       irr::s32 l_iHead = l_cSerializer.getS32();
@@ -1583,9 +1599,48 @@ namespace dustbin {
           switch (l_iMarker) {
             case c_iMarbleClass:
               m_iMarbleClass = l_cSerializer.getS32();
+              setDefaults();
+              break;
+
+            case c_iMarbleModes:
+              m_iModeMap = l_cSerializer.getS32();
               break;
           }
         }
+      }
+    }
+
+    void SMarbleAiData::setDefaults() {
+      switch (m_iMarbleClass) {
+        case 0:
+        case 3:
+          // All modes available for MarbleGP
+          m_iModeMap = (int)enAiMode::TimeAttack | (int)enAiMode::Cruise | (int)enAiMode::Default;
+
+          m_fSpeedFactor1   = 80.0;
+          m_fSpeedFactor2   = 75.0;
+          m_fSpeedThreshold = 1.8;
+          break;
+
+        case 1:
+        case 4:
+          // Only "Cruise" and "Default" modes for Marble2
+          m_iModeMap = (int)enAiMode::Cruise | (int)enAiMode::Default;
+
+          m_fSpeedFactor1   = 75.0;
+          m_fSpeedFactor2   = 65.0;
+          m_fSpeedThreshold = 1.5;
+          break;
+
+        case 2:
+        case 5:
+          // Only "Default" mode for Marble3
+          m_iModeMap = (int)enAiMode::Default;
+
+          m_fSpeedFactor1   = 60.0;
+          m_fSpeedFactor2   = 55.0;
+          m_fSpeedThreshold = 1.35;
+          break;
       }
     }
 
@@ -1595,6 +1650,8 @@ namespace dustbin {
       l_cSerializer.addS32(c_iMarbleData);
       l_cSerializer.addS32(c_iMarbleClass);
       l_cSerializer.addS32(m_iMarbleClass);
+      l_cSerializer.addS32(c_iMarbleModes);
+      l_cSerializer.addS32(m_iModeMap);
 
       return l_cSerializer.getMessageAsString();
     }

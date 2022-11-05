@@ -114,12 +114,14 @@ namespace dustbin {
 
           if (m_pLblAiHelp != nullptr)
             switch (m_cData.m_eAiHelp) {
-              case data::SPlayerData::enAiHelp::Off    : m_pLblAiHelp->setText(L"Off"    ); break;
-              case data::SPlayerData::enAiHelp::Display: m_pLblAiHelp->setText(L"Display"); break;
-              case data::SPlayerData::enAiHelp::Low    : m_pLblAiHelp->setText(L"Low"    ); break;
-              case data::SPlayerData::enAiHelp::Medium : m_pLblAiHelp->setText(L"Medium" ); break;
-              case data::SPlayerData::enAiHelp::High   : m_pLblAiHelp->setText(L"High"   ); break;
-              case data::SPlayerData::enAiHelp::Bot    : m_pLblAiHelp->setText(L"AI Bot" ); break;
+              case data::SPlayerData::enAiHelp::Off    : m_pLblAiHelp->setText(L"Off"              ); break;
+              case data::SPlayerData::enAiHelp::Display: m_pLblAiHelp->setText(L"Display"          ); break;
+              case data::SPlayerData::enAiHelp::Low    : m_pLblAiHelp->setText(L"Low"              ); break;
+              case data::SPlayerData::enAiHelp::Medium : m_pLblAiHelp->setText(L"Medium"           ); break;
+              case data::SPlayerData::enAiHelp::High   : m_pLblAiHelp->setText(L"High"             ); break;
+              case data::SPlayerData::enAiHelp::BotMgp : m_pLblAiHelp->setText(L"AI Bot (MarbleGP)"); break;
+              case data::SPlayerData::enAiHelp::BotMb2 : m_pLblAiHelp->setText(L"AI Bot (Marble2)" ); break;
+              case data::SPlayerData::enAiHelp::BotMb3 : m_pLblAiHelp->setText(L"AI Bot (Marble3)" ); break;
             }
         }
       }

@@ -536,6 +536,18 @@ namespace dustbin {
         l_cSizeBot.Width = l_cSizeTop.Width;
 
       std::wstring l_sName = a_pPlayer->m_sWName;
+
+      switch (a_pPlayer->m_eAiHelp) {
+        case data::SPlayerData::enAiHelp::Off    : break;
+        case data::SPlayerData::enAiHelp::Display: break;
+        case data::SPlayerData::enAiHelp::Low    : l_sName += L" (AI help \"Low\")"   ; break;
+        case data::SPlayerData::enAiHelp::Medium : l_sName += L" (AI help \"Medium\")"; break;
+        case data::SPlayerData::enAiHelp::High   : l_sName += L" (AI help \"High\")"  ; break;
+        case data::SPlayerData::enAiHelp::BotMgp : l_sName += L" (MarbleGP Bot)"      ; break;
+        case data::SPlayerData::enAiHelp::BotMb2 : l_sName += L" (Marble2 Bot)"       ; break;
+        case data::SPlayerData::enAiHelp::BotMb3 : l_sName += L" (Marble3 Bot)"       ; break;
+      }
+
       irr::core::dimension2du l_cSizeName = getDimension(l_sName, l_pRegular);
 
       irr::core::position2di l_cLapHead = irr::core::position2di(a_cRect.UpperLeftCorner .X                   , a_cRect.UpperLeftCorner.Y                    );
@@ -727,7 +739,7 @@ namespace dustbin {
         (*l_itRank)->m_iState = 0;
       }
 
-      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Bot) {
+      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
         m_pAiNode = new scenenodes::CAiPathSceneNode(l_pGlobal->getSceneManager()->getRootSceneNode(), l_pGlobal->getSceneManager(), -1, irr::core::vector3df(), irr::core::dimension2df(1.5f, 1.5f));
         m_pAiNode->drop();

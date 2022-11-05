@@ -210,6 +210,7 @@ namespace dustbin {
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
         int m_iMyPosition;        /**< My position in the race */
         int m_iPathSelection;     /**< The index of the path selection maps */
+        int m_iClassIndex;        /**< Index for accessing the class-specific path data */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */

@@ -159,7 +159,11 @@ namespace dustbin {
       m_aMarbles       (a_pMarbles),
       m_p2dPath        (nullptr)
     {
-      if (m_iInstances[m_cAiData.m_iMarbleClass] == 0) {
+      m_cAiData = data::SMarbleAiData(a_sControls);
+
+      m_iClassIndex = m_cAiData.m_iMarbleClass % 2;
+
+      if (m_iInstances[m_iClassIndex] == 0) {
         CGlobal *l_pGlobal = CGlobal::getInstance();
 
         std::vector<const scenenodes::CAiPathNode *> l_vAiNodes;
@@ -222,7 +226,7 @@ namespace dustbin {
                 }
               }
               
-              irr::f32 l_fClass =  m_cAiData.m_iMarbleClass == 0 ? 1.0f : m_cAiData.m_iMarbleClass == 1 ? 0.95f : 0.9f;
+              irr::f32 l_fClass =  m_iClassIndex == 0 ? 1.0f : m_iClassIndex == 1 ? 0.9f : 0.85f;
 
               irr::core::vector3df l_cEdgePoints[] = {
                 (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector * l_fClass,   // Start point 1
@@ -256,16 +260,16 @@ namespace dustbin {
             
               p->m_cNormal = (*l_itSection)->m_cNormal;
 
-              m_vAiPath[m_cAiData.m_iMarbleClass].push_back(p);
+              m_vAiPath[m_iClassIndex].push_back(p);
             }
           }
         }
 
         // Now that we have a filled vector of the path sections we need to link them
-        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itThis != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itThis++) {
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_iClassIndex].begin(); l_itThis != m_vAiPath[m_iClassIndex].end(); l_itThis++) {
           irr::core::vector3df l_cThis = (*l_itThis)->m_cRealLine.end;
 
-          for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itNext != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itNext++) {
+          for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath[m_iClassIndex].begin(); l_itNext != m_vAiPath[m_iClassIndex].end(); l_itNext++) {
             irr::core::vector3df l_cNext = (*l_itNext)->m_cRealLine.start;
 
             // Now we check if the end of this line matches the start of the next line.
@@ -288,17 +292,17 @@ namespace dustbin {
           }
         }
 
-        printf("%i AI path sections found.\n", (int)m_vAiPath[m_cAiData.m_iMarbleClass].size());
+        printf("%i AI path sections found.\n", (int)m_vAiPath[m_iClassIndex].size());
 
         // Now we calculate the next 500+ meters for all AI path sections
-        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itThis != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itThis++) {
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_iClassIndex].begin(); l_itThis != m_vAiPath[m_iClassIndex].end(); l_itThis++) {
           (*l_itThis)->fillLineVectors(a_pMarbles, m_iMarbleId);
         }
 
         int l_iZeroLinks = 0;
 
         // For debugging: show how many links each section has
-        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_cAiData.m_iMarbleClass].begin(); l_itThis != m_vAiPath[m_cAiData.m_iMarbleClass].end(); l_itThis++) {
+        for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath[m_iClassIndex].begin(); l_itThis != m_vAiPath[m_iClassIndex].end(); l_itThis++) {
           if ((*l_itThis)->m_vNext.size() == 0)
             l_iZeroLinks++;
           else {
@@ -320,17 +324,17 @@ namespace dustbin {
         printf("%i unlinked sections found.\n", l_iZeroLinks);
         printf("Ready.");
       }
-      m_iInstances[m_cAiData.m_iMarbleClass]++;
+      m_iInstances[m_iClassIndex]++;
     }
 
     CControllerAi_V2::~CControllerAi_V2() {
-      m_iInstances[m_cAiData.m_iMarbleClass]--;
+      m_iInstances[m_iClassIndex]--;
 
       if (m_iInstances == 0) {
         printf("Deleting AI data.\n");
-        while (m_vAiPath[m_cAiData.m_iMarbleClass].size() > 0) {
-          SAiPathSection *p = *m_vAiPath[m_cAiData.m_iMarbleClass].begin();
-          m_vAiPath[m_cAiData.m_iMarbleClass].erase(m_vAiPath[m_cAiData.m_iMarbleClass].begin());
+        while (m_vAiPath[m_iClassIndex].size() > 0) {
+          SAiPathSection *p = *m_vAiPath[m_iClassIndex].begin();
+          m_vAiPath[m_iClassIndex].erase(m_vAiPath[m_iClassIndex].begin());
           delete p;
         }
       }
@@ -447,6 +451,16 @@ namespace dustbin {
     * @param a_eMode the new mode
     */
     void CControllerAi_V2::switchMarbleMode(enMarbleMode a_eMode) {
+      if ((m_cAiData.m_iModeMap & (int)data::SMarbleAiData::enAiMode::TimeAttack) == 0) {
+        if (a_eMode == enMarbleMode::TimeAttack)
+          return;
+      }
+
+      if ((m_cAiData.m_iModeMap & (int)data::SMarbleAiData::enAiMode::Cruise) == 0) {
+        if (a_eMode == enMarbleMode::Cruise)
+          return;
+      }
+
       if (a_eMode != m_eMode) {
         switch (m_eMode) {
           case enMarbleMode::Evade:
@@ -527,10 +541,10 @@ namespace dustbin {
 
       // If we do not yet know where we are we have a look
       if (m_pCurrent == nullptr) {
-        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath[m_cAiData.m_iMarbleClass], m_iLastCheckpoint == -1, true);
+        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath[m_iClassIndex], m_iLastCheckpoint == -1, true);
 
         if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath[m_cAiData.m_iMarbleClass], false, true);
+          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath[m_iClassIndex], false, true);
       }
 
       if (m_pCurrent != nullptr) {
@@ -872,21 +886,21 @@ namespace dustbin {
                 // .. if the speed factor is high enough we increase the speed
                 // to up to 160. To do: maybe the 0.85 can be marble-class dependent
                 if (l_fSpeedFactor > 0.85) {
-                  m_fVCalc += (irr::f32)(80.0 * (l_fSpeedFactor / 0.85));
+                  m_fVCalc += (irr::f32)(m_cAiData.m_fSpeedFactor1 * (l_fSpeedFactor / 0.85));
                 }
 
                 // Now we calculate another possible speed using
                 // the second control line, same procedure as above
                 irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
-                irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * 75.0f);
+                irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * m_cAiData.m_fSpeedFactor2);
 
                 if (l_fSpeedFact2 > 0.85) {
-                  l_fSpeed2 += 80.0 * (l_fSpeedFact2 / 0.85);
+                  l_fSpeed2 += m_cAiData.m_fSpeedFactor2 * (l_fSpeedFact2 / 0.85);
                 }
                 
                 // if we are fast enough we use this second
                 // calculated speed
-                if (l_fVel > 1.8 * l_cLine.getLength()) {
+                if (l_fVel > m_cAiData.m_fSpeedThreshold * l_cLine.getLength()) {
                   m_fVCalc = (irr::f32)l_fSpeed2;
                 }
               }

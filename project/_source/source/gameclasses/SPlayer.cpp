@@ -98,5 +98,9 @@ namespace dustbin {
       m_sName  =                       a_sName;
       m_sWName = helpers::s2ws(a_sName);
     }
+
+    bool SPlayer::isBot() {
+      return m_eAiHelp == data::SPlayerData::enAiHelp::BotMgp || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3;
+    }
   }
 }
