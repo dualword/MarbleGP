@@ -330,7 +330,7 @@ namespace dustbin {
     CControllerAi_V2::~CControllerAi_V2() {
       m_iInstances[m_iClassIndex]--;
 
-      if (m_iInstances == 0) {
+      if (m_iInstances[m_iClassIndex] == 0) {
         printf("Deleting AI data.\n");
         while (m_vAiPath[m_iClassIndex].size() > 0) {
           SAiPathSection *p = *m_vAiPath[m_iClassIndex].begin();
