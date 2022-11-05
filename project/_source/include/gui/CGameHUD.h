@@ -20,6 +20,10 @@ namespace dustbin {
     class IControllerAI;
   }
 
+  namespace scenenodes {
+    class CAiPathSceneNode;
+  }
+
   namespace gui {
     class CRankingElement;  /**< Forward declaration of the ranking element */
 
@@ -61,6 +65,7 @@ namespace dustbin {
         irr::core::position2di     m_cSpeedOffset;  /**< Offset of the speed bar */
         irr::core::dimension2du    m_cSpeedBar;     /**< Size of the speed bar */
         irr::core::vector3df       m_cUpVector;     /**< The marble's up vector */
+        irr::core::vector3df       m_cPosition;     /**< The marble's position */
         CRankingElement            *m_aRanking[16];  /**< The GUI elements for the ranking */
         irr::gui::IGUITab          *m_pRankParent;   /**< The parent for the ranking display */
         irr::video::ITexture       *m_pCountDown[5]; /**< The countdown textures */
@@ -115,6 +120,7 @@ namespace dustbin {
         irr::video::ITexture          *m_pCheckered;      /**< The checkered flag texture */
         controller::IControllerAI     *m_pAiController;   /**< AI controller to show the user control hints */
         CHudAiHelp                    *m_pAiHelp;         /**< The AI help display */
+        scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);
 
@@ -267,8 +273,10 @@ namespace dustbin {
         * @param a_bBrake is the marble braking?
         * @param a_bRespawn does the marble request manual respawn?
         * @param a_bAutomatic is the automatic control active?
+        * @param a_cPoint1 the first point calculated by the AI
+        * @param a_cPoint2 the second point calculated by the AI
         */
-        void updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic);
+        void updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic, const irr::core::vector3df &a_cPoint1, const irr::core::vector3df &a_cPoint2);
     };
   }
 }

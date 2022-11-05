@@ -498,8 +498,20 @@ namespace dustbin {
     * @param a_bRearView [out] does the marble look to the back?
     * @param a_bRespawn [out] does the marble want a manual respawn?
     * @param a_eMode [out] the AI mode the marble is currently in
+    * @param a_cPoint1 [out] the first point for the AI calculation
+    * @param a_cPoint2 [out] the second point for the AI calculation
     */
-    bool CControllerAi_V2::getControlMessage(irr::s32& a_iMarbleId, irr::s8& a_iCtrlX, irr::s8& a_iCtrlY, bool& a_bBrake, bool& a_bRearView, bool& a_bRespawn, enMarbleMode &a_eMode) {
+    bool CControllerAi_V2::getControlMessage(
+      irr::s32& a_iMarbleId, 
+      irr::s8& a_iCtrlX, 
+      irr::s8& a_iCtrlY, 
+      bool& a_bBrake, 
+      bool& a_bRearView, 
+      bool& a_bRespawn, 
+      enMarbleMode &a_eMode, 
+      irr::core::vector3df &a_cPoint1, 
+      irr::core::vector3df &a_cPoint2
+    ) {
       if (m_aMarbles[m_iIndex].m_iMarbleId == -1)
         return false;
 
@@ -742,7 +754,7 @@ namespace dustbin {
             switch (m_eMode) {
               case enMarbleMode::OffTrack: {
                 // Off-track: get back on the track as fast as possible
-                l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr);
+                l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr, a_cPoint1, a_cPoint2);
                 irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
                 irr::f32 l_fDist = v.getDistanceFrom(l_cLine.start);
                 if (l_fDist > 2.5f * m_p2dPath->m_fWidth)
@@ -751,19 +763,19 @@ namespace dustbin {
               }
                 
               case enMarbleMode::Default:
-                l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd);
+                l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                 break;
 
               case enMarbleMode::Cruise:
-                l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd);
+                l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                 break;
 
               case enMarbleMode::TimeAttack:
-                l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
+                l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                 break;
 
               case enMarbleMode::Evade:
-                l_iLines = getControlLines_Evade(l_cLine, l_cOther, *l_itEnd, 2.0f * l_fVel);
+                l_iLines = getControlLines_Evade(l_cLine, l_cOther, *l_itEnd, 2.0f * l_fVel, a_cPoint1, a_cPoint2);
                 break;
 
               case enMarbleMode::Jump: {
@@ -1043,11 +1055,14 @@ namespace dustbin {
     * from the startpoint of the "a_cLine" parameter
     * @param a_cLine [out] the best line, start is used as input
     * @param a_pEnd the 2d path lines to search
+    * @param a_cPoint [out] the 3d point of the AI calculation
     */
-    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd, SPathLine2d **a_pCollide) {
+    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd, SPathLine2d **a_pCollide, irr::core::vector3df &a_cPoint) {
       while (a_pEnd != nullptr) {
         bool l_bReturn = true;
         a_cLine.end = a_pEnd->m_cLines[0].end;
+
+        a_cPoint = a_pEnd->m_pParent->m_pParent->m_cRealLine.end;
 
         SPathLine2d *l_pOther = a_pEnd;
         while (l_pOther != nullptr) {
@@ -1077,14 +1092,14 @@ namespace dustbin {
     * @param a_pPath the AI path data for calculating the two lines
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Default(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+    int CControllerAi_V2::getControlLines_Default(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr))
+      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1))
         l_iRet++;
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, nullptr))
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint2))
         l_iRet++;
       
       return l_iRet;
@@ -1095,19 +1110,21 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
+    * @param a_cPoint1 [out] the first 3d point of the AI calculation
+    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Cruise(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+    int CControllerAi_V2::getControlLines_Cruise(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr))
+      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1))
         l_iRet++;
 
 
       SPathLine2d *l_pPath = nullptr;
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, &l_pPath)) {
+      if (getBestLine(a_cLineTwo, a_pPath, &l_pPath, a_cPoint2)) {
         l_iRet++;
 
         if (l_pPath != nullptr) {
@@ -1126,18 +1143,20 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
+    * @param a_cPoint1 [out] the first 3d point of the AI calculation
+    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_TimeAttack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+    int CControllerAi_V2::getControlLines_TimeAttack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr))
+      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1))
         l_iRet++;
 
       a_cLineOne.end += 15.0f * (a_cLineOne.end - a_cLineOne.start).normalize();
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint2)) {
         l_iRet++;
       }
       
@@ -1149,17 +1168,21 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
+    * @param a_cPoint1 [out] the first 3d point of the AI calculation
+    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Offtrack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
+    int CControllerAi_V2::getControlLines_Offtrack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
       int l_iRet = 0;
 
       a_cLineOne.end = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df());
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint1)) {
         l_iRet++;
       }
+
+      a_cPoint2 = a_cPoint1;
       
       return l_iRet;
     }
@@ -1169,12 +1192,14 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
+    * @param a_cPoint1 [out] the first 3d point of the AI calculation
+    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance) {
+    int CControllerAi_V2::getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr)) {
+      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1)) {
         l_iRet++;
 
         irr::core::line2df l_cLine;
@@ -1199,7 +1224,7 @@ namespace dustbin {
         a_cLineTwo.start  = a_cLineOne.end;
         a_cLineTwo.end    = a_cLineOne.end;
 
-        if (getBestLine(a_cLineTwo, a_pPath, nullptr))
+        if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint2))
           l_iRet++;
       }
 

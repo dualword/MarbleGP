@@ -973,10 +973,34 @@ namespace dustbin {
           bool l_bRespawn   = false;
           bool l_bAutomatic = false;
 
-          (*it)->m_pController->postControlMessage(l_bLeft, l_bRight, l_bForward, l_bBackward, l_bBrake, l_bRespawn, l_bAutomatic);
+          irr::core::vector3df l_cPoint1;
+          irr::core::vector3df l_cPoint2;
 
-          if ((*it)->m_pMarble->m_pViewport->m_pHUD != nullptr)
-            (*it)->m_pMarble->m_pViewport->m_pHUD->updateAiHelp(l_bLeft, l_bRight, l_bForward, l_bBackward, l_bBrake, l_bRespawn, l_bAutomatic);
+          (*it)->m_pController->postControlMessage(
+            l_bLeft, 
+            l_bRight, 
+            l_bForward, 
+            l_bBackward, 
+            l_bBrake, 
+            l_bRespawn, 
+            l_bAutomatic, 
+            l_cPoint1, 
+            l_cPoint2
+          );
+
+          if ((*it)->m_pMarble->m_pViewport->m_pHUD != nullptr) {
+            (*it)->m_pMarble->m_pViewport->m_pHUD->updateAiHelp(
+              l_bLeft, 
+              l_bRight, 
+              l_bForward, 
+              l_bBackward, 
+              l_bBrake, 
+              l_bRespawn, 
+              l_bAutomatic, 
+              l_cPoint1, 
+              l_cPoint2
+            );
+          }
         }
       }
 

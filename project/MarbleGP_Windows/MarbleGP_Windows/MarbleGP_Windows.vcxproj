@@ -173,6 +173,7 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CAiPathNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiPathSceneNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
@@ -301,6 +302,7 @@
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CAiPathNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiPathSceneNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />

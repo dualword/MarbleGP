@@ -21,7 +21,10 @@ namespace dustbin {
 
         IControllerAI::enMarbleMode l_eMode;
 
-        if (m_aControllers[i]->getControlMessage(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn, l_eMode)) {
+        irr::core::vector3df l_cPoint1;
+        irr::core::vector3df l_cPoint2;
+
+        if (m_aControllers[i]->getControlMessage(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn, l_eMode, l_cPoint1, l_cPoint2)) {
           messages::CMarbleControl p = messages::CMarbleControl(l_iMarbleId, l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
           m_pDynamicsIn->postMessage(&p);
         }

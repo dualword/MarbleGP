@@ -96,8 +96,10 @@ namespace dustbin {
     * @param a_bBrake [out] is the marble braking?
     * @param a_bRespawn [out] does the marble request manual respawn?
     * @param a_bAutomatic [out] is the automatic control active?
+    * @param a_cPoint1 [out] the first point for the AI calculation
+    * @param a_cPoint2 [out] the second point for the AI calculation
     */
-    void CMarbleController::postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic) {
+    void CMarbleController::postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
       if (m_pQueue != nullptr && m_pController != nullptr) {
         irr::f32 l_fCtrlX = m_pController->getSteer();
         irr::f32 l_fCtrlY = m_pController->getThrottle();
@@ -120,7 +122,7 @@ namespace dustbin {
 
           IControllerAI::enMarbleMode l_eMode = IControllerAI::enMarbleMode::Default;
 
-          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot, l_eMode);
+          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot, l_eMode, a_cPoint1, a_cPoint2);
 
           switch (m_eAiHelp) {
             // Bot: marble is always controlled by AI

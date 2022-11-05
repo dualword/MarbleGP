@@ -312,44 +312,53 @@ namespace dustbin {
         * @param a_cLine [out] the best line, start is used as input
         * @param a_pEnd the 2d path lines to search
         * @param a_pCollide [out] the 2d line path where the collision was detected (can be nullptr)
+        * @param a_cPoint [out] the 3d point of the AI calculation
         */
-        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd, SPathLine2d **a_pCollide);
+        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd, SPathLine2d **a_pCollide, irr::core::vector3df &a_cPoint);
 
         /**
         * Get the 2d lines for calculating the marble controls for Default mode
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
+        * @param a_cPoint1 [out] the first 3d point of the AI calculation
+        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Default(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+        int getControlLines_Default(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
 
         /**
         * Get the 2d lines for calculating the marble controls for Cruise mode
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
+        * @param a_cPoint1 [out] the first 3d point of the AI calculation
+        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Cruise(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+        int getControlLines_Cruise(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
 
         /**
         * Get the 2d lines for calculating the marble controls for Time Attack mode
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
+        * @param a_cPoint1 [out] the first 3d point of the AI calculation
+        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_TimeAttack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+        int getControlLines_TimeAttack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
 
         /**
         * Get the 2d lines for calculating the marble controls after the marble has respawned
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
+        * @param a_cPoint1 [out] the first 3d point of the AI calculation
+        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
+        int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
 
         /**
         * Get the 2d lines for calculating the marble controls when an incoming marble was detected and evasise steps must be taken
@@ -357,9 +366,11 @@ namespace dustbin {
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
         * @param a_fDistance the distance used for the "incoming" calculation
+        * @param a_cPoint1 [out] the first 3d point of the AI calculation
+        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance);
+        int getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
 
       public:
         /**
@@ -412,8 +423,20 @@ namespace dustbin {
         * @param a_bRearView [out] does the marble look to the back?
         * @param a_bRespawn [out] does the marble want a manual respawn?
         * @param a_eMode [out] the AI mode the marble is currently in
+        * @param a_cPoint1 [out] the first point for the AI calculation
+        * @param a_cPoint2 [out] the second point for the AI calculation
         */
-        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn, enMarbleMode &a_eMode) override;
+        virtual bool getControlMessage(
+          irr::s32 &a_iMarbleId, 
+          irr::s8 &a_iCtrlX, 
+          irr::s8 &a_iCtrlY, 
+          bool &a_bBrake, 
+          bool &a_bRearView, 
+          bool &a_bRespawn, 
+          enMarbleMode &a_eMode, 
+          irr::core::vector3df &a_cPoint1, 
+          irr::core::vector3df &a_cPoint2
+        ) override;
 
         /**
         * Set the controller to debug mode

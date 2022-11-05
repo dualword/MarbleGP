@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <scenenodes/CMyTextSceneNode.h>
+#include <scenenodes/CAiPathSceneNode.h>
 #include <gui/hud_items/CHudAiHelp.h>
 #include <controller/IControllerAI.h>
 #include <scenenodes/CMyBillboard.h>
@@ -76,6 +77,9 @@ namespace dustbin {
         m_bRespawn    = false;
         m_bStunned    = false;
         m_iFinishStep = m_iStep;
+
+        if (m_pAiNode != nullptr)
+          m_pAiNode->setVisible(false);
       }
       else {
         for (int i = 0; i < 3; i++) {
@@ -360,6 +364,7 @@ namespace dustbin {
 
         if (l_iIndex >= 0 && l_iIndex < 16) {
           if (!m_aRostrum[l_iIndex]) {
+            m_cPosition = a_Position;
             m_cUpVector = a_CameraUp;
             m_cUpVector.normalize();
           }
@@ -461,7 +466,8 @@ namespace dustbin {
       m_bShowLapTimes (false),
       m_pCheckered    (nullptr),
       m_pAiController (nullptr),
-      m_pAiHelp       (nullptr)
+      m_pAiHelp       (nullptr),
+      m_pAiNode       (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -721,8 +727,11 @@ namespace dustbin {
         (*l_itRank)->m_iState = 0;
       }
 
-      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Bot)
+      if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Bot) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+        m_pAiNode = new scenenodes::CAiPathSceneNode(l_pGlobal->getSceneManager()->getRootSceneNode(), l_pGlobal->getSceneManager(), -1, irr::core::vector3df(), irr::core::dimension2df(1.5f, 1.5f));
+        m_pAiNode->drop();
+      }
     }
 
     CGameHUD::~CGameHUD() {
@@ -1211,8 +1220,10 @@ namespace dustbin {
     * @param a_bBrake is the marble braking?
     * @param a_bRespawn does the marble request manual respawn?
     * @param a_bAutomatic is the automatic control active?
+    * @param a_cPoint1 the first point calculated by the AI
+    * @param a_cPoint2 the second point calculated by the AI
     */
-    void CGameHUD::updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic) {
+    void CGameHUD::updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic, const irr::core::vector3df &a_cPoint1, const irr::core::vector3df &a_cPoint2) {
       if (m_pAiHelp != nullptr) {
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Left     , a_bLeft      ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Right    , a_bRight     ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
@@ -1221,6 +1232,13 @@ namespace dustbin {
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Brake    , a_bBrake     ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Respawn  , a_bRespawn   ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Automatic, a_bAutomatic ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
+      }
+
+      if (m_pAiNode != nullptr) {
+        irr::video::SColor l_cColor = a_bForward ? irr::video::SColor(0xFF, 0, 0xFF, 0) : a_bBrake ? irr::video::SColor(0xFF, 0xFF, 0, 0) : a_bBackward ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0) : irr::video::SColor(0xFF, 0, 0, 0xFF);
+        m_pAiNode->setPosition(m_cPosition);
+        m_pAiNode->setColor(l_cColor);
+        m_pAiNode->setAiData(a_cPoint1, a_cPoint2);
       }
     }
   }
