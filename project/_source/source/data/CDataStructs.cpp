@@ -1619,7 +1619,7 @@ namespace dustbin {
 
           m_fSpeedFactor1   = 80.0;
           m_fSpeedFactor2   = 75.0;
-          m_fSpeedThreshold = 1.8;
+          m_fSpeedThreshold = 1.8f;
           break;
 
         case 1:
@@ -1629,7 +1629,7 @@ namespace dustbin {
 
           m_fSpeedFactor1   = 75.0;
           m_fSpeedFactor2   = 65.0;
-          m_fSpeedThreshold = 1.5;
+          m_fSpeedThreshold = 1.5f;
           break;
 
         case 2:
@@ -1639,7 +1639,7 @@ namespace dustbin {
 
           m_fSpeedFactor1   = 60.0;
           m_fSpeedFactor2   = 55.0;
-          m_fSpeedThreshold = 1.35;
+          m_fSpeedThreshold = 1.35f;
           break;
       }
     }

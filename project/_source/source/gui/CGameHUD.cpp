@@ -718,7 +718,7 @@ namespace dustbin {
         (*l_itRank)->m_iState = 0;
       }
 
-      // m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
+      m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
