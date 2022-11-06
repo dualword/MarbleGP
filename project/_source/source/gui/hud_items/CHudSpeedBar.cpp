@@ -5,8 +5,6 @@
 namespace dustbin {
   namespace gui {
     CHudSpeedBar::CHudSpeedBar(irr::video::IVideoDriver* a_pDrv, irr::gui::IGUIFont *a_pFont, const irr::core::recti& a_cViewport) : m_pDrv(a_pDrv), m_pFont(a_pFont) {
-      irr::core::dimension2du l_cViewport = irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight());
-
       m_cText = a_pFont->getDimension(L"666");
       m_cText.Width  = 5 * m_cText.Width  / 4;
       m_cText.Height = 5 * m_cText.Height / 4;
@@ -41,7 +39,7 @@ namespace dustbin {
     * @return the height of the rendered speed bar
     */
     irr::s32 CHudSpeedBar::render(irr::f32 a_fVelocity, const irr::core::position2di& a_cPos, const irr::core::recti &a_cClip) {
-      irr::core::recti l_cTotal = irr::core::recti(a_cPos - irr::core::vector2di(m_cSize.Width, m_cSize.Height) / 2, m_cSize);
+      irr::core::recti l_cTotal = irr::core::recti(a_cPos - irr::core::vector2di(m_cSize.Width, 0) / 2, m_cSize);
 
       m_pDrv->draw2DRectangle(irr::video::SColor(160, 192, 192, 192), l_cTotal, &a_cClip);
       wchar_t s[0xFF];

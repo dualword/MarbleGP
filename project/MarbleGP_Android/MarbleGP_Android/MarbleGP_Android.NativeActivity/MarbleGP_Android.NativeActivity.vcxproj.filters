@@ -414,6 +414,9 @@
     <ClInclude Include="..\..\..\_source\include\scenenodes\CAiPathSceneNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudSteering.h">
+      <Filter>Headerdateien\gui\hud_items</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -825,6 +828,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\scenenodes\CAiPathSceneNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudSteering.cpp">
+      <Filter>Quelldateien\gui\hud_items</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

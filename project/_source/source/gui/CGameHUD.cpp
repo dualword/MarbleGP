@@ -3,6 +3,7 @@
 #include <scenenodes/CMyTextSceneNode.h>
 #include <scenenodes/CAiPathSceneNode.h>
 #include <gui/hud_items/CHudSpeedBar.h>
+#include <gui/hud_items/CHudSteering.h>
 #include <gui/hud_items/CHudAiHelp.h>
 #include <controller/IControllerAI.h>
 #include <scenenodes/CMyBillboard.h>
@@ -719,6 +720,7 @@ namespace dustbin {
       }
 
       m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
+      m_pSteering = new CHudSteering(m_pDrv, a_cRect);
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
@@ -739,6 +741,11 @@ namespace dustbin {
       if (m_pSpeedBar != nullptr) {
         delete m_pSpeedBar;
         m_pSpeedBar = nullptr;
+      }
+
+      if (m_pSteering != nullptr) {
+        delete m_pSteering;
+        m_pSteering = nullptr;
       }
     }
 
@@ -769,8 +776,13 @@ namespace dustbin {
 
           irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
 
+          l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
+
           if (m_pSpeedBar != nullptr)
-            l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect) + m_iCtrlHeight;
+            l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
+
+          if (m_pSteering != nullptr && m_bShowCtrl)
+            l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bRespawn, m_cRect);
 
           irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
 
@@ -780,38 +792,12 @@ namespace dustbin {
           m_mTextElements[enTextElements::LapHead].setPosition(irr::core::position2di(l_cTotal.LowerRightCorner.X + l_cPosSize.Width / 9, l_cTotal.UpperLeftCorner.Y));
           m_mTextElements[enTextElements::Lap    ].setPosition(m_mTextElements[enTextElements::LapHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
 
-          if (m_bShowCtrl) {
-            irr::core::recti l_cSteer = irr::core::recti(l_cTotal.getCenter().X, l_cTotal.LowerRightCorner.Y + m_iCtrlHeight, l_cTotal.getCenter().X + (irr::s32)(m_fSteer * (irr::f32)l_cTotal.getWidth() / 2.0f), l_cTotal.LowerRightCorner.Y + 2 * m_iCtrlHeight);
-            if (l_cSteer.UpperLeftCorner.X > l_cSteer.LowerRightCorner.X) {
-              irr::s32 l_iDummy = l_cSteer.UpperLeftCorner.X;
-              l_cSteer.UpperLeftCorner.X = l_cSteer.LowerRightCorner.X;
-              l_cSteer.LowerRightCorner.X = l_iDummy;
-            }
-
-            m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), l_cSteer, &m_cRect);
-
-            irr::core::recti l_cThrottle = irr::core::recti(l_cTotal.getCenter().X, l_cTotal.LowerRightCorner.Y + 3 * m_iCtrlHeight, l_cTotal.getCenter().X + (irr::s32)(m_fThrottle * (irr::f32)l_cTotal.getWidth() / 2.0f), l_cTotal.LowerRightCorner.Y + 4 * m_iCtrlHeight);
-
-            if (l_cThrottle.UpperLeftCorner.X > l_cThrottle.LowerRightCorner.X) {
-              irr::s32 l_iDummy = l_cThrottle.UpperLeftCorner.X;
-              l_cThrottle.UpperLeftCorner.X = l_cThrottle.LowerRightCorner.X;
-              l_cThrottle.LowerRightCorner.X = l_iDummy;
-            }
-
-            m_pDrv->draw2DRectangle(m_fThrottle < 0 ? irr::video::SColor(128, 255, 255, 0) : irr::video::SColor(128, 0, 255, 0), l_cThrottle, &m_cRect);
-
-            if (m_bBrake) {
-              m_pDrv->draw2DRectangle(irr::video::SColor(128, 255, 0, 0), irr::core::recti(l_cTotal.UpperLeftCorner.X, l_cTotal.LowerRightCorner.Y + 2 * m_iCtrlHeight, l_cTotal.LowerRightCorner.X, l_cTotal.LowerRightCorner.Y + 3 * m_iCtrlHeight), &m_cRect);
-            }
-
-            l_cSpeed.Y += 4 * m_iCtrlHeight;
-          }
-
           if (m_pPlayer->m_iPosition > 0 && m_pPlayer->m_iPosition != 99) {
             irr::s32 l_iOffset = 3 * m_cDefSize.Height / 2;
 
             irr::core::position2di l_cRank = l_cSpeed;
             l_cRank.X -= m_cLabelSize.Width / 2;
+            l_cRank.Y  = m_mTextElements[enTextElements::Pos].m_cThisRect.LowerRightCorner.Y;
 
             irr::core::recti l_cRects[] = {
               irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),

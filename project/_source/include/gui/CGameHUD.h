@@ -26,6 +26,7 @@ namespace dustbin {
     class CRankingElement;  /**< Forward declaration of the ranking element */
     class CHudAiHelp;       /**< Forward declaration of the AI help icon display */
     class CHudSpeedBar;     /**< Forward declaration of the speed bar item */
+    class CHudSteering;     /**< Forward declaration of the steering display item */
 
     /**
     * @class CGameHUD
@@ -117,6 +118,7 @@ namespace dustbin {
         controller::IControllerAI     *m_pAiController;   /**< AI controller to show the user control hints */
         CHudAiHelp                    *m_pAiHelp;         /**< The AI help display */
         CHudSpeedBar                  *m_pSpeedBar;       /**< The speed bar */
+        CHudSteering                  *m_pSteering;       /**< The steering display */
         scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);
