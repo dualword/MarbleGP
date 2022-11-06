@@ -408,6 +408,9 @@
     <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudAiHelp.h">
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudSpeedBar.h">
+      <Filter>Headerdateien\gui\hud_items</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -812,6 +815,9 @@
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudAiHelp.cpp">
+      <Filter>Quelldateien\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudSpeedBar.cpp">
       <Filter>Quelldateien\gui\hud_items</Filter>
     </ClCompile>
   </ItemGroup>

@@ -112,7 +112,6 @@ namespace dustbin {
     */
     CControllerAi_V2::SAiPathSection *CControllerAi_V2::selectCurrentSection(const irr::core::vector3df& a_cPosition, SAiPathSection* a_pCurrent, bool a_bOverrideSelected) {
       irr::core::vector3df  l_cClosest  = a_pCurrent->m_cLine3d.getClosestPoint(a_cPosition);
-      SAiPathSection       *l_pSelected = nullptr;
 
       do {
         if (l_cClosest == a_pCurrent->m_cLine3d.end) {
@@ -314,10 +313,6 @@ namespace dustbin {
 
             l_cPlane.getIntersectionWithLine((*l_itThis)->m_cLine3d.end  , (*l_itThis)->m_cNormal, l_cThis );
             l_cPlane.getIntersectionWithLine((*l_itNext)->m_cLine3d.start, (*l_itNext)->m_cNormal, l_cOther);
-
-            irr::core::vector3df l_cV1 = (*l_itThis)->m_cLine3d.end;
-            irr::core::vector3df l_cV2 = (*l_itThis)->m_cLine3d.end + ((*l_itThis)->m_cLine3d.start - (*l_itThis)->m_cLine3d.end);
-            irr::core::vector3df l_cV3 = (*l_itThis)->m_cLine3d.end + (l_cOther - (*l_itThis)->m_cLine3d.end);
           }
         }
 
@@ -1231,8 +1226,6 @@ namespace dustbin {
         }
 
         irr::core::vector2df l_cNormal = irr::core::vector2df(-a_cLineOne.end.Y, a_cLineOne.end.X).normalize();
-        if (a_cLineOne.getPointOrientation(a_cLineOne.end + l_cNormal) < 0.0f)
-          l_cNormal = l_cNormal;
 
         a_cLineOne.end   += 0.45f * m_p2dPath->m_fWidth * l_cNormal;
         a_cLineTwo.start  = a_cLineOne.end;
@@ -1282,12 +1275,10 @@ namespace dustbin {
       irr::core::line3df l1 = irr::core::line3df(a_cLine1.start, a_cLine1.end);
       irr::core::line3df l2 = irr::core::line3df(a_cLine2.start, a_cLine2.end);
       irr::core::line3df l3 = irr::core::line3df(a_cLine1.start, a_cLine2.end);
-      irr::core::line3df l4 = irr::core::line3df(a_cLine2.start, a_cLine1.end);
 
       irr::core::vector3df m1 = l1.getMiddle();
       irr::core::vector3df m2 = l2.getMiddle();
       irr::core::vector3df m3 = l3.getMiddle();
-      irr::core::vector3df m4 = l4.getMiddle();
 
       return m1.getDistanceFrom(m2) > m1.getDistanceFrom(m3);
     }
@@ -1508,8 +1499,6 @@ namespace dustbin {
 
       for (std::vector<const data::SMarblePosition *>::iterator l_itMarble = a_vMarbles.begin(); l_itMarble != a_vMarbles.end(); l_itMarble++) {
         if (m_cBBox.isPointInside((*l_itMarble)->m_cPosition)) {
-          std::vector<const data::SMarblePosition *>::iterator l_itDelete = l_itMarble;
-
           irr::core::vector3df l_cPos = (*l_itMarble)->m_cPosition;
           irr::core::vector3df l_cVel = (*l_itMarble)->m_cVelocity + l_cPos;
           

@@ -10,8 +10,6 @@
 #include <map>
 
 namespace dustbin {
-  class CHudAiHelp;
-
   namespace gameclasses {
     struct SPlayer;
   }
@@ -26,6 +24,8 @@ namespace dustbin {
 
   namespace gui {
     class CRankingElement;  /**< Forward declaration of the ranking element */
+    class CHudAiHelp;       /**< Forward declaration of the AI help icon display */
+    class CHudSpeedBar;     /**< Forward declaration of the speed bar item */
 
     /**
     * @class CGameHUD
@@ -59,12 +59,8 @@ namespace dustbin {
         irr::gui::IGUIFont        *m_pTimeFont;     /**< Font for laptimes and ranking */
         irr::video::IVideoDriver  *m_pDrv;          /**< The Irrlicht video driver */
         irr::core::dimension2du    m_cScreen;       /**< The screen size */
-        irr::gui::IGUIFont        *m_pSpeedFont;    /**< Font for the speed text */
-        irr::core::dimension2du    m_cSpeedTotal;   /**< Total size of the speed meter */
-        irr::core::dimension2du    m_cSpeedText;    /**< Size of the speed text */
-        irr::core::position2di     m_cSpeedOffset;  /**< Offset of the speed bar */
-        irr::core::dimension2du    m_cSpeedBar;     /**< Size of the speed bar */
         irr::core::vector3df       m_cUpVector;     /**< The marble's up vector */
+        irr::core::dimension2du    m_cLabelSize;    /**< Dimension of the speed bar, used for calculating some sizes */
         irr::core::vector3df       m_cPosition;     /**< The marble's position */
         CRankingElement            *m_aRanking[16];  /**< The GUI elements for the ranking */
         irr::gui::IGUITab          *m_pRankParent;   /**< The parent for the ranking display */
@@ -120,6 +116,7 @@ namespace dustbin {
         irr::video::ITexture          *m_pCheckered;      /**< The checkered flag texture */
         controller::IControllerAI     *m_pAiController;   /**< AI controller to show the user control hints */
         CHudAiHelp                    *m_pAiHelp;         /**< The AI help display */
+        CHudSpeedBar                  *m_pSpeedBar;       /**< The speed bar */
         scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);

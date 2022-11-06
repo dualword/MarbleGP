@@ -2,6 +2,7 @@
 
 #include <scenenodes/CMyTextSceneNode.h>
 #include <scenenodes/CAiPathSceneNode.h>
+#include <gui/hud_items/CHudSpeedBar.h>
 #include <gui/hud_items/CHudAiHelp.h>
 #include <controller/IControllerAI.h>
 #include <scenenodes/CMyBillboard.h>
@@ -433,11 +434,6 @@ namespace dustbin {
       m_pTimeFont     (nullptr),
       m_pDrv          (a_pGui->getVideoDriver()),
       m_cScreen       (irr::core::dimension2du()),
-      m_pSpeedFont    (nullptr),
-      m_cSpeedTotal   (irr::core::dimension2du()),
-      m_cSpeedText    (irr::core::dimension2du()),
-      m_cSpeedOffset  (irr::core::position2di()),
-      m_cSpeedBar     (irr::core::dimension2du()),
       m_cUpVector     (irr::core::vector3df()),
       m_pRankParent   (nullptr),
       m_pPaused       (nullptr),
@@ -467,6 +463,7 @@ namespace dustbin {
       m_pCheckered    (nullptr),
       m_pAiController (nullptr),
       m_pAiHelp       (nullptr),
+      m_pSpeedBar     (nullptr),
       m_pAiNode       (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
@@ -496,32 +493,14 @@ namespace dustbin {
       m_pDefFont = l_pSmall;
       m_cDefSize = getDimension(L"+666.6", m_pDefFont);
 
-      m_pSpeedFont = l_pRegular;
-      m_cSpeedText = getDimension(L"666", m_pSpeedFont);
-
-      m_cSpeedTotal.Width  = a_cRect.getWidth() / 4;
-      m_cSpeedTotal.Height = m_cSpeedText.Height;
-
-      m_cSpeedBar.Width  = m_cSpeedTotal.Width - m_cSpeedText.Width;
-      m_cSpeedBar.Height = m_cSpeedTotal.Height;
-
-      m_cSpeedOffset.X = m_cSpeedTotal.Width - m_cSpeedBar.Width;
-
-      int l_iSpeedOffset = m_cSpeedBar.Height / 8;
-      if (l_iSpeedOffset < 2)
-        l_iSpeedOffset = 2;
-
-      m_cSpeedOffset.Y += l_iSpeedOffset;
-      m_cSpeedBar.Width -= l_iSpeedOffset;
-      m_cSpeedBar.Height -= 2 * l_iSpeedOffset;
-
-      m_cSpeedOffset.Y = (m_cSpeedTotal.Height - m_cSpeedBar.Height) / 2;
-
-      m_iCtrlHeight = m_cSpeedTotal.Height / 4;
-      if (m_iCtrlHeight < 2) m_iCtrlHeight = 2;
+      m_cLabelSize.Width  = a_cRect.getWidth() / 4;
+      m_cLabelSize.Height = l_pRegular->getDimension(L"666").Height;
 
       irr::core::dimension2du l_cSizeTop = getDimension(L"Lap"    , l_pSmall  );
       irr::core::dimension2du l_cSizeBot = getDimension(L"66 / 66", l_pRegular);
+
+      m_iCtrlHeight = m_cLabelSize.Height / 4;
+      if (m_iCtrlHeight < 2) m_iCtrlHeight = 2;
 
       {
         irr::core::dimension2du d = getDimension(L"Pos", l_pSmall);
@@ -739,6 +718,8 @@ namespace dustbin {
         (*l_itRank)->m_iState = 0;
       }
 
+      // m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
+
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
         m_pAiNode = new scenenodes::CAiPathSceneNode(l_pGlobal->getSceneManager()->getRootSceneNode(), l_pGlobal->getSceneManager(), -1, irr::core::vector3df(), irr::core::dimension2df(1.5f, 1.5f));
@@ -753,6 +734,11 @@ namespace dustbin {
       if (m_pAiHelp != nullptr) {
         delete m_pAiHelp;
         m_pAiHelp = nullptr;
+      }
+
+      if (m_pSpeedBar != nullptr) {
+        delete m_pSpeedBar;
+        m_pSpeedBar = nullptr;
       }
     }
 
@@ -776,12 +762,15 @@ namespace dustbin {
           irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
 
           if (m_pAiHelp != nullptr)
-            m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cSpeedTotal.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+            m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
 
           l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
           l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
 
-          irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cSpeedTotal.Width, m_cSpeedTotal.Height) / 2, m_cSpeedTotal);
+          irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
+
+          if (m_pSpeedBar != nullptr)
+            l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect) + m_iCtrlHeight;
 
           irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
 
@@ -790,22 +779,6 @@ namespace dustbin {
 
           m_mTextElements[enTextElements::LapHead].setPosition(irr::core::position2di(l_cTotal.LowerRightCorner.X + l_cPosSize.Width / 9, l_cTotal.UpperLeftCorner.Y));
           m_mTextElements[enTextElements::Lap    ].setPosition(m_mTextElements[enTextElements::LapHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
-
-          m_pDrv->draw2DRectangle(irr::video::SColor(160, 192, 192, 192), l_cTotal, &m_cRect);
-          wchar_t s[0xFF];
-          swprintf(s, 0xFF, L"%.0f", m_fVel);
-          m_pSpeedFont->draw(s, irr::core::recti(l_cTotal.UpperLeftCorner, m_cSpeedText), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
-
-          int l_iVel = m_fVel > 150.0f ? 150 : (int)m_fVel;
-
-          irr::f32 l_fRd = m_fVel < 75.0f ? 0.0f : m_fVel > 125.0f ? 1.0f :        (m_fVel - 75.0f) / 50.0f;
-          irr::f32 l_fGr = m_fVel < 75.0f ? 1.0f : m_fVel > 125.0f ? 0.0f : 1.0f - (m_fVel - 75.0f) / 50.0f;
-
-          l_fGr = l_fGr * l_fGr;
-
-          m_pDrv->draw2DRectangle(irr::video::SColor(128, (irr::u32)(255.0f * l_fRd), (irr::u32)(255.0f * l_fGr), 0), irr::core::recti(l_cTotal.UpperLeftCorner + m_cSpeedOffset, irr::core::dimension2di(l_iVel * m_cSpeedBar.Width / 150, m_cSpeedBar.Height)), &m_cRect);
-
-          l_cSpeed.Y = l_cTotal.LowerRightCorner.Y + m_iCtrlHeight;
 
           if (m_bShowCtrl) {
             irr::core::recti l_cSteer = irr::core::recti(l_cTotal.getCenter().X, l_cTotal.LowerRightCorner.Y + m_iCtrlHeight, l_cTotal.getCenter().X + (irr::s32)(m_fSteer * (irr::f32)l_cTotal.getWidth() / 2.0f), l_cTotal.LowerRightCorner.Y + 2 * m_iCtrlHeight);
@@ -838,13 +811,13 @@ namespace dustbin {
             irr::s32 l_iOffset = 3 * m_cDefSize.Height / 2;
 
             irr::core::position2di l_cRank = l_cSpeed;
-            l_cRank.X -= m_cSpeedTotal.Width / 2;
+            l_cRank.X -= m_cLabelSize.Width / 2;
 
             irr::core::recti l_cRects[] = {
-              irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0,     l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0, 2 * l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0, 3 * l_iOffset), irr::core::dimension2du(m_cSpeedTotal.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank + irr::core::position2di(0,     l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank + irr::core::position2di(0, 2 * l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+              irr::core::recti(l_cRank + irr::core::position2di(0, 3 * l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
             };
 
             int l_iPos[] = {

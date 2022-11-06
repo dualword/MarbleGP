@@ -304,6 +304,7 @@
     <ClInclude Include="..\..\..\_source\include\gui\CTrackButton.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CVirtualKeyboard.h" />
     <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudAiHelp.h" />
+    <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudSpeedBar.h" />
     <ClInclude Include="..\..\..\_source\include\helpers\CMenuLoader.h" />
     <ClInclude Include="..\..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\..\_source\include\helpers\CTextureHelpers.h" />
@@ -533,6 +534,7 @@
     <ClCompile Include="..\..\..\_source\source\gui\CSelector.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\CVirtualKeyboard.cpp" />
     <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudAiHelp.cpp" />
+    <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudSpeedBar.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\..\_source\source\helpers\CTextureHelpers.cpp" />
