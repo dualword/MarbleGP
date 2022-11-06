@@ -600,6 +600,9 @@
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSteering.cpp">
       <Filter>Quelldateien\gui\hud_items</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudBanner.cpp">
+      <Filter>Quelldateien\gui\hud_items</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -978,6 +981,9 @@
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSteering.h">
+      <Filter>Headerdateien\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudBanner.h">
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
   </ItemGroup>

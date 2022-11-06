@@ -6,6 +6,7 @@
 #include <gui/hud_items/CHudSteering.h>
 #include <gui/hud_items/CHudAiHelp.h>
 #include <controller/IControllerAI.h>
+#include <gui/hud_items/CHudBanner.h>
 #include <scenenodes/CMyBillboard.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
@@ -28,6 +29,10 @@ namespace dustbin {
         if (a_MarbleId == m_iMarble) {
           m_bShowSpeed = a_State == 2;
           m_bRespawn   = a_State != 2;
+
+          if (m_pBanner != nullptr) {
+            m_pBanner->setState(a_State != 2 ? CHudBanner::enBanners::Respawn : CHudBanner::enBanners::Count);
+          }
         }
 
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
@@ -82,6 +87,9 @@ namespace dustbin {
 
         if (m_pAiNode != nullptr)
           m_pAiNode->setVisible(false);
+
+        if (m_pBanner != nullptr)
+          m_pBanner->setState(CHudBanner::enBanners::Finished);
       }
       else {
         for (int i = 0; i < 3; i++) {
@@ -117,6 +125,8 @@ namespace dustbin {
         if (a_MarbleId == m_iMarble) {
           m_bShowSpeed = a_State != 1;
           m_bStunned   = a_State == 1;
+          if (m_pBanner != nullptr)
+            m_pBanner->setState(a_State == 1 ? CHudBanner::enBanners::Stunned : CHudBanner::enBanners::Count);
         }
       
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
@@ -146,8 +156,11 @@ namespace dustbin {
     * @param a_Deficit Deficit of the marble on the leader in steps
     */
     void CGameHUD::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
-      if (a_MarbleId == m_iMarble)
+      if (a_MarbleId == m_iMarble) {
         m_iFinished = a_Position - 1;
+        if (m_pBanner != nullptr)
+          m_pBanner->setPosition(a_Position - 1);
+      }
     }
 
     /**
@@ -216,7 +229,15 @@ namespace dustbin {
     * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
     */
     void CGameHUD::onCountdown(irr::u8 a_Tick) {
-      m_iCountDown = a_Tick;
+      if (m_pBanner != nullptr) {
+        switch (a_Tick) {
+          case 4: m_pBanner->setState(CHudBanner::enBanners::CountdownReady); break;
+          case 3: m_pBanner->setState(CHudBanner::enBanners::Countdown3    ); break;
+          case 2: m_pBanner->setState(CHudBanner::enBanners::Countdown2    ); break;
+          case 1: m_pBanner->setState(CHudBanner::enBanners::Countdown1    ); break;
+          case 0: m_pBanner->setState(CHudBanner::enBanners::CountdownGo   ); break;
+        }
+      }
 
       if (a_Tick == 1) {
         m_bFadeStart = true;
@@ -250,8 +271,9 @@ namespace dustbin {
     */
     void CGameHUD::onConfirmwithdraw(irr::s32 a_MarbleId, irr::s32 a_Timeout) {
       if (a_MarbleId == m_iMarble) {
+        if (m_pBanner != nullptr)
+          m_pBanner->showConfirmWithdraw(true);
         m_iWithdraw = m_iStep + a_Timeout;
-        m_pWithdraw->setVisible(true);
       }
     }
 
@@ -270,6 +292,9 @@ namespace dustbin {
             m_aRanking[i]->setVisible(a_Paused || m_aRostrum[i]);
         }
       }
+
+      if (m_pBanner != nullptr)
+        m_pBanner->setState(a_Paused ? CHudBanner::enBanners::Paused : CHudBanner::enBanners::Count);
     }
 
     /**
@@ -324,14 +349,21 @@ namespace dustbin {
         }
       }
 
-      if (m_iCountDown == 0 && m_iStep > m_iGoStep + 240) {
-        m_fCdAlpha = std::min(1.0f, ((irr::f32)(m_iGoStep - m_iStep + 300)) / 60.0f);
-        if (m_fCdAlpha < 0.0f)
-          m_iCountDown = -1;
+      if (m_bCountdown && m_iGoStep != 0 && m_iStep > m_iGoStep + 240) {
+        if (m_pBanner != nullptr) {
+          irr::f32 f = std::min(1.0f, ((irr::f32)(m_iGoStep - m_iStep + 300)) / 60.0f);
+          if (f < 0.0f) {
+            m_pBanner->setState(CHudBanner::enBanners::Count);
+            m_bCountdown = false;
+          }
+          else m_pBanner->setFade(f);
+        }
       }
 
       if (m_iWithdraw != -1 && m_iWithdraw < m_iStep) {
-        m_pWithdraw->setVisible(false);
+        if (m_pBanner != nullptr)
+          m_pBanner->showConfirmWithdraw(false);
+
         m_iWithdraw = -1;
       }
     }
@@ -361,6 +393,7 @@ namespace dustbin {
         m_fSteer    = ((irr::f32)a_ControlX) / 127.0f;
         m_fThrottle = ((irr::f32)a_ControlY) / 127.0f;
         m_bBrake    = a_ControlBrake;
+        m_bManRsp   = a_ControlRespawn;
 
         int l_iIndex = a_ObjectId - 10000;
 
@@ -422,11 +455,13 @@ namespace dustbin {
       m_fSteer        (0.0f),
       m_bShowSpeed    (false),
       m_bBrake        (false),
+      m_bManRsp       (false),
       m_bHightlight   (true),
       m_bShowCtrl     (true),
       m_bShowRanking  (true),
       m_bFadeStart    (false),
       m_bPaused       (false),
+      m_bCountdown    (true),
       m_cRect         (a_cRect),
       m_pGui          (a_pGui),
       m_pPlayer       (a_pPlayer),
@@ -437,22 +472,15 @@ namespace dustbin {
       m_cScreen       (irr::core::dimension2du()),
       m_cUpVector     (irr::core::vector3df()),
       m_pRankParent   (nullptr),
-      m_pPaused       (nullptr),
-      m_iCountDown    (4),
-      m_fCdAlpha      (1.0f),
       m_iGoStep       (0),
       m_iFinishStep   (0),
       m_iStep         (0),
-      m_pStunned      (nullptr),
-      m_pRespawn      (nullptr),
-      m_pFinished     (nullptr),
       m_bRespawn      (false),
       m_bStunned      (false),
       m_bFinished     (false),
       m_iFadeStart    (-1),
       m_iFinished     (-1),
       m_pPosFont      (nullptr),
-      m_pWithdraw     (nullptr),
       m_iWithdraw     (-1),
       m_cRankBack     (irr::video::SColor(96, 192, 192, 192)),
       m_pSmgr         (CGlobal::getInstance()->getSceneManager()),
@@ -465,6 +493,8 @@ namespace dustbin {
       m_pAiController (nullptr),
       m_pAiHelp       (nullptr),
       m_pSpeedBar     (nullptr),
+      m_pSteering     (nullptr),
+      m_pBanner       (nullptr),
       m_pAiNode       (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
@@ -615,58 +645,6 @@ namespace dustbin {
           l_iOffsetY += 3 * l_cRankSize.Height / 2;
       }
 
-      m_pStunned  = m_pDrv->getTexture("data/images/text_stunned.png");
-      m_pRespawn  = m_pDrv->getTexture("data/images/text_respawn.png");
-      m_pFinished = m_pDrv->getTexture("data/images/text_finished.png");
-
-      m_pCountDown[4] = m_pDrv->getTexture("data/images/countdown_ready.png");
-      m_pCountDown[3] = m_pDrv->getTexture("data/images/countdown_three.png");
-      m_pCountDown[2] = m_pDrv->getTexture("data/images/countdown_two.png");
-      m_pCountDown[1] = m_pDrv->getTexture("data/images/countdown_one.png");
-      m_pCountDown[0] = m_pDrv->getTexture("data/images/countdown_go.png");
-
-      m_pLaurel[0] = m_pDrv->getTexture("data/images/laurel_gold.png");
-      m_pLaurel[1] = m_pDrv->getTexture("data/images/laurel_silver.png");
-      m_pLaurel[2] = m_pDrv->getTexture("data/images/laurel_bronze.png");
-      m_pLaurel[3] = m_pDrv->getTexture("data/images/laurel_rest.png");
-
-      m_pPaused = m_pDrv->getTexture("data/images/pause.png");
-
-      if (m_pCountDown[0] != nullptr) {
-        irr::core::dimension2du l_cSize   = m_pCountDown[0]->getOriginalSize();
-        irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cRect.getWidth(), a_cRect.getHeight());
-        irr::core::position2di  l_cPos    = a_cRect.UpperLeftCorner;
-
-        irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
-          l_cSize.Width  * l_cScreen.Width  / 3840,
-          l_cSize.Height * l_cScreen.Height / 2160
-        );
-
-        l_cCntSize.Height = 250 * l_cCntSize.Width / 2560;
-
-        irr::core::position2di l_cCntPos = irr::core::position2di(
-          l_cPos.X + l_cScreen .Width / 2 - l_cCntSize.Width  / 2,
-          l_cPos.Y + l_cRankPos.Y     / 2 - l_cCntSize.Height / 2
-        );
-
-        m_cCountDown = irr::core::recti(l_cCntPos, l_cCntSize);
-        m_cCntSource = irr::core::recti(irr::core::vector2di(0, 0), m_pCountDown[0]->getOriginalSize());
-
-        if (m_pLaurel[0] != nullptr) {
-          irr::core::dimension2di l_cDim = irr::core::dimension2di(m_cCountDown.getHeight(), m_cCountDown.getHeight());
-
-          m_cLaurelLft = irr::core::recti(m_cCountDown.UpperLeftCorner                                                                        , l_cDim);
-          m_cLaurelRgt = irr::core::recti(irr::core::vector2di(m_cCountDown.LowerRightCorner.X - l_cDim.Width, m_cCountDown.UpperLeftCorner.Y), l_cDim);
-
-          m_cLaurelSrc = irr::core::recti(irr::core::vector2di(0, 0), m_pLaurel[0]->getOriginalSize());
-        }
-
-        m_pWithdraw = m_pGui->addStaticText(L"Withdraw from Race? Click again!", m_cCountDown);
-        m_pWithdraw->setOverrideFont(l_pBig);
-        m_pWithdraw->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        m_pWithdraw->setVisible(false);
-      }
-
       for (int i = 0; i < 3; i++) {
         m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(m_pSmgr->getRootSceneNode(), m_pSmgr, -1, irr::core::vector3df(0.0f), irr::core::dimension2df(2.5f, 2.5f));
         m_aHiLight[i].m_pArrow->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -721,6 +699,7 @@ namespace dustbin {
 
       m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
       m_pSteering = new CHudSteering(m_pDrv, a_cRect);
+      m_pBanner   = new CHudBanner  (m_pDrv, m_pGui, l_pBig, l_pHuge, a_cRect);
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
@@ -747,43 +726,51 @@ namespace dustbin {
         delete m_pSteering;
         m_pSteering = nullptr;
       }
+
+      if (m_pBanner != nullptr) {
+        delete m_pBanner;
+        m_pBanner = nullptr;
+      }
     }
 
     void CGameHUD::draw() {
+
+    if (m_pColMgr != nullptr) {
+      // For Android we move these elements
+      // a little less down so that it fits
+      // the screen with it's larger fonts
+      irr::f32 l_fFactor =
+#ifdef _ANDROID
+        1.5f;
+#else
+        3.0f;
+#endif
+      ;
+
+      irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
+
+      if (m_pAiHelp != nullptr && m_bShowSpeed)
+        m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+
+      l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
+      l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
+
+      irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
+
+      l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
+
+      if (m_pSpeedBar != nullptr && m_bShowSpeed)
+        l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
+
+      if (m_pSteering != nullptr && m_bShowCtrl && m_bShowSpeed)
+        l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bManRsp, m_cRect);
+
+      if (m_pBanner != nullptr)
+        m_pBanner->render(m_cRect);
+
       if (m_bShowSpeed) {
         for (std::map<enTextElements, STextElement>::iterator it = m_mTextElements.begin(); it != m_mTextElements.end(); it++)
           it->second.render();
-
-        if (m_pColMgr != nullptr) {
-          // For Android we move these elements
-          // a little less down so that it fits
-          // the screen with it's larger fonts
-          irr::f32 l_fFactor =
-#ifdef _ANDROID
-            1.5f;
-#else
-            3.0f;
-#endif
-          ;
-
-          irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
-
-          if (m_pAiHelp != nullptr)
-            m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
-
-          l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
-          l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
-
-          irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
-
-          l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
-
-          if (m_pSpeedBar != nullptr)
-            l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
-
-          if (m_pSteering != nullptr && m_bShowCtrl)
-            l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bRespawn, m_cRect);
-
           irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
 
           m_mTextElements[enTextElements::PosHead].setPosition(l_cTotal.UpperLeftCorner - irr::core::position2di(10 * l_cPosSize.Width / 9, 0));
@@ -887,42 +874,6 @@ namespace dustbin {
 
       if (m_pRankParent->isVisible())
         m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect, &AbsoluteClippingRect);
-
-      if (!m_pWithdraw->isVisible()) {
-        if (m_iCountDown >= 0 && m_iCountDown < 5 && m_pCountDown[m_iCountDown] != nullptr) {
-          irr::video::SColor l_aColor[] = {
-            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255),
-            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255),
-            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255),
-            irr::video::SColor((irr::u32)(255.0f * m_fCdAlpha), 255, 255, 255)
-          };
-
-          m_pDrv->draw2DImage(m_pCountDown[m_iCountDown], m_cCountDown, m_cCntSource, nullptr, l_aColor, true);
-        }
-
-        if (m_bRespawn && m_pRespawn != nullptr)
-          m_pDrv->draw2DImage(m_pRespawn, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
-
-        if (m_bStunned && m_pStunned != nullptr)
-          m_pDrv->draw2DImage(m_pStunned, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
-
-        if (m_bFinished) {
-          if (m_pFinished != nullptr) {
-            m_pDrv->draw2DImage(m_pFinished, m_cCountDown, m_cCntSource, nullptr, nullptr, true);
-          }
-
-          if (m_iFinished >= 0) {
-            int l_iIndex = m_iFinished < 3 ? m_iFinished : 3;
-            m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelLft, m_cLaurelSrc, nullptr, nullptr, true);
-            m_pDrv->draw2DImage(m_pLaurel[l_iIndex], m_cLaurelRgt, m_cLaurelSrc, nullptr, nullptr, true);
-
-            if (m_pPosFont != nullptr) {
-              m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelLft, irr::video::SColor(0xFF, 0, 0, 0), true, true);
-              m_pPosFont->draw(std::to_wstring(m_iFinished + 1).c_str(), m_cLaurelRgt, irr::video::SColor(0xFF, 0, 0, 0), true, true);
-            }
-          }
-        }
-      }
 
       irr::core::position2di l_cLapTimePos = m_cLapTimePos;
       if (m_bShowLapTimes && m_mLapTimes.find(m_iMarble) != m_mLapTimes.end()) {
@@ -1034,8 +985,6 @@ namespace dustbin {
 
       if (m_bPaused) {
         m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect);
-        if (m_pPaused != nullptr)
-          m_pDrv->draw2DImage(m_pPaused, m_cCountDown, m_cCntSource, &AbsoluteClippingRect, nullptr, true);
       }
     }
 

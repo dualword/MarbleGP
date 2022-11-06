@@ -27,6 +27,7 @@ namespace dustbin {
     class CHudAiHelp;       /**< Forward declaration of the AI help icon display */
     class CHudSpeedBar;     /**< Forward declaration of the speed bar item */
     class CHudSteering;     /**< Forward declaration of the steering display item */
+    class CHudBanner;       /**< Forward declaration of the banner renderer */
 
     /**
     * @class CGameHUD
@@ -45,6 +46,7 @@ namespace dustbin {
         irr::f32                   m_fSteer;        /**< The steer setting of the marble */
         bool                       m_bShowSpeed;    /**< Is the speed meter visible? */
         bool                       m_bBrake;        /**< Is the brake of the marble active? */
+        bool                       m_bManRsp;       /**< Does the user request manual respawn? */
         bool                       m_bHightlight;   /**< From the settings: highlight leader and marble ahead */
         bool                       m_bShowCtrl;     /**< From the settings: show marble controls */
         bool                       m_aRostrum[16];  /**< Flags for all player that are on the rostrum */
@@ -52,6 +54,7 @@ namespace dustbin {
         bool                       m_bFadeStart;    /**< Are we currently fading the start screen? */
         bool                       m_aFinished[16]; /**< Finished players */
         bool                       m_bPaused;       /**< Is the game paused? */
+        bool                       m_bCountdown;    /**< Is the countdown banner still visible? */
         irr::core::recti           m_cRect;         /**< The total rect of the viewport */
         irr::gui::IGUIEnvironment *m_pGui;
         gameclasses::SPlayer      *m_pPlayer;       /**< This is the data of the player this HUD belongs to */
@@ -65,30 +68,16 @@ namespace dustbin {
         irr::core::vector3df       m_cPosition;     /**< The marble's position */
         CRankingElement            *m_aRanking[16];  /**< The GUI elements for the ranking */
         irr::gui::IGUITab          *m_pRankParent;   /**< The parent for the ranking display */
-        irr::video::ITexture       *m_pCountDown[5]; /**< The countdown textures */
-        irr::video::ITexture       *m_pPaused;       /**< The paused texture */
-        int                        m_iCountDown;    /**< The current countdown state (4..0) */
-        irr::f32                   m_fCdAlpha;      /**< Alpha channel of the countdown */
         int                        m_iGoStep;       /**< The step when the countdown reached 0 */
         int                        m_iFinishStep;   /**< The simulation step when the player has finished */
         int                        m_iStep;         /**< The current simulation step */
-        irr::core::recti           m_cCountDown;    /**< The rect to draw the countdown */
-        irr::core::recti           m_cCntSource;    /**< The source rect for drawning the countdow */
-        irr::video::ITexture      *m_pStunned;      /**< The "Stunned" image */
-        irr::video::ITexture      *m_pRespawn;      /**< The "Respawn" image */
-        irr::video::ITexture      *m_pFinished;     /**< The "Finished" image */
         bool                       m_bRespawn;      /**< Is the marble this HUD belongs to currently respawning? */
         bool                       m_bStunned;      /**< Is the marble this HUD belongs to currently stunned? */
         bool                       m_bFinished;     /**< Has the marble this HUD belongs to finished the race ? */
         int                        m_iFadeStart;    /**< The step when countdown 1 was received (and fading the grid starts) */
         int                        m_iFinished;     /**< Finished position of the player */
-        irr::core::recti           m_cLaurelLft;    /**< Recti for the left laurel wreath */
-        irr::core::recti           m_cLaurelRgt;    /**< Recti for the right laurel wreath */
-        irr::core::recti           m_cLaurelSrc;    /**< Source rect for rendering the laurel wreaths */
-        irr::video::ITexture      *m_pLaurel[4];    /**< The laurel wreath images */
         irr::gui::IGUIFont        *m_pPosFont;      /**< Font for showing the finish position */
-        irr::gui::IGUIStaticText  *m_pWithdraw;     /**< The "Confirm Withdraw" static text */
-        int                        m_iWithdraw;     /**< The step when the "confirm withdraw" will be hidden again */
+        int                        m_iWithdraw;     /**< Withdraw from race step */
         irr::video::SColor         m_cRankBack;     /**< The background color for the ranking */
         SHighLight                 m_aHiLight[3];   /**< Data for the highlighted marbles */
         irr::scene::ISceneManager *m_pSmgr;         /**< The Irrlicht scene manager */
@@ -119,6 +108,7 @@ namespace dustbin {
         CHudAiHelp                    *m_pAiHelp;         /**< The AI help display */
         CHudSpeedBar                  *m_pSpeedBar;       /**< The speed bar */
         CHudSteering                  *m_pSteering;       /**< The steering display */
+        CHudBanner                    *m_pBanner;         /**< The banner renderer */
         scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);
