@@ -54,7 +54,7 @@ namespace dustbin {
 
         data::SMarbleAiData l_cAiData = data::SMarbleAiData(m_eAiHelp);
 
-        m_pAiControls = new CControllerAi_V2(a_iMarbleId, "" /*l_cAiData.serialize()*/, m_aMarbles, m_pLuaScript, a_cViewport);
+        m_pAiControls = new CControllerAi_V2(a_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
         
         if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
           m_pAiControls->setDebug(true);
