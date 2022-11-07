@@ -31,7 +31,8 @@ namespace dustbin {
         irr::video::ITexture     *m_pBanners[(int)enBanners::Count];  /**< The textures for the banner */
         irr::video::ITexture     *m_pLaurel[4];                       /**< The laurel wreath images */
         enBanners                 m_eState;                           /**< The state, i.e. which banner to render */
-        irr::core::recti          m_cRect;                            /**< The rect to render to */
+        irr::core::recti          m_cRect;                            /**< The rect to render the banners to */
+        irr::core::recti          m_cViewport;                        /**< The vireport */
         irr::core::recti          m_cSource;                          /**< The source rect */
         irr::f32                  m_fFade;                            /**< The alpha value to fade out the countdown banner */
         irr::core::recti          m_cLaurelLft;                       /**< Recti for the left laurel wreath */

@@ -1083,14 +1083,8 @@ namespace dustbin {
                   l_fFactor = 1.0f - l_fFactor;
 
                 m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
-
                 break;
               }
-
-              // Blue overlay for stunned players
-              case gameclasses::SMarbleNodes::enMarbleState::Stunned:
-                m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), it->second.m_cRect);
-                break;
 
               default:
                 break;

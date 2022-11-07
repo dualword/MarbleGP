@@ -13,6 +13,8 @@ namespace dustbin {
       m_pHugeFont(a_pHuge),
       m_iFinished(-1)
     {
+      m_cViewport = a_cViewport;
+
       m_pBanners[(int)enBanners::CountdownReady] = m_pDrv->getTexture("data/images/countdown_ready.png");
       m_pBanners[(int)enBanners::Countdown3    ] = m_pDrv->getTexture("data/images/countdown_three.png");
       m_pBanners[(int)enBanners::Countdown2    ] = m_pDrv->getTexture("data/images/countdown_two.png");
@@ -81,6 +83,15 @@ namespace dustbin {
     * @param a_cPos the (center) position to render to
     */
     void CHudBanner::render(const irr::core::recti &a_cClip) {
+      switch (m_eState) {
+      case enBanners::Stunned:
+        m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), m_cViewport);
+        break;
+
+      default:
+        break;
+      }
+
       if (m_eState != enBanners::Count && !m_pWithdraw->isVisible()) {
         if (m_eState == enBanners::CountdownGo) {
           irr::video::SColor l_aColor[] = {
