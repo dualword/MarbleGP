@@ -4,6 +4,7 @@
 #include <scenenodes/CAiPathSceneNode.h>
 #include <gui/hud_items/CHudSpeedBar.h>
 #include <gui/hud_items/CHudSteering.h>
+#include <gui/hud_items/CHudLapTimes.h>
 #include <gui/hud_items/CHudAiHelp.h>
 #include <controller/IControllerAI.h>
 #include <gui/hud_items/CHudBanner.h>
@@ -83,7 +84,6 @@ namespace dustbin {
         m_bFinished   = true;
         m_bRespawn    = false;
         m_bStunned    = false;
-        m_iFinishStep = m_iStep;
 
         if (m_pAiNode != nullptr)
           m_pAiNode->setVisible(false);
@@ -100,19 +100,8 @@ namespace dustbin {
         }
       }
 
-      // The player has finished so we remove the currently running lap. I have chosen to do it this way because this
-      // callback is called *after* the lap has started, and using the number of laps doesn't work either because the
-      // player may already lapped.
-      if (m_mLapTimes.find(a_MarbleId) != m_mLapTimes.end() && m_mLapTimes[a_MarbleId].m_vLapTimes.size() > 0) {
-        m_mLapTimes[a_MarbleId].m_vLapTimes.erase(m_mLapTimes[a_MarbleId].m_vLapTimes.end() - 1);
-      }
-
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-        if ((*it)->m_iId == a_MarbleId) {
-          (*it)->m_iState = 4;
-          break;
-        }
-      }
+      if (m_pLapTimes != nullptr)
+        m_pLapTimes->onPlayerFinished(a_RaceTime, a_MarbleId);
     }
 
     /**
@@ -169,26 +158,8 @@ namespace dustbin {
     * @param a_LapNo Number of the started lap
     */
     void CGameHUD::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
-      if (m_mLapTimes.find(a_MarbleId) == m_mLapTimes.end())
-        m_mLapTimes[a_MarbleId] = SPlayerRacetime();
-
-      if (m_mLapTimes[a_MarbleId].m_vLapTimes.size() > 0) {
-        int l_iTime = m_iStep - m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iStart;
-        m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iEnd     = m_iStep;
-        m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iLapTime = l_iTime;
-
-        if (m_iBestLapTime == -1 || l_iTime < m_iBestLapTime) {
-          m_iBestLapTime = l_iTime;
-        }
-
-        if (l_iTime < m_mLapTimes[a_MarbleId].m_iFastest || m_mLapTimes[a_MarbleId].m_iFastest == -1) {
-          m_mLapTimes[a_MarbleId].m_iFastest = l_iTime;
-        }
-      }
-
-      m_mLapTimes[a_MarbleId].m_vLapTimes.push_back(SLapTime());
-      m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iStart = m_iStep;
-      m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iLapNo = a_LapNo;
+      if (m_pLapTimes != nullptr)
+        m_pLapTimes->onLapStart(m_iStep, a_MarbleId, a_LapNo);
       
       if (a_MarbleId == m_iMarble) {
         for (std::map<enTextElements, STextElement>::iterator it = m_mTextElements.begin(); it != m_mTextElements.end(); it++)
@@ -303,33 +274,8 @@ namespace dustbin {
     * @param a_Checkpoint The checkpoint ID the player has passed
     */
     void CGameHUD::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
-      if (m_mLapTimes.find(a_MarbleId) != m_mLapTimes.end() && m_mLapTimes[a_MarbleId].m_vLapTimes.size() > 0) {
-        int l_iSplitTime = m_iStep - m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_iStart;
-
-        if (l_iSplitTime != 0) {
-          m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_vSplitTimes.push_back(l_iSplitTime);
-          m_mLapTimes[a_MarbleId].m_iLastSplit = m_iStep;
-
-          size_t l_iSplitIdx = m_mLapTimes[a_MarbleId].m_vLapTimes.back().m_vSplitTimes.size();
-
-          if (m_vBestSplits.size() < l_iSplitIdx) {
-            m_vBestSplits.push_back(l_iSplitTime);
-          }
-          else {
-            if (l_iSplitTime < m_vBestSplits[l_iSplitIdx - 1]) {
-              m_vBestSplits[l_iSplitIdx - 1] = l_iSplitTime;
-            }
-          }
-
-          if (m_mLapTimes[a_MarbleId].m_vPlayerBestSplit.size() < l_iSplitIdx) {
-            m_mLapTimes[a_MarbleId].m_vPlayerBestSplit.push_back(l_iSplitTime);
-          }
-          else {
-            if (l_iSplitTime < m_mLapTimes[a_MarbleId].m_vPlayerBestSplit[l_iSplitIdx - 1])
-              m_mLapTimes[a_MarbleId].m_vPlayerBestSplit[l_iSplitIdx - 1] = l_iSplitTime;
-          }
-        }
-      }
+      if (m_pLapTimes != nullptr)
+        m_pLapTimes->onCheckpoint(m_iStep, a_MarbleId);
     }
 
     /**
@@ -473,7 +419,6 @@ namespace dustbin {
       m_cUpVector     (irr::core::vector3df()),
       m_pRankParent   (nullptr),
       m_iGoStep       (0),
-      m_iFinishStep   (0),
       m_iStep         (0),
       m_bRespawn      (false),
       m_bStunned      (false),
@@ -486,7 +431,6 @@ namespace dustbin {
       m_pSmgr         (CGlobal::getInstance()->getSceneManager()),
       m_pColMgr       (nullptr),
       m_vRanking      (a_vRanking),
-      m_iBestLapTime  (-1),
       m_iLapTimeOffset(0),
       m_bShowLapTimes (false),
       m_pCheckered    (nullptr),
@@ -495,6 +439,7 @@ namespace dustbin {
       m_pSpeedBar     (nullptr),
       m_pSteering     (nullptr),
       m_pBanner       (nullptr),
+      m_pLapTimes     (nullptr),
       m_pAiNode       (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
@@ -671,10 +616,6 @@ namespace dustbin {
       for (int i = 0; i < 16; i++)
         m_aFinished[i] = false;
 
-      m_cLapTotalDim = m_pTimeFont->getDimension(L"Lap #66: 666.66");
-      m_cLapTotalDim.Width  = 5 * m_cLapTotalDim.Width  / 4;
-      m_cLapTotalDim.Height = 5 * m_cLapTotalDim.Height / 4;
-      
       m_cLapNoDim = m_pTimeFont->getDimension(L" Lap 66: ");
       m_cLapNoDim.Width  = 5 * m_cLapNoDim.Width  / 4;
       m_cLapNoDim.Height = 5 * m_cLapNoDim.Height / 4;
@@ -683,12 +624,9 @@ namespace dustbin {
       m_cPosNameDim.Width  = 10 * m_cPosNameDim.Width  / 9;
       m_cPosNameDim.Height =  5 * m_cPosNameDim.Height / 4;
 
+      m_iLapTimeOffset = 5 * m_cPosNameDim.Height / 4;
+
       m_cStartNr = irr::core::dimension2du(m_cPosNameDim.Height, m_cPosNameDim.Height);
-
-      m_iLapTimeOffset = 5 * m_cLapTotalDim.Height / 4;
-
-      m_cLapTimePos.X = a_cRect.LowerRightCorner.X - m_cLapTotalDim.Width;
-      m_cLapTimePos.Y = a_cRect.UpperLeftCorner.Y;
 
       m_pCheckered = m_pDrv->getTexture("data/images/checkered.png");
       m_cCheckered = m_pCheckered->getOriginalSize();
@@ -700,6 +638,13 @@ namespace dustbin {
       m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
       m_pSteering = new CHudSteering(m_pDrv, a_cRect);
       m_pBanner   = new CHudBanner  (m_pDrv, m_pGui, l_pBig, l_pHuge, a_cRect);
+      m_pLapTimes = new CHudLapTimes(m_pDrv, m_iMarble, irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y), 
+#ifdef _ANDROID
+        l_pTiny
+#else
+        l_pSmall
+#endif
+      );
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
@@ -875,76 +820,8 @@ namespace dustbin {
       if (m_pRankParent->isVisible())
         m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect, &AbsoluteClippingRect);
 
-      irr::core::position2di l_cLapTimePos = m_cLapTimePos;
-      if (m_bShowLapTimes && m_mLapTimes.find(m_iMarble) != m_mLapTimes.end()) {
-        for (std::vector<SLapTime>::iterator it = m_mLapTimes[m_iMarble].m_vLapTimes.begin(); it != m_mLapTimes[m_iMarble].m_vLapTimes.end(); it++) {
-          std::wstring l_sLap  = L" Lap " + std::to_wstring((*it).m_iLapNo) + L": ";
-          std::wstring l_sTime = L"";
-
-          irr::video::SColor l_cColor = irr::video::SColor(128, 224, 224, 244);
-          irr::video::SColor l_cText  = irr::video::SColor(255,   0,   0,   0);
-
-          if ((*it).m_iLapTime != -1) {
-            l_sTime = helpers::convertToTime((*it).m_iLapTime);
-
-            if ((*it).m_iLapTime == m_iBestLapTime) {
-              l_cColor = irr::video::SColor(128, 255, 96, 96);
-            }
-            else if ((*it).m_iLapTime == m_mLapTimes[m_iMarble].m_iFastest) {
-              l_cColor = irr::video::SColor(128, 255, 255, 96);
-            }
-          }
-          else {
-            if (m_mLapTimes[m_iMarble].m_iLastSplit != -1 && m_iStep - m_mLapTimes[m_iMarble].m_iLastSplit <= 180) {
-              irr::s32 l_iSplit = m_mLapTimes[m_iMarble].m_vLapTimes.back().m_vSplitTimes.back();
-              l_sTime = helpers::convertToTime(l_iSplit);
-              l_cColor = irr::video::SColor(128, 192, 192, 192);
-
-              if (l_iSplit == m_vBestSplits[m_mLapTimes[m_iMarble].m_vLapTimes.back().m_vSplitTimes.size() - 1])
-                l_cText = irr::video::SColor(0xFF, 255, 0, 0);
-              else if (l_iSplit == m_mLapTimes[m_iMarble].m_vPlayerBestSplit[m_mLapTimes[m_iMarble].m_vLapTimes.back().m_vSplitTimes.size() - 1])
-                l_cText = irr::video::SColor(0xFF, 255, 255, 0);
-            }
-            else l_sTime = helpers::convertToTime(m_iStep - (*it).m_iStart);
-          }
-
-          irr::core::dimension2du l_cSize = m_pTimeFont->getDimension(l_sTime.c_str());
-
-          irr::core::recti l_cRect = irr::core::recti(l_cLapTimePos, m_cLapTotalDim);
-
-          m_pDrv->draw2DRectangle(l_cColor, l_cRect, &m_cRect);
-          m_pTimeFont->draw(l_sLap.c_str(), irr::core::recti(l_cLapTimePos, m_cLapTotalDim), irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
-
-          irr::core::recti l_cRectTime = irr::core::recti(
-            l_cRect.LowerRightCorner.X - m_cLapTotalDim.Height / 4 - l_cSize.Width,
-            l_cRect.UpperLeftCorner.Y,
-            l_cRect.LowerRightCorner.X,
-            l_cRect.LowerRightCorner.Y
-          );
-
-          m_pTimeFont->draw(l_sTime.c_str(), l_cRectTime, l_cText, false, true);
-
-          l_cLapTimePos.Y += m_iLapTimeOffset;
-        }
-      }
-
-      if (m_bShowLapTimes) {
-        irr::core::recti l_cRect = irr::core::recti(l_cLapTimePos, m_cLapTotalDim);
-        m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 255, 192), l_cRect);
-        m_pTimeFont->draw(L" Race: ", l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &l_cRect);
-
-        std::wstring l_sTime = helpers::convertToTime( m_iFinishStep != 0 ? m_iFinishStep : m_iStep);
-        irr::core::dimension2du l_cSize = m_pTimeFont->getDimension(l_sTime.c_str());
-
-        irr::core::recti l_cRectTime = irr::core::recti(
-          l_cRect.LowerRightCorner.X - m_cLapTotalDim.Height / 4 - l_cSize.Width,
-          l_cRect.UpperLeftCorner.Y,
-          l_cRect.LowerRightCorner.X,
-          l_cRect.LowerRightCorner.Y
-        );
-
-        m_pTimeFont->draw(l_sTime.c_str(), l_cRectTime, irr::video::SColor(0xFF, 0, 0, 0), false, true);
-      }
+      if (m_bShowLapTimes && m_pLapTimes != nullptr)
+        m_pLapTimes->render(m_iStep, m_cRect);
 
       if (m_bShowRanking) {
         irr::core::position2di l_cPos = m_cRect.UpperLeftCorner;

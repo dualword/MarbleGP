@@ -28,6 +28,7 @@ namespace dustbin {
     class CHudSpeedBar;     /**< Forward declaration of the speed bar item */
     class CHudSteering;     /**< Forward declaration of the steering display item */
     class CHudBanner;       /**< Forward declaration of the banner renderer */
+    class CHudLapTimes;     /**< Forward declaration of the lap time renderer */
 
     /**
     * @class CGameHUD
@@ -69,7 +70,6 @@ namespace dustbin {
         CRankingElement            *m_aRanking[16];  /**< The GUI elements for the ranking */
         irr::gui::IGUITab          *m_pRankParent;   /**< The parent for the ranking display */
         int                        m_iGoStep;       /**< The step when the countdown reached 0 */
-        int                        m_iFinishStep;   /**< The simulation step when the player has finished */
         int                        m_iStep;         /**< The current simulation step */
         bool                       m_bRespawn;      /**< Is the marble this HUD belongs to currently respawning? */
         bool                       m_bStunned;      /**< Is the marble this HUD belongs to currently stunned? */
@@ -92,11 +92,6 @@ namespace dustbin {
 
         std::map<int, irr::core::vector3df> m_mMarblePositions;
 
-        std::map<int, SPlayerRacetime> m_mLapTimes;       /**< The lap times of the marbles (key == marble id, value == lap time structure vector) */
-        std::vector<int>               m_vBestSplits;     /**< The best split times */
-        int                            m_iBestLapTime;    /**< The best lap time */
-        irr::core::position2di         m_cLapTimePos;     /**< Position of the lap times */
-        irr::core::dimension2du        m_cLapTotalDim;    /**< Size of the lap times labels */
         irr::core::dimension2du        m_cLapNoDim;       /**< Size of the lap number of the lap times display */
         irr::core::dimension2du        m_cPosNameDim;     /**< Size of the position display (upper left) */
         irr::core::dimension2du        m_cStartNr;        /**< Size of the starting number */
@@ -109,6 +104,7 @@ namespace dustbin {
         CHudSpeedBar                  *m_pSpeedBar;       /**< The speed bar */
         CHudSteering                  *m_pSteering;       /**< The steering display */
         CHudBanner                    *m_pBanner;         /**< The banner renderer */
+        CHudLapTimes                  *m_pLapTimes;       /**< The lap times renderer */
         scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);
