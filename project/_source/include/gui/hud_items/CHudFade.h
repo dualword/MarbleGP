@@ -39,6 +39,7 @@ namespace dustbin {
           FinishedOut =  64,     /**< The fade out when the camera is switched to the rostrum */
           FinishedIn  = 128,     /**< The fade in when the camera is switched to the rostrum */
           RaceEnd     = 256,     /**< Fade out at the end of the race */
+          GamePaused  = 512,     /**< The game is paused */
 
           Count
         };

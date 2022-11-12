@@ -93,8 +93,8 @@ namespace dustbin {
           }
 
           // Fade in after finished (grey overlay needs be be rendered below everything else)
-          if ((m_iFade & (int)enFade::FinishedIn)) {
-            m_pDrv->draw2DRectangle(irr::video::SColor((irr::s32)(96.0f), 192, 192, 192), m_cRect);
+          if ((m_iFade & (int)enFade::FinishedIn) == (int)enFade::FinishedIn || (m_iFade & (int)enFade::GamePaused) == (int)enFade::GamePaused) {
+            m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cRect);
           }
           break;
         }

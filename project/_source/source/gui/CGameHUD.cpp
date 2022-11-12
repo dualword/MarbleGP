@@ -299,6 +299,9 @@ namespace dustbin {
           if (m_aRanking[i] != nullptr)
             m_aRanking[i]->setVisible(a_Paused || m_aRostrum[i]);
         }
+
+        if (m_pFade != nullptr)
+          m_pFade->setFadeFlag(CHudFade::enFade::GamePaused, a_Paused);
       }
 
       if (m_pBanner != nullptr)
