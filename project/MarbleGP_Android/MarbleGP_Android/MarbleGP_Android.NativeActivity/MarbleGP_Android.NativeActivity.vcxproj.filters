@@ -423,6 +423,9 @@
     <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudLapTimes.h">
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudFade.h">
+      <Filter>Headerdateien\gui\hud_items</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -842,6 +845,9 @@
       <Filter>Quelldateien\gui\hud_items</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudLapTimes.cpp">
+      <Filter>Quelldateien\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudFade.cpp">
       <Filter>Quelldateien\gui\hud_items</Filter>
     </ClCompile>
   </ItemGroup>

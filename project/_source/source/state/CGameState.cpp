@@ -894,8 +894,8 @@ namespace dustbin {
 
           for (int i = 0; i < 16; i++) {
             if (m_aMarbles[i] != nullptr) {
-              bool l_bRespawn = m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn1 || m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2,
-                   l_bOther   = m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0;
+              bool l_bRespawn = m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn1 || m_aMarbles[i]->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2;
+              bool l_bOther   = m_aMarbles[i]->m_pPositional != a_pViewPort->m_pMarble && m_aMarbles[i]->m_pPositional != nullptr && m_aMarbles[i]->m_pRotational->getMesh()->getMeshBufferCount() > 0;
 
               if (l_bOther || l_bRespawn) {
                 bool l_bBehind = l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK;
@@ -1064,32 +1064,6 @@ namespace dustbin {
           beforeDrawScene(&it->second);
           m_pShader->renderScene(it->second.m_cRect);
           afterDrawScene(&it->second);
-
-          if (it->second.m_pPlayer != nullptr && it->second.m_pPlayer->m_iStateChange != -1) {
-            switch (it->second.m_pPlayer->m_eState) {
-              // Fade the viewport out and in if the player is respawning
-              case gameclasses::SMarbleNodes::enMarbleState::Respawn1:
-              case gameclasses::SMarbleNodes::enMarbleState::Respawn2: {
-                int l_iStepSince = m_iStep - it->second.m_pPlayer->m_iStateChange;
-                irr::f32 l_fFactor = 1.0f;
-
-                if (l_iStepSince < 120) {
-                  l_fFactor = ((irr::f32)l_iStepSince) / 120.0f;
-                  if (l_fFactor > 1.0f)
-                    l_fFactor = 1.0f;
-                }
-
-                if (it->second.m_pPlayer->m_eState == gameclasses::SMarbleNodes::enMarbleState::Respawn2)
-                  l_fFactor = 1.0f - l_fFactor;
-
-                m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
-                break;
-              }
-
-              default:
-                break;
-            }
-          }
         }
       }
 
@@ -1102,29 +1076,15 @@ namespace dustbin {
           if (it->second.m_pPlayer->m_eState == gameclasses::SMarbleNodes::enMarbleState::Finished) {
             if (m_pRostrum != nullptr) {
               int l_iStepSince = m_iStep - it->second.m_pPlayer->m_iStateChange;
-              irr::f32 l_fFactor = 0.0f;
-
-              if (l_iStepSince > 180) {
-                l_fFactor = 1.0f - ((irr::f32)(l_iStepSince - 180)) / 100.0f;
-                if (l_fFactor < 0.0f) l_fFactor = 0.0f;
-              }
-              else if (l_iStepSince > 160) {
+              
+              if (l_iStepSince > 160) {
                 if (!it->second.m_pHUD->isResultParentVisible())
                   it->second.m_pHUD->showResultParent();
 
                 it->second.m_pCamera->setPosition(m_pRostrum->getCameraPosition());
                 it->second.m_pCamera->setTarget(m_pRostrum->getAbsolutePosition() - irr::core::vector3df(0.0f, 15.0f, 0.0f));
                 it->second.m_pCamera->setUpVector(irr::core::vector3df(0.0f, 1.0f, 0.0f));
-                l_fFactor = 1.0f;
               }
-              else if (l_iStepSince > 60) {
-                l_fFactor = ((irr::f32)(l_iStepSince - 60)) / 100.0f;
-                if (l_fFactor > 1.0f) {
-                  l_fFactor = 1.0f;
-                }
-              }
-
-              m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFactor), 0, 0, 0), it->second.m_cRect);
             }
           }
         }
@@ -1138,9 +1098,6 @@ namespace dustbin {
         else
           l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
 
-        if (l_fFade > 0.0f)
-          m_pGlobal->drawNextRaceScreen(l_fFade);
-
         if (l_fFade < 0.1f && l_fFade > 0.0f)
           m_pSoundIntf->setMenuFlag(false);
 
@@ -1150,6 +1107,12 @@ namespace dustbin {
         if (m_iFinished != -1 && m_iStep - m_iFinished > 1800) { // Wait until the finished soundtrack has ended
           m_eState = enGameState::Finished;
           m_iFadeOut = m_iStep;
+
+          for (auto l_cViewport: m_mViewports) {
+            if (l_cViewport.second.m_pHUD != nullptr) {
+              l_cViewport.second.m_pHUD->startFinalFadeOut();
+            }
+          }
         }
       }
       else if (m_eState == enGameState::Finished) {
@@ -1164,7 +1127,6 @@ namespace dustbin {
             m_pDynamics->stopThread();
         }
 
-        m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * l_fFade), 0, 0, 0), m_cScreen);
         m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f - l_fFade);
       }
 

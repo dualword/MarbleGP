@@ -29,6 +29,7 @@ namespace dustbin {
     class CHudSteering;     /**< Forward declaration of the steering display item */
     class CHudBanner;       /**< Forward declaration of the banner renderer */
     class CHudLapTimes;     /**< Forward declaration of the lap time renderer */
+    class CHudFade;         /**< Forward declaration of the HUD fade renderer */
 
     /**
     * @class CGameHUD
@@ -67,13 +68,13 @@ namespace dustbin {
         irr::core::vector3df       m_cUpVector;     /**< The marble's up vector */
         irr::core::dimension2du    m_cLabelSize;    /**< Dimension of the speed bar, used for calculating some sizes */
         irr::core::vector3df       m_cPosition;     /**< The marble's position */
-        CRankingElement            *m_aRanking[16];  /**< The GUI elements for the ranking */
-        irr::gui::IGUITab          *m_pRankParent;   /**< The parent for the ranking display */
+        CRankingElement           *m_aRanking[16];  /**< The GUI elements for the ranking */
         int                        m_iGoStep;       /**< The step when the countdown reached 0 */
         int                        m_iStep;         /**< The current simulation step */
         bool                       m_bRespawn;      /**< Is the marble this HUD belongs to currently respawning? */
         bool                       m_bStunned;      /**< Is the marble this HUD belongs to currently stunned? */
         bool                       m_bFinished;     /**< Has the marble this HUD belongs to finished the race ? */
+        bool                       m_bRanking;      /**< Show the ranking list */
         int                        m_iFadeStart;    /**< The step when countdown 1 was received (and fading the grid starts) */
         int                        m_iFinished;     /**< Finished position of the player */
         irr::gui::IGUIFont        *m_pPosFont;      /**< Font for showing the finish position */
@@ -105,6 +106,7 @@ namespace dustbin {
         CHudSteering                  *m_pSteering;       /**< The steering display */
         CHudBanner                    *m_pBanner;         /**< The banner renderer */
         CHudLapTimes                  *m_pLapTimes;       /**< The lap times renderer */
+        CHudFade                      *m_pFade;           /**< The HUD fade renderer */
         scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);
@@ -262,6 +264,11 @@ namespace dustbin {
         * @param a_cPoint2 the second point calculated by the AI
         */
         void updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic, const irr::core::vector3df &a_cPoint1, const irr::core::vector3df &a_cPoint2);
+
+        /**
+        * Start the fade-out at the end of the race
+        */
+        void startFinalFadeOut();
     };
   }
 }

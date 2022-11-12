@@ -74,7 +74,7 @@ namespace dustbin {
         * Set the position of the player
         * @param a_iPosition the position of the player
         */
-        void setPosition(int a_iPosition);
+        void setRacePosition(int a_iPosition);
       };
   }
 }

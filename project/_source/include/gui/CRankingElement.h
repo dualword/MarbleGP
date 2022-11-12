@@ -14,7 +14,7 @@ namespace dustbin {
     * This GUI element renders the final standings
     * in the game HUD
     */
-    class CRankingElement : public irr::gui::IGUIElement, public gui::CButtonRenderer {
+    class CRankingElement : public gui::CButtonRenderer {
       private:
         int          m_iDeficit;    /**< The deficit on the leader */
         std::wstring m_sName;       /**< The player name of the position */
@@ -23,6 +23,7 @@ namespace dustbin {
         irr::core::recti m_cPosition;   /**< Rendering rect for the position */
         irr::core::recti m_cName;       /**< Rendering rect for the name */
         irr::core::recti m_cDeficit;    /**< Rendering rect for the deficit */
+        irr::core::recti m_cRect;       /**< The rendering rectangle */
 
         irr::video::SColor m_cBackground;   /**< The background color */
         irr::video::SColor m_cOriginal;     /**< The original background color */
@@ -33,6 +34,7 @@ namespace dustbin {
 
         bool m_bHighLight;    /**< Highlight this player */
         bool m_bWithdrawn;    /**< did the player withdraw from the race (true) or finish normally (false)? */
+        bool m_bVisible;      /**< Visibility flag */
 
         irr::core::vector2di  m_cHighLight;   /**< The hightlight position */
 
@@ -51,7 +53,7 @@ namespace dustbin {
         */
         void setData(const std::wstring &a_sName, int a_iDeficit, bool a_bWithdrawn);
 
-        virtual void draw();
+        void draw();
 
         /**
         * Set the alpha value
@@ -64,6 +66,12 @@ namespace dustbin {
         * @para a_bHighLight Hightlight or don't
         */
         void highlight(bool a_bHighLight);
+
+        /**
+        * Set the item visible or invisible
+        * @param a_bVisible visibility flag
+        */
+        void setVisible(bool a_bVisible);
     };
   }
 }

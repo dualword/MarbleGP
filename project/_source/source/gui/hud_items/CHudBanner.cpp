@@ -45,7 +45,7 @@ namespace dustbin {
 
         irr::core::position2di l_cCntPos = irr::core::position2di(
           l_cPos.X + a_cViewport.getWidth () / 2 - l_cCntSize.Width / 2,
-          l_cPos.Y + a_cViewport.getHeight() / 4 - l_cCntSize.Height / 2
+          l_cPos.Y + a_cViewport.getHeight() / 6 - l_cCntSize.Height / 2
         );
 
         m_cRect = irr::core::recti(l_cCntPos, l_cCntSize);
@@ -83,15 +83,6 @@ namespace dustbin {
     * @param a_cPos the (center) position to render to
     */
     void CHudBanner::render(const irr::core::recti &a_cClip) {
-      switch (m_eState) {
-      case enBanners::Stunned:
-        m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), m_cViewport);
-        break;
-
-      default:
-        break;
-      }
-
       if (m_eState != enBanners::Count && !m_pWithdraw->isVisible()) {
         if (m_eState == enBanners::CountdownGo) {
           irr::video::SColor l_aColor[] = {
@@ -139,7 +130,7 @@ namespace dustbin {
     * Set the position of the player
     * @param a_iPosition the position of the player
     */
-    void CHudBanner::setPosition(int a_iPosition) {
+    void CHudBanner::setRacePosition(int a_iPosition) {
       m_iFinished = a_iPosition;
     }
   }

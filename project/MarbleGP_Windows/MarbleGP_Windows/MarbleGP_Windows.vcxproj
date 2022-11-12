@@ -128,6 +128,7 @@
     <ClCompile Include="..\..\_source\source\gui\CSelector.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudAiHelp.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudBanner.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudFade.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudLapTimes.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSpeedBar.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSteering.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="..\..\_source\include\gui\CSelector.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudAiHelp.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudBanner.h" />
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudFade.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudLapTimes.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSpeedBar.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSteering.h" />

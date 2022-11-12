@@ -57,7 +57,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Off;Display;Low;Medium;High;AI Bot" />
+              <attribute key="options" value="Off;Display;Low;Medium;High;AI Bot (MarbleGP);AI Bot (Marble2);AI Bot (Marble3)" />
             </custom>
           </element>
         </children>

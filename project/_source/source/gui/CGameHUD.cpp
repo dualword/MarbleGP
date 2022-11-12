@@ -11,6 +11,7 @@
 #include <scenenodes/CMyBillboard.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <gui/hud_items/CHudFade.h>
 #include <gameclasses/SPlayer.h>
 #include <gui/CRankingElement.h>
 #include <gfx/SViewPort.h>
@@ -33,6 +34,9 @@ namespace dustbin {
 
           if (m_pBanner != nullptr) {
             m_pBanner->setState(a_State != 2 ? CHudBanner::enBanners::Respawn : CHudBanner::enBanners::Count);
+
+            if (a_MarbleId == m_iMarble && a_State == 1 && m_pFade != nullptr)
+              m_pFade->setFadeFlag(CHudFade::enFade::RespawnOut, true);
           }
         }
 
@@ -62,6 +66,11 @@ namespace dustbin {
             break;
           }
         }
+
+        if (a_MarbleId == m_iMarble && m_pFade != nullptr) {
+          m_pFade->setFadeFlag(CHudFade::enFade::RespawnOut, false);
+          m_pFade->setFadeFlag(CHudFade::enFade::RespawnIn , true );
+        }
       }
     }
 
@@ -88,8 +97,13 @@ namespace dustbin {
         if (m_pAiNode != nullptr)
           m_pAiNode->setVisible(false);
 
-        if (m_pBanner != nullptr)
+        if (m_pBanner != nullptr) {
           m_pBanner->setState(CHudBanner::enBanners::Finished);
+        }
+
+        if (m_pFade != nullptr) {
+          m_pFade->setFadeFlag(CHudFade::enFade::FinishedOut, true);
+        }
       }
       else {
         for (int i = 0; i < 3; i++) {
@@ -114,8 +128,14 @@ namespace dustbin {
         if (a_MarbleId == m_iMarble) {
           m_bShowSpeed = a_State != 1;
           m_bStunned   = a_State == 1;
-          if (m_pBanner != nullptr)
+
+          if (m_pBanner != nullptr) {
             m_pBanner->setState(a_State == 1 ? CHudBanner::enBanners::Stunned : CHudBanner::enBanners::Count);
+          }
+
+          if (m_pFade != nullptr) {
+            m_pFade->setFadeFlag(CHudFade::enFade::Stunned, a_State == 1);
+          }
         }
       
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
@@ -148,7 +168,7 @@ namespace dustbin {
       if (a_MarbleId == m_iMarble) {
         m_iFinished = a_Position - 1;
         if (m_pBanner != nullptr)
-          m_pBanner->setPosition(a_Position - 1);
+          m_pBanner->setRacePosition(a_Position - 1);
       }
     }
 
@@ -191,6 +211,11 @@ namespace dustbin {
 
         if (a_MarbleId == m_iMarble) {
           m_cUpVector = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+
+          if (m_iMarble == a_MarbleId && m_pFade != nullptr) {
+            m_pFade->setFadeFlag(CHudFade::enFade::FinishedOut, false);
+            m_pFade->setFadeFlag(CHudFade::enFade::FinishedIn , true );
+          }
         }
       }
     }
@@ -208,6 +233,18 @@ namespace dustbin {
           case 1: m_pBanner->setState(CHudBanner::enBanners::Countdown1    ); break;
           case 0: m_pBanner->setState(CHudBanner::enBanners::CountdownGo   ); break;
         }
+
+        if (m_pFade != nullptr) {
+          // Start fading out the grey overlay on tick 1
+          if (a_Tick == 1)
+            m_pFade->setFadeFlag(CHudFade::enFade::RaceGrey, true);
+          // Hide the grey overlay on tick 0
+          else if (a_Tick == 0) {
+            m_pFade->setFadeFlag(CHudFade::enFade::RaceGrey , false);
+            m_pFade->setFadeFlag(CHudFade::enFade::NextRace , false);
+            m_pFade->setFadeFlag(CHudFade::enFade::RaceStart, false);
+          }
+        }
       }
 
       if (a_Tick == 1) {
@@ -216,7 +253,7 @@ namespace dustbin {
       }
       else if (a_Tick == 0) {
         m_bFadeStart = false;
-        m_pRankParent->setVisible(false);
+        m_bRanking = false;
 
         m_cRankBack = irr::video::SColor(96, 192, 192, 192);
 
@@ -255,8 +292,8 @@ namespace dustbin {
     */
     void CGameHUD::onPausechanged(bool a_Paused) {
       m_bPaused = a_Paused;
-      if (m_pRankParent != nullptr && !m_bFinished) {
-        m_pRankParent->setVisible(a_Paused);
+      if (!m_bFinished) {
+        m_bRanking = a_Paused;
 
         for (int i = 0; i < 16; i++) {
           if (m_aRanking[i] != nullptr)
@@ -312,6 +349,9 @@ namespace dustbin {
 
         m_iWithdraw = -1;
       }
+
+      if (m_pFade != nullptr)
+        m_pFade->onStep(a_StepNo);
     }
 
 
@@ -417,12 +457,12 @@ namespace dustbin {
       m_pDrv          (a_pGui->getVideoDriver()),
       m_cScreen       (irr::core::dimension2du()),
       m_cUpVector     (irr::core::vector3df()),
-      m_pRankParent   (nullptr),
       m_iGoStep       (0),
       m_iStep         (0),
       m_bRespawn      (false),
       m_bStunned      (false),
       m_bFinished     (false),
+      m_bRanking      (true),
       m_iFadeStart    (-1),
       m_iFinished     (-1),
       m_pPosFont      (nullptr),
@@ -440,6 +480,7 @@ namespace dustbin {
       m_pSteering     (nullptr),
       m_pBanner       (nullptr),
       m_pLapTimes     (nullptr),
+      m_pFade         (nullptr),
       m_pAiNode       (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
@@ -541,9 +582,6 @@ namespace dustbin {
         m_aRostrum[i] = false;
       }
 
-      m_pRankParent = a_pGui->addTab(a_cRect, a_pGui->getRootGUIElement());
-      m_pRankParent->setVisible(true);
-
       irr::core::dimension2du l_cRankSize = getDimension(L"ThisStringReallyIsEnough", 
 #ifdef _ANDROID
         l_pRegular
@@ -561,8 +599,8 @@ namespace dustbin {
 
       for (int i = 0; i < m_iPlayers; i++) {
         irr::core::position2di l_cThisPos = irr::core::position2di(
-          i < m_iPlayers / 2 ? l_cRankPos.X - l_cRankSize.Width - 2 * l_pGlobal->getRasterSize() : l_cRankPos.X + 2 * l_pGlobal->getRasterSize(), 
-          l_cRankPos.Y + l_iOffsetY
+          i < m_iPlayers / 2 ? l_cRankPos.X - l_cRankSize.Width - 2 * l_pGlobal->getRasterSize() + a_cRect.UpperLeftCorner.X : l_cRankPos.X + 2 * l_pGlobal->getRasterSize() + a_cRect.UpperLeftCorner.X, 
+          l_cRankPos.Y + l_iOffsetY + a_cRect.UpperLeftCorner.Y
         );
 
         m_aRanking[i] = new gui::CRankingElement(
@@ -574,7 +612,7 @@ namespace dustbin {
 #else
           l_pRegular,
 #endif
-          m_pRankParent,
+          nullptr,
           a_pGui
         );
 
@@ -582,7 +620,6 @@ namespace dustbin {
           m_aRanking[i]->highlight(true);
 
         m_aRanking[i]->setData((*m_vRanking)[i]->m_sWName, 0, (*m_vRanking)[i]->m_bWithdrawn);
-        m_aRanking[i]->drop();
 
         if (i == (m_iPlayers / 2) - 1)
           l_iOffsetY = 0;
@@ -637,14 +674,15 @@ namespace dustbin {
 
       m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
       m_pSteering = new CHudSteering(m_pDrv, a_cRect);
-      m_pBanner   = new CHudBanner  (m_pDrv, m_pGui, l_pBig, l_pHuge, a_cRect);
-      m_pLapTimes = new CHudLapTimes(m_pDrv, m_iMarble, irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y), 
+      m_pBanner   = new CHudBanner  (m_pDrv, m_pGui, l_pBig, l_pBig, a_cRect);
+      m_pLapTimes = new CHudLapTimes(m_pDrv, m_iMarble, irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y),
 #ifdef _ANDROID
         l_pTiny
 #else
         l_pSmall
 #endif
       );
+      m_pFade     = new CHudFade    (m_pDrv, m_iMarble, a_cRect);
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
@@ -676,21 +714,29 @@ namespace dustbin {
         delete m_pBanner;
         m_pBanner = nullptr;
       }
+
+      for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++) {
+        delete m_aRanking[i];
+        m_aRanking[i] = nullptr;
+      }
     }
 
     void CGameHUD::draw() {
 
-    if (m_pColMgr != nullptr) {
-      // For Android we move these elements
-      // a little less down so that it fits
-      // the screen with it's larger fonts
-      irr::f32 l_fFactor =
+      if (m_pColMgr != nullptr) {
+        // For Android we move these elements
+        // a little less down so that it fits
+        // the screen with it's larger fonts
+        irr::f32 l_fFactor =
 #ifdef _ANDROID
         1.5f;
 #else
         3.0f;
 #endif
       ;
+
+      if (m_pFade != nullptr)
+        m_pFade->render(CHudFade::enCall::Start);
 
       irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
 
@@ -709,6 +755,15 @@ namespace dustbin {
 
       if (m_pSteering != nullptr && m_bShowCtrl && m_bShowSpeed)
         l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bManRsp, m_cRect);
+
+
+      if (m_bRanking)
+        for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++) {
+          m_aRanking[i]->draw();
+        }
+
+      if (m_pFade != nullptr)
+        m_pFade->render(CHudFade::enCall::BeforeBanners);
 
       if (m_pBanner != nullptr)
         m_pBanner->render(m_cRect);
@@ -817,8 +872,8 @@ namespace dustbin {
         }
       }
 
-      if (m_pRankParent->isVisible())
-        m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect, &AbsoluteClippingRect);
+      // if (m_pRankParent->isVisible())
+      //   m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect, &AbsoluteClippingRect);
 
       if (m_bShowLapTimes && m_pLapTimes != nullptr)
         m_pLapTimes->render(m_iStep, m_cRect);
@@ -860,9 +915,8 @@ namespace dustbin {
         }
       }
 
-      if (m_bPaused) {
-        m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect);
-      }
+      if (m_pFade != nullptr)
+        m_pFade->render(CHudFade::enCall::End);
     }
 
     std::wstring CGameHUD::getDeficitString(int a_iDeficit) {
@@ -951,12 +1005,11 @@ namespace dustbin {
     }
 
     bool CGameHUD::isResultParentVisible() {
-      return m_pRankParent == nullptr || m_pRankParent->isVisible();
+      return m_bRanking;
     }
 
     void CGameHUD::showResultParent() {
-      if (m_pRankParent != nullptr)
-        m_pRankParent->setVisible(true);
+      m_bRanking = true;
     }
 
     /**
@@ -1037,6 +1090,15 @@ namespace dustbin {
         m_pAiNode->setColor(l_cColor);
         m_pAiNode->setAiData(a_cPoint1, a_cPoint2);
       }
+    }
+
+
+    /**
+    * Start the fade-out at the end of the race
+    */
+    void CGameHUD::startFinalFadeOut() {
+      if (m_pFade != nullptr)
+        m_pFade->setFadeFlag(CHudFade::enFade::RaceEnd, true);
     }
   }
 }

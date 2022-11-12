@@ -7,7 +7,6 @@
 namespace dustbin {
   namespace gui {
     CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui) :
-      IGUIElement(irr::gui::EGUIET_COUNT, a_pGui, a_pParent != nullptr ? a_pParent : a_pGui->getRootGUIElement(), -1, a_cRect),
       m_iDeficit   (0),
       m_sName      (L""),
       m_sPosition  (std::to_wstring(a_iPosition) + L": "),
@@ -17,23 +16,26 @@ namespace dustbin {
       m_cHlColor   (irr::video::SColor(232, 0, 255, 0)),
       m_pFont      (a_pFont),
       m_bHighLight (false),
-      m_bWithdrawn (false)
+      m_bWithdrawn (false),
+      m_bVisible   (true)
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
       l_cDimPos.Height = a_cRect.getHeight();
 
-      m_cPosition = irr::core::recti(AbsoluteClippingRect.UpperLeftCorner, AbsoluteClippingRect.UpperLeftCorner + irr::core::vector2di(l_cDimPos.Width, l_cDimPos.Height));
+      m_cRect = a_cRect;
+
+      m_cPosition = irr::core::recti(a_cRect.UpperLeftCorner, a_cRect.UpperLeftCorner + irr::core::vector2di(l_cDimPos.Width, l_cDimPos.Height));
 
       irr::core::dimension2du l_cDimDeficit = m_pFont->getDimension(L"+666.66");
       l_cDimDeficit.Width  = 3 * l_cDimDeficit.Width / 2;
       l_cDimDeficit.Height = a_cRect.getHeight();
 
-      m_cDeficit = irr::core::recti(AbsoluteClippingRect.LowerRightCorner.X - l_cDimDeficit.Width, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
+      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width, a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X, a_cRect.LowerRightCorner.Y);
 
       m_iDeficit = 0;
 
-      m_cName = irr::core::recti(m_cPosition.LowerRightCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, m_cDeficit.UpperLeftCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
+      m_cName = irr::core::recti(m_cPosition.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y, m_cDeficit.UpperLeftCorner.X, a_cRect.LowerRightCorner.Y);
 
       m_iRaster = a_cRect.getHeight() /  4;
       m_iBorder = a_cRect.getHeight() / 16;
@@ -71,24 +73,24 @@ namespace dustbin {
     }
 
     void CRankingElement::draw() {
-      if (IsVisible) {
-        renderBackground(AbsoluteClippingRect, m_cBackground);
+      if (m_bVisible) {
+        renderBackground(m_cRect, m_cBackground);
 
-        m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &AbsoluteClippingRect);
+        m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &m_cRect);
 
         if (m_iDeficit != 0) {
           if (m_bWithdrawn) {
-            m_pFont->draw(L"DNF", m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
+            m_pFont->draw(L"DNF", m_cDeficit, m_cTextColor, true, true, &m_cRect);
           }
           else {
-            m_pFont->draw((L"+" + helpers::convertToTime(m_iDeficit)).c_str(), m_cDeficit, m_cTextColor, true, true, &AbsoluteClippingRect);
+            m_pFont->draw((L"+" + helpers::convertToTime(m_iDeficit)).c_str(), m_cDeficit, m_cTextColor, true, true, &m_cRect);
           }
         }
 
-        m_pFont->draw(m_sName.c_str(), m_cName, m_cTextColor, false, true, &AbsoluteClippingRect);
+        m_pFont->draw(m_sName.c_str(), m_cName, m_cTextColor, false, true, &m_cRect);
 
         if (m_bHighLight) {
-          irr::core::vector2di l_cPos = irr::core::vector2di(AbsoluteClippingRect.LowerRightCorner.X - 3 * m_cHlSize.Width / 2, AbsoluteClippingRect.getCenter().Y - m_cHlSize.Height / 2);
+          irr::core::vector2di l_cPos = irr::core::vector2di(m_cRect.LowerRightCorner.X - 3 * m_cHlSize.Width / 2, m_cRect.getCenter().Y - m_cHlSize.Height / 2);
 
           for (std::vector<irr::core::line2di>::const_iterator it = m_vHightLight.begin(); it != m_vHightLight.end(); it++) {
             m_pDrv->draw2DLine(l_cPos + (*it).start, l_cPos + (*it).end, m_cHlColor);
@@ -117,6 +119,14 @@ namespace dustbin {
     */
     void CRankingElement::highlight(bool a_bHighLight) {
       m_bHighLight = a_bHighLight;
+    }
+
+    /**
+    * Set the item visible or invisible
+    * @param a_bVisible visibility flag
+    */
+    void CRankingElement::setVisible(bool a_bVisible) {
+      m_bVisible = a_bVisible;
     }
   }
 }
