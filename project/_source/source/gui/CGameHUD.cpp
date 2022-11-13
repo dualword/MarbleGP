@@ -875,9 +875,6 @@ namespace dustbin {
         }
       }
 
-      // if (m_pRankParent->isVisible())
-      //   m_pDrv->draw2DRectangle(m_cRankBack, AbsoluteClippingRect, &AbsoluteClippingRect);
-
       if (m_bShowLapTimes && m_pLapTimes != nullptr)
         m_pLapTimes->render(m_iStep, m_cRect);
 
