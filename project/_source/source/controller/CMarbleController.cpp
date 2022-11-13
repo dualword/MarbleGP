@@ -157,13 +157,13 @@ namespace dustbin {
               if (l_eMode == IControllerAI::enMarbleMode::Jump || l_eMode == IControllerAI::enMarbleMode::OffTrack) {
                 l_iCtrlX     = l_iBotX;
                 l_iCtrlY     = l_iBotY;
-                l_bBrake     = l_bBrakeBot;
                 a_bAutomatic = true;
               }
               else {
                 if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
                 if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
               }
+              l_bBrake     = l_bBrakeBot;
               l_bRespawn   = l_bRspnBot;
               break;
 

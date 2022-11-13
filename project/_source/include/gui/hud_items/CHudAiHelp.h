@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <data/CDataStructs.h>
 #include <irrlicht.h>
 
 namespace dustbin {
@@ -47,8 +48,9 @@ namespace dustbin {
         * The constructor
         * @param a_pDrv the video driver
         * @param a_cRect the rect to render to
+        * @param a_eAiHelp the AI help level for the player
         */
-        CHudAiHelp(irr::video::IVideoDriver *a_pDrv, const irr::core::recti &a_cRect);
+        CHudAiHelp(irr::video::IVideoDriver *a_pDrv, const irr::core::recti &a_cRect, data::SPlayerData::enAiHelp a_eAiHelp);
         ~CHudAiHelp();
 
         /**

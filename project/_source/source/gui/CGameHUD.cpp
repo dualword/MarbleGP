@@ -688,7 +688,7 @@ namespace dustbin {
       m_pFade     = new CHudFade    (m_pDrv, m_iMarble, a_cRect);
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
-        m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+        m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect, a_pPlayer->m_eAiHelp);
         m_pAiNode = new scenenodes::CAiPathSceneNode(l_pGlobal->getSceneManager()->getRootSceneNode(), l_pGlobal->getSceneManager(), -1, irr::core::vector3df(), irr::core::dimension2df(1.5f, 1.5f));
         m_pAiNode->drop();
       }

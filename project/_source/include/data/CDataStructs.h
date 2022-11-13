@@ -84,8 +84,8 @@ namespace dustbin {
         Off,      /**< No AI help at all */
         Display,  /**< AI shows best path, steering and speed hints */
         Low,      /**< Display + adjust speed before jumps */
-        Medium,   /**< Low + adjust steering to the correct value */
-        High,     /**< Medium + try to make sure marble does not fall off the track */
+        Medium,   /**< Low + adjust steering to the correct value + brake + try to keep marbles on the road */
+        High,     /**< Medium + full throttle control */
         BotMgp,   /**< Complete AI control (MarbleGP) */
         BotMb2,   /**< Complete AI control (Marble2) */
         BotMb3    /**< Complete AI control (Marble3) */

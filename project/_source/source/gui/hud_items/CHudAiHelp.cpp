@@ -3,6 +3,7 @@
 #include <gui/hud_items/CHudAiHelp.h>
 #include <CGlobal.h>
 #include <string>
+#include <tuple>
 
 namespace dustbin {
   namespace gui {
@@ -11,18 +12,19 @@ namespace dustbin {
     * The constructor
     * @param a_pDrv the video driver
     * @param a_cRect the rect to render to
+    * @param a_eAiHelp the AI help level for the player
     */
-    CHudAiHelp::CHudAiHelp(irr::video::IVideoDriver* a_pDrv, const irr::core::recti& a_cRect) : m_pDrv(a_pDrv) {
+    CHudAiHelp::CHudAiHelp(irr::video::IVideoDriver* a_pDrv, const irr::core::recti& a_cRect, data::SPlayerData::enAiHelp a_eAiHelp) : m_pDrv(a_pDrv) {
       // The base filenames
-      std::string l_aFiles[] = {
-        "data/images/ctrl_accelerate",
-        "data/images/ctrl_left",
-        "data/images/ctrl_back",
-        "data/images/ctrl_right",
-        "data/images/ctrl_brake",
-        "data/images/ctrl_automatic",
-        "data/images/ctrl_respawn",
-        ""
+      std::tuple<data::SPlayerData::enAiHelp, std::string> l_aFiles[] = {
+        std::make_tuple(data::SPlayerData::enAiHelp::Medium, "data/images/ctrl_accelerate"),
+        std::make_tuple(data::SPlayerData::enAiHelp::High  , "data/images/ctrl_left"      ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Medium,  "data/images/ctrl_back"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::High  , "data/images/ctrl_right"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low   , "data/images/ctrl_brake"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Off   , "data/images/ctrl_automatic" ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low   , "data/images/ctrl_respawn"   ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Off   , ""                           )
       };
 
       // The postfix strings for the filenames
@@ -33,13 +35,15 @@ namespace dustbin {
       };
 
       // Load the textures
-      for (int l_iFile = 0; l_aFiles[l_iFile] != ""; l_iFile++) {
+      for (int l_iFile = 0; std::get<1>(l_aFiles[l_iFile]) != ""; l_iFile++) {
         for (int l_iPostfix = 0; l_aPostfix[l_iPostfix] != ""; l_iPostfix++) {
-          m_aIcons[l_iFile][l_iPostfix] = a_pDrv->getTexture((l_aFiles[l_iFile] + l_aPostfix[l_iPostfix]).c_str());
+          if ((int)a_eAiHelp <= (int)std::get<0>(l_aFiles[l_iFile]) || std::get<0>(l_aFiles[l_iFile]) == data::SPlayerData::enAiHelp::Off) {
+            m_aIcons[l_iFile][l_iPostfix] = a_pDrv->getTexture((std::get<1>(l_aFiles[l_iFile]) + l_aPostfix[l_iPostfix]).c_str());
 
-          // We set the source rect every time to make sure it's valid
-          if (m_aIcons[l_iFile][l_iPostfix] != nullptr) {
-            m_cSource = irr::core::recti(irr::core::vector2di(0, 0), m_aIcons[l_iFile][l_iPostfix]->getSize());
+            // We set the source rect every time to make sure it's valid
+            if (m_aIcons[l_iFile][l_iPostfix] != nullptr) {
+              m_cSource = irr::core::recti(irr::core::vector2di(0, 0), m_aIcons[l_iFile][l_iPostfix]->getSize());
+            }
           }
         }
 
@@ -98,7 +102,9 @@ namespace dustbin {
     */
     void CHudAiHelp::render(const irr::core::position2di a_cPosition, const irr::core::recti &a_cClip) {
       for (int i = 0; i < (int)enIcons::Count; i++) {
-        m_pDrv->draw2DImage(m_aIcons[i][(int)m_aState[i]], m_aRects[i] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+        if (m_aIcons[i][(int)m_aState[i]] != nullptr) {
+          m_pDrv->draw2DImage(m_aIcons[i][(int)m_aState[i]], m_aRects[i] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+        }
       }
     }
   }
