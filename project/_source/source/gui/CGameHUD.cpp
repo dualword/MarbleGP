@@ -787,7 +787,6 @@ namespace dustbin {
 
             irr::core::position2di l_cRank = l_cSpeed;
             l_cRank.X -= m_cLabelSize.Width / 2;
-            l_cRank.Y  = m_mTextElements[enTextElements::Pos].m_cThisRect.LowerRightCorner.Y;
 
             irr::core::recti l_cRects[] = {
               irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),

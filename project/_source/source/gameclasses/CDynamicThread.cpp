@@ -530,7 +530,7 @@ namespace dustbin {
               p->m_bHasContact,
               p->m_bBrake,
               p->m_bRearView,
-              false,
+              p->m_bRespawn,
               m_pOutputQueue);
 
             if (m_pRostrumNode != nullptr && (p->m_eState == CObjectMarble::enMarbleState::Finished || p->m_eState == CObjectMarble::enMarbleState::Withdrawn) && p->m_iFinishTime > 0) {

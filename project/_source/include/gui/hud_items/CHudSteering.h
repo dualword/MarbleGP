@@ -12,9 +12,17 @@ namespace dustbin {
     */
     class CHudSteering {
       private:
-        irr::video::IVideoDriver *m_pDrv;     /**< The Irrlicht video driver */
-        irr::core::dimension2du   m_cSize;    /**< Size of the element */
-        int                       m_iHeight;  /**< The height of the lines */
+        irr::video::IVideoDriver *m_pDrv;           /**< The Irrlicht video driver */
+        irr::core::dimension2du   m_cSize;          /**< Size of the element */
+        int                       m_iHeight;        /**< The height of the lines */
+        irr::video::ITexture     *m_pIcons[7][2];   /**< The icons */
+        irr::core::recti          m_cSource;        /**< Original size of the icons */
+        irr::core::recti          m_cLeft;          /**< Rectangle for showing the amount of left steering */
+        irr::core::recti          m_cRight;         /**< Rectangle for showing the amount of right steering */
+        irr::core::recti          m_cAccel;         /**< Rectangle for showing the amount of acceleration */
+        irr::core::recti          m_cBack;          /**< Rectangle for showing the amount of back throttle */
+        irr::core::dimension2du   m_cRender;        /**< Render size of the icons */
+        irr::core::position2di    m_cPositions[5];  /**< Relative positions of the icons */
 
         /**
         * Draw steering or throttle
