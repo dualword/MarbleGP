@@ -863,7 +863,8 @@ namespace dustbin {
       for (int i = 0; i < 16; i++) {
         if (m_aMarbles[i] != nullptr) {
           if (m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished) {
-            m_aMarbles[i]->m_eState = CObjectMarble::enMarbleState::Finished;
+            m_aMarbles[i]->m_eState        = CObjectMarble::enMarbleState::Finished;
+            m_aMarbles[i]->m_iStunnedStart = -1;
             sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
 
             if (m_pLuaScript != nullptr)
@@ -1037,7 +1038,13 @@ namespace dustbin {
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
 
         if (m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
-          m_aMarbles[l_iIndex]->m_eState = CObjectMarble::enMarbleState::Finished;
+          if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Stunned) {
+            // Reset stunned state if a stunned player finishes the race
+            m_aMarbles[l_iIndex]->m_iStunnedStart = -1;
+            sendPlayerstunned(a_iMarbleId, 2, m_pOutputQueue);
+          }
+
+          m_aMarbles[l_iIndex]->m_eState      = CObjectMarble::enMarbleState::Finished;
           m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
         }
 
