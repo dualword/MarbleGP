@@ -85,8 +85,14 @@ namespace dustbin {
 
       printf("Player %i finished (%i)\n", l_iId, a_MarbleId);
 
-      if (l_iId >= 0 && l_iId < 16)
+      if (l_iId >= 0 && l_iId < 16) {
         m_aFinished[l_iId] = true;
+
+        for (auto l_pPlayer: *m_vRanking) {
+          if (l_pPlayer->m_iId == a_MarbleId)
+            l_pPlayer->m_iState = 4;
+        }
+      }
 
       if (a_MarbleId == m_iMarble) {
         m_bShowSpeed  = false;
