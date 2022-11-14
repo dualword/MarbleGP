@@ -99,17 +99,6 @@ namespace dustbin {
           if ((m_iFade & (int)enFade::Stunned) == (int)enFade::Stunned)
             m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), m_cRect);
 
-          // Fade in after finished
-          if ((m_iFade & (int)enFade::FinishedIn)) {
-            int l_iSince = m_iStep - m_iAlphaStep[c_iAlphaIdxFinishedIn];
-
-            irr::f32 l_fFactor = 1.0f - ((irr::f32)(l_iSince - 60) / 100.0f);
-            l_fFactor = std::max(0.0f, std::min(1.0f, l_fFactor));
-
-            if (l_fFactor != 0.0f)
-              m_pDrv->draw2DRectangle(irr::video::SColor((irr::s32)(l_fFactor * 255.0f), 0, 0, 0), m_cRect);
-          }
-
           // Fade out because of a respawn
           if ((m_iFade & (int)enFade::RespawnOut) == (int)enFade::RespawnOut) {
             int l_iStepSince = m_iStep - m_iAlphaStep[c_iAlphaIdxRespawnOut];
@@ -138,6 +127,11 @@ namespace dustbin {
             m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * (1.0f - l_fFactor)), 0, 0, 0), m_cRect);
           }
 
+          // Fade in after finished (grey overlay needs be be rendered below everything else)
+          if ((m_iFade & (int)enFade::FinishedIn) == (int)enFade::FinishedIn || (m_iFade & (int)enFade::GamePaused) == (int)enFade::GamePaused) {
+            m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cRect);
+          }
+
           // Fade out after finished
           if ((m_iFade & (int)enFade::FinishedOut)) {
             int l_iSince = m_iStep - m_iAlphaStep[c_iAlphaIdxFinishedOut];
@@ -148,10 +142,15 @@ namespace dustbin {
             m_pDrv->draw2DRectangle(irr::video::SColor((irr::s32)(l_fFactor * 255.0f), 0, 0, 0), m_cRect);
           }
 
+          // Fade in after finished
+          if ((m_iFade & (int)enFade::FinishedIn)) {
+            int l_iSince = m_iStep - m_iAlphaStep[c_iAlphaIdxFinishedIn];
 
-          // Fade in after finished (grey overlay needs be be rendered below everything else)
-          if ((m_iFade & (int)enFade::FinishedIn) == (int)enFade::FinishedIn || (m_iFade & (int)enFade::GamePaused) == (int)enFade::GamePaused) {
-            m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cRect);
+            irr::f32 l_fFactor = 1.0f - ((irr::f32)(l_iSince - 60) / 100.0f);
+            l_fFactor = std::max(0.0f, std::min(1.0f, l_fFactor));
+
+            if (l_fFactor != 0.0f)
+              m_pDrv->draw2DRectangle(irr::video::SColor((irr::s32)(l_fFactor * 255.0f), 0, 0, 0), m_cRect);
           }
           break;
         }

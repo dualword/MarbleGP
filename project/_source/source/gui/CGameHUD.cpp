@@ -764,15 +764,15 @@ namespace dustbin {
             renderNearbyRanking(l_cSpeed, l_cTotal);
         }
 
+        if (m_bRanking)
+          for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++)
+            m_aRanking[i]->draw();
+
         if (m_pFade != nullptr)
           m_pFade->render(CHudFade::enCall::BeforeBanners);
 
         if (m_pBanner != nullptr)
           m_pBanner->render(m_cRect);
-
-        if (m_bRanking)
-          for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++)
-            m_aRanking[i]->draw();
 
         if (m_bShowLapTimes && m_pLapTimes != nullptr)
           m_pLapTimes->render(m_iStep, m_cRect);
