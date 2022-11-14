@@ -736,186 +736,200 @@ namespace dustbin {
 #else
         3.0f;
 #endif
-      ;
+        ;
 
-      if (m_pFade != nullptr)
-        m_pFade->render(CHudFade::enCall::Start);
+        if (m_pFade != nullptr)
+          m_pFade->render(CHudFade::enCall::Start);
 
-      irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
+        irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
 
-      if (m_pAiHelp != nullptr && m_bShowSpeed)
-        m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+        if (m_pAiHelp != nullptr && m_bShowSpeed)
+          m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
 
-      l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
-      l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
+        l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
+        l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
 
-      irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
+        irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
 
-      l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
+        l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
 
-      if (m_pSpeedBar != nullptr && m_bShowSpeed)
-        l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
+        if (!m_bRanking) {
+          if (m_pSpeedBar != nullptr && m_bShowSpeed)
+            l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
 
-      if (m_pSteering != nullptr && m_bShowCtrl && m_bShowSpeed)
-        l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bManRsp, m_cRect);
+          if (m_pSteering != nullptr && m_bShowCtrl && m_bShowSpeed)
+            l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bManRsp, m_cRect);
 
-
-      if (m_bRanking)
-        for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++) {
-          m_aRanking[i]->draw();
+          if (m_bShowSpeed)
+            renderNearbyRanking(l_cSpeed, l_cTotal);
         }
 
+        if (m_pFade != nullptr)
+          m_pFade->render(CHudFade::enCall::BeforeBanners);
+
+        if (m_pBanner != nullptr)
+          m_pBanner->render(m_cRect);
+
+        if (m_bRanking)
+          for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++)
+            m_aRanking[i]->draw();
+
+        if (m_bShowLapTimes && m_pLapTimes != nullptr)
+          m_pLapTimes->render(m_iStep, m_cRect);
+
+        if (m_bShowRanking)
+          renderRanking();
+      }
+
       if (m_pFade != nullptr)
-        m_pFade->render(CHudFade::enCall::BeforeBanners);
+        m_pFade->render(CHudFade::enCall::End);
+    }
 
-      if (m_pBanner != nullptr)
-        m_pBanner->render(m_cRect);
+    /**
+    * Render the ranking shown in the upper left corner of the screen
+    */
+    void CGameHUD::renderRanking() {
+      irr::core::position2di l_cPos = m_cRect.UpperLeftCorner;
 
-      if (m_bShowSpeed) {
-        for (std::map<enTextElements, STextElement>::iterator it = m_mTextElements.begin(); it != m_mTextElements.end(); it++)
-          it->second.render();
-          irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
+      int l_iPos = 1;
+      for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+        irr::video::SColor l_cColor = irr::video::SColor(128, 224, 244, 244);
 
-          m_mTextElements[enTextElements::PosHead].setPosition(l_cTotal.UpperLeftCorner - irr::core::position2di(10 * l_cPosSize.Width / 9, 0));
-          m_mTextElements[enTextElements::Pos    ].setPosition(m_mTextElements[enTextElements::PosHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
+        if ((*it)->m_iState == 1)
+          l_cColor = irr::video::SColor(128, 0, 0, 255);
+        else if ((*it)->m_iState == 2)
+          l_cColor = irr::video::SColor(128, 255, 0, 0);
+        else if ((*it)->m_iState == 3)
+          l_cColor = irr::video::SColor(128, 255, 255, 0);
 
-          m_mTextElements[enTextElements::LapHead].setPosition(irr::core::position2di(l_cTotal.LowerRightCorner.X + l_cPosSize.Width / 9, l_cTotal.UpperLeftCorner.Y));
-          m_mTextElements[enTextElements::Lap    ].setPosition(m_mTextElements[enTextElements::LapHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
+        irr::core::recti l_cNameRect = irr::core::recti(l_cPos, m_cPosNameDim);
 
-          if (m_pPlayer->m_iPosition > 0 && m_pPlayer->m_iPosition != 99) {
-            irr::s32 l_iOffset = 3 * m_cDefSize.Height / 2;
+        m_pDrv->draw2DRectangle(l_cColor, l_cNameRect);
 
-            irr::core::position2di l_cRank = l_cSpeed;
-            l_cRank.X -= m_cLabelSize.Width / 2;
+        std::wstring l_sPos = l_iPos < 10 ? L" " + std::to_wstring(l_iPos) : std::to_wstring(l_iPos);
 
-            irr::core::recti l_cRects[] = {
-              irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0,     l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0, 2 * l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
-              irr::core::recti(l_cRank + irr::core::position2di(0, 3 * l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
-            };
+        m_pTimeFont->draw((L" " + l_sPos + L": " + helpers::s2ws((*it)->m_sShortName)).c_str(), l_cNameRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
 
-            int l_iPos[] = {
-              1,
-              m_pPlayer->m_iPosition == 1 ? 2 : m_pPlayer->m_iPosition == 2 ? 2 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_iPosition - 1,
-              m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == 2 ? 3 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
-              m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == 2 ? 4 : m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
-            };
+        irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cNameRect.LowerRightCorner.X, l_cNameRect.UpperLeftCorner.Y), m_cStartNr);
 
-            for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
-              if (l_iPos[i] == m_pPlayer->m_iPosition) {
-                std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + m_pPlayer->m_sWName;
+        m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
+        m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
+        m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
+
+        if ((*it)->m_iState == 4 && m_pCheckered != nullptr) {
+          m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cCheckered), nullptr, nullptr, false);
+        }
+
+        l_cPos.Y += m_iLapTimeOffset;
+        l_iPos++;
+      }
+    }
+
+    /**
+    * Render the ranking element below the speed bar
+    * @param a_cPos the position to render to
+    * @param a_cTotal the drawing rect of the speed bar, used to calculate the size and relative positions of the text elements
+    */
+    void CGameHUD::renderNearbyRanking(const irr::core::position2di& a_cPos, const irr::core::recti &a_cTotal) {
+      for (std::map<enTextElements, STextElement>::iterator it = m_mTextElements.begin(); it != m_mTextElements.end(); it++)
+        it->second.render();
+      irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
+
+      m_mTextElements[enTextElements::PosHead].setPosition(a_cTotal.UpperLeftCorner - irr::core::position2di(10 * l_cPosSize.Width / 9, 0));
+      m_mTextElements[enTextElements::Pos    ].setPosition(m_mTextElements[enTextElements::PosHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
+
+      m_mTextElements[enTextElements::LapHead].setPosition(irr::core::position2di(a_cTotal.LowerRightCorner.X + l_cPosSize.Width / 9, a_cTotal.UpperLeftCorner.Y));
+      m_mTextElements[enTextElements::Lap    ].setPosition(m_mTextElements[enTextElements::LapHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
+
+      if (m_pPlayer->m_iPosition > 0 && m_pPlayer->m_iPosition != 99) {
+        irr::s32 l_iOffset = 3 * m_cDefSize.Height / 2;
+
+        irr::core::position2di l_cRank = a_cPos;
+        l_cRank.X -= m_cLabelSize.Width / 2;
+
+        irr::core::recti l_cRects[] = {
+          irr::core::recti(l_cRank                                           , irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+          irr::core::recti(l_cRank + irr::core::position2di(0,     l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+          irr::core::recti(l_cRank + irr::core::position2di(0, 2 * l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+          irr::core::recti(l_cRank + irr::core::position2di(0, 3 * l_iOffset), irr::core::dimension2du(m_cLabelSize.Width - m_cDefSize.Height, m_cDefSize.Height)),
+        };
+
+        int l_iPos[] = {
+          1,
+          m_pPlayer->m_iPosition == 1 ? 2 : m_pPlayer->m_iPosition == 2 ? 2 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_iPosition - 1,
+          m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == 2 ? 3 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
+          m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == 2 ? 4 : m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
+        };
+
+        for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
+          if (l_iPos[i] == m_pPlayer->m_iPosition) {
+            std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + m_pPlayer->m_sWName;
+            m_pDrv->draw2DRectangle(
+              irr::video::SColor(192, 232, 232, 232), 
+              l_cRects[i], &m_cRect
+            );
+            m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+
+            irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
+
+            m_pDrv->draw2DRectangle(m_pPlayer->m_cBack, l_cNumber);
+            m_pDrv->draw2DRectangleOutline(l_cNumber, m_pPlayer->m_cFrme);
+            m_pTimeFont->draw(m_pPlayer->m_sNumber.c_str(), l_cNumber, m_pPlayer->m_cText, true, true);
+          }
+          else {
+            for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
+              if ((*it)->m_iPosition == l_iPos[i]) {
                 m_pDrv->draw2DRectangle(
-                  irr::video::SColor(192, 232, 232, 232), 
+                  (*it)->m_iState == 1 ? irr::video::SColor(192,  96,  96, 255) :
+                  (*it)->m_iState == 2 ? irr::video::SColor(192, 255,  96,  96) :
+                  (*it)->m_iState == 3 ? irr::video::SColor(192, 255, 255,  96) : irr::video::SColor(192, 232, 232, 232), 
                   l_cRects[i], &m_cRect
                 );
+
+                std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + (*it)->m_sWName;
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
+
+                std::wstring l_sDeficit;
+
+                if (l_iPos[i] == 1) {
+                  l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_iDiffLeader);
+                }
+                else if (l_iPos[i] < m_pPlayer->m_iPosition) {
+                  if (l_iPos[i] == m_pPlayer->m_iPosition - 1)
+                    l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_iDiffAhead);
+                  else {
+                    int l_iTotal = m_pPlayer->m_iDiffAhead;
+                    for (std::vector<gameclasses::SPlayer*>::const_iterator it2 = m_vRanking->begin(); it2 != m_vRanking->end(); it2++) {
+                      if ((*it2)->m_iPosition == m_pPlayer->m_iPosition - 1)
+                        l_iTotal += (*it2)->m_iDiffAhead;
+                    }
+                    l_sDeficit = L"-" + getDeficitString(l_iTotal);
+                  }
+                }
+                else {
+                  if (m_pPlayer->m_iPosition == 1) {
+                    l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffLeader);
+                  }
+                  else {
+                    l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffAhead);
+                  }
+                }
+
+                irr::core::dimension2du l_cSize = m_pDefFont->getDimension(l_sDeficit.c_str());
+                m_pDefFont->draw(l_sDeficit.c_str(), irr::core::recti(l_cRects[i].LowerRightCorner.X - l_cSize.Width, l_cRects[i].UpperLeftCorner.Y, l_cRects[i].LowerRightCorner.X, l_cRects[i].LowerRightCorner.Y), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
 
                 irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
 
-                m_pDrv->draw2DRectangle(m_pPlayer->m_cBack, l_cNumber);
-                m_pDrv->draw2DRectangleOutline(l_cNumber, m_pPlayer->m_cFrme);
-                m_pTimeFont->draw(m_pPlayer->m_sNumber.c_str(), l_cNumber, m_pPlayer->m_cText, true, true);
-              }
-              else {
-                for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-                  if ((*it)->m_iPosition == l_iPos[i]) {
-                    m_pDrv->draw2DRectangle(
-                      (*it)->m_iState == 1 ? irr::video::SColor(192,  96,  96, 255) :
-                      (*it)->m_iState == 2 ? irr::video::SColor(192, 255,  96,  96) :
-                      (*it)->m_iState == 3 ? irr::video::SColor(192, 255, 255,  96) : irr::video::SColor(192, 232, 232, 232), 
-                      l_cRects[i], &m_cRect
-                    );
+                m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
+                m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
+                m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
 
-                    std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + (*it)->m_sWName;
-                    m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
-                    
-                    std::wstring l_sDeficit;
-
-                    if (l_iPos[i] == 1) {
-                      l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_iDiffLeader);
-                    }
-                    else if (l_iPos[i] < m_pPlayer->m_iPosition) {
-                      if (l_iPos[i] == m_pPlayer->m_iPosition - 1)
-                        l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_iDiffAhead);
-                      else {
-                        int l_iTotal = m_pPlayer->m_iDiffAhead;
-                        for (std::vector<gameclasses::SPlayer*>::const_iterator it2 = m_vRanking->begin(); it2 != m_vRanking->end(); it2++) {
-                          if ((*it2)->m_iPosition == m_pPlayer->m_iPosition - 1)
-                            l_iTotal += (*it2)->m_iDiffAhead;
-                        }
-                        l_sDeficit = L"-" + getDeficitString(l_iTotal);
-                      }
-                    }
-                    else {
-                      if (m_pPlayer->m_iPosition == 1) {
-                        l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffLeader);
-                      }
-                      else {
-                        l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffAhead);
-                      }
-                    }
-
-                    irr::core::dimension2du l_cSize = m_pDefFont->getDimension(l_sDeficit.c_str());
-                    m_pDefFont->draw(l_sDeficit.c_str(), irr::core::recti(l_cRects[i].LowerRightCorner.X - l_cSize.Width, l_cRects[i].UpperLeftCorner.Y, l_cRects[i].LowerRightCorner.X, l_cRects[i].LowerRightCorner.Y), irr::video::SColor(0xFF, 0, 0, 0), true, true, &m_cRect);
-
-                    irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
-
-                    m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
-                    m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
-                    m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
-
-                    break;
-                  }
-                }
+                break;
               }
             }
           }
         }
       }
-
-      if (m_bShowLapTimes && m_pLapTimes != nullptr)
-        m_pLapTimes->render(m_iStep, m_cRect);
-
-      if (m_bShowRanking) {
-        irr::core::position2di l_cPos = m_cRect.UpperLeftCorner;
-
-        int l_iPos = 1;
-        for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-          irr::video::SColor l_cColor = irr::video::SColor(128, 224, 244, 244);
-
-          if ((*it)->m_iState == 1)
-            l_cColor = irr::video::SColor(128, 0, 0, 255);
-          else if ((*it)->m_iState == 2)
-            l_cColor = irr::video::SColor(128, 255, 0, 0);
-          else if ((*it)->m_iState == 3)
-            l_cColor = irr::video::SColor(128, 255, 255, 0);
-
-          irr::core::recti l_cNameRect = irr::core::recti(l_cPos, m_cPosNameDim);
-
-          m_pDrv->draw2DRectangle(l_cColor, l_cNameRect);
-          
-          std::wstring l_sPos = l_iPos < 10 ? L" " + std::to_wstring(l_iPos) : std::to_wstring(l_iPos);
-
-          m_pTimeFont->draw((L" " + l_sPos + L": " + helpers::s2ws((*it)->m_sShortName)).c_str(), l_cNameRect, irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
-
-          irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cNameRect.LowerRightCorner.X, l_cNameRect.UpperLeftCorner.Y), m_cStartNr);
-
-          m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
-          m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
-          m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
-
-          if ((*it)->m_iState == 4 && m_pCheckered != nullptr) {
-            m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cCheckered), nullptr, nullptr, false);
-          }
-
-          l_cPos.Y += m_iLapTimeOffset;
-          l_iPos++;
-        }
-      }
-
-      if (m_pFade != nullptr)
-        m_pFade->render(CHudFade::enCall::End);
     }
 
     std::wstring CGameHUD::getDeficitString(int a_iDeficit) {

@@ -220,6 +220,18 @@ namespace dustbin {
         */
         virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) override;
 
+      private:
+        /**
+        * Render the ranking element below the speed bar
+        * @param a_cPos the position to render to
+        */
+        void renderNearbyRanking(const irr::core::position2di &a_cPos, const irr::core::recti &a_cTotal);
+
+        /**
+        * Render the ranking shown in the upper left corner of the screen
+        */
+        void renderRanking();
+
       public:
         CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);
         virtual ~CGameHUD();
