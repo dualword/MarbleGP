@@ -47,7 +47,7 @@ namespace dustbin {
       else
         m_iFade &= ~(int)a_eFade;
 
-      for (int i = 0; i < 8; i++)
+      for (int i = 0; i < 10; i++)
         printf("%i", (m_iFade & i) == i ? 1 : 0);
 
       printf("@step #%i\n", m_iStep);
@@ -91,6 +91,11 @@ namespace dustbin {
               m_pDrv->draw2DRectangle(irr::video::SColor((irr::s32)(l_fAlpha * 96.0f), 192, 192, 192), m_cRect);
             }
           }
+
+          // Fade in after finished (grey overlay needs be be rendered below everything else)
+          if ((m_iFade & (int)enFade::FinishedIn) == (int)enFade::FinishedIn || (m_iFade & (int)enFade::GamePaused) == (int)enFade::GamePaused) {
+            m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cRect);
+          }
           break;
         }
 
@@ -125,11 +130,6 @@ namespace dustbin {
             }
 
             m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * (1.0f - l_fFactor)), 0, 0, 0), m_cRect);
-          }
-
-          // Fade in after finished (grey overlay needs be be rendered below everything else)
-          if ((m_iFade & (int)enFade::FinishedIn) == (int)enFade::FinishedIn || (m_iFade & (int)enFade::GamePaused) == (int)enFade::GamePaused) {
-            m_pDrv->draw2DRectangle(irr::video::SColor(96, 192, 192, 192), m_cRect);
           }
 
           // Fade out after finished
