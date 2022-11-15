@@ -35,14 +35,14 @@ namespace dustbin {
         * This struct holds all data necessary to handle input
         */
         struct SCtrlInput {
-          std::string    m_sName,       /**< The name of this control */
-                         m_sJoystick;   /**< Name of the joystick (if this is a joystick control) */
+          std::string    m_sName;       /**< The name of this control */
+          std::string    m_sJoystick;   /**< Name of the joystick (if this is a joystick control) */
           enInputType    m_eType;       /**< The type of this input */
           irr::EKEY_CODE m_eKey;        /**< The key to use (necessary for enCtrlType::Key input) */
           irr::u8        m_iJoystick;   /**< The joystick to use for any type of enCtrlType::Joy* input type */
           irr::u32       m_iButton;     /**< The button used for enCtrlType::JoyButton inputs */
-          irr::s16       m_iAxis,       /**< The axis used for enCtrlType::JoyAxis inputs */
-                         m_iPov;        /**< The POV direction used */
+          irr::s16       m_iAxis;       /**< The axis used for enCtrlType::JoyAxis inputs */
+          irr::s16       m_iPov;        /**< The POV direction used */
           irr::s8        m_iDirection;  /**< The direction of the axis to use for enCtrlType::JoyAxis inputs */
           irr::f32       m_fValue;      /**< The value of the input (0 .. -1) */
 

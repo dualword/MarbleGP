@@ -18,15 +18,19 @@
         </attributes>
         
         <children>
-          <element type="DustbinCheckbox" rect="center: -11, -14, -9, -12">
+          <element type="Selector" rect="center: -11, -14, 10, -12" tooltip="Which type of controller do you want to use?">
             <attributes>
-              <attribute key="Name" value="enable_touch" />
+              <attribute key="Name" value="controller_type" />
+              <attribute key="Selected" value="0" />
             </attributes>
+            <custom>
+              <attribute key="options" value="Gamepad;Touch;Gyroscope" />
+            </custom>
           </element>
           
-          <element type="staticText" rect="center: -8, -14, 20, -12">
+          <element type="staticText" rect="center: -19, -14, -10, -12">
             <attributes>
-              <attribute key="Caption" value="Enable touch controller for this profile" />
+              <attribute key="Caption" value="Controller Type:" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>

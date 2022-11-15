@@ -122,6 +122,10 @@ namespace dustbin {
     void CHudLapTimes::render(int a_iStep, const irr::core::recti &a_cClip) {
       irr::core::position2di l_cLapTimePos = m_cPos;
 
+#ifdef _ANDROID
+      l_cLapTimePos.Y += m_iLapTimeOffset;
+#endif
+
       if (m_mLapTimes.find(m_iMarbleID) != m_mLapTimes.end()) {
         for (std::vector<SLapTime>::iterator it = m_mLapTimes[m_iMarbleID].m_vLapTimes.begin(); it != m_mLapTimes[m_iMarbleID].m_vLapTimes.end(); it++) {
           std::wstring l_sLap  = L" Lap " + std::to_wstring((*it).m_iLapNo) + L": ";

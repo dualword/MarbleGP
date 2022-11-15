@@ -11,8 +11,10 @@ namespace dustbin {
     const irr::c8 g_MenuBackgroundName[] = "MenuBackground";
 
     class CMenuBackground : public irr::gui::IGUIElement, public CButtonRenderer {
-      private:
+      protected:
         irr::video::IVideoDriver* m_pDrv;
+
+      private:
         irr::video::SColor        m_cOverrideColor;
         bool                      m_bOverrideColor;
         int                       m_iZLayer;        /**< The Z-Layer of all the children. Useful for the menu controller */

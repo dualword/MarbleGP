@@ -29,70 +29,35 @@ namespace dustbin {
     */
     class CControllerUi : public gui::CMenuBackground, public controller::CControllerBase, public controller::IJoystickEventHandler {
       private:
-        struct SJoystickState {
-          std::string m_sName;  /**< Name of the joystick */
-
-          int m_iIndex;   /**< The index in the "m_aJoysticks" array */
-          int m_iAxes;    /**< The number of axes*/
-          int m_iButtons; /**< The number of buttons */
-
-          bool m_bInitialized;  /**< Set to "true" after the joystick got it's first update */
-          bool m_bHasPov;       /**< Is a POV present? */
-
-          std::vector<float> m_vAxes; /**< The values of the axes */
+        enum class enControls {
+          Forward,
+          Backward,
+          Left,
+          Right,
+          Brake,
+          Rearview,
+          Respawn,
+          Pause,
+          Cancel
         };
 
-        struct SCtrlUi {
-          controller::CControllerBase::SCtrlInput *m_pInput;    /**< The controller input configured by this UI item */
-
-          std::wstring m_sName;   /**< The display name of the item */
-          std::wstring m_sValue;  /**< The current value of this item */
-
-          irr::core::recti m_cRectLabel;  /**< The rectangle of this item */
-          irr::core::recti m_cRectItem;  /**< The rectangle of this item */
-
-          SCtrlUi(controller::CControllerBase::SCtrlInput* a_pInput, const std::wstring& a_sName, const std::wstring& a_sValue, const irr::core::recti& a_cRectLabel, const irr::core::recti &a_cRectItem) :
-            m_pInput    (a_pInput),
-            m_sName     (a_sName),
-            m_sValue    (a_sValue),
-            m_cRectLabel(a_cRectLabel),
-            m_cRectItem (a_cRectItem)
-          {
-          }
-        };
-
-        bool m_bMouseDown;
-        bool m_bSelected;   /**< Is this UI element selected via gamepad input? */
-
-        irr::gui::IGUIElement *m_pParent;
-
-        irr::core::position2di m_cMousePos;
-
-        irr::core::recti m_cItemRect;   /**< The inner rect for the items */
-
-        std::string m_sConfigData;
-        std::string m_sHeadline;
-        std::wstring m_sReturn;
-
+        irr::gui::ICursorControl *m_pCursor;
         irr::gui::IGUIFont       *m_pFont;
-        irr::video::IVideoDriver *m_pDrv;
-        CGlobal                  *m_pGlobal;
+        menu::IMenuManager       *m_pMenuMgr;
+        std::string               m_sSelected;    /**< The selected controller type */
+        std::string               m_sConfigData;  /**< The serialized controller config string */
+        irr::core::recti          m_cDraw;        /**< Draw rect for the image */
+        irr::s32                  m_iFontHeight;  /**< Height of the font */
 
-        std::vector<SCtrlUi> m_vItems;
+        std::map<std::string, std::tuple<irr::video::ITexture *, irr::core::recti>> m_mImages;    /**< The images. Key == image name (no path, no extension), value == (img ptr, source rect) */
 
-        std::vector<SCtrlUi>::iterator m_itHover;
-        std::vector<SCtrlUi>::iterator m_itClick;
-        std::vector<SCtrlUi>::iterator m_itSelct;
+        std::map<enControls, irr::core::vector2di> m_mTextPositions;
 
-        std::vector<SJoystickState> m_vJoyStates;
-
-        menu::IMenuManager *m_pMenuManager;
-
-        CDustbinScrollPane *m_pScrollPane;    /**< The helper for scrolling */
-
-        irr::gui::ICursorControl *m_pCursor;  /**< The cursor control */
-
-        void updateConfigData();
+        /**
+        * Get a readable string of the set controls
+        * @return a readable string of the set controls
+        */
+        std::wstring getControlText(CControllerBase::SCtrlInput *a_pCtrl);
 
       public:
         CControllerUi(irr::gui::IGUIElement *a_pParent);

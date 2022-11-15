@@ -34,6 +34,11 @@ namespace dustbin {
         ""
       };
 
+      // Initialize array with null
+      for (int i = 0; i < 7; i++)
+        for (int j = 0; j < 2; j++)
+          m_aIcons[i][j] = nullptr;
+
       // Load the textures
       for (int l_iFile = 0; std::get<1>(l_aFiles[l_iFile]) != ""; l_iFile++) {
         for (int l_iPostfix = 0; l_aPostfix[l_iPostfix] != ""; l_iPostfix++) {

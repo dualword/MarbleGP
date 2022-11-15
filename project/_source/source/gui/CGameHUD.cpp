@@ -797,6 +797,10 @@ namespace dustbin {
     void CGameHUD::renderRanking() {
       irr::core::position2di l_cPos = m_cRect.UpperLeftCorner;
 
+#ifdef _ANDROID
+      l_cPos.Y += m_iLapTimeOffset;
+#endif
+
       int l_iPos = 1;
       for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         irr::video::SColor l_cColor = irr::video::SColor(128, 224, 244, 244);
