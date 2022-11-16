@@ -29,29 +29,20 @@ namespace dustbin {
     */
     class CControllerUi : public gui::CMenuBackground, public controller::CControllerBase, public controller::IJoystickEventHandler {
       private:
-        enum class enControls {
-          Forward,
-          Backward,
-          Left,
-          Right,
-          Brake,
-          Rearview,
-          Respawn,
-          Pause,
-          Cancel
-        };
-
         irr::gui::ICursorControl *m_pCursor;
         irr::gui::IGUIFont       *m_pFont;
+        irr::gui::IGUIFont       *m_pSmall;
         menu::IMenuManager       *m_pMenuMgr;
         std::string               m_sSelected;    /**< The selected controller type */
         std::string               m_sConfigData;  /**< The serialized controller config string */
         irr::core::recti          m_cDraw;        /**< Draw rect for the image */
         irr::s32                  m_iFontHeight;  /**< Height of the font */
+        irr::SEvent               m_cOld;         /**< The old event, we want the release events to set the control */
+        bool                      m_bJoyOld;      /**< Is the old event a joystick input event? */
 
-        std::map<std::string, std::tuple<irr::video::ITexture *, irr::core::recti>> m_mImages;    /**< The images. Key == image name (no path, no extension), value == (img ptr, source rect) */
+        std::map<std::string, std::tuple<irr::video::ITexture *, irr::core::recti        >>   m_mImages;    /**< The images. Key == image name (no path, no extension), value == (img ptr, source rect) */
+        std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>> m_mLabels;    /**< Map with the control labels (Key == Name of the control, Value = tuple(0 == rect of the label, 1 == text of the label 2 == hovered, 3 == clicked, 4 == selected) */
 
-        std::map<enControls, irr::core::vector2di> m_mTextPositions;
 
         /**
         * Get a readable string of the set controls

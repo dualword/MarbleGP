@@ -165,11 +165,14 @@ namespace dustbin {
       CMenuBackground(a_pParent, (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId),
       m_pCursor      (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()),
       m_pFont        (nullptr),
+      m_pSmall       (nullptr),
       m_pMenuMgr     (nullptr),
       m_sSelected    (""),
-      m_sConfigData  ("")
+      m_sConfigData  (""),
+      m_bJoyOld      (false)
     {
-      m_pFont = CGlobal::getInstance()->getFont(enFont::Regular, CGlobal::getInstance()->getVideoDriver()->getScreenSize());
+      m_pFont  = CGlobal::getInstance()->getFont(enFont::Regular, CGlobal::getInstance()->getVideoDriver()->getScreenSize());
+      m_pSmall = CGlobal::getInstance()->getFont(enFont::Small  , CGlobal::getInstance()->getVideoDriver()->getScreenSize());
 
       m_iFontHeight = m_pFont->getDimension(L"ABCdefg").Height;
 
@@ -203,15 +206,6 @@ namespace dustbin {
     */
     void CControllerUi::buildUi(irr::gui::IGUIElement* a_pParent) {
       printf("Build UI: %i, %i - %i, %i\n", AbsoluteClippingRect.UpperLeftCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
-    }
-
-    bool CControllerUi::isEditing() {
-      return false;
-    }
-
-    void CControllerUi::setMenuManager(menu::IMenuManager* a_pMenuManager) {
-      printf("Set menu manager: %i, %i - %i, %i\n", AbsoluteClippingRect.UpperLeftCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
-      m_pMenuMgr = a_pMenuManager;
 
       if (m_mImages.size() > 0) {
         // Calculate the drawing rect
@@ -228,20 +222,115 @@ namespace dustbin {
           90 * AbsoluteClippingRect.getHeight() / 100                       + AbsoluteClippingRect.UpperLeftCorner.Y
         );
 
-        m_mTextPositions[enControls::Forward ] = irr::core::vector2di((irr::s32)(497.0f * l_fFactX), (irr::s32)( 27.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Backward] = irr::core::vector2di((irr::s32)(497.0f * l_fFactX), (irr::s32)(393.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Right   ] = irr::core::vector2di((irr::s32)(675.0f * l_fFactX), (irr::s32)(211.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Left    ] = irr::core::vector2di((irr::s32)(304.0f * l_fFactX), (irr::s32)(211.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Brake   ] = irr::core::vector2di((irr::s32)( 71.0f * l_fFactX), (irr::s32)( 43.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Rearview] = irr::core::vector2di((irr::s32)( 71.0f * l_fFactX), (irr::s32)(128.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Respawn ] = irr::core::vector2di((irr::s32)( 71.0f * l_fFactX), (irr::s32)(212.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Pause   ] = irr::core::vector2di((irr::s32)( 71.0f * l_fFactX), (irr::s32)(294.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
-        m_mTextPositions[enControls::Cancel  ] = irr::core::vector2di((irr::s32)( 71.0f * l_fFactX), (irr::s32)(379.0f * l_fFactY)) + m_cDraw.UpperLeftCorner;
+        std::vector<std::tuple<std::string, irr::core::vector2df, int>> l_vItems = {
+          std::make_tuple("Forward"    , irr::core::vector2df(497.0f,  27.0f), 0),  // 0 == forward
+          std::make_tuple("Backward"   , irr::core::vector2df(497.0f, 393.0f), 1),  // 1 == backward
+          std::make_tuple("Left"       , irr::core::vector2df(304.0f, 211.0f), 2),  // 2 == left
+          std::make_tuple("Right"      , irr::core::vector2df(675.0f, 211.0f), 3),  // 3 == right
+          std::make_tuple("Brake"      , irr::core::vector2df( 71.0f,  29.0f), 4),  // 4 == brake
+          std::make_tuple("Rearview"   , irr::core::vector2df( 71.0f,  93.0f), 5),  // 5 == rearview
+          std::make_tuple("Respawn"    , irr::core::vector2df( 71.0f, 156.0f), 6),  // 6 == respawn
+          std::make_tuple("Pause"      , irr::core::vector2df( 71.0f, 328.0f), 7),  // 7 == pause
+          std::make_tuple("Cancel Race", irr::core::vector2df( 71.0f, 392.0f), 8)   // 8 == cancel race
+        };
+
+        for (auto l_tItem: l_vItems) {
+          irr::core::position2di  l_cLabelPos = irr::core::vector2di((irr::s32)(std::get<1>(l_tItem).X * l_fFactX), (irr::s32)(std::get<1>(l_tItem).Y * l_fFactY)) + m_cDraw.UpperLeftCorner;
+          std::wstring            l_cLabelTxt = getControlText(&m_vControls[std::get<2>(l_tItem)]);
+          irr::core::dimension2du l_cLabelDim = m_pFont->getDimension(l_cLabelTxt.c_str());
+
+          l_cLabelDim.Width  = 5 * l_cLabelDim.Width  / 4;
+          l_cLabelDim.Height = 5 * l_cLabelDim.Height / 4;
+
+          bool l_bAdd = false;
+
+          if (m_vControls[std::get<2>(l_tItem)].m_sName == "Forward") {
+            l_cLabelPos.X -= l_cLabelDim.Width  / 2;
+            l_cLabelPos.Y -= l_cLabelDim.Height;
+            l_bAdd = true;
+          }
+          else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Backward") {
+            l_cLabelPos.X -= l_cLabelDim.Width  / 2;
+            l_bAdd = true;
+          }
+          else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Right") {
+            l_cLabelPos.Y -= l_cLabelDim.Height / 2;
+            l_bAdd = true;
+          }
+          else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Left") {
+            l_cLabelPos.X -= l_cLabelDim.Width;
+            l_cLabelPos.Y -= l_cLabelDim.Height / 2;
+            l_bAdd = true;
+          }
+          else {
+            if (m_vControls[std::get<2>(l_tItem)].m_sName == "Brake") {
+              l_bAdd = true;
+            }
+            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Rearview") {
+              l_bAdd = true;
+            }
+            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Respawn") {
+              l_bAdd = true;
+            }
+            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Pause") {
+              l_bAdd = true;
+            }
+            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Cancel Race") {
+              l_bAdd = true;
+            }
+
+            if (l_bAdd)
+              l_cLabelPos.Y -= l_cLabelDim.Height / 2;
+          }
+
+          if (l_bAdd) {
+            m_mLabels[std::get<0>(l_tItem)] = std::make_tuple(irr::core::recti(l_cLabelPos, l_cLabelDim), l_cLabelTxt, false, false, false);
+          }
+        }
       }
+    }
+
+    bool CControllerUi::isEditing() {
+      return false;
+    }
+
+    void CControllerUi::setMenuManager(menu::IMenuManager* a_pMenuManager) {
+      printf("Set menu manager: %i, %i - %i, %i\n", AbsoluteClippingRect.UpperLeftCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
+      m_pMenuMgr = a_pMenuManager;
     }
 
     bool CControllerUi::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
+
+      if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+          for (std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>>::iterator l_itLabel = m_mLabels.begin(); l_itLabel != m_mLabels.end(); l_itLabel++) {
+            bool l_bHover = std::get<0>(l_itLabel->second).isPointInside(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
+            std::get<3>(l_itLabel->second) = std::get<2>(l_itLabel->second) == l_bHover && l_bHover && std::get<3>(l_itLabel->second);
+            std::get<2>(l_itLabel->second) = l_bHover;
+          }
+          l_bRet = true;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          for (std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>>::iterator l_itLabel = m_mLabels.begin(); l_itLabel != m_mLabels.end(); l_itLabel++) {
+            std::get<3>(l_itLabel->second) = std::get<2>(l_itLabel->second);
+          }
+          l_bRet = true;
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          for (std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>>::iterator l_itLabel = m_mLabels.begin(); l_itLabel != m_mLabels.end(); l_itLabel++) {
+            std::get<4>(l_itLabel->second) = std::get<3>(l_itLabel->second);
+            std::get<3>(l_itLabel->second) = false;
+          }
+          l_bRet = true;
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+          if (a_cEvent.GUIEvent.Caller == this)
+            CGlobal::getInstance()->getGuiEnvironment()->setFocus(this);
+        }
+      }
 
       return l_bRet;
     }
@@ -249,6 +338,83 @@ namespace dustbin {
     // This method is necessary because UI elements don't receive Joystick events
     bool CControllerUi::update(const irr::SEvent& a_cEvent) {
       bool l_bRet = CControllerBase::update(a_cEvent);
+
+      if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT || a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        for (std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>>::iterator l_itLabel = m_mLabels.begin(); l_itLabel != m_mLabels.end(); l_itLabel++) {
+          if (std::get<4>(l_itLabel->second)) {
+            std::string l_sName = l_itLabel->first;
+
+            for (std::vector<SCtrlInput>::iterator l_itCtrl = m_vControls.begin(); l_itCtrl != m_vControls.end(); l_itCtrl++) {
+              if (l_sName == (*l_itCtrl).m_sName) {
+                if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+                  if (a_cEvent.KeyInput.PressedDown) {
+                    m_cOld = irr::SEvent(a_cEvent);
+                    l_bRet = true;
+                  }
+                  else {
+                    if (a_cEvent.KeyInput.Key == m_cOld.KeyInput.Key) {
+                      (*l_itCtrl).m_eType = CControllerBase::enInputType::Key;
+                      (*l_itCtrl).m_eKey  = a_cEvent.KeyInput.Key;
+
+                      buildUi(Parent);
+                      std::get<4>(l_itLabel->second) = false;
+                      l_bRet = true;
+                    }
+                  }
+                }
+                else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+                  if (!m_bJoyOld) {
+                    m_cOld    = irr::SEvent(a_cEvent);
+                    m_bJoyOld = true;
+                    l_bRet    = true;
+                  }
+                  else {
+                    for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_BUTTONS; i++) {
+                      if (m_cOld.JoystickEvent.IsButtonPressed(i) && !a_cEvent.JoystickEvent.IsButtonPressed(i)) {
+                        (*l_itCtrl).m_eType     = CControllerBase::enInputType::JoyButton;
+                        (*l_itCtrl).m_iJoystick = a_cEvent.JoystickEvent.Joystick;
+                        (*l_itCtrl).m_iButton   = i;
+                        l_bRet = true;
+                      }
+                    }
+
+                    if (!l_bRet) {
+                      for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES; i++) {
+                        irr::s16 l_iOld = m_cOld.JoystickEvent.Axis[i];
+                        irr::s16 l_iNew = a_cEvent.JoystickEvent.Axis[i];
+
+                        if (l_iNew > 16000 != l_iOld > 16000) {
+                          printf(" 1 ");
+                          (*l_itCtrl).m_eType      = CControllerBase::enInputType::JoyAxis;
+                          (*l_itCtrl).m_iAxis      = i;
+                          (*l_itCtrl).m_iDirection = 1;
+
+                          l_bRet = true;
+                        }
+                        else if (l_iNew < -16000 != l_iOld < -16000) {
+                          printf(" 2 ");
+                          (*l_itCtrl).m_eType      = CControllerBase::enInputType::JoyAxis;
+                          (*l_itCtrl).m_iAxis      = i;
+                          (*l_itCtrl).m_iDirection = -1;
+
+                          l_bRet = true;
+                        }
+                      }
+                    }
+
+                    if (l_bRet) {
+                      buildUi(Parent);
+                      std::get<4>(l_itLabel->second) = false;
+                      m_bJoyOld = false;
+                    }
+                    else l_bRet = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
 
       return l_bRet;
     }
@@ -322,68 +488,30 @@ namespace dustbin {
 
         m_pDrv->draw2DImage(l_pImage, m_cDraw, l_cSource, &AbsoluteClippingRect, nullptr, true);
 
-        for (CControllerBase::SCtrlInput l_cItem : m_vControls) {
-          std::wstring l_sControl = getControlText(&l_cItem);
-          irr::core::dimension2du l_cSize = m_pFont->getDimension(l_sControl.c_str());
-          irr::core::vector2di l_cPos;
-          bool l_bDraw = false;
+        for (auto l_cLabel : m_mLabels) {
+          m_pDrv->draw2DRectangle(
+            std::get<4>(l_cLabel.second) ? irr::video::SColor(192, 192, 0, 0) : std::get<3>(l_cLabel.second) ? irr::video::SColor(192, 96, 96, 192) : std::get<2>(l_cLabel.second) ? irr::video::SColor(192, 192, 96, 0) : irr::video::SColor(192, 192, 192, 192),
+            std::get<0>(l_cLabel.second), &AbsoluteClippingRect
+          );
+          m_pDrv->draw2DRectangleOutline(std::get<0>(l_cLabel.second), irr::video::SColor(0xFF, 0, 0, 0));
+          m_pFont->draw(std::get<1>(l_cLabel.second).c_str(), std::get<0>(l_cLabel.second), irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
 
-          l_cSize.Width  = 5 * l_cSize.Width  / 4;
-          l_cSize.Height = 5 * l_cSize.Height / 4;
+          if (std::get<2>(l_cLabel.second) && m_pCursor != nullptr) {
+            std::wstring l_sTip = helpers::s2ws(l_cLabel.first);
+            irr::core::dimension2du l_cSize = m_pSmall->getDimension(l_sTip.c_str());
 
-          if (l_cItem.m_sName == "Forward") {
-            l_cPos = m_mTextPositions[enControls::Forward];
-            l_cPos.X -= l_cSize.Width  / 2;
-            l_cPos.Y -= l_cSize.Height;
-            l_bDraw = true;
-          }
-          else if (l_cItem.m_sName == "Backward") {
-            l_cPos = m_mTextPositions[enControls::Backward];
-            l_cPos.X -= l_cSize.Width  / 2;
-            l_bDraw = true;
-          }
-          else if (l_cItem.m_sName == "Right") {
-            l_cPos = m_mTextPositions[enControls::Right];
-            l_cPos.Y -= l_cSize.Height / 2;
-            l_bDraw = true;
-          }
-          else if (l_cItem.m_sName == "Left") {
-            l_cPos = m_mTextPositions[enControls::Left];
-            l_cPos.X -= l_cSize.Width;
-            l_cPos.Y -= l_cSize.Height / 2;
-            l_bDraw = true;
-          }
-          else {
-            if (l_cItem.m_sName == "Brake") {
-              l_cPos = m_mTextPositions[enControls::Brake];
-              l_bDraw = true;
-            }
-            else if (l_cItem.m_sName == "Rearview") {
-              l_cPos = m_mTextPositions[enControls::Rearview];
-              l_bDraw = true;
-            }
-            else if (l_cItem.m_sName == "Respawn") {
-              l_cPos = m_mTextPositions[enControls::Respawn];
-              l_bDraw = true;
-            }
-            else if (l_cItem.m_sName == "Pause") {
-              l_cPos = m_mTextPositions[enControls::Pause];
-              l_bDraw = true;
-            }
-            else if (l_cItem.m_sName == "Cancel Race") {
-              l_cPos = m_mTextPositions[enControls::Cancel];
-              l_bDraw = true;
-            }
+            l_cSize.Width  = 10 * l_cSize.Width  / 9;
+            l_cSize.Height = 10 * l_cSize.Height / 9;
 
-            l_cPos.Y -= l_cSize.Height / 2;
-          }
+            irr::core::vector2di l_cPos = m_pCursor->getPosition();
+            l_cPos.X += l_cSize.Height / 5;
+            l_cPos.Y -= l_cSize.Height / 5 + l_cSize.Height;
 
-          if (l_bDraw) {
-            irr::core::recti l_cRect = irr::core::recti(l_cPos, l_cSize);
+            irr::core::recti l_cTip = irr::core::recti(l_cPos, l_cSize);
 
-            m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 192, 192, 192), l_cRect, &AbsoluteClippingRect);
-            m_pDrv->draw2DRectangleOutline(l_cRect, irr::video::SColor(0xFF, 0, 0, 0));
-            m_pFont->draw(getControlText(&l_cItem).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
+            m_pDrv->draw2DRectangle(irr::video::SColor(255, 255, 255, 255), l_cTip, &AbsoluteClippingRect);
+            m_pDrv->draw2DRectangleOutline(l_cTip, irr::video::SColor(0xFF, 0, 0 ,0));
+            m_pSmall->draw(l_sTip.c_str(), l_cTip, irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
           }
         }
       }

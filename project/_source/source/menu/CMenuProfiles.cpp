@@ -174,6 +174,8 @@ namespace dustbin {
         std::vector<irr::video::ITexture*> m_vPatterns;   /**< List of the available texture patterns */
         std::vector<gui::CReactiveLabel*> m_vColorPick;  /**< List of the predefined colors to pick */
 
+        std::map<irr::u8, irr::SEvent> m_mJoyStates;    /**< Joystick states to make sure events are only passed when the joystick state changes */
+
         void updateTextureUI() {
           if (m_aProfiles[m_iEditing].m_cData.m_sTexture == "") {
             m_aProfiles[m_iEditing].m_cData.m_sTexture = "default://number=1";
@@ -919,7 +921,39 @@ namespace dustbin {
             if (m_pMySmgr) m_pMySmgr->drop();
           }
 
+          int joyevent = 0;
+
           virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
+            // A guard to make sure joystick events are only handled once per change
+            if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+              irr::u8 l_iIndex = a_cEvent.JoystickEvent.Joystick;
+              bool    l_bSkip  = false;
+
+              if (m_mJoyStates.find(l_iIndex) != m_mJoyStates.end()) {
+                l_bSkip = m_mJoyStates[l_iIndex].JoystickEvent.ButtonStates == a_cEvent.JoystickEvent.ButtonStates &&
+                          m_mJoyStates[l_iIndex].JoystickEvent.POV          == a_cEvent.JoystickEvent.POV;
+
+                if (l_bSkip) {
+                  for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES && l_bSkip; i++) {
+                    int l_iOld = m_mJoyStates[l_iIndex].JoystickEvent.Axis[i];
+                    int l_iNew = a_cEvent              .JoystickEvent.Axis[i];
+
+                    if (abs(l_iOld) < 16000) l_iOld = 0;
+                    if (abs(l_iNew) < 16000) l_iNew = 0;
+
+                    l_bSkip &= l_iOld > 0 == l_iNew > 0 && l_iOld < 0 == l_iNew < 0;
+                  }
+                }
+              }
+
+              m_mJoyStates[l_iIndex] = irr::SEvent(a_cEvent);
+
+              if (l_bSkip)
+                return true;
+
+              printf("Process joystick event (%i).\n", joyevent++);
+            }
+
             bool l_bRet = false;
 
             if (m_pControlDialog != nullptr && m_pControllerUI != nullptr && m_pControlDialog->isVisible())
