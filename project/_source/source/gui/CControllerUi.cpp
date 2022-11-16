@@ -384,7 +384,6 @@ namespace dustbin {
                         irr::s16 l_iNew = a_cEvent.JoystickEvent.Axis[i];
 
                         if (l_iNew > 16000 != l_iOld > 16000) {
-                          printf(" 1 ");
                           (*l_itCtrl).m_eType      = CControllerBase::enInputType::JoyAxis;
                           (*l_itCtrl).m_iAxis      = i;
                           (*l_itCtrl).m_iDirection = 1;
@@ -392,7 +391,6 @@ namespace dustbin {
                           l_bRet = true;
                         }
                         else if (l_iNew < -16000 != l_iOld < -16000) {
-                          printf(" 2 ");
                           (*l_itCtrl).m_eType      = CControllerBase::enInputType::JoyAxis;
                           (*l_itCtrl).m_iAxis      = i;
                           (*l_itCtrl).m_iDirection = -1;
