@@ -108,6 +108,7 @@
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi_Game.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGameHUDHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h" />
     <ClInclude Include="..\..\_source\include\gfx\SViewPort.h" />
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi_Game.h" />
     <ClInclude Include="..\..\_source\include\gui\CDustbinScrollPane.h" />
     <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiTextField.h" />

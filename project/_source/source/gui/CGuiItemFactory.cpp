@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <gui/CControllerUi_Game.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
@@ -52,8 +53,8 @@ namespace dustbin {
 				p->drop();
 				return p;
 			}
-			else if (l_sTypeName == g_ControllerUiName) {
-				irr::gui::IGUIElement* p = new gui::CControllerUi(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+			else if (l_sTypeName == g_ControllerUiGameName) {
+				irr::gui::IGUIElement* p = new gui::CControllerUi_Game(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
 				p->drop();
 				return p;
 			}
@@ -156,7 +157,7 @@ namespace dustbin {
 					break;
 
 				case 2:
-					return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId;
+					return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiGameId;
 					break;
 
 				case 3:
@@ -213,7 +214,7 @@ namespace dustbin {
 					break;
 
 				case 2:
-					return g_ControllerUiName;
+					return g_ControllerUiGameName;
 					break;
 
 				case 3:
@@ -269,8 +270,8 @@ namespace dustbin {
 					return g_MenuBackgroundName;
 					break;
 
-				case (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiId:
-					return g_ControllerUiName;
+				case (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiGameId:
+					return g_ControllerUiGameName;
 					break;
 
 				case (irr::gui::EGUI_ELEMENT_TYPE)g_DustbinCheckboxId:

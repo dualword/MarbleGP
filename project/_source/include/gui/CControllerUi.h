@@ -17,8 +17,6 @@ namespace dustbin {
     class IMenuManager;   /**< Forward declaration of the menu manager */
   }
   namespace gui {
-    const int g_ControllerUiId = MAKE_IRR_ID('d', 'g', 'c', 'u');
-    const irr::c8 g_ControllerUiName[] = "ControllerUi";
 
     class CDustbinScrollPane; /**< Forward declaration of the scroll pane */
 
@@ -28,7 +26,7 @@ namespace dustbin {
     * This class provides a UI interface to configure controls
     */
     class CControllerUi : public gui::CMenuBackground, public controller::CControllerBase, public controller::IJoystickEventHandler {
-      private:
+      protected:
         irr::gui::ICursorControl *m_pCursor;
         irr::gui::IGUIFont       *m_pFont;
         irr::gui::IGUIFont       *m_pSmall;
@@ -52,14 +50,14 @@ namespace dustbin {
         std::wstring getControlText(CControllerBase::SCtrlInput *a_pCtrl);
 
       public:
-        CControllerUi(irr::gui::IGUIElement *a_pParent);
+        CControllerUi(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType);
         ~CControllerUi();
 
         /**
         * This method builds the UI for the controller
         * @param a_pParent the parent element. The outbox of this element will be used for the UI
         */
-        void buildUi(irr::gui::IGUIElement *a_pParent);
+        virtual void buildUi(irr::gui::IGUIElement *a_pParent) = 0;
 
         virtual bool update(const irr::SEvent& a_cEvent) override;
 
@@ -70,8 +68,6 @@ namespace dustbin {
         * @return the configuration of the controller
         */
         std::string getControllerString();
-
-        virtual irr::gui::EGUI_ELEMENT_TYPE getType() override;
 
         /**
         * The "setText" method is abused to pass the configuration XML string to the UI

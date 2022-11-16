@@ -5,13 +5,13 @@
 #include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
+#include <gui/CControllerUi_Game.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
 #include <gui/CReactiveLabel.h>
 #include <gui/CGuiImageList.h>
-#include <gui/CControllerUi.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
 #include <gui/CMenuButton.h>
@@ -150,12 +150,12 @@ namespace dustbin {
 
         gui::CGuiImageList *m_pPatternList;   /**< The list of texture patterns */
 
-        gui::CSelector        *m_pTextureMode;           /**< The texture type selector (Default, Generated, Imported) */
-        gui::CSelector        *m_pAiHelp;                /**< The "AI Help" selector in the user control configuration */
-        irr::gui::IGUIImage   *m_pTextureImg;       /**< The texture GUI image showing the current texture */
-        irr::gui::IGUIEditBox *m_pTexturePattern; /**< The edit field of the texture pattern */
-        irr::gui::IGUIListBox *m_pCustomTexture;  /**< The custom texture list */
-        gui::CControllerUi    *m_pControllerUI;      /**< The UI for controller configuration */
+        gui::CSelector          *m_pTextureMode;      /**< The texture type selector (Default, Generated, Imported) */
+        gui::CSelector          *m_pAiHelp;           /**< The "AI Help" selector in the user control configuration */
+        irr::gui::IGUIImage     *m_pTextureImg;       /**< The texture GUI image showing the current texture */
+        irr::gui::IGUIEditBox   *m_pTexturePattern;   /**< The edit field of the texture pattern */
+        irr::gui::IGUIListBox   *m_pCustomTexture;    /**< The custom texture list */
+        gui::CControllerUi_Game *m_pControllerUI;     /**< The UI for controller configuration */
 
         irr::scene::ISceneManager* m_pMySmgr;   /**< Alternative scene manager to draw the texture scene */
         irr::video::ITexture* m_pMyRtt;         /**< Render target for the texture scene */
@@ -720,23 +720,23 @@ namespace dustbin {
 
             irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
 
-            m_pTextureDialog  = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("texture_dialog"   , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pColorDialog    = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("color_dialog"     , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pTextureMode    = reinterpret_cast<     gui::CSelector     *>(findElementByNameAndType("texture_mode"     , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId    , l_pRoot));
-            m_pAiHelp         = reinterpret_cast<     gui::CSelector     *>(findElementByNameAndType("ai_help"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId    , l_pRoot));
-            m_pTextureImg     = reinterpret_cast<irr::gui::IGUIImage     *>(findElementByNameAndType("texture_image"    , irr::gui::EGUIET_IMAGE                            , l_pRoot));
-            m_pTexturePattern = reinterpret_cast<irr::gui::IGUIEditBox   *>(findElementByNameAndType("texture_pattern"  , irr::gui::EGUIET_EDIT_BOX                         , l_pRoot));
-            m_pCustomTexture  = reinterpret_cast<irr::gui::IGUIListBox   *>(findElementByNameAndType("imported_texture" , irr::gui::EGUIET_LIST_BOX                         , l_pRoot));
-            m_pTextureTabs[0] = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("texture_generated", irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pTextureTabs[1] = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("texture_imported" , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pPatternDialog  = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("pattern_dialog"   , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pColorDisplay   = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("color_display"    , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pControlDialog  = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("controllerDialog" , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pConfirmDialog  = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("confirmDialog"    , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pButtonTab      = reinterpret_cast<irr::gui::IGUITab       *>(findElementByNameAndType("ButtonTab"        , irr::gui::EGUIET_TAB                              , l_pRoot));
-            m_pMore           = reinterpret_cast<     gui::CMenuButton   *>(findElementByNameAndType("btn_more"         , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId  , l_pRoot));
-            m_pControllerUI   = reinterpret_cast<     gui::CControllerUi *>(findElementByNameAndType("controller_ui"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId, l_pRoot));
-            m_pPatternList    = reinterpret_cast<     gui::CGuiImageList *>(findElementByNameAndType("PatternList"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId   , l_pRoot));
+            m_pTextureDialog  = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("texture_dialog"   , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pColorDialog    = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("color_dialog"     , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pTextureMode    = reinterpret_cast<     gui::CSelector          *>(findElementByNameAndType("texture_mode"     , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId        , l_pRoot));
+            m_pAiHelp         = reinterpret_cast<     gui::CSelector          *>(findElementByNameAndType("ai_help"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId        , l_pRoot));
+            m_pTextureImg     = reinterpret_cast<irr::gui::IGUIImage          *>(findElementByNameAndType("texture_image"    , irr::gui::EGUIET_IMAGE                                , l_pRoot));
+            m_pTexturePattern = reinterpret_cast<irr::gui::IGUIEditBox        *>(findElementByNameAndType("texture_pattern"  , irr::gui::EGUIET_EDIT_BOX                             , l_pRoot));
+            m_pCustomTexture  = reinterpret_cast<irr::gui::IGUIListBox        *>(findElementByNameAndType("imported_texture" , irr::gui::EGUIET_LIST_BOX                             , l_pRoot));
+            m_pTextureTabs[0] = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("texture_generated", irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pTextureTabs[1] = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("texture_imported" , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pPatternDialog  = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("pattern_dialog"   , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pColorDisplay   = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("color_display"    , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pControlDialog  = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("controllerDialog" , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pConfirmDialog  = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("confirmDialog"    , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pButtonTab      = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("ButtonTab"        , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pMore           = reinterpret_cast<     gui::CMenuButton        *>(findElementByNameAndType("btn_more"         , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId      , l_pRoot));
+            m_pControllerUI   = reinterpret_cast<     gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, l_pRoot));
+            m_pPatternList    = reinterpret_cast<     gui::CGuiImageList      *>(findElementByNameAndType("PatternList"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId       , l_pRoot));
 
 
             if (m_pTextureImg != nullptr && m_pMyRtt != nullptr)

@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <gui/CControllerUi_Game.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CReactiveLabel.h>
@@ -277,7 +278,7 @@ namespace dustbin {
           case irr::gui::EGUIET_TABLE:
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId: 
-          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId: {
+          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId: {
             enFont l_eFont = enFont::Regular;
 
             if (a_sFont == "tiny")
@@ -306,7 +307,7 @@ namespace dustbin {
               else if (l_pRet->getType() == gui::g_MenuButtonId) {
                 reinterpret_cast<gui::CMenuButton*>(l_pRet)->setOverrideFont(l_pFont);
               }
-              else if (l_pRet->getType() == gui::g_ControllerUiId) {
+              else if (l_pRet->getType() == gui::g_ControllerUiGameId) {
                 reinterpret_cast<gui::CControllerUi*>(l_pRet)->setFont(l_pFont);
               }
               else if (l_pRet->getType() == gui::g_ReactiveLabelId) {
@@ -373,10 +374,10 @@ namespace dustbin {
     * @return "true" on success
     */
     irr::gui::IGUIElement *parseElement(irr::io::IXMLReaderUTF8* a_pXml, irr::gui::IGUIElement* a_pParent, irr::gui::IGUIEnvironment *a_pGui) {
-      std::string l_sType = a_pXml->getAttributeValueSafe("type"   ),
-                  l_sRect = a_pXml->getAttributeValueSafe("rect"   ),
-                  l_sFont = a_pXml->getAttributeValueSafe("font"   ),
-                  l_sTtip = a_pXml->getAttributeValueSafe("tooltip");
+      std::string l_sType = a_pXml->getAttributeValueSafe("type"   );
+      std::string l_sRect = a_pXml->getAttributeValueSafe("rect"   );
+      std::string l_sFont = a_pXml->getAttributeValueSafe("font"   );
+      std::string l_sTtip = a_pXml->getAttributeValueSafe("tooltip");
 
       irr::gui::IGUIElement *l_pElement = createElement(l_sType, l_sRect, l_sFont, l_sTtip, a_pParent, a_pGui);
 

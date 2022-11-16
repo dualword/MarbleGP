@@ -18,7 +18,7 @@
         </attributes>
         
         <children>
-          <element type="ControllerUi" rect="center: -22, -16, 22, 11" font="small">
+          <element type="ControllerUiGame" rect="center: -22, -16, 22, 11" font="small">
             <attributes>
               <attribute key="Name" value="controller_ui" />
               <attribute key="UseOverrideColor" value="true" />

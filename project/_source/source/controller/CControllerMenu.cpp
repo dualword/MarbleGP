@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerMenu.h>
 #include <messages/CMessageHelpers.h>
+#include <gui/CControllerUi_Game.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CVirtualKeyboard.h>
@@ -132,7 +133,7 @@ namespace dustbin {
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId:
-        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId:
           if (isElementVisible(a_pThis) && a_pThis->isEnabled() && getElementZLayer(a_pThis) == m_iZLayer)
             a_vElements.push_back(a_pThis);
           break;
