@@ -402,6 +402,15 @@ namespace dustbin {
                       }
                     }
 
+                    if (!l_bRet) {
+                      if (m_cOld.JoystickEvent.POV != a_cEvent.JoystickEvent.POV) {
+                        (*l_itCtrl).m_eType = CControllerBase::enInputType::JoyPov;
+                        (*l_itCtrl).m_iPov  = m_cOld.JoystickEvent.POV;
+
+                        l_bRet = true;
+                      }
+                    }
+
                     if (l_bRet) {
                       buildUi(Parent);
                       std::get<4>(l_itLabel->second) = false;
