@@ -176,25 +176,11 @@ namespace dustbin {
 
       m_iFontHeight = m_pFont->getDimension(L"ABCdefg").Height;
 
-      std::string l_aImages[] = {
-        "ctrl_config_joykey",
-        "ctrl_config_touch_left",
-        "ctrl_config_touch_right",
-        "ctrl_config_touch_center",
-        "ctrl_config_gyro",
-        "ctrl_config_touch_steer"
-      };
+      m_pBackground = m_pDrv->getTexture("data/images/ctrl_config_joykey.png");
 
-      for (std::string l_sImage : l_aImages) {
-        std::string l_sPath = "data/images/" + l_sImage + ".png";
-        irr::video::ITexture *l_pImage = m_pDrv->getTexture(l_sPath.c_str());
-
-        if (l_pImage != nullptr) {
-          printf("Loaded \"%s\"\n", l_sImage.c_str());
-          m_mImages[l_sImage] = std::make_tuple(l_pImage, irr::core::recti(0, 0, l_pImage->getSize().Width, l_pImage->getSize().Height));
-        }
+      if (m_pBackground != nullptr) {
+        m_cSource = irr::core::recti(irr::core::vector2di(0, 0), m_pBackground->getSize());
       }
-      printf("Constructor: %i, %i - %i, %i\n", AbsoluteClippingRect.UpperLeftCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
     }
 
     CControllerUi::~CControllerUi() {
@@ -207,13 +193,13 @@ namespace dustbin {
     void CControllerUi::buildUi(irr::gui::IGUIElement* a_pParent) {
       printf("Build UI: %i, %i - %i, %i\n", AbsoluteClippingRect.UpperLeftCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
 
-      if (m_mImages.size() > 0) {
+      if (m_pBackground != nullptr) {
         // Calculate the drawing rect
-        irr::f32 l_fRatio  = (irr::f32)std::get<0>(m_mImages.begin()->second)->getSize().Width / (irr::f32)std::get<0>(m_mImages.begin()->second)->getSize().Height;
+        irr::f32 l_fRatio  = (irr::f32)m_pBackground->getSize().Width / (irr::f32)m_pBackground->getSize().Height;
         irr::f32 l_fWidth  = 0.8f * (irr::f32)AbsoluteClippingRect.getWidth();
         irr::f32 l_fHeight = l_fWidth  / l_fRatio;
-        irr::f32 l_fFactX  = l_fWidth  / (irr::f32)std::get<0>(m_mImages.begin()->second)->getSize().Width;
-        irr::f32 l_fFactY  = l_fHeight / (irr::f32)std::get<0>(m_mImages.begin()->second)->getSize().Height;
+        irr::f32 l_fFactX  = l_fWidth  / m_pBackground->getSize().Width;
+        irr::f32 l_fFactY  = l_fHeight / m_pBackground->getSize().Height;
 
         m_cDraw = irr::core::recti(
           10 * AbsoluteClippingRect.getWidth () / 100                       + AbsoluteClippingRect.UpperLeftCorner.X,
@@ -480,20 +466,8 @@ namespace dustbin {
     void CControllerUi::draw() {
       CMenuBackground::draw();
 
-      if (m_mImages.size() > 0) {
-        irr::video::ITexture *l_pImage = nullptr;
-        irr::core::recti      l_cSource;
-
-        if (m_mImages.find(m_sSelected) != m_mImages.end()) {
-          l_pImage  = std::get<0>(m_mImages[m_sSelected]);
-          l_cSource = std::get<1>(m_mImages[m_sSelected]);
-        }
-        else {
-          l_pImage  = std::get<0>(m_mImages.begin()->second);
-          l_cSource = std::get<1>(m_mImages.begin()->second);
-        }
-
-        m_pDrv->draw2DImage(l_pImage, m_cDraw, l_cSource, &AbsoluteClippingRect, nullptr, true);
+      if (m_pBackground != nullptr) {
+        m_pDrv->draw2DImage(m_pBackground, m_cDraw, m_cSource, &AbsoluteClippingRect, nullptr, true);
 
         for (auto l_cLabel : m_mLabels) {
           m_pDrv->draw2DRectangle(

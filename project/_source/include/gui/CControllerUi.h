@@ -39,8 +39,9 @@ namespace dustbin {
         irr::s32                  m_iFontHeight;  /**< Height of the font */
         irr::SEvent               m_cOld;         /**< The old event, we want the release events to set the control */
         bool                      m_bJoyOld;      /**< Is the old event a joystick input event? */
+        irr::video::ITexture     *m_pBackground;  /**< The background image */
+        irr::core::recti          m_cSource;      /**< Source rectangle for the background image */
 
-        std::map<std::string, std::tuple<irr::video::ITexture *, irr::core::recti        >>   m_mImages;    /**< The images. Key == image name (no path, no extension), value == (img ptr, source rect) */
         std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>> m_mLabels;    /**< Map with the control labels (Key == Name of the control, Value = tuple(0 == rect of the label, 1 == text of the label 2 == hovered, 3 == clicked, 4 == selected) */
 
 
