@@ -222,6 +222,9 @@ namespace dustbin {
         }
       }
 
+      if (!l_bRet)
+        l_bRet = Parent->OnEvent(a_cEvent);
+
       return l_bRet;
     }
 

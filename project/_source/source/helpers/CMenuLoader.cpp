@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <gui/CControllerUi_Game.h>
+#include <gui/CControllerUi_Menu.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CReactiveLabel.h>
@@ -278,7 +279,8 @@ namespace dustbin {
           case irr::gui::EGUIET_TABLE:
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId: 
-          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId: {
+          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId: 
+          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId: {
             enFont l_eFont = enFont::Regular;
 
             if (a_sFont == "tiny")
@@ -307,7 +309,7 @@ namespace dustbin {
               else if (l_pRet->getType() == gui::g_MenuButtonId) {
                 reinterpret_cast<gui::CMenuButton*>(l_pRet)->setOverrideFont(l_pFont);
               }
-              else if (l_pRet->getType() == gui::g_ControllerUiGameId) {
+              else if (l_pRet->getType() == gui::g_ControllerUiGameId || l_pRet->getType() == gui::g_ControllerUiMenuId) {
                 reinterpret_cast<gui::CControllerUi*>(l_pRet)->setFont(l_pFont);
               }
               else if (l_pRet->getType() == gui::g_ReactiveLabelId) {
@@ -381,26 +383,30 @@ namespace dustbin {
 
       irr::gui::IGUIElement *l_pElement = createElement(l_sType, l_sRect, l_sFont, l_sTtip, a_pParent, a_pGui);
 
-      while (a_pXml->read()) {
-        std::string l_sName = a_pXml->getNodeName();
+      if (l_pElement != nullptr) {
+        while (a_pXml->read()) {
+          std::string l_sName = a_pXml->getNodeName();
 
-        if (a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-          if (l_sName == "attributes") {
-            deserializeAttributes(l_pElement, parseAttributes(a_pXml), a_pGui->getFileSystem());
+          if (a_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (l_sName == "attributes") {
+              deserializeAttributes(l_pElement, parseAttributes(a_pXml), a_pGui->getFileSystem());
+            }
+            else if (l_sName == "custom") {
+              deserializeCustom(l_pElement, parseAttributes(a_pXml), a_pGui);
+            }
+            else if (l_sName == "children") {
+              parseChildren(a_pXml, l_pElement, a_pGui);
+            }
           }
-          else if (l_sName == "custom") {
-            deserializeCustom(l_pElement, parseAttributes(a_pXml), a_pGui);
-          }
-          else if (l_sName == "children") {
-            parseChildren(a_pXml, l_pElement, a_pGui);
-          }
-        }
-        else if (a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-          if (l_sName == "element") {
-            break;
+          else if (a_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+            if (l_sName == "element") {
+              break;
+            }
           }
         }
       }
+      else 
+        printf("Unknown GUI type \"%s\"\n", l_sType.c_str());
 
       return l_pElement;
     }

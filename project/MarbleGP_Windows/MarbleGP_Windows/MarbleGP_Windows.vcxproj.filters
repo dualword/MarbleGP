@@ -612,6 +612,9 @@
     <ClCompile Include="..\..\_source\source\gui\CControllerUi_Game.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi_menu.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1002,6 +1005,9 @@
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CControllerUi_Game.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi_Menu.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>

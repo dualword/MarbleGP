@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <gui/CControllerUi_Game.h>
+#include <gui/CControllerUi_Menu.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
@@ -93,6 +94,11 @@ namespace dustbin {
         p->drop();
         return p;
       }
+      else if (l_sTypeName == g_ControllerUiMenuName) {
+        irr::gui::IGUIElement *p = new gui::CControllerUi_Menu(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+        p->drop();
+        return p;
+      }
 #ifdef _TOUCH_CONTROL
       else if (l_sTypeName == g_TouchControlName) {
         int l_iType = CGlobal::getInstance()->getSettingData().m_iTouchControl;
@@ -137,9 +143,9 @@ namespace dustbin {
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
 #ifdef _TOUCH_CONTROL
-      return 11;
+      return 12;
 #else
-			return 10;
+			return 11;
 #endif
 		}
 
@@ -188,8 +194,11 @@ namespace dustbin {
           return (irr::gui::EGUI_ELEMENT_TYPE)g_TextFieldId;
           break;
 
-#ifdef _TOUCH_CONTROL
         case 10:
+          return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiMenuId;
+
+#ifdef _TOUCH_CONTROL
+        case 11:
           return (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId;
           break;
 #endif
@@ -245,8 +254,12 @@ namespace dustbin {
           return g_TextFieldName;
           break;
 
-#ifdef _TOUCH_CONTROL
         case 10:
+          return g_ControllerUiGameName;
+          break;
+
+#ifdef _TOUCH_CONTROL
+        case 11:
           return g_TouchControlName;
           break;
 #endif
@@ -300,6 +313,10 @@ namespace dustbin {
 
         case (irr::gui::EGUI_ELEMENT_TYPE)g_TextFieldId:
           return g_TextFieldName;
+          break;
+
+        case (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiMenuId:
+          return g_ControllerUiMenuName;
           break;
 
 #ifdef _TOUCH_CONTROL

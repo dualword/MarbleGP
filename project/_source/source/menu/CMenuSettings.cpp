@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerMenu.h>
+#include <gui/CControllerUi_Menu.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
 #include <gui/CDustbinCheckbox.h>
@@ -25,18 +26,20 @@ namespace dustbin {
     */
     class CMenuSettings : public IMenuHandler {
       private:
-        gui::CSelector       *m_pResolution;
-        gui::CSelector       *m_pSplitScreen;
-        gui::CMenuBackground *m_pGfxG;
-        gui::CMenuBackground *m_pGfxM;
-        gui::CMenuBackground *m_pSfx;
-        gui::CMenuBackground *m_pMisc;
-        gui::CMenuBackground *m_pLog;
-        gui::CControllerUi   *m_pController;
+        gui::CSelector          *m_pResolution;
+        gui::CSelector          *m_pSplitScreen;
+        gui::CMenuBackground   *m_pGfxG;
+        gui::CMenuBackground    *m_pGfxM;
+        gui::CMenuBackground    *m_pSfx;
+        gui::CMenuBackground    *m_pMisc;
+        gui::CMenuBackground    *m_pLog;
+        gui::CControllerUi_Menu *m_pController;
 
         std::map<std::string, bool[4]> m_mPageVisibility;
 
         std::map<std::string, irr::gui::IGUIStaticText *> m_mHeadLines;
+
+        std::map<irr::u8, irr::SEvent> m_mJoyStates;    /**< Joystick states to make sure events are only passed when the joystick state changes */
 
         std::vector<gui::CMenuBackground *> m_vPages;
 
@@ -160,7 +163,7 @@ namespace dustbin {
             delete p;
           }
 
-          // m_pController = reinterpret_cast<gui::CControllerUi *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiId, m_pGui->getRootGUIElement()));
+          m_pController = reinterpret_cast<gui::CControllerUi_Menu *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId, m_pGui->getRootGUIElement()));
 
           if (m_pController != nullptr) {
             m_pController->setText(helpers::s2ws(l_sCtrl).c_str());
@@ -216,7 +219,39 @@ namespace dustbin {
           m_pState->setZLayer(1);
         }
 
+        int joyevent = 0;
+
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+          // A guard to make sure joystick events are only handled once per change
+          if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+            irr::u8 l_iIndex = a_cEvent.JoystickEvent.Joystick;
+            bool    l_bSkip  = false;
+
+            if (m_mJoyStates.find(l_iIndex) != m_mJoyStates.end()) {
+              l_bSkip = m_mJoyStates[l_iIndex].JoystickEvent.ButtonStates == a_cEvent.JoystickEvent.ButtonStates &&
+                m_mJoyStates[l_iIndex].JoystickEvent.POV          == a_cEvent.JoystickEvent.POV;
+
+              if (l_bSkip) {
+                for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES && l_bSkip; i++) {
+                  int l_iOld = m_mJoyStates[l_iIndex].JoystickEvent.Axis[i];
+                  int l_iNew = a_cEvent              .JoystickEvent.Axis[i];
+
+                  if (abs(l_iOld) < 16000) l_iOld = 0;
+                  if (abs(l_iNew) < 16000) l_iNew = 0;
+
+                  l_bSkip &= l_iOld > 0 == l_iNew > 0 && l_iOld < 0 == l_iNew < 0;
+                }
+              }
+            }
+
+            m_mJoyStates[l_iIndex] = irr::SEvent(a_cEvent);
+
+            if (l_bSkip)
+              return true;
+
+            printf("Process joystick event (%i).\n", joyevent++);
+          }
+
           bool l_bRet = false;
 
           if (m_pController != nullptr)

@@ -231,7 +231,7 @@
         </attributes>
       </element>
       
-      <element type="ControllerUiMenu" rect="center: -23, -4, 23, 12" font="small">
+      <element type="ControllerUiMenu" rect="center: -23, -4, 23, 12" font="tiny">
         <attributes>
           <attribute key="Name" value="controller_ui" />
           <attribute key="UseOverrideColor" value="true" />
