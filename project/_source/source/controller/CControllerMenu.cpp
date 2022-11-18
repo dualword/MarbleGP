@@ -1,7 +1,9 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerMenu.h>
+#include <gui/IGuiMoveOptionElement.h>
 #include <messages/CMessageHelpers.h>
 #include <gui/CControllerUi_Game.h>
+#include <gui/CControllerUi_Menu.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CVirtualKeyboard.h>
@@ -343,14 +345,19 @@ namespace dustbin {
           setZLayer((int)a_cEvent.UserEvent.UserData2);
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
+          enDirection l_eDirection = enDirection::Any;
+
           switch (a_cEvent.UserEvent.UserData2) {
-            case 0: moveMouse(enDirection::Up   ); l_bRet = true; break;
-            case 1: moveMouse(enDirection::Down ); l_bRet = true; break;
-            case 2: moveMouse(enDirection::Left ); l_bRet = true; break;
-            case 3: moveMouse(enDirection::Right); l_bRet = true; break;
+            case 0: l_eDirection = enDirection::Up   ; break;
+            case 1: l_eDirection = enDirection::Down ; break;
+            case 2: l_eDirection = enDirection::Left ; break;
+            case 3: l_eDirection = enDirection::Right; break;
           }
 
-          l_bRet = true;
+          if (l_eDirection != enDirection::Any) {
+            moveMouse(l_eDirection);
+            l_bRet = true;
+          }
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventMouseClicked) {
           if (l_pHovered != nullptr) {
@@ -573,10 +580,30 @@ namespace dustbin {
     }
 
     void CControllerMenu::moveMouse(CControllerMenu::enDirection a_eDirection) {
+      irr::gui::IGUIElement  *l_pHover = m_pGui->getRootGUIElement()->getElementFromPoint(m_cMousePos);
+      irr::core::position2di  l_cOption;
+      bool                    l_bFound = false;
+
+      if (l_pHover != nullptr) {
+        if (l_pHover->getType() == gui::g_ControllerUiGameId || l_pHover->getType() == gui::g_ControllerUiMenuId) {
+          gui::CControllerUi *l_pCtrl = static_cast<gui::CControllerUi *>(l_pHover);
+          if (l_pCtrl->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
+            m_cMousePos = l_cOption;
+        }
+      }
+
       irr::gui::IGUIElement *p = findBestOption(a_eDirection);
 
-      if (p != nullptr) {
-        m_cMousePos = p->getAbsoluteClippingRect().getCenter();
+      if (p != nullptr || l_bFound) {
+        if (!l_bFound) {
+          m_cMousePos = p->getAbsoluteClippingRect().getCenter();
+
+          if (p->getType() == gui::g_ControllerUiGameId || p->getType() == gui::g_ControllerUiMenuId) {
+            gui::CControllerUi *l_pCtrl = static_cast<gui::CControllerUi *>(p);
+            if (l_pCtrl->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
+              m_cMousePos = l_cOption;
+          }
+        }
 
         if (m_pCursor != nullptr)
           m_pCursor->setPosition(m_cMousePos);

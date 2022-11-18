@@ -19,11 +19,11 @@ namespace dustbin {
     class CControllerMenu : public CControllerBase {
       private:
         enum class enDirection {
-          Up,
-          Down,
-          Left,
-          Right,
-          Any
+          Up    = 0,
+          Down  = 1,
+          Left  = 2,
+          Right = 3,
+          Any   = 4
         };
 
         bool m_bButtonDown;
@@ -94,7 +94,7 @@ namespace dustbin {
 
         /**
         * Find the best option for movement
-        * @param a_eDirection
+        * @param a_eDirection the direction to search for an option
         * @return the GUI element that is the best option for the movement
         */
         irr::gui::IGUIElement *findBestOption(enDirection a_eDirection);

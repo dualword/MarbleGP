@@ -1,5 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerBase.h>
+#include <gui/CControllerUi_Menu.h>
+#include <gui/CControllerUi_Game.h>
 #include <gui/CDustbinScrollPane.h>
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
@@ -194,8 +196,11 @@ namespace dustbin {
 
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+          m_cMousePos.X = a_cEvent.MouseInput.X;
+          m_cMousePos.Y = a_cEvent.MouseInput.Y;
+
           for (std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>>::iterator l_itLabel = m_mLabels.begin(); l_itLabel != m_mLabels.end(); l_itLabel++) {
-            bool l_bHover = std::get<0>(l_itLabel->second).isPointInside(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
+            bool l_bHover = std::get<0>(l_itLabel->second).isPointInside(m_cMousePos);
             std::get<3>(l_itLabel->second) = std::get<2>(l_itLabel->second) == l_bHover && l_bHover && std::get<3>(l_itLabel->second);
             std::get<2>(l_itLabel->second) = l_bHover;
           }
@@ -380,14 +385,14 @@ namespace dustbin {
           m_pDrv->draw2DRectangleOutline(std::get<0>(l_cLabel.second), irr::video::SColor(0xFF, 0, 0, 0));
           m_pFont->draw(std::get<1>(l_cLabel.second).c_str(), std::get<0>(l_cLabel.second), irr::video::SColor(0xFF, 0, 0, 0), true, true, &AbsoluteClippingRect);
 
-          if (std::get<2>(l_cLabel.second) && m_pCursor != nullptr) {
+          if (std::get<2>(l_cLabel.second)) {
             std::wstring l_sTip = helpers::s2ws(l_cLabel.first);
             irr::core::dimension2du l_cSize = m_pSmall->getDimension(l_sTip.c_str());
 
             l_cSize.Width  = 10 * l_cSize.Width  / 9;
             l_cSize.Height = 10 * l_cSize.Height / 9;
 
-            irr::core::vector2di l_cPos = m_pCursor->getPosition();
+            irr::core::vector2di l_cPos = m_cMousePos;
             l_cPos.X += l_cSize.Height / 5;
             l_cPos.Y -= l_cSize.Height / 5 + l_cSize.Height;
 
@@ -400,6 +405,97 @@ namespace dustbin {
         }
       }
       else m_pDrv->draw2DRectangle(irr::video::SColor(50, 0xFF, 0, 0), m_cDraw);
+
+      irr::video::SColor c[] = {
+        irr::video::SColor(0xFF, 0xFF, 0x80, 0x80),
+        irr::video::SColor(0xFF, 0xFF, 0x80, 0xFF),
+        irr::video::SColor(0xFF, 0x80, 0xFF, 0x80),
+        irr::video::SColor(0xFF, 0x80, 0x80, 0xFF)
+      };
+
+      bool b = false;
+
+      for (auto &l_cLabel: m_mLabels) {
+        irr::core::recti l_cRect = std::get<0>(l_cLabel.second);
+
+        if (l_cRect.isPointInside(m_cMousePos)) {
+          b = true;
+
+          std::tuple<bool, irr::core::recti> l_aChecks[4] = {
+            { false, irr::core::recti() },
+            { false, irr::core::recti() },
+            { false, irr::core::recti() },
+            { false, irr::core::recti() }
+          };
+
+          for (int i = 0; i < 4; i++) {
+            irr::core::recti l_cOut;
+            irr::core::recti l_cCheck;
+
+            if (checkForRectCollision(l_cRect, irr::core::dimension2du(l_cRect.getWidth() / 2, l_cRect.getHeight() / 2), i, l_cOut, l_cCheck)) {
+              std::get<0>(l_aChecks[i]) = true;
+              std::get<1>(l_aChecks[i]) = l_cOut;
+
+              irr::video::SColor o = c[i];
+              o.setAlpha(32);
+              m_pDrv->draw2DRectangle(o, l_cCheck);
+              m_pDrv->draw2DRectangle(irr::video::SColor(192, 255, 255, 255), l_cOut);
+            }
+          }
+
+          for (int i = 0; i < 4; i++) {
+            if (std::get<0>(l_aChecks[i])) {
+              irr::core::rect l_cCheckRect = irr::core::recti(
+                std::get<1>(l_aChecks[i]).UpperLeftCorner .X + i       * std::get<1>(l_aChecks[i]).getWidth() / 4,
+                std::get<1>(l_aChecks[i]).UpperLeftCorner .Y,
+                std::get<1>(l_aChecks[i]).UpperLeftCorner .X + (i + 1) * std::get<1>(l_aChecks[i]).getWidth() / 4,
+                std::get<1>(l_aChecks[i]).LowerRightCorner.Y
+              );
+
+              m_pDrv->draw2DRectangle(c[i],l_cCheckRect);
+              m_pFont->draw(i == 0 ? L"U" : i == 1 ? L"D" : i == 2 ? L"L" : L"R", l_cCheckRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+            }
+          }
+        }
+      }
+
+      if (!b) {
+        std::tuple<bool, irr::core::recti> l_aChecks[4] = {
+          { false, irr::core::recti() },
+          { false, irr::core::recti() },
+          { false, irr::core::recti() },
+          { false, irr::core::recti() }
+        };
+
+        for (int i = 0; i < 4; i++) {
+          irr::core::recti l_cOut;
+          irr::core::recti l_cCheck;
+
+          if (checkForNearestLabel(i, l_cOut, l_cCheck)) {
+            std::get<0>(l_aChecks[i]) = true;
+            std::get<1>(l_aChecks[i]) = l_cOut;
+
+            irr::video::SColor o = c[i];
+            o.setAlpha(32);
+            m_pDrv->draw2DRectangle(o, l_cCheck);
+            m_pDrv->draw2DRectangle(irr::video::SColor(192, 255, 255, 255), l_cOut);
+          }
+        }
+
+        for (int i = 0; i < 4; i++) {
+          if (std::get<0>(l_aChecks[i])) {
+            irr::core::rect l_cCheckRect = irr::core::recti(
+              std::get<1>(l_aChecks[i]).UpperLeftCorner .X + i       * std::get<1>(l_aChecks[i]).getWidth() / 4,
+              std::get<1>(l_aChecks[i]).UpperLeftCorner .Y,
+              std::get<1>(l_aChecks[i]).UpperLeftCorner .X + (i + 1) * std::get<1>(l_aChecks[i]).getWidth() / 4,
+              std::get<1>(l_aChecks[i]).LowerRightCorner.Y
+            );
+
+            m_pDrv->draw2DRectangle(c[i],l_cCheckRect);
+            m_pFont->draw(i == 0 ? L"U" : i == 1 ? L"D" : i == 2 ? L"L" : L"R", l_cCheckRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+          }
+        }
+      }
     }
 
     /**
@@ -424,5 +520,119 @@ namespace dustbin {
           return L"";
       }
     }
+
+    /**
+    * Get a position to move to depending on the direction and the given mouse position
+    * @param a_cMousePos the mouse position
+    * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
+    */
+    bool CControllerUi::getMoveOption(const irr::core::position2di &a_cMousePos, int a_iDirection, irr::core::position2di &a_cOut) {
+      bool l_bFound = false;
+      int  l_iDist  = 0;
+
+      for (auto &l_cLabel : m_mLabels) {
+        irr::core::recti l_cRect = std::get<0>(l_cLabel.second);
+        if (l_cRect.isPointInside(a_cMousePos)) {
+          irr::s32 l_iWidth  = l_cRect.getWidth ();
+          irr::s32 l_iHeight = l_cRect.getHeight();
+
+          l_cRect.UpperLeftCorner .X -= l_iWidth / 2; l_cRect.UpperLeftCorner .Y -= l_iHeight / 2;
+          l_cRect.LowerRightCorner.X += l_iWidth / 2; l_cRect.LowerRightCorner.Y += l_iHeight / 2;
+
+          switch (a_iDirection) {
+            case 0: l_cRect.UpperLeftCorner .Y = AbsoluteClippingRect.UpperLeftCorner .Y; break;
+            case 1: l_cRect.LowerRightCorner.Y = AbsoluteClippingRect.LowerRightCorner.Y; break;
+            case 2: l_cRect.UpperLeftCorner .X = AbsoluteClippingRect.UpperLeftCorner .X; break;
+            case 3: l_cRect.LowerRightCorner.X = AbsoluteClippingRect.LowerRightCorner.X; break;
+          }
+
+          for (auto &l_cTest : m_mLabels) {
+            irr::core::recti l_cOther = std::get<0>(l_cTest.second);
+            if (std::get<0>(l_cTest.second) != std::get<0>(l_cLabel.second)) {
+              if (l_cRect.isRectCollided(l_cOther) || l_iDist == 0) {
+                irr::core::position2di l_cCenter = l_cOther.getCenter();
+
+                l_iDist = l_cRect.getCenter().getDistanceFrom(l_cCenter);
+                a_cOut  = l_cOther.getCenter();
+              }
+            }
+          }
+        }
+      }
+
+
+      return l_bFound;
+    }
+
+    /**
+    * Search for the nearest collision of a label with a rectangle
+    * @param a_cRect the rect to collide with
+    * @param a_cOffset offset for the rectangle (will be used to enlarge the rect)
+    * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
+    * @param a_cOut [out] the result rectangle
+    * @param a_cCheck [out] the rectangle that was checked against
+    * @return true if a collision was found, false otherwise
+    */
+    bool CControllerUi::checkForRectCollision(const irr::core::recti& a_cRect, const irr::core::dimension2du& a_cOffset, int a_iDirection, irr::core::recti& a_cOut, irr::core::recti &a_cCheck) {
+      a_cCheck = a_cRect;
+
+      a_cCheck.UpperLeftCorner .X -= a_cOffset.Width; a_cCheck.UpperLeftCorner .Y -= a_cOffset.Height;
+      a_cCheck.LowerRightCorner.X += a_cOffset.Width; a_cCheck.LowerRightCorner.Y += a_cOffset.Height;
+
+      switch (a_iDirection) {
+        case 0: a_cCheck.UpperLeftCorner .Y = AbsoluteClippingRect.UpperLeftCorner .Y; break;
+        case 1: a_cCheck.LowerRightCorner.Y = AbsoluteClippingRect.LowerRightCorner.Y; break;
+        case 2: a_cCheck.UpperLeftCorner .X = AbsoluteClippingRect.UpperLeftCorner .X; break;
+        case 3: a_cCheck.LowerRightCorner.X = AbsoluteClippingRect.LowerRightCorner.X; break;
+      }
+
+      int l_iDist = 0;
+
+      for (auto &l_cLabel : m_mLabels) {
+        irr::core::recti l_cOther = std::get<0>(l_cLabel.second);
+
+        if (l_cOther != a_cRect) {
+          if (a_cCheck.isRectCollided(l_cOther) && (l_iDist == 0 || l_iDist > a_cRect.getCenter().getDistanceFrom(l_cOther.getCenter()))) {
+            l_iDist = a_cRect.getCenter().getDistanceFrom(l_cOther.getCenter());
+            a_cOut  = l_cOther;
+          }
+        }
+      }
+
+      return l_iDist > 0;
+    }
+
+    /**
+    * Search for the nearest label to the mouse cursor in a particular direction.
+    * Only called if no label was found using checkForRectCollision
+    * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
+    * @param a_cOut [out] the result rectangle
+    * @return true if a collision was found, false otherwise
+    */
+    bool CControllerUi::checkForNearestLabel(int a_iDirection, irr::core::recti& a_cOut, irr::core::recti& a_cCheck) {
+      a_cCheck = AbsoluteClippingRect;
+
+      switch (a_iDirection) {
+        case 0: a_cCheck.LowerRightCorner.Y = m_cMousePos.Y; break;
+        case 1: a_cCheck.UpperLeftCorner .Y = m_cMousePos.Y; break;
+        case 2: a_cCheck.LowerRightCorner.X = m_cMousePos.X; break;
+        case 3: a_cCheck.UpperLeftCorner .X = m_cMousePos.X; break;
+      }
+
+      int l_iDist = 0;
+
+      for (auto& l_cLabel : m_mLabels) {
+        irr::core::recti     l_cOther  = std::get<0>(l_cLabel.second);
+        irr::core::vector2di l_cCenter = l_cOther.getCenter();
+        
+        if (a_cCheck.isRectCollided(l_cOther) && (l_iDist == 0 || l_iDist > l_cCenter.getDistanceFrom(m_cMousePos))) {
+          l_iDist = l_cCenter.getDistanceFrom(m_cMousePos);
+          a_cOut  = l_cOther;
+        }
+      }
+
+      return l_iDist > 0;
+    }
+
   } // namespace controller 
 } // namespace dustbin

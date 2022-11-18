@@ -295,6 +295,7 @@
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudLapTimes.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSpeedBar.h" />
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSteering.h" />
+    <ClInclude Include="..\..\_source\include\gui\IGuiMoveOptionElement.h" />
     <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h" />
     <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />
