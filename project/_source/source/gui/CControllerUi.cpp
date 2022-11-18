@@ -551,8 +551,6 @@ namespace dustbin {
         }
       }
 
-      printf("Found: %s (%i, %i) / (%i, %i)\n", l_bFound ? "true" : "false", a_cMousePos.X, a_cMousePos.Y, a_cOut.X, a_cOut.Y);
-
       return l_bFound;
     }
 
