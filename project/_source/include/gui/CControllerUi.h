@@ -57,6 +57,7 @@ namespace dustbin {
         * @param a_cOffset offset for the rectangle (will be used to enlarge the rect)
         * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
         * @param a_cOut [out] the result rectangle
+        * @param a_cCheck [out] the rectangle that was checked against (for debug output)
         * @return true if a collision was found, false otherwise
         */
         bool checkForRectCollision(const irr::core::recti &a_cRect, const irr::core::dimension2du &a_cOffset, int a_iDirection, irr::core::recti &a_cOut, irr::core::recti &a_cCheck);
@@ -68,7 +69,7 @@ namespace dustbin {
         * @param a_cOut [out] the result rectangle
         * @return true if a collision was found, false otherwise
         */
-        bool checkForNearestLabel(int a_iDirection, irr::core::recti &a_cOut, irr::core::recti &a_cCheck);
+        bool checkForNearestLabel(int a_iDirection, irr::core::recti &a_cOut);
 
       public:
         CControllerUi(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType);

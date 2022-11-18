@@ -587,8 +587,10 @@ namespace dustbin {
       if (l_pHover != nullptr) {
         if (l_pHover->getType() == gui::g_ControllerUiGameId || l_pHover->getType() == gui::g_ControllerUiMenuId) {
           gui::CControllerUi *l_pCtrl = static_cast<gui::CControllerUi *>(l_pHover);
-          if (l_pCtrl->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
+          if (l_pCtrl->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption)) {
             m_cMousePos = l_cOption;
+            l_bFound = true;
+          }
         }
       }
 
@@ -596,13 +598,14 @@ namespace dustbin {
 
       if (p != nullptr || l_bFound) {
         if (!l_bFound) {
-          m_cMousePos = p->getAbsoluteClippingRect().getCenter();
-
           if (p->getType() == gui::g_ControllerUiGameId || p->getType() == gui::g_ControllerUiMenuId) {
             gui::CControllerUi *l_pCtrl = static_cast<gui::CControllerUi *>(p);
             if (l_pCtrl->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
               m_cMousePos = l_cOption;
+            else
+              m_cMousePos = p->getAbsoluteClippingRect().getCenter();
           }
+          else m_cMousePos = p->getAbsoluteClippingRect().getCenter();
         }
 
         if (m_pCursor != nullptr)
