@@ -5,7 +5,7 @@
 namespace dustbin {
   namespace controller {
 
-    CControllerGame::CControllerGame() : m_bWithdrawDown(false), m_bPauseDown(false) {
+    CControllerGame::CControllerGame() : m_bWithdrawDown(false), m_bPauseDown(false), m_eType(enType::KeyJoy) {
       SCtrlInput l_cInput;
 
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_UP    ; l_cInput.m_sName = "Forward"    ; m_vControls.push_back(l_cInput);  // 0 == forward
@@ -103,6 +103,14 @@ namespace dustbin {
       }
 
       return false;
+    }
+
+    /**
+    * Get the selected controller type
+    * @return the selected controller type
+    */
+    CControllerGame::enType CControllerGame::getType() {
+      return m_eType;
     }
 
   } // namespace controller

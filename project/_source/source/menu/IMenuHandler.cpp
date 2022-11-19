@@ -51,6 +51,22 @@ namespace dustbin {
       return p;
     }
 
+    irr::gui::IGUIElement* findElementByName(const std::string& a_sName, irr::gui::IGUIElement* a_pElement) {
+      std::string l_sName = a_pElement->getName();
+      if (l_sName == a_sName)
+        return a_pElement;
+
+      irr::gui::IGUIElement *p = nullptr;
+
+      for (auto l_cChild : a_pElement->getChildren()) {
+        p = findElementByName(a_sName, l_cChild);
+        if (p != nullptr)
+          return p;
+      }
+
+      return p;
+    }
+
     IMenuHandler::IMenuHandler(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) :
       m_pDevice (a_pDevice),
       m_pFs     (a_pDevice->getFileSystem    ()),

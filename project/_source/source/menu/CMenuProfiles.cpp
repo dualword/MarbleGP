@@ -53,7 +53,8 @@ namespace dustbin {
 
       data::SPlayerData m_cData;   /**< The Player Data structure linked to this profile UI */
 
-      SPlayerProfileUI() :
+
+     SPlayerProfileUI() :
         m_pRoot       (nullptr),
         m_pDataRoot   (nullptr),
         m_pName       (nullptr),
@@ -87,19 +88,40 @@ namespace dustbin {
           m_pDataRoot->setVisible(true);
           m_pAddProfile->setVisible(false);
 
-          controller::CControllerGame l_cCtrl;
-          l_cCtrl.deserialize(m_cData.m_sControls);
-          switch ((*l_cCtrl.getInputs().begin()).m_eType) {
-            case controller::CControllerBase::enInputType::JoyAxis:
-            case controller::CControllerBase::enInputType::JoyButton:
-            case controller::CControllerBase::enInputType::JoyPov:
-              if (m_pControl != nullptr) m_pControl->setText(L"Joystick");
-              break;
+          std::string l_sCtrl = m_cData.m_sControls;
 
-            case controller::CControllerBase::enInputType::Key:
-              if (m_pControl != nullptr) m_pControl->setText(L"Keyboard");
-              break;
+          if (l_sCtrl == "DustbinTouchSteerRight") {
+            if (m_pControl != nullptr)
+              m_pControl->setText(L"Controls: Touch Steer Right");
           }
+          else if (l_sCtrl == "DustbinTouchSteerLeft") {
+            if (m_pControl != nullptr)
+              m_pControl->setText(L"Controls: Touch Steer Left");
+          }
+          else if (l_sCtrl == "DustbinTouchSteerOnly") {
+            if (m_pControl != nullptr)
+              m_pControl->setText(L"Controls: Touch Steer Only (High AI Help)");
+          }
+          else if (l_sCtrl == "DustbinGyroscope") {
+            if (m_pControl != nullptr)
+              m_pControl->setText(L"Controls: Gyroscope");
+          }
+          else {
+            controller::CControllerGame l_cCtrl;
+            l_cCtrl.deserialize(l_sCtrl);
+            switch ((*l_cCtrl.getInputs().begin()).m_eType) {
+              case controller::CControllerBase::enInputType::JoyAxis:
+              case controller::CControllerBase::enInputType::JoyButton:
+              case controller::CControllerBase::enInputType::JoyPov:
+                if (m_pControl != nullptr) m_pControl->setText(L"Controls: Joystick");
+                break;
+
+              case controller::CControllerBase::enInputType::Key:
+                if (m_pControl != nullptr) m_pControl->setText(L"Controls: Keyboard");
+                break;
+            }
+          }
+
           size_t l_iPos = m_cData.m_sTexture.find("://");
 
           if (l_iPos != std::string::npos && m_pTextureType != nullptr) {
@@ -156,6 +178,9 @@ namespace dustbin {
         irr::gui::IGUIEditBox   *m_pTexturePattern;   /**< The edit field of the texture pattern */
         irr::gui::IGUIListBox   *m_pCustomTexture;    /**< The custom texture list */
         gui::CControllerUi_Game *m_pControllerUI;     /**< The UI for controller configuration */
+        gui::CSelector          *m_pCtrlType;         /**< The type of controller (at the moment only used in Android) */
+
+        std::map<std::string, irr::gui::IGUIElement *> m_mCtrlTypes;    /**< The type of controller */
 
         irr::scene::ISceneManager* m_pMySmgr;   /**< Alternative scene manager to draw the texture scene */
         irr::video::ITexture* m_pMyRtt;         /**< Render target for the texture scene */
@@ -563,11 +588,36 @@ namespace dustbin {
         * selected profile
         */
         void updateControlDialog() {
-          if (m_pControllerUI != nullptr) {
-            if (m_aProfiles[m_iEditing].isValid()) {
-              std::string s = m_aProfiles[m_iEditing].m_cData.m_sControls;
-              if (s != "")
-                m_pControllerUI->setText(helpers::s2ws(s).c_str());
+          if (m_aProfiles[m_iEditing].isValid()) {
+            std::string s = m_aProfiles[m_iEditing].m_cData.m_sControls;
+            if (s != "") {
+              std::tuple<std::string, std::string> l_sCtrl[] = {
+                std::make_tuple("DustbinController"     , "controller_ui"              ),
+                std::make_tuple("DustbinTouchSteerRight", "controller_touch_steerleft" ),
+                std::make_tuple("DustbinTouchSteerLeft" , "controller_touch_steerright"),
+                std::make_tuple("DustbinTouchSteerOnly" , "controller_touch_steer"     ),
+                std::make_tuple("DustbinGyroscope"      , "controller_gyroscope"       ),
+                std::make_tuple(""                      , ""                           )
+              };
+
+              bool l_bFound = false;
+
+              for (int i = 0; std::get<0>(l_sCtrl[i]) != ""; i++) {
+                std::string l_sSub = s.substr(0, std::get<0>(l_sCtrl[i]).length());
+                std::string l_sKey = std::get<1>(l_sCtrl[i]);
+
+                if (m_mCtrlTypes.find(l_sKey) != m_mCtrlTypes.end()) {
+                  bool l_bVisible = l_sSub == std::get<0>(l_sCtrl[i]);
+                  m_mCtrlTypes[l_sKey]->setVisible(l_bVisible);
+                  if (l_bVisible) {
+                    if (m_pCtrlType != nullptr)
+                      m_pCtrlType->setSelected(i);
+
+                    if (i == 0 && m_pControllerUI != nullptr)
+                      m_pControllerUI->setText(helpers::s2ws(s).c_str());
+                  }
+                }
+              }
             }
           }
 
@@ -594,7 +644,13 @@ namespace dustbin {
         */
         void buttonControlsOkClicked() {
           if (m_iEditing >= 0 && m_iEditing <= m_iMaxIndex && m_aProfiles[m_iEditing].isValid() && m_pControllerUI != nullptr) {
-            m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize();
+            switch (m_pCtrlType->getSelected()) {
+              case 0: m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize(); break;
+              case 1: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerRight"    ; break;
+              case 2: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerLeft"     ; break;
+              case 3: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerOnly"     ; m_aProfiles[m_iEditing].m_cData.m_eAiHelp = data::SPlayerData::enAiHelp::High; break;
+              case 4: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinGyroscope"          ; break;
+            }
             m_aProfiles[m_iEditing].fillUI();
           }
 
@@ -695,6 +751,7 @@ namespace dustbin {
             m_pTexturePattern(nullptr),
             m_pCustomTexture (nullptr),
             m_pControllerUI  (nullptr),
+            m_pCtrlType      (nullptr),
             m_pMySmgr        (nullptr),
             m_pMyRtt         (nullptr),
             m_pMarble        (nullptr),
@@ -737,7 +794,23 @@ namespace dustbin {
             m_pMore           = reinterpret_cast<     gui::CMenuButton        *>(findElementByNameAndType("btn_more"         , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId      , l_pRoot));
             m_pControllerUI   = reinterpret_cast<     gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, l_pRoot));
             m_pPatternList    = reinterpret_cast<     gui::CGuiImageList      *>(findElementByNameAndType("PatternList"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId       , l_pRoot));
+            m_pCtrlType       = reinterpret_cast<     gui::CSelector          *>(findElementByNameAndType("controller_type"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId        , l_pRoot));
 
+            std::string l_sCtrls[] = {
+              "controller_ui",
+              "controller_touch_steerleft",
+              "controller_touch_steerright",
+              "controller_touch_steer",
+              "controller_gyroscope",
+              ""
+            };
+
+            for (int i = 0; l_sCtrls[i] != ""; i++) {
+              irr::gui::IGUIElement *p = findElementByName(l_sCtrls[i], l_pRoot);
+              if (p != nullptr) {
+                m_mCtrlTypes[l_sCtrls[i]] = p;
+              }
+            }
 
             if (m_pTextureImg != nullptr && m_pMyRtt != nullptr)
               m_pTextureImg->setImage(m_pMyRtt);
@@ -1227,6 +1300,22 @@ namespace dustbin {
                       m_aProfiles[m_iEditing].m_cData.m_eAiHelp = (data::SPlayerData::enAiHelp)p->getSelected();
 
                       l_bRet = true;
+                    }
+                  }
+                  else if (a_cEvent.GUIEvent.Caller == m_pCtrlType) {
+                    std::string l_sSelected = "";
+
+                    switch (m_pCtrlType->getSelected()) {
+                      case 0: l_sSelected = "controller_ui"              ; break;
+                      case 1: l_sSelected = "controller_touch_steerright"; break;
+                      case 2: l_sSelected = "controller_touch_steerleft" ; break;
+                      case 3: l_sSelected = "controller_touch_steer"     ; break;
+                      case 4: l_sSelected = "controller_gyroscope"       ; break;
+                    }
+
+                    for (auto& l_cCtrl : m_mCtrlTypes) {
+                      bool l_bVisible = l_cCtrl.first == l_sSelected;
+                      l_cCtrl.second->setVisible(l_bVisible);
                     }
                   }
                   else {

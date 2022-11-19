@@ -70,5 +70,6 @@ namespace dustbin {
 
     irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement);
     irr::gui::IGUIElement* findElementByNameAndType(const std::string &a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement);
+    irr::gui::IGUIElement* findElementByName(const std::string& a_sName, irr::gui::IGUIElement* a_pElement);
   }
 }

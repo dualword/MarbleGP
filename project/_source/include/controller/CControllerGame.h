@@ -13,9 +13,22 @@ namespace dustbin {
     * This class handles handles controls for the actual game
     */
     class CControllerGame : public CControllerBase {
+      public:
+        enum class enType {
+          KeyJoy,     /**< Keyboard and gamepad control */
+          TouchLeft,  /**< Touch controls, steering left (Android only) */
+          TouchRight, /**< Touch controls, steering right (Android only) */
+          TouchSteer, /**< Touch controls, steering only (Android only, High AI help) */
+          Gyroscope,  /**< Gyroscope controls (Android only) */
+
+          Count
+        };
+
       private:
         bool m_bWithdrawDown;   /**< Cancel button pressed? */
         bool m_bPauseDown;    /**< Pause button pressed? */
+
+        enType m_eType;   /**< Selected controller type */
 
       public:
         CControllerGame();
@@ -62,6 +75,12 @@ namespace dustbin {
         * @return true if the button was pressed since the last query, false otherwise
         */
         bool pause();
+
+        /**
+        * Get the selected controller type
+        * @return the selected controller type
+        */
+        enType getType();
     };
 
   } // namespace controller

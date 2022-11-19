@@ -374,7 +374,7 @@ namespace dustbin {
     void CControllerUi::draw() {
       CMenuBackground::draw();
 
-      if (m_pBackground != nullptr) {
+      if (IsVisible && m_pBackground != nullptr) {
         m_pDrv->draw2DImage(m_pBackground, m_cDraw, m_cSource, &AbsoluteClippingRect, nullptr, true);
 
         for (auto &l_cLabel : m_mLabels) {
@@ -404,7 +404,6 @@ namespace dustbin {
           }
         }
       }
-      else m_pDrv->draw2DRectangle(irr::video::SColor(50, 0xFF, 0, 0), m_cDraw);
 
 #ifdef _DEBUG_CONTROLLER_CONFIG
       irr::video::SColor c[] = {

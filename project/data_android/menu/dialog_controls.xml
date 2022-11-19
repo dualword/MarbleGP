@@ -24,7 +24,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Gamepad;Touch;Gyroscope" />
+              <attribute key="options" value="Gamepad;Touch Steer Right;Touch Steer Left;Touch Steer Only (High AI Help);Gyroscope" />
             </custom>
           </element>
           
@@ -42,6 +42,50 @@
               <attribute key="OverrideColor" value="128, 232, 232, 232" />
               <attribute key="headline" value="Game Controller Setup" />
             </attributes>
+          </element>
+          
+          <element type="image" rect="center: -19, -11, 19, 10" font="small">
+            <attributes>
+              <attribute key="Name" value="controller_touch_steerleft" />
+              <attribute key="ScaleImage" value="true" />
+              <attribute key="UseAlphaChannel" value="true" />
+            </attributes>
+            <custom>
+              <attribute key="src" value="file://data/images/ctrl_config_touch_left.png" />
+            </custom>
+          </element>
+          
+          <element type="image" rect="center: -19, -11, 19, 10" font="small">
+            <attributes>
+              <attribute key="Name" value="controller_touch_steerright" />
+              <attribute key="ScaleImage" value="true" />
+              <attribute key="UseAlphaChannel" value="true" />
+            </attributes>
+            <custom>
+              <attribute key="src" value="file://data/images/ctrl_config_touch_right.png" />
+            </custom>
+          </element>
+          
+          <element type="image" rect="center: -19, -11, 19, 10" font="small">
+            <attributes>
+              <attribute key="Name" value="controller_touch_steer" />
+              <attribute key="ScaleImage" value="true" />
+              <attribute key="UseAlphaChannel" value="true" />
+            </attributes>
+            <custom>
+              <attribute key="src" value="file://data/images/ctrl_config_touch_steer.png" />
+            </custom>
+          </element>
+          
+          <element type="image" rect="center: -19, -11, 19, 10" font="small">
+            <attributes>
+              <attribute key="Name" value="controller_gyroscope" />
+              <attribute key="ScaleImage" value="true" />
+              <attribute key="UseAlphaChannel" value="true" />
+            </attributes>
+            <custom>
+              <attribute key="src" value="file://data/images/ctrl_config_gyro.png" />
+            </custom>
           </element>
           
           <element type="MenuButton" rect="center: 1, 10, 4, 13" tooltip="Save controller changes">
