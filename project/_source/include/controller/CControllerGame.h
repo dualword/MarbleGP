@@ -26,49 +26,49 @@ namespace dustbin {
         * Returns the throttle control (-1 .. 1): forward - backward
         * @return the throttle state
         */
-        irr::f32 getThrottle();
+        virtual irr::f32 getThrottle() override;
 
         /**
         * Returns the steer (-1 .. 1): right - left
         * @return the steer state
         */
-        irr::f32 getSteer();
+        virtual irr::f32 getSteer() override;
 
         /**
         * Returns the state of the brake control
         * @return true if control >= 0.5, false otherwise
         */
-        bool getBrake();
+        virtual bool getBrake() override;
 
         /**
          * Return the rearview control
          * @return true if control >= 0.5, false otherwise
          */
-        bool getRearView();
+        virtual bool getRearView() override;
 
         /**
         * Get the respawn control state
         * @return true if control >= 0.5, false otherwise
         */
-        bool getRespawn();
+        virtual bool getRespawn() override;
 
         /**
         * Get the "withdraw from race" button state
         * @return true if the button was pressed since the last query, false otherwise
         */
-        bool withdrawFromRace();
+        virtual bool withdrawFromRace() override;
 
         /**
         * Get the pause button state
         * @return true if the button was pressed since the last query, false otherwise
         */
-        bool pause();
+        virtual bool pause() override;
 
         /**
         * Process Irrlicht evnts to update the controls
         * @param a_cEvent event to process
         */
-        virtual void updateControls(const irr::SEvent &a_cEvent);
+        virtual void updateControls(const irr::SEvent &a_cEvent) override;
     };
 
   } // namespace controller
