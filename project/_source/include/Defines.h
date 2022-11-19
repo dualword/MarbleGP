@@ -31,6 +31,4 @@ namespace dustbin {
     ControlLeft   = 6,
     ControlRight  = 7
   };
-
-  bool controlAllowsRanking(int a_iControl);
 }

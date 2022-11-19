@@ -447,9 +447,6 @@
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\gui\CGuiTouchControl.cpp">
-      <Filter>Quelldateien\gui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
     </ClCompile>
@@ -614,6 +611,9 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\gui\CControllerUi_menu.cpp">
       <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame_Touch.cpp">
+      <Filter>Quelldateien\controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -938,9 +938,6 @@
     <ClInclude Include="resource.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_source\include\gui\CGuiTouchControl.h">
-      <Filter>Headerdateien\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
@@ -1014,6 +1011,9 @@
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\IControllerGame.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerGame_Touch.h">
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
   </ItemGroup>

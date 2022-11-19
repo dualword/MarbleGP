@@ -31,6 +31,7 @@ namespace dustbin {
         IControllerGame *m_pController;
         IControllerAI   *m_pAiControls;
         int              m_iMarbleId;
+        bool             m_bOwnsCtrl;     /**< Does this class need to delete the controller or is this done by the GUI */
         
         data::SMarblePosition        m_aMarbles[16];
         data::SPlayerData::enAiHelp  m_eAiHelp;

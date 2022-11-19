@@ -25,6 +25,7 @@ namespace dustbin {
       m_pController(nullptr), 
       m_pAiControls(nullptr), 
       m_iMarbleId  (a_iMarbleId),
+      m_bOwnsCtrl  (true),
       m_eAiHelp    (a_eAiHelp),
       m_pAiNode    (a_pAiNode),
       m_pLuaScript (nullptr)
@@ -78,7 +79,7 @@ namespace dustbin {
     }
 
     CMarbleController::~CMarbleController() {
-      if (m_pController != nullptr)
+      if (m_pController != nullptr && m_bOwnsCtrl)
         delete m_pController;
 
       if (m_pAiControls != nullptr)

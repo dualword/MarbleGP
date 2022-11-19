@@ -192,9 +192,6 @@
     <ClInclude Include="..\..\..\_source\include\threads\IThread.h">
       <Filter>Headerdateien\threads</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\gui\CGuiTouchControl.h">
-      <Filter>Headerdateien\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\gameclasses\CGameLogicDefault.h">
       <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
@@ -426,6 +423,18 @@
     <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudFade.h">
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerGame_Touch.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\CControllerUi_Game.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\CControllerUi_Menu.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\IControllerGame.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -579,9 +588,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\threads\CMessageQueue.cpp">
       <Filter>Quelldateien\threads</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\_source\source\gui\CGuiTouchControl.cpp">
-      <Filter>Quelldateien\gui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gameclasses\CGameLogicDefault.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
@@ -849,6 +855,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\gui\hud_items\CHudFade.cpp">
       <Filter>Quelldateien\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\CControllerUi_Game.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\CControllerUi_menu.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerGame_Touch.cpp">
+      <Filter>Quelldateien\controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

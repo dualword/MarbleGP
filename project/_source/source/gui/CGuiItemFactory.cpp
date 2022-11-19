@@ -9,16 +9,12 @@
 #include <gui/CGuiImageList.h>
 #include <gui/CControllerUi.h>
 #include <gui/CGuiTextField.h>
+#include <data/CDataStructs.h>
 #include <gui/CClipImage.h>
 #include <gui/CSelector.h>
+#include <CGlobal.h>
 #include <Defines.h>
 #include <string>
-
-#ifdef _TOUCH_CONTROL
-#include <gui/CGuiTouchControl.h>
-#include <data/CDataStructs.h>
-#include <CGlobal.h>
-#endif
 
 namespace dustbin {
   namespace gui {
@@ -99,54 +95,13 @@ namespace dustbin {
         p->drop();
         return p;
       }
-#ifdef _TOUCH_CONTROL
-      else if (l_sTypeName == g_TouchControlName) {
-        int l_iType = CGlobal::getInstance()->getSettingData().m_iTouchControl;
-
-        irr::gui::IGUIElement *p = nullptr;
-
-        switch (l_iType) {
-          case (int)enTouchCtrlType::Gamepad:
-            // Gamepad, nothing to do here
-            break;
-
-          case (int)enTouchCtrlType::Gyroscope:
-            p = new gui::CGuiGyroControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement()); 
-            break;
-            
-          case (int)enTouchCtrlType::SteerLeft:
-          case (int)enTouchCtrlType::SteerRight:
-          case (int)enTouchCtrlType::SteerCenter:
-            // Steer Left, Throttle Right or Steer Right, Throttle Left
-            p = new gui::CGuiTouchControl_Split(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
-            break;
-
-          case (int)enTouchCtrlType::ControlLeft:
-          case (int)enTouchCtrlType::ControlRight:
-          case (int)enTouchCtrlType::ControlCenter:
-            // All Controls Left or all Controls Right or Central
-            p = new CGuiTouchControl(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
-            break;
-            
-        }
-
-        if (p != nullptr) {
-          p->drop();
-        }
-        return p;
-      }
-#endif
 
 			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-#ifdef _TOUCH_CONTROL
-      return 12;
-#else
 			return 11;
-#endif
 		}
 
 		//! Get type of a createable element type
@@ -196,12 +151,6 @@ namespace dustbin {
 
         case 10:
           return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiMenuId;
-
-#ifdef _TOUCH_CONTROL
-        case 11:
-          return (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId;
-          break;
-#endif
 
 				default:
 					return irr::gui::EGUIET_COUNT;
@@ -258,12 +207,6 @@ namespace dustbin {
           return g_ControllerUiGameName;
           break;
 
-#ifdef _TOUCH_CONTROL
-        case 11:
-          return g_TouchControlName;
-          break;
-#endif
-
 				default:
 					return nullptr;
 					break;
@@ -318,12 +261,6 @@ namespace dustbin {
         case (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiMenuId:
           return g_ControllerUiMenuName;
           break;
-
-#ifdef _TOUCH_CONTROL
-        case (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId:
-          return g_TouchControlName;
-          break;
-#endif
 
 				default:
 					return nullptr;

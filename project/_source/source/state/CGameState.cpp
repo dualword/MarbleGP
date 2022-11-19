@@ -39,7 +39,6 @@
 #include <map>
 
 #ifdef _TOUCH_CONTROL
-#include <gui/CGuiTouchControl.h>
 #include <scenenodes/CCameraTouchAnimator.h>
 #else
 #include <scenenodes/CMyCameraAnimator.h>
@@ -596,23 +595,6 @@ namespace dustbin {
       }
 #endif
 
-#ifdef _TOUCH_CONTROL
-      if (m_pCamAnimator == nullptr && m_cPlayers.m_vPlayers.size() > 0) {
-        // If the "menu pad" is set we ignore the settings
-        // of the touch controller and use the gamepad
-        if (!m_pGlobal->getSettingData().m_bMenuPad) {
-          switch (m_pGlobal->getSettingData().m_iTouchControl) {
-            case 0:
-              // Nothing to do, gamepads will be handled normally
-              break;
-
-            default:
-              m_pTouchControl = reinterpret_cast<gui::IGuiMarbleControl *>(m_pGui->addGUIElement(gui::g_TouchControlName, m_pGui->getRootGUIElement()));
-              break;
-          }
-        }
-      }
-#endif
       helpers::addToDebugLog("CGameState::activate }\n");
     }
 
@@ -789,11 +771,6 @@ namespace dustbin {
         if ((*it)->m_pController != nullptr)
           (*it)->m_pController->update(a_cEvent);
       }
-
-#ifdef _TOUCH_CONTROL
-      if (m_pTouchControl != nullptr)
-        l_bRet = m_pTouchControl->OnEvent(a_cEvent);
-#endif
 
       if (!l_bRet && a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
         if (!a_cEvent.KeyInput.PressedDown) {
@@ -1007,19 +984,6 @@ namespace dustbin {
 #ifdef _TOUCH_CONTROL
       if (m_pCamAnimator != nullptr && m_pCamera != nullptr)
         m_pCamAnimator->animateNode(m_pCamera, 0);
-
-      if (m_pTouchControl != nullptr && m_pCamAnimator == nullptr && m_mViewports.size() > 0) {
-        irr::s8 l_iCtrlX    = 0,
-                l_iCtrlY    = 0;
-        bool    l_bBrake    = false,
-                l_bRespawn  = false,
-                l_bRearView = false;
-
-        m_pTouchControl->getControl(l_iCtrlX, l_iCtrlY, l_bBrake, l_bRespawn, l_bRearView);
-
-        messages::CMarbleControl l_cMessage = messages::CMarbleControl(m_mViewports.begin()->second.m_pMarble->getID(), l_iCtrlX, l_iCtrlY, l_bBrake, l_bRearView, l_bRespawn);
-        m_pOutputQueue->postMessage(&l_cMessage);
-      }
 #endif
 
       do {
@@ -1363,13 +1327,6 @@ namespace dustbin {
         for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
           if (it->second.m_pHUD != nullptr) {
             bool l_bShowRanking = true;
-
-#ifdef _TOUCH_CONTROL
-            if (!m_pGlobal->getSettingData().m_bMenuPad && !controlAllowsRanking(m_pGlobal->getSettingData().m_iTouchControl)) {
-              l_bShowRanking = false;
-            }
-#endif
-
             it->second.m_pHUD->setSettings(m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking && l_bShowRanking, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowLapTimes);
           }
         }
@@ -1498,30 +1455,12 @@ namespace dustbin {
             p->m_iStateChange = m_iStep;
 
             m_pSoundIntf->playMarbleStunned(a_MarbleId, p->m_pPositional->getAbsolutePosition());
-#ifdef _TOUCH_CONTROL
-            if (m_pTouchControl != nullptr) {
-              for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-                if (it->second.m_pMarble->getID() == a_MarbleId) {
-                  m_pTouchControl->setVisible(false);
-                }
-              }
-            }
-#endif
           }
           else {
             p->m_eState = gameclasses::SMarbleNodes::enMarbleState::Rolling;
             p->m_iStateChange = -1;
 
             m_pSoundIntf->stopMarbleStunned(a_MarbleId);
-#ifdef _TOUCH_CONTROL
-            if (m_pTouchControl != nullptr) {
-              for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-                if (it->second.m_pMarble->getID() == a_MarbleId) {
-                  m_pTouchControl->setVisible(true);
-                }
-              }
-            }
-#endif
           }
         }
       }
@@ -1544,17 +1483,6 @@ namespace dustbin {
           p->m_iStateChange = m_iStep;
           m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::GameOver);
         }
-
-#ifdef _TOUCH_CONTROL
-        if (m_pTouchControl != nullptr)
-          for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-            if (it->second.m_pMarble->getID() == a_MarbleId) {
-              m_pTouchControl->setVisible(false);
-              break;
-            }
-          }
-#endif
-
         if (m_pLuaScript != nullptr)
           m_pLuaScript->onplayerfinished(a_MarbleId, a_RaceTime, a_Laps);
       }

@@ -180,11 +180,11 @@ namespace dustbin {
         virtual bool getMoveOption(const irr::core::position2di &a_cMousePos, int a_iDirection, irr::core::position2di &a_cOut) override;
 
         /** Inherited from irr::gui::IGUIElement **/
-        virtual bool OnEvent(const irr::SEvent& a_cEvent);
-        virtual void draw();
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
+        virtual void draw() override;
 
-        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
-        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
+        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const override;
+        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) override;
     };
   }
 }
