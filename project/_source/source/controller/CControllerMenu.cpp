@@ -612,8 +612,8 @@ namespace dustbin {
             else
               m_cMousePos = p->getAbsoluteClippingRect().getCenter();
           }
-          else if (l_pHover->getType() == gui::g_ImageListId) {
-            gui::CGuiImageList *l_pImg = static_cast<gui::CGuiImageList *>(l_pHover);
+          else if (p->getType() == gui::g_ImageListId) {
+            gui::CGuiImageList *l_pImg = static_cast<gui::CGuiImageList *>(p);
             if (l_pImg->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
               m_cMousePos = l_cOption;
             else
