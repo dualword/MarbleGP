@@ -1,11 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <controller/CControllerGame.h>
+#include <controller/IController.h>
 
 namespace dustbin {
   namespace controller {
 
-    CControllerGame::CControllerGame() : m_bWithdrawDown(false), m_bPauseDown(false), m_eType(enType::KeyJoy) {
+    CControllerGame::CControllerGame() : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false) {
       SCtrlInput l_cInput;
 
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_UP    ; l_cInput.m_sName = "Forward"    ; m_vControls.push_back(l_cInput);  // 0 == forward
@@ -105,13 +106,14 @@ namespace dustbin {
       return false;
     }
 
-    /**
-    * Get the selected controller type
-    * @return the selected controller type
-    */
-    CControllerGame::enType CControllerGame::getType() {
-      return m_eType;
-    }
 
+    /**
+    * Process Irrlicht evnts to update the controls
+    * @param a_cEvent event to process
+    */
+    void CControllerGame::updateControls(const irr::SEvent& a_cEvent) {
+      // In this case just pass the event to the base class
+      CControllerBase::update(a_cEvent);
+    }
   } // namespace controller
 } // namespace dustbin

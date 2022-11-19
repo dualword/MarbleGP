@@ -61,6 +61,14 @@
           <attribute key="ImagePath" value="data/images/btn_texture.png" />
         </attributes>
       </element>
+      
+      <element type="staticText" rect="relative: 11, 4, 40, 7" font="regular">
+        <attributes>
+          <attribute key="Name" value="label_controls" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Caption" value="This is the controller" />
+        </attributes>
+      </element>
     </children>
   </element>
 </dialog>

@@ -3,7 +3,6 @@
 
 #include <irrlicht.h>
 
-#include <controller/CControllerGame.h>
 #include <controller/IController.h>
 #include <data/CDataStructs.h>
 #include <threads/IQueue.h>
@@ -19,6 +18,7 @@ namespace dustbin {
   }
 
   namespace controller {
+    class IControllerGame;
     class IControllerAI;
 
     /**
@@ -28,7 +28,7 @@ namespace dustbin {
     */
     class CMarbleController : public IController {
       protected:
-        CControllerGame *m_pController;
+        IControllerGame *m_pController;
         IControllerAI   *m_pAiControls;
         int              m_iMarbleId;
         

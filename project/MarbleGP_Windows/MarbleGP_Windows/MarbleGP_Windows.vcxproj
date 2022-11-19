@@ -256,6 +256,7 @@
     <ClInclude Include="..\..\_source\include\controller\CMarbleController.h" />
     <ClInclude Include="..\..\_source\include\controller\IController.h" />
     <ClInclude Include="..\..\_source\include\controller\IControllerAI.h" />
+    <ClInclude Include="..\..\_source\include\controller\IControllerGame.h" />
     <ClInclude Include="..\..\_source\include\controller\ICustomEventReceiver.h" />
     <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />

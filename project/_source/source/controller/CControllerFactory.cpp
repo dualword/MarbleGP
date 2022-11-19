@@ -21,11 +21,27 @@ namespace dustbin {
       const std::string           &a_sAiScript,
       const irr::core::recti      &a_cViewport
     ) {
-      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sControls.c_str());
 
-      std::string l_sHead = l_cSerializer.getString();
+      bool l_bDataValid = false;
 
-      if (l_sHead == "DustbinController") {
+      std::string l_aCtrl[] = {
+        "DustbinController"     ,
+        "DustbinTouchSteerRight",
+        "DustbinTouchSteerLeft" ,
+        "DustbinTouchSteerOnly" ,
+        "DustbinGyroscope"      ,
+        ""                      
+      };
+
+      for (std::string l_sCtrl : l_aCtrl) {
+        std::string l_sSub = a_sControls.substr(0, l_sCtrl.size());
+        if (l_sSub == l_sCtrl) {
+          l_bDataValid = true;
+          break;
+        }
+      }
+
+      if (l_bDataValid) {
         return new CMarbleController(a_iMarbleId, a_sControls, a_pAiNode, a_eAiHelp, m_pQueue, a_sAiScript, a_cViewport);
       }
 

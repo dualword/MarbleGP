@@ -4,6 +4,8 @@
 #include <controller/CMarbleController.h>
 #include <_generated/lua/CLuaScript_ai.h>
 #include <controller/CControllerAi_V2.h>
+#include <controller/IControllerGame.h>
+#include <controller/CControllerGame.h>
 #include <helpers/CStringHelpers.h>
 #include <messages/CSerializer64.h>
 #include <CGlobal.h>
@@ -27,14 +29,12 @@ namespace dustbin {
       m_pAiNode    (a_pAiNode),
       m_pLuaScript (nullptr)
     {
-      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sControls.c_str());
+      controller::CControllerGame *l_pController = nullptr;
+      
+      l_pController = new controller::CControllerGame();
+      l_pController->deserialize(a_sControls);
 
-      std::string l_sHead = l_cSerializer.getString();
-
-      if (l_sHead == "DustbinController") {
-        m_pController = new controller::CControllerGame();
-        m_pController->deserialize(a_sControls);
-      }
+      m_pController = l_pController;
 
       if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
         irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
@@ -218,7 +218,7 @@ namespace dustbin {
     */
     void CMarbleController::update(const irr::SEvent& a_cEvent) {
       if (m_pController != nullptr)
-        m_pController->update(a_cEvent);
+        m_pController->updateControls(a_cEvent);
     }
 
     void CMarbleController::onMarbleMoved(int a_iMarbleId, const irr::core::vector3df &a_cNewPos, const irr::core::vector3df &a_cVelocity, const irr::core::vector3df &a_cCameraPos, const irr::core::vector3df &a_cCameraUp, bool a_bHasContact) { 
