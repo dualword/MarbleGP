@@ -592,6 +592,13 @@ namespace dustbin {
             l_bFound = true;
           }
         }
+        else if (l_pHover->getType() == gui::g_ImageListId) {
+          gui::CGuiImageList *l_pImg = static_cast<gui::CGuiImageList *>(l_pHover);
+          if (l_pImg->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption)) {
+            m_cMousePos = l_cOption;
+            l_bFound = true;
+          }
+        }
       }
 
       irr::gui::IGUIElement *p = findBestOption(a_eDirection);
@@ -601,6 +608,13 @@ namespace dustbin {
           if (p->getType() == gui::g_ControllerUiGameId || p->getType() == gui::g_ControllerUiMenuId) {
             gui::CControllerUi *l_pCtrl = static_cast<gui::CControllerUi *>(p);
             if (l_pCtrl->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
+              m_cMousePos = l_cOption;
+            else
+              m_cMousePos = p->getAbsoluteClippingRect().getCenter();
+          }
+          else if (l_pHover->getType() == gui::g_ImageListId) {
+            gui::CGuiImageList *l_pImg = static_cast<gui::CGuiImageList *>(l_pHover);
+            if (l_pImg->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
               m_cMousePos = l_cOption;
             else
               m_cMousePos = p->getAbsoluteClippingRect().getCenter();

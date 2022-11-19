@@ -516,76 +516,84 @@ namespace dustbin {
             l_bRet = true;
           }
         }
-        else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
-          if (m_cImages.isPointInside(m_cMouse)) {
-            if (a_cEvent.UserEvent.UserData2 == 2) {
-              selectPrevImage();
-              l_bRet = true;
-            }
-            else if (a_cEvent.UserEvent.UserData2 == 3) {
-              selectNextImage();
-              l_bRet = true;
-            }
-            else if (a_cEvent.UserEvent.UserData2 == 0) {
-              if (m_bCategories) {
-                irr::SEvent l_cEvent{};
-
-                l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-                l_cEvent.MouseInput.Event   = irr::EMIE_MOUSE_MOVED;
-                l_cEvent.MouseInput.X       = m_cCategoryOuter.getCenter().X;
-                l_cEvent.MouseInput.Y       = m_cCategoryOuter.getCenter().Y;
-                l_cEvent.MouseInput.Control = false;
-                l_cEvent.MouseInput.Shift   = false;
-                l_cEvent.MouseInput.Wheel   = 0;
-
-                CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
-
-                if (m_pCursor != nullptr) {
-                  m_pCursor->setPosition(m_cCategoryOuter.getCenter());
-                }
-
-                l_bRet = true;
-              }
-            }
-          }
-          else if (m_bCategories) {
-            if (m_cCategoryOuter.isPointInside(m_cMouse)) {
-              if (a_cEvent.UserEvent.UserData2 == 2) {
-                selectPrevCategory();
-                l_bRet = true;
-              }
-              else if (a_cEvent.UserEvent.UserData2 == 3) {
-                selectNextCategory();
-                l_bRet = true;
-              }
-              else if (a_cEvent.UserEvent.UserData2 == 1) {
-                irr::SEvent l_cEvent{};
-
-                l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-                l_cEvent.MouseInput.Event   = irr::EMIE_MOUSE_MOVED;
-                l_cEvent.MouseInput.X       = m_cImages.getCenter().X;
-                l_cEvent.MouseInput.Y       = m_cImages.getCenter().Y;
-                l_cEvent.MouseInput.Control = false;
-                l_cEvent.MouseInput.Shift   = false;
-                l_cEvent.MouseInput.Wheel   = 0;
-
-                CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
-
-                if (m_pCursor != nullptr) {
-                  m_pCursor->setPosition(m_cImages.getCenter());
-                }
-
-                l_bRet = true;
-              }
-            }
-          }
-        }
       }
 
       if (!l_bRet)
         l_bRet = IGUIElement::OnEvent(a_cEvent);
 
       return l_bRet;
+    }
+
+    /**
+    * Get a position to move to depending on the direction and the given mouse position
+    * @param a_cMousePos the mouse position
+    * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
+    * @param a_cOut the position to move to
+    * @return true if a position was found, false otherwise
+    */
+    bool CGuiImageList::getMoveOption(const irr::core::position2di& a_cMousePos, int a_iDirection, irr::core::position2di& a_cOut) {
+      switch (a_iDirection) {
+        case 0:
+          if (!m_bCategories) {
+            if (AbsoluteClippingRect.isPointInside(a_cMousePos))
+              return false;
+            else {
+              a_cOut = AbsoluteClippingRect.getCenter();
+              return true;
+            }
+          }
+          else {
+            if (m_cImages.getCenter().Y < a_cMousePos.Y) {
+              a_cOut = m_cImages.getCenter();
+              return true;
+            }
+            else if (m_cCategoryOuter.getCenter().Y < a_cMousePos.Y) {
+              a_cOut = m_cCategoryOuter.getCenter();
+              return true;
+            }
+            else return false;
+          }
+          break;
+
+        case 1:
+          if (!m_bCategories) {
+            if (AbsoluteClippingRect.isPointInside(a_cMousePos))
+              return false;
+            else {
+              a_cOut = AbsoluteClippingRect.getCenter();
+              return true;
+            }
+          }
+          else {
+            if (m_cImages.getCenter().Y > a_cMousePos.Y) {
+              a_cOut = m_cImages.getCenter();
+              return true;
+            }
+            else if (m_cCategoryOuter.getCenter().Y > a_cMousePos.Y) {
+              a_cOut = m_cCategoryOuter.getCenter();
+              return true;
+            }
+            else return false;
+          }
+          break;
+
+        case 2:
+        case 3:
+          if (m_cImages.isPointInside(a_cMousePos)) {
+            if (a_iDirection == 2) selectPrevImage(); else selectNextImage();
+            a_cOut = a_cMousePos;
+            return true;
+          }
+          else if (m_cCategoryOuter.isPointInside(a_cMousePos)) {
+            if (a_iDirection == 2) selectPrevCategory(); else selectNextCategory();
+            a_cOut = a_cMousePos;
+            return true;
+          }
+          else return false;
+          break;
+      }
+
+      return false;
     }
 
     void CGuiImageList::draw() {
