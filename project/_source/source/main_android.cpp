@@ -300,9 +300,9 @@ void android_main(struct android_app* a_pApp) {
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
 
     {
-      std::ofstream l_cFile(l_sPath);
-      l_cFile << l_pMainClass->getSettings();
-      l_cFile.close();
+      FILE *l_pFile = fopen(l_sPath.c_str(), "w");
+      fwrite(l_pMainClass->getSettings().c_str(), 1, l_pMainClass->getSettings().size(), l_pFile);
+      fclose(l_pFile);
     }
 
     l_pDevice->closeDevice();

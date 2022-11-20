@@ -3,6 +3,9 @@
 
 #include <controller/IControllerGame.h>
 #include <irrlicht.h>
+#include <string>
+#include <tuple>
+#include <map>
 
 namespace dustbin {
   namespace controller {
@@ -19,20 +22,69 @@ namespace dustbin {
     */
     class CControllerGame_Touch : public IControllerGame, public irr::gui::IGUIElement {
       private:
-        irr::f32 m_fSteer;    /**< The steering control */
-        irr::f32 m_fThrottle; /**< The throttle control */
+        enum class enControls {
+          Forward    = 0,
+          Backward   = 1,
+          Left       = 2,
+          Right      = 3,
+          Brake      = 4,
+          Rearview   = 5,
+          Respawn    = 6,
+          NoThrottle = 7,
+          NoSteer    = 8,
 
-        bool m_bBrake;    /**< The brake control */
-        bool m_bRear;     /**< The rearview control */
-        bool m_bRespawn;  /**< The respawn control */
-        bool m_bWithdraw; /**< The actual withdraw from race control. "withdrawFromRace()" just returns "true" once when the control is released. */
-        bool m_bPause;    /**< The actual pause control. "pause()" just returns "true" once when the control is released. */
+          Count      = 9
+        };
 
-        bool m_bWithdrawPressed;  /**< Is the "withdraw from race" button pressed? */
-        bool m_bPausePressed;     /**< Is the "pause" button pressed? */
+        typedef struct STouchInput {
+          irr::video::IVideoDriver *m_pDrv;   /**< The Irrlicht video driver */
+
+          irr::video::ITexture *m_pOff;       /**< The image shown if the control is not active */
+          irr::video::ITexture *m_pOn;        /**< The image shown if the control is active */
+
+          irr::core::recti m_cScreen;         /**< The rectangle on the screen to draw the texture */
+          irr::core::recti m_cTouch;          /**< The rectangle that can be touched for the control */
+          irr::core::recti m_cSourceOff;      /**< The source rectangle for the in-active image */
+          irr::core::recti m_cSourceOn;       /**< The source rectangle for the active image */
+
+          bool m_bActive;                     /**< Flag to indicate whether the control is active or not */
+
+          STouchInput();
+          STouchInput(const std::string &a_sPathOff, const std::string &a_sPathOn, const irr::core::recti &a_cScreen, irr::video::IVideoDriver *a_pDrv);
+
+          void draw(const irr::core::recti &a_cClip);
+        }
+        STouchInput;
+
+        struct STouchState {
+          int  m_iIndex;      /**< The touch index */
+
+          enControls m_eControl;  /**< Which control is it activating? */
+
+          STouchState();
+        };
+
+        irr::video::IVideoDriver *m_pDrv;       /**< The Irrlicht video driver */
+        irr::core::recti          m_cViewport;  /**< The viewport for clipping*/
+
+        STouchInput *m_aControls[(int)enControls::Count];   /**< Array with the controls */
+
+        STouchState m_aTouch[5];    /**< The touch states */
+
+        /**
+        * Create the throttle controls
+        * @param a_bLeft throttle controls on the left?
+        */
+        void createThrottleControls(bool a_bLeft);
+
+        /**
+        * Create the steering controls
+        * @param a_bLeft throttle controls on the left?
+        */
+        void createSteeringControls(bool a_bLeft);
 
       public:
-        CControllerGame_Touch(IControllerGame::enType a_eType);
+        CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport);
         virtual ~CControllerGame_Touch();
 
         /**

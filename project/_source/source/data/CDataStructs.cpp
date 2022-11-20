@@ -135,6 +135,7 @@ namespace dustbin {
       m_bFullscreen  (false),
       m_bGfxChange   (false),
       m_bMenuPad     (false),
+      m_bDebugAI     (false),
 #ifdef _ANDROID
       m_bUseMenuCtrl (true),
       m_bVirtualKeys (true),
@@ -142,7 +143,6 @@ namespace dustbin {
 #else
       m_bUseMenuCtrl (false),
       m_bVirtualKeys (false),
-      m_bDebugAI     (false),
       m_sController  ("")
 #endif
     {

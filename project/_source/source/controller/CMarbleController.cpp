@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
+#include <controller/CControllerGame_Touch.h>
 #include <_generated/messages/CMessages.h>
 #include <controller/CMarbleController.h>
 #include <_generated/lua/CLuaScript_ai.h>
@@ -30,10 +31,36 @@ namespace dustbin {
       m_pAiNode    (a_pAiNode),
       m_pLuaScript (nullptr)
     {
-      controller::CControllerGame *l_pController = nullptr;
+      controller::IControllerGame *l_pController = nullptr;
       
-      l_pController = new controller::CControllerGame();
-      l_pController->deserialize(a_sControls);
+      /*
+      std::string l_aCtrl[] = {
+      "DustbinController"     ,
+      "DustbinTouchSteerRight",
+      "DustbinTouchSteerLeft" ,
+      "DustbinTouchSteerOnly" ,
+      "DustbinGyroscope"      ,
+      ""                      
+      };
+      */
+
+      if (a_sControls.substr(0, std::string("DustbinTouchSteerRight").size()) == "DustbinTouchSteerRight") {
+        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchRight, a_cViewport);
+        m_bOwnsCtrl   = false;
+      }
+      else if (a_sControls.substr(0, std::string("DustbinTouchSteerLeft").size()) == "DustbinTouchSteerLeft") {
+        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchRight, a_cViewport);
+        m_bOwnsCtrl   = false;
+      }
+      else if (a_sControls.substr(0, std::string("DustbinTouchSteerOnly").size()) == "DustbinTouchSteerOnly") {
+        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchSteer, a_cViewport);
+        m_bOwnsCtrl   = false;
+      }
+      else {
+        controller::CControllerGame *p = new controller::CControllerGame();
+        p->deserialize(a_sControls);
+        l_pController = p;
+      }
 
       m_pController = l_pController;
 
@@ -150,7 +177,7 @@ namespace dustbin {
               }
               l_iCtrlY     = l_iBotY;
               l_bBrake     = l_bBrakeBot;
-              l_bRespawn   = l_bRspnBot;
+              l_bRespawn  |= l_bRspnBot;
               break;
 
             // Medium: The marble is controlled by the player unless in the modes "Jump" and "Off-Track"
@@ -165,7 +192,7 @@ namespace dustbin {
                 if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
               }
               l_bBrake     = l_bBrakeBot;
-              l_bRespawn   = l_bRspnBot;
+              l_bRespawn  |= l_bRspnBot;
               break;
 
             // Low: The marbles is controlled by the player, in mode "Jump" the velocity is adjusted by the AI,
@@ -182,7 +209,7 @@ namespace dustbin {
                 l_bBrake     = l_bBrakeBot;
                 a_bAutomatic = true;
               }
-              l_bRespawn   = l_bRspnBot;
+              l_bRespawn  |= l_bRspnBot;
               break;
 
             case data::SPlayerData::enAiHelp::Display:
