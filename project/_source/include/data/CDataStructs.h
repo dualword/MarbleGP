@@ -45,7 +45,6 @@ namespace dustbin {
       int m_iResolutionH;   /**< Selected window height */
       int m_iShadows;       /**< Shadow details */
       int m_iAmbient;       /**< Ambient light */
-      int m_iTouchControl;  /**< Which controller type to use (0 == Gamepad, 1 == Gyroscope, 2 == Steer Left, 3 == Steer Right, 4 == Controls Left, 5 == Controls Right; Android only) */
 
       float m_fSfxMaster;   /**< Sound master volume */
       float m_fSoundTrack;  /**< Sound track volume */

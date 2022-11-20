@@ -127,7 +127,6 @@ namespace dustbin {
       m_iResolutionH (1080), 
       m_iShadows     (2), 
       m_iAmbient     (2),
-      m_iTouchControl(0),
       m_fSfxMaster   (1.0f),
       m_fSoundTrack  (1.0f),
       m_fSfxMenu     (1.0f),
@@ -153,7 +152,6 @@ namespace dustbin {
       if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH  = std::atoi(a_mData.at("resolution_h").c_str());
       if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
       if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
-      if (a_mData.find("touchcontrol") != a_mData.end()) m_iTouchControl = std::atoi(a_mData.at("touchcontrol").c_str());
 
       if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen" ) == "true";
       if (a_mData.find("usemenuctrl" ) != a_mData.end()) m_bUseMenuCtrl  = a_mData.at("usemenuctrl") == "true";
@@ -184,7 +182,6 @@ namespace dustbin {
       a_mData["resolution_h"] = std::to_string(m_iResolutionH);
       a_mData["shadows"     ] = std::to_string(m_iShadows    );
       a_mData["ambient"     ] = std::to_string(m_iAmbient    );
-      a_mData["touchcontrol"] = std::to_string(m_iTouchControl);
 
       a_mData["fullscreen"  ] = m_bFullscreen   ? "true" : "false";
       a_mData["usemenuctrl" ] = m_bUseMenuCtrl  ? "true" : "false";
@@ -217,7 +214,6 @@ namespace dustbin {
       m_iResolutionH  = a_cOther.m_iResolutionH;
       m_iShadows      = a_cOther.m_iShadows;
       m_iAmbient      = a_cOther.m_iAmbient;
-      m_iTouchControl = a_cOther.m_iTouchControl;
       m_bFullscreen   = a_cOther.m_bFullscreen;
       m_fSfxMaster    = a_cOther.m_fSfxMaster;
       m_fSoundTrack   = a_cOther.m_fSoundTrack;

@@ -144,24 +144,6 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 0, 15, 20, 17"/>
-            <attributes>
-              <attribute key="Caption" value="Marble Controller:">
-              <attribute key="HTextAlign" value="lowerRight" />
-              <attribute key="VTextAlign" value="center" />
-            </attributes>
-          </element>
-          
-          <element type="Selector" rect="relative: 21, 15, 47, 17">
-            <attributes>
-              <attribute key="Name" value="touchcontrol" />
-              <attribute key="Selected" value="0" />
-            </attributes>
-            <custom>
-              <attribute key="options" value="Gamepad;Gyroscope;Touch: Steer Center;Touch: Steer Left, Throttle Right;Touch: Steer Right, Throttle Left;Touch: All Controls Center;Touch: All Controls Left;Touch: All Controls Right" />
-            </custom>
-          </element>
-          
           <element type="staticText" rect="relative: 26, 12, 35, 14" tooltip="Network Game">
             <attributes>
               <attribute key="Caption" value="Network Game:" />
