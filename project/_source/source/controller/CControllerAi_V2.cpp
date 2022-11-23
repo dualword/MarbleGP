@@ -3,6 +3,7 @@
 #include <controller/CControllerAi_V2.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CAiPathNode.h>
+#include <data/CDataStructs.h>
 #include <gui/CGameHUD.h>
 #include <CGlobal.h>
 #include <cmath>
@@ -546,465 +547,467 @@ namespace dustbin {
         // Update the current path section if necessary
         m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent, false);
 
-        irr::f32 l_fVel = m_cVelocity2d.getLength();
-        m_fVCalc = -1.0f;
+        if (m_pCurrent != nullptr) {
+          irr::f32 l_fVel = m_cVelocity2d.getLength();
+          m_fVCalc = -1.0f;
 
-        // transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
-        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
+          // transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
+          std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
 
-        SPathLine2d *l_pSpecial = nullptr;
+          SPathLine2d *l_pSpecial = nullptr;
 
-        if (m_pCurrent->m_pAiPath != nullptr) {
-          // Create a matrix to transform the ai data to 2d
-          irr::core::matrix4 l_cMatrix;
-          l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
+          if (m_pCurrent->m_pAiPath != nullptr) {
+            // Create a matrix to transform the ai data to 2d
+            irr::core::matrix4 l_cMatrix;
+            l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
 
-          std::vector<const data::SMarblePosition *> l_vMarbles;
-          for (int i = 0; i < 16; i++) {
-            if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId)
-              l_vMarbles.push_back(&m_aMarbles[i]);
-          }
+            std::vector<const data::SMarblePosition *> l_vMarbles;
+            for (int i = 0; i < 16; i++) {
+              if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId)
+                l_vMarbles.push_back(&m_aMarbles[i]);
+            }
 
-          // Transform the data
-          m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(
-            l_cMatrix, 
-            m_mSplitSelections[m_iPathSelection], 
-            m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0], 
-            l_vMarbles, 
-            l_vMarblePosVel,
-            m_pLuaScript
-          );
+            // Transform the data
+            m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(
+              l_cMatrix, 
+              m_mSplitSelections[m_iPathSelection], 
+              m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0], 
+              l_vMarbles, 
+              l_vMarblePosVel,
+              m_pLuaScript
+            );
 
-          // Transform our velocity to 2d
-          irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
-          l_cMatrix.transformVect(l_vDummy);
+            // Transform our velocity to 2d
+            irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
+            l_cMatrix.transformVect(l_vDummy);
 
-          m_iPathSelection = m_iPathSelection == 0 ? 1 : 0;
-          m_mSplitSelections[m_iPathSelection].clear();
+            m_iPathSelection = m_iPathSelection == 0 ? 1 : 0;
+            m_mSplitSelections[m_iPathSelection].clear();
 
-          m_cVelocity2d.X = l_vDummy.X;
-          m_cVelocity2d.Y = l_vDummy.Y;
+            m_cVelocity2d.X = l_vDummy.X;
+            m_cVelocity2d.Y = l_vDummy.Y;
 
-          // Search for special path segments , i.e. jumps or block
-          if (m_p2dPath->m_vNext.size() > 0)
-            l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
+            // Search for special path segments , i.e. jumps or block
+            if (m_p2dPath->m_vNext.size() > 0)
+              l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
 
-          if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
-            // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
-            // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
-            if (m_eMode != enMarbleMode::Respawn)
-              switchMarbleMode(enMarbleMode::OffTrack);
-          }
-          else {
+            if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
+              // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
+              // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
+              if (m_eMode != enMarbleMode::Respawn)
+                switchMarbleMode(enMarbleMode::OffTrack);
+            }
+            else {
+              if (l_pSpecial != nullptr) {
+                // We have found a jump
+                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                  // Now we check for the segment after the jump, to see if we need to switch to jump mode
+                  // we create two lines from our position to the borders of the end of the segment and see
+                  // if these lines do not cross any border (therefore the 0.1 * limitation) we are ready to jump
+                  irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
+                  irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
+
+                  l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
+                  l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
+
+                  // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
+                  if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
+                    switchMarbleMode(enMarbleMode::Jump);
+                  else 
+                    if (m_eMode == enMarbleMode::Jump)
+                      switchMarbleMode(enMarbleMode::Default);
+                }
+                else {
+                  // No jump ahead but still jumping? Switch to default
+                  if (m_eMode == enMarbleMode::Jump)
+                    switchMarbleMode(enMarbleMode::Default);
+                }
+            
+                // A blocker is ahead
+                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
+                  // First we check if we would reach the blocker within a second
+                  irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
+                  if (l_fDist < l_fVel) {
+                    // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
+                    if (m_pLuaScript != nullptr) {
+                      int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, l_pSpecial->m_pParent->m_pParent->m_iTag);
+
+                      // ... if so we set the veclcity to zero, overriding any other calculation
+                      if (!l_bBlock) {
+                        m_fVCalc = 0.0f;
+                      }
+                    }
+                  }
+                }
+              }
+              else {
+                // No jump ahead but still in jump mood? Switch to default
+                if (m_eMode == enMarbleMode::Jump)
+                  switchMarbleMode(enMarbleMode::Default);
+              }
+
+              // If we are still in off-track mood but have detected that we are
+              // back on track we switch the mode to "default"
+              if (m_eMode == enMarbleMode::OffTrack)
+                switchMarbleMode(enMarbleMode::Default);
+              else if (m_eMode != enMarbleMode::Jump) {
+                // if we are not currently jumping we use the ranking to see if we
+                // can switch the mode. To do: make this dependent of the class and marble
+
+                if (m_iMyPosition > 1) {
+                  // If we are in lead we just use our advantage on the next
+                  // marble to switch the ode
+                  if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead > 0) {
+                    if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 360)
+                      switchMarbleMode(enMarbleMode::TimeAttack);
+                    else if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 480)
+                      switchMarbleMode(enMarbleMode::Default);
+                    else
+                      switchMarbleMode(enMarbleMode::Cruise);
+                  }
+                }
+                else if (m_iMyPosition == 1) {
+                  // If we are not in lead we just look at the marble ahead
+                  if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead > 0) {
+                    if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 240)
+                      switchMarbleMode(enMarbleMode::TimeAttack);
+                    else if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 360)
+                      switchMarbleMode(enMarbleMode::Default);
+                    else
+                      switchMarbleMode(enMarbleMode::Cruise);
+                  }
+                }
+              }
+            }
+          }        
+
+          irr::s16 l_iCtrlX = 0;
+
+          if (m_pDebugRTT != nullptr) {
+            // If debugging is active we paint the two calculated lines the determine how we move
+            m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
             if (l_pSpecial != nullptr) {
-              // We have found a jump
               if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
-                // Now we check for the segment after the jump, to see if we need to switch to jump mode
-                // we create two lines from our position to the borders of the end of the segment and see
-                // if these lines do not cross any border (therefore the 0.1 * limitation) we are ready to jump
                 irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
                 irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
 
                 l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
                 l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
 
-                // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
-                if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
-                  switchMarbleMode(enMarbleMode::Jump);
-                else 
-                  if (m_eMode == enMarbleMode::Jump)
-                    switchMarbleMode(enMarbleMode::Default);
-              }
-              else {
-                // No jump ahead but still jumping? Switch to default
-                if (m_eMode == enMarbleMode::Jump)
-                  switchMarbleMode(enMarbleMode::Default);
-              }
-            
-              // A blocker is ahead
-              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
-                // First we check if we would reach the blocker within a second
-                irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
-                if (l_fDist < l_fVel) {
-                  // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
-                  if (m_pLuaScript != nullptr) {
-                    int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, l_pSpecial->m_pParent->m_pParent->m_iTag);
+                bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
+                bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
 
-                    // ... if so we set the veclcity to zero, overriding any other calculation
-                    if (!l_bBlock) {
-                      m_fVCalc = 0.0f;
-                    }
-                  }
+                draw2dDebugLine(m_pDrv, l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                draw2dDebugLine(m_pDrv, l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+              }
+            }
+          }
+
+          irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
+
+          if (m_p2dPath != nullptr) {
+            if (m_pDebugRTT != nullptr)
+              m_p2dPath->debugDraw(m_pDrv, m_cOffset, 2.0f);
+
+            irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
+
+            irr::f32 l_fFactor = (irr::core::line2df(m_p2dPath->m_cLines[0].end, l_cClosest).getLengthSQ() / m_p2dPath->m_cLines[0].getLengthSQ());
+
+            l_fFactor = std::max(0.15f, l_fFactor);
+
+            // Now we search for the possible ends of the path
+            std::vector<SPathLine2d *> l_vEnds;
+            findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
+
+            bool l_bIncoming = false;
+
+            // Here we calcualate all of the other marbles, their position and their velocity, to see if we need to evade an incoming marble
+            for (std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>>::iterator l_itOthers = l_vMarblePosVel.begin(); l_itOthers != l_vMarblePosVel.end(); l_itOthers++) {
+              irr::core::vector3df l_cPos = std::get<0>(*l_itOthers);
+              irr::core::vector3df l_cVel = std::get<1>(*l_itOthers);
+
+              irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
+              irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
+
+              if (l_cPos2d.Y < 0.0f && l_cVel2d.Y > 0.0f && (l_cVel2d.X - l_cPos2d.X > 0) != l_cPos.X > 0) {
+                irr::core::line2df l_cVelLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
+
+                irr::core::vector2df l_cDist = l_cVelLine.getClosestPoint(l_cPos2d) - l_cPos2d;
+
+                if (l_cDist.getLengthSQ() < l_fVel * l_fVel) {
+                  l_bIncoming = true;
+                  break;
                 }
               }
-            }
-            else {
-              // No jump ahead but still in jump mood? Switch to default
-              if (m_eMode == enMarbleMode::Jump)
-                switchMarbleMode(enMarbleMode::Default);
+
+              if (m_pDebugRTT != nullptr) {
+                draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 15, m_fScale, m_cOffset);
+                draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+              }
             }
 
-            // If we are still in off-track mood but have detected that we are
-            // back on track we switch the mode to "default"
-            if (m_eMode == enMarbleMode::OffTrack)
+            if (l_bIncoming) {
+              // If an incoming marble was detected we switch to "evade" mode..
+              switchMarbleMode(enMarbleMode::Evade);
+            }
+            else if (m_eMode == enMarbleMode::Evade) {
+              // .. otherwise we turn the evade mode off if it's still active
               switchMarbleMode(enMarbleMode::Default);
-            else if (m_eMode != enMarbleMode::Jump) {
-              // if we are not currently jumping we use the ranking to see if we
-              // can switch the mode. To do: make this dependent of the class and marble
+            }
 
-              if (m_iMyPosition > 1) {
-                // If we are in lead we just use our advantage on the next
-                // marble to switch the ode
-                if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead > 0) {
-                  if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 360)
-                    switchMarbleMode(enMarbleMode::TimeAttack);
-                  else if (m_aRacePositions[m_iMyPosition - 1].m_iDeficitAhead < 480)
-                    switchMarbleMode(enMarbleMode::Default);
-                  else
-                    switchMarbleMode(enMarbleMode::Cruise);
+            int l_iLines = 0;
+
+            for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
+              irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
+              irr::core::line2df l_cOther;
+
+              // Now we calculate the control lines depending on the mode we are in
+              switch (m_eMode) {
+                case enMarbleMode::OffTrack: {
+                  // Off-track: get back on the track as fast as possible
+                  l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr, a_cPoint1, a_cPoint2);
+                  irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
+                  irr::f32 l_fDist = v.getDistanceFrom(l_cLine.start);
+                  if (l_fDist > 2.5f * m_p2dPath->m_fWidth)
+                    m_eMode = enMarbleMode::Respawn;
+                  break;
                 }
-              }
-              else if (m_iMyPosition == 1) {
-                // If we are not in lead we just look at the marble ahead
-                if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead > 0) {
-                  if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 240)
-                    switchMarbleMode(enMarbleMode::TimeAttack);
-                  else if (m_aRacePositions[m_iMyPosition].m_iDeficitAhead < 360)
-                    switchMarbleMode(enMarbleMode::Default);
-                  else
-                    switchMarbleMode(enMarbleMode::Cruise);
-                }
-              }
-            }
-          }
-        }        
-
-        irr::s16 l_iCtrlX = 0;
-
-        if (m_pDebugRTT != nullptr) {
-          // If debugging is active we paint the two calculated lines the determine how we move
-          m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
-          if (l_pSpecial != nullptr) {
-            if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
-              irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
-              irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
-
-              l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
-              l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
-
-              bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
-              bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
-
-              draw2dDebugLine(m_pDrv, l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
-              draw2dDebugLine(m_pDrv, l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
-            }
-          }
-        }
-
-        irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
-
-        if (m_p2dPath != nullptr) {
-          if (m_pDebugRTT != nullptr)
-            m_p2dPath->debugDraw(m_pDrv, m_cOffset, 2.0f);
-
-          irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
-
-          irr::f32 l_fFactor = (irr::core::line2df(m_p2dPath->m_cLines[0].end, l_cClosest).getLengthSQ() / m_p2dPath->m_cLines[0].getLengthSQ());
-
-          l_fFactor = std::max(0.15f, l_fFactor);
-
-          // Now we search for the possible ends of the path
-          std::vector<SPathLine2d *> l_vEnds;
-          findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
-
-          bool l_bIncoming = false;
-
-          // Here we calcualate all of the other marbles, their position and their velocity, to see if we need to evade an incoming marble
-          for (std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>>::iterator l_itOthers = l_vMarblePosVel.begin(); l_itOthers != l_vMarblePosVel.end(); l_itOthers++) {
-            irr::core::vector3df l_cPos = std::get<0>(*l_itOthers);
-            irr::core::vector3df l_cVel = std::get<1>(*l_itOthers);
-
-            irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
-            irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
-
-            if (l_cPos2d.Y < 0.0f && l_cVel2d.Y > 0.0f && (l_cVel2d.X - l_cPos2d.X > 0) != l_cPos.X > 0) {
-              irr::core::line2df l_cVelLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
-
-              irr::core::vector2df l_cDist = l_cVelLine.getClosestPoint(l_cPos2d) - l_cPos2d;
-
-              if (l_cDist.getLengthSQ() < l_fVel * l_fVel) {
-                l_bIncoming = true;
-                break;
-              }
-            }
-
-            if (m_pDebugRTT != nullptr) {
-              draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 15, m_fScale, m_cOffset);
-              draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
-            }
-          }
-
-          if (l_bIncoming) {
-            // If an incoming marble was detected we switch to "evade" mode..
-            switchMarbleMode(enMarbleMode::Evade);
-          }
-          else if (m_eMode == enMarbleMode::Evade) {
-            // .. otherwise we turn the evade mode off if it's still active
-            switchMarbleMode(enMarbleMode::Default);
-          }
-
-          int l_iLines = 0;
-
-          for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-            irr::core::line2df l_cLine  = irr::core::line2df(irr::core::vector2df(), irr::core::vector2df());
-            irr::core::line2df l_cOther;
-
-            // Now we calculate the control lines depending on the mode we are in
-            switch (m_eMode) {
-              case enMarbleMode::OffTrack: {
-                // Off-track: get back on the track as fast as possible
-                l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr, a_cPoint1, a_cPoint2);
-                irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
-                irr::f32 l_fDist = v.getDistanceFrom(l_cLine.start);
-                if (l_fDist > 2.5f * m_p2dPath->m_fWidth)
-                  m_eMode = enMarbleMode::Respawn;
-                break;
-              }
                 
-              case enMarbleMode::Default:
-                l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
-                break;
+                case enMarbleMode::Default:
+                  l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  break;
 
-              case enMarbleMode::Cruise:
-                l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
-                break;
+                case enMarbleMode::Cruise:
+                  l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  break;
 
-              case enMarbleMode::TimeAttack:
-                l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
-                break;
+                case enMarbleMode::TimeAttack:
+                  l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  break;
 
-              case enMarbleMode::Evade:
-                l_iLines = getControlLines_Evade(l_cLine, l_cOther, *l_itEnd, 2.0f * l_fVel, a_cPoint1, a_cPoint2);
-                break;
+                case enMarbleMode::Evade:
+                  l_iLines = getControlLines_Evade(l_cLine, l_cOther, *l_itEnd, 2.0f * l_fVel, a_cPoint1, a_cPoint2);
+                  break;
 
-              case enMarbleMode::Jump: {
-                // In jump mode we just use the direction the jump is pointing
-                // to and use that together with the (possibly) defined speed for controls
-                l_iLines = 2;
-                l_cLine.start = irr::core::vector2df();
+                case enMarbleMode::Jump: {
+                  // In jump mode we just use the direction the jump is pointing
+                  // to and use that together with the (possibly) defined speed for controls
+                  l_iLines = 2;
+                  l_cLine.start = irr::core::vector2df();
                 
-                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
-                  irr::core::vector2df l_cDirection = l_pSpecial->m_cLines[0].end - l_pSpecial->m_cLines[0].start;
-                  l_cDirection = l_cDirection.normalize();
+                  if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                    irr::core::vector2df l_cDirection = l_pSpecial->m_cLines[0].end - l_pSpecial->m_cLines[0].start;
+                    l_cDirection = l_cDirection.normalize();
 
-                  irr::f32 l_fMin = l_pSpecial->m_pParent->m_pParent->m_fMinVel;
-                  irr::f32 l_fMax = l_pSpecial->m_pParent->m_pParent->m_fMaxVel;
+                    irr::f32 l_fMin = l_pSpecial->m_pParent->m_pParent->m_fMinVel;
+                    irr::f32 l_fMax = l_pSpecial->m_pParent->m_pParent->m_fMaxVel;
 
-                  if (l_fMin <= 0.0f) l_fMin = l_fVel;
-                  if (l_fMax <= 0.0f) l_fMax = l_fVel * 1.25f;
+                    if (l_fMin <= 0.0f) l_fMin = l_fVel;
+                    if (l_fMax <= 0.0f) l_fMax = l_fVel * 1.25f;
 
-                  l_cLine .end   = l_fMin * l_cDirection;
-                  l_cOther.start = l_cLine.end;
-                  l_cOther.end   = l_cOther.start + l_fMax * l_cDirection;
+                    l_cLine .end   = l_fMin * l_cDirection;
+                    l_cOther.start = l_cLine.end;
+                    l_cOther.end   = l_cOther.start + l_fMax * l_cDirection;
 
-                  irr::core::line2df l_cJumpLine = irr::core::line2df(l_pSpecial->m_cLines[1].start, l_pSpecial->m_cLines[2].start);
+                    irr::core::line2df l_cJumpLine = irr::core::line2df(l_pSpecial->m_cLines[1].start, l_pSpecial->m_cLines[2].start);
 
-                  irr::core::vector2df v;
+                    irr::core::vector2df v;
 
-                  // To do: some randomness and skill for the speed we are going to use
-                  if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v)) {
-                    m_fVCalc = l_fMax;
-                    if (m_pDebugRTT != nullptr) {
-                      draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
+                    // To do: some randomness and skill for the speed we are going to use
+                    if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v)) {
+                      m_fVCalc = l_fMax;
+                      if (m_pDebugRTT != nullptr) {
+                        draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
+                      }
                     }
-                  }
-                  else {
-                    if (m_pDebugRTT != nullptr) {
-                      draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                    else {
+                      if (m_pDebugRTT != nullptr) {
+                        draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                      }
                     }
+
+                    break;
                   }
 
                   break;
                 }
 
-                break;
+                case enMarbleMode::Respawn:
+                  // If we are in respawn mode we
+                  // just set the "respawn" flag to true
+                  a_bRespawn = true;
+                  break;
               }
-
-              case enMarbleMode::Respawn:
-                // If we are in respawn mode we
-                // just set the "respawn" flag to true
-                a_bRespawn = true;
-                break;
-            }
               
 
-            if (m_pDebugRTT != nullptr)
-              draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
+              if (m_pDebugRTT != nullptr)
+                draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
 
-            if (l_iLines > 1 && m_pDebugRTT != nullptr)
-              draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+              if (l_iLines > 1 && m_pDebugRTT != nullptr)
+                draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
 
-            if (l_fVel > 5.0f) {
-              // A reasonable speed has been calculated or we are in jump mode
-              irr::f32 l_fCtrlLen = l_cLine.getLength();
+              if (l_fVel > 5.0f) {
+                // A reasonable speed has been calculated or we are in jump mode
+                irr::f32 l_fCtrlLen = l_cLine.getLength();
 
-              // Get the angle between the veclocity and the first control line,
-              // use the angle to calculate a factor between 0.15 (angle == 90) and 1.15 (angle == 0)
-              // to do: maybe change the "0.15" depending on the AI class and marble
-              irr::f64 l_fAngle1 = l_cVelocityLine.getAngleWith(l_cLine);
-              irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
+                // Get the angle between the veclocity and the first control line,
+                // use the angle to calculate a factor between 0.15 (angle == 90) and 1.15 (angle == 0)
+                // to do: maybe change the "0.15" depending on the AI class and marble
+                irr::f64 l_fAngle1 = l_cVelocityLine.getAngleWith(l_cLine);
+                irr::f64 l_fFactor = 1.0 - ((l_fAngle1) / 90.0) + 0.15;
 
-              // Calculate a point in the calculated distance on the first line
-              irr::core::vector2df l_cPoint1 = (l_cLine.end - l_cLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
+                // Calculate a point in the calculated distance on the first line
+                irr::core::vector2df l_cPoint1 = (l_cLine.end - l_cLine.start).normalize() * l_fVel * (irr::f32)l_fFactor;
 
-              irr::f64 l_fAngle2  = l_cLine.getAngleWith(l_cOther);
-              irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.15;
+                irr::f64 l_fAngle2  = l_cLine.getAngleWith(l_cOther);
+                irr::f64 l_fFactor2 = 1.0 - (l_fAngle2 / 90.0) + 0.15;
 
-              // If the calculated point is the end of the line we move the point
-              // by the remaining speed in the direction of the second control line
-              if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
-                l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
-              }
-
-              irr::f64 l_fAngle3 = l_cVelocityLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
-
-              l_fFactor = l_fAngle3 / 90.0;
-
-              if (m_fVCalc == -1.0f) {
-                // We only calculate the speed if it has not yet been set, i.e.
-                // we are not approaching a blocker
-                irr::f64 l_fSpeedFactor = (1.0 - l_fFactor);
-
-                // First we calculate a speed of up to 75, and ..
-                m_fVCalc = (irr::f32)(l_fSpeedFactor * l_fSpeedFactor * 75.0);
-
-                // .. if the speed factor is high enough we increase the speed
-                // to up to 160. To do: maybe the 0.85 can be marble-class dependent
-                if (l_fSpeedFactor > 0.85) {
-                  m_fVCalc += (irr::f32)(m_cAiData.m_fSpeedFactor1 * (l_fSpeedFactor / 0.85));
+                // If the calculated point is the end of the line we move the point
+                // by the remaining speed in the direction of the second control line
+                if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
+                  l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
                 }
 
-                // Now we calculate another possible speed using
-                // the second control line, same procedure as above
-                irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
-                irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * m_cAiData.m_fSpeedFactor2);
+                irr::f64 l_fAngle3 = l_cVelocityLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
 
-                if (l_fSpeedFact2 > 0.85) {
-                  l_fSpeed2 += m_cAiData.m_fSpeedFactor2 * (l_fSpeedFact2 / 0.85);
-                }
+                l_fFactor = l_fAngle3 / 90.0;
+
+                if (m_fVCalc == -1.0f) {
+                  // We only calculate the speed if it has not yet been set, i.e.
+                  // we are not approaching a blocker
+                  irr::f64 l_fSpeedFactor = (1.0 - l_fFactor);
+
+                  // First we calculate a speed of up to 75, and ..
+                  m_fVCalc = (irr::f32)(l_fSpeedFactor * l_fSpeedFactor * 75.0);
+
+                  // .. if the speed factor is high enough we increase the speed
+                  // to up to 160. To do: maybe the 0.85 can be marble-class dependent
+                  if (l_fSpeedFactor > 0.85) {
+                    m_fVCalc += (irr::f32)(m_cAiData.m_fSpeedFactor1 * (l_fSpeedFactor / 0.85));
+                  }
+
+                  // Now we calculate another possible speed using
+                  // the second control line, same procedure as above
+                  irr::f64 l_fSpeedFact2 = 1.0 - l_fFactor2;
+                  irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * m_cAiData.m_fSpeedFactor2);
+
+                  if (l_fSpeedFact2 > 0.85) {
+                    l_fSpeed2 += m_cAiData.m_fSpeedFactor2 * (l_fSpeedFact2 / 0.85);
+                  }
                 
-                // if we are fast enough we use this second
-                // calculated speed
-                if (l_fVel > m_cAiData.m_fSpeedThreshold * l_cLine.getLength()) {
-                  m_fVCalc = (irr::f32)l_fSpeed2;
+                  // if we are fast enough we use this second
+                  // calculated speed
+                  if (l_fVel > m_cAiData.m_fSpeedThreshold * l_cLine.getLength()) {
+                    m_fVCalc = (irr::f32)l_fSpeed2;
+                  }
                 }
-              }
 
-              if (m_fVCalc > l_fVel) {
-                // if the calculated speed is greater than
-                // our current speed we accelerate ..
-                a_iCtrlY = 127;
+                if (m_fVCalc > l_fVel) {
+                  // if the calculated speed is greater than
+                  // our current speed we accelerate ..
+                  a_iCtrlY = 127;
+                }
+                else {
+                  // .. otherwise we decelerate and if the
+                  // wanted speed is either 5.0 below the
+                  // current speed or the wanted speed is
+                  // zero we activate the brake
+                  a_iCtrlY = -127;
+                  a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f || m_fVCalc == 0.0f;
+                }
+
+                irr::core::vector2df l_cPos = irr::core::vector2df();
+
+                // If the factor and the angle calculated above to get the actual steering. If the current angle is small (2.5) and the velocity line is not on the same
+                // side as the end of the second control line we do not steer to avoind chattering
+                l_iCtrlX = (std::abs(l_fAngle3) > 2.5 || (l_cOther.end.X > 0.0f != m_cVelocity2d.X > 0.0f)) ? l_fFactor > 0.05 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25)) : 0;
+
+                // Not determine if we need to steer left or right
+                if (l_cPoint1.X < 0.0f)
+                  l_iCtrlX = -l_iCtrlX;
+
+                // Again do something agains chattering by using the
+                // angular velocity to see if we can stop steering
+                if (m_fOldAngle != 0.0) {
+                  irr::f64 l_fTurnSpeed = m_fOldAngle - l_fAngle3;
+                  if (l_fAngle3 - 3.0 * l_fTurnSpeed < 0.0)
+                    l_iCtrlX = 0;
+                }
+
+                // Fill the parameter for steering input
+                a_iCtrlX = (irr::s8)(std::max((irr::s16)-127, std::min((irr::s16)127, l_iCtrlX)));
+
+                if (m_eMode == enMarbleMode::Jump) {
+                  // We limit our steering amount if we are currently jumping
+                  if (!m_aMarbles[m_iIndex].m_bContact) {
+                    if (doesLineCollide(l_cVelocityLine, m_p2dPath)) {
+                      a_iCtrlX = a_iCtrlX > 64 ? 64 : a_iCtrlX < -64 ? -64 : a_iCtrlX;
+                    }
+                    else {
+                      a_iCtrlX = 0;
+                    }
+                  }
+                }
+
+                // If we are going the wrong direction
+                // we do full acceleration back
+                if (l_cPoint1.Y > 0.0)
+                  a_iCtrlY = -127;
+
+                m_fOldAngle = l_fAngle3;
+              }
+              else if (m_fVCalc == 0.0f) {
+                // We are approaching a blocker?
+                // just stop
+                a_iCtrlY = 0;
+                a_bBrake = true;
               }
               else {
-                // .. otherwise we decelerate and if the
-                // wanted speed is either 5.0 below the
-                // current speed or the wanted speed is
-                // zero we activate the brake
-                a_iCtrlY = -127;
-                a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f || m_fVCalc == 0.0f;
+                // If we have a low
+                // speed we do some
+                // acceleration
+                a_iCtrlY = 127;
               }
-
-              irr::core::vector2df l_cPos = irr::core::vector2df();
-
-              // If the factor and the angle calculated above to get the actual steering. If the current angle is small (2.5) and the velocity line is not on the same
-              // side as the end of the second control line we do not steer to avoind chattering
-              l_iCtrlX = (std::abs(l_fAngle3) > 2.5 || (l_cOther.end.X > 0.0f != m_cVelocity2d.X > 0.0f)) ? l_fFactor > 0.05 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25)) : 0;
-
-              // Not determine if we need to steer left or right
-              if (l_cPoint1.X < 0.0f)
-                l_iCtrlX = -l_iCtrlX;
-
-              // Again do something agains chattering by using the
-              // angular velocity to see if we can stop steering
-              if (m_fOldAngle != 0.0) {
-                irr::f64 l_fTurnSpeed = m_fOldAngle - l_fAngle3;
-                if (l_fAngle3 - 3.0 * l_fTurnSpeed < 0.0)
-                  l_iCtrlX = 0;
-              }
-
-              // Fill the parameter for steering input
-              a_iCtrlX = (irr::s8)(std::max((irr::s16)-127, std::min((irr::s16)127, l_iCtrlX)));
-
-              if (m_eMode == enMarbleMode::Jump) {
-                // We limit our steering amount if we are currently jumping
-                if (!m_aMarbles[m_iIndex].m_bContact) {
-                  if (doesLineCollide(l_cVelocityLine, m_p2dPath)) {
-                    a_iCtrlX = a_iCtrlX > 64 ? 64 : a_iCtrlX < -64 ? -64 : a_iCtrlX;
-                  }
-                  else {
-                    a_iCtrlX = 0;
-                  }
-                }
-              }
-
-              // If we are going the wrong direction
-              // we do full acceleration back
-              if (l_cPoint1.Y > 0.0)
-                a_iCtrlY = -127;
-
-              m_fOldAngle = l_fAngle3;
-            }
-            else if (m_fVCalc == 0.0f) {
-              // We are approaching a blocker?
-              // just stop
-              a_iCtrlY = 0;
-              a_bBrake = true;
-            }
-            else {
-              // If we have a low
-              // speed we do some
-              // acceleration
-              a_iCtrlY = 127;
             }
           }
-        }
 
-        if (m_pDebugRTT != nullptr) {
-          draw2dDebugLine(m_pDrv, l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
-          draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 10, m_fScale, m_cOffset);
+          if (m_pDebugRTT != nullptr) {
+            draw2dDebugLine(m_pDrv, l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
+            draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 10, m_fScale, m_cOffset);
 
-          std::wstring s; 
+            std::wstring s; 
 
-          switch (m_eMode) {
-            case enMarbleMode::OffTrack:
-              s = L"Ai Mode: Off Track";
-              break;
+            switch (m_eMode) {
+              case enMarbleMode::OffTrack:
+                s = L"Ai Mode: Off Track";
+                break;
 
-            case enMarbleMode::Default:
-              s = L"Ai Mode: Default";
-              break;
+              case enMarbleMode::Default:
+                s = L"Ai Mode: Default";
+                break;
 
-            case enMarbleMode::Cruise:
-              s = L"Ai Mode: Cruise";
-              break;
+              case enMarbleMode::Cruise:
+                s = L"Ai Mode: Cruise";
+                break;
 
-            case enMarbleMode::TimeAttack:
-              s = L"Ai Mode: Time Attack";
-              break;
+              case enMarbleMode::TimeAttack:
+                s = L"Ai Mode: Time Attack";
+                break;
               
-            case enMarbleMode::Evade:
-              s = L"Ai Mode: Evade";
-              break;
+              case enMarbleMode::Evade:
+                s = L"Ai Mode: Evade";
+                break;
 
-            case enMarbleMode::Jump:
-              s = L"Ai Mode: Jump";
-              break;
+              case enMarbleMode::Jump:
+                s = L"Ai Mode: Jump";
+                break;
 
-            case enMarbleMode::Respawn:
-              s = L"Ai Mode: Respawn";
-              break;
+              case enMarbleMode::Respawn:
+                s = L"Ai Mode: Respawn";
+                break;
+            }
+            draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df());
           }
-          draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df());
         }
       }
 
