@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <map>
 
 namespace dustbin {
   namespace gui {
@@ -29,9 +30,9 @@ namespace dustbin {
         * This data structure holds all data necessary for the image selection
         */
         struct SListImage {
-          std::string m_sPath;    /**< The path of the image */
-          std::string m_sName;    /**< The displayed name of the image */
-          std::string m_sData;    /**< Some data that can be used to identify the selected image */
+          std::string m_sPath;      /**< The path of the image */
+          std::string m_sName;      /**< The displayed name of the image */
+          std::string m_sData;      /**< Some data that can be used to identify the selected image */
 
           std::wstring m_sCategory; /**< Category for tracks */
 
@@ -39,13 +40,23 @@ namespace dustbin {
 
           irr::core::recti m_cDrawRect;   /**< The screen rect the texture is drawn to */
 
-          SListImage(const std::string a_sPath, const std::string a_sName, const std::string a_sData) : m_sPath(a_sPath), m_sName(a_sName), m_sData(a_sData), m_sCategory(L""), m_pImage(nullptr) {
+          int m_iRanking;   /**< Ranking value */
+
+          SListImage(const std::string &a_sPath, const std::string &a_sName, const std::string &a_sData, int a_iRank) : m_sPath(a_sPath), m_sName(a_sName), m_sData(a_sData), m_sCategory(L""), m_pImage(nullptr), m_iRanking(a_iRank) {
           }
 
-          SListImage() : m_sPath(""), m_sName(""), m_sData(""), m_sCategory(L""), m_pImage(nullptr) {
+          SListImage() : m_sPath(""), m_sName(""), m_sData(""), m_sCategory(L""), m_pImage(nullptr), m_iRanking(-1) {
           }
 
-          SListImage(const SListImage& a_cOther) : m_sPath(a_cOther.m_sPath), m_sName(a_cOther.m_sName), m_sData(a_cOther.m_sData), m_sCategory(a_cOther.m_sCategory), m_pImage(a_cOther.m_pImage), m_cDrawRect(a_cOther.m_cDrawRect) {
+          SListImage(const SListImage& a_cOther) : 
+            m_sPath    (a_cOther.m_sPath), 
+            m_sName    (a_cOther.m_sName), 
+            m_sData    (a_cOther.m_sData), 
+            m_sCategory(a_cOther.m_sCategory), 
+            m_pImage   (a_cOther.m_pImage), 
+            m_cDrawRect(a_cOther.m_cDrawRect), 
+            m_iRanking (a_cOther.m_iRanking)
+          {
           }
 
           irr::video::ITexture *getImage();
@@ -107,6 +118,8 @@ namespace dustbin {
         CButtonRenderer m_cBtnRenderer;
 
         std::wstring m_sCategory;   /**< The currently selected category */
+
+        std::map<std::string, int> m_mCategoryRanking;    /**< Category ranking */
         
         std::vector<std::tuple<std::wstring, irr::core::recti>> m_vCategories;    /**< Categories of the items */
 
@@ -132,7 +145,7 @@ namespace dustbin {
         * Set the list of images
         * @param a_vImages the list of images
         */
-        void setImageList(const std::vector<CGuiImageList::SListImage> a_vImages);
+        void setImageList(std::vector<CGuiImageList::SListImage> &a_vImages);
 
         /**
         * Get the "name" property of the selected image
@@ -169,6 +182,12 @@ namespace dustbin {
         * @param a_cImageSrc a rect<f32> with values 0..1
         */
         void setImageSourceRect(const irr::core::rectf a_cImageSrc);
+
+        /**
+        * Set the category ranking
+        * @param a_mRanking the category ranking (key == name of the category, lowercase, value == rank)
+        */
+        void setCategoryRanking(std::map<std::string, int> &a_mRanking);
 
         /**
         * Get a position to move to depending on the direction and the given mouse position

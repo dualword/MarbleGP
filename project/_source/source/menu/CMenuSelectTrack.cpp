@@ -107,42 +107,19 @@ namespace dustbin {
 
         void updateTrackFilter() {
           std::map<std::string, int> l_mCategoryScore = {
-            { "flat"   , 0 },
-            { "jump"   , 1 },
-            { "loop"   , 2 },
-            { "complex", 3 },
-            { "moving" , 4 }
+            { "noob"   , 0 },
+            { "flat"   , 1 },
+            { "jump"   , 2 },
+            { "loop"   , 3 },
+            { "complex", 4 },
+            { "moving" , 5 }
           };
-
-          std::sort(m_vTracks.begin(), m_vTracks.end(), [=](std::tuple<int, std::string, std::string> e1, std::tuple<int, std::string, std::string> e2) {
-            std::string l_sCategory1 = std::get<2>(e1);
-            std::string l_sCategory2 = std::get<2>(e2);
-
-            std::transform(l_sCategory1.begin(), l_sCategory1.end(), l_sCategory1.begin(), [](wchar_t c){ return std::tolower(c); });
-            std::transform(l_sCategory2.begin(), l_sCategory2.end(), l_sCategory2.begin(), [](wchar_t c){ return std::tolower(c); });
-
-            if (l_sCategory1.find_first_of(':') != std::string::npos) l_sCategory1 = l_sCategory1.substr(0, l_sCategory1.find_first_of(':'));
-            if (l_sCategory2.find_first_of(':') != std::string::npos) l_sCategory2 = l_sCategory2.substr(0, l_sCategory2.find_first_of(':'));
-
-            if (l_sCategory1 != l_sCategory2) {
-              bool b1 = l_mCategoryScore.find(l_sCategory1) != l_mCategoryScore.end();
-              bool b2 = l_mCategoryScore.find(l_sCategory2) != l_mCategoryScore.end();
-
-              if (b1 && b2)
-                return l_mCategoryScore.find(l_sCategory1)->second < l_mCategoryScore.find(l_sCategory2)->second;
-              else if (b1)
-                return true;
-              else if (b2)
-                return false;
-              else
-                return l_sCategory1 < l_sCategory2;
-            }
-            else return std::get<0>(e1) < std::get<0>(e2);
-          });
 
           m_itStart = m_vTracks.begin();
 
           if (m_pTrackList != nullptr) {
+            m_pTrackList->setCategoryRanking(l_mCategoryScore);
+
             std::vector<gui::CGuiImageList::SListImage> l_vTracks;
 
             for (std::vector<std::tuple<int, std::string, std::string>>::iterator it = m_vTracks.begin(); it != m_vTracks.end(); it++) {
@@ -154,7 +131,8 @@ namespace dustbin {
               l_vTracks.push_back(gui::CGuiImageList::SListImage(
                 l_sPath,
                 std::get<2>(*it),
-                std::get<1>(*it)
+                std::get<1>(*it),
+                std::get<0>(*it)
               ));
             }
 

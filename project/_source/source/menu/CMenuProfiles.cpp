@@ -300,7 +300,7 @@ namespace dustbin {
                       std::string l_sPath = "data/patterns/" + l_sPattern;
 
                       if (m_pFs->existFile(l_sPath.c_str())) {
-                        l_vPatterns.push_back(gui::CGuiImageList::SListImage(l_sPath, l_sPattern, l_sPattern));
+                        l_vPatterns.push_back(gui::CGuiImageList::SListImage(l_sPath, l_sPattern, l_sPattern, -1));
                       }
                     }
                   }

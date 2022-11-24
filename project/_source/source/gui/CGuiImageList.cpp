@@ -149,8 +149,41 @@ namespace dustbin {
     * Set the list of images
     * @param a_vImages the list of images
     */
-    void CGuiImageList::setImageList(const std::vector<CGuiImageList::SListImage> a_vImages) {
+    void CGuiImageList::setImageList(std::vector<CGuiImageList::SListImage> &a_vImages) {
       std::string l_sSelected = m_itSelected != m_vImages.end() ? (*m_itSelected).m_sData : "";
+
+      if (m_bCategories && m_mCategoryRanking.size() > 0) {
+        std::sort(a_vImages.begin(), a_vImages.end(), [=](const SListImage &a_cImg1, const SListImage &a_cImg2) {
+          std::string l_sCategory1 = a_cImg1.m_sName;
+          std::string l_sCategory2 = a_cImg2.m_sName;
+
+          std::transform(l_sCategory1.begin(), l_sCategory1.end(), l_sCategory1.begin(), [](wchar_t c){ return std::tolower(c); });
+          std::transform(l_sCategory2.begin(), l_sCategory2.end(), l_sCategory2.begin(), [](wchar_t c){ return std::tolower(c); });
+
+          if (l_sCategory1.find_first_of(':') != std::string::npos) l_sCategory1 = l_sCategory1.substr(0, l_sCategory1.find_first_of(':'));
+          if (l_sCategory2.find_first_of(':') != std::string::npos) l_sCategory2 = l_sCategory2.substr(0, l_sCategory2.find_first_of(':'));
+
+          if (l_sCategory1 != l_sCategory2) {
+            bool b1 = m_mCategoryRanking.find(l_sCategory1) != m_mCategoryRanking.end();
+            bool b2 = m_mCategoryRanking.find(l_sCategory2) != m_mCategoryRanking.end();
+
+            if (b1 && b2)
+              return m_mCategoryRanking.find(l_sCategory1)->second < m_mCategoryRanking.find(l_sCategory2)->second;
+            else if (b1)
+              return true;
+            else if (b2)
+              return false;
+            else
+              return l_sCategory1 < l_sCategory2;
+          }
+          else {
+            if (a_cImg1.m_iRanking != a_cImg2.m_iRanking)
+              return a_cImg1.m_iRanking < a_cImg2.m_iRanking;
+            else
+              return a_cImg1.m_sName < a_cImg2.m_sName;
+          }
+        });
+      }
 
       m_vImages.clear();
 
@@ -177,7 +210,7 @@ namespace dustbin {
       }
 
       if (m_bCategories) {
-        std::sort(l_vCategories.begin(), l_vCategories.end(), [](const std::wstring& s1, const std::wstring& s2) {
+        std::sort(l_vCategories.begin(), l_vCategories.end(), [=](const std::wstring& s1, const std::wstring& s2) {
           std::wstring l1 = s1;
           std::transform(l1.begin(), l1.end(), l1.begin(),
             [](wchar_t c){ return std::tolower(c); });
@@ -186,7 +219,10 @@ namespace dustbin {
           std::transform(l2.begin(), l2.end(), l2.begin(),
             [](wchar_t c){ return std::tolower(c); });
 
-          return l1 < l2;
+          if (m_mCategoryRanking.find(helpers::ws2s(l1)) != m_mCategoryRanking.end() && m_mCategoryRanking.find(helpers::ws2s(l2)) != m_mCategoryRanking.end()) {
+            return m_mCategoryRanking[helpers::ws2s(l1)] < m_mCategoryRanking[helpers::ws2s(l2)];
+          }
+          else return l1 < l2;
         });
 
         irr::core::position2di l_cPos = m_cCategoryInner.UpperLeftCorner;
@@ -306,6 +342,14 @@ namespace dustbin {
     */
     void CGuiImageList::setImageSourceRect(const irr::core::rectf a_cImageSrc) {
       m_cImageSrc = a_cImageSrc;
+    }
+
+    /**
+    * Set the category ranking
+    * @param a_mRanking the category ranking (key == name of the category, lowercase, value == rank)
+    */
+    void CGuiImageList::setCategoryRanking(std::map<std::string, int>& a_mRanking) {
+      m_mCategoryRanking = a_mRanking;
     }
 
 
