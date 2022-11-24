@@ -40,6 +40,7 @@ namespace dustbin {
           FinishedIn  = 128,     /**< The fade in when the camera is switched to the rostrum */
           RaceEnd     = 256,     /**< Fade out at the end of the race */
           GamePaused  = 512,     /**< The game is paused */
+          Rostrum     = 1024,    /**< Rostrum shown and faded in */
 
           Count
         };
@@ -69,6 +70,12 @@ namespace dustbin {
         * @param a_bActivate true if the state needs to be activated, false otherwise
         */
         void setFadeFlag(enFade a_eFade, bool a_bActivate);
+
+        /**
+        * Get a fade flag
+        * @param a_eFade which fade do we want to know?
+        */
+        bool getFadeFlag(enFade a_eFade);
 
        /**
         * Tell the fade instance about a simulation step

@@ -74,6 +74,7 @@ namespace dustbin {
         bool                       m_bRespawn;      /**< Is the marble this HUD belongs to currently respawning? */
         bool                       m_bStunned;      /**< Is the marble this HUD belongs to currently stunned? */
         bool                       m_bFinished;     /**< Has the marble this HUD belongs to finished the race ? */
+        bool                       m_bRostrum;      /**< Is the rostrum shown and the fade-in finished? */
         bool                       m_bRanking;      /**< Show the ranking list */
         int                        m_iFadeStart;    /**< The step when countdown 1 was received (and fading the grid starts) */
         int                        m_iFinished;     /**< Finished position of the player */

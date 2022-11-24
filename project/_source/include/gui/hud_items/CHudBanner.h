@@ -21,6 +21,7 @@ namespace dustbin {
           Respawn,
           Stunned,
           Finished,
+          Laurel,
           Paused,
 
           Count

@@ -471,6 +471,7 @@ namespace dustbin {
       m_bRespawn      (false),
       m_bStunned      (false),
       m_bFinished     (false),
+      m_bRostrum      (false),
       m_bRanking      (true),
       m_iFadeStart    (-1),
       m_iFinished     (-1),
@@ -683,7 +684,17 @@ namespace dustbin {
 
       m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
       m_pSteering = new CHudSteering(m_pDrv, a_cRect);
-      m_pBanner   = new CHudBanner  (m_pDrv, m_pGui, l_pBig, l_pBig, a_cRect);
+      m_pBanner   = new CHudBanner  (m_pDrv, 
+        m_pGui,
+#ifdef _ANDROID
+        l_pRegular,
+        l_pBig,
+#else
+        l_pBig,
+        l_pHuge,
+#endif
+        a_cRect
+      );
       m_pLapTimes = new CHudLapTimes(m_pDrv, m_iMarble, irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y),
 #ifdef _ANDROID
         l_pTiny
@@ -744,8 +755,13 @@ namespace dustbin {
 #endif
         ;
 
-        if (m_pFade != nullptr)
+        if (m_pFade != nullptr) {
           m_pFade->render(CHudFade::enCall::Start);
+
+          if (m_pBanner != nullptr && m_bFinished && !m_bRostrum && m_pFade->getFadeFlag(CHudFade::enFade::Rostrum)) {
+            m_pBanner->setState(CHudBanner::enBanners::Laurel);
+          }
+        }
 
         irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
 

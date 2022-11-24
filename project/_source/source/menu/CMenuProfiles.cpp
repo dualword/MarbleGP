@@ -643,16 +643,19 @@ namespace dustbin {
         * @see m_aProfiles
         */
         void buttonControlsOkClicked() {
-          if (m_iEditing >= 0 && m_iEditing <= m_iMaxIndex && m_aProfiles[m_iEditing].isValid() && m_pControllerUI != nullptr) {
-            switch (m_pCtrlType->getSelected()) {
-              case 0: m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize(); break;
-              case 1: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerRight"    ; break;
-              case 2: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerLeft"     ; break;
-              case 3: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerOnly"     ; m_aProfiles[m_iEditing].m_cData.m_eAiHelp = data::SPlayerData::enAiHelp::High; break;
-              case 4: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinGyroscope"          ; break;
+          if (m_pCtrlType != nullptr) {
+            if (m_iEditing >= 0 && m_iEditing <= m_iMaxIndex && m_aProfiles[m_iEditing].isValid() && m_pControllerUI != nullptr) {
+              switch (m_pCtrlType->getSelected()) {
+                case 0: m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize(); break;
+                case 1: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerRight"    ; break;
+                case 2: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerLeft"     ; break;
+                case 3: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerOnly"     ; m_aProfiles[m_iEditing].m_cData.m_eAiHelp = data::SPlayerData::enAiHelp::High; break;
+                case 4: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinGyroscope"          ; break;
+              }
+              m_aProfiles[m_iEditing].fillUI();
             }
-            m_aProfiles[m_iEditing].fillUI();
           }
+          else m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize();
 
           if (m_pControlDialog != nullptr) {
             m_pControlDialog->setVisible(false);
@@ -1118,9 +1121,12 @@ namespace dustbin {
                           }
                         }
 
+                        l_iNum--;
+
                         m_aProfiles[i].m_pAddProfile->setVisible(false);
                         m_aProfiles[i].m_pDataRoot  ->setVisible(true);
                         m_aProfiles[i].m_pName      ->setText   (l_sName.c_str());
+                        m_aProfiles[i].m_pShort     ->setText   ((std::wstring(L"Plr#") + std::to_wstring(l_iNum)).c_str());
 
                         m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
                         m_aProfiles[i].m_cData.m_sName = helpers::ws2s(l_sName);

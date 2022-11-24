@@ -23,6 +23,7 @@ namespace dustbin {
       m_pBanners[(int)enBanners::Stunned       ] = m_pDrv->getTexture("data/images/text_stunned.png");
       m_pBanners[(int)enBanners::Respawn       ] = m_pDrv->getTexture("data/images/text_respawn.png");
       m_pBanners[(int)enBanners::Finished      ] = m_pDrv->getTexture("data/images/text_finished.png");
+      m_pBanners[(int)enBanners::Laurel        ] = m_pDrv->getTexture("data/images/text_finished.png");
       m_pBanners[(int)enBanners::Paused        ] = m_pDrv->getTexture("data/images/pause.png");
 
       
@@ -97,7 +98,7 @@ namespace dustbin {
         else m_pDrv->draw2DImage(m_pBanners[(int)m_eState], m_cRect, m_cSource, &a_cClip, nullptr, true);
       }
 
-      if (m_iFinished >= 0 && m_eState == enBanners::Finished) {
+      if (m_iFinished >= 0 && m_eState == enBanners::Laurel) {
         m_pDrv->draw2DImage(m_pLaurel[m_iFinished < 3 ? m_iFinished : 3], m_cLaurelLft, m_cLaurelSrc, nullptr, nullptr, true);
         m_pDrv->draw2DImage(m_pLaurel[m_iFinished < 3 ? m_iFinished : 3], m_cLaurelRgt, m_cLaurelSrc, nullptr, nullptr, true);
 
