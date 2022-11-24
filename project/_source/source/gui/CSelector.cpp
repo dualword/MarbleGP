@@ -19,6 +19,7 @@ namespace dustbin {
       m_bLeftBtn           (false),
       m_bSelected          (false),
       m_bInside            (false),
+      m_bOnText            (false),
       m_cBackgroundColor   (irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)),
       m_cHoverColor        (irr::video::SColor(0xff, 0x33, 0x67, 0xb8)),
       m_cClickColor        (irr::video::SColor(0xff, 0xec, 0xf1, 0x63)),
@@ -127,6 +128,8 @@ namespace dustbin {
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           m_bLeftBtn = false;
+          m_bOnText  = false;
+
           if (m_cBoxL.isPointInside(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y))) {
             if (m_iSelected > 0) {
               m_iSelected--;
@@ -152,10 +155,34 @@ namespace dustbin {
           m_bLeftBtn = true;
           if (m_bHoverL || m_bHoverR || m_bHoverT)
             CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
+
+          if (m_bHoverT) {
+            m_cTextDown = m_cMousePos;
+            m_bOnText   = true;
+          }
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) { 
           m_cMousePos.X = a_cEvent.MouseInput.X;
           m_cMousePos.Y = a_cEvent.MouseInput.Y;
+
+          if (m_bOnText) {
+            if (m_cMousePos.X > m_cTextDown.X + AbsoluteClippingRect.getHeight()) {
+              if (m_iSelected < m_vItems.size() - 1) {
+                m_iSelected++;
+                setText(m_vItems[m_iSelected].c_str());
+                m_cTextDown = m_cMousePos;
+                distributeEvent();
+              }
+            }
+            else if (m_cMousePos.X < m_cTextDown.X - AbsoluteClippingRect.getHeight()) {
+              if (m_iSelected > 0) {
+                m_iSelected--;
+                setText(m_vItems[m_iSelected].c_str());
+                m_cTextDown = m_cMousePos;
+                distributeEvent();
+              }
+            }
+          }
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_WHEEL) {
           m_iSelected += (int)a_cEvent.MouseInput.Wheel;

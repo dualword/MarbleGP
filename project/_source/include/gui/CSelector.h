@@ -29,6 +29,7 @@ namespace dustbin {
         bool m_bLeftBtn;  /**< Left mouse button pressed? */
         bool m_bSelected; /**< Selected by the menu controller */
         bool m_bInside;   /**< Is the mouse pointer inside the element? */
+        bool m_bOnText;   /**< Was the mouse pressed in the text area? */
 
         irr::video::SColor m_cBackgroundColor;  /**< The background color */
         irr::video::SColor m_cHoverColor;       /**< The color when the mouse hoveres the element */
@@ -36,6 +37,7 @@ namespace dustbin {
         irr::video::SColor m_cDisabledColor;    /**< Background color when the item is disabled */
 
         irr::core::position2di m_cMousePos;   /**< The mouse position */
+        irr::core::position2di m_cTextDown;   /**< Mouse down position in the central text area */
 
         std::vector<std::wstring> m_vItems;   /**< A vector with the items of the selector */
 
