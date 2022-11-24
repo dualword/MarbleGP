@@ -19,7 +19,7 @@
       <element type="DustbinImageList" rect="relative: 1, 10, 79, 47" font="small">
         <attributes>
           <attribute key="Name" value="TrackList" />
-          <attribute key="Rows" value="2" />
+          <attribute key="Rows" value="1" />
           <attribute key="Categories" value="true" />
           <attribute key="ShowSelected" value="true" />
         </attributes>
