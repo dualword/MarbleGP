@@ -32,6 +32,7 @@ namespace dustbin {
       std::string  m_sShortName;        /**< The short name of the player */
       std::wstring m_sNumber;           /**< The player's starting number */
       bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
+      bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
       int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
 
       irr::video::SColor m_cText;   /**< The text color (for the starting number in the ranking display) */

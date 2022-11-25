@@ -36,7 +36,8 @@ namespace dustbin {
           data::SPlayerData::enAiHelp  a_eAiHelp, 
           scenenodes::CAiNode         *a_pAiNode, 
           const std::string           &a_sAiScript,
-          const irr::core::recti      &a_cViewport
+          const irr::core::recti      &a_cViewport,
+          bool                        &a_bShowRaking
         );
     };
   }

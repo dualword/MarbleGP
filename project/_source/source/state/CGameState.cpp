@@ -1290,7 +1290,8 @@ namespace dustbin {
                 l_pPlayer->m_eAiHelp, 
                 reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
                 "data/levels/" + m_cGameData.m_sTrack + "/ai.lua",
-                l_pPlayer->m_pMarble->m_pViewport->m_cRect
+                l_pPlayer->m_pMarble->m_pViewport->m_cRect,
+                l_pPlayer->m_bShowRanking
               );
             }
             else if ((*it).m_eType == data::enPlayerType::Ai) {
@@ -1326,8 +1327,12 @@ namespace dustbin {
 
         for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
           if (it->second.m_pHUD != nullptr) {
-            bool l_bShowRanking = true;
-            it->second.m_pHUD->setSettings(m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHightlight, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking && l_bShowRanking, m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowLapTimes);
+            bool l_bHighligh     = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHighlight   ;
+            bool l_bShowCtrl     = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls;
+            bool l_bShowRanking  = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking  && it->second.m_pPlayer->m_pPlayer->m_bShowRanking;
+            bool l_bShowLapTimes = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowLapTimes && it->second.m_pPlayer->m_pPlayer->m_bShowRanking;
+
+            it->second.m_pHUD->setSettings(l_bHighligh, l_bShowCtrl, l_bShowRanking, l_bShowLapTimes);
           }
         }
         it->second.m_pHUD->drop();

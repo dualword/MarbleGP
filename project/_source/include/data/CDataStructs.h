@@ -25,7 +25,7 @@ namespace dustbin {
     * splitscreen possibility
     */
     typedef struct SGameGFX {
-      bool m_bHightlight;   /**< Highlight the leader and the marble ahead*/
+      bool m_bHighlight;   /**< Highlight the leader and the marble ahead*/
       bool m_bShowControls; /**< Show the marble controls */
       bool m_bShowRanking;  /**< Show the race ranking */
       bool m_bShowLapTimes; /**< Show the laptimes of the race? */

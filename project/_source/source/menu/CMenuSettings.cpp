@@ -92,7 +92,7 @@ namespace dustbin {
           if (l_iIndex >= 0 && l_iIndex < 8) {
             irr::gui::EGUI_ELEMENT_TYPE l_eType = (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId;
 
-            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bHightlight  , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bHighlight  , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
@@ -111,8 +111,8 @@ namespace dustbin {
           irr::gui::EGUI_ELEMENT_TYPE l_eType = (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId;
 
           for (int i = 7; i >= l_iIndex; i--) {
-            if (m_cSettings.m_aGameGFX[i].m_bHightlight == m_cSettings.m_aGameGFX[l_iIndex].m_bHightlight)
-              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bHightlight, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
+            if (m_cSettings.m_aGameGFX[i].m_bHighlight == m_cSettings.m_aGameGFX[l_iIndex].m_bHighlight)
+              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bHighlight, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
 
             if (m_cSettings.m_aGameGFX[i].m_bShowControls == m_cSettings.m_aGameGFX[l_iIndex].m_bShowControls)
               updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));

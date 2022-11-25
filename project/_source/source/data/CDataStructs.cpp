@@ -112,11 +112,11 @@ namespace dustbin {
 
     const char c_sPlayerDataHead[] = "PlayerProfile";
 
-    SGameGFX::SGameGFX() : m_bHightlight(true), m_bShowControls(true), m_bShowRanking(true), m_bShowLapTimes(true) {
+    SGameGFX::SGameGFX() : m_bHighlight(true), m_bShowControls(true), m_bShowRanking(true), m_bShowLapTimes(true) {
     }
 
     void SGameGFX::copyFrom(const SGameGFX& a_cOther) {
-      m_bHightlight   = a_cOther.m_bHightlight;
+      m_bHighlight   = a_cOther.m_bHighlight;
       m_bShowControls = a_cOther.m_bShowControls;
       m_bShowRanking  = a_cOther.m_bShowRanking;
       m_bShowLapTimes = a_cOther.m_bShowLapTimes;
@@ -165,7 +165,7 @@ namespace dustbin {
       if (a_mData.find("menu_control") != a_mData.end()) m_sController = a_mData.at("menu_control");
 
       for (int i = 0; i < 8; i++) {
-        if (a_mData.find(std::string("highlight_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bHightlight   = a_mData.at(std::string("highlight_") + std::to_string(i)) == "true";
+        if (a_mData.find(std::string("highlight_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bHighlight   = a_mData.at(std::string("highlight_") + std::to_string(i)) == "true";
         if (a_mData.find(std::string("showctrls_") + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bShowControls = a_mData.at(std::string("showctrls_") + std::to_string(i)) == "true";
         if (a_mData.find(std::string("showrank_" ) + std::to_string(i)) != a_mData.end()) m_aGameGFX[i].m_bShowRanking  = a_mData.at(std::string("showrank_" ) + std::to_string(i)) == "true";
       }
@@ -201,7 +201,7 @@ namespace dustbin {
       a_mData["menu_control"] = m_sController;
 
       for (int i = 0; i < 8; i++) {
-        a_mData[std::string("highlight_") + std::to_string(i)] = m_aGameGFX[i].m_bHightlight   ? "true" : "false";
+        a_mData[std::string("highlight_") + std::to_string(i)] = m_aGameGFX[i].m_bHighlight   ? "true" : "false";
         a_mData[std::string("showctrls_") + std::to_string(i)] = m_aGameGFX[i].m_bShowControls ? "true" : "false";
         a_mData[std::string("showrank_" ) + std::to_string(i)] = m_aGameGFX[i].m_bShowRanking  ? "true" : "false";
       }

@@ -19,6 +19,7 @@ namespace dustbin {
       m_sShortName     (""),
       m_sNumber        (L""),
       m_bWithdrawn     (false),
+      m_bShowRanking   (true),
       m_iState         (0),
       m_eType          (data::enPlayerType::Local),
       m_eAiHelp        (data::SPlayerData::enAiHelp::Off),

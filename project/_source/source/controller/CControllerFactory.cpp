@@ -19,7 +19,8 @@ namespace dustbin {
       data::SPlayerData::enAiHelp  a_eAiHelp, 
       scenenodes::CAiNode         *a_pAiNode, 
       const std::string           &a_sAiScript,
-      const irr::core::recti      &a_cViewport
+      const irr::core::recti      &a_cViewport,
+      bool                        &a_bShowRaking
     ) {
 
       bool l_bDataValid = false;
@@ -37,6 +38,9 @@ namespace dustbin {
         std::string l_sSub = a_sControls.substr(0, l_sCtrl.size());
         if (l_sSub == l_sCtrl) {
           l_bDataValid = true;
+
+          a_bShowRaking = l_sSub == "DustbinController" || l_sSub == "DustbinGyroscope";
+
           break;
         }
       }
