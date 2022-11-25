@@ -600,8 +600,6 @@ namespace dustbin {
                 std::make_tuple(""                      , ""                           )
               };
 
-              bool l_bFound = false;
-
               for (int i = 0; std::get<0>(l_sCtrl[i]) != ""; i++) {
                 std::string l_sSub = s.substr(0, std::get<0>(l_sCtrl[i]).length());
                 std::string l_sKey = std::get<1>(l_sCtrl[i]);
