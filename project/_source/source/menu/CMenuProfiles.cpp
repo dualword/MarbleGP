@@ -593,8 +593,8 @@ namespace dustbin {
             if (s != "") {
               std::tuple<std::string, std::string> l_sCtrl[] = {
                 std::make_tuple("DustbinController"     , "controller_ui"              ),
-                std::make_tuple("DustbinTouchSteerRight", "controller_touch_steerleft" ),
-                std::make_tuple("DustbinTouchSteerLeft" , "controller_touch_steerright"),
+                std::make_tuple("DustbinTouchSteerRight", "controller_touch_steerright"),
+                std::make_tuple("DustbinTouchSteerLeft" , "controller_touch_steerleft" ),
                 std::make_tuple("DustbinTouchSteerOnly" , "controller_touch_steer"     ),
                 std::make_tuple("DustbinGyroscope"      , "controller_gyroscope"       ),
                 std::make_tuple(""                      , ""                           )

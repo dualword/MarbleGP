@@ -49,7 +49,7 @@ namespace dustbin {
         m_bOwnsCtrl   = false;
       }
       else if (a_sControls.substr(0, std::string("DustbinTouchSteerLeft").size()) == "DustbinTouchSteerLeft") {
-        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchRight, a_cViewport);
+        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchLeft, a_cViewport);
         m_bOwnsCtrl   = false;
       }
       else if (a_sControls.substr(0, std::string("DustbinTouchSteerOnly").size()) == "DustbinTouchSteerOnly") {

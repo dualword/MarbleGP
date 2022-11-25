@@ -75,14 +75,38 @@ namespace dustbin {
 
       irr::core::vector2di l_cPos = irr::core::vector2di(
         a_bLeft ? l_cTouchSize.Width / 2 : m_cViewport.getWidth() - l_cTouchSize.Width - l_cTouchSize.Width / 2,
-        m_cViewport.getHeight() - 6 * l_cTouchSize.Height - l_cTouchSize.Height / 2
+        m_cViewport.getHeight() - 4 * l_cTouchSize.Height - l_cTouchSize.Height / 2
       );
 
-      m_aControls[(int)enControls::Respawn   ] = new STouchInput("data/images/ctrl_respawn_off.png"   , "data/images/ctrl_respawn.png"   , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += 2 * l_cTouchSize.Height;
-      m_aControls[(int)enControls::Forward   ] = new STouchInput("data/images/ctrl_accelerate_off.png", "data/images/ctrl_accelerate.png", irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y +=     l_cTouchSize.Height;
-      m_aControls[(int)enControls::NoThrottle] = new STouchInput("data/images/ctrl_none_off.png"      , "data/images/ctrl_none.png"      , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y +=     l_cTouchSize.Height;
-      m_aControls[(int)enControls::Backward  ] = new STouchInput("data/images/ctrl_back_off.png"      , "data/images/ctrl_back.png"      , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y +=     l_cTouchSize.Height;
+      m_aControls[(int)enControls::Respawn   ] = new STouchInput("data/images/ctrl_respawn_off.png"   , "data/images/ctrl_respawn.png"   , irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize), m_pDrv);
+
+      m_aControls[(int)enControls::Forward   ] = new STouchInput("data/images/ctrl_accelerate_off.png", "data/images/ctrl_accelerate.png", irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
+      m_aControls[(int)enControls::NoThrottle] = new STouchInput("data/images/ctrl_none_off.png"      , "data/images/ctrl_none.png"      , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
+      m_aControls[(int)enControls::Backward  ] = new STouchInput("data/images/ctrl_back_off.png"      , "data/images/ctrl_back.png"      , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
       m_aControls[(int)enControls::Brake     ] = new STouchInput("data/images/ctrl_brake_off.png"     , "data/images/ctrl_brake.png"     , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv);
+
+      enControls l_aAdjust[] = {
+        enControls::Forward,
+        enControls::NoThrottle,
+        enControls::Backward,
+        enControls::Brake
+      };
+
+      if (a_bLeft) {
+        for (enControls l_cCtrl: l_aAdjust) {
+          m_aControls[(int)l_cCtrl]->m_cTouch.UpperLeftCorner .X  = 0;
+          m_aControls[(int)l_cCtrl]->m_cTouch.LowerRightCorner.X += 2 * l_cTouchSize.Width;
+        }
+      }
+      else {
+        for (enControls l_cCtrl: l_aAdjust) {
+          m_aControls[(int)l_cCtrl]->m_cTouch.UpperLeftCorner .X -= 2 * l_cTouchSize.Width;
+          m_aControls[(int)l_cCtrl]->m_cTouch.LowerRightCorner.X  = m_cViewport.getWidth();
+        }
+      }
+
+      m_aControls[(int)enControls::Forward]->m_cTouch.UpperLeftCorner .Y = 2 * l_cTouchSize.Height;
+      m_aControls[(int)enControls::Brake  ]->m_cTouch.LowerRightCorner.Y = m_cViewport.getHeight();
     }
 
     /**
@@ -100,15 +124,29 @@ namespace dustbin {
         m_cViewport.getHeight() - l_cTouchSize.Height - l_cTouchSize.Height / 2
       );
 
-      if (a_bLeft)
-        m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", irr::core::recti(l_cPos - irr::core::vector2di(0, 2 * l_cTouchSize.Height), l_cTouchSize), m_pDrv);
-
       m_aControls[(int)enControls::Left   ] = new STouchInput("data/images/ctrl_left_off.png" , "data/images/ctrl_left.png" , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.X += l_cTouchSize.Width;
       m_aControls[(int)enControls::NoSteer] = new STouchInput("data/images/ctrl_none_off.png" , "data/images/ctrl_none.png" , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.X += l_cTouchSize.Width;
       m_aControls[(int)enControls::Right  ] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", irr::core::recti(l_cPos, l_cTouchSize), m_pDrv);
 
-      if (!a_bLeft)
-        m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", irr::core::recti(l_cPos - irr::core::vector2di(0, 2 * l_cTouchSize.Height), l_cTouchSize), m_pDrv);
+      m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", irr::core::recti(irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - l_cTouchSize.Width, 0), l_cTouchSize), m_pDrv);
+
+      enControls l_aAdjust[] = {
+        enControls::Left,
+        enControls::NoSteer,
+        enControls::Right
+      };
+
+      for (enControls l_eCtrl: l_aAdjust) {
+        m_aControls[(int)l_eCtrl]->m_cTouch.UpperLeftCorner .Y -= 3 * l_cTouchSize.Height;
+        m_aControls[(int)l_eCtrl]->m_cTouch.LowerRightCorner.Y  = m_cViewport.getHeight();
+      }
+
+      if (a_bLeft) {
+        m_aControls[(int)enControls::Right]->m_cTouch.LowerRightCorner.X = m_cViewport.getWidth() / 2;
+      }
+      else {
+        m_aControls[(int)enControls::Left]->m_cTouch.UpperLeftCorner.X = m_cViewport.getWidth() / 2;
+      }
     }
 
     /**
