@@ -121,6 +121,23 @@
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Content Include="assets\sounds\button_hover.wav" />
+    <Content Include="assets\sounds\button_press.wav" />
+    <Content Include="assets\sounds\checkpoint.wav" />
+    <Content Include="assets\sounds\countdown.wav" />
+    <Content Include="assets\sounds\countdown_go.wav" />
+    <Content Include="assets\sounds\gameover.wav" />
+    <Content Include="assets\sounds\hit.wav" />
+    <Content Include="assets\sounds\lap.wav" />
+    <Content Include="assets\sounds\respawn.wav" />
+    <Content Include="assets\sounds\respawn_start.wav" />
+    <Content Include="assets\sounds\rolling.ogg" />
+    <Content Include="assets\sounds\skid.wav" />
+    <Content Include="assets\sounds\stunned.wav" />
+    <Content Include="assets\sounds\theme_menu.ogg" />
+    <Content Include="assets\sounds\theme_race.ogg" />
+    <Content Include="assets\sounds\theme_result.ogg" />
+    <Content Include="assets\sounds\wind.ogg" />
     <Content Include="res\drawable\marblegp_logo.png" />
     <Content Include="assets\marblegp.dat" />
     <Content Include="assets\shaders_es\COGLES2DetailMap.fsh" />
@@ -145,22 +162,6 @@
     <Content Include="assets\shaders_es\COGLES2TransparentAlphaChannel.fsh" />
     <Content Include="assets\shaders_es\COGLES2TransparentAlphaChannelRef.fsh" />
     <Content Include="assets\shaders_es\COGLES2TransparentVertexAlpha.fsh" />
-    <Content Include="assets\sounds\button_hover.wav" />
-    <Content Include="assets\sounds\button_press.wav" />
-    <Content Include="assets\sounds\checkpoint.wav" />
-    <Content Include="assets\sounds\countdown.wav" />
-    <Content Include="assets\sounds\countdown_go.wav" />
-    <Content Include="assets\sounds\gameover.wav" />
-    <Content Include="assets\sounds\hit.wav" />
-    <Content Include="assets\sounds\lap.wav" />
-    <Content Include="assets\sounds\respawn.wav" />
-    <Content Include="assets\sounds\respawn_start.wav" />
-    <Content Include="assets\sounds\rolling.wav" />
-    <Content Include="assets\sounds\skid.wav" />
-    <Content Include="assets\sounds\stunned.wav" />
-    <Content Include="assets\sounds\theme_menu.wav" />
-    <Content Include="assets\sounds\theme_race.wav" />
-    <Content Include="assets\sounds\theme_result.wav" />
     <Content Include="res\values\strings.xml" />
     <AntBuildXml Include="build.xml" />
     <AndroidManifest Include="AndroidManifest.xml" />

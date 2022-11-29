@@ -10,8 +10,6 @@
   <sound id="data/sounds/respawn.ogg"       vol="0.7" />
   <sound id="data/sounds/checkpoint.ogg"    vol="1.0"/>
   <sound id="data/sounds/gameover.ogg"      vol="1.0" />
-  <sound id="data/sounds/ghost_start.ogg"   vol="0.6" />
-  <sound id="data/sounds/ghost_end.ogg"     vol="0.6" />
   <sound id="data/sounds/button_hover.ogg"  vol="0.6" />
   <sound id="data/sounds/button_press.ogg"  vol="0.6" />
   <sound id="data/sounds/countdown.ogg"     vol="0.6" />

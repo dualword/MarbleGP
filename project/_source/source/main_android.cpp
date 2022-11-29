@@ -215,6 +215,7 @@ irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEven
 
 
 void android_main(struct android_app* a_pApp) {
+  LOGI("Starting MarbleGP...");
   JNIEnv *l_pJni = nullptr;
 
   if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {

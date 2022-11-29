@@ -15,7 +15,7 @@
 #include <android/log.h>
 #include <vector>
 
-#define APP_NAME "RhythmGame"
+#define APP_NAME "MarbleGP_Android_Audio"
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, APP_NAME, __VA_ARGS__))
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, APP_NAME, __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, APP_NAME, __VA_ARGS__))
@@ -36,183 +36,181 @@ namespace dustbin {
 
       private:
         static int32_t decode(AAsset *a_pAsset, uint8_t *a_pTargetData, SAudioProperties a_cTargetProperties) {
-          LOGD("Using NDK decoder");
+          // LOGI("DustbinGames: Using NDK decoder");
 
+          int32_t l_iBytesWritten = 0;
           // open asset as file descriptor
           off_t l_iStart, l_iLength;
           int l_iFd = AAsset_openFileDescriptor(a_pAsset, &l_iStart, &l_iLength);
 
-          // Extract the audio frames
-          AMediaExtractor *l_pExtractor = AMediaExtractor_new();
-          media_status_t l_eAmResult = AMediaExtractor_setDataSourceFd(l_pExtractor, l_iFd,
-            static_cast<off64_t>(l_iStart),
-            static_cast<off64_t>(l_iLength));
-          if (l_eAmResult != AMEDIA_OK){
-            LOGE("Error setting extractor data source, err %d", l_eAmResult);
-            return 0;
-          }
-
-          // Specify our desired output format by creating it from our source
-          AMediaFormat *format = AMediaExtractor_getTrackFormat(l_pExtractor, 0);
-
-          int32_t l_iSampleRate;
-          if (AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_SAMPLE_RATE, &l_iSampleRate)) {
-            LOGD("Source sample rate %d", l_iSampleRate);
-            if (l_iSampleRate != a_cTargetProperties.m_iSampleRate) {
-              LOGE("Input (%d) and output (%d) sample rates do not match. "
-                "NDK decoder does not support resampling.",
-                l_iSampleRate,
-                a_cTargetProperties.m_iSampleRate);
+          if (l_iFd >= 0) {
+            // Extract the audio frames
+            AMediaExtractor *l_pExtractor = AMediaExtractor_new();
+            media_status_t l_eAmResult = AMediaExtractor_setDataSourceFd(l_pExtractor, l_iFd,
+              static_cast<off64_t>(l_iStart),
+              static_cast<off64_t>(l_iLength));
+            if (l_eAmResult != AMEDIA_OK){
+              LOGE("Error setting extractor data source, err %d", l_eAmResult);
               return 0;
             }
-          } else {
-            LOGE("Failed to get sample rate");
-            return 0;
-          };
 
-          int32_t l_iChannelCount;
-          if (AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_CHANNEL_COUNT, &l_iChannelCount)) {
-            LOGD("Got channel count %d", l_iChannelCount);
-            if (l_iChannelCount != a_cTargetProperties.m_iChannelCount){
-              LOGE("NDK decoder does not support different "
-                "input (%d) and output (%d) channel counts",
-                l_iChannelCount,
-                a_cTargetProperties.m_iChannelCount);
+            // Specify our desired output format by creating it from our source
+            AMediaFormat *format = AMediaExtractor_getTrackFormat(l_pExtractor, 0);
+
+            int32_t l_iSampleRate;
+            if (AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_SAMPLE_RATE, &l_iSampleRate)) {
+              // LOGD("Source sample rate %d", l_iSampleRate);
+              if (l_iSampleRate != a_cTargetProperties.m_iSampleRate) {
+                LOGE("Input (%d) and output (%d) sample rates do not match. "
+                  "NDK decoder does not support resampling.",
+                  l_iSampleRate,
+                  a_cTargetProperties.m_iSampleRate);
+                return 0;
+              }
+            } else {
+              LOGE("Failed to get sample rate");
+              return 0;
+            };
+
+            int32_t l_iChannelCount;
+            if (AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_CHANNEL_COUNT, &l_iChannelCount)) {
+              // LOGD("Got channel count %d", l_iChannelCount);
+              if (l_iChannelCount != a_cTargetProperties.m_iChannelCount){
+                LOGE("NDK decoder does not support different "
+                  "input (%d) and output (%d) channel counts",
+                  l_iChannelCount,
+                  a_cTargetProperties.m_iChannelCount);
+              }
+            } else {
+              LOGE("Failed to get channel count");
+              return 0;
             }
-          } else {
-            LOGE("Failed to get channel count");
-            return 0;
-          }
 
-          const char *l_sFormatStr = AMediaFormat_toString(format);
-          LOGD("Output format %s", l_sFormatStr);
+            // const char *l_sFormatStr = AMediaFormat_toString(format);
+            // LOGD("Output format %s", l_sFormatStr);
 
-          const char *l_sMimeType;
-          if (AMediaFormat_getString(format, AMEDIAFORMAT_KEY_MIME, &l_sMimeType)) {
-            LOGD("Got mime type %s", l_sMimeType);
-          } else {
-            LOGE("Failed to get mime type");
-            return 0;
-          }
+            const char *l_sMimeType;
+            if (AMediaFormat_getString(format, AMEDIAFORMAT_KEY_MIME, &l_sMimeType)) {
+              // LOGD("Got mime type %s", l_sMimeType);
+            } else {
+              LOGE("Failed to get mime type");
+              return 0;
+            }
 
-          // Obtain the correct decoder
-          LOGD("1");
-          AMediaCodec *l_pCodec = nullptr;
-          LOGD("2");
-          AMediaExtractor_selectTrack(l_pExtractor, 0);
-          LOGD("3");
-          l_pCodec = AMediaCodec_createDecoderByType(l_sMimeType);
-          LOGD("4");
-          AMediaCodec_configure(l_pCodec, format, nullptr, nullptr, 0);
-          LOGD("5");
-          AMediaCodec_start(l_pCodec);
-          LOGD("6");
+            // Obtain the correct decoder
+            AMediaCodec *l_pCodec = nullptr;
+            AMediaExtractor_selectTrack(l_pExtractor, 0);
+            l_pCodec = AMediaCodec_createDecoderByType(l_sMimeType);
+            AMediaCodec_configure(l_pCodec, format, nullptr, nullptr, 0);
+            AMediaCodec_start(l_pCodec);
 
-          // DECODE
+            // DECODE
 
-          bool l_bExtracting = true;
-          bool l_bDecoding = true;
-          int32_t l_iBytesWritten = 0;
+            bool l_bExtracting = true;
+            bool l_bDecoding = true;
 
-          while(l_bExtracting || l_bDecoding) {
-            if (l_bExtracting) {
+            while(l_bExtracting || l_bDecoding) {
+              if (l_bExtracting) {
 
-              // Obtain the index of the next available input buffer
-              LOGD("7");
-              ssize_t l_iInputIndex = AMediaCodec_dequeueInputBuffer(l_pCodec, 2000);
-              LOGD("8");
-              LOGI("Got input buffer %d", (int)l_iInputIndex);
+                // Obtain the index of the next available input buffer
+                // LOGD("7");
+                ssize_t l_iInputIndex = AMediaCodec_dequeueInputBuffer(l_pCodec, 2000);
+                // LOGD("8");
+                // LOGI("Got input buffer %d", (int)l_iInputIndex);
 
-              // The input index acts as a status if its negative
-              if (l_iInputIndex < 0){
-                if (l_iInputIndex == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-                  LOGI("Codec.dequeueInputBuffer try again later");
+                // The input index acts as a status if its negative
+                if (l_iInputIndex < 0) {
+                  if (l_iInputIndex == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+                    // LOGI("Codec.dequeueInputBuffer try again later");
+                  } 
+                  else {
+                    LOGE("Codec.dequeueInputBuffer unknown error status");
+                  }
                 } 
                 else {
-                  LOGE("Codec.dequeueInputBuffer unknown error status");
-                }
-              } 
-              else {
 
-                // Obtain the actual buffer and read the encoded data into it
-                size_t l_iInputSize;
-                uint8_t *l_pInputBuffer = AMediaCodec_getInputBuffer(l_pCodec, l_iInputIndex, &l_iInputSize);
-                LOGI("Sample size is: %d", (int)l_iInputSize);
+                  // Obtain the actual buffer and read the encoded data into it
+                  size_t l_iInputSize;
+                  uint8_t *l_pInputBuffer = AMediaCodec_getInputBuffer(l_pCodec, l_iInputIndex, &l_iInputSize);
+                  // LOGI("Sample size is: %d", (int)l_iInputSize);
 
-                ssize_t l_iSampleSize = AMediaExtractor_readSampleData(l_pExtractor, l_pInputBuffer, l_iInputSize);
-                auto l_iPresentationTimeUs = AMediaExtractor_getSampleTime(l_pExtractor);
+                  ssize_t l_iSampleSize = AMediaExtractor_readSampleData(l_pExtractor, l_pInputBuffer, l_iInputSize);
+                  auto l_iPresentationTimeUs = AMediaExtractor_getSampleTime(l_pExtractor);
 
-                if (l_iSampleSize > 0) {
+                  if (l_iSampleSize > 0) {
 
-                  // Enqueue the encoded data
-                  AMediaCodec_queueInputBuffer(l_pCodec, l_iInputIndex, 0, l_iSampleSize,
-                    l_iPresentationTimeUs,
-                    0);
-                  AMediaExtractor_advance(l_pExtractor);
+                    // Enqueue the encoded data
+                    AMediaCodec_queueInputBuffer(l_pCodec, l_iInputIndex, 0, l_iSampleSize,
+                      l_iPresentationTimeUs,
+                      0);
+                    AMediaExtractor_advance(l_pExtractor);
 
-                } else {
-                   LOGD("End of extractor data stream");
-                  l_bExtracting = false;
+                  } else {
+                     LOGD("End of extractor data stream");
+                    l_bExtracting = false;
 
-                  // We need to tell the codec that we've reached the end of the stream
-                  AMediaCodec_queueInputBuffer(l_pCodec, l_iInputIndex, 0, 0,
-                    l_iPresentationTimeUs,
-                    AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM);
+                    // We need to tell the codec that we've reached the end of the stream
+                    AMediaCodec_queueInputBuffer(l_pCodec, l_iInputIndex, 0, 0,
+                      l_iPresentationTimeUs,
+                      AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM);
+                  }
                 }
               }
-            }
 
-            if (l_bDecoding) {
-              // Dequeue the decoded data
-              AMediaCodecBufferInfo l_cInfo;
-              ssize_t l_iOutputIndex = AMediaCodec_dequeueOutputBuffer(l_pCodec, &l_cInfo, 0);
+              // LOGD("A");
 
-              if (l_iOutputIndex >= 0) {
+              if (l_bDecoding) {
+                // Dequeue the decoded data
+                AMediaCodecBufferInfo l_cInfo;
+                ssize_t l_iOutputIndex = AMediaCodec_dequeueOutputBuffer(l_pCodec, &l_cInfo, 0);
 
-                // Check whether this is set earlier
-                if (l_cInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM){
-                  LOGD("Reached end of decoding stream");
-                  l_bDecoding = false;
+                if (l_iOutputIndex >= 0) {
+                  // Check whether this is set earlier
+                  if (l_cInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
+                    LOGD("Reached end of decoding stream");
+                    l_bDecoding = false;
+                  } 
+
+                  // Valid index, acquire buffer
+                  size_t l_iOutputSize;
+                  uint8_t *l_pOutputBuffer = AMediaCodec_getOutputBuffer(l_pCodec, l_iOutputIndex, &l_iOutputSize);
+
+                  /*LOGI("Got output buffer index %d, buffer size: %d, info size: %d writing to pcm index %d",
+                    (int)l_iOutputIndex,
+                    (int)l_iOutputSize,
+                    (int)l_cInfo.size,
+                    0);*/
+
+                  // copy the data out of the buffer
+                  memcpy(a_pTargetData + l_iBytesWritten, l_pOutputBuffer, l_cInfo.size);
+                  l_iBytesWritten += l_cInfo.size;
+                  AMediaCodec_releaseOutputBuffer(l_pCodec, l_iOutputIndex, false);
                 } 
-
-                // Valid index, acquire buffer
-                size_t l_iOutputSize;
-                uint8_t *l_pOutputBuffer = AMediaCodec_getOutputBuffer(l_pCodec, l_iOutputIndex, &l_iOutputSize);
-
-                LOGI("Got output buffer index %d, buffer size: %d, info size: %d writing to pcm index %d",
-                  (int)l_iOutputIndex,
-                  (int)l_iOutputSize,
-                  (int)l_cInfo.size,
-                  0);
-
-                // copy the data out of the buffer
-                memcpy(a_pTargetData + l_iBytesWritten, l_pOutputBuffer, l_cInfo.size);
-                l_iBytesWritten += l_cInfo.size;
-                AMediaCodec_releaseOutputBuffer(l_pCodec, l_iOutputIndex, false);
-              } else {
-
-                // The outputIndex doubles as a status return if its value is < 0
-                switch(l_iOutputIndex) {
-                  case AMEDIACODEC_INFO_TRY_AGAIN_LATER:
-                    LOGD("dequeueOutputBuffer: try again later");
-                    break;
-                  case AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED:
-                    LOGD("dequeueOutputBuffer: output buffers changed");
-                    break;
-                  case AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED:
-                    LOGD("dequeueOutputBuffer: output outputFormat changed");
-                    format = AMediaCodec_getOutputFormat(l_pCodec);
-                    LOGD("outputFormat changed to: %s", AMediaFormat_toString(format));
-                    break;
+                else {
+                  // The outputIndex doubles as a status return if its value is < 0
+                  switch(l_iOutputIndex) {
+                    case AMEDIACODEC_INFO_TRY_AGAIN_LATER:
+                      // LOGD("dequeueOutputBuffer: try again later");
+                      break;
+                    case AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED:
+                      LOGD("dequeueOutputBuffer: output buffers changed");
+                      break;
+                    case AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED:
+                      // LOGD("dequeueOutputBuffer: output outputFormat changed");
+                      format = AMediaCodec_getOutputFormat(l_pCodec);
+                      LOGD("outputFormat changed to: %s", AMediaFormat_toString(format));
+                      break;
+                  }
                 }
               }
             }
-          }
 
-          // Clean up
-          AMediaFormat_delete(format);
-          AMediaCodec_delete(l_pCodec);
-          AMediaExtractor_delete(l_pExtractor);
+            // Clean up
+            AMediaFormat_delete(format);
+            AMediaCodec_delete(l_pCodec);
+            AMediaExtractor_delete(l_pExtractor);
+            LOGD("Decoding done.");
+          }
 
           return l_iBytesWritten;        
         }
@@ -224,13 +222,14 @@ namespace dustbin {
 
         static CAssetDataSource* newFromCompressedAsset(AAssetManager& a_cAssetManager, const char* a_sFilename, SAudioProperties a_cTargetProperties) {
           AAsset *l_pAsset = AAssetManager_open(&a_cAssetManager, a_sFilename, AASSET_MODE_BUFFER);
+          LOGD("Open data file \"%s\"", a_sFilename);
           if (!l_pAsset) {
             LOGE("Failed to open asset %s", a_sFilename);
             return nullptr;
           }
 
           off_t a_iAssetSize = AAsset_getLength(l_pAsset);
-          LOGD("Opened %s, size %ld", a_sFilename, a_iAssetSize);
+          // LOGD("Opened %s, size %ld", a_sFilename, a_iAssetSize);
 
           // Allocate memory to store the decompressed audio. We don't know the exact
           // size of the decoded data until after decoding so we make an assumption about the
@@ -329,7 +328,7 @@ namespace dustbin {
           m_cBuilder.setDirection(oboe::Direction::Output)
             ->setFormatConversionAllowed(true)
             ->setSampleRate(44100)
-            ->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Fastest)
+            ->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::Medium)
             ->setUsage(oboe::Usage::Game)
             ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
             ->setSharingMode(oboe::SharingMode::Shared)
@@ -345,9 +344,6 @@ namespace dustbin {
           std::string l_sSound = a_sSound;
           if (l_sSound.substr(0, 5) == "data/")
             l_sSound = l_sSound.substr(5);            
-
-          if (l_sSound.find_last_of(L'.') != std::string::npos)
-            l_sSound = l_sSound.substr(0, l_sSound.find_last_of(L'.')) + ".wav";
 
           m_pSource = CAssetDataSource::newFromCompressedAsset(*(CGlobal::getInstance()->getAndroidApp()->activity->assetManager), l_sSound.c_str(), l_cTargetProperties);
 
@@ -448,8 +444,8 @@ namespace dustbin {
           SMarbleSound() {
             m_aSounds[(int)enMarbleSounds::Rolling] = new CAudioPlayer("data/sounds/rolling.ogg", true);
             m_aSounds[(int)enMarbleSounds::Wind   ] = new CAudioPlayer("data/sounds/wind.ogg"   , true);
-            m_aSounds[(int)enMarbleSounds::Skid   ] = new CAudioPlayer("data/sounds/skid.ogg"   , true);
-            m_aSounds[(int)enMarbleSounds::Stunned] = new CAudioPlayer("data/sounds/stunned.ogg", true);
+            m_aSounds[(int)enMarbleSounds::Skid   ] = new CAudioPlayer("data/sounds/skid.wav"   , true);
+            m_aSounds[(int)enMarbleSounds::Stunned] = new CAudioPlayer("data/sounds/stunned.wav", true);
 
             m_aSounds[(int)enMarbleSounds::Rolling]->setVolume(0.0f);
             m_aSounds[(int)enMarbleSounds::Wind   ]->setVolume(0.0f);
@@ -460,6 +456,8 @@ namespace dustbin {
             m_aSounds[(int)enMarbleSounds::Wind   ]->setPlaying(true, true);
             m_aSounds[(int)enMarbleSounds::Skid   ]->setPlaying(true, true);
             m_aSounds[(int)enMarbleSounds::Stunned]->setPlaying(true, true);
+
+            LOGD("Marble sounds loaded.");
           }
 
           ~SMarbleSound() {
@@ -512,17 +510,21 @@ namespace dustbin {
           m_iPlayerMarble    (0),
           m_eSoundTrack      (enSoundTrack::enStNone) 
         {
+          LOGI("CSoundInterface construtor.");
           oboe::DefaultStreamValues::SampleRate = 44100;
 
           std::string l_a2dSounds[] = {
-            "data/sounds/button_hover.ogg",
-            "data/sounds/button_press.ogg",
-            "data/sounds/countdown.ogg",
-            "data/sounds/countdown_go.ogg",
+            "data/sounds/button_hover.wav",
+            "data/sounds/button_press.wav",
+            "data/sounds/countdown.wav",
+            "data/sounds/countdown_go.wav",
             ""
           };
 
           for (int i = 0; l_a2dSounds[i] != ""; i++) {
+            LOGD("*******************");
+            LOGD("Loading 2d sound %s", l_a2dSounds[i].c_str());
+            LOGD("*******************");
             m_aSounds2d[i] = new CAudioPlayer(l_a2dSounds[i], false);
           }
 
@@ -544,6 +546,9 @@ namespace dustbin {
 
                     if (l_sAttr == L"id") {
                       l_sName = l_sValue;
+                      LOGD("+++++++++++++++++++++++");
+                      LOGD("Loading marble sound %s", helpers::ws2s(l_sName).c_str());
+                      LOGD("+++++++++++++++++++++++");
                     }
                     else if (l_sAttr == L"vol") {
                       l_fVolume = std::stof(l_sValue);
@@ -560,22 +565,26 @@ namespace dustbin {
             }
           }
 
+          LOGD("********************");
+          LOGD("* 2d sounds loaded *");
+          LOGD("********************");
           m_fMarbleParams[0] = m_mParameters.find(L"data/sounds/rolling.ogg") != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
           m_fMarbleParams[1] = m_mParameters.find(L"data/sounds/wind.ogg"   ) != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
           m_fMarbleParams[2] = m_mParameters.find(L"data/sounds/skid.ogg"   ) != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
           m_fMarbleParams[3] = m_mParameters.find(L"data/sounds/stunned.ogg") != m_mParameters.end() ? m_mParameters[L"data/sounds/rolling.ogg"] : 1.0f;
 
           std::string l_aOneShots[] = {
-            "data/sounds/respawn_start.ogg",
-            "data/sounds/respawn.ogg",
-            "data/sounds/hit.ogg",
-            "data/sounds/checkpoint.ogg",
-            "data/sounds/lap.ogg",
-            "data/sounds/gameover.ogg",
+            "data/sounds/respawn_start.wav",
+            "data/sounds/respawn.wav",
+            "data/sounds/hit.wav",
+            "data/sounds/checkpoint.wav",
+            "data/sounds/lap.wav",
+            "data/sounds/gameover.wav",
             ""
           };
 
           for (int i = 0; l_aOneShots[i] != ""; i++) {
+            LOGD("Loading one shot sound %s", l_aOneShots[i].c_str());
             m_aShots[i] = new CAudioPlayer(l_aOneShots[i], false);
           }
         }
