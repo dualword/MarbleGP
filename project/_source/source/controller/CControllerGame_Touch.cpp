@@ -37,23 +37,23 @@ namespace dustbin {
         createThrottleControls(true);
       }
       else if (a_eType == IControllerGame::enType::TouchSteer) {
-        int l_iHeightOffset = l_cTouchSize.Height / 2;
+        int l_iHeightOffset = 2 * l_cTouchSize.Height;
 
-        irr::core::position2di l_cPos = irr::core::position2di(l_iHeightOffset, l_cScreen.Height - l_cTouchSize.Height - l_iHeightOffset);
-        irr::core::recti l_cScreenRect = irr::core::recti(l_cPos, l_cTouchSize);
-        m_aControls[(int)enControls::Left] = new STouchInput("data/images/ctrl_left_off.png", "data/images/ctrl_left.png", l_cScreenRect, m_pDrv);
+        irr::core::recti l_cScreenRect = irr::core::recti(irr::core::vector2di(0, (l_cScreen.Height - l_cTouchSize.Height) / 2), l_cTouchSize);
+        irr::core::recti l_cTouchRect  = irr::core::recti(irr::core::vector2di(0, l_iHeightOffset), irr::core::dimension2du(l_cScreen.Width / 3, l_cScreen.Height - l_iHeightOffset));
 
-        l_cPos = irr::core::position2di(l_cScreen.Width - l_cTouchSize.Width - l_iHeightOffset, l_cScreen.Height - l_cTouchSize.Height - l_iHeightOffset);
-        l_cScreenRect = irr::core::recti(l_cPos, l_cTouchSize);
-        m_aControls[(int)enControls::Right] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", l_cScreenRect, m_pDrv);
+        m_aControls[(int)enControls::Left] = new STouchInput("data/images/ctrl_left_off.png", "data/images/ctrl_left.png", l_cScreenRect, l_cTouchRect, m_pDrv);
 
-        l_cPos = irr::core::position2di(l_iHeightOffset, l_cScreen.Height - l_iHeightOffset - 3 * l_cTouchSize.Height);
-        l_cScreenRect = irr::core::recti(l_cPos, l_cTouchSize);
-        m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", l_cScreenRect, m_pDrv);
+        l_cScreenRect = irr::core::recti(irr::core::vector2di(l_cScreen.Width - l_cTouchSize.Width, (l_cScreen.Height - l_cTouchSize.Height) / 2), l_cTouchSize);
+        l_cTouchRect  = irr::core::recti(irr::core::vector2di(2 * l_cScreen.Width / 3, l_iHeightOffset), irr::core::dimension2du(l_cScreen.Width / 3, l_cScreen.Height - l_iHeightOffset));
 
-        l_cPos = irr::core::position2di(l_cScreen.Width - l_cTouchSize.Width - l_iHeightOffset, l_cScreen.Height - l_iHeightOffset - 3 * l_cTouchSize.Height);
-        l_cScreenRect = irr::core::recti(l_cPos, l_cTouchSize);
-        m_aControls[(int)enControls::Respawn] = new STouchInput("data/images/ctrl_respawn_off.png", "data/images/ctrl_respawn.png", l_cScreenRect, m_pDrv);
+        m_aControls[(int)enControls::Right] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", l_cScreenRect, l_cTouchRect, m_pDrv);
+
+        l_cScreenRect = irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize);
+        m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", l_cScreenRect, l_cScreenRect, m_pDrv);
+
+        l_cScreenRect = irr::core::recti(irr::core::vector2di(l_cScreen.Width - l_cTouchSize.Width, 0), l_cTouchSize);
+        m_aControls[(int)enControls::Respawn] = new STouchInput("data/images/ctrl_respawn_off.png", "data/images/ctrl_respawn.png", l_cScreenRect, l_cScreenRect, m_pDrv);
       }
     }
 
@@ -78,12 +78,12 @@ namespace dustbin {
         m_cViewport.getHeight() - 4 * l_cTouchSize.Height - l_cTouchSize.Height / 2
       );
 
-      m_aControls[(int)enControls::Respawn   ] = new STouchInput("data/images/ctrl_respawn_off.png"   , "data/images/ctrl_respawn.png"   , irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize), m_pDrv);
+      m_aControls[(int)enControls::Respawn   ] = new STouchInput("data/images/ctrl_respawn_off.png"   , "data/images/ctrl_respawn.png"   , irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize), irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize), m_pDrv);
 
-      m_aControls[(int)enControls::Forward   ] = new STouchInput("data/images/ctrl_accelerate_off.png", "data/images/ctrl_accelerate.png", irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
-      m_aControls[(int)enControls::NoThrottle] = new STouchInput("data/images/ctrl_none_off.png"      , "data/images/ctrl_none.png"      , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
-      m_aControls[(int)enControls::Backward  ] = new STouchInput("data/images/ctrl_back_off.png"      , "data/images/ctrl_back.png"      , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
-      m_aControls[(int)enControls::Brake     ] = new STouchInput("data/images/ctrl_brake_off.png"     , "data/images/ctrl_brake.png"     , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv);
+      m_aControls[(int)enControls::Forward   ] = new STouchInput("data/images/ctrl_accelerate_off.png", "data/images/ctrl_accelerate.png", irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
+      m_aControls[(int)enControls::NoThrottle] = new STouchInput("data/images/ctrl_none_off.png"      , "data/images/ctrl_none.png"      , irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
+      m_aControls[(int)enControls::Backward  ] = new STouchInput("data/images/ctrl_back_off.png"      , "data/images/ctrl_back.png"      , irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
+      m_aControls[(int)enControls::Brake     ] = new STouchInput("data/images/ctrl_brake_off.png"     , "data/images/ctrl_brake.png"     , irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv);
 
       enControls l_aAdjust[] = {
         enControls::Forward,
@@ -124,11 +124,43 @@ namespace dustbin {
         m_cViewport.getHeight() - l_cTouchSize.Height - l_cTouchSize.Height / 2
       );
 
-      m_aControls[(int)enControls::Left   ] = new STouchInput("data/images/ctrl_left_off.png" , "data/images/ctrl_left.png" , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.X += l_cTouchSize.Width;
-      m_aControls[(int)enControls::NoSteer] = new STouchInput("data/images/ctrl_none_off.png" , "data/images/ctrl_none.png" , irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.X += l_cTouchSize.Width;
-      m_aControls[(int)enControls::Right  ] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", irr::core::recti(l_cPos, l_cTouchSize), m_pDrv);
+      irr::core::recti l_cScreen = irr::core::recti(
+        irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - 3 * l_cTouchSize.Width, m_cViewport.getHeight() - l_cTouchSize.Height),
+        l_cTouchSize
+      );
 
-      m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", irr::core::recti(irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - l_cTouchSize.Width, 0), l_cTouchSize), m_pDrv);
+      irr::core::recti l_cTouch = irr::core::recti(
+        irr::core::vector2di(a_bLeft ? 0 : 2 * m_cViewport.getWidth() / 3, 2 * m_cViewport.getHeight() / 3),
+        irr::core::dimension2du(a_bLeft ? l_cTouchSize.Width : m_cViewport.getWidth() / 3 - 2 * l_cTouchSize.Width, m_cViewport.getHeight() / 3)
+      );
+
+      m_aControls[(int)enControls::Left   ] = new STouchInput("data/images/ctrl_left_off.png" , "data/images/ctrl_left.png" , l_cScreen, l_cTouch, m_pDrv);
+
+      l_cScreen = irr::core::recti(
+        irr::core::vector2di(a_bLeft ? l_cTouchSize.Width : m_cViewport.getWidth() - 2 * l_cTouchSize.Width, m_cViewport.getHeight() - l_cTouchSize.Height),
+        l_cTouchSize
+      );
+
+      l_cTouch = irr::core::recti(
+        irr::core::vector2di(l_cScreen.UpperLeftCorner.X, m_cViewport.getHeight() / 3),
+        irr::core::dimension2du(l_cTouchSize.Width, m_cViewport.getHeight() / 3)
+      );
+
+      m_aControls[(int)enControls::NoSteer] = new STouchInput("data/images/ctrl_none_off.png" , "data/images/ctrl_none.png" , l_cScreen, l_cTouch, m_pDrv);
+
+      l_cScreen = irr::core::recti(
+        irr::core::vector2di(a_bLeft ? 2 * l_cTouchSize.Width : m_cViewport.getWidth() - l_cTouchSize.Width, m_cViewport.getHeight() - l_cTouchSize.Height),
+        l_cTouchSize
+      );
+
+      l_cTouch = irr::core::recti(
+        irr::core::vector2di(l_cScreen.UpperLeftCorner.X, m_cViewport.getHeight() / 3),
+        irr::core::dimension2du(a_bLeft ? m_cViewport.getWidth() - 2 * l_cTouchSize.Width : l_cTouchSize.Width, l_cTouchSize.Height)
+      );
+
+      m_aControls[(int)enControls::Right  ] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", l_cScreen, l_cTouch, m_pDrv);
+
+      m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", irr::core::recti(irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - l_cTouchSize.Width, 0), l_cTouchSize), irr::core::recti(irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - l_cTouchSize.Width, 0), l_cTouchSize), m_pDrv);
 
       enControls l_aAdjust[] = {
         enControls::Left,
@@ -354,7 +386,7 @@ namespace dustbin {
     {
     }
 
-    CControllerGame_Touch::STouchInput::STouchInput(const std::string& a_sPathOff, const std::string& a_sPathOn, const irr::core::recti& a_cScreen, irr::video::IVideoDriver* a_pDrv) :
+    CControllerGame_Touch::STouchInput::STouchInput(const std::string& a_sPathOff, const std::string& a_sPathOn, const irr::core::recti& a_cScreen, const irr::core::recti &a_cTouch, irr::video::IVideoDriver* a_pDrv) :
       m_pDrv   (a_pDrv),
       m_pOff   (nullptr),
       m_pOn    (nullptr),
@@ -363,11 +395,11 @@ namespace dustbin {
       m_pOff = m_pDrv->getTexture(a_sPathOff.c_str());
       m_pOn  = m_pDrv->getTexture(a_sPathOn .c_str());
 
-      m_cTouch = a_cScreen;
+      m_cTouch = a_cTouch;
       
-      irr::s32 l_iOffset = m_cTouch.getWidth() / 16;   // The rect to draw the icon will be offset a little
+      irr::s32 l_iOffset = a_cScreen.getWidth() / 16;   // The rect to draw the icon will be offset a little
 
-      m_cScreen = irr::core::recti(m_cTouch.UpperLeftCorner + irr::core::vector2di(l_iOffset), m_cTouch.LowerRightCorner - irr::core::vector2di(l_iOffset));
+      m_cScreen = irr::core::recti(a_cScreen.UpperLeftCorner + irr::core::vector2di(l_iOffset), a_cScreen.LowerRightCorner - irr::core::vector2di(l_iOffset));
 
       if (m_pOff != nullptr) m_cSourceOff = irr::core::recti(irr::core::position2di(), m_pOff->getSize());
       if (m_pOn  != nullptr) m_cSourceOn  = irr::core::recti(irr::core::position2di(), m_pOn ->getSize());

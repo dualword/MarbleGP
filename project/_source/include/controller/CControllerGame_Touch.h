@@ -50,7 +50,7 @@ namespace dustbin {
           bool m_bActive;                     /**< Flag to indicate whether the control is active or not */
 
           STouchInput();
-          STouchInput(const std::string &a_sPathOff, const std::string &a_sPathOn, const irr::core::recti &a_cScreen, irr::video::IVideoDriver *a_pDrv);
+          STouchInput(const std::string &a_sPathOff, const std::string &a_sPathOn, const irr::core::recti &a_cScreen, const irr::core::recti &a_cTouch, irr::video::IVideoDriver *a_pDrv);
 
           void draw(const irr::core::recti &a_cClip);
         }
