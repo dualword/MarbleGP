@@ -821,6 +821,10 @@ namespace dustbin {
                       }
                     }
                     else {
+                      l_cLine .end   = l_fVel * l_cDirection;
+                      l_cOther.start = l_cLine.end;
+                      l_cOther.end   = l_cOther.start + l_fMax * l_cDirection;
+
                       if (m_pDebugRTT != nullptr) {
                         draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
                       }
@@ -828,6 +832,7 @@ namespace dustbin {
 
                     break;
                   }
+                  else switchMarbleMode(enMarbleMode::Default);
 
                   break;
                 }
@@ -865,12 +870,12 @@ namespace dustbin {
                 // If the calculated point is the end of the line we move the point
                 // by the remaining speed in the direction of the second control line
                 if (l_cLine.getClosestPoint(l_cPoint1) == l_cLine.end) {
-                  l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen);
+                  l_cPoint1 = l_cOther.start + (l_cOther.end - l_cOther.start).normalize() * (irr::f32)l_fFactor2 * (l_fVel - l_fCtrlLen) * 1.25;
                 }
 
                 irr::f64 l_fAngle3 = l_cVelocityLine.getAngleWith(irr::core::line2df(irr::core::vector2df(), l_cPoint1));
 
-                l_fFactor = l_fAngle3 / 90.0;
+                l_fFactor = l_fAngle3 / 80.0;
 
                 if (m_fVCalc == -1.0f) {
                   // We only calculate the speed if it has not yet been set, i.e.
