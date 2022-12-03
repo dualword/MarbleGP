@@ -767,8 +767,9 @@ namespace dustbin {
                   // Off-track: get back on the track as fast as possible
                   l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr, a_cPoint1, a_cPoint2);
                   irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
-                  irr::f32 l_fDist = v.getDistanceFrom(l_cLine.start);
-                  if (l_fDist > 2.5f * m_p2dPath->m_fWidth)
+                  irr::f32 l_fDist      = v.getDistanceFrom(l_cLine.start);
+                  irr::f32 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25f : 2.5f;
+                  if (l_fDist > l_fThreshold * m_p2dPath->m_fWidth)
                     m_eMode = enMarbleMode::Respawn;
                   break;
                 }
@@ -923,9 +924,12 @@ namespace dustbin {
 
                 irr::core::vector2df l_cPos = irr::core::vector2df();
 
+                // Modify thresholds for marble classes??
+                irr::f64 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25 : 2.5;
+
                 // If the factor and the angle calculated above to get the actual steering. If the current angle is small (2.5) and the velocity line is not on the same
                 // side as the end of the second control line we do not steer to avoind chattering
-                l_iCtrlX = (std::abs(l_fAngle3) > 2.5 || (l_cOther.end.X > 0.0f != m_cVelocity2d.X > 0.0f)) ? l_fFactor > 0.05 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25)) : 0;
+                l_iCtrlX = (std::abs(l_fAngle3) > l_fThreshold || (l_cOther.end.X > 0.0f != m_cVelocity2d.X > 0.0f)) ? l_fFactor > 0.05 ? 127 : (irr::s8)(127.0 * (l_fFactor + 0.25)) : 0;
 
                 // Not determine if we need to steer left or right
                 if (l_cPoint1.X < 0.0f)
