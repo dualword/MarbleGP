@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<marble_cup name="Rookie Cup">
+  <race track="noob_oval" laps="10" />
+  <race track="noob_eight_crossing" laps="6" />
+  <race track="noob_complex" laps="3" />
+  <race track="playground" laps="4" />
+</marble_cup>

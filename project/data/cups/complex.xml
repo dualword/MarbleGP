@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<marble_cup name="Complex Cup">
+  <race track="small" laps="4" />
+  <race track="eight_hi_lo" laps="3" />
+</marble_cup>

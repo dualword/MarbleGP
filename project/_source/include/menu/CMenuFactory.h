@@ -31,6 +31,7 @@ namespace dustbin {
     IMenuHandler *createMenuFillGrid    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuFinalResult (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuCredits     (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
+    IMenuHandler *createMenuSelectCup   (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
   }
 }
 

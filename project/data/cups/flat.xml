@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<marble_cup name="Flat Cup">
+  <race track="oval" laps="10" />
+  <race track="eight_crossing" laps="5" />
+  <race track="flat_counter_crossings" laps="4" />
+</marble_cup>

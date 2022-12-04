@@ -297,7 +297,7 @@ namespace dustbin {
     /**
     * @class SChampionship
     * @author Christian Keimel
-    * This data structure stores
+    * This data structure stores the championship data
     */
     typedef struct SChampionship {
       std::vector<SChampionshipPlayer> m_vPlayers;  /**< The players of the championship */

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<marble_cup name="Moving Cup">
+  <race track="noob_oval" laps="8" />
+  <race track="noob_eight_crossing" laps="6" />
+  <race track="noob_complex" laps="4" />
+  <race track="playground" laps="4" />
+  <race track="oval" laps="8" />
+  <race track="eight_crossing" laps="6" />
+  <race track="flat_counter_crossings" laps="4" />
+  <race track="stepstones" laps="5" />
+  <race track="hi_jump" laps="5" />
+  <race track="doubleloop" laps="7" />
+  <race track="small" laps="4" />
+  <race track="eight_hi_lo" laps="3" />
+  <race track="the_gates" laps="3" />
+  <race track="four_obstacles" laps="5" />
+</marble_cup>

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<marble_cup name="Jumpin' Cup Flash">
+  <race track="stepstones" laps="6" />
+  <race track="hi_jump" laps="4" />
+</marble_cup>

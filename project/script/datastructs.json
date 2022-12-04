@@ -1,0 +1,168 @@
+{
+  "enums": {
+    "enPlayerType": {
+      "comment": "Enumeration for the player type",
+      "values" : [
+        { "name": "Local"  , "comment": "A local player (with his own viewport)" },
+        { "name": "Ai"     , "comment": "An AI player (has no viewport)" },
+        { "name": "Network", "comment": "A player connected by network" }
+      ]
+    },
+    "enAiHelp": {
+      "comment": "",
+      "values": [
+        { "name": "Off"    , "comment": "No AI help at all" },
+        { "name": "Display", "comment": "AI shows best path, steering and speed hints" },
+        { "name": "Low"    , "comment": "Display + adjust speed before jumps" },
+        { "name": "Medium" , "comment": "Low + adjust steering to the correct value + brake + try to keep marbles on the road" },
+        { "name": "High"   , "comment": "Medium + full throttle control" },
+        { "name": "BotMgp" , "comment": "Complete AI control (MarbleGP)" },
+        { "name": "BotMb2" , "comment": "Complete AI control (Marble2)" },
+        { "name": "BotMb3" , "comment": "Complete AI control (Marble3)" }
+      ]
+    },
+    "enGameType": {
+      "comment": "The type of race for this instance of the application",
+      "values": [
+        { "name": "Local"    , "comment": "The race is local. Might be a network race running on the server" },
+        { "name": "Network"  , "comment": "The instance is a network client" },
+        { "name": "ViewTrack", "comment": "The race is a view track race" },
+        { "name": "Replay"   , "comment": "The race is a race replay" }
+      ]
+    },
+    "enAiMode": {
+      "comment": "Enum for all the AI mode flags. Evade and Off-Track are always possible",
+      "values": [
+        { "name": "Default"   , "value": "0", "comment": "Default mode is zero, always possible" },
+        { "name": "Cruise"    , "value": "1", "comment": "" },
+        { "name": "TimeAttack", "value": "2", "comment": "" }
+      ]
+    },
+    "enGridOrder": {
+      "comment": "Enum for the grid position of the next race",
+      "values": [
+        { "name": "Fixed"    , "comment": "The starting positions are the same for all races of the tournament" },
+        { "name": "LastRace" , "comment": "The finish order of the previous race defines that starting positions of a race" },
+        { "name": "Standings", "comment": "The tournament standings define the starting positions of a race" },
+        { "name": "Random"   , "comment": "Every race has random starting positions" }
+      ]
+    },
+    "enAutoFinish": {
+      "comment": "The switch to define the type of auto-finish of a race",
+      "values": [
+        { "name": "AllPlayers"     , "comment": "All players have to finish, AI is auto-finished" },
+        { "name": "SecondToLast"   , "comment": "All players except for the last player have to finish, last player and AI is auto-finished" },
+        { "name": "FirstPlayer"    , "comment": "First player has to finish, all others are auto-finished" },
+        { "name": "AllPlayersAndAI", "comment": "All players and AI have to finish" }
+      ]
+    }
+  },
+  "structs": {
+    "SPlayerData": {
+      "comment": "This data structure holds the players' data",
+      "fields": [
+        { "name": "eType"     , "type": "enPlayerType", "default": "enPlayerType::Local", "comment": "The type of player" },
+        { "name": "eAiHelp"   , "type": "enAiHelp"    , "default": "enAiHelp::Off"      , "comment": "The level of AI help" },
+        { "name": "iPlayerId" , "type": "int"         , "default": "-1"                 , "comment": "The ID of the player" },
+        { "name": "iGridPos"  , "type": "int"         , "default": "-1"                 , "comment": "Position in the grid (1..16)" },
+        { "name": "iViewPort" , "type": "int"         , "default": "-1"                 , "comment": "The viewport of this player (if any)" },
+        { "name": "sName"     , "type": "string"      , "default": ""                   , "comment": "The player's name" },
+        { "name": "sTexture"  , "type": "string"      , "default": ""                   , "comment": "The player's texture generation string" },
+        { "name": "sShortName", "type": "string"      , "default": ""                   , "comment": "Abbreviation of the name for ranking display" }
+      ],
+      "functions": {
+        "isBot": { "type": "bool", "parameters": [ ], "comment": "Is this player a bot?" }
+      }
+    },
+    "SGameSettings": {
+      "comment": "A class for the general game settings",
+      "fields": [
+        { "name": "iGridSize"       , "type": "int"         , "default": "-1"                      , "comment": "The grid size, filled with AI players" },
+        { "name": "eGridPos"        , "type": "enGridOrder" , "default": "enGridOrder::LastRace"   , "comment": "The grid positions of the next race" },
+        { "name": "eAutoFinish"     , "type": "enAutoFinish", "default": "enAutoFinish::AllPlayers", "comment": "The auto finish mode" },
+        { "name": "bReverseGrid"    , "type": "bool"        , "default": "false"                   , "comment": "Shall the grid be reversed?" },
+        { "name": "bRandomFirstRace", "type": "bool"        , "default": "true"                    , "comment": "Shall the grid of the first race be randomized?" },
+        { "name": "bFillGridAI"     , "type": "bool"        , "default": "true"                    , "comment": "Should the grid be filled with AI players?" }
+      ]
+    },
+    "SGameData": {
+      "comment": "This struct holds the data for the upcoming race",
+      "fields": [
+        { "name": "eType" , "type": "enGameType", "default": "enGameType::Local", "comment": "The type of race" },
+        { "name": "sTrack", "type": "string"    , "default": ""                 , "comment": "The track" },
+        { "name": "iLaps" , "type": "int"       , "default": "0"                , "comment": "The number of laps" }
+      ]
+    },
+    "SRacePlayers": {
+      "comment": "This data struct holds the players of a race / championship",
+      "fields": [
+        { "name": "players", "type": "std::vector<SPlayerData>", "comment": "The players of the race / championship" }
+      ]
+    },
+    "SRacePlayer": {
+      "comment": "This data structure holds all data to keep up with a player during a race in the dynamics thread",
+      "fields": [
+        { "name": "iId"            , "type": "int"                          , "default": "-1"   , "comment": "The marble ID" },
+        { "name": "iStunned"       , "type": "int"                          , "default": "-1"   , "comment": "Stunned counter" },
+        { "name": "iRespawn"       , "type": "int"                          , "default": "-1"   , "comment": "Respawn counter" },
+        { "name": "iDeficitL"      , "type": "int"                          , "default": "-1"   , "comment": "Deficit to the leader" },
+        { "name": "iDeficitA"      , "type": "int"                          , "default": "-1"   , "comment": "Deficit to the marble ahead" },
+        { "name": "iPos"           , "type": "int"                          , "default": "-1"   , "comment": "The position of the player in the race" },
+        { "name": "iFastest"       , "type": "int"                          , "default": "-1"   , "comment": "Fastest lap of the player" },
+        { "name": "iWithdrawn"     , "type": "int"                          , "default": "-1"   , "comment": "The step when the player has withdrawn from the race" },
+        { "name": "bWithdrawn"     , "type": "bool"                         , "default": "false", "comment": "Has the player withdrawn from the race?" },
+        { "name": "bFinished"      , "type": "bool"                         , "default": "false", "comment": "Has the player finished the race?" },
+        { "name": "vLapCheckpoints", "type": "std::vector<std::vector<int>>", "default": ""     , "comment": "A vector that contains all checkpoint times for the laps" }
+      ],
+      "functions": {
+        "getRaceTime": { "type": "int", "parameters": [ ], "comment": "Get the race time of the player"   },
+        "getLapNo"   : { "type": "int", "parameters": [ ], "comment": "Get the current lap of the player" }
+      }
+    },
+    "SChampionshipPlayer": {
+      "comment": "This data struct stores the data of a player during a championship",
+      "fields": [
+        { "name": "iPlayerId"    , "type": "int"    , "default": "-1", "comment": "The player ID (0..16)" },
+        { "name": "sName"        , "type": "string" , "default": ""  , "comment": "Name" },
+        { "name": "aResult"      , "type": "int[16]", "default": "0" , "comment": "The race positions" },
+        { "name": "iPoints"      , "type": "int"    , "default": "0" , "comment": "Points of the player" },
+        { "name": "iRespawn"     , "type": "int"    , "default": "0" ,"comment": "The total number of respawns" },
+        { "name": "iStunned"     , "type": "int"    , "default": "0" , "comment": "The total number of stuns" },
+        { "name": "iFastestLaps" , "type": "int"    , "default": "0" , "comment": "Race in which this player made the fastest lap" },
+        { "name": "iDidNotFinish", "type": "int"    , "default": "0" , "comment": "Number of race a player hasn't finished" },
+        { "name": "iBestFinish"  , "type": "int"    , "default": "0" , "comment": "The first race in which the player scored it's best result" }
+      ]
+    },
+    "SChampionshipRace": {
+      "comment": "Used to store the races of a championship race",
+      "fields": [
+        { "name": "sTrack"     , "type": "string"            , "comment": "The track of the race" },
+        { "name": "iPlayers"   , "type": "int"               , "comment": "The number of players of the race" },
+        { "name": "iLaps"      , "type": "int"               , "comment": "The number of laps of the race" },
+        { "name": "aResult[16]", "type": "SRacePlayer"       , "comment": "The race result" },
+        { "name": "mAssignment", "type": "std::map<int, int>", "comment": " The assignment of marbles (key == marble id) to players (value == player id) in the race" }
+      ]
+    },
+    "SChampionship": {
+      "comment": "This data structure stores the championship data",
+      "fields": [
+        { "name": "vPlayers"    , "type": "std::vector<SChampionshipPlayer>", "comment": "The players of the championship" },
+        { "name": "vRaces"      , "type": "std::vector<SChampionshipRace>"  , "comment": "The races of the championship" },
+        { "name": "iGridOrder"  , "type": "enGridOrder"                     , "comment": "The grid order (0 == Last Race, 1 == Standings, 2 == Random)" },
+        { "name": "iGridSize"   , "type": "int"                             , "comment": "Grid size (0..16)" },
+        { "name": "bReverseGrid", "type": "bool"                            , "comment": "Reverse the grid?" }
+      ],
+      "functions": {
+        "getStandings": { "type": "std::vector<SChampionshipPlayer>", "parameters": [                                                                         ], "comment": "Get the current championship standings" },
+        "addRace"     : { "type": "void"                            , "parameters": [ { "prefix": "const", "type": "SChampionshipRace &", "name": "a_cRace" } ], "comment": "Add a race to the championship"         },
+        "getLastRace" : { "type": "SChampionshipRace *"             , "parameters": [                                                                         ], "comment": "Get the last race of the championship"  }
+      }
+    },
+    "SFreeGameSlots": {
+      "comment": "A little struct for storing the available free game slots in the globals",
+      "fields": [
+        { "name": "vSlots", "type": "std::vector<int>", "comment": "The available free game slots" }
+      ]
+    }
+  }
+}

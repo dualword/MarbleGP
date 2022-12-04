@@ -82,8 +82,7 @@ namespace dustbin {
               createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "cup") {
-              m_pState->getGlobal()->setGlobal("message_text", "MarbleGP Cup is not yet implemented");
-              createMenu("menu_message", m_pDevice, m_pManager, m_pState);
+              createMenu("menu_selectcup", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "credits") {
               createMenu("menu_credits", m_pDevice, m_pManager, m_pState);

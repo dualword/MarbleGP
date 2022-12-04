@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<marblegp_cups>
+  <cup file="noob.xml" />
+  <cup file="flat.xml" />
+  <cup file="jump.xml" />
+  <cup file="complex.xml" />
+  <cup file="moving.xml" />
+</marblegp_cups>

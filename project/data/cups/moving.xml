@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<marble_cup name="Moving Cup">
+  <race track="four_obstacles" laps="5" />
+  <race track="the_gates" laps="4" />
+</marble_cup>
