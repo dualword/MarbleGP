@@ -748,7 +748,7 @@ namespace dustbin {
 
             if (l_bIncoming) {
               // If an incoming marble was detected we switch to "evade" mode..
-              switchMarbleMode(enMarbleMode::Evade);
+              // switchMarbleMode(enMarbleMode::Evade);
             }
             else if (m_eMode == enMarbleMode::Evade) {
               // .. otherwise we turn the evade mode off if it's still active
