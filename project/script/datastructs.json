@@ -9,7 +9,7 @@
       ]
     },
     "enAiHelp": {
-      "comment": "",
+      "comment": "Enumeration to define a player's AI help",
       "values": [
         { "name": "Off"    , "comment": "No AI help at all" },
         { "name": "Display", "comment": "AI shows best path, steering and speed hints" },
@@ -57,8 +57,9 @@
       ]
     }
   },
-  "structs": {
-    "SPlayerData": {
+  "structs": [
+    {
+      "name": "SPlayerData",
       "comment": "This data structure holds the players' data",
       "fields": [
         { "name": "eType"     , "type": "enPlayerType", "default": "enPlayerType::Local", "comment": "The type of player" },
@@ -66,15 +67,16 @@
         { "name": "iPlayerId" , "type": "int"         , "default": "-1"                 , "comment": "The ID of the player" },
         { "name": "iGridPos"  , "type": "int"         , "default": "-1"                 , "comment": "Position in the grid (1..16)" },
         { "name": "iViewPort" , "type": "int"         , "default": "-1"                 , "comment": "The viewport of this player (if any)" },
-        { "name": "sName"     , "type": "string"      , "default": ""                   , "comment": "The player's name" },
-        { "name": "sTexture"  , "type": "string"      , "default": ""                   , "comment": "The player's texture generation string" },
-        { "name": "sShortName", "type": "string"      , "default": ""                   , "comment": "Abbreviation of the name for ranking display" }
+        { "name": "sName"     , "type": "std::string" , "default": "\"\""               , "comment": "The player's name" },
+        { "name": "sTexture"  , "type": "std::string" , "default": "\"\""               , "comment": "The player's texture generation string" },
+        { "name": "sShortName", "type": "std::string" , "default": "\"\""               , "comment": "Abbreviation of the name for ranking display" }
       ],
       "functions": {
         "isBot": { "type": "bool", "parameters": [ ], "comment": "Is this player a bot?" }
       }
     },
-    "SGameSettings": {
+    {
+      "name": "SGameSettings",
       "comment": "A class for the general game settings",
       "fields": [
         { "name": "iGridSize"       , "type": "int"         , "default": "-1"                      , "comment": "The grid size, filled with AI players" },
@@ -85,21 +87,24 @@
         { "name": "bFillGridAI"     , "type": "bool"        , "default": "true"                    , "comment": "Should the grid be filled with AI players?" }
       ]
     },
-    "SGameData": {
+    {
+      "name": "SGameData",
       "comment": "This struct holds the data for the upcoming race",
       "fields": [
-        { "name": "eType" , "type": "enGameType", "default": "enGameType::Local", "comment": "The type of race" },
-        { "name": "sTrack", "type": "string"    , "default": ""                 , "comment": "The track" },
-        { "name": "iLaps" , "type": "int"       , "default": "0"                , "comment": "The number of laps" }
+        { "name": "eType" , "type": "enGameType" , "default": "enGameType::Local", "comment": "The type of race" },
+        { "name": "sTrack", "type": "std::string", "default": "\"\""             , "comment": "The track" },
+        { "name": "iLaps" , "type": "int"        , "default": "0"                , "comment": "The number of laps" }
       ]
     },
-    "SRacePlayers": {
+    {
+      "name": "SRacePlayers",
       "comment": "This data struct holds the players of a race / championship",
       "fields": [
         { "name": "players", "type": "std::vector<SPlayerData>", "comment": "The players of the race / championship" }
       ]
     },
-    "SRacePlayer": {
+    {
+      "name": "SRacePlayer",
       "comment": "This data structure holds all data to keep up with a player during a race in the dynamics thread",
       "fields": [
         { "name": "iId"            , "type": "int"                          , "default": "-1"   , "comment": "The marble ID" },
@@ -119,31 +124,34 @@
         "getLapNo"   : { "type": "int", "parameters": [ ], "comment": "Get the current lap of the player" }
       }
     },
-    "SChampionshipPlayer": {
+    {
+      "name": "SChampionshipPlayer",
       "comment": "This data struct stores the data of a player during a championship",
       "fields": [
-        { "name": "iPlayerId"    , "type": "int"    , "default": "-1", "comment": "The player ID (0..16)" },
-        { "name": "sName"        , "type": "string" , "default": ""  , "comment": "Name" },
-        { "name": "aResult"      , "type": "int[16]", "default": "0" , "comment": "The race positions" },
-        { "name": "iPoints"      , "type": "int"    , "default": "0" , "comment": "Points of the player" },
-        { "name": "iRespawn"     , "type": "int"    , "default": "0" ,"comment": "The total number of respawns" },
-        { "name": "iStunned"     , "type": "int"    , "default": "0" , "comment": "The total number of stuns" },
-        { "name": "iFastestLaps" , "type": "int"    , "default": "0" , "comment": "Race in which this player made the fastest lap" },
-        { "name": "iDidNotFinish", "type": "int"    , "default": "0" , "comment": "Number of race a player hasn't finished" },
-        { "name": "iBestFinish"  , "type": "int"    , "default": "0" , "comment": "The first race in which the player scored it's best result" }
+        { "name": "iPlayerId"    , "type": "int"        , "default": "-1"  , "comment": "The player ID (0..16)" },
+        { "name": "sName"        , "type": "std::string", "default": "\"\"", "comment": "Name" },
+        { "name": "aResult"      , "type": "int"        , "default": "0"   , "comment": "The race positions", "array": "16" },
+        { "name": "iPoints"      , "type": "int"        , "default": "0"   , "comment": "Points of the player" },
+        { "name": "iRespawn"     , "type": "int"        , "default": "0"   ,"comment": "The total number of respawns" },
+        { "name": "iStunned"     , "type": "int"        , "default": "0"   , "comment": "The total number of stuns" },
+        { "name": "iFastestLaps" , "type": "int"        , "default": "0"   , "comment": "Race in which this player made the fastest lap" },
+        { "name": "iDidNotFinish", "type": "int"        , "default": "0"   , "comment": "Number of races a player hasn't finished" },
+        { "name": "iBestFinish"  , "type": "int"        , "default": "0"   , "comment": "The first race in which the player scored it's best result" }
       ]
     },
-    "SChampionshipRace": {
+    {
+      "name": "SChampionshipRace",
       "comment": "Used to store the races of a championship race",
       "fields": [
-        { "name": "sTrack"     , "type": "string"            , "comment": "The track of the race" },
+        { "name": "sTrack"     , "type": "std::string"       , "comment": "The track of the race" },
         { "name": "iPlayers"   , "type": "int"               , "comment": "The number of players of the race" },
         { "name": "iLaps"      , "type": "int"               , "comment": "The number of laps of the race" },
-        { "name": "aResult[16]", "type": "SRacePlayer"       , "comment": "The race result" },
+        { "name": "aResult"    , "type": "SRacePlayer"       , "comment": "The race result", "array": "16" },
         { "name": "mAssignment", "type": "std::map<int, int>", "comment": " The assignment of marbles (key == marble id) to players (value == player id) in the race" }
       ]
     },
-    "SChampionship": {
+    {
+      "name": "SChampionship",
       "comment": "This data structure stores the championship data",
       "fields": [
         { "name": "vPlayers"    , "type": "std::vector<SChampionshipPlayer>", "comment": "The players of the championship" },
@@ -158,11 +166,12 @@
         "getLastRace" : { "type": "SChampionshipRace *"             , "parameters": [                                                                         ], "comment": "Get the last race of the championship"  }
       }
     },
-    "SFreeGameSlots": {
+    {
+      "name": "SFreeGameSlots",
       "comment": "A little struct for storing the available free game slots in the globals",
       "fields": [
         { "name": "vSlots", "type": "std::vector<int>", "comment": "The available free game slots" }
       ]
     }
-  }
+  ]
 }
