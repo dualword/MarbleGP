@@ -112,7 +112,7 @@ namespace dustbin {
             std::map<irr::core::vector3df, int> &a_mSplitSelections, 
             std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
             std::vector<const data::SMarblePosition *> &a_vMarbles,
-            std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
+            std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
             lua::CLuaScript_ai *a_pLuaScript
           );
 

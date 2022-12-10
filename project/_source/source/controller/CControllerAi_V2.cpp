@@ -534,8 +534,8 @@ namespace dustbin {
           irr::f32 l_fVel = m_cVelocity2d.getLength();
           m_fVCalc = -1.0f;
 
-          // transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
-          std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
+          // transformed positions (tuple index 1) and velocities (tuple index 2) with the IDs (tuple index 0) of the marbles
+          std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
 
           SPathLine2d *l_pSpecial = nullptr;
 
@@ -664,6 +664,25 @@ namespace dustbin {
             }
           }        
 
+          irr::f32             l_fClosest = 0.0f;
+          irr::core::vector2df l_cClosest;
+
+          for (auto& l_cMarble : l_vMarblePosVel) {
+            irr::core::vector2df v = irr::core::vector2df(std::get<1>(l_cMarble).X, std::get<1>(l_cMarble).Y);
+
+            if (v.Y < 0.0f) {
+              irr::f32 f = v.getLength();
+              if (l_fClosest == 0.0f || f < l_fClosest) {
+                l_cClosest = v;
+                l_fClosest = f;
+              }
+            }
+          }
+
+          if (m_iMarbleId == 10001) {
+            // printf("--> %i (%.2f, %.2f)\n", (int)l_vMarblePosVel.size(), l_cClosest.X, l_cClosest.Y);
+          }
+
           irr::s16 l_iCtrlX = 0;
 
           if (m_pDebugRTT != nullptr) {
@@ -683,6 +702,9 @@ namespace dustbin {
                 draw2dDebugLine(m_pDrv, l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
                 draw2dDebugLine(m_pDrv, l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
               }
+            }
+            if (l_fClosest != 0.0f && m_pDebugRTT != nullptr) {
+              draw2dDebugRectangle(m_pDrv, l_cClosest, irr::video::SColor(0xFF, 0, 0xFF, 0), 15, m_fScale, m_cOffset);
             }
           }
 
@@ -788,6 +810,22 @@ namespace dustbin {
                   break;
               }
               
+              bool l_bOvertake = false;
+              bool l_bOTBrake  = true;
+
+              if (m_eMode != enMarbleMode::Jump) {
+                if (l_fClosest != 0.0f && l_fClosest < 16.0f) {
+                  bool l_bPath = l_cLine.getPointOrientation(l_cOther.end) < 0.0f;
+                  bool l_bMrbl = l_cLine.getPointOrientation(l_cClosest  ) < 0.0f;
+
+                  l_bOvertake = true;
+                  l_cLine.end.X += l_bPath ? -5.0f : 5.0f;
+                  l_cOther.start = l_cLine.end;
+                  switchMarbleMode(enMarbleMode::TimeAttack);
+
+                  l_bOTBrake = !((l_bMrbl == l_bPath) && l_fClosest < 5.0f);
+                }
+              }
 
               if (m_pDebugRTT != nullptr)
                 draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
@@ -849,6 +887,9 @@ namespace dustbin {
                   if (l_fVel > m_cAiData.m_fSpeedThreshold * l_cLine.getLength()) {
                     m_fVCalc = (irr::f32)l_fSpeed2;
                   }
+
+                  if (l_bOvertake)
+                    m_fVCalc *= 1.05f;
                 }
 
                 if (m_fVCalc > l_fVel) {
@@ -862,7 +903,7 @@ namespace dustbin {
                   // current speed or the wanted speed is
                   // zero we activate the brake
                   a_iCtrlY = -127;
-                  a_bBrake = std::abs(l_fVel - m_fVCalc) > 5.0f || m_fVCalc == 0.0f;
+                  a_bBrake = l_bOTBrake && (std::abs(l_fVel - m_fVCalc) > 5.0f || m_fVCalc == 0.0f);
                 }
 
                 irr::core::vector2df l_cPos = irr::core::vector2df();
@@ -1391,7 +1432,7 @@ namespace dustbin {
       std::map<irr::core::vector3df, int> &a_mSplitSelections, 
       std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
       std::vector<const data::SMarblePosition *> &a_vMarbles,
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
+      std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
       lua::CLuaScript_ai *a_pLuaScript
     ) {
       m_cPathLine.m_vNext.clear();
@@ -1414,7 +1455,7 @@ namespace dustbin {
           a_cMatrix.transformVect(l_cPos);
           a_cMatrix.transformVect(l_cVel);
 
-          a_vMarblePosVel.push_back(std::make_tuple(l_cPos, l_cVel));
+          a_vMarblePosVel.push_back(std::make_tuple((*l_itMarble)->m_iMarbleId, l_cPos, l_cVel));
         }
       }
 
