@@ -458,24 +458,7 @@ namespace dustbin {
       }
 
       if (a_eMode != m_eMode) {
-        switch (m_eMode) {
-          case enMarbleMode::Evade:
-            if (a_eMode == enMarbleMode::OffTrack)
-              m_eMode = enMarbleMode::OffTrack;
-            else {
-              m_iMode--;
-              if (m_iMode <= 0)
-                m_eMode = a_eMode;
-            }
-            break;
-
-          default:
-            m_eMode = a_eMode;
-            break;
-        }
-
-        if (a_eMode == enMarbleMode::Evade)
-          m_iMode = 120;
+        m_eMode = a_eMode;
       }
     }
 
@@ -719,42 +702,6 @@ namespace dustbin {
             std::vector<SPathLine2d *> l_vEnds;
             findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
 
-            bool l_bIncoming = false;
-
-            // Here we calcualate all of the other marbles, their position and their velocity, to see if we need to evade an incoming marble
-            for (std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>>::iterator l_itOthers = l_vMarblePosVel.begin(); l_itOthers != l_vMarblePosVel.end(); l_itOthers++) {
-              irr::core::vector3df l_cPos = std::get<0>(*l_itOthers);
-              irr::core::vector3df l_cVel = std::get<1>(*l_itOthers);
-
-              irr::core::vector2df l_cPos2d = irr::core::vector2df(l_cPos.X, l_cPos.Y);
-              irr::core::vector2df l_cVel2d = irr::core::vector2df(l_cVel.X, l_cVel.Y);
-
-              if (l_cPos2d.Y < 0.0f && l_cVel2d.Y > 0.0f && (l_cVel2d.X - l_cPos2d.X > 0) != l_cPos.X > 0) {
-                irr::core::line2df l_cVelLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
-
-                irr::core::vector2df l_cDist = l_cVelLine.getClosestPoint(l_cPos2d) - l_cPos2d;
-
-                if (l_cDist.getLengthSQ() < l_fVel * l_fVel) {
-                  l_bIncoming = true;
-                  break;
-                }
-              }
-
-              if (m_pDebugRTT != nullptr) {
-                draw2dDebugRectangle(m_pDrv, l_cPos2d, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), 15, m_fScale, m_cOffset);
-                draw2dDebugLine(m_pDrv, irr::core::line2df(l_cPos2d, l_cVel2d), m_fScale, m_eMode == enMarbleMode::Evade ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
-              }
-            }
-
-            if (l_bIncoming) {
-              // If an incoming marble was detected we switch to "evade" mode..
-              // switchMarbleMode(enMarbleMode::Evade);
-            }
-            else if (m_eMode == enMarbleMode::Evade) {
-              // .. otherwise we turn the evade mode off if it's still active
-              switchMarbleMode(enMarbleMode::Default);
-            }
-
             int l_iLines = 0;
 
             for (std::vector<SPathLine2d*>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
@@ -784,10 +731,6 @@ namespace dustbin {
 
                 case enMarbleMode::TimeAttack:
                   l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
-                  break;
-
-                case enMarbleMode::Evade:
-                  l_iLines = getControlLines_Evade(l_cLine, l_cOther, *l_itEnd, 2.0f * l_fVel, a_cPoint1, a_cPoint2);
                   break;
 
                 case enMarbleMode::Jump: {
@@ -1002,11 +945,7 @@ namespace dustbin {
               case enMarbleMode::TimeAttack:
                 s = L"Ai Mode: Time Attack";
                 break;
-              
-              case enMarbleMode::Evade:
-                s = L"Ai Mode: Evade";
-                break;
-
+     
               case enMarbleMode::Jump:
                 s = L"Ai Mode: Jump";
                 break;
@@ -1205,48 +1144,6 @@ namespace dustbin {
 
       a_cPoint2 = a_cPoint1;
       
-      return l_iRet;
-    }
-
-    /**
-    * Get the 2d lines for calculating the marble controls when an incoming marble was detected and evasise steps must be taken
-    * @param a_cLineOne [out] the first control line
-    * @param a_cLineTwo [out] the second control line
-    * @param a_pPath the AI path data for calculating the two lines
-    * @param a_cPoint1 [out] the first 3d point of the AI calculation
-    * @param a_cPoint2 [out] the second 3d point of the AI calculation
-    * @return the number of calculated lines (1 or 2)
-    */
-    int CControllerAi_V2::getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
-      int l_iRet = 0;
-
-      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1)) {
-        l_iRet++;
-
-        irr::core::line2df l_cLine;
-        SPathLine2d *l_pThis = m_p2dPath;
-
-        a_cLineOne.end = l_pThis->m_cLines[0].getClosestPoint(irr::core::vector2df());
-
-        irr::f32 l_fDist = irr::core::line2df(a_cLineOne.end, irr::core::vector2df()).getLength();
-        l_pThis = *l_pThis->m_vNext.begin();
-
-        while (l_fDist < 50.0f) {
-          a_cLineOne.end = l_pThis->m_cLines[0].end;
-          l_fDist += a_cLineOne.getLength();
-          l_pThis = *l_pThis->m_vNext.begin();
-        }
-
-        irr::core::vector2df l_cNormal = irr::core::vector2df(-a_cLineOne.end.Y, a_cLineOne.end.X).normalize();
-
-        a_cLineOne.end   += 0.45f * m_p2dPath->m_fWidth * l_cNormal;
-        a_cLineTwo.start  = a_cLineOne.end;
-        a_cLineTwo.end    = a_cLineOne.end;
-
-        if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint2))
-          l_iRet++;
-      }
-
       return l_iRet;
     }
 

@@ -361,18 +361,6 @@ namespace dustbin {
         */
         int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
 
-        /**
-        * Get the 2d lines for calculating the marble controls when an incoming marble was detected and evasise steps must be taken
-        * @param a_cLineOne [out] the first control line
-        * @param a_cLineTwo [out] the second control line
-        * @param a_pPath the AI path data for calculating the two lines
-        * @param a_fDistance the distance used for the "incoming" calculation
-        * @param a_cPoint1 [out] the first 3d point of the AI calculation
-        * @param a_cPoint2 [out] the second 3d point of the AI calculation
-        * @return the number of calculated lines (1 or 2)
-        */
-        int getControlLines_Evade(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::f32 a_fDistance, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
-
       public:
         /**
         * The constructor
