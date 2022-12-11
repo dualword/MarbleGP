@@ -113,6 +113,13 @@ namespace dustbin {
     }
 
     /**
+    * A marble has finished
+    * @param a_iMarbleId ID of the finished marble
+    */
+    void CControllerAI::onPlayerFinished(irr::s32 a_iMarbleId) {
+    }
+
+    /**
     * Get the control values for the marble
     * @param a_iMarbleId [out] ID of the marble this controller controls
     * @param a_iCtrlX [out] the steering value 

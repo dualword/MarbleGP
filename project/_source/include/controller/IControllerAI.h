@@ -61,6 +61,12 @@ namespace dustbin {
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) = 0;
 
         /**
+        * A marble has finished
+        * @param a_iMarbleId ID of the finished marble
+        */
+        virtual void onPlayerFinished(irr::s32 a_iMarbleId) = 0;
+
+        /**
         * Get the control values for the marble
         * @param a_iMarbleId [out] ID of the marble this controller controls
         * @param a_iCtrlX [out] the steering value 

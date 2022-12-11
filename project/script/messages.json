@@ -464,7 +464,8 @@
         "MarbleMoved",
         "PlayerRespawn",
         "Checkpoint",
-        "RacePosition"
+        "RacePosition",
+        "PlayerFinished"
       ]
     }
   ]

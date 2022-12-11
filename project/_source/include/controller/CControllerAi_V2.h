@@ -240,6 +240,8 @@ namespace dustbin {
         SRacePosition                m_aRacePositions[16];    /**< The positions in the race */
         const data::SMarblePosition *m_aMarbles          ;    /**< Data of the marbles */
 
+        std::vector<irr::s32> m_vFinished;    /**< Vector with all finished marbles */
+
         static std::vector<SAiPathSection *> m_vAiPath   [3];   /**< A list of all ai path sections for the three classes */
         static int                           m_iInstances[3];   /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
 
@@ -402,6 +404,12 @@ namespace dustbin {
         * @param a_DeficitLeader Deficit of the marble on the leader in steps
         */
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
+
+        /**
+        * A marble has finished
+        * @param a_iMarbleId ID of the finished marble
+        */
+        virtual void onPlayerFinished(irr::s32 a_iMarbleId) override;
 
         /**
         * Get the control values for the marble

@@ -483,6 +483,14 @@ namespace dustbin {
     }
 
     /**
+    * A marble has finished
+    * @param a_iMarbleId ID of the finished marble
+    */
+    void CControllerAi_V2::onPlayerFinished(irr::s32 a_iMarbleId) {
+      m_vFinished.push_back(a_iMarbleId);
+    }
+
+    /**
     * Get the control values for the marble
     * @param a_iMarbleId [out] ID of the marble this controller controls
     * @param a_iCtrlX [out] the steering value 
@@ -665,16 +673,20 @@ namespace dustbin {
           }        
 
           irr::f32             l_fClosest = 0.0f;
-          irr::core::vector2df l_cClosest;
+          irr::core::vector2df l_cCloseMb;
+          irr::core::vector2df l_cCloseSp;
 
           for (auto& l_cMarble : l_vMarblePosVel) {
-            irr::core::vector2df v = irr::core::vector2df(std::get<1>(l_cMarble).X, std::get<1>(l_cMarble).Y);
+            if (std::find(m_vFinished.begin(), m_vFinished.end(), std::get<0>(l_cMarble)) == m_vFinished.end()) {
+              irr::core::vector2df v = irr::core::vector2df(std::get<1>(l_cMarble).X, std::get<1>(l_cMarble).Y);
 
-            if (v.Y < 0.0f) {
-              irr::f32 f = v.getLength();
-              if (l_fClosest == 0.0f || f < l_fClosest) {
-                l_cClosest = v;
-                l_fClosest = f;
+              if (v.Y < 0.0f) {
+                irr::f32 f = v.getLength();
+                if (l_fClosest == 0.0f || f < l_fClosest) {
+                  l_cCloseMb = v;
+                  l_fClosest = f;
+                  l_cCloseSp = irr::core::vector2df(std::get<2>(l_cMarble).X, std::get<2>(l_cMarble).Y);
+                }
               }
             }
           }
@@ -704,7 +716,7 @@ namespace dustbin {
               }
             }
             if (l_fClosest != 0.0f && m_pDebugRTT != nullptr) {
-              draw2dDebugRectangle(m_pDrv, l_cClosest, irr::video::SColor(0xFF, 0, 0xFF, 0), 15, m_fScale, m_cOffset);
+              draw2dDebugRectangle(m_pDrv, l_cCloseMb, irr::video::SColor(0xFF, 0, 0xFF, 0), 15, m_fScale, m_cOffset);
             }
           }
 
@@ -811,27 +823,59 @@ namespace dustbin {
               }
               
               bool l_bOvertake = false;
+              bool l_bCollide  = false;
               bool l_bOTBrake  = true;
 
               if (m_eMode != enMarbleMode::Jump) {
-                if (l_fClosest != 0.0f && l_fClosest < 16.0f) {
-                  bool l_bPath = l_cLine.getPointOrientation(l_cOther.end) < 0.0f;
-                  bool l_bMrbl = l_cLine.getPointOrientation(l_cClosest  ) < 0.0f;
+                if (true) {
+                  // Avoid collisions
+                  irr::core::vector2df l_cCollision = l_cVelocityLine.getClosestPoint(l_cCloseMb);
 
-                  l_bOvertake = true;
-                  l_cLine.end.X += l_bPath ? -5.0f : 5.0f;
-                  l_cOther.start = l_cLine.end;
-                  switchMarbleMode(enMarbleMode::TimeAttack);
+                  if (l_cCollision.Y < 0.0f) {
+                    irr::f32 l_fSideVal = 2.0f;   // todo: verify other values
+                    irr::f32 l_fVelFact = 1.15f;  // Marble2: 1.35f, Marble3: 1.5f
+                    irr::f32 l_fColFact = 0.8f;   // todo: verify other values
 
-                  l_bOTBrake = !((l_bMrbl == l_bPath) && l_fClosest < 5.0f);
+                    if ((l_cCollision - l_cCloseMb).getLength() <= l_fSideVal && l_cCloseSp.getLength() < l_fVelFact * l_fVel && l_cCollision.getLength() < l_fColFact * l_fVel) {
+                      m_fVCalc = 0.9f * l_cCloseSp.getLength();
+                      l_bCollide = true;
+                    }
+                    else if (abs(l_cCollision.X) < abs(l_cCollision.Y) && l_cCloseSp.getLength() < l_fVel) {
+                      m_fVCalc = 0.9f * l_cCloseSp.getLength();
+                      l_bCollide = true;
+                    }
+                  }
+                }
+                else if (true) {
+                  // Overtake attempt
+                  if (l_fClosest != 0.0f && l_fClosest < 16.0f) {
+                    bool l_bPath = l_cLine.getPointOrientation(l_cOther.end) < 0.0f;
+                    bool l_bMrbl = l_cLine.getPointOrientation(l_cClosest  ) < 0.0f;
+
+                    l_bOvertake = true;
+                    l_cLine.end.X += l_bPath ? -5.0f : 5.0f;
+                    l_cOther.start = l_cLine.end;
+                    switchMarbleMode(enMarbleMode::TimeAttack);
+
+                    l_bOTBrake = !((l_bMrbl == l_bPath) && l_fClosest < 5.0f && l_bMrbl == l_bPath);
+                  }
                 }
               }
 
-              if (m_pDebugRTT != nullptr)
+              if (m_pDebugRTT != nullptr) {
                 draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
 
-              if (l_iLines > 1 && m_pDebugRTT != nullptr)
-                draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+                if (l_iLines > 1)
+                  draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+
+                if (l_bCollide || l_bOvertake) {
+                  std::wstring s = l_bCollide ? L"C" : l_bOTBrake ? L"OB" : L"O";
+                  irr::core::dimension2du l_cDim = m_pFont->getDimension(s.c_str());
+                  irr::core::position2di  l_cPos = irr::core::position2di(0, m_pDebugRTT->getOriginalSize().Height - l_cDim.Height);
+                  m_pDrv->draw2DRectangle(l_bCollide ? irr::video::SColor(0xFF, 0xFF, 0, 0) : l_bOTBrake ? irr::video::SColor(0xFF, 0, 0xFF, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), irr::core::recti(l_cPos, l_cDim));
+                  draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df((irr::f32)l_cPos.X, (irr::f32)l_cPos.Y));
+                }
+              }
 
               if (l_fVel > 5.0f) {
                 // A reasonable speed has been calculated or we are in jump mode

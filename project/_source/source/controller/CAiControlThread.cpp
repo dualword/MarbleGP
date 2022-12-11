@@ -107,6 +107,16 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "PlayerFinished"
+    * @param a_MarbleId ID of the finished marble
+    * @param a_RaceTime Racetime of the finished player in simulation steps
+    * @param a_Laps The number of laps the player has done
+    */
+    void CAiControlThread::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+
+    }
+
+    /**
     * The implementing object must implement this method. It is called when the thread start working
     */
     void CAiControlThread::execute() {
