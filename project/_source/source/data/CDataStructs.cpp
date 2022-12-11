@@ -1616,6 +1616,13 @@ namespace dustbin {
           m_fSpeedFactor1   = 80.0;
           m_fSpeedFactor2   = 75.0;
           m_fSpeedThreshold = 1.8f;
+          m_iOvertake       = 85;
+          m_iAvoid          = 10;
+          m_iJumpMode       = 99;
+          m_iJumpDir        = 95;
+          m_iJumpVel        = 92;
+          m_iPathSelect     = 95;
+          m_iRoadBlock      = 95;
           break;
 
         case 1:
@@ -1623,9 +1630,16 @@ namespace dustbin {
           // Only "Cruise" and "Default" modes for Marble2
           m_iModeMap = (int)enAiMode::Cruise | (int)enAiMode::Default;
 
-          m_fSpeedFactor1   = 75.0;
-          m_fSpeedFactor2   = 65.0;
-          m_fSpeedThreshold = 1.5f;
+          m_fSpeedFactor1   = 65.0;
+          m_fSpeedFactor2   = 55.0;
+          m_fSpeedThreshold = 1.35f;
+          m_iOvertake       = 45;
+          m_iAvoid          = 35;
+          m_iJumpMode       = 90;
+          m_iJumpDir        = 85;
+          m_iJumpVel        = 83;
+          m_iPathSelect     = 80;
+          m_iRoadBlock      = 85;
           break;
 
         case 2:
@@ -1633,9 +1647,16 @@ namespace dustbin {
           // Only "Default" mode for Marble3
           m_iModeMap = (int)enAiMode::Default;
 
-          m_fSpeedFactor1   = 60.0;
-          m_fSpeedFactor2   = 55.0;
-          m_fSpeedThreshold = 1.35f;
+          m_fSpeedFactor1   = 55.0;
+          m_fSpeedFactor2   = 50.0;
+          m_fSpeedThreshold = 1.25f;
+          m_iOvertake       = 15;
+          m_iAvoid          = 65;
+          m_iJumpMode       = 80;
+          m_iJumpDir        = 75;
+          m_iJumpVel        = 75;
+          m_iPathSelect     = 50;
+          m_iRoadBlock      = 65;
           break;
       }
     }

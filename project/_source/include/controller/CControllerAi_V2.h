@@ -103,14 +103,12 @@ namespace dustbin {
           * Create 2d path lines out of the list of 3d path lines
           * @param a_cMatrix the camera matrix to use for the transformation
           * @param a_mSplitSelections a map with all the already selected directions on road splits
-          * @param a_mLastStepSelections the selection map used in the last step
           * @param a_vMarbles the current positions of the marbles
           * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
           */
           SPathLine2d *transformTo2d(
             const irr::core::matrix4 &a_cMatrix, 
-            std::map<irr::core::vector3df, int> &a_mSplitSelections, 
-            std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
+            std::map<int, SPathLine3d *> &a_mSplitSelections, 
             std::vector<const data::SMarblePosition *> &a_vMarbles,
             std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
             lua::CLuaScript_ai *a_pLuaScript
@@ -132,14 +130,15 @@ namespace dustbin {
         * read from the scene
         */
         typedef struct SAiPathSection {
+          int m_iTag;           /**< The tag passed to the script for split-offs and blocks */
           int m_iIndex;         /**< Index for debugging */
           int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
-          int m_iTag;           /**< The tag passed to the script for split-offs and blocks */
           bool m_bStartup;      /**< Is this a startup section? */
           bool m_bSelected;     /**< Is this section selected if multiple sections exist? */
 
           irr::f32 m_fMinVel;   /**< Minimum velocity for jumps */
           irr::f32 m_fMaxVel;   /**< Maximum velocity for jumps */
+          irr::f32 m_fBestVel;  /**< Best velocity for jumps */
 
           irr::core::line3df m_cRealLine;   /**< The real (not adjusted) 3d line of the section */
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
@@ -205,16 +204,38 @@ namespace dustbin {
         }
         SRacePosition;
 
+        /**
+        * Which class is this AI instance? Can either be help (0..2) or a bot (3..5)
+        */
+        enum class enAiMode {
+          MarbleGP,
+          Marble2,
+          Marble3
+        };
+
+        enum class enSkill {
+          OtherMarbleMode,    /**< This skills checks whether an AI controlled marble overtakes, avoids or ignores another marble */
+          JumpModeSwitch,     /**< Does the marble succeed in switching to the jump mode? */
+          JumpDirection,      /**< Does the marble succeed in the jump direction? */
+          JumpVelocity,       /**< Does the marble succeed in the jump velocity? */
+          PathSelection,      /**< Is the LUA script called for a path selection? */
+          RoadBlock,          /**< Is the LUA script called to detect a road block? */
+
+          Count
+        };
+
+        enAiMode m_eAiMode;       /**< AI Mode of this instance */
+
         int m_iMarbleId;          /**< ID of the marble this instance controls */
         int m_iIndex;             /**< Index of the marble in the marble data array */
         int m_iLastCheckpoint;    /**< The last passed checkpoint */
         int m_iMyPosition;        /**< My position in the race */
-        int m_iPathSelection;     /**< The index of the path selection maps */
         int m_iClassIndex;        /**< Index for accessing the class-specific path data */
+        int m_iRespawn;           /**< Respawn counter */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */
-        irr::s32 m_iMode;     /**< Mode change counter, used for evade mode */
+        irr::f32 m_fJumpFact; /**< Jump factor for calculating the speed between min and max */
 
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
@@ -222,6 +243,8 @@ namespace dustbin {
         data::SMarbleAiData m_cAiData;    /**< Struct with the AI data */
 
         irr::f64 m_fOldAngle;
+
+        bool m_bAiHelp;   /**< Is this an AI help instance? If so it always succeeds with all skills */
 
         enMarbleMode m_eMode;   /**< The marble's current mode */
 
@@ -235,7 +258,7 @@ namespace dustbin {
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
-        std::map<irr::core::vector3df, int> m_mSplitSelections[2];    /**< Selections of split roads */
+        std::map<int, SPathLine3d *> m_mSplitSelections;     /**< Selections of split roads */
 
         SRacePosition                m_aRacePositions[16];    /**< The positions in the race */
         const data::SMarblePosition *m_aMarbles          ;    /**< Data of the marbles */
@@ -248,6 +271,13 @@ namespace dustbin {
         std::vector<std::wstring> m_vDebugText;   /**< Additional debug text (lower left) */
 
         SPathLine2d *m_p2dPath;   /**< The 2d path for the control calculation */
+
+        int m_iSkills[(int)enSkill::Count];   /**< Does this marble succeed in his skills? */
+
+        /**
+        * Update the skill values using random number generation
+        */
+        void rollDice();
 
         /**
         * Search for "special" path lines, i.e. jumps or blocks

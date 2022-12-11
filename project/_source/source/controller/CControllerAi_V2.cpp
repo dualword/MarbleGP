@@ -139,14 +139,15 @@ namespace dustbin {
     * @param a_cViewport the viewport of the player, necessary for debug data output
     */
     CControllerAi_V2::CControllerAi_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport) : 
+      m_eAiMode        (enAiMode::Marble3),
       m_iMarbleId      (a_iMarbleId), 
       m_iIndex         (a_iMarbleId - 10000),
       m_iLastCheckpoint(-1), 
       m_iMyPosition    (0),
-      m_iPathSelection (0),
+      m_iClassIndex    (0),
+      m_iRespawn       (0),
       m_fVCalc         (0.0f), 
       m_fScale         (1.0f),
-      m_iMode          (0),
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
@@ -160,6 +161,15 @@ namespace dustbin {
       m_p2dPath        (nullptr)
     {
       m_cAiData = data::SMarbleAiData(a_sControls);
+
+      if (m_cAiData.m_iMarbleClass == 0 || m_cAiData.m_iMarbleClass == 3)
+        m_eAiMode = enAiMode::MarbleGP;
+      else if (m_cAiData.m_iMarbleClass == 1 || m_cAiData.m_iMarbleClass == 4)
+        m_eAiMode = enAiMode::Marble2;
+      else if (m_cAiData.m_iMarbleClass == 2 || m_cAiData.m_iMarbleClass == 5)
+        m_eAiMode = enAiMode::Marble3;
+
+      m_bAiHelp = m_cAiData.m_iMarbleClass < 3;
 
       m_iClassIndex = m_cAiData.m_iMarbleClass % 2;
 
@@ -192,9 +202,13 @@ namespace dustbin {
               p->m_eType = (*l_itSection)->m_eType;
               p->m_iTag  = (*l_itSection)->m_iTag;
 
+              if (p->m_iTag != 0)
+                printf("Tag: %i\n", p->m_iTag); 
+
               if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
-                p->m_fMinVel = (*l_itSection)->m_fMinSpeed;
-                p->m_fMaxVel = (*l_itSection)->m_fMaxSpeed;
+                p->m_fMinVel  = (*l_itSection)->m_fMinSpeed;
+                p->m_fMaxVel  = (*l_itSection)->m_fMaxSpeed;
+                p->m_fBestVel = (*l_itSection)->m_fBestSpeed;
               }
 
               irr::core::vector3df l_cStart = (*l_itSection)->m_cPosition;
@@ -321,6 +335,9 @@ namespace dustbin {
         printf("Ready.");
       }
       m_iInstances[m_iClassIndex]++;
+
+      for (int i = 0; i < (int)enSkill::Count; i++)
+        m_iSkills[i] = 0;
     }
 
     CControllerAi_V2::~CControllerAi_V2() {
@@ -366,9 +383,39 @@ namespace dustbin {
         }
 
         m_pCurrent = nullptr;
-        m_iMode    = 0;
         switchMarbleMode(enMarbleMode::OffTrack);
+        m_iRespawn++;
+        rollDice();
       }
+    }
+
+    /**
+    * Update the skill values using random number generation
+    */
+    void CControllerAi_V2::rollDice() {
+      for (int i = 0; i < (int)enSkill::Count; i++) {
+        if (m_iRespawn < 5 && !m_bAiHelp) {
+          int l_iQuot = m_iRespawn == 0 ? 100 : m_iRespawn == 1 ? 80 : m_iRespawn == 2 ? 60 : m_iRespawn == 3 ? 40 : 20;
+          m_iSkills[i] = std::rand() % l_iQuot;
+        }
+        else m_iSkills[i] = 0;
+
+        printf("Marble %i (class %s): Skill %i = %i (%s)\n", 
+          m_iMarbleId, 
+          m_eAiMode == enAiMode::MarbleGP ? "MarbleGP" : m_eAiMode == enAiMode::Marble2 ? "Marble2 " : "Marble3 ",
+          i, 
+          m_iSkills[i], 
+          i == (int)enSkill::OtherMarbleMode ? m_iSkills[i] < m_cAiData.m_iAvoid      ? "avoid"         : m_iSkills[i] < m_cAiData.m_iOvertake ? "overtake" : "default" : 
+          i == (int)enSkill::JumpModeSwitch  ? m_iSkills[i] < m_cAiData.m_iJumpMode   ? "Jump Mode OK"  : "Jump Mode Fail"  :
+          i == (int)enSkill::JumpDirection   ? m_iSkills[i] < m_cAiData.m_iJumpDir    ? "Jump Dir OK"   : "Jump Dir Fail"   :
+          i == (int)enSkill::JumpVelocity    ? m_iSkills[i] < m_cAiData.m_iJumpVel    ? "Jump Vel OK"   : "Jump Vel Fail"   :
+          i == (int)enSkill::PathSelection   ? m_iSkills[i] < m_cAiData.m_iPathSelect ? "Path Select OK": "Path Select Fail":
+          i == (int)enSkill::RoadBlock       ? m_iSkills[i] < m_cAiData.m_iRoadBlock  ? "Road Block OK" : "Road Block Fail" : ""
+        );
+      }
+
+      m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
+      printf("Marble %i (class %s): Jump velocity factor = %.2f\n", m_iMarbleId, m_eAiMode == enAiMode::MarbleGP ? "MarbleGP" : m_eAiMode == enAiMode::Marble2 ? "Marble2 " : "Marble3 ", m_fJumpFact);
     }
 
     /**
@@ -379,6 +426,10 @@ namespace dustbin {
     void CControllerAi_V2::onCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       if (a_iMarbleId == m_iMarbleId) {
         m_iLastCheckpoint = a_iCheckpoint;
+        m_iRespawn = 0;
+        rollDice();
+
+        m_mSplitSelections.clear();
       }
     }
 
@@ -458,7 +509,14 @@ namespace dustbin {
       }
 
       if (a_eMode != m_eMode) {
-        m_eMode = a_eMode;
+        bool a_bSucceed = true;
+
+        if (a_eMode == enMarbleMode::Jump) {
+          a_bSucceed = m_iSkills[(int)enSkill::JumpModeSwitch] < m_cAiData.m_iJumpMode;
+        }
+
+        if (a_bSucceed)
+          m_eMode = a_eMode;
       }
     }
 
@@ -561,19 +619,15 @@ namespace dustbin {
             // Transform the data
             m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(
               l_cMatrix, 
-              m_mSplitSelections[m_iPathSelection], 
-              m_mSplitSelections[m_iPathSelection == 0 ? 1 : 0], 
+              m_mSplitSelections, 
               l_vMarbles, 
               l_vMarblePosVel,
-              m_pLuaScript
+              m_iSkills[(int)enSkill::PathSelection] < m_cAiData.m_iPathSelect ? m_pLuaScript : nullptr
             );
 
             // Transform our velocity to 2d
             irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
             l_cMatrix.transformVect(l_vDummy);
-
-            m_iPathSelection = m_iPathSelection == 0 ? 1 : 0;
-            m_mSplitSelections[m_iPathSelection].clear();
 
             m_cVelocity2d.X = l_vDummy.X;
             m_cVelocity2d.Y = l_vDummy.Y;
@@ -620,7 +674,7 @@ namespace dustbin {
                   irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
                   if (l_fDist < l_fVel) {
                     // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
-                    if (m_pLuaScript != nullptr) {
+                    if (m_pLuaScript != nullptr && m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock) {
                       int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, l_pSpecial->m_pParent->m_pParent->m_iTag);
 
                       // ... if so we set the veclcity to zero, overriding any other calculation
@@ -779,6 +833,7 @@ namespace dustbin {
 
                     irr::f32 l_fMin = l_pSpecial->m_pParent->m_pParent->m_fMinVel;
                     irr::f32 l_fMax = l_pSpecial->m_pParent->m_pParent->m_fMaxVel;
+                    irr::f32 l_fBst = l_pSpecial->m_pParent->m_pParent->m_fBestVel;
 
                     if (l_fMin <= 0.0f) l_fMin = l_fVel;
                     if (l_fMax <= 0.0f) l_fMax = l_fVel * 1.25f;
@@ -792,8 +847,20 @@ namespace dustbin {
                     irr::core::vector2df v;
 
                     // To do: some randomness and skill for the speed we are going to use
-                    if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v)) {
-                      m_fVCalc = l_fMax;
+                    if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v) && m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel) {
+
+                      if (l_fBst != -1.0f && m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel / 8)
+                        m_fVCalc = l_fBst;
+                      else {
+                        if (l_fMin == -1.0f)
+                          m_fVCalc = l_fMax;
+                        else if (l_fMax == -1.f)
+                          m_fVCalc = l_fMin;
+                        else {
+                          m_fVCalc = l_fMin + ((l_fMax - l_fMin) * m_fJumpFact);
+                        }
+                      }
+
                       if (m_pDebugRTT != nullptr) {
                         draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
                       }
@@ -827,26 +894,27 @@ namespace dustbin {
               bool l_bOTBrake  = true;
 
               if (m_eMode != enMarbleMode::Jump) {
-                if (true) {
+                if (m_iSkills[(int)enSkill::OtherMarbleMode] < m_cAiData.m_iAvoid) {
                   // Avoid collisions
                   irr::core::vector2df l_cCollision = l_cVelocityLine.getClosestPoint(l_cCloseMb);
 
                   if (l_cCollision.Y < 0.0f) {
-                    irr::f32 l_fSideVal = 2.0f;   // todo: verify other values
-                    irr::f32 l_fVelFact = 1.15f;  // Marble2: 1.35f, Marble3: 1.5f
-                    irr::f32 l_fColFact = 0.8f;   // todo: verify other values
+                    irr::f32 l_fSideVal  = m_eAiMode == enAiMode::MarbleGP ? 1.75f : m_eAiMode == enAiMode::Marble2 ? 2.0f  : 2.5f;
+                    irr::f32 l_fVelFact  = m_eAiMode == enAiMode::MarbleGP ? 1.15f : m_eAiMode == enAiMode::Marble2 ? 1.35f : 1.5f;
+                    irr::f32 l_fColFact  = m_eAiMode == enAiMode::MarbleGP ?  0.8f : m_eAiMode == enAiMode::Marble2 ? 0.9f  : 1.0f;
+                    irr::f32 l_fMultiply = m_eAiMode == enAiMode::MarbleGP ?  0.9f : m_eAiMode == enAiMode::Marble2 ? 0.8f  : 0.7f;
 
                     if ((l_cCollision - l_cCloseMb).getLength() <= l_fSideVal && l_cCloseSp.getLength() < l_fVelFact * l_fVel && l_cCollision.getLength() < l_fColFact * l_fVel) {
-                      m_fVCalc = 0.9f * l_cCloseSp.getLength();
+                      m_fVCalc = l_fMultiply * l_cCloseSp.getLength();
                       l_bCollide = true;
                     }
                     else if (abs(l_cCollision.X) < abs(l_cCollision.Y) && l_cCloseSp.getLength() < l_fVel) {
-                      m_fVCalc = 0.9f * l_cCloseSp.getLength();
+                      m_fVCalc = l_fMultiply * l_cCloseSp.getLength();
                       l_bCollide = true;
                     }
                   }
                 }
-                else if (true) {
+                else if (m_iSkills[(int)enSkill::OtherMarbleMode] < m_cAiData.m_iOvertake) {
                   // Overtake attempt
                   if (l_fClosest != 0.0f && l_fClosest < 16.0f) {
                     bool l_bPath = l_cLine.getPointOrientation(l_cOther.end) < 0.0f;
@@ -954,6 +1022,17 @@ namespace dustbin {
 
                 // Modify thresholds for marble classes??
                 irr::f64 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25 : 2.5;
+
+                if (m_eMode == enMarbleMode::Jump) {
+                  int l_iSkillJump = m_iSkills[(int)enSkill::JumpDirection];
+
+                  if (l_iSkillJump < m_cAiData.m_iJumpDir)
+                    l_fThreshold = 0.25;
+                  else {
+                    irr::f32 l_fFactor = (irr::f32)(m_cAiData.m_iJumpDir - l_iSkillJump) / (irr::f32)m_cAiData.m_iJumpDir;
+                    l_fThreshold = 0.25 + 2.0f * abs(l_fFactor);
+                  }
+                }
 
                 // If the factor and the angle calculated above to get the actual steering. If the current angle is small (2.5) and the velocity line is not on the same
                 // side as the end of the second control line we do not steer to avoind chattering
@@ -1467,14 +1546,12 @@ namespace dustbin {
     * Create 2d path lines out of the list of 3d path lines
     * @param a_cMatrix the camera matrix to use for the transformation
     * @param a_mSplitSelections a map with all the already selected directions on road splits
-    * @param a_mLastStepSelections the selection map used in the last step
     * @param a_vMarbles the current positions of the marbles
     * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
     */
     CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(
       const irr::core::matrix4 &a_cMatrix, 
-      std::map<irr::core::vector3df, int> &a_mSplitSelections, 
-      std::map<irr::core::vector3df, int> &a_mLastStepSelections, 
+      std::map<int, SPathLine3d *> &a_mSplitSelections, 
       std::vector<const data::SMarblePosition *> &a_vMarbles,
       std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
       lua::CLuaScript_ai *a_pLuaScript
@@ -1507,28 +1584,27 @@ namespace dustbin {
       m_cPathLine.m_cMatrix = a_cMatrix;
 
       if (m_vNext.size() == 1) {
-        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
       else if (m_vNext.size() > 1) {
-        irr::core::vector3df v = m_cLines[0].start;
+        int l_iTag = (*this->m_pParent->m_vNext.begin())->m_iTag;
         int l_iSplit = -1;
 
+        printf("%i\n", a_mSplitSelections.size());
         if (a_pLuaScript != nullptr) {
           l_iSplit = a_pLuaScript->decide_roadsplit(-1, (*this->m_pParent->m_vNext.begin())->m_iTag);
 
           if (l_iSplit != -1) {
-            a_mSplitSelections[v] = l_iSplit;
+            a_mSplitSelections[l_iTag] = m_vNext[l_iSplit];
           }
         }
 
         if (l_iSplit == -1) {
-          if (a_mLastStepSelections.find(v) == a_mLastStepSelections.end() || a_mLastStepSelections[v] < 0 || a_mLastStepSelections[v] >= m_vNext.size()) {
-            a_mSplitSelections[v] = std::rand() % m_vNext.size();
-          }
-          else {
-            a_mSplitSelections[v] = a_mLastStepSelections[v];
+          if (a_mSplitSelections.find(l_iTag) == a_mSplitSelections.end()) {
+            if (m_vNext.size() > 0)
+              a_mSplitSelections[l_iTag] = m_vNext[std::rand() % m_vNext.size()];
           }
         }
 
@@ -1536,22 +1612,20 @@ namespace dustbin {
           (*l_itNext)->m_pParent->m_bSelected = false;
         }
 
-        SPathLine3d *l_pNext = m_vNext[a_mSplitSelections[v]];
-        l_pNext->m_pParent->m_bSelected = true;
+        if (a_mSplitSelections.find(l_iTag) != a_mSplitSelections.end()) {
+          SPathLine3d *l_pNext = a_mSplitSelections[l_iTag];
+          l_pNext->m_pParent->m_bSelected = true;
 
-        // 0 == -338
-        // 1 == -315
-        // 2 == -361
-
-        SPathLine2d *l_pChild = l_pNext->transformTo2d(a_cMatrix, a_mSplitSelections, a_mLastStepSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
-        l_pChild->m_pPrevious = &m_cPathLine;
-        m_cPathLine.m_vNext.push_back(l_pChild);
+          SPathLine2d *l_pChild = l_pNext->transformTo2d(a_cMatrix, a_mSplitSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
+          l_pChild->m_pPrevious = &m_cPathLine;
+          m_cPathLine.m_vNext.push_back(l_pChild);
+        }
       }
 
       return &m_cPathLine;
     }
 
-    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_iTag(0), m_fMinVel(-1.0f), m_fMaxVel(-1.0f), m_bStartup(false), m_bSelected(false), m_pAiPath(nullptr) {
+    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_iTag(0), m_fMinVel(-1.0f), m_fMaxVel(-1.0f), m_fBestVel(-1.0f), m_bStartup(false), m_bSelected(false), m_pAiPath(nullptr) {
     }
 
     CControllerAi_V2::SAiPathSection::~SAiPathSection() {
