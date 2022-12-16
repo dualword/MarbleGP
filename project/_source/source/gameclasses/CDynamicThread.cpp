@@ -99,14 +99,35 @@ namespace dustbin {
           }
         }
         else {
+          irr::core::vector3df l_cVel = irr::core::vector3df();
+
+          if (l_pOdeNode1->m_cBody != 0)
+            l_cVel = vectorOdeToIrr(dBodyGetLinearVel(l_pOdeNode1->m_cBody));
+          else if (l_pOdeNode2->m_cBody != 0)
+            l_cVel = vectorOdeToIrr(dBodyGetLinearVel(l_pOdeNode2->m_cBody));
+
+          irr::f32 l_fVel = l_cVel.getLengthSQ();
+
+          if (l_fVel < 100.0f)
+            l_fVel = 100.0f;
+          else if (l_fVel > 2500.0f)
+            l_fVel = 2500.0f;
+
+          l_fVel = (l_fVel - 100.0f) / 2400.0f;
+
+          dReal l_fSoftErp = 0.4 * l_fVel;
+
           for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
             l_cContact[i].surface.bounce = (dReal)0.15;
-            l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2; // | dContactSoftCFM | dContactSoftERP;
+            l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2;
+
+            if (l_fSoftErp > 0.0) l_cContact[i].surface.mode |= dContactSoftERP;
+
             l_cContact[i].surface.mu = (dReal)1500;
             l_cContact[i].surface.mu2 = (dReal)0;
-            l_cContact[i].surface.bounce_vel = (dReal)0.0001;
-            l_cContact[i].surface.soft_cfm = (dReal)0.001;
-            l_cContact[i].surface.soft_erp = (dReal)0.2;
+            l_cContact[i].surface.bounce_vel = (dReal)0.0003;
+            l_cContact[i].surface.soft_cfm = 0.0;
+            l_cContact[i].surface.soft_erp = l_fSoftErp;
             l_cContact[i].surface.rho = (dReal)0.9;
             l_cContact[i].surface.rho2 = (dReal)0.9;
             l_cContact[i].surface.slip1 = (dReal)0.05;
