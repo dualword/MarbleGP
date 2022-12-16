@@ -1592,7 +1592,6 @@ namespace dustbin {
         int l_iTag = (*this->m_pParent->m_vNext.begin())->m_iTag;
         int l_iSplit = -1;
 
-        printf("%i\n", a_mSplitSelections.size());
         if (a_pLuaScript != nullptr) {
           l_iSplit = a_pLuaScript->decide_roadsplit(-1, (*this->m_pParent->m_vNext.begin())->m_iTag);
 
