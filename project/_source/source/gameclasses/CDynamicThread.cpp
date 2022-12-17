@@ -91,7 +91,7 @@ namespace dustbin {
             l_cContact[i].surface.mu2 = (dReal)0;
             l_cContact[i].surface.bounce_vel = (dReal)0.00001;
             l_cContact[i].surface.soft_cfm = (dReal)0.004;
-            l_cContact[i].surface.soft_erp = (dReal)0.4;
+            l_cContact[i].surface.soft_erp = (dReal)0.2;
             l_cContact[i].surface.rho = (dReal)0.9;
             l_cContact[i].surface.rho2 = (dReal)0.9;
             l_cContact[i].surface.slip1 = (dReal)0.5;
