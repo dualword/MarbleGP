@@ -240,7 +240,8 @@ namespace dustbin {
                 }
               }
               
-              irr::f32 l_fClass =  m_iClassIndex == 0 ? 1.0f : m_iClassIndex == 1 ? 0.9f : 0.85f;
+              
+              irr::f32 l_fClass = m_eAiMode == enAiMode::MarbleGP ? 1.0f : m_eAiMode == enAiMode::Marble2 ? 0.85f : 0.8f;// m_iClassIndex == 0 ? 1.0f : m_iClassIndex == 1 ? 0.85f : 0.8f;
 
               irr::core::vector3df l_cEdgePoints[] = {
                 (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector * l_fClass,   // Start point 1
@@ -899,10 +900,10 @@ namespace dustbin {
                   irr::core::vector2df l_cCollision = l_cVelocityLine.getClosestPoint(l_cCloseMb);
 
                   if (l_cCollision.Y < 0.0f) {
-                    irr::f32 l_fSideVal  = m_eAiMode == enAiMode::MarbleGP ? 1.75f : m_eAiMode == enAiMode::Marble2 ? 2.0f  : 2.5f;
-                    irr::f32 l_fVelFact  = m_eAiMode == enAiMode::MarbleGP ? 1.15f : m_eAiMode == enAiMode::Marble2 ? 1.35f : 1.5f;
+                    irr::f32 l_fSideVal  = m_eAiMode == enAiMode::MarbleGP ? 1.75f : m_eAiMode == enAiMode::Marble2 ? 2.5f  : 3.5f;
+                    irr::f32 l_fVelFact  = m_eAiMode == enAiMode::MarbleGP ? 1.15f : m_eAiMode == enAiMode::Marble2 ? 1.65f : 2.0f;
                     irr::f32 l_fColFact  = m_eAiMode == enAiMode::MarbleGP ?  0.8f : m_eAiMode == enAiMode::Marble2 ? 0.9f  : 1.0f;
-                    irr::f32 l_fMultiply = m_eAiMode == enAiMode::MarbleGP ?  0.9f : m_eAiMode == enAiMode::Marble2 ? 0.8f  : 0.7f;
+                    irr::f32 l_fMultiply = m_eAiMode == enAiMode::MarbleGP ?  0.9f : m_eAiMode == enAiMode::Marble2 ? 0.6f  : 0.5f;
 
                     if ((l_cCollision - l_cCloseMb).getLength() <= l_fSideVal && l_cCloseSp.getLength() < l_fVelFact * l_fVel && l_cCollision.getLength() < l_fColFact * l_fVel) {
                       m_fVCalc = l_fMultiply * l_cCloseSp.getLength();
@@ -991,7 +992,7 @@ namespace dustbin {
                   irr::f64 l_fSpeed2 = std::max(15.0, l_fSpeedFact2 * l_fSpeedFact2 * m_cAiData.m_fSpeedFactor2);
 
                   if (l_fSpeedFact2 > 0.85) {
-                    l_fSpeed2 += m_cAiData.m_fSpeedFactor2 * (l_fSpeedFact2 / 0.85);
+                    l_fSpeed2 += m_cAiData.m_fSpeedFactor2 * (l_fSpeedFact2 / (m_eAiMode == enAiMode::MarbleGP ? 0.85f : m_eAiMode == enAiMode::Marble2 ? 0.95f  : 1.0f));
                   }
                 
                   // if we are fast enough we use this second

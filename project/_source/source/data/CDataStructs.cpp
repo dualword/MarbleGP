@@ -1635,9 +1635,9 @@ namespace dustbin {
           m_fSpeedThreshold = 1.35f;
           m_iOvertake       = 45;
           m_iAvoid          = 35;
-          m_iJumpMode       = 90;
-          m_iJumpDir        = 85;
-          m_iJumpVel        = 83;
+          m_iJumpMode       = 97;
+          m_iJumpDir        = 90;
+          m_iJumpVel        = 90;
           m_iPathSelect     = 80;
           m_iRoadBlock      = 85;
           break;
@@ -1652,9 +1652,9 @@ namespace dustbin {
           m_fSpeedThreshold = 1.25f;
           m_iOvertake       = 15;
           m_iAvoid          = 65;
-          m_iJumpMode       = 80;
-          m_iJumpDir        = 75;
-          m_iJumpVel        = 75;
+          m_iJumpMode       = 95;
+          m_iJumpDir        = 85;
+          m_iJumpVel        = 87;
           m_iPathSelect     = 50;
           m_iRoadBlock      = 65;
           break;
