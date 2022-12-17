@@ -384,7 +384,7 @@ namespace dustbin {
         }
 
         m_pCurrent = nullptr;
-        switchMarbleMode(enMarbleMode::OffTrack);
+        m_eMode = enMarbleMode::OffTrack;
         m_iRespawn++;
         rollDice();
       }
@@ -394,6 +394,8 @@ namespace dustbin {
     * Update the skill values using random number generation
     */
     void CControllerAi_V2::rollDice() {
+      printf("%i (%s)", m_iMarbleId, m_eAiMode == enAiMode::MarbleGP ? "MarbleGP" : m_eAiMode == enAiMode::Marble2 ? "Marble2 " : "Marble3 ");
+
       for (int i = 0; i < (int)enSkill::Count; i++) {
         if (m_iRespawn < 5 && !m_bAiHelp) {
           int l_iQuot = m_iRespawn == 0 ? 100 : m_iRespawn == 1 ? 80 : m_iRespawn == 2 ? 60 : m_iRespawn == 3 ? 40 : 20;
@@ -401,22 +403,20 @@ namespace dustbin {
         }
         else m_iSkills[i] = 0;
 
-        printf("Marble %i (class %s): Skill %i = %i (%s)\n", 
-          m_iMarbleId, 
-          m_eAiMode == enAiMode::MarbleGP ? "MarbleGP" : m_eAiMode == enAiMode::Marble2 ? "Marble2 " : "Marble3 ",
+        printf(":%i=%-3i[%s]", 
           i, 
           m_iSkills[i], 
-          i == (int)enSkill::OtherMarbleMode ? m_iSkills[i] < m_cAiData.m_iAvoid      ? "avoid"         : m_iSkills[i] < m_cAiData.m_iOvertake ? "overtake" : "default" : 
-          i == (int)enSkill::JumpModeSwitch  ? m_iSkills[i] < m_cAiData.m_iJumpMode   ? "Jump Mode OK"  : "Jump Mode Fail"  :
-          i == (int)enSkill::JumpDirection   ? m_iSkills[i] < m_cAiData.m_iJumpDir    ? "Jump Dir OK"   : "Jump Dir Fail"   :
-          i == (int)enSkill::JumpVelocity    ? m_iSkills[i] < m_cAiData.m_iJumpVel    ? "Jump Vel OK"   : "Jump Vel Fail"   :
-          i == (int)enSkill::PathSelection   ? m_iSkills[i] < m_cAiData.m_iPathSelect ? "Path Select OK": "Path Select Fail":
-          i == (int)enSkill::RoadBlock       ? m_iSkills[i] < m_cAiData.m_iRoadBlock  ? "Road Block OK" : "Road Block Fail" : ""
+          i == (int)enSkill::OtherMarbleMode ? m_iSkills[i] < m_cAiData.m_iAvoid      ? "avo" : m_iSkills[i] < m_cAiData.m_iOvertake ? "ovt" : "def" : 
+          i == (int)enSkill::JumpModeSwitch  ? m_iSkills[i] < m_cAiData.m_iJumpMode   ? "jm+" : "jm-"  :
+          i == (int)enSkill::JumpDirection   ? m_iSkills[i] < m_cAiData.m_iJumpDir    ? "jd+" : "jd-"   :
+          i == (int)enSkill::JumpVelocity    ? m_iSkills[i] < m_cAiData.m_iJumpVel    ? "jv+" : "jv-"   :
+          i == (int)enSkill::PathSelection   ? m_iSkills[i] < m_cAiData.m_iPathSelect ? "ps+" : "ps-":
+          i == (int)enSkill::RoadBlock       ? m_iSkills[i] < m_cAiData.m_iRoadBlock  ? "rb+" : "rb-" : ""
         );
       }
 
       m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
-      printf("Marble %i (class %s): Jump velocity factor = %.2f\n", m_iMarbleId, m_eAiMode == enAiMode::MarbleGP ? "MarbleGP" : m_eAiMode == enAiMode::Marble2 ? "Marble2 " : "Marble3 ", m_fJumpFact);
+      printf(" | jvf: %.2f\n", m_fJumpFact);
     }
 
     /**
@@ -516,6 +516,11 @@ namespace dustbin {
           a_bSucceed = m_iSkills[(int)enSkill::JumpModeSwitch] < m_cAiData.m_iJumpMode;
         }
 
+        if (a_eMode == enMarbleMode::OffTrack) {
+          // If we are in a loop we ignore off-track
+          a_bSucceed = m_eMode != enMarbleMode::Loop;
+        }
+
         if (a_bSucceed)
           m_eMode = a_eMode;
       }
@@ -601,6 +606,9 @@ namespace dustbin {
           irr::f32 l_fVel = m_cVelocity2d.getLength();
           m_fVCalc = -1.0f;
 
+          if (m_eMode == enMarbleMode::Loop && l_fVel < 30.0f)
+            switchMarbleMode(enMarbleMode::Respawn);
+
           // transformed positions (tuple index 1) and velocities (tuple index 2) with the IDs (tuple index 0) of the marbles
           std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
 
@@ -646,7 +654,7 @@ namespace dustbin {
             else {
               if (l_pSpecial != nullptr) {
                 // We have found a jump
-                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
                   // Now we check for the segment after the jump, to see if we need to switch to jump mode
                   // we create two lines from our position to the borders of the end of the segment and see
                   // if these lines do not cross any border (therefore the 0.1 * limitation) we are ready to jump
@@ -658,7 +666,7 @@ namespace dustbin {
 
                   // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
                   if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
-                    switchMarbleMode(enMarbleMode::Jump);
+                    switchMarbleMode(l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump ? enMarbleMode::Jump : enMarbleMode::Loop);
                   else 
                     if (m_eMode == enMarbleMode::Jump)
                       switchMarbleMode(enMarbleMode::Default);
@@ -688,7 +696,7 @@ namespace dustbin {
               }
               else {
                 // No jump ahead but still in jump mood? Switch to default
-                if (m_eMode == enMarbleMode::Jump)
+                if (m_eMode == enMarbleMode::Jump || m_eMode == enMarbleMode::Loop)
                   switchMarbleMode(enMarbleMode::Default);
               }
 
@@ -696,7 +704,7 @@ namespace dustbin {
               // back on track we switch the mode to "default"
               if (m_eMode == enMarbleMode::OffTrack)
                 switchMarbleMode(enMarbleMode::Default);
-              else if (m_eMode != enMarbleMode::Jump) {
+              else if (m_eMode != enMarbleMode::Jump && m_eMode != enMarbleMode::Loop) {
                 // if we are not currently jumping we use the ranking to see if we
                 // can switch the mode. To do: make this dependent of the class and marble
 
@@ -756,7 +764,7 @@ namespace dustbin {
             // If debugging is active we paint the two calculated lines the determine how we move
             m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
             if (l_pSpecial != nullptr) {
-              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
                 irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
                 irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
 
@@ -819,6 +827,7 @@ namespace dustbin {
                   break;
 
                 case enMarbleMode::TimeAttack:
+                case enMarbleMode::Loop:
                   l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                   break;
 
@@ -1113,6 +1122,10 @@ namespace dustbin {
      
               case enMarbleMode::Jump:
                 s = L"Ai Mode: Jump";
+                break;
+
+              case enMarbleMode::Loop:
+                s = L"Ai Mode: Loop";
                 break;
 
               case enMarbleMode::Respawn:

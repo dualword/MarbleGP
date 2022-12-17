@@ -25,6 +25,7 @@ namespace dustbin {
           Cruise,       /**< Cruise mode, more safety, lap time not as good */
           TimeAttack,   /**< Time Attack mode, sacrifice some safety for better lap time */
           Jump,         /**< We are approaching a jump so we need to handle things differently */
+          Loop,         /**< We are in a loop, so let's try to keep the speed as high as possible */
           Respawn       /**< The marble wants to respawn */
         };
 

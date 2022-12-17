@@ -22,7 +22,8 @@ namespace dustbin {
         enum enSegmentType {
           Default,
           Jump,
-          Block
+          Block,
+          Loop
         };
 
         typedef struct SAiPathSection {
