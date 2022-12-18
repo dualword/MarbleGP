@@ -103,12 +103,14 @@ namespace dustbin {
           * Create 2d path lines out of the list of 3d path lines
           * @param a_cMatrix the camera matrix to use for the transformation
           * @param a_mSplitSelections a map with all the already selected directions on road splits
+          * @param a_mOldSelections the map with the selections of the previous step
           * @param a_vMarbles the current positions of the marbles
           * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
           */
           SPathLine2d *transformTo2d(
             const irr::core::matrix4 &a_cMatrix, 
             std::map<int, SPathLine3d *> &a_mSplitSelections, 
+            std::map<int, SPathLine3d *> &a_mOldSelections,
             std::vector<const data::SMarblePosition *> &a_vMarbles,
             std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
             lua::CLuaScript_ai *a_pLuaScript
@@ -232,6 +234,7 @@ namespace dustbin {
         int m_iMyPosition;        /**< My position in the race */
         int m_iClassIndex;        /**< Index for accessing the class-specific path data */
         int m_iRespawn;           /**< Respawn counter */
+        int m_iSplitIndex;        /**< The current index of m_mSplitSelections */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */
@@ -258,7 +261,7 @@ namespace dustbin {
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
-        std::map<int, SPathLine3d *> m_mSplitSelections;     /**< Selections of split roads */
+        std::map<int, SPathLine3d *> m_mSplitSelections[2];     /**< Selections of split roads */
 
         SRacePosition                m_aRacePositions[16];    /**< The positions in the race */
         const data::SMarblePosition *m_aMarbles          ;    /**< Data of the marbles */

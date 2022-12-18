@@ -146,6 +146,7 @@ namespace dustbin {
       m_iMyPosition    (0),
       m_iClassIndex    (0),
       m_iRespawn       (0),
+      m_iSplitIndex    (0),
       m_fVCalc         (0.0f), 
       m_fScale         (1.0f),
       m_pCurrent       (nullptr), 
@@ -422,8 +423,6 @@ namespace dustbin {
         m_iLastCheckpoint = a_iCheckpoint;
         m_iRespawn = 0;
         rollDice();
-
-        m_mSplitSelections.clear();
       }
     }
 
@@ -621,11 +620,15 @@ namespace dustbin {
             // Transform the data
             m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d(
               l_cMatrix, 
-              m_mSplitSelections, 
+              m_mSplitSelections[m_iSplitIndex],
+              m_mSplitSelections[m_iSplitIndex == 0 ? 1 : 0],
               l_vMarbles, 
               l_vMarblePosVel,
-              m_iSkills[(int)enSkill::PathSelection] < m_cAiData.m_iPathSelect ? m_pLuaScript : nullptr
+              m_cAiData.m_iPathSelect >= 100 || m_iSkills[(int)enSkill::PathSelection] < m_cAiData.m_iPathSelect ? m_pLuaScript : nullptr
             );
+
+            m_iSplitIndex = m_iSplitIndex == 0 ? 1 : 0;
+            m_mSplitSelections[m_iSplitIndex].clear();
 
             // Transform our velocity to 2d
             irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
@@ -676,7 +679,7 @@ namespace dustbin {
                   irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
                   if (l_fDist < l_fVel) {
                     // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
-                    if (m_pLuaScript != nullptr && m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock) {
+                    if (m_pLuaScript != nullptr && (m_cAiData.m_iRoadBlock >= 100 || m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock)) {
                       int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, l_pSpecial->m_pParent->m_pParent->m_iTag);
 
                       // ... if so we set the veclcity to zero, overriding any other calculation
@@ -850,7 +853,7 @@ namespace dustbin {
                     irr::core::vector2df v;
 
                     // To do: some randomness and skill for the speed we are going to use
-                    if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v) && m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel) {
+                    if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v) && (m_cAiData.m_iJumpVel >= 100 || m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel)) {
 
                       if (l_fBst != -1.0f && m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel / 8)
                         m_fVCalc = l_fBst;
@@ -1029,7 +1032,7 @@ namespace dustbin {
                 if (m_eMode == enMarbleMode::Jump) {
                   int l_iSkillJump = m_iSkills[(int)enSkill::JumpDirection];
 
-                  if (l_iSkillJump < m_cAiData.m_iJumpDir)
+                  if (m_cAiData.m_iJumpDir >= 100 || l_iSkillJump < m_cAiData.m_iJumpDir)
                     l_fThreshold = 0.25;
                   else {
                     irr::f32 l_fFactor = (irr::f32)(m_cAiData.m_iJumpDir - l_iSkillJump) / (irr::f32)m_cAiData.m_iJumpDir;
@@ -1553,12 +1556,14 @@ namespace dustbin {
     * Create 2d path lines out of the list of 3d path lines
     * @param a_cMatrix the camera matrix to use for the transformation
     * @param a_mSplitSelections a map with all the already selected directions on road splits
+    * @param a_mOldSelections the map with the selections of the previous step
     * @param a_vMarbles the current positions of the marbles
     * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
     */
     CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d(
       const irr::core::matrix4 &a_cMatrix, 
       std::map<int, SPathLine3d *> &a_mSplitSelections, 
+      std::map<int, SPathLine3d *> &a_mOldSelections,
       std::vector<const data::SMarblePosition *> &a_vMarbles,
       std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel,
       lua::CLuaScript_ai *a_pLuaScript
@@ -1591,7 +1596,7 @@ namespace dustbin {
       m_cPathLine.m_cMatrix = a_cMatrix;
 
       if (m_vNext.size() == 1) {
-        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d(a_cMatrix, a_mSplitSelections, a_mOldSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
         l_pChild->m_pPrevious = &m_cPathLine;
         m_cPathLine.m_vNext.push_back(l_pChild);
       }
@@ -1608,9 +1613,12 @@ namespace dustbin {
         }
 
         if (l_iSplit == -1) {
-          if (a_mSplitSelections.find(l_iTag) == a_mSplitSelections.end()) {
+          if (a_mOldSelections.find(l_iTag) == a_mOldSelections.end()) {
             if (m_vNext.size() > 0)
               a_mSplitSelections[l_iTag] = m_vNext[std::rand() % m_vNext.size()];
+          }
+          else {
+            a_mSplitSelections[l_iTag] = a_mOldSelections[l_iTag];
           }
         }
 
@@ -1622,7 +1630,7 @@ namespace dustbin {
           SPathLine3d *l_pNext = a_mSplitSelections[l_iTag];
           l_pNext->m_pParent->m_bSelected = true;
 
-          SPathLine2d *l_pChild = l_pNext->transformTo2d(a_cMatrix, a_mSplitSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
+          SPathLine2d *l_pChild = l_pNext->transformTo2d(a_cMatrix, a_mSplitSelections, a_mOldSelections, a_vMarbles, a_vMarblePosVel, a_pLuaScript);
           l_pChild->m_pPrevious = &m_cPathLine;
           m_cPathLine.m_vNext.push_back(l_pChild);
         }
