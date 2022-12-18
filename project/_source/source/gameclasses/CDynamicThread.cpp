@@ -363,8 +363,15 @@ namespace dustbin {
 
               p->m_bHasContact = false;
 
+              irr::f32 l_fVel = p->m_vVelocity.getLength();
+              irr::f32 l_fFac = 1.0f;
+              
+              if (l_fVel > 140.0f) {
+                l_fFac = 1.0f - (l_fVel - 140.0f) / 15.0f;
+              }
+
               // Marble Class Param: Steer Power and Thrust
-              irr::core::vector3df l_vTorque = (p->m_bHasContact ? 20.0f : 70.0f) * l_vSteer.X * v + 60.0f * l_vSteer.Y * p->m_vSideVector;
+              irr::core::vector3df l_vTorque = (p->m_bHasContact ? 20.0f : 70.0f) * l_vSteer.X * v + l_fFac * 60.0f * l_vSteer.Y * p->m_vSideVector;
 
               dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
