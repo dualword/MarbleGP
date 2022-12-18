@@ -265,8 +265,7 @@ namespace dustbin {
 
         std::vector<irr::s32> m_vFinished;    /**< Vector with all finished marbles */
 
-        static std::vector<SAiPathSection *> m_vAiPath   [3];   /**< A list of all ai path sections for the three classes */
-        static int                           m_iInstances[3];   /**< Instance counter. If the counter is zero the constrcutor will create the AI data, if it reaches zero in the destructor the AI data will be deleted */
+        std::vector<SAiPathSection *> m_vAiPath;   /**< A list of all ai path sections for the three classes */
 
         std::vector<std::wstring> m_vDebugText;   /**< Additional debug text (lower left) */
 
