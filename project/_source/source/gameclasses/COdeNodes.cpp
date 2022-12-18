@@ -329,6 +329,8 @@ namespace dustbin {
       m_iLapNo        (0),
       m_iFinishTime   (0),
       m_iWithdraw     (-1),
+      m_iGroundContact(0),
+      m_iLastJump     (0),
       m_bActive       (false),
       m_vCamera       (irr::core::vector3df()),
       m_vUpVector     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),

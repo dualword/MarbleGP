@@ -99,6 +99,28 @@ namespace dustbin {
           }
         }
         else {
+          CObjectMarble *l_pMarble = l_pOdeNode1->getType() == enObjectType::Marble ? reinterpret_cast<CObjectMarble *>(l_pOdeNode1) : l_pOdeNode2->getType() == enObjectType::Marble? reinterpret_cast<CObjectMarble *>(l_pOdeNode2) : nullptr;
+
+          dReal l_fMaxERP = 1.0;
+
+          if (l_pMarble != nullptr) {
+            int l_iSinceLastContact = l_pWorld->m_iWorldStep - l_pMarble->m_iGroundContact;
+
+            if (l_iSinceLastContact > 30) {
+              l_pMarble->m_iLastJump = l_pWorld->m_iWorldStep;
+              l_fMaxERP = 0.2;
+            }
+            else {
+              int l_iSinceLast = l_pWorld->m_iWorldStep - l_pMarble->m_iLastJump;
+              if (l_iSinceLast > 90) {
+                l_fMaxERP = 1.0f;
+              }
+              else {
+                l_fMaxERP = 0.2 + 0.8 * (dReal)l_iSinceLast / 90.0;
+              }
+            }
+          }
+
           irr::core::vector3df l_cVel = irr::core::vector3df();
 
           if (l_pOdeNode1->m_cBody != 0)
@@ -115,7 +137,7 @@ namespace dustbin {
 
           l_fVel = (l_fVel - 100.0f) / 2400.0f;
 
-          dReal l_fSoftErp = 0.4 * l_fVel;
+          dReal l_fSoftErp = l_fMaxERP * l_fVel;
 
           for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
             l_cContact[i].surface.bounce = (dReal)0.15;
@@ -243,12 +265,14 @@ namespace dustbin {
         for (irr::u32 i = 0; i < numc; i++) {
           if (l_pOdeNode1 != nullptr && l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() != enObjectType::Marble && l_pOdeNode2->m_bCollides) {
             CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode1);
+            p->m_iGroundContact = l_pWorld->m_iWorldStep;
             p->m_bHasContact = true;
             p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
           }
 
           if (l_pOdeNode2 != nullptr && l_pOdeNode2->getType() == enObjectType::Marble && l_pOdeNode1->getType() != enObjectType::Marble && l_pOdeNode1->m_bCollides) {
             CObjectMarble* p = reinterpret_cast<CObjectMarble*>(l_pOdeNode2);
+            p->m_iGroundContact = l_pWorld->m_iWorldStep;
             p->m_bHasContact = true;
             p->m_vContact = irr::core::vector3df((irr::f32)l_cContact[i].geom.pos[0], (irr::f32)l_cContact[i].geom.pos[1], (irr::f32)l_cContact[i].geom.pos[2]);
           }

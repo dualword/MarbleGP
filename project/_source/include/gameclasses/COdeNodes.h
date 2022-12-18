@@ -171,6 +171,8 @@ namespace dustbin {
         int m_iFinishTime;    /**< Finish time of the marble */
         int m_iPosition;      /**< Position in the race */
         int m_iWithdraw;      /**< Time (in simulation steps) for the user to confirm a withdraw (-1 == no withdraw requested) */
+        int m_iGroundContact; /**< The last step with ground contact (used to identify if a marble is jumping) */
+        int m_iLastJump;      /**< The end of the last jump */
 
         bool m_bActive;     /**< The player has already shown some activity */
         bool m_bAiPlayer;   /**< Is this an AI player? */
