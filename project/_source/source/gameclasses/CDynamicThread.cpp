@@ -77,8 +77,8 @@ namespace dustbin {
       else {
         if (l_pBody1 == 0 && l_pBody2 == 0) return;
 
-        CObject* l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1),
-               * l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
+        CObject *l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1);
+        CObject *l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
 
         bool l_bMarbleCollision = l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() == enObjectType::Marble;
 
@@ -132,10 +132,10 @@ namespace dustbin {
 
           if (l_fVel < 100.0f)
             l_fVel = 100.0f;
-          else if (l_fVel > 2500.0f)
-            l_fVel = 2500.0f;
+          else if (l_fVel > 900.0f)
+            l_fVel = 900.0f;
 
-          l_fVel = (l_fVel - 100.0f) / 2400.0f;
+          l_fVel = (l_fVel - 100.0f) / 800.0f;
 
           dReal l_fSoftErp = l_fMaxERP * l_fVel;
 

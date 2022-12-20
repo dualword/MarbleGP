@@ -73,7 +73,12 @@ namespace dustbin {
             m_mChoices[p->m_pThis->m_iIndex] = std::rand() % p->m_pNext->m_vNext.size();
           }
 
-          p = p->m_pNext->m_vNext[m_mChoices[p->m_pThis->m_iIndex]];
+          int l_iIndex = m_mChoices[p->m_pThis->m_iIndex];
+
+          if (l_iIndex <= p->m_pNext->m_vNext.size())
+            p = p->m_pNext->m_vNext[l_iIndex];
+          else
+            p = *(p->m_pNext->m_vNext.begin());
 
           l_cLine   = p->m_cLinkLine;
           l_fLength = p->m_fLinkLength;
