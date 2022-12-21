@@ -64,15 +64,50 @@ namespace dustbin {
     /**
     * Find all AI path nodes in the scene tree
     * @param a_pNode the node to check
+    * @param a_bAiHelp search for nodes for AI help?
     * @param a_vNodes [out] the vector of nodes that will be filled
     */
-    void findAiPathNodes(const irr::scene::ISceneNode* a_pNode, std::vector<const scenenodes::CAiPathNode *>& a_vNodes) {
-      if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiPathNodeId)
-        a_vNodes.push_back(reinterpret_cast<const scenenodes::CAiPathNode *>(a_pNode));
+    void findAiPathNodes(const irr::scene::ISceneNode* a_pNode, bool a_bAiHelp, std::vector<const scenenodes::CAiPathNode *>& a_vNodes) {
+      int l_iAiNodes = 0;
+      int l_iAiHelp  = 0; // Number of AI nodes marked with the "AI Help" flag
+
+      // Step one: count the number of AI node children
+      for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator l_itNodes = a_pNode->getChildren().begin(); l_itNodes != a_pNode->getChildren().end(); l_itNodes++) {
+        if ((*l_itNodes)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiPathNodeId) {
+          l_iAiNodes++;
+
+          if (reinterpret_cast<scenenodes::CAiPathNode *>(*l_itNodes)->isAiHelpNode())
+            l_iAiHelp++;
+        }
+      }
+
+      // Only one node or no specific AI help node found: add it
+      if (l_iAiNodes == 1 || l_iAiHelp == 0) {
+        for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator l_itNodes = a_pNode->getChildren().begin(); l_itNodes != a_pNode->getChildren().end(); l_itNodes++) {
+          if ((*l_itNodes)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiPathNodeId) {
+            a_vNodes.push_back(reinterpret_cast<scenenodes::CAiPathNode *>(*l_itNodes));
+            printf("Single AI node found, adding to list [%i, %i]\n", l_iAiHelp, (*l_itNodes)->getID());
+            break;
+          }
+        }
+      }
+      else if (l_iAiNodes > 1) {
+        for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator l_itNodes = a_pNode->getChildren().begin(); l_itNodes != a_pNode->getChildren().end(); l_itNodes++) {
+          if ((*l_itNodes)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiPathNodeId) {
+            scenenodes::CAiPathNode *l_pNode = reinterpret_cast<scenenodes::CAiPathNode *>(*l_itNodes);
+
+            if (l_pNode->isAiHelpNode() == a_bAiHelp) {
+              a_vNodes.push_back(l_pNode);
+              printf("Special AI help node found, adding.\n");
+              break;
+            }
+          }
+        }
+      }
 
       
       for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator l_itNodes = a_pNode->getChildren().begin(); l_itNodes != a_pNode->getChildren().end(); l_itNodes++)
-        findAiPathNodes(*l_itNodes, a_vNodes);
+        findAiPathNodes(*l_itNodes, a_bAiHelp, a_vNodes);
     }
 
     /**
@@ -178,11 +213,12 @@ namespace dustbin {
 
       std::vector<const scenenodes::CAiPathNode *> l_vAiNodes;
 
-      findAiPathNodes(l_pGlobal->getSceneManager()->getRootSceneNode(), l_vAiNodes);
+      findAiPathNodes(l_pGlobal->getSceneManager()->getRootSceneNode(), m_bAiHelp, l_vAiNodes);
 
       printf("%i AI path nodes found.\n", (int)l_vAiNodes.size());
 
       int l_iIndex = 0;
+      int l_iNoNxt = 0;
 
       // Iterate over all found AI Path Nodes
       for (std::vector<const scenenodes::CAiPathNode*>::iterator l_itPath = l_vAiNodes.begin(); l_itPath != l_vAiNodes.end(); l_itPath++) {
@@ -196,6 +232,10 @@ namespace dustbin {
         // Iterate the AI Path sections stored in the AI path nodes
         for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itSection = (*l_itPath)->m_vSections.begin(); l_itSection != (*l_itPath)->m_vSections.end(); l_itSection++) {
           // Create one SAiPathSection for each link between the current section and it's successors
+          printf("%i next sections  ", (int)(*l_itSection)->m_vNextSegments.size());
+          for (int i = 0; i < (*l_itSection)->m_vNextSegments.size(); i++) printf("*");
+          printf("\n");
+
           for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
             SAiPathSection *p = new SAiPathSection();
 
@@ -222,8 +262,10 @@ namespace dustbin {
             p->m_cRealLine   = irr::core::line3df((*l_itSection)->m_cPosition, (*l_itNext)->m_cPosition);
             p->m_cLine3d     = irr::core::line3df(l_cStart, l_cEnd);
             p->m_iIndex      = ++l_iIndex;
+            p->m_iSectionIdx = (*l_itSection)->m_iIndex;
             p->m_iCheckpoint = -1;
             p->m_bStartup    = (*l_itPath)->isStartupPath();
+            
 
             if (l_pParent != nullptr) {
               p->m_iCheckpoint = l_pParent->getID();
@@ -284,12 +326,14 @@ namespace dustbin {
       for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
         irr::core::vector3df l_cThis = (*l_itThis)->m_cRealLine.end;
 
+        std::tuple<irr::f32, SAiPathSection *> l_tNextOptions = std::tuple<irr::f32, SAiPathSection *>(0.0f, nullptr);
+
         for (std::vector<SAiPathSection*>::iterator l_itNext = m_vAiPath.begin(); l_itNext != m_vAiPath.end(); l_itNext++) {
           irr::core::vector3df l_cNext = (*l_itNext)->m_cRealLine.start;
 
           // Now we check if the end of this line matches the start of the next line.
           // We use a certain threshold as the serialization is not 100% accurate
-          if (abs(l_cThis.X - l_cNext.X) < 0.01f && abs(l_cThis.Y - l_cNext.Y) < 0.01f && abs(l_cThis.Z - l_cNext.Z) < 0.01f) {
+          if (abs(l_cThis.X - l_cNext.X) < 0.02f && abs(l_cThis.Y - l_cNext.Y) < 0.02f && abs(l_cThis.Z - l_cNext.Z) < 0.02f) {
             bool l_bAdd = (*l_itThis)->m_iCheckpoint == (*l_itNext)->m_iCheckpoint;
 
             if (!l_bAdd) {
@@ -304,10 +348,29 @@ namespace dustbin {
             if (l_bAdd)
               (*l_itThis)->m_vNext.push_back(*l_itNext);
           }
+          else {
+            if (std::get<1>(l_tNextOptions) == nullptr)
+              l_tNextOptions = std::make_tuple(l_cThis.getDistanceFrom(l_cNext), * l_itNext);
+            else {
+              irr::f32 l_fDist = l_cThis.getDistanceFrom(l_cNext);
+              if (l_fDist < std::get<0>(l_tNextOptions))
+                l_tNextOptions = std::make_tuple(l_fDist, *l_itNext);
+            }
+          }
+        }
+
+        if ((*l_itThis)->m_vNext.size() == 0) {
+          if (std::get<1>(l_tNextOptions) != nullptr) {
+            (*l_itThis)->m_vNext.push_back(std::get<1>(l_tNextOptions));
+          }
+          else {
+            printf("No next nodes found for AI path section %i (%i next checkpoints)\n", (*l_itThis)->m_iIndex, (int)(*l_itThis)->m_vCheckpoints.size());
+            l_iNoNxt++;
+          }
         }
       }
 
-      printf("%i AI path sections found.\n", (int)m_vAiPath.size());
+      printf("%i AI path sections found [%i sections without links].\n", (int)m_vAiPath.size(), l_iNoNxt);
 
       // Now we calculate the next 500+ meters for all AI path sections
       for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
@@ -1639,7 +1702,18 @@ namespace dustbin {
       return &m_cPathLine;
     }
 
-    CControllerAi_V2::SAiPathSection::SAiPathSection() : m_iIndex(-1), m_iCheckpoint(-1), m_iTag(0), m_fMinVel(-1.0f), m_fMaxVel(-1.0f), m_fBestVel(-1.0f), m_bStartup(false), m_bSelected(false), m_pAiPath(nullptr) {
+    CControllerAi_V2::SAiPathSection::SAiPathSection() : 
+      m_iIndex     (-1),
+      m_iSectionIdx(-1),
+      m_iCheckpoint(-1), 
+      m_iTag       (0), 
+      m_fMinVel    (-1.0f), 
+      m_fMaxVel    (-1.0f), 
+      m_fBestVel   (-1.0f), 
+      m_bStartup   (false), 
+      m_bSelected  (false), 
+      m_pAiPath    (nullptr) 
+    {
     }
 
     CControllerAi_V2::SAiPathSection::~SAiPathSection() {

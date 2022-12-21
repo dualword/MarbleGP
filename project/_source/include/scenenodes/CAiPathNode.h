@@ -78,6 +78,7 @@ namespace dustbin {
         irr::core::aabbox3df      m_cBox;
         irr::video::IVideoDriver *m_pDrv;
         bool                      m_bStartNode;   /**< Is this the node for the race start? Only necessary if more nodes overlap */
+        bool                      m_bAiHelp;      /**< Is this the path for AI help? This attribute will only be respected if there are more than one AI path nodes as children of a checkpoint node */
 
       public:
         CAiPathNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId);
@@ -101,6 +102,12 @@ namespace dustbin {
         * @return true if this section is marked as a startup section
         */
         bool isStartupPath() const;
+
+        /**
+        * Get the "AI help" flag
+        * @return the "AI help" flag
+        */
+        bool isAiHelpNode() const;
     };
   }
 }

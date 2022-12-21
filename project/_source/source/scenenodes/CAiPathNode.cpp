@@ -77,6 +77,9 @@ namespace dustbin {
 
       m_bStartNode = a_pIn->getAttributeAsBool("startnode");
 
+      if (a_pIn->existsAttribute("aihelp"))
+        m_bAiHelp = a_pIn->getAttributeAsBool("aihelp");
+
       int l_iIndex = 0;
       std::string l_sName = "AISection_" + std::to_string(l_iIndex);
 
@@ -115,6 +118,7 @@ namespace dustbin {
       irr::scene::ISceneNode::serializeAttributes(a_pOut, a_pOptions);
 
       a_pOut->addBool("startnode", m_bStartNode);
+      a_pOut->addBool("aihelp"   , m_bAiHelp   );
 
       int l_iIndex = 0;
 
@@ -126,6 +130,14 @@ namespace dustbin {
 
     bool CAiPathNode::isStartupPath() const {
       return m_bStartNode;
+    }
+
+    /**
+    * Get the "AI help" flag
+    * @return the "AI help" flag
+    */
+    bool CAiPathNode::isAiHelpNode() const {
+      return m_bAiHelp;
     }
 
     void CAiPathNode::addPathSection(CAiPathNode::SAiPathSection* a_pNew) {
