@@ -187,7 +187,7 @@ namespace dustbin {
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
-      m_eMode          (enMarbleMode::Default),
+      m_eMode          (enMarbleMode::Cruise),
       m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
       m_pDebugRTT      (nullptr),
       m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight()))),
@@ -762,7 +762,7 @@ namespace dustbin {
               // If we are still in off-track mood but have detected that we are
               // back on track we switch the mode to "default"
               if (m_eMode == enMarbleMode::OffTrack)
-                switchMarbleMode(enMarbleMode::Default);
+                switchMarbleMode(enMarbleMode::Cruise);
               else if (m_eMode != enMarbleMode::Jump && m_eMode != enMarbleMode::Loop) {
                 // if we are not currently jumping we use the ranking to see if we
                 // can switch the mode. To do: make this dependent of the class and marble
@@ -1454,14 +1454,14 @@ namespace dustbin {
 
       l_pThis->m_cBBox.reset(m_cLine3d.start);
       l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end);
-      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.start + 5.0f * m_cNormal);
-      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end   + 5.0f * m_cNormal);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.start + 0.0f * m_cNormal);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end   + 0.0f * m_cNormal);
 
       for (int i = 0; i < 2; i++) {
         l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start);
         l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end);
-        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start + 5.0f * m_cNormal);
-        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end   + 5.0f * m_cNormal);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start + 0.0f * m_cNormal);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end   + 0.0f * m_cNormal);
       }
       
       if (a_pPrevious != nullptr)
