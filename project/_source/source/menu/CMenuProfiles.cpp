@@ -284,7 +284,7 @@ namespace dustbin {
         */
         void updatePatterns() {
           if (m_pPatternList != nullptr) {
-            irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/texture_patterns.xml");
+            irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/patterns/patterns.xml");
 
             if (l_pXml) {
               std::vector<gui::CGuiImageList::SListImage> l_vPatterns;
@@ -311,9 +311,9 @@ namespace dustbin {
 
               if (m_pTexturePattern != nullptr)
                 m_pPatternList->setSelected(helpers::ws2s(m_pTexturePattern->getText()), false);
-            }
 
-            l_pXml->drop();
+              l_pXml->drop();
+            }
           }
         }
 
