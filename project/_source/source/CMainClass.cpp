@@ -12,6 +12,7 @@
 #include <network/CGameClient.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CGuiItemFactory.h>
+#include <platform/CPlatform.h>
 #include <menu/IMenuHandler.h>
 #include <state/CMenuState.h>
 #include <state/CGameState.h>
@@ -643,6 +644,19 @@ namespace dustbin {
         }
       }
     }
+#ifdef _DEBUG
+    else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+      if (a_cEvent.KeyInput.Key == irr::KEY_F3 && !a_cEvent.KeyInput.PressedDown) {
+        irr::video::IImage *l_pScreenshot = m_pDrv->createScreenShot();
+        if (l_pScreenshot != nullptr) {
+          std::wstring l_sPath = platform::portableGetDataPath() + L"/screenshot.png";
+          m_pDrv->writeImageToFile(l_pScreenshot, helpers::ws2s(l_sPath).c_str());
+          l_pScreenshot->drop();
+          l_bRet = true;
+        }
+      }
+    }
+#endif
 
     if (!l_bRet && m_pActiveState != nullptr)
       l_bRet = m_pActiveState->OnEvent(a_cEvent);
