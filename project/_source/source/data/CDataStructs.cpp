@@ -123,7 +123,7 @@ namespace dustbin {
     }
 
     SSettings::SSettings() : 
-      m_iResolutionW (1980), 
+      m_iResolutionW (1920), 
       m_iResolutionH (1080), 
       m_iShadows     (2), 
       m_iAmbient     (2),
