@@ -21,9 +21,10 @@ namespace dustbin {
       public:
         enum enSegmentType {
           Default,
-          Jump,
-          Block,
-          Loop
+          Jump,       /**< There is a jump in this segment */
+          Block,      /**< A blocker is coming */
+          Loop,       /**< A loop segment, ignore state "off-track" */
+          Startup     /**< Marks a startup segment option */
         };
 
         typedef struct SAiPathSection {
@@ -77,7 +78,6 @@ namespace dustbin {
 
         irr::core::aabbox3df      m_cBox;
         irr::video::IVideoDriver *m_pDrv;
-        bool                      m_bStartNode;   /**< Is this the node for the race start? Only necessary if more nodes overlap */
         bool                      m_bAiHelp;      /**< Is this the path for AI help? This attribute will only be respected if there are more than one AI path nodes as children of a checkpoint node */
 
       public:
@@ -96,12 +96,6 @@ namespace dustbin {
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
 
         void addPathSection(CAiPathNode::SAiPathSection *a_pNew);
-
-        /**
-        * Is this a starting path? Only necessary for the start if two paths overlap
-        * @return true if this section is marked as a startup section
-        */
-        bool isStartupPath() const;
 
         /**
         * Get the "AI help" flag

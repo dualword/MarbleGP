@@ -75,8 +75,6 @@ namespace dustbin {
     void CAiPathNode::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       irr::scene::ISceneNode::deserializeAttributes(a_pIn, a_pOptions);
 
-      m_bStartNode = a_pIn->getAttributeAsBool("startnode");
-
       if (a_pIn->existsAttribute("aihelp"))
         m_bAiHelp = a_pIn->getAttributeAsBool("aihelp");
 
@@ -117,7 +115,6 @@ namespace dustbin {
     void CAiPathNode::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       irr::scene::ISceneNode::serializeAttributes(a_pOut, a_pOptions);
 
-      a_pOut->addBool("startnode", m_bStartNode);
       a_pOut->addBool("aihelp"   , m_bAiHelp   );
 
       int l_iIndex = 0;
@@ -126,10 +123,6 @@ namespace dustbin {
         std::string l_sName = "AISection_" + std::to_string(l_iIndex++);
         a_pOut->addString(l_sName.c_str(), (*it)->serialize().c_str());
       }
-    }
-
-    bool CAiPathNode::isStartupPath() const {
-      return m_bStartNode;
     }
 
     /**

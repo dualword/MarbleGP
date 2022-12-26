@@ -122,20 +122,41 @@ namespace dustbin {
 
       irr::f32 l_fDistance = -1.0f;
 
-      for (std::vector<SAiPathSection*>::iterator l_itPath = a_vOptions.begin(); l_itPath != a_vOptions.end(); l_itPath++) {
-        irr::core::vector3df l_cOption = (*l_itPath)->m_cLine3d.getClosestPoint(a_cPosition);
-        irr::f32 l_fOption = l_cOption.getDistanceFromSQ(a_cPosition);
+      if (a_bSelectStartupPath) {
+        for (std::vector<SAiPathSection*>::iterator l_itPath = a_vOptions.begin(); l_itPath != a_vOptions.end(); l_itPath++) {
+          if ((*l_itPath)->m_eType == scenenodes::CAiPathNode::enSegmentType::Startup) {
+            irr::core::vector3df l_cOption = (*l_itPath)->m_cLine3d.getClosestPoint(a_cPosition);
+            irr::f32 l_fOption = l_cOption.getDistanceFromSQ(a_cPosition);
 
-        if (!a_bOverrideSelected && (*l_itPath)->m_bSelected) {
-          l_pCurrent = *l_itPath;
-          break;
-        }
-
-        if ((l_fDistance == -1.0f || l_fOption < l_fDistance) && (!a_bSelectStartupPath || (*l_itPath)->m_bStartup) && (m_iLastCheckpoint == -1 || (*l_itPath)->m_iCheckpoint == m_iLastCheckpoint)) {
-          l_pCurrent = *l_itPath;
-          l_fDistance = l_fOption;
+            if (l_fDistance == -1 || l_fOption < l_fDistance) {
+              l_pCurrent = *l_itPath;
+              l_fDistance = l_fOption;
+            }
+          } 
         }
       }
+
+      if (l_pCurrent == nullptr) {
+        l_fDistance = -1.0f;
+
+        for (std::vector<SAiPathSection*>::iterator l_itPath = a_vOptions.begin(); l_itPath != a_vOptions.end(); l_itPath++) {
+          irr::core::vector3df l_cOption = (*l_itPath)->m_cLine3d.getClosestPoint(a_cPosition);
+          irr::f32 l_fOption = l_cOption.getDistanceFromSQ(a_cPosition);
+
+          if (!a_bOverrideSelected && (*l_itPath)->m_bSelected) {
+            l_pCurrent = *l_itPath;
+            break;
+          }
+
+          if ((l_fDistance == -1.0f    || l_fOption < l_fDistance) && (m_iLastCheckpoint == -1 || (*l_itPath)->m_iCheckpoint == m_iLastCheckpoint || (*l_itPath)->m_iCheckpoint == -1)) {
+            l_pCurrent = *l_itPath;
+            l_fDistance = l_fOption;
+          }
+        }
+      }
+
+      if (a_bSelectStartupPath && l_pCurrent->m_eType == scenenodes::CAiPathNode::enSegmentType::Startup)
+        printf("Startup path selected.\n");
 
       return l_pCurrent;
     }
@@ -264,7 +285,6 @@ namespace dustbin {
             p->m_iIndex      = ++l_iIndex;
             p->m_iSectionIdx = (*l_itSection)->m_iIndex;
             p->m_iCheckpoint = -1;
-            p->m_bStartup    = (*l_itPath)->isStartupPath();
             
 
             if (l_pParent != nullptr) {
@@ -441,7 +461,7 @@ namespace dustbin {
         }
 
         m_pCurrent = nullptr;
-        m_eMode = enMarbleMode::OffTrack;
+        m_eMode = enMarbleMode::Respawn2;
         m_iRespawn++;
         rollDice();
       }
@@ -651,6 +671,9 @@ namespace dustbin {
 
         if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
           m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false, true);
+
+        if (m_eMode == enMarbleMode::Respawn2)
+          m_eMode = enMarbleMode::OffTrack;
       }
 
       if (m_pCurrent != nullptr) {
@@ -1710,7 +1733,6 @@ namespace dustbin {
       m_fMinVel    (-1.0f), 
       m_fMaxVel    (-1.0f), 
       m_fBestVel   (-1.0f), 
-      m_bStartup   (false), 
       m_bSelected  (false), 
       m_pAiPath    (nullptr) 
     {

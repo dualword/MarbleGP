@@ -136,7 +136,6 @@ namespace dustbin {
           int m_iIndex;         /**< Index for debugging */
           int m_iSectionIdx;    /**< The original section index */
           int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
-          bool m_bStartup;      /**< Is this a startup section? */
           bool m_bSelected;     /**< Is this section selected if multiple sections exist? */
 
           irr::f32 m_fMinVel;   /**< Minimum velocity for jumps */
