@@ -285,6 +285,7 @@ namespace dustbin {
             p->m_iIndex      = ++l_iIndex;
             p->m_iSectionIdx = (*l_itSection)->m_iIndex;
             p->m_iCheckpoint = -1;
+            p->m_iRespawn    = (*l_itSection)->m_iRespawn;
             
 
             if (l_pParent != nullptr) {
@@ -462,6 +463,13 @@ namespace dustbin {
 
         m_pCurrent = nullptr;
         m_eMode = enMarbleMode::Respawn2;
+        
+        for (auto& l_itPath : m_vAiPath) {
+          if (l_itPath->m_eType == scenenodes::CAiPathNode::enSegmentType::Respawn && m_iLastCheckpoint == l_itPath->m_iRespawn) {
+            m_pCurrent = l_itPath;
+          }
+        }
+
         m_iRespawn++;
         rollDice();
       }
@@ -506,6 +514,9 @@ namespace dustbin {
         m_iLastCheckpoint = a_iCheckpoint;
         m_iRespawn = 0;
         rollDice();
+
+        if (m_eMode == enMarbleMode::Respawn2)
+          switchMarbleMode(enMarbleMode::Cruise);
       }
     }
 
@@ -671,9 +682,6 @@ namespace dustbin {
 
         if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
           m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false, true);
-
-        if (m_eMode == enMarbleMode::Respawn2)
-          m_eMode = enMarbleMode::OffTrack;
       }
 
       if (m_pCurrent != nullptr) {
@@ -730,7 +738,7 @@ namespace dustbin {
             if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
               // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
               // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
-              if (m_eMode != enMarbleMode::Respawn)
+              if (m_eMode != enMarbleMode::Respawn && m_eMode != enMarbleMode::Respawn2)
                 switchMarbleMode(enMarbleMode::OffTrack);
             }
             else {
@@ -895,13 +903,19 @@ namespace dustbin {
                   irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
                   irr::f32 l_fDist      = v.getDistanceFrom(l_cLine.start);
                   irr::f32 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25f : 2.5f;
-                  if (l_fDist > l_fThreshold * m_p2dPath->m_fWidth)
+                  if (l_fDist > l_fThreshold * m_p2dPath->m_fWidth && m_eMode != enMarbleMode::Respawn2)
                     m_eMode = enMarbleMode::Respawn;
                   break;
                 }
                 
                 case enMarbleMode::Default:
                   l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  break;
+
+                case enMarbleMode::Respawn2: 
+                  l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  if (l_cLine.getLength() < 0.75f * m_p2dPath->m_fWidth)
+                    switchMarbleMode(enMarbleMode::Cruise);
                   break;
 
                 case enMarbleMode::Cruise:
@@ -1212,6 +1226,10 @@ namespace dustbin {
 
               case enMarbleMode::Respawn:
                 s = L"Ai Mode: Respawn";
+                break;
+
+              case enMarbleMode::Respawn2:
+                s = L"Ai Mode: Respawn2";
                 break;
             }
             draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df());

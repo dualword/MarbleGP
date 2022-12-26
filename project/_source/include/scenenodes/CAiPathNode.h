@@ -24,7 +24,8 @@ namespace dustbin {
           Jump,       /**< There is a jump in this segment */
           Block,      /**< A blocker is coming */
           Loop,       /**< A loop segment, ignore state "off-track" */
-          Startup     /**< Marks a startup segment option */
+          Startup,    /**< Marks a startup segment option */
+          Respawn     /**< This segment is connected to a respawn */
         };
 
         typedef struct SAiPathSection {
@@ -39,6 +40,7 @@ namespace dustbin {
           irr::f32             m_fMaxSpeed;   /**< Maximum speed (for jumps only) */
           irr::f32             m_fBestSpeed;  /**< Best speed (for jumps only) */
           irr::s32             m_iTag;        /**< A tag for turnoffs and blockers */
+          irr::s32             m_iRespawn;    /**< The ID of the checkpoint this segment is used for respawn (m_eType == enSegmentType::Respawn) */
           enSegmentType        m_eType;       /**< The type of this segment */
 
           std::vector<irr::s32        > m_vNextIndices;   /**< Indices of the next segments (for de-serialization only) */

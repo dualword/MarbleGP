@@ -136,6 +136,7 @@ namespace dustbin {
           int m_iIndex;         /**< Index for debugging */
           int m_iSectionIdx;    /**< The original section index */
           int m_iCheckpoint;    /**< The checkpoint index this section belongs to */
+          int m_iRespawn;       /**< This section is the re-entry for this checkpoint's respawn */
           bool m_bSelected;     /**< Is this section selected if multiple sections exist? */
 
           irr::f32 m_fMinVel;   /**< Minimum velocity for jumps */
