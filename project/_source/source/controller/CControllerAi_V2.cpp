@@ -253,11 +253,8 @@ namespace dustbin {
         // Iterate the AI Path sections stored in the AI path nodes
         for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itSection = (*l_itPath)->m_vSections.begin(); l_itSection != (*l_itPath)->m_vSections.end(); l_itSection++) {
           // Create one SAiPathSection for each link between the current section and it's successors
-          printf("%i next sections  ", (int)(*l_itSection)->m_vNextSegments.size());
-          for (int i = 0; i < (*l_itSection)->m_vNextSegments.size(); i++) printf("*");
-          printf("\n");
 
-          for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
+         for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itNext = (*l_itSection)->m_vNextSegments.begin(); l_itNext != (*l_itSection)->m_vNextSegments.end(); l_itNext++) {
             SAiPathSection *p = new SAiPathSection();
 
             p->m_eType = (*l_itSection)->m_eType;
