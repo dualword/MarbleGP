@@ -157,10 +157,10 @@ namespace dustbin {
             case data::SPlayerData::enAiHelp::BotMgp:
             case data::SPlayerData::enAiHelp::BotMb2:
             case data::SPlayerData::enAiHelp::BotMb3:
-              l_iCtrlX    = l_iBotX;
-              l_iCtrlY    = l_iBotY;
-              l_bBrake    = l_bBrakeBot;
-              l_bRespawn  = l_bRspnBot;
+              l_iCtrlX     = l_iBotX;
+              l_iCtrlY     = l_iBotY;
+              l_bBrake     = l_bBrakeBot;
+              l_bRespawn  |= l_bRspnBot;
               a_bAutomatic = true;
               break;
 
