@@ -464,8 +464,13 @@ namespace dustbin {
         for (auto& l_itPath : m_vAiPath) {
           if (l_itPath->m_eType == scenenodes::CAiPathNode::enSegmentType::Respawn && m_iLastCheckpoint == l_itPath->m_iRespawn) {
             m_pCurrent = l_itPath;
+            printf("Found respawn section: %i (%.2f, %.2f, %.2f)\n", m_pCurrent->m_iIndex, m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
+            break;
           }
         }
+
+        if (m_pCurrent == nullptr)
+          printf("No suitable respawn section found.\n");
 
         m_iRespawn++;
         rollDice();
@@ -909,7 +914,7 @@ namespace dustbin {
                   l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                   break;
 
-                case enMarbleMode::Respawn2: 
+                case enMarbleMode::Respawn2:
                   l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                   if (l_cLine.getLength() < 0.75f * m_p2dPath->m_fWidth)
                     switchMarbleMode(enMarbleMode::Cruise);
