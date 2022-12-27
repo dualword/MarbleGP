@@ -205,6 +205,8 @@ namespace dustbin {
       m_iSplitIndex    (0),
       m_fVCalc         (0.0f), 
       m_fScale         (1.0f),
+      m_fJumpFact      (1.0f),
+      m_fCtrlY         (0.0f),
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
@@ -1119,7 +1121,9 @@ namespace dustbin {
                 if (m_fVCalc > l_fVel) {
                   // if the calculated speed is greater than
                   // our current speed we accelerate ..
-                  a_iCtrlY = 127;
+                  m_fCtrlY = std::min(1.0f, m_fCtrlY + m_cAiData.m_fThrottleAdd);
+
+                  a_iCtrlY = (irr::s8)(127.0f * m_fCtrlY);
                 }
                 else {
                   // .. otherwise we decelerate and if the
@@ -1128,6 +1132,7 @@ namespace dustbin {
                   // zero we activate the brake
                   a_iCtrlY = -127;
                   a_bBrake = l_bOTBrake && (std::abs(l_fVel - m_fVCalc) > 5.0f || m_fVCalc == 0.0f);
+                  m_fCtrlY = 0.0f;
                 }
 
                 irr::core::vector2df l_cPos = irr::core::vector2df();

@@ -1623,6 +1623,7 @@ namespace dustbin {
           m_iJumpVel        = 100;
           m_iPathSelect     = 97;
           m_iRoadBlock      = 95;
+          m_fThrottleAdd    = 1.0f;
           break;
 
         case 1:
@@ -1630,9 +1631,9 @@ namespace dustbin {
           // Only "Cruise" and "Default" modes for Marble2
           m_iModeMap = (int)enAiMode::Cruise | (int)enAiMode::Default;
 
-          m_fSpeedFactor1   = 65.0;
+          m_fSpeedFactor1   = 60.0;
           m_fSpeedFactor2   = 55.0;
-          m_fSpeedThreshold = 1.35f;
+          m_fSpeedThreshold = 1.3f;
           m_iOvertake       = 45;
           m_iAvoid          = 35;
           m_iJumpMode       = 97;
@@ -1640,6 +1641,7 @@ namespace dustbin {
           m_iJumpVel        = 95;
           m_iPathSelect     = 80;
           m_iRoadBlock      = 85;
+          m_fThrottleAdd    = 0.02f;
           break;
 
         case 2:
@@ -1657,6 +1659,7 @@ namespace dustbin {
           m_iJumpVel        = 93;
           m_iPathSelect     = 50;
           m_iRoadBlock      = 65;
+          m_fThrottleAdd    = 0.01f;
           break;
       }
     }

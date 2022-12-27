@@ -240,6 +240,7 @@ namespace dustbin {
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */
         irr::f32 m_fJumpFact; /**< Jump factor for calculating the speed between min and max */
+        irr::f32 m_fCtrlY;    /**< The current acceleration control */
 
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */

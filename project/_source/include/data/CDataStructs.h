@@ -384,6 +384,7 @@ namespace dustbin {
       float m_fSpeedFactor1;    /**< The first factor for calculating the wanted velocity */
       float m_fSpeedFactor2;    /**< The second factor for calculating the wanted velocity */
       float m_fSpeedThreshold;  /**< Threshold for using the second calculated point  */
+      float m_fThrottleAdd;     /**< How fast does this AI player push the throttle to full? */
 
       int m_iOvertake;    /**< The skill value for overtake mode (0..100) */
       int m_iAvoid;       /**< The skill value for avoid other marble mode (0..100) */
