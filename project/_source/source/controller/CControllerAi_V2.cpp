@@ -588,13 +588,17 @@ namespace dustbin {
     */
     void CControllerAi_V2::switchMarbleMode(enMarbleMode a_eMode) {
       if ((m_cAiData.m_iModeMap & (int)data::SMarbleAiData::enAiMode::TimeAttack) == 0) {
-        if (a_eMode == enMarbleMode::TimeAttack)
+        if (a_eMode == enMarbleMode::TimeAttack) {
+          switchMarbleMode(enMarbleMode::Default);
           return;
+        }
       }
 
       if ((m_cAiData.m_iModeMap & (int)data::SMarbleAiData::enAiMode::Cruise) == 0) {
-        if (a_eMode == enMarbleMode::Cruise)
+        if (a_eMode == enMarbleMode::Default) {
+          m_eMode = enMarbleMode::Cruise;
           return;
+        }
       }
 
       if (a_eMode != m_eMode) {
@@ -905,7 +909,7 @@ namespace dustbin {
                   irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
                   irr::f32 l_fDist      = v.getDistanceFrom(l_cLine.start);
                   irr::f32 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25f : 2.5f;
-                  if (l_fDist > l_fThreshold * m_p2dPath->m_fWidth && m_eMode != enMarbleMode::Respawn2)
+                  if (l_fDist > l_fThreshold * m_p2dPath->m_fWidth)
                     m_eMode = enMarbleMode::Respawn;
                   break;
                 }
@@ -935,7 +939,7 @@ namespace dustbin {
                   l_iLines = 2;
                   l_cLine.start = irr::core::vector2df();
                 
-                  if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
+                  if (l_pSpecial != nullptr && l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
                     irr::core::vector2df l_cDirection = l_pSpecial->m_cLines[0].end - l_pSpecial->m_cLines[0].start;
                     l_cDirection = l_cDirection.normalize();
 
