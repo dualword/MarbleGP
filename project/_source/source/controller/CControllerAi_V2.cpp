@@ -1122,6 +1122,7 @@ namespace dustbin {
                   // if the calculated speed is greater than
                   // our current speed we accelerate ..
                   if (m_eMode == enMarbleMode::Loop)
+                    // If we are in a loop we do not take the throttle add parameter into account
                     m_fCtrlY = 1.0f;
                   else
                     m_fCtrlY = std::min(1.0f, m_fCtrlY + m_cAiData.m_fThrottleAdd);
