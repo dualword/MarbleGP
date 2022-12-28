@@ -1121,7 +1121,10 @@ namespace dustbin {
                 if (m_fVCalc > l_fVel) {
                   // if the calculated speed is greater than
                   // our current speed we accelerate ..
-                  m_fCtrlY = std::min(1.0f, m_fCtrlY + m_cAiData.m_fThrottleAdd);
+                  if (m_eMode == enMarbleMode::Loop)
+                    m_fCtrlY = 1.0f;
+                  else
+                    m_fCtrlY = std::min(1.0f, m_fCtrlY + m_cAiData.m_fThrottleAdd);
 
                   a_iCtrlY = (irr::s8)(127.0f * m_fCtrlY);
                 }
