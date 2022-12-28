@@ -1574,7 +1574,7 @@ namespace dustbin {
         case data::SPlayerData::enAiHelp::Display: m_iMarbleClass = 0; break;   // Help Display: AI is MarbleGP class
         case data::SPlayerData::enAiHelp::Low    : m_iMarbleClass = 0; break;   // Help Low    : AI is MarbleGP class
         case data::SPlayerData::enAiHelp::Medium : m_iMarbleClass = 1; break;   // Help Medium : AI is Marble2 class
-        case data::SPlayerData::enAiHelp::High   : m_iMarbleClass = 2; break;   // Help High   : AI is Marble3  class
+        case data::SPlayerData::enAiHelp::High   : m_iMarbleClass = 0; break;   // Help High   : AI is Marble3  class
         case data::SPlayerData::enAiHelp::BotMgp : m_iMarbleClass = 3; break;   // Help Bot    : AI is MarbleGP class
         case data::SPlayerData::enAiHelp::BotMb2 : m_iMarbleClass = 4; break;   // Help Bot    : AI is Marble2 class
         case data::SPlayerData::enAiHelp::BotMb3 : m_iMarbleClass = 5; break;   // Help Bot    : AI is Marble3 class

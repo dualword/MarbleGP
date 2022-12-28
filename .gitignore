@@ -1794,3 +1794,4 @@
 /project/script/copydata_files.dict
 /project/_source/include/_generated/lua/CLuaSingleton_ai.h
 /project/tracks_and_models/*.wings~
+/project/tracks_and_models/*.wings#
