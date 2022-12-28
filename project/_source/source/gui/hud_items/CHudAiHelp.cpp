@@ -69,6 +69,10 @@ namespace dustbin {
 
       irr::core::recti l_cTotal;
 
+      if (a_eAiHelp == data::SPlayerData::enAiHelp::High) {
+        l_cPos.Y += l_cSize.Width;
+      }
+
       for (int y = 0; y < 2; y++) {
         for (int x = 0; x < 3; x++) {
           m_aRects[l_iIndex] = irr::core::recti(l_cPos, l_cSize);
@@ -81,7 +85,9 @@ namespace dustbin {
           l_iIndex++;
         }
         l_cPos.X = l_iStartX;
-        l_cPos.Y += l_cSize.Width;
+
+        if (a_eAiHelp != data::SPlayerData::enAiHelp::High)
+          l_cPos.Y += l_cSize.Width;
       }
 
       m_cOffset.X = 0;
