@@ -1726,7 +1726,7 @@ namespace dustbin {
         if (a_pLuaScript != nullptr) {
           l_iSplit = a_pLuaScript->decide_roadsplit(-1, (*this->m_pParent->m_vNext.begin())->m_iTag);
 
-          if (l_iSplit != -1) {
+          if (l_iSplit != -1 && l_iSplit < m_vNext.size()) {
             a_mSplitSelections[l_iTag] = m_vNext[l_iSplit];
           }
         }

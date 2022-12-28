@@ -101,8 +101,10 @@ namespace dustbin {
       // Create the links between the AI path sections
       for (std::vector<SAiPathSection*>::iterator it = m_vSections.begin(); it != m_vSections.end(); it++) {
         for (std::vector<irr::s32>::iterator it2 = (*it)->m_vNextIndices.begin(); it2 != (*it)->m_vNextIndices.end(); it2++) {
-          (*it)->addToNextSections(m_vSections[*it2]);
-          m_vSections[*it2]->addToPrevSections(*it);
+          if (*it2 < m_vSections.size()) {
+            (*it)->addToNextSections(m_vSections[*it2]);
+            m_vSections[*it2]->addToPrevSections(*it);
+          }
         }
         (*it)->m_vNextIndices.clear();
       }
