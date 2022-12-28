@@ -100,9 +100,6 @@ namespace dustbin {
         m_bRespawn    = false;
         m_bStunned    = false;
 
-        if (m_pAiNode != nullptr)
-          m_pAiNode->setVisible(false);
-
         if (m_pBanner != nullptr) {
           m_pBanner->setState(CHudBanner::enBanners::Finished);
         }
@@ -490,8 +487,7 @@ namespace dustbin {
       m_pSteering     (nullptr),
       m_pBanner       (nullptr),
       m_pLapTimes     (nullptr),
-      m_pFade         (nullptr),
-      m_pAiNode       (nullptr)
+      m_pFade         (nullptr)
     {
       CGlobal *l_pGlobal = CGlobal::getInstance();
 
@@ -706,8 +702,6 @@ namespace dustbin {
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
         m_pAiHelp = new CHudAiHelp(m_pDrv, m_pPlayer->m_pMarble->m_pViewport->m_cRect, a_pPlayer->m_eAiHelp);
-        m_pAiNode = new scenenodes::CAiPathSceneNode(l_pGlobal->getSceneManager()->getRootSceneNode(), l_pGlobal->getSceneManager(), -1, irr::core::vector3df(), irr::core::dimension2df(1.5f, 1.5f));
-        m_pAiNode->drop();
       }
     }
 
@@ -1121,13 +1115,6 @@ namespace dustbin {
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Brake    , a_bBrake     ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Respawn  , a_bRespawn   ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Automatic, a_bAutomatic ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
-      }
-
-      if (m_pAiNode != nullptr) {
-        irr::video::SColor l_cColor = a_bForward ? irr::video::SColor(0xFF, 0, 0xFF, 0) : a_bBrake ? irr::video::SColor(0xFF, 0xFF, 0, 0) : a_bBackward ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0) : irr::video::SColor(0xFF, 0, 0, 0xFF);
-        m_pAiNode->setPosition(m_cPosition);
-        m_pAiNode->setColor(l_cColor);
-        m_pAiNode->setAiData(a_cPoint1, a_cPoint2);
       }
     }
 

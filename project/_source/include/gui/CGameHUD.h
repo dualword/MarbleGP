@@ -108,7 +108,6 @@ namespace dustbin {
         CHudBanner                    *m_pBanner;         /**< The banner renderer */
         CHudLapTimes                  *m_pLapTimes;       /**< The lap times renderer */
         CHudFade                      *m_pFade;           /**< The HUD fade renderer */
-        scenenodes::CAiPathSceneNode  *m_pAiNode;         /**< The AI path node */
 
         std::wstring getDeficitString(int a_iDeficit);
 
