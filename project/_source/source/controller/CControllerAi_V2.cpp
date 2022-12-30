@@ -420,6 +420,9 @@ namespace dustbin {
 
       for (int i = 0; i < (int)enSkill::Count; i++)
         m_iSkills[i] = 0;
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->marbleclass(m_eAiMode == enAiMode::MarbleGP ? 0 : m_eAiMode == enAiMode::Marble2 ? 1 : 2);
     }
 
     CControllerAi_V2::~CControllerAi_V2() {
@@ -521,6 +524,9 @@ namespace dustbin {
 
         if (m_eMode == enMarbleMode::Respawn2)
           switchMarbleMode(enMarbleMode::Cruise);
+
+        if (m_pLuaScript != nullptr)
+          m_pLuaScript->oncheckpoint(a_iMarbleId, a_iCheckpoint);
       }
     }
 
@@ -921,7 +927,7 @@ namespace dustbin {
                   break;
 
                 case enMarbleMode::Respawn2:
-                  l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
                   if (l_cLine.getLength() < 0.75f * m_p2dPath->m_fWidth)
                     switchMarbleMode(enMarbleMode::Cruise);
                   break;

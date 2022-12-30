@@ -26,6 +26,11 @@ namespace dustbin {
         virtual ~CLuaScript_ai();
 
         /**
+         * Inform the script about the marble class (0 == MarbleGP, 1 == Marble2, 2 == Marble3)
+         * @param The marble class of the AI controlled marble
+         */
+        void marbleclass(int a_class);
+        /**
          * Triggered on every simulation step
          * @param The current step number
          */

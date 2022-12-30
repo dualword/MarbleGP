@@ -372,6 +372,12 @@
       ],
       "methods": {
         "lua_to": {
+           "marbleclass": {
+             "comment": "Inform the script about the marble class (0 == MarbleGP, 1 == Marble2, 2 == Marble3)",
+             "arguments": [
+               { "name": "class", "type": "int", "comment": "The marble class of the AI controlled marble" }
+             ]
+           },
            "onstep": {
             "comment": "Triggered on every simulation step",
             "arguments": [
