@@ -442,8 +442,8 @@ namespace dustbin {
           CAudioPlayer *m_aSounds[(int)enMarbleSounds::Count];
 
           SMarbleSound() {
-            m_aSounds[(int)enMarbleSounds::Rolling] = new CAudioPlayer("data/sounds/rolling.ogg", true);
-            m_aSounds[(int)enMarbleSounds::Wind   ] = new CAudioPlayer("data/sounds/wind.ogg"   , true);
+            m_aSounds[(int)enMarbleSounds::Rolling] = new CAudioPlayer("data/sounds/rolling.wav", true);
+            m_aSounds[(int)enMarbleSounds::Wind   ] = new CAudioPlayer("data/sounds/wind.wav"   , true);
             m_aSounds[(int)enMarbleSounds::Skid   ] = new CAudioPlayer("data/sounds/skid.wav"   , true);
             m_aSounds[(int)enMarbleSounds::Stunned] = new CAudioPlayer("data/sounds/stunned.wav", true);
 

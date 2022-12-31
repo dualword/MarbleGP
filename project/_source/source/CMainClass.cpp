@@ -268,7 +268,15 @@ namespace dustbin {
 
     const std::map<enSoundTrack, std::tuple<std::string, bool>> l_mSoundTracks;
 
-
+#ifdef _ANDROID
+    m_pSoundInterface->assignSoundtracks(
+      {
+        { enSoundTrack::enStMenu  , std::make_tuple("data/sounds/theme_menu.wav"  , true  ) },
+        { enSoundTrack::enStRace  , std::make_tuple("data/sounds/theme_race.wav"  , true  ) },
+        { enSoundTrack::enStFinish, std::make_tuple("data/sounds/theme_result.wav", false ) }
+      }
+    );
+#else
     m_pSoundInterface->assignSoundtracks(
       {
         { enSoundTrack::enStMenu  , std::make_tuple("data/sounds/theme_menu.ogg"  , true  ) },
@@ -276,6 +284,7 @@ namespace dustbin {
         { enSoundTrack::enStFinish, std::make_tuple("data/sounds/theme_result.ogg", false ) }
       }
     );
+#endif
 
     m_pSoundInterface->setSoundtrackVolume(m_cSettings.m_fSoundTrack);
     m_pSoundInterface->setSfxVolumeMenu   (m_cSettings.m_fSfxMenu   );
