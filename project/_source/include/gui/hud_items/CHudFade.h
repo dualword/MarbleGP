@@ -46,7 +46,6 @@ namespace dustbin {
         };
 
       private:
-        int                       m_iMarble;          /**< ID of the HUD's marble */
         int                       m_iFade;            /**< A bitfield for fading. @see enFade */
         int                       m_iStep;            /**< The current simulation step */
         CGlobal                  *m_pGlobal;          /**< Pointer to the global singleton */

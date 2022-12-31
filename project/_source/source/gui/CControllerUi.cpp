@@ -523,7 +523,6 @@ namespace dustbin {
     */
     bool CControllerUi::getMoveOption(const irr::core::position2di &a_cMousePos, int a_iDirection, irr::core::position2di &a_cOut) {
       bool l_bFound = false;
-      int  l_iDist  = 0;
 
       m_cMousePos = a_cMousePos;
 

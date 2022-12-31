@@ -13,8 +13,8 @@ namespace dustbin {
       m_iLastChange(0),
       m_fLastOffset(0.0f),
       m_pNode      (a_pNode),
-      m_pMarbles   (a_pMarbles),
       m_pCurrent   (nullptr),
+      m_pMarbles   (a_pMarbles),
       m_bBrake     (false),
       m_bDebug     (false)
     {

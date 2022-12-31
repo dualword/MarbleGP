@@ -21,7 +21,6 @@ namespace dustbin {
     * @param a_cRect the vireport rectangle
     */
     CHudFade::CHudFade(irr::video::IVideoDriver *a_pDrv, int a_iMarble, const irr::core::recti& a_cRect) :
-      m_iMarble(a_iMarble),
       m_iFade  ((int)enFade::NextRace | (int)enFade::RaceGrey | (int)enFade::RaceStart),
       m_iStep  (0),
       m_pGlobal(CGlobal::getInstance()),

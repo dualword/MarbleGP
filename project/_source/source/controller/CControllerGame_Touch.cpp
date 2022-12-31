@@ -5,14 +5,13 @@
 
 namespace dustbin {
   namespace controller {
-    CControllerGame_Touch::CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport) : irr::gui::IGUIElement(
+    CControllerGame_Touch::CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport) : IControllerGame(a_eType), irr::gui::IGUIElement(
         (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId,
         CGlobal::getInstance()->getGuiEnvironment(), 
         CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), 
         -1, 
         irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize())
       ),
-      IControllerGame(a_eType),
       m_pDrv         (CGlobal::getInstance()->getVideoDriver())
     {
       m_cViewport = a_cViewport;

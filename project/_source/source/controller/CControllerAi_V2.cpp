@@ -1602,7 +1602,7 @@ namespace dustbin {
         m_cLines[i] = a_cOther.m_cLines[i];
     }
 
-    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_iMarbleId(-1), m_pParent(nullptr), m_pMarbles(nullptr), m_pPrevious(nullptr) {
+    CControllerAi_V2::SPathLine2d::SPathLine2d(irr::core::line2df& a_cLine1, irr::core::line2df& a_cLine2, irr::core::line2df& a_cLine3) : m_fWidth((a_cLine2.start - a_cLine3.start).getLength()), m_iMarbleId(-1), m_pMarbles(nullptr), m_pParent(nullptr), m_pPrevious(nullptr) {
       m_cLines[0] = a_cLine1;
       m_cLines[1] = a_cLine2;
       m_cLines[2] = a_cLine3;
@@ -1767,12 +1767,12 @@ namespace dustbin {
     CControllerAi_V2::SAiPathSection::SAiPathSection() : 
       m_iIndex     (-1),
       m_iSectionIdx(-1),
-      m_iCheckpoint(-1), 
       m_iTag       (0), 
+      m_iCheckpoint(-1), 
+      m_bSelected  (false), 
       m_fMinVel    (-1.0f), 
       m_fMaxVel    (-1.0f), 
       m_fBestVel   (-1.0f), 
-      m_bSelected  (false), 
       m_pAiPath    (nullptr) 
     {
     }
