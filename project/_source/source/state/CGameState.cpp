@@ -1487,6 +1487,9 @@ namespace dustbin {
           p->m_bCamLink = false;
           p->m_iStateChange = m_iStep;
           m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::GameOver);
+
+          if (p->m_pPlayer->m_pController != nullptr)
+            p->m_pPlayer->m_pController->playerFinished();
         }
         if (m_pLuaScript != nullptr)
           m_pLuaScript->onplayerfinished(a_MarbleId, a_RaceTime, a_Laps);

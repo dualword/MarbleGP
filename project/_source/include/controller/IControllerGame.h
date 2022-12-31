@@ -83,6 +83,11 @@ namespace dustbin {
         * @return the selected controller type
         */
         IControllerGame::enType getType() { return m_eType; }
+
+        /**
+        * The player has finished, hide the UI elements if necessary
+        */
+        virtual void playerFinished() = 0;
     };
   }
 }

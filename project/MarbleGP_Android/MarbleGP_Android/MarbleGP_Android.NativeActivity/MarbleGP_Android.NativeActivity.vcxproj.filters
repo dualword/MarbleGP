@@ -276,9 +276,6 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGyroControl.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\controller\IGyroCallback.h">
-      <Filter>Headerdateien\controller</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\gui\CGameHUDHelpers.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
@@ -423,9 +420,6 @@
     <ClInclude Include="..\..\..\_source\include\gui\hud_items\CHudFade.h">
       <Filter>Headerdateien\gui\hud_items</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\controller\CControllerGame_Touch.h">
-      <Filter>Headerdateien\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\gui\CControllerUi_Game.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
@@ -433,6 +427,12 @@
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\_source\include\controller\IControllerGame.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerGame_Touch.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerGame_Gyro.h">
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
   </ItemGroup>
@@ -867,6 +867,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSelectCup.cpp">
       <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerGame_Gyro.cpp">
+      <Filter>Quelldateien\controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

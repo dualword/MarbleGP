@@ -115,5 +115,12 @@ namespace dustbin {
       // In this case just pass the event to the base class
       CControllerBase::update(a_cEvent);
     }
+
+    /**
+    * The player has finished, hide the UI elements if necessary
+    */
+    void CControllerGame::playerFinished() {
+      // Nothing to do in this case
+    }
   } // namespace controller
 } // namespace dustbin

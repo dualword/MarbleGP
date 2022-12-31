@@ -69,6 +69,11 @@ namespace dustbin {
         * @param a_cEvent event to process
         */
         virtual void updateControls(const irr::SEvent &a_cEvent) override;
+
+        /**
+        * The player has finished, hide the UI elements if necessary
+        */
+        virtual void playerFinished() override;
     };
 
   } // namespace controller

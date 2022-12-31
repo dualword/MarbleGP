@@ -267,13 +267,13 @@
     <ClInclude Include="..\..\..\_source\include\controller\CControllerBase.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerFactory.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerGame.h" />
+    <ClInclude Include="..\..\..\_source\include\controller\CControllerGame_Gyro.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerGame_Touch.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CControllerMenu.h" />
     <ClInclude Include="..\..\..\_source\include\controller\CMarbleController.h" />
     <ClInclude Include="..\..\..\_source\include\controller\IController.h" />
     <ClInclude Include="..\..\..\_source\include\controller\IControllerGame.h" />
     <ClInclude Include="..\..\..\_source\include\controller\ICustomEventReceiver.h" />
-    <ClInclude Include="..\..\..\_source\include\controller\IGyroCallback.h" />
     <ClInclude Include="..\..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\..\_source\include\Defines.h" />
@@ -516,6 +516,7 @@
     <ClCompile Include="..\..\..\_source\source\controller\CControllerFactory.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerGame.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerGame_Touch.cpp" />
+    <ClCompile Include="..\..\..\_source\source\controller\CControllerGame_Gyro.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\..\..\_source\source\controller\CMarbleController.cpp" />
     <ClCompile Include="..\..\..\_source\source\data\CDataStructs.cpp" />

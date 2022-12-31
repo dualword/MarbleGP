@@ -84,6 +84,11 @@ namespace dustbin {
         virtual void onTrigger(irr::s32 a_iTriggerId, irr::s32 a_iObjectId) = 0;
 
         /**
+        * The player has finished, hide the UI elements if necessary
+        */
+        virtual void playerFinished() = 0;
+
+        /**
         * Get the AI controller (if any)
         * @return the AI controller
         */

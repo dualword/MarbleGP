@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <controller/CControllerGame_Touch.h>
+#include <controller/CControllerGame_Gyro.h>
 #include <_generated/messages/CMessages.h>
 #include <controller/CMarbleController.h>
 #include <_generated/lua/CLuaScript_ai.h>
@@ -55,6 +56,10 @@ namespace dustbin {
       else if (a_sControls.substr(0, std::string("DustbinTouchSteerOnly").size()) == "DustbinTouchSteerOnly") {
         l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchSteer, a_cViewport);
         m_bOwnsCtrl   = false;
+      }
+      else if (a_sControls.substr(0, std::string("DustbinGyroscope").size()) == "DustbinGyroscope") {
+        l_pController = new controller::CControllerGame_Gyro(controller::CControllerGame::enType::Gyroscope, a_cViewport, a_eAiHelp == data::SPlayerData::enAiHelp::High);
+        m_bOwnsCtrl = false;
       }
       else {
         controller::CControllerGame *p = new controller::CControllerGame();
@@ -327,5 +332,13 @@ namespace dustbin {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->ontrigger(a_iObjectId, a_iTriggerId);
     }
-  }
+
+    /**
+    * The player has finished, hide the UI elements if necessary
+    */
+    void CMarbleController::playerFinished() {
+      if (m_pController != nullptr)
+        m_pController->playerFinished();
+    }
+ }
 }

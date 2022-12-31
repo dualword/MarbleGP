@@ -9,83 +9,45 @@
 
 namespace dustbin {
   namespace controller {
-    const int g_TouchControlId = MAKE_IRR_ID('t', 'o', 'c', 'h');
-    const irr::c8 g_TouchControlName[] = "TouchControl";
+    const int g_GyroControlId = MAKE_IRR_ID('g', 'y', 'c', 't');
+    const irr::c8 g_GyroControlName[] = "GyroControl";
 
     /**
-    * @class CControllerGame_Touch
+    * @class CControllerGame_Gyro
     * @author Christian Keimel
-    * This controller class handles Android touch
+    * This controller class handles Android gyro
     * events and turns them into marble controls.
     * It provides both the controller and the GUi
     * element.
     */
-    class CControllerGame_Touch : public IControllerGame, public irr::gui::IGUIElement {
+    class CControllerGame_Gyro : public IControllerGame, public irr::gui::IGUIElement {
       private:
-        enum class enControls {
-          Forward    = 0,
-          Backward   = 1,
-          Left       = 2,
-          Right      = 3,
-          Brake      = 4,
-          Rearview   = 5,
-          Respawn    = 6,
-          NoThrottle = 7,
-          NoSteer    = 8,
+        irr::video::IVideoDriver *m_pDrv;   /**< The Irrlicht video driver */
 
-          Count      = 9
-        };
+        irr::video::ITexture *m_pGyroOne;       /**< The circle shown in the center */
+        irr::video::ITexture *m_pGyroTwo;       /**< The filled circle showing the current controls */
+        irr::video::ITexture *m_pReset;         /**< The "reset gyro" button icon */
+        irr::video::ITexture *m_pRespawn [2];   /**< The "respawn" button icon */
+        irr::video::ITexture *m_pRearview[2];   /**< The "rearview" button icon */
 
-        typedef struct STouchInput {
-          irr::video::IVideoDriver *m_pDrv;   /**< The Irrlicht video driver */
+        irr::core::recti m_cIconSrc;        /**< The source rectangle for the icons */
+        irr::core::recti m_cGyroOne;        /**< The draw rectangle for the gyro circle (the second icon is calculated) */
+        irr::core::recti m_cReset[2];       /**< The draw rectangles for the "reset gyro" buttons */
+        irr::core::recti m_cRespawn[2];     /**< The draw rectangles for the "respawn" buttons */
+        irr::core::recti m_cRearview[2];    /**< The draw rectangles for the "rearview" buttons */
+        irr::core::recti m_cViewport;       /**< The viewport to draw to */
 
-          irr::video::ITexture *m_pOff;       /**< The image shown if the control is not active */
-          irr::video::ITexture *m_pOn;        /**< The image shown if the control is active */
+        irr::f32 m_fGyroX;    /**< The X coordinate calculated from the gyro for steering */
+        irr::f32 m_fGyroY;    /**< The X coordinate calculated from the gyro for throttle */
 
-          irr::core::recti m_cScreen;         /**< The rectangle on the screen to draw the texture */
-          irr::core::recti m_cTouch;          /**< The rectangle that can be touched for the control */
-          irr::core::recti m_cSourceOff;      /**< The source rectangle for the in-active image */
-          irr::core::recti m_cSourceOn;       /**< The source rectangle for the active image */
+        irr::s32 m_iRespawn;    /**< Touch ID for the respawn button */
+        irr::s32 m_iRearview;   /**< Touch ID for the rearview button */
 
-          bool m_bActive;                     /**< Flag to indicate whether the control is active or not */
-
-          STouchInput();
-          STouchInput(const std::string &a_sPathOff, const std::string &a_sPathOn, const irr::core::recti &a_cScreen, const irr::core::recti &a_cTouch, irr::video::IVideoDriver *a_pDrv);
-
-          void draw(const irr::core::recti &a_cClip);
-        }
-        STouchInput;
-
-        struct STouchState {
-          int  m_iIndex;      /**< The touch index */
-
-          enControls m_eControl;  /**< Which control is it activating? */
-
-          STouchState();
-        };
-
-        irr::video::IVideoDriver *m_pDrv;       /**< The Irrlicht video driver */
-        irr::core::recti          m_cViewport;  /**< The viewport for clipping*/
-
-        STouchInput *m_aControls[(int)enControls::Count];   /**< Array with the controls */
-
-        STouchState m_aTouch[5];    /**< The touch states */
-
-        /**
-        * Create the throttle controls
-        * @param a_bLeft throttle controls on the left?
-        */
-        void createThrottleControls(bool a_bLeft);
-
-        /**
-        * Create the steering controls
-        * @param a_bLeft throttle controls on the left?
-        */
-        void createSteeringControls(bool a_bLeft);
+        bool m_bSteerOnly;  /**< Only steering supported due to high AI help? */
 
       public:
-        CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport);
-        virtual ~CControllerGame_Touch();
+        CControllerGame_Gyro(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport, bool a_bSteerOnly);
+        virtual ~CControllerGame_Gyro();
 
         /**
         * Returns the throttle control (-1 .. 1): forward - backward

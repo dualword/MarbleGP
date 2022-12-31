@@ -107,6 +107,11 @@ namespace dustbin {
         virtual void onStep(int a_iStep) override;
 
         /**
+        * The player has finished, hide the UI elements if necessary
+        */
+        virtual void playerFinished() override;
+
+        /**
         * This function receives messages of type "Trigger"
         * @param a_TriggerId ID of the trigger
         * @param a_ObjectId ID of the marble that caused the trigger

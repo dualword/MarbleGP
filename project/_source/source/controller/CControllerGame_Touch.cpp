@@ -260,6 +260,13 @@ namespace dustbin {
     }
 
     /**
+    * The player has finished, hide the UI elements if necessary
+    */
+    void CControllerGame_Touch::playerFinished() {
+      setVisible(false);
+    }
+
+    /**
     * Implementation of the serialization method which does nothing in this case
     */
     void CControllerGame_Touch::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
@@ -371,9 +378,11 @@ namespace dustbin {
     }
 
     void CControllerGame_Touch::draw()  {
-      for (auto& l_pControl : m_aControls) {
-        if (l_pControl != nullptr)
-          l_pControl->draw(m_cViewport);
+      if (IsVisible) {
+        for (auto& l_pControl : m_aControls) {
+          if (l_pControl != nullptr)
+            l_pControl->draw(m_cViewport);
+        }
       }
     }
 
