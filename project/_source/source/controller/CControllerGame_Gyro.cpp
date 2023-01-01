@@ -134,6 +134,7 @@ namespace dustbin {
     * @param a_cEvent event to process
     */
     void CControllerGame_Gyro::updateControls(const irr::SEvent& a_cEvent) {
+#ifdef _TOUCH_CONTROL
       if (a_cEvent.EventType == irr::EET_GYROSCOPE_EVENT) {
         m_fGyroX -= a_cEvent.GyroscopeEvent.Z;
         m_fGyroY += a_cEvent.GyroscopeEvent.Y;
@@ -165,6 +166,8 @@ namespace dustbin {
             m_iRespawn = -1;
         }
       }
+#else
+#endif
     }
 
     /**

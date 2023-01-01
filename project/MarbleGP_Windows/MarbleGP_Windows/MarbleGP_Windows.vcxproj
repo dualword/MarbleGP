@@ -99,6 +99,7 @@
     <ClCompile Include="..\..\_source\source\controller\CControllerBase.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerFactory.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerGame.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame_Gyro.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerGame_Touch.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp" />

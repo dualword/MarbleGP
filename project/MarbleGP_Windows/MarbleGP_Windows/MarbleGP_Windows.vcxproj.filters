@@ -618,6 +618,9 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectCup.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame_Gyro.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
