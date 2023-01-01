@@ -498,12 +498,13 @@ namespace dustbin {
         printf(":%i=%-3i[%s]", 
           i, 
           m_iSkills[i], 
-          i == (int)enSkill::OtherMarbleMode ? m_iSkills[i] < m_cAiData.m_iAvoid      ? "avo" : m_iSkills[i] < m_cAiData.m_iOvertake ? "ovt" : "def" : 
-          i == (int)enSkill::JumpModeSwitch  ? m_iSkills[i] < m_cAiData.m_iJumpMode   ? "jm+" : "jm-"  :
-          i == (int)enSkill::JumpDirection   ? m_iSkills[i] < m_cAiData.m_iJumpDir    ? "jd+" : "jd-"   :
-          i == (int)enSkill::JumpVelocity    ? m_iSkills[i] < m_cAiData.m_iJumpVel    ? "jv+" : "jv-"   :
-          i == (int)enSkill::PathSelection   ? m_iSkills[i] < m_cAiData.m_iPathSelect ? "ps+" : "ps-":
-          i == (int)enSkill::RoadBlock       ? m_iSkills[i] < m_cAiData.m_iRoadBlock  ? "rb+" : "rb-" : ""
+          i == (int)enSkill::OtherMarbleMode ? m_iSkills[i] < m_cAiData.m_iAvoid       ? "avo" : m_iSkills[i] < m_cAiData.m_iOvertake ? "ovt" : "def" : 
+          i == (int)enSkill::JumpModeSwitch  ? m_iSkills[i] < m_cAiData.m_iJumpMode    ? "jm+" : "jm-" :
+          i == (int)enSkill::JumpDirection   ? m_iSkills[i] < m_cAiData.m_iJumpDir     ? "jd+" : "jd-" :
+          i == (int)enSkill::JumpVelocity    ? m_iSkills[i] < m_cAiData.m_iJumpVel     ? "jv+" : "jv-" :
+          i == (int)enSkill::PathSelection   ? m_iSkills[i] < m_cAiData.m_iPathSelect  ? "ps+" : "ps-" :
+          i == (int)enSkill::RoadBlock       ? m_iSkills[i] < m_cAiData.m_iRoadBlock   ? "rb+" : "rb-" : 
+          i == (int)enSkill::BestJumpVel     ? m_iSkills[i] < m_cAiData.m_iBestJumpVel ? "bv+" : "bv-" : ""
         );
       }
 
@@ -969,7 +970,7 @@ namespace dustbin {
                     // To do: some randomness and skill for the speed we are going to use
                     if (l_fMax > 0.0f && l_cJumpLine.intersectWith(irr::core::line2df(irr::core::vector2df(), m_cVelocity2d), v) && (m_cAiData.m_iJumpVel >= 100 || m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel)) {
 
-                      if (l_fBst != -1.0f && m_iSkills[(int)enSkill::JumpVelocity] < m_cAiData.m_iJumpVel / 8)
+                      if ((l_fBst != -1.0f && m_iSkills[(int)enSkill::BestJumpVel] < m_cAiData.m_iBestJumpVel) || m_cAiData.m_iBestJumpVel == 100)
                         m_fVCalc = l_fBst;
                       else {
                         if (l_fMin == -1.0f)

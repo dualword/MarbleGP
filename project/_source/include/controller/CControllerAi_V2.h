@@ -223,6 +223,7 @@ namespace dustbin {
           JumpVelocity,       /**< Does the marble succeed in the jump velocity? */
           PathSelection,      /**< Is the LUA script called for a path selection? */
           RoadBlock,          /**< Is the LUA script called to detect a road block? */
+          BestJumpVel,        /**< Does the marble use the best jump velocity? */
 
           Count
         };

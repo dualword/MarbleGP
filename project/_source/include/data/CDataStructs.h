@@ -391,6 +391,7 @@ namespace dustbin {
       int m_iJumpMode;    /**< The skill value for switching to jump mode (0..100) */
       int m_iJumpDir;     /**< The skill value for the jump direction (0..100) */
       int m_iJumpVel;     /**< The skill value for the jump velocity (0..100) */
+      int m_iBestJumpVel; /**< The skill value for the best jump velocity (0..100) */
       int m_iPathSelect;  /**< The skill value for selecting the correct path (by calling the LUA script) at turnoffs (0..100) */
       int m_iRoadBlock;   /**< The skill value for detecting road blocks (0..100) */
       
