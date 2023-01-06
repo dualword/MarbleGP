@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <controller/CControllerGame_Touch.h>
+#include <controller/CControllerAiHelp_V2.h>
 #include <controller/CControllerGame_Gyro.h>
 #include <_generated/messages/CMessages.h>
 #include <controller/CMarbleController.h>
@@ -33,17 +34,6 @@ namespace dustbin {
       m_pLuaScript (nullptr)
     {
       controller::IControllerGame *l_pController = nullptr;
-      
-      /*
-      std::string l_aCtrl[] = {
-      "DustbinController"     ,
-      "DustbinTouchSteerRight",
-      "DustbinTouchSteerLeft" ,
-      "DustbinTouchSteerOnly" ,
-      "DustbinGyroscope"      ,
-      ""                      
-      };
-      */
 
       if (a_sControls.substr(0, std::string("DustbinTouchSteerRight").size()) == "DustbinTouchSteerRight") {
         l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchRight, a_cViewport);
@@ -72,24 +62,56 @@ namespace dustbin {
       if (m_eAiHelp != data::SPlayerData::enAiHelp::Off) {
         irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
 
-        if (l_pFs->existFile(a_sAiScript.c_str())) {
-          std::string l_sScript = helpers::loadTextFile(a_sAiScript);
-          m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
-
-          if (m_pLuaScript->getError() == "") {
-          }
-          else {
-            printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
-            delete m_pLuaScript;
-            m_pLuaScript = nullptr;
-          }
-        }
-
         data::SMarbleAiData l_cAiData = data::SMarbleAiData(m_eAiHelp);
 
-        m_pAiControls = new CControllerAi_V2(a_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
-        
-        if (CGlobal::getInstance()->getSettingData().m_bDebugAI) {
+        if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMgp) {
+          std::string l_sScriptFile = a_sAiScript + "/ai.lua";
+
+          if (l_pFs->existFile(l_sScriptFile.c_str())) {
+            std::string l_sScript = helpers::loadTextFile(l_sScriptFile);
+            m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
+
+            if (m_pLuaScript->getError() == "") {
+            }
+            else {
+              printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
+              delete m_pLuaScript;
+              m_pLuaScript = nullptr;
+            }
+          }
+
+          m_pAiControls = new CControllerAi_V2(a_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
+        }
+        else {
+          std::string l_aScript[] = {
+            a_sAiScript + "/aihelp.lua",
+            a_sAiScript + "/ai.lua",
+            ""
+          };
+
+          m_pLuaScript = nullptr;
+
+          for (int i = 0; l_aScript[i] != "" && m_pLuaScript == nullptr; i++) {
+            if (l_pFs->existFile(l_aScript[i].c_str())) {
+              std::string l_sScript = helpers::loadTextFile(l_aScript[i]);
+              m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
+
+              if (m_pLuaScript->getError() == "") {
+                printf("Loaded lua script \"%s\"\".\n", l_aScript[i].c_str());
+              }
+              else {
+                printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
+                delete m_pLuaScript;
+                m_pLuaScript = nullptr;
+              }
+            }
+          }
+
+
+          m_pAiControls = new CControllerAiHelp_V2(m_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
+        }
+
+        if (m_pAiControls != nullptr && CGlobal::getInstance()->getSettingData().m_bDebugAI) {
           m_pAiControls->setDebug(true);
 
           irr::video::ITexture *l_pTexture = m_pAiControls->getDebugTexture();
@@ -129,10 +151,8 @@ namespace dustbin {
     * @param a_bBrake [out] is the marble braking?
     * @param a_bRespawn [out] does the marble request manual respawn?
     * @param a_bAutomatic [out] is the automatic control active?
-    * @param a_cPoint1 [out] the first point for the AI calculation
-    * @param a_cPoint2 [out] the second point for the AI calculation
     */
-    void CMarbleController::postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
+    void CMarbleController::postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic) {
       if (m_pQueue != nullptr && m_pController != nullptr) {
         irr::f32 l_fCtrlX = m_pController->getSteer();
         irr::f32 l_fCtrlY = m_pController->getThrottle();
@@ -155,7 +175,7 @@ namespace dustbin {
 
           IControllerAI::enMarbleMode l_eMode = IControllerAI::enMarbleMode::Default;
 
-          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot, l_eMode, a_cPoint1, a_cPoint2);
+          m_pAiControls->getControlMessage(i, l_iBotX, l_iBotY, l_bBrakeBot, l_bRearBot, l_bRspnBot, l_eMode);
 
           switch (m_eAiHelp) {
             // Bot: marble is always controlled by AI
@@ -187,15 +207,7 @@ namespace dustbin {
 
             // Medium: The marble is controlled by the player unless in the modes "Jump" and "Off-Track"
             case data::SPlayerData::enAiHelp::Medium:
-              if (l_eMode == IControllerAI::enMarbleMode::Jump || l_eMode == IControllerAI::enMarbleMode::OffTrack) {
-                l_iCtrlX     = l_iBotX;
-                l_iCtrlY     = l_iBotY;
-                a_bAutomatic = true;
-              }
-              else {
-                if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
-                if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
-              }
+              l_iCtrlY     = l_iBotY;
               l_bBrake     = l_bBrakeBot;
               l_bRespawn  |= l_bRspnBot;
               break;

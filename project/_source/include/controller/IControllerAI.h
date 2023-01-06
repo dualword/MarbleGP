@@ -77,10 +77,8 @@ namespace dustbin {
         * @param a_bRearView [out] does the marble look to the back?
         * @param a_bRespawn [out] does the marble want a manual respawn?
         * @param a_eMode [out] the AI mode the marble is currently in
-        * @param a_cPoint1 [out] the first point for the AI calculation
-        * @param a_cPoint2 [out] the second point for the AI calculation
         */
-        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn, enMarbleMode &a_eMode, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) = 0;
+        virtual bool getControlMessage(irr::s32 &a_iMarbleId, irr::s8 &a_iCtrlX, irr::s8 &a_iCtrlY, bool &a_bBrake, bool &a_bRearView, bool &a_bRespawn, enMarbleMode &a_eMode) = 0;
 
         /**
         * Set the controller to debug mode

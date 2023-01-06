@@ -95,6 +95,7 @@
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerAI.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\CControllerAiHelp_V2.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerAi_V2.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerBase.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CControllerFactory.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="..\..\_source\include\CMainClass.h" />
     <ClInclude Include="..\..\_source\include\controller\CAiControlThread.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerAI.h" />
+    <ClInclude Include="..\..\_source\include\controller\CControllerAiHelp_V2.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerAi_V2.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerBase.h" />
     <ClInclude Include="..\..\_source\include\controller\CControllerFactory.h" />

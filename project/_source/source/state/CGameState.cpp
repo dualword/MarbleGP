@@ -950,9 +950,6 @@ namespace dustbin {
           bool l_bRespawn   = false;
           bool l_bAutomatic = false;
 
-          irr::core::vector3df l_cPoint1;
-          irr::core::vector3df l_cPoint2;
-
           (*it)->m_pController->postControlMessage(
             l_bLeft, 
             l_bRight, 
@@ -960,9 +957,7 @@ namespace dustbin {
             l_bBackward, 
             l_bBrake, 
             l_bRespawn, 
-            l_bAutomatic, 
-            l_cPoint1, 
-            l_cPoint2
+            l_bAutomatic
           );
 
           if ((*it)->m_pMarble->m_pViewport->m_pHUD != nullptr) {
@@ -973,9 +968,7 @@ namespace dustbin {
               l_bBackward, 
               l_bBrake, 
               l_bRespawn, 
-              l_bAutomatic, 
-              l_cPoint1, 
-              l_cPoint2
+              l_bAutomatic
             );
           }
         }
@@ -1289,7 +1282,7 @@ namespace dustbin {
                 l_pPlayer->m_sController, 
                 l_pPlayer->m_eAiHelp, 
                 reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
-                "data/levels/" + m_cGameData.m_sTrack + "/ai.lua",
+                "data/levels/" + m_cGameData.m_sTrack,
                 l_pPlayer->m_pMarble->m_pViewport->m_cRect,
                 l_pPlayer->m_bShowRanking
               );

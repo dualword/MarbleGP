@@ -621,6 +621,9 @@
     <ClCompile Include="..\..\_source\source\controller\CControllerGame_Gyro.cpp">
       <Filter>Quelldateien\controller</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerAiHelp_V2.cpp">
+      <Filter>Quelldateien\controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1020,6 +1023,9 @@
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\CControllerGame_Touch.h">
+      <Filter>Headerdateien\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerAiHelp_V2.h">
       <Filter>Headerdateien\controller</Filter>
     </ClInclude>
   </ItemGroup>

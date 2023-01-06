@@ -272,10 +272,8 @@ namespace dustbin {
         * @param a_bBrake is the marble braking?
         * @param a_bRespawn does the marble request manual respawn?
         * @param a_bAutomatic is the automatic control active?
-        * @param a_cPoint1 the first point calculated by the AI
-        * @param a_cPoint2 the second point calculated by the AI
         */
-        void updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic, const irr::core::vector3df &a_cPoint1, const irr::core::vector3df &a_cPoint2);
+        void updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic);
 
         /**
         * Start the fade-out at the end of the race

@@ -143,9 +143,7 @@ namespace dustbin {
       bool &a_bBrake, 
       bool &a_bRearView, 
       bool &a_bRespawn, 
-      enMarbleMode &a_eMode, 
-      irr::core::vector3df &a_cPoint1, 
-      irr::core::vector3df &a_cPoint2
+      enMarbleMode &a_eMode
     ) { 
       bool l_bRespawn = false;
 

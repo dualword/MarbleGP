@@ -23,9 +23,47 @@ namespace dustbin {
     * class of it's own
     */
     class CControllerAi_V2 : public IControllerAI {
-      private:
+      protected:
         struct SAiPathSection;
         struct SPathLine3d;
+
+        /**
+        * Draw a debug line with factor
+        * @param a_pDrv the Irrlicht video driver
+        * @param a_cLine the line to draw
+        * @param a_fFactor the factor to scale the line
+        * @param a_cColor the color of the line
+        * @param a_cOffset offset of the line
+        */
+        void draw2dDebugLine(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset);
+
+        /**
+        * Draws a debug rectangle
+        * @param a_pDrv the Irrlicht video driver
+        * @param a_cPos the center position
+        * @param a_cColor the rectangle color
+        * @param a_iSize the size of the rectangle
+        * @param a_fScale the scale factor
+        * @param a_cOffset the offset of the rectangle
+        */
+        void draw2dDebugRectangle(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset);
+
+        /**
+        * Draw a debug text string
+        * @param a_pDrv the video driver
+        * @param a_sText the text to render
+        * @param a_pFont the font to use
+        * @param a_cPosition the screen position to render to
+        */
+        void draw2dDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition);
+
+        /**
+        * Find all AI path nodes in the scene tree
+        * @param a_pNode the node to check
+        * @param a_bAiHelp search for nodes for AI help?
+        * @param a_vNodes [out] the vector of nodes that will be filled
+        */
+        void findAiPathNodes(const irr::scene::ISceneNode* a_pNode, bool a_bAiHelp, std::vector<const scenenodes::CAiPathNode *>& a_vNodes);
 
         /**
         * @class SPathLine2d
@@ -71,6 +109,18 @@ namespace dustbin {
           * @return true if the line intersects with a border, false otherwise
           */
           bool doesLineIntersectBorder(const irr::core::line2df &a_cLine);
+
+          /**
+          * Create a clone of this path line and all follow-ups
+          */
+          SPathLine2d *clone();
+
+          /**
+          * Delete all children
+          */
+          void deleteAllChildren();
+
+          bool getFirstCollisionLine(const irr::core::line2df &a_cLine, irr::core::vector2df &a_cOutput, bool &a_bIsCenterLine);
         }
         SPathLine2d;
 
@@ -117,6 +167,20 @@ namespace dustbin {
           );
 
           /**
+          * Create 2d path lines out of the list of 3d path lines
+          * @param a_cMatrix the camera matrix to use for the transformation
+          * @param a_mSplitSelections a map with all the already selected directions on road splits
+          * @param a_mOldSelections the map with the selections of the previous step
+          * @param a_vMarbles the current positions of the marbles
+          * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
+          */
+          SPathLine2d *transformTo2d_Help(
+            const irr::core::matrix4 &a_cMatrix, 
+            std::vector<const data::SMarblePosition *> &a_vMarbles,
+            std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+          );
+
+          /**
           * Transform the lines to lie in the given plane
           * @param a_cPlane the plane to place the points on
           * @param a_cNormal the normal of the path section
@@ -142,6 +206,7 @@ namespace dustbin {
           irr::f32 m_fMinVel;   /**< Minimum velocity for jumps */
           irr::f32 m_fMaxVel;   /**< Maximum velocity for jumps */
           irr::f32 m_fBestVel;  /**< Best velocity for jumps */
+          irr::f32 m_fWidthSq;  /**< Square of the width, including the factor of the original path definition */
 
           irr::core::line3df m_cRealLine;   /**< The real (not adjusted) 3d line of the section */
           irr::core::line3df m_cLine3d;     /**< The 3d line of this section, necessary to find the correct section on race startup, respawn and stun */
@@ -152,6 +217,8 @@ namespace dustbin {
           irr::core::plane3df m_cPlane;     /**< This section's 3d plane */
 
           irr::core::vector3df m_cNormal;   /**< The normal of the section */
+
+          SAiPathSection *m_pPrev;
 
           std::vector<SAiPathSection *> m_vNext;          /**< The next options after this section */
           std::vector<int             > m_vCheckpoints;   /**< Vector with the next indices of the checkpoint */
@@ -350,53 +417,44 @@ namespace dustbin {
         * @param a_cLine [out] the best line, start is used as input
         * @param a_pEnd the 2d path lines to search
         * @param a_pCollide [out] the 2d line path where the collision was detected (can be nullptr)
-        * @param a_cPoint [out] the 3d point of the AI calculation
         */
-        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd, SPathLine2d **a_pCollide, irr::core::vector3df &a_cPoint);
+        bool getBestLine(irr::core::line2df &a_cLine, SPathLine2d *a_pEnd, SPathLine2d **a_pCollide);
 
         /**
         * Get the 2d lines for calculating the marble controls for Default mode
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
-        * @param a_cPoint1 [out] the first 3d point of the AI calculation
-        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Default(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
+        int getControlLines_Default(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
         /**
         * Get the 2d lines for calculating the marble controls for Cruise mode
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
-        * @param a_cPoint1 [out] the first 3d point of the AI calculation
-        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Cruise(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
+        int getControlLines_Cruise(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
         /**
         * Get the 2d lines for calculating the marble controls for Time Attack mode
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
-        * @param a_cPoint1 [out] the first 3d point of the AI calculation
-        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_TimeAttack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
+        int getControlLines_TimeAttack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
         /**
         * Get the 2d lines for calculating the marble controls after the marble has respawned
         * @param a_cLineOne [out] the first control line
         * @param a_cLineTwo [out] the second control line
         * @param a_pPath the AI path data for calculating the two lines
-        * @param a_cPoint1 [out] the first 3d point of the AI calculation
-        * @param a_cPoint2 [out] the second 3d point of the AI calculation
         * @return the number of calculated lines (1 or 2)
         */
-        int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2);
+        int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
       public:
         /**
@@ -455,8 +513,6 @@ namespace dustbin {
         * @param a_bRearView [out] does the marble look to the back?
         * @param a_bRespawn [out] does the marble want a manual respawn?
         * @param a_eMode [out] the AI mode the marble is currently in
-        * @param a_cPoint1 [out] the first point for the AI calculation
-        * @param a_cPoint2 [out] the second point for the AI calculation
         */
         virtual bool getControlMessage(
           irr::s32 &a_iMarbleId, 
@@ -465,9 +521,7 @@ namespace dustbin {
           bool &a_bBrake, 
           bool &a_bRearView, 
           bool &a_bRespawn, 
-          enMarbleMode &a_eMode, 
-          irr::core::vector3df &a_cPoint1, 
-          irr::core::vector3df &a_cPoint2
+          enMarbleMode &a_eMode 
         ) override;
 
         /**

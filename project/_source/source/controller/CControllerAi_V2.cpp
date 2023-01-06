@@ -22,7 +22,7 @@ namespace dustbin {
     * @param a_cColor the color of the line
     * @param a_cOffset offset of the line
     */
-    void draw2dDebugLine(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
+    void CControllerAi_V2::draw2dDebugLine(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
       a_pDrv->draw2DLine(
         irr::core::vector2di(
           (irr::s32)(a_fFactor * a_cLine.start.X) + a_cOffset.X, 
@@ -45,12 +45,19 @@ namespace dustbin {
     * @param a_fScale the scale factor
     * @param a_cOffset the offset of the rectangle
     */
-    void draw2dDebugRectangle(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset) {
+    void CControllerAi_V2::draw2dDebugRectangle(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset) {
       irr::core::vector2di l_cUpperLeft = irr::core::vector2di((irr::s32)(a_fScale * a_cPos.X) + a_cOffset.X - a_iSize / 2, (irr::s32)(a_fScale * a_cPos.Y) + a_cOffset.Y - a_iSize / 2);
       a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cUpperLeft, irr::core::dimension2du(a_iSize, a_iSize)), a_cColor);
     }
 
-    void draw2dDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition) {
+    /**
+    * Draw a debug text string
+    * @param a_pDrv the video driver
+    * @param a_sText the text to render
+    * @param a_pFont the font to use
+    * @param a_cPosition the screen position to render to
+    */
+    void CControllerAi_V2::draw2dDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition) {
       irr::core::dimension2du l_cDim = a_pFont->getDimension(a_sText);
       l_cDim.Width  = 6 * l_cDim.Width  / 5;
       l_cDim.Height = 6 * l_cDim.Height / 5;
@@ -67,7 +74,7 @@ namespace dustbin {
     * @param a_bAiHelp search for nodes for AI help?
     * @param a_vNodes [out] the vector of nodes that will be filled
     */
-    void findAiPathNodes(const irr::scene::ISceneNode* a_pNode, bool a_bAiHelp, std::vector<const scenenodes::CAiPathNode *>& a_vNodes) {
+    void CControllerAi_V2::findAiPathNodes(const irr::scene::ISceneNode* a_pNode, bool a_bAiHelp, std::vector<const scenenodes::CAiPathNode *>& a_vNodes) {
       int l_iAiNodes = 0;
       int l_iAiHelp  = 0; // Number of AI nodes marked with the "AI Help" flag
 
@@ -262,9 +269,6 @@ namespace dustbin {
             p->m_eType = (*l_itSection)->m_eType;
             p->m_iTag  = (*l_itSection)->m_iTag;
 
-            if (p->m_iTag != 0)
-              printf("Tag: %i\n", p->m_iTag); 
-
             if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
               p->m_fMinVel  = (*l_itSection)->m_fMinSpeed;
               p->m_fMaxVel  = (*l_itSection)->m_fMaxSpeed;
@@ -335,7 +339,9 @@ namespace dustbin {
               p->m_cEdges[1] = l_cEdges[3];
             }
             
-            p->m_cNormal = (*l_itSection)->m_cNormal;
+            p->m_cNormal   = (*l_itSection)->m_cNormal;
+            p->m_fWidthSq  = (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * l_fClass;
+            p->m_fWidthSq *= p->m_fWidthSq;
 
             m_vAiPath.push_back(p);
           }
@@ -365,8 +371,10 @@ namespace dustbin {
               }
             }
 
-            if (l_bAdd)
+            if (l_bAdd) {
               (*l_itThis)->m_vNext.push_back(*l_itNext);
+              (*l_itNext)->m_pPrev = *l_itThis;
+            }
           }
           else {
             if (std::get<1>(l_tNextOptions) == nullptr)
@@ -664,8 +672,6 @@ namespace dustbin {
     * @param a_bRearView [out] does the marble look to the back?
     * @param a_bRespawn [out] does the marble want a manual respawn?
     * @param a_eMode [out] the AI mode the marble is currently in
-    * @param a_cPoint1 [out] the first point for the AI calculation
-    * @param a_cPoint2 [out] the second point for the AI calculation
     */
     bool CControllerAi_V2::getControlMessage(
       irr::s32& a_iMarbleId, 
@@ -674,9 +680,7 @@ namespace dustbin {
       bool& a_bBrake, 
       bool& a_bRearView, 
       bool& a_bRespawn, 
-      enMarbleMode &a_eMode, 
-      irr::core::vector3df &a_cPoint1, 
-      irr::core::vector3df &a_cPoint2
+      enMarbleMode &a_eMode
     ) {
       if (m_aMarbles[m_iIndex].m_iMarbleId == -1)
         return false;
@@ -914,7 +918,7 @@ namespace dustbin {
               switch (m_eMode) {
                 case enMarbleMode::OffTrack: {
                   // Off-track: get back on the track as fast as possible
-                  l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr, a_cPoint1, a_cPoint2);
+                  l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr);
                   irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
                   irr::f32 l_fDist      = v.getDistanceFrom(l_cLine.start);
                   irr::f32 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25f : 2.5f;
@@ -924,22 +928,22 @@ namespace dustbin {
                 }
                 
                 case enMarbleMode::Default:
-                  l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  l_iLines = getControlLines_Default(l_cLine, l_cOther, *l_itEnd);
                   break;
 
                 case enMarbleMode::Respawn2:
-                  l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, *l_itEnd);
                   if (l_cLine.getLength() < 0.75f * m_p2dPath->m_fWidth)
                     switchMarbleMode(enMarbleMode::Cruise);
                   break;
 
                 case enMarbleMode::Cruise:
-                  l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  l_iLines = getControlLines_Cruise(l_cLine, l_cOther, *l_itEnd);
                   break;
 
                 case enMarbleMode::TimeAttack:
                 case enMarbleMode::Loop:
-                  l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd, a_cPoint1, a_cPoint2);
+                  l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
                   break;
 
                 case enMarbleMode::Jump: {
@@ -1317,12 +1321,10 @@ namespace dustbin {
     * @param a_pEnd the 2d path lines to search
     * @param a_cPoint [out] the 3d point of the AI calculation
     */
-    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd, SPathLine2d **a_pCollide, irr::core::vector3df &a_cPoint) {
+    bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd, SPathLine2d **a_pCollide) {
       while (a_pEnd != nullptr) {
         bool l_bReturn = true;
         a_cLine.end = a_pEnd->m_cLines[0].end;
-
-        a_cPoint = a_pEnd->m_pParent->m_pParent->m_cRealLine.end;
 
         SPathLine2d *l_pOther = a_pEnd;
         while (l_pOther != nullptr) {
@@ -1352,14 +1354,14 @@ namespace dustbin {
     * @param a_pPath the AI path data for calculating the two lines
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Default(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
+    int CControllerAi_V2::getControlLines_Default(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1))
+      if (getBestLine(a_cLineOne, a_pPath, nullptr))
         l_iRet++;
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint2))
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr))
         l_iRet++;
       
       return l_iRet;
@@ -1370,21 +1372,19 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
-    * @param a_cPoint1 [out] the first 3d point of the AI calculation
-    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Cruise(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
+    int CControllerAi_V2::getControlLines_Cruise(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1))
+      if (getBestLine(a_cLineOne, a_pPath, nullptr))
         l_iRet++;
 
 
       SPathLine2d *l_pPath = nullptr;
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, &l_pPath, a_cPoint2)) {
+      if (getBestLine(a_cLineTwo, a_pPath, &l_pPath)) {
         l_iRet++;
 
         if (l_pPath != nullptr) {
@@ -1403,20 +1403,18 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
-    * @param a_cPoint1 [out] the first 3d point of the AI calculation
-    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_TimeAttack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
+    int CControllerAi_V2::getControlLines_TimeAttack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
       int l_iRet = 0;
 
-      if (getBestLine(a_cLineOne, a_pPath, nullptr, a_cPoint1))
+      if (getBestLine(a_cLineOne, a_pPath, nullptr))
         l_iRet++;
 
       a_cLineOne.end += 15.0f * (a_cLineOne.end - a_cLineOne.start).normalize();
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint2)) {
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
         l_iRet++;
       }
       
@@ -1428,22 +1426,18 @@ namespace dustbin {
     * @param a_cLineOne [out] the first control line
     * @param a_cLineTwo [out] the second control line
     * @param a_pPath the AI path data for calculating the two lines
-    * @param a_cPoint1 [out] the first 3d point of the AI calculation
-    * @param a_cPoint2 [out] the second 3d point of the AI calculation
     * @return the number of calculated lines (1 or 2)
     */
-    int CControllerAi_V2::getControlLines_Offtrack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) {
+    int CControllerAi_V2::getControlLines_Offtrack(irr::core::line2df& a_cLineOne, irr::core::line2df& a_cLineTwo, SPathLine2d* a_pPath) {
       int l_iRet = 0;
 
       a_cLineOne.end = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df());
 
       a_cLineTwo = irr::core::line2df(a_cLineOne.end, a_cLineOne.end);
-      if (getBestLine(a_cLineTwo, a_pPath, nullptr, a_cPoint1)) {
+      if (getBestLine(a_cLineTwo, a_pPath, nullptr)) {
         l_iRet++;
       }
 
-      a_cPoint2 = a_cPoint1;
-      
       return l_iRet;
     }
 
@@ -1517,14 +1511,14 @@ namespace dustbin {
 
       l_pThis->m_cBBox.reset(m_cLine3d.start);
       l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end);
-      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.start + 0.0f * m_cNormal);
-      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end   + 0.0f * m_cNormal);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.start + 1.0f * m_cNormal);
+      l_pThis->m_cBBox.addInternalPoint(m_cLine3d.end   + 1.0f * m_cNormal);
 
       for (int i = 0; i < 2; i++) {
         l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start);
         l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end);
-        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start + 0.0f * m_cNormal);
-        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end   + 0.0f * m_cNormal);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].start + 1.0f * m_cNormal);
+        l_pThis->m_cBBox.addInternalPoint(m_cEdges[i].end   + 1.0f * m_cNormal);
       }
       
       if (a_pPrevious != nullptr)
@@ -1594,6 +1588,79 @@ namespace dustbin {
 
       return false;
     }
+
+    /**
+    * Create a clone of this path line and all follow-ups
+    */
+    CControllerAi_V2::SPathLine2d* CControllerAi_V2::SPathLine2d::clone() {
+      SPathLine2d *l_pClone = new SPathLine2d(*this);
+
+      for (std::vector<SPathLine2d *>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
+        SPathLine2d *l_pNext = (*l_itNext)->clone();
+        l_pNext->m_pPrevious = l_pClone;
+        l_pClone->m_vNext.push_back(l_pNext);
+      }
+
+      return l_pClone;
+    }
+
+    /**
+    * Delete all children
+    */
+    void CControllerAi_V2::SPathLine2d::deleteAllChildren() {
+      while (m_vNext.size() > 0) {
+        (*m_vNext.begin())->deleteAllChildren();
+        SPathLine2d *p = *m_vNext.begin();
+        m_vNext.erase(m_vNext.begin());
+        delete p;
+      }
+    }
+
+    bool CControllerAi_V2::SPathLine2d::getFirstCollisionLine(const irr::core::line2df& a_cLine, irr::core::vector2df& a_cOutput, bool& a_bIsCenterLine) {
+      bool l_bRet = false;
+      a_bIsCenterLine = false;
+      
+      irr::core::vector2df l_cIntersect[3] = {
+        irr::core::vector2df(-1.0f, -1.0f),
+        irr::core::vector2df(-1.0f, -1.0f),
+        irr::core::vector2df(-1.0f, -1.0f)
+      };
+
+      for (int i = 1; i < 3; i++) {
+        if (!m_cLines[i].intersectWith(a_cLine, l_cIntersect[i])) {
+          l_cIntersect[i].X = -1.0f;
+          l_cIntersect[i].Y = -1.0f;
+        }
+        else l_bRet = true;
+      }
+
+      if (l_bRet) {
+        int l_iIndex = 0;
+        irr::f32 l_fDist = 0.0f;
+
+        for (int i = 0; i < 3; i++) {
+          if (l_cIntersect[i].X != -1.0f && l_cIntersect[i].Y != -1.0f) {
+            if (l_fDist == 0.0f || l_fDist > l_cIntersect[i].getLengthSQ()) {
+              l_iIndex = i;
+              l_fDist = l_cIntersect[i].getLengthSQ();
+            }
+          }
+        }
+
+        a_bIsCenterLine = l_iIndex == 0;
+
+        a_cOutput = l_cIntersect[l_iIndex];
+      }
+      else {
+        for (std::vector<SPathLine2d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end() && !l_bRet; l_itNext++) {
+          l_bRet = (*l_itNext)->getFirstCollisionLine(a_cLine, a_cOutput, a_bIsCenterLine);
+        }
+      }
+
+      return l_bRet;
+    }
+
+
 
     CControllerAi_V2::SPathLine2d::SPathLine2d() : m_fWidth(0.0f), m_iMarbleId(-1), m_pMarbles(nullptr), m_pParent(nullptr), m_pPrevious(nullptr) {
     }
@@ -1668,10 +1735,10 @@ namespace dustbin {
         irr::core::vector3df l_cOut;
 
         if (a_cPlane.getIntersectionWithLine(m_cLines[i].start, a_cNormal, l_cOut))
-          m_cLines[i].start = l_cOut;
+          m_cLines[i].start = l_cOut - 0.05f * (m_cLines[i].end - m_cLines[i].start).normalize();
 
         if (a_cPlane.getIntersectionWithLine(m_cLines[i].end, a_cNormal, l_cOut))
-          m_cLines[i].end = l_cOut;
+          m_cLines[i].end = l_cOut + 0.05f * (m_cLines[i].end - m_cLines[i].start).normalize();
       }
 
       for (std::vector<SPathLine3d *>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++)
@@ -1764,6 +1831,53 @@ namespace dustbin {
 
       return &m_cPathLine;
     }
+    /**
+    * Create 2d path lines out of the list of 3d path lines
+    * @param a_cMatrix the camera matrix to use for the transformation
+    * @param a_mSplitSelections a map with all the already selected directions on road splits
+    * @param a_mOldSelections the map with the selections of the previous step
+    * @param a_vMarbles the current positions of the marbles
+    * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
+    */
+    CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d_Help(
+      const irr::core::matrix4 &a_cMatrix, 
+      std::vector<const data::SMarblePosition *> &a_vMarbles,
+      std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+    ) {
+      m_cPathLine.m_vNext.clear();
+
+      for (int i = 0; i < 3; i++) {
+        irr::core::vector3df vs;
+        irr::core::vector3df ve;
+
+        a_cMatrix.transformVect(vs, m_cLines[i].start);
+        a_cMatrix.transformVect(ve, m_cLines[i].end  );
+
+        m_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
+      }
+
+      for (std::vector<const data::SMarblePosition *>::iterator l_itMarble = a_vMarbles.begin(); l_itMarble != a_vMarbles.end(); l_itMarble++) {
+        if (m_cBBox.isPointInside((*l_itMarble)->m_cPosition)) {
+          irr::core::vector3df l_cPos = (*l_itMarble)->m_cPosition;
+          irr::core::vector3df l_cVel = (*l_itMarble)->m_cVelocity + l_cPos;
+          
+          a_cMatrix.transformVect(l_cPos);
+          a_cMatrix.transformVect(l_cVel);
+
+          a_vMarblePosVel.push_back(std::make_tuple((*l_itMarble)->m_iMarbleId, l_cPos, l_cVel));
+        }
+      }
+
+      m_cPathLine.m_fWidth  = (m_cPathLine.m_cLines[1].start - m_cPathLine.m_cLines[2].start).getLength();
+      m_cPathLine.m_cMatrix = a_cMatrix;
+
+      for (std::vector<SPathLine3d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
+        SPathLine2d *l_pChild = (*l_itNext)->transformTo2d_Help(a_cMatrix, a_vMarbles, a_vMarblePosVel);
+        m_cPathLine.m_vNext.push_back(l_pChild);
+      }
+
+      return &m_cPathLine;
+    }
 
     CControllerAi_V2::SAiPathSection::SAiPathSection() : 
       m_iIndex     (-1),
@@ -1774,6 +1888,8 @@ namespace dustbin {
       m_fMinVel    (-1.0f), 
       m_fMaxVel    (-1.0f), 
       m_fBestVel   (-1.0f), 
+      m_fWidthSq   (0.0f),
+      m_pPrev      (nullptr),
       m_pAiPath    (nullptr) 
     {
     }

@@ -38,10 +38,8 @@ namespace dustbin {
         * @param a_bBrake [out] is the marble braking?
         * @param a_bRespawn [out] does the marble request manual respawn?
         * @param a_bAutomatic [out] is the automatic control active?
-        * @param a_cPoint1 [out] the first point for the AI calculation
-        * @param a_cPoint2 [out] the second point for the AI calculation
         */
-        virtual void postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic, irr::core::vector3df &a_cPoint1, irr::core::vector3df &a_cPoint2) = 0;
+        virtual void postControlMessage(bool &a_bLeft, bool &a_bRight, bool &a_bForward, bool &a_bBackward, bool &a_bBrake, bool &a_bRespawn, bool &a_bAutomatic) = 0;
 
         /**
         * Update the controller with the Irrlicht event

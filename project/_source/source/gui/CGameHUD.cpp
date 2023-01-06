@@ -1106,7 +1106,7 @@ namespace dustbin {
     * @param a_cPoint1 the first point calculated by the AI
     * @param a_cPoint2 the second point calculated by the AI
     */
-    void CGameHUD::updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic, const irr::core::vector3df &a_cPoint1, const irr::core::vector3df &a_cPoint2) {
+    void CGameHUD::updateAiHelp(bool a_bLeft, bool a_bRight, bool a_bForward, bool a_bBackward, bool a_bBrake, bool a_bRespawn, bool a_bAutomatic) {
       if (m_pAiHelp != nullptr) {
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Left     , a_bLeft      ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
         m_pAiHelp->setIconState(CHudAiHelp::enIcons::Right    , a_bRight     ? CHudAiHelp::enState::Active : CHudAiHelp::enState::Inactive);
