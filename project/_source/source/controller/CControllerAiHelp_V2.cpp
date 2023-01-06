@@ -107,17 +107,24 @@ namespace dustbin {
       m_cVelocity2d.X = 1.15f * l_vDummy.X;
       m_cVelocity2d.Y = 1.15f * l_vDummy.Y;
 
-      irr::core::line2df l_cVelocity = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d);
-
       std::vector<const data::SMarblePosition *> l_vMarbles;
       for (int i = 0; i < 16; i++) {
         if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId)
           l_vMarbles.push_back(&m_aMarbles[i]);
       }
 
+      std::vector<std::tuple<irr::core::line2df, irr::s8, irr::s8, bool>> l_vCtrlOptions;
+
       for (std::vector<SAiPathSection *>::iterator l_itCurrent = l_vCurrent.begin(); l_itCurrent != l_vCurrent.end(); l_itCurrent++) {
+        irr::s8 l_iCtrlX = 0;
+        irr::s8 l_iCtrlY = 0;
+        bool l_bBrake = false;
+
         // Update the current path section if necessary
         m_pCurrent = *l_itCurrent;
+
+        irr::core::line2df l_cVelocity  = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d);
+        irr::core::line2df l_cReference = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), irr::core::vector2df(0.0f, 0.0f));
 
         std::vector<SPathLine2d *> l_vOptions;
         std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
@@ -134,12 +141,24 @@ namespace dustbin {
           bool l_bCollide = false;
 
           if (m_p2dPath->getFirstCollisionLine(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d), l_cIntersect, l_bCenter)) {
-            if (!l_bCenter)
+            l_cReference.end = l_cIntersect;
+
+            if (!l_bCenter) {
               l_cIntersect -= 0.15f * (l_cVelocity.end - l_cVelocity.start);
+            }
 
             l_cVelocity.end = l_cIntersect;
             l_bCollide = true;
           }
+          else {
+            if (l_cVelocity.getLengthSQ() > 1.0f) {
+              l_cReference.end = irr::core::vector2df(0.0f, 1.0f);
+            }
+            else {
+              l_cReference.end = l_cVelocity.end;
+            }
+          }
+
           draw2dDebugLine(m_pDrv, l_cVelocity, m_fScale, l_bCollide ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);          
 
           SPathLine2d *l_pSpecial = findNextSpecial(m_p2dPath);
@@ -167,12 +186,12 @@ namespace dustbin {
                   irr::f32 l_fVel = m_aMarbles[m_iIndex].m_cVelocity.getLength();
 
                   if (m_fVCalc < l_fVel) {
-                    a_bBrake = l_fVel - m_fVCalc > 5.0f;
-                    a_iCtrlY = -127;
+                    l_bBrake = l_fVel - m_fVCalc > 5.0f;
+                    l_iCtrlY = -127;
                   }
                   else {
-                    a_bBrake = false;
-                    a_iCtrlY = 127;
+                    l_bBrake = false;
+                    l_iCtrlY = 127;
                   }
                 }
 
@@ -192,28 +211,27 @@ namespace dustbin {
             std::vector<SPathLine2d *> l_vEnds;
             findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
 
-            irr::f64 l_fAngle1 = l_cVelocity.getAngleWith(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), irr::core::vector2df(0.0f, 1.0f)));
-
             for (std::vector<SPathLine2d *>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
               irr::core::line2df l_cBest = irr::core::line2df(l_cVelocity.end, l_cVelocity.end);
 
               if (getBestLine(l_cBest, *l_itEnd, nullptr)) {
                 draw2dDebugLine(m_pDrv, l_cBest, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+                l_cReference.end = l_cBest.end;
 
-                irr::f64 l_fAngle2 = l_cVelocity.getAngleWith(l_cBest);
+                irr::f64 l_fAngle = l_cVelocity.getAngleWith(l_cBest);
 
-                irr::f64 l_fFactor = std::max(1.0, l_fAngle2 / 65.0f);
+                irr::f64 l_fFactor = std::max(1.0, l_fAngle / 65.0f);
 
                 irr::f32 l_fVel1 = m_aMarbles[m_iIndex].m_cVelocity.getLength();
                 irr::f32 l_fVel2 = (irr::f32)l_fFactor * l_cVelocity.getLength();
 
                 if (1.1f * l_fVel1 > l_fVel2 && l_bCollide) {
-                  a_iCtrlY = -127;
-                  a_bBrake = l_fVel1 > 1.15f * l_fVel2;
+                  l_iCtrlY = -127;
+                  l_bBrake = l_fVel1 > 1.15f * l_fVel2;
                 }
                 else {
-                  a_iCtrlY = 127;
-                  a_bBrake = false;
+                  l_iCtrlY = 127;
+                  l_bBrake = false;
                 }
               }
             }
@@ -225,6 +243,25 @@ namespace dustbin {
           l_vOptions.erase(l_vOptions.begin());
           p->deleteAllChildren();
           delete p;
+        }
+
+        l_vCtrlOptions.push_back(std::make_tuple(l_cReference, l_iCtrlX, l_iCtrlY, l_bBrake));
+      }
+
+      irr::core::line2df l_cReference = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), irr::core::vector2df(0.0f, 1.0f));
+      irr::f64 l_fAngle = 0.0;
+
+      for (std::vector<std::tuple<irr::core::line2df, irr::s8, irr::s8, bool>>::iterator l_itCtrl = l_vCtrlOptions.begin(); l_itCtrl != l_vCtrlOptions.end(); l_itCtrl++) {
+        irr::f64 l_fNewAngle = std::get<0>(*l_itCtrl).getAngleWith(l_cReference);
+
+        draw2dDebugLine(m_pDrv, std::get<0>(*l_itCtrl), m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+
+        if (l_itCtrl == l_vCtrlOptions.begin() || l_fNewAngle < l_fAngle) {
+          a_iCtrlX = std::get<1>(*l_itCtrl);
+          a_iCtrlY = std::get<2>(*l_itCtrl);
+          a_bBrake = std::get<3>(*l_itCtrl);
+
+          l_fAngle = l_fNewAngle;
         }
       }
 

@@ -309,6 +309,9 @@ namespace dustbin {
               
             irr::f32 l_fClass = m_eAiMode == enAiMode::MarbleGP ? 1.0f : m_eAiMode == enAiMode::Marble2 ? 0.85f : 0.8f;// m_iClassIndex == 0 ? 1.0f : m_iClassIndex == 1 ? 0.85f : 0.8f;
 
+            if (m_bAiHelp)
+              l_fClass *= 1.25f;
+
             irr::core::vector3df l_cEdgePoints[] = {
               (*l_itSection)->m_cPosition - (*l_itSection)->m_fWidth * (*l_itSection)->m_fFactor * (*l_itSection)->m_cSideVector * l_fClass,   // Start point 1
               (*l_itNext   )->m_cPosition - (*l_itNext   )->m_fWidth * (*l_itNext   )->m_fFactor * (*l_itNext   )->m_cSideVector * l_fClass,   // End point 1
