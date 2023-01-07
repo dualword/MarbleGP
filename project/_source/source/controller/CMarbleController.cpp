@@ -84,7 +84,6 @@ namespace dustbin {
         }
         else {
           std::string l_aScript[] = {
-            a_sAiScript + "/aihelp.lua",
             a_sAiScript + "/ai.lua",
             ""
           };
