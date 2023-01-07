@@ -25,6 +25,7 @@ namespace dustbin {
     CControllerAiHelp_V2::CControllerAiHelp_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport) :
       CControllerAi_V2(a_iMarbleId, a_sControls, a_pMarbles, a_pLuaScript, a_cViewport), m_bStarting(true)
     {
+      m_cAiData.m_iAvoid = -1;
     }
 
     CControllerAiHelp_V2::~CControllerAiHelp_V2() {
@@ -62,6 +63,12 @@ namespace dustbin {
         }
       }
       else {
+        if (m_p2dPath != nullptr) {
+          if (m_p2dPath->m_cLines[0].end.Y > 0.0f && m_p2dPath->m_vNext.size() > 0) {
+            m_pCurrent = (*m_p2dPath->m_vNext.begin())->m_pParent->m_pParent;
+          }
+        }
+
         // Transform our velocity to 2d
         irr::core::matrix4 l_cMatrix;
         l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
@@ -72,7 +79,9 @@ namespace dustbin {
         m_cVelocity2d.X = l_vDummy.X;
         m_cVelocity2d.Y = l_vDummy.Y;
 
-        irr::core::line2df l_cCheck = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d.getLengthSQ() != 0.0f ? 250.0f * m_cVelocity2d.normalize() : irr::core::vector2df(0.0f, 0.0f));
+        irr::core::vector2df l_cVelocity2d = m_cVelocity2d;
+
+        irr::core::line2df l_cCheck = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d.getLengthSQ() != 0.0f ? 250.0f * l_cVelocity2d.normalize() : irr::core::vector2df(0.0f, 0.0f));
 
         if (m_pDebugRTT != nullptr)
           // If debugging is active we paint the two calculated lines the determine how we move
@@ -80,20 +89,22 @@ namespace dustbin {
 
         std::vector<SAiPathSection *> l_vCurrent;
 
-        SPathLine2d *l_pPath = m_pCurrent->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
+        m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
 
-        if (m_pDebugRTT) {
-          draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
-          m_pCurrent->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
-        }
+        // if (m_pDebugRTT) {
+        //   draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+        //   m_pCurrent->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
+        // }
+
+        irr::core::vector2df v1 = irr::core::vector2df(-50000.0f);
+        irr::core::vector2df v2 = irr::core::vector2df(-50000.0f);
+
+        m_fVCalc = -1.0f;
+        calculateControlMessage(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRearView, a_bRespawn, a_eMode, nullptr, v1, v2);
 
         if (m_pDebugRTT != nullptr) {
           m_pDrv->setRenderTarget(nullptr);
         } 
-
-        if (l_pPath != nullptr && l_pPath->m_pParent->m_pParent != m_pCurrent) {
-          m_pCurrent = l_pPath->m_pParent->m_pParent;
-        }
       }
 
       return true;

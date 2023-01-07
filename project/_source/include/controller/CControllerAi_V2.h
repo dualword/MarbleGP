@@ -450,6 +450,30 @@ namespace dustbin {
         */
         int getControlLines_Offtrack(irr::core::line2df &a_cLineOne, irr::core::line2df &a_cLineTwo, SPathLine2d *a_pPath);
 
+        /**
+        * Do the actual control message calculation from the 2d path
+        * @param a_iCtrlX [out] the steering value 
+        * @param a_iCtrlY [out] the throttle value
+        * @param a_bBrake [out] is the brake active?
+        * @param a_bRearView [out] does the marble look to the back?
+        * @param a_bRespawn [out] does the marble want a manual respawn?
+        * @param a_eMode [out] the AI mode the marble is currently in
+        * @param a_pSpecial a special path segment in reach, e.g. a jump
+        */
+        void calculateControlMessage(
+          irr::s8 &a_iCtrlX, 
+          irr::s8 &a_iCtrlY, 
+          bool &a_bBrake, 
+          bool &a_bRearView, 
+          bool &a_bRespawn, 
+          enMarbleMode &a_eMode,
+          SPathLine2d *a_pSpecial,
+          const irr::core::vector2df &a_cCloseMb,
+          const irr::core::vector2df &a_cCloseSp
+        );
+
+        // void getClosestMarble(std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> a_vMarblePosVel, irr::core::vector2df &a_cCloseMb, irr::core::vector2df &a_cCloseSp);
+
       public:
         /**
         * The constructor
