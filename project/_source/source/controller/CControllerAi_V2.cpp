@@ -16,14 +16,13 @@ namespace dustbin {
   namespace controller {
     /**
     * Draw a debug line with factor
-    * @param a_pDrv the Irrlicht video driver
     * @param a_cLine the line to draw
     * @param a_fFactor the factor to scale the line
     * @param a_cColor the color of the line
     * @param a_cOffset offset of the line
     */
-    void CControllerAi_V2::draw2dDebugLine(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
-      a_pDrv->draw2DLine(
+    void CControllerAi_V2::draw2dDebugLine(const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset) {
+      m_pDrv->draw2DLine(
         irr::core::vector2di(
           (irr::s32)(a_fFactor * a_cLine.start.X) + a_cOffset.X, 
           (irr::s32)(a_fFactor * a_cLine.start.Y) + a_cOffset.Y
@@ -38,33 +37,31 @@ namespace dustbin {
 
     /**
     * Draws a debug rectangle
-    * @param a_pDrv the Irrlicht video driver
     * @param a_cPos the center position
     * @param a_cColor the rectangle color
     * @param a_iSize the size of the rectangle
     * @param a_fScale the scale factor
     * @param a_cOffset the offset of the rectangle
     */
-    void CControllerAi_V2::draw2dDebugRectangle(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset) {
+    void CControllerAi_V2::draw2dDebugRectangle(const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset) {
       irr::core::vector2di l_cUpperLeft = irr::core::vector2di((irr::s32)(a_fScale * a_cPos.X) + a_cOffset.X - a_iSize / 2, (irr::s32)(a_fScale * a_cPos.Y) + a_cOffset.Y - a_iSize / 2);
-      a_pDrv->draw2DRectangleOutline(irr::core::recti(l_cUpperLeft, irr::core::dimension2du(a_iSize, a_iSize)), a_cColor);
+      m_pDrv->draw2DRectangleOutline(irr::core::recti(l_cUpperLeft, irr::core::dimension2du(a_iSize, a_iSize)), a_cColor);
     }
 
     /**
     * Draw a debug text string
-    * @param a_pDrv the video driver
     * @param a_sText the text to render
     * @param a_pFont the font to use
     * @param a_cPosition the screen position to render to
     */
-    void CControllerAi_V2::draw2dDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition) {
+    void CControllerAi_V2::draw2dDebugText(const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition) {
       irr::core::dimension2du l_cDim = a_pFont->getDimension(a_sText);
       l_cDim.Width  = 6 * l_cDim.Width  / 5;
       l_cDim.Height = 6 * l_cDim.Height / 5;
 
       irr::core::recti l_cRect = irr::core::recti(irr::core::vector2di((irr::s32)a_cPosition.X, (irr::s32)a_cPosition.Y), l_cDim);
 
-      a_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 192, 192, 192), l_cRect);
+      m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 192, 192, 192), l_cRect);
       a_pFont->draw(a_sText, l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
     }
 
@@ -886,12 +883,12 @@ namespace dustbin {
                 bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
                 bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
 
-                draw2dDebugLine(m_pDrv, l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
-                draw2dDebugLine(m_pDrv, l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                draw2dDebugLine(l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                draw2dDebugLine(l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
               }
             }
             if (l_fClosest != 0.0f && m_pDebugRTT != nullptr) {
-              draw2dDebugRectangle(m_pDrv, l_cCloseMb, irr::video::SColor(0xFF, 0, 0xFF, 0), 15, m_fScale, m_cOffset);
+              draw2dDebugRectangle(l_cCloseMb, irr::video::SColor(0xFF, 0, 0xFF, 0), 15, m_fScale, m_cOffset);
             }
           }
 
@@ -990,7 +987,7 @@ namespace dustbin {
                       }
 
                       if (m_pDebugRTT != nullptr) {
-                        draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
+                        draw2dDebugLine(l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
                       }
                     }
                     else {
@@ -999,7 +996,7 @@ namespace dustbin {
                       l_cOther.end   = l_cOther.start + l_fMax * l_cDirection;
 
                       if (m_pDebugRTT != nullptr) {
-                        draw2dDebugLine(m_pDrv, l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                        draw2dDebugLine(l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
                       }
                     }
 
@@ -1059,17 +1056,17 @@ namespace dustbin {
               }
 
               if (m_pDebugRTT != nullptr) {
-                draw2dDebugLine(m_pDrv, l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
+                draw2dDebugLine(l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
 
                 if (l_iLines > 1)
-                  draw2dDebugLine(m_pDrv, l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+                  draw2dDebugLine(l_cOther, 2.0f, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
 
                 if (l_bCollide || l_bOvertake) {
                   std::wstring s = l_bCollide ? L"C" : l_bOTBrake ? L"OB" : L"O";
                   irr::core::dimension2du l_cDim = m_pFont->getDimension(s.c_str());
                   irr::core::position2di  l_cPos = irr::core::position2di(0, m_pDebugRTT->getOriginalSize().Height - l_cDim.Height);
                   m_pDrv->draw2DRectangle(l_bCollide ? irr::video::SColor(0xFF, 0xFF, 0, 0) : l_bOTBrake ? irr::video::SColor(0xFF, 0, 0xFF, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), irr::core::recti(l_cPos, l_cDim));
-                  draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df((irr::f32)l_cPos.X, (irr::f32)l_cPos.Y));
+                  draw2dDebugText(s.c_str(), m_pFont, irr::core::vector2df((irr::f32)l_cPos.X, (irr::f32)l_cPos.Y));
                 }
               }
 
@@ -1223,8 +1220,8 @@ namespace dustbin {
           }
 
           if (m_pDebugRTT != nullptr) {
-            draw2dDebugLine(m_pDrv, l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
-            draw2dDebugRectangle(m_pDrv, irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 10, m_fScale, m_cOffset);
+            draw2dDebugLine(l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
+            draw2dDebugRectangle(irr::core::vector2df(0.0f), irr::video::SColor(0xFF, 0, 0, 0xFF), 10, m_fScale, m_cOffset);
 
             std::wstring s; 
 
@@ -1261,7 +1258,7 @@ namespace dustbin {
                 s = L"Ai Mode: Respawn2";
                 break;
             }
-            draw2dDebugText(m_pDrv, s.c_str(), m_pFont, irr::core::vector2df());
+            draw2dDebugText(s.c_str(), m_pFont, irr::core::vector2df());
           }
         }
       }
@@ -1619,7 +1616,7 @@ namespace dustbin {
       }
     }
 
-    bool CControllerAi_V2::SPathLine2d::getFirstCollisionLine(const irr::core::line2df& a_cLine, irr::core::vector2df& a_cOutput, bool& a_bIsCenterLine) {
+    bool CControllerAi_V2::SPathLine2d::getFirstCollisionLine(const irr::core::line2df& a_cLine, irr::core::vector2df& a_cOutput, bool a_bBordersOnly, bool& a_bIsCenterLine) {
       bool l_bRet = false;
       a_bIsCenterLine = false;
       
@@ -1641,7 +1638,7 @@ namespace dustbin {
         int l_iIndex = 0;
         irr::f32 l_fDist = 0.0f;
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = a_bBordersOnly ? 1 : 0; i < 3; i++) {
           if (l_cIntersect[i].X != -1.0f && l_cIntersect[i].Y != -1.0f) {
             if (l_fDist == 0.0f || l_fDist > l_cIntersect[i].getLengthSQ()) {
               l_iIndex = i;
@@ -1656,7 +1653,7 @@ namespace dustbin {
       }
       else {
         for (std::vector<SPathLine2d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end() && !l_bRet; l_itNext++) {
-          l_bRet = (*l_itNext)->getFirstCollisionLine(a_cLine, a_cOutput, a_bIsCenterLine);
+          l_bRet = (*l_itNext)->getFirstCollisionLine(a_cLine, a_cOutput, a_bBordersOnly, a_bIsCenterLine);
         }
       }
 
@@ -1837,15 +1834,12 @@ namespace dustbin {
     /**
     * Create 2d path lines out of the list of 3d path lines
     * @param a_cMatrix the camera matrix to use for the transformation
-    * @param a_mSplitSelections a map with all the already selected directions on road splits
-    * @param a_mOldSelections the map with the selections of the previous step
-    * @param a_vMarbles the current positions of the marbles
-    * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
+    * @param a_cVeclocity 2d velocity to pick the correct path in case of a split
     */
     CControllerAi_V2::SPathLine2d *CControllerAi_V2::SPathLine3d::transformTo2d_Help(
-      const irr::core::matrix4 &a_cMatrix, 
-      std::vector<const data::SMarblePosition *> &a_vMarbles,
-      std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+      const irr::core::matrix4 &a_cMatrix,
+      const irr::core::line2df &a_cVelocity,
+      SPathLine2d *a_pRoot
     ) {
       m_cPathLine.m_vNext.clear();
 
@@ -1859,24 +1853,44 @@ namespace dustbin {
         m_cPathLine.m_cLines[i] = irr::core::line2df(vs.X, vs.Y, ve.X, ve.Y);
       }
 
-      for (std::vector<const data::SMarblePosition *>::iterator l_itMarble = a_vMarbles.begin(); l_itMarble != a_vMarbles.end(); l_itMarble++) {
-        if (m_cBBox.isPointInside((*l_itMarble)->m_cPosition)) {
-          irr::core::vector3df l_cPos = (*l_itMarble)->m_cPosition;
-          irr::core::vector3df l_cVel = (*l_itMarble)->m_cVelocity + l_cPos;
-          
-          a_cMatrix.transformVect(l_cPos);
-          a_cMatrix.transformVect(l_cVel);
-
-          a_vMarblePosVel.push_back(std::make_tuple((*l_itMarble)->m_iMarbleId, l_cPos, l_cVel));
-        }
-      }
-
       m_cPathLine.m_fWidth  = (m_cPathLine.m_cLines[1].start - m_cPathLine.m_cLines[2].start).getLength();
       m_cPathLine.m_cMatrix = a_cMatrix;
 
-      for (std::vector<SPathLine3d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
-        SPathLine2d *l_pChild = (*l_itNext)->transformTo2d_Help(a_cMatrix, a_vMarbles, a_vMarblePosVel);
+      if (m_vNext.size() == 1) {
+        SPathLine2d *l_pChild = (*m_vNext.begin())->transformTo2d_Help(a_cMatrix, a_cVelocity, a_pRoot != nullptr ? a_pRoot : &m_cPathLine);
         m_cPathLine.m_vNext.push_back(l_pChild);
+      }
+      else if (m_vNext.size() > 0) {
+        std::vector<SPathLine2d *> l_vOptions;
+
+        for (std::vector<SPathLine3d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end(); l_itNext++) {
+          SPathLine2d *l_pChild = (*l_itNext)->transformTo2d_Help(a_cMatrix, a_cVelocity, a_pRoot != nullptr ? a_pRoot : &m_cPathLine);
+          l_vOptions.push_back(l_pChild);
+        }
+
+        SPathLine2d *l_pSelected = nullptr;
+        irr::f32 l_fLength = -1.0f;
+
+        irr::core::line2df l_cCheck = irr::core::line2df(irr::core::vector2df(0.0f), irr::core::vector2df(0.0f, 150.0f));
+
+        for (std::vector<SPathLine2d*>::iterator l_itOptions = l_vOptions.begin(); l_itOptions != l_vOptions.end(); l_itOptions++) {
+          SPathLine2d *p = *l_itOptions;
+
+          bool b = false;
+          irr::core::vector2df l_cOther = p->m_cLines[0].end + 1.5f * p->m_fWidth * (p->m_cLines[0].end - p->m_cLines[0].start).normalize();
+          irr::core::vector2df l_cPoint = a_cVelocity.getClosestPoint(l_cOther);
+
+          irr::f32 l_fDist = (l_cPoint - l_cOther).getLengthSQ();
+
+          if (l_fDist < l_fLength || l_fLength < 0.0f) {
+            l_fLength = l_fDist;
+            l_pSelected = *l_itOptions;
+          }
+        }
+
+        if (l_pSelected != nullptr) {
+          m_cPathLine.m_vNext.push_back(l_pSelected);
+        }
       }
 
       return &m_cPathLine;

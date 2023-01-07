@@ -23,22 +23,9 @@ namespace dustbin {
     */
     class CControllerAiHelp_V2 : public CControllerAi_V2 {
       private:
-        /**
-        * Fill a vector with the possible path options for the AI help
-        * @param a_cPosition position of the marble
-        * @param a_vAiPath the AI path to iterate for the good options
-        * @param a_vResult the filled output vector
-        */
-        void fillPathVector(const irr::core::vector3df &a_cPosition, const std::vector<SAiPathSection *> &a_vAiPath, std::vector<SAiPathSection *> &a_vResult);
+        bool m_bStarting;   /**< The race is starting. Necessary for the inital path selection */
 
-        void iterateOptions(SPathLine3d *a_pInput, std::vector<SPathLine3d *> &a_vOutput);
-
-        /**
-        * Get all path options of an input, i.e. all splits and such
-        * @param a_pInput the current path section
-        * @param a_vOutput the resulting vector
-        */
-        void getAllPathOptions(SAiPathSection *a_pInput, std::vector<SPathLine2d *> &a_vOutput, std::vector<const data::SMarblePosition *> &a_vMarbles, std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel);
+        std::vector<SAiPathSection *> m_vCurrent;   /**< The current paths (on a road split more than one is possible, and it's up to the user to decide which way to use) */
 
       public:
         /**

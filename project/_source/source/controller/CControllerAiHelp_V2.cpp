@@ -23,7 +23,7 @@ namespace dustbin {
     * @param a_cViewport the viewport of the player, necessary for debug data output
     */
     CControllerAiHelp_V2::CControllerAiHelp_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport) :
-      CControllerAi_V2(a_iMarbleId, a_sControls, a_pMarbles, a_pLuaScript, a_cViewport)
+      CControllerAi_V2(a_iMarbleId, a_sControls, a_pMarbles, a_pLuaScript, a_cViewport), m_bStarting(true)
     {
     }
 
@@ -52,293 +52,49 @@ namespace dustbin {
       if (m_aMarbles[m_iIndex].m_iMarbleId == -1)
         return false;
 
-      a_iMarbleId = m_iMarbleId;
-      a_iCtrlX    = 0;
-      a_iCtrlY    = 0;
-      a_bBrake    = false;
-      a_bRearView = false;
-      a_bRespawn  = false;
-      a_eMode     = m_eMode;
+      // The race is starting, we select on section
+      if (m_bStarting || m_vCurrent.size() == 0) {
+        SAiPathSection *l_pStart = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, true, true);
 
-      m_vDebugText.clear();
-
-
-      // A vector with all AI path sections the
-      // player's marble is currently in
-      std::vector<SAiPathSection *> l_vCurrent;
-      fillPathVector(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, l_vCurrent);
-
-      if (l_vCurrent.size() == 0) {
-        // switchMarbleMode(enMarbleMode::OffTrack);
-        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, m_iLastCheckpoint == -1, true);
-
-        if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false, true);
-
-        if (m_pCurrent != nullptr)
-          l_vCurrent.push_back(m_pCurrent);
-      }
-
-      // The potential control lines. We'll choose one later on (line1, line2, the AI path selection of the lines and the new marble mode)
-      std::vector<std::tuple<irr::core::line2df, irr::core::line2df, SAiPathSection *, enMarbleMode>> l_vCtrlLines;
-
-      // If we do not yet know where we are we have a look
-      if (m_pCurrent == nullptr) {
-        m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, m_iLastCheckpoint == -1, true);
-
-        if (m_pCurrent == nullptr && m_iLastCheckpoint == -1)
-          m_pCurrent = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, false, true);
-      }
-
-      SPathLine2d *l_pSpecial = nullptr;
-
-      // Clear the render target if debugging is active
-      if (m_pDebugRTT != nullptr)
-        m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
-
-      // Create a matrix to transform the ai data to 2d
-      irr::core::matrix4 l_cMatrix;
-      l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
-
-      // Transform our velocity to 2d
-      irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
-      l_cMatrix.transformVect(l_vDummy);
-
-      m_cVelocity2d.X = 1.15f * l_vDummy.X;
-      m_cVelocity2d.Y = 1.15f * l_vDummy.Y;
-
-      std::vector<const data::SMarblePosition *> l_vMarbles;
-      for (int i = 0; i < 16; i++) {
-        if (m_aMarbles[i].m_iMarbleId != -1 && m_aMarbles[i].m_iMarbleId != m_iMarbleId)
-          l_vMarbles.push_back(&m_aMarbles[i]);
-      }
-
-      std::vector<std::tuple<irr::core::line2df, irr::s8, irr::s8, bool>> l_vCtrlOptions;
-
-      for (std::vector<SAiPathSection *>::iterator l_itCurrent = l_vCurrent.begin(); l_itCurrent != l_vCurrent.end(); l_itCurrent++) {
-        irr::s8 l_iCtrlX = 0;
-        irr::s8 l_iCtrlY = 0;
-        bool l_bBrake = false;
-
-        // Update the current path section if necessary
-        m_pCurrent = *l_itCurrent;
-
-        irr::core::line2df l_cVelocity  = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d);
-        irr::core::line2df l_cReference = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), irr::core::vector2df(0.0f, 0.0f));
-
-        std::vector<SPathLine2d *> l_vOptions;
-        std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> l_vMarblePosVel;
-        getAllPathOptions(m_pCurrent, l_vOptions, l_vMarbles, l_vMarblePosVel);
-
-        for (std::vector<SPathLine2d*>::iterator l_itOption = l_vOptions.begin(); l_itOption != l_vOptions.end(); l_itOption++) {
-          m_p2dPath = *l_itOption;
-
-          if (m_pDebugRTT != nullptr)
-            m_p2dPath->debugDraw(m_pDrv, m_cOffset, m_fScale);
-
-          irr::core::vector2df l_cIntersect;
-          bool l_bCenter  = false;
-          bool l_bCollide = false;
-
-          if (m_p2dPath->getFirstCollisionLine(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d), l_cIntersect, l_bCenter)) {
-            l_cReference.end = l_cIntersect;
-
-            if (!l_bCenter) {
-              l_cIntersect -= 0.15f * (l_cVelocity.end - l_cVelocity.start);
-            }
-
-            l_cVelocity.end = l_cIntersect;
-            l_bCollide = true;
-          }
-          else {
-            if (l_cVelocity.getLengthSQ() > 1.0f) {
-              l_cReference.end = irr::core::vector2df(0.0f, 1.0f);
-            }
-            else {
-              l_cReference.end = l_cVelocity.end;
-            }
-          }
-
-          draw2dDebugLine(m_pDrv, l_cVelocity, m_fScale, l_bCollide ? irr::video::SColor(0xFF, 0xFF, 0, 0) : irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);          
-
-          SPathLine2d *l_pSpecial = findNextSpecial(m_p2dPath);
-
-          m_fVCalc = 0.0f;
-
-          if (l_pSpecial != nullptr) {
-            if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
-              irr::core::line2df l_cSpecialLine = irr::core::line2df(l_pSpecial->m_cLines[1].start, l_pSpecial->m_cLines[2].start);
-              irr::core::vector2df v;
-
-              if (l_cSpecialLine.intersectWith(l_cVelocity, v)) {
-                if (l_pSpecial->m_pParent->m_pParent->m_fBestVel != -1) {
-                  m_fVCalc = l_pSpecial->m_pParent->m_pParent->m_fBestVel;
-                }
-                else if (l_pSpecial->m_pParent->m_pParent->m_fMaxVel != -1) {
-                  m_fVCalc = l_pSpecial->m_pParent->m_pParent->m_fMaxVel * 0.98f;
-                }
-                else if (l_pSpecial->m_pParent->m_pParent->m_fMinVel != -1) {
-                  m_fVCalc = l_pSpecial->m_pParent->m_pParent->m_fMinVel * 1.05f;
-                }
-                else l_pSpecial = nullptr;
-
-                if (l_pSpecial != nullptr) {
-                  irr::f32 l_fVel = m_aMarbles[m_iIndex].m_cVelocity.getLength();
-
-                  if (m_fVCalc < l_fVel) {
-                    l_bBrake = l_fVel - m_fVCalc > 5.0f;
-                    l_iCtrlY = -127;
-                  }
-                  else {
-                    l_bBrake = false;
-                    l_iCtrlY = 127;
-                  }
-                }
-
-                draw2dDebugLine(m_pDrv, l_cSpecialLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
-              }
-              else l_pSpecial = nullptr;
-            }
-            else l_pSpecial = nullptr;
-          }
-
-          if (l_pSpecial == nullptr) {
-            irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
-            irr::f32 l_fFactor = (irr::core::line2df(m_p2dPath->m_cLines[0].end, l_cClosest).getLengthSQ() / m_p2dPath->m_cLines[0].getLengthSQ());
-            l_fFactor = std::max(0.15f, l_fFactor);
-
-            // Now we search for the possible ends of the path
-            std::vector<SPathLine2d *> l_vEnds;
-            findEnds(l_vEnds, m_p2dPath, 0.0f, l_fFactor);
-
-            for (std::vector<SPathLine2d *>::iterator l_itEnd = l_vEnds.begin(); l_itEnd != l_vEnds.end(); l_itEnd++) {
-              irr::core::line2df l_cBest = irr::core::line2df(l_cVelocity.end, l_cVelocity.end);
-
-              if (getBestLine(l_cBest, *l_itEnd, nullptr)) {
-                draw2dDebugLine(m_pDrv, l_cBest, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
-                l_cReference.end = l_cBest.end;
-
-                irr::f64 l_fAngle = l_cVelocity.getAngleWith(l_cBest);
-
-                irr::f64 l_fFactor = std::max(1.0, l_fAngle / 65.0f);
-
-                irr::f32 l_fVel1 = m_aMarbles[m_iIndex].m_cVelocity.getLength();
-                irr::f32 l_fVel2 = (irr::f32)l_fFactor * l_cVelocity.getLength();
-
-                if (1.1f * l_fVel1 > l_fVel2 && l_bCollide) {
-                  l_iCtrlY = -127;
-                  l_bBrake = l_fVel1 > 1.15f * l_fVel2;
-                }
-                else {
-                  l_iCtrlY = 127;
-                  l_bBrake = false;
-                }
-              }
-            }
-          }
-        }
-
-        while (l_vOptions.size() > 0) {
-          SPathLine2d *p = *l_vOptions.begin();
-          l_vOptions.erase(l_vOptions.begin());
-          p->deleteAllChildren();
-          delete p;
-        }
-
-        l_vCtrlOptions.push_back(std::make_tuple(l_cReference, l_iCtrlX, l_iCtrlY, l_bBrake));
-      }
-
-      irr::core::line2df l_cReference = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), irr::core::vector2df(0.0f, 1.0f));
-      irr::f64 l_fAngle = 0.0;
-
-      for (std::vector<std::tuple<irr::core::line2df, irr::s8, irr::s8, bool>>::iterator l_itCtrl = l_vCtrlOptions.begin(); l_itCtrl != l_vCtrlOptions.end(); l_itCtrl++) {
-        irr::f64 l_fNewAngle = std::get<0>(*l_itCtrl).getAngleWith(l_cReference);
-
-        draw2dDebugLine(m_pDrv, std::get<0>(*l_itCtrl), m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
-
-        if (l_itCtrl == l_vCtrlOptions.begin() || l_fNewAngle < l_fAngle) {
-          a_iCtrlX = std::get<1>(*l_itCtrl);
-          a_iCtrlY = std::get<2>(*l_itCtrl);
-          a_bBrake = std::get<3>(*l_itCtrl);
-
-          l_fAngle = l_fNewAngle;
-        }
-      }
-
-      if (m_pDebugRTT != nullptr) {
-        m_pDrv->setRenderTarget(nullptr);
-      } 
-
-      return true;
-    }
-
-    /**
-    * Fill a vector with the possible path options for the AI help
-    * @param a_cPosition position of the marble
-    * @param a_vAiPath the AI path to iterate for the good options
-    * @param a_vResult the filled output vector
-    */
-    void CControllerAiHelp_V2::fillPathVector(const irr::core::vector3df& a_cPosition, const std::vector<SAiPathSection*>& a_vAiPath, std::vector<SAiPathSection*>& a_vResult) {
-      for (std::vector<SAiPathSection*>::const_iterator l_itPath = a_vAiPath.begin(); l_itPath != a_vAiPath.end(); l_itPath++) {
-        SAiPathSection *l_pPath = *l_itPath;
-
-        irr::f32 l_fDistSq = (l_pPath->m_cLine3d.getClosestPoint(a_cPosition) - a_cPosition).getLengthSQ();
-
-        if (l_fDistSq <= (l_pPath->m_fWidthSq + 2.0f) && l_pPath->m_cLine3d.getMiddle().Y < a_cPosition.Y && l_pPath->m_cLine3d.getMiddle().Y > a_cPosition.Y - 10.0f) {
-          a_vResult.push_back(l_pPath);
-        }
-      }
-
-      // printf("Found %i path sections\n", (int)a_vResult.size());
-    }
-
-    void CControllerAiHelp_V2::iterateOptions(SPathLine3d* a_pInput, std::vector<SPathLine3d *> &a_vOutput) {
-      if (a_pInput->m_vNext.size() > 1) {
-        a_vOutput.push_back(a_pInput);
-      }
-
-      for (std::vector<SPathLine3d*>::iterator l_itNext = a_pInput->m_vNext.begin(); l_itNext != a_pInput->m_vNext.end(); l_itNext++) {
-        iterateOptions(*l_itNext, a_vOutput);
-      }
-    }
-
-    /**
-    * Get all path options of an input, i.e. all splits and such
-    * @param a_pInput the current path section
-    * @param a_vOutput [out] the resulting vector
-    * @param a_vMarbles data of all marbles but the player's
-    * @param a_vMarblePosVel the resulting marble data (position and velocity)
-    */
-    void CControllerAiHelp_V2::getAllPathOptions(
-      SAiPathSection* a_pInput, 
-      std::vector<SPathLine2d*> &a_vOutput, 
-      std::vector<const data::SMarblePosition *> &a_vMarbles, 
-      std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
-    ) {
-      std::vector<SPathLine3d *> l_vSelections;
-
-      iterateOptions(a_pInput->m_pAiPath, l_vSelections);
-      
-      irr::core::matrix4 l_cMatrix;
-      l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
-
-      if (l_vSelections.size() > 0) {
-        for (std::vector<SPathLine3d*>::iterator l_itLine = l_vSelections.begin(); l_itLine != l_vSelections.end(); l_itLine++) {
-          for (std::vector<SPathLine3d *>::iterator l_itNext = (*l_itLine)->m_vNext.begin(); l_itNext != (*l_itLine)->m_vNext.end(); l_itNext++) {
-            std::map<int, SPathLine3d *> l_mSplitSelections;
-            std::map<int, SPathLine3d *> l_mOldSelections;
-
-            l_mOldSelections[(*(*l_itLine)->m_vNext.begin())->m_pParent->m_iTag] = *l_itNext;
-            a_vOutput.push_back(a_pInput->m_pAiPath->transformTo2d(l_cMatrix, l_mSplitSelections, l_mOldSelections, a_vMarbles, a_vMarblePosVel, nullptr)->clone());
-          }
+        if (l_pStart != nullptr) {
+          m_bStarting = false;
+          m_vCurrent.push_back(l_pStart);
         }
       }
       else {
-        std::map<int, SPathLine3d *> l_mSplitSelections;
-        std::map<int, SPathLine3d *> l_mOldSelections;
+        // Transform our velocity to 2d
+        irr::core::matrix4 l_cMatrix;
+        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + (*m_vCurrent.begin())->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
 
-        a_vOutput.push_back(a_pInput->m_pAiPath->transformTo2d(l_cMatrix, l_mSplitSelections, l_mOldSelections, a_vMarbles, a_vMarblePosVel, nullptr)->clone());
+        irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
+        l_cMatrix.transformVect(l_vDummy);
+
+        m_cVelocity2d.X = l_vDummy.X;
+        m_cVelocity2d.Y = l_vDummy.Y;
+
+        irr::core::line2df l_cCheck = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d.getLengthSQ() != 0.0f ? 250.0f * m_cVelocity2d.normalize() : irr::core::vector2df(0.0f, 0.0f));
+
+        if (m_pDebugRTT != nullptr)
+          // If debugging is active we paint the two calculated lines the determine how we move
+          m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
+
+        std::vector<SAiPathSection *> l_vCurrent;
+
+        for (std::vector<SAiPathSection*>::iterator l_itCurrent = m_vCurrent.begin(); l_itCurrent != m_vCurrent.end(); l_itCurrent++) {
+          (*l_itCurrent)->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
+
+          if (m_pDebugRTT) {
+            draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+            (*l_itCurrent)->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
+          }
+        }
+
+        if (m_pDebugRTT != nullptr) {
+          m_pDrv->setRenderTarget(nullptr);
+        } 
       }
+
+      return true;
     }
   }
 }

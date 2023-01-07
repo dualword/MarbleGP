@@ -29,33 +29,30 @@ namespace dustbin {
 
         /**
         * Draw a debug line with factor
-        * @param a_pDrv the Irrlicht video driver
         * @param a_cLine the line to draw
         * @param a_fFactor the factor to scale the line
         * @param a_cColor the color of the line
         * @param a_cOffset offset of the line
         */
-        void draw2dDebugLine(irr::video::IVideoDriver* a_pDrv, const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset);
+        void draw2dDebugLine(const irr::core::line2df& a_cLine, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::vector2di& a_cOffset);
 
         /**
         * Draws a debug rectangle
-        * @param a_pDrv the Irrlicht video driver
         * @param a_cPos the center position
         * @param a_cColor the rectangle color
         * @param a_iSize the size of the rectangle
         * @param a_fScale the scale factor
         * @param a_cOffset the offset of the rectangle
         */
-        void draw2dDebugRectangle(irr::video::IVideoDriver* a_pDrv, const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset);
+        void draw2dDebugRectangle(const irr::core::vector2df& a_cPos, const irr::video::SColor& a_cColor, int a_iSize, irr::f32 a_fScale, const irr::core::vector2di& a_cOffset);
 
         /**
         * Draw a debug text string
-        * @param a_pDrv the video driver
         * @param a_sText the text to render
         * @param a_pFont the font to use
         * @param a_cPosition the screen position to render to
         */
-        void draw2dDebugText(irr::video::IVideoDriver *a_pDrv, const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition);
+        void draw2dDebugText(const wchar_t* a_sText, irr::gui::IGUIFont* a_pFont, const irr::core::vector2df &a_cPosition);
 
         /**
         * Find all AI path nodes in the scene tree
@@ -120,7 +117,7 @@ namespace dustbin {
           */
           void deleteAllChildren();
 
-          bool getFirstCollisionLine(const irr::core::line2df &a_cLine, irr::core::vector2df &a_cOutput, bool &a_bIsCenterLine);
+          bool getFirstCollisionLine(const irr::core::line2df &a_cLine, irr::core::vector2df &a_cOutput, bool a_bBordersOnly, bool &a_bIsCenterLine);
         }
         SPathLine2d;
 
@@ -169,15 +166,12 @@ namespace dustbin {
           /**
           * Create 2d path lines out of the list of 3d path lines
           * @param a_cMatrix the camera matrix to use for the transformation
-          * @param a_mSplitSelections a map with all the already selected directions on road splits
-          * @param a_mOldSelections the map with the selections of the previous step
-          * @param a_vMarbles the current positions of the marbles
-          * @param a_vMarblePosVel [out] transformed positions (tuple index 0) and velocities (tuple index 1) of the marbles
+          * @param a_cVeclocity 2d velocity to pick the correct path in case of a split
           */
           SPathLine2d *transformTo2d_Help(
-            const irr::core::matrix4 &a_cMatrix, 
-            std::vector<const data::SMarblePosition *> &a_vMarbles,
-            std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> &a_vMarblePosVel
+            const irr::core::matrix4 &a_cMatrix,
+            const irr::core::line2df &a_cVelocity,
+            SPathLine2d *a_pRoot
           );
 
           /**
