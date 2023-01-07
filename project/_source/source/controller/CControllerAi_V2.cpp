@@ -1893,7 +1893,7 @@ namespace dustbin {
         }
       }
 
-      return &m_cPathLine;
+      return (m_cPathLine.m_cLines[0].end.Y > 0.0f && m_cPathLine.m_vNext.size() > 0) ? *m_cPathLine.m_vNext.begin() : &m_cPathLine;
     }
 
     CControllerAi_V2::SAiPathSection::SAiPathSection() : 

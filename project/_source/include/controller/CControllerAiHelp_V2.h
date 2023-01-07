@@ -25,8 +25,6 @@ namespace dustbin {
       private:
         bool m_bStarting;   /**< The race is starting. Necessary for the inital path selection */
 
-        std::vector<SAiPathSection *> m_vCurrent;   /**< The current paths (on a road split more than one is possible, and it's up to the user to decide which way to use) */
-
       public:
         /**
         * The constructor

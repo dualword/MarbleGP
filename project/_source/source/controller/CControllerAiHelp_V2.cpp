@@ -53,18 +53,18 @@ namespace dustbin {
         return false;
 
       // The race is starting, we select on section
-      if (m_bStarting || m_vCurrent.size() == 0) {
+      if (m_bStarting || m_pCurrent == nullptr) {
         SAiPathSection *l_pStart = selectClosest(m_aMarbles[m_iIndex].m_cPosition, m_vAiPath, true, true);
 
         if (l_pStart != nullptr) {
           m_bStarting = false;
-          m_vCurrent.push_back(l_pStart);
+          m_pCurrent = l_pStart;
         }
       }
       else {
         // Transform our velocity to 2d
         irr::core::matrix4 l_cMatrix;
-        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + (*m_vCurrent.begin())->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
+        l_cMatrix = l_cMatrix.buildCameraLookAtMatrixRH(m_aMarbles[m_iIndex].m_cPosition + m_pCurrent->m_cNormal, m_aMarbles[m_iIndex].m_cPosition, m_aMarbles[m_iIndex].m_cDirection);
 
         irr::core::vector3df l_vDummy = m_aMarbles[m_iIndex].m_cPosition + m_aMarbles[m_iIndex].m_cVelocity;
         l_cMatrix.transformVect(l_vDummy);
@@ -80,18 +80,20 @@ namespace dustbin {
 
         std::vector<SAiPathSection *> l_vCurrent;
 
-        for (std::vector<SAiPathSection*>::iterator l_itCurrent = m_vCurrent.begin(); l_itCurrent != m_vCurrent.end(); l_itCurrent++) {
-          (*l_itCurrent)->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
+        SPathLine2d *l_pPath = m_pCurrent->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
 
-          if (m_pDebugRTT) {
-            draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
-            (*l_itCurrent)->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
-          }
+        if (m_pDebugRTT) {
+          draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
+          m_pCurrent->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
         }
 
         if (m_pDebugRTT != nullptr) {
           m_pDrv->setRenderTarget(nullptr);
         } 
+
+        if (l_pPath != nullptr && l_pPath->m_pParent->m_pParent != m_pCurrent) {
+          m_pCurrent = l_pPath->m_pParent->m_pParent;
+        }
       }
 
       return true;
