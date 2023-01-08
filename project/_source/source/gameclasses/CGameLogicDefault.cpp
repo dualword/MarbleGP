@@ -238,8 +238,10 @@ namespace dustbin {
     const std::vector<data::SRacePlayer *> &CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
-        m_aPlayers[l_iId].m_vLapCheckpoints.back().push_back(a_iStep);
-        updatePositions(l_iId);
+        if (m_aPlayers[l_iId].m_vLapCheckpoints.size() > 0) {
+          m_aPlayers[l_iId].m_vLapCheckpoints.back().push_back(a_iStep);
+          updatePositions(l_iId);
+        }
       }
 
       return m_vPositions;
