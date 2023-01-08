@@ -98,12 +98,19 @@ namespace dustbin {
         if (m_p2dPath->m_vNext.size() > 0)
           l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
 
-        if (l_pSpecial != nullptr)
-          processNextSpecial(l_pSpecial, m_cVelocity2d.getLength());
-        // if (m_pDebugRTT) {
-        //   draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
-        //   m_pCurrent->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
-        // }
+        if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
+          // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
+          // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
+          if (m_eMode != enMarbleMode::Respawn && m_eMode != enMarbleMode::Respawn2)
+            switchMarbleMode(enMarbleMode::OffTrack);
+        }
+        else {
+          if (m_eMode == enMarbleMode::OffTrack || m_eMode == enMarbleMode::Respawn || m_eMode == enMarbleMode::Respawn2)
+            switchMarbleMode(enMarbleMode::Cruise);
+
+          if (l_pSpecial != nullptr)
+            processNextSpecial(l_pSpecial, m_cVelocity2d.getLength());
+        }
 
         irr::core::vector2df v1 = irr::core::vector2df(-50000.0f);
         irr::core::vector2df v2 = irr::core::vector2df(-50000.0f);
