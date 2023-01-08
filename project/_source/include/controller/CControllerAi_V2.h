@@ -353,6 +353,14 @@ namespace dustbin {
         SPathLine2d *findNextSpecial(SPathLine2d *a_pInput);
 
         /**
+        * Get the processes the next special path line, i.e. a jump or block. It calculates if
+        * the line is in reach and changes the marble mode if appropriate
+        * @param a_pSpecial the special path line
+        * @param a_fVel the current calculated velocity
+        */
+        void processNextSpecial(SPathLine2d *a_pSpecial, irr::f32 a_fVel);
+
+        /**
         * Determine whether or not a line collides with an AI path line
         * @param a_cLine the line to verify
         * @param a_pPath the path to check against

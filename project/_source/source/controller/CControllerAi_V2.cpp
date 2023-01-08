@@ -560,6 +560,66 @@ namespace dustbin {
     }
 
     /**
+    * Get the processes the next special path line, i.e. a jump or block. It calculates if
+    * the line is in reach and changes the marble mode if appropriate
+    * @param a_pSpecial the special path line
+    * @param a_fVel the current calculated velocity
+    */
+    void CControllerAi_V2::processNextSpecial(SPathLine2d *a_pSpecial, irr::f32 a_fVel) {
+      if (a_pSpecial != nullptr) {
+        // We have found a jump
+        if (a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
+          // Now we check for the segment after the jump, to see if we need to switch to jump mode
+          // we create two lines from our position to the borders of the end of the segment and see
+          // if these lines do not cross any border (therefore the 0.1 * limitation) we are ready to jump
+          irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), a_pSpecial->m_cLines[1].end);
+          irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), a_pSpecial->m_cLines[2].end);
+
+          l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
+          l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
+
+          bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
+          bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
+
+          // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
+          if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath)) {
+            switchMarbleMode(a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump ? enMarbleMode::Jump : enMarbleMode::Loop);
+          }
+          else 
+            if (m_eMode == enMarbleMode::Jump)
+              switchMarbleMode(enMarbleMode::Default);
+        }
+        else {
+          // No jump ahead but still jumping? Switch to default
+          if (m_eMode == enMarbleMode::Jump)
+            switchMarbleMode(enMarbleMode::Default);
+        }
+
+        // A blocker is ahead
+        if (a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
+          // First we check if we would reach the blocker within a second
+          irr::f32 l_fDist = a_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
+          if (l_fDist < a_fVel) {
+            // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
+            if (m_pLuaScript != nullptr && (m_cAiData.m_iRoadBlock >= 100 || m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock)) {
+              int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, a_pSpecial->m_pParent->m_pParent->m_iTag);
+
+              // ... if so we set the veclcity to zero, overriding any other calculation
+              if (!l_bBlock) {
+                m_fVCalc = 0.0f;
+              }
+            }
+          }
+        }
+      }
+      else {
+        // No jump ahead but still in jump or loop mood? Switch to default
+        if (m_eMode == enMarbleMode::Jump || m_eMode == enMarbleMode::Loop)
+          switchMarbleMode(enMarbleMode::Default);
+      }
+    }
+
+    /**
     * Determine whether or not a line collides with an AI path line
     * @param a_cLine the line to verify
     * @param a_pPath the path to check against
@@ -762,46 +822,7 @@ namespace dustbin {
             }
             else {
               if (l_pSpecial != nullptr) {
-                // We have found a jump
-                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
-                  // Now we check for the segment after the jump, to see if we need to switch to jump mode
-                  // we create two lines from our position to the borders of the end of the segment and see
-                  // if these lines do not cross any border (therefore the 0.1 * limitation) we are ready to jump
-                  irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
-                  irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
-
-                  l_cLine1.end = l_cLine1.end - (l_cLine1.end - l_cLine1.start);
-                  l_cLine2.end = l_cLine2.end - (l_cLine2.end - l_cLine2.start);
-
-                  // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
-                  if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath))
-                    switchMarbleMode(l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump ? enMarbleMode::Jump : enMarbleMode::Loop);
-                  else 
-                    if (m_eMode == enMarbleMode::Jump)
-                      switchMarbleMode(enMarbleMode::Default);
-                }
-                else {
-                  // No jump ahead but still jumping? Switch to default
-                  if (m_eMode == enMarbleMode::Jump)
-                    switchMarbleMode(enMarbleMode::Default);
-                }
-            
-                // A blocker is ahead
-                if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block) {
-                  // First we check if we would reach the blocker within a second
-                  irr::f32 l_fDist = l_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
-                  if (l_fDist < l_fVel) {
-                    // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
-                    if (m_pLuaScript != nullptr && (m_cAiData.m_iRoadBlock >= 100 || m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock)) {
-                      int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, l_pSpecial->m_pParent->m_pParent->m_iTag);
-
-                      // ... if so we set the veclcity to zero, overriding any other calculation
-                      if (!l_bBlock) {
-                        m_fVCalc = 0.0f;
-                      }
-                    }
-                  }
-                }
+                processNextSpecial(l_pSpecial, l_fVel);
               }
               else {
                 // No jump ahead but still in jump mood? Switch to default
