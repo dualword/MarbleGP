@@ -340,6 +340,8 @@ namespace dustbin {
       m_vDirection    (irr::core::vector3df()),
       m_vPosition     (irr::core::vector3df()),
       m_vVelocity     (irr::core::vector3df()),
+      m_iActiveTrigger(0),
+      m_iSecondTrigger(1),
       m_fDamp         ((dReal)0.0015),
       m_iCtrlX        (0),
       m_iCtrlY        (0),
@@ -350,8 +352,6 @@ namespace dustbin {
       m_bRespawn      (false),
       m_vRespawnPos   (irr::core::vector3df(1.0f, 0.0f, 0.0f)),
       m_vRespawnDir   (a_cDirection),
-      m_iActiveTrigger(0),
-      m_iSecondTrigger(1),
       m_eState        (enMarbleState::Countdown)
     {
       m_bStatic = false;

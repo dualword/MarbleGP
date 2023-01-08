@@ -578,9 +578,6 @@ namespace dustbin {
           l_cLine1.end = l_cLine1.end - 0.1f * (l_cLine1.end - l_cLine1.start);
           l_cLine2.end = l_cLine2.end - 0.1f * (l_cLine2.end - l_cLine2.start);
 
-          bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
-          bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
-
           // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
           if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath)) {
             switchMarbleMode(a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump ? enMarbleMode::Jump : enMarbleMode::Loop);
@@ -1929,7 +1926,6 @@ namespace dustbin {
         for (std::vector<SPathLine2d*>::iterator l_itOptions = l_vOptions.begin(); l_itOptions != l_vOptions.end(); l_itOptions++) {
           SPathLine2d *p = *l_itOptions;
 
-          bool b = false;
           irr::core::vector2df l_cOther = p->m_cLines[0].end + 1.5f * p->m_fWidth * (p->m_cLines[0].end - p->m_cLines[0].start).normalize();
           irr::core::vector2df l_cPoint = a_cVelocity.getClosestPoint(l_cOther);
 
@@ -1950,9 +1946,9 @@ namespace dustbin {
     }
 
     CControllerAi_V2::SAiPathSection::SAiPathSection() : 
+      m_iTag       (0), 
       m_iIndex     (-1),
       m_iSectionIdx(-1),
-      m_iTag       (0), 
       m_iCheckpoint(-1), 
       m_bSelected  (false), 
       m_fMinVel    (-1.0f), 

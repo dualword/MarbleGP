@@ -647,8 +647,12 @@ namespace dustbin {
                 case 0: m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize(); break;
                 case 1: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerRight"    ; break;
                 case 2: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerLeft"     ; break;
-                case 3: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerOnly"     ; m_aProfiles[m_iEditing].m_cData.m_eAiHelp = data::SPlayerData::enAiHelp::High; break;
                 case 4: m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinGyroscope"          ; break;
+                case 3: 
+                  m_aProfiles[m_iEditing].m_cData.m_sControls = "DustbinTouchSteerOnly";
+                  if (m_aProfiles[m_iEditing].m_cData.m_eAiHelp < data::SPlayerData::enAiHelp::Medium)
+                    m_aProfiles[m_iEditing].m_cData.m_eAiHelp = data::SPlayerData::enAiHelp::Medium;
+                  break;
               }
               m_aProfiles[m_iEditing].fillUI();
             }

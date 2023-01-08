@@ -32,9 +32,9 @@ namespace dustbin {
 
     CAiPathNode::CAiPathNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) : 
       irr::scene::ISceneNode(a_pParent, a_pMgr, a_iId),
-      m_pDrv         (nullptr),
       m_pSelected    (nullptr),
-      m_bNewlyCreated(true)
+      m_bNewlyCreated(true),
+      m_pDrv         (nullptr)
     {
       m_pDrv = a_pMgr->getVideoDriver();
       setVisible(false);
@@ -153,28 +153,28 @@ namespace dustbin {
     CAiPathNode::SAiPathSection::SAiPathSection() :
       m_iIndex    (0),
       m_iNode     (-1),
-      m_eType     (enSegmentType::Default),
       m_fWidth    (1.00f),
       m_fFactor   (0.75f),
       m_fMinSpeed (-1.0f),
       m_fMaxSpeed (-1.0f),
       m_fBestSpeed(-1.0f),
       m_iTag      (0),
-      m_iRespawn  (-1)
+      m_iRespawn  (-1),
+      m_eType     (enSegmentType::Default)
     {
     }
 
     CAiPathNode::SAiPathSection::SAiPathSection(const std::string &a_sData) :
       m_iIndex    (0),
       m_iNode     (-1),
-      m_eType     (enSegmentType::Default),
       m_fWidth    (1.00f),
       m_fFactor   (0.75f),
       m_fMinSpeed (-1.0f),
       m_fMaxSpeed (-1.0f),
       m_fBestSpeed(-1.0f),
       m_iTag      (0),
-      m_iRespawn  (-1)
+      m_iRespawn  (-1),
+      m_eType     (enSegmentType::Default)
     {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 

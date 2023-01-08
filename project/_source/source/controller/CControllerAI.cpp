@@ -14,9 +14,9 @@ namespace dustbin {
       m_fLastOffset(0.0f),
       m_pNode      (a_pNode),
       m_pCurrent   (nullptr),
-      m_pMarbles   (a_pMarbles),
       m_bBrake     (false),
-      m_bDebug     (false)
+      m_bDebug     (false),
+      m_pMarbles   (a_pMarbles)
     {
       if (m_pNode != nullptr)
         m_vPath = a_pNode->getPath();
