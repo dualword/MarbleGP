@@ -64,49 +64,25 @@ namespace dustbin {
 
         data::SMarbleAiData l_cAiData = data::SMarbleAiData(m_eAiHelp);
 
-        if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMgp) {
-          std::string l_sScriptFile = a_sAiScript + "/ai.lua";
+        std::string l_sScriptFile = a_sAiScript + "/ai.lua";
 
-          if (l_pFs->existFile(l_sScriptFile.c_str())) {
-            std::string l_sScript = helpers::loadTextFile(l_sScriptFile);
-            m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
+        if (l_pFs->existFile(l_sScriptFile.c_str())) {
+          std::string l_sScript = helpers::loadTextFile(l_sScriptFile);
+          m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
 
-            if (m_pLuaScript->getError() == "") {
-            }
-            else {
-              printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
-              delete m_pLuaScript;
-              m_pLuaScript = nullptr;
-            }
+          if (m_pLuaScript->getError() == "") {
           }
+          else {
+            printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
+            delete m_pLuaScript;
+            m_pLuaScript = nullptr;
+          }
+        }
 
+        if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMgp) {
           m_pAiControls = new CControllerAi_V2(a_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
         }
         else {
-          std::string l_aScript[] = {
-            a_sAiScript + "/ai.lua",
-            ""
-          };
-
-          m_pLuaScript = nullptr;
-
-          for (int i = 0; l_aScript[i] != "" && m_pLuaScript == nullptr; i++) {
-            if (l_pFs->existFile(l_aScript[i].c_str())) {
-              std::string l_sScript = helpers::loadTextFile(l_aScript[i]);
-              m_pLuaScript = new lua::CLuaScript_ai(l_sScript);
-
-              if (m_pLuaScript->getError() == "") {
-                printf("Loaded lua script \"%s\"\".\n", l_aScript[i].c_str());
-              }
-              else {
-                printf("LUA error: %s\n", m_pLuaScript->getError().c_str());
-                delete m_pLuaScript;
-                m_pLuaScript = nullptr;
-              }
-            }
-          }
-
-
           m_pAiControls = new CControllerAiHelp_V2(m_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
         }
 
@@ -199,31 +175,25 @@ namespace dustbin {
                 if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
                 if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
               }
-              l_iCtrlY     = l_iBotY;
+              l_iCtrlY     = (!a_bAutomatic && l_bBrake) ? -127 : l_iBotY;
               l_bBrake     = l_bBrakeBot;
               l_bRespawn  |= l_bRspnBot;
               break;
 
-            // Medium: The marble is controlled by the player unless in the modes "Jump" and "Off-Track"
+            // Medium: The speed is controller by the AI, the rest is up to the player
             case data::SPlayerData::enAiHelp::Medium:
-              l_iCtrlY     = l_iBotY;
-              l_bBrake     = l_bBrakeBot;
-              l_bRespawn  |= l_bRspnBot;
+              l_iCtrlY      = l_bBrake ? -127 : l_iBotY;
+              l_bBrake     |= l_bBrakeBot;
+              l_bRespawn   |= l_bRspnBot;
+              a_bAutomatic  = l_bRspnBot;
               break;
 
-            // Low: The marbles is controlled by the player, in mode "Jump" the velocity is adjusted by the AI,
-            //      and in mode "Off-Track" control is completely taken over by AI
+            // Low: the player controls the marble, only in jump mode is the speed adjusted by AI
             case data::SPlayerData::enAiHelp::Low:
               if (l_eMode == IControllerAI::enMarbleMode::Jump) {
-                l_iCtrlY     = l_iBotY;
-                l_bBrake     = l_bBrakeBot;
-                a_bAutomatic = true;
-              }
-              else if (l_eMode == IControllerAI::enMarbleMode::OffTrack) {
-                l_iCtrlX     = l_iBotX;
-                l_iCtrlY     = l_iBotY;
-                l_bBrake     = l_bBrakeBot;
-                a_bAutomatic = true;
+                l_iCtrlY      = l_iBotY;
+                l_bBrake     |= l_bBrakeBot;
+                a_bAutomatic  = true;
               }
               l_bRespawn  |= l_bRspnBot;
               break;

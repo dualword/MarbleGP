@@ -17,14 +17,14 @@ namespace dustbin {
     CHudAiHelp::CHudAiHelp(irr::video::IVideoDriver* a_pDrv, const irr::core::recti& a_cRect, data::SPlayerData::enAiHelp a_eAiHelp) : m_pDrv(a_pDrv) {
       // The base filenames
       std::tuple<data::SPlayerData::enAiHelp, std::string> l_aFiles[] = {
-        std::make_tuple(data::SPlayerData::enAiHelp::Medium, "data/images/ctrl_accelerate"),
-        std::make_tuple(data::SPlayerData::enAiHelp::High  , "data/images/ctrl_left"      ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Medium,  "data/images/ctrl_back"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::High  , "data/images/ctrl_right"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low   , "data/images/ctrl_brake"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Off   , "data/images/ctrl_automatic" ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low   , "data/images/ctrl_respawn"   ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Off   , ""                           )
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_accelerate"),
+        std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_left"      ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low ,  "data/images/ctrl_back"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_right"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_brake"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Off , "data/images/ctrl_automatic" ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_respawn"   ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Off , ""                           )
       };
 
       // The postfix strings for the filenames
@@ -69,7 +69,7 @@ namespace dustbin {
 
       irr::core::recti l_cTotal;
 
-      if (a_eAiHelp == data::SPlayerData::enAiHelp::High) {
+      if (a_eAiHelp == data::SPlayerData::enAiHelp::High || a_eAiHelp == data::SPlayerData::enAiHelp::Medium) {
         l_cPos.Y += l_cSize.Width;
       }
 
@@ -86,7 +86,7 @@ namespace dustbin {
         }
         l_cPos.X = l_iStartX;
 
-        if (a_eAiHelp != data::SPlayerData::enAiHelp::High)
+        if (a_eAiHelp != data::SPlayerData::enAiHelp::High && a_eAiHelp != data::SPlayerData::enAiHelp::Medium)
           l_cPos.Y += l_cSize.Width;
       }
 

@@ -25,7 +25,9 @@ namespace dustbin {
     CControllerAiHelp_V2::CControllerAiHelp_V2(int a_iMarbleId, const std::string& a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport) :
       CControllerAi_V2(a_iMarbleId, a_sControls, a_pMarbles, a_pLuaScript, a_cViewport), m_bStarting(true)
     {
-      m_cAiData.m_iAvoid = -1;
+      m_cAiData.m_iAvoid       = -1;
+      m_cAiData.m_iRoadBlock   = -1;
+      m_cAiData.m_fThrottleAdd = 1.0f;
     }
 
     CControllerAiHelp_V2::~CControllerAiHelp_V2() {
@@ -91,6 +93,13 @@ namespace dustbin {
 
         m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
 
+        SPathLine2d *l_pSpecial = nullptr;
+        // Search for special path segments , i.e. jumps or block
+        if (m_p2dPath->m_vNext.size() > 0)
+          l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
+
+        if (l_pSpecial != nullptr)
+          processNextSpecial(l_pSpecial, m_cVelocity2d.getLength());
         // if (m_pDebugRTT) {
         //   draw2dDebugLine(l_cCheck, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0), m_cOffset);
         //   m_pCurrent->m_pAiPath->m_cPathLine.debugDraw(m_pDrv, m_cOffset, m_fScale);
@@ -100,11 +109,13 @@ namespace dustbin {
         irr::core::vector2df v2 = irr::core::vector2df(-50000.0f);
 
         m_fVCalc = -1.0f;
-        calculateControlMessage(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRearView, a_bRespawn, a_eMode, nullptr, v1, v2);
+        calculateControlMessage(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRearView, a_bRespawn, a_eMode, l_pSpecial, v1, v2);
 
         if (m_pDebugRTT != nullptr) {
           m_pDrv->setRenderTarget(nullptr);
-        } 
+        }
+
+        a_eMode = m_eMode;
       }
 
       return true;

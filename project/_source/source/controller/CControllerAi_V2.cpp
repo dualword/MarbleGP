@@ -600,12 +600,14 @@ namespace dustbin {
           // First we check if we would reach the blocker within a second
           irr::f32 l_fDist = a_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
           if (l_fDist < a_fVel) {
+            printf("%s (%i)\n", m_pLuaScript != nullptr ? "Script" : "Nope", a_pSpecial->m_pParent->m_pParent->m_iTag);
             // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
             if (m_pLuaScript != nullptr && (m_cAiData.m_iRoadBlock >= 100 || m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock)) {
               int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, a_pSpecial->m_pParent->m_pParent->m_iTag);
 
               // ... if so we set the veclcity to zero, overriding any other calculation
               if (!l_bBlock) {
+                printf("Stop!\n");
                 m_fVCalc = 0.0f;
               }
             }
