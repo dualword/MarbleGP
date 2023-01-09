@@ -54,7 +54,8 @@ namespace dustbin {
       bool m_bFullscreen;   /**< Fullscreen or not? */
       bool m_bGfxChange;    /**< Gfx settings have changed */
       bool m_bMenuPad;      /**< Was the menu controlled by Joypad? */
-      bool m_bDebugAI;      /**< Show the AI debug image (lower left) */
+      bool m_bDebugAIPath;  /**< Show the AI path debug image (lower left) */
+      bool m_bDebugAIDice;  /**< Show the AI dice debug image (lower right) */
       bool m_bUseMenuCtrl;  /**< Use the controller for the menu */
       bool m_bVirtualKeys;  /**< Use virtual keyboard (always true for Android) */
 

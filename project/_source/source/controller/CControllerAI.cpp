@@ -15,7 +15,8 @@ namespace dustbin {
       m_pNode      (a_pNode),
       m_pCurrent   (nullptr),
       m_bBrake     (false),
-      m_bDebug     (false),
+      m_bDebugPath (false),
+      m_bDebugDice (false),
       m_pMarbles   (a_pMarbles)
     {
       if (m_pNode != nullptr)
@@ -203,7 +204,7 @@ namespace dustbin {
         irr::core::vector3df l_cAhead1 = getLookAhead(l_fLookAhead1);
         irr::core::vector3df l_cAhead2 = getLookAhead(l_fLookAhead2);
 
-        if (m_bDebug) {
+        if (m_bDebugPath) {
           l_vDebug.push_back(irr::core::line3df(m_pMarbles[m_iIndex].m_cPosition, l_cAhead1));
           l_vDebug.push_back(irr::core::line3df(l_cAhead1, l_cAhead2));
         }
@@ -221,7 +222,7 @@ namespace dustbin {
 
         irr::core::vector3df l_cNewPoint = getLookAhead(std::fmax(15.0f, l_fFactor * l_fOffset * l_fVelocity));
 
-        if (m_bDebug) {
+        if (m_bDebugPath) {
           l_vDebug.push_back(irr::core::line3df(m_pMarbles[m_iIndex].m_cPosition, l_cNewPoint));
         }
 
@@ -256,7 +257,7 @@ namespace dustbin {
 
         m_bBrake = l_fVelocity > 1.1f * l_fVel && (!l_bRoll || l_fVelocity > 1.15f * l_fVel);
 
-        if (m_bDebug) m_pNode->setDebugLines(m_iMarbleId, l_vDebug);
+        if (m_bDebugPath) m_pNode->setDebugLines(m_iMarbleId, l_vDebug);
         m_iLastChange++;
 
         // printf("%5i%5i %s %5.2f\n", m_iCtrlX, m_iCtrlY, m_bBrake ? "B" : " ", m_fLastOffset - l_fOffset);
@@ -273,8 +274,9 @@ namespace dustbin {
       return true;
     }
 
-    void CControllerAI::setDebug(bool a_bDebug) {
-      m_bDebug = a_bDebug;
+    void CControllerAI::setDebug(bool a_bDebugPath, bool a_bDebugDice) {
+      m_bDebugPath = a_bDebugDice;
+      m_bDebugDice = a_bDebugDice;
     }
   }
 }

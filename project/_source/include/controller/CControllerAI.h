@@ -38,7 +38,8 @@ namespace dustbin {
         irr::s8 m_iCtrlY;
 
         bool m_bBrake;
-        bool m_bDebug;
+        bool m_bDebugPath;
+        bool m_bDebugDice;
 
         std::map<int, int> m_mChoices;
 
@@ -110,9 +111,10 @@ namespace dustbin {
 
         /**
         * Set the controller to debug mode
-        * @param a_bDebug the new debug flag
+        * @param a_bDebugPath the new debug flag for path debugging
+        * @param a_bDebugDice the new debug flat for dice debugging
         */
-        virtual void setDebug(bool a_bDebug) override;
+        virtual void setDebug(bool a_bDebugPath, bool a_bDebugDice) override;
 
         /**
         * Tell the controller about it's HUD
@@ -125,7 +127,15 @@ namespace dustbin {
         * Get the render target texture for debugging
         * @return the render target texture for debugging
         */
-        virtual irr::video::ITexture* getDebugTexture() override {
+        virtual irr::video::ITexture* getDebugPathTexture() override {
+          return nullptr;
+        }
+
+        /**
+        * Get the render target texture for dice debugging
+        * @return the render target texture for dice debugging
+        */
+        virtual irr::video::ITexture* getDebugDiceTexture() override {
           return nullptr;
         }
 

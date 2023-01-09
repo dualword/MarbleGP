@@ -216,7 +216,8 @@ namespace dustbin {
       m_fOldAngle      (0.0),
       m_eMode          (enMarbleMode::Cruise),
       m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
-      m_pDebugRTT      (nullptr),
+      m_pDebugPathRTT  (nullptr),
+      m_pDebugDiceRTT  (nullptr),
       m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight()))),
       m_pLuaScript     (a_pLuaScript),
       m_cViewport      (a_cViewport),
@@ -445,8 +446,8 @@ namespace dustbin {
         m_pHUD->setAiController(nullptr);
       }
 
-      if (m_pDebugRTT != nullptr) {
-        m_pDebugRTT = nullptr;
+      if (m_pDebugPathRTT != nullptr) {
+        m_pDebugPathRTT = nullptr;
       }
     }
 
@@ -491,10 +492,56 @@ namespace dustbin {
     }
 
     /**
+    * Fill the data with appropriate color and return a string for dice debuggin
+    * @param a_bOk flag to show if the skill was met or not
+    * @param a_cColor [out] the background color
+    * @return "Ok" or "Failed"
+    */
+    std::wstring CControllerAi_V2::fillDebugDiceData(int a_iDice, int a_iSkill, irr::video::SColor &a_cColor) {
+      wchar_t s[0xFF];
+
+      swprintf(s, L"%i / %i", a_iDice, a_iSkill);
+
+      if (a_iDice < a_iSkill) {
+        a_cColor = irr::video::SColor(0xFF, 0x80, 0xFF, 0x80);
+      }
+      else {
+        a_cColor = irr::video::SColor(0xFF, 0xFF, 0x80, 0x80);
+      }
+
+      return std::wstring(s);
+    }
+
+    void CControllerAi_V2::drawDebugDice(const wchar_t* a_sText, const wchar_t* a_sValues, irr::core::position2di& a_cPos, const irr::video::SColor &a_cBackground) {
+      if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
+        irr::core::dimension2du l_cRtt = m_pDebugDiceRTT->getOriginalSize();
+        irr::core::dimension2du l_cDim = m_pFont->getDimension(a_sValues);
+
+        a_cPos.Y -= l_cDim.Height + l_cDim.Height / 10;
+        irr::core::position2di l_cPos = a_cPos + irr::core::position2di(l_cRtt.Width / 96);
+        l_cDim.Width = l_cRtt.Width;
+
+        m_pDrv->draw2DRectangle(a_cBackground, irr::core::recti(a_cPos, l_cDim));
+
+        m_pFont->draw(a_sText, irr::core::recti(a_cPos + irr::core::position2di(l_cDim.Width / 10, 0), l_cDim), irr::video::SColor(0xFF, 0, 0, 0), false, true);
+
+        l_cDim = m_pFont->getDimension(a_sValues);
+        l_cDim.Width += l_cRtt.Width / 96;
+
+        l_cPos = irr::core::position2di(l_cRtt.Width - l_cDim.Width, a_cPos.Y);
+
+        m_pFont->draw(a_sValues, irr::core::recti(l_cPos, l_cDim), irr::video::SColor(0xFF, 0, 0, 0), false, true);
+      }
+    }
+
+    /**
     * Update the skill values using random number generation
     */
     void CControllerAi_V2::rollDice() {
-      printf("%i (%s)", m_iMarbleId, m_eAiMode == enAiMode::MarbleGP ? "MarbleGP" : m_eAiMode == enAiMode::Marble2 ? "Marble2 " : "Marble3 ");
+      irr::core::position2di l_cPos = irr::core::position2di(0, m_pDebugDiceRTT != nullptr ? m_pDebugDiceRTT->getOriginalSize().Height : 0);
+
+      if (m_pDebugDiceRTT != nullptr)
+        m_pDrv->setRenderTarget(m_pDebugDiceRTT, true, false, irr::video::SColor(0, 0, 0, 0));
 
       for (int i = 0; i < (int)enSkill::Count; i++) {
         if (m_iRespawn < 5 && !m_bAiHelp) {
@@ -503,21 +550,51 @@ namespace dustbin {
         }
         else m_iSkills[i] = 0;
 
-        printf(":%i=%-3i[%s]", 
-          i, 
-          m_iSkills[i], 
-          i == (int)enSkill::OtherMarbleMode ? m_iSkills[i] < m_cAiData.m_iAvoid       ? "avo" : m_iSkills[i] < m_cAiData.m_iOvertake ? "ovt" : "def" : 
-          i == (int)enSkill::JumpModeSwitch  ? m_iSkills[i] < m_cAiData.m_iJumpMode    ? "jm+" : "jm-" :
-          i == (int)enSkill::JumpDirection   ? m_iSkills[i] < m_cAiData.m_iJumpDir     ? "jd+" : "jd-" :
-          i == (int)enSkill::JumpVelocity    ? m_iSkills[i] < m_cAiData.m_iJumpVel     ? "jv+" : "jv-" :
-          i == (int)enSkill::PathSelection   ? m_iSkills[i] < m_cAiData.m_iPathSelect  ? "ps+" : "ps-" :
-          i == (int)enSkill::RoadBlock       ? m_iSkills[i] < m_cAiData.m_iRoadBlock   ? "rb+" : "rb-" : 
-          i == (int)enSkill::BestJumpVel     ? m_iSkills[i] < m_cAiData.m_iBestJumpVel ? "bv+" : "bv-" : ""
-        );
+        if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
+          std::wstring s1;
+          std::wstring s2;
+          irr::video::SColor l_cBackground;
+
+          switch ((enSkill)i) {
+            case enSkill::OtherMarbleMode:
+              s1 = L"OtherMarbleMode";
+              if (m_iSkills[i] < m_cAiData.m_iAvoid) {
+                s2 = L"Avoid";
+                l_cBackground = irr::video::SColor(0xFF, 0x80, 0xFF, 0x80);
+              }
+              else if (m_iSkills[i] < m_cAiData.m_iOvertake) {
+                s2 = L"Overtake";
+                l_cBackground = irr::video::SColor(0xFF, 0xFF, 0xFF, 0x80);
+              }
+              else {
+                s2 = L"Default";
+                l_cBackground = irr::video::SColor(0xFF, 0x80, 0x80, 0xFF);
+              }
+              break;
+
+            case enSkill::JumpModeSwitch: s1 = L"Jump Mode"       ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iJumpMode   , l_cBackground); break;
+            case enSkill::JumpDirection : s1 = L"Jump Direction"  ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iJumpDir    , l_cBackground); break;
+            case enSkill::JumpVelocity  : s1 = L"Jump Velocity"   ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iJumpVel    , l_cBackground); break;
+            case enSkill::PathSelection : s1 = L"Path Selection"  ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iPathSelect , l_cBackground); break;
+            case enSkill::RoadBlock     : s1 = L"Blocker"         ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iRoadBlock  , l_cBackground); break;
+            case enSkill::BestJumpVel   : s1 = L"Best Jump Speed" ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iBestJumpVel, l_cBackground); break;
+          }
+
+          drawDebugDice(s1.c_str(), s2.c_str(), l_cPos, l_cBackground);
+        }
       }
 
       m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
-      printf(" | jvf: %.2f\n", m_fJumpFact);
+
+      if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
+        wchar_t s[0xFF];
+        swprintf_s(s, 0xFF, L"%.2f", m_fJumpFact);
+
+        drawDebugDice(L"Jump Speed Factor", s, l_cPos, irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0));
+      }
+
+      if (m_pDebugDiceRTT != nullptr)
+        m_pDrv->setRenderTarget(nullptr);
     }
 
     /**
@@ -883,9 +960,9 @@ namespace dustbin {
             }
           }
 
-          if (m_pDebugRTT != nullptr) {
+          if (m_pDebugPathRTT != nullptr) {
             // If debugging is active we paint the two calculated lines the determine how we move
-            m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
+            m_pDrv->setRenderTarget(m_pDebugPathRTT, true, false);
             if (l_pSpecial != nullptr) {
               if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
                 irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
@@ -901,7 +978,7 @@ namespace dustbin {
                 draw2dDebugLine(l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
               }
             }
-            if (l_fClosest != 0.0f && m_pDebugRTT != nullptr) {
+            if (l_fClosest != 0.0f && m_pDebugPathRTT != nullptr) {
               draw2dDebugRectangle(l_cCloseMb, irr::video::SColor(0xFF, 0, 0xFF, 0), 15, m_fScale, m_cOffset);
             }
           }
@@ -912,7 +989,7 @@ namespace dustbin {
             calculateControlMessage(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRearView, a_bRespawn, a_eMode, l_pSpecial, l_cCloseMb, l_cCloseSp);
           }
 
-          if (m_pDebugRTT != nullptr) {
+          if (m_pDebugPathRTT != nullptr) {
             irr::core::line2df l_cVelocityLine = irr::core::line2df(irr::core::vector2df(), m_cVelocity2d);
 
             draw2dDebugLine(l_cVelocityLine, m_fScale, irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
@@ -958,7 +1035,7 @@ namespace dustbin {
         }
       }
 
-      if (m_pDebugRTT != nullptr) {
+      if (m_pDebugPathRTT != nullptr) {
         m_pDrv->setRenderTarget(nullptr);
       } 
 
@@ -967,10 +1044,11 @@ namespace dustbin {
 
     /**
     * Set the controller to debug mode
-    * @param a_bDebug the new debug flag
+    * @param a_bDebugPath the new debug flag for path debugging
+    * @param a_bDebugDice the new debug flat for dice debugging
     */
-    void CControllerAi_V2::setDebug(bool a_bDebug) {
-      if (a_bDebug) {
+    void CControllerAi_V2::setDebug(bool a_bDebugPath, bool a_bDebugDice) {
+      if (a_bDebugPath) {
         m_cRttSize = irr::core::dimension2du(m_cViewport.getWidth(), m_cViewport.getHeight());
 
         m_cRttSize.Width  /= 3;
@@ -979,13 +1057,25 @@ namespace dustbin {
         m_fScale = ((irr::f32)m_cRttSize.Height) / 1000.0f;
         m_fScale = 1.0f / m_fScale;
 
-        m_pDebugRTT = m_pDrv->getTexture((std::string("ai_debug_rtt_") + std::to_string(m_iMarbleId)).c_str());
+        m_pDebugPathRTT = m_pDrv->getTexture((std::string("ai_debug_path_rtt_") + std::to_string(m_iMarbleId)).c_str());
 
-        if (m_pDebugRTT == nullptr)
-          m_pDebugRTT = m_pDrv->addRenderTargetTexture(m_cRttSize, "ai_debug_rtt");
+        if (m_pDebugPathRTT == nullptr)
+          m_pDebugPathRTT = m_pDrv->addRenderTargetTexture(m_cRttSize, "ai_debug_path_rtt");
 
         m_cOffset.X = m_cRttSize.Width / 2;
         m_cOffset.Y = m_cRttSize.Height;
+      }
+
+      if (a_bDebugDice) {
+        m_cRttSize = irr::core::dimension2du(m_cViewport.getWidth(), m_cViewport.getHeight());
+
+        m_cRttSize.Width  /= 6;
+        m_cRttSize.Height /= 3;
+
+        m_pDebugDiceRTT = m_pDrv->getTexture((std::string("ai_debug_dice_rtt_") + std::to_string(m_iMarbleId)).c_str());
+
+        if (m_pDebugDiceRTT == nullptr)
+          m_pDebugDiceRTT = m_pDrv->addRenderTargetTexture(m_cRttSize, "ai_debug_dice_rtt");
       }
     }
 
@@ -1005,8 +1095,16 @@ namespace dustbin {
     * Get the render target texture for debugging
     * @return the render target texture for debugging
     */
-    irr::video::ITexture* CControllerAi_V2::getDebugTexture() {
-      return m_pDebugRTT;
+    irr::video::ITexture* CControllerAi_V2::getDebugPathTexture() {
+      return m_pDebugPathRTT;
+    }
+
+    /**
+    * Get the render target texture for dice debugging
+    * @return the render target texture for dice debugging
+    */
+    irr::video::ITexture* CControllerAi_V2::getDebugDiceTexture() {
+      return m_pDebugDiceRTT;
     }
 
     /**
@@ -1158,7 +1256,7 @@ namespace dustbin {
       const irr::core::vector2df &a_cCloseMb,
       const irr::core::vector2df &a_cCloseSp
     ) {
-      if (m_pDebugRTT != nullptr)
+      if (m_pDebugPathRTT != nullptr)
         m_p2dPath->debugDraw(m_pDrv, m_cOffset, 2.0f);
 
       irr::core::vector2df l_cClosest = m_p2dPath->m_cLines[0].getClosestPoint(irr::core::vector2df(0.0f));
@@ -1252,7 +1350,7 @@ namespace dustbin {
                   }
                 }
 
-                if (m_pDebugRTT != nullptr) {
+                if (m_pDebugPathRTT != nullptr) {
                   draw2dDebugLine(l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0x80, 0), m_cOffset);
                 }
               }
@@ -1261,7 +1359,7 @@ namespace dustbin {
                 l_cOther.start = l_cLine.end;
                 l_cOther.end   = l_cOther.start + l_fMax * l_cDirection;
 
-                if (m_pDebugRTT != nullptr) {
+                if (m_pDebugPathRTT != nullptr) {
                   draw2dDebugLine(l_cJumpLine, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
                 }
               }
@@ -1323,7 +1421,7 @@ namespace dustbin {
           }
         }
 
-        if (m_pDebugRTT != nullptr) {
+        if (m_pDebugPathRTT != nullptr) {
           draw2dDebugLine(l_cLine, 2.0f, irr::video::SColor(255, 255, 0, 0), m_cOffset);
 
           if (l_iLines > 1)
@@ -1332,7 +1430,7 @@ namespace dustbin {
           if (l_bCollide || l_bOvertake) {
             std::wstring s = l_bCollide ? L"C" : l_bOTBrake ? L"OB" : L"O";
             irr::core::dimension2du l_cDim = m_pFont->getDimension(s.c_str());
-            irr::core::position2di  l_cPos = irr::core::position2di(0, m_pDebugRTT->getOriginalSize().Height - l_cDim.Height);
+            irr::core::position2di  l_cPos = irr::core::position2di(0, m_pDebugPathRTT->getOriginalSize().Height - l_cDim.Height);
             m_pDrv->draw2DRectangle(l_bCollide ? irr::video::SColor(0xFF, 0xFF, 0, 0) : l_bOTBrake ? irr::video::SColor(0xFF, 0, 0xFF, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0), irr::core::recti(l_cPos, l_cDim));
             draw2dDebugText(s.c_str(), m_pFont, irr::core::vector2df((irr::f32)l_cPos.X, (irr::f32)l_cPos.Y));
           }
@@ -1664,9 +1762,14 @@ namespace dustbin {
       }
     }
 
-    bool CControllerAi_V2::SPathLine2d::getFirstCollisionLine(const irr::core::line2df& a_cLine, irr::core::vector2df& a_cOutput, bool a_bBordersOnly, bool& a_bIsCenterLine) {
+    bool CControllerAi_V2::SPathLine2d::getFirstCollisionLine(const irr::core::line2df& a_cLine, irr::core::vector2df& a_cOutput, bool a_bBordersOnly, irr::f32 a_fDistance, bool& a_bIsCenterLine) {
       bool l_bRet = false;
       a_bIsCenterLine = false;
+
+      a_fDistance -= m_cLines[0].getLength();
+
+      if (a_fDistance <= 0)
+        return false;
       
       irr::core::vector2df l_cIntersect[3] = {
         irr::core::vector2df(-1.0f, -1.0f),
@@ -1701,7 +1804,7 @@ namespace dustbin {
       }
       else {
         for (std::vector<SPathLine2d*>::iterator l_itNext = m_vNext.begin(); l_itNext != m_vNext.end() && !l_bRet; l_itNext++) {
-          l_bRet = (*l_itNext)->getFirstCollisionLine(a_cLine, a_cOutput, a_bBordersOnly, a_bIsCenterLine);
+          l_bRet = (*l_itNext)->getFirstCollisionLine(a_cLine, a_cOutput, a_bBordersOnly, a_fDistance, a_bIsCenterLine);
         }
       }
 

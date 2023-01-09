@@ -85,17 +85,18 @@ namespace dustbin {
 
         irr::core::line2df l_cCheck = irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), m_cVelocity2d.getLengthSQ() != 0.0f ? 250.0f * l_cVelocity2d.normalize() : irr::core::vector2df(0.0f, 0.0f));
 
-        if (m_pDebugRTT != nullptr)
-          // If debugging is active we paint the two calculated lines the determine how we move
-          m_pDrv->setRenderTarget(m_pDebugRTT, true, false);
-
         std::vector<SAiPathSection *> l_vCurrent;
 
         m_p2dPath = m_pCurrent->m_pAiPath->transformTo2d_Help(l_cMatrix, l_cCheck, nullptr);
 
+        if (m_pDebugPathRTT != nullptr) {
+          // If debugging is active we paint the two calculated lines the determine how we move
+          m_pDrv->setRenderTarget(m_pDebugPathRTT, true, false);
+        }
+
         SPathLine2d *l_pSpecial = nullptr;
         // Search for special path segments , i.e. jumps or block
-        if (m_p2dPath->m_vNext.size() > 0)
+        if (m_p2dPath != nullptr && m_p2dPath->m_vNext.size() > 0)
           l_pSpecial = findNextSpecial(*m_p2dPath->m_vNext.begin());
 
         if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
@@ -118,7 +119,32 @@ namespace dustbin {
         m_fVCalc = -1.0f;
         calculateControlMessage(a_iCtrlX, a_iCtrlY, a_bBrake, a_bRearView, a_bRespawn, a_eMode, l_pSpecial, v1, v2);
 
-        if (m_pDebugRTT != nullptr) {
+        if (m_eMode == enMarbleMode::Default || m_eMode == enMarbleMode::Cruise || m_eMode == enMarbleMode::TimeAttack) {
+          l_cVelocity2d = 1.15f * m_cVelocity2d;
+
+          irr::core::vector2df l_cOut = irr::core::vector2df();
+          bool b = false;
+
+          if (m_p2dPath->getFirstCollisionLine(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cVelocity2d), l_cOut, l_cVelocity2d.getLength(), true, b)) {
+            l_cVelocity2d = l_cOut;
+            b = true;
+          }
+          else b = false;
+
+          if (m_pDebugPathRTT != nullptr) {
+            draw2dDebugLine(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cVelocity2d), m_fScale, b ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0) : irr::video::SColor(0xFF, 0, 0xFF, 0), m_cOffset);
+          }
+
+          if (b) {
+            a_bBrake = m_cVelocity2d.getLength() > 1.05f * l_cVelocity2d.getLength();
+            a_iCtrlY = -127;
+          }
+          else {
+            a_iCtrlY = 127;
+          }
+        }
+
+        if (m_pDebugPathRTT != nullptr) {
           m_pDrv->setRenderTarget(nullptr);
         }
 

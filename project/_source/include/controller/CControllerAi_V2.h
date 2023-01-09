@@ -117,7 +117,7 @@ namespace dustbin {
           */
           void deleteAllChildren();
 
-          bool getFirstCollisionLine(const irr::core::line2df &a_cLine, irr::core::vector2df &a_cOutput, bool a_bBordersOnly, bool &a_bIsCenterLine);
+          bool getFirstCollisionLine(const irr::core::line2df &a_cLine, irr::core::vector2df &a_cOutput, bool a_bBordersOnly, irr::f32 a_fDistance, bool &a_bIsCenterLine);
         }
         SPathLine2d;
 
@@ -315,13 +315,14 @@ namespace dustbin {
 
         enMarbleMode m_eMode;   /**< The marble's current mode */
 
-        irr::video::IVideoDriver *m_pDrv;       /**< The Irrlicht video driver for debug rendering */
-        irr::video::ITexture     *m_pDebugRTT;  /**< Render target texture for debugging */
-        irr::core::dimension2du   m_cRttSize;   /**< Size of the debug RTT */
-        irr::core::vector2di      m_cOffset;    /**< Offset for debug rendering */
-        irr::gui::IGUIFont       *m_pFont;      /**< Font for debug output */
-        lua::CLuaScript_ai       *m_pLuaScript; /**< AI LUA script for decisions */
-        irr::core::recti          m_cViewport;  /**< The viewport for optional debug output */
+        irr::video::IVideoDriver *m_pDrv;           /**< The Irrlicht video driver for debug rendering */
+        irr::video::ITexture     *m_pDebugPathRTT;  /**< Render target texture for debugging the path calculation */
+        irr::video::ITexture     *m_pDebugDiceRTT;  /**< Render target texture for debugging the dice values */
+        irr::core::dimension2du   m_cRttSize;       /**< Size of the debug RTT */
+        irr::core::vector2di      m_cOffset;        /**< Offset for debug rendering */
+        irr::gui::IGUIFont       *m_pFont;          /**< Font for debug output */
+        lua::CLuaScript_ai       *m_pLuaScript;     /**< AI LUA script for decisions */
+        irr::core::recti          m_cViewport;      /**< The viewport for optional debug output */
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
 
@@ -480,6 +481,17 @@ namespace dustbin {
           const irr::core::vector2df &a_cCloseSp
         );
 
+        /**
+        * Fill the data with appropriate color and return a string for dice debuggin
+        * @param a_iDice the value rolled by the dice
+        * @param a_iSkill the skill value
+        * @param a_cColor [out] the background color
+        * @return "Ok" or "Failed"
+        */
+        std::wstring fillDebugDiceData(int a_iDice, int a_iSkill, irr::video::SColor &a_cColor);
+
+        void drawDebugDice(const wchar_t *a_sText, const wchar_t *a_sValues, irr::core::position2di &a_cPos, const irr::video::SColor &a_cBackground);
+
         // void getClosestMarble(std::vector<std::tuple<int, irr::core::vector3df, irr::core::vector3df>> a_vMarblePosVel, irr::core::vector2df &a_cCloseMb, irr::core::vector2df &a_cCloseSp);
 
       public:
@@ -552,9 +564,10 @@ namespace dustbin {
 
         /**
         * Set the controller to debug mode
-        * @param a_bDebug the new debug flag
+        * @param a_bDebugPath the new debug flag for path debugging
+        * @param a_bDebugDice the new debug flat for dice debugging
         */
-        virtual void setDebug(bool a_bDebug) override;
+        virtual void setDebug(bool a_bDebugPath, bool a_bDebugDice) override;
 
         /**
         * Tell the controller about it's HUD
@@ -566,7 +579,13 @@ namespace dustbin {
         * Get the render target texture for debugging
         * @return the render target texture for debugging
         */
-        virtual irr::video::ITexture *getDebugTexture() override;
+        virtual irr::video::ITexture *getDebugPathTexture() override;
+
+        /**
+        * Get the render target texture for dice debugging
+        * @return the render target texture for dice debugging
+        */
+        virtual irr::video::ITexture *getDebugDiceTexture() override;
     };
   }
 }

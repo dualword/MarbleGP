@@ -86,22 +86,44 @@ namespace dustbin {
           m_pAiControls = new CControllerAiHelp_V2(m_iMarbleId, l_cAiData.serialize(), m_aMarbles, m_pLuaScript, a_cViewport);
         }
 
-        if (m_pAiControls != nullptr && CGlobal::getInstance()->getSettingData().m_bDebugAI) {
-          m_pAiControls->setDebug(true);
+        if (m_pAiControls != nullptr) {
+          bool a_bDebugPath = CGlobal::getInstance()->getSettingData().m_bDebugAIPath;
+          bool a_bDebugDice = CGlobal::getInstance()->getSettingData().m_bDebugAIDice;
 
-          irr::video::ITexture *l_pTexture = m_pAiControls->getDebugTexture();
+          m_pAiControls->setDebug(a_bDebugPath, a_bDebugDice);
 
-          if (l_pTexture != nullptr) {
-            irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight());
-            irr::core::dimension2du l_cSize   = l_cScreen;
+          if (a_bDebugPath) {
+            irr::video::ITexture *l_pTexture = m_pAiControls->getDebugPathTexture();
 
-            l_cSize.Width  /= 3;
-            l_cSize.Height /= 3;
+            if (l_pTexture != nullptr) {
+              irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight());
+              irr::core::dimension2du l_cSize   = l_cScreen;
 
-            CGlobal::getInstance()->getGuiEnvironment()->addImage(
-              l_pTexture,
-              irr::core::vector2di(a_cViewport.UpperLeftCorner.X, a_cViewport.LowerRightCorner.Y - l_cSize.Height)
-            );
+              l_cSize.Width  /= 3;
+              l_cSize.Height /= 3;
+
+              CGlobal::getInstance()->getGuiEnvironment()->addImage(
+                l_pTexture,
+                irr::core::vector2di(a_cViewport.UpperLeftCorner.X, a_cViewport.LowerRightCorner.Y - l_cSize.Height)
+              );
+            }
+          }
+
+          if (a_bDebugDice) {
+            irr::video::ITexture *l_pTexture = m_pAiControls->getDebugDiceTexture();
+            
+            if (l_pTexture != nullptr) {
+              irr::core::dimension2du l_cScreen = irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight());
+              irr::core::dimension2du l_cSize   = l_cScreen;
+
+              l_cSize.Width  /= 6;
+              l_cSize.Height /= 3;
+
+              CGlobal::getInstance()->getGuiEnvironment()->addImage(
+                l_pTexture,
+                irr::core::vector2di(a_cViewport.LowerRightCorner.X - l_cSize.Width, a_cViewport.LowerRightCorner.Y - l_cSize.Height)
+              );
+            }
           }
         }
       }

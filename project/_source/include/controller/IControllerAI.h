@@ -82,9 +82,10 @@ namespace dustbin {
 
         /**
         * Set the controller to debug mode
-        * @param a_bDebug the new debug flag
+        * @param a_bDebugPath the new debug flag for path debugging
+        * @param a_bDebugDice the new debug flat for dice debugging
         */
-        virtual void setDebug(bool a_bDebug) = 0;
+        virtual void setDebug(bool a_bDebugPath, bool a_bDebugDice) = 0;
 
         /**
         * Tell the controller about it's HUD
@@ -93,10 +94,16 @@ namespace dustbin {
         virtual void setHUD(gui::CGameHUD *a_pHUD) = 0;
 
         /**
-        * Get the render target texture for debugging
+        * Get the render target texture for path debugging
         * @return the render target texture for debugging
         */
-        virtual irr::video::ITexture *getDebugTexture() = 0;
+        virtual irr::video::ITexture *getDebugPathTexture() = 0;
+
+        /**
+        * Get the render target texture for dice debugging
+        * @return the render target texture for dice debugging
+        */
+        virtual irr::video::ITexture *getDebugDiceTexture() = 0;
     };
   }
 }
