@@ -1642,9 +1642,9 @@ namespace dustbin {
           m_iOvertake       = 45;
           m_iAvoid          = 35;
           m_iJumpMode       = 97;
-          m_iJumpDir        = 95;
+          m_iJumpDir        = 90;
           m_iJumpVel        = 95;
-          m_iBestJumpVel    = 94;
+          m_iBestJumpVel    = 85;
           m_iPathSelect     = 80;
           m_iRoadBlock      = 85;
           m_fThrottleAdd    = 0.02f;
@@ -1661,8 +1661,8 @@ namespace dustbin {
           m_iOvertake       = 15;
           m_iAvoid          = 65;
           m_iJumpMode       = 95;
-          m_iBestJumpVel    = 90;
-          m_iJumpDir        = 90;
+          m_iBestJumpVel    = 40;
+          m_iJumpDir        = 80;
           m_iJumpVel        = 93;
           m_iPathSelect     = 50;
           m_iRoadBlock      = 65;

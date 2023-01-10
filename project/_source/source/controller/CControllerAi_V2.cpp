@@ -585,12 +585,27 @@ namespace dustbin {
       }
 
       m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
+      printf("Fact: %.2f\n", m_fJumpFact);
 
       if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
         wchar_t s[0xFF];
         swprintf_s(s, 0xFF, L"%.2f", m_fJumpFact);
 
         drawDebugDice(L"Jump Speed Factor", s, l_cPos, irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0));
+
+        std::wstring l_sMode = 
+          m_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
+          m_eMode == enMarbleMode::Default    ? L"Default"    :
+          m_eMode == enMarbleMode::Cruise     ? L"Cruise"     :
+          m_eMode == enMarbleMode::Jump       ? L"Jump"       :
+          m_eMode == enMarbleMode::Loop       ? L"Loop"       :
+          m_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
+          m_eMode == enMarbleMode::Respawn    ? L"Respawn"    :
+          m_eMode == enMarbleMode::Respawn2   ? L"Respawn2"   :
+          m_eMode == enMarbleMode::TimeAttack ? L"TimeAttack" : L"- unknwon -"
+        ;
+
+        drawDebugDice(L"Marble Mode", l_sMode.c_str(), l_cPos, irr::video::SColor(0xFF, 0xD0, 0xD0, 0xD0));
       }
 
       if (m_pDebugDiceRTT != nullptr)
@@ -1341,13 +1356,14 @@ namespace dustbin {
                 if ((l_fBst != -1.0f && m_iSkills[(int)enSkill::BestJumpVel] < m_cAiData.m_iBestJumpVel) || m_cAiData.m_iBestJumpVel == 100)
                   m_fVCalc = l_fBst;
                 else {
-                  if (l_fMin == -1.0f)
-                    m_fVCalc = l_fMax;
-                  else if (l_fMax == -1.f)
-                    m_fVCalc = l_fMin;
-                  else {
+                  if (l_fBst != -1 && l_fMax != -1 && l_fMin != -1)
                     m_fVCalc = l_fMin + ((l_fMax - l_fMin) * m_fJumpFact);
-                  }
+                  else if (l_fMin == -1.0f && l_fMax != -1)
+                    m_fVCalc = l_fMax;
+                  else if (l_fMax == -1.0f && l_fMin != -1)
+                    m_fVCalc = l_fMin;
+                  else
+                    m_fVCalc = -1.0f;
                 }
 
                 if (m_pDebugPathRTT != nullptr) {
@@ -1519,7 +1535,7 @@ namespace dustbin {
           irr::core::vector2df l_cPos = irr::core::vector2df();
 
           // Modify thresholds for marble classes??
-          irr::f64 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25 : 2.5;
+          irr::f64 l_fThreshold = 2.5;
 
           if (m_eMode == enMarbleMode::Jump) {
             int l_iSkillJump = m_iSkills[(int)enSkill::JumpDirection];
