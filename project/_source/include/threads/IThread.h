@@ -30,7 +30,7 @@ namespace dustbin {
         bool m_bStarted;          /**< Has the thread been started? */
 
         /**
-        * The implementing object must implement this method. It is called when the thread start working
+        * The implementing object must implement this method. It is called when the thread starts working
         */
         virtual void execute() = 0;
 

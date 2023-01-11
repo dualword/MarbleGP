@@ -634,6 +634,7 @@ namespace dustbin {
 
         helpers::addToDebugLog("Clear input queue");
         messages::IMessage *l_pMsg = nullptr;
+
         do {
           l_pMsg = m_pInputQueue->popMessage();
           if (l_pMsg != nullptr && !m_bWillBeDeleted) {
@@ -1292,7 +1293,7 @@ namespace dustbin {
                 m_pAiThread = new controller::CAiControlThread(m_pTheOutputQueue, m_pTheInputQueue, reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode));
               }
 
-              m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController);
+              m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, "data/levels/" + m_cGameData.m_sTrack);
             }
 
             delete l_pFactory;

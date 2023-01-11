@@ -50,7 +50,7 @@ namespace dustbin {
         ~CNetBase();
 
         /**
-        * The implementing object must implement this method. It is called when the thread start working
+        * The implementing object must implement this method. It is called when the thread starts working
         */
         virtual void execute();
 

@@ -1644,7 +1644,7 @@ namespace dustbin {
           m_iJumpMode       = 97;
           m_iJumpDir        = 90;
           m_iJumpVel        = 95;
-          m_iBestJumpVel    = 85;
+          m_iBestJumpVel    = 60;
           m_iPathSelect     = 80;
           m_iRoadBlock      = 85;
           m_fThrottleAdd    = 0.02f;

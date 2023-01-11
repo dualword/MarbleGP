@@ -96,16 +96,16 @@ namespace dustbin {
         */
         virtual void onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) override;
 
-        /**
-        * The implementing object must implement this method. It is called when the thread start working
-        */
-        virtual void execute() override;
-
       public:
         CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn, scenenodes::CAiNode *a_pAiNode);
         virtual ~CAiControlThread();
 
-        void addAiMarble(int a_iMarbleId, const std::string &a_sControls);
+        void addAiMarble(int a_iMarbleId, const std::string &a_sControls, const std::string &a_sAiScriptPath);
+
+        /**
+        * The implementing object must implement this method. It is called when the thread starts working
+        */
+        virtual void execute() override;
     };
   }
 }

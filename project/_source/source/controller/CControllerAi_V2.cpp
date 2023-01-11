@@ -585,7 +585,6 @@ namespace dustbin {
       }
 
       m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
-      printf("Fact: %.2f\n", m_fJumpFact);
 
       if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
         wchar_t s[0xFF];

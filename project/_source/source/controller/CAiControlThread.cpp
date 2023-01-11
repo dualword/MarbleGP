@@ -1,8 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
+#include <controller/CControllerAiHelp_V2.h>
 #include <_generated/messages/CMessages.h>
+#include <_generated/lua/CLuaScript_ai.h>
 #include <controller/CAiControlThread.h>
 #include <controller/CControllerAI.h>
+#include <helpers/CStringHelpers.h>
+#include <CGlobal.h>
 
 namespace dustbin {
   namespace controller {
@@ -62,9 +66,10 @@ namespace dustbin {
         m_aMarbles[l_iIndex].m_iMarbleId  = a_ObjectId;
         m_aMarbles[l_iIndex].m_cPosition  = a_Position;
         m_aMarbles[l_iIndex].m_cVelocity  = a_LinearVelocity;
-        m_aMarbles[l_iIndex].m_cDirection = a_CameraPosition - a_Position;
+        m_aMarbles[l_iIndex].m_cDirection = a_CameraPosition;
         m_aMarbles[l_iIndex].m_cCamera    = a_CameraPosition;
         m_aMarbles[l_iIndex].m_cCameraUp  = a_CameraUp;
+        m_aMarbles[l_iIndex].m_bContact   = a_Contact;
       }
     }
 
@@ -114,7 +119,7 @@ namespace dustbin {
     }
 
     /**
-    * The implementing object must implement this method. It is called when the thread start working
+    * The implementing object must implement this method. It is called when the thread starts working
     */
     void CAiControlThread::execute() {
       while (!m_bStopThread) {
@@ -126,7 +131,7 @@ namespace dustbin {
         }
       }
 
-      printf("AI Control Thread ends.\n");
+      // printf("AI Control Thread ends.\n");
     }
 
     CAiControlThread::CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn, scenenodes::CAiNode* a_pAiNode) : 
@@ -149,9 +154,34 @@ namespace dustbin {
       m_pDynamicsOut->removeListener(m_pInputQueue);
     }
 
-    void CAiControlThread::addAiMarble(int a_iMarbleId, const std::string& a_sControls) {
+    void CAiControlThread::addAiMarble(int a_iMarbleId, const std::string& a_sControls, const std::string &a_sAiScriptPath) {
       if (m_iNumberOfBots < 16) {
-        m_aControllers[m_iNumberOfBots] = new controller::CControllerAI(a_iMarbleId, a_sControls, nullptr, m_pAiNode, m_aMarbles);
+        data::SPlayerData::enAiHelp l_eClass = data::SPlayerData::enAiHelp::BotMgp; // a_iMarbleId % 3 == 0 ? data::SPlayerData::enAiHelp::BotMgp : a_iMarbleId % 3 == 1 ? data::SPlayerData::enAiHelp::BotMb2 : data::SPlayerData::enAiHelp::BotMb3;
+        data::SMarbleAiData l_cAiData = data::SMarbleAiData(l_eClass);
+
+        std::string l_sScriptFile = a_sAiScriptPath + "/ai.lua";
+
+        irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+        lua::CLuaScript_ai *l_pLuaScript = nullptr;
+
+        if (l_pFs->existFile(l_sScriptFile.c_str())) {
+          std::string l_sScript = helpers::loadTextFile(l_sScriptFile);
+           l_pLuaScript = new lua::CLuaScript_ai(l_sScript);
+
+          if (l_pLuaScript->getError() == "") {
+          }
+          else {
+            printf("LUA error: %s\n", l_pLuaScript->getError().c_str());
+            delete l_pLuaScript;
+            l_pLuaScript = nullptr;
+          }
+        }
+
+        irr::core::recti a_cViewport = irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize());
+
+        m_aControllers[m_iNumberOfBots] = new controller::CControllerAi_V2(a_iMarbleId, l_cAiData.serialize(), m_aMarbles, l_pLuaScript, a_cViewport);
+
         m_iNumberOfBots++;
       }
       else printf("Too many bots!\n");
