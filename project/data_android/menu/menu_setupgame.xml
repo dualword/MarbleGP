@@ -30,15 +30,33 @@
       
       <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
         <children>
-          <element type="staticText" rect="relative: 24, 1, 35, 3" tooltip="Select the Raceclass, i.e. how fast the Marbles are">
+          <element type="staticText" rect="relative: 24, 1, 35, 3" tooltip="Network Game">
             <attributes>
-              <attribute key="Caption" value="Race Class:" />
+              <attribute key="Caption" value="Network Game:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>
           
           <element type="Selector" rect="relative: 36, 1, 47, 3">
+            <attributes>
+              <attribute key="Name" value="network_game" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="None;Start Server;Join Server" />
+            </custom>
+          </element>
+          
+          <element type="staticText" rect="relative: 26, 12, 35, 14" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
+            <attributes>
+              <attribute key="Caption" value="Ai Class:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="relative: 36, 12, 47, 14">
             <attributes>
               <attribute key="Name" value="raceclass" />
               <attribute key="Selected" value="0" />
@@ -144,23 +162,6 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 26, 12, 35, 14" tooltip="Network Game">
-            <attributes>
-              <attribute key="Caption" value="Network Game:" />
-              <attribute key="HTextAlign" value="lowerRight" />
-              <attribute key="VTextAlign" value="center" />
-            </attributes>
-          </element>
-          
-          <element type="Selector" rect="relative: 36, 12, 47, 14">
-            <attributes>
-              <attribute key="Name" value="network_game" />
-              <attribute key="Selected" value="0" />
-            </attributes>
-            <custom>
-              <attribute key="options" value="None;Start Server;Join Server" />
-            </custom>
-          </element>
         </children>
       </element>
     </children>

@@ -122,25 +122,7 @@
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 5, 3, 17, 7" tooltip="Select the Raceclass, i.e. how fast the Marbles are">
-            <attributes>
-              <attribute key="Caption" value="Race Class:" />
-              <attribute key="HTextAlign" value="lowerRight" />
-              <attribute key="VTextAlign" value="center" />
-            </attributes>
-          </element>
-          
-          <element type="Selector" rect="relative: 18, 4, 33, 6">
-            <attributes>
-              <attribute key="Name" value="raceclass" />
-              <attribute key="Selected" value="0" />
-            </attributes>
-            <custom>
-              <attribute key="options" value="Marbles3;Marbles2;MarbleGP" />
-            </custom>
-          </element>
-          
-          <element type="staticText" rect="relative: 5, 7, 17, 11" tooltip="Select the starting Order of the Races">
+          <element type="staticText" rect="relative: 4, 3, 17, 7" tooltip="Select the starting Order of the Races">
             <attributes>
               <attribute key="Caption" value="Grid Positions:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -148,7 +130,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 18, 8, 33, 10">
+          <element type="Selector" rect="relative: 18, 4, 33, 6">
             <attributes>
               <attribute key="Name" value="starting_positions" />
               <attribute key="Selected" value="0" />
@@ -158,7 +140,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 0, 11, 17, 15" tooltip="Reverse Starting Positions">
+          <element type="staticText" rect="relative: 0, 7, 17, 11" tooltip="Reverse Starting Positions">
             <attributes>
               <attribute key="Caption" value="Reverse Grid:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -166,13 +148,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 18, 12, 20, 14">
+          <element type="DustbinCheckbox" rect="relative: 18, 8, 20, 10">
             <attributes>
               <attribute key="Name" value="reverse_grid" />
             </attributes>
           </element>
                     
-          <element type="staticText" rect="relative: 0, 15, 17, 19" tooltip="Randomize Starting Positions of the First Race">
+          <element type="staticText" rect="relative: 0, 11, 17, 15" tooltip="Randomize Starting Positions of the First Race">
             <attributes>
               <attribute key="Caption" value="Randomize First Race:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -180,13 +162,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 18, 16, 20, 18">
+          <element type="DustbinCheckbox" rect="relative: 18, 12, 20, 14">
             <attributes>
               <attribute key="Name" value="randomize_first" />
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 0, 19, 17, 23" tooltip="Fill the Grid with AI Marbles">
+          <element type="staticText" rect="relative: 0, 15, 17, 19" tooltip="Fill the Grid with AI Marbles">
             <attributes>
               <attribute key="Caption" value="Fill Grid with AI Players:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -194,11 +176,30 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 18, 20, 20, 22">
+          <element type="DustbinCheckbox" rect="relative: 18, 16, 20, 18">
             <attributes>
               <attribute key="Name" value="fillgrid_ai" />
             </attributes>
           </element>
+          
+          <element type="staticText" rect="relative: 5, 19, 17, 23" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
+            <attributes>
+              <attribute key="Caption" value="Ai Class:" />
+              <attribute key="HTextAlign" value="lowerRight" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="Selector" rect="relative: 18, 20, 33, 22">
+            <attributes>
+              <attribute key="Name" value="raceclass" />
+              <attribute key="Selected" value="0" />
+            </attributes>
+            <custom>
+              <attribute key="options" value="Marbles3;Marbles2;MarbleGP" />
+            </custom>
+          </element>
+          
           
           <element type="staticText" rect="relative: 5, 23, 17, 27" tooltip="Select the Grid Size">
             <attributes>

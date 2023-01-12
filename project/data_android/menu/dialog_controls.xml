@@ -18,7 +18,7 @@
         </attributes>
         
         <children>
-          <element type="Selector" rect="center: -11, -14, 10, -12" tooltip="Which type of controller do you want to use?">
+          <element type="Selector" rect="center: -9, -14, 10, -12" tooltip="Which type of controller do you want to use?">
             <attributes>
               <attribute key="Name" value="controller_type" />
               <attribute key="Selected" value="0" />
@@ -28,7 +28,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="center: -19, -14, -10, -12">
+          <element type="staticText" rect="center: -19, -14, -8, -12">
             <attributes>
               <attribute key="Caption" value="Controller Type:" />
               <attribute key="VTextAlign" value="center" />
