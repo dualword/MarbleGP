@@ -148,7 +148,6 @@ namespace dustbin {
           if (l_pSelector != nullptr) {
             l_pSelector->setSelected(m_cSettings.m_iAutoFinish); 
           }
-          else printf("Ui element \"ai_class\" not found.");
           
           l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("reverse_grid", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
           if (l_pCheckbox != nullptr) l_pCheckbox->setChecked(m_cSettings.m_bReverseGrid); else printf("Ui element \"reverse_grid\" not found.");
@@ -407,7 +406,7 @@ namespace dustbin {
                 else if (l_sSender == "fillgrid_ai") {
                   m_cSettings.m_bFillGridAI = p->isChecked();
 
-                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_class", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("raceclass", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
                   if (l_pSelector != nullptr) l_pSelector->setEnabled(m_cSettings.m_bFillGridAI);
 
                   l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
