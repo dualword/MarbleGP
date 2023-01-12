@@ -498,10 +498,6 @@ namespace dustbin {
     * @return "Ok" or "Failed"
     */
     std::wstring CControllerAi_V2::fillDebugDiceData(int a_iDice, int a_iSkill, irr::video::SColor &a_cColor) {
-      wchar_t s[0xFF];
-
-      swprintf(s, L"%i / %i", a_iDice, a_iSkill);
-
       if (a_iDice < a_iSkill) {
         a_cColor = irr::video::SColor(0xFF, 0x80, 0xFF, 0x80);
       }
@@ -509,7 +505,7 @@ namespace dustbin {
         a_cColor = irr::video::SColor(0xFF, 0xFF, 0x80, 0x80);
       }
 
-      return std::wstring(s);
+      return std::to_wstring(a_iDice) + L" / " + std::to_wstring(a_iSkill);
     }
 
     void CControllerAi_V2::drawDebugDice(const wchar_t* a_sText, const wchar_t* a_sValues, irr::core::position2di& a_cPos, const irr::video::SColor &a_cBackground) {
@@ -578,6 +574,7 @@ namespace dustbin {
             case enSkill::PathSelection : s1 = L"Path Selection"  ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iPathSelect , l_cBackground); break;
             case enSkill::RoadBlock     : s1 = L"Blocker"         ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iRoadBlock  , l_cBackground); break;
             case enSkill::BestJumpVel   : s1 = L"Best Jump Speed" ; s2 = fillDebugDiceData(m_iSkills[i], m_cAiData.m_iBestJumpVel, l_cBackground); break;
+            default: break;
           }
 
           drawDebugDice(s1.c_str(), s2.c_str(), l_cPos, l_cBackground);
@@ -587,10 +584,20 @@ namespace dustbin {
       m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
 
       if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
+#ifdef _ANDROID
+        std::wstring s = std::to_wstring(m_fJumpFact);
+#else
         wchar_t s[0xFF];
         swprintf_s(s, 0xFF, L"%.2f", m_fJumpFact);
+#endif
 
-        drawDebugDice(L"Jump Speed Factor", s, l_cPos, irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0));
+        drawDebugDice(L"Jump Speed Factor", 
+#ifdef _ANDROID
+          s.c_str(),
+#else
+          s, 
+#endif
+          l_cPos, irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0));
 
         std::wstring l_sMode = 
           m_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
@@ -1299,7 +1306,7 @@ namespace dustbin {
             l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, nullptr);
             irr::core::vector2df v = m_p2dPath->m_cLines[0].getClosestPoint(l_cLine.start);
             irr::f32 l_fDist      = v.getDistanceFrom(l_cLine.start);
-            irr::f32 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.25f : 2.5f;
+            irr::f32 l_fThreshold = m_eMode == enMarbleMode::Jump ? 0.125f : 2.5f;
             if (l_fDist > l_fThreshold * m_p2dPath->m_fWidth)
               m_eMode = enMarbleMode::Respawn;
             break;
@@ -1540,7 +1547,7 @@ namespace dustbin {
             int l_iSkillJump = m_iSkills[(int)enSkill::JumpDirection];
 
             if (m_cAiData.m_iJumpDir >= 100 || l_iSkillJump < m_cAiData.m_iJumpDir)
-              l_fThreshold = 0.25;
+              l_fThreshold = 0.125;
             else {
               irr::f32 l_fFactor = (irr::f32)(m_cAiData.m_iJumpDir - l_iSkillJump) / (irr::f32)m_cAiData.m_iJumpDir;
               l_fThreshold = 0.25 + 2.0f * abs(l_fFactor);
