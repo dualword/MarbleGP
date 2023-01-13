@@ -16,8 +16,9 @@ def checkForModifications(a_Folder):
         checkForModifications(l_File)
       else:
         if l_File not in g_CopiedItems["files"]:
-          print("New File: " + l_File)
-          g_Modified.append(l_File)
+          if l_File[-4:] != ".bmp":
+            print("New File: " + l_File)
+            g_Modified.append(l_File)
         else:
           if math.floor(os.path.getmtime(l_File)) > g_CopiedItems["files"][l_File]:
             print("Modified: " + l_File + " (" + str(g_CopiedItems["files"][l_File]) + ", " + str(math.floor(os.path.getmtime(l_File))) + ")")
