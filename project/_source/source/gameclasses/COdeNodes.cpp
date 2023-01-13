@@ -109,6 +109,7 @@ namespace dustbin {
       m_bRespawn    (false),
       m_bSliderJoint(false),
       m_bMarbleTouch(false),
+      m_bMarbleOnly (false),
       m_iTrigger    (-1),
       m_pWorld      (a_pWorld),
       m_cGeom       (0),
@@ -127,11 +128,12 @@ namespace dustbin {
 
         a_pNode->serializeAttributes(l_pAttr);
 
-        if (l_pAttr->existsAttribute("static"                                                  )) m_bStatic   = l_pAttr->getAttributeAsBool("static");
-        if (l_pAttr->existsAttribute("collides"                                                )) m_bCollides = l_pAttr->getAttributeAsBool("collides");
-        if (l_pAttr->existsAttribute(("DoesTrigger_" + std::to_string(a_iMaterial + 1)).c_str())) m_bTrigger  = l_pAttr->getAttributeAsBool(("DoesTrigger_" + std::to_string(a_iMaterial + 1)).c_str());
-        if (l_pAttr->existsAttribute(("Trigger_"     + std::to_string(a_iMaterial + 1)).c_str())) m_iTrigger  = l_pAttr->getAttributeAsInt (("Trigger_"     + std::to_string(a_iMaterial + 1)).c_str());
-        if (l_pAttr->existsAttribute(("Respawn_"     + std::to_string(a_iMaterial + 1)).c_str())) m_bRespawn  = l_pAttr->getAttributeAsBool(("Respawn_"     + std::to_string(a_iMaterial + 1)).c_str());
+        if (l_pAttr->existsAttribute("static"                                                           )) m_bStatic     = l_pAttr->getAttributeAsBool("static");
+        if (l_pAttr->existsAttribute("collides"                                                         )) m_bCollides   = l_pAttr->getAttributeAsBool("collides");
+        if (l_pAttr->existsAttribute(("DoesTrigger_"     + std::to_string(a_iMaterial + 1)).c_str())) m_bTrigger    = l_pAttr->getAttributeAsBool(("DoesTrigger_" + std::to_string(a_iMaterial + 1)).c_str());
+        if (l_pAttr->existsAttribute(("Trigger_"         + std::to_string(a_iMaterial + 1)).c_str())) m_iTrigger    = l_pAttr->getAttributeAsInt (("Trigger_"     + std::to_string(a_iMaterial + 1)).c_str());
+        if (l_pAttr->existsAttribute(("Respawn_"         + std::to_string(a_iMaterial + 1)).c_str())) m_bRespawn    = l_pAttr->getAttributeAsBool(("Respawn_"     + std::to_string(a_iMaterial + 1)).c_str());
+        if (l_pAttr->existsAttribute("CollideMarbleOnly"                                                )) m_bMarbleOnly = l_pAttr->getAttributeAsBool("CollideMarbleOnly");
 
         l_pAttr->drop();
       }

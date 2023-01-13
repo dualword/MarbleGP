@@ -14,10 +14,11 @@ namespace dustbin {
 
     CPhysicsNode::CPhysicsNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) :
       ISceneNode (a_pParent, a_pMgr, a_iId),
-      m_bCollides(true),
-      m_bStatic  (true),
-      m_fMass    (1.0),
-      m_eType    (enNodeType::Trimesh)
+      m_bCollides  (true),
+      m_bStatic    (true),
+      m_bMarbleOnly(false),
+      m_fMass      (1.0),
+      m_eType      (enNodeType::Trimesh)
     {
       m_cBox.reset(getPosition());
       sceneNodeIdUsed(a_iId);
@@ -57,6 +58,8 @@ namespace dustbin {
       a_pOut->addBool ("static"  , m_bStatic  );
       a_pOut->addBool ("collides", m_bCollides);
 
+      a_pOut->addBool("CollideMarbleOnly", m_bMarbleOnly);
+
       if (!m_bStatic)
         a_pOut->addFloat("mass", m_fMass);
 
@@ -86,6 +89,9 @@ namespace dustbin {
 
         if (a_pIn->existsAttribute("collides"))
           m_bCollides = a_pIn->getAttributeAsBool("collides");
+
+        if (a_pIn->existsAttribute("CollideMarbleOnly"))
+          m_bMarbleOnly = a_pIn->getAttributeAsBool("CollideMarbleOnly");
 
         if (a_pIn->existsAttribute("mass"))
           m_fMass = a_pIn->getAttributeAsFloat("mass");
@@ -156,6 +162,10 @@ namespace dustbin {
 
     bool CPhysicsNode::isStatic() {
       return m_bStatic;
+    }
+
+    bool CPhysicsNode::collidesWithMarblesOnly() {
+      return m_bMarbleOnly;
     }
 
     irr::f32 CPhysicsNode::getMass() {

@@ -58,6 +58,7 @@ namespace dustbin {
         bool m_bRespawn;      /**< Does the collision of a marble with this object respawn the marble? */
         bool m_bSliderJoint;  /**< Is the joint attached to the object (if any) a slider? */
         bool m_bMarbleTouch;  /**< This object has a "Marble Touch" trigger */
+        bool m_bMarbleOnly;   /**< This object does only collide with marbles */
 
         int m_iTrigger;
 

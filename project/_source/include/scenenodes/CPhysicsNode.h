@@ -27,8 +27,9 @@ namespace dustbin {
         std::vector<std::tuple<bool, irr::u8> > m_vTrigger; /**< Every material of the parent node can produce a trigger */
         std::vector<bool>                       m_vRespawn; /**< Respawn flag for every material */
 
-        bool m_bCollides, /**< Does this object collide. If not it can still produce triggers */
-             m_bStatic;   /**< Is this a static object? */
+        bool m_bCollides;     /**< Does this object collide. If not it can still produce triggers */
+        bool m_bStatic;       /**< Is this a static object? */
+        bool m_bMarbleOnly;   /**< Does this object only collide with marbles? */
 
         float m_fMass;  /**< Mass of the object, only used for non-static objects */
 
@@ -55,6 +56,7 @@ namespace dustbin {
 
         enNodeType getNodeType();
         bool isStatic();
+        bool collidesWithMarblesOnly();
         irr::f32 getMass();
     };
   }

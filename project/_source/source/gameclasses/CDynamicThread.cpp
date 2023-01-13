@@ -80,6 +80,9 @@ namespace dustbin {
         CObject *l_pOdeNode1 = (CObject*)dGeomGetData(a_iGeom1);
         CObject *l_pOdeNode2 = (CObject*)dGeomGetData(a_iGeom2);
 
+        if ((l_pOdeNode1->getType() != enObjectType::Marble && l_pOdeNode2->m_bMarbleOnly) || (l_pOdeNode2->getType() != enObjectType::Marble && l_pOdeNode1->m_bMarbleOnly))
+          return;
+
         bool l_bMarbleCollision = l_pOdeNode1->getType() == enObjectType::Marble && l_pOdeNode2->getType() == enObjectType::Marble;
 
         // If two marbles collide we need some sort of "special" surface parameters
@@ -160,6 +163,9 @@ namespace dustbin {
         irr::u32 numc = dCollide(a_iGeom1, a_iGeom2, MAX_CONTACTS, &l_cContact[0].geom, sizeof(dContact));
 
         if (!l_bMarbleCollision) {
+          for (int i = 0; i < numc; i++) {
+            
+          }
           if (numc > 0) {
             CObjectMarble *p = nullptr; // The colliding marble
             CObject       *o = nullptr; // Trigger or respawn object
