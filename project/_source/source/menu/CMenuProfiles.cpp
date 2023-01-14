@@ -113,7 +113,7 @@ namespace dustbin {
               case controller::CControllerBase::enInputType::JoyAxis:
               case controller::CControllerBase::enInputType::JoyButton:
               case controller::CControllerBase::enInputType::JoyPov:
-                if (m_pControl != nullptr) m_pControl->setText(L"Controls: Joystick");
+                if (m_pControl != nullptr) m_pControl->setText(L"Controls: Gamepad");
                 break;
 
               case controller::CControllerBase::enInputType::Key:
