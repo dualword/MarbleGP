@@ -86,14 +86,14 @@ namespace dustbin {
         * Serialize the settings
         * @return a serialized string with the controller settings
         */
-        std::string serialize();
+        virtual std::string serialize();
 
         /**
         * Fill the controller from a serialized string. If the vector of controllers is empty
         * it will be filled, otherwise the corresponding items will be updated
         * @param a_sData the serialized string to load the data from
         */
-        void deserialize(const std::string a_sData);
+        virtual void deserialize(const std::string a_sData);
 
         /**
         * Update a control item with the values of the parameter. The name of the

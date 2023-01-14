@@ -163,9 +163,6 @@ namespace dustbin {
         irr::u32 numc = dCollide(a_iGeom1, a_iGeom2, MAX_CONTACTS, &l_cContact[0].geom, sizeof(dContact));
 
         if (!l_bMarbleCollision) {
-          for (int i = 0; i < numc; i++) {
-            
-          }
           if (numc > 0) {
             CObjectMarble *p = nullptr; // The colliding marble
             CObject       *o = nullptr; // Trigger or respawn object

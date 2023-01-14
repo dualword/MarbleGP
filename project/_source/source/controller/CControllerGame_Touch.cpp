@@ -36,7 +36,7 @@ namespace dustbin {
         createThrottleControls(true);
       }
       else if (a_eType == IControllerGame::enType::TouchSteer) {
-        int l_iHeightOffset = 2 * l_cTouchSize.Height;
+        int l_iHeightOffset = 4 * l_cTouchSize.Height;
 
         irr::core::recti l_cScreenRect = irr::core::recti(irr::core::vector2di(0, (l_cScreen.Height - l_cTouchSize.Height) / 2), l_cTouchSize);
         irr::core::recti l_cTouchRect  = irr::core::recti(irr::core::vector2di(0, l_iHeightOffset), irr::core::dimension2du(l_cScreen.Width / 3, l_cScreen.Height - l_iHeightOffset));
@@ -53,6 +53,11 @@ namespace dustbin {
 
         l_cScreenRect = irr::core::recti(irr::core::vector2di(l_cScreen.Width - l_cTouchSize.Width, 0), l_cTouchSize);
         m_aControls[(int)enControls::Respawn] = new STouchInput("data/images/ctrl_respawn_off.png", "data/images/ctrl_respawn.png", l_cScreenRect, l_cScreenRect, m_pDrv);
+
+        l_cScreenRect = irr::core::recti(irr::core::vector2di(0, l_cScreen.Height - l_cTouchSize.Height), l_cTouchSize);
+        l_cTouchRect  = irr::core::recti(irr::core::vector2di(0, l_cScreen.Height - 2 * l_cTouchSize.Height), irr::core::dimension2di(l_cScreen.Width, 2 * l_cTouchSize.Height));
+
+        m_aControls[(int)enControls::Brake] = new STouchInput("data/images/ctrl_brake_off.png", "data/images/ctrl_brake.png",l_cScreenRect,l_cTouchRect,m_pDrv);
       }
     }
 

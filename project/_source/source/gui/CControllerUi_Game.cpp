@@ -20,8 +20,6 @@ namespace dustbin {
     * @param a_pParent the parent element. The outbox of this element will be used for the UI
     */
     void CControllerUi_Game::buildUi(irr::gui::IGUIElement* a_pParent) {
-      printf("Build UI: %i, %i - %i, %i\n", AbsoluteClippingRect.UpperLeftCorner.X, AbsoluteClippingRect.UpperLeftCorner.Y, AbsoluteClippingRect.LowerRightCorner.X, AbsoluteClippingRect.LowerRightCorner.Y);
-
       if (m_pBackground != nullptr) {
         // Calculate the drawing rect
         irr::f32 l_fRatio  = (irr::f32)m_pBackground->getSize().Width / (irr::f32)m_pBackground->getSize().Height;
@@ -109,5 +107,23 @@ namespace dustbin {
       return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiGameId;
     }
 
+
+    /**
+    * Fill the controller from a serialized string. If the vector of controllers is empty
+    * it will be filled, otherwise the corresponding items will be updated
+    * @param a_sData the serialized string to load the data from
+    */
+    void CControllerUi_Game::deserialize(const std::string a_sData) {
+      std::string l_sData = a_sData;
+      if (l_sData == "" || l_sData.substr(0, std::string("DustbinController").size()) != "DustbinController") {
+#ifdef _ANDROID
+        l_sData = "DustbinController;control;JoyButton;Forward;Gamepad;M;a;j;a;-0md;b;control;JoyButton;Backward;Gamepad;O;a;i;c;-0md;b;control;JoyAxis;Left;Gamepad;L;a;a;a;-0md;-b;control;JoyAxis;Right;Gamepad;N;a;a;a;-0md;b;control;JoyButton;Brake;Gamepad;G;a;a;a;-0md;b;control;JoyButton;Rearview;Gamepad;j;a;g;a;-0md;b;control;JoyButton;Respawn;Gamepad;n;a;h;a;-0md;b;control;JoyButton;Pause;Gamepad;t;a;m;a;-SN;b;control;JoyButton;Cancel%20Race;Gamepad;B;a;n;a;-SN;b";
+#else
+        // Default controls for new player
+        l_sData = "DustbinController;control;Key;Forward;Controller%20%28GAME%20FOR%20WINDOWS%29;M;a;a;a;-0md;b;control;Key;Backward;Controller%20%28GAME%20FOR%20WINDOWS%29;O;a;a;c;-0md;b;control;Key;Left;Controller%20%28GAME%20FOR%20WINDOWS%29;L;a;a;a;-0md;-b;control;Key;Right;Controller%20%28GAME%20FOR%20WINDOWS%29;N;a;a;a;-0md;b;control;Key;Brake;Controller%20%28GAME%20FOR%20WINDOWS%29;G;a;a;a;-0md;b;control;Key;Rearview;Controller%20%28GAME%20FOR%20WINDOWS%29;j;a;e;a;-0md;b;control;Key;Respawn;Controller%20%28GAME%20FOR%20WINDOWS%29;n;a;f;a;-0md;b";
+#endif
+      }
+      CControllerBase::deserialize(l_sData);
+    }
   }
 }

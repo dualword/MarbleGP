@@ -170,7 +170,11 @@ namespace dustbin {
       m_pSmall       (nullptr),
       m_pMenuMgr     (nullptr),
       m_sSelected    (""),
+#ifdef _ANDROID
+      m_sConfigData("DustbinController;control;JoyPov;Up;Gamepad;M;a;a;a;a;b;control;JoyPov;Down;Gamepad;O;a;a;a;qze;b;control;JoyPov;Left;Gamepad;L;a;a;a;4Lg;b;control;JoyPov;Right;Gamepad;N;a;a;a;Omc;b;control;JoyButton;Enter;Gamepad;G;a;a;a;a;b;control;JoyButton;Ok;Gamepad;n;a;m;a;a;b;control;JoyButton;Cancel;Gamepad;B;a;n;a;a;b"),
+#else
       m_sConfigData  (""),
+#endif
       m_bJoyOld      (false)
     {
       m_pFont  = CGlobal::getInstance()->getFont(enFont::Regular, CGlobal::getInstance()->getVideoDriver()->getScreenSize());
@@ -498,22 +502,25 @@ namespace dustbin {
     * @return a readable string of the set controls
     */
     std::wstring CControllerUi::getControlText(CControllerBase::SCtrlInput* a_pCtrl) {
-      switch (a_pCtrl->m_eType) {
-        case enInputType::JoyAxis:
-          return L"Axis " + std::to_wstring(a_pCtrl->m_iAxis) + (a_pCtrl->m_iDirection > 0 ? L"+" : L"-");
+      if (a_pCtrl != nullptr) {
+        switch (a_pCtrl->m_eType) {
+          case enInputType::JoyAxis:
+            return L"Axis " + std::to_wstring(a_pCtrl->m_iAxis) + (a_pCtrl->m_iDirection > 0 ? L"+" : L"-");
           
-        case enInputType::JoyButton:
-          return L"Button " + std::to_wstring(a_pCtrl->m_iButton);
+          case enInputType::JoyButton:
+            return L"Button " + std::to_wstring(a_pCtrl->m_iButton);
 
-        case enInputType::JoyPov:
-          return L"POV " + std::to_wstring(a_pCtrl->m_iPov);
+          case enInputType::JoyPov:
+            return L"POV " + std::to_wstring(a_pCtrl->m_iPov);
 
-        case enInputType::Key:
-          return keyCodeToString(a_pCtrl->m_eKey);
+          case enInputType::Key:
+            return keyCodeToString(a_pCtrl->m_eKey);
 
-        default:
-          return L"";
+          default:
+            return L"";
+        }
       }
+      else return L"";
     }
 
     /**

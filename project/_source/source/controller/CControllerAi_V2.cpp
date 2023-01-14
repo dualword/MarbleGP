@@ -90,7 +90,7 @@ namespace dustbin {
         for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator l_itNodes = a_pNode->getChildren().begin(); l_itNodes != a_pNode->getChildren().end(); l_itNodes++) {
           if ((*l_itNodes)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_AiPathNodeId) {
             a_vNodes.push_back(reinterpret_cast<scenenodes::CAiPathNode *>(*l_itNodes));
-            printf("Single AI node found, adding to list [%i, %i]\n", l_iAiHelp, (*l_itNodes)->getID());
+            // printf("Single AI node found, adding to list [%i, %i]\n", l_iAiHelp, (*l_itNodes)->getID());
             break;
           }
         }
@@ -102,7 +102,7 @@ namespace dustbin {
 
             if (l_pNode->isAiHelpNode() == a_bAiHelp) {
               a_vNodes.push_back(l_pNode);
-              printf("Special AI help node found, adding.\n");
+              // printf("Special AI help node found, adding.\n");
               break;
             }
           }
@@ -159,8 +159,8 @@ namespace dustbin {
         }
       }
 
-      if (a_bSelectStartupPath && l_pCurrent->m_eType == scenenodes::CAiPathNode::enSegmentType::Startup)
-        printf("Startup path selected.\n");
+      // if (a_bSelectStartupPath && l_pCurrent->m_eType == scenenodes::CAiPathNode::enSegmentType::Startup)
+      //   printf("Startup path selected.\n");
 
       return l_pCurrent;
     }
@@ -243,7 +243,7 @@ namespace dustbin {
 
       findAiPathNodes(l_pGlobal->getSceneManager()->getRootSceneNode(), m_bAiHelp, l_vAiNodes);
 
-      printf("%i AI path nodes found.\n", (int)l_vAiNodes.size());
+      // printf("%i AI path nodes found.\n", (int)l_vAiNodes.size());
 
       int l_iIndex = 0;
       int l_iNoNxt = 0;
@@ -254,8 +254,8 @@ namespace dustbin {
 
         if ((*l_itPath)->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_CheckpointNodeId)
           l_pParent = reinterpret_cast<scenenodes::CCheckpointNode *>((*l_itPath)->getParent());
-        else
-          printf("Parent is not a checkpoint!\n");
+        // else
+        //   printf("Parent is not a checkpoint!\n");
 
         // Iterate the AI Path sections stored in the AI path nodes
         for (std::vector<scenenodes::CAiPathNode::SAiPathSection*>::const_iterator l_itSection = (*l_itPath)->m_vSections.begin(); l_itSection != (*l_itPath)->m_vSections.end(); l_itSection++) {
@@ -393,13 +393,13 @@ namespace dustbin {
             (*l_itThis)->m_vNext.push_back(std::get<1>(l_tNextOptions));
           }
           else {
-            printf("No next nodes found for AI path section %i (%i next checkpoints)\n", (*l_itThis)->m_iIndex, (int)(*l_itThis)->m_vCheckpoints.size());
+            // printf("No next nodes found for AI path section %i (%i next checkpoints)\n", (*l_itThis)->m_iIndex, (int)(*l_itThis)->m_vCheckpoints.size());
             l_iNoNxt++;
           }
         }
       }
 
-      printf("%i AI path sections found [%i sections without links].\n", (int)m_vAiPath.size(), l_iNoNxt);
+      // printf("%i AI path sections found [%i sections without links].\n", (int)m_vAiPath.size(), l_iNoNxt);
 
       // Now we calculate the next 500+ meters for all AI path sections
       for (std::vector<SAiPathSection*>::iterator l_itThis = m_vAiPath.begin(); l_itThis != m_vAiPath.end(); l_itThis++) {
@@ -424,8 +424,8 @@ namespace dustbin {
         }
       }
 
-      printf("%i unlinked sections found.\n", l_iZeroLinks);
-      printf("Ready.");
+      // printf("%i unlinked sections found.\n", l_iZeroLinks);
+      // printf("Ready.");
 
       for (int i = 0; i < (int)enSkill::Count; i++)
         m_iSkills[i] = 0;
@@ -435,7 +435,7 @@ namespace dustbin {
     }
 
     CControllerAi_V2::~CControllerAi_V2() {
-      printf("Deleting AI data.\n");
+      // printf("Deleting AI data.\n");
       while (m_vAiPath.size() > 0) {
         SAiPathSection *p = *m_vAiPath.begin();
         m_vAiPath.erase(m_vAiPath.begin());
@@ -478,13 +478,13 @@ namespace dustbin {
         for (auto& l_itPath : m_vAiPath) {
           if (l_itPath->m_eType == scenenodes::CAiPathNode::enSegmentType::Respawn && m_iLastCheckpoint == l_itPath->m_iRespawn) {
             m_pCurrent = l_itPath;
-            printf("Found respawn section: %i (%.2f, %.2f, %.2f)\n", m_pCurrent->m_iIndex, m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
+            // printf("Found respawn section: %i (%.2f, %.2f, %.2f)\n", m_pCurrent->m_iIndex, m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
             break;
           }
         }
 
-        if (m_pCurrent == nullptr)
-          printf("No suitable respawn section found.\n");
+        // if (m_pCurrent == nullptr)
+        //   printf("No suitable respawn section found.\n");
 
         m_iRespawn++;
         rollDice();
@@ -695,7 +695,7 @@ namespace dustbin {
           // First we check if we would reach the blocker within a second
           irr::f32 l_fDist = a_pSpecial->m_cLines[0].start.getDistanceFrom(irr::core::vector2df());
           if (l_fDist < a_fVel) {
-            printf("%s (%i)\n", m_pLuaScript != nullptr ? "Script" : "Nope", a_pSpecial->m_pParent->m_pParent->m_iTag);
+            // printf("%s (%i)\n", m_pLuaScript != nullptr ? "Script" : "Nope", a_pSpecial->m_pParent->m_pParent->m_iTag);
             // If so we need to ask the LUA script on whether or not the blocker is currently blocking the road and...
             if (m_pLuaScript != nullptr && (m_cAiData.m_iRoadBlock >= 100 || m_iSkills[(int)enSkill::RoadBlock] < m_cAiData.m_iRoadBlock)) {
               int l_bBlock = m_pLuaScript->decide_blocker(m_iMarbleId, a_pSpecial->m_pParent->m_pParent->m_iTag);

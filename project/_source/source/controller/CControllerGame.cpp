@@ -9,6 +9,17 @@ namespace dustbin {
     CControllerGame::CControllerGame() : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false) {
       SCtrlInput l_cInput;
 
+#ifdef _ANDROID
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 1;                             l_cInput.m_sName = "Forward"    ; m_vControls.push_back(l_cInput);  // 0 == forward
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 2;                             l_cInput.m_sName = "Backward"   ; m_vControls.push_back(l_cInput);  // 1 == backward
+      l_cInput.m_eType = enInputType::JoyAxis  ; l_cInput.m_iAxis   = 0; l_cInput.m_iDirection = -1; l_cInput.m_sName = "Left"       ; m_vControls.push_back(l_cInput);  // 2 == left
+      l_cInput.m_eType = enInputType::JoyAxis  ; l_cInput.m_iAxis   = 0; l_cInput.m_iDirection =  1; l_cInput.m_sName = "Right"      ; m_vControls.push_back(l_cInput);  // 3 == right
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 0;                             l_cInput.m_sName = "Brake"      ; m_vControls.push_back(l_cInput);  // 4 == brake
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 4;                             l_cInput.m_sName = "Rearview"   ; m_vControls.push_back(l_cInput);  // 5 == rearview
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 5;                             l_cInput.m_sName = "Respawn"    ; m_vControls.push_back(l_cInput);  // 6 == respawn
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 7;                             l_cInput.m_sName = "Pause"      ; m_vControls.push_back(l_cInput);  // 7 == pause
+      l_cInput.m_eType = enInputType::JoyButton; l_cInput.m_iButton = 6;                             l_cInput.m_sName = "Cancel Race"; m_vControls.push_back(l_cInput);  // 8 == cancel race
+#else
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_UP    ; l_cInput.m_sName = "Forward"    ; m_vControls.push_back(l_cInput);  // 0 == forward
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_DOWN  ; l_cInput.m_sName = "Backward"   ; m_vControls.push_back(l_cInput);  // 1 == backward
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_LEFT  ; l_cInput.m_sName = "Left"       ; m_vControls.push_back(l_cInput);  // 2 == left
@@ -18,6 +29,7 @@ namespace dustbin {
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_RETURN; l_cInput.m_sName = "Respawn"    ; m_vControls.push_back(l_cInput);  // 6 == respawn
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_PAUSE ; l_cInput.m_sName = "Pause"      ; m_vControls.push_back(l_cInput);  // 7 == pause
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_ESCAPE; l_cInput.m_sName = "Cancel Race"; m_vControls.push_back(l_cInput);  // 8 == cancel race
+#endif
     }
 
     CControllerGame::~CControllerGame() {

@@ -100,7 +100,7 @@ namespace dustbin {
           }
           else if (l_sCtrl == "DustbinTouchSteerOnly") {
             if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Touch Steer Only (High AI Help)");
+              m_pControl->setText(L"Controls: Touch Steer Only (Medius / High AI Help)");
           }
           else if (l_sCtrl == "DustbinGyroscope") {
             if (m_pControl != nullptr)
@@ -590,6 +590,12 @@ namespace dustbin {
         void updateControlDialog() {
           if (m_aProfiles[m_iEditing].isValid()) {
             std::string s = m_aProfiles[m_iEditing].m_cData.m_sControls;
+
+#ifdef _ANDROID
+            if (s == "")
+              s = "DustbinTouchSteerOnly";
+#endif
+
             if (s != "") {
               std::tuple<std::string, std::string> l_sCtrl[] = {
                 std::make_tuple("DustbinController"     , "controller_ui"              ),
@@ -1137,6 +1143,8 @@ namespace dustbin {
                           m_aProfiles[i + 1].m_pAddProfile->setVisible(true);
                           m_aProfiles[i + 1].m_pDataRoot  ->setVisible(false);
                         }
+
+                        m_aProfiles[i].fillUI();
                       }
                     }
                   }
@@ -1312,6 +1320,10 @@ namespace dustbin {
                   }
                   else if (a_cEvent.GUIEvent.Caller == m_pCtrlType) {
                     std::string l_sSelected = "";
+
+                    if (m_pCtrlType->getSelected() == 0) {
+                      reinterpret_cast<gui::CControllerUi_Game *>(m_mCtrlTypes["controller_ui"])->deserialize(m_aProfiles[m_iEditing].m_cData.m_sControls);
+                    }
 
                     switch (m_pCtrlType->getSelected()) {
                       case 0: l_sSelected = "controller_ui"              ; break;

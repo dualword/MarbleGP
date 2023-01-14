@@ -25,6 +25,13 @@ namespace dustbin {
         virtual void buildUi(irr::gui::IGUIElement *a_pParent) override;
 
         virtual irr::gui::EGUI_ELEMENT_TYPE getType() override;
+
+        /**
+        * Fill the controller from a serialized string. If the vector of controllers is empty
+        * it will be filled, otherwise the corresponding items will be updated
+        * @param a_sData the serialized string to load the data from
+        */
+        virtual void deserialize(const std::string a_sData) override;
     };
   }
 }
