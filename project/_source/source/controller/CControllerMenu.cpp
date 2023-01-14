@@ -37,7 +37,8 @@ namespace dustbin {
       m_pTimer        (CGlobal::getInstance()->getIrrlichtDevice()->getTimer()),
       m_iZLayer       (a_iZLayer),
       m_pSelected     (nullptr),
-      m_sEditChars    (L"")
+      m_sEditChars    (L""),
+      m_pCursorTexture(nullptr)
     {
       SCtrlInput l_cInput;
 
@@ -55,6 +56,10 @@ namespace dustbin {
 
       m_pArrows[0] = m_pDrv->getTexture("data/images/arrow_up.png"  );
       m_pArrows[1] = m_pDrv->getTexture("data/images/arrow_down.png");
+
+#ifdef _ANDROID
+      m_pCursorTexture = m_pDrv->getTexture("data/images/cursor.png");
+#endif
 
       m_cScreen = m_pDrv->getScreenSize();
 
@@ -687,9 +692,8 @@ namespace dustbin {
       if (m_pCursor != nullptr)
         m_cMousePos = m_pCursor->getPosition();
 
-      if (m_pCursor == nullptr && m_bVisible) {
-        m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF,    0,    0,    0), irr::core::recti(m_cMousePos - irr::core::position2di(24, 24), irr::core::dimension2du(48, 48)));
-        m_pGui->getVideoDriver()->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), irr::core::recti(m_cMousePos - irr::core::position2di(16, 16), irr::core::dimension2du(32, 32)));
+      if (m_pCursor == nullptr && m_bVisible && m_pCursorTexture != nullptr) {
+        m_pDrv->draw2DImage(m_pCursorTexture, irr::core::recti(m_cMousePos, irr::core::dimension2du(2 * m_iRaster, 2 * m_iRaster)), irr::core::recti(irr::core::position2di(0, 0), m_pCursorTexture->getOriginalSize()), nullptr, nullptr, true);
       }
 
       if (m_bDebug) {

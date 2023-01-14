@@ -58,6 +58,7 @@ namespace dustbin {
         irr::u32 m_aNextEvent[4];   /**< Timestamp of the last movement events */
 
         irr::video::ITexture *m_pArrows[2];
+        irr::video::ITexture *m_pCursorTexture;   /**< The cursor for Android */
 
         std::map<int, std::vector<irr::gui::IGUIElement *>> m_mRows;    /**< The rows of items */
         std::map<int, std::vector<irr::gui::IGUIElement *>> m_mCols;    /**< The columns of items */
