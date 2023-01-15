@@ -128,10 +128,12 @@ namespace dustbin {
             std::string l_sPrefix  = m_cData.m_sTexture.substr(0, l_iPos );
             if (l_sPrefix == "file" || l_sPrefix == "imported")
               m_pTextureType->setText(L"Imported");
-            else if (l_sPrefix == "generate")
+            else if (l_sPrefix == "generate") {
               m_pTextureType->setText(L"Generated");
-            else
+            }
+            else {
               m_pTextureType->setText(L"Default");
+            }
           }
 
           updateAiHelp();
@@ -215,8 +217,13 @@ namespace dustbin {
 
             std::map<std::string, std::string> l_mParamaters = helpers::parseParameters(l_sType, m_aProfiles[m_iEditing].m_cData.m_sTexture);
 
-            if (l_sType == "default")
+            if (l_sType == "default") {
               m_pTextureMode->setSelected(0);
+              if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(false);
+              if (m_pTextureTabs[1] != nullptr) m_pTextureTabs[1]->setVisible(false);
+
+              if (m_pMore != nullptr) m_pMore->setVisible(false);
+            }
             else if (l_sType == "generate") {
               m_pTextureMode->setSelected(1);
               if (m_pTextureTabs[0] != nullptr) m_pTextureTabs[0]->setVisible(true);
