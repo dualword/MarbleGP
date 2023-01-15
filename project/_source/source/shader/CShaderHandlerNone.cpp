@@ -12,6 +12,10 @@ namespace dustbin {
 
     }
 
+    void CShaderHandlerNone::beginScene() {
+      m_pDrv->beginScene(true, true);
+    }
+
     void CShaderHandlerNone::renderScene(const irr::core::recti &a_cViewPort) {
       m_pDrv->setViewPort(a_cViewPort);
       m_pSmgr->drawAll();
