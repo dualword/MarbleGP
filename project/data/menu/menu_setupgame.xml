@@ -196,7 +196,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="Marbles3;Marbles2;MarbleGP" />
+              <attribute key="options" value="MarbleGP;Marbles2;Marbles3;Random" />
             </custom>
           </element>
           

@@ -418,9 +418,9 @@ namespace dustbin {
     }
 
     SGameSettings::SGameSettings() :
-      m_iRaceClass      (0),
+      m_iRaceClass      (2),
       m_iGridPos        (1),
-      m_iGridSize       (2),
+      m_iGridSize       (1),
       m_iAutoFinish     (0),
       m_bReverseGrid    (false),
       m_bRandomFirstRace(true),
@@ -460,7 +460,7 @@ namespace dustbin {
           }
         }
       }
-      else {
+      else if (a_sSerialized != "") {
         printf("Invalid game settings data.\n");
         return false;
       }

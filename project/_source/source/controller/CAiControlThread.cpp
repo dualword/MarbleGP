@@ -156,7 +156,14 @@ namespace dustbin {
 
     void CAiControlThread::addAiMarble(int a_iMarbleId, const std::string& a_sControls, const std::string &a_sAiScriptPath) {
       if (m_iNumberOfBots < 16) {
-        data::SPlayerData::enAiHelp l_eClass = data::SPlayerData::enAiHelp::BotMgp; // a_iMarbleId % 3 == 0 ? data::SPlayerData::enAiHelp::BotMgp : a_iMarbleId % 3 == 1 ? data::SPlayerData::enAiHelp::BotMb2 : data::SPlayerData::enAiHelp::BotMb3;
+        std::vector<std::string> l_vClass = helpers::splitString(a_sControls, '=');
+        std::string l_sClass = (a_iMarbleId % 3) == 2 ? "marble3" : (a_iMarbleId % 3 == 1) ? "marble2" : "marblegp";
+
+        if (l_vClass.size() >= 2) {
+          l_sClass = l_vClass[1];
+        }
+
+        data::SPlayerData::enAiHelp l_eClass = l_sClass == "marble3" ? data::SPlayerData::enAiHelp::BotMb3 : l_sClass == "marble2" ? data::SPlayerData::enAiHelp::BotMb2 : data::SPlayerData::enAiHelp::BotMgp;
         data::SMarbleAiData l_cAiData = data::SMarbleAiData(l_eClass);
 
         std::string l_sScriptFile = a_sAiScriptPath + "/ai.lua";

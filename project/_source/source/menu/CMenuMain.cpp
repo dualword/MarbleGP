@@ -69,10 +69,15 @@ namespace dustbin {
                 l_cData.m_iGridPos   = i;
                 l_cData.m_iPlayerId  = i + 1;
                 l_cData.m_sName      = "AI Demo Player #" + std::to_string(i + 1);
-                l_cData.m_sControls  = "ai_player";
                 l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
                 l_cData.m_sTexture   = "default://number=" + std::to_string(i + 1);
                 l_cData.m_sShortName = "Ai#" + std::to_string(i + 1);
+
+                switch (i % 3) {
+                  case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
+                  case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sName = "AI Marble3 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                  case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sName = "AI Marble2 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                }
 
                 l_cPlayers.m_vPlayers.push_back(l_cData);
               }

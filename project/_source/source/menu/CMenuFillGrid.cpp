@@ -107,6 +107,21 @@ namespace dustbin {
               l_cData.m_sTexture   = "default://number=" + std::to_string(l_cData.m_iGridPos + 1);
               l_cData.m_sShortName = "Ai#" + std::to_string(l_cData.m_iGridPos + 1);
 
+              switch (l_cSettings.m_iRaceClass) {
+                case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
+                case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sName = "AI Marble3 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sName = "AI Marble2 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                default: {
+                  int l_iClass = l_cData.m_iGridPos % 3;
+                  switch (l_iClass) {
+                    case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
+                    case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sName = "AI Marble3 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                    case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sName = "AI Marble2 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                  }
+                  break;
+                }
+              }
+
               l_vGrid.erase(l_vGrid.begin());
 
               l_cPlayers.m_vPlayers.push_back(l_cData);
