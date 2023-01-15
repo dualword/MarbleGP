@@ -134,17 +134,21 @@ namespace dustbin {
               m_pTextureType->setText(L"Default");
           }
 
-          if (m_pLblAiHelp != nullptr)
-            switch (m_cData.m_eAiHelp) {
-              case data::SPlayerData::enAiHelp::Off    : m_pLblAiHelp->setText(L"Off"              ); break;
-              case data::SPlayerData::enAiHelp::Display: m_pLblAiHelp->setText(L"Display"          ); break;
-              case data::SPlayerData::enAiHelp::Low    : m_pLblAiHelp->setText(L"Low"              ); break;
-              case data::SPlayerData::enAiHelp::Medium : m_pLblAiHelp->setText(L"Medium"           ); break;
-              case data::SPlayerData::enAiHelp::High   : m_pLblAiHelp->setText(L"High"             ); break;
-              case data::SPlayerData::enAiHelp::BotMgp : m_pLblAiHelp->setText(L"AI Bot (MarbleGP)"); break;
-              case data::SPlayerData::enAiHelp::BotMb2 : m_pLblAiHelp->setText(L"AI Bot (Marble2)" ); break;
-              case data::SPlayerData::enAiHelp::BotMb3 : m_pLblAiHelp->setText(L"AI Bot (Marble3)" ); break;
-            }
+          updateAiHelp();
+        }
+      }
+
+      void updateAiHelp() {
+        if (m_pLblAiHelp != nullptr)
+          switch (m_cData.m_eAiHelp) {
+          case data::SPlayerData::enAiHelp::Off    : m_pLblAiHelp->setText(L"Off"              ); break;
+          case data::SPlayerData::enAiHelp::Display: m_pLblAiHelp->setText(L"Display"          ); break;
+          case data::SPlayerData::enAiHelp::Low    : m_pLblAiHelp->setText(L"Low"              ); break;
+          case data::SPlayerData::enAiHelp::Medium : m_pLblAiHelp->setText(L"Medium"           ); break;
+          case data::SPlayerData::enAiHelp::High   : m_pLblAiHelp->setText(L"High"             ); break;
+          case data::SPlayerData::enAiHelp::BotMgp : m_pLblAiHelp->setText(L"AI Bot (MarbleGP)"); break;
+          case data::SPlayerData::enAiHelp::BotMb2 : m_pLblAiHelp->setText(L"AI Bot (Marble2)" ); break;
+          case data::SPlayerData::enAiHelp::BotMb3 : m_pLblAiHelp->setText(L"AI Bot (Marble3)" ); break;
         }
       }
     };
@@ -664,6 +668,8 @@ namespace dustbin {
             }
           }
           else m_aProfiles[m_iEditing].m_cData.m_sControls = m_pControllerUI->serialize();
+
+          m_aProfiles[m_iEditing].updateAiHelp();
 
           if (m_pControlDialog != nullptr) {
             m_pControlDialog->setVisible(false);
