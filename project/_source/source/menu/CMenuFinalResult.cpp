@@ -94,7 +94,7 @@ namespace dustbin {
               if (l_pMarble1 != nullptr) {
                 for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
-                    // l_pMarble1->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
+                    l_pMarble1->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
                     break;
                   }
                 }
