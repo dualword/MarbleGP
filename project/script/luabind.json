@@ -65,6 +65,48 @@
               { "name": "marbleid", "type": "int"      , "comment": "ID of the marble" },
               { "name": "upvector", "type": "SVector3d", "comment": "The new up-vector of the marble's camera" }
             ]
+          },
+          "getrotation": {
+            "comment": "Get the rotation of a scene node (Euler degrees)",
+            "arguments": [
+              { "name": "id", "type": "int", "comment": "ID of the physics object" }
+            ],
+            "return": { "type": "SVector3d", "comment": "Rotation vector of the object" }
+          },
+          "setrotation": {
+            "comment": "Set the rotation of a scene node (Euler degrees)",
+            "arguments": [
+              { "name": "id"      , "type": "int"      , "comment": "ID of the physics object" },
+              { "name": "rotation", "type": "SVector3d", "comment": "The new rotation of the object" }
+            ]
+          },
+          "setangularvel": {
+            "comment": "Set the angular velocity of a scene node (Euler degrees)",
+            "arguments": [
+              { "name": "id"      , "type": "int"      , "comment": "ID of the physics object" },
+              { "name": "velocity", "type": "SVector3d", "comment": "The new angular velocity of the object" }
+            ]
+          },
+          "sethistop": {
+            "comment": "Change the hi-stop of a joint attached to a physics body",
+            "arguments": [
+              { "name": "id"    , "type": "int"  , "comment": "ID of the physics object" },
+              { "name": "histop", "type": "float", "comment": "The new hi-stop value" }
+            ]
+          },
+          "setlostop": {
+            "comment": "Change the lo-stop of a joint attached to a physics body",
+            "arguments": [
+              { "name": "id"    , "type": "int"  , "comment": "ID of the physics object" },
+              { "name": "lostop", "type": "float", "comment": "The new lo-stop value" }
+            ]
+          },
+          "setjointaxis": {
+            "comment": "Set the axis of a joint attached to a physics body",
+            "arguments": [
+              { "name": "id"  , "type": "int"      , "comment": "ID of the physics object" },
+              { "name": "axis", "type": "SVector3d", "comment": "The new axis" }
+            ]
           }
         },
         "lua_none": {
@@ -93,6 +135,13 @@
               { "name": "id"      , "type": "int"      , "comment": "ID of the scene node" },
               { "name": "rotation", "type": "SVector3d", "comment": "The new rotation" }
             ]
+          },
+          "getrotation": {
+            "comment": "Get the rotation of a scene node (Euler degrees)",
+            "arguments": [
+              { "name": "id", "type": "int", "comment": "ID of the scene node" }
+            ],
+            "return": { "type": "SVector3d", "comment": "Rotation vector of the object" }
           },
           "setposition": {
             "comment": "Change the position of a scene node",
