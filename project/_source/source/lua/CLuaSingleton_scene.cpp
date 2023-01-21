@@ -20,6 +20,24 @@ namespace dustbin {
     }
 
     /**
+    * Get the rotation of a scene node (Euler degrees)
+    * @param ID of the scene node
+    */
+    SVector3d CLuaSingleton_scene::getrotation(int a_id) {
+      SVector3d l_cRet;
+      irr::scene::ISceneNode *l_pNode = findnode(a_id);
+
+      if (l_pNode != nullptr) {
+        irr::core::vector3df l_cRot = l_pNode->getRotation();
+        l_cRet.m_x = l_cRot.X;
+        l_cRet.m_y = l_cRot.Y;
+        l_cRet.m_z = l_cRot.Z;
+      }
+
+      return l_cRet;
+    }
+
+    /**
     * Change the position of a scene node
     * @param ID of the scene node
     * @param The new position
@@ -63,10 +81,8 @@ namespace dustbin {
         m_scenenodes.push_back(a_node);
       }
 
-      if (a_node->getType() != scenenodes::g_WorldNodeId) {
-        for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itNode = a_node->getChildren().begin(); l_itNode != a_node->getChildren().end(); l_itNode++) {
-          fillNodeVector(*l_itNode);
-        }
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itNode = a_node->getChildren().begin(); l_itNode != a_node->getChildren().end(); l_itNode++) {
+        fillNodeVector(*l_itNode);
       }
     }
 
