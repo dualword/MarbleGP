@@ -1137,7 +1137,7 @@ namespace dustbin {
     */
     bool CControllerAi_V2::getBestLine(irr::core::line2df& a_cLine, SPathLine2d* a_pEnd, SPathLine2d **a_pCollide) {
       while (a_pEnd != nullptr) {
-        bool l_bReturn = true;
+        bool l_bReturn = a_pEnd->m_cLines[0].end.Y < 0.0f;
         a_cLine.end = a_pEnd->m_cLines[0].end;
 
         SPathLine2d *l_pOther = a_pEnd;
