@@ -417,16 +417,16 @@ namespace dustbin {
       helpers::addToDebugLog("Setup grid...");
       m_fGridAngle = m_pGridNode->getAngle();
 
-      int  l_iGridOrder  = 0;
-      int  l_iAutoFinish = 0;
-      bool l_bGridRevert = false;
+      int  l_iGridOrder   = 0;
+      int  l_iAutoFinish  = 0;
+      bool l_bGridReverse = false;
 
       std::string l_sSettings = m_pGlobal->getSetting("gamesetup");
       if (l_sSettings != "") {
         data::SGameSettings l_cSettings;
         l_cSettings.deserialize(l_sSettings);
         l_iGridOrder  = l_cSettings.m_iGridPos;
-        l_bGridRevert = l_cSettings.m_bReverseGrid;
+        l_bGridReverse = l_cSettings.m_bReverseGrid;
         l_iAutoFinish = l_cSettings.m_iAutoFinish;
       }
 
@@ -497,14 +497,20 @@ namespace dustbin {
         }
       }
 
+      if (l_bGridReverse && l_iGridOrder != 3 && l_pLastRace != nullptr) {
+        for (auto &l_cPlayer: m_cPlayers.m_vPlayers) {
+          printf("Reverse Grid: %i ==> ", l_cPlayer.m_iGridPos);
+          l_cPlayer.m_iGridPos = (int)m_cPlayers.m_vPlayers.size() - 1 - l_cPlayer.m_iGridPos;
+          printf("%i (%s)\n", l_cPlayer.m_iGridPos, l_cPlayer.m_sName.c_str());
+        }
+        printf("Grid reversed.\n");
+      }
+
       helpers::addToDebugLog("Apply grid order...");
       // First we sort the player vector by the grid position as the first step will be marble assignment ..
       std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
         return a_cPlayer1.m_iGridPos < a_cPlayer2.m_iGridPos;
       });
-
-      if (l_bGridRevert && l_iGridOrder != 0 && l_pLastRace != nullptr)
-        std::reverse(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end());
 
       helpers::addToDebugLog("Create championship race struct...");
       m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
@@ -547,9 +553,9 @@ namespace dustbin {
           }
 
           helpers::addToDebugLog("  sort players");
-          std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
-            return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
-          });
+          // std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
+          //   return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
+          // });
 
           helpers::addToDebugLog("  Load physics script");
           std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
