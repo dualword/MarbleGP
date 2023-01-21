@@ -54,6 +54,7 @@ namespace dustbin {
               dJointSetHingeAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
               
               m_bSliderJoint = false;
+              m_iJoint = 0;
               break;
 
             case 1: // Slider Joint
@@ -62,7 +63,9 @@ namespace dustbin {
               // the axis is not calculated correctly!
               dJointAttach(m_cJoint, m_cBody, 0);
               dJointSetSliderAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
+
               m_bSliderJoint = true;
+              m_iJoint = 1;
               break;
 
             default:
@@ -92,7 +95,7 @@ namespace dustbin {
 
           if (l_pJoint->m_bUseLoStop) {
             if (l_pJoint->m_iType == 0)
-              dJointSetHingeParam(m_cJoint, dParamHiStop, l_pJoint->m_fHiStop);
+              dJointSetHingeParam(m_cJoint, dParamLoStop, l_pJoint->m_fLoStop);
             else
               dJointSetSliderParam(m_cJoint, dParamLoStop, l_pJoint->m_fLoStop);
           }
@@ -111,6 +114,7 @@ namespace dustbin {
       m_bMarbleTouch(false),
       m_bMarbleOnly (false),
       m_iTrigger    (-1),
+      m_iJoint      (-1),
       m_pWorld      (a_pWorld),
       m_cGeom       (0),
       m_cBody       (0),

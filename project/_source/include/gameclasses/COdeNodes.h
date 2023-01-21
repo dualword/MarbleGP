@@ -61,6 +61,7 @@ namespace dustbin {
         bool m_bMarbleOnly;   /**< This object does only collide with marbles */
 
         int m_iTrigger;
+        int m_iJoint;         /**< The joint type (0 == hinge, 1 == slider) */
 
         CWorld* m_pWorld;
 
