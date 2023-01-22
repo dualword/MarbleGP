@@ -1,13 +1,13 @@
 {
   "datatypes": [
-    { "name": "messages::IDynamicThread"  , "include": "_generated/messages/IDynamicThread.h"  },
-    { "name": "gameclasses::CWorld"       , "include": "gameclasses/COdeNodes.h" },
-    { "name": "gameclasses::CObject"      , "include": "gameclasses/COdeNodes.h" },
-    { "name": "gameclasses::CObjectMarble", "include": "gameclasses/COdeNodes.h" },
-    { "name": "irr::scene::ISceneManager" , "include": "irrlicht.h" },
-    { "name": "irr::scene::ISceneNode"    , "include": "irrlicht.h" },
-    { "name": "irr::io::IFileSystem"      , "include": "irrlicht.h" },
-    { "name": "irr::IrrlichtDevice"       , "include": "irrlicht.h" }
+    { "name": "gameclasses::CDynamicThread", "include": "gameclasses/CDynamicThread.h"  },
+    { "name": "gameclasses::CWorld"        , "include": "gameclasses/COdeNodes.h" },
+    { "name": "gameclasses::CObject"       , "include": "gameclasses/COdeNodes.h" },
+    { "name": "gameclasses::CObjectMarble" , "include": "gameclasses/COdeNodes.h" },
+    { "name": "irr::scene::ISceneManager"  , "include": "irrlicht.h" },
+    { "name": "irr::scene::ISceneNode"     , "include": "irrlicht.h" },
+    { "name": "irr::io::IFileSystem"       , "include": "irrlicht.h" },
+    { "name": "irr::IrrlichtDevice"        , "include": "irrlicht.h" }
   ],
   "baseclasses": {
   },
@@ -46,8 +46,9 @@
       "comment": "A physics singleton for LUA AI functions to modify the physics",
       "globalidentifier": "worldsingleton_cinstance",
       "members": [
-        { "name": "world"  , "type": "gameclasses::CWorld *"       , "comment": "The physics world"  , "default": "nullptr" },
-        { "name": "marbles", "type": "gameclasses::CObjectMarble *", "comment": "An array of marbles", "default": "nullptr", "arraysize": "16" }
+        { "name": "world"   , "type": "gameclasses::CWorld *"        , "comment": "The physics world"  , "default": "nullptr" },
+        { "name": "marbles" , "type": "gameclasses::CObjectMarble *" , "comment": "An array of marbles", "default": "nullptr", "arraysize": "16" },
+        { "name": "dynamics", "type": "gameclasses::CDynamicThread *", "comment": "The dynamics thread", "default": "nullptr" }
       ],
       "methods": {
         "lua_from": {
@@ -107,14 +108,23 @@
               { "name": "id"  , "type": "int"      , "comment": "ID of the physics object" },
               { "name": "axis", "type": "SVector3d", "comment": "The new axis" }
             ]
+          },
+          "sendluamessage": {
+            "comment": "Send a message to the LUA scripts for scene and AI",
+            "arguments": [
+              { "name": "NumberOne", "type": "int"        , "comment": "First number for any information" },
+              { "name": "NumberTwo", "type": "int"        , "comment": "Other number for any information" },
+              { "name": "Data"     , "type": "std::string", "comment": "String for any further information" }
+            ]
           }
         },
         "lua_none": {
           "setworld": {
             "comment": "Set the ODE world this singleton can modify",
             "arguments": [
-              { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The world" },
-              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "Array with the marbles" }
+              { "name": "world"      , "type": "gameclasses::CWorld *"        , "comment": "The world" },
+              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *" , "comment": "Array with the marbles" },
+              { "name": "dynamics"   , "type": "gameclasses::CDynamicThread *", "comment": "The dynamics thread running this script" }
             ]
           }
         }
@@ -149,6 +159,13 @@
               { "name": "id"      , "type": "int"      , "comment": "ID of the scene node" },
               { "name": "position", "type": "SVector3d", "comment": "The new position" }
             ]
+          },
+          "getposition": {
+            "comment": "Get the position of a scene node",
+            "arguments": [
+              { "name": "id", "type": "int", "comment": "ID of the scene node" }
+            ],
+            "return": { "type": "SVector3d", "comment": "Position of the object" }
           },
           "setvisible": {
             "comment": "Change the visibility of a scene node",
@@ -316,7 +333,8 @@
             "comment": "Tell the script about the world it's managing",
             "arguments": [
               { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The physics world" },
-              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "Array with the marbles" }
+              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "Array with the marbles" },
+              { "name": "dynamics"   , "type": "gameclasses::CDynamicThread *", "comment": "The dynamics thread running this script" }
             ]
           }
         }
@@ -395,6 +413,14 @@
             "arguments": [
               { "name": "marbleid", "type": "int", "comment": "ID of the player's marble" },
               { "name": "state"   , "type": "int", "comment": "Respawn state (1 == respawn start, 2 == camera respawn, 3 == respawn done)" }
+            ]
+          },
+          "onluamessage": {
+            "comment": "A LUA message was received from the physics LUA script",
+            "arguments": [
+              { "name": "NumberOne", "type": "int"        , "comment": "First number for any information" },
+              { "name": "NumberTwo", "type": "int"        , "comment": "Other number for any information" },
+              { "name": "Data"     , "type": "std::string", "comment": "String for any further information" }
             ]
           }
         },
@@ -479,6 +505,14 @@
               { "name": "tag"     , "type": "int", "comment": "Tag defined in the track file to identify the split" }
             ],
             "return": { "type": "bool", "comment": "true if the block can be passed, false otherwise", "default": "true" }
+          },
+          "onluamessage": {
+            "comment": "A LUA message was received from the physics LUA script",
+            "arguments": [
+              { "name": "NumberOne", "type": "int"        , "comment": "First number for any information" },
+              { "name": "NumberTwo", "type": "int"        , "comment": "Other number for any information" },
+              { "name": "Data"     , "type": "std::string", "comment": "String for any further information" }
+            ]
           }
         },
         "lua_from": {

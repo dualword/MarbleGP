@@ -160,11 +160,23 @@ namespace dustbin {
     }
 
     /**
+    * Send a message to the LUA scripts for scene and AI
+    * @param First number for any information
+    * @param Other number for any information
+    * @param String for any further information
+    */
+    void CLuaSingleton_physics::sendluamessage(int a_NumberOne, int a_NumberTwo, const std::string& a_Data) {
+      if (m_dynamics != nullptr)
+        m_dynamics->sendMessageFromLUA(a_NumberOne, a_NumberTwo, a_Data);
+    }
+
+    /**
     * Set the ODE world this singleton can modify
     * @param The world
     */
-    void CLuaSingleton_physics::setworld(gameclasses::CWorld *a_world, gameclasses::CObjectMarble * a_marbles[16]) {
-      m_world   = a_world;
+    void CLuaSingleton_physics::setworld(gameclasses::CWorld *a_world, gameclasses::CObjectMarble * a_marbles[16], gameclasses::CDynamicThread * a_dynamics) {
+      m_world    = a_world;
+      m_dynamics = a_dynamics;
       
       for (int i = 0; i < 16; i++)
         m_marbles[i] = a_marbles[i];

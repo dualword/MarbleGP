@@ -53,7 +53,8 @@
     [ "DiscoverServerResponse", "42" ],
     [ "DiscoveryStep"         , "43" ],
     [ "GameServerFound"       , "44" ],
-    [ "SetTexture"            , "45" ]
+    [ "SetTexture"            , "45" ],
+    [ "LuaMessage"            , "46" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -364,6 +365,14 @@
         { "name": "playerid", "type": "irr::u32"   , "comment": "The Player's ID" },
         { "name": "texture" , "type": "std::string", "comment": "The marble texture" }
       ]
+    },
+    "LuaMessage": {
+      "comment": "This type of message can be sent from the LUA physics script to the AI and HUD scripts for transferring virtualy any information",
+      "fields": [
+        { "name": "NumberOne", "type": "irr::s32"   , "comment": "First number for any information" },
+        { "name": "NumberTwo", "type": "irr::s32"   , "comment": "Other number for any information" },
+        { "name": "Data"     , "type": "std::string", "comment": "String for any further information" }
+      ]
     }
   },
   "interfaces": [
@@ -391,7 +400,8 @@
         "PlayerWithdrawn",
         "RaceResult",
         "EndRaceState",
-        "PlayerRemoved"
+        "PlayerRemoved",
+        "LuaMessage"
       ],
       "receive": [
         "MarbleControl",
@@ -430,7 +440,8 @@
         "RaceResult",
         "EndRaceState",
         "PlayerRemoved",
-        "PauseChanged"
+        "PauseChanged",
+        "LuaMessage"
       ]
     },
     {
@@ -465,7 +476,8 @@
         "PlayerRespawn",
         "Checkpoint",
         "RacePosition",
-        "PlayerFinished"
+        "PlayerFinished",
+        "LuaMessage"
       ]
     }
   ]

@@ -74,6 +74,13 @@ namespace dustbin {
          * @param Tag defined in the track file to identify the split
          */
         bool decide_blocker(int a_marbleid, int a_tag);
+        /**
+         * A LUA message was received from the physics LUA script
+         * @param First number for any information
+         * @param Other number for any information
+         * @param String for any further information
+         */
+        void onluamessage(int a_NumberOne, int a_NumberTwo, const std::string &a_Data);
     };
   }
 }

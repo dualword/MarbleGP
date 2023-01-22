@@ -49,6 +49,23 @@ namespace dustbin {
         l_pNode->setPosition(irr::core::vector3df((irr::f32)a_position.m_x, (irr::f32)a_position.m_y, (irr::f32)a_position.m_z));
       }
     }
+    /**
+    * Get the position of a scene node
+    * @param ID of the scene node
+    */
+    SVector3d CLuaSingleton_scene::getposition(int a_id) {
+      SVector3d l_cRet;
+      irr::scene::ISceneNode *l_pNode = findnode(a_id);
+
+      if (l_pNode != nullptr) {
+        irr::core::vector3df l_cRot = l_pNode->getAbsolutePosition();
+        l_cRet.m_x = l_cRot.X;
+        l_cRet.m_y = l_cRot.Y;
+        l_cRet.m_z = l_cRot.Z;
+      }
+
+      return l_cRet;
+    }
 
     /**
     * Change the visibility of a scene node
@@ -77,7 +94,9 @@ namespace dustbin {
     * @param the current node
     */
     void CLuaSingleton_scene::fillNodeVector(irr::scene::ISceneNode* a_node) {
-      if (a_node != m_scenemanager->getRootSceneNode() && a_node->getType() != scenenodes::g_WorldNodeId && a_node->getType() != irr::scene::ESNT_SKY_BOX) {
+      std::string l_sName = a_node->getName();
+
+      if (a_node->getType() == irr::scene::ESNT_MESH && l_sName.substr(0, std::string("Marble_").size()) != "Marble_") {
         m_scenenodes.push_back(a_node);
       }
 

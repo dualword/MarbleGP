@@ -96,6 +96,14 @@ namespace dustbin {
         */
         virtual void onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) override;
 
+        /**
+        * This function receives messages of type "LuaMessage"
+        * @param a_NumberOne First number for any information
+        * @param a_NumberTwo Other number for any information
+        * @param a_Data String for any further information
+        */
+        virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) override;
+
       public:
         CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn, scenenodes::CAiNode *a_pAiNode);
         virtual ~CAiControlThread();

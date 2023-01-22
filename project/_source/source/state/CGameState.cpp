@@ -1671,6 +1671,17 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "LuaMessage"
+    * @param a_NumberOne First number for any information
+    * @param a_NumberTwo Other number for any information
+    * @param a_Data String for any further information
+    */
+    void CGameState::onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string& a_Data) {
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onluamessage(a_NumberOne, a_NumberTwo, a_Data);
+    }
+
+    /**
     * This function receives messages of type "RacePosition"
     * @param a_MarbleId ID of the marble
     * @param a_Position Position of the marble

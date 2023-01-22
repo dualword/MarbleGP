@@ -1129,6 +1129,17 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "LuaMessage"
+    * @param a_NumberOne First number for any information
+    * @param a_NumberTwo Other number for any information
+    * @param a_Data String for any further information
+    */
+    void CControllerAi_V2::onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string& a_Data) {
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onluamessage(a_NumberOne, a_NumberTwo, a_Data);
+    }
+
+    /**
     * Get the best, i.e. not colliding with a border line, line in the path starting
     * from the startpoint of the "a_cLine" parameter
     * @param a_cLine [out] the best line, start is used as input

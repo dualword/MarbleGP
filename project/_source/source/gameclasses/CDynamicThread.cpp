@@ -841,7 +841,7 @@ namespace dustbin {
         m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
         if (m_pLuaScript->getError() == "") {
-          m_pLuaScript->setWorld(m_pWorld, m_aMarbles);
+          m_pLuaScript->setWorld(m_pWorld, m_aMarbles, this);
           m_pLuaScript->initialize();
         }
         else {
@@ -1149,6 +1149,16 @@ namespace dustbin {
         if (m_aMarbles[l_iIndex]->m_eState != gameclasses::CObjectMarble::enMarbleState::Withdrawn)
           m_aMarbles[l_iIndex]->m_eState = gameclasses::CObjectMarble::enMarbleState::Rolling;
       }
+    }
+
+    /**
+    * A function for the physics LUA script to send data to the AI and scene scripts
+    * @param a_iNumberOne first number
+    * @param a_iNumberTwo other number
+    * @param a_sData string data
+    */
+    void CDynamicThread::sendMessageFromLUA(int a_iNumberOne, int a_iNumbetTwo, const std::string& a_sData) {
+      sendLuamessage(a_iNumberOne, a_iNumbetTwo, a_sData, m_pOutputQueue);
     }
 
     /**

@@ -180,6 +180,14 @@ namespace dustbin {
         void startPlayer(int a_iMarble);
 
         /**
+        * A function for the physics LUA script to send data to the AI and scene scripts
+        * @param a_iNumberOne first number
+        * @param a_iNumberTwo other number
+        * @param a_sData string data
+        */
+        void sendMessageFromLUA(int a_iNumberOne, int a_iNumbetTwo, const std::string &a_sData);
+
+        /**
         * Get the race result
         * @return the race result
         */

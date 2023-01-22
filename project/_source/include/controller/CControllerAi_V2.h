@@ -586,6 +586,14 @@ namespace dustbin {
         * @return the render target texture for dice debugging
         */
         virtual irr::video::ITexture *getDebugDiceTexture() override;
+
+        /**
+        * This function receives messages of type "LuaMessage"
+        * @param a_NumberOne First number for any information
+        * @param a_NumberTwo Other number for any information
+        * @param a_Data String for any further information
+        */
+        virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) override;
     };
   }
 }
