@@ -125,7 +125,8 @@ namespace dustbin {
     * @param a_Data String for any further information
     */
     void CAiControlThread::onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string& a_Data) {
-
+      for (int i = 0; i < 16 && m_aControllers[i] != nullptr; i++)
+        m_aControllers[i]->onLuamessage(a_NumberOne, a_NumberTwo, a_Data);
     }
 
     /**

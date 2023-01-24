@@ -702,7 +702,6 @@ namespace dustbin {
 
               // ... if so we set the veclcity to zero, overriding any other calculation
               if (!l_bBlock) {
-                printf("Stop!\n");
                 m_fVCalc = 0.0f;
               }
             }
