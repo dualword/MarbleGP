@@ -85,6 +85,8 @@ function onstep(a_stepno)
     
     physics:startmotor(23526, g_KickData[g_KickState]["velocity"], 500)
     
+    physics:sendluamessage(3, g_KickState, "")
+    
     g_KickState = g_KickState + 1
     
     if g_KickData[g_KickState] == nil then
@@ -115,7 +117,7 @@ function onstep(a_stepno)
       physics:startmotor(23420, -g_GateVelocity, 500)
       g_GateState = 3
       
-      physics:sendluamessage(2, 1, "")
+      physics:sendluamessage(2, 2, "")
     end
   elseif g_GateState == 3 then
     if a_stepno % g_GateInterval == 0 then
@@ -123,7 +125,7 @@ function onstep(a_stepno)
       physics:startmotor(23420, g_GateVelocity, 500)
       g_GateState = 0
       
-      physics:sendluamessage(2, 1, "")
+      physics:sendluamessage(2, 3, "")
     end
   end
   
