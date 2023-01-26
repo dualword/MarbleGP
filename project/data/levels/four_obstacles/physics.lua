@@ -22,7 +22,7 @@ g_GateInterval = 240
 g_GateVelocity = 75
 g_GateState    = 0
 
-g_BlockInterval = 120
+g_BlockInterval = 240
 g_BlockVecocity = 150
 g_BlockState    = 1
 g_BlockStep     = 0

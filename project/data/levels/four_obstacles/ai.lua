@@ -1,7 +1,9 @@
 g_Blockers = {
   [1] = true,
   [2] = true,
-  [3] = true
+  [3] = true,
+  [4] = true,
+  [5] = true
 }
 
 g_Splits = {
@@ -16,10 +18,21 @@ g_GateState  = 0
 function onluamessage(a_NumberOne, a_NumberTwo, a_Data)
   -- io.write("onluamessage(" .. tostring(a_NumberOne) .. ", " .. tostring(a_NumberTwo) .. ", \"" .. a_Data .. "\")\n")
   if a_NumberOne == 0 then
+    io.write("onluamessage(" .. tostring(a_NumberOne) .. ", " .. tostring(a_NumberTwo) .. ", \"" .. a_Data .. "\")\n")
     if a_NumberTwo == 1 then
       g_Splits[34] = 0
+      
+      g_Blockers[3] = true
+      g_Blockers[4] = true
     elseif a_NumberTwo == 3 then
       g_Splits[34] = 1
+      
+      g_Blockers[3] = true
+      g_Blockers[4] = true
+    elseif a_NumberTwo == 0 then
+      g_Blockers[3] = false
+    else
+      g_Blockers[4] = false
     end
   elseif a_NumberOne == 1 then
     if a_NumberTwo % 3 == 0 then
@@ -53,6 +66,10 @@ function decide_blocker(a_MarbleId, a_Blocker)
   elseif a_Blocker == 12 then
     return g_Blockers[2]
   elseif a_Blocker == 13 then
+    return g_Blockers[3]
+  elseif a_Blocker == 93 then
+    return g_Blockers[4]
+  elseif a_Blocker == 94 then
     return g_Blockers[3]
   else
     
