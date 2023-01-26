@@ -107,7 +107,7 @@ namespace dustbin {
 
         void updateTrackFilter() {
           std::map<std::string, int> l_mCategoryScore = {
-            { "noob"   , 0 },
+            { "rookie" , 0 },
             { "flat"   , 1 },
             { "jump"   , 2 },
             { "loop"   , 3 },
