@@ -16,9 +16,7 @@ g_KickState  = 1
 g_GateState  = 0
 
 function onluamessage(a_NumberOne, a_NumberTwo, a_Data)
-  -- io.write("onluamessage(" .. tostring(a_NumberOne) .. ", " .. tostring(a_NumberTwo) .. ", \"" .. a_Data .. "\")\n")
   if a_NumberOne == 0 then
-    io.write("onluamessage(" .. tostring(a_NumberOne) .. ", " .. tostring(a_NumberTwo) .. ", \"" .. a_Data .. "\")\n")
     if a_NumberTwo == 1 then
       g_Splits[34] = 0
       
