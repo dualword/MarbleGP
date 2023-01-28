@@ -4,6 +4,7 @@
 #include <lua/luawrap.hpp>
 #include <lua/ILuaClass.h>
 #include <_generated/lua/CLuaSingleton_system.h>
+#include <_generated/lua/CLuaSingleton_ai.h>
 
 namespace dustbin {
   namespace lua {
@@ -17,6 +18,7 @@ namespace dustbin {
       protected:
 
         CLuaSingleton_system *m_LuaSgt_system;
+        CLuaSingleton_ai *m_LuaSgt_ai;
 
       private:
         void *getObjectFromLuaStack(const std::string &a_sIdentifier);
@@ -81,6 +83,10 @@ namespace dustbin {
          * @param String for any further information
          */
         void onluamessage(int a_NumberOne, int a_NumberTwo, const std::string &a_Data);
+        /**
+         * Get the AI LUA singleton
+         */
+        CLuaSingleton_ai * getsingleton();
     };
   }
 }

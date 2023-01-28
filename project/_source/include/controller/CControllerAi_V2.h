@@ -12,6 +12,7 @@
 namespace dustbin {
   namespace lua {
     class CLuaScript_ai;
+    class CLuaSingleton_ai;
   }
 
   namespace controller {
@@ -322,6 +323,7 @@ namespace dustbin {
         irr::core::vector2di      m_cOffset;        /**< Offset for debug rendering */
         irr::gui::IGUIFont       *m_pFont;          /**< Font for debug output */
         lua::CLuaScript_ai       *m_pLuaScript;     /**< AI LUA script for decisions */
+        lua::CLuaSingleton_ai    *m_pLuaSingleton;  /**< AI LUA singleton */
         irr::core::recti          m_cViewport;      /**< The viewport for optional debug output */
 
         irr::core::vector2df m_cVelocity2d; /**< The transformed velocity of the marble */
@@ -500,7 +502,7 @@ namespace dustbin {
         * @param a_iMarbleId the marble ID for this controller
         * @param a_sControls details about the skills of the controller
         * @param a_pMarbles an array of the 16 possible marbles, ID of -1 is not used
-        * @param a_pLuaScript an optional LUA script to help the C++ code make decirions
+        * @param a_pLuaScript an optional LUA script to help the C++ code make decisions
         * @param a_cViewport the viewport of the player, necessary for debug data output
         */
         CControllerAi_V2(int a_iMarbleId, const std::string &a_sControls, data::SMarblePosition *a_pMarbles, lua::CLuaScript_ai *a_pLuaScript, const irr::core::recti &a_cViewport);
@@ -535,6 +537,16 @@ namespace dustbin {
         * @param a_DeficitLeader Deficit of the marble on the leader in steps
         */
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) override;
+
+        /**
+        * Callback for object moved messages
+        * @param a_iObjectId ID of the object
+        * @param a_cPosition new position of the object
+        * @param a_cRotation new rotation of the object
+        * @param a_cVelLin linear velocity of the object
+        * @param a_fVelAng angular velocity of the object
+        */
+        virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cRotation, const irr::core::vector3df &a_fVelLin, float a_fVelAng) override;
 
         /**
         * A marble has finished

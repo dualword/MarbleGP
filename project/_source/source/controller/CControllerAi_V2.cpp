@@ -220,11 +220,15 @@ namespace dustbin {
       m_pDebugDiceRTT  (nullptr),
       m_pFont          (CGlobal::getInstance()->getFont(dustbin::enFont::Small, irr::core::dimension2du(a_cViewport.getWidth(), a_cViewport.getHeight()))),
       m_pLuaScript     (a_pLuaScript),
+      m_pLuaSingleton  (nullptr),
       m_cViewport      (a_cViewport),
       m_aMarbles       (a_pMarbles),
       m_p2dPath        (nullptr)
     {
       m_cAiData = data::SMarbleAiData(a_sControls);
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaSingleton = m_pLuaScript->getsingleton();
 
       if (m_cAiData.m_iMarbleClass == 0 || m_cAiData.m_iMarbleClass == 3)
         m_eAiMode = enAiMode::MarbleGP;
@@ -809,6 +813,19 @@ namespace dustbin {
         if (a_MarbleId == m_iMarbleId)
           m_iMyPosition = a_Position;
       }
+    }
+
+    /**
+    * Callback for object moved messages
+    * @param a_iObjectId ID of the object
+    * @param a_cPosition new position of the object
+    * @param a_cRotation new rotation of the object
+    * @param a_cVelLin linear velocity of the object
+    * @param a_fVelAng angular velocity of the object
+    */
+    void CControllerAi_V2::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_cRotation, const irr::core::vector3df &a_cVelLin, float a_fVelAng) {
+      if (m_pLuaSingleton != nullptr)
+        m_pLuaSingleton->objectmoved(a_iObjectId, a_cPosition, a_cRotation, a_cVelLin);
     }
 
     /**

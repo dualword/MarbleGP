@@ -41,6 +41,8 @@ namespace dustbin {
     * @param a_AngularVelocity The angualar (rotation) velocity
     */
     void CAiControlThread::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, irr::f32 a_AngularVelocity) {
+      for (int i = 0; i < 16 && m_aControllers[i] != nullptr; i++)
+        m_aControllers[i]->onObjectMoved(a_ObjectId, a_Position, a_Rotation, a_LinearVelocity, a_AngularVelocity);
     }
 
     /**

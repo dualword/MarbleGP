@@ -309,6 +309,19 @@ namespace dustbin {
     }
 
     /**
+    * Callback for object moved messages
+    * @param a_iObjectId ID of the object
+    * @param a_cPosition new position of the object
+    * @param a_cRotation new rotation of the object
+    * @param a_cVelLin linear velocity of the object
+    * @param a_fVelAng angular velocity of the object
+    */
+    void CMarbleController::onObjectMoved(int a_iObjectId, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_cRotation, const irr::core::vector3df& a_cVelLin, float a_fVelAng) {
+      if (m_pAiControls != nullptr)
+        m_pAiControls->onObjectMoved(a_iObjectId, a_cPosition, a_cRotation, a_cVelLin, a_fVelAng);
+    }
+
+    /**
     * Get the AI controller (if any)
     * @return the AI controller
     */

@@ -7,7 +7,8 @@
     { "name": "irr::scene::ISceneManager"  , "include": "irrlicht.h" },
     { "name": "irr::scene::ISceneNode"     , "include": "irrlicht.h" },
     { "name": "irr::io::IFileSystem"       , "include": "irrlicht.h" },
-    { "name": "irr::IrrlichtDevice"        , "include": "irrlicht.h" }
+    { "name": "irr::IrrlichtDevice"        , "include": "irrlicht.h" },
+    { "name": "irr::core::vector3df"       , "include": "irrlicht.h" }
   ],
   "baseclasses": {
   },
@@ -247,6 +248,51 @@
           }
         }
       }
+    },
+    "ai": {
+      "comment": "A LUA singleton with access to some information for the AI",
+      "globalidentifier": "aisingleton_cinstance",
+      "members": [
+        { "name": "objects", "type": "std::map<int, std::tuple<irr::core::vector3df, irr::core::vector3df, irr::core::vector3df>>", "comment": "Data of the non-marble objects" }
+      ],
+      "methods": {
+        "lua_from": {
+          "getobjectposition": {
+            "comment": "Get the position of a (non marble) object in the level",
+            "arguments": [
+              { "name": "objectid", "type": "int", "comment": "ID of the object" }
+            ],
+            "return": { "type": "SVector3d", "comment": "the position of the object" }
+          },
+          "getobjectrotation": {
+            "comment": "Get the rotation of a (non marble) object in the level",
+            "arguments": [
+              { "name": "objectid", "type": "int", "comment": "ID of the object" }
+            ],
+            "return": { "type": "SVector3d", "comment": "the rotation of the object" }
+          },
+          "getobjectvelocity": {
+            "comment": "Get the linear velocity of a (non marble) object in the level",
+            "arguments": [
+              { "name": "objectid", "type": "int", "comment": "ID of the object" }
+            ],
+            "return": { "type": "SVector3d", "comment": "the linear velocity of the object" }
+          }
+        },
+        "lua_to": {
+        },
+        "lua_none": {
+          "objectmoved": {
+            "comment": "Callback to inform the singleton about a moved object",
+            "arguments": [
+              { "name": "objectid", "type": "int", "comment": "ID of the object" },
+              { "name": "position", "type": "irr::core::vector3df", "comment": "The new position of the object" },
+              { "name": "rotation", "type": "irr::core::vector3df", "comment": "The new rotation of the object" },
+              { "name": "veclocity", "type": "irr::core::vector3df", "comment": "The new linear veclocity of the object" }
+            ]
+          }
+        }
+      }
     }
   },
   "scripts": {
@@ -443,7 +489,8 @@
       "members": [
       ],
       "singletons": [
-        "system"
+        "system",
+        "ai"
       ],
       "methods": {
         "lua_to": {
@@ -518,6 +565,12 @@
         "lua_from": {
         },
         "lua_none": {
+          "getsingleton": {
+            "comment": "Get the AI LUA singleton",
+            "arguments": [
+            ],
+            "return": { "type": "CLuaSingleton_ai *", "comment": "The singleton instance used by the script" }
+          }
         }
       }
     }

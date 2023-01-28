@@ -64,6 +64,16 @@ namespace dustbin {
         virtual void onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) = 0;
 
         /**
+        * Callback for object moved messages
+        * @param a_iObjectId ID of the object
+        * @param a_cPosition new position of the object
+        * @param a_cRotation new rotation of the object
+        * @param a_cVelLin linear velocity of the object
+        * @param a_fVelAng angular velocity of the object
+        */
+        virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cRotation, const irr::core::vector3df &a_cVelLin, float a_fVelAng) = 0;
+
+        /**
         * A marble has finished
         * @param a_iMarbleId ID of the finished marble
         */
