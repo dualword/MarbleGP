@@ -1152,6 +1152,14 @@ namespace dustbin {
           m_mMoving[a_ObjectId]->setRotation(a_Rotation);
       }
       else printf("Object %i not found.\n", a_ObjectId);
+      for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+        if (it->second.m_pPlayer != nullptr && it->second.m_pPlayer->m_pPlayer != nullptr && it->second.m_pPlayer->m_pPlayer->m_pController != nullptr) {
+          controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();
+          if (l_pCtrl != nullptr) {
+            l_pCtrl->onObjectMoved(a_ObjectId, a_Position, a_Rotation, a_LinearVelocity, a_AngularVelocity);
+          }
+        }
+      }
     }
 
     /**
