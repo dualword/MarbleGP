@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
   <marbles3>
-  <position>2</position>
+  <position>3</position>
   <name>Moving: Four Obstacles</name>
-  <info>This track comes with 4 obstacles that either block the road or try to kick you off the road - or both.</info>
-  </marbles3>
+</marbles3>
