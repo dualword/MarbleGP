@@ -573,6 +573,7 @@
     <ClCompile Include="..\..\..\_source\source\menu\CMenuMessage.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuNetworkLobby.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuProfiles.cpp" />
+    <ClCompile Include="..\..\..\_source\source\menu\CMenuProfileWizard.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuRaceResult.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSearchServer.cpp" />
     <ClCompile Include="..\..\..\_source\source\menu\CMenuSelectCup.cpp" />

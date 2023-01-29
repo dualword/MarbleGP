@@ -95,6 +95,10 @@ namespace dustbin {
       m_pFont = a_pFont;
     }
 
+    const irr::video::SColor &CReactiveLabel::getBackgroundColor() {
+      return m_cBackground;
+    }
+
     bool CReactiveLabel::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 

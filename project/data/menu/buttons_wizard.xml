@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuButton" rect="lowermiddle: -6, -10, -2, -6" tooltip="Back">
+    <attributes>
+      <attribute key="Name" value="back" />
+      <attribute key="Id" value="20001" />
+      <attribute key="ImagePath" value="data/images/arrow_left.png" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: -1, -10, 3, -6" tooltip="Cancel">
+    <attributes>
+      <attribute key="Name" value="cancel" />
+      <attribute key="Id" value="20002" />
+      <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: 4, -10, 8, -6" tooltip="Next Step">
+    <attributes>
+      <attribute key="Name" value="next" />
+      <attribute key="Id" value="20003" />
+      <attribute key="ImagePath" value="data/images/arrow_right.png" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: 9, -10, 13, -6" tooltip="Save Changes">
+    <attributes>
+      <attribute key="Name" value="save" />
+      <attribute key="Id" value="20004" />
+      <attribute key="ImagePath" value="data/images/btn_ok.png" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+</dialog>

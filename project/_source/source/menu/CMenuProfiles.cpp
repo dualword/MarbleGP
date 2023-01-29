@@ -435,7 +435,7 @@ namespace dustbin {
 
               std::string l_sName = it->first->getName();
 
-                    if (l_sName == "scrollbar_red"  ) { l_sRed   = s; while (l_sRed  .size() < 2) l_sRed   = L"0" + l_sRed  ; }
+                   if (l_sName == "scrollbar_red"  ) { l_sRed   = s; while (l_sRed  .size() < 2) l_sRed   = L"0" + l_sRed  ; }
               else if (l_sName == "scrollbar_green") { l_sGreen = s; while (l_sGreen.size() < 2) l_sGreen = L"0" + l_sGreen; }
               else if (l_sName == "scrollbar_blue" ) { l_sBlue  = s; while (l_sBlue .size() < 2) l_sBlue  = L"0" + l_sBlue ; }
             }
@@ -1254,6 +1254,9 @@ namespace dustbin {
                         updateControlDialog();
                         changeZLayer(42);
                         l_bRet = true;
+                        CGlobal::getInstance()->setGlobal("edit_profile", std::to_string(i));
+                        m_pManager->pushToMenuStack("menu_profiles");
+                        createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
                         break;
                       }
                     }

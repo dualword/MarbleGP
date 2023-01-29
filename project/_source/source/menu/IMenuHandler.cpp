@@ -179,6 +179,9 @@ namespace dustbin {
       else if (a_sName == "menu_selectcup") {
         l_pRet = a_pManager->changeMenu(createMenuSelectCup(a_pDevice, a_pManager, a_pState));
       }
+      else if (a_sName == "menu_profilewizard") {
+        l_pRet = a_pManager->changeMenu(createMenuProfileWizard(a_pDevice, a_pManager, a_pState));
+      }
 
       if (l_pRet == nullptr)
         printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());

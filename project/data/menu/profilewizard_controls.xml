@@ -1,0 +1,35 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - Profile Wizard 4 / 5" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 5, 79, 7" font="default">
+        <attributes>
+          <attribute key="Caption" value="Profile Wizard Step 4 / 5. Change the controls for your marble." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="ControllerUiGame" rect="relative: 10, 10, 69, 40" font="small">
+        <attributes>
+          <attribute key="Name" value="controller_ui" />
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="128, 232, 232, 232" />
+          <attribute key="headline" value="Game Controller Setup" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <include file="data/menu/buttons_wizard.xml" />
+</dialog>

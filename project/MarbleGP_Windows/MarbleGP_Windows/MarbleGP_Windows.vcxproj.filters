@@ -627,6 +627,9 @@
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_ai.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuProfileWizard.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

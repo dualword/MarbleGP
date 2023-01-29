@@ -1,0 +1,46 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - Profile Wizard 1 / 5" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 5, 79, 7" font="default">
+        <attributes>
+          <attribute key="Caption" value="Profile Wizard Step 1 / 5. Use the input file below to define or change the name of the selected player" />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 10, 30, 12">
+        <attributes>
+          <attribute key="Caption" value="Profile Name:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 31, 10, 60, 12">
+        <attributes>
+          <attribute key="Name" value="name" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 3, 18, 77, 24">
+        <attributes>
+          <attribute key="Caption" value="The profile names identifies a player. It is used while setting up a race, in the ranking list you see while the game is paused, and in the standings and ranking dialogs between the races. It's also shown in the tournament result dialog (if you manage the be in the top three)." />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <include file="data/menu/buttons_wizard.xml" />
+</dialog>
