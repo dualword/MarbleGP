@@ -552,25 +552,8 @@ namespace dustbin {
           }
 
           if (l_bClose) {
-            messages::CSerializer64 l_cSerializer;
+            saveProfiles();
 
-            l_cSerializer.addS32(c_iProfileHead);
-            l_cSerializer.addString(c_sProfileHead);
-
-            for (int i = 0; i <= m_iMaxIndex; i++) {
-              if (m_aProfiles[i].m_cData.m_iPlayerId > 0 && m_aProfiles[i].m_cData.m_iPlayerId <= m_iMaxIndex + 1) {
-                if (m_aProfiles[i].m_pDataRoot->isVisible()) {
-                  printf("Save profile %i (\"%s\")...\n", i, m_aProfiles[i].m_cData.m_sName.c_str());
-                  l_cSerializer.addS32(c_iProfileStart);
-                  l_cSerializer.addString(m_aProfiles[i].m_cData.serialize());
-                  l_cSerializer.addS32(c_iProfileEnd);
-                }
-              }
-            }
-
-            l_cSerializer.addS32(c_iAllProfileEnd);
-
-            m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
             m_pControlDialog = nullptr;
             createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
           }
@@ -757,6 +740,92 @@ namespace dustbin {
           updateTexture(createTextureString());
         }
 
+        /**
+        * Let's see if we were called by the profile wizard and a new profile was created
+        * @param a_cProfile filled profile (if data available)
+        * @param a_iIndex index of the edited profile
+        * @return true if a profile was edited, false otherwise
+        */
+        void checkForNewProfile() {
+          CGlobal *l_pGlobal = CGlobal::getInstance();
+
+          std::string l_sProfile = l_pGlobal->getGlobal("edited_profile");
+          std::string l_sNumber  = l_pGlobal->getGlobal("edit_profileno");
+
+          if (l_sProfile != "") {
+            data::SPlayerData l_cPlayer;
+            l_cPlayer.deserialize(l_sProfile);
+
+            int l_iIndex = std::atoi(l_sNumber.c_str());
+
+            if (l_iIndex < 0) {
+              std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
+
+              // Max 8 profiles, and we want to add a new one
+              if (l_vProfiles.size() < 7) {
+                l_iIndex = (int)l_vProfiles.size();
+
+                if (m_aProfiles[l_iIndex].isValid()) {
+                  m_aProfiles[l_iIndex].m_pAddProfile->setVisible(false);
+                  m_aProfiles[l_iIndex].m_pDataRoot  ->setVisible(true);
+                  m_aProfiles[l_iIndex].m_pName      ->setText   (helpers::s2ws(l_cPlayer.m_sName     ).c_str());
+                  m_aProfiles[l_iIndex].m_pShort     ->setText   (helpers::s2ws(l_cPlayer.m_sShortName).c_str());
+
+                  l_cPlayer.m_iPlayerId = l_iIndex + 1;
+                  m_aProfiles[l_iIndex].m_cData = l_cPlayer;
+
+                  if (l_iIndex + 1 <= m_iMaxIndex && m_aProfiles[l_iIndex + 1].isValid()) {
+                    m_aProfiles[l_iIndex + 1].m_pAddProfile->setVisible(true);
+                    m_aProfiles[l_iIndex + 1].m_pDataRoot  ->setVisible(false);
+                  }
+                }
+              }
+            }
+            else {
+              if (l_iIndex < 8 && m_aProfiles[l_iIndex].isValid()) {
+                m_aProfiles[l_iIndex].m_pAddProfile->setVisible(false);
+                m_aProfiles[l_iIndex].m_pDataRoot  ->setVisible(true);
+                m_aProfiles[l_iIndex].m_pName      ->setText   (helpers::s2ws(l_cPlayer.m_sName     ).c_str());
+                m_aProfiles[l_iIndex].m_pShort     ->setText   (helpers::s2ws(l_cPlayer.m_sShortName).c_str());
+
+                m_aProfiles[l_iIndex].m_cData = l_cPlayer;
+
+                // if (l_iIndex + 1 <= m_iMaxIndex && m_aProfiles[l_iIndex + 1].isValid()) {
+                //   m_aProfiles[l_iIndex + 1].m_pAddProfile->setVisible(true);
+                //   m_aProfiles[l_iIndex + 1].m_pDataRoot  ->setVisible(false);
+                // }
+
+                m_aProfiles[l_iIndex].fillUI();
+              }
+            }
+          }
+
+          l_pGlobal->setGlobal("edited_profile", "");
+          l_pGlobal->setGlobal("edit_profileno", "");
+        }
+
+        void saveProfiles() {
+          messages::CSerializer64 l_cSerializer;
+
+          l_cSerializer.addS32(c_iProfileHead);
+          l_cSerializer.addString(c_sProfileHead);
+
+          for (int i = 0; i <= m_iMaxIndex; i++) {
+            if (m_aProfiles[i].m_cData.m_iPlayerId > 0 && m_aProfiles[i].m_cData.m_iPlayerId <= m_iMaxIndex + 1) {
+              if (m_aProfiles[i].m_pDataRoot->isVisible()) {
+                printf("Save profile %i (\"%s\")...\n", i, m_aProfiles[i].m_cData.m_sName.c_str());
+                l_cSerializer.addS32(c_iProfileStart);
+                l_cSerializer.addString(m_aProfiles[i].m_cData.serialize());
+                l_cSerializer.addS32(c_iProfileEnd);
+              }
+            }
+          }
+
+          l_cSerializer.addS32(c_iAllProfileEnd);
+
+          m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
+        }
+
         public:
           CMenuProfiles(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState) : 
             IMenuHandler(a_pDevice, a_pManager, a_pState), 
@@ -928,6 +997,8 @@ namespace dustbin {
                       if (l_iNum >= 0 && l_iNum <= m_iMaxIndex) {
                         m_aProfiles[l_iNum].m_cData.deserialize(l_cSerializer.getString());
 
+                        printf("\n%s\n\n", m_aProfiles[l_iNum].m_cData.m_sControls.c_str());
+
                         if (m_aProfiles[l_iNum].isValid())
                           m_aProfiles[l_iNum].m_cData.m_iPlayerId = l_iNum + 1;
 
@@ -958,6 +1029,8 @@ namespace dustbin {
               }
               else printf("Invalid header for player profiles.\n");
             }
+
+            checkForNewProfile();
 
             // We use an XML file to get a list of the available patterns as the
             // Irrlicht file system directory list does not work with archives.
@@ -1133,31 +1206,10 @@ namespace dustbin {
                   else if (l_sSender == "btn_add") {
                     for (int i = 0; i <= m_iMaxIndex; i++) {
                       if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pAddProfile == a_cEvent.GUIEvent.Caller) {
-                        int l_iNum = 1;
-                        std::wstring l_sName = L"Player " + std::to_wstring(l_iNum++);
-
-                        for (int j = 0; j < i; j++) {
-                          if (m_aProfiles[j].isValid() && l_sName == m_aProfiles[j].m_pName->getText()) {
-                            l_sName = std::wstring(L"Player ") + std::to_wstring(l_iNum++);
-                          }
-                        }
-
-                        l_iNum--;
-
-                        m_aProfiles[i].m_pAddProfile->setVisible(false);
-                        m_aProfiles[i].m_pDataRoot  ->setVisible(true);
-                        m_aProfiles[i].m_pName      ->setText   (l_sName.c_str());
-                        m_aProfiles[i].m_pShort     ->setText   ((std::wstring(L"Plr#") + std::to_wstring(l_iNum)).c_str());
-
-                        m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
-                        m_aProfiles[i].m_cData.m_sName = helpers::ws2s(l_sName);
-
-                        if (i + 1 <= m_iMaxIndex && m_aProfiles[i + 1].isValid()) {
-                          m_aProfiles[i + 1].m_pAddProfile->setVisible(true);
-                          m_aProfiles[i + 1].m_pDataRoot  ->setVisible(false);
-                        }
-
-                        m_aProfiles[i].fillUI();
+                        CGlobal::getInstance()->setGlobal("edit_profileno", "-1");
+                        CGlobal::getInstance()->setGlobal("edit_profile", "");
+                        m_pManager->pushToMenuStack("menu_profiles");
+                        createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
                       }
                     }
                   }
@@ -1249,13 +1301,10 @@ namespace dustbin {
                   else if (l_sSender == "btn_controls") {
                     for (int i = 0; i <= m_iMaxIndex; i++) {
                       if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pControls == a_cEvent.GUIEvent.Caller && m_pControlDialog != nullptr) {
-                        m_iEditing = i;
-                        m_pControlDialog->setVisible(true);
-                        updateControlDialog();
-                        changeZLayer(42);
-                        l_bRet = true;
-                        CGlobal::getInstance()->setGlobal("edit_profile", std::to_string(i));
+                        CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
+                        CGlobal::getInstance()->setGlobal("edit_profile", m_aProfiles[i].m_cData.serialize());
                         m_pManager->pushToMenuStack("menu_profiles");
+                        saveProfiles();
                         createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
                         break;
                       }

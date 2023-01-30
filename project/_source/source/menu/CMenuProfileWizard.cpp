@@ -31,15 +31,12 @@ namespace dustbin {
 
         enMenuStep   m_eStep;         /**< The current step of the wizard */
         CGlobal     *m_pGlobal;       /**< Instance of the global object */
-        std::string  m_sName;         /**< The profile's name */
-        std::string  m_sShort;        /**< The abbreviation of the name */
-        std::string  m_sControls;     /**< Serialized representation of the controls */
-        std::string  m_sTexture;      /**< Serialized representation of the texture */
         std::string  m_sColorEdit;    /**< The currently edited color (Step 5: Texture) */
-        int          m_iProfileNo;    /**< Number of the currently edited profile */
+        std::string  m_sProfile;      /**< Number of the currently edited profile */
 
-        data::SPlayerData::enAiHelp m_eAiHelp;  /**< AI help of the edited profile */
+        data::SPlayerData m_cPlayer;  /**< The player we edit */
 
+        gui::CControllerUi_Game   *m_pCtrl;     /**< The controller UI (Step 4/5) */
         irr::scene::ISceneManager *m_pMySmgr;   /**< Own scene manager for rendering the texture of the marble */
         irr::video::ITexture      *m_pMyRtt;    /**< Render target texture for the marble with it's custom texture */
         irr::scene::ISceneNode    *m_pMarble;   /**< The marble for the texture preview */
@@ -50,7 +47,7 @@ namespace dustbin {
         */
         void updateMarbleTexture(const std::string &a_sTexture) {
           if (m_pMyRtt != nullptr && m_pMarble != nullptr) {
-            m_pMarble->getMaterial(0).setTexture(0, helpers::createTexture(a_sTexture, m_pDrv, m_pFs));
+            m_pMarble->getMaterial(0).setTexture(0, helpers::createTexture(a_sTexture != "" ? a_sTexture : "default://number=1", m_pDrv, m_pFs));
           }
         }
 
@@ -184,8 +181,7 @@ namespace dustbin {
               if (l_pTab != nullptr) {
                 l_pTab->setVisible(false);
               }
-              m_sTexture = "default://number=1";
-              updateMarbleTexture(m_sTexture);
+              updateMarbleTexture(m_cPlayer.m_sTexture);
             }
             else {
               if (l_pTab != nullptr) {
@@ -253,7 +249,7 @@ namespace dustbin {
               // Copy the name field to the m_sName member
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr)
-                m_sName = helpers::ws2s(l_pEdit->getText());
+                m_cPlayer.m_sName = helpers::ws2s(l_pEdit->getText());
               break;
             }
 
@@ -261,7 +257,7 @@ namespace dustbin {
               // Copy the short name to the m_sShort member
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr)
-                m_sShort = helpers::ws2s(l_pEdit->getText());
+                m_cPlayer.m_sShortName = helpers::ws2s(l_pEdit->getText());
               break;
             }
 
@@ -270,14 +266,14 @@ namespace dustbin {
               gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
               if (l_pSelector != nullptr) {
                 switch (l_pSelector->getSelected()) {
-                  case 0: m_eAiHelp = data::SPlayerData::enAiHelp::Off    ; break;
-                  case 1: m_eAiHelp = data::SPlayerData::enAiHelp::Display; break;
-                  case 2: m_eAiHelp = data::SPlayerData::enAiHelp::Low    ; break;
-                  case 3: m_eAiHelp = data::SPlayerData::enAiHelp::Medium ; break;
-                  case 4: m_eAiHelp = data::SPlayerData::enAiHelp::High   ; break;
-                  case 5: m_eAiHelp = data::SPlayerData::enAiHelp::BotMgp ; break;
-                  case 6: m_eAiHelp = data::SPlayerData::enAiHelp::BotMb2 ; break;
-                  case 7: m_eAiHelp = data::SPlayerData::enAiHelp::BotMb3 ; break;
+                  case 0: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::Off    ; break;
+                  case 1: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::Display; break;
+                  case 2: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::Low    ; break;
+                  case 3: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::Medium ; break;
+                  case 4: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::High   ; break;
+                  case 5: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::BotMgp ; break;
+                  case 6: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::BotMb2 ; break;
+                  case 7: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::BotMb3 ; break;
                 }
               }
               break;
@@ -285,10 +281,12 @@ namespace dustbin {
 
             case enMenuStep::Controls: {
               // Serialize the controls and save it to m_sControls
-              gui::CControllerUi_Game *l_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
+              if (m_pCtrl != nullptr) {
+                if (m_pCtrl != nullptr) {
+                  m_cPlayer.m_sControls = m_pCtrl->serialize();
+                }
 
-              if (l_pCtrl != nullptr) {
-                m_sControls = l_pCtrl->serialize();
+                m_pCtrl = nullptr;
               }
               break;
             }
@@ -313,14 +311,14 @@ namespace dustbin {
             case enMenuStep::Name: {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr)
-                l_pEdit->setText(helpers::s2ws(m_sName).c_str());
+                l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
               break;
             }
 
             case enMenuStep::Abbreviation: {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr)
-                l_pEdit->setText(helpers::s2ws(m_sShort).c_str());
+                l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sShortName).c_str());
               break;
             }
 
@@ -328,7 +326,7 @@ namespace dustbin {
               gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
               if (l_pSelector != nullptr) {
-                switch (m_eAiHelp) {
+                switch (m_cPlayer.m_eAiHelp) {
                   case data::SPlayerData::enAiHelp::Off    : l_pSelector->setSelected(0); break;
                   case data::SPlayerData::enAiHelp::Display: l_pSelector->setSelected(1); break;
                   case data::SPlayerData::enAiHelp::Low    : l_pSelector->setSelected(2); break;
@@ -345,20 +343,20 @@ namespace dustbin {
             }
 
             case enMenuStep::Controls: {
-              gui::CControllerUi_Game *l_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
+              m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
 
-              if (l_pCtrl != nullptr) {
-                l_pCtrl->deserialize(m_sControls);
-                l_pCtrl->buildUi(l_pCtrl);
+              if (m_pCtrl != nullptr) {
+                m_pCtrl->setText(helpers::s2ws(m_cPlayer.m_sControls).c_str());
+                m_pCtrl->setMenuManager(m_pManager);
               }
               break;
             }
 
             case enMenuStep::Texture: {
-              size_t l_iPos = m_sTexture.find("://");
+              size_t l_iPos = m_cPlayer.m_sTexture.find("://");
 
               if (l_iPos != std::string::npos) {
-                std::string l_sPrefix  = m_sTexture.substr(0, l_iPos);
+                std::string l_sPrefix  = m_cPlayer.m_sTexture.substr(0, l_iPos);
 
                 printf("Prefix: %s\n", l_sPrefix.c_str());
                 gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"     , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
@@ -370,10 +368,7 @@ namespace dustbin {
                   if (l_sPrefix == "generate") {
                     l_pMode->setSelected(1);
 
-                    std::string l_sTexture = m_sTexture.substr(l_iPos + 3);
-
-                    printf("\n\n%s\n\n", m_sTexture.c_str());
-                    printf("\n\n%s\n\n", l_sTexture.c_str());
+                    std::string l_sTexture = m_cPlayer.m_sTexture.substr(l_iPos + 3);
 
                     std::map<std::string, std::string> l_mParamMap{
                       { "numbercolor" , "texture_fg_nb"       },
@@ -466,7 +461,7 @@ namespace dustbin {
 
             if (m_pMySmgr != nullptr) {
               m_pMarble = m_pMySmgr->getSceneNodeFromName("marble");
-              updateMarbleTexture(m_sTexture);
+              updateMarbleTexture(m_cPlayer.m_sTexture);
             }
           }
 
@@ -480,18 +475,15 @@ namespace dustbin {
           IMenuHandler(a_pDevice, a_pManager, a_pState),
           m_eStep     (enMenuStep::Initialize),
           m_pGlobal   (CGlobal::getInstance()),
-          m_sName     (""),
-          m_sShort    (""),
-          m_sControls (""),
-          m_sTexture  (""),
           m_sColorEdit(""),
-          m_iProfileNo(-1),
-          m_eAiHelp   (data::SPlayerData::enAiHelp::Off),
+          m_sProfile  (""),
+          m_pCtrl     (nullptr),
           m_pMySmgr   (nullptr),
           m_pMyRtt    (nullptr),
           m_pMarble   (nullptr)
         {
-          m_iProfileNo = std::atoi(m_pGlobal->getGlobal("edit_profile").c_str());
+          m_sProfile = m_pGlobal->getGlobal("edit_profile");
+          m_pGlobal->setGlobal("edit_profile", "");
 
           changeStep(enMenuStep::Name);
 
@@ -499,23 +491,19 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
-
-          if (l_vProfiles.size() < m_iProfileNo) {
-            m_pGlobal->setGlobal("ERROR_MESSAGE", "Invalid Profile Selected.");
-            m_pGlobal->setGlobal("ERROR_HEAD", "Error editing Profile");
-            m_pManager->changeMenu(createMenu("menu_message", m_pDevice, m_pManager, m_pState));
+          if (m_sProfile == "commit_profile") {
+            // ToDo: add profile when wizard is confirmed, hide "cancel" buttons
           }
-          else {
-            m_sName     = l_vProfiles[m_iProfileNo].m_sName;
-            m_sShort    = l_vProfiles[m_iProfileNo].m_sShortName;
-            m_sControls = l_vProfiles[m_iProfileNo].m_sControls;
-            m_sTexture  = l_vProfiles[m_iProfileNo].m_sTexture;
-            m_eAiHelp   = l_vProfiles[m_iProfileNo].m_eAiHelp;
+
+          m_cPlayer = data::SPlayerData();
+          m_cPlayer.m_iPlayerId = 1;
+
+          if (m_sProfile != "") {  
+            m_cPlayer.deserialize(m_sProfile);
 
             irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
             if (l_pEdit != nullptr) {
-              l_pEdit->setText(helpers::s2ws(m_sName).c_str());
+              l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
             }
           }
         }
@@ -528,117 +516,127 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
-          if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-            if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-              std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
+          if (m_pCtrl != nullptr) {
+            m_pCtrl->update(a_cEvent);
+          }
 
-              if (l_sButton == "cancel") {
-                m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
-              }
-              else if (l_sButton == "next") {
-                switch (m_eStep) {
-                  case enMenuStep::Name        : changeStep(enMenuStep::Abbreviation); break;
-                  case enMenuStep::Abbreviation: changeStep(enMenuStep::AiHelp      ); break;
-                  case enMenuStep::AiHelp      : changeStep(enMenuStep::Controls    ); break;
-                  case enMenuStep::Controls    : changeStep(enMenuStep::Texture     ); break;
-                  case enMenuStep::Texture     :
-                  case enMenuStep::Initialize  :
-                    // This button is not visible here, so let's ignore it
-                    break;
+          if (!l_bRet) {
+            if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+              if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+                std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
+
+                if (l_sButton == "cancel") {
+                  m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
                 }
-              }
-              else if (l_sButton == "back") {
-                switch (m_eStep) {
-                  case enMenuStep::Name      :
-                  case enMenuStep::Initialize:
-                    // This button isn't visible here, so we ignore it
-                    break;
-
-                  case enMenuStep::Abbreviation: changeStep(enMenuStep::Name        ); break;
-                  case enMenuStep::AiHelp      : changeStep(enMenuStep::Abbreviation); break;
-                  case enMenuStep::Controls    : changeStep(enMenuStep::AiHelp      ); break;
-                  case enMenuStep::Texture     : changeStep(enMenuStep::Controls    );  break;
+                else if (l_sButton == "save") {
+                  CGlobal::getInstance()->setGlobal("edited_profile", m_cPlayer.serialize());
+                  m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice,m_pManager, m_pState));
                 }
-              }
-              else {
-                if (m_eStep == enMenuStep::Texture) {
-                  if (l_sButton == "btn_color_ok") {
-                    irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                else if (l_sButton == "next") {
+                  switch (m_eStep) {
+                    case enMenuStep::Name        : changeStep(enMenuStep::Abbreviation); break;
+                    case enMenuStep::Abbreviation: changeStep(enMenuStep::AiHelp      ); break;
+                    case enMenuStep::AiHelp      : changeStep(enMenuStep::Controls    ); break;
+                    case enMenuStep::Controls    : changeStep(enMenuStep::Texture     ); break;
+                    case enMenuStep::Texture     :
+                    case enMenuStep::Initialize  :
+                      // This button is not visible here, so let's ignore it
+                      break;
+                  }
+                }
+                else if (l_sButton == "back") {
+                  switch (m_eStep) {
+                    case enMenuStep::Name      :
+                    case enMenuStep::Initialize:
+                      // This button isn't visible here, so we ignore it
+                      break;
 
-                    if (l_pColor != nullptr) {
-                      irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(m_sColorEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    case enMenuStep::Abbreviation: changeStep(enMenuStep::Name        ); break;
+                    case enMenuStep::AiHelp      : changeStep(enMenuStep::Abbreviation); break;
+                    case enMenuStep::Controls    : changeStep(enMenuStep::AiHelp      ); break;
+                    case enMenuStep::Texture     : changeStep(enMenuStep::Controls    );  break;
+                  }
+                }
+                else {
+                  if (m_eStep == enMenuStep::Texture) {
+                    if (l_sButton == "btn_color_ok") {
+                      irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
-                      if (l_pEdit != nullptr) {
-                        l_pEdit->setText(helpers::s2ws(colorToString(getColorFromColorDialog())).c_str());
-                      }
+                      if (l_pColor != nullptr) {
+                        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(m_sColorEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
-                      updateMarbleTexture(helpers::ws2s(getTextureString()));
+                        if (l_pEdit != nullptr) {
+                          l_pEdit->setText(helpers::s2ws(colorToString(getColorFromColorDialog())).c_str());
+                        }
+
+                        updateMarbleTexture(helpers::ws2s(getTextureString()));
                       
-                      l_pColor->setVisible(false);
-                      changeZLayer(0);
-                    }
-                  }
-                  else if (l_sButton == "btn_color_cancel") {
-                    irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
-
-                    if (l_pColor != nullptr) {
-                      l_pColor->setVisible(false);
-                      changeZLayer(0);
-                    }
-                  }
-                  else if (l_sButton == "pick_color") {
-                    gui::CReactiveLabel *p = reinterpret_cast<gui::CReactiveLabel *>(a_cEvent.GUIEvent.Caller);
-                    irr::video::SColor   c = p->getBackgroundColor();
-
-                    initializeColorDialog(helpers::s2ws(colorToString(c)));
-                  }
-                  else {
-                    std::map<std::string, std::string> l_mButtonLinks = {
-                      { "btn_select_fg_nb"     , "texture_fg_nb"       },
-                      { "btn_select_bg_nb"     , "texture_bg_nb"       },
-                      { "btn_select_nr"        , "texture_nr"          },
-                      { "btn_select_nf"        , "texture_nf"          },
-                      { "btn_select_fg_pt"     , "texture_fg_pt"       },
-                      { "btn_select_bg_pt"     , "texture_bg_pt"       },
-                      { "btn_select_name_color", "imported_name_color" },
-                      { "btn_select_name_back" , "imported_name_back"  }
-                    };
-
-                    printf("Button: %s\n", l_sButton.c_str());
-
-                    if (l_mButtonLinks.find(l_sButton) != l_mButtonLinks.end()) {
-                      irr::gui::IGUITab     *l_pColor = reinterpret_cast<irr::gui::IGUITab     *>(findElementByNameAndType("color_dialog"           , irr::gui::EGUIET_TAB     , m_pGui->getRootGUIElement()));
-                      irr::gui::IGUIEditBox *l_pEdit  = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(l_mButtonLinks[l_sButton], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-
-                      if (l_pColor != nullptr && l_pEdit != nullptr) {
-                        m_sColorEdit = l_mButtonLinks[l_sButton];
-                        l_pColor->setVisible(true);
-                        initializeColorDialog(l_pEdit->getText());
-                        changeZLayer(23);
+                        l_pColor->setVisible(false);
+                        changeZLayer(0);
                       }
-                      // irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByName(l_mButtonLinks[l_sButton], m_pGui->getRootGUIElement()));
+                    }
+                    else if (l_sButton == "btn_color_cancel") {
+                      irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
-                      // if (l_pEdit != nullptr) {
+                      if (l_pColor != nullptr) {
+                        l_pColor->setVisible(false);
+                        changeZLayer(0);
+                      }
+                    }
+                    else if (l_sButton == "pick_color") {
+                      gui::CReactiveLabel *p = reinterpret_cast<gui::CReactiveLabel *>(a_cEvent.GUIEvent.Caller);
+                      irr::video::SColor   c = p->getBackgroundColor();
 
-                      // }
+                      initializeColorDialog(helpers::s2ws(colorToString(c)));
+                    }
+                    else {
+                      std::map<std::string, std::string> l_mButtonLinks = {
+                        { "btn_select_fg_nb"     , "texture_fg_nb"       },
+                        { "btn_select_bg_nb"     , "texture_bg_nb"       },
+                        { "btn_select_nr"        , "texture_nr"          },
+                        { "btn_select_nf"        , "texture_nf"          },
+                        { "btn_select_fg_pt"     , "texture_fg_pt"       },
+                        { "btn_select_bg_pt"     , "texture_bg_pt"       },
+                        { "btn_select_name_color", "imported_name_color" },
+                        { "btn_select_name_back" , "imported_name_back"  }
+                      };
+
+                      printf("Button: %s\n", l_sButton.c_str());
+
+                      if (l_mButtonLinks.find(l_sButton) != l_mButtonLinks.end()) {
+                        irr::gui::IGUITab     *l_pColor = reinterpret_cast<irr::gui::IGUITab     *>(findElementByNameAndType("color_dialog"           , irr::gui::EGUIET_TAB     , m_pGui->getRootGUIElement()));
+                        irr::gui::IGUIEditBox *l_pEdit  = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(l_mButtonLinks[l_sButton], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+                        if (l_pColor != nullptr && l_pEdit != nullptr) {
+                          m_sColorEdit = l_mButtonLinks[l_sButton];
+                          l_pColor->setVisible(true);
+                          initializeColorDialog(l_pEdit->getText());
+                          changeZLayer(23);
+                        }
+                        // irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByName(l_mButtonLinks[l_sButton], m_pGui->getRootGUIElement()));
+
+                        // if (l_pEdit != nullptr) {
+
+                        // }
+                      }
                     }
                   }
                 }
               }
-            }
-            else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
-              std::string l_sScrollbar = a_cEvent.GUIEvent.Caller->getName();
-              if (l_sScrollbar == "ai_help")
-                updateAiHelpInfo();
-              else if (l_sScrollbar == "texture_mode") {
-                updateGeneratedTexture();
-              }
-              else if (m_eStep == enMenuStep::Texture) {
-                if (m_sColorEdit != "") {
-                  irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_display", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
+                std::string l_sScrollbar = a_cEvent.GUIEvent.Caller->getName();
+                if (l_sScrollbar == "ai_help")
+                  updateAiHelpInfo();
+                else if (l_sScrollbar == "texture_mode") {
+                  updateGeneratedTexture();
+                }
+                else if (m_eStep == enMenuStep::Texture) {
+                  if (m_sColorEdit != "") {
+                    irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_display", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
-                  if (l_pTab != nullptr)
-                    l_pTab->setBackgroundColor(getColorFromColorDialog());
+                    if (l_pTab != nullptr)
+                      l_pTab->setBackgroundColor(getColorFromColorDialog());
+                  }
                 }
               }
             }
