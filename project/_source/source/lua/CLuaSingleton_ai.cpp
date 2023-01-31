@@ -54,6 +54,28 @@ namespace dustbin {
     }
 
     /**
+    * Little helper function to turn the data retrieved from getobjectrotation to something usefule.
+    * @param The vector to rotate
+    * @param Euler rotation to rotate the vector by
+    */
+    SVector3d CLuaSingleton_ai::rotatevector(const SVector3d& a_vector, const SVector3d& a_rotation) {
+      SVector3d l_cRet;
+
+      irr::core::matrix4 l_cMatrix = irr::core::matrix4();
+      l_cMatrix = l_cMatrix.setRotationDegrees(irr::core::vector3df(a_rotation.m_x, a_rotation.m_y, a_rotation.m_z));
+
+      irr::core::vector3df l_cVector = irr::core::vector3df(a_vector.m_x, a_vector.m_y, a_vector.m_z);
+
+      l_cMatrix.rotateVect(l_cVector);
+
+      l_cRet.m_x = l_cVector.X;
+      l_cRet.m_y = l_cVector.Y;
+      l_cRet.m_z = l_cVector.Z;
+
+      return l_cRet;
+    }
+
+    /**
     * Callback to inform the singleton about a moved object
     * @param ID of the object
     * @param The new position of the object

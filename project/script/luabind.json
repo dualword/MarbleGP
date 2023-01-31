@@ -277,6 +277,14 @@
               { "name": "objectid", "type": "int", "comment": "ID of the object" }
             ],
             "return": { "type": "SVector3d", "comment": "the linear velocity of the object" }
+          },
+          "rotatevector": {
+            "comment": "Little helper function to turn the data retrieved from getobjectrotation to something usefule.",
+            "arguments": [
+              { "name": "vector"  , "type": "SVector3d", "comment": "The vector to rotate" },
+              { "name": "rotation", "type": "SVector3d", "comment": "Euler rotation to rotate the vector by" }
+            ],
+            "return": { "type": "SVector3d", "comment": "the linear velocity of the object" }
           }
         },
         "lua_to": {
