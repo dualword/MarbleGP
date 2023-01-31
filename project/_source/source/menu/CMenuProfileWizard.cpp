@@ -41,6 +41,12 @@ namespace dustbin {
         irr::video::ITexture      *m_pMyRtt;    /**< Render target texture for the marble with it's custom texture */
         irr::scene::ISceneNode    *m_pMarble;   /**< The marble for the texture preview */
 
+        irr::gui::IGUIElement *m_pBtnBack;    /**< The back button */
+        irr::gui::IGUIElement *m_pBtnCancel;  /**< The cancel button */
+        irr::gui::IGUIElement *m_pBtnNext;    /**< The next button */
+        irr::gui::IGUIElement *m_pBtnSave;    /**< The save button */
+        irr::gui::IGUIImage   *m_pWarning;    /**< The warning image for the name steps */
+
         /**
         * Update the texture of the preview marble in the texture wizard step
         * @param a_sTexture the texture string of the marble
@@ -407,6 +413,50 @@ namespace dustbin {
         }
 
         /**
+        * Toggle the button visibility depending on state and input fields. Also
+        * update the background color of the edit fields for (short) name
+        */
+        void toggleButtonVisibility() {
+          if (m_pBtnBack != nullptr)
+            m_pBtnBack->setVisible(m_eStep != enMenuStep::Initialize && m_eStep != enMenuStep::Name);
+
+          if (m_pBtnNext != nullptr) {
+            bool l_bVisible = m_eStep != enMenuStep::Texture;
+
+            if (m_eStep == enMenuStep::Name) {
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+              if (l_pEdit != nullptr) {
+                std::wstring s = l_pEdit->getText();
+                l_bVisible = s.size() >= 3;
+
+                if (m_pWarning != nullptr)
+                  m_pWarning->setVisible(!l_bVisible);
+              }
+            }
+            else if (m_eStep == enMenuStep::Abbreviation) {
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+              if (l_pEdit != nullptr) {
+                std::wstring s = l_pEdit->getText();
+                l_bVisible = s.size() >= 2;
+
+                if (m_pWarning != nullptr)
+                  m_pWarning->setVisible(!l_bVisible);
+              }
+            }
+
+            m_pBtnNext->setVisible(l_bVisible);
+          }
+
+          if (m_pBtnCancel != nullptr)
+            m_pBtnCancel->setVisible(m_sProfile != "commit_profile");
+
+          if (m_pBtnSave != nullptr)
+            m_pBtnSave->setVisible(m_eStep == enMenuStep::Texture);
+        }
+
+        /**
         * Change the current wizard step
         * @para a_eStep the new step
         */
@@ -468,6 +518,19 @@ namespace dustbin {
           m_eStep = a_eStep;
 
           restoreDataOfWizardStep();
+
+          m_pBtnBack   = findElementByName("back"  , m_pGui->getRootGUIElement());
+          m_pBtnCancel = findElementByName("cancel", m_pGui->getRootGUIElement());
+          m_pBtnNext   = findElementByName("next"  , m_pGui->getRootGUIElement());
+          m_pBtnSave   = findElementByName("save"  , m_pGui->getRootGUIElement());
+
+          m_pWarning   = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("warning", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+
+          if (m_pWarning != nullptr) {
+            m_pWarning->setImage(m_pDrv->getTexture("data/images/edit_warning.png"));
+          }
+
+          toggleButtonVisibility();
         }
 
       public:
@@ -480,7 +543,11 @@ namespace dustbin {
           m_pCtrl     (nullptr),
           m_pMySmgr   (nullptr),
           m_pMyRtt    (nullptr),
-          m_pMarble   (nullptr)
+          m_pMarble   (nullptr),
+          m_pBtnBack  (nullptr),
+          m_pBtnCancel(nullptr),
+          m_pBtnNext  (nullptr),
+          m_pBtnSave  (nullptr)
         {
           m_sProfile = m_pGlobal->getGlobal("edit_profile");
           m_pGlobal->setGlobal("edit_profile", "");
@@ -505,6 +572,8 @@ namespace dustbin {
             if (l_pEdit != nullptr) {
               l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
             }
+
+            toggleButtonVisibility();
           }
         }
 
@@ -638,6 +707,9 @@ namespace dustbin {
                       l_pTab->setBackgroundColor(getColorFromColorDialog());
                   }
                 }
+              }
+              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
+                toggleButtonVisibility();
               }
             }
           }

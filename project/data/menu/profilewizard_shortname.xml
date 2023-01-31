@@ -35,6 +35,14 @@
         </attributes>
       </element>
       
+      <element type="image" rect="relative: 46, 9, 50, 13" tooltip="The short name must at least be 2 characters long.">
+        <attributes>
+          <attribute key="Name" value="warning" />
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+        </attributes>
+      </element>
+      
       <element type="staticText" rect="relative: 3, 18, 77, 24">
         <attributes>
           <attribute key="Caption" value="The abbreviation of the profile name is used to indicate the position of the player during a race. You can see it in the ranking list on the upper left of the screen." />

@@ -28,6 +28,14 @@
         </attributes>
       </element>
       
+      <element type="image" rect="relative: 61, 9, 65, 13" tooltip="The profile name must at least be 3 characters long.">
+        <attributes>
+          <attribute key="Name" value="warning" />
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+        </attributes>
+      </element>
+      
       <element type="editBox" rect="relative: 31, 10, 60, 12">
         <attributes>
           <attribute key="Name" value="name" />
