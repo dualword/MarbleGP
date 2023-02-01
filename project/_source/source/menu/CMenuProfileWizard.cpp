@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CTextureHelpers.h>
+#include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CControllerUi_Game.h>
 #include <helpers/CMenuLoader.h>
@@ -9,6 +10,7 @@
 #include <state/IState.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
+#include <Defines.h>
 
 namespace dustbin {
   namespace menu {
@@ -479,6 +481,15 @@ namespace dustbin {
 
             if (l_pBack != nullptr)
               l_pBack->setVisible(false);
+
+            irr::gui::IGUIElement *l_pEdit = findElementByName("name", m_pGui->getRootGUIElement());
+            if (l_pEdit != nullptr)
+              m_pGui->setFocus(l_pEdit);
+          }
+          else if (a_eStep == enMenuStep::Abbreviation) {
+            irr::gui::IGUIElement *l_pEdit = findElementByName("shortname", m_pGui->getRootGUIElement());
+            if (l_pEdit != nullptr)
+              m_pGui->setFocus(l_pEdit);
           }
           else if (a_eStep == enMenuStep::Texture) {
             // In the texture dialog we hide the "next" button ...
@@ -590,7 +601,23 @@ namespace dustbin {
           }
 
           if (!l_bRet) {
-            if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+            if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+              if (a_cEvent.KeyInput.Key == irr::KEY_RETURN && !a_cEvent.KeyInput.PressedDown) {
+                if ((m_pBtnNext != nullptr && m_pBtnNext->isVisible()) || (m_pBtnSave != nullptr && m_pBtnSave->isVisible())) {
+                  irr::SEvent l_cEvent;
+
+                  l_cEvent.EventType = irr::EET_GUI_EVENT;
+                  l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+                  l_cEvent.GUIEvent.Caller    = (m_pBtnNext != nullptr && m_pBtnNext->isVisible()) ? m_pBtnNext : m_pBtnSave;
+                  l_cEvent.GUIEvent.Element   = m_pBtnNext;
+ 
+                  OnEvent(l_cEvent);
+
+                  l_bRet = true;
+                }
+              }
+            }
+            else if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
               if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
                 std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
@@ -598,8 +625,28 @@ namespace dustbin {
                   m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
                 }
                 else if (l_sButton == "save") {
-                  CGlobal::getInstance()->setGlobal("edited_profile", m_cPlayer.serialize());
-                  m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice,m_pManager, m_pState));
+                  if (m_sProfile == "commit_profile") {
+                    // Save the profile to the settings (it's the first profile in the list)
+                    m_cPlayer.m_iPlayerId = 1;
+
+                    messages::CSerializer64 l_cSerializer;
+
+                    l_cSerializer.addS32(c_iProfileHead);
+                    l_cSerializer.addString(c_sProfileHead);
+
+                    l_cSerializer.addS32(c_iProfileStart);
+                    l_cSerializer.addString(m_cPlayer.serialize());
+                    l_cSerializer.addS32(c_iProfileEnd);
+
+                    l_cSerializer.addS32(c_iAllProfileEnd);
+
+                    m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
+                  }
+                  else {
+                    CGlobal::getInstance()->setGlobal("edited_profile", m_cPlayer.serialize());                    
+                  }
+                    
+                  createMenu(m_pManager->popMenuStack(), m_pDevice,m_pManager, m_pState);
                 }
                 else if (l_sButton == "next") {
                   switch (m_eStep) {

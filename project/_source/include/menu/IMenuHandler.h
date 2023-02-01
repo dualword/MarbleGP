@@ -36,6 +36,11 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent &a_cEvent) = 0;
 
         /**
+        * This method is called to activate the menu.
+        */
+        virtual void activate() { }
+
+        /**
         * This method is called every frame after "scenemanager::drawall" is called
         * @return true if drawing was done by the menu, false otherwise
         */

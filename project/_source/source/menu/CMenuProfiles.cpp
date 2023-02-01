@@ -1210,6 +1210,8 @@ namespace dustbin {
                         CGlobal::getInstance()->setGlobal("edit_profile", "");
                         m_pManager->pushToMenuStack("menu_profiles");
                         createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
+
+                        break;
                       }
                     }
                   }

@@ -41,6 +41,12 @@ namespace dustbin {
     * This method is called when the state is activated
     */
     void CMenuState::activate() {
+      std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pGlobal->getSetting("profiles"));
+      if (l_vProfiles.size() == 0) {
+        CGlobal::getInstance()->setGlobal("edit_profile", "commit_profile");
+        pushToMenuStack("menu_profilewizard");
+      }
+
       m_eState = enState::None;
       std::string l_sState = popMenuStack();
       menu::IMenuHandler::createMenu(l_sState, m_pDevice, this, this);
@@ -312,6 +318,9 @@ namespace dustbin {
       if (m_pController != nullptr) {
         m_pController->reset();
       }
+
+      if (m_pMenu != nullptr)
+        m_pMenu->activate();
 
       return m_pMenu;
     }
