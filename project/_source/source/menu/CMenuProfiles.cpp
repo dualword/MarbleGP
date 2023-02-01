@@ -1303,12 +1303,18 @@ namespace dustbin {
                   else if (l_sSender == "btn_controls") {
                     for (int i = 0; i <= m_iMaxIndex; i++) {
                       if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pControls == a_cEvent.GUIEvent.Caller && m_pControlDialog != nullptr) {
-                        CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
+                        /*CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
                         CGlobal::getInstance()->setGlobal("edit_profile", m_aProfiles[i].m_cData.serialize());
                         m_pManager->pushToMenuStack("menu_profiles");
                         saveProfiles();
                         createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
-                        break;
+                        break;*/
+
+                        m_iEditing = i;
+                        m_pControlDialog->setVisible(true);
+                        updateControlDialog();
+                        changeZLayer(42);
+                        l_bRet = true;
                       }
                     }
                   }

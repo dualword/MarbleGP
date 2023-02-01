@@ -173,9 +173,8 @@ namespace dustbin {
 #ifdef _ANDROID
       m_sConfigData("DustbinController;control;JoyPov;Up;Gamepad;M;a;a;a;a;b;control;JoyPov;Down;Gamepad;O;a;a;a;qze;b;control;JoyPov;Left;Gamepad;L;a;a;a;4Lg;b;control;JoyPov;Right;Gamepad;N;a;a;a;Omc;b;control;JoyButton;Enter;Gamepad;G;a;a;a;a;b;control;JoyButton;Ok;Gamepad;n;a;m;a;a;b;control;JoyButton;Cancel;Gamepad;B;a;n;a;a;b"),
 #else
-      m_sConfigData  (""),
+      m_sConfigData  ("")
 #endif
-      m_bJoyOld      (false)
     {
       m_pFont  = CGlobal::getInstance()->getFont(enFont::Regular, CGlobal::getInstance()->getVideoDriver()->getScreenSize());
       m_pSmall = CGlobal::getInstance()->getFont(enFont::Small  , CGlobal::getInstance()->getVideoDriver()->getScreenSize());
@@ -265,14 +264,16 @@ namespace dustbin {
                   }
                 }
                 else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-                  if (!m_bJoyOld) {
-                    m_cOld    = irr::SEvent(a_cEvent);
-                    m_bJoyOld = true;
+                  if (m_mJoyOld.find(a_cEvent.JoystickEvent.Joystick) == m_mJoyOld.end()) {
                     l_bRet    = true;
+
+                    m_mJoyOld[a_cEvent.JoystickEvent.Joystick] = irr::SEvent(a_cEvent);
+
+                    printf("%i\n", a_cEvent.JoystickEvent.Joystick);
                   }
                   else {
                     for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_BUTTONS; i++) {
-                      if (m_cOld.JoystickEvent.IsButtonPressed(i) && !a_cEvent.JoystickEvent.IsButtonPressed(i)) {
+                      if (m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.IsButtonPressed(i) && !a_cEvent.JoystickEvent.IsButtonPressed(i)) {
                         (*l_itCtrl).m_eType     = CControllerBase::enInputType::JoyButton;
                         (*l_itCtrl).m_iJoystick = a_cEvent.JoystickEvent.Joystick;
                         (*l_itCtrl).m_iButton   = i;
@@ -282,7 +283,7 @@ namespace dustbin {
 
                     if (!l_bRet) {
                       for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES; i++) {
-                        irr::s16 l_iOld = m_cOld.JoystickEvent.Axis[i];
+                        irr::s16 l_iOld = m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.Axis[i];
                         irr::s16 l_iNew = a_cEvent.JoystickEvent.Axis[i];
 
                         if (l_iNew > 16000 != l_iOld > 16000) {
@@ -303,9 +304,9 @@ namespace dustbin {
                     }
 
                     if (!l_bRet) {
-                      if (m_cOld.JoystickEvent.POV != a_cEvent.JoystickEvent.POV) {
+                      if (m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.POV != a_cEvent.JoystickEvent.POV) {
                         (*l_itCtrl).m_eType = CControllerBase::enInputType::JoyPov;
-                        (*l_itCtrl).m_iPov  = m_cOld.JoystickEvent.POV;
+                        (*l_itCtrl).m_iPov  = m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.POV;
 
                         l_bRet = true;
                       }
@@ -314,7 +315,8 @@ namespace dustbin {
                     if (l_bRet) {
                       buildUi(Parent);
                       std::get<4>(l_itLabel->second) = false;
-                      m_bJoyOld = false;
+                      
+                      m_mJoyOld.erase(a_cEvent.JoystickEvent.Joystick);
                     }
                     else l_bRet = true;
                   }
