@@ -14,7 +14,7 @@
 
 namespace dustbin {
   namespace state {
-    CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_pController(nullptr), m_pTouchCtrl(nullptr), m_pClient(nullptr), m_pInputQueue(nullptr) {
+    CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_bMenuCtrl(true), m_pController(nullptr), m_pTouchCtrl(nullptr), m_pClient(nullptr), m_pInputQueue(nullptr) {
       m_pController = new controller::CControllerMenu(-1);
 
       irr::SEvent l_cEvent;
@@ -103,7 +103,7 @@ namespace dustbin {
     bool CMenuState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
-      if (m_pController != nullptr)
+      if (m_pController != nullptr && m_bMenuCtrl)
         l_bRet = m_pController->update(a_cEvent);
 
       if (!l_bRet && m_pTouchCtrl != nullptr)
@@ -340,6 +340,14 @@ namespace dustbin {
 
         m_pClient->stateChanged(a_sMenu);
       }
+    }
+
+    /**
+    * Turn the menu controller on or off
+    * @param a_bFlag on / off flag
+    */
+    void CMenuState::enableMenuController(bool a_bFlag) {
+      m_bMenuCtrl = a_bFlag;
     }
   }
 }

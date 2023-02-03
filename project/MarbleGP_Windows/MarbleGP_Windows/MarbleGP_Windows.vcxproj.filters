@@ -1037,6 +1037,9 @@
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_ai.h">
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\IGuiControllerUiCallback.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MarbleGP_Windows.rc">

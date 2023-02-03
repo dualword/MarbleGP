@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <gui/IGuiControllerUiCallback.h>
 #include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
@@ -6,6 +7,7 @@
 #include <helpers/CMenuLoader.h>
 #include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
+#include <gui/CGuiImageList.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
 #include <irrlicht.h>
@@ -20,7 +22,7 @@ namespace dustbin {
     * This class handles the menu that acts as a profile
     * for creating / editing a player profile
     */
-    class CMenuProfileWizard : public IMenuHandler {
+    class CMenuProfileWizard : public IMenuHandler, public gui::IGuiControllerUiCallback {
       private:
         enum class enMenuStep {
           Initialize,   /**< Initial step: only used when entering the wizard */
@@ -43,11 +45,54 @@ namespace dustbin {
         irr::video::ITexture      *m_pMyRtt;    /**< Render target texture for the marble with it's custom texture */
         irr::scene::ISceneNode    *m_pMarble;   /**< The marble for the texture preview */
 
-        irr::gui::IGUIElement *m_pBtnBack;    /**< The back button */
-        irr::gui::IGUIElement *m_pBtnCancel;  /**< The cancel button */
-        irr::gui::IGUIElement *m_pBtnNext;    /**< The next button */
-        irr::gui::IGUIElement *m_pBtnSave;    /**< The save button */
-        irr::gui::IGUIImage   *m_pWarning;    /**< The warning image for the name steps */
+        irr::gui::IGUIElement *m_pBtnBack;          /**< The back button */
+        irr::gui::IGUIElement *m_pBtnCancel;        /**< The cancel button */
+        irr::gui::IGUIElement *m_pBtnNext;          /**< The next button */
+        irr::gui::IGUIElement *m_pBtnSave;          /**< The save button */
+        irr::gui::IGUIImage   *m_pWarning;          /**< The warning image for the name steps */
+        irr::gui::IGUITab     *m_pPatternDialog;    /**< The pattern selection dialog */
+        gui::CGuiImageList    *m_pPatternList;      /**< The list of texture patterns */
+
+        /**
+        * Update the pattern images starting with "m_iPatternPage"
+        * @see m_iPatternPage
+        */
+        void updatePatterns() {
+          if (m_pPatternList != nullptr) {
+            irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/patterns/patterns.xml");
+
+            if (l_pXml) {
+              std::vector<gui::CGuiImageList::SListImage> l_vPatterns;
+
+              while (l_pXml->read()) {
+                if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+                  std::string l_sNode = l_pXml->getNodeName();
+
+                  if (l_sNode == "pattern") {
+                    std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
+
+                    if (l_sPattern != "") {
+                      std::string l_sPath = "data/patterns/" + l_sPattern;
+
+                      if (m_pFs->existFile(l_sPath.c_str())) {
+                        l_vPatterns.push_back(gui::CGuiImageList::SListImage(l_sPath, l_sPattern, l_sPattern, -1));
+                      }
+                    }
+                  }
+                }
+              }
+
+              m_pPatternList->setImageList(l_vPatterns);
+
+              irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+              if (l_pPattern != nullptr)
+                m_pPatternList->setSelected(helpers::ws2s(l_pPattern->getText()), false);
+
+              l_pXml->drop();
+            }
+          }
+        }
 
         /**
         * Update the texture of the preview marble in the texture wizard step
@@ -354,6 +399,7 @@ namespace dustbin {
               m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
 
               if (m_pCtrl != nullptr) {
+                m_pCtrl->setCallback(this);
                 m_pCtrl->setText(helpers::s2ws(m_cPlayer.m_sControls).c_str());
                 m_pCtrl->setMenuManager(m_pManager);
               }
@@ -546,19 +592,22 @@ namespace dustbin {
 
       public:
         CMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler(a_pDevice, a_pManager, a_pState),
-          m_eStep     (enMenuStep::Initialize),
-          m_pGlobal   (CGlobal::getInstance()),
-          m_sColorEdit(""),
-          m_sProfile  (""),
-          m_pCtrl     (nullptr),
-          m_pMySmgr   (nullptr),
-          m_pMyRtt    (nullptr),
-          m_pMarble   (nullptr),
-          m_pBtnBack  (nullptr),
-          m_pBtnCancel(nullptr),
-          m_pBtnNext  (nullptr),
-          m_pBtnSave  (nullptr)
+          IMenuHandler    (a_pDevice, a_pManager, a_pState),
+          m_eStep         (enMenuStep::Initialize),
+          m_pGlobal       (CGlobal::getInstance()),
+          m_sColorEdit    (""),
+          m_sProfile      (""),
+          m_pCtrl         (nullptr),
+          m_pMySmgr       (nullptr),
+          m_pMyRtt        (nullptr),
+          m_pMarble       (nullptr),
+          m_pBtnBack      (nullptr),
+          m_pBtnCancel    (nullptr),
+          m_pBtnNext      (nullptr),
+          m_pBtnSave      (nullptr),
+          m_pWarning      (nullptr),
+          m_pPatternDialog(nullptr),
+          m_pPatternList  (nullptr)
         {
           m_sProfile = m_pGlobal->getGlobal("edit_profile");
           m_pGlobal->setGlobal("edit_profile", "");
@@ -569,23 +618,23 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          if (m_sProfile == "commit_profile") {
-            // ToDo: add profile when wizard is confirmed, hide "cancel" buttons
-          }
-
           m_cPlayer = data::SPlayerData();
           m_cPlayer.m_iPlayerId = 1;
 
-          if (m_sProfile != "") {  
-            m_cPlayer.deserialize(m_sProfile);
-
-            irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-            if (l_pEdit != nullptr) {
-              l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
-            }
-
-            toggleButtonVisibility();
+          if (m_sProfile == "commit_profile") {
+            m_cPlayer.m_sName = "Player 1";
+            m_cPlayer.m_sShortName = "Pl#1";
           }
+          else if (m_sProfile != "") {  
+            m_cPlayer.deserialize(m_sProfile);
+          }
+
+          irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+          if (l_pEdit != nullptr) {
+            l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
+          }
+
+          toggleButtonVisibility();
         }
 
         virtual ~CMenuProfileWizard() {
@@ -622,13 +671,14 @@ namespace dustbin {
                 std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
                 if (l_sButton == "cancel") {
-                  m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
+                  if (m_pBtnCancel != nullptr && m_pBtnCancel->isVisible())
+                    m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
                 }
                 else if (l_sButton == "save") {
-                  if (m_sProfile == "commit_profile") {
-                    // Save the profile to the settings (it's the first profile in the list)
-                    m_cPlayer.m_iPlayerId = 1;
+                  m_cPlayer.m_iPlayerId = 1;
 
+                  if (m_sProfile == "commit_profile" && m_pBtnSave != nullptr && m_pBtnSave->isVisible()) {
+                    // Save the profile to the settings (it's the first profile in the list)
                     messages::CSerializer64 l_cSerializer;
 
                     l_cSerializer.addS32(c_iProfileHead);
@@ -682,14 +732,27 @@ namespace dustbin {
                         irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(m_sColorEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
                         if (l_pEdit != nullptr) {
-                          l_pEdit->setText(helpers::s2ws(colorToString(getColorFromColorDialog())).c_str());
+                          std::wstring l_sNewColor = helpers::s2ws(colorToString(getColorFromColorDialog()));
+                          std::wstring l_sOldColor = l_pEdit->getText();
+
+                          l_pEdit->setText(l_sNewColor.c_str());
+
+                          if (m_sColorEdit == "texture_bg_nb") {
+                            irr::gui::IGUIEditBox *l_pFrame = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_nf", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                            if (l_pFrame != nullptr && l_sOldColor == l_pFrame->getText()) {
+                              l_pFrame->setText(l_sNewColor.c_str());
+                            }
+                          }
                         }
 
-                        updateMarbleTexture(helpers::ws2s(getTextureString()));
+                        m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
+                        updateMarbleTexture(m_cPlayer.m_sTexture);
                       
                         l_pColor->setVisible(false);
                         changeZLayer(0);
                       }
+
+                      m_sColorEdit = "";
                     }
                     else if (l_sButton == "btn_color_cancel") {
                       irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
@@ -704,6 +767,26 @@ namespace dustbin {
                       irr::video::SColor   c = p->getBackgroundColor();
 
                       initializeColorDialog(helpers::s2ws(colorToString(c)));
+                    }
+                    else if (l_sButton == "btn_select_pattern") {
+                      m_pPatternDialog = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("pattern_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+
+                      if (m_pPatternDialog != nullptr) {
+                        m_pPatternList = reinterpret_cast<gui::CGuiImageList *>(findElementByNameAndType("PatternList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId, m_pGui->getRootGUIElement()));
+
+                        if (m_pPatternList != nullptr) {
+                          updatePatterns();
+                          m_pPatternDialog->setVisible(true);
+                          changeZLayer(46);
+                        }
+                        else m_pPatternDialog = nullptr;
+                      }
+                    }
+                    else if (l_sButton == "btn_pattern_close") {
+                      if (m_pPatternDialog != nullptr) {
+                        m_pPatternDialog->setVisible(false);
+                        m_pPatternDialog = nullptr;
+                      }
                     }
                     else {
                       std::map<std::string, std::string> l_mButtonLinks = {
@@ -729,11 +812,6 @@ namespace dustbin {
                           initializeColorDialog(l_pEdit->getText());
                           changeZLayer(23);
                         }
-                        // irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByName(l_mButtonLinks[l_sButton], m_pGui->getRootGUIElement()));
-
-                        // if (l_pEdit != nullptr) {
-
-                        // }
                       }
                     }
                   }
@@ -759,6 +837,27 @@ namespace dustbin {
                 toggleButtonVisibility();
               }
             }
+            else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+              if (a_cEvent.UserEvent.UserData1 == c_iEventImageSelected && a_cEvent.UserEvent.UserData2 == c_iEventImageSelected && m_pPatternList != nullptr) {
+                std::string s = m_pPatternList->getSelectedData();
+
+                if (s != "") {
+                  irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+                  if (l_pPattern != nullptr)
+                    l_pPattern ->setText(helpers::s2ws(s).c_str());
+
+                  m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
+                  updateMarbleTexture(m_cPlayer.m_sTexture);
+                  changeZLayer(10);
+
+                  m_pPatternDialog->setVisible(false);
+                  m_pPatternDialog = nullptr;
+
+                  l_bRet = true;
+                }
+              }
+            }
           }
 
           return l_bRet;
@@ -776,7 +875,15 @@ namespace dustbin {
 
           return false;
         }
-    };
+        /**
+        * The callback notified when the controller configuration changes
+        * @param a_bEditing is the change because editing is started or not
+        */
+        virtual void editingController(bool a_bEditing) override {
+          printf("Editing: %s\n", a_bEditing ? "true" : "false");
+          m_pState->enableMenuController(!a_bEditing);
+        }
+   };
 
     IMenuHandler* createMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState) {
       return new CMenuProfileWizard(a_pDevice, a_pManager, a_pState);

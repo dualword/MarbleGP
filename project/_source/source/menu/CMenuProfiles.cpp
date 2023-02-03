@@ -811,6 +811,7 @@ namespace dustbin {
           l_cSerializer.addString(c_sProfileHead);
 
           for (int i = 0; i <= m_iMaxIndex; i++) {
+            m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
             if (m_aProfiles[i].m_cData.m_iPlayerId > 0 && m_aProfiles[i].m_cData.m_iPlayerId <= m_iMaxIndex + 1) {
               if (m_aProfiles[i].m_pDataRoot->isVisible()) {
                 printf("Save profile %i (\"%s\")...\n", i, m_aProfiles[i].m_cData.m_sName.c_str());
@@ -1303,18 +1304,12 @@ namespace dustbin {
                   else if (l_sSender == "btn_controls") {
                     for (int i = 0; i <= m_iMaxIndex; i++) {
                       if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pControls == a_cEvent.GUIEvent.Caller && m_pControlDialog != nullptr) {
-                        /*CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
+                        saveProfiles();
+                        CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
                         CGlobal::getInstance()->setGlobal("edit_profile", m_aProfiles[i].m_cData.serialize());
                         m_pManager->pushToMenuStack("menu_profiles");
-                        saveProfiles();
                         createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
-                        break;*/
-
-                        m_iEditing = i;
-                        m_pControlDialog->setVisible(true);
-                        updateControlDialog();
-                        changeZLayer(42);
-                        l_bRet = true;
+                        break;
                       }
                     }
                   }
@@ -1331,7 +1326,7 @@ namespace dustbin {
                     }
                   }
                   else if (l_sSender == "btn_pattern_select") {
-                  irr::SEvent l_cEvent{};
+                    irr::SEvent l_cEvent{};
                     l_cEvent.EventType = irr::EET_USER_EVENT;
                     l_cEvent.UserEvent.UserData1 = c_iEventImageSelected;
                     l_cEvent.UserEvent.UserData2 = c_iEventImageSelected;

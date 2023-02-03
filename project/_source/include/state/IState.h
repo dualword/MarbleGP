@@ -122,6 +122,13 @@ namespace dustbin {
         void willBeDeleted() {
           m_bWillBeDeleted = true;
         }
+
+        /**
+        * Turn the menu controller on or off
+        * @param a_bFlag on / off flag
+        */
+        virtual void enableMenuController(bool a_bFlag) {
+        }
     };
   }
 }

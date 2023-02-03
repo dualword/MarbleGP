@@ -19,8 +19,8 @@ namespace dustbin {
   }
   namespace gui {
 
-    class CDustbinScrollPane; /**< Forward declaration of the scroll pane */
-
+    class CDustbinScrollPane;       /**< Forward declaration of the scroll pane */
+    class IGuiControllerUiCallback; /**< Forward declaration of the callback */
     /**
     * @class CControllerUi
     * @author Christian Keimel
@@ -40,6 +40,7 @@ namespace dustbin {
         irr::SEvent               m_cOld;         /**< The old event, we want the release events to set the control */
         irr::video::ITexture     *m_pBackground;  /**< The background image */
         irr::core::recti          m_cSource;      /**< Source rectangle for the background image */
+        IGuiControllerUiCallback *m_pCallback;    /**< Callback for editing change */
 
         std::map<irr::u8, irr::SEvent> m_mJoyOld;
 
@@ -107,6 +108,12 @@ namespace dustbin {
         * Is currently editing an item active? This will block the menu controller
         */
         bool isEditing();
+
+        /**
+        * Set the callback for item editing
+        * @param a_pCallback the new callback
+        */
+        void setCallback(gui::IGuiControllerUiCallback *a_pCallback);
 
         void setMenuManager(menu::IMenuManager *a_pMenuManager);
 

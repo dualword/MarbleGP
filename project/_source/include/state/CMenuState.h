@@ -40,6 +40,8 @@ namespace dustbin {
       private:
         menu::IMenuHandler *m_pMenu;
 
+        bool m_bMenuCtrl;   /**< Menu controller enabled? */
+
         controller::CControllerMenu      *m_pController;    /**< The controller for navigating the menues with a joypad */
         controller::ICustomEventReceiver *m_pTouchCtrl;     /**< Touch controller for the menu */
 
@@ -140,6 +142,12 @@ namespace dustbin {
         * Does this state want the virtual keyboard?
         */
         virtual bool showVirtualKeyboard() override;
+
+        /**
+        * Turn the menu controller on or off
+        * @param a_bFlag on / off flag
+        */
+        virtual void enableMenuController(bool a_bFlag);
     };
   }
 }
