@@ -48,17 +48,10 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 26, 4, 29, 7" tooltip="Edit Controls">
+      <element type="MenuButton" rect="relative: 26, 4, 29, 7" tooltip="Edit Profile">
         <attributes>
-          <attribute key="Name" value="btn_controls" />
-          <attribute key="ImagePath" value="data/images/btn_gamepad.png" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="relative: 22, 4, 25, 7" tooltip="Edit Texture">
-        <attributes>
-          <attribute key="Name" value="btn_texture" />
-          <attribute key="ImagePath" value="data/images/btn_texture.png" />
+          <attribute key="Name" value="btn_edit_profile" />
+          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
         </attributes>
       </element>
       

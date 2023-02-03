@@ -10,7 +10,7 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -22, -15, 21, 19">
+      <element type="MenuBackground" rect="center: -39, -24, 39, 24">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="232, 239, 239, 255" />
@@ -18,7 +18,7 @@
         </attributes>
         
         <children>
-          <element type="staticText" rect="relative: 0, 0, 40, 3" font="big">
+          <element type="staticText" rect="center: -38, -23, 38, -20" font="big">
             <attributes>
               <attribute key="Caption" value="Choose your texture pattern" />
               <attribute key="Name" value="texture_headline" />
@@ -27,7 +27,7 @@
             </attributes>
           </element>
           
-          <element type="DustbinImageList" rect="relative: 2, 5, 41, 28" font="small">
+          <element type="DustbinImageList" rect="center: -38, -19, 38, 18" font="small">
             <attributes>
               <attribute key="Name" value="PatternList" />
               <attribute key="Rows" value="3" />
@@ -39,7 +39,7 @@
             </custom>
           </element>
           
-          <element type="MenuButton" rect="center: -2, 14, 2, 18" tooltip="Close Dialog">
+          <element type="MenuButton" rect="center: -2, 19, 2, 23" tooltip="Close Dialog">
             <attributes>
               <attribute key="Name" value="btn_pattern_close" />
               <attribute key="ImagePath" value="data/images/btn_cancel.png" />
