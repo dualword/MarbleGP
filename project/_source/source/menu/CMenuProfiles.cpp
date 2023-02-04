@@ -98,7 +98,7 @@ namespace dustbin {
           }
           else if (l_sCtrl == "DustbinTouchSteerOnly") {
             if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Touch Steer Only (Medius / High AI Help)");
+              m_pControl->setText(L"Controls: Touch Steer Only");
           }
           else if (l_sCtrl == "DustbinGyroscope") {
             if (m_pControl != nullptr)
