@@ -186,6 +186,9 @@ namespace dustbin {
 
                 if (l_pList->getVideoModeResolution(i) == l_cScreenSize)
                   m_pResolution->setSelected(i);
+                else if (l_pList->getVideoModeResolution(i).Width > l_cScreenSize.Width && l_pList->getVideoModeResolution(i).Height > l_cScreenSize.Height) {
+                  m_pResolution->setSelected(i);
+                }
               }
             }
           }
