@@ -87,24 +87,21 @@ namespace dustbin {
               createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "cup") {
+#ifdef _DEBUG
               createMenu("menu_selectcup", m_pDevice, m_pManager, m_pState);
+#else
+              m_pState->getGlobal()->setGlobal("message_headline", "To be Implemented");
+              m_pState->getGlobal()->setGlobal("message_text"    , "MarbleGP Cup is not yet implemented");
+              createMenu("menu_message", m_pDevice, m_pManager, m_pState);
+#endif
             }
             else if (l_sButton == "credits") {
               createMenu("menu_credits", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "race_replay") {
-              // m_pState->getGlobal()->setGlobal("message_text", "Race Replay is not yet implemented");
-              // createMenu("menu_message", m_pDevice, m_pManager, m_pState);
-
-              FILE *f = fopen("C:\\Users\\Brainsaw\\AppData\\Roaming\\DustbinGames\\MarbleGP\\championship_result.dat", "r");
-              char s[0xFFFF];
-              memset(s, 0, 0xFFFF);
-              fread(s, 1, 0xFFFF, f);
-              fclose(f);
-
-              m_pState->getGlobal()->setGlobal("championship", s);
-
-              createMenu("menu_finalresult", m_pDevice, m_pManager, m_pState);
+              m_pState->getGlobal()->setGlobal("message_headline", "To be Implemented");
+              m_pState->getGlobal()->setGlobal("message_text"    , "Race Replay is not yet implemented");
+              createMenu("menu_message", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "exit") {
               m_pState->setState(state::enState::Quit);

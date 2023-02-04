@@ -23,7 +23,7 @@ namespace dustbin {
       m_sName = a_sName;
     }
 
-    CControllerBase::SCtrlInput::SCtrlInput(messages::CSerializer64* a_pSerializer) {
+    CControllerBase::SCtrlInput::SCtrlInput(messages::CSerializer64* a_pSerializer) : m_fValue(0.0f) {
       std::string l_sType = a_pSerializer->getString();
 
       m_eType = l_sType == "JoyAxis" ? enInputType::JoyAxis : l_sType == "JoyButton" ? enInputType::JoyButton : l_sType == "JoyPov" ? enInputType::JoyPov : enInputType::Key;
@@ -38,7 +38,7 @@ namespace dustbin {
       m_iDirection =                 a_pSerializer->getS32();
     }
 
-    CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) {
+    CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) : m_fValue(0.0f) {
       copyFrom(a_cOther);
     }
 
@@ -53,7 +53,6 @@ namespace dustbin {
       m_iButton    = a_cOther.m_iButton;
       m_iAxis      = a_cOther.m_iAxis;
       m_iDirection = a_cOther.m_iDirection;
-      m_fValue     = a_cOther.m_fValue;
       m_iPov       = a_cOther.m_iPov;
       m_sJoystick  = a_cOther.m_sJoystick;
     }
