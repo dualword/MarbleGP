@@ -23,6 +23,7 @@
           <attribute key="Visible" value="true" />
           <attribute key="HTextAlign" value="upperLeft" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Enabled" value="false" />
         </attributes>
       </element>
       
@@ -38,6 +39,7 @@
         <attributes>
           <attribute key="Name" value="edit_abbreviation" />
           <attribute key="MaxChars" value="5" />
+          <attribute key="Enabled" value="false" />
         </attributes>
       </element>
       
@@ -48,17 +50,10 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 7, 4, 10, 7" tooltip="Edit Controls">
+      <element type="MenuButton" rect="relative: 7, 4, 10, 7" tooltip="Edit Profile">
         <attributes>
-          <attribute key="Name" value="btn_controls" />
-          <attribute key="ImagePath" value="data/images/btn_gamepad.png" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="relative: 2, 4, 5, 7" tooltip="Edit Texture">
-        <attributes>
-          <attribute key="Name" value="btn_texture" />
-          <attribute key="ImagePath" value="data/images/btn_texture.png" />
+          <attribute key="Name" value="btn_edit_profile" />
+          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
         </attributes>
       </element>
       

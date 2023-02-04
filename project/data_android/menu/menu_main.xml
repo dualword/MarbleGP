@@ -233,13 +233,6 @@ Attribute Track: ""
       <attribute key="Caption" value="Settings" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: -19, 2, -1, 6" font="big" tooltip="Review a recorded race">
-    <attributes>
-      <attribute key="Name" value="race_replay" />
-      <attribute key="Id" value="23005" />
-      <attribute key="Caption" value="Race Replay" />
-    </attributes>
-  </element>
   <element type="MenuButton" rect="center: 1, 2, 18, 6" font="big" tooltip="Take a closer look at a track of your choice">
     <attributes>
       <attribute key="Name" value="view_track" />
@@ -247,7 +240,7 @@ Attribute Track: ""
       <attribute key="Caption" value="View Track" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: -19, 7, -1, 11" font="big" tooltip="Show credits">
+  <element type="MenuButton" rect="center: -19, 2, -1, 6" font="big" tooltip="Show credits">
     <attributes>
       <attribute key="Name" value="credits" />
       <attribute key="Id" value="23007" />

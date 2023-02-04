@@ -243,13 +243,7 @@ namespace dustbin {
       m_sControls (""),
       m_sShortName("")
     {
-#ifdef _ANDROID
-      m_sControls = "DustbinTouchSteerOnly";
-      // m_sControls = "DustbinController;control;JoyButton;Forward;Gamepad;M;a;j;a;-0md;b;control;JoyButton;Backward;Gamepad;O;a;i;c;-0md;b;control;JoyAxis;Left;Gamepad;L;a;a;a;-0md;-b;control;JoyAxis;Right;Gamepad;N;a;a;a;-0md;b;control;JoyButton;Brake;Gamepad;G;a;a;a;-0md;b;control;JoyButton;Rearview;Gamepad;j;a;g;a;-0md;b;control;JoyButton;Respawn;Gamepad;n;a;h;a;-0md;b;control;JoyButton;Pause;Gamepad;t;a;m;a;-SN;b;control;JoyButton;Cancel%20Race;Gamepad;B;a;n;a;-SN;b";
-#else
-      // Default controls for new player
-      m_sControls = "DustbinController;control;Key;Forward;;M;a;a;a;-0md;b;control;Key;Backward;;O;a;a;a;-0md;b;control;Key;Left;;L;a;a;a;-0md;b;control;Key;Right;;N;a;a;a;-0md;b;control;Key;Brake;;G;a;a;a;-0md;b;control;Key;Rearview;;j;a;a;a;-0md;b;control;Key;Respawn;;n;a;a;a;-0md;b;control;Key;Pause;;t;a;a;a;-0md;b;control;Key;Cancel%20Race;;B;a;a;a;-0md;b";
-#endif
+      m_sControls = c_sDefaultControls;
     }
 
     void SPlayerData::reset() {

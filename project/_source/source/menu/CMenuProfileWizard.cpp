@@ -8,6 +8,7 @@
 #include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CGuiImageList.h>
+#include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
 #include <irrlicht.h>
@@ -333,8 +334,34 @@ namespace dustbin {
             }
 
             case enMenuStep::Controls: {
+              gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+
+              bool l_bSaved = false;
+
+              if (l_pType != nullptr && l_pImage != nullptr) {
+                unsigned     l_iSelected = l_pType->getSelected();
+                std::wstring l_sSelected = l_iSelected >= 0 && l_iSelected < l_pType->getItemCount() ? l_pType->getItem(l_iSelected) : L"";
+
+                l_pImage->setVisible(false);
+
+                std::map<std::wstring, std::string> l_mItemMap = {
+                  { L"Touch Steer Right", "DustbinTouchSteerRight" },
+                  { L"Touch Steer Left" , "DustbinTouchSteerLeft"  },
+                  { L"Touch Steer Only" , "DustbinTouchSteerOnly"  },
+                  { L"Gyroscope"        , "DustbinGyroscope"       }
+                };
+
+                for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
+                  if (l_itCtrl->first == l_sSelected) {
+                    l_bSaved = true;
+                    m_cPlayer.m_sControls = l_itCtrl->second;
+                  }
+                }
+              }
+
               // Serialize the controls and save it to m_sControls
-              if (m_pCtrl != nullptr) {
+              if (m_pCtrl != nullptr && !l_bSaved) {
                 if (m_pCtrl != nullptr) {
                   m_cPlayer.m_sControls = m_pCtrl->serialize();
                 }
@@ -363,15 +390,37 @@ namespace dustbin {
 
             case enMenuStep::Name: {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-              if (l_pEdit != nullptr)
+              if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
+                m_pGui->setFocus(l_pEdit);
+
+                irr::SEvent l_cEvent;
+                l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
+                l_cEvent.KeyInput.Shift       = false;
+                l_cEvent.KeyInput.Control     = false;
+                l_cEvent.KeyInput.Char        = 0;
+                l_cEvent.KeyInput.Key         = irr::KEY_END;
+                l_cEvent.KeyInput.PressedDown = true;
+                l_pEdit->OnEvent(l_cEvent);
+              }
               break;
             }
 
             case enMenuStep::Abbreviation: {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-              if (l_pEdit != nullptr)
+              if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sShortName).c_str());
+                m_pGui->setFocus(l_pEdit);
+
+                irr::SEvent l_cEvent;
+                l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
+                l_cEvent.KeyInput.Shift       = false;
+                l_cEvent.KeyInput.Control     = false;
+                l_cEvent.KeyInput.Char        = 0;
+                l_cEvent.KeyInput.Key         = irr::KEY_END;
+                l_cEvent.KeyInput.PressedDown = true;
+                l_pEdit->OnEvent(l_cEvent);
+              }
               break;
             }
 
@@ -389,6 +438,8 @@ namespace dustbin {
                   case data::SPlayerData::enAiHelp::BotMb2 : l_pSelector->setSelected(6); break;
                   case data::SPlayerData::enAiHelp::BotMb3 : l_pSelector->setSelected(7); break;
                 }
+
+                m_pGui->setFocus(l_pSelector);
               }
 
               updateAiHelpInfo();
@@ -400,8 +451,40 @@ namespace dustbin {
 
               if (m_pCtrl != nullptr) {
                 m_pCtrl->setCallback(this);
-                m_pCtrl->setText(helpers::s2ws(m_cPlayer.m_sControls).c_str());
                 m_pCtrl->setMenuManager(m_pManager);
+
+                if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
+                  m_pCtrl->setText(helpers::s2ws(m_cPlayer.m_sControls).c_str());
+                }
+                else {
+                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+
+                  if (l_pType != nullptr && l_pImage != nullptr) {
+                    std::vector<std::tuple<std::string, std::string, std::wstring>> l_mItemMap = {
+                      { "DustbinTouchSteerRight", "data/images/ctrl_config_touch_right.png", L"Touch Steer Right" },
+                      { "DustbinTouchSteerLeft" , "data/images/ctrl_config_touch_left.png" , L"Touch Steer Left"  },
+                      { "DustbinTouchSteerOnly" , "data/images/ctrl_config_touch_steer.png", L"Touch Steer Only"  },
+                      { "DustbinGyroscope"      , "data/images/ctrl_config_gyro.png"       , L"Gyroscope"         }
+                    };
+
+                    for (std::vector<std::tuple<std::string, std::string, std::wstring>>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
+                      if (m_cPlayer.m_sControls == std::get<0>(*l_itCtrl)) {
+                        m_pCtrl ->setVisible(false);
+                        l_pImage->setVisible(true );
+                        l_pImage->setImage(m_pDrv->getTexture(std::get<1>(*l_itCtrl).c_str()));
+
+                        for (unsigned i = 0; i < l_pType->getItemCount(); i++) {
+                          if (std::get<2>(*l_itCtrl) == l_pType->getItem(i)) {
+                            l_pType->setSelected(i);
+                            break;
+                          }
+                        }
+                        break;
+                      }
+                    }
+                  }
+                }
               }
               break;
             }
@@ -413,11 +496,15 @@ namespace dustbin {
                 std::string l_sPrefix  = m_cPlayer.m_sTexture.substr(0, l_iPos);
 
                 printf("Prefix: %s\n", l_sPrefix.c_str());
-                gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"     , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated", irr::gui::EGUIET_TAB                          , m_pGui->getRootGUIElement()));
+                gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
+                gui::CMenuButton  *l_pBtn  = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated" , irr::gui::EGUIET_TAB                            , m_pGui->getRootGUIElement()));
+
                 if (l_pMode != nullptr) {
-                  if (l_pTab != nullptr)
+                  if (l_pTab != nullptr && l_pBtn == nullptr) {
                     l_pTab->setVisible(l_sPrefix == "generate");
+                    m_pGui->getRootGUIElement()->bringToFront(l_pTab);
+                  }
 
                   if (l_sPrefix == "generate") {
                     l_pMode->setSelected(1);
@@ -527,15 +614,22 @@ namespace dustbin {
 
             if (l_pBack != nullptr)
               l_pBack->setVisible(false);
-
-            irr::gui::IGUIElement *l_pEdit = findElementByName("name", m_pGui->getRootGUIElement());
-            if (l_pEdit != nullptr)
-              m_pGui->setFocus(l_pEdit);
           }
-          else if (a_eStep == enMenuStep::Abbreviation) {
-            irr::gui::IGUIElement *l_pEdit = findElementByName("shortname", m_pGui->getRootGUIElement());
-            if (l_pEdit != nullptr)
-              m_pGui->setFocus(l_pEdit);
+          else if (a_eStep == enMenuStep::Controls) {
+            gui::CSelector *l_pType = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+            // If we find the selector for the controller type
+            // we assume that we are on Android
+            if (l_pType != nullptr) {
+              l_pType->addItem(L"Gamepad"); 
+              l_pType->addItem(L"Touch Steer Right"); 
+              l_pType->addItem(L"Touch Steer Left"); 
+
+              if (m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::Medium || m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::High)
+                l_pType->addItem(L"Touch Steer Only"); 
+
+              l_pType->addItem(L"Gyroscope");
+            }
           }
           else if (a_eStep == enMenuStep::Texture) {
             // In the texture dialog we hide the "next" button ...
@@ -574,8 +668,6 @@ namespace dustbin {
 
           m_eStep = a_eStep;
 
-          restoreDataOfWizardStep();
-
           m_pBtnBack   = findElementByName("back"  , m_pGui->getRootGUIElement());
           m_pBtnCancel = findElementByName("cancel", m_pGui->getRootGUIElement());
           m_pBtnNext   = findElementByName("next"  , m_pGui->getRootGUIElement());
@@ -587,6 +679,7 @@ namespace dustbin {
             m_pWarning->setImage(m_pDrv->getTexture("data/images/edit_warning.png"));
           }
 
+          restoreDataOfWizardStep();
           toggleButtonVisibility();
         }
 
@@ -612,8 +705,6 @@ namespace dustbin {
           m_sProfile = m_pGlobal->getGlobal("edit_profile");
           m_pGlobal->setGlobal("edit_profile", "");
 
-          changeStep(enMenuStep::Name);
-
           m_pSmgr->clear();
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
@@ -629,12 +720,7 @@ namespace dustbin {
             m_cPlayer.deserialize(m_sProfile);
           }
 
-          irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-          if (l_pEdit != nullptr) {
-            l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
-          }
-
-          toggleButtonVisibility();
+          changeStep(enMenuStep::Name);
         }
 
         virtual ~CMenuProfileWizard() {
@@ -645,7 +731,7 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
-          if (m_pCtrl != nullptr) {
+          if (m_pCtrl != nullptr && m_eStep == enMenuStep::Controls) {
             m_pCtrl->update(a_cEvent);
           }
 
@@ -788,6 +874,16 @@ namespace dustbin {
                         m_pPatternDialog = nullptr;
                       }
                     }
+                    else if (l_sButton == "btn_texture_params") {
+                      irr::gui::IGUIElement *l_pTab = findElementByName("texture_generated", m_pGui->getRootGUIElement());
+                      if (l_pTab != nullptr)
+                        l_pTab->setVisible(true);
+                    }
+                    else if (l_sButton == "btn_close_texture") {
+                      irr::gui::IGUIElement *l_pTab = findElementByName("texture_generated", m_pGui->getRootGUIElement());
+                      if (l_pTab != nullptr)
+                        l_pTab->setVisible(false);
+                    }
                     else {
                       std::map<std::string, std::string> l_mButtonLinks = {
                         { "btn_select_fg_nb"     , "texture_fg_nb"       },
@@ -823,6 +919,43 @@ namespace dustbin {
                   updateAiHelpInfo();
                 else if (l_sScrollbar == "texture_mode") {
                   updateGeneratedTexture();
+                }
+                else if (l_sScrollbar == "controller_type") {
+                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+
+                  if (l_pType != nullptr && l_pImage != nullptr) {
+                    unsigned     l_iSelected = l_pType->getSelected();
+                    std::wstring l_sSelected = l_iSelected >= 0 && l_iSelected < l_pType->getItemCount() ? l_pType->getItem(l_iSelected) : L"";
+
+                    l_pImage->setVisible(false);
+
+                    std::map<std::wstring, std::string> l_mItemMap = {
+                      { L"Touch Steer Right", "data/images/ctrl_config_touch_right.png" },
+                      { L"Touch Steer Left" , "data/images/ctrl_config_touch_left.png"  },
+                      { L"Touch Steer Only" , "data/images/ctrl_config_touch_steer.png" },
+                      { L"Gyroscope"        , "data/images/ctrl_config_gyro.png"        }
+                    };
+                    
+                    bool l_bFound = false;
+
+                    for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
+                      if (l_itCtrl->first == l_sSelected) {
+                        l_bFound = true;
+                        l_pImage->setImage(m_pDrv->getTexture(l_itCtrl->second.c_str()));
+                        l_pImage->setVisible(true);
+                      }
+                    }
+
+                    if (m_pCtrl != nullptr) {
+                      m_pCtrl->setVisible(!l_bFound);
+
+                      if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController;").size()) != "DustbinController;") {
+                        m_cPlayer.m_sControls = data::c_sDefaultControls;
+                        m_pCtrl->deserialize(m_cPlayer.m_sControls);
+                      }
+                    }
+                  }
                 }
                 else if (m_eStep == enMenuStep::Texture) {
                   if (m_sColorEdit != "") {

@@ -147,8 +147,7 @@ namespace dustbin {
       // printf("AI Control Thread ends.\n");
     }
 
-    CAiControlThread::CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn, scenenodes::CAiNode* a_pAiNode) : 
-      m_pAiNode      (a_pAiNode), 
+    CAiControlThread::CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn) : 
       m_pDynamicsOut (a_pDynamicsOut),
       m_pDynamicsIn  (a_pDynamicsIn), 
       m_iNumberOfBots(0)

@@ -125,7 +125,7 @@ namespace dustbin {
           irr::core::vector2df l_cOut = irr::core::vector2df();
           bool b = false;
 
-          if (m_p2dPath->getFirstCollisionLine(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cVelocity2d), l_cOut, l_cVelocity2d.getLength(), true, b)) {
+          if (m_p2dPath->getFirstCollisionLine(irr::core::line2df(irr::core::vector2df(0.0f, 0.0f), l_cVelocity2d), l_cOut, true, l_cVelocity2d.getLength(), b)) {
             l_cVelocity2d = l_cOut;
             b = true;
           }

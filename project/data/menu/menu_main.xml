@@ -262,13 +262,6 @@ Attribute Track: ""
       <attribute key="Caption" value="Settings" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: -22, 0, -3, 4" font="big" tooltip="Review a recorded race">
-    <attributes>
-      <attribute key="Name" value="race_replay" />
-      <attribute key="Id" value="23005" />
-      <attribute key="Caption" value="Race Replay" />
-    </attributes>
-  </element>
   <element type="MenuButton" rect="center: 4, 0, 23, 4" font="big" tooltip="Take a closer look at a track of your choice">
     <attributes>
       <attribute key="Name" value="view_track" />
@@ -276,7 +269,7 @@ Attribute Track: ""
       <attribute key="Caption" value="View Track" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: -22, 6, -3, 10" font="big" tooltip="Show credits">
+  <element type="MenuButton" rect="center: -22, 0, -3, 4" font="big" tooltip="Show credits">
     <attributes>
       <attribute key="Name" value="credits" />
       <attribute key="Id" value="23007" />
@@ -333,14 +326,4 @@ Attribute Track: ""
       <attribute key="src" value="file://data/images/dustbin.png" />
     </custom>
   </element>
-  <!-- <element type="spinBox" rect="center: -26, 16, -20, 18" font="regular">
-    <attributes>
-      <attribute key="Min" value="1" />
-      <attribute key="Max" value="10" />
-      <attribute key="DecimalPlaces" value="0" />
-    </attributes>
-    <custom>
-      <attribute key="textAlignment" value="right" />
-    </custom>
-  </element> -->
 </dialog>

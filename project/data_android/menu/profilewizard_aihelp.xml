@@ -1,0 +1,51 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Profile Wizard 3 / 5" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 5, 49, 7" font="default">
+        <attributes>
+          <attribute key="Caption" value="Profile Wizard Step 3 / 5. Select how much help you want from the game's AI." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 15, 14, 18">
+        <attributes>
+          <attribute key="Caption" value="AI Help Level:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 16, 15, 43, 18" font="huge" tooltip="Let the AI help you">
+        <attributes>
+          <attribute key="Name" value="ai_help" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="Off;Display;Low;Medium;High;AI Bot (MarbleGP);AI Bot (Marble2);AI Bot (Marble3)" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 3, 23, 49, 40">
+        <attributes>
+          <attribute key="Caption" value="Text filled with info of currently selected AI level" />
+          <attribute key="Name" value="aihelp_info" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <include file="data/menu/buttons_wizard.xml" />
+</dialog>

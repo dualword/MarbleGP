@@ -15,7 +15,7 @@
       
       <element type="staticText" rect="relative: 1, 5, 79, 7" font="default">
         <attributes>
-          <attribute key="Caption" value="Profile Wizard Step 4 / 5. Change the controls for your marble." />
+          <attribute key="Caption" value="Profile Wizard Step 4 / 5. Customize the controls of your marble." />
           <attribute key="HTextAlign" value="center" />
         </attributes>
       </element>

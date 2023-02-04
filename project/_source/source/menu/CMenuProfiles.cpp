@@ -173,8 +173,6 @@ namespace dustbin {
         irr::scene::ISceneNode* m_pMarble;      /**< The marble scene node in the texture scene */
 
         int m_iMaxIndex;    /**< The highest found index of the profile edit tabs */
-        int m_iEditing;     /**< The currently edited profile */
-        int m_iPatternPage; /**< The currently active page of the texture pattern dialog */
 
         std::map<std::string, std::tuple<std::string, irr::gui::IGUITab*>> m_mButtonLinks;    /**< This map links the button names (key) with the edit boxes (value) */
         std::map<std::string, irr::gui::IGUIEditBox* > m_mGeneratedEd;    /**< Link of buttons to their edit fields */
@@ -322,9 +320,7 @@ namespace dustbin {
             m_pMySmgr        (nullptr),
             m_pMyRtt         (nullptr),
             m_pMarble        (nullptr),
-            m_iMaxIndex      (-1), 
-            m_iEditing       (-1),
-            m_iPatternPage   (1)
+            m_iMaxIndex      (-1)
           {
             m_pState->getGlobal()->clearGui();
 

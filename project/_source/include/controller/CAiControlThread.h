@@ -8,10 +8,6 @@
 #include <irrlicht.h>
 
 namespace dustbin {
-  namespace scenenodes {
-    class CAiNode;  /**< Forward declaration of the AI node */
-  }
-
   namespace controller {
     /**
     * @class CAiControlThread
@@ -21,7 +17,6 @@ namespace dustbin {
     class CAiControlThread : public threads::IThread, public messages::IAiController {
       private:
         controller::IControllerAI *m_aControllers[17];    /**< The AI controllers, one more than possible to have a terminating "nullptr" */
-        scenenodes::CAiNode       *m_pAiNode;
         threads::COutputQueue     *m_pDynamicsOut;
         threads::CInputQueue      *m_pDynamicsIn;
 
@@ -105,7 +100,7 @@ namespace dustbin {
         virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) override;
 
       public:
-        CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn, scenenodes::CAiNode *a_pAiNode);
+        CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn);
         virtual ~CAiControlThread();
 
         void addAiMarble(int a_iMarbleId, const std::string &a_sControls, const std::string &a_sAiScriptPath);
