@@ -186,11 +186,14 @@ namespace dustbin {
 
                 if (l_pList->getVideoModeResolution(i) == l_cScreenSize)
                   m_pResolution->setSelected(i);
-                else if (l_pList->getVideoModeResolution(i).Width > l_cScreenSize.Width && l_pList->getVideoModeResolution(i).Height > l_cScreenSize.Height) {
+                else if (m_pResolution->getSelected() == -1 && l_pList->getVideoModeResolution(i).Width > l_cScreenSize.Width && l_pList->getVideoModeResolution(i).Height > l_cScreenSize.Height) {
                   m_pResolution->setSelected(i);
                 }
               }
             }
+
+            if (m_pResolution->getSelected() == -1 && m_pResolution->getItemCount() > 0)
+              m_pResolution->setSelected(m_pResolution->getItemCount() - 1);
           }
 
           updateCheckboxUI(m_cSettings.m_bFullscreen , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23011, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
