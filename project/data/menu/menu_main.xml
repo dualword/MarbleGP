@@ -326,4 +326,5 @@ Attribute Track: ""
       <attribute key="src" value="file://data/images/dustbin.png" />
     </custom>
   </element>
+  <include file="data/menu/version.xml" />
 </dialog>
