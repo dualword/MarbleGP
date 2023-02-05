@@ -36,8 +36,8 @@ namespace dustbin {
         m_cSource = irr::core::recti(irr::core::vector2di(0, 0), m_pBanners[0]->getOriginalSize());
 
         irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
-          a_cViewport.getWidth () * a_cViewport.getWidth () / 3840,
-          a_cViewport.getHeight() * a_cViewport.getHeight() / 2160
+          2 * a_cViewport.getWidth () / 3,
+          2 * a_cViewport.getHeight() / 3
         );
 
         l_cCntSize.Height = 250 * l_cCntSize.Width / 2560;
