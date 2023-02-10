@@ -8,7 +8,7 @@ g_Warnings = {
       marbles = { },
       count = 0
     },
-    checkpointid = 23004,
+    checkpointid = 23003,
     trigger_inc = 1,
     trigger_dec = 3,
     sign = 23300,
@@ -26,13 +26,13 @@ g_Warnings = {
       marbles = { },
       count = 0
     },
-    checkpointid = 23003,
+    checkpointid = 23004,
     trigger_inc = 0,
     trigger_dec = 2,
     sign = 23299,
     sign_small = 25001,
-    currenty = 180,
-    targety = 180,
+    currenty = 90,
+    targety = 90,
     last_checkpoint = -1
   }
 }
@@ -78,9 +78,7 @@ function onplayerfinished(a_Marble, a_Racetime, a_Laps)
 end
 
 function onplayerrespawn(a_Marble, a_State)
-  if a_State == 1 then
-    removeFromAll(a_Marble)
-  end
+  removeFromAll(a_Marble)
 end
 
 function onplayerwithdrawn(a_Marble)
@@ -109,10 +107,10 @@ end
 
 function adjustRotation(a_Index)
   if g_Warnings[a_Index]["trigger"]["count"] > 0 then
-    g_Warnings[a_Index]["targety"] = 60
+    g_Warnings[a_Index]["targety"] = 330
   elseif g_Warnings[a_Index]["checkpoint"]["count"] > 0 then
-    g_Warnings[a_Index]["targety"] = 300
+    g_Warnings[a_Index]["targety"] = 210
   else
-    g_Warnings[a_Index]["targety"] = 180
+    g_Warnings[a_Index]["targety"] = 90
   end
 end
