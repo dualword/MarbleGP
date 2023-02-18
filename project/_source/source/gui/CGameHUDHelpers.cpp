@@ -13,8 +13,9 @@ namespace dustbin {
     SPlayerRacetime::SPlayerRacetime() : m_iFastest(-1), m_iLastSplit(-1) {
     }
 
-    STextElement::STextElement(const irr::core::recti &a_cRect, const std::wstring &a_sText, irr::gui::IGUIFont *a_pFont, const irr::video::SColor &a_cBackground, const irr::video::SColor &a_cTextColor, irr::video::IVideoDriver *a_pDrv) :
+    STextElement::STextElement(const irr::core::recti &a_cRect, const std::wstring &a_sText, irr::gui::IGUIFont *a_pFont, const irr::video::SColor &a_cBackground, const irr::video::SColor &a_cTextColor, const irr::core::recti &a_cClip, irr::video::IVideoDriver *a_pDrv) :
       m_cThisRect  (a_cRect),
+      m_cClip      (a_cClip),
       m_sText      (a_sText),
       m_pFont      (a_pFont),
       m_cBackground(a_cBackground),
@@ -35,7 +36,7 @@ namespace dustbin {
 
     void STextElement::render() {
       if (m_bVisible) {
-        m_pDrv->draw2DRectangle(m_cBackground, m_cThisRect);
+        m_pDrv->draw2DRectangle(m_cBackground, m_cThisRect, &m_cClip);
 
         irr::core::recti        l_cTextRect = m_cThisRect;
         irr::core::dimension2du l_cTextDim  = m_pFont->getDimension(m_sText.c_str());
@@ -48,7 +49,7 @@ namespace dustbin {
           l_cTextRect.UpperLeftCorner.Y = m_cThisRect.LowerRightCorner.Y - l_cTextDim.Height;
         }
 
-        m_pFont->draw(m_sText.c_str(), l_cTextRect, m_cTextColor, m_eAlignH == irr::gui::EGUIA_CENTER, m_eAlignV == irr::gui::EGUIA_CENTER);
+        m_pFont->draw(m_sText.c_str(), l_cTextRect, m_cTextColor, m_eAlignH == irr::gui::EGUIA_CENTER, m_eAlignV == irr::gui::EGUIA_CENTER, &m_cClip);
       }
     }
 

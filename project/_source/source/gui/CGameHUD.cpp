@@ -560,11 +560,11 @@ namespace dustbin {
 
       irr::core::position2di l_pName  = irr::core::position2di(a_cRect.getCenter().X - l_cSizeName.Width / 2, a_cRect.UpperLeftCorner.Y);
 
-      m_mTextElements[enTextElements::LapHead] = STextElement(irr::core::recti(l_cPosHead, l_cSizeTop ), L"Lap"    , l_pSmall  , l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
-      m_mTextElements[enTextElements::Lap    ] = STextElement(irr::core::recti(l_cPos    , l_cSizeBot ), L"66 / 66", l_pRegular, l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
-      m_mTextElements[enTextElements::PosHead] = STextElement(irr::core::recti(l_cLapHead, l_cSizeTop ), L"Pos"    , l_pSmall  , l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
-      m_mTextElements[enTextElements::Pos    ] = STextElement(irr::core::recti(l_cLap    , l_cSizeBot ), L"0"      , l_pRegular, l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
-      m_mTextElements[enTextElements::Name   ] = STextElement(irr::core::recti(l_pName   , l_cSizeName), l_sName   , l_pRegular, l_cBackground, l_cTextColor, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::LapHead] = STextElement(irr::core::recti(l_cPosHead, l_cSizeTop ), L"Lap"    , l_pSmall  , l_cBackground, l_cTextColor, m_cRect, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::Lap    ] = STextElement(irr::core::recti(l_cPos    , l_cSizeBot ), L"66 / 66", l_pRegular, l_cBackground, l_cTextColor, m_cRect, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::PosHead] = STextElement(irr::core::recti(l_cLapHead, l_cSizeTop ), L"Pos"    , l_pSmall  , l_cBackground, l_cTextColor, m_cRect, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::Pos    ] = STextElement(irr::core::recti(l_cLap    , l_cSizeBot ), L"0"      , l_pRegular, l_cBackground, l_cTextColor, m_cRect, a_pGui->getVideoDriver());
+      m_mTextElements[enTextElements::Name   ] = STextElement(irr::core::recti(l_pName   , l_cSizeName), l_sName   , l_pRegular, l_cBackground, l_cTextColor, m_cRect, a_pGui->getVideoDriver());
 
       m_mTextElements[enTextElements::LapHead].m_eAlignH = irr::gui::EGUIA_CENTER;
       m_mTextElements[enTextElements::Lap    ].m_eAlignH = irr::gui::EGUIA_CENTER;
@@ -832,12 +832,12 @@ namespace dustbin {
 
         irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cNameRect.LowerRightCorner.X, l_cNameRect.UpperLeftCorner.Y), m_cStartNr);
 
-        m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
-        m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
-        m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
+        m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber, &m_cRect);
+        draw2dRectangleOutlineWithClipping(l_cNumber, (*it)->m_cFrme, m_cRect);
+        m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true, &m_cRect);
 
         if ((*it)->m_iState == 4 && m_pCheckered != nullptr) {
-          m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cCheckered), nullptr, nullptr, false);
+          m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cCheckered), &m_cRect, nullptr, false);
         }
 
         l_cPos.Y += m_iLapTimeOffset;
@@ -892,9 +892,9 @@ namespace dustbin {
 
             irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
 
-            m_pDrv->draw2DRectangle(m_pPlayer->m_cBack, l_cNumber);
-            m_pDrv->draw2DRectangleOutline(l_cNumber, m_pPlayer->m_cFrme);
-            m_pTimeFont->draw(m_pPlayer->m_sNumber.c_str(), l_cNumber, m_pPlayer->m_cText, true, true);
+            m_pDrv->draw2DRectangle(m_pPlayer->m_cBack, l_cNumber, &m_cRect);
+            draw2dRectangleOutlineWithClipping(l_cNumber, m_pPlayer->m_cFrme, m_cRect);
+            m_pTimeFont->draw(m_pPlayer->m_sNumber.c_str(), l_cNumber, m_pPlayer->m_cText, true, true, &m_cRect);
           }
           else {
             for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
@@ -940,9 +940,9 @@ namespace dustbin {
 
                 irr::core::recti l_cNumber = irr::core::recti(irr::core::position2di(l_cRects[i].LowerRightCorner.X, l_cRects[i].UpperLeftCorner.Y), irr::core::dimension2du(m_cDefSize.Height, l_cRects[i].getHeight()));
 
-                m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber);
-                m_pDrv->draw2DRectangleOutline(l_cNumber, (*it)->m_cFrme);
-                m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true);
+                m_pDrv->draw2DRectangle((*it)->m_cBack, l_cNumber, &m_cRect);
+                draw2dRectangleOutlineWithClipping(l_cNumber, (*it)->m_cFrme, m_cRect);
+                m_pTimeFont->draw((*it)->m_sNumber.c_str(), l_cNumber, (*it)->m_cText, true, true, &m_cRect);
 
                 break;
               }
@@ -954,6 +954,53 @@ namespace dustbin {
 
     std::wstring CGameHUD::getDeficitString(int a_iDeficit) {
       return helpers::convertToTime(a_iDeficit) + L" ";
+    }
+
+    /**
+    * Draw a 2d rectangle with a clipping rect (just especially for the game HUD, this is not an universal method for this)
+    * @param a_cRect the rectangle to draw
+    * @param a_cColor the color of the rectangle
+    * @param a_cClip the clipping rectangle
+    */
+    void CGameHUD::draw2dRectangleOutlineWithClipping(const irr::core::recti& a_cRect, const irr::video::SColor& a_cColor, const irr::core::recti& a_cClip) {
+      irr::core::line2di l_cLines[] = {
+        irr::core::line2di(irr::core::vector2di(a_cRect.UpperLeftCorner .X, a_cRect.UpperLeftCorner .Y), irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner .Y)),
+        irr::core::line2di(irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner .Y), irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.LowerRightCorner.Y)),
+        irr::core::line2di(irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.LowerRightCorner.Y), irr::core::vector2di(a_cRect.UpperLeftCorner .X, a_cRect.LowerRightCorner.Y)),
+        irr::core::line2di(irr::core::vector2di(a_cRect.UpperLeftCorner .X, a_cRect.LowerRightCorner.Y), irr::core::vector2di(a_cRect.UpperLeftCorner .X, a_cRect.UpperLeftCorner .Y))
+      };
+
+      for (int i = 0; i < 4; i++) {
+        if (a_cClip.isPointInside(l_cLines[i].start) && a_cClip.isPointInside(l_cLines[i].end)) {
+          m_pDrv->draw2DLine(l_cLines[i].start, l_cLines[i].end, a_cColor);
+        }
+        else {
+          switch (i) {
+            case 0:
+              // The horizontal line is outside, dont't draw
+              break;
+
+            case 1:
+              // Vertical line can either be completely outside or the lower point is outside
+              if (a_cRect.isPointInside(l_cLines[1].start)) {
+                m_pDrv->draw2DLine(l_cLines[1].start, irr::core::vector2di(l_cLines[1].start.X, a_cRect.LowerRightCorner.Y), a_cColor);
+              }
+              break;
+
+            case 2:
+              // We just handle the lines being moved out at the bottom,
+              // so if this horziontal line cannot be partly outside
+              break;
+
+            case 3:
+              // Second vertical line, can again be partly outside
+              if (a_cRect.isPointInside(l_cLines[i].end)) {
+                m_pDrv->draw2DLine(irr::core::vector2di(l_cLines[3].start.X, a_cRect.LowerRightCorner.Y), l_cLines[3].end, a_cColor);
+              }
+              break;
+          }
+        }
+      }
     }
 
     void CGameHUD::updateRanking() {

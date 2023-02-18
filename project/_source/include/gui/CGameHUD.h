@@ -111,6 +111,14 @@ namespace dustbin {
 
         std::wstring getDeficitString(int a_iDeficit);
 
+        /**
+        * Draw a 2d rectangle with a clipping rect
+        * @param a_cRect the rectangle to draw
+        * @param a_cColor the color of the rectangle
+        * @param a_cClip the clipping rectangle
+        */
+        void draw2dRectangleOutlineWithClipping(const irr::core::recti &a_cRect, const irr::video::SColor &a_cColor, const irr::core::recti &a_cClip);
+
       protected:
         /**
         * This function receives messages of type "PlayerRespawn"

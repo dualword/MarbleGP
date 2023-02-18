@@ -20,6 +20,7 @@ namespace dustbin {
     */
     struct STextElement {
       irr::core::recti          m_cThisRect;    /**< Screen rect of the element */
+      irr::core::recti          m_cClip;        /**< The clipping rectangle */
       std::wstring              m_sText;        /**< Text of the element */
       irr::gui::IGUIFont       *m_pFont;        /**< Font of the text element */
       irr::video::SColor        m_cBackground;  /**< The background color*/
@@ -29,7 +30,7 @@ namespace dustbin {
       irr::gui::EGUI_ALIGNMENT  m_eAlignH;      /**< Horizontal alignment */
       bool                      m_bVisible;     /**< Is this text element visible? */
 
-      STextElement(const irr::core::recti &a_cRect, const std::wstring &a_sText, irr::gui::IGUIFont *a_pFont, const irr::video::SColor &a_cBackground, const irr::video::SColor &a_cTextColor, irr::video::IVideoDriver *a_pDrv);
+      STextElement(const irr::core::recti &a_cRect, const std::wstring &a_sText, irr::gui::IGUIFont *a_pFont, const irr::video::SColor &a_cBackground, const irr::video::SColor &a_cTextColor, const irr::core::recti &a_cClip, irr::video::IVideoDriver *a_pDrv);
 
       STextElement();
 
