@@ -61,9 +61,6 @@
     <Filter Include="Quelldateien\state">
       <UniqueIdentifier>{5b039a50-e530-4ac0-aa0c-af0c3201d559}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\gameclasses">
-      <UniqueIdentifier>{ad1a854d-ccf0-4b90-9664-05d491250752}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\gameclasses">
       <UniqueIdentifier>{76812ff3-8ec2-4d2f-94c1-1469aaf84b69}</UniqueIdentifier>
     </Filter>
@@ -144,6 +141,9 @@
     </Filter>
     <Filter Include="Quelldateien\gui\hud_items">
       <UniqueIdentifier>{32232ba1-fe57-4ddd-ac16-5e5836c71480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\gameclasses">
+      <UniqueIdentifier>{ad1a854d-ccf0-4b90-9664-05d491250752}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -630,6 +630,9 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuProfileWizard.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CTutorialHUD.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1038,6 +1041,9 @@
       <Filter>Headerdateien\_generated\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\IGuiControllerUiCallback.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CTutorialHUD.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>

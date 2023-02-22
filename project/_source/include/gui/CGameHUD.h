@@ -38,7 +38,7 @@ namespace dustbin {
     * all necessary information for the player
     */
     class CGameHUD : public irr::gui::IGUIElement, public messages::IGameHUD {
-      private:
+      protected:
         int                        m_iMarble;       /**< The marble ID of the player */
         int                        m_iLapCnt;       /**< The number of laps */
         int                        m_iPlayers;      /**< The number of players for the ranking */
@@ -287,6 +287,15 @@ namespace dustbin {
         * Start the fade-out at the end of the race
         */
         void startFinalFadeOut();
+
+        /**
+        * Callback if a trigger was triggered. This method is only
+        * implemented in the tutorial HUD
+        * @param a_iObjectId the triggering object
+        * @param a_iTriggerId the ID of the trigger
+        * @see CTutorialHUD::triggerCallback
+        */
+        virtual void triggerCallback(int a_iObjectId, int a_iTriggerId);
     };
   }
 }

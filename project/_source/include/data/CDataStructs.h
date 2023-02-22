@@ -160,10 +160,11 @@ namespace dustbin {
         Replay      /**< The race is a race replay */
       };
 
-      enType      m_eType;    /**< The type of race */
-      std::string m_sTrack;   /**< The track */
-      int         m_iLaps;    /**< The number of laps */
-      int         m_iClass;   /**< The race class */
+      enType      m_eType;        /**< The type of race */
+      std::string m_sTrack;       /**< The track */
+      int         m_iLaps;        /**< The number of laps */
+      int         m_iClass;       /**< The race class */
+      bool        m_bIsTutorial;  /**< Is this a tutorial race? If so we create a CTutorialHUD instead of a CGameHUD instance */
 
       SGameData();
       SGameData(enType a_eType, const std::string &a_sTrack, int a_iLaps, int a_iClass);

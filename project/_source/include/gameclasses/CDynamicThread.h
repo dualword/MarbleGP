@@ -188,10 +188,11 @@ namespace dustbin {
         void sendMessageFromLUA(int a_iNumberOne, int a_iNumbetTwo, const std::string &a_sData);
 
         /**
-        * Get the race result
-        * @return the race result
+        * Send a trigger message to the UI thread
+        * @param a_iTriggerID ID of the trigger
+        * @param a_iObjectID the object that has triggered
         */
-        // const std::vector<data::SRacePlayer *> getRaceResult();
+        void sendTriggerToUI(int a_iTriggerID, int a_iObjectID);
 
         /**
         * Retrieve the world of the race

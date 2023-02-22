@@ -1173,5 +1173,16 @@ namespace dustbin {
       if (m_pFade != nullptr)
         m_pFade->setFadeFlag(CHudFade::enFade::RaceEnd, true);
     }
+
+    /**
+    * Callback if a trigger was triggered. This method is only
+    * implemented in the tutorial HUD
+    * @param a_iObjectId the triggering object
+    * @param a_iTriggerId the ID of the trigger
+    * @see CTutorialHUD::triggerCallback
+    */
+    void CGameHUD::triggerCallback(int a_iObjectId, int a_iTriggerId) {
+      // Nothing to do here
+    }
   }
 }

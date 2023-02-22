@@ -29,6 +29,7 @@
 #include <data/CDataStructs.h>
 #include <state/CGameState.h>
 #include <state/CMenuState.h>
+#include <gui/CTutorialHUD.h>
 #include <gui/CGameHUD.h>
 #include <CMainClass.h>
 #include <CGlobal.h>
@@ -1240,6 +1241,12 @@ namespace dustbin {
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
         if ((*it)->m_pController != nullptr)
           (*it)->m_pController->onTrigger(a_TriggerId, a_ObjectId);
+
+        if ((*it)->m_pMarble                      != nullptr &&
+            (*it)->m_pMarble->m_pViewport         != nullptr &&
+            (*it)->m_pMarble->m_pViewport->m_pHUD != nullptr) {
+          (*it)->m_pMarble->m_pViewport->m_pHUD->triggerCallback(a_ObjectId, a_TriggerId);
+        }
       }
     }
 
@@ -1325,7 +1332,11 @@ namespace dustbin {
       m_pSoundIntf->startGame();
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-        it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+
+        if (m_cGameData.m_bIsTutorial)
+          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+        else
+          it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
 
         controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();
         if (l_pCtrl != nullptr) {

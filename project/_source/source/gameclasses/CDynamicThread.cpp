@@ -1162,6 +1162,16 @@ namespace dustbin {
     }
 
     /**
+    * Send a trigger message to the UI thread
+    * @param a_iTriggerID ID of the trigger
+    * @param a_iObjectID the object that has triggered
+    */
+    void CDynamicThread::sendTriggerToUI(int a_iTriggerID, int a_iObjectID) {
+      sendTrigger(a_iObjectID, a_iTriggerID, m_pOutputQueue);
+    }
+
+
+    /**
     * Retrieve the world of the race
     * @return the world of the race
     */

@@ -101,6 +101,7 @@ namespace dustbin {
     const irr::s32 c_iGameTrack = -152;   /**< The track of the upcoming race */
     const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
     const irr::s32 c_iGameClass = -154;   /**< The class of the race */
+    const irr::s32 c_iTutorial  = -155;   /**< Is this race a tutorial race? */
 
     // Marble AI Class
     const irr::s32 c_iMarbleData  = -170;   /**< Header for the Marble AI data */
@@ -461,10 +462,10 @@ namespace dustbin {
       return true;
     }
 
-    SGameData::SGameData() : m_eType(enType::Local), m_sTrack(""), m_iLaps(1), m_iClass(0) {
+    SGameData::SGameData() : m_eType(enType::Local), m_sTrack(""), m_iLaps(1), m_iClass(0), m_bIsTutorial(false) {
     }
 
-    SGameData::SGameData(enType a_eType, const std::string& a_sTrack, int a_iLaps, int a_iClass) : m_eType(a_eType), m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_iClass(a_iClass) {
+    SGameData::SGameData(enType a_eType, const std::string& a_sTrack, int a_iLaps, int a_iClass) : m_eType(a_eType), m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_iClass(a_iClass), m_bIsTutorial(false) {
     }
 
     SGameData::SGameData(const std::string& a_sData) {
@@ -491,6 +492,10 @@ namespace dustbin {
 
             case c_iGameClass:
               m_iClass = l_cSerializer.getS32();
+              break;
+
+            case c_iTutorial:
+              m_bIsTutorial = l_cSerializer.getS32() != 0;
               break;
 
             default:
@@ -522,6 +527,10 @@ namespace dustbin {
       // The race class
       l_cSerializer.addS32(c_iGameClass);
       l_cSerializer.addS32(m_iClass);
+
+      // Is this race a tutorial?
+      l_cSerializer.addS32(c_iTutorial);
+      l_cSerializer.addS32(m_bIsTutorial ? 1 : 0);
 
       return l_cSerializer.getMessageAsString();
     }

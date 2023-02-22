@@ -117,6 +117,13 @@
               { "name": "NumberTwo", "type": "int"        , "comment": "Other number for any information" },
               { "name": "Data"     , "type": "std::string", "comment": "String for any further information" }
             ]
+          },
+          "sendtrigger": {
+            "comment": "A method to forward a trigger to the game state",
+            "arguments": [
+              { "name": "TriggerId", "type": "int", "comment": "The ID of the trigger" },
+              { "name": "ObjectId" , "type": "int", "comment": "The object that has triggered" }
+            ]
           }
         },
         "lua_none": {

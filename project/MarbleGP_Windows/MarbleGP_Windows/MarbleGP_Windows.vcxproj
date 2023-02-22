@@ -116,6 +116,7 @@
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGameHUDHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CTutorialHUD.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CVirtualKeyboard.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp" />
@@ -282,6 +283,7 @@
     <ClInclude Include="..\..\_source\include\gui\CDustbinScrollPane.h" />
     <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiTextField.h" />
+    <ClInclude Include="..\..\_source\include\gui\CTutorialHUD.h" />
     <ClInclude Include="..\..\_source\include\gui\CVirtualKeyboard.h" />
     <ClInclude Include="..\..\_source\include\gui\CButtonRenderer.h" />
     <ClInclude Include="..\..\_source\include\gui\CClipImage.h" />

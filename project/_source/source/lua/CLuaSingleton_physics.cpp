@@ -171,6 +171,16 @@ namespace dustbin {
     }
 
     /**
+    * A method to forward a trigger to the game state
+    * @param The ID of the trigger
+    * @param The object that has triggered
+    */
+    void CLuaSingleton_physics::sendtrigger(int a_TriggerId, int a_ObjectId) {
+      if (m_dynamics != nullptr)
+        m_dynamics->sendTriggerToUI(a_TriggerId, a_ObjectId);
+    }
+
+    /**
     * Set the ODE world this singleton can modify
     * @param The world
     */
