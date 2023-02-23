@@ -4,7 +4,7 @@
 namespace dustbin {
   namespace gui {
     CTutorialHUD::CTutorialHUD(gameclasses::SPlayer* a_pPlayer, const irr::core::recti& a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment* a_pGui, std::vector<gameclasses::SPlayer*>* a_vRanking) :
-      CGameHUD(a_pPlayer, a_cRect, a_iLapCnt, a_pGui, a_vRanking), m_iCurrent(-1)
+      CGameHUD(a_pPlayer, a_cRect, a_iLapCnt, a_pGui, a_vRanking), m_iCurrent(0)
     {
     }
 
@@ -20,10 +20,13 @@ namespace dustbin {
     * @see CGameHUD::triggerCallback
     */
     void CTutorialHUD::triggerCallback(int a_iObjectId, int a_iTriggerId) {
-      if (a_iObjectId == m_iMarble)
-        m_iCurrent = a_iTriggerId;
+      if (a_iObjectId == m_iMarble) {
+        if (a_iTriggerId == m_iCurrent + 1 || (a_iTriggerId == 1 && m_iCurrent == 7)) {
+          m_iCurrent = a_iTriggerId;
 
-      printf("Got Trigger %i\n", a_iTriggerId);
+          printf("Got Trigger %i\n", a_iTriggerId);
+        }
+      }
     }
 
     /**
