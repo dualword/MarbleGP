@@ -5,6 +5,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace threads {
+    class COutputQueue;
+  }
+
   namespace gui {
     /**
     * @class CTutorialHUD
@@ -15,10 +19,17 @@ namespace dustbin {
       private:
         int m_iCurrent;   /**< The Current tutorial Step */
         
-        std::map<int, irr::gui::IGUIElement *> m_pTips; /**< The root elements for the tutorial tip text */
+        std::map<int, std::string> m_mHints; /**< The tutorial texts */
+
+        irr::gui::IGUITab        *m_pRoot;    /**< The root GUI element for the tutorial hints */
+        irr::gui::IGUIStaticText *m_pHint;    /**< The text GUI element for the tutorial hints */
+
+        threads::COutputQueue *m_pQueue;
+
+        void pauseGame();
 
       public:
-        CTutorialHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);
+        CTutorialHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking, threads::COutputQueue *a_pQueue);
         virtual ~CTutorialHUD();
 
 

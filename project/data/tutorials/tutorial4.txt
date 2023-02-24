@@ -1,0 +1,1 @@
+Now you are trapped. This should normally never happen, but in case you jump far off the track or get stuck in a situation where it's hard to get out you may remember this: keep the manual respawn button pressed for two seconds to initiate a manual respawn.

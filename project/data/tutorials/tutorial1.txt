@@ -1,0 +1,1 @@
+The first step to understand MarbleGP is to know which way to go. You must pass all checkpoints of a lap in the correct order. The next checkpoint is highlighted in green color and comes with a green / yellow flashlight.

@@ -1334,7 +1334,7 @@ namespace dustbin {
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
 
         if (m_cGameData.m_bIsTutorial)
-          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition, m_pOutputQueue);
         else
           it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
 

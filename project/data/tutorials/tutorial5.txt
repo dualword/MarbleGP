@@ -1,0 +1,1 @@
+In front of your marble you can see a rotating object. Some tracks have these moving obstacles and you should try to avoid getting hit by them as they either stun you or even trigger a respawn.
