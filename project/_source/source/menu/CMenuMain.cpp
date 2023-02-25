@@ -96,30 +96,7 @@ namespace dustbin {
 #endif
             }
             else if (l_sButton == "credits") {
-#ifdef _DEBUG
-              data::SGameData l_cData;
-              l_cData.m_eType       = data::SGameData::enType::Local;
-              l_cData.m_iClass      = 0;
-              l_cData.m_iLaps       = 1;
-              l_cData.m_sTrack      = "tutorial";
-              l_cData.m_bIsTutorial = true;
-
-              CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
-
-              data::SGameSettings l_cSettings;
-
-              std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
-              l_vProfiles[0].m_iPlayerId = 1;
-              l_vProfiles[0].m_iViewPort = 1;
-
-              data::SRacePlayers l_cPlayers;
-              l_cPlayers.m_vPlayers.push_back(l_vProfiles[0]);
-
-              CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
-              m_pState->setState(state::enState::Game);
-#else
               createMenu("menu_credits", m_pDevice, m_pManager, m_pState);
-#endif
             }
             else if (l_sButton == "race_replay") {
               m_pState->getGlobal()->setGlobal("message_headline", "To be Implemented");
