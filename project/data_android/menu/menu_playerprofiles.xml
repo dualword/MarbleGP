@@ -43,6 +43,13 @@
         </attributes>
       </element>
       
+      <element type="MenuButton" rect="relative: 37, 4, 40, 7"  tooltip="Play Tutorial with this Profile">
+        <attributes>
+          <attribute key="Name" value="btn_play_tutorial" />
+          <attribute key="ImagePath" value="data/images/btn_tutorial.png" />
+        </attributes>
+      </element>
+      
       <element type="MenuButton" rect="relative: 41, 4, 44, 7" tooltip="Remove Player Profile">
         <attributes>
           <attribute key="Name" value="btn_delete" />
@@ -57,7 +64,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 11, 4, 40, 7" font="regular">
+      <element type="staticText" rect="relative: 11, 4, 37, 7" font="regular">
         <attributes>
           <attribute key="Name" value="label_controls" />
           <attribute key="VTextAlign" value="center" />
