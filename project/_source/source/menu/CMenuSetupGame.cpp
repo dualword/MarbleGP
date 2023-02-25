@@ -204,6 +204,8 @@ namespace dustbin {
 
           m_pOk = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
+          updateSelectedPlayers();
+
           printf("Ready.\n");
         }
 
