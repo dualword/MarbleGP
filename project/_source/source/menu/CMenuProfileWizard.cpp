@@ -8,6 +8,7 @@
 #include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CGuiImageList.h>
+#include <data/CDataStructs.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
@@ -31,7 +32,8 @@ namespace dustbin {
           Abbreviation, /**< Second step: pick an abbreviation for the ranking display during race */
           AiHelp,       /**< Third step: define the AI help for the player */
           Controls,     /**< Fourth step: define the profile's controls */
-          Texture       /**< Fifth step: create a custom texture (if wanted) */
+          Texture,      /**< Fifth step: create a custom texture (if wanted) */
+          Tutorial      /**< Sixth step: Do you want to play the tutorial? (only available if the wizard was started because no profiles have been found) */
         };
 
         enMenuStep   m_eStep;         /**< The current step of the wizard */
@@ -585,10 +587,10 @@ namespace dustbin {
           }
 
           if (m_pBtnCancel != nullptr)
-            m_pBtnCancel->setVisible(m_sProfile != "commit_profile");
+            m_pBtnCancel->setVisible(m_sProfile != "commit_profile" || m_eStep == enMenuStep::Tutorial);
 
           if (m_pBtnSave != nullptr)
-            m_pBtnSave->setVisible(m_eStep == enMenuStep::Texture);
+            m_pBtnSave->setVisible(m_eStep == enMenuStep::Texture || m_eStep == enMenuStep::Tutorial);
         }
 
         /**
@@ -605,7 +607,8 @@ namespace dustbin {
                    a_eStep == enMenuStep::Abbreviation ? "data/menu/profilewizard_shortname.xml" :
                    a_eStep == enMenuStep::AiHelp       ? "data/menu/profilewizard_aihelp.xml"    :
                    a_eStep == enMenuStep::Controls     ? "data/menu/profilewizard_controls.xml"  :
-                   a_eStep == enMenuStep::Texture      ? "data/menu/profilewizard_texture.xml"   : "",
+                   a_eStep == enMenuStep::Texture      ? "data/menu/profilewizard_texture.xml"   :
+                   a_eStep == enMenuStep::Tutorial     ? "data/menu/profilewizard_tutorial.xml"  : "",
             m_pGui->getRootGUIElement(), m_pGui
           );
 
@@ -761,28 +764,53 @@ namespace dustbin {
                     m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
                 }
                 else if (l_sButton == "save") {
-                  m_cPlayer.m_iPlayerId = 1;
+                  if (m_eStep != enMenuStep::Tutorial) {
+                    m_cPlayer.m_iPlayerId = 1;
 
-                  if (m_sProfile == "commit_profile" && m_pBtnSave != nullptr && m_pBtnSave->isVisible()) {
-                    // Save the profile to the settings (it's the first profile in the list)
-                    messages::CSerializer64 l_cSerializer;
+                    if (m_sProfile == "commit_profile" && m_pBtnSave != nullptr && m_pBtnSave->isVisible()) {
+                      // Save the profile to the settings (it's the first profile in the list)
+                      messages::CSerializer64 l_cSerializer;
 
-                    l_cSerializer.addS32(c_iProfileHead);
-                    l_cSerializer.addString(c_sProfileHead);
+                      l_cSerializer.addS32(c_iProfileHead);
+                      l_cSerializer.addString(c_sProfileHead);
 
-                    l_cSerializer.addS32(c_iProfileStart);
-                    l_cSerializer.addString(m_cPlayer.serialize());
-                    l_cSerializer.addS32(c_iProfileEnd);
+                      l_cSerializer.addS32(c_iProfileStart);
+                      l_cSerializer.addString(m_cPlayer.serialize());
+                      l_cSerializer.addS32(c_iProfileEnd);
 
-                    l_cSerializer.addS32(c_iAllProfileEnd);
+                      l_cSerializer.addS32(c_iAllProfileEnd);
 
-                    m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
+                      m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
+                      changeStep(enMenuStep::Tutorial);
+                    }
+                    else {
+                      CGlobal::getInstance()->setGlobal("edited_profile", m_cPlayer.serialize());                    
+                      createMenu(m_pManager->popMenuStack(), m_pDevice,m_pManager, m_pState);
+                    }
                   }
                   else {
-                    CGlobal::getInstance()->setGlobal("edited_profile", m_cPlayer.serialize());                    
+                    data::SGameData l_cData;
+
+                    l_cData.m_eType       = data::SGameData::enType::Local;
+                    l_cData.m_iClass      = 0;
+                    l_cData.m_iLaps       = 1;
+                    l_cData.m_sTrack      = "tutorial";
+                    l_cData.m_bIsTutorial = true;
+
+                    CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+
+                    data::SGameSettings l_cSettings;
+
+                    m_cPlayer.m_iViewPort = 1;
+                    m_cPlayer.m_iGridPos  = 1;
+                    m_cPlayer.m_iPlayerId = 1;
+
+                    data::SRacePlayers l_cPlayers;
+                    l_cPlayers.m_vPlayers.push_back(m_cPlayer);
+
+                    CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
+                    m_pState->setState(state::enState::Game);
                   }
-                    
-                  createMenu(m_pManager->popMenuStack(), m_pDevice,m_pManager, m_pState);
                 }
                 else if (l_sButton == "next") {
                   switch (m_eStep) {

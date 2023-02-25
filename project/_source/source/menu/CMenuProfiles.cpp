@@ -48,6 +48,7 @@ namespace dustbin {
 
       gui::CMenuButton *m_pDelete;      /**< The "remove profile" button */
       gui::CMenuButton *m_pEdit;        /**< The "edit controls" button */
+      gui::CMenuButton *m_pTutorial;    /**< The "play tutorial" button */
       gui::CMenuButton *m_pAddProfile;  /**< The "add profile" button */
 
       data::SPlayerData m_cData;   /**< The Player Data structure linked to this profile UI */
@@ -63,18 +64,18 @@ namespace dustbin {
         m_pLblAiHelp  (nullptr),
         m_pDelete     (nullptr),
         m_pEdit       (nullptr),
+        m_pTutorial   (nullptr),
         m_pAddProfile (nullptr)
       {
       }
 
       bool isValid() {
         return m_pAddProfile  != nullptr &&
-               m_pEdit    != nullptr &&
+               m_pEdit        != nullptr &&
                m_pDataRoot    != nullptr &&
                m_pDelete      != nullptr &&
                m_pName        != nullptr &&
                m_pRoot        != nullptr &&
-               m_pEdit        != nullptr &&
                m_pShort       != nullptr;
       }
 
@@ -404,12 +405,13 @@ namespace dustbin {
 
                 m_aProfiles[i].m_pDataRoot    = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("tab"              , irr::gui::EGUIET_TAB                            , l_pRoot));
                 m_aProfiles[i].m_pName        = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_name"        , irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
-                m_aProfiles[i].m_pShort       = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_abbreviation", irr::gui::EGUIET_EDIT_BOX, l_pRoot));
+                m_aProfiles[i].m_pShort       = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_abbreviation", irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
                 m_aProfiles[i].m_pControl     = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_controls"   , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
                 m_aProfiles[i].m_pTextureType = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_texture"    , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
                 m_aProfiles[i].m_pLblAiHelp   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_aihelp"     , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
                 m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_delete"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 m_aProfiles[i].m_pEdit        = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_edit_profile" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pTutorial    = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_play_tutorial", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 m_aProfiles[i].m_pAddProfile  = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_add"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
 
                 if (m_aProfiles[i].isValid()) {
@@ -621,6 +623,37 @@ namespace dustbin {
                         m_pManager->pushToMenuStack("menu_profiles");
                         createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
                         break;
+                      }
+                    }
+                  }
+                  else if (l_sSender == "btn_play_tutorial") {
+                    saveProfiles();
+
+                    for (int i = 0; i <= m_iMaxIndex; i++) {
+                      if (m_aProfiles[i].m_pTutorial == a_cEvent.GUIEvent.Caller) {
+                        data::SGameData l_cData;
+
+                        l_cData.m_eType       = data::SGameData::enType::Local;
+                        l_cData.m_iClass      = 0;
+                        l_cData.m_iLaps       = 1;
+                        l_cData.m_sTrack      = "tutorial";
+                        l_cData.m_bIsTutorial = true;
+
+                        CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+
+                        data::SGameSettings l_cSettings;
+
+                        m_aProfiles[i].m_cData.m_iViewPort = 1;
+                        m_aProfiles[i].m_cData.m_iGridPos  = 1;
+                        m_aProfiles[i].m_cData.m_iPlayerId = 1;
+
+                        data::SRacePlayers l_cPlayers;
+                        l_cPlayers.m_vPlayers.push_back(m_aProfiles[i].m_cData);
+
+                        CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
+                        
+                        m_pState->setState(state::enState::Game);
+                        m_pManager->pushToMenuStack("menu_profiles");
                       }
                     }
                   }

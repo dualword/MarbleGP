@@ -1,0 +1,48 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - Profile Wizard" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 5, 79, 15" font="default">
+        <attributes>
+          <attribute key="Caption" value="Do you want to play a basic tutorial to get used to MarbleGP? You can start the tutorial later from the Profiles menu if you don't want to play it now." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="lowermiddle: -1, -10, 3, -6" tooltip="Skip Tutorial">
+        <attributes>
+          <attribute key="Name" value="cancel" />
+          <attribute key="Id" value="20002" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
+        <custom>
+          <attribute key="Default" value="true" />
+        </custom>
+      </element>
+      
+      <element type="MenuButton" rect="lowermiddle: 9, -10, 13, -6" tooltip="Play Tutorial">
+        <attributes>
+          <attribute key="Name" value="save" />
+          <attribute key="Id" value="20004" />
+          <attribute key="ImagePath" value="data/images/btn_ok.png" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <custom>
+          <attribute key="Default" value="true" />
+        </custom>
+      </element>
+      
+    </children>
+  </element>
+</dialog>

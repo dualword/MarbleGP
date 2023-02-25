@@ -65,8 +65,9 @@ namespace dustbin {
 
       l_cRect = irr::core::recti(irr::core::vector2di(0, m_pRoot->getAbsoluteClippingRect().getHeight() - l_cSize.Height), irr::core::dimension2du(m_pRoot->getAbsoluteClippingRect().getWidth(), l_cSize.Height));
 
-      irr::gui::IGUIStaticText *l_pContinue = CGlobal::getInstance()->getGuiEnvironment()->addStaticText(l_sContinue.c_str(), l_cRect, false, true, m_pRoot);
-      l_pContinue->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+      m_pNext = CGlobal::getInstance()->getGuiEnvironment()->addStaticText(l_sContinue.c_str(), l_cRect, false, true, m_pRoot);
+      m_pNext->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+      m_pNext->setVisible(false);
     }
 
     CTutorialHUD::~CTutorialHUD() {
@@ -86,10 +87,11 @@ namespace dustbin {
     * @see CGameHUD::triggerCallback
     */
     void CTutorialHUD::triggerCallback(int a_iObjectId, int a_iTriggerId) {
-      int l_iNextTrigger = 0;
-
       if (a_iObjectId == m_iMarble && m_pHint != nullptr) {
         if (a_iTriggerId == m_iCurrent + 1) {
+          if (m_pNext != nullptr)
+            m_pNext->setVisible(true);
+
           if (m_mHintObj.find(m_iCurrent) != m_mHintObj.end())
             m_mHintObj[m_iCurrent]->setVisible(false);
 
@@ -103,22 +105,9 @@ namespace dustbin {
             pauseGame();
           }
         }
-        else if (a_iTriggerId == 1 && m_iCurrent == 7 && m_mHints.find(8) != m_mHints.end()) {
-          m_pHint->setText(helpers::s2ws(m_mHints[8]).c_str());
-          m_iCurrent = 8;
-
-          if (m_mHintObj.find(1) != m_mHintObj.end()) {
-            m_mHintObj[1]->setVisible(true);
-          }
-
-          pauseGame();
-        }
       }
 
-      if (m_iCurrent < 7)
-        l_iNextTrigger = m_iCurrent + 1;
-      else
-        l_iNextTrigger = 1;
+      int l_iNextTrigger = m_iCurrent + 1;
 
       if (m_mHintObj.find(l_iNextTrigger) != m_mHintObj.end())
         m_mHintObj[l_iNextTrigger]->setVisible(true);
@@ -166,6 +155,24 @@ namespace dustbin {
       if (a_Tick == 0 && m_mHintObj.find(1) != m_mHintObj.end())
         m_mHintObj[1]->setVisible(true);
 
+    }
+
+    /**
+    * This function receives messages of type "PlayerFinished"
+    * @param a_MarbleId ID of the finished marble
+    * @param a_RaceTime Racetime of the finished player in simulation steps
+    * @param a_Laps The number of laps the player has done
+    */
+    void CTutorialHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+      CGameHUD::onPlayerfinished(a_MarbleId, a_RaceTime, a_Laps);
+
+      if (m_mHints.find(8) != m_mHints.end()) {
+        m_pHint->setText(helpers::s2ws(m_mHints[8]).c_str());
+        m_pRoot->setVisible(true);
+
+        if (m_pNext != nullptr)
+          m_pNext->setVisible(false);
+      }
     }
   }
 }

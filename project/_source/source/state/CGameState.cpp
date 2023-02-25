@@ -1264,7 +1264,7 @@ namespace dustbin {
           gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
             (*it).m_iPlayerId,
             (*it).m_sName,
-            (*it).m_sTexture,
+            (*it).m_sTexture != "" ? (*it).m_sTexture : "default://number=" + std::to_string(a_playerid),
             (*it).m_sControls,
             (*it).m_sShortName,
             (*it).m_eAiHelp,

@@ -24,6 +24,7 @@ namespace dustbin {
 
         irr::gui::IGUITab        *m_pRoot;    /**< The root GUI element for the tutorial hints */
         irr::gui::IGUIStaticText *m_pHint;    /**< The text GUI element for the tutorial hints */
+        irr::gui::IGUIStaticText *m_pNext;    /**< The "unpause" text */
 
         threads::COutputQueue *m_pQueue;
 
@@ -43,6 +44,14 @@ namespace dustbin {
         * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
         */
         virtual void onCountdown(irr::u8 a_Tick) override;
+
+        /**
+        * This function receives messages of type "PlayerFinished"
+        * @param a_MarbleId ID of the finished marble
+        * @param a_RaceTime Racetime of the finished player in simulation steps
+        * @param a_Laps The number of laps the player has done
+        */
+        virtual void onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) override;
 
       public:
         CTutorialHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking, threads::COutputQueue *a_pQueue);

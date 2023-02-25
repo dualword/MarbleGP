@@ -23,6 +23,7 @@
           <attribute key="Visible" value="true" />
           <attribute key="HTextAlign" value="upperLeft" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Enabled" value="false" />
         </attributes>
       </element>
       
@@ -37,7 +38,22 @@
       <element type="editBox" rect="relative: 26, 1, 33, 3">
         <attributes>
           <attribute key="Name" value="edit_abbreviation" />
+          <attribute key="Enabled" value="false" />
           <attribute key="MaxChars" value="5" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 23, 4, 26, 7" tooltip="Play Tutorial with this Profile">
+        <attributes>
+          <attribute key="Name" value="btn_play_tutorial" />
+          <attribute key="ImagePath" value="data/images/btn_tutorial.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 27, 4, 30, 7" tooltip="Edit Profile">
+        <attributes>
+          <attribute key="Name" value="btn_edit_profile" />
+          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
         </attributes>
       </element>
       
@@ -45,13 +61,6 @@
         <attributes>
           <attribute key="Name" value="btn_delete" />
           <attribute key="ImagePath" value="data/images/btn_cancel.png" />
-        </attributes>
-      </element>
-      
-      <element type="MenuButton" rect="relative: 26, 4, 29, 7" tooltip="Edit Profile">
-        <attributes>
-          <attribute key="Name" value="btn_edit_profile" />
-          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
         </attributes>
       </element>
       
