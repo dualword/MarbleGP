@@ -19,7 +19,8 @@ namespace dustbin {
       private:
         int m_iCurrent;   /**< The Current tutorial Step */
         
-        std::map<int, std::string> m_mHints; /**< The tutorial texts */
+        std::map<int, std::string             > m_mHints  ;   /**< The tutorial texts */
+        std::map<int, irr::scene::ISceneNode *> m_mHintObj;   /**< The objects in the scene indicating a hint */
 
         irr::gui::IGUITab        *m_pRoot;    /**< The root GUI element for the tutorial hints */
         irr::gui::IGUIStaticText *m_pHint;    /**< The text GUI element for the tutorial hints */
@@ -27,6 +28,21 @@ namespace dustbin {
         threads::COutputQueue *m_pQueue;
 
         void pauseGame();
+
+        /**
+        * Find a scene node by it's name
+        * @param a_sName name of the node
+        * @param a_pNode current node to check
+        * @return the found scene node, nullptr if no node was found
+        */
+        irr::scene::ISceneNode *findSceneNode(const std::string &a_sName, irr::scene::ISceneNode *a_pNode);
+
+      protected:
+        /**
+        * This function receives messages of type "Countdown"
+        * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+        */
+        virtual void onCountdown(irr::u8 a_Tick) override;
 
       public:
         CTutorialHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking, threads::COutputQueue *a_pQueue);

@@ -24,6 +24,15 @@ namespace dustbin {
 
           m_mHints[l_iCount] = std::string(l_pBuffer);
 
+          irr::scene::ISceneNode *l_pNode = findSceneNode("Hint" + std::to_string(l_iCount), m_pSmgr->getRootSceneNode());
+
+          if (l_pNode != nullptr) {
+            printf("Hint node #%i found.\n", l_iCount);
+            l_pNode->setVisible(false);
+            m_mHintObj[l_iCount] = l_pNode;
+          }
+          else printf("No match for hint node #%i\n", l_iCount);
+
           delete []l_pBuffer;
           l_iCount++;
           l_pFile->drop();
@@ -77,9 +86,18 @@ namespace dustbin {
     * @see CGameHUD::triggerCallback
     */
     void CTutorialHUD::triggerCallback(int a_iObjectId, int a_iTriggerId) {
+      int l_iNextTrigger = 0;
+
       if (a_iObjectId == m_iMarble && m_pHint != nullptr) {
         if (a_iTriggerId == m_iCurrent + 1) {
+          if (m_mHintObj.find(m_iCurrent) != m_mHintObj.end())
+            m_mHintObj[m_iCurrent]->setVisible(false);
+
           m_iCurrent = a_iTriggerId;
+
+          if (m_mHintObj.find(m_iCurrent) != m_mHintObj.end())
+            m_mHintObj[m_iCurrent]->setVisible(false);
+
           if (m_mHints.find(m_iCurrent) != m_mHints.end()) {
             m_pHint->setText(helpers::s2ws(m_mHints[m_iCurrent]).c_str());
             pauseGame();
@@ -88,9 +106,22 @@ namespace dustbin {
         else if (a_iTriggerId == 1 && m_iCurrent == 7 && m_mHints.find(8) != m_mHints.end()) {
           m_pHint->setText(helpers::s2ws(m_mHints[8]).c_str());
           m_iCurrent = 8;
+
+          if (m_mHintObj.find(1) != m_mHintObj.end()) {
+            m_mHintObj[1]->setVisible(true);
+          }
+
           pauseGame();
         }
       }
+
+      if (m_iCurrent < 7)
+        l_iNextTrigger = m_iCurrent + 1;
+      else
+        l_iNextTrigger = 1;
+
+      if (m_mHintObj.find(l_iNextTrigger) != m_mHintObj.end())
+        m_mHintObj[l_iNextTrigger]->setVisible(true);
     }
 
     /**
@@ -99,6 +130,42 @@ namespace dustbin {
     */
     void CTutorialHUD::onPausechanged(bool a_Paused) {
       m_pRoot->setVisible(a_Paused);
+    }
+
+
+    /**
+    * Find a scene node by it's name
+    * @param a_sName name of the node
+    * @param a_pNode current node to check
+    * @return the found scene node, nullptr if no node was found
+    */
+    irr::scene::ISceneNode* CTutorialHUD::findSceneNode(const std::string& a_sName, irr::scene::ISceneNode *a_pNode) {
+      if (a_sName == a_pNode->getName())
+        return a_pNode;
+
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itNext = a_pNode->getChildren().begin(); l_itNext != a_pNode->getChildren().end(); l_itNext++) {
+        irr::scene::ISceneNode *l_pNode = findSceneNode(a_sName, *l_itNext);
+
+        if (l_pNode != nullptr)
+          return l_pNode;
+      }
+
+      return nullptr;
+    }
+
+    /**
+    * This function receives messages of type "Countdown"
+    * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+    */
+    void CTutorialHUD::onCountdown(irr::u8 a_Tick) {
+      CGameHUD::onCountdown(a_Tick);
+
+      if (m_pRoot != nullptr)
+        m_pRoot->setVisible(a_Tick != 0);
+
+      if (a_Tick == 0 && m_mHintObj.find(1) != m_mHintObj.end())
+        m_mHintObj[1]->setVisible(true);
+
     }
   }
 }
