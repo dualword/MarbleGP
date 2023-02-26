@@ -441,6 +441,9 @@
     <ClInclude Include="..\..\..\_source\include\gui\IGuiControllerUiCallback.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\_source\include\gui\CTutorialHUD.h">
+      <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -885,6 +888,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\_source\source\menu\CMenuProfileWizard.cpp">
       <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\_source\source\gui\CTutorialHUD.cpp">
+      <Filter>Quelldateien\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
