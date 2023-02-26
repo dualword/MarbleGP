@@ -299,7 +299,6 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGuiItemFactory.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGuiLogDisplay.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CGuiTextField.h" />
-    <ClInclude Include="..\..\..\_source\include\gui\CGyroControl.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CMenuBackground.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CMenuButton.h" />
     <ClInclude Include="..\..\..\_source\include\gui\CRankingElement.h" />

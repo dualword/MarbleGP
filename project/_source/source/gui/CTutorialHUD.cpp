@@ -52,7 +52,12 @@ namespace dustbin {
       m_pRoot->setDrawBackground(true);
       m_pRoot->setVisible(false);
 
+#ifdef _ANDROID
+      std::wstring l_sContinue = L"Press the Pause key or swipe right to left to continue!";
+#else
       std::wstring l_sContinue = L"Press the Pause key to continue with the turorial!";
+#endif
+
       irr::core::dimension2du l_cSize = CGlobal::getInstance()->getFont(dustbin::enFont::Regular, irr::core::dimension2du(a_cRect.getSize().Width, a_cRect.getSize().Height))->getDimension(l_sContinue.c_str());
 
       l_cRect = irr::core::recti(irr::core::vector2di(l_iOffset, l_iOffset), m_pRoot->getAbsoluteClippingRect().getSize() - irr::core::dimension2di(2 * l_iOffset, 2 * l_iOffset + l_cSize.Height));
@@ -119,6 +124,19 @@ namespace dustbin {
     */
     void CTutorialHUD::onPausechanged(bool a_Paused) {
       m_pRoot->setVisible(a_Paused);
+    }
+
+    /**
+    * This method needs to be implemented for the Android tutorial HUD to make sure the player
+    * can continue playing
+    * @return true if the event was handled, false otherwise
+    */
+    bool CTutorialHUD::onWithdrawButton() {
+      if (m_pNext != nullptr && m_pNext->isVisible()) {
+        pauseGame();
+        return true;
+      }
+      else return false;
     }
 
 

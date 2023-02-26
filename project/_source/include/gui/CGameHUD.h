@@ -296,6 +296,13 @@ namespace dustbin {
         * @see CTutorialHUD::triggerCallback
         */
         virtual void triggerCallback(int a_iObjectId, int a_iTriggerId);
+
+        /**
+        * This method needs to be implemented for the Android tutorial HUD to make sure the player
+        * can continue playing
+        * @return true if the event was handled, false otherwise
+        */
+        virtual bool onWithdrawButton();
     };
   }
 }

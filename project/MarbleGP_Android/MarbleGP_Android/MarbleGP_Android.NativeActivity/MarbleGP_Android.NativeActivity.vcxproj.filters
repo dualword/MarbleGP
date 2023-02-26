@@ -273,9 +273,6 @@
     <ClInclude Include="..\..\..\_source\include\gui\CGuiTextField.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\_source\include\gui\CGyroControl.h">
-      <Filter>Headerdateien\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\_source\include\gui\CGameHUDHelpers.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>

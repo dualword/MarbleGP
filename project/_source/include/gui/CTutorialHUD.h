@@ -72,6 +72,13 @@ namespace dustbin {
         * @param a_Paused The current paused state
         */
         virtual void onPausechanged(bool a_Paused) override;
+
+        /**
+        * This method needs to be implemented for the Android tutorial HUD to make sure the player
+        * can continue playing
+        * @return true if the event was handled, false otherwise
+        */
+        virtual bool onWithdrawButton() override;
     };
   }
 }

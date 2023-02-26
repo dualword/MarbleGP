@@ -825,6 +825,11 @@ namespace dustbin {
         if (a_cEvent.KeyInput.Key == irr::KEY_BACK) {
           if (a_cEvent.KeyInput.PressedDown && m_mViewports.size() > 0) {
             if (m_mViewports.begin()->second.m_pMarble != nullptr) {
+              if (m_mViewports.begin()->second.m_pHUD != nullptr) {
+                if (m_mViewports.begin()->second.m_pHUD->onWithdrawButton())
+                  return true;
+              }
+
               int l_iMarble = m_mViewports.begin()->second.m_pMarble->getID();
               if (l_iMarble >= 10000 && l_iMarble < 10016) {
                 messages::CPlayerWithdraw l_cMessage = messages::CPlayerWithdraw(l_iMarble);

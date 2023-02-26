@@ -1184,5 +1184,15 @@ namespace dustbin {
     void CGameHUD::triggerCallback(int a_iObjectId, int a_iTriggerId) {
       // Nothing to do here
     }
+
+    /**
+    * This method needs to be implemented for the Android tutorial HUD to make sure the player
+    * can continue playing
+    * @return true if the event was handled, false otherwise
+    */
+    bool CGameHUD::onWithdrawButton() {
+      // Nothing to do here
+      return false;
+    }
   }
 }
