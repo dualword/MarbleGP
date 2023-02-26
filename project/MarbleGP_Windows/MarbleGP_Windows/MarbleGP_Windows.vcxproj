@@ -137,6 +137,7 @@
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudLapTimes.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSpeedBar.cpp" />
     <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSteering.cpp" />
+    <ClCompile Include="..\..\_source\source\helpers\CDataHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
@@ -306,6 +307,7 @@
     <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSteering.h" />
     <ClInclude Include="..\..\_source\include\gui\IGuiControllerUiCallback.h" />
     <ClInclude Include="..\..\_source\include\gui\IGuiMoveOptionElement.h" />
+    <ClInclude Include="..\..\_source\include\helpers\CDataHelpers.h" />
     <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h" />
     <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />

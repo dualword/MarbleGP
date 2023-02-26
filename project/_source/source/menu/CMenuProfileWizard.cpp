@@ -4,6 +4,7 @@
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CControllerUi_Game.h>
+#include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
@@ -722,6 +723,32 @@ namespace dustbin {
           else if (m_sProfile != "") {  
             m_cPlayer.deserialize(m_sProfile);
           }
+          else {
+            std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(m_pGlobal->getSetting("profiles"));
+            int l_iIndex = 1;
+
+            while (true) {
+              bool l_bFound = false;
+
+              std::string l_sName = "Player " + std::to_string(l_iIndex);
+
+              for (auto& l_cPlayer : l_vPlayers) {
+                if (l_cPlayer.m_sName == l_sName) {
+                  l_bFound = true;
+                  break;
+                }
+              }
+
+              if (l_bFound) {
+                l_iIndex++;
+              }
+              else {
+                m_cPlayer.m_sName = "Player " + std::to_string(l_iIndex);
+                m_cPlayer.m_sShortName = "Pl#" + std::to_string(l_iIndex);
+                break;
+              }
+            }
+          }
 
           changeStep(enMenuStep::Name);
         }
@@ -765,26 +792,15 @@ namespace dustbin {
                 }
                 else if (l_sButton == "save") {
                   if (m_eStep != enMenuStep::Tutorial) {
-                    m_cPlayer.m_iPlayerId = 1;
+                    std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(m_pGlobal->getSetting("profiles"));
+
+                    l_vPlayers.push_back(m_cPlayer);
+                    helpers::saveProfiles(l_vPlayers);
 
                     if (m_sProfile == "commit_profile" && m_pBtnSave != nullptr && m_pBtnSave->isVisible()) {
-                      // Save the profile to the settings (it's the first profile in the list)
-                      messages::CSerializer64 l_cSerializer;
-
-                      l_cSerializer.addS32(c_iProfileHead);
-                      l_cSerializer.addString(c_sProfileHead);
-
-                      l_cSerializer.addS32(c_iProfileStart);
-                      l_cSerializer.addString(m_cPlayer.serialize());
-                      l_cSerializer.addS32(c_iProfileEnd);
-
-                      l_cSerializer.addS32(c_iAllProfileEnd);
-
-                      m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
                       changeStep(enMenuStep::Tutorial);
                     }
                     else {
-                      CGlobal::getInstance()->setGlobal("edited_profile", m_cPlayer.serialize());                    
                       createMenu(m_pManager->popMenuStack(), m_pDevice,m_pManager, m_pState);
                     }
                   }

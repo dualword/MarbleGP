@@ -53,7 +53,7 @@ namespace dustbin {
               if (l_vProfiles.size() == 0) {
                 m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_setupgame");
-                createMenu("menu_profiles", m_pDevice, m_pManager, m_pState);
+                createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
               }
               else {
                 m_pManager->pushToMenuStack("menu_selecttrack");

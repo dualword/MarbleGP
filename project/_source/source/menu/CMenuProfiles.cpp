@@ -7,6 +7,7 @@
 #include <helpers/CStringHelpers.h>
 #include <gui/CControllerUi_Game.h>
 #include <gui/CDustbinCheckbox.h>
+#include <helpers/CDataHelpers.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
@@ -226,91 +227,19 @@ namespace dustbin {
           createMenu("menu_main", m_pDevice, m_pManager, m_pState);
         }
 
-        /**
-        * Let's see if we were called by the profile wizard and a new profile was created
-        * @param a_cProfile filled profile (if data available)
-        * @param a_iIndex index of the edited profile
-        * @return true if a profile was edited, false otherwise
-        */
-        void checkForNewProfile() {
-          CGlobal *l_pGlobal = CGlobal::getInstance();
-
-          std::string l_sProfile = l_pGlobal->getGlobal("edited_profile");
-          std::string l_sNumber  = l_pGlobal->getGlobal("edit_profileno");
-
-          if (l_sProfile != "") {
-            data::SPlayerData l_cPlayer;
-            l_cPlayer.deserialize(l_sProfile);
-
-            int l_iIndex = std::atoi(l_sNumber.c_str());
-
-            if (l_iIndex < 0) {
-              std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
-
-              // Max 8 profiles, and we want to add a new one
-              if (l_vProfiles.size() < 7) {
-                l_iIndex = (int)l_vProfiles.size();
-
-                if (m_aProfiles[l_iIndex].isValid()) {
-                  m_aProfiles[l_iIndex].m_pAddProfile->setVisible(false);
-                  m_aProfiles[l_iIndex].m_pDataRoot  ->setVisible(true);
-                  m_aProfiles[l_iIndex].m_pName      ->setText   (helpers::s2ws(l_cPlayer.m_sName     ).c_str());
-                  m_aProfiles[l_iIndex].m_pShort     ->setText   (helpers::s2ws(l_cPlayer.m_sShortName).c_str());
-
-                  l_cPlayer.m_iPlayerId = l_iIndex + 1;
-                  m_aProfiles[l_iIndex].m_cData = l_cPlayer;
-
-                  if (l_iIndex + 1 <= m_iMaxIndex && m_aProfiles[l_iIndex + 1].isValid()) {
-                    m_aProfiles[l_iIndex + 1].m_pAddProfile->setVisible(true);
-                    m_aProfiles[l_iIndex + 1].m_pDataRoot  ->setVisible(false);
-                  }
-                }
-              }
-            }
-            else {
-              if (l_iIndex < 8 && m_aProfiles[l_iIndex].isValid()) {
-                m_aProfiles[l_iIndex].m_pAddProfile->setVisible(false);
-                m_aProfiles[l_iIndex].m_pDataRoot  ->setVisible(true);
-                m_aProfiles[l_iIndex].m_pName      ->setText   (helpers::s2ws(l_cPlayer.m_sName     ).c_str());
-                m_aProfiles[l_iIndex].m_pShort     ->setText   (helpers::s2ws(l_cPlayer.m_sShortName).c_str());
-
-                m_aProfiles[l_iIndex].m_cData = l_cPlayer;
-
-                // if (l_iIndex + 1 <= m_iMaxIndex && m_aProfiles[l_iIndex + 1].isValid()) {
-                //   m_aProfiles[l_iIndex + 1].m_pAddProfile->setVisible(true);
-                //   m_aProfiles[l_iIndex + 1].m_pDataRoot  ->setVisible(false);
-                // }
-
-                m_aProfiles[l_iIndex].fillUI();
-              }
-            }
-          }
-
-          l_pGlobal->setGlobal("edited_profile", "");
-          l_pGlobal->setGlobal("edit_profileno", "");
-        }
-
         void saveProfiles() {
-          messages::CSerializer64 l_cSerializer;
-
-          l_cSerializer.addS32(c_iProfileHead);
-          l_cSerializer.addString(c_sProfileHead);
+          std::vector<data::SPlayerData> l_vPlayers;
 
           for (int i = 0; i <= m_iMaxIndex; i++) {
             m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
             if (m_aProfiles[i].m_cData.m_iPlayerId > 0 && m_aProfiles[i].m_cData.m_iPlayerId <= m_iMaxIndex + 1) {
               if (m_aProfiles[i].m_pDataRoot->isVisible()) {
-                printf("Save profile %i (\"%s\")...\n", i, m_aProfiles[i].m_cData.m_sName.c_str());
-                l_cSerializer.addS32(c_iProfileStart);
-                l_cSerializer.addString(m_aProfiles[i].m_cData.serialize());
-                l_cSerializer.addS32(c_iProfileEnd);
+                l_vPlayers.push_back(m_aProfiles[i].m_cData);
               }
             }
           }
 
-          l_cSerializer.addS32(c_iAllProfileEnd);
-
-          m_pState->getGlobal()->setSetting("profiles", l_cSerializer.getMessageAsString());
+          helpers::saveProfiles(l_vPlayers);
         }
 
         public:
@@ -422,59 +351,24 @@ namespace dustbin {
               }
             }
 
-            std::string l_sProfiles = m_pState->getGlobal()->getSetting("profiles");
+            std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
-            if (l_sProfiles != "") {
-              messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_sProfiles.c_str());
+            int l_iIndex = 0;
 
-              int l_iNum = 0;
+            for (auto& l_cPlayer : l_vPlayers) {
+              l_cPlayer.m_iPlayerId = l_iIndex + 1;
 
-              if (l_cSerializer.getS32() == c_iProfileHead) {
-                if (l_cSerializer.getString() == c_sProfileHead) {
-                  while (l_cSerializer.hasMoreMessages()) {
-                    irr::s32 l_iNextTuple = l_cSerializer.getS32();
+              m_aProfiles[l_iIndex].m_cData = l_cPlayer;
+              m_aProfiles[l_iIndex].fillUI();
 
-                    if (l_iNextTuple == c_iAllProfileEnd) {
-                      break;
-                    }
-                    else if (l_iNextTuple == c_iProfileStart) {
-                      if (l_iNum >= 0 && l_iNum <= m_iMaxIndex) {
-                        m_aProfiles[l_iNum].m_cData.deserialize(l_cSerializer.getString());
+              l_iIndex++;
 
-                        printf("\n%s\n\n", m_aProfiles[l_iNum].m_cData.m_sControls.c_str());
-
-                        if (m_aProfiles[l_iNum].isValid())
-                          m_aProfiles[l_iNum].m_cData.m_iPlayerId = l_iNum + 1;
-
-                        if (l_cSerializer.getS32() == c_iProfileEnd) {
-                          m_aProfiles[l_iNum].fillUI();
-                          l_iNum++;
-
-                          if (l_iNum > m_iMaxIndex)
-                            break;
-                          else 
-                            if (m_aProfiles[l_iNum].isValid()) {
-                              m_aProfiles[l_iNum].m_pAddProfile->setVisible(true);
-                            }
-                        }
-                        else {
-                          printf("Invalid profile ending.\n");
-                          break;
-                        }
-                      }
-                    }
-                    else {
-                      printf("Invalid player profile header.\n");
-                      break;
-                    }
-                  }
-                }
-                else printf("Invalid player profile identifier.\n");
+              if (l_iIndex >= m_iMaxIndex)
+                break;
+              else if (m_aProfiles[l_iIndex].isValid()) {
+                m_aProfiles[l_iIndex].m_pAddProfile->setVisible(true);
               }
-              else printf("Invalid header for player profiles.\n");
             }
-
-            checkForNewProfile();
           }
 
           virtual ~CMenuProfiles() {

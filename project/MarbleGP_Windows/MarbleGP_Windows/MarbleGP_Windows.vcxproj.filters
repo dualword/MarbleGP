@@ -633,6 +633,9 @@
     <ClCompile Include="..\..\_source\source\gui\CTutorialHUD.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CDataHelpers.cpp">
+      <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1045,6 +1048,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CTutorialHUD.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CDataHelpers.h">
+      <Filter>Headerdateien\helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

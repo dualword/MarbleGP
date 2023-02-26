@@ -109,7 +109,7 @@ namespace dustbin {
       
       void reset();
 
-      std::string serialize();
+      std::string serialize() const;
       bool deserialize(const std::string &a_sSerialized);
 
       std::string toString();
