@@ -687,6 +687,11 @@ namespace dustbin {
           toggleButtonVisibility();
         }
 
+        void prepareSetupGame() {
+          m_pState->getGlobal()->setSetting("track"          , "noob_oval");
+          m_pState->getGlobal()->setSetting("selectedplayers", m_cPlayer.serialize());
+        }
+
       public:
         CMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler    (a_pDevice, a_pManager, a_pState),
@@ -787,8 +792,15 @@ namespace dustbin {
                 std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
                 if (l_sButton == "cancel") {
-                  if (m_pBtnCancel != nullptr && m_pBtnCancel->isVisible())
-                    m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
+                  if (m_pBtnCancel != nullptr && m_pBtnCancel->isVisible()) {
+                    if (m_eStep != enMenuStep::Tutorial)
+                      m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
+                    else {
+                      prepareSetupGame();
+                      m_pManager->pushToMenuStack("menu_selecttrack");
+                      m_pManager->changeMenu(createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState));
+                    }
+                  }
                 }
                 else if (l_sButton == "save") {
                   if (m_eStep != enMenuStep::Tutorial) {
@@ -824,6 +836,9 @@ namespace dustbin {
                     data::SRacePlayers l_cPlayers;
                     l_cPlayers.m_vPlayers.push_back(m_cPlayer);
 
+                    prepareSetupGame();
+                    m_pManager->pushToMenuStack("menu_selecttrack");
+                    m_pManager->pushToMenuStack("menu_setupgame");
                     CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
                     m_pState->setState(state::enState::Game);
                   }

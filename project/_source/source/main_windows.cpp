@@ -24,6 +24,17 @@ int main(int argc, char *argv[]) {
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
 #endif
 
+  irr::u32 l_iWidth  = 1920;
+  irr::u32 l_iHeight = 1080;
+
+  irr::IrrlichtDevice *l_pNull = irr::createDevice(irr::video::EDT_NULL);
+  irr::video::IVideoModeList *l_pList = l_pNull->getVideoModeList();
+
+  l_iWidth  = l_pList->getDesktopResolution().Width ;
+  l_iHeight = l_pList->getDesktopResolution().Height;
+
+  l_pNull->drop();
+
   dustbin::helpers::clearDebugLog();
 
   dustbin::CMainClass *l_pMainClass = nullptr;
@@ -31,9 +42,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
   dustbin::state::enState l_eState = dustbin::state::enState::None;
 
   do {
-    TCHAR l_sPath       [MAX_PATH],
-          l_sDataPath   [MAX_PATH],
-          l_sTexturePath[MAX_PATH];
+    TCHAR l_sPath       [MAX_PATH];
+    TCHAR l_sDataPath   [MAX_PATH];
+    TCHAR l_sTexturePath[MAX_PATH];
 
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
       PathAppend(l_sPath, L"\\DustbinGames\\");
@@ -67,15 +78,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     if (GetComputerName(l_aName, &l_iName))
       l_pMainClass->setDeviceName(dustbin::helpers::ws2s(l_aName));
 
-    irr::u32 l_iWidth  = 1920,
-             l_iHeight = 1080;
-    bool     l_bFullScreen = false;
+    bool l_bFullScreen = true;
 
     if (l_sSettings != "") {
       l_iWidth  = l_pMainClass->getSettingData().m_iResolutionW;
       l_iHeight = l_pMainClass->getSettingData().m_iResolutionH;
 
       l_bFullScreen = l_pMainClass->getSettingData().m_bFullscreen;
+    }
+    else {
+      l_pMainClass->getSettingData().m_iResolutionW = l_iWidth;
+      l_pMainClass->getSettingData().m_iResolutionH = l_iHeight;
+      l_pMainClass->getSettingData().m_bFullscreen  = true;
     }
 
     irr::IrrlichtDevice *l_pDevice = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2du(l_iWidth, l_iHeight), 32U, l_bFullScreen);

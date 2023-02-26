@@ -100,8 +100,8 @@ namespace dustbin {
         while (l_pXml->read()) {
           std::string l_sNode = l_pXml->getNodeName();
           if (l_sNode == "setting" && l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-            std::string l_sName  = l_pXml->getAttributeValueSafe("name" ),
-                        l_sValue = l_pXml->getAttributeValueSafe("value");
+            std::string l_sName  = l_pXml->getAttributeValueSafe("name" );
+            std::string l_sValue = l_pXml->getAttributeValueSafe("value");
 
             printf("\t%s = %s\n", l_sName.c_str(), l_sValue.c_str());
 

@@ -327,7 +327,7 @@ namespace dustbin {
                       if (m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.POV != a_cEvent.JoystickEvent.POV) {
                         printf("POV: %i, %i (%i)\n", m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.POV, a_cEvent.JoystickEvent.POV, a_cEvent.JoystickEvent.Joystick);
                         (*l_itCtrl).m_eType = CControllerBase::enInputType::JoyPov;
-                        (*l_itCtrl).m_iPov  = m_mJoyOld[a_cEvent.JoystickEvent.Joystick].JoystickEvent.POV;
+                        (*l_itCtrl).m_iPov  = a_cEvent.JoystickEvent.POV;
 
                         l_bRet = true;
                       }
@@ -545,7 +545,16 @@ namespace dustbin {
             return L"Button " + std::to_wstring(a_pCtrl->m_iButton);
 
           case enInputType::JoyPov:
-            return L"POV " + std::to_wstring(a_pCtrl->m_iPov);
+            if (a_pCtrl->m_iPov == 0)
+              return L"POV Up";
+            else if (a_pCtrl->m_iPov == 18000)
+              return L"POV Down";
+            else if (a_pCtrl->m_iPov == 27000)
+              return L"POV Left";
+            else if (a_pCtrl->m_iPov == 9000)
+              return L"POV Right";
+            else
+              return L"POV " + std::to_wstring(a_pCtrl->m_iPov);
 
           case enInputType::Key:
             return keyCodeToString(a_pCtrl->m_eKey);
