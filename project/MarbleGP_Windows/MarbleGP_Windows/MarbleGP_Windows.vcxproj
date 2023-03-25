@@ -473,7 +473,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\mystuff\projects\libs\enet-master\include;..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -515,10 +515,10 @@
     <VcpkgTriplet>x86-windows</VcpkgTriplet>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
