@@ -124,11 +124,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>..\..\libs\lua-5.4.4\src;D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\mystuff\projects\MarbleGP\project\libs\lua-5.4.4\src;..\..\libs\lua-5.4.4\src;D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\mystuff\projects\vcpkg\installed\x64-windows-static\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;..\..\..\_source\include;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include;..\..\libs\lua-5.4.4\src;D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\mystuff\projects\MarbleGP\project\libs\lua-5.4.4\src;D:\myStuff\projects\MarbleGP\project\_source\include;..\..\libs\lua-5.4.4\src;D:\myStuff\projects\libs\libenet-android-master\jni;D:\myStuff\projects\MarbleGP\project\_source\include\enet;D:\myStuff\projects\vcpkg\installed\arm64-android\include;D:\myStuff\projects\libs\agkd\include;..\..\..\MarbleGP_Android\MarbleGP_Android\MarbleGP_Android.NativeActivity;D:\myStuff\projects\libs\irrlicht-es.1.9\include;D:\myStuff\projects\libs\agdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
@@ -147,7 +147,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;LUA_USE_LONGJMP;LUA_USE_LINUX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;LUA_USE_LINUX;LUA_USE_LONGJMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
@@ -159,7 +159,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;LUA_USE_LONGJMP;LUA_USE_LINUX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_XEFFECT;_OPENGL_ES;_TOUCH_CONTROL;_ANDROID;LUA_USE_LINUX;LUA_USE_LONGJMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
     </ClCompile>
     <Link>
