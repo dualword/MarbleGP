@@ -43,7 +43,7 @@ os.chdir("../temp_android")
 os.system("7z.exe a -r -tzip marblegp.dat data")
 os.chdir("..")
 
-g_AndroidPath = "../MarbleGP_Android/MarbleGP_Android/MarbleGP_Android.Packaging/assets/marblegp.dat"
+g_AndroidPath = "../MarbleGP_Android/app/src/main/assets/marblegp.dat"
 
 if os.path.exists(g_AndroidPath):
   os.remove(g_AndroidPath)
