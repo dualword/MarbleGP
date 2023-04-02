@@ -1,9 +1,9 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
-// #include <media/NdkMediaExtractor.h>
+#include <media/NdkMediaExtractor.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
-// #include <android/asset_manager.h>
+#include <android/asset_manager.h>
 #include <oboe/Oboe.h>
 #include <CGlobal.h>
 #include <string>
@@ -35,7 +35,7 @@ namespace dustbin {
         };
 
       private:
-        /*static int32_t decode(AAsset *a_pAsset, uint8_t *a_pTargetData, SAudioProperties a_cTargetProperties) {
+        static int32_t decode(AAsset *a_pAsset, uint8_t *a_pTargetData, SAudioProperties a_cTargetProperties) {
 
           // LOGI("DustbinGames: Using NDK decoder");
 
@@ -208,14 +208,14 @@ namespace dustbin {
           }
 
           return l_iBytesWritten;
-        }*/
+        }
 
       public:
         int64_t getSize() const { return mBufferSize; }
         SAudioProperties getProperties() const { return mProperties; }
         const float* getData() const { return mBuffer.get(); }
 
-        /*static CAssetDataSource* newFromCompressedAsset(AAssetManager& a_cAssetManager, const char* a_sFilename, SAudioProperties a_cTargetProperties) {
+        static CAssetDataSource* newFromCompressedAsset(AAssetManager& a_cAssetManager, const char* a_sFilename, SAudioProperties a_cTargetProperties) {
           AAsset *l_pAsset = AAssetManager_open(&a_cAssetManager, a_sFilename, AASSET_MODE_BUFFER);
           LOGD("Open data file \"%s\"", a_sFilename);
           if (!l_pAsset) {
@@ -250,7 +250,7 @@ namespace dustbin {
           return new CAssetDataSource(std::move(l_pOutputBuffer),
             numSamples,
             a_cTargetProperties);
-        }*/
+        }
 
       private:
         CAssetDataSource(std::unique_ptr<float[]> data, size_t size,
@@ -340,7 +340,7 @@ namespace dustbin {
           if (l_sSound.substr(0, 5) == "data/")
             l_sSound = l_sSound.substr(5);
 
-          // m_pSource = CAssetDataSource::newFromCompressedAsset(*(CGlobal::getInstance()->getAndroidApp()->activity->assetManager), l_sSound.c_str(), l_cTargetProperties);
+          m_pSource = CAssetDataSource::newFromCompressedAsset(*(CGlobal::getInstance()->getAndroidApp()->activity->assetManager), l_sSound.c_str(), l_cTargetProperties);
 
           m_cBuilder.setCallback(this);
           oboe::Result l_eResult = m_cBuilder.openStream(m_pStream);
@@ -641,7 +641,7 @@ namespace dustbin {
         }
 
         virtual void unmuteAudio() override {
-          /*for (std::vector<CAudioPlayer*>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
+          for (std::vector<CAudioPlayer*>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
             (*it)->setVolume(m_fGameVolume * m_fMasterVolume);
           }
 
@@ -651,7 +651,7 @@ namespace dustbin {
 
           for (std::map<enSoundTrack, CAudioPlayer *>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
             it->second->setVolume(m_fSoundtrackVolume * m_fMasterVolume);
-          }*/
+          }
         }
 
         virtual irr::f32 getMasterVolume() override {

@@ -132,4 +132,5 @@ target_link_libraries( # Specifies the target library.
                        ode
                        enet
                        lua
+                       mediandk
         )
