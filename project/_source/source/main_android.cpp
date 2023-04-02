@@ -248,14 +248,14 @@ void android_main(struct android_app* a_pApp) {
   do {
     std::string l_sSettings = "";
 
-    // std::string l_sPath = a_pApp->activity->internalDataPath;
-      // l_sPath += "/MarbleGP_Setup.xml";
+    std::string l_sPath = a_pApp->activity->internalDataPath;
+    l_sPath += "/MarbleGP_Setup.xml";
 
-      // std::ifstream l_cFile(l_sPath.c_str());
-      // if (l_cFile.is_open()) {
-      // l_sSettings = std::string(std::istreambuf_iterator<char>(l_cFile), std::istreambuf_iterator<char>());
-      // l_cFile.close();
-      // }
+    std::ifstream l_cFile(l_sPath.c_str());
+    if (l_cFile.is_open()) {
+      l_sSettings = std::string(std::istreambuf_iterator<char>(l_cFile), std::istreambuf_iterator<char>());
+      l_cFile.close();
+    }
 
     l_pMainClass = new dustbin::CMainClass(l_sSettings, a_pApp);
 
@@ -301,9 +301,9 @@ void android_main(struct android_app* a_pApp) {
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
 
     {
-        // FILE *l_pFile = fopen(l_sPath.c_str(), "w");
-        // fwrite(l_pMainClass->getSettings().c_str(), 1, l_pMainClass->getSettings().size(), l_pFile);
-        // fclose(l_pFile);
+      FILE *l_pFile = fopen(l_sPath.c_str(), "w");
+      fwrite(l_pMainClass->getSettings().c_str(), 1, l_pMainClass->getSettings().size(), l_pFile);
+      fclose(l_pFile);
     }
 
     l_pDevice->closeDevice();
