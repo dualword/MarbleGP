@@ -2,6 +2,7 @@
 #pragma once
 
 #include <_generated/messages/IGameHUD.h>
+#include <scenenodes/CMyTextSceneNode.h>
 #include <gui/CGameHUDHelpers.h>
 #include <irrlicht.h>
 #include <string>

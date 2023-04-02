@@ -1,0 +1,35 @@
+export GNUMAKE=/c/cygwin64/bin/make.exe
+
+ndk-build
+
+environment variables
+*********************
+
+VCPKG_ROOT
+IRRLICHT_ES_FOLDER
+
+
+Adjust Irrlicht-ES Makefiles
+****************************
+
+Android.mk: # CTRGouraudAlpha2.cpp \, LOCAL_ARM_NEON := true
+
+Application.mk: APP_PLATFORM := android-29
+
+Copy libIrrlicht.a to %VCPKG_ROOT%\installed\[arm64-android|arm-android]\lib
+
+./vcpkg.exe install enet:arm-android
+./vcpkg.exe install ode:arm-android
+./vcpkg.exe install lua:arm-android
+
+./vcpkg.exe install enet:arm64-android
+./vcpkg.exe install ode:arm64-android
+./vcpkg.exe install lua:arm64-android
+
+./vcpkg.exe install enet:x64-android
+./vcpkg.exe install ode:x64-android
+./vcpkg.exe install lua:x64-android
+
+./vcpkg.exe install ode:x86-android
+./vcpkg.exe install enet:x86-android
+./vcpkg.exe install lua:x86-android

@@ -11,7 +11,7 @@
 #include <Defines.h>
 #include <CGlobal.h>
 
-#include "android_native_app_glue.h"
+// #include "android_native_app_glue.h"
 
 #include <android/sensor.h>
 
@@ -90,7 +90,7 @@ class CAndroidMenuEventHandler : public dustbin::controller::ICustomEventReceive
     }
 };
 
-int32_t (*g_IrrlichtInputHandler)(struct android_app* app, AInputEvent* event) = nullptr;
+// int32_t (*g_IrrlichtInputHandler)(struct android_app* app, AInputEvent* event) = nullptr;
 
 struct SJoystickInput {
   irr::SEvent m_cJoypadEvent;
@@ -110,16 +110,16 @@ struct SJoystickInput {
     m_cJoypadEvent.JoystickEvent.Joystick     = 0;
     m_cJoypadEvent.JoystickEvent.POV          = 65535;
 
-    m_aAxes[0] = AMOTION_EVENT_AXIS_X;
-    m_aAxes[1] = AMOTION_EVENT_AXIS_Y;
-    m_aAxes[2] = AMOTION_EVENT_AXIS_Z;
-    m_aAxes[3] = AMOTION_EVENT_AXIS_RZ;
-    m_aAxes[4] = AMOTION_EVENT_AXIS_BRAKE;
-    m_aAxes[5] = AMOTION_EVENT_AXIS_GAS;
-    m_aAxes[6] = -1;
+    // m_aAxes[0] = AMOTION_EVENT_AXIS_X;
+      // m_aAxes[1] = AMOTION_EVENT_AXIS_Y;
+      // m_aAxes[2] = AMOTION_EVENT_AXIS_Z;
+      // m_aAxes[3] = AMOTION_EVENT_AXIS_RZ;
+      // m_aAxes[4] = AMOTION_EVENT_AXIS_BRAKE;
+      // m_aAxes[5] = AMOTION_EVENT_AXIS_GAS;
+      // m_aAxes[6] = -1;
   }
 
-  bool parseEvent(AInputEvent* a_pEvent) {
+  /* bool parseEvent(AInputEvent* a_pEvent) {
     int32_t l_iSource = AInputEvent_getSource(a_pEvent);
 
     bool l_bRet = false;
@@ -130,8 +130,8 @@ struct SJoystickInput {
 
       switch (l_iEvent) {
         case AINPUT_EVENT_TYPE_MOTION: {
-          float l_fHatX = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_X, 0);
-          float l_fHatY = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_Y, 0);
+            // float l_fHatX = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_X, 0);
+            // float l_fHatY = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_Y, 0);
 
           for (int i = 0; m_aAxes[i] != -1; i++) {
             float f = AMotionEvent_getAxisValue(a_pEvent, m_aAxes[i], 0);
@@ -201,46 +201,46 @@ struct SJoystickInput {
     }
 
     return l_bRet;
-  }
+  }*/
 };
 
 SJoystickInput g_cJoystickInput;
 
-irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEvent) {
+/* irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEvent) {
   if (g_cJoystickInput.parseEvent(a_pAndroidEvent))
     return 1;
 
   return (*g_IrrlichtInputHandler)(a_pApp, a_pAndroidEvent);
-}
+}*/
 
 
 void android_main(struct android_app* a_pApp) {
   LOGI("Starting MarbleGP...");
-  JNIEnv *l_pJni = nullptr;
+    /*JNIEnv *l_pJni = nullptr;
 
-  if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
-    printf("Oops");
-  }
-
-  /*Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
-
-  std::string l_sError   = "PADDLEBOAT_NO_ERROR";
-  std::string l_sMessage = "Everything fine.";
-
-  if (l_iError != PADDLEBOAT_NO_ERROR) {
-    printf("Oops, could not initialize Paddleboat.\n");
-
-    switch (l_iError) {
-      case PADDLEBOAT_ERROR_ALREADY_INITIALIZED     : l_sError = "PADDLEBOAT_ERROR_ALREADY_INITIALIZED"     ; l_sMessage = "Paddleboat_init was called a second time without a call to Paddleboat_destroy in between..\n"; break;
-      case PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED   : l_sError = "PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED"   ; l_sMessage = "The feature is not supported by the specified controller.\nExample: Calling Paddleboat_setControllerVibrationData on a controller that does not have the PADDLEBOAT_CONTROLLER_FLAG_VIBRATION bit set in Paddleboat_Controller_Info.controllerFlags..\n"; break;
-      case PADDLEBOAT_ERROR_INIT_GCM_FAILURE        : l_sError = "PADDLEBOAT_ERROR_INIT_GCM_FAILURE"        ; l_sMessage = "Paddleboat could not be successfully initialized.\nInstantiation of the GameControllerManager class failed..\n"; break;
-      case PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX: l_sError = "PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX"; l_sMessage = "Invalid controller index specified.\nValid index range is from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.\n"; break;
-      case PADDLEBOAT_ERROR_INVALID_PARAMETER       : l_sError = "PADDLEBOAT_ERROR_INVALID_PARAMETER"       ; l_sMessage = "An invalid parameter was specified.\nThis usually means NULL or nullptr was passed in a parameter that requires a valid pointer..\n"; break;
-      case PADDLEBOAT_ERROR_NOT_INITIALIZED         : l_sError = "PADDLEBOAT_ERROR_NOT_INITIALIZED"         ; l_sMessage = "Paddleboat was not successfully initialized.\nEither Paddleboat_init was not called or returned an error..\n"; break;
-      case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
-      case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
+    if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
+      printf("Oops");
     }
-  }*/
+
+    Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
+
+    std::string l_sError   = "PADDLEBOAT_NO_ERROR";
+    std::string l_sMessage = "Everything fine.";
+
+    if (l_iError != PADDLEBOAT_NO_ERROR) {
+      printf("Oops, could not initialize Paddleboat.\n");
+
+      switch (l_iError) {
+        case PADDLEBOAT_ERROR_ALREADY_INITIALIZED     : l_sError = "PADDLEBOAT_ERROR_ALREADY_INITIALIZED"     ; l_sMessage = "Paddleboat_init was called a second time without a call to Paddleboat_destroy in between..\n"; break;
+        case PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED   : l_sError = "PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED"   ; l_sMessage = "The feature is not supported by the specified controller.\nExample: Calling Paddleboat_setControllerVibrationData on a controller that does not have the PADDLEBOAT_CONTROLLER_FLAG_VIBRATION bit set in Paddleboat_Controller_Info.controllerFlags..\n"; break;
+        case PADDLEBOAT_ERROR_INIT_GCM_FAILURE        : l_sError = "PADDLEBOAT_ERROR_INIT_GCM_FAILURE"        ; l_sMessage = "Paddleboat could not be successfully initialized.\nInstantiation of the GameControllerManager class failed..\n"; break;
+        case PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX: l_sError = "PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX"; l_sMessage = "Invalid controller index specified.\nValid index range is from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.\n"; break;
+        case PADDLEBOAT_ERROR_INVALID_PARAMETER       : l_sError = "PADDLEBOAT_ERROR_INVALID_PARAMETER"       ; l_sMessage = "An invalid parameter was specified.\nThis usually means NULL or nullptr was passed in a parameter that requires a valid pointer..\n"; break;
+        case PADDLEBOAT_ERROR_NOT_INITIALIZED         : l_sError = "PADDLEBOAT_ERROR_NOT_INITIALIZED"         ; l_sMessage = "Paddleboat was not successfully initialized.\nEither Paddleboat_init was not called or returned an error..\n"; break;
+        case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
+        case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
+      }
+    }*/
 
   dustbin::CMainClass *l_pMainClass = nullptr;
   dustbin::state::enState l_eState{};
@@ -248,14 +248,14 @@ void android_main(struct android_app* a_pApp) {
   do {
     std::string l_sSettings = "";
 
-    std::string l_sPath = a_pApp->activity->internalDataPath;
-    l_sPath += "/MarbleGP_Setup.xml";
+    // std::string l_sPath = a_pApp->activity->internalDataPath;
+      // l_sPath += "/MarbleGP_Setup.xml";
 
-    std::ifstream l_cFile(l_sPath.c_str());
-    if (l_cFile.is_open()) {
-      l_sSettings = std::string(std::istreambuf_iterator<char>(l_cFile), std::istreambuf_iterator<char>());
-      l_cFile.close();
-    }
+      // std::ifstream l_cFile(l_sPath.c_str());
+      // if (l_cFile.is_open()) {
+      // l_sSettings = std::string(std::istreambuf_iterator<char>(l_cFile), std::istreambuf_iterator<char>());
+      // l_cFile.close();
+      // }
 
     l_pMainClass = new dustbin::CMainClass(l_sSettings, a_pApp);
 
@@ -284,9 +284,9 @@ void android_main(struct android_app* a_pApp) {
     l_pMainClass->setIrrlichtDevice(l_pDevice);
     l_pMainClass->setCustomEventReceivers(l_pMenuHandler, nullptr);
 
-    g_IrrlichtInputHandler = a_pApp->onInputEvent;
-    g_cJoystickInput.m_pDevice = l_pDevice;
-    a_pApp->onInputEvent = &overrideInputReceiever;
+      // g_IrrlichtInputHandler = a_pApp->onInputEvent;
+      // g_cJoystickInput.m_pDevice = l_pDevice;
+    // a_pApp->onInputEvent = &overrideInputReceiever;
 
 
     do {
@@ -301,9 +301,9 @@ void android_main(struct android_app* a_pApp) {
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
 
     {
-      FILE *l_pFile = fopen(l_sPath.c_str(), "w");
-      fwrite(l_pMainClass->getSettings().c_str(), 1, l_pMainClass->getSettings().size(), l_pFile);
-      fclose(l_pFile);
+        // FILE *l_pFile = fopen(l_sPath.c_str(), "w");
+        // fwrite(l_pMainClass->getSettings().c_str(), 1, l_pMainClass->getSettings().size(), l_pFile);
+        // fclose(l_pFile);
     }
 
     l_pDevice->closeDevice();

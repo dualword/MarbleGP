@@ -4,15 +4,11 @@
 #include <vector>
 #include <iostream>
 
-#ifdef _WINDOWS
 extern "C" {
-#endif
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
-#ifdef _WINDOWS
 }
-#endif
 
 namespace dustbin {
   namespace lua {

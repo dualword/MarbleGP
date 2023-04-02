@@ -1,6 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
-#include <scenenodes/CMyTextSceneNode.h>
 #include <scenenodes/CAiPathSceneNode.h>
 #include <gui/hud_items/CHudSpeedBar.h>
 #include <gui/hud_items/CHudSteering.h>

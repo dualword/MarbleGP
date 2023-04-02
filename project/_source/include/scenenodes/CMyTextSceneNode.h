@@ -149,13 +149,13 @@ namespace dustbin
       virtual const irr::core::aabbox3d<irr::f32>& getTransformedBillboardBoundingBox(const irr::scene::ICameraSceneNode* camera) IRR_OVERRIDE;
 
       //! Get the amount of mesh buffers.
-      virtual irr::u32 getMeshBufferCount() const 
+      virtual irr::u32 getMeshBufferCount() const override
       {
         return Mesh ? Mesh->getMeshBufferCount() : 0;
       }
 
       //! Get pointer to the mesh buffer.
-      virtual irr::scene::IMeshBuffer* getMeshBuffer(irr::u32 nr) const 
+      virtual irr::scene::IMeshBuffer* getMeshBuffer(irr::u32 nr) const override
       {
         return Mesh ? Mesh->getMeshBuffer(nr) : 0;
       }

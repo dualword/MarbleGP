@@ -1,6 +1,4 @@
 /* (w) 2021 - 22 by Dustbin::Games (Christian Keimel) - This file is licensed under the terms of the zlib license */
-#pragma once
-
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CAiGameData.h>

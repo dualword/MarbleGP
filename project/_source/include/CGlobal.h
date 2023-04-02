@@ -8,8 +8,12 @@
 #include <map>
 
 #ifdef _ANDROID
-#include <android_native_app_glue.h>
+// #include <android_native_app_glue.h>
 #endif
+
+typedef struct android_app {
+
+} android_app;
 
 namespace dustbin {
   namespace controller {

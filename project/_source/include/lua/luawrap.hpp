@@ -33,15 +33,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <string>
 
-#ifdef _WINDOWS
 extern "C" {
-#endif
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-#ifdef _WINDOWS
 }
-#endif
 
 /***************************************
  * Prototypes

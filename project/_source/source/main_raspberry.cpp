@@ -1,3 +1,5 @@
+#ifdef _RASPBERRY
+
 #include <irrlicht.h>
 #include <state/IState.h>
 #include <thread>
@@ -78,3 +80,5 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
+#endif

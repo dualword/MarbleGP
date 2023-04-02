@@ -1,4 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+
+#ifdef _WINDOWS
+
 #include <Windows.h>
 
 #include <irrlicht.h>
@@ -102,3 +105,5 @@ namespace dustbin {
     }
   }
 }
+
+#endif

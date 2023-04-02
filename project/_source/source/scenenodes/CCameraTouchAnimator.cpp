@@ -1,4 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+
+#ifdef _ANDROID
+
 #include <scenenodes/CCameraTouchAnimator.h>
 #include <messages/CSerializer64.h>
 
@@ -187,3 +190,4 @@ namespace dustbin {
   }
 }
 
+#endif

@@ -438,9 +438,6 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
-      <Filter>Quelldateien\scenenodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
@@ -635,6 +632,9 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\helpers\CDataHelpers.cpp">
       <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -950,9 +950,6 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
-      <Filter>Headerdateien\scenenodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGuiTextField.h">
       <Filter>Headerdateien\gui</Filter>
     </ClInclude>
@@ -1051,6 +1048,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\helpers\CDataHelpers.h">
       <Filter>Headerdateien\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+
+#ifndef NO_XEFFECT
+
 #include <shader/CShaderHandleXEffectSplitscreen.h>
 
 
@@ -29,3 +32,5 @@ namespace dustbin {
 
   }
 }
+
+#endif

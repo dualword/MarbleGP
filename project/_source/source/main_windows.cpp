@@ -1,4 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#ifdef _WINDOWS
+
 #ifdef _DEBUG
 // #include <vld.h>
 #endif
@@ -126,3 +128,5 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
   dustbin::helpers::clearDebugLog();
   return 0;
 }
+
+#endif

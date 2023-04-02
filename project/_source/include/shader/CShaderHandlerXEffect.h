@@ -1,6 +1,8 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#ifndef NO_XEFFECT
+
 #include <shader/CShaderHandlerBase.h>
 #include <EffectHandler.h>
 
@@ -31,3 +33,5 @@ namespace dustbin {
 
   }
 }
+
+#endif

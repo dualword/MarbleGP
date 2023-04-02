@@ -1,3 +1,5 @@
+#ifndef NO_XEFFECT
+
 #include "CShaderPre.h"
 #include <iostream>
 #include <string>
@@ -308,3 +310,5 @@ core::stringc CShaderPreprocessor::ppShaderFF(core::stringc shaderProgram)
 {
 	return ppShader(getFileContent(shaderProgram.c_str(), m_pDevice).c_str());
 }
+
+#endif

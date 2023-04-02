@@ -1,4 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+
+#ifdef _ANDROID
+
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <data/CDataStructs.h>
@@ -229,3 +232,5 @@ namespace dustbin {
     }
   }
 }
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef NO_XEFFECT
+
 #include "EffectHandler.h"
 #include "EffectCB.h"
 #include "EffectShaders.h"
@@ -552,3 +554,5 @@ s32 EffectHandler::addPostProcessingEffectFromFile(const irr::core::stringc& fil
 }
 
 // Copyright (C) 2007-2009 Ahmed Hilali
+
+#endif

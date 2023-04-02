@@ -6,13 +6,9 @@ This file is licensed under the terms of the ZLib license - https://www.zlib.net
 
 #include <string>
 
-#ifdef _WINDOWS
 extern "C" {
-#endif
 #include <lua.h>
-#ifdef _WINDOWS
 }
-#endif
 
 namespace dustbin {
   namespace lua {

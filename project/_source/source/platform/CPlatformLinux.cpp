@@ -1,4 +1,7 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
+
+#ifdef _LINUX
+
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
 #include <stdlib.h>
@@ -44,3 +47,5 @@ namespace dustbin {
     }
   }
 }
+
+#endif

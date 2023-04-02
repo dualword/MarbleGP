@@ -1,3 +1,5 @@
+#ifdef _WINDOWS
+
 // (w) 2021 by Dustbin::Games / Christian Keimel
 #define IRRKLANG_STATIC
 
@@ -596,3 +598,5 @@ namespace dustbin {
     }
   }
 }
+
+#endif

@@ -1795,3 +1795,7 @@
 /project/_source/include/_generated/lua/CLuaSingleton_ai.h
 /project/tracks_and_models/*.wings~
 /project/tracks_and_models/*.wings#
+/project/libs/irrlicht/lib/android-x64/libirrlicht.a
+/project/libs/irrlicht/lib/android-x86/libirrlicht.a
+/project/libs/irrlicht/lib/arm64-v8a/libirrlicht.a
+/project/libs/irrlicht/lib/armabi-v7a/libirrlicht.a

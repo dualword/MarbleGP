@@ -4,13 +4,9 @@
 #include <platform/CPlatform.h>
 #include <CGlobal.h>
 
-#ifdef _WINDOWS
 extern "C" {
-#endif
 #include <lua.h>
-#ifdef _WINDOWS
 }
-#endif
 
 namespace dustbin {
   namespace lua {
