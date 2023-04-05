@@ -3,7 +3,7 @@
 
 
 #include <controller/ICustomEventReceiver.h>
-// #include <paddleboat/paddleboat.h>
+#include <paddleboat/paddleboat.h>
 #include <sys/system_properties.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
@@ -130,8 +130,8 @@ struct SJoystickInput {
 
       switch (l_iEvent) {
         case AINPUT_EVENT_TYPE_MOTION: {
-            // float l_fHatX = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_X, 0);
-            // float l_fHatY = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_Y, 0);
+            float l_fHatX = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_X, 0);
+            float l_fHatY = AMotionEvent_getAxisValue(a_pEvent, AMOTION_EVENT_AXIS_HAT_Y, 0);
 
           for (int i = 0; m_aAxes[i] != -1; i++) {
             float f = AMotionEvent_getAxisValue(a_pEvent, m_aAxes[i], 0);
@@ -216,7 +216,7 @@ irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEven
 
 void android_main(struct android_app* a_pApp) {
   LOGI("Starting MarbleGP...");
-    /*JNIEnv *l_pJni = nullptr;
+    JNIEnv *l_pJni = nullptr;
 
     if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
       printf("Oops");
@@ -240,7 +240,7 @@ void android_main(struct android_app* a_pApp) {
         case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
         case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
       }
-    }*/
+    }
 
   dustbin::CMainClass *l_pMainClass = nullptr;
   dustbin::state::enState l_eState{};

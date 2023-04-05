@@ -84,6 +84,7 @@ find_library( # Sets the name of the path variable.
         log )
 
 find_package (oboe REQUIRED CONFIG)
+find_package (games-controller REQUIRED CONFIG)
 
 target_include_directories(marblegp PUBLIC
         ../../_source/include
@@ -120,4 +121,5 @@ target_link_libraries( # Specifies the target library.
         enet
         lua
         mediandk
+        games-controller::paddleboat_static
         )

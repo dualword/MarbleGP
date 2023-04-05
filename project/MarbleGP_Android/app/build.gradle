@@ -53,4 +53,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.google.oboe:oboe:1.7.0'
+    implementation "androidx.games:games-controller:2.0.0"
+    implementation "androidx.games:games-text-input:2.0.0"
+
 }
