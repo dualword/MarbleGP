@@ -99,7 +99,7 @@ namespace dustbin {
     * @param a_cClip the clipping rectangle
     */
     void CHudSteering::drawControlItem(const irr::core::vector2di& a_cPos, irr::f32 a_fFactor, const irr::video::SColor& a_cColor, const irr::core::recti &a_cClip) {
-      irr::core::recti l_cRect = irr::core::recti(
+      /*irr::core::recti l_cRect = irr::core::recti(
         a_cPos, a_cPos + irr::core::vector2di((irr::s32)((irr::f32)m_cSize.Width * a_fFactor / 2.0f), m_iHeight)
       );
 
@@ -109,7 +109,7 @@ namespace dustbin {
         l_cRect.LowerRightCorner.X = l_iDummy;
       }
 
-      m_pDrv->draw2DRectangle(a_cColor, l_cRect, &a_cClip);
+      m_pDrv->draw2DRectangle(a_cColor, l_cRect, &a_cClip);*/
     }
 
     /**

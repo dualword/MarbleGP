@@ -90,7 +90,7 @@ class CAndroidMenuEventHandler : public dustbin::controller::ICustomEventReceive
     }
 };
 
-// int32_t (*g_IrrlichtInputHandler)(struct android_app* app, AInputEvent* event) = nullptr;
+int32_t (*g_IrrlichtInputHandler)(struct android_app* app, AInputEvent* event) = nullptr;
 
 struct SJoystickInput {
   irr::SEvent m_cJoypadEvent;
@@ -110,16 +110,16 @@ struct SJoystickInput {
     m_cJoypadEvent.JoystickEvent.Joystick     = 0;
     m_cJoypadEvent.JoystickEvent.POV          = 65535;
 
-    // m_aAxes[0] = AMOTION_EVENT_AXIS_X;
-      // m_aAxes[1] = AMOTION_EVENT_AXIS_Y;
-      // m_aAxes[2] = AMOTION_EVENT_AXIS_Z;
-      // m_aAxes[3] = AMOTION_EVENT_AXIS_RZ;
-      // m_aAxes[4] = AMOTION_EVENT_AXIS_BRAKE;
-      // m_aAxes[5] = AMOTION_EVENT_AXIS_GAS;
-      // m_aAxes[6] = -1;
+    m_aAxes[0] = AMOTION_EVENT_AXIS_X;
+    m_aAxes[1] = AMOTION_EVENT_AXIS_Y;
+    m_aAxes[2] = AMOTION_EVENT_AXIS_Z;
+    m_aAxes[3] = AMOTION_EVENT_AXIS_RZ;
+    m_aAxes[4] = AMOTION_EVENT_AXIS_BRAKE;
+    m_aAxes[5] = AMOTION_EVENT_AXIS_GAS;
+    m_aAxes[6] = -1;
   }
 
-  /* bool parseEvent(AInputEvent* a_pEvent) {
+  bool parseEvent(AInputEvent* a_pEvent) {
     int32_t l_iSource = AInputEvent_getSource(a_pEvent);
 
     bool l_bRet = false;
@@ -201,17 +201,17 @@ struct SJoystickInput {
     }
 
     return l_bRet;
-  }*/
+  }
 };
 
 SJoystickInput g_cJoystickInput;
 
-/* irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEvent) {
+irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEvent) {
   if (g_cJoystickInput.parseEvent(a_pAndroidEvent))
     return 1;
 
   return (*g_IrrlichtInputHandler)(a_pApp, a_pAndroidEvent);
-}*/
+}
 
 
 void android_main(struct android_app* a_pApp) {
@@ -284,9 +284,9 @@ void android_main(struct android_app* a_pApp) {
     l_pMainClass->setIrrlichtDevice(l_pDevice);
     l_pMainClass->setCustomEventReceivers(l_pMenuHandler, nullptr);
 
-      // g_IrrlichtInputHandler = a_pApp->onInputEvent;
-      // g_cJoystickInput.m_pDevice = l_pDevice;
-    // a_pApp->onInputEvent = &overrideInputReceiever;
+    g_IrrlichtInputHandler = a_pApp->onInputEvent;
+    g_cJoystickInput.m_pDevice = l_pDevice;
+    a_pApp->onInputEvent = &overrideInputReceiever;
 
 
     do {

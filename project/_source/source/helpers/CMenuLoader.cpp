@@ -51,7 +51,8 @@ namespace dustbin {
 
     void deserializeAttributes(irr::gui::IGUIElement* a_pElement, const std::map <std::string, std::string> &a_mAttributes, irr::io::IFileSystem *a_pFs) {
       irr::io::IAttributes *l_pAttributes = a_pFs->createEmptyAttributes();
-      if (l_pAttributes) {
+      if (l_pAttributes && a_pElement != nullptr) {
+        a_pElement->setMaxSize(irr::core::dimension2du(a_pElement->getAbsoluteClippingRect().getWidth(), a_pElement->getAbsoluteClippingRect().getHeight()));
         a_pElement->serializeAttributes(l_pAttributes);
 
         for (std::map<std::string, std::string>::const_iterator it = a_mAttributes.begin(); it != a_mAttributes.end(); it++) {
