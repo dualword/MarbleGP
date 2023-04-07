@@ -18,6 +18,17 @@ namespace dustbin {
     */
     class CControllerMenu : public CControllerBase {
       private:
+        /**
+        * @class SOldAxisPos
+        * @author Christian Keimel
+        * This structure is necessary for the map with the old axis
+        * values for selecting the gamepad to control the menu
+        * @see m_mOldAxisPos
+        */
+        typedef struct SOldAxisPos {
+          int m_iAxis[18];
+        } SOldAxisPos;
+
         enum class enDirection {
           Up    = 0,
           Down  = 1,
@@ -56,6 +67,10 @@ namespace dustbin {
         std::wstring m_sEditChars;    /**< String with the characters for name editing with the menu controller */
 
         irr::u32 m_aNextEvent[4];   /**< Timestamp of the last movement events */
+        irr::s32 m_iGamepad;        /**< The menu control gamepad (if wanted) */
+        bool     m_bGamepad;        /**< Does the control use a gampad? */
+
+        std::map<int, SOldAxisPos> m_mOldAxisPos;   /**< The old axis position of the joysticks to select the menu controller gamepad */
 
         irr::video::ITexture *m_pArrows[2];
         irr::video::ITexture *m_pCursorTexture;   /**< The cursor for Android */

@@ -38,6 +38,8 @@ namespace dustbin {
       m_iZLayer       (a_iZLayer),
       m_pSelected     (nullptr),
       m_sEditChars    (L""),
+      m_iGamepad      (-1),
+      m_bGamepad      (false),
       m_pCursorTexture(nullptr)
     {
       SCtrlInput l_cInput;
@@ -341,10 +343,44 @@ namespace dustbin {
       bool l_bRet = false;
       irr::gui::IGUIElement *l_pHovered = m_pGui->getRootGUIElement()->getElementFromPoint(m_cMousePos);
 
+      if (m_bGamepad && m_iGamepad == -1) {
+        if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+          bool l_bEvent = false;
+
+          if (m_mOldAxisPos.find(a_cEvent.JoystickEvent.Joystick) == m_mOldAxisPos.end()) {
+            m_mOldAxisPos[a_cEvent.JoystickEvent.Joystick] = SOldAxisPos();
+
+            for (int i = 0; i < 18; i++)
+              m_mOldAxisPos[a_cEvent.JoystickEvent.Joystick].m_iAxis[i] = a_cEvent.JoystickEvent.Axis[i];
+          }
+
+          if (a_cEvent.JoystickEvent.ButtonStates != 0)
+            l_bEvent = true;
+          else if (a_cEvent.JoystickEvent.POV != 65535)
+            l_bEvent = true;
+          else
+            for (int i = 0; i < 18 && !l_bEvent; i++)
+              l_bEvent = a_cEvent.JoystickEvent.Axis[i] != m_mOldAxisPos[a_cEvent.JoystickEvent.Joystick].m_iAxis[i];
+
+          if (l_bEvent) {
+            printf("Gamepad %i selected for menu control.\n", a_cEvent.JoystickEvent.Joystick);
+            m_iGamepad = (irr::s32)a_cEvent.JoystickEvent.Joystick;
+
+            for (std::vector<SCtrlInput>::iterator l_itCtrl = m_vControls.begin(); l_itCtrl != m_vControls.end(); l_itCtrl++) {
+              (*l_itCtrl).m_iJoystick = m_iGamepad;
+            }
+          }
+        }
+      }
+
       if (a_cEvent.EventType == irr::EET_USER_EVENT) {
         if (a_cEvent.UserEvent.UserData1 == c_iEventSettingsChanged) {
           m_bActive = CGlobal::getInstance()->getSettingData().m_bUseMenuCtrl;
           deserialize(CGlobal::getInstance()->getSettingData().m_sController);
+
+          for (std::vector<SCtrlInput>::iterator l_itCtrl = m_vControls.begin(); l_itCtrl != m_vControls.end() && !m_bGamepad; l_itCtrl++) {
+            m_bGamepad = (*l_itCtrl).m_eType == enInputType::JoyAxis || (*l_itCtrl).m_eType == enInputType::JoyButton || (*l_itCtrl).m_eType == enInputType::JoyPov;
+          }
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventChangeZLayer) {
           setZLayer((int)a_cEvent.UserEvent.UserData2);
