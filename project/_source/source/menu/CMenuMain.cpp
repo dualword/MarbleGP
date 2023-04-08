@@ -30,6 +30,12 @@ namespace dustbin {
 
           m_pState->getGlobal()->stopGameServer();
           m_pState->getGlobal()->stopGameClient();
+
+          std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
+
+          for (std::vector<data::SPlayerData>::iterator l_itPlayer = l_vProfiles.begin(); l_itPlayer != l_vProfiles.end(); l_itPlayer++) {
+            printf("\n%s\n", (*l_itPlayer).m_sControls.c_str());
+          }
         }
 
         virtual ~CMenuMain() {

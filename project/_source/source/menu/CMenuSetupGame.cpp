@@ -50,6 +50,8 @@ namespace dustbin {
 
         gui::CMenuButton *m_pOk;  /**< The OK button */
 
+        irr::gui::IGUITab *m_pSelectCtrl;
+
         /**
         * Update the list of selected players
         */
@@ -91,7 +93,8 @@ namespace dustbin {
           m_iMaxIndex    (-1), 
           m_itAdd        (m_vPlayerUI.end()),
           m_pSelectPlayer(nullptr),
-          m_pOk          (nullptr)
+          m_pOk          (nullptr),
+          m_pSelectCtrl  (nullptr)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
@@ -202,7 +205,8 @@ namespace dustbin {
           updateSelectedPlayers();
           m_pState->setZLayer(1);
 
-          m_pOk = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+          m_pOk         = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId , m_pGui->getRootGUIElement()));
+          m_pSelectCtrl = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("selectctrl_dialog",                              irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
           updateSelectedPlayers();
 

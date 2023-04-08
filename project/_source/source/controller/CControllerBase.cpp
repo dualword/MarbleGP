@@ -6,6 +6,15 @@
 
 namespace dustbin {
   namespace controller {
+    const int c_iHead =  5;
+    const int c_iType =  7;
+    const int c_iName = 11;
+    const int c_iKey  = 13;
+    const int c_iJoy  = 17;
+    const int c_iBtn  = 19;
+    const int c_iAxis = 23;
+    const int c_iDir  = 29;
+
     /** Implementation of SCtrlInput */
     CControllerBase::SCtrlInput::SCtrlInput() {
       m_sName      = "";
@@ -24,18 +33,23 @@ namespace dustbin {
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(messages::CSerializer64* a_pSerializer) : m_fValue(0.0f) {
-      std::string l_sType = a_pSerializer->getString();
+      int l_iHead = a_pSerializer->getS32();
 
-      m_eType = l_sType == "JoyAxis" ? enInputType::JoyAxis : l_sType == "JoyButton" ? enInputType::JoyButton : l_sType == "JoyPov" ? enInputType::JoyPov : enInputType::Key;
+      if (l_iHead == c_iHead) {
+        while (a_pSerializer->hasMoreMessages()) {
+          int l_iIdentifier = a_pSerializer->getS32();
 
-      m_sName      =                 a_pSerializer->getString();
-      m_sJoystick  =                 a_pSerializer->getString();
-      m_eKey       = (irr::EKEY_CODE)a_pSerializer->getS32();
-      m_iJoystick  =                 a_pSerializer->getS32();
-      m_iButton    =                 a_pSerializer->getS32();
-      m_iAxis      =                 a_pSerializer->getS32();
-      m_iPov       =                 a_pSerializer->getS32();
-      m_iDirection =                 a_pSerializer->getS32();
+          switch (l_iIdentifier) {
+            case c_iName: m_sName      =                 a_pSerializer->getString(); break;
+            case c_iType: m_eType      = (enInputType   )a_pSerializer->getS32   (); break;
+            case c_iKey : m_eKey       = (irr::EKEY_CODE)a_pSerializer->getS32   (); break;
+            case c_iJoy : m_iJoystick  =                 a_pSerializer->getS32   (); break;
+            case c_iBtn : m_iButton    =                 a_pSerializer->getS32   (); break;
+            case c_iAxis: m_iAxis      =                 a_pSerializer->getS32   (); break;
+            case c_iDir : m_iDirection =                 a_pSerializer->getS32   (); break;
+          }
+        }
+      }
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) : m_fValue(0.0f) {
@@ -43,6 +57,17 @@ namespace dustbin {
     }
 
     CControllerBase::SCtrlInput::~SCtrlInput() {
+    }
+
+    void CControllerBase::SCtrlInput::serialize(messages::CSerializer64* a_pSerializer) const {
+      a_pSerializer->addS32(c_iHead);
+      a_pSerializer->addS32(c_iName); a_pSerializer->addString(          m_sName     );
+      a_pSerializer->addS32(c_iType); a_pSerializer->addS32   ((irr::s32)m_eType     );
+      a_pSerializer->addS32(c_iKey ); a_pSerializer->addS32   ((irr::s32)m_eKey      );
+      a_pSerializer->addS32(c_iJoy ); a_pSerializer->addS32   (          m_iJoystick );
+      a_pSerializer->addS32(c_iBtn ); a_pSerializer->addS32   (          m_iButton   );
+      a_pSerializer->addS32(c_iAxis); a_pSerializer->addS32   (          m_iAxis     );
+      a_pSerializer->addS32(c_iDir ); a_pSerializer->addS32   (          m_iDirection);
     }
 
     void CControllerBase::SCtrlInput::copyFrom(const SCtrlInput& a_cOther) {
@@ -54,7 +79,6 @@ namespace dustbin {
       m_iAxis      = a_cOther.m_iAxis;
       m_iDirection = a_cOther.m_iDirection;
       m_iPov       = a_cOther.m_iPov;
-      m_sJoystick  = a_cOther.m_sJoystick;
     }
 
     bool CControllerBase::SCtrlInput::valueUpdate(irr::f32 a_fValue) {
@@ -129,19 +153,6 @@ namespace dustbin {
       return l_bRet;
     }
 
-    void CControllerBase::SCtrlInput::serialize(messages::CSerializer64* a_pSerializer) const {
-      a_pSerializer->addString("control");
-      a_pSerializer->addString(m_eType == enInputType::JoyAxis ? "JoyAxis" : m_eType == enInputType::JoyButton ? "JoyButton" : m_eType == enInputType::JoyPov ? "JoyPov" : "Key");
-      a_pSerializer->addString(m_sName);
-      a_pSerializer->addString(m_sJoystick);
-      a_pSerializer->addS32((irr::s32)m_eKey);
-      a_pSerializer->addS32(m_iJoystick);
-      a_pSerializer->addS32(m_iButton);
-      a_pSerializer->addS32(m_iAxis);
-      a_pSerializer->addS32(m_iPov);
-      a_pSerializer->addS32(m_iDirection);
-    }
-
 
     CControllerBase::CControllerBase() {
     }
@@ -174,7 +185,10 @@ namespace dustbin {
       l_cSerializer.addString("DustbinController");
 
       for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-        (*it).serialize(&l_cSerializer);
+        messages::CSerializer64 l_cCtrl;
+        (*it).serialize(&l_cCtrl);
+        l_cSerializer.addString("control");
+        l_cSerializer.addString(l_cCtrl.getMessageAsString());
       }
       
       l_sRet = std::string((char*)l_cSerializer.getBuffer());
@@ -196,7 +210,8 @@ namespace dustbin {
 
         if (l_sHead == "DustbinController") {
           while (l_cSerializer.getString() == "control") {
-            SCtrlInput l_cCtrl(&l_cSerializer);
+            messages::CSerializer64 l_cCtrlData = messages::CSerializer64(l_cSerializer.getString().c_str());
+            SCtrlInput l_cCtrl(&l_cCtrlData);
 
             if (l_bFillVector) {
               m_vControls.push_back(l_cCtrl);
@@ -230,6 +245,19 @@ namespace dustbin {
           break;
         }
       }
+    }
+
+    /**
+    * Is this a controller using a joystick?
+    * return true if this is a controller using a joystick
+    */
+    bool CControllerBase::usesJoystick() {
+      for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+        if ((*it).m_eType == enInputType::JoyAxis || (*it).m_eType == enInputType::JoyButton || (*it).m_eType == enInputType::JoyPov)
+          return true;
+      }
+
+      return false;
     }
 
     std::vector<CControllerBase::SCtrlInput>& CControllerBase::getInputs() {

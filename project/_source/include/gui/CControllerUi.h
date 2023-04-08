@@ -100,6 +100,12 @@ namespace dustbin {
         virtual void setText(const wchar_t* a_pText) override;
 
         /**
+        * Set the controller which is to be configured
+        * @param a_pCtrl the controller which is to be configured
+        */
+        void setController(controller::CControllerBase *a_pCtrl);
+
+        /**
         * Change the font for the configuration dialog
         */
         void setFont(irr::gui::IGUIFont* a_pFont);

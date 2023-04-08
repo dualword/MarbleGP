@@ -36,7 +36,6 @@ namespace dustbin {
         */
         struct SCtrlInput {
           std::string    m_sName;       /**< The name of this control */
-          std::string    m_sJoystick;   /**< Name of the joystick (if this is a joystick control) */
           enInputType    m_eType;       /**< The type of this input */
           irr::EKEY_CODE m_eKey;        /**< The key to use (necessary for enCtrlType::Key input) */
           irr::u8        m_iJoystick;   /**< The joystick to use for any type of enCtrlType::Joy* input type */
@@ -101,6 +100,12 @@ namespace dustbin {
         * @param a_cItem the new values for the item.
         */
         void setControlItem(const CControllerBase::SCtrlInput& a_cItem);
+
+        /**
+        * Is this a controller using a joystick?
+        * return true if this is a controller using a joystick
+        */
+        bool usesJoystick();
      };
 
   } // namespace controller 

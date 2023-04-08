@@ -388,6 +388,17 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Set the controller which is to be configured
+    * @param a_pCtrl the controller which is to be configured
+    */
+    void CControllerUi::setController(controller::CControllerBase* a_pCtrl) {
+      std::string s = a_pCtrl->serialize();
+      deserialize(s);
+      buildUi(Parent);
+    }
+
+
     bool CControllerUi::OnJoystickEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 

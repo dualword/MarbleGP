@@ -157,18 +157,20 @@ namespace dustbin {
 
           std::string l_sCtrl = m_cSettings.m_sController;
 
-          if (l_sCtrl == "") {
-            controller::CControllerMenu *p = new controller::CControllerMenu(-1);
+          controller::CControllerMenu *p = new controller::CControllerMenu(-1);
+
+          if (l_sCtrl != "") {
             l_sCtrl = p->serialize();
-            delete p;
           }
 
           m_pController = reinterpret_cast<gui::CControllerUi_Menu *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId, m_pGui->getRootGUIElement()));
 
           if (m_pController != nullptr) {
-            m_pController->setText(helpers::s2ws(l_sCtrl).c_str());
+            m_pController->setController(p);
             m_pController->setMenuManager(m_pManager);
           }
+
+          delete p;
 
           // Fill the video resolution list
           if (m_pResolution != nullptr) {

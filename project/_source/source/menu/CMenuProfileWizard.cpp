@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <gui/IGuiControllerUiCallback.h>
+#include <controller/CControllerGame.h>
 #include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
@@ -456,8 +457,15 @@ namespace dustbin {
                 m_pCtrl->setCallback(this);
                 m_pCtrl->setMenuManager(m_pManager);
 
+                if (m_cPlayer.m_sControls == "") {
+                  controller::CControllerGame l_cCtrl;
+                  m_cPlayer.m_sControls = l_cCtrl.serialize();
+                }
+
                 if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
-                  m_pCtrl->setText(helpers::s2ws(m_cPlayer.m_sControls).c_str());
+                  controller::CControllerGame l_cCtrl;
+                  l_cCtrl.deserialize(m_cPlayer.m_sControls);
+                  m_pCtrl->setController(&l_cCtrl);
                 }
                 else {
                   gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));

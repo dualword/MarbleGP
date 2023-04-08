@@ -420,7 +420,7 @@ namespace dustbin {
 #ifdef _ANDROID
     const std::string c_sDefaultControls = "DustbinTouchSteerOnly";
 #else
-    const std::string c_sDefaultControls = "DustbinController;control;Key;Forward;;M;a;a;a;-0md;b;control;Key;Backward;;O;a;a;a;-0md;b;control;Key;Left;;L;a;a;a;-0md;b;control;Key;Right;;N;a;a;a;-0md;b;control;Key;Brake;;G;a;a;a;-0md;b;control;Key;Rearview;;j;a;a;a;-0md;b;control;Key;Respawn;;n;a;a;a;-0md;b;control;Key;Pause;;t;a;a;a;-0md;b;control;Key;Cancel%20Race;;B;a;a;a;-0md;b";
+    const std::string c_sDefaultControls = "";
 #endif
   }
 }
