@@ -57,47 +57,44 @@ namespace dustbin {
 
           bool l_bAdd = false;
 
-          if (m_vControls[std::get<2>(l_tItem)].m_sName == "Forward") {
-            l_cLabelPos.X -= l_cLabelDim.Width  / 2;
-            l_cLabelPos.Y -= l_cLabelDim.Height;
-            l_bAdd = true;
-          }
-          else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Backward") {
-            l_cLabelPos.X -= l_cLabelDim.Width  / 2;
-            l_bAdd = true;
-          }
-          else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Right") {
-            l_cLabelPos.Y -= l_cLabelDim.Height / 2;
-            l_bAdd = true;
-          }
-          else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Left") {
-            l_cLabelPos.X -= l_cLabelDim.Width;
-            l_cLabelPos.Y -= l_cLabelDim.Height / 2;
-            l_bAdd = true;
-          }
-          else {
-            if (m_vControls[std::get<2>(l_tItem)].m_sName == "Brake") {
-              l_bAdd = true;
-            }
-            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Rearview") {
-              l_bAdd = true;
-            }
-            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Respawn") {
-              l_bAdd = true;
-            }
-            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Pause") {
-              l_bAdd = true;
-            }
-            else if (m_vControls[std::get<2>(l_tItem)].m_sName == "Cancel Race") {
-              l_bAdd = true;
-            }
+          if (m_vControls.size() >= std::get<2>(l_tItem)) {
+            std::string l_sItemName = m_vControls[std::get<2>(l_tItem)].m_sName;
 
-            if (l_bAdd)
+            if (l_sItemName == "Forward") {
+              l_cLabelPos.X -= l_cLabelDim.Width / 2;
+              l_cLabelPos.Y -= l_cLabelDim.Height;
+              l_bAdd = true;
+            } else if (l_sItemName == "Backward") {
+              l_cLabelPos.X -= l_cLabelDim.Width / 2;
+              l_bAdd = true;
+            } else if (l_sItemName == "Right") {
               l_cLabelPos.Y -= l_cLabelDim.Height / 2;
-          }
+              l_bAdd = true;
+            } else if (l_sItemName == "Left") {
+              l_cLabelPos.X -= l_cLabelDim.Width;
+              l_cLabelPos.Y -= l_cLabelDim.Height / 2;
+              l_bAdd = true;
+            } else {
+              if (l_sItemName == "Brake") {
+                l_bAdd = true;
+              } else if (l_sItemName == "Rearview") {
+                l_bAdd = true;
+              } else if (l_sItemName == "Respawn") {
+                l_bAdd = true;
+              } else if (l_sItemName == "Pause") {
+                l_bAdd = true;
+              } else if (l_sItemName == "Cancel Race") {
+                l_bAdd = true;
+              }
 
-          if (l_bAdd) {
-            m_mLabels[std::get<0>(l_tItem)] = std::make_tuple(irr::core::recti(l_cLabelPos, l_cLabelDim), l_cLabelTxt, false, false, false);
+              if (l_bAdd)
+                l_cLabelPos.Y -= l_cLabelDim.Height / 2;
+            }
+
+            if (l_bAdd) {
+              m_mLabels[std::get<0>(l_tItem)] = std::make_tuple(
+                irr::core::recti(l_cLabelPos, l_cLabelDim), l_cLabelTxt, false, false, false);
+            }
           }
         }
       }
@@ -117,7 +114,7 @@ namespace dustbin {
       std::string l_sData = a_sData;
       if (l_sData == "" || l_sData.substr(0, std::string("DustbinController").size()) != "DustbinController") {
 #ifdef _ANDROID
-        l_sData = "DustbinController;control;JoyButton;Forward;Gamepad;M;a;j;a;-0md;b;control;JoyButton;Backward;Gamepad;O;a;i;c;-0md;b;control;JoyAxis;Left;Gamepad;L;a;a;a;-0md;-b;control;JoyAxis;Right;Gamepad;N;a;a;a;-0md;b;control;JoyButton;Brake;Gamepad;G;a;a;a;-0md;b;control;JoyButton;Rearview;Gamepad;j;a;g;a;-0md;b;control;JoyButton;Respawn;Gamepad;n;a;h;a;-0md;b;control;JoyButton;Pause;Gamepad;t;a;m;a;-SN;b;control;JoyButton;Cancel%20Race;Gamepad;B;a;n;a;-SN;b";
+        l_sData = "DustbinController;control;f%3bl%3bForward%3bh%3bb%3bn%3bM%3br%3ba%3bt%3ba%3bx%3bc%3bD%3b-b;control;f%3bl%3bBackward%3bh%3bb%3bn%3bO%3br%3ba%3bt%3ba%3bx%3bc%3bD%3bb;control;f%3bl%3bLeft%3bh%3bb%3bn%3bL%3br%3ba%3bt%3ba%3bx%3ba%3bD%3b-b;control;f%3bl%3bRight%3bh%3bb%3bn%3bN%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBrake%3bh%3bc%3bn%3bG%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRearview%3bh%3bc%3bn%3bj%3br%3ba%3bt%3be%3bx%3ba%3bD%3bb;control;f%3bl%3bRespawn%3bh%3bc%3bn%3bn%3br%3ba%3bt%3bf%3bx%3ba%3bD%3bb;control;f%3bl%3bPause%3bh%3bc%3bn%3bt%3br%3ba%3bt%3bg%3bx%3ba%3bD%3bb;control;f%3bl%3bCancel%2520Race%3bh%3bc%3bn%3bB%3br%3ba%3bt%3bh%3bx%3ba%3bD%3bb";
 #else
         // Default controls for new player
         l_sData = "DustbinController;control;Key;Forward;Controller%20%28GAME%20FOR%20WINDOWS%29;M;a;a;a;-0md;b;control;Key;Backward;Controller%20%28GAME%20FOR%20WINDOWS%29;O;a;a;c;-0md;b;control;Key;Left;Controller%20%28GAME%20FOR%20WINDOWS%29;L;a;a;a;-0md;-b;control;Key;Right;Controller%20%28GAME%20FOR%20WINDOWS%29;N;a;a;a;-0md;b;control;Key;Brake;Controller%20%28GAME%20FOR%20WINDOWS%29;G;a;a;a;-0md;b;control;Key;Rearview;Controller%20%28GAME%20FOR%20WINDOWS%29;j;a;e;a;-0md;b;control;Key;Respawn;Controller%20%28GAME%20FOR%20WINDOWS%29;n;a;f;a;-0md;b";

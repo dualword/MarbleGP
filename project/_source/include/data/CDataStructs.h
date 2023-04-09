@@ -418,7 +418,7 @@ namespace dustbin {
     SMarbleAiData;
 
 #ifdef _ANDROID
-    const std::string c_sDefaultControls = "DustbinTouchSteerOnly";
+    const std::string c_sDefaultControls = "DustbinTouchSteerLeft";
 #else
     const std::string c_sDefaultControls = "";
 #endif

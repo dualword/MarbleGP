@@ -21,6 +21,10 @@ namespace dustbin {
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iEventSettingsChanged;
       m_pController->update(l_cEvent);
+      if (m_pController->hasError()) {
+        delete m_pController;
+        m_pController = new controller::CControllerMenu(-1);
+      }
     }
 
     CMenuState::~CMenuState() {

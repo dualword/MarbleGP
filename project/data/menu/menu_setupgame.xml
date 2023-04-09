@@ -259,6 +259,8 @@
     </children>
   </element>  
   
+  <include file="data/menu/button_ok.xml" />
+  <include file="data/menu/button_cancel.xml" />
   
   <element type="tab" rect="fillwindow">
     <attributes>
@@ -269,7 +271,7 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -20, -6, 20, 2">
+      <element type="MenuBackground" rect="center: -23, -6, 23, 4">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="230, 239, 239, 255" />
@@ -285,9 +287,9 @@
             </attributes>
           </element>
           
-          <element type="staticText" rect="center: -19, -1, 19, 1">
+          <element type="staticText" rect="center: -22, -1, 22, 3">
             <attributes>
-              <attribute key="Caption" value="Player Brainsaw: Select your gamepad by clicking a button." />
+              <attribute key="Caption" value="DummyText" />
               <attribute key="Name" value="selectctrl_player" />
               <attribute key="HTextAlign" value="center" />
               <attribute key="VTextAlign" value="center" />
@@ -299,7 +301,5 @@
   </element>
 
   
-  <include file="data/menu/button_ok.xml" />
-  <include file="data/menu/button_cancel.xml" />
   <include file="data/menu/dialog_select_player.xml" />
 </dialog>

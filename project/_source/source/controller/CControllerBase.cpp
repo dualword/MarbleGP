@@ -16,7 +16,7 @@ namespace dustbin {
     const int c_iDir  = 29;
 
     /** Implementation of SCtrlInput */
-    CControllerBase::SCtrlInput::SCtrlInput() {
+    CControllerBase::SCtrlInput::SCtrlInput() : m_sName(""), m_eType(enInputType::Key), m_eKey(irr::KEY_SPACE), m_iJoystick(0), m_iButton(0), m_iAxis(0), m_iDirection(1), m_fValue(0.0f), m_bError(false) {
       m_sName      = "";
       m_eType      = enInputType::Key;
       m_eKey       = irr::KEY_SPACE;
@@ -27,16 +27,16 @@ namespace dustbin {
       m_fValue     = 0.0f;
     }
 
-    CControllerBase::SCtrlInput::SCtrlInput(enInputType a_eType, const std::string& a_sName) {
+    CControllerBase::SCtrlInput::SCtrlInput(enInputType a_eType, const std::string& a_sName) : m_bError(false) {
       m_eType = a_eType;
       m_sName = a_sName;
     }
 
-    CControllerBase::SCtrlInput::SCtrlInput(messages::CSerializer64* a_pSerializer) : m_fValue(0.0f) {
+    CControllerBase::SCtrlInput::SCtrlInput(messages::CSerializer64* a_pSerializer) : m_fValue(0.0f), m_bError(false) {
       int l_iHead = a_pSerializer->getS32();
 
       if (l_iHead == c_iHead) {
-        while (a_pSerializer->hasMoreMessages()) {
+        while (a_pSerializer->hasMoreMessages() && !m_bError) {
           int l_iIdentifier = a_pSerializer->getS32();
 
           switch (l_iIdentifier) {
@@ -47,6 +47,9 @@ namespace dustbin {
             case c_iBtn : m_iButton    =                 a_pSerializer->getS32   (); break;
             case c_iAxis: m_iAxis      =                 a_pSerializer->getS32   (); break;
             case c_iDir : m_iDirection =                 a_pSerializer->getS32   (); break;
+            default:
+              m_bError = true;
+              break;
           }
         }
       }
@@ -154,7 +157,7 @@ namespace dustbin {
     }
 
 
-    CControllerBase::CControllerBase() {
+    CControllerBase::CControllerBase() : m_bError(false) {
     }
 
     CControllerBase::~CControllerBase() {
@@ -213,6 +216,8 @@ namespace dustbin {
             messages::CSerializer64 l_cCtrlData = messages::CSerializer64(l_cSerializer.getString().c_str());
             SCtrlInput l_cCtrl(&l_cCtrlData);
 
+            m_bError |= l_cCtrl.m_bError;
+
             if (l_bFillVector) {
               m_vControls.push_back(l_cCtrl);
             }
@@ -258,6 +263,57 @@ namespace dustbin {
       }
 
       return false;
+    }
+
+    /**
+    * Reset the joystick indices of the controls
+    */
+    void CControllerBase::resetJoystick() {
+      if (usesJoystick()) {
+        for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+          (*it).m_iJoystick = 255;
+        }
+      }
+    }
+
+    /**
+    * Set the joystick indices of the controls
+    * @param a_iJoystick the new joystick index
+    */
+    void CControllerBase::setJoystickIndices(irr::s32 a_iJoystick) {
+      if (usesJoystick()) {
+        for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+          (*it).m_iJoystick = (irr::u8)a_iJoystick;
+        }
+      }
+    }
+
+    /**
+    * Check if the joystick is already assigned
+    * @return true if the joystick is already assigned, false otherwise
+    */
+    bool CControllerBase::isJoystickAssigned() {
+      if (usesJoystick()) {
+        bool l_bRet = true;
+
+        for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+          if ((*it).m_iJoystick == 255) {
+            l_bRet = false;
+            break;
+          }
+        }
+
+        return l_bRet;
+      }
+      else return true;
+    }
+
+    /**
+    * Was there an error while deseriazlization?
+    * @return true if the was an error, false otherwise
+    */
+    bool CControllerBase::hasError() {
+      return m_bError;
     }
 
     std::vector<CControllerBase::SCtrlInput>& CControllerBase::getInputs() {

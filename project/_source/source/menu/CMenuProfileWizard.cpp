@@ -465,7 +465,14 @@ namespace dustbin {
                 if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
                   controller::CControllerGame l_cCtrl;
                   l_cCtrl.deserialize(m_cPlayer.m_sControls);
-                  m_pCtrl->setController(&l_cCtrl);
+
+                  if (l_cCtrl.hasError()) {
+                    controller::CControllerGame l_cDefault;
+                    m_pCtrl->setController(&l_cDefault);
+                  }
+                  else {
+                    m_pCtrl->setController(&l_cCtrl);
+                  }
                 }
                 else {
                   gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
@@ -812,9 +819,17 @@ namespace dustbin {
                 }
                 else if (l_sButton == "save") {
                   if (m_eStep != enMenuStep::Tutorial) {
+                    std::string l_sEditProfileNo = m_pState->getGlobal()->getGlobal("edit_profileno");
+                    int l_iEditProfileNo = std::atoi(l_sEditProfileNo.c_str());
+
                     std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(m_pGlobal->getSetting("profiles"));
 
-                    l_vPlayers.push_back(m_cPlayer);
+                    if (l_sEditProfileNo != "" && l_iEditProfileNo >= 0 && l_iEditProfileNo < l_vPlayers.size()) {
+                      l_vPlayers[l_iEditProfileNo] = m_cPlayer;
+                    }
+                    else {
+                      l_vPlayers.push_back(m_cPlayer);
+                    }
                     helpers::saveProfiles(l_vPlayers);
 
                     if (m_sProfile == "commit_profile" && m_pBtnSave != nullptr && m_pBtnSave->isVisible()) {

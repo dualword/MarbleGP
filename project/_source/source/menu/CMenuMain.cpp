@@ -57,6 +57,9 @@ namespace dustbin {
               std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
               if (l_vProfiles.size() == 0) {
+                CGlobal::getInstance()->setGlobal("edit_profileno", "-1");
+                CGlobal::getInstance()->setGlobal("edit_profile", "");
+
                 m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_setupgame");
                 createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);

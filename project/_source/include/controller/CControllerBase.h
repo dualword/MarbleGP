@@ -44,6 +44,7 @@ namespace dustbin {
           irr::s16       m_iPov;        /**< The POV direction used */
           irr::s8        m_iDirection;  /**< The direction of the axis to use for enCtrlType::JoyAxis inputs */
           irr::f32       m_fValue;      /**< The value of the input (0 .. -1) */
+          bool           m_bError;      /**< Error while deserialiation */
 
           SCtrlInput();
           SCtrlInput(enInputType a_eType, const std::string& a_sName);
@@ -67,6 +68,7 @@ namespace dustbin {
 
       protected:
         std::vector<SCtrlInput> m_vControls;
+        bool m_bError;
 
       public:
         CControllerBase();
@@ -106,6 +108,29 @@ namespace dustbin {
         * return true if this is a controller using a joystick
         */
         bool usesJoystick();
+
+        /**
+        * Reset the joystick indices of the controls
+        */
+        void resetJoystick();
+
+        /**
+        * Set the joystick indices of the controls
+        * @param a_iJoystick the new joystick index
+        */
+        void setJoystickIndices(irr::s32 a_iJoystick);
+
+        /**
+        * Check if the joystick is already assigned
+        * @return true if the joystick is already assigned, false otherwise
+        */
+        bool isJoystickAssigned();
+
+        /**
+        * Was there an error while deseriazlization?
+        * @return true if the was an error, false otherwise
+        */
+        bool hasError();
      };
 
   } // namespace controller 
