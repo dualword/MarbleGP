@@ -381,6 +381,8 @@ namespace dustbin {
           for (std::vector<SCtrlInput>::iterator l_itCtrl = m_vControls.begin(); l_itCtrl != m_vControls.end() && !m_bGamepad; l_itCtrl++) {
             m_bGamepad = (*l_itCtrl).m_eType == enInputType::JoyAxis || (*l_itCtrl).m_eType == enInputType::JoyButton || (*l_itCtrl).m_eType == enInputType::JoyPov;
           }
+
+          m_iGamepad = -1;
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventChangeZLayer) {
           setZLayer((int)a_cEvent.UserEvent.UserData2);

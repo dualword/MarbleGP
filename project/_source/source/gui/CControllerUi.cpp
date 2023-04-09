@@ -16,7 +16,7 @@
 
 
 namespace dustbin {
-  namespace gui {
+  namespace helpers {
     std::wstring keyCodeToString(irr::EKEY_CODE e) {
       if (e == irr::KEY_LBUTTON   ) return L"KEY_LBUTTON";
       if (e == irr::KEY_RBUTTON   ) return L"KEY_RBUTTON";
@@ -163,7 +163,9 @@ namespace dustbin {
       if (e == irr::KEY_OEM_CLEAR ) return L"KEY_OEM_CLEAR";
       return L"UNKNOWN";
     }
+  }
 
+  namespace gui {
     CControllerUi::CControllerUi(irr::gui::IGUIElement* a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType) :
       CMenuBackground(a_pParent, a_eType),
       m_pCursor      (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()),
@@ -568,7 +570,7 @@ namespace dustbin {
               return L"POV " + std::to_wstring(a_pCtrl->m_iPov);
 
           case enInputType::Key:
-            return keyCodeToString(a_pCtrl->m_eKey);
+            return helpers::keyCodeToString(a_pCtrl->m_eKey);
 
           default:
             return L"";

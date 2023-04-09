@@ -62,5 +62,12 @@ namespace dustbin {
     * @return the content of the file as string
     */
     std::string loadTextFile(const std::string& a_sFile);
+
+    /**
+    * Convert an Irrlicht key code to it's string representation
+    * @param e the key code
+    * @return the string representation
+    */
+    std::wstring keyCodeToString(irr::EKEY_CODE e);
   }
 }

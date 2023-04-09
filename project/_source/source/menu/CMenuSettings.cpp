@@ -28,7 +28,7 @@ namespace dustbin {
       private:
         gui::CSelector          *m_pResolution;
         gui::CSelector          *m_pSplitScreen;
-        gui::CMenuBackground   *m_pGfxG;
+        gui::CMenuBackground    *m_pGfxG;
         gui::CMenuBackground    *m_pGfxM;
         gui::CMenuBackground    *m_pSfx;
         gui::CMenuBackground    *m_pMisc;
@@ -160,7 +160,7 @@ namespace dustbin {
           controller::CControllerMenu *p = new controller::CControllerMenu(-1);
 
           if (l_sCtrl != "") {
-            l_sCtrl = p->serialize();
+            p->deserialize(l_sCtrl);
           }
 
           m_pController = reinterpret_cast<gui::CControllerUi_Menu *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId, m_pGui->getRootGUIElement()));

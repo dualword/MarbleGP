@@ -2,6 +2,7 @@
 
 #include <controller/CControllerBase.h>
 #include <messages/CSerializer64.h>
+#include <helpers/CStringHelpers.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -14,9 +15,10 @@ namespace dustbin {
     const int c_iBtn  = 19;
     const int c_iAxis = 23;
     const int c_iDir  = 29;
+    const int c_iPov  = 31;
 
     /** Implementation of SCtrlInput */
-    CControllerBase::SCtrlInput::SCtrlInput() : m_sName(""), m_eType(enInputType::Key), m_eKey(irr::KEY_SPACE), m_iJoystick(0), m_iButton(0), m_iAxis(0), m_iDirection(1), m_fValue(0.0f), m_bError(false) {
+    CControllerBase::SCtrlInput::SCtrlInput() : m_sName(""), m_eType(enInputType::Key), m_eKey(irr::KEY_SPACE), m_iJoystick(0), m_iButton(0), m_iAxis(0), m_iPov(0xFFFF), m_iDirection(1), m_fValue(0.0f), m_bError(false) {
       m_sName      = "";
       m_eType      = enInputType::Key;
       m_eKey       = irr::KEY_SPACE;
@@ -47,12 +49,15 @@ namespace dustbin {
             case c_iBtn : m_iButton    =                 a_pSerializer->getS32   (); break;
             case c_iAxis: m_iAxis      =                 a_pSerializer->getS32   (); break;
             case c_iDir : m_iDirection =                 a_pSerializer->getS32   (); break;
+            case c_iPov : m_iPov       =                 a_pSerializer->getU16   (); break;
             default:
               m_bError = true;
               break;
           }
         }
       }
+
+      printf("constructor: %s\n", toString().c_str());
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) : m_fValue(0.0f) {
@@ -71,6 +76,22 @@ namespace dustbin {
       a_pSerializer->addS32(c_iBtn ); a_pSerializer->addS32   (          m_iButton   );
       a_pSerializer->addS32(c_iAxis); a_pSerializer->addS32   (          m_iAxis     );
       a_pSerializer->addS32(c_iDir ); a_pSerializer->addS32   (          m_iDirection);
+      a_pSerializer->addS32(c_iPov ); a_pSerializer->addU16   (          m_iPov      );
+
+      printf("serialize: % s\n", toString().c_str());
+    }
+
+    std::string CControllerBase::SCtrlInput::toString() const {
+      std::string l_sRet = "CtrlInput \"" + m_sName + "\": ";
+
+      switch (m_eType) {
+        case enInputType::JoyAxis  : l_sRet += "Joy " + std::to_string(m_iJoystick) + " Axis " + std::to_string(m_iAxis) + " Direction " + std::to_string(m_iDirection); break;
+        case enInputType::JoyButton: l_sRet += "Joy " + std::to_string(m_iJoystick) + " Button " + std::to_string(m_iButton)                                                ; break;
+        case enInputType::JoyPov   : l_sRet += "Joy " + std::to_string(m_iJoystick) + " POV " + std::to_string(m_iPov)                                                      ; break;
+        case enInputType::Key      : l_sRet += "Key " + helpers::ws2s(helpers::keyCodeToString(m_eKey))                                                                               ; break;
+      }
+
+      return l_sRet;
     }
 
     void CControllerBase::SCtrlInput::copyFrom(const SCtrlInput& a_cOther) {
@@ -223,8 +244,10 @@ namespace dustbin {
             }
             else {
               for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
-                if ((*it).m_sName == l_cCtrl.m_sName)
+                if ((*it).m_sName == l_cCtrl.m_sName) {
+                  printf("%s <==> %s\n", (*it).m_sName.c_str(), l_cCtrl.m_sName.c_str());
                   (*it) = l_cCtrl;
+                }
               }
             }
           }

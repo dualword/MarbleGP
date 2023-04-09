@@ -41,7 +41,7 @@ namespace dustbin {
           irr::u8        m_iJoystick;   /**< The joystick to use for any type of enCtrlType::Joy* input type */
           irr::u32       m_iButton;     /**< The button used for enCtrlType::JoyButton inputs */
           irr::s16       m_iAxis;       /**< The axis used for enCtrlType::JoyAxis inputs */
-          irr::s16       m_iPov;        /**< The POV direction used */
+          irr::u16       m_iPov;        /**< The POV direction used */
           irr::s8        m_iDirection;  /**< The direction of the axis to use for enCtrlType::JoyAxis inputs */
           irr::f32       m_fValue;      /**< The value of the input (0 .. -1) */
           bool           m_bError;      /**< Error while deserialiation */
@@ -64,6 +64,8 @@ namespace dustbin {
           void copyFrom(const SCtrlInput& a_cOther);
 
           bool valueUpdate(irr::f32 a_fValue);
+
+          std::string toString() const;
         };
 
       protected:
