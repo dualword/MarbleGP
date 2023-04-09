@@ -127,6 +127,12 @@ namespace dustbin {
         bool isJoystickAssigned();
 
         /**
+        * Get the index of the joystick assigned to this controller
+        * @return the index of the joystick assigned to this controller
+        */
+        irr::s32 getJoystickIndex();
+
+        /**
         * Was there an error while deseriazlization?
         * @return true if the was an error, false otherwise
         */

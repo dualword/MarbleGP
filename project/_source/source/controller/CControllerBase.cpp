@@ -309,6 +309,17 @@ namespace dustbin {
     }
 
     /**
+    * Get the index of the joystick assigned to this controller
+    * @return the index of the joystick assigned to this controller
+    */
+    irr::s32 CControllerBase::getJoystickIndex() {
+      if (usesJoystick()) 
+        return (*m_vControls.begin()).m_iJoystick;
+      else 
+        return -1;
+    }
+
+    /**
     * Was there an error while deseriazlization?
     * @return true if the was an error, false otherwise
     */

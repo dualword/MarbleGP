@@ -179,7 +179,7 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -20, -6, 20 , 4">
+      <element type="MenuBackground" rect="center: -20, -6, 20 , 9">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="230, 239, 239, 255" />
@@ -204,6 +204,16 @@
             </attributes>
           </element>
         </children>
+      </element>
+      <element type="MenuButton" rect="center: 0, 4, 4, 8" tooltip="Cancel Gamepad Assignment">
+        <attributes>
+          <attribute key="Name" value="CancelAssignJoystick" />
+          <attribute key="Id" value="30001" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
+        <custom>
+          <attribute key="Cancel" value="true" />
+        </custom>
       </element>
     </children>
   </element>  
