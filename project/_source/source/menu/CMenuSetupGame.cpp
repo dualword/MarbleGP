@@ -49,6 +49,8 @@ namespace dustbin {
 
         std::vector<gui::CMenuButton *> m_vSelectPlayer;  /**< The player buttons in the "select player" dialog */
 
+        irr::s32 m_iAssigned;   /**< Was a joystick assigned in the last frame? Store the joystick index here. */
+
         std::vector<std::string> m_vAssignJoystick;   /**< Vector of the players which need to assign a joystick */
 
         gui::CMenuButton *m_pOk;  /**< The OK button */
@@ -73,21 +75,6 @@ namespace dustbin {
 
             if (it2 != m_vSelectedPlayers.end())  {
               std::get<1>(*it)->setText(helpers::s2ws(*it2).c_str());
-
-              if (m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
-                for (std::vector<data::SPlayerData>::iterator l_itPlayer = m_vProfiles.begin(); l_itPlayer != m_vProfiles.end(); l_itPlayer++) {
-                  if ((*l_itPlayer).m_sName == *it2) {
-                    controller::CControllerGame l_cCtrl;
-                    l_cCtrl.deserialize((*l_itPlayer).m_sControls);
-
-                    if (!l_cCtrl.isJoystickAssigned())
-                      m_vAssignJoystick.push_back(*it2);
-
-                    break;
-                  }
-                }
-              }
-
               it2++;
             }
             else b = false;
@@ -121,7 +108,8 @@ namespace dustbin {
           m_pSelectPlayer(nullptr),
           m_pOk          (nullptr),
           m_pSelectCtrl  (nullptr),
-          m_pSelectName  (nullptr)
+          m_pSelectName  (nullptr),
+          m_iAssigned    (-1)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
@@ -238,7 +226,6 @@ namespace dustbin {
               m_vSelectPlayer.push_back(p);
           }
 
-          updateSelectedPlayers();
           m_pState->setZLayer(1);
 
           m_pOk         = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_MenuButtonId    , m_pGui->getRootGUIElement()));
@@ -246,6 +233,29 @@ namespace dustbin {
           m_pSelectName = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player",                              irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           updateSelectedPlayers();
+
+          if (m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
+            for (std::vector<std::string>::iterator l_itName = m_vSelectedPlayers.begin(); l_itName != m_vSelectedPlayers.end(); l_itName++) {
+              for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
+                if (*l_itName == (*l_itPlr).m_sName) {
+                  controller::CControllerGame l_cCtrl;
+                  l_cCtrl.deserialize((*l_itPlr).m_sControls);
+
+                  if (l_cCtrl.usesJoystick()) {
+                    l_cCtrl.resetJoystick();
+                    (*l_itPlr).m_sControls = l_cCtrl.serialize();
+                    m_vAssignJoystick.push_back(*l_itName);
+
+                    m_pSelectCtrl->setVisible(true);
+                    m_iAssigned = -1;
+
+                    std::wstring s = L"Player " + helpers::s2ws(*m_vAssignJoystick.begin()) + L": Select your gamepad by clicking a button.";
+                    m_pSelectName->setText(s.c_str());
+                  }
+                }
+              }
+            }
+          }
 
           printf("Ready.\n");
         }
@@ -408,8 +418,21 @@ namespace dustbin {
               else {
                 for (std::vector<gui::CMenuButton *>::iterator it = m_vSelectPlayer.begin(); it != m_vSelectPlayer.end(); it++) {
                   if (*it == a_cEvent.GUIEvent.Caller && a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId) {
-                    m_vSelectedPlayers.push_back(helpers::ws2s(reinterpret_cast<gui::CMenuButton *>(a_cEvent.GUIEvent.Caller)->getText()));
+                    std::string l_sName = helpers::ws2s(reinterpret_cast<gui::CMenuButton *>(a_cEvent.GUIEvent.Caller)->getText());
+                    m_vSelectedPlayers.push_back(l_sName);
                     updateSelectedPlayers();
+
+                    for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
+                      controller::CControllerGame l_cCtrl;
+                      l_cCtrl.deserialize((*l_itPlr).m_sControls);
+
+                      if (l_cCtrl.usesJoystick() && !l_cCtrl.isJoystickAssigned() && m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
+                        (*l_itPlr).m_sControls = l_cCtrl.serialize();
+
+                        m_pSelectCtrl->setVisible(true);
+                        m_vAssignJoystick.push_back((*l_itPlr).m_sName);
+                      }
+                    }
 
                     if (m_pSelectPlayer != nullptr)
                       m_pSelectPlayer->setVisible(false);
@@ -425,6 +448,18 @@ namespace dustbin {
                     for (std::vector<std::tuple<irr::gui::IGUIStaticText*, irr::gui::IGUIStaticText*, gui::CMenuButton*, gui::CMenuButton *>>::iterator it = m_vPlayerUI.begin(); it != m_vPlayerUI.end(); it++) {
                       if (a_cEvent.GUIEvent.Caller == std::get<2>(*it)) {
                         if (l_iNum < m_vSelectedPlayers.size()) {
+                          std::string l_sName = *(m_vSelectedPlayers.begin() + l_iNum);
+
+                          for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
+                            if ((*l_itPlr).m_sName == l_sName) {
+                              printf("Unassign joystick for player %s\n", l_sName.c_str());
+                              controller::CControllerGame l_cCtrl;
+                              l_cCtrl.deserialize((*l_itPlr).m_sControls);
+                              l_cCtrl.resetJoystick();
+                              (*l_itPlr).m_sControls = l_cCtrl.serialize();
+                            }
+                          }
+
                           m_vSelectedPlayers.erase(m_vSelectedPlayers.begin() + l_iNum);
                           updateSelectedPlayers();
                         }
@@ -490,26 +525,36 @@ namespace dustbin {
             }
           }
           else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-            if (m_pSelectCtrl != nullptr && m_pSelectCtrl->isVisible() && m_vAssignJoystick.size() > 0) {
-              if (a_cEvent.JoystickEvent.ButtonStates != 0) {
-                printf("Player %s has selected joystick #%i.\n", (*m_vAssignJoystick.begin()).c_str(), a_cEvent.JoystickEvent.Joystick);
+            if (m_iAssigned != -1) {
+              if (a_cEvent.JoystickEvent.Joystick == m_iAssigned && a_cEvent.JoystickEvent.ButtonStates == 0) {
+                m_iAssigned = -1;
+              }
+            }
+            else {
+              if (m_pSelectCtrl != nullptr && m_pSelectCtrl->isVisible() && m_vAssignJoystick.size() > 0) {
+                if (a_cEvent.JoystickEvent.ButtonStates != 0) {
+                  m_iAssigned = a_cEvent.JoystickEvent.Joystick;
+                  printf("Player %s has selected joystick #%i.\n", (*m_vAssignJoystick.begin()).c_str(), a_cEvent.JoystickEvent.Joystick);
 
-                for (std::vector<data::SPlayerData>::iterator l_itPlayer = m_vProfiles.begin(); l_itPlayer != m_vProfiles.end(); l_itPlayer++) {
-                  if ((*l_itPlayer).m_sName == *m_vAssignJoystick.begin()) {
-                    controller::CControllerGame l_cCtrl;
-                    l_cCtrl.deserialize((*l_itPlayer).m_sControls);
-                    l_cCtrl.setJoystickIndices(a_cEvent.JoystickEvent.Joystick);
-                    (*l_itPlayer).m_sControls = l_cCtrl.serialize();
+                  for (std::vector<data::SPlayerData>::iterator l_itPlayer = m_vProfiles.begin(); l_itPlayer != m_vProfiles.end(); l_itPlayer++) {
+                    if ((*l_itPlayer).m_sName == *m_vAssignJoystick.begin()) {
+                      controller::CControllerGame l_cCtrl;
+                      l_cCtrl.deserialize((*l_itPlayer).m_sControls);
+                      l_cCtrl.setJoystickIndices(a_cEvent.JoystickEvent.Joystick);
+                      (*l_itPlayer).m_sControls = l_cCtrl.serialize();
 
-                    m_vAssignJoystick.erase(m_vAssignJoystick.begin());
+                      m_vAssignJoystick.erase(m_vAssignJoystick.begin());
 
-                    if (m_vAssignJoystick.size() > 0) {
-                      std::wstring s = L"Player " + helpers::s2ws(*m_vAssignJoystick.begin()) + L": Select your gamepad by clicking a button.";
-                      m_pSelectName->setText(s.c_str());
+                      if (m_vAssignJoystick.size() > 0) {
+                        std::wstring s = L"Player " + helpers::s2ws(*m_vAssignJoystick.begin()) + L": Select your gamepad by clicking a button.";
+                        m_pSelectName->setText(s.c_str());
+                      }
+                      else {
+                        m_pSelectCtrl->setVisible(false);
+                      }
+
+                      break;
                     }
-                    else m_pSelectCtrl->setVisible(false);
-
-                    break;
                   }
                 }
               }
