@@ -15,6 +15,7 @@
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="232, 239, 239, 255" />
           <attribute key="ZLayer" value="23" />
+          <attribute key="Name" value="back_texture" />
         </attributes>
         
         <children>

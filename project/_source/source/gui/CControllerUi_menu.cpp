@@ -25,8 +25,8 @@ namespace dustbin {
       if (m_pBackground != nullptr) {
         // Calculate the drawing rect
         irr::f32 l_fRatio  = (irr::f32)m_pBackground->getSize().Width / (irr::f32)m_pBackground->getSize().Height;
-        irr::f32 l_fWidth  = 0.8f * (irr::f32)AbsoluteClippingRect.getWidth();
-        irr::f32 l_fHeight = l_fWidth  / l_fRatio;
+        irr::f32 l_fWidth  = 0.8f * (irr::f32)AbsoluteClippingRect.getWidth ();
+        irr::f32 l_fHeight = 0.8f * (irr::f32)AbsoluteClippingRect.getHeight();
         irr::f32 l_fFactX  = l_fWidth  / m_pBackground->getSize().Width;
         irr::f32 l_fFactY  = l_fHeight / m_pBackground->getSize().Height;
 
