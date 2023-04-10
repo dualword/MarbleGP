@@ -32,8 +32,6 @@ namespace dustbin {
         m_pSmgr->loadScene("data/scenes/skybox.xml");
         m_pSmgr->addCameraSceneNode();
 
-        m_pState->setZLayer(0);
-
         data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
         printf("\n\n%s\n\n", l_cChampionship.to_string().c_str());
