@@ -9,16 +9,11 @@ namespace dustbin {
       irr::gui::IGUIElement(a_eType, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
       m_pDrv(CGlobal::getInstance()->getVideoDriver()),
       m_cOverrideColor(irr::video::SColor(0xc0, 0xef, 0xef, 0xff)),
-      m_bOverrideColor(false),
-      m_iZLayer(1)
+      m_bOverrideColor(false)
     {
     }
 
     CMenuBackground::~CMenuBackground() {
-    }
-
-    int CMenuBackground::getZLayer() {
-      return m_iZLayer;
     }
 
     void CMenuBackground::draw() {
@@ -37,14 +32,12 @@ namespace dustbin {
       irr::gui::IGUIElement::serializeAttributes(a_pOut, a_pOptions);
       a_pOut->addBool("UseOverrideColor", m_bOverrideColor);
       a_pOut->addColor("OverrideColor", m_cOverrideColor);
-      a_pOut->addInt("ZLayer", m_iZLayer);
     }
 
     void CMenuBackground::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
       irr::gui::IGUIElement::deserializeAttributes(a_pIn, a_pOptions);
       m_bOverrideColor = a_pIn->getAttributeAsBool("UseOverrideColor");
       m_cOverrideColor = a_pIn->getAttributeAsColor("OverrideColor");
-      m_iZLayer        = a_pIn->getAttributeAsInt("ZLayer");
     }
   }
 }

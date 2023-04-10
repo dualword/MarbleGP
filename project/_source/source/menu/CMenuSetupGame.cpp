@@ -86,7 +86,6 @@ namespace dustbin {
 
           if (m_pSelectCtrl != nullptr && m_pSelectName != nullptr && m_vAssignJoystick.size() > 0) {
             m_pSelectCtrl->setVisible(true);
-            changeZLayer(94);
 
             std::wstring s = L"Player " + helpers::s2ws(*m_vAssignJoystick.begin()) + L": Select your gamepad by clicking a button.";
             m_pSelectName->setText(s.c_str());
@@ -99,7 +98,6 @@ namespace dustbin {
         void playerSelectCancel() {
           if (m_pSelectPlayer != nullptr) {
             m_pSelectPlayer->setVisible(false);
-            changeZLayer(1);
           }
         }
 
@@ -229,8 +227,6 @@ namespace dustbin {
               m_vSelectPlayer.push_back(p);
           }
 
-          m_pState->setZLayer(1);
-
           m_pOk         = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_MenuButtonId    , m_pGui->getRootGUIElement()));
           m_pSelectCtrl = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("selectctrl_dialog",                              irr::gui::EGUIET_TAB        , m_pGui->getRootGUIElement()));
           m_pSelectName = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player",                              irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
@@ -250,7 +246,6 @@ namespace dustbin {
                     m_vAssignJoystick.push_back(*l_itName);
 
                     m_pSelectCtrl->setVisible(true);
-                    changeZLayer(94);
                     m_iAssigned = -1;
 
                     std::wstring s = L"Player " + helpers::s2ws(*m_vAssignJoystick.begin()) + L": Select your gamepad by clicking a button.";
@@ -368,7 +363,6 @@ namespace dustbin {
               else if (l_sSender == "cancel") {
                 if (m_pSelectPlayer != nullptr && m_pSelectPlayer->isVisible()) {
                   playerSelectCancel();
-                  m_pState->setZLayer(1);
                 }
                 else createMenu("menu_main", m_pDevice, m_pManager, m_pState);
 
@@ -385,7 +379,6 @@ namespace dustbin {
 
                     if (m_pSelectPlayer != nullptr) {
                       m_pSelectPlayer->setVisible(true);
-                      m_pState->setZLayer(46);
 
                       std::vector<std::string> l_vNames;
 
@@ -440,7 +433,6 @@ namespace dustbin {
                   }
                   else {
                     m_pSelectCtrl->setVisible(false);
-                    changeZLayer(0);
                   }
                 }
               } 
@@ -460,14 +452,12 @@ namespace dustbin {
 
                         m_pSelectCtrl->setVisible(true);
                         m_vAssignJoystick.push_back((*l_itPlr).m_sName);
-                        changeZLayer(94);
                       }
                     }
 
                     if (m_pSelectPlayer != nullptr)
                       m_pSelectPlayer->setVisible(false);
 
-                    changeZLayer(1);
                     l_bRet = true;
                   }
                 }
@@ -605,7 +595,6 @@ namespace dustbin {
                         }
                         else {
                           m_pSelectCtrl->setVisible(false);
-                          changeZLayer(0);
                         }
                       }
                       break;

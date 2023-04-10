@@ -29,8 +29,6 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(1);
-
           m_mElements["headline" ] = findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT                   , m_pGui->getRootGUIElement());
           m_mElements["link"     ] = findElementByNameAndType("label_link"    , irr::gui::EGUIET_STATIC_TEXT                   , m_pGui->getRootGUIElement());
           m_mElements["main"     ] = findElementByNameAndType("textfield"     , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_TextFieldId, m_pGui->getRootGUIElement());

@@ -21,7 +21,7 @@
 namespace dustbin {
   namespace controller {
 
-    CControllerMenu::CControllerMenu(int a_iZLayer) :
+    CControllerMenu::CControllerMenu() :
       m_bButtonDown   (false),
       m_bActive       (false),
       m_bEvent        (false),
@@ -35,7 +35,6 @@ namespace dustbin {
       m_pCursor       (CGlobal::getInstance()->getIrrlichtDevice()->getCursorControl()),
       m_pDevice       (CGlobal::getInstance()->getIrrlichtDevice()),
       m_pTimer        (CGlobal::getInstance()->getIrrlichtDevice()->getTimer()),
-      m_iZLayer       (a_iZLayer),
       m_pSelected     (nullptr),
       m_sEditChars    (L""),
       m_iGamepad      (-1),
@@ -51,8 +50,6 @@ namespace dustbin {
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_SPACE ; l_cInput.m_sName = "Enter" ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_RETURN; l_cInput.m_sName = "Ok"    ; m_vControls.push_back(l_cInput);
       l_cInput.m_eType = enInputType::Key; l_cInput.m_eKey = irr::KEY_ESCAPE; l_cInput.m_sName = "Cancel"; m_vControls.push_back(l_cInput);
-
-      setZLayer(m_iZLayer > 0 ? m_iZLayer : 1);
 
       m_sEditChars = L" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:";
 
@@ -72,22 +69,6 @@ namespace dustbin {
     }
 
     CControllerMenu::~CControllerMenu() {
-    }
-
-    /**
-    * Get the Z-Layer of an element
-    * @param p the element to check
-    * @return the Z-Layer of the element
-    */
-    int CControllerMenu::getZLayer(irr::gui::IGUIElement* p) {
-      if (p->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId) {
-        return reinterpret_cast<gui::CMenuBackground *>(p)->getZLayer();
-      }
-
-      if (p == m_pGui->getRootGUIElement())
-        return 1;
-
-      return getZLayer(p->getParent());
     }
 
     /**
@@ -120,18 +101,7 @@ namespace dustbin {
       // - spinbox
 
       switch (a_pThis->getType()) {
-        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: {
-          // Special handling: The menu buttons can be available on all Z-Layers
-          gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(a_pThis);
-
-          if (p->availableOnAllZLayers()) {
-            a_vElements.push_back(a_pThis);
-            break;
-          }
-
-          
-        }
-        [[fallthrough]];
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId:
         case irr::gui::EGUIET_BUTTON:
         case irr::gui::EGUIET_CHECK_BOX:
         case irr::gui::EGUIET_COMBO_BOX:
@@ -142,10 +112,13 @@ namespace dustbin {
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId:
-        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId:
-          if (isElementVisible(a_pThis) && a_pThis->isEnabled() && getElementZLayer(a_pThis) == m_iZLayer)
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId: {
+          irr::gui::IGUIElement *l_pTest = m_pGui->getRootGUIElement()->getElementFromPoint(a_pThis->getAbsoluteClippingRect().getCenter());
+
+          if (l_pTest == a_pThis)
             a_vElements.push_back(a_pThis);
           break;
+        }
 
         default:
           break;
@@ -383,9 +356,6 @@ namespace dustbin {
           }
 
           m_iGamepad = -1;
-        }
-        else if (a_cEvent.UserEvent.UserData1 == c_iEventChangeZLayer) {
-          setZLayer((int)a_cEvent.UserEvent.UserData2);
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iEventMoveMouse) {
           enDirection l_eDirection = enDirection::Any;
@@ -676,39 +646,6 @@ namespace dustbin {
           m_pDevice->postEventFromUser(l_cEvent);
         }
       }
-    }
-
-    /**
-    * Get the Z-Layer of an item. Iterates through all ancestors until either a "MenuBackground" element or the root element
-    * is found. If a "MenuBackground" is found it's "Z-Layer" property is returned, for the root element "0" is returned
-    * @param a_pItem the item to get the Z-Layer
-    * @return the Z-Layer of the item
-    */
-    int CControllerMenu::getElementZLayer(irr::gui::IGUIElement* a_pItem) {
-      m_bButtonDown = false;
-
-      if (a_pItem->getType() == gui::g_MenuBackgroundId)
-        return reinterpret_cast<gui::CMenuBackground*>(a_pItem)->getZLayer();
-      else if (a_pItem == m_pGui->getRootGUIElement())
-        return 1;
-      else
-        return getElementZLayer(a_pItem->getParent());
-    }
-
-    /**
-    * Change the Z-Layer the controller controls
-    * @param a_iZLayer the new Z-Layer
-    */
-    void CControllerMenu::setZLayer(int a_iZLayer) {
-      m_iZLayer = a_iZLayer;
-
-      irr::SEvent l_cEvent{};
-      l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-      l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-      l_cEvent.MouseInput.X = m_cMousePos.X;
-      l_cEvent.MouseInput.Y = m_cMousePos.Y;
-      m_pDevice->postEventFromUser(l_cEvent);
-      printf("Ready.\n");
     }
 
     /**

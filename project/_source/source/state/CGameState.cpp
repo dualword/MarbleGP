@@ -756,13 +756,6 @@ namespace dustbin {
     }
 
     /**
-    * Change the Z-Layer for the Menu Controller
-    * @param a_iZLayer the new Z-Layer
-    */
-    void CGameState::setZLayer(int a_iZLayer) {
-    }
-
-    /**
      * Return the state's ID
      */
     enState CGameState::getId() {

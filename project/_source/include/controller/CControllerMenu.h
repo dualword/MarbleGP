@@ -60,8 +60,6 @@ namespace dustbin {
 
         irr::ITimer* m_pTimer;
 
-        int m_iZLayer;    /**< The current Z-Layer */
-
         irr::gui::IGUIElement *m_pSelected;
 
         std::wstring m_sEditChars;    /**< String with the characters for name editing with the menu controller */
@@ -80,13 +78,6 @@ namespace dustbin {
 
         std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator m_itRow;
         std::map<int, std::vector<irr::gui::IGUIElement*>>::iterator m_itCol;
-
-        /**
-        * Get the Z-Layer of an element
-        * @param p the element to check
-        * @return the Z-Layer of the element
-        */
-        int getZLayer(irr::gui::IGUIElement *p);
 
         /**
         * Is this element really visible?
@@ -138,16 +129,8 @@ namespace dustbin {
         */
         bool isVisible(irr::gui::IGUIElement* a_pItem);
 
-        /**
-        * Get the Z-Layer of an item. Iterates through all ancestors until either a "MenuBackground" element or the root element
-        * is found. If a "MenuBackground" is found it's "Z-Layer" property is returned, for the root element "0" is returned
-        * @param a_pItem the item to get the Z-Layer
-        * @return the Z-Layer of the item
-        */
-        int getElementZLayer(irr::gui::IGUIElement* a_pItem);
-
       public:
-        CControllerMenu(int a_iZLayer);
+        CControllerMenu();
         virtual ~CControllerMenu();
 
         /**
@@ -155,12 +138,6 @@ namespace dustbin {
         * @param a_cEvent the event to handle
         */
         virtual bool update(const irr::SEvent& a_cEvent);
-
-        /**
-        * Change the Z-Layer the controller controls
-        * @param a_iZLayer the new Z-Layer
-        */
-        void setZLayer(int a_iZLayer);
 
         /**
         * Reset all necessary members as a new menu was loaded

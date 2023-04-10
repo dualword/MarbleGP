@@ -46,8 +46,6 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(1);
-
           m_pStep = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("LabelStep", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           m_pQueue = new threads::CInputQueue();

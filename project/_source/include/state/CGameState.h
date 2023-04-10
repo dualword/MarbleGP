@@ -442,12 +442,6 @@ namespace dustbin {
         virtual void deactivate() override;
 
         /**
-        * Change the Z-Layer for the Menu Controller
-        * @param a_iZLayer the new Z-Layer
-        */
-        virtual void setZLayer(int a_iZLayer) override;
-
-        /**
          * Return the state's ID
          */
         virtual enState getId() override;

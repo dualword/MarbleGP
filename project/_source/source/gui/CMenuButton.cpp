@@ -16,22 +16,12 @@ namespace dustbin {
       m_bHovered   (false),
       m_bLDown     (false),
       m_bSend      (true),
-      m_bAllZLayers(false),
       m_pImage     (nullptr)
     {
     }
 
     CMenuButton::~CMenuButton() {
       m_bSend = false;
-    }
-
-    /**
-    * Is this button available on all Z-Layers for the menu controller
-    * @see CControllerMenu::fillElementVector
-    * @return true if the button is available on all Z-Layers for the menu controller
-    */
-    bool CMenuButton::availableOnAllZLayers() {
-      return m_bAllZLayers;
     }
 
     void CMenuButton::draw() {
@@ -58,7 +48,6 @@ namespace dustbin {
     void CMenuButton::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
       irr::gui::IGUIElement::serializeAttributes(a_pOut, a_pOptions);
       a_pOut->addString("ImagePath" , m_sImage.c_str());
-      a_pOut->addBool  ("AllZLayers", m_bAllZLayers);
     }
 
     void CMenuButton::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
@@ -72,10 +61,6 @@ namespace dustbin {
           m_pImage->drop();
 
         m_pImage = m_pDrv->getTexture(m_sImage.c_str());
-      }
-
-      if (a_pIn->existsAttribute("AllZLayers")) {
-        m_bAllZLayers = a_pIn->getAttributeAsBool("AllZLayers");
       }
     }
 

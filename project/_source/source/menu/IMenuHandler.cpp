@@ -99,16 +99,6 @@ namespace dustbin {
       return false;
     }
 
-    void IMenuHandler::changeZLayer(int a_iZLayer) {
-      irr::SEvent l_cEvent;
-
-      l_cEvent.EventType = irr::EET_USER_EVENT;
-      l_cEvent.UserEvent.UserData1 = c_iEventChangeZLayer;
-      l_cEvent.UserEvent.UserData2 = a_iZLayer;
-
-      m_pDevice->postEventFromUser(l_cEvent);
-    }
-
     /**
     * This method is called every frame after "scenemanager::drawall" is called
     * @return true if drawing was done by the menu, false otherwise

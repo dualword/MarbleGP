@@ -157,7 +157,7 @@ namespace dustbin {
 
           std::string l_sCtrl = m_cSettings.m_sController;
 
-          controller::CControllerMenu *p = new controller::CControllerMenu(-1);
+          controller::CControllerMenu *p = new controller::CControllerMenu();
 
           if (l_sCtrl != "") {
             p->deserialize(l_sCtrl);
@@ -223,8 +223,6 @@ namespace dustbin {
               l_pLog->addLogLine(std::get<0>(*it), helpers::s2ws(std::get<1>(*it)));
             }
           }
-
-          m_pState->setZLayer(1);
         }
 
         int joyevent = 0;
@@ -270,8 +268,6 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "gfx") {
-                m_pState->setZLayer(1);
-
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(true);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(true);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
@@ -285,8 +281,6 @@ namespace dustbin {
                     it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "sfx") {
-                m_pState->setZLayer(2);
-
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(true);
@@ -300,8 +294,6 @@ namespace dustbin {
                     it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "misc") {
-                m_pState->setZLayer(4);
-
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
@@ -315,8 +307,6 @@ namespace dustbin {
                     it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "log") {
-                m_pState->setZLayer(5);
-
                 if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
                 if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
                 if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);

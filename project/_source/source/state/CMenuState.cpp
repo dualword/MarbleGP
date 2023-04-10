@@ -15,7 +15,7 @@
 namespace dustbin {
   namespace state {
     CMenuState::CMenuState(irr::IrrlichtDevice *a_pDevice, CGlobal *a_pGlobal) : IState(a_pDevice, a_pGlobal), m_pMenu(nullptr), m_bMenuCtrl(true), m_pController(nullptr), m_pTouchCtrl(nullptr), m_pClient(nullptr), m_pInputQueue(nullptr) {
-      m_pController = new controller::CControllerMenu(-1);
+      m_pController = new controller::CControllerMenu();
 
       irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;
@@ -23,7 +23,7 @@ namespace dustbin {
       m_pController->update(l_cEvent);
       if (m_pController->hasError()) {
         delete m_pController;
-        m_pController = new controller::CControllerMenu(-1);
+        m_pController = new controller::CControllerMenu();
       }
     }
 
@@ -82,16 +82,6 @@ namespace dustbin {
       }
 
       m_pClient = nullptr;
-    }
-
-    /**
-    * Change the Z-Layer for the Menu Controller
-    * @param a_iZLayer the new Z-Layer
-    */
-    void CMenuState::setZLayer(int a_iZLayer) {
-      if (m_pController != nullptr)
-        m_pController->setZLayer(a_iZLayer);
-
     }
 
     /**

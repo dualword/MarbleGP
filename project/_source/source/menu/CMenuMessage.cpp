@@ -23,8 +23,6 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pState->setZLayer(1);
-
           std::string l_sHeadline = m_pState->getGlobal()->getGlobal("message_headline");
           if (l_sHeadline != "") {
             irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));

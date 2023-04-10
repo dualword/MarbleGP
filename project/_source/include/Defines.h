@@ -2,16 +2,15 @@
 
 namespace dustbin {
   #define c_iEventSettingsChanged 1
-  #define c_iEventChangeZLayer 2
-  #define c_iEventImagePosChanged 3
-  #define c_iEventImageSelected 4
-  #define c_iEventNewFrame 5
-  #define c_iEventMoveMouse 6
-  #define c_iEventKeyboardDestroyed 7
-  #define c_iEventMouseClicked 8
-  #define c_iEventHideCursor 9
-  #define c_iEventOkClicked 10
-  #define c_iEventCancelClicked 11
+  #define c_iEventImagePosChanged 2
+  #define c_iEventImageSelected 3
+  #define c_iEventNewFrame 4
+  #define c_iEventMoveMouse 5
+  #define c_iEventKeyboardDestroyed 6
+  #define c_iEventMouseClicked 7
+  #define c_iEventHideCursor 8
+  #define c_iEventOkClicked 9
+  #define c_iEventCancelClicked 10
 
   // Some constants for profile serialization
   #define c_iProfileHead 42

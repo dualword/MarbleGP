@@ -54,12 +54,6 @@ namespace dustbin {
         static IMenuHandler *createMenu(const std::string &a_sName, irr::IrrlichtDevice *a_pDevice, IMenuManager *a_pManager, state::IState *a_pState);
 
         /**
-        * Change the Z-Layer. This is important for controlling the menu
-        * via gamepad
-        */
-        void changeZLayer(int a_iZLayer);
-
-        /**
         * Get the menu manager
         * @return the menu manager
         */

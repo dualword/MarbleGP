@@ -81,8 +81,6 @@ namespace dustbin {
           if (m_pMainFrame != nullptr)
             m_pMainFrame->setVisible(false);
 
-          m_pState->setZLayer(1);
-
           irr::u32 l_iServerIp = std::atoi(m_pState->getGlobal()->getGlobal("selected_server_ip"  ).c_str());
           irr::u32 l_iPortNo   = std::atoi(m_pState->getGlobal()->getGlobal("selected_server_port").c_str());
 

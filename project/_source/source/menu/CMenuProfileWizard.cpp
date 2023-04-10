@@ -781,6 +781,13 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
+          if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT && a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+            irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
+            if (p != nullptr) {
+              printf("Hover: \"%s\"\n", p->getName());
+            }
+          }
+
           if (m_pCtrl != nullptr && m_eStep == enMenuStep::Controls) {
             m_pCtrl->update(a_cEvent);
           }
@@ -917,7 +924,6 @@ namespace dustbin {
                         updateMarbleTexture(m_cPlayer.m_sTexture);
                       
                         l_pColor->setVisible(false);
-                        changeZLayer(0);
                       }
 
                       m_sColorEdit = "";
@@ -927,7 +933,6 @@ namespace dustbin {
 
                       if (l_pColor != nullptr) {
                         l_pColor->setVisible(false);
-                        changeZLayer(0);
                       }
                     }
                     else if (l_sButton == "pick_color") {
@@ -945,7 +950,6 @@ namespace dustbin {
                         if (m_pPatternList != nullptr) {
                           updatePatterns();
                           m_pPatternDialog->setVisible(true);
-                          changeZLayer(46);
                         }
                         else m_pPatternDialog = nullptr;
                       }
@@ -988,7 +992,6 @@ namespace dustbin {
                           m_sColorEdit = l_mButtonLinks[l_sButton];
                           l_pColor->setVisible(true);
                           initializeColorDialog(l_pEdit->getText());
-                          changeZLayer(23);
                         }
                       }
                     }
@@ -1064,7 +1067,6 @@ namespace dustbin {
 
                   m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
                   updateMarbleTexture(m_cPlayer.m_sTexture);
-                  changeZLayer(10);
 
                   m_pPatternDialog->setVisible(false);
                   m_pPatternDialog = nullptr;
