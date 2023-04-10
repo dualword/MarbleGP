@@ -781,13 +781,6 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
-          if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT && a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
-            irr::gui::IGUIElement *p = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
-            if (p != nullptr) {
-              printf("Hover: \"%s\"\n", p->getName());
-            }
-          }
-
           if (m_pCtrl != nullptr && m_eStep == enMenuStep::Controls) {
             m_pCtrl->update(a_cEvent);
           }
