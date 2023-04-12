@@ -92,6 +92,10 @@ class CAndroidMenuEventHandler : public dustbin::controller::ICustomEventReceive
 
 int32_t (*g_IrrlichtInputHandler)(struct android_app* app, AInputEvent* event) = nullptr;
 
+bool g_Focused = true;
+bool g_Quit    = false;
+bool g_Restart = false;
+
 struct SJoystickInput {
   irr::SEvent m_cJoypadEvent;
 
@@ -215,70 +219,22 @@ irr::s32 overrideInputReceiver(android_app* a_pApp, AInputEvent* a_pAndroidEvent
 
 void overrideAppCmd(struct android_app* app, int32_t cmd) {
   switch (cmd) {
-    case (int32_t)APP_CMD_INPUT_CHANGED:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_INIT_WINDOW:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_TERM_WINDOW:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_WINDOW_RESIZED:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_WINDOW_REDRAW_NEEDED:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_CONTENT_RECT_CHANGED:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_GAINED_FOCUS:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_LOST_FOCUS:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_CONFIG_CHANGED:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_LOW_MEMORY:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_START:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_RESUME:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_SAVE_STATE:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_PAUSE:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_STOP:
-      printf("cmd %i\n", cmd);
-      break;
-
-    case (int32_t)APP_CMD_DESTROY:
-      printf("cmd %i\n", cmd);
-      break;
-
+    case (int32_t)APP_CMD_INPUT_CHANGED: break;
+    case (int32_t)APP_CMD_INIT_WINDOW: break;
+    case (int32_t)APP_CMD_TERM_WINDOW: g_Quit = true; break;
+    case (int32_t)APP_CMD_WINDOW_RESIZED: break;
+    case (int32_t)APP_CMD_WINDOW_REDRAW_NEEDED: break;
+    case (int32_t)APP_CMD_CONTENT_RECT_CHANGED: break;
+    case (int32_t)APP_CMD_GAINED_FOCUS: g_Focused = true; break;
+    case (int32_t)APP_CMD_LOST_FOCUS: g_Focused = false; break;
+    case (int32_t)APP_CMD_CONFIG_CHANGED: break;
+    case (int32_t)APP_CMD_LOW_MEMORY: break;
+    case (int32_t)APP_CMD_START: break;
+    case (int32_t)APP_CMD_RESUME: g_Focused = true; break;
+    case (int32_t)APP_CMD_SAVE_STATE: break;
+    case (int32_t)APP_CMD_PAUSE: g_Focused = false; break;
+    case (int32_t)APP_CMD_STOP: g_Quit = true; break;
+    case (int32_t)APP_CMD_DESTROY: g_Quit = true; break;
   }
 }
 
@@ -323,7 +279,7 @@ void android_main(struct android_app* a_pApp) {
     printf("Oops");
   }
 
-  Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
+  /*Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
 
   std::string l_sError   = "PADDLEBOAT_NO_ERROR";
   std::string l_sMessage = "Everything fine.";
@@ -341,7 +297,7 @@ void android_main(struct android_app* a_pApp) {
       case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
       case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
     }
-  }
+  }*/
 
   dustbin::CMainClass *l_pMainClass = nullptr;
   dustbin::state::enState l_eState{};
@@ -392,15 +348,22 @@ void android_main(struct android_app* a_pApp) {
 
 
     do {
-      l_eState = l_pMainClass->run();
+      if (g_Focused) {
+        l_eState = l_pMainClass->run();
 
-      irr::SEvent l_cEvent{};
-      l_cEvent.EventType = irr::EET_USER_EVENT;
-      l_cEvent.UserEvent.UserData1 = c_iEventNewFrame;
-      l_cEvent.UserEvent.UserData2 = c_iEventNewFrame;
-      l_pDevice->postEventFromUser(l_cEvent);
+        irr::SEvent l_cEvent{};
+        l_cEvent.EventType = irr::EET_USER_EVENT;
+        l_cEvent.UserEvent.UserData1 = c_iEventNewFrame;
+        l_cEvent.UserEvent.UserData2 = c_iEventNewFrame;
+        l_pDevice->postEventFromUser(l_cEvent);
+      }
+
+      if (g_Restart) {
+        g_Restart = false;
+        l_eState = dustbin::state::enState::Restart;
+      }
     }
-    while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
+    while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit && !g_Quit);
 
     {
       FILE *l_pFile = fopen(l_sPath.c_str(), "w");
