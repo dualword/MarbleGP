@@ -282,33 +282,66 @@ void overrideAppCmd(struct android_app* app, int32_t cmd) {
   }
 }
 
+void AutoHideNavBar(struct android_app* state)
+{
+  JNIEnv* env{};
+  state->activity->vm->AttachCurrentThread(&env, NULL);
+
+  jclass activityClass = env->FindClass("android/app/NativeActivity");
+  jmethodID getWindow = env->GetMethodID(activityClass, "getWindow", "()Landroid/view/Window;");
+
+  jclass windowClass = env->FindClass("android/view/Window");
+  jmethodID getDecorView = env->GetMethodID(windowClass, "getDecorView", "()Landroid/view/View;");
+
+  jclass viewClass = env->FindClass("android/view/View");
+  jmethodID setSystemUiVisibility = env->GetMethodID(viewClass, "setSystemUiVisibility", "(I)V");
+
+  jobject window = env->CallObjectMethod(state->activity->clazz, getWindow);
+
+  jobject decorView = env->CallObjectMethod(window, getDecorView);
+
+  jfieldID flagFullscreenID = env->GetStaticFieldID(viewClass, "SYSTEM_UI_FLAG_FULLSCREEN", "I");
+  jfieldID flagHideNavigationID = env->GetStaticFieldID(viewClass, "SYSTEM_UI_FLAG_HIDE_NAVIGATION", "I");
+  jfieldID flagImmersiveStickyID = env->GetStaticFieldID(viewClass, "SYSTEM_UI_FLAG_IMMERSIVE_STICKY", "I");
+
+  const int flagFullscreen = env->GetStaticIntField(viewClass, flagFullscreenID);
+  const int flagHideNavigation = env->GetStaticIntField(viewClass, flagHideNavigationID);
+  const int flagImmersiveSticky = env->GetStaticIntField(viewClass, flagImmersiveStickyID);
+  const int flag = flagFullscreen | flagHideNavigation | flagImmersiveSticky;
+
+  env->CallVoidMethod(decorView, setSystemUiVisibility, flag);
+
+  state->activity->vm->DetachCurrentThread();
+}
+
 void android_main(struct android_app* a_pApp) {
   LOGI("Starting MarbleGP...");
-    JNIEnv *l_pJni = nullptr;
+  AutoHideNavBar(a_pApp);
+  JNIEnv *l_pJni = nullptr;
 
-    if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
-      printf("Oops");
+  if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
+    printf("Oops");
+  }
+
+  Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
+
+  std::string l_sError   = "PADDLEBOAT_NO_ERROR";
+  std::string l_sMessage = "Everything fine.";
+
+  if (l_iError != PADDLEBOAT_NO_ERROR) {
+    printf("Oops, could not initialize Paddleboat.\n");
+
+    switch (l_iError) {
+      case PADDLEBOAT_ERROR_ALREADY_INITIALIZED     : l_sError = "PADDLEBOAT_ERROR_ALREADY_INITIALIZED"     ; l_sMessage = "Paddleboat_init was called a second time without a call to Paddleboat_destroy in between..\n"; break;
+      case PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED   : l_sError = "PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED"   ; l_sMessage = "The feature is not supported by the specified controller.\nExample: Calling Paddleboat_setControllerVibrationData on a controller that does not have the PADDLEBOAT_CONTROLLER_FLAG_VIBRATION bit set in Paddleboat_Controller_Info.controllerFlags..\n"; break;
+      case PADDLEBOAT_ERROR_INIT_GCM_FAILURE        : l_sError = "PADDLEBOAT_ERROR_INIT_GCM_FAILURE"        ; l_sMessage = "Paddleboat could not be successfully initialized.\nInstantiation of the GameControllerManager class failed..\n"; break;
+      case PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX: l_sError = "PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX"; l_sMessage = "Invalid controller index specified.\nValid index range is from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.\n"; break;
+      case PADDLEBOAT_ERROR_INVALID_PARAMETER       : l_sError = "PADDLEBOAT_ERROR_INVALID_PARAMETER"       ; l_sMessage = "An invalid parameter was specified.\nThis usually means NULL or nullptr was passed in a parameter that requires a valid pointer..\n"; break;
+      case PADDLEBOAT_ERROR_NOT_INITIALIZED         : l_sError = "PADDLEBOAT_ERROR_NOT_INITIALIZED"         ; l_sMessage = "Paddleboat was not successfully initialized.\nEither Paddleboat_init was not called or returned an error..\n"; break;
+      case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
+      case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
     }
-
-    Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
-
-    std::string l_sError   = "PADDLEBOAT_NO_ERROR";
-    std::string l_sMessage = "Everything fine.";
-
-    if (l_iError != PADDLEBOAT_NO_ERROR) {
-      printf("Oops, could not initialize Paddleboat.\n");
-
-      switch (l_iError) {
-        case PADDLEBOAT_ERROR_ALREADY_INITIALIZED     : l_sError = "PADDLEBOAT_ERROR_ALREADY_INITIALIZED"     ; l_sMessage = "Paddleboat_init was called a second time without a call to Paddleboat_destroy in between..\n"; break;
-        case PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED   : l_sError = "PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED"   ; l_sMessage = "The feature is not supported by the specified controller.\nExample: Calling Paddleboat_setControllerVibrationData on a controller that does not have the PADDLEBOAT_CONTROLLER_FLAG_VIBRATION bit set in Paddleboat_Controller_Info.controllerFlags..\n"; break;
-        case PADDLEBOAT_ERROR_INIT_GCM_FAILURE        : l_sError = "PADDLEBOAT_ERROR_INIT_GCM_FAILURE"        ; l_sMessage = "Paddleboat could not be successfully initialized.\nInstantiation of the GameControllerManager class failed..\n"; break;
-        case PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX: l_sError = "PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX"; l_sMessage = "Invalid controller index specified.\nValid index range is from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.\n"; break;
-        case PADDLEBOAT_ERROR_INVALID_PARAMETER       : l_sError = "PADDLEBOAT_ERROR_INVALID_PARAMETER"       ; l_sMessage = "An invalid parameter was specified.\nThis usually means NULL or nullptr was passed in a parameter that requires a valid pointer..\n"; break;
-        case PADDLEBOAT_ERROR_NOT_INITIALIZED         : l_sError = "PADDLEBOAT_ERROR_NOT_INITIALIZED"         ; l_sMessage = "Paddleboat was not successfully initialized.\nEither Paddleboat_init was not called or returned an error..\n"; break;
-        case PADDLEBOAT_ERROR_NO_CONTROLLER           : l_sError = "PADDLEBOAT_ERROR_NO_CONTROLLER"           ; l_sMessage = "No controller is connected at the specified controller index..\n"; break;
-        case PADDLEBOAT_ERROR_NO_MOUSE                : l_sError = "PADDLEBOAT_ERROR_NO_MOUSE"                ; l_sMessage = "No virtual or physical mouse device is connected.\n"; break;
-      }
-    }
+  }
 
   dustbin::CMainClass *l_pMainClass = nullptr;
   dustbin::state::enState l_eState{};
