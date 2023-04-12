@@ -261,7 +261,7 @@ namespace dustbin {
           bool l_bRet = false;
 
           if (m_pController != nullptr)
-            m_pController->update(a_cEvent);
+            l_bRet = m_pController->update(a_cEvent);
 
           if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
             std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();

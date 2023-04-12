@@ -206,13 +206,81 @@ struct SJoystickInput {
 
 SJoystickInput g_cJoystickInput;
 
-irr::s32 overrideInputReceiever(android_app* a_pApp, AInputEvent* a_pAndroidEvent) {
+irr::s32 overrideInputReceiver(android_app* a_pApp, AInputEvent* a_pAndroidEvent) {
   if (g_cJoystickInput.parseEvent(a_pAndroidEvent))
     return 1;
 
   return (*g_IrrlichtInputHandler)(a_pApp, a_pAndroidEvent);
 }
 
+void overrideAppCmd(struct android_app* app, int32_t cmd) {
+  switch (cmd) {
+    case (int32_t)APP_CMD_INPUT_CHANGED:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_INIT_WINDOW:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_TERM_WINDOW:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_WINDOW_RESIZED:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_WINDOW_REDRAW_NEEDED:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_CONTENT_RECT_CHANGED:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_GAINED_FOCUS:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_LOST_FOCUS:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_CONFIG_CHANGED:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_LOW_MEMORY:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_START:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_RESUME:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_SAVE_STATE:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_PAUSE:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_STOP:
+      printf("cmd %i\n", cmd);
+      break;
+
+    case (int32_t)APP_CMD_DESTROY:
+      printf("cmd %i\n", cmd);
+      break;
+
+  }
+}
 
 void android_main(struct android_app* a_pApp) {
   LOGI("Starting MarbleGP...");
@@ -286,7 +354,8 @@ void android_main(struct android_app* a_pApp) {
 
     g_IrrlichtInputHandler = a_pApp->onInputEvent;
     g_cJoystickInput.m_pDevice = l_pDevice;
-    a_pApp->onInputEvent = &overrideInputReceiever;
+    a_pApp->onInputEvent = &overrideInputReceiver;
+    a_pApp->onAppCmd = &overrideAppCmd;
 
 
     do {
