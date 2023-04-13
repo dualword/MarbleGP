@@ -28,7 +28,7 @@ message(NOTICE "VCPKG_HOME=$ENV{VCPKG_ROOT}")
 message(NOTICE "ANDROID_NDK=${ANDROID_NDK}")
 message(NOTICE "IRRLICHT_ES_FOLDER=$ENV{IRRLICHT_ES_FOLDER}")
 
-add_definitions(-D_ANDROID -DNO_XEFFECT -D_IRR_STATIC_LIB_ -D_OPENGL_ES -ferror-limit=0)
+add_definitions(-D_ANDROID -DNO_XEFFECT -D_IRR_STATIC_LIB_ -D_OPENGL_ES -D_TOUCH_CONTROL -ferror-limit=0)
 
 
 add_library(native_app_glue STATIC
