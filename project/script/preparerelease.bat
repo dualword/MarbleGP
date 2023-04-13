@@ -12,5 +12,6 @@ echo *** Signing MarbleGP_Windows.exe
 SignTool.exe sign /f "%PFX_FILE%" /p "%password%" /t http://timestamp.digicert.com /fd SHA256 ..\..\MarbleGP\MarbleGP_Windows.exe
 7z.exe a -r -tzip ..\release\MarbleGP.zip ..\..\MarbleGP\*.*
 setup.iss
+release_backup.bat
 set password=
 pause

@@ -1804,3 +1804,4 @@
 /ikpFlac.dll
 /ikpMP3.dll
 /project/MarbleGP_Android/app/release/*.aab
+/project/script/release_backup.bat
