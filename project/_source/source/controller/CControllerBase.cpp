@@ -178,7 +178,7 @@ namespace dustbin {
     }
 
 
-    CControllerBase::CControllerBase() : m_bError(false) {
+    CControllerBase::CControllerBase() : m_bError(false), m_bIsTouchControl(false) {
     }
 
     CControllerBase::~CControllerBase() {
@@ -226,6 +226,22 @@ namespace dustbin {
     */
     void CControllerBase::deserialize(const std::string a_sData) {
       if (a_sData != "") {
+        std::string l_sCtrl[] = {
+          "DustbinTouchSteerRight",
+          "DustbinTouchSteerLeft" ,
+          "DustbinTouchSteerOnly" ,
+          "DustbinGyroscope"      ,
+          ""
+        };
+
+        m_bIsTouchControl = false;
+
+        for (int i = 0; l_sCtrl[i] != "" && !m_bIsTouchControl; i++) {
+          if (a_sData == l_sCtrl[i]) {
+            m_bIsTouchControl = true;
+          }
+        }
+
         bool l_bFillVector = m_vControls.size() == 0;
 
         messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
@@ -280,6 +296,9 @@ namespace dustbin {
     * return true if this is a controller using a joystick
     */
     bool CControllerBase::usesJoystick() {
+      if (m_bIsTouchControl)
+        return false;
+
       for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
         if ((*it).m_eType == enInputType::JoyAxis || (*it).m_eType == enInputType::JoyButton || (*it).m_eType == enInputType::JoyPov)
           return true;

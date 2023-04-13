@@ -127,6 +127,7 @@ namespace dustbin {
                 if ((*it).m_sName == l_sName) {
                   l_bAdd = true;
 
+
                   controller::CControllerGame l_cCtrl = controller::CControllerGame();
                   l_cCtrl.deserialize((*it).m_sControls);
 

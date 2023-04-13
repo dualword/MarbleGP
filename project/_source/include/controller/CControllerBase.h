@@ -71,6 +71,7 @@ namespace dustbin {
       protected:
         std::vector<SCtrlInput> m_vControls;
         bool m_bError;
+        bool m_bIsTouchControl;   /**< Is the de-serialized data defining a touch controller (Android only) */
 
       public:
         CControllerBase();
