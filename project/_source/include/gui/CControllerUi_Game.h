@@ -19,19 +19,12 @@ namespace dustbin {
         virtual ~CControllerUi_Game();
 
         /**
-        * This method builds the UI for the controller
-        * @param a_pParent the parent element. The outbox of this element will be used for the UI
+        * Set the controller which is to be configured
+        * @param a_sCtrl the controller string the controller is constructed from
         */
-        virtual void buildUi(irr::gui::IGUIElement *a_pParent) override;
+        void setController(const std::string& a_sCtrl);
 
-        virtual irr::gui::EGUI_ELEMENT_TYPE getType() override;
-
-        /**
-        * Fill the controller from a serialized string. If the vector of controllers is empty
-        * it will be filled, otherwise the corresponding items will be updated
-        * @param a_sData the serialized string to load the data from
-        */
-        virtual void deserialize(const std::string a_sData) override;
+        virtual void deserialize(const std::string a_sData);
     };
   }
 }

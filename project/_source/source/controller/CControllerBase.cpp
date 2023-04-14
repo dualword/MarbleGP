@@ -94,6 +94,19 @@ namespace dustbin {
       return l_sRet;
     }
 
+    std::wstring CControllerBase::SCtrlInput::getControlString() const {
+      std::wstring l_sRet = L"";
+
+      switch (m_eType) {
+        case enInputType::JoyAxis  : l_sRet += L"Gamepad Axis "   + std::to_wstring(m_iAxis  ) + L" " + (m_iDirection > 0 ? L"+" : L"-"); break;
+        case enInputType::JoyButton: l_sRet += L"Gamepad Button " + std::to_wstring(m_iButton)                                          ; break;
+        case enInputType::JoyPov   : l_sRet += L"Gamepad POV "    + std::to_wstring(m_iPov   )                                          ; break;
+        case enInputType::Key      : l_sRet += L"Key " + helpers::keyCodeToString(m_eKey)                                                                                        ; break;
+      }
+
+      return l_sRet;
+    }
+
     void CControllerBase::SCtrlInput::copyFrom(const SCtrlInput& a_cOther) {
       m_sName      = a_cOther.m_sName;
       m_eType      = a_cOther.m_eType;
@@ -367,6 +380,22 @@ namespace dustbin {
     */
     bool CControllerBase::hasError() {
       return m_bError;
+    }
+
+    /**
+    * Compare the items of this controller to another one
+    * @param a_pController the other controller
+    * @return true if the number of items and the names match, false otherwise
+    */
+    bool CControllerBase::compareTo(CControllerBase* a_pController) {
+      if (a_pController->getInputs().size() != m_vControls.size())
+        return false;
+
+      for (int i = 0; i < m_vControls.size(); i++)
+        if (a_pController->getInputs()[i].m_sName != m_vControls[i].m_sName)
+          return false;
+
+      return true;
     }
 
     std::vector<CControllerBase::SCtrlInput>& CControllerBase::getInputs() {

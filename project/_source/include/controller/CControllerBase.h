@@ -66,6 +66,8 @@ namespace dustbin {
           bool valueUpdate(irr::f32 a_fValue);
 
           std::string toString() const;
+
+          std::wstring getControlString() const;
         };
 
       protected:
@@ -140,6 +142,13 @@ namespace dustbin {
         * @return true if the was an error, false otherwise
         */
         bool hasError();
+
+        /**
+        * Compare the items of this controller to another one
+        * @param a_pController the other controller
+        * @return true if the number of items and the names match, false otherwise
+        */
+        bool compareTo(CControllerBase *a_pController);
      };
 
   } // namespace controller 

@@ -19,12 +19,10 @@ namespace dustbin {
         virtual ~CControllerUi_Menu();
 
         /**
-        * This method builds the UI for the controller
-        * @param a_pParent the parent element. The outbox of this element will be used for the UI
+        * Set the controller which is to be configured
+        * @param a_sCtrl the controller string the controller is constructed from
         */
-        virtual void buildUi(irr::gui::IGUIElement *a_pParent) override;
-
-        virtual irr::gui::EGUI_ELEMENT_TYPE getType() override;
+        virtual void setController(const std::string &a_sCtrl) override;
     };
   }
 }

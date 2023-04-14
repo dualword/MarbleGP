@@ -310,9 +310,6 @@ namespace dustbin {
               else if (l_pRet->getType() == gui::g_MenuButtonId) {
                 reinterpret_cast<gui::CMenuButton*>(l_pRet)->setOverrideFont(l_pFont);
               }
-              else if (l_pRet->getType() == gui::g_ControllerUiGameId || l_pRet->getType() == gui::g_ControllerUiMenuId) {
-                reinterpret_cast<gui::CControllerUi*>(l_pRet)->setFont(l_pFont);
-              }
               else if (l_pRet->getType() == gui::g_ReactiveLabelId) {
                 reinterpret_cast<gui::CReactiveLabel*>(l_pRet)->setOverrideFont(l_pFont);
               }

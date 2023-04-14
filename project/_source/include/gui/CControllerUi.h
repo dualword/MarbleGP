@@ -17,6 +17,8 @@ namespace dustbin {
   namespace menu {
     class IMenuManager;   /**< Forward declaration of the menu manager */
   }
+
+
   namespace gui {
 
     class CDustbinScrollPane;       /**< Forward declaration of the scroll pane */
@@ -26,64 +28,39 @@ namespace dustbin {
     * @author Christian Keimel
     * This class provides a UI interface to configure controls
     */
-    class CControllerUi : public gui::CMenuBackground, public controller::CControllerBase, public controller::IJoystickEventHandler, public gui::IGuiMoveOptionElement {
+    class CControllerUi : public irr::gui::IGUIElement, public controller::IJoystickEventHandler {
+      public:
+        enum class enMode {
+          Display,          /**< Just show the controls */
+          Wizard,           /**< Control wizard to step through the control items and initialize them */
+          Test              /**< Test the controls */
+        };
+
       protected:
-        irr::gui::ICursorControl *m_pCursor;
-        irr::gui::IGUIFont       *m_pFont;
-        irr::gui::IGUIFont       *m_pSmall;
-        menu::IMenuManager       *m_pMenuMgr;
-        irr::core::position2di    m_cMousePos;    /**< Position of the mouse, filled with "mouse moved" events as Android has no ICursor instance */
-        std::string               m_sSelected;    /**< The selected controller type */
-        std::string               m_sConfigData;  /**< The serialized controller config string */
-        irr::core::recti          m_cDraw;        /**< Draw rect for the image */
-        irr::s32                  m_iFontHeight;  /**< Height of the font */
-        irr::SEvent               m_cOld;         /**< The old event, we want the release events to set the control */
-        irr::video::ITexture     *m_pBackground;  /**< The background image */
-        irr::core::recti          m_cSource;      /**< Source rectangle for the background image */
-        IGuiControllerUiCallback *m_pCallback;    /**< Callback for editing change */
+        struct SGuiElement {
+          irr::core::vector2di m_cPosHead;  /**< The headline position */
+          irr::core::vector2di m_cPosColn;  /**< The colon position */
+          irr::core::vector2di m_cPosCtrl;  /**< The control text position */
+          irr::core::vector2di m_cPosBack;  /**< Position of the background rectangle */
 
-        std::map<irr::u8, irr::SEvent> m_mJoyOld;
+          irr::core::dimension2di m_cDimHead;   /**< Size of the headline */
+          irr::core::dimension2di m_cDimColn;   /**< Size of the colon */
 
-        std::map<std::string, std::tuple<irr::core::recti, std::wstring, bool, bool, bool>> m_mLabels;    /**< Map with the control labels (Key == Name of the control, Value = tuple(0 == rect of the label, 1 == text of the label 2 == hovered, 3 == clicked, 4 == selected) */
+          SGuiElement();
+        };
 
+        controller::CControllerBase *m_pController;
+        irr::video::IVideoDriver    *m_pDrv;
+        irr::gui::IGUIFont          *m_pFont;
+        enMode                       m_eMode;
 
-        /**
-        * Get a readable string of the set controls
-        * @return a readable string of the set controls
-        */
-        std::wstring getControlText(CControllerBase::SCtrlInput *a_pCtrl);
+        std::vector<SGuiElement> m_vGui;
 
-        /**
-        * Search for the nearest collision of a label with a rectangle
-        * @param a_cRect the rect to collide with
-        * @param a_cOffset offset for the rectangle (will be used to enlarge the rect)
-        * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
-        * @param a_cOut [out] the result rectangle
-        * @param a_cCheck [out] the rectangle that was checked against (for debug output)
-        * @return true if a collision was found, false otherwise
-        */
-        bool checkForRectCollision(const irr::core::recti &a_cRect, const irr::core::dimension2du &a_cOffset, int a_iDirection, irr::core::recti &a_cOut, irr::core::recti &a_cCheck);
-
-        /**
-        * Search for the nearest label to the mouse cursor in a particular direction.
-        * Only called if no label was found using checkForRectCollision
-        * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
-        * @param a_cOut [out] the result rectangle
-        * @return true if a collision was found, false otherwise
-        */
-        bool checkForNearestLabel(int a_iDirection, irr::core::recti &a_cOut);
+        void calculateGui();
 
       public:
         CControllerUi(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType);
         ~CControllerUi();
-
-        /**
-        * This method builds the UI for the controller
-        * @param a_pParent the parent element. The outbox of this element will be used for the UI
-        */
-        virtual void buildUi(irr::gui::IGUIElement *a_pParent) = 0;
-
-        virtual bool update(const irr::SEvent& a_cEvent) override;
 
         virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
@@ -101,40 +78,15 @@ namespace dustbin {
 
         /**
         * Set the controller which is to be configured
-        * @param a_pCtrl the controller which is to be configured
+        * @param a_sCtrl the controller string the controller is constructed from
         */
-        void setController(controller::CControllerBase *a_pCtrl);
-
-        /**
-        * Change the font for the configuration dialog
-        */
-        void setFont(irr::gui::IGUIFont* a_pFont);
-
-        /**
-        * Is currently editing an item active? This will block the menu controller
-        */
-        bool isEditing();
-
-        /**
-        * Set the callback for item editing
-        * @param a_pCallback the new callback
-        */
-        void setCallback(gui::IGuiControllerUiCallback *a_pCallback);
-
-        void setMenuManager(menu::IMenuManager *a_pMenuManager);
+        virtual void setController(const std::string &a_sCtrl);
 
         virtual bool OnJoystickEvent(const irr::SEvent& a_cEvent) override;
 
         virtual void draw() override;
 
-        /**
-        * Get a position to move to depending on the direction and the given mouse position
-        * @param a_cMousePos the mouse position
-        * @param a_iDirection the direction (0 == up, 1 == down, 2 == left, 3 == right)
-        * @param a_cOut the position to move to
-        * @return true if a position was found, false otherwise
-        */
-        virtual bool getMoveOption(const irr::core::position2di &a_cMousePos, int a_iDirection, irr::core::position2di &a_cOut) override;
+        virtual std::string serialize();
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;

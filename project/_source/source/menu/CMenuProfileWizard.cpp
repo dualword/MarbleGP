@@ -454,25 +454,13 @@ namespace dustbin {
               m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
 
               if (m_pCtrl != nullptr) {
-                m_pCtrl->setCallback(this);
-                m_pCtrl->setMenuManager(m_pManager);
-
                 if (m_cPlayer.m_sControls == "") {
                   controller::CControllerGame l_cCtrl;
                   m_cPlayer.m_sControls = l_cCtrl.serialize();
                 }
 
                 if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
-                  controller::CControllerGame l_cCtrl;
-                  l_cCtrl.deserialize(m_cPlayer.m_sControls);
-
-                  if (l_cCtrl.hasError()) {
-                    controller::CControllerGame l_cDefault;
-                    m_pCtrl->setController(&l_cDefault);
-                  }
-                  else {
-                    m_pCtrl->setController(&l_cCtrl);
-                  }
+                  m_pCtrl->setController(m_cPlayer.m_sControls);
                 }
                 else {
                   gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
@@ -782,7 +770,7 @@ namespace dustbin {
           bool l_bRet = false;
 
           if (m_pCtrl != nullptr && m_eStep == enMenuStep::Controls) {
-            m_pCtrl->update(a_cEvent);
+            l_bRet = m_pCtrl->OnEvent(a_cEvent);
           }
 
           if (!l_bRet) {
