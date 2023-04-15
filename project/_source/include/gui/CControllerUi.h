@@ -137,6 +137,12 @@ namespace dustbin {
         void setControlType(enControl a_eCtrl);
 
         /**
+        * Get the control type
+        * @return the control type
+        */
+        enControl getControlType();
+
+        /**
         * Start the controller configuration wizard
         */
         void startWizard();

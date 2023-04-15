@@ -410,6 +410,14 @@ namespace dustbin {
     }
 
     /**
+    * Get the control type
+    * @return the control type
+    */
+    CControllerUi::enControl CControllerUi::getControlType() {
+      return m_eCtrl;
+    }
+
+    /**
     * Start the controller configuration wizard
     */
     void CControllerUi::startWizard() {

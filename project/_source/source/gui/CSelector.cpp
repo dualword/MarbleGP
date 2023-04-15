@@ -333,12 +333,47 @@ namespace dustbin {
     * @param a_iIndex the new index
     */
     void CSelector::setSelected(int a_iIndex) {
+      if (a_iIndex < 0 || a_iIndex >= (int)m_vItems.size())
+        a_iIndex = 0;
+
       if ((a_iIndex >= 0 && a_iIndex < m_vItems.size()) || m_vItems.size() == 0) {
         m_iSelected = a_iIndex;
 
         if (m_iSelected >= 0 && m_iSelected < m_vItems.size())
           setText(m_vItems[m_iSelected].c_str());
       }
+    }
+
+    /**
+    * Set the selected item
+    * @param a_sItem the item to select
+    */
+    void CSelector::setSelectedItem(const std::wstring& a_sItem) {
+      m_iSelected = 0;
+
+      int l_iCnt = 0;
+      for (std::vector<std::wstring>::iterator l_itItem = m_vItems.begin(); l_itItem != m_vItems.end(); l_itItem++) {
+        if (*l_itItem == a_sItem) {
+          m_iSelected = l_iCnt;
+          break;
+        }
+        l_iCnt++;
+      }
+
+      setSelected(m_iSelected);
+
+      l_iCnt++;
+    }
+
+    /**
+    * Get the selected Item
+    * @return the selected Item
+    */
+    std::wstring CSelector::getSelectedItem() {
+      if (m_iSelected >= 0 && m_iSelected < (int)m_vItems.size())
+        return m_vItems[m_iSelected];
+      else
+        return L"";
     }
   } // namespace gui
 }   // namespace dustbin

@@ -77,6 +77,8 @@ namespace dustbin {
 
         void updateSelectorUI(int a_iSetting, gui::CSelector *a_pSelector) { if (a_pSelector != nullptr) a_pSelector->setSelected(a_iSetting); else printf("Selector is null.\n"); }
 
+        void updateSelectorUI(const std::string a_sSetting, gui::CSelector *a_pSelector) { if (a_pSelector != nullptr) a_pSelector->setSelectedItem(helpers::s2ws(a_sSetting)); else printf("Selector is null.\n"); }
+
         void updateCheckboxSettings(bool &a_bSetting, gui::CDustbinCheckbox *a_pCheckbox) { if (a_pCheckbox != nullptr) a_bSetting = a_pCheckbox->isChecked(); else printf("Checkbox is null.\n"); }
 
         void updateCheckboxUI(bool a_bSetting, gui::CDustbinCheckbox* a_pCheckbox) { if (a_pCheckbox != nullptr) a_pCheckbox->setChecked(a_bSetting); else printf("Checkbox is null.\n"); }
@@ -160,18 +162,24 @@ namespace dustbin {
 
           if (m_pController != nullptr) {
             m_pController->setController(l_sCtrl);
-            m_pController->setControlType(m_cSettings.m_iMenuCtrl == 0 ? gui::CControllerUi::enControl::Off : m_cSettings.m_iMenuCtrl == 1 ? gui::CControllerUi::enControl::Keyboard : gui::CControllerUi::enControl::Joystick);
+
+            if (m_cSettings.m_sMenuCtrl == "Keyboard")
+              m_pController->setControlType(gui::CControllerUi::enControl::Keyboard);
+            else if (m_cSettings.m_sMenuCtrl == "Gamepad")
+              m_pController->setControlType(gui::CControllerUi::enControl::Joystick);
+            else
+              m_pController->setControlType(gui::CControllerUi::enControl::Off);
 
             gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
             if (l_pBtn != nullptr) {
-              l_pBtn->setVisible(m_cSettings.m_iMenuCtrl != 0);
+              l_pBtn->setVisible(m_pController->getControlType() != gui::CControllerUi::enControl::Off);
             }
 
             gui::CSelector *l_pOption = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
             if (l_pOption != nullptr) {
-              l_pOption->setSelected(m_cSettings.m_iMenuCtrl);
+              l_pOption->setSelectedItem(helpers::s2ws(m_cSettings.m_sMenuCtrl));
             }
           }
 
@@ -208,7 +216,7 @@ namespace dustbin {
 
           updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
           updateSelectorUI(m_cSettings.m_iAmbient, reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23013, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
-          updateSelectorUI(m_cSettings.m_iMenuCtrl,reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+          updateSelectorUI(m_cSettings.m_sMenuCtrl,reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
 
           updateSoundUI(23018, 30000, m_cSettings.m_fSfxMaster );
           updateSoundUI(23020, 30001, m_cSettings.m_fSoundTrack);
@@ -280,7 +288,7 @@ namespace dustbin {
                 if (m_pLog  != nullptr) m_pLog ->setVisible(false);
 
                 l_bRet = true;
-
+                
                 for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
                   if (it->second != nullptr)
                     it->second->setVisible(l_sSender == it->first);
@@ -330,34 +338,36 @@ namespace dustbin {
                 updateSplitscreenUI();
                 l_bRet = true;
               }
-              else if ((l_sSender == "Shadows" || l_sSender == "Ambient" || l_sSender == "misc_menuctrl") && a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId) {
+              else if (l_sSender == "misc_menuctrl") {
+                gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller);
+
+                m_cSettings.m_sMenuCtrl = helpers::ws2s(l_pSelector->getSelectedItem());
+
+                if (m_cSettings.m_sMenuCtrl == "Keyboard")
+                  m_pController->setControlType(gui::CControllerUi::enControl::Keyboard);
+                else if (m_cSettings.m_sMenuCtrl == "Gamepad")
+                  m_pController->setControlType(gui::CControllerUi::enControl::Joystick);
+                else
+                  m_pController->setControlType(gui::CControllerUi::enControl::Off);
+
+                gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+                if (l_pBtn != nullptr) {
+                  l_pBtn->setVisible(m_pController->getControlType() != gui::CControllerUi::enControl::Off);
+                }
+
+                l_bRet = true;
+              }
+              else if ((l_sSender == "Shadows" || l_sSender == "Ambient") && a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId) {
                 int *a_pSetting = nullptr;
 
                 if (a_cEvent.GUIEvent.Caller->getID() == 23012)
                   a_pSetting = &m_cSettings.m_iShadows;
                 else if (a_cEvent.GUIEvent.Caller->getID() == 23013)
                   a_pSetting = &m_cSettings.m_iAmbient;
-                else if (a_cEvent.GUIEvent.Caller->getID() == 23026)
-                  a_pSetting = &m_cSettings.m_iMenuCtrl;
 
                 if (a_pSetting != nullptr)
                   updateSelectorSettings(*a_pSetting, reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller));
-
-                if (a_cEvent.GUIEvent.Caller->getID() == 23026) {
-                  if (m_pController != nullptr) {
-                    switch (m_cSettings.m_iMenuCtrl) {
-                      case 0: m_pController->setControlType(gui::CControllerUi::enControl::Off     ); break;
-                      case 1: m_pController->setControlType(gui::CControllerUi::enControl::Keyboard); break;
-                      case 2: m_pController->setControlType(gui::CControllerUi::enControl::Joystick); break;
-                    }
-
-                    gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-
-                    if (l_pBtn != nullptr) {
-                      l_pBtn->setVisible(m_cSettings.m_iMenuCtrl != 0);
-                    }
-                  }
-                }
               }
               else if (l_sSender == "Resolution") {
                 if (m_pResolution != nullptr) {

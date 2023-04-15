@@ -96,6 +96,18 @@ namespace dustbin {
         */
         void setSelected(int a_iIndex);
 
+        /**
+        * Get the selected Item
+        * @return the selected Item
+        */
+        std::wstring getSelectedItem();
+
+        /**
+        * Set the selected item
+        * @param a_sItem the item to select
+        */
+        void setSelectedItem(const std::wstring &a_sItem);
+
         virtual irr::gui::EGUI_ELEMENT_TYPE getType();
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent);

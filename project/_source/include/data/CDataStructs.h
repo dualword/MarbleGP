@@ -45,7 +45,6 @@ namespace dustbin {
       int m_iResolutionH;   /**< Selected window height */
       int m_iShadows;       /**< Shadow details */
       int m_iAmbient;       /**< Ambient light */
-      int m_iMenuCtrl;      /**< The menu navigation option (0 == off, 1 == keyboard, 2 == gamepad) */
 
       float m_fSfxMaster;   /**< Sound master volume */
       float m_fSoundTrack;  /**< Sound track volume */
@@ -60,6 +59,7 @@ namespace dustbin {
       bool m_bVirtualKeys;  /**< Use virtual keyboard (always true for Android) */
 
       std::string m_sController;  /**< The serialized menu controller configuration */
+      std::string m_sMenuCtrl;    /**< The menu controller setting (off, keyboard, gamepad) */
 
       SGameGFX m_aGameGFX[8];   /**< Separate settings for splitscreen up to 8 players */
 

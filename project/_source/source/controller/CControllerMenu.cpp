@@ -348,7 +348,7 @@ namespace dustbin {
 
       if (a_cEvent.EventType == irr::EET_USER_EVENT) {
         if (a_cEvent.UserEvent.UserData1 == c_iEventSettingsChanged) {
-          m_bActive = CGlobal::getInstance()->getSettingData().m_iMenuCtrl != 0;
+          m_bActive = CGlobal::getInstance()->getSettingData().m_sMenuCtrl == "Keyboard" || CGlobal::getInstance()->getSettingData().m_sMenuCtrl == "Gamepad";
           deserialize(CGlobal::getInstance()->getSettingData().m_sController);
 
           for (std::vector<SCtrlInput>::iterator l_itCtrl = m_vControls.begin(); l_itCtrl != m_vControls.end() && !m_bGamepad; l_itCtrl++) {
