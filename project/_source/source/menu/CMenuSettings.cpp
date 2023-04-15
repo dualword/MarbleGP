@@ -11,6 +11,7 @@
 #include <menu/IMenuManager.h>
 #include <data/CDataStructs.h>
 #include <gui/CControllerUi.h>
+#include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
 #include <Defines.h>
@@ -38,8 +39,6 @@ namespace dustbin {
         std::map<std::string, bool[4]> m_mPageVisibility;
 
         std::map<std::string, irr::gui::IGUIStaticText *> m_mHeadLines;
-
-        std::map<irr::u8, irr::SEvent> m_mJoyStates;    /**< Joystick states to make sure events are only passed when the joystick state changes */
 
         std::vector<gui::CMenuBackground *> m_vPages;
 
@@ -152,7 +151,7 @@ namespace dustbin {
 
           m_mHeadLines["gfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("headline_gfx" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           m_mHeadLines["sfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("sfx_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["misc"] = reinterpret_cast<irr::gui::IGUIStaticText*>(findElementByNameAndType("misc_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["misc"] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("misc_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           m_mHeadLines["log" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("log_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           std::string l_sCtrl = m_cSettings.m_sController;
@@ -161,6 +160,19 @@ namespace dustbin {
 
           if (m_pController != nullptr) {
             m_pController->setController(l_sCtrl);
+            m_pController->setControlType(m_cSettings.m_iMenuCtrl == 0 ? gui::CControllerUi::enControl::Off : m_cSettings.m_iMenuCtrl == 1 ? gui::CControllerUi::enControl::Keyboard : gui::CControllerUi::enControl::Joystick);
+
+            gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+            if (l_pBtn != nullptr) {
+              l_pBtn->setVisible(m_cSettings.m_iMenuCtrl != 0);
+            }
+
+            gui::CSelector *l_pOption = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+            if (l_pOption != nullptr) {
+              l_pOption->setSelected(m_cSettings.m_iMenuCtrl);
+            }
           }
 
           // Fill the video resolution list
@@ -190,13 +202,13 @@ namespace dustbin {
           }
 
           updateCheckboxUI(m_cSettings.m_bFullscreen , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23011, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
-          updateCheckboxUI(m_cSettings.m_bUseMenuCtrl, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
           updateCheckboxUI(m_cSettings.m_bVirtualKeys, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23046, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
 
           updateSplitscreenUI();
 
           updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
           updateSelectorUI(m_cSettings.m_iAmbient, reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23013, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+          updateSelectorUI(m_cSettings.m_iMenuCtrl,reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
 
           updateSoundUI(23018, 30000, m_cSettings.m_fSfxMaster );
           updateSoundUI(23020, 30001, m_cSettings.m_fSoundTrack);
@@ -221,32 +233,8 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
           // A guard to make sure joystick events are only handled once per change
           if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-            irr::u8 l_iIndex = a_cEvent.JoystickEvent.Joystick;
-            bool    l_bSkip  = false;
-
-            if (m_mJoyStates.find(l_iIndex) != m_mJoyStates.end()) {
-              l_bSkip = m_mJoyStates[l_iIndex].JoystickEvent.ButtonStates == a_cEvent.JoystickEvent.ButtonStates &&
-                m_mJoyStates[l_iIndex].JoystickEvent.POV          == a_cEvent.JoystickEvent.POV;
-
-              if (l_bSkip) {
-                for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES && l_bSkip; i++) {
-                  int l_iOld = m_mJoyStates[l_iIndex].JoystickEvent.Axis[i];
-                  int l_iNew = a_cEvent              .JoystickEvent.Axis[i];
-
-                  if (abs(l_iOld) < 16000) l_iOld = 0;
-                  if (abs(l_iNew) < 16000) l_iNew = 0;
-
-                  l_bSkip &= l_iOld > 0 == l_iNew > 0 && l_iOld < 0 == l_iNew < 0;
-                }
-              }
-            }
-
-            m_mJoyStates[l_iIndex] = irr::SEvent(a_cEvent);
-
-            if (l_bSkip)
+            if (m_pController != nullptr && m_pController->OnJoystickEvent(a_cEvent))
               return true;
-
-            printf("Process joystick event (%i).\n", joyevent++);
           }
 
           bool l_bRet = false;
@@ -331,6 +319,10 @@ namespace dustbin {
 
                 createMenu("menu_main", m_pDevice, m_pManager, m_pState);
               }
+              else if (l_sSender == "editMenuCtrl") {
+                if (m_pController != nullptr)
+                  m_pController->startWizard();
+              }
               else printf("Button clicked (%s, %i, CMenuMain).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
@@ -338,16 +330,34 @@ namespace dustbin {
                 updateSplitscreenUI();
                 l_bRet = true;
               }
-              else if ((l_sSender == "Shadows" || l_sSender == "Ambient") && a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId) {
+              else if ((l_sSender == "Shadows" || l_sSender == "Ambient" || l_sSender == "misc_menuctrl") && a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId) {
                 int *a_pSetting = nullptr;
 
                 if (a_cEvent.GUIEvent.Caller->getID() == 23012)
                   a_pSetting = &m_cSettings.m_iShadows;
                 else if (a_cEvent.GUIEvent.Caller->getID() == 23013)
                   a_pSetting = &m_cSettings.m_iAmbient;
+                else if (a_cEvent.GUIEvent.Caller->getID() == 23026)
+                  a_pSetting = &m_cSettings.m_iMenuCtrl;
 
                 if (a_pSetting != nullptr)
                   updateSelectorSettings(*a_pSetting, reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller));
+
+                if (a_cEvent.GUIEvent.Caller->getID() == 23026) {
+                  if (m_pController != nullptr) {
+                    switch (m_cSettings.m_iMenuCtrl) {
+                      case 0: m_pController->setControlType(gui::CControllerUi::enControl::Off     ); break;
+                      case 1: m_pController->setControlType(gui::CControllerUi::enControl::Keyboard); break;
+                      case 2: m_pController->setControlType(gui::CControllerUi::enControl::Joystick); break;
+                    }
+
+                    gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+                    if (l_pBtn != nullptr) {
+                      l_pBtn->setVisible(m_cSettings.m_iMenuCtrl != 0);
+                    }
+                  }
+                }
               }
               else if (l_sSender == "Resolution") {
                 if (m_pResolution != nullptr) {
@@ -387,9 +397,6 @@ namespace dustbin {
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
               if (a_cEvent.GUIEvent.Caller->getID() == 23011) {
                 m_cSettings.m_bFullscreen = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
-              }
-              else if (a_cEvent.GUIEvent.Caller->getID() == 23026) {
-                m_cSettings.m_bUseMenuCtrl = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
               }
               else if (a_cEvent.GUIEvent.Caller->getID() == 23046) {
 #ifndef _ANDROID

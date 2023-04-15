@@ -87,8 +87,19 @@ namespace dustbin {
       switch (m_eType) {
         case enInputType::JoyAxis  : l_sRet += "Joy " + std::to_string(m_iJoystick) + " Axis " + std::to_string(m_iAxis) + " Direction " + std::to_string(m_iDirection); break;
         case enInputType::JoyButton: l_sRet += "Joy " + std::to_string(m_iJoystick) + " Button " + std::to_string(m_iButton)                                                ; break;
-        case enInputType::JoyPov   : l_sRet += "Joy " + std::to_string(m_iJoystick) + " POV " + std::to_string(m_iPov)                                                      ; break;
-        case enInputType::Key      : l_sRet += "Key " + helpers::ws2s(helpers::keyCodeToString(m_eKey))                                                                               ; break;
+        case enInputType::JoyPov   : l_sRet += "Joy " + std::to_string(m_iJoystick) + " POV "; 
+          if (m_iPov == 0)
+            l_sRet += "Up";
+          else if (m_iPov == 18000)
+            l_sRet += "Down";
+          else if (m_iPov == 9000)
+            l_sRet += "Left";
+          else if (m_iPov == 27000)
+            l_sRet += "Right";
+          else
+            l_sRet += std::to_string(m_iPov);
+          break;
+        case enInputType::Key      : l_sRet += "Key " + helpers::ws2s(helpers::keyCodeToString(m_eKey)); break;
       }
 
       return l_sRet;
@@ -100,8 +111,19 @@ namespace dustbin {
       switch (m_eType) {
         case enInputType::JoyAxis  : l_sRet += L"Gamepad Axis "   + std::to_wstring(m_iAxis  ) + L" " + (m_iDirection > 0 ? L"+" : L"-"); break;
         case enInputType::JoyButton: l_sRet += L"Gamepad Button " + std::to_wstring(m_iButton)                                          ; break;
-        case enInputType::JoyPov   : l_sRet += L"Gamepad POV "    + std::to_wstring(m_iPov   )                                          ; break;
-        case enInputType::Key      : l_sRet += L"Key " + helpers::keyCodeToString(m_eKey)                                                                                        ; break;
+        case enInputType::JoyPov   : l_sRet += L"Gamepad POV "    ;
+          switch (m_iPov) {
+            case     0: l_sRet += L"Up"   ; break;
+            case  9000: l_sRet += L"Right"; break;
+            case 18000: l_sRet += L"Down" ; break;
+            case 27000: l_sRet += L"Left" ; break;
+            default:
+              l_sRet += std::to_wstring(m_iPov);
+              break;
+          }
+          break;
+
+        case enInputType::Key      : l_sRet += L"Key " + helpers::keyCodeToString(m_eKey); break;
       }
 
       return l_sRet;

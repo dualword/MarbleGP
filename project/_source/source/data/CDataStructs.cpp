@@ -128,6 +128,7 @@ namespace dustbin {
       m_iResolutionH (1080), 
       m_iShadows     (2), 
       m_iAmbient     (2),
+      m_iMenuCtrl    (0),
       m_fSfxMaster   (1.0f),
       m_fSoundTrack  (1.0f),
       m_fSfxMenu     (1.0f),
@@ -142,7 +143,6 @@ namespace dustbin {
       m_bVirtualKeys (true),
       m_sController("DustbinTouchSteerLeft")
 #else
-      m_bUseMenuCtrl (false),
       m_bVirtualKeys (false),
       m_sController  ("DustbinController;control;f%3bl%3bForward%3bh%3ba%3bn%3bM%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBackward%3bh%3ba%3bn%3bO%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bLeft%3bh%3ba%3bn%3bL%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRight%3bh%3ba%3bn%3bN%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBrake%3bh%3ba%3bn%3bG%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRearview%3bh%3ba%3bn%3bj%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRespawn%3bh%3ba%3bn%3bn%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bPause%3bh%3ba%3bn%3bt%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bCancel%2520Race%3bh%3ba%3bn%3bB%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb")
 #endif
@@ -154,9 +154,9 @@ namespace dustbin {
       if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH  = std::atoi(a_mData.at("resolution_h").c_str());
       if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
       if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
+      if (a_mData.find("menuctrl"    ) != a_mData.end()) m_iMenuCtrl     = std::atoi(a_mData.at("menuctrl"    ).c_str());
 
       if (a_mData.find("fullscreen" ) != a_mData.end()) m_bFullscreen  = a_mData.at("fullscreen" ) == "true";
-      if (a_mData.find("usemenuctrl") != a_mData.end()) m_bUseMenuCtrl = a_mData.at("usemenuctrl") == "true";
       if (a_mData.find("debugaipath") != a_mData.end()) m_bDebugAIPath = a_mData.at("debugaipath") == "true";
       if (a_mData.find("debugaidice") != a_mData.end()) m_bDebugAIDice = a_mData.at("debugaidice") == "true";
 
@@ -185,9 +185,9 @@ namespace dustbin {
       a_mData["resolution_h"] = std::to_string(m_iResolutionH);
       a_mData["shadows"     ] = std::to_string(m_iShadows    );
       a_mData["ambient"     ] = std::to_string(m_iAmbient    );
+      a_mData["menuctrl"    ] = std::to_string(m_iMenuCtrl   );
 
       a_mData["fullscreen"  ] = m_bFullscreen  ? "true" : "false";
-      a_mData["usemenuctrl" ] = m_bUseMenuCtrl ? "true" : "false";
       a_mData["debugaipath" ] = m_bDebugAIPath ? "true" : "false";
       a_mData["debugaidice" ] = m_bDebugAIDice ? "true" : "false";
 
@@ -218,12 +218,12 @@ namespace dustbin {
       m_iResolutionH  = a_cOther.m_iResolutionH;
       m_iShadows      = a_cOther.m_iShadows;
       m_iAmbient      = a_cOther.m_iAmbient;
+      m_iMenuCtrl     = a_cOther.m_iMenuCtrl;
       m_bFullscreen   = a_cOther.m_bFullscreen;
       m_fSfxMaster    = a_cOther.m_fSfxMaster;
       m_fSoundTrack   = a_cOther.m_fSoundTrack;
       m_fSfxMenu      = a_cOther.m_fSfxMenu;
       m_fSfxGame      = a_cOther.m_fSfxGame;
-      m_bUseMenuCtrl  = a_cOther.m_bUseMenuCtrl;
       m_sController   = a_cOther.m_sController;
       m_bVirtualKeys  = a_cOther.m_bVirtualKeys;
       m_bDebugAIPath  = a_cOther.m_bDebugAIPath;

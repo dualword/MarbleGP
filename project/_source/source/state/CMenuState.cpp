@@ -97,14 +97,14 @@ namespace dustbin {
     bool CMenuState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
-      // if (m_pController != nullptr && m_bMenuCtrl)
-      //   l_bRet = m_pController->update(a_cEvent);
-
       if (!l_bRet && m_pTouchCtrl != nullptr)
         l_bRet = m_pTouchCtrl->handleEvent(a_cEvent);
 
       if (!l_bRet && m_pMenu != nullptr)
         l_bRet = m_pMenu->OnEvent(a_cEvent);
+
+      if (!l_bRet && m_pController != nullptr && m_bMenuCtrl)
+        l_bRet = m_pController->update(a_cEvent);
 
       if (!l_bRet) {
         if (a_cEvent.EventType == irr::EET_USER_EVENT) {

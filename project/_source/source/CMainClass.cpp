@@ -645,7 +645,7 @@ namespace dustbin {
           irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(a_cEvent.GUIEvent.Caller);
 
           if (m_pKeyBoard == nullptr) {
-            m_pKeyBoard = new gui::CVirtualKeyboard(CGlobal::getInstance()->getSettingData().m_bUseMenuCtrl);
+            m_pKeyBoard = new gui::CVirtualKeyboard(CGlobal::getInstance()->getSettingData().m_iMenuCtrl != 0);
             m_pKeyBoard->drop();
           }
 

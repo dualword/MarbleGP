@@ -24,21 +24,73 @@ namespace dustbin {
     CControllerUi::SGuiElement::SGuiElement() {
     }
 
+    CControllerUi::SJoystickState::SJoystickState() : m_iPov(0xFFFF) {
+      for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_AXES; i++)
+        m_iAxis[i] = 0;
+
+      for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_BUTTONS; i++)
+        m_bButton[i] = false;
+    }
+
+    void CControllerUi::SJoystickState::update(const irr::SEvent& a_cEvent) {
+      if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+        for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_AXES; i++)
+          m_iAxis[i] = a_cEvent.JoystickEvent.Axis[i];
+
+        for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_BUTTONS; i++)
+          m_bButton[i] = a_cEvent.JoystickEvent.IsButtonPressed(i);
+      }
+    }
+
+    bool CControllerUi::SJoystickState::isNeutral() {
+      for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_AXES; i++)
+        if (m_iAxis[i] < -5000 || m_iAxis[i] > 5000)
+          return false;
+
+      for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_BUTTONS; i++)
+        if (m_bButton[i])
+          return false;
+
+      if (m_iPov != 0xFFFF)
+        return false;
+
+      return true;
+    }
+
+    bool CControllerUi::SJoystickState::hasChanged(const irr::SEvent& a_cEvent) {
+      if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+        for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_AXES; i++) {
+          if ((a_cEvent.JoystickEvent.Axis[i] < -5000 || a_cEvent.JoystickEvent.Axis[i] > 5000) != (m_iAxis[i] < -5000 || m_iAxis[i] > 5000))
+            return true;
+        }
+
+        for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_BUTTONS; i++)
+          if (m_bButton[i] != a_cEvent.JoystickEvent.IsButtonPressed(i))
+            return true;
+
+        if (m_iPov != a_cEvent.JoystickEvent.POV)
+          return true;
+      }
+
+      return false;
+    }
+
     CControllerUi::CControllerUi(irr::gui::IGUIElement* a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType) :
       irr::gui::IGUIElement(a_eType, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()), 
       m_pController(nullptr),
       m_pDrv       (CGlobal::getInstance()->getVideoDriver()),
-      m_eMode      (enMode::Display)
+      m_eMode      (enMode::Display),
+      m_eCtrl      (enControl::Keyboard),
+      m_bSet       (true),
+      m_iJoystick  (255)
     {
     }
 
     CControllerUi::~CControllerUi() {
-    }
-
-    bool CControllerUi::OnEvent(const irr::SEvent& a_cEvent) {
-      bool l_bRet = false;
-
-      return l_bRet;
+      if (m_pController != nullptr) {
+        delete m_pController;
+        m_pController = nullptr;
+      }
     }
 
     /**
@@ -76,6 +128,95 @@ namespace dustbin {
     bool CControllerUi::OnJoystickEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
+      // Only listen to joystick events if the mode is set to Joystick
+      if (m_eCtrl == enControl::Joystick) {
+        if (m_eMode == enMode::Wizard) {
+          if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+            if (m_mJoysticks.find(a_cEvent.JoystickEvent.Joystick) == m_mJoysticks.end()) {
+              m_mJoysticks[a_cEvent.JoystickEvent.Joystick] = SJoystickState();
+              m_mJoysticks[a_cEvent.JoystickEvent.Joystick].update(a_cEvent);
+
+              printf("Joystick %i added.\n", a_cEvent.JoystickEvent.Joystick);
+            }
+            
+            if (m_mJoysticks.find(a_cEvent.JoystickEvent.Joystick) != m_mJoysticks.end()) {
+              if (m_iJoystick == 255 && m_mJoysticks[a_cEvent.JoystickEvent.Joystick].hasChanged(a_cEvent))
+                m_iJoystick = a_cEvent.JoystickEvent.Joystick;
+
+              if (m_iJoystick == a_cEvent.JoystickEvent.Joystick) {
+                if (m_bSet) {
+                  if (m_mJoysticks[m_iJoystick].hasChanged(a_cEvent)) {
+                    for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_AXES; i++) {
+                      if ((m_mJoysticks[m_iJoystick].m_iAxis[i] < -5000 || m_mJoysticks[m_iJoystick].m_iAxis[i] > 5000) != (a_cEvent.JoystickEvent.Axis[i] < -5000 || a_cEvent.JoystickEvent.Axis[i] > 5000)) {
+                        m_pController->getInputs()[m_iWizard].m_eType      = controller::CControllerBase::enInputType::JoyAxis;
+                        m_pController->getInputs()[m_iWizard].m_iAxis      = i;
+                        m_pController->getInputs()[m_iWizard].m_iDirection = a_cEvent.JoystickEvent.Axis[i] > m_mJoysticks[m_iJoystick].m_iAxis[i] ? 1 : -1;
+                        m_mJoysticks[m_iJoystick].update(a_cEvent);
+                        m_bSet = false;
+                        break;
+                      }
+                    }
+
+                    if (m_bSet) {
+                      for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_BUTTONS; i++) {
+                        if (a_cEvent.JoystickEvent.IsButtonPressed(i) != m_mJoysticks[m_iJoystick].m_bButton[i]) {
+                          m_pController->getInputs()[m_iWizard].m_eType   = controller::CControllerBase::enInputType::JoyButton;
+                          m_pController->getInputs()[m_iWizard].m_iButton = i;
+                          m_mJoysticks[m_iJoystick].update(a_cEvent);
+                          m_bSet = false;
+                          break;
+                        }
+                      }
+                    }
+
+                    if (m_bSet) {
+                      if (a_cEvent.JoystickEvent.POV != m_mJoysticks[m_iJoystick].m_iPov) {
+                        m_pController->getInputs()[m_iWizard].m_eType = controller::CControllerBase::enInputType::JoyPov;
+                        m_pController->getInputs()[m_iWizard].m_iPov  = a_cEvent.JoystickEvent.POV;
+                        m_mJoysticks[m_iJoystick].update(a_cEvent);
+                        m_bSet = false;
+                      }
+                    }
+                  }
+                }
+                else {
+                  if (
+                    (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyAxis   && std::abs(a_cEvent.JoystickEvent.Axis[m_pController->getInputs()[m_iWizard].m_iAxis]) < 1000) || 
+                    (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyButton && !a_cEvent.JoystickEvent.IsButtonPressed(m_pController->getInputs()[m_iWizard].m_iButton)) ||
+                    (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyPov    && a_cEvent.JoystickEvent.POV == 0xFFFF)
+                  ) {
+                    m_bSet = true;
+                    m_iWizard++;
+
+                    m_mJoysticks[m_iJoystick].update(a_cEvent);
+
+                    if (m_iWizard >= m_pController->getInputs().size())
+                      setMode(enMode::Display);
+                  }
+                }
+              }
+            }
+          }
+
+          l_bRet = true;
+        }
+      }
+
+      return l_bRet;
+    }
+
+    bool CControllerUi::OnEvent(const irr::SEvent& a_cEvent) {
+      bool l_bRet = false;
+
+      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        // Only listen to keyboard events if the mode is set to keyboard
+        if (m_eCtrl == enControl::Keyboard) {
+          if (m_eMode == enMode::Wizard) {
+
+          }
+        }
+      }
+
       return l_bRet;
     }
 
@@ -90,7 +231,9 @@ namespace dustbin {
     void CControllerUi::draw() {
       irr::gui::IGUIElement::draw();
 
-      if (m_vGui.size() > 0) {
+      m_pDrv->draw2DRectangleOutline(AbsoluteClippingRect, irr::video::SColor(0xFF, 0, 0, 0));
+
+      if (m_vGui.size() > 0 && m_eCtrl != enControl::Off) {
         irr::core::dimension2du l_cCtrlSize;
 
         for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end(); l_itCtrl++) {
@@ -103,6 +246,8 @@ namespace dustbin {
         l_cCtrlSize.Width += (*m_vGui.begin()).m_cPosColn.X - (*m_vGui.begin()).m_cPosBack.X + (*m_vGui.begin()).m_cDimHead.Height;
 
         std::vector<SGuiElement>::iterator l_itGui = m_vGui.begin();
+
+        int l_iIndex = 0;
 
         for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end() && l_itGui != m_vGui.end(); l_itCtrl++) {
 
@@ -117,17 +262,37 @@ namespace dustbin {
           irr::core::recti l_cRect = irr::core::recti((*l_itGui).m_cPosBack, l_cCtrlSize);
 
           switch (m_eMode) {
-            case enMode::Display: {
+            case enMode::Display:
               m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 192, 192), l_cRect, &AbsoluteClippingRect);
 
               m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
               m_pFont->draw(L":"                                              , l_cColn, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
               m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
               break;
-            }
+
+            case enMode::Wizard:
+              irr::video::SColor l_cBack = irr::video::SColor( 96, 224, 224, 224);
+              irr::video::SColor l_cText = irr::video::SColor(128,   0,   0,   0);
+
+              if (l_iIndex == m_iWizard) {
+                l_cBack = irr::video::SColor(128, 192, 192, 255);
+                l_cText = irr::video::SColor(255,   0,   0,   0);
+              }
+              else if (l_iIndex < m_iWizard) {
+                l_cBack = irr::video::SColor(128, 192, 192, 192);
+                l_cText = irr::video::SColor(255,   0,   0,   0);
+              }
+
+              m_pDrv->draw2DRectangle(l_cBack, l_cRect, &AbsoluteClippingRect);
+
+              m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, l_cText, false, true, &AbsoluteClippingRect);
+              m_pFont->draw(L":"                                              , l_cColn, l_cText, false, true, &AbsoluteClippingRect);
+              m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, l_cText, false, true, &AbsoluteClippingRect);
+              break;
           }
 
           l_itGui++;
+          l_iIndex++;
         }
       }
     }
@@ -193,8 +358,37 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Set the mode of the controller UI
+    * @param a_eMode the new mode
+    */
+    void CControllerUi::setMode(enMode a_eMode) {
+      m_eMode = a_eMode;
+    }
+
+    /**
+    * Set the control type of the UI
+    * @param a_eCtrl the new control type
+    */
+    void CControllerUi::setControlType(enControl a_eCtrl) {
+      m_eCtrl = a_eCtrl;
+    }
+
+    /**
+    * Start the controller configuration wizard
+    */
+    void CControllerUi::startWizard() {
+      m_eMode     = enMode::Wizard;
+      m_iWizard   = 0;
+      m_bSet      = true;
+      m_iJoystick = 255;
+    }
+
     std::string CControllerUi::serialize() {
-      return "";
+      if (m_pController != nullptr)
+        return m_pController->serialize();
+      else
+        return "";
     }
   } // namespace controller 
 } // namespace dustbin

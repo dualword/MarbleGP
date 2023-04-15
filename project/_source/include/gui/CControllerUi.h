@@ -30,10 +30,22 @@ namespace dustbin {
     */
     class CControllerUi : public irr::gui::IGUIElement, public controller::IJoystickEventHandler {
       public:
+        /**
+        * The mode of the controller UI
+        */
         enum class enMode {
           Display,          /**< Just show the controls */
           Wizard,           /**< Control wizard to step through the control items and initialize them */
           Test              /**< Test the controls */
+        };
+
+        /**
+        * The control type of the UI
+        */
+        enum class enControl {
+          Off,                  /**< Controller deactivated */
+          Keyboard,             /**< Only receive keyboard events */
+          Joystick              /**< Only receive joystick events */
         };
 
       protected:
@@ -49,18 +61,37 @@ namespace dustbin {
           SGuiElement();
         };
 
+        struct SJoystickState {
+          irr::s16 m_iAxis    [irr::SEvent::SJoystickEvent::NUMBER_OF_AXES   ];
+          bool     m_bButton  [irr::SEvent::SJoystickEvent::NUMBER_OF_BUTTONS];
+          irr::u16 m_iPov;
+          
+          SJoystickState();
+
+          void update(const irr::SEvent &a_cEvent);
+
+          bool isNeutral();
+          bool hasChanged(const irr::SEvent &a_cEvent);
+        };
+
         controller::CControllerBase *m_pController;
         irr::video::IVideoDriver    *m_pDrv;
         irr::gui::IGUIFont          *m_pFont;
         enMode                       m_eMode;
+        enControl                    m_eCtrl;
+        int                          m_iWizard;     /**< The item index of the control item the wizard is currently editing */
+        bool                         m_bSet;        /**< Was a value set? */
+        irr::u8                      m_iJoystick;   /**< The joystick index to listen for (for the wizard) */
 
         std::vector<SGuiElement> m_vGui;
+
+        std::map<irr::u8, SJoystickState> m_mJoysticks;
 
         void calculateGui();
 
       public:
         CControllerUi(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType);
-        ~CControllerUi();
+        virtual ~CControllerUi();
 
         virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
 
@@ -87,6 +118,23 @@ namespace dustbin {
         virtual void draw() override;
 
         virtual std::string serialize();
+
+        /**
+        * Set the mode of the controller UI
+        * @param a_eMode the new mode
+        */
+        void setMode(enMode a_eMode);
+
+        /**
+        * Set the control type of the UI
+        * @param a_eCtrl the new control type
+        */
+        void setControlType(enControl a_eCtrl);
+
+        /**
+        * Start the controller configuration wizard
+        */
+        void startWizard();
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
