@@ -622,6 +622,7 @@ namespace dustbin {
             if (l_pBack != nullptr)
               l_pBack->setVisible(false);
           }
+#ifdef _ANDROID
           else if (a_eStep == enMenuStep::Controls) {
             gui::CSelector *l_pType = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
@@ -638,6 +639,7 @@ namespace dustbin {
               l_pType->addItem(L"Gyroscope");
             }
           }
+#endif
           else if (a_eStep == enMenuStep::Texture) {
             // In the texture dialog we hide the "next" button ...
             irr::gui::IGUIElement *l_pNext = findElementByName("next", m_pGui->getRootGUIElement());

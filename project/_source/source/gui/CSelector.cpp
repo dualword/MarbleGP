@@ -25,7 +25,7 @@ namespace dustbin {
       m_cClickColor        (irr::video::SColor(0xff, 0xec, 0xf1, 0x63)),
       m_cDisabledColor     (irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0)),
       m_pFont              (CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont()),
-      m_iSelected          (-1)
+      m_iSelected          (0)
     {
     }
 

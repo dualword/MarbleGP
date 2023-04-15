@@ -231,7 +231,30 @@ namespace dustbin {
         // Only listen to keyboard events if the mode is set to keyboard
         if (m_eCtrl == enControl::Keyboard) {
           if (m_eMode == enMode::Wizard) {
+            if (!a_cEvent.KeyInput.PressedDown) {
+              m_pController->getInputs()[m_iWizard].m_eType = controller::CControllerBase::enInputType::Key;
+              m_pController->getInputs()[m_iWizard].m_eKey  = a_cEvent.KeyInput.Key;
 
+              m_bError = false;
+
+              for (int i = 0; i < m_iWizard; i++) {
+                if (m_pController->getInputs()[i].equals(&m_pController->getInputs()[m_iWizard])) {
+                  m_iErrorCnt  = 0;
+                  m_iErrorCtrl = i;
+                  m_iErrorTime = m_pTimer->getRealTime();
+                  m_bError     = true;
+                  m_bSet       = true;
+                  break;
+                }
+              }
+
+              if (!m_bError) {
+                m_iWizard++;
+
+                if (m_iWizard >= m_pController->getInputs().size())
+                  setMode(enMode::Display);
+              }
+            }
           }
         }
       }
