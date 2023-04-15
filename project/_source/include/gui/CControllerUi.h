@@ -82,6 +82,11 @@ namespace dustbin {
         int                          m_iWizard;     /**< The item index of the control item the wizard is currently editing */
         bool                         m_bSet;        /**< Was a value set? */
         irr::u8                      m_iJoystick;   /**< The joystick index to listen for (for the wizard) */
+        int                          m_iErrorCnt;   /**< The error counter (conflicting inputs will flash four times) */
+        int                          m_iErrorTime;  /**< The last time an error has flased */
+        bool                         m_bError;      /**< Is there an error, i.e. conflicting inputs */
+        int                          m_iErrorCtrl;  /**< Index of the conflicting control if an error was found */
+        irr::ITimer                 *m_pTimer;      /**< The Irrlicht timer */
 
         std::vector<SGuiElement> m_vGui;
 

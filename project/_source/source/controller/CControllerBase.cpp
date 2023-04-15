@@ -129,6 +129,34 @@ namespace dustbin {
       return l_sRet;
     }
 
+    /**
+    * Compare a control input to another
+    * @return true if the control data matches, false otherwise
+    */
+    bool CControllerBase::SCtrlInput::equals(SCtrlInput* a_pOther) {
+      if (m_eType != a_pOther->m_eType)
+        return false;
+
+      switch (m_eType) {
+        case enInputType::Key:
+          return a_pOther->m_eKey == m_eKey;
+          break;
+
+        case enInputType::JoyAxis:
+          return a_pOther->m_iAxis == m_iAxis && a_pOther->m_iDirection == m_iDirection;
+          break;
+
+        case enInputType::JoyButton:
+          return a_pOther->m_iButton == m_iButton;
+          break;
+
+        case enInputType::JoyPov:
+          return a_pOther->m_iPov == m_iPov;
+      }
+
+      return true;
+    }
+
     void CControllerBase::SCtrlInput::copyFrom(const SCtrlInput& a_cOther) {
       m_sName      = a_cOther.m_sName;
       m_eType      = a_cOther.m_eType;

@@ -82,7 +82,11 @@ namespace dustbin {
       m_eMode      (enMode::Display),
       m_eCtrl      (enControl::Keyboard),
       m_bSet       (true),
-      m_iJoystick  (255)
+      m_iJoystick  (255),
+      m_iErrorCnt  (0),
+      m_iErrorTime (0),
+      m_bError     (false),
+      m_pTimer     (CGlobal::getInstance()->getIrrlichtDevice()->getTimer())
     {
     }
 
@@ -185,13 +189,28 @@ namespace dustbin {
                     (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyButton && !a_cEvent.JoystickEvent.IsButtonPressed(m_pController->getInputs()[m_iWizard].m_iButton)) ||
                     (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyPov    && a_cEvent.JoystickEvent.POV == 0xFFFF)
                   ) {
-                    m_bSet = true;
-                    m_iWizard++;
+                    m_bError = false;
 
-                    m_mJoysticks[m_iJoystick].update(a_cEvent);
+                    for (int i = 0; i < m_iWizard; i++) {
+                      if (m_pController->getInputs()[i].equals(&m_pController->getInputs()[m_iWizard])) {
+                        m_iErrorCnt  = 0;
+                        m_iErrorCtrl = i;
+                        m_iErrorTime = m_pTimer->getRealTime();
+                        m_bError     = true;
+                        m_bSet       = true;
+                        break;
+                      }
+                    }
 
-                    if (m_iWizard >= m_pController->getInputs().size())
-                      setMode(enMode::Display);
+                    if (!m_bError) {
+                      m_bSet = true;
+                      m_iWizard++;
+
+                      m_mJoysticks[m_iJoystick].update(a_cEvent);
+
+                      if (m_iWizard >= m_pController->getInputs().size())
+                        setMode(enMode::Display);
+                    }
                   }
                 }
               }
@@ -247,10 +266,22 @@ namespace dustbin {
 
         std::vector<SGuiElement>::iterator l_itGui = m_vGui.begin();
 
+        bool l_bShowError = false;
+
+        if (m_bError) {
+          int l_iTime = (int)m_pTimer->getRealTime();
+          int l_iDiff = l_iTime - m_iErrorTime;
+
+          if (l_iDiff > 500) {
+            m_iErrorCnt++;
+            m_iErrorTime = l_iTime;
+          }
+          l_bShowError = m_iErrorCnt % 2 == 0;
+        }
+
         int l_iIndex = 0;
 
         for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end() && l_itGui != m_vGui.end(); l_itCtrl++) {
-
           irr::core::dimension2du l_cSize = irr::core::dimension2du(
             m_pFont->getDimension((*l_itCtrl).getControlString().c_str()).Width,
             (*l_itGui).m_cDimHead.Height
@@ -281,6 +312,10 @@ namespace dustbin {
               else if (l_iIndex < m_iWizard) {
                 l_cBack = irr::video::SColor(128, 192, 192, 192);
                 l_cText = irr::video::SColor(255,   0,   0,   0);
+              }
+
+              if (l_bShowError && (l_iIndex == m_iErrorCtrl || l_iIndex == m_iWizard)) {
+                l_cBack = irr::video::SColor(128, 192, 0, 0);
               }
 
               m_pDrv->draw2DRectangle(l_cBack, l_cRect, &AbsoluteClippingRect);

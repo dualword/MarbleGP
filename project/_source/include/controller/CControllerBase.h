@@ -68,6 +68,12 @@ namespace dustbin {
           std::string toString() const;
 
           std::wstring getControlString() const;
+
+          /**
+          * Compare a control input to another
+          * @return true if the control data matches, false otherwise
+          */
+          bool equals(SCtrlInput *a_pOther);
         };
 
       protected:
