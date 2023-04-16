@@ -901,6 +901,14 @@ namespace dustbin {
                   if (m_pCtrl != nullptr)
                     m_pCtrl->setMode(gui::CControllerUi::enMode::Wizard);
                 }
+                else if (l_sButton == "testGameCtrl") {
+                  if (m_pCtrl != nullptr) {
+                    if (m_pCtrl->getMode() == gui::CControllerUi::enMode::Display)
+                      m_pCtrl->startTest();
+                    else if (m_pCtrl->getMode() == gui::CControllerUi::enMode::Test)
+                      m_pCtrl->setMode(gui::CControllerUi::enMode::Display);
+                  }
+                }
                 else {
                   if (m_eStep == enMenuStep::Texture) {
                     if (l_sButton == "btn_color_ok") {
@@ -1094,7 +1102,7 @@ namespace dustbin {
             }
             else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
               if (m_pCtrl != nullptr)
-                m_pCtrl->OnJoystickEvent(a_cEvent);
+                l_bRet = m_pCtrl->OnJoystickEvent(a_cEvent);
             }
           }
 

@@ -453,17 +453,21 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: -30, -5, -28, -3">
+      <element type="Selector" rect="center: -24, -5, -3, -3">
         <attributes>
-          <attribute key="Name" value="misc_use" />
+          <attribute key="Name" value="misc_menuctrl" />
           <attribute key="Id" value="23026" />
         </attributes>
+        
+        <custom>
+          <attribute key="options" value="Off;Keyboard;Gamepad" />
+        </custom>
       </element>
       
-      <element type="staticText" rect="center: -27, -5, 0, -3" font="small">
+      <element type="staticText" rect="center: -34, -5, -25, -3" font="small">
         <attributes>
           <attribute key="Name" value="label_misc_use" />
-          <attribute key="Caption" value="Use game controller to navigate menues." />
+          <attribute key="Caption" value="Menu Navigation" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
@@ -483,7 +487,7 @@
         </attributes>
       </element>
       
-      <element type="ControllerUiMenu" rect="center: -33, -2, -5, 20" font="small">
+      <element type="ControllerUiMenu" rect="center: -33, -2, -3, 20" font="small">
         <attributes>
           <attribute key="Name" value="controller_ui" />
           <attribute key="UseOverrideColor" value="true" />
@@ -491,6 +495,21 @@
           <attribute key="headline" value="Menu Controller Setup" />
         </attributes>
       </element>
+      
+      <element type="MenuButton" rect="center: -11, 16, -8, 19" tooltip="Edit Controls">
+        <attributes>
+          <attribute key="Name" value="editMenuCtrl" />
+          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -7, 16, -4, 19" tooltip="Test Controls">
+        <attributes>
+          <attribute key="Name" value="testMenuCtrl" />
+          <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />
+        </attributes>
+      </element>
+      
     </children>
   </element>
   

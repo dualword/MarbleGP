@@ -139,6 +139,12 @@ namespace dustbin {
         void setMode(enMode a_eMode);
 
         /**
+        * Get the current mode
+        * @return the current mode
+        */
+        enMode getMode();
+
+        /**
         * Set the control type of the UI
         * @param a_eCtrl the new control type
         */
@@ -154,6 +160,11 @@ namespace dustbin {
         * Start the controller configuration wizard
         */
         void startWizard();
+
+        /**
+        * Start the test of the controller configuration
+        */
+        void startTest();
 
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;

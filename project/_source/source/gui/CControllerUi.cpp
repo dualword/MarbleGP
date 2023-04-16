@@ -219,6 +219,24 @@ namespace dustbin {
 
           l_bRet = true;
         }
+        else if (m_eMode == enMode::Test) {
+          if (m_mJoysticks.find(a_cEvent.JoystickEvent.Joystick) == m_mJoysticks.end()) {
+            m_mJoysticks[a_cEvent.JoystickEvent.Joystick] = SJoystickState();
+            m_mJoysticks[a_cEvent.JoystickEvent.Joystick].update(a_cEvent);
+          }
+
+          if (m_iJoystick == 255 && m_mJoysticks.find(a_cEvent.JoystickEvent.Joystick) != m_mJoysticks.end()) {
+            if (m_mJoysticks[a_cEvent.JoystickEvent.Joystick].hasChanged(a_cEvent)) {
+              m_iJoystick = a_cEvent.JoystickEvent.Joystick;
+              m_pController->setJoystickIndices(m_iJoystick);
+            }
+          }
+
+          if (m_iJoystick != 255) {
+            m_pController->update(a_cEvent);
+            l_bRet = true;
+          }
+        }
       }
 
       return l_bRet;
@@ -258,6 +276,12 @@ namespace dustbin {
               }
             }
           }
+          else if (m_eMode == enMode::Test) {
+            if (m_pController != nullptr) {
+              l_bRet = true;
+              m_pController->update(a_cEvent);
+            }
+          }
         }
       }
 
@@ -276,6 +300,11 @@ namespace dustbin {
       irr::gui::IGUIElement::draw();
 
       m_pDrv->draw2DRectangleOutline(AbsoluteClippingRect, irr::video::SColor(0xFF, 0, 0, 0));
+
+      std::wstring l_sMode = m_eMode == enMode::Display ? L"Display" : m_eMode == enMode::Wizard ? L"Configure" : L"Test";
+      irr::core::dimension2du l_cDimMode = m_pFont->getDimension(l_sMode.c_str());
+      irr::core::vector2di    l_cPosMode = irr::core::vector2di(AbsoluteClippingRect.LowerRightCorner.X - l_cDimMode.Width -  l_cDimMode.Height / 2, AbsoluteClippingRect.UpperLeftCorner.Y + l_cDimMode.Height / 2);
+      m_pFont->draw(l_sMode.c_str(), irr::core::recti(l_cPosMode, l_cDimMode), irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
 
       if (m_vGui.size() > 0 && m_eCtrl != enControl::Off) {
         irr::core::dimension2du l_cCtrlSize;
@@ -326,7 +355,7 @@ namespace dustbin {
               m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
               break;
 
-            case enMode::Wizard:
+            case enMode::Wizard: {
               irr::video::SColor l_cBack = irr::video::SColor( 96, 224, 224, 224);
               irr::video::SColor l_cText = irr::video::SColor(128,   0,   0,   0);
 
@@ -349,6 +378,30 @@ namespace dustbin {
               m_pFont->draw(L":"                                              , l_cColn, l_cText, false, true, &AbsoluteClippingRect);
               m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, l_cText, false, true, &AbsoluteClippingRect);
               break;
+            }
+
+            case enMode::Test: {
+              irr::f32 l_fValue = (*l_itCtrl).m_fValue;
+              irr::s32 l_iWidth = l_cRect.getWidth();
+
+              if (l_fValue > 1.0f)
+                l_fValue = 1.0f;
+              else if (l_fValue < 0.0f)
+                l_fValue = 0.0f;
+
+              irr::s32 l_iSplit = (irr::s32)((irr::f32)l_iWidth * l_fValue);
+
+              irr::core::recti l_cRect1 = irr::core::recti(l_cRect.UpperLeftCorner, irr::core::dimension2du(l_iSplit, l_cRect.getHeight()));
+              irr::core::recti l_cRect2 = irr::core::recti(irr::core::vector2di(l_cRect1.LowerRightCorner.X, l_cRect1.UpperLeftCorner.Y), l_cRect.LowerRightCorner);
+
+              m_pDrv->draw2DRectangle(irr::video::SColor(192, 0, 0, 255), l_cRect1, &AbsoluteClippingRect);
+              m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 192, 192), l_cRect2, &AbsoluteClippingRect);
+
+              m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+              m_pFont->draw(L":"                                              , l_cColn, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+              m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+              break;
+            }
           }
 
           l_itGui++;
@@ -427,6 +480,14 @@ namespace dustbin {
     }
 
     /**
+    * Get the current mode
+    * @return the current mode
+    */
+    CControllerUi::enMode CControllerUi::getMode() {
+      return m_eMode;
+    }
+
+    /**
     * Set the control type of the UI
     * @param a_eCtrl the new control type
     */
@@ -453,6 +514,14 @@ namespace dustbin {
       m_eMode     = enMode::Wizard;
       m_iWizard   = 0;
       m_bSet      = true;
+      m_iJoystick = 255;
+    }
+
+    /**
+    * Start the test of the controller configuration
+    */
+    void CControllerUi::startTest() {
+      m_eMode     = enMode::Test;
       m_iJoystick = 255;
     }
 

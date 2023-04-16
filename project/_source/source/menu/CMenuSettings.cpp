@@ -331,6 +331,17 @@ namespace dustbin {
                 if (m_pController != nullptr)
                   m_pController->startWizard();
               }
+              else if (l_sSender == "testMenuCtrl") {
+                if (m_pController != nullptr) {
+
+                  if (m_pController->getMode() == gui::CControllerUi::enMode::Display) {
+                    m_pController->startTest();
+                  }
+                  else if (m_pController->getMode() == gui::CControllerUi::enMode::Test) {
+                    m_pController->setMode(gui::CControllerUi::enMode::Display);
+                  }
+                }
+              }
               else printf("Button clicked (%s, %i, CMenuMain).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {

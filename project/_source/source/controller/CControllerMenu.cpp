@@ -425,7 +425,7 @@ namespace dustbin {
       if (a_cEvent.EventType != irr::EET_GUI_EVENT && !m_bEvent) {
         m_bEvent = true;
 
-        CControllerBase::update(a_cEvent);
+        l_bRet = CControllerBase::update(a_cEvent);
 
         for (int i = 0; i < 4; i++) {
           if (m_vControls[i].m_fValue > 0.5f) {
