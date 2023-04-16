@@ -448,6 +448,13 @@ namespace dustbin {
       return true;
     }
 
+    /**
+    * Clear the controls, necessary for the configuration GUI
+    */
+    void CControllerBase::clearControlItems() {
+      m_vControls.clear();
+    }
+
     std::vector<CControllerBase::SCtrlInput>& CControllerBase::getInputs() {
       return m_vControls;
     }

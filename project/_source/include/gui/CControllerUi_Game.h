@@ -14,6 +14,16 @@ namespace dustbin {
     * This class extends the controller UI for configuration of the game controls
     */
     class CControllerUi_Game : public CControllerUi {
+      protected:
+
+        /**
+        * The child classes nees to implement this method for
+        * creating default controls if the controller type
+        * is changed
+        * @param a_eCtrl the new controller type
+        */
+        virtual void resetToDefaultForMode(enControl a_eCtrl) override;
+
       public:
         CControllerUi_Game(irr::gui::IGUIElement* a_pParent);
         virtual ~CControllerUi_Game();

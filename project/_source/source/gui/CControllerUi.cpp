@@ -231,6 +231,8 @@ namespace dustbin {
         // Only listen to keyboard events if the mode is set to keyboard
         if (m_eCtrl == enControl::Keyboard) {
           if (m_eMode == enMode::Wizard) {
+            l_bRet = true;
+
             if (!a_cEvent.KeyInput.PressedDown) {
               m_pController->getInputs()[m_iWizard].m_eType = controller::CControllerBase::enInputType::Key;
               m_pController->getInputs()[m_iWizard].m_eKey  = a_cEvent.KeyInput.Key;
@@ -429,7 +431,11 @@ namespace dustbin {
     * @param a_eCtrl the new control type
     */
     void CControllerUi::setControlType(enControl a_eCtrl) {
-      m_eCtrl = a_eCtrl;
+      if (a_eCtrl != m_eCtrl) {
+        m_eCtrl = a_eCtrl;
+
+        resetToDefaultForMode(a_eCtrl);
+      }
     }
 
     /**

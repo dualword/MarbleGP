@@ -94,6 +94,14 @@ namespace dustbin {
 
         void calculateGui();
 
+        /**
+        * The child classes nees to implement this method for
+        * creating default controls if the controller type
+        * is changed
+        * @param a_eCtrl the new controller type
+        */
+        virtual void resetToDefaultForMode(enControl a_eCtrl) = 0;
+
       public:
         CControllerUi(irr::gui::IGUIElement *a_pParent, irr::gui::EGUI_ELEMENT_TYPE a_eType);
         virtual ~CControllerUi();

@@ -155,6 +155,11 @@ namespace dustbin {
         * @return true if the number of items and the names match, false otherwise
         */
         bool compareTo(CControllerBase *a_pController);
+
+        /**
+        * Clear the controls, necessary for the configuration GUI
+        */
+        void clearControlItems();
      };
 
   } // namespace controller 

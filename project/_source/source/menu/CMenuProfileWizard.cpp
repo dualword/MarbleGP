@@ -461,6 +461,22 @@ namespace dustbin {
 
                 if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
                   m_pCtrl->setController(m_cPlayer.m_sControls);
+
+                  gui::CSelector *l_pType  = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+                  if (l_pType != nullptr) {
+                    controller::CControllerGame l_cCtrl;
+                    l_cCtrl.deserialize(m_cPlayer.m_sControls);
+
+                    if (l_cCtrl.getInputs().size() > 0) {
+                      if (l_cCtrl.getInputs()[0].m_eType == controller::CControllerBase::enInputType::Key) {
+                        l_pType->setSelectedItem(L"Keyboard");
+                      }
+                      else {
+                        l_pType->setSelectedItem(L"Gamepad");
+                      }
+                    }
+                  }
                 }
                 else {
                   gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
@@ -881,6 +897,10 @@ namespace dustbin {
                     case enMenuStep::Texture     : changeStep(enMenuStep::Controls    );  break;
                   }
                 }
+                else if (l_sButton == "editGameCtrl") {
+                  if (m_pCtrl != nullptr)
+                    m_pCtrl->setMode(gui::CControllerUi::enMode::Wizard);
+                }
                 else {
                   if (m_eStep == enMenuStep::Texture) {
                     if (l_sButton == "btn_color_ok") {
@@ -992,35 +1012,49 @@ namespace dustbin {
                   gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
                   irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
 
-                  if (l_pType != nullptr && l_pImage != nullptr) {
-                    unsigned     l_iSelected = l_pType->getSelected();
-                    std::wstring l_sSelected = l_iSelected >= 0 && l_iSelected < l_pType->getItemCount() ? l_pType->getItem(l_iSelected) : L"";
+                  if (l_pType != nullptr) {
+                    if (l_pImage != nullptr) {
+                      unsigned     l_iSelected = l_pType->getSelected();
+                      std::wstring l_sSelected = l_iSelected >= 0 && l_iSelected < l_pType->getItemCount() ? l_pType->getItem(l_iSelected) : L"";
 
-                    l_pImage->setVisible(false);
+                      l_pImage->setVisible(false);
 
-                    std::map<std::wstring, std::string> l_mItemMap = {
-                      { L"Touch Steer Right", "data/images/ctrl_config_touch_right.png" },
-                      { L"Touch Steer Left" , "data/images/ctrl_config_touch_left.png"  },
-                      { L"Touch Steer Only" , "data/images/ctrl_config_touch_steer.png" },
-                      { L"Gyroscope"        , "data/images/ctrl_config_gyro.png"        }
-                    };
+                      std::map<std::wstring, std::string> l_mItemMap = {
+                        { L"Touch Steer Right", "data/images/ctrl_config_touch_right.png" },
+                        { L"Touch Steer Left" , "data/images/ctrl_config_touch_left.png"  },
+                        { L"Touch Steer Only" , "data/images/ctrl_config_touch_steer.png" },
+                        { L"Gyroscope"        , "data/images/ctrl_config_gyro.png"        }
+                      };
                     
-                    bool l_bFound = false;
+                      bool l_bFound = false;
 
-                    for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
-                      if (l_itCtrl->first == l_sSelected) {
-                        l_bFound = true;
-                        l_pImage->setImage(m_pDrv->getTexture(l_itCtrl->second.c_str()));
-                        l_pImage->setVisible(true);
+                      for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
+                        if (l_itCtrl->first == l_sSelected) {
+                          l_bFound = true;
+                          l_pImage->setImage(m_pDrv->getTexture(l_itCtrl->second.c_str()));
+                          l_pImage->setVisible(true);
+                        }
+                      }
+
+                      if (m_pCtrl != nullptr) {
+                        m_pCtrl->setVisible(!l_bFound);
+
+                        if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController;").size()) != "DustbinController;") {
+                          m_cPlayer.m_sControls = data::c_sDefaultControls;
+                          m_pCtrl->deserialize(m_cPlayer.m_sControls);
+                        }
                       }
                     }
+                    else {
+                      // The control image is only available on Android, and the keyboard controls are only available on Windows
+                      // so we assume we are now on Windows
+                      std::string l_sType = helpers::ws2s(l_pType->getSelectedItem());
 
-                    if (m_pCtrl != nullptr) {
-                      m_pCtrl->setVisible(!l_bFound);
-
-                      if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController;").size()) != "DustbinController;") {
-                        m_cPlayer.m_sControls = data::c_sDefaultControls;
-                        m_pCtrl->deserialize(m_cPlayer.m_sControls);
+                      if (l_sType == "Keyboard") {
+                        m_pCtrl->setControlType(gui::CControllerUi::enControl::Keyboard);
+                      }
+                      else if (l_sType == "Gamepad") {
+                        m_pCtrl->setControlType(gui::CControllerUi::enControl::Joystick);
                       }
                     }
                   }
@@ -1058,6 +1092,10 @@ namespace dustbin {
                 }
               }
             }
+            else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+              if (m_pCtrl != nullptr)
+                m_pCtrl->OnJoystickEvent(a_cEvent);
+            }
           }
 
           return l_bRet;
@@ -1066,7 +1104,7 @@ namespace dustbin {
         /**
         * This method is called every frame after "scenemanager::drawall" is called
         */
-        virtual bool run() override {
+        bool run() override {
           if (m_eStep == enMenuStep::Texture && m_pMyRtt != nullptr && m_pMySmgr != nullptr) {
             m_pDrv->setRenderTarget(m_pMyRtt, true, true);
             m_pMySmgr->drawAll();
