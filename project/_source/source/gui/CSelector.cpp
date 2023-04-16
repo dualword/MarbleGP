@@ -197,7 +197,10 @@ namespace dustbin {
       }
       else if (a_cEvent.EventType == irr::EET_GUI_EVENT && a_cEvent.GUIEvent.Caller == this) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
-          m_bInside = false;
+          m_bInside   = false;
+          m_bSelected = false;
+          m_bLeftBtn  = false;
+          m_bHoverL   = false;
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
           m_bInside = true;
