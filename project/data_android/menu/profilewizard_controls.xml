@@ -28,7 +28,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 17 , 7, 43, 9" font="huge" tooltip="Let the AI help you">
+      <element type="Selector" rect="relative: 17 , 7, 43, 9" font="huge" tooltip="Select the controller you want to use">
         <attributes>
           <attribute key="Name" value="controller_type" />
           <attribute key="Selected" value="0" />
@@ -38,7 +38,7 @@
         </custom>
       </element>
       
-      <element type="image" rect="relative: 7, 10, 43, 29" font="huge" tooltip="Let the AI help you">
+      <element type="image" rect="relative: 7, 10, 43, 29" font="huge" tooltip="Selected Controller">
         <attributes>
           <attribute key="Name" value="controller_img" />
           <attribute key="Visible" value="false" />
@@ -52,6 +52,20 @@
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="128, 232, 232, 232" />
           <attribute key="headline" value="Game Controller Setup" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 38, 24, 42, 28" tooltip="Edit Controls">
+        <attributes>
+          <attribute key="Name" value="editGameCtrl" />
+          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
+        </attributes>
+      </element>
+
+      <element type="MenuButton" rect="relative: 38, 19, 42, 23" tooltip="Test Controls">
+        <attributes>
+          <attribute key="Name" value="testGameCtrl" />
+          <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />
         </attributes>
       </element>
     </children>

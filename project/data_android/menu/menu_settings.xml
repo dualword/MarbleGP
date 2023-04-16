@@ -216,14 +216,18 @@
     </attributes>
     
     <children>
-      <element type="DustbinCheckbox" rect="center: -23, -7, -21, -5">
+      <element type="Selector" rect="center: -3, -7, 12, -5">
         <attributes>
-          <attribute key="Name" value="misc_use" />
+          <attribute key="Name" value="misc_menuctrl" />
           <attribute key="Id" value="23026" />
         </attributes>
+        
+        <custom>
+          <attribute key="options" value="Off;Gamepad" />
+        </custom>
       </element>
       
-      <element type="staticText" rect="center: -20, -7, 24, -5">
+      <element type="staticText" rect="center: -24, -7, -4, -5">
         <attributes>
           <attribute key="Name" value="label_misc_use" />
           <attribute key="Caption" value="Use game controller to navigate menues." />
@@ -237,6 +241,20 @@
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="128, 232, 232, 232" />
           <attribute key="headline" value="Menu Controller Setup" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: 18, 7, 22, 11" tooltip="Edit Controls">
+        <attributes>
+          <attribute key="Name" value="editMenuCtrl" />
+          <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: 18, 2, 22, 19" tooltip="Test Controls">
+        <attributes>
+          <attribute key="Name" value="testMenuCtrl" />
+          <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />
         </attributes>
       </element>
     </children>

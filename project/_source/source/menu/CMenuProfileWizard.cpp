@@ -638,13 +638,13 @@ namespace dustbin {
             if (l_pBack != nullptr)
               l_pBack->setVisible(false);
           }
-#ifdef _ANDROID
           else if (a_eStep == enMenuStep::Controls) {
-            gui::CSelector *l_pType = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+            gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
 
             // If we find the selector for the controller type
             // we assume that we are on Android
-            if (l_pType != nullptr) {
+            if (l_pType != nullptr && l_pImage != nullptr) {
               l_pType->addItem(L"Gamepad"); 
               l_pType->addItem(L"Touch Steer Right"); 
               l_pType->addItem(L"Touch Steer Left"); 
@@ -655,7 +655,6 @@ namespace dustbin {
               l_pType->addItem(L"Gyroscope");
             }
           }
-#endif
           else if (a_eStep == enMenuStep::Texture) {
             // In the texture dialog we hide the "next" button ...
             irr::gui::IGUIElement *l_pNext = findElementByName("next", m_pGui->getRootGUIElement());
@@ -1017,8 +1016,10 @@ namespace dustbin {
                   updateGeneratedTexture();
                 }
                 else if (l_sScrollbar == "controller_type") {
-                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                          , m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pEdit  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("editGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pTest  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("testGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
                   if (l_pType != nullptr) {
                     if (l_pImage != nullptr) {
@@ -1051,6 +1052,9 @@ namespace dustbin {
                           m_cPlayer.m_sControls = data::c_sDefaultControls;
                           m_pCtrl->deserialize(m_cPlayer.m_sControls);
                         }
+
+                        if (l_pEdit != nullptr) l_pEdit->setVisible(!l_bFound);
+                        if (l_pTest != nullptr) l_pTest->setVisible(!l_bFound);
                       }
                     }
                     else {

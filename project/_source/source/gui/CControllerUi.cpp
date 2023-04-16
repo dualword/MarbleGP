@@ -297,115 +297,117 @@ namespace dustbin {
     }
 
     void CControllerUi::draw() {
-      irr::gui::IGUIElement::draw();
+      if (IsVisible) {
+        irr::gui::IGUIElement::draw();
 
-      m_pDrv->draw2DRectangleOutline(AbsoluteClippingRect, irr::video::SColor(0xFF, 0, 0, 0));
+        m_pDrv->draw2DRectangleOutline(AbsoluteClippingRect, irr::video::SColor(0xFF, 0, 0, 0));
 
-      std::wstring l_sMode = m_eMode == enMode::Display ? L"Display" : m_eMode == enMode::Wizard ? L"Configure" : L"Test";
-      irr::core::dimension2du l_cDimMode = m_pFont->getDimension(l_sMode.c_str());
-      irr::core::vector2di    l_cPosMode = irr::core::vector2di(AbsoluteClippingRect.LowerRightCorner.X - l_cDimMode.Width -  l_cDimMode.Height / 2, AbsoluteClippingRect.UpperLeftCorner.Y + l_cDimMode.Height / 2);
-      m_pFont->draw(l_sMode.c_str(), irr::core::recti(l_cPosMode, l_cDimMode), irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+        std::wstring l_sMode = m_eMode == enMode::Display ? L"Display" : m_eMode == enMode::Wizard ? L"Configure" : L"Test";
+        irr::core::dimension2du l_cDimMode = m_pFont->getDimension(l_sMode.c_str());
+        irr::core::vector2di    l_cPosMode = irr::core::vector2di(AbsoluteClippingRect.LowerRightCorner.X - l_cDimMode.Width -  l_cDimMode.Height / 2, AbsoluteClippingRect.UpperLeftCorner.Y + l_cDimMode.Height / 2);
+        m_pFont->draw(l_sMode.c_str(), irr::core::recti(l_cPosMode, l_cDimMode), irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
 
-      if (m_vGui.size() > 0 && m_eCtrl != enControl::Off) {
-        irr::core::dimension2du l_cCtrlSize;
+        if (m_vGui.size() > 0 && m_eCtrl != enControl::Off) {
+          irr::core::dimension2du l_cCtrlSize;
 
-        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end(); l_itCtrl++) {
-          irr::core::dimension2du d = m_pFont->getDimension((*l_itCtrl).getControlString().c_str());
+          for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end(); l_itCtrl++) {
+            irr::core::dimension2du d = m_pFont->getDimension((*l_itCtrl).getControlString().c_str());
 
-          if (l_cCtrlSize.Width  < d.Width ) l_cCtrlSize.Width  = d.Width;
-          if (l_cCtrlSize.Height < d.Height) l_cCtrlSize.Height = d.Height;
-        }
-
-        l_cCtrlSize.Width += (*m_vGui.begin()).m_cPosColn.X - (*m_vGui.begin()).m_cPosBack.X + (*m_vGui.begin()).m_cDimHead.Height;
-
-        std::vector<SGuiElement>::iterator l_itGui = m_vGui.begin();
-
-        bool l_bShowError = false;
-
-        if (m_bError) {
-          int l_iTime = (int)m_pTimer->getRealTime();
-          int l_iDiff = l_iTime - m_iErrorTime;
-
-          if (l_iDiff > 500) {
-            m_iErrorCnt++;
-            m_iErrorTime = l_iTime;
-          }
-          l_bShowError = m_iErrorCnt % 2 == 0;
-        }
-
-        int l_iIndex = 0;
-
-        for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end() && l_itGui != m_vGui.end(); l_itCtrl++) {
-          irr::core::dimension2du l_cSize = irr::core::dimension2du(
-            m_pFont->getDimension((*l_itCtrl).getControlString().c_str()).Width,
-            (*l_itGui).m_cDimHead.Height
-          );
-
-          irr::core::recti l_cHead = irr::core::recti((*l_itGui).m_cPosHead, (*l_itGui).m_cDimHead);
-          irr::core::recti l_cColn = irr::core::recti((*l_itGui).m_cPosColn, (*l_itGui).m_cDimColn);
-          irr::core::recti l_cCtrl = irr::core::recti((*l_itGui).m_cPosCtrl, l_cSize);
-          irr::core::recti l_cRect = irr::core::recti((*l_itGui).m_cPosBack, l_cCtrlSize);
-
-          switch (m_eMode) {
-            case enMode::Display:
-              m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 192, 192), l_cRect, &AbsoluteClippingRect);
-
-              m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
-              m_pFont->draw(L":"                                              , l_cColn, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
-              m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
-              break;
-
-            case enMode::Wizard: {
-              irr::video::SColor l_cBack = irr::video::SColor( 96, 224, 224, 224);
-              irr::video::SColor l_cText = irr::video::SColor(128,   0,   0,   0);
-
-              if (l_iIndex == m_iWizard) {
-                l_cBack = irr::video::SColor(128, 192, 192, 255);
-                l_cText = irr::video::SColor(255,   0,   0,   0);
-              }
-              else if (l_iIndex < m_iWizard) {
-                l_cBack = irr::video::SColor(128, 192, 192, 192);
-                l_cText = irr::video::SColor(255,   0,   0,   0);
-              }
-
-              if (l_bShowError && (l_iIndex == m_iErrorCtrl || l_iIndex == m_iWizard)) {
-                l_cBack = irr::video::SColor(128, 192, 0, 0);
-              }
-
-              m_pDrv->draw2DRectangle(l_cBack, l_cRect, &AbsoluteClippingRect);
-
-              m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, l_cText, false, true, &AbsoluteClippingRect);
-              m_pFont->draw(L":"                                              , l_cColn, l_cText, false, true, &AbsoluteClippingRect);
-              m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, l_cText, false, true, &AbsoluteClippingRect);
-              break;
-            }
-
-            case enMode::Test: {
-              irr::f32 l_fValue = (*l_itCtrl).m_fValue;
-              irr::s32 l_iWidth = l_cRect.getWidth();
-
-              if (l_fValue > 1.0f)
-                l_fValue = 1.0f;
-              else if (l_fValue < 0.0f)
-                l_fValue = 0.0f;
-
-              irr::s32 l_iSplit = (irr::s32)((irr::f32)l_iWidth * l_fValue);
-
-              irr::core::recti l_cRect1 = irr::core::recti(l_cRect.UpperLeftCorner, irr::core::dimension2du(l_iSplit, l_cRect.getHeight()));
-              irr::core::recti l_cRect2 = irr::core::recti(irr::core::vector2di(l_cRect1.LowerRightCorner.X, l_cRect1.UpperLeftCorner.Y), l_cRect.LowerRightCorner);
-
-              m_pDrv->draw2DRectangle(irr::video::SColor(192, 0, 0, 255), l_cRect1, &AbsoluteClippingRect);
-              m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 192, 192), l_cRect2, &AbsoluteClippingRect);
-
-              m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
-              m_pFont->draw(L":"                                              , l_cColn, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
-              m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
-              break;
-            }
+            if (l_cCtrlSize.Width  < d.Width ) l_cCtrlSize.Width  = d.Width;
+            if (l_cCtrlSize.Height < d.Height) l_cCtrlSize.Height = d.Height;
           }
 
-          l_itGui++;
-          l_iIndex++;
+          l_cCtrlSize.Width += (*m_vGui.begin()).m_cPosColn.X - (*m_vGui.begin()).m_cPosBack.X + (*m_vGui.begin()).m_cDimHead.Height;
+
+          std::vector<SGuiElement>::iterator l_itGui = m_vGui.begin();
+
+          bool l_bShowError = false;
+
+          if (m_bError) {
+            int l_iTime = (int)m_pTimer->getRealTime();
+            int l_iDiff = l_iTime - m_iErrorTime;
+
+            if (l_iDiff > 500) {
+              m_iErrorCnt++;
+              m_iErrorTime = l_iTime;
+            }
+            l_bShowError = m_iErrorCnt % 2 == 0;
+          }
+
+          int l_iIndex = 0;
+
+          for (std::vector<controller::CControllerBase::SCtrlInput>::iterator l_itCtrl = m_pController->getInputs().begin(); l_itCtrl != m_pController->getInputs().end() && l_itGui != m_vGui.end(); l_itCtrl++) {
+            irr::core::dimension2du l_cSize = irr::core::dimension2du(
+              m_pFont->getDimension((*l_itCtrl).getControlString().c_str()).Width,
+              (*l_itGui).m_cDimHead.Height
+            );
+
+            irr::core::recti l_cHead = irr::core::recti((*l_itGui).m_cPosHead, (*l_itGui).m_cDimHead);
+            irr::core::recti l_cColn = irr::core::recti((*l_itGui).m_cPosColn, (*l_itGui).m_cDimColn);
+            irr::core::recti l_cCtrl = irr::core::recti((*l_itGui).m_cPosCtrl, l_cSize);
+            irr::core::recti l_cRect = irr::core::recti((*l_itGui).m_cPosBack, l_cCtrlSize);
+
+            switch (m_eMode) {
+              case enMode::Display:
+                m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 192, 192), l_cRect, &AbsoluteClippingRect);
+
+                m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+                m_pFont->draw(L":"                                              , l_cColn, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+                m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+                break;
+
+              case enMode::Wizard: {
+                irr::video::SColor l_cBack = irr::video::SColor( 96, 224, 224, 224);
+                irr::video::SColor l_cText = irr::video::SColor(128,   0,   0,   0);
+
+                if (l_iIndex == m_iWizard) {
+                  l_cBack = irr::video::SColor(128, 192, 192, 255);
+                  l_cText = irr::video::SColor(255,   0,   0,   0);
+                }
+                else if (l_iIndex < m_iWizard) {
+                  l_cBack = irr::video::SColor(128, 192, 192, 192);
+                  l_cText = irr::video::SColor(255,   0,   0,   0);
+                }
+
+                if (l_bShowError && (l_iIndex == m_iErrorCtrl || l_iIndex == m_iWizard)) {
+                  l_cBack = irr::video::SColor(128, 192, 0, 0);
+                }
+
+                m_pDrv->draw2DRectangle(l_cBack, l_cRect, &AbsoluteClippingRect);
+
+                m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, l_cText, false, true, &AbsoluteClippingRect);
+                m_pFont->draw(L":"                                              , l_cColn, l_cText, false, true, &AbsoluteClippingRect);
+                m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, l_cText, false, true, &AbsoluteClippingRect);
+                break;
+              }
+
+              case enMode::Test: {
+                irr::f32 l_fValue = (*l_itCtrl).m_fValue;
+                irr::s32 l_iWidth = l_cRect.getWidth();
+
+                if (l_fValue > 1.0f)
+                  l_fValue = 1.0f;
+                else if (l_fValue < 0.0f)
+                  l_fValue = 0.0f;
+
+                irr::s32 l_iSplit = (irr::s32)((irr::f32)l_iWidth * l_fValue);
+
+                irr::core::recti l_cRect1 = irr::core::recti(l_cRect.UpperLeftCorner, irr::core::dimension2du(l_iSplit, l_cRect.getHeight()));
+                irr::core::recti l_cRect2 = irr::core::recti(irr::core::vector2di(l_cRect1.LowerRightCorner.X, l_cRect1.UpperLeftCorner.Y), l_cRect.LowerRightCorner);
+
+                m_pDrv->draw2DRectangle(irr::video::SColor(192, 0, 0, 255), l_cRect1, &AbsoluteClippingRect);
+                m_pDrv->draw2DRectangle(irr::video::SColor(128, 192, 192, 192), l_cRect2, &AbsoluteClippingRect);
+
+                m_pFont->draw(helpers::s2ws((*l_itCtrl).m_sName).c_str(), l_cHead, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+                m_pFont->draw(L":"                                              , l_cColn, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+                m_pFont->draw((*l_itCtrl).getControlString()            .c_str(), l_cCtrl, irr::video::SColor(0xFF, 0, 0, 0), false, true, &AbsoluteClippingRect);
+                break;
+              }
+            }
+
+            l_itGui++;
+            l_iIndex++;
+          }
         }
       }
     }
