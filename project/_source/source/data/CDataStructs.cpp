@@ -138,7 +138,6 @@ namespace dustbin {
       m_bDebugAIPath (false),
       m_bDebugAIDice (false),
 #ifdef _ANDROID
-      m_bUseMenuCtrl (true),
       m_bVirtualKeys (true),
       m_sController("DustbinTouchSteerLeft"),
 #else

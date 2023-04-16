@@ -251,7 +251,7 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="center: 18, 2, 22, 19" tooltip="Test Controls">
+      <element type="MenuButton" rect="center: 18, 2, 22, 6" tooltip="Test Controls">
         <attributes>
           <attribute key="Name" value="testMenuCtrl" />
           <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />

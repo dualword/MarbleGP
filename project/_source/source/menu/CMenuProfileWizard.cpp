@@ -379,6 +379,9 @@ namespace dustbin {
               // Serialize the texture and save it to m_sTexture
               break;
             }
+
+            case enMenuStep::Tutorial:
+              break;
           }
         }
 
@@ -566,6 +569,9 @@ namespace dustbin {
               }
               break;
             }
+
+            case enMenuStep::Tutorial:
+              break;
           }
         }
 
@@ -881,6 +887,8 @@ namespace dustbin {
                     case enMenuStep::Initialize  :
                       // This button is not visible here, so let's ignore it
                       break;
+                    case enMenuStep::Tutorial:
+                      break;
                   }
                 }
                 else if (l_sButton == "back") {
@@ -894,6 +902,7 @@ namespace dustbin {
                     case enMenuStep::AiHelp      : changeStep(enMenuStep::Abbreviation); break;
                     case enMenuStep::Controls    : changeStep(enMenuStep::AiHelp      ); break;
                     case enMenuStep::Texture     : changeStep(enMenuStep::Controls    );  break;
+                    case enMenuStep::Tutorial    : break;
                   }
                 }
                 else if (l_sButton == "editGameCtrl") {

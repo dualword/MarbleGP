@@ -32,7 +32,7 @@ namespace dustbin {
         * Set the controller which is to be configured
         * @param a_sCtrl the controller string the controller is constructed from
         */
-        void setController(const std::string& a_sCtrl);
+        void setController(const std::string& a_sCtrl) override;
 
         virtual void deserialize(const std::string a_sData);
     };

@@ -78,7 +78,7 @@ namespace dustbin {
       a_pSerializer->addS32(c_iDir ); a_pSerializer->addS32   (          m_iDirection);
       a_pSerializer->addS32(c_iPov ); a_pSerializer->addU16   (          m_iPov      );
 
-      printf("serialize: % s\n", toString().c_str());
+      printf("serialize: %s\n", toString().c_str());
     }
 
     std::string CControllerBase::SCtrlInput::toString() const {
