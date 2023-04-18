@@ -5,184 +5,85 @@
 
 namespace dustbin {
   namespace controller {
-    CControllerGame_Touch::CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport) : IControllerGame(a_eType), irr::gui::IGUIElement(
-        (irr::gui::EGUI_ELEMENT_TYPE)g_TouchControlId,
-        CGlobal::getInstance()->getGuiEnvironment(), 
-        CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), 
-        -1, 
-        irr::core::recti(irr::core::position2di(0, 0), CGlobal::getInstance()->getVideoDriver()->getScreenSize())
-      ),
-      m_pDrv         (CGlobal::getInstance()->getVideoDriver())
+    CControllerGame_Touch::CControllerGame_Touch(IControllerGame::enType a_eType,
+                                                 const irr::core::recti &a_cViewport)
+      : IControllerGame(a_eType), irr::gui::IGUIElement(
+      (irr::gui::EGUI_ELEMENT_TYPE) g_TouchControlId,
+      CGlobal::getInstance()->getGuiEnvironment(),
+      CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(),
+      -1,
+      irr::core::recti(irr::core::position2di(0, 0),
+                       CGlobal::getInstance()->getVideoDriver()->getScreenSize())
+    ),
+        m_iTouchThrottle (-1),
+        m_iTouchSteer    (-1),
+        m_iTouchBrake    (-1),
+        m_iTouchRearview (-1),
+        m_iTouchRespawn  (-1),
+        m_iThrottleY1    (0),
+        m_iThrottleY2    (0),
+        m_iThrottleY3    (0),
+        m_iSteerX1       (0),
+        m_iSteerX2       (0),
+        m_iThrottleHeight(0),
+        m_iSteeringWidth (0),
+        m_fThrottle      (0.0f),
+        m_fSteering      (0.0f),
+        m_bBrkThrottle   (false),
+        m_pDrv           (CGlobal::getInstance()->getVideoDriver()),
+        m_pSpeedForward  (nullptr),
+        m_pSpeedBackward (nullptr),
+        m_pSteerLeft     (nullptr),
+        m_pSteerRight    (nullptr)
     {
       m_cViewport = a_cViewport;
 
-      for (int i = 0; i < (int)enControls::Count; i++)
-        m_aControls[i] = nullptr;
+      irr::core::dimension2du l_cImage = irr::core::dimension2du(m_cViewport.getHeight() / 8, m_cViewport.getHeight() / 8);
 
-      irr::core::dimension2du l_cTouchSize = irr::core::dimension2du(
-        a_cViewport.getSize().Width / 16,
-        a_cViewport.getSize().Width / 16
-      );
+      m_pSpeedForward    = m_pDrv->getTexture("data/images/ctrl_accelerate.png");
+      m_pSpeedBackward   = m_pDrv->getTexture("data/images/ctrl_back.png");
+      m_pSteerLeft       = m_pDrv->getTexture("data/images/ctrl_left.png");
+      m_pSteerRight      = m_pDrv->getTexture("data/images/ctrl_right.png");
+      m_pSpeedNeutral[0] = m_pDrv->getTexture("data/images/ctrl_nothrottle.png");
+      m_pSpeedNeutral[1] = m_pDrv->getTexture("data/images/ctrl_nothrottle_on.png");
+      m_pSteerNeutral[0] = m_pDrv->getTexture("data/images/ctrl_none_off.png");
+      m_pSteerNeutral[1] = m_pDrv->getTexture("data/images/ctrl_none.png");
+      m_pBrake       [0] = m_pDrv->getTexture("data/images/ctrl_brake_off.png");
+      m_pBrake       [1] = m_pDrv->getTexture("data/images/ctrl_brake.png");
+      m_pRespawn     [0] = m_pDrv->getTexture("data/images/ctrl_respawn_off.png");
+      m_pRespawn     [1] = m_pDrv->getTexture("data/images/ctrl_respawn.png");
+      m_pRearview    [0] = m_pDrv->getTexture("data/images/ctrl_rearview_off.png");
+      m_pRearview    [1] = m_pDrv->getTexture("data/images/ctrl_rearview.png");
 
-      irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
+      m_cImage = irr::core::recti(irr::core::vector2di(0, 0), m_pSpeedBackward->getOriginalSize());
 
+      m_cSpeedNeutral[0] = irr::core::recti(irr::core::vector2di(                                      0, m_cViewport.getHeight() / 2 - l_cImage.Height / 2), l_cImage);
+      m_cSpeedNeutral[1] = irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - l_cImage.Width, m_cViewport.getHeight() / 2 - l_cImage.Height / 2), l_cImage);
 
-      if (a_eType == IControllerGame::enType::TouchLeft) {
-        createSteeringControls(true);
-        createThrottleControls(false);
-      }
-      else if (a_eType == IControllerGame::enType::TouchRight) {
-        createSteeringControls(false);
-        createThrottleControls(true);
-      }
-      else if (a_eType == IControllerGame::enType::TouchSteer) {
-        int l_iHeightOffset = 4 * l_cTouchSize.Height;
+      m_cBrake[0] = irr::core::recti(irr::core::vector2di(                                      0, m_cViewport.getHeight() - l_cImage.Height), l_cImage);
+      m_cBrake[1] = irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - l_cImage.Width, m_cViewport.getHeight() - l_cImage.Height), l_cImage);
 
-        irr::core::recti l_cScreenRect = irr::core::recti(irr::core::vector2di(0, (l_cScreen.Height - l_cTouchSize.Height) / 2), l_cTouchSize);
-        irr::core::recti l_cTouchRect  = irr::core::recti(irr::core::vector2di(0, l_iHeightOffset), irr::core::dimension2du(l_cScreen.Width / 3, l_cScreen.Height - l_iHeightOffset));
+      m_cSteerNeutral = irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() / 2 - l_cImage.Width / 2, m_cViewport.getHeight() - l_cImage.Height), l_cImage);
+      m_cRearView     = irr::core::recti(irr::core::vector2di(0, 0), l_cImage);
+      m_cRespawn      = irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - l_cImage.Width, 0), l_cImage);
 
-        m_aControls[(int)enControls::Left] = new STouchInput("data/images/ctrl_left_off.png", "data/images/ctrl_left.png", l_cScreenRect, l_cTouchRect, m_pDrv);
+      m_cTouchSteer = irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() / 4, 0), irr::core::dimension2du(m_cViewport.getWidth() / 2, m_cViewport.getHeight()));
 
-        l_cScreenRect = irr::core::recti(irr::core::vector2di(l_cScreen.Width - l_cTouchSize.Width, (l_cScreen.Height - l_cTouchSize.Height) / 2), l_cTouchSize);
-        l_cTouchRect  = irr::core::recti(irr::core::vector2di(2 * l_cScreen.Width / 3, l_iHeightOffset), irr::core::dimension2du(l_cScreen.Width / 3, l_cScreen.Height - l_iHeightOffset));
+      m_cTouchSpeed[0] = irr::core::recti(irr::core::vector2di(0                                      , l_cImage.Height), irr::core::dimension2du(m_cViewport.getWidth() / 4, m_cViewport.getHeight() - 2 * l_cImage.Height));
+      m_cTouchSpeed[1] = irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - l_cImage.Width, l_cImage.Height), irr::core::dimension2du(m_cViewport.getWidth() / 4, m_cViewport.getHeight() - 2 * l_cImage.Height));
 
-        m_aControls[(int)enControls::Right] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", l_cScreenRect, l_cTouchRect, m_pDrv);
+      m_iThrottleY1 = m_cSpeedNeutral[0].UpperLeftCorner .Y;
+      m_iThrottleY2 = m_cSpeedNeutral[0].LowerRightCorner.Y;
+      m_iThrottleY3 = m_cViewport.getHeight() - 3 * m_cBrake[0].getHeight();
 
-        l_cScreenRect = irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize);
-        m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", l_cScreenRect, l_cScreenRect, m_pDrv);
+      m_iSteerX1 = m_cSteerNeutral.UpperLeftCorner .X;
+      m_iSteerX2 = m_cSteerNeutral.LowerRightCorner.X;
 
-        l_cScreenRect = irr::core::recti(irr::core::vector2di(l_cScreen.Width - l_cTouchSize.Width, 0), l_cTouchSize);
-        m_aControls[(int)enControls::Respawn] = new STouchInput("data/images/ctrl_respawn_off.png", "data/images/ctrl_respawn.png", l_cScreenRect, l_cScreenRect, m_pDrv);
-
-        l_cScreenRect = irr::core::recti(irr::core::vector2di(0, l_cScreen.Height - l_cTouchSize.Height), l_cTouchSize);
-        l_cTouchRect  = irr::core::recti(irr::core::vector2di(0, l_cScreen.Height - 2 * l_cTouchSize.Height), irr::core::dimension2di(l_cScreen.Width, 2 * l_cTouchSize.Height));
-
-        m_aControls[(int)enControls::Brake] = new STouchInput("data/images/ctrl_brake_off.png", "data/images/ctrl_brake.png",l_cScreenRect,l_cTouchRect,m_pDrv);
-      }
+      m_iSteeringWidth  = m_cViewport.getWidth () / 10;
+      m_iThrottleHeight = m_cViewport.getHeight() / 10;
     }
 
     CControllerGame_Touch::~CControllerGame_Touch() {
-      for (int i = 0; i < (int)enControls::Count; i++)
-        if (m_aControls[i] != nullptr)
-          delete m_aControls[i];
-    }
-
-    /**
-    * Create the throttle controls
-    * @param a_bLeft throttle controls on the left?
-    */
-    void CControllerGame_Touch::createThrottleControls(bool a_bLeft) {
-      irr::core::dimension2du l_cTouchSize = irr::core::dimension2du(
-        m_cViewport.getSize().Width / 16,
-        m_cViewport.getSize().Width / 16
-      );
-
-      irr::core::vector2di l_cPos = irr::core::vector2di(
-        a_bLeft ? l_cTouchSize.Width / 2 : m_cViewport.getWidth() - l_cTouchSize.Width - l_cTouchSize.Width / 2,
-        m_cViewport.getHeight() - 4 * l_cTouchSize.Height - l_cTouchSize.Height / 2
-      );
-
-      m_aControls[(int)enControls::Respawn   ] = new STouchInput("data/images/ctrl_respawn_off.png"   , "data/images/ctrl_respawn.png"   , irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize), irr::core::recti(irr::core::vector2di(0, 0), l_cTouchSize), m_pDrv);
-
-      m_aControls[(int)enControls::Forward   ] = new STouchInput("data/images/ctrl_accelerate_off.png", "data/images/ctrl_accelerate.png", irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
-      m_aControls[(int)enControls::NoThrottle] = new STouchInput("data/images/ctrl_none_off.png"      , "data/images/ctrl_none.png"      , irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
-      m_aControls[(int)enControls::Backward  ] = new STouchInput("data/images/ctrl_back_off.png"      , "data/images/ctrl_back.png"      , irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv); l_cPos.Y += l_cTouchSize.Height;
-      m_aControls[(int)enControls::Brake     ] = new STouchInput("data/images/ctrl_brake_off.png"     , "data/images/ctrl_brake.png"     , irr::core::recti(l_cPos, l_cTouchSize), irr::core::recti(l_cPos, l_cTouchSize), m_pDrv);
-
-      enControls l_aAdjust[] = {
-        enControls::Forward,
-        enControls::NoThrottle,
-        enControls::Backward,
-        enControls::Brake
-      };
-
-      if (a_bLeft) {
-        for (enControls l_cCtrl: l_aAdjust) {
-          m_aControls[(int)l_cCtrl]->m_cTouch.UpperLeftCorner .X  = 0;
-          m_aControls[(int)l_cCtrl]->m_cTouch.LowerRightCorner.X += 2 * l_cTouchSize.Width;
-        }
-      }
-      else {
-        for (enControls l_cCtrl: l_aAdjust) {
-          m_aControls[(int)l_cCtrl]->m_cTouch.UpperLeftCorner .X -= 2 * l_cTouchSize.Width;
-          m_aControls[(int)l_cCtrl]->m_cTouch.LowerRightCorner.X  = m_cViewport.getWidth();
-        }
-      }
-
-      m_aControls[(int)enControls::Forward]->m_cTouch.UpperLeftCorner .Y = 2 * l_cTouchSize.Height;
-      m_aControls[(int)enControls::Brake  ]->m_cTouch.LowerRightCorner.Y = m_cViewport.getHeight();
-    }
-
-    /**
-    * Create the steering controls
-    * @param a_bLeft steering controls on the left?
-    */
-    void CControllerGame_Touch::createSteeringControls(bool a_bLeft) {
-      irr::core::dimension2du l_cTouchSize = irr::core::dimension2du(
-        m_cViewport.getSize().Width / 16,
-        m_cViewport.getSize().Width / 16
-      );
-
-      irr::core::vector2di l_cPos = irr::core::vector2di(
-        a_bLeft ? l_cTouchSize.Width / 2 : m_cViewport.getWidth() - 3 * l_cTouchSize.Width - l_cTouchSize.Width / 2,
-        m_cViewport.getHeight() - l_cTouchSize.Height - l_cTouchSize.Height / 2
-      );
-
-      irr::core::recti l_cScreen = irr::core::recti(
-        irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - 3 * l_cTouchSize.Width, m_cViewport.getHeight() - l_cTouchSize.Height),
-        l_cTouchSize
-      );
-
-      irr::core::recti l_cTouch = irr::core::recti(
-        irr::core::vector2di(a_bLeft ? 0 : 2 * m_cViewport.getWidth() / 3, 2 * m_cViewport.getHeight() / 3),
-        irr::core::dimension2du(a_bLeft ? l_cTouchSize.Width : m_cViewport.getWidth() / 3 - 2 * l_cTouchSize.Width, m_cViewport.getHeight() / 3)
-      );
-
-      m_aControls[(int)enControls::Left   ] = new STouchInput("data/images/ctrl_left_off.png" , "data/images/ctrl_left.png" , l_cScreen, l_cTouch, m_pDrv);
-
-      l_cScreen = irr::core::recti(
-        irr::core::vector2di(a_bLeft ? l_cTouchSize.Width : m_cViewport.getWidth() - 2 * l_cTouchSize.Width, m_cViewport.getHeight() - l_cTouchSize.Height),
-        l_cTouchSize
-      );
-
-      l_cTouch = irr::core::recti(
-        irr::core::vector2di(l_cScreen.UpperLeftCorner.X, m_cViewport.getHeight() / 3),
-        irr::core::dimension2du(l_cTouchSize.Width, m_cViewport.getHeight() / 3)
-      );
-
-      m_aControls[(int)enControls::NoSteer] = new STouchInput("data/images/ctrl_none_off.png" , "data/images/ctrl_none.png" , l_cScreen, l_cTouch, m_pDrv);
-
-      l_cScreen = irr::core::recti(
-        irr::core::vector2di(a_bLeft ? 2 * l_cTouchSize.Width : m_cViewport.getWidth() - l_cTouchSize.Width, m_cViewport.getHeight() - l_cTouchSize.Height),
-        l_cTouchSize
-      );
-
-      l_cTouch = irr::core::recti(
-        irr::core::vector2di(l_cScreen.UpperLeftCorner.X, m_cViewport.getHeight() / 3),
-        irr::core::dimension2du(a_bLeft ? m_cViewport.getWidth() - 2 * l_cTouchSize.Width : l_cTouchSize.Width, l_cTouchSize.Height)
-      );
-
-      m_aControls[(int)enControls::Right  ] = new STouchInput("data/images/ctrl_right_off.png", "data/images/ctrl_right.png", l_cScreen, l_cTouch, m_pDrv);
-
-      m_aControls[(int)enControls::Rearview] = new STouchInput("data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png", irr::core::recti(irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - l_cTouchSize.Width, 0), l_cTouchSize), irr::core::recti(irr::core::vector2di(a_bLeft ? 0 : m_cViewport.getWidth() - l_cTouchSize.Width, 0), l_cTouchSize), m_pDrv);
-
-      enControls l_aAdjust[] = {
-        enControls::Left,
-        enControls::NoSteer,
-        enControls::Right
-      };
-
-      for (enControls l_eCtrl: l_aAdjust) {
-        m_aControls[(int)l_eCtrl]->m_cTouch.UpperLeftCorner .Y -= 3 * l_cTouchSize.Height;
-        m_aControls[(int)l_eCtrl]->m_cTouch.LowerRightCorner.Y  = m_cViewport.getHeight();
-      }
-
-      if (a_bLeft) {
-        m_aControls[(int)enControls::Right]->m_cTouch.LowerRightCorner.X = m_cViewport.getWidth() / 2;
-      }
-      else {
-        m_aControls[(int)enControls::Left]->m_cTouch.UpperLeftCorner.X = m_cViewport.getWidth() / 2;
-      }
     }
 
     /**
@@ -190,17 +91,7 @@ namespace dustbin {
     * @return the throttle state
     */
     irr::f32 CControllerGame_Touch::getThrottle() {
-      irr::f32 l_fThrottle = 0.0f;
-
-      if (m_aControls[(int)enControls::Forward ] != nullptr && m_aControls[(int)enControls::Forward ]->m_bActive) l_fThrottle += 1.0f;
-
-      if (
-        (m_aControls[(int)enControls::Backward] != nullptr && m_aControls[(int)enControls::Backward]->m_bActive) || 
-        (m_aControls[(int)enControls::Brake   ] != nullptr && m_aControls[(int)enControls::Brake   ]->m_bActive)
-      ) 
-        l_fThrottle -= 1.0f;
-
-      return l_fThrottle;
+      return m_fThrottle;
     }
 
     /**
@@ -208,12 +99,7 @@ namespace dustbin {
     * @return the steer state
     */
     irr::f32 CControllerGame_Touch::getSteer() {
-      irr::f32 l_fSteer = 0.0f;
-
-      if (m_aControls[(int)enControls::Left ] != nullptr && m_aControls[(int)enControls::Left ]->m_bActive) l_fSteer -= 1.0f;
-      if (m_aControls[(int)enControls::Right] != nullptr && m_aControls[(int)enControls::Right]->m_bActive) l_fSteer += 1.0f;
-
-      return l_fSteer;
+      return m_fSteering;
     }
 
     /**
@@ -221,7 +107,7 @@ namespace dustbin {
     * @return true if control >= 0.5, false otherwise
     */
     bool CControllerGame_Touch::getBrake() {
-      return m_aControls[(int)enControls::Brake] != nullptr ? m_aControls[(int)enControls::Brake]->m_bActive : false;
+      return m_iTouchBrake != -1 || m_bBrkThrottle;
     }
 
     /**
@@ -229,7 +115,7 @@ namespace dustbin {
     * @return true if control >= 0.5, false otherwise
     */
     bool CControllerGame_Touch::getRearView() {
-      return m_aControls[(int)enControls::Rearview] != nullptr ? m_aControls[(int)enControls::Rearview]->m_bActive : false;
+      return m_iTouchRearview != -1;
     }
 
     /**
@@ -237,7 +123,7 @@ namespace dustbin {
     * @return true if control >= 0.5, false otherwise
     */
     bool CControllerGame_Touch::getRespawn() {
-      return m_aControls[(int)enControls::Respawn] != nullptr ? m_aControls[(int)enControls::Respawn]->m_bActive : false;
+      return m_iTouchRespawn != -1;
     }
 
     /**
@@ -257,10 +143,10 @@ namespace dustbin {
     }
 
     /**
-    * Process Irrlicht evnts to update the controls
+    * Process Irrlicht events to update the controls
     * @param a_cEvent event to process
     */
-    void CControllerGame_Touch::updateControls(const irr::SEvent& a_cEvent) {
+    void CControllerGame_Touch::updateControls(const irr::SEvent &a_cEvent) {
       OnEvent(a_cEvent);
     }
 
@@ -274,162 +160,103 @@ namespace dustbin {
     /**
     * Implementation of the serialization method which does nothing in this case
     */
-    void CControllerGame_Touch::serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const {
+    void CControllerGame_Touch::serializeAttributes(irr::io::IAttributes *a_pOut,
+                                                    irr::io::SAttributeReadWriteOptions *a_pOptions) const {
     }
 
     /**
     * Implementation of the deserialization method which does nothing in this case
     */
-    void CControllerGame_Touch::deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) {
+    void CControllerGame_Touch::deserializeAttributes(irr::io::IAttributes *a_pIn,
+                                                      irr::io::SAttributeReadWriteOptions *a_pOptions) {
     }
 
     /**
     * handle Irrlicht events
     * @param a_cEvent the Irrlicht event to handle
     */
-    bool CControllerGame_Touch::OnEvent(const irr::SEvent& a_cEvent) {
+    bool CControllerGame_Touch::OnEvent(const irr::SEvent &a_cEvent) {
       bool l_bRet = false;
 
 #ifdef _TOUCH_CONTROL
       if (a_cEvent.EventType == irr::EET_TOUCH_INPUT_EVENT) {
         if (a_cEvent.TouchInput.Event == irr::ETIE_PRESSED_DOWN) {
-          for (int i = 0; i < 5; i++) {
-            if (m_aTouch[i].m_iIndex == -1) {
-              m_aTouch[i].m_iIndex = a_cEvent.TouchInput.ID;
+          irr::core::vector2di l_cTouch = irr::core::vector2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
 
-              irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
-
-              for (int j = 0; j < (int)enControls::Count; j++) {
-                if (m_aControls[j] != nullptr && m_aControls[j]->m_cTouch.isPointInside(l_cPos)) {
-                  m_aControls[j]->m_bActive = true;
-                  m_aTouch   [i].m_eControl = (enControls)j;
-
-                  if (m_aControls[j] != nullptr) {
-                    m_aControls[j]->m_bActive = true;
-                  }
-
-                  break;
-                }
-              }
-
-              break;
-            }
+          if (m_cBrake[0].isPointInside(l_cTouch) || m_cBrake[1].isPointInside(l_cTouch))
+            m_iTouchBrake = a_cEvent.TouchInput.ID;
+          else if (m_cRearView.isPointInside(l_cTouch))
+            m_iTouchRearview = a_cEvent.TouchInput.ID;
+          else if (m_cRespawn.isPointInside(l_cTouch))
+            m_iTouchRespawn = a_cEvent.TouchInput.ID;
+          else if (m_cTouchSpeed[0].isPointInside(l_cTouch) || m_cTouchSpeed[1].isPointInside(l_cTouch))
+            m_iTouchThrottle = a_cEvent.TouchInput.ID;
+          else if (m_cTouchSteer.isPointInside(l_cTouch))
+            m_iTouchSteer = a_cEvent.TouchInput.ID;
+        } else if (a_cEvent.TouchInput.Event == irr::ETIE_LEFT_UP) {
+          if (m_iTouchBrake == a_cEvent.TouchInput.ID)
+            m_iTouchBrake = -1;
+          else if (m_iTouchRearview == a_cEvent.TouchInput.ID)
+            m_iTouchRearview = -1;
+          else if (m_iTouchRespawn == a_cEvent.TouchInput.ID)
+            m_iTouchRespawn = -1;
+          else if (m_iTouchThrottle == a_cEvent.TouchInput.ID) {
+            m_iTouchThrottle = -1;
+            m_fThrottle = 0.0f;
           }
-        }
-        else if (a_cEvent.TouchInput.Event == irr::ETIE_LEFT_UP) {
-          for (int i = 0; i < 5; i++) {
-            if (m_aTouch[i].m_iIndex == a_cEvent.TouchInput.ID) {
-              if (m_aTouch[i].m_eControl != enControls::Count && m_aControls[(int)m_aTouch[i].m_eControl] != nullptr) {
-                m_aControls[(int)m_aTouch[i].m_eControl]->m_bActive = false;
-              }
-
-              m_aTouch[i].m_iIndex   = -1;
-              m_aTouch[i].m_eControl = enControls::Count;
-            }
+          else if (m_iTouchSteer == a_cEvent.TouchInput.ID) {
+            m_iTouchSteer = -1;
+            m_fSteering = 0.0f;
           }
-        }
-        else if (a_cEvent.TouchInput.Event == irr::ETIE_MOVED) {
-          for (int i = 0; i < 5; i++) {
-            if (m_aTouch[i].m_iIndex == a_cEvent.TouchInput.ID) {
-              enControls l_eCtrl = enControls::Count;
+        } else if (a_cEvent.TouchInput.Event == irr::ETIE_MOVED) {
+          if (a_cEvent.TouchInput.ID == m_iTouchThrottle) {
+            irr::s32 y = a_cEvent.TouchInput.Y;
 
-              irr::core::position2di l_cPos = irr::core::position2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
-
-              for (int j = 0; j < (int)enControls::Count; j++) {
-                if (m_aControls[j] != nullptr && m_aControls[j]->m_cTouch.isPointInside(l_cPos)) {
-                  l_eCtrl = (enControls)j;
-                }
-              }
-
-              if (l_eCtrl != m_aTouch[i].m_eControl) {
-                if (m_aTouch[i].m_eControl != enControls::Count && m_aControls[(int)m_aTouch[i].m_eControl] != nullptr)
-                  m_aControls[(int)m_aTouch[i].m_eControl]->m_bActive = false;
-
-                if (l_eCtrl != enControls::Count && m_aControls[(int)l_eCtrl] != nullptr)
-                  m_aControls[(int)l_eCtrl]->m_bActive = true;
-              }
-
-              m_aTouch[i].m_eControl = l_eCtrl;
-
-              break;
+            if (y < m_iThrottleY1) {
+              m_fThrottle = ((irr::f32)m_iThrottleY1 - (irr::f32)y) / (irr::f32)m_iThrottleHeight;
+              if (m_fThrottle > 1.0f)
+                m_fThrottle = 1.0f;
             }
-          }
-        }
-      }
-#else
-      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
-        std::vector<std::tuple<enControls, irr::EKEY_CODE>> a_vControls = {
-          std::make_tuple(enControls::Left    , irr::KEY_LEFT),
-          std::make_tuple(enControls::Right   , irr::KEY_RIGHT),
-          std::make_tuple(enControls::Forward , irr::KEY_UP),
-          std::make_tuple(enControls::Backward, irr::KEY_DOWN),
-          std::make_tuple(enControls::Brake   , irr::KEY_SPACE),
-          std::make_tuple(enControls::Rearview, irr::KEY_TAB),
-          std::make_tuple(enControls::Respawn , irr::KEY_RETURN)
-        };
+            else if (y > m_iThrottleY2) {
+              m_fThrottle = -(((irr::f32)y - (irr::f32)m_iThrottleY2) / (irr::f32)m_iThrottleHeight);
+              if (m_fThrottle < -1.0f)
+                m_fThrottle = -1.0f;
+            }
 
-        for (auto& l_cCtrl : a_vControls) {
-          if (m_aControls[(int)std::get<0>(l_cCtrl)] != nullptr) {
-            if (a_cEvent.KeyInput.Key == std::get<1>(l_cCtrl)) {
-              m_aControls[(int)std::get<0>(l_cCtrl)]->m_bActive = a_cEvent.KeyInput.PressedDown;
+            m_bBrkThrottle = y > m_iThrottleY3;
+          }
+          else if (a_cEvent.TouchInput.ID == m_iTouchSteer) {
+            irr::s32 x = a_cEvent.TouchInput.X;
+
+            if (x < m_iSteerX1) {
+              m_fSteering = -((irr::f32)m_iSteerX1 - (irr::f32)x) / (irr::f32)m_iSteeringWidth;
+              if (m_fSteering < -1.0f)
+                m_fSteering = -1.0f;
+            }
+            else if (x > m_iSteerX2) {
+              m_fSteering = ((irr::f32)x - (irr::f32)m_iSteerX2) / (irr::f32)m_iSteeringWidth;
+              if (m_fSteering > 1.0f)
+                m_fSteering = 1.0f;
             }
           }
         }
       }
-
 #endif
 
       return l_bRet;
     }
 
-    void CControllerGame_Touch::draw()  {
+    void CControllerGame_Touch::draw() {
       if (IsVisible) {
-        for (auto& l_pControl : m_aControls) {
-          if (l_pControl != nullptr)
-            l_pControl->draw(m_cViewport);
-        }
+        m_pDrv->draw2DImage(m_iTouchThrottle != -1 ? m_pSpeedNeutral[1] : m_pSpeedNeutral[0], m_cSpeedNeutral[0], m_cImage, nullptr, nullptr, true);
+        m_pDrv->draw2DImage(m_iTouchThrottle != -1 ? m_pSpeedNeutral[1] : m_pSpeedNeutral[0], m_cSpeedNeutral[1], m_cImage, nullptr, nullptr, true);
+        m_pDrv->draw2DImage(m_iTouchSteer    != -1 ? m_pSteerNeutral[1] : m_pSteerNeutral[0], m_cSteerNeutral   , m_cImage, nullptr, nullptr, true);
+        m_pDrv->draw2DImage(m_iTouchRearview != -1 ?  m_pRearview   [1] : m_pRearview    [0], m_cRearView       , m_cImage, nullptr, nullptr, true);
+        m_pDrv->draw2DImage(m_iTouchRespawn  != -1 ? m_pRespawn     [1] : m_pRespawn     [0], m_cRespawn        , m_cImage, nullptr, nullptr, true);
+
+        m_pDrv->draw2DImage(m_iTouchBrake != -1 || m_bBrkThrottle ? m_pBrake[1] : m_pBrake[0], m_cBrake[0], m_cImage, nullptr, nullptr, true);
+        m_pDrv->draw2DImage(m_iTouchBrake != -1 || m_bBrkThrottle ? m_pBrake[1] : m_pBrake[0], m_cBrake[1], m_cImage, nullptr, nullptr, true);
       }
-    }
-
-    CControllerGame_Touch::STouchInput::STouchInput() :
-      m_pDrv   (nullptr),
-      m_pOff   (nullptr),
-      m_pOn    (nullptr),
-      m_bActive(false  )
-    {
-    }
-
-    CControllerGame_Touch::STouchInput::STouchInput(const std::string& a_sPathOff, const std::string& a_sPathOn, const irr::core::recti& a_cScreen, const irr::core::recti &a_cTouch, irr::video::IVideoDriver* a_pDrv) :
-      m_pDrv   (a_pDrv),
-      m_pOff   (nullptr),
-      m_pOn    (nullptr),
-      m_bActive(false)
-    {
-      m_pOff = m_pDrv->getTexture(a_sPathOff.c_str());
-      m_pOn  = m_pDrv->getTexture(a_sPathOn .c_str());
-
-      m_cTouch = a_cTouch;
-      
-      irr::s32 l_iOffset = a_cScreen.getWidth() / 16;   // The rect to draw the icon will be offset a little
-
-      m_cScreen = irr::core::recti(a_cScreen.UpperLeftCorner + irr::core::vector2di(l_iOffset), a_cScreen.LowerRightCorner - irr::core::vector2di(l_iOffset));
-
-      if (m_pOff != nullptr) m_cSourceOff = irr::core::recti(irr::core::position2di(), m_pOff->getSize());
-      if (m_pOn  != nullptr) m_cSourceOn  = irr::core::recti(irr::core::position2di(), m_pOn ->getSize());
-    }
-
-    void CControllerGame_Touch::STouchInput::draw(const irr::core::recti &a_cClip) {
-      if (m_bActive) {
-        if (m_pOn != nullptr)
-          m_pDrv->draw2DImage(m_pOn, m_cScreen, m_cSourceOn, &a_cClip, nullptr, true);
-      }
-      else {
-        if (m_pOff != nullptr)
-          m_pDrv->draw2DImage(m_pOff, m_cScreen, m_cSourceOff, &a_cClip, nullptr, true);
-      }
-    }
-
-    CControllerGame_Touch::STouchState::STouchState() : m_iIndex(-1), m_eControl(enControls::Count) {
     }
   }
 }
