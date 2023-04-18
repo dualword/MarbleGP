@@ -334,6 +334,26 @@ void android_main(struct android_app* a_pApp) {
     l_cParams.EventReceiver    = l_pMainClass;
 
     irr::IrrlichtDevice *l_pDevice = irr::createDeviceEx(l_cParams);
+
+    irr::video::IVideoDriver *l_pDrv = l_pDevice->getVideoDriver();
+
+    irr::video::ITexture *l_pLogo = l_pDrv->getTexture("logo.png");
+
+    l_pDrv->beginScene(true, true, irr::video::SColor(0xFF, 0x4a, 0x6d, 0xaf));
+
+    if (l_pLogo != nullptr) {
+      irr::core::recti l_cSrc = irr::core::recti(irr::core::vector2di(0, 0), l_pLogo->getOriginalSize());
+
+      irr::core::vector2di l_cCenter = irr::core::vector2di(l_pDrv->getScreenSize().Width  / 2, l_pDrv->getScreenSize().Height / 2);
+      irr::core::vector2di l_cTarget = irr::core::vector2di(l_pDrv->getScreenSize().Height / 3, l_pDrv->getScreenSize().Height / 3);
+
+      irr::core::recti l_cTgt = irr::core::recti(l_cCenter - l_cTarget, l_cCenter + l_cTarget);
+
+      l_pDrv->draw2DImage(l_pLogo, l_cTgt, l_cSrc, nullptr, nullptr, true);
+    }
+
+    l_pDrv->endScene();
+
     l_pDevice->activateGyroscope();
 
     dustbin::controller::ICustomEventReceiver *l_pMenuHandler = new CAndroidMenuEventHandler(l_pDevice, l_pMainClass);
