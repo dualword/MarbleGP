@@ -606,10 +606,6 @@ namespace dustbin {
           for (std::vector<CAudioPlayer*>::iterator it = m_vMenuSounds.begin(); it != m_vMenuSounds.end(); it++) {
             (*it)->setVolume(m_fMenuVolume * m_fMasterVolume);
           }
-
-          for (std::map<enSoundTrack, CAudioPlayer *>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
-            it->second->setVolume(m_fSoundtrackVolume * m_fMasterVolume);
-          }
         }
 
         virtual void setSfxVolumeGame(irr::f32 a_fVolume) override {
@@ -766,6 +762,7 @@ namespace dustbin {
         */
         virtual void playMarbleOneShotSound(int a_iMarble, enOneShots a_eSound) override {
           if (a_iMarble == m_iPlayerMarble) {
+            m_aShots[(int)a_eSound]->setVolume(m_fMasterVolume * m_fGameVolume);
             m_aShots[(int)a_eSound]->setPlaying(true, true);
           }
         }
@@ -780,7 +777,7 @@ namespace dustbin {
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
           if (m_aSounds2d[(int)a_eSound] != nullptr) {
             m_aSounds2d[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
-            m_aSounds2d[(int)a_eSound]->setVolume(a_fVolume);
+            m_aSounds2d[(int)a_eSound]->setVolume(a_fVolume * m_fMasterVolume * (a_eSound == en2dSounds::ButtonHover || a_eSound == en2dSounds::ButtonPress ? m_fMenuVolume : m_fGameVolume));
           }
         }
 
