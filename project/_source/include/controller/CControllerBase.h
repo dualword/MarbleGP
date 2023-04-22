@@ -74,6 +74,8 @@ namespace dustbin {
           * @return true if the control data matches, false otherwise
           */
           bool equals(SCtrlInput *a_pOther);
+
+          bool nextWizardStep(const irr::SEvent &a_cEvent);
         };
 
       protected:

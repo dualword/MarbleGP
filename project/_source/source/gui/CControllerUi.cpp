@@ -37,8 +37,9 @@ namespace dustbin {
         for (int i = 0; i < irr::SEvent::SJoystickEvent::NUMBER_OF_AXES; i++)
           m_iAxis[i] = a_cEvent.JoystickEvent.Axis[i];
 
-        for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_BUTTONS; i++)
+        for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_BUTTONS; i++) {
           m_bButton[i] = a_cEvent.JoystickEvent.IsButtonPressed(i);
+        }
       }
     }
 
@@ -86,6 +87,8 @@ namespace dustbin {
       m_iErrorCnt  (0),
       m_iErrorTime (0),
       m_bError     (false),
+      m_iErrorCtrl (-1),
+      m_iNextSet   (-1),
       m_pTimer     (CGlobal::getInstance()->getIrrlichtDevice()->getTimer())
     {
     }
@@ -156,6 +159,7 @@ namespace dustbin {
                         m_pController->getInputs()[m_iWizard].m_iAxis      = i;
                         m_pController->getInputs()[m_iWizard].m_iDirection = a_cEvent.JoystickEvent.Axis[i] > m_mJoysticks[m_iJoystick].m_iAxis[i] ? 1 : -1;
                         m_mJoysticks[m_iJoystick].update(a_cEvent);
+                        m_iNextSet = 0;
                         m_bSet = false;
                         break;
                       }
@@ -167,6 +171,7 @@ namespace dustbin {
                           m_pController->getInputs()[m_iWizard].m_eType   = controller::CControllerBase::enInputType::JoyButton;
                           m_pController->getInputs()[m_iWizard].m_iButton = i;
                           m_mJoysticks[m_iJoystick].update(a_cEvent);
+                          m_iNextSet = 0;
                           m_bSet = false;
                           break;
                         }
@@ -178,17 +183,26 @@ namespace dustbin {
                         m_pController->getInputs()[m_iWizard].m_eType = controller::CControllerBase::enInputType::JoyPov;
                         m_pController->getInputs()[m_iWizard].m_iPov  = a_cEvent.JoystickEvent.POV;
                         m_mJoysticks[m_iJoystick].update(a_cEvent);
+                        m_iNextSet = 0;
                         m_bSet = false;
                       }
                     }
                   }
                 }
                 else {
-                  if (
+                  if (m_iNextSet != -1) {
+                    m_iNextSet++;
+                    if (m_iNextSet > 16)
+                      m_iNextSet = -1;
+                  }
+
+                  /*if (
+                    m_iNextSet == -1 &&
                     (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyAxis   && std::abs(a_cEvent.JoystickEvent.Axis[m_pController->getInputs()[m_iWizard].m_iAxis]) < 1000) || 
                     (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyButton && !a_cEvent.JoystickEvent.IsButtonPressed(m_pController->getInputs()[m_iWizard].m_iButton)) ||
                     (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyPov    && a_cEvent.JoystickEvent.POV == 0xFFFF)
-                  ) {
+                  ) */
+                  if (m_pController->getInputs()[m_iWizard].nextWizardStep(a_cEvent)) {
                     m_bError = false;
 
                     for (int i = 0; i < m_iWizard; i++) {
@@ -204,6 +218,7 @@ namespace dustbin {
 
                     if (!m_bError) {
                       m_bSet = true;
+                      m_iNextSet = -1;
                       m_iWizard++;
 
                       m_mJoysticks[m_iJoystick].update(a_cEvent);

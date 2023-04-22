@@ -86,6 +86,7 @@ namespace dustbin {
         int                          m_iErrorTime;  /**< The last time an error has flased */
         bool                         m_bError;      /**< Is there an error, i.e. conflicting inputs */
         int                          m_iErrorCtrl;  /**< Index of the conflicting control if an error was found */
+        int                          m_iNextSet;    /**< Hack as my gamepad on Android sends a button pressed after the shoulder axis are used */
         irr::ITimer                 *m_pTimer;      /**< The Irrlicht timer */
 
         std::vector<SGuiElement> m_vGui;

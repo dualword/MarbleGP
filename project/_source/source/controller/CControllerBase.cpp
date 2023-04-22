@@ -129,6 +129,23 @@ namespace dustbin {
       return l_sRet;
     }
 
+    bool CControllerBase::SCtrlInput::nextWizardStep(const irr::SEvent &a_cEvent) {
+      if (a_cEvent.JoystickEvent.Joystick == m_iJoystick) {
+        if (a_cEvent.JoystickEvent.ButtonStates != 0)
+          return false;
+
+        if (m_eType == enInputType::JoyAxis)
+          if (std::abs(a_cEvent.JoystickEvent.Axis[m_iAxis]) > 1000)
+            return false;
+
+        if (m_eType == enInputType::JoyPov)
+          if (a_cEvent.JoystickEvent.POV != 0xFFFF)
+            return false;
+      }
+
+      return true;
+    }
+
     /**
     * Compare a control input to another
     * @return true if the control data matches, false otherwise

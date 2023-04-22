@@ -366,10 +366,7 @@ namespace dustbin {
 
               // Serialize the controls and save it to m_sControls
               if (m_pCtrl != nullptr && !l_bSaved) {
-                if (m_pCtrl != nullptr) {
-                  m_cPlayer.m_sControls = m_pCtrl->serialize();
-                }
-
+                m_cPlayer.m_sControls = m_pCtrl->serialize();
                 m_pCtrl = nullptr;
               }
               break;
@@ -462,9 +459,9 @@ namespace dustbin {
                   m_cPlayer.m_sControls = l_cCtrl.serialize();
                 }
 
-                if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
-                  m_pCtrl->setController(m_cPlayer.m_sControls);
+                m_pCtrl->setController(m_cPlayer.m_sControls);
 
+                if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
                   gui::CSelector *l_pType  = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
                   if (l_pType != nullptr) {
@@ -884,6 +881,8 @@ namespace dustbin {
                     case enMenuStep::AiHelp      : changeStep(enMenuStep::Controls    ); break;
                     case enMenuStep::Controls    : changeStep(enMenuStep::Texture     ); break;
                     case enMenuStep::Texture     :
+                      break;
+
                     case enMenuStep::Initialize  :
                       // This button is not visible here, so let's ignore it
                       break;
@@ -1033,7 +1032,7 @@ namespace dustbin {
                   if (l_pType != nullptr) {
                     if (l_pImage != nullptr) {
                       unsigned     l_iSelected = l_pType->getSelected();
-                      std::wstring l_sSelected = l_iSelected >= 0 && l_iSelected < l_pType->getItemCount() ? l_pType->getItem(l_iSelected) : L"";
+                      std::wstring l_sSelected = l_iSelected >= 0 && l_iSelected < l_pType->getItemCount() ? l_pType->getItem((int)l_iSelected) : L"";
 
                       l_pImage->setVisible(false);
 
