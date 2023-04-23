@@ -45,6 +45,8 @@ namespace dustbin {
           Right,
           Rearview,
           Respawn,
+          BrakeL,
+          BrakeR,
 
           Count
         };
@@ -52,6 +54,7 @@ namespace dustbin {
         size_t m_iTouchSteer;
 
         irr::s32 m_iThrottleHeight;    /**< Height of the actual throttle from 0 to max */
+        irr::f32 m_fSteer;             /**< The steering value */
 
         irr::core::recti m_cSteerRect;  /**< The rectangle with the steering controls */
 
@@ -64,6 +67,8 @@ namespace dustbin {
         std::map<enControl, SControl> m_mControls;
 
         void addToControlMap(enControl a_eControl, const irr::core::recti &a_cDestination, const irr::video::SColor &a_cColor, const std::string &a_sOff, const std::string &a_sOn);
+
+        void calculateSteer();
 
       public:
         CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport);

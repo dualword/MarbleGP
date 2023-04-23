@@ -350,9 +350,9 @@ namespace dustbin {
                 l_pImage->setVisible(false);
 
                 std::map<std::wstring, std::string> l_mItemMap = {
-                  { L"Touch Steer Right", "DustbinTouchControl"   },
-                  { L"Touch Steer Only" , "DustbinTouchSteerOnly" },
-                  { L"Gyroscope"        , "DustbinGyroscope"      }
+                  { L"Touch Control"   , "DustbinTouchControl"   },
+                  { L"Touch Steer Only", "DustbinTouchSteerOnly" },
+                  { L"Gyroscope"       , "DustbinGyroscope"      }
                 };
 
                 for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
