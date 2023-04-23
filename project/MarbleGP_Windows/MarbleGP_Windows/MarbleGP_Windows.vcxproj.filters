@@ -145,6 +145,12 @@
     <Filter Include="Quelldateien\gameclasses">
       <UniqueIdentifier>{ad1a854d-ccf0-4b90-9664-05d491250752}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\controller\touch">
+      <UniqueIdentifier>{ccc1dc56-7fe0-4736-9bd7-280f37a442a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\controller\touch">
+      <UniqueIdentifier>{a87aa1ad-427b-4a98-befb-877ab1b816f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -636,6 +642,18 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\ITouchController.cpp">
+      <Filter>Quelldateien\controller\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchCentral.cpp">
+      <Filter>Quelldateien\controller\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide.cpp">
+      <Filter>Quelldateien\controller\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp">
+      <Filter>Quelldateien\controller\touch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1051,6 +1069,18 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\ITouchController.h">
+      <Filter>Headerdateien\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchCentral.h">
+      <Filter>Headerdateien\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSteerOnly.h">
+      <Filter>Headerdateien\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide.h">
+      <Filter>Headerdateien\controller\touch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

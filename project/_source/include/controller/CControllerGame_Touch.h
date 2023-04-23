@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <controller/touch/ITouchController.h>
 #include <controller/IControllerGame.h>
 #include <irrlicht.h>
 #include <string>
@@ -23,52 +24,7 @@ namespace dustbin {
     */
     class CControllerGame_Touch : public IControllerGame, public irr::gui::IGUIElement {
       private:
-        typedef struct SControl {
-          irr::core::recti      m_cDestination;     /**< The rectangle on the screen to render the item to */
-          irr::core::recti      m_cSource;          /**< The source rectangle */
-          irr::video::SColor    m_cBackground;      /**< The background color */
-          irr::video::ITexture *m_pTextureOff;      /**< The image of the button drawn when the control is inactive */
-          irr::video::ITexture *m_pTextureOn;       /**< The image of the button drawn when the control is active */
-          bool                  m_bTouched;         /**< Is the control touched? */
-          size_t                m_iTouchID;         /**< ID which is touching this control element, -1 if not touched */
-
-          SControl();
-          SControl(const irr::core::recti &a_cDestination, const irr::core::recti &a_cSource, const irr::video::SColor &a_cBackground, irr::video::ITexture *a_pOff, irr::video::ITexture *a_pOn);
-        }
-        SControl;
-
-        enum class enControl {
-          Neutral,
-          Forward,
-          Backward,
-          Left,
-          Right,
-          Rearview,
-          Respawn,
-          BrakeL,
-          BrakeR,
-
-          Count
-        };
-
-        size_t m_iTouchSteer;
-
-        irr::s32 m_iThrottleHeight;    /**< Height of the actual throttle from 0 to max */
-        irr::f32 m_fSteer;             /**< The steering value */
-
-        irr::core::recti m_cSteerRect;  /**< The rectangle with the steering controls */
-
-        irr::core::vector2di m_cSteerPos;   /**< The position of the steering touch */
-
-        irr::video::IVideoDriver *m_pDrv;
-
-        irr::core::recti m_cViewport;
-
-        std::map<enControl, SControl> m_mControls;
-
-        void addToControlMap(enControl a_eControl, const irr::core::recti &a_cDestination, const irr::video::SColor &a_cColor, const std::string &a_sOff, const std::string &a_sOn);
-
-        void calculateSteer();
+        ITouchController *m_pController;    /**< The actual implementation of the controller */
 
       public:
         CControllerGame_Touch(IControllerGame::enType a_eType, const irr::core::recti &a_cViewport);
