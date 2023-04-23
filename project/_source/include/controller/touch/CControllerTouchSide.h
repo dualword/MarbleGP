@@ -3,6 +3,7 @@
 
 #include <controller/touch/ITouchController.h>
 #include <irrlicht.h>
+#include <string>
 
 namespace dustbin {
   namespace controller {
@@ -16,20 +17,37 @@ namespace dustbin {
         enum class enControl {
           ForwardL  = 0,
           BackwardL = 1,
-          ForwardR  = 0,
-          BackwardR = 1,
-          BrakeL    = 2,
-          BrakeR    = 3,
-          Left      = 4,
-          Right     = 5,
-          Rearview  = 6,
-          Respawn   = 6,
+          ForwardR  = 2,
+          BackwardR = 3,
+          BrakeL    = 4,
+          BrakeR    = 5,
+          Left      = 6,
+          Right     = 7,
+          Rearview  = 8,
+          Respawn   = 9,
 
-          Count     = 8
+          Count     = 10
         };
 
         SControl m_aControls[(int)enControl::Count];
 
+        irr::s32 m_iThrottleHeight;
+        irr::s32 m_iLeftID;
+        irr::s32 m_iRightID;
+        irr::s32 m_iCenterX;
+        irr::s32 m_iSteerLeft;
+        irr::s32 m_iSteerRght;
+        irr::f32 m_iSteerY1;
+        irr::s32 m_iSteerY2;
+        irr::s32 m_iForward;
+        irr::s32 m_iBackward;
+        irr::f32 m_fThrottle;
+        irr::f32 m_fSteer;
+
+        bool m_bBrake;
+
+        void addToControlMap(enControl a_eControl, const irr::core::recti &a_cDestination, const irr::video::SColor &a_cColor, const std::string &a_sOff, const std::string &a_sOn);
+        void updateSteering(const irr::core::vector2di &a_cTouch);
       public:
         CControllerTouchSide(irr::video::IVideoDriver *a_pDrv, const irr::core::recti &a_cViewport);
         virtual ~CControllerTouchSide();

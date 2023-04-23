@@ -108,7 +108,7 @@ namespace dustbin {
     * @return true if the event was handled, false otherwise
     */
     bool CControllerTouchCentral::handleEvent(const irr::SEvent &a_cEvent) {
-      bool a_bRet = false;
+      bool l_bRet = false;
 
 #ifdef _TOUCH_CONTROL
       if (a_cEvent.EventType == irr::EET_TOUCH_INPUT_EVENT) {
@@ -118,12 +118,16 @@ namespace dustbin {
           if (m_cSteerRect.isPointInside(l_cTouch)) {
             m_iTouchSteer = a_cEvent.TouchInput.ID;
             m_cSteerPos   = l_cTouch;
+
+            l_bRet = true;
           }
 
           for (int i = 0; i < (int)enControl::Count; i++) {
             if (m_aControls[i].m_cDestination.isPointInside(l_cTouch)) {
               m_aControls[i].m_iTouchID = a_cEvent.TouchInput.ID;
               m_aControls[i].m_bTouched = true;
+
+              l_bRet = true;
               break;
             }
           }
@@ -152,6 +156,7 @@ namespace dustbin {
             if (!m_aControls[(int)enControl::Left].m_bTouched && !m_aControls[(int)enControl::Right].m_bTouched) {
               m_fSteer = 0.0f;
             }
+            l_bRet = true;
           }
           else {
             enControl l_aCtrl[]  = {
@@ -164,6 +169,7 @@ namespace dustbin {
               if (a_cEvent.TouchInput.ID == m_aControls[(int)l_aCtrl[i]].m_iTouchID) {
                 m_aControls[(int)l_aCtrl[i]].m_bTouched = false;
                 m_aControls[(int)l_aCtrl[i]].m_iTouchID = -1;
+                l_bRet = true;
               }
             }
           }
@@ -182,12 +188,13 @@ namespace dustbin {
             m_aControls[(int)enControl::Neutral].m_bTouched = m_aControls[(int)enControl::Neutral].m_cDestination.isPointInside(m_cSteerPos);
 
             calculateSteer();
+            l_bRet = true;
           }
         }
       }
 #endif
 
-      return a_bRet;
+      return l_bRet;
     }
 
     void CControllerTouchCentral::calculateSteer() {
