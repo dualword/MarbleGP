@@ -26,11 +26,10 @@ namespace dustbin {
       bool l_bDataValid = false;
 
       std::string l_aCtrl[] = {
-        "DustbinController"     ,
-        "DustbinTouchSteerRight",
-        "DustbinTouchSteerLeft" ,
-        "DustbinTouchSteerOnly" ,
-        "DustbinGyroscope"      ,
+        "DustbinController"    ,
+        "DustbinTouchControl"  ,
+        "DustbinTouchSteerOnly",
+        "DustbinGyroscope"     ,
         ""                      
       };
 

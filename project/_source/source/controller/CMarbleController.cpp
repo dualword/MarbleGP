@@ -35,12 +35,8 @@ namespace dustbin {
     {
       controller::IControllerGame *l_pController = nullptr;
 
-      if (a_sControls.substr(0, std::string("DustbinTouchSteerRight").size()) == "DustbinTouchSteerRight") {
-        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchRight, a_cViewport);
-        m_bOwnsCtrl   = false;
-      }
-      else if (a_sControls.substr(0, std::string("DustbinTouchSteerLeft").size()) == "DustbinTouchSteerLeft") {
-        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchLeft, a_cViewport);
+      if (a_sControls.substr(0, std::string("DustbinTouchControl").size()) == "DustbinTouchControl") {
+        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::Touch, a_cViewport);
         m_bOwnsCtrl   = false;
       }
       else if (a_sControls.substr(0, std::string("DustbinTouchSteerOnly").size()) == "DustbinTouchSteerOnly") {

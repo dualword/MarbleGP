@@ -350,10 +350,9 @@ namespace dustbin {
                 l_pImage->setVisible(false);
 
                 std::map<std::wstring, std::string> l_mItemMap = {
-                  { L"Touch Steer Right", "DustbinTouchSteerRight" },
-                  { L"Touch Steer Left" , "DustbinTouchSteerLeft"  },
-                  { L"Touch Steer Only" , "DustbinTouchSteerOnly"  },
-                  { L"Gyroscope"        , "DustbinGyroscope"       }
+                  { L"Touch Steer Right", "DustbinTouchControl"   },
+                  { L"Touch Steer Only" , "DustbinTouchSteerOnly" },
+                  { L"Gyroscope"        , "DustbinGyroscope"      }
                 };
 
                 for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
@@ -484,10 +483,9 @@ namespace dustbin {
 
                   if (l_pType != nullptr && l_pImage != nullptr) {
                     std::vector<std::tuple<std::string, std::string, std::wstring>> l_mItemMap = {
-                      { "DustbinTouchSteerRight", "data/images/ctrl_config_touch_right.png", L"Touch Steer Right" },
-                      { "DustbinTouchSteerLeft" , "data/images/ctrl_config_touch_left.png" , L"Touch Steer Left"  },
-                      { "DustbinTouchSteerOnly" , "data/images/ctrl_config_touch_steer.png", L"Touch Steer Only"  },
-                      { "DustbinGyroscope"      , "data/images/ctrl_config_gyro.png"       , L"Gyroscope"         }
+                      { "DustbinTouchControl"  , "data/images/ctrl_config_touch.png"      , L"Touch Control"    },
+                      { "DustbinTouchSteerOnly", "data/images/ctrl_config_touch_steer.png", L"Touch Steer Only" },
+                      { "DustbinGyroscope"     , "data/images/ctrl_config_gyro.png"       , L"Gyroscope"        }
                     };
 
                     for (std::vector<std::tuple<std::string, std::string, std::wstring>>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
@@ -506,6 +504,11 @@ namespace dustbin {
                       }
                     }
                   }
+                  gui::CMenuButton    *l_pEdit  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("editGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pTest  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("testGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+                  if (l_pEdit != nullptr) l_pEdit->setVisible(false);
+                  if (l_pTest != nullptr) l_pTest->setVisible(false);
                 }
               }
               break;
@@ -649,8 +652,7 @@ namespace dustbin {
             // we assume that we are on Android
             if (l_pType != nullptr && l_pImage != nullptr) {
               l_pType->addItem(L"Gamepad"); 
-              l_pType->addItem(L"Touch Steer Right"); 
-              l_pType->addItem(L"Touch Steer Left"); 
+              l_pType->addItem(L"Touch Control");
 
               if (m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::Medium || m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::High)
                 l_pType->addItem(L"Touch Steer Only"); 
@@ -1037,10 +1039,9 @@ namespace dustbin {
                       l_pImage->setVisible(false);
 
                       std::map<std::wstring, std::string> l_mItemMap = {
-                        { L"Touch Steer Right", "data/images/ctrl_config_touch_right.png" },
-                        { L"Touch Steer Left" , "data/images/ctrl_config_touch_left.png"  },
-                        { L"Touch Steer Only" , "data/images/ctrl_config_touch_steer.png" },
-                        { L"Gyroscope"        , "data/images/ctrl_config_gyro.png"        }
+                        { L"Touch Control"   , "data/images/ctrl_config_touch.png"   },
+                        { L"Touch Steer Only", "data/images/ctrl_config_touch_steer.png" },
+                        { L"Gyroscope"       , "data/images/ctrl_config_gyro.png"        }
                       };
                     
                       bool l_bFound = false;
@@ -1060,10 +1061,9 @@ namespace dustbin {
                           m_cPlayer.m_sControls = data::c_sDefaultControls;
                           m_pCtrl->deserialize(m_cPlayer.m_sControls);
                         }
-
-                        if (l_pEdit != nullptr) l_pEdit->setVisible(!l_bFound);
-                        if (l_pTest != nullptr) l_pTest->setVisible(!l_bFound);
                       }
+                      if (l_pEdit != nullptr) l_pEdit->setVisible(!l_bFound);
+                      if (l_pTest != nullptr) l_pTest->setVisible(!l_bFound);
                     }
                     else {
                       // The control image is only available on Android, and the keyboard controls are only available on Windows

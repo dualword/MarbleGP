@@ -307,8 +307,7 @@ namespace dustbin {
     void CControllerBase::deserialize(const std::string a_sData) {
       if (a_sData != "") {
         std::string l_sCtrl[] = {
-          "DustbinTouchSteerRight",
-          "DustbinTouchSteerLeft" ,
+          "DustbinTouchControl",
           "DustbinTouchSteerOnly" ,
           "DustbinGyroscope"      ,
           ""

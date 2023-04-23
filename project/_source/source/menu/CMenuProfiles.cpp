@@ -90,13 +90,9 @@ namespace dustbin {
 
           std::string l_sCtrl = m_cData.m_sControls;
 
-          if (l_sCtrl == "DustbinTouchSteerRight") {
+          if (l_sCtrl == "DustbinTouchControl") {
             if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Touch Steer Right");
-          }
-          else if (l_sCtrl == "DustbinTouchSteerLeft") {
-            if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Touch Steer Left");
+              m_pControl->setText(L"Controls: Touch");
           }
           else if (l_sCtrl == "DustbinTouchSteerOnly") {
             if (m_pControl != nullptr)

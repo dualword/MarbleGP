@@ -15,8 +15,7 @@ namespace dustbin {
       public:
         enum class enType {
           KeyJoy,     /**< Keyboard and gamepad control */
-          TouchLeft,  /**< Touch controls, steering left (Android only) */
-          TouchRight, /**< Touch controls, steering right (Android only) */
+          Touch,      /**< Touch controls, steering left (Android only) */
           TouchSteer, /**< Touch controls, steering only (Android only, High AI help) */
           Gyroscope,  /**< Gyroscope controls (Android only) */
 
