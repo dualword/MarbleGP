@@ -29,6 +29,7 @@ namespace dustbin {
         "DustbinController"    ,
         "DustbinTouchControl"  ,
         "DustbinTouchSteerOnly",
+        "DustbinSideTouchCtrl",
         "DustbinGyroscope"     ,
         ""                      
       };

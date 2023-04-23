@@ -350,9 +350,10 @@ namespace dustbin {
                 l_pImage->setVisible(false);
 
                 std::map<std::wstring, std::string> l_mItemMap = {
-                  { L"Touch Control"   , "DustbinTouchControl"   },
-                  { L"Touch Steer Only", "DustbinTouchSteerOnly" },
-                  { L"Gyroscope"       , "DustbinGyroscope"      }
+                  { L"Touch Control"     , "DustbinTouchControl"   },
+                  { L"Side Touch Control", "DustbinSideTouchCtrl"  },
+                  { L"Touch Steer Only"  , "DustbinTouchSteerOnly" },
+                  { L"Gyroscope"         , "DustbinGyroscope"      }
                 };
 
                 for (std::map<std::wstring, std::string>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
@@ -483,9 +484,10 @@ namespace dustbin {
 
                   if (l_pType != nullptr && l_pImage != nullptr) {
                     std::vector<std::tuple<std::string, std::string, std::wstring>> l_mItemMap = {
-                      { "DustbinTouchControl"  , "data/images/ctrl_config_touch.png"      , L"Touch Control"    },
-                      { "DustbinTouchSteerOnly", "data/images/ctrl_config_touch_steer.png", L"Touch Steer Only" },
-                      { "DustbinGyroscope"     , "data/images/ctrl_config_gyro.png"       , L"Gyroscope"        }
+                      { "DustbinTouchControl"  , "data/images/ctrl_config_touch.png"      , L"Touch Control"      },
+                      { "DustbinSideTouchCtrl" , "data/images/ctrl_config_sidetouch.png"  , L"Side Touch Control" },
+                      { "DustbinTouchSteerOnly", "data/images/ctrl_config_touch_steer.png", L"Touch Steer Only"   },
+                      { "DustbinGyroscope"     , "data/images/ctrl_config_gyro.png"       , L"Gyroscope"          }
                     };
 
                     for (std::vector<std::tuple<std::string, std::string, std::wstring>>::iterator l_itCtrl = l_mItemMap.begin(); l_itCtrl != l_mItemMap.end(); l_itCtrl++) {
@@ -653,6 +655,7 @@ namespace dustbin {
             if (l_pType != nullptr && l_pImage != nullptr) {
               l_pType->addItem(L"Gamepad"); 
               l_pType->addItem(L"Touch Control");
+              l_pType->addItem(L"Side Touch Control");
 
               if (m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::Medium || m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::High)
                 l_pType->addItem(L"Touch Steer Only"); 
@@ -1039,9 +1042,10 @@ namespace dustbin {
                       l_pImage->setVisible(false);
 
                       std::map<std::wstring, std::string> l_mItemMap = {
-                        { L"Touch Control"   , "data/images/ctrl_config_touch.png"   },
-                        { L"Touch Steer Only", "data/images/ctrl_config_touch_steer.png" },
-                        { L"Gyroscope"       , "data/images/ctrl_config_gyro.png"        }
+                        { L"Touch Control"     , "data/images/ctrl_config_touch.png"   },
+                        { L"Side Touch Control", "data/images/ctrl_config_sidetouch.png" },
+                        { L"Touch Steer Only"  , "data/images/ctrl_config_touch_steer.png" },
+                        { L"Gyroscope"         , "data/images/ctrl_config_gyro.png"        }
                       };
                     
                       bool l_bFound = false;

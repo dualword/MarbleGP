@@ -102,6 +102,10 @@ namespace dustbin {
             if (m_pControl != nullptr)
               m_pControl->setText(L"Controls: Gyroscope");
           }
+          else if (l_sCtrl == "DustbinSideTouchCtrl") {
+            if (m_pControl != nullptr)
+              m_pControl->setText(L"Controls: Side Touch");
+          }
           else {
             controller::CControllerGame l_cCtrl;
             l_cCtrl.deserialize(l_sCtrl);
