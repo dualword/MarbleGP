@@ -657,7 +657,7 @@
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Right.cpp">
       <Filter>Quelldateien\controller\touch</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchLeft.cpp">
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Left.cpp">
       <Filter>Quelldateien\controller\touch</Filter>
     </ClCompile>
   </ItemGroup>

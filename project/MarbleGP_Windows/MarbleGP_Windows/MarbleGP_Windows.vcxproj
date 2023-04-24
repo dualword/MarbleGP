@@ -105,7 +105,7 @@
     <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchCentral.cpp" />
-    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchLeft.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Left.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Right.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp" />
