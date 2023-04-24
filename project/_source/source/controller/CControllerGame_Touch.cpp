@@ -1,8 +1,9 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
+#include <controller/touch/CControllerTouchSide_Right.h>
+#include <controller/touch/CControllerTouchSide_Left.h>
 #include <controller/touch/CControllerTouchSteerOnly.h>
 #include <controller/touch/CControllerTouchCentral.h>
-#include <controller/touch/CControllerTouchSide.h>
 #include <controller/CControllerGame_Touch.h>
 #include <CGlobal.h>
 
@@ -26,8 +27,12 @@ namespace dustbin {
           m_pController = new CControllerTouchCentral(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
           break;
 
-        case IControllerGame::enType::TouchSide:
-          m_pController = new CControllerTouchSide(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
+        case IControllerGame::enType::TouchSteerLeft:
+          m_pController = new CControllerTouchSide_Left(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
+          break;
+
+        case IControllerGame::enType::TouchSteerRight:
+          m_pController = new CControllerTouchSide_Right(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
           break;
 
         case IControllerGame::enType::TouchSteer:

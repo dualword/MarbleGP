@@ -308,7 +308,8 @@ namespace dustbin {
       if (a_sData != "") {
         std::string l_sCtrl[] = {
           "DustbinTouchControl",
-          "DustbinSideTouchCtrl",
+          "DustbinTouchSteerLeft",
+          "DustbinTouchSteerRight",
           "DustbinTouchSteerOnly" ,
           "DustbinGyroscope"      ,
           ""

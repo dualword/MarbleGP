@@ -105,7 +105,9 @@
     <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchCentral.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchLeft.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide.cpp" />
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Right.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\ITouchController.cpp" />
     <ClCompile Include="..\..\_source\source\data\CDataStructs.cpp" />
@@ -274,6 +276,8 @@
     <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h" />
     <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchCentral.h" />
     <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide.h" />
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide_Left.h" />
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide_Right.h" />
     <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSteerOnly.h" />
     <ClInclude Include="..\..\_source\include\controller\touch\ITouchController.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />

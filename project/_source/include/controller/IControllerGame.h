@@ -14,11 +14,12 @@ namespace dustbin {
     class IControllerGame {
       public:
         enum class enType {
-          KeyJoy,     /**< Keyboard and gamepad control */
-          Touch,      /**< Touch controls, steering left (Android only) */
-          TouchSide,  /**< Touch control with all controls on the sides of the screen */
-          TouchSteer, /**< Touch controls, steering only (Android only, High AI help) */
-          Gyroscope,  /**< Gyroscope controls (Android only) */
+          KeyJoy,           /**< Keyboard and gamepad control */
+          Touch,            /**< Touch controls, steering left (Android only) */
+          TouchSteerLeft,   /**< Touch control with the steering on the left and throttle on the right side */
+          TouchSteerRight,  /**< Touch control with the steering on the right and throttle on the left side */
+          TouchSteer,       /**< Touch controls, steering only (Android only, High AI help) */
+          Gyroscope,        /**< Gyroscope controls (Android only) */
 
           Count
         };

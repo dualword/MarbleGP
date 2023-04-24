@@ -28,8 +28,9 @@ namespace dustbin {
       std::string l_aCtrl[] = {
         "DustbinController"    ,
         "DustbinTouchControl"  ,
+        "DustbinTouchSteerLeft",
+        "DustbinTouchSteerRight",
         "DustbinTouchSteerOnly",
-        "DustbinSideTouchCtrl",
         "DustbinGyroscope"     ,
         ""                      
       };

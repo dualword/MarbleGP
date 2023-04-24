@@ -1805,3 +1805,4 @@
 /ikpMP3.dll
 /project/MarbleGP_Android/app/release/*.aab
 /project/script/release_backup.bat
+/project/MarbleGP_Windows/MarbleGP_Windows/x64/Debug/MarbleGP_Windows.tlog

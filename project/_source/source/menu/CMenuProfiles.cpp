@@ -102,9 +102,13 @@ namespace dustbin {
             if (m_pControl != nullptr)
               m_pControl->setText(L"Controls: Gyroscope");
           }
-          else if (l_sCtrl == "DustbinSideTouchCtrl") {
+          else if (l_sCtrl == "DustbinTouchSteerLeft") {
             if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Side Touch");
+              m_pControl->setText(L"Controls: Steering Left");
+          }
+          else if (l_sCtrl == "DustbinTouchSteerRight") {
+            if (m_pControl != nullptr)
+              m_pControl->setText(L"Controls: Steering Right");
           }
           else {
             controller::CControllerGame l_cCtrl;
