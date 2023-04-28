@@ -302,6 +302,9 @@ void android_main(struct android_app* a_pApp) {
   dustbin::CMainClass *l_pMainClass = nullptr;
   dustbin::state::enState l_eState{};
 
+  int events;
+  android_poll_source *pSource;
+
   do {
     std::string l_sSettings = "";
 
@@ -364,10 +367,14 @@ void android_main(struct android_app* a_pApp) {
     g_IrrlichtInputHandler = a_pApp->onInputEvent;
     g_cJoystickInput.m_pDevice = l_pDevice;
     a_pApp->onInputEvent = &overrideInputReceiver;
-    a_pApp->onAppCmd = &overrideAppCmd;
-
 
     do {
+      if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
+        if (pSource) {
+          pSource->process(a_pApp, pSource);
+        }
+      }
+
       if (g_Focused) {
         l_eState = l_pMainClass->run();
 
@@ -397,7 +404,7 @@ void android_main(struct android_app* a_pApp) {
     delete l_pMainClass;
     l_pMainClass = nullptr;
   }
-  while (l_eState != dustbin::state::enState::Quit);
+  while (!a_pApp->destroyRequested); // l_eState != dustbin::state::enState::Quit);
 
   // Paddleboat_destroy(l_pJni);
 
