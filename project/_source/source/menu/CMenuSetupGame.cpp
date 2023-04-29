@@ -103,6 +103,26 @@ namespace dustbin {
           }
         }
 
+        void checkAiElements() {
+          gui::CSelector        *l_pRaceclass = reinterpret_cast<gui::CSelector        *>(findElementByNameAndType("raceclass"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId       , m_pGui->getRootGUIElement()));
+          gui::CSelector        *l_pGridSize  = reinterpret_cast<gui::CSelector        *>(findElementByNameAndType("gridsize"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId       , m_pGui->getRootGUIElement()));
+          gui::CDustbinCheckbox *l_pFillGrid  = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+
+          if (l_pGridSize != nullptr) {
+            int l_iSize = std::wcstol(l_pGridSize->getSelectedItem().c_str(), nullptr, 10);
+            bool l_bEnabled = l_iSize > m_vSelectedPlayers.size();
+            printf("==> %i, %i (%s)\n", l_iSize, (int)m_vSelectedPlayers.size(), l_bEnabled ? "true" : "false");
+
+            if (l_pRaceclass != nullptr)
+              l_pRaceclass->setEnabled(l_bEnabled && m_cSettings.m_bFillGridAI);
+
+            if (l_pRaceclass != nullptr)
+              l_pRaceclass->setEnabled(l_bEnabled && m_cSettings.m_bFillGridAI);
+
+            l_pGridSize->setEnabled(m_cSettings.m_bFillGridAI);
+          }
+        }
+
       public:
         CMenuSetupGame(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
@@ -170,8 +190,7 @@ namespace dustbin {
 
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
-            l_pSelector->setSelected(m_cSettings.m_iGridSize); 
-            l_pSelector->setEnabled(m_cSettings.m_bFillGridAI);
+            checkAiElements();
           }
           else printf("Ui element \"gridsize\" not found.");
 
@@ -285,6 +304,7 @@ namespace dustbin {
               printf("%s not found.\n", l_sGameSetup[i].c_str());
           }
 
+          checkAiElements();
           printf("Ready.\n");
         }
 
@@ -355,6 +375,7 @@ namespace dustbin {
                       l_cPlayer.m_iViewPort = l_iNum;
                       l_cPlayer.m_iPlayerId = l_iNum++;
                       l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+
                       break;
                     }
                   }
@@ -452,6 +473,7 @@ namespace dustbin {
                     if (*l_itSelected == l_sName) {
                       m_vSelectedPlayers.erase(l_itSelected);
                       updateSelectedPlayers();
+                      checkAiElements();
                       break;
                     }
                   }
@@ -471,6 +493,7 @@ namespace dustbin {
                     std::string l_sName = helpers::ws2s(reinterpret_cast<gui::CMenuButton *>(a_cEvent.GUIEvent.Caller)->getText());
                     m_vSelectedPlayers.push_back(l_sName);
                     updateSelectedPlayers();
+                    checkAiElements();
 
                     for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
                       controller::CControllerGame l_cCtrl;
@@ -523,6 +546,7 @@ namespace dustbin {
 
                           m_vSelectedPlayers.erase(m_vSelectedPlayers.begin() + l_iNum);
                           updateSelectedPlayers();
+                          checkAiElements();
                         }
                         break;
                       }
@@ -545,11 +569,7 @@ namespace dustbin {
                 else if (l_sSender == "fillgrid_ai") {
                   m_cSettings.m_bFillGridAI = p->isChecked();
 
-                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("raceclass", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  if (l_pSelector != nullptr) l_pSelector->setEnabled(m_cSettings.m_bFillGridAI);
-
-                  l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  if (l_pSelector != nullptr) l_pSelector->setEnabled(m_cSettings.m_bFillGridAI);
+                  checkAiElements();
                   l_bRet = true;
                 }
                 else printf("Unknown checkbox: \"%s\"\n", l_sSender.c_str());
@@ -562,6 +582,7 @@ namespace dustbin {
 
                 if (l_sSender == "gridsize") {
                   m_cSettings.m_iGridSize = p->getSelected();
+                  checkAiElements();
                   l_bRet = true;
                 }
                 else if (l_sSender == "race_finish") {
