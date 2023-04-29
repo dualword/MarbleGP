@@ -60,6 +60,8 @@ namespace dustbin {
 
         std::vector<irr::u8> m_vUsedJoysticks;
 
+        std::vector<irr::gui::IGUIElement *> m_vSetupUI;   /**< All elements relevant for game setup, hidden if Network Client is selected */
+
         /**
         * Update the list of selected players
         */
@@ -255,6 +257,32 @@ namespace dustbin {
                 }
               }
             }
+          }
+
+          std::string l_sGameSetup[] = {
+            "label_gridpos",
+            "starting_positions",
+            "label_reverse_grid",
+            "reverse_grid",
+            "label_randomize_first",
+            "randomize_first",
+            "label_fillgrid_ai",
+            "fillgrid_ai",
+            "label_raceclass",
+            "raceclass",
+            "label_gridsize",
+            "gridsize",
+            "label_race_finish",
+            "race_finish",
+            ""
+          };
+
+          for (int i = 0; l_sGameSetup[i] != ""; i++) {
+            irr::gui::IGUIElement *p = findElementByName(l_sGameSetup[i], m_pGui->getRootGUIElement());
+            if (p != nullptr)
+              m_vSetupUI.push_back(p);
+            else
+              printf("%s not found.\n", l_sGameSetup[i].c_str());
           }
 
           printf("Ready.\n");
@@ -551,6 +579,14 @@ namespace dustbin {
                 else if (l_sSender == "touchcontrol") {
                   // If a touch controller was selected we need to reset the "menu pad" flag
                   CGlobal::getInstance()->getSettingData().m_bMenuPad = false;
+                }
+                else if (l_sSender == "network_game") {
+                  gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller);
+                  bool l_bVisible = l_pNet->getSelectedItem() != L"Join Server";
+
+                  for (std::vector<irr::gui::IGUIElement*>::iterator l_itElement = m_vSetupUI.begin(); l_itElement != m_vSetupUI.end(); l_itElement++) {
+                    (*l_itElement)->setVisible(l_bVisible);
+                  }
                 }
                 else printf("Unkown selector \"%s\"\n", l_sSender.c_str());
               }

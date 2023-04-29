@@ -127,6 +127,7 @@
               <attribute key="Caption" value="Grid Positions:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_gridpos" />
             </attributes>
           </element>          
           
@@ -145,6 +146,7 @@
               <attribute key="Caption" value="Reverse Grid:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_reverse_grid" />
             </attributes>
           </element>          
           
@@ -159,6 +161,7 @@
               <attribute key="Caption" value="Randomize First Race:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_randomize_first" />
             </attributes>
           </element>          
           
@@ -173,6 +176,7 @@
               <attribute key="Caption" value="Fill Grid with AI Players:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_fillgrid_ai" />
             </attributes>
           </element>          
           
@@ -187,6 +191,7 @@
               <attribute key="Caption" value="Ai Class:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_raceclass" />
             </attributes>
           </element>
           
@@ -206,6 +211,7 @@
               <attribute key="Caption" value="Grid Size:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_gridsize" />
             </attributes>
           </element>          
           
@@ -224,6 +230,7 @@
               <attribute key="Caption" value="Race Auto Finish" />
               <attribute key="HTextAlign" value="center" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_race_finish" />
             </attributes>
           </element>          
           
