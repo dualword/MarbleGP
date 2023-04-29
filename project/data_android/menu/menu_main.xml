@@ -204,7 +204,7 @@ Attribute Track: ""
     </custom>
   </element>
   
-  <element type="MenuButton" rect="center: -19, -9, 18, -1" font="huge" tooltip="Race against other players or AI">
+  <element type="MenuButton" rect="center: -13, -9, 12, -3" font="huge" tooltip="Race against other players or AI">
     <attributes>
       <attribute key="Name" value="free_racing" />
       <attribute key="Id" value="23001" />
