@@ -26,31 +26,33 @@ namespace dustbin {
     }
 
     void CDustbinCheckbox::draw() {
-      int l_iWidth  = getAbsoluteClippingRect().getWidth (),
-          l_iHeight = getAbsoluteClippingRect().getHeight(),
-          l_iDrawX  = 85 * l_iWidth  / 100,
-          l_iDrawY  = 85 * l_iHeight / 100,
-          l_iCheckX = 75 * l_iWidth  / 100,
-          l_iCheckY = 75 * l_iWidth  / 100,
-          l_iBorder = l_iDrawX  > l_iDrawY  ? l_iHeight - l_iDrawY  : l_iWidth - l_iDrawX,
-          l_iCheckB = l_iCheckX > l_iCheckY ? l_iHeight - l_iCheckY : l_iWidth - l_iCheckX,
-          l_iPosX   = getAbsoluteClippingRect().UpperLeftCorner.X,
-          l_iPosY   = getAbsoluteClippingRect().UpperLeftCorner.Y;
+      if (IsVisible) {
+        int l_iWidth  = getAbsoluteClippingRect().getWidth (),
+            l_iHeight = getAbsoluteClippingRect().getHeight(),
+            l_iDrawX  = 85 * l_iWidth  / 100,
+            l_iDrawY  = 85 * l_iHeight / 100,
+            l_iCheckX = 75 * l_iWidth  / 100,
+            l_iCheckY = 75 * l_iWidth  / 100,
+            l_iBorder = l_iDrawX  > l_iDrawY  ? l_iHeight - l_iDrawY  : l_iWidth - l_iDrawX,
+            l_iCheckB = l_iCheckX > l_iCheckY ? l_iHeight - l_iCheckY : l_iWidth - l_iCheckX,
+            l_iPosX   = getAbsoluteClippingRect().UpperLeftCorner.X,
+            l_iPosY   = getAbsoluteClippingRect().UpperLeftCorner.Y;
 
-      m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0, 0, 0), irr::core::recti(l_iPosX, l_iPosY, l_iPosX + l_iWidth, l_iPosY + l_iHeight));
+        m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0, 0, 0), irr::core::recti(l_iPosX, l_iPosY, l_iPosX + l_iWidth, l_iPosY + l_iHeight));
 
-      m_pDrv->draw2DRectangle(IsEnabled ? (getAbsoluteClippingRect().isPointInside(m_cMousePos) && m_bInside) ? m_bMouseL ? m_cClickColor : m_cHoverColor : m_cBackgroundColor : m_cDisabledColor, irr::core::recti(l_iPosX + l_iBorder, l_iPosY + l_iBorder, l_iPosX + l_iDrawX, l_iPosY + l_iDrawY ));
+        m_pDrv->draw2DRectangle(IsEnabled ? (getAbsoluteClippingRect().isPointInside(m_cMousePos) && m_bInside) ? m_bMouseL ? m_cClickColor : m_cHoverColor : m_cBackgroundColor : m_cDisabledColor, irr::core::recti(l_iPosX + l_iBorder, l_iPosY + l_iBorder, l_iPosX + l_iDrawX, l_iPosY + l_iDrawY ));
 
-      if (m_bChecked)
-        m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0, 0, 0), irr::core::recti(l_iPosX + l_iCheckB, l_iPosY + l_iCheckB, l_iPosX + l_iCheckX, l_iPosY + l_iCheckY));
+        if (m_bChecked)
+          m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0, 0, 0), irr::core::recti(l_iPosX + l_iCheckB, l_iPosY + l_iCheckB, l_iPosX + l_iCheckX, l_iPosY + l_iCheckY));
 
-      if (getAbsoluteClippingRect().isPointInside(m_cMousePos)) {
-        if (!m_bHover)
-          CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
+        if (getAbsoluteClippingRect().isPointInside(m_cMousePos)) {
+          if (!m_bHover)
+            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
 
-        m_bHover = true;
+          m_bHover = true;
+        }
+        else m_bHover = false;
       }
-      else m_bHover = false;
     }
 
     irr::gui::EGUI_ELEMENT_TYPE CDustbinCheckbox::getType() {
