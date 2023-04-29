@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
 <dialog>
-  <element type="staticText" rect="lowerright: -8, 0, 1 , 1" tooltip="MarbleGP Version" font="small">
+  <element type="staticText" rect="lowermiddle: -6, -2, 6, 0" tooltip="MarbleGP Version" font="small">
     <attributes>
-      <attribute key="Caption" value="Version 0.8 build 210" />
+      <attribute key="Caption" value="Version 0.12 build 210" />
       <attribute key="HTextAlign" value="center" />
       <attribute key="VTextAlign" value="center" />
     </attributes>

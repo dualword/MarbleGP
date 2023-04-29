@@ -204,43 +204,29 @@ Attribute Track: ""
     </custom>
   </element>
   
-  <element type="MenuButton" rect="center: -19, -8, -1, -4" font="big" tooltip="Race against other players or AI">
+  <element type="MenuButton" rect="center: -19, -9, 18, -1" font="huge" tooltip="Race against other players or AI">
     <attributes>
       <attribute key="Name" value="free_racing" />
       <attribute key="Id" value="23001" />
-      <attribute key="Caption" value="Free Racing" />
+      <attribute key="Caption" value="Play" />
       <attribute key="TabStop" value="true" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: 1, -8, 18, -4" font="big" tooltip="Play a cup against other players or AI">
-    <attributes>
-      <attribute key="Name" value="cup" />
-      <attribute key="Id" value="23002" />
-      <attribute key="Caption" value="MarbleGP Cup" />
-    </attributes>
-  </element>
-  <element type="MenuButton" rect="center: -19, -3, -1, 1" font="big" tooltip="Add, edit and remove player profiles">
+  <element type="MenuButton" rect="center: -19, 2, -1, 6" font="big" tooltip="Add, edit and remove player profiles">
     <attributes>
       <attribute key="Name" value="profiles" />
       <attribute key="Id" value="23003" />
       <attribute key="Caption" value="Profiles" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: 1, -3, 18, 1" font="big" tooltip="Change graphics and sound settings">
+  <element type="MenuButton" rect="center: 1, 2, 18, 6" font="big" tooltip="Change graphics and sound settings">
     <attributes>
       <attribute key="Name" value="settings" />
       <attribute key="Id" value="23004" />
       <attribute key="Caption" value="Settings" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: 1, 2, 18, 6" font="big" tooltip="Take a closer look at a track of your choice">
-    <attributes>
-      <attribute key="Name" value="view_track" />
-      <attribute key="Id" value="23006" />
-      <attribute key="Caption" value="View Track" />
-    </attributes>
-  </element>
-  <element type="MenuButton" rect="center: -19, 2, -1, 6" font="big" tooltip="Show credits">
+  <element type="MenuButton" rect="center: -19, 7, -1, 11" font="big" tooltip="Show credits">
     <attributes>
       <attribute key="Name" value="credits" />
       <attribute key="Id" value="23007" />
