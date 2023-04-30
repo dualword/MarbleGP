@@ -11,7 +11,7 @@ copy ..\MarbleGP_Windows\x64\Release\MarbleGP_Windows.exe ..\..\MarbleGP
 echo *** Signing MarbleGP_Windows.exe
 SignTool.exe sign /f "%PFX_FILE%" /p "%password%" /t http://timestamp.digicert.com /fd SHA256 ..\..\MarbleGP\MarbleGP_Windows.exe
 7z.exe a -r -tzip ..\release\MarbleGP.zip ..\..\MarbleGP\*.*
-copy ..\MarbleGP_Android\app\release\app-release.apk ..\relase\marblegp.apk
+copy ..\MarbleGP_Android\app\release\app-release.apk ..\release\marblegp.apk
 setup.iss
 release_backup.bat
 set password=

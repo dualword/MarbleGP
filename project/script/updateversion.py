@@ -19,7 +19,7 @@ for l_Line in g_Lines:
     g_CopyFile = open("release_backup.bat", "w")
     g_CopyFile.write("copy ..\\release\\MarbleGP.zip %RELEASE_BACKUP%\\MarbleGP_" + l_NewVersion + ".zip\n")
     g_CopyFile.write("copy ..\\release\\MarbleGP_Setup.exe %RELEASE_BACKUP%\\MarbleGP_Setup_" + l_NewVersion + ".exe\n")
-    g_CopyFile.write("copy ..\\MarbleGP_Android\\app\\release\\marblegp.apk %RELEASE_BACKUP%\\marblegp_" + l_NewVersion + ".apk\n");
+    g_CopyFile.write("copy ..\\MarbleGP_Android\\app\\release\\app-release.apk %RELEASE_BACKUP%\\marblegp_" + l_NewVersion + ".apk\n");
     g_CopyFile.close()
     
     l_NewLine = l_Line[:l_Index + len(g_Build)] + l_NewVersion + l_Sub[l_Index2:]
