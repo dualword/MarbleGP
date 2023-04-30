@@ -300,7 +300,7 @@ void android_main(struct android_app* a_pApp) {
   }*/
 
   dustbin::CMainClass *l_pMainClass = nullptr;
-  dustbin::state::enState l_eState{};
+  dustbin::state::enState l_eState = dustbin::state::enState::Menu;
 
   int events;
   android_poll_source *pSource;
@@ -404,9 +404,10 @@ void android_main(struct android_app* a_pApp) {
     delete l_pMainClass;
     l_pMainClass = nullptr;
   }
-  while (!a_pApp->destroyRequested); // l_eState != dustbin::state::enState::Quit);
+  while (l_eState != dustbin::state::enState::Quit);
 
   // Paddleboat_destroy(l_pJni);
 
-  std::exit(0);
+  ANativeActivity_finish(a_pApp->activity);
+  std::terminate();
 }
