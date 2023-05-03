@@ -31,7 +31,6 @@
 #include <state/CMenuState.h>
 #include <gui/CTutorialHUD.h>
 #include <gui/CGameHUD.h>
-#include <CMainClass.h>
 #include <CGlobal.h>
 #include <algorithm>
 #include <Defines.h>

@@ -5,6 +5,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CMenuBackground.h>
+#include <platform/CPlatform.h>
 #include <menu/IMenuHandler.h>
 #include <menu/CMenuFactory.h>
 #include <data/CDataStructs.h>
@@ -406,6 +407,9 @@ namespace dustbin {
                 std::string l_sNext    = m_pManager->popMenuStack();
 
                 m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
+
+                platform::saveSettings();
+
                 createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
 
                 l_bRet = true;

@@ -95,6 +95,7 @@ int32_t (*g_IrrlichtInputHandler)(struct android_app* app, AInputEvent* event) =
 bool g_Focused = true;
 bool g_Quit    = false;
 bool g_Restart = false;
+bool g_Consume = true;    /**< Consume the "back" event */
 
 struct SJoystickInput {
   irr::SEvent m_cJoypadEvent;
@@ -192,7 +193,7 @@ struct SJoystickInput {
 
         m_pDevice->postEventFromUser(l_cEvent);
 
-        l_bRet = true;
+        l_bRet = g_Consume;
       }
     }
     
@@ -270,10 +271,36 @@ void AutoHideNavBar(struct android_app* state)
   state->activity->vm->DetachCurrentThread();
 }
 
+namespace dustbin {
+  namespace platform {
+    struct android_app *g_pApp = nullptr;
+
+    void saveSettings() {
+      if (g_pApp != nullptr) {
+        std::string l_sPath = g_pApp->activity->internalDataPath;
+        l_sPath += "/MarbleGP_Setup.xml";
+
+        FILE *l_pFile = fopen(l_sPath.c_str(), "w");
+
+        if (l_pFile != nullptr) {
+          fwrite(CGlobal::getInstance()->getSettings().c_str(), 1,
+                 CGlobal::getInstance()->getSettings().size(), l_pFile);
+          fclose(l_pFile);
+        }
+      }
+    }
+
+    void consumeBackEvent(bool a_bConsume) {
+      g_Consume = a_bConsume;
+    }
+  }
+}
 void android_main(struct android_app* a_pApp) {
   LOGI("Starting MarbleGP...");
   AutoHideNavBar(a_pApp);
   JNIEnv *l_pJni = nullptr;
+
+  dustbin::platform::g_pApp = a_pApp;
 
   if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
     printf("Oops");
@@ -391,12 +418,6 @@ void android_main(struct android_app* a_pApp) {
       }
     }
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit && !g_Quit);
-
-    {
-      FILE *l_pFile = fopen(l_sPath.c_str(), "w");
-      fwrite(l_pMainClass->getSettings().c_str(), 1, l_pMainClass->getSettings().size(), l_pFile);
-      fclose(l_pFile);
-    }
 
     l_pDevice->closeDevice();
     l_pDevice->drop();

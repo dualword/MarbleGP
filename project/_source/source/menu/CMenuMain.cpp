@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CMenuLoader.h>
+#include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
@@ -34,6 +35,8 @@ namespace dustbin {
           for (std::vector<data::SPlayerData>::iterator l_itPlayer = l_vProfiles.begin(); l_itPlayer != l_vProfiles.end(); l_itPlayer++) {
             printf("\n%s\n", (*l_itPlayer).m_sControls.c_str());
           }
+
+          platform::consumeBackEvent(false);
         }
 
         virtual ~CMenuMain() {
@@ -46,9 +49,11 @@ namespace dustbin {
             std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
             if (l_sButton == "settings") {
+              platform::consumeBackEvent(true);
               createMenu("menu_settings", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "profiles") {
+              platform::consumeBackEvent(true);
               createMenu("menu_profiles", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "free_racing") {
@@ -60,10 +65,12 @@ namespace dustbin {
 
                 m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_setupgame");
+                platform::consumeBackEvent(true);
                 createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
               }
               else {
                 m_pManager->pushToMenuStack("menu_selecttrack");
+                platform::consumeBackEvent(true);
                 createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState);
               }
             }
@@ -91,23 +98,28 @@ namespace dustbin {
 
               m_pState->getGlobal()->setGlobal("raceplayers", l_cPlayers.serialize());
 
+              platform::consumeBackEvent(true);
               createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "cup") {
 #ifdef _DEBUG
+              platform::consumeBackEvent(true);
               createMenu("menu_selectcup", m_pDevice, m_pManager, m_pState);
 #else
               m_pState->getGlobal()->setGlobal("message_headline", "To be Implemented");
               m_pState->getGlobal()->setGlobal("message_text"    , "MarbleGP Cup is not yet implemented");
+              platform::consumeBackEvent(true);
               createMenu("menu_message", m_pDevice, m_pManager, m_pState);
 #endif
             }
             else if (l_sButton == "credits") {
+              platform::consumeBackEvent(true);
               createMenu("menu_credits", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "race_replay") {
               m_pState->getGlobal()->setGlobal("message_headline", "To be Implemented");
               m_pState->getGlobal()->setGlobal("message_text"    , "Race Replay is not yet implemented");
+              platform::consumeBackEvent(true);
               createMenu("menu_message", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "exit") {

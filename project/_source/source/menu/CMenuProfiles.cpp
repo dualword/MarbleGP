@@ -219,6 +219,7 @@ namespace dustbin {
 
           if (l_bClose) {
             saveProfiles();
+            platform::saveSettings();
             createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
           }
         }

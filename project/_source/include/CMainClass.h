@@ -29,8 +29,8 @@ namespace dustbin {
       irr::gui::IGUIEnvironment *m_pGui;        /**< The GUI environment */
       irr::io::IFileSystem      *m_pFs;         /**< The Irrlicht file system */
 
-      std::map<std::string, std::string> m_mSettings,   /**< All the settings of the program */
-                                         m_mGlobals;    /**< The global variables */
+      std::map<std::string, std::string> m_mSettings;   /**< All the settings of the program */
+      std::map<std::string, std::string> m_mGlobals;    /**< The global variables */
 
       int m_iRasterSize;    /**< The raster size for UI layout */
 
@@ -108,7 +108,7 @@ namespace dustbin {
       * function wherever appropriate for the current system
       * @return a string with the settings
       */
-      std::string getSettings();
+      virtual std::string getSettings() override;
 
       virtual irr::IrrlichtDevice       *getIrrlichtDevice() override;   /**< Get the Irrlicht device */
       virtual irr::gui::IGUIEnvironment *getGuiEnvironment() override;   /**< Get the Irrlicht GUI environment */

@@ -6,6 +6,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
+#include <platform/CPlatform.h>
 #include <gui/CGuiLogDisplay.h>
 #include <menu/IMenuHandler.h>
 #include <menu/IMenuManager.h>
@@ -317,6 +318,7 @@ namespace dustbin {
                 l_cEvent.UserEvent.UserData1 = c_iEventSettingsChanged;
                 CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
 
+                platform::saveSettings();
                 createMenu("menu_main", m_pDevice, m_pManager, m_pState);
               }
               else if (l_sSender == "cancel") {

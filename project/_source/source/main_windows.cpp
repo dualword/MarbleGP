@@ -110,12 +110,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     }
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit);
 
-    {
-      std::ofstream l_cFile(l_sPath);
-      l_cFile << l_pMainClass->getSettings();
-      l_cFile.close();
-    }
-
     delete l_pMainClass;
     l_pMainClass = nullptr;
 

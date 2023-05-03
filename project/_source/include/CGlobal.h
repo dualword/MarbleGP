@@ -96,6 +96,13 @@ namespace dustbin {
       virtual std::string getSetting(const std::string &a_sKey) = 0;
 
       /**
+      * Get the settings string that will be stored by the main
+      * function wherever appropriate for the current system
+      * @return a string with the settings
+      */
+      virtual std::string getSettings() = 0;
+
+      /**
       * Set a global (globals are not stored when the program quits and restored on startup)
       * @param a_sKey the key of the global
       * @param a_sValue the value of the global

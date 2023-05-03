@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 
+#include <CMainClass.h>
 #include <irrlicht.h>
 #include <filesystem>
 #include <shellapi.h>
@@ -16,6 +17,8 @@
 #include <cstring>
 #include <codecvt>
 #include <tchar.h>
+#include <fstream>
+#include <streambuf>
 #include <time.h>
 #include <string>
 #include <vector>
@@ -102,6 +105,35 @@ namespace dustbin {
 
     void preventScreenSaver() {
       SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
+    }
+
+    void saveSettings() {
+      data::SSettings l_cSettings = CGlobal::getInstance()->getSettingData();
+
+      TCHAR l_sPath       [MAX_PATH];
+      TCHAR l_sDataPath   [MAX_PATH];
+      TCHAR l_sTexturePath[MAX_PATH];
+
+      if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
+        PathAppend(l_sPath, L"\\DustbinGames\\");
+        if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
+
+#ifdef _DEBUG
+        PathAppend(l_sPath, L"\\MarbleGP_debug\\");
+#else
+        PathAppend(l_sPath, L"\\MarbleGP\\");
+#endif
+        if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
+        PathAppend(l_sPath, L"MarbleGP_Setup.xml");
+      }
+
+      std::ofstream l_cFile(l_sPath);
+      l_cFile << CGlobal::getInstance()->getSettings();;
+      l_cFile.close();
+    }
+
+    void consumeBackEvent(bool a_bConsume) {
+      // Android specific, nothing to do here
     }
   }
 }
