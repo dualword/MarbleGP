@@ -296,6 +296,7 @@ namespace dustbin {
                   m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
                   m_pState->getGlobal()->initNextRaceScreen();
 
+                  platform::saveSettings();
                   if (m_pServer != nullptr) {
                     m_pServer->sendGlobalData("gamedata");
                     m_iClientState = 1;
