@@ -4,6 +4,7 @@
 #include <controller/touch/ITouchController.h>
 #include <irrlicht.h>
 #include <string>
+#include <map>
 
 namespace dustbin {
   namespace controller {
@@ -25,10 +26,28 @@ namespace dustbin {
           Count    = 6
         };
 
+        enum class enControlAreas {
+          Left = 0,
+          Right = 1,
+          Brake = 2,
+          Rearview = 3,
+          Respawn = 4,
+
+          Count = 5
+        };
+
         SControl m_aControls[(int)enControl::Count];
+
+        irr::core::recti m_aCtrlRects[(int)enControlAreas::Count];
+
+        std::map<size_t, irr::core::vector2di> m_mTouch;
 
         irr::s32 m_iThrottleHeight;
         irr::f32 m_fSteer;
+        irr::f32 m_fThrottle;
+
+        bool m_bRearView;
+        bool m_bRespawn;
 
         void addToControlMap(enControl a_eControl, const irr::core::recti &a_cDestination, const irr::video::SColor &a_cColor, const std::string &a_sOff, const std::string &a_sOn);
         void calculateSteer();

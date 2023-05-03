@@ -430,5 +430,4 @@ void android_main(struct android_app* a_pApp) {
   // Paddleboat_destroy(l_pJni);
 
   ANativeActivity_finish(a_pApp->activity);
-  std::terminate();
 }

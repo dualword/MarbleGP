@@ -24,16 +24,16 @@ namespace dustbin {
 
       switch (a_eType) {
         case IControllerGame::enType::Touch:
-          m_pController = new CControllerTouchCentral(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
-          break;
+          // m_pController = new CControllerTouchCentral(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
+          // break;
 
         case IControllerGame::enType::TouchSteerLeft:
-          m_pController = new CControllerTouchSide_Left(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
-          break;
+          // m_pController = new CControllerTouchSide_Left(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
+          // break;
 
         case IControllerGame::enType::TouchSteerRight:
-          m_pController = new CControllerTouchSide_Right(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
-          break;
+          // m_pController = new CControllerTouchSide_Right(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
+          // break;
 
         case IControllerGame::enType::TouchSteer:
           m_pController = new CControllerTouchSteerOnly(CGlobal::getInstance()->getVideoDriver(), l_cViewport);

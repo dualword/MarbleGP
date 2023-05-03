@@ -3,7 +3,7 @@
 
 namespace dustbin {
   namespace controller {
-    CControllerTouchSteerOnly::CControllerTouchSteerOnly(irr::video::IVideoDriver* a_pDrv, const irr::core::recti &a_cViewport) : ITouchController(a_pDrv, a_cViewport), m_iThrottleHeight(0), m_fSteer(0.0f) {
+    CControllerTouchSteerOnly::CControllerTouchSteerOnly(irr::video::IVideoDriver* a_pDrv, const irr::core::recti &a_cViewport) : ITouchController(a_pDrv, a_cViewport), m_iThrottleHeight(0), m_fSteer(0.0f), m_fThrottle(0.0f), m_bRearView(false), m_bRespawn(false) {
       m_iThrottleHeight = m_cViewport.getHeight() / 8;
       irr::core::vector2di l_cCenter = a_cViewport.getCenter();
       irr::core::dimension2du l_cSize = irr::core::dimension2du (m_iThrottleHeight, m_iThrottleHeight);
@@ -14,6 +14,31 @@ namespace dustbin {
       addToControlMap(enControl::Respawn , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - m_iThrottleHeight,                                                   0), l_cSize), irr::video::SColor(128, 255, 255,    0), "data/images/ctrl_respawn_off.png", "data/images/ctrl_respawn.png");
       addToControlMap(enControl::BrakeL  , irr::core::recti(irr::core::vector2di(                                         0, m_cViewport.getHeight()     - m_iThrottleHeight    ), l_cSize), irr::video::SColor(128, 255,   0,    0), "data/images/ctrl_brake_off.png", "data/images/ctrl_brake.png");
       addToControlMap(enControl::BrakeR  , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - m_iThrottleHeight, m_cViewport.getHeight()     - m_iThrottleHeight    ), l_cSize), irr::video::SColor(128, 255,   0,    0), "data/images/ctrl_brake_off.png", "data/images/ctrl_brake.png");
+
+      m_aCtrlRects[(int)enControlAreas::Left] = irr::core::recti(
+        irr::core::vector2di(0, l_cSize.Height),
+        irr::core::dimension2du(m_cViewport.getWidth() / 2, (2 * m_cViewport.getHeight() / 3))
+      );
+
+      m_aCtrlRects[(int)enControlAreas::Right] = irr::core::recti(
+        irr::core::vector2di(m_cViewport.getWidth() / 2 , l_cSize.Height),
+        irr::core::dimension2du(m_cViewport.getWidth() / 2, (2 * m_cViewport.getHeight() / 3))
+      );
+
+      m_aCtrlRects[(int)enControlAreas::Brake] = irr::core::recti(
+        irr::core::vector2di(0, 2 * m_cViewport.getHeight() / 3),
+        irr::core::dimension2du(m_cViewport.getWidth(), m_cViewport.getHeight() / 3)
+      );
+
+      m_aCtrlRects[(int)enControlAreas::Rearview] = irr::core::recti(
+        irr::core::vector2di(0, 0),
+        irr::core::dimension2du(m_cViewport.getWidth() / 2, 2 * l_cSize.Height)
+      );
+
+      m_aCtrlRects[(int)enControlAreas::Respawn] = irr::core::recti(
+        irr::core::vector2di(m_cViewport.getWidth() / 2, 0),
+        irr::core::dimension2du(m_cViewport.getWidth() / 2, 2 * l_cSize.Height)
+      );
     }
 
     CControllerTouchSteerOnly::~CControllerTouchSteerOnly() {
@@ -25,7 +50,7 @@ namespace dustbin {
     * @return the throttle state
     */
     irr::f32 CControllerTouchSteerOnly::getThrottle() {
-      return 0.0f;
+      return m_fThrottle;
     }
 
     /**
@@ -41,7 +66,7 @@ namespace dustbin {
     * @return true if control >= 0.5, false otherwise
     */
     bool CControllerTouchSteerOnly::getBrake() {
-      return m_aControls[(int)enControl::BrakeR].m_bTouched||  m_aControls[(int)enControl::BrakeL].m_bTouched;
+      return m_fThrottle < 0.25f;
     }
 
     /**
@@ -49,7 +74,7 @@ namespace dustbin {
     * @return true if control >= 0.5, false otherwise
     */
     bool CControllerTouchSteerOnly::getRearView() {
-      return m_aControls[(int)enControl::Rearview].m_bTouched;
+      return m_bRearView;
     }
 
     /**
@@ -57,7 +82,7 @@ namespace dustbin {
     * @return true if control >= 0.5, false otherwise
     */
     bool CControllerTouchSteerOnly::getRespawn() {
-      return m_aControls[(int)enControl::Respawn].m_bTouched;
+      return m_bRespawn;
     }
 
     /**
@@ -94,55 +119,18 @@ namespace dustbin {
 #ifdef _TOUCH_CONTROL
       if (a_cEvent.EventType == irr::EET_TOUCH_INPUT_EVENT) {
         if (a_cEvent.TouchInput.Event == irr::ETIE_PRESSED_DOWN) {
-          irr::core::vector2di l_cTouch = irr::core::vector2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
-
-          if (l_cTouch.X < m_cViewport.getWidth() / 2 && l_cTouch.Y > m_iThrottleHeight && l_cTouch.Y < m_cViewport.getHeight() - m_iThrottleHeight) {
-            m_aControls[(int)enControl::Left].m_bTouched = true;
-            m_aControls[(int)enControl::Left].m_iTouchID = a_cEvent.TouchInput.ID;
-          }
-          if (l_cTouch.X > m_cViewport.getWidth() / 2 && l_cTouch.Y >  m_iThrottleHeight && l_cTouch.Y < m_cViewport.getHeight() - m_iThrottleHeight) {
-            m_aControls[(int)enControl::Right].m_bTouched = true;
-            m_aControls[(int)enControl::Right].m_iTouchID = a_cEvent.TouchInput.ID;
-          }
-          if (l_cTouch.X < m_cViewport.getWidth() / 2 && l_cTouch.Y <= m_iThrottleHeight) {
-            m_aControls[(int)enControl::Rearview].m_bTouched = true;
-            m_aControls[(int)enControl::Rearview].m_iTouchID = a_cEvent.TouchInput.ID;
-          }
-          if (l_cTouch.X > m_cViewport.getWidth() / 2 && l_cTouch.Y <= m_iThrottleHeight) {
-            m_aControls[(int)enControl::Respawn ].m_bTouched = true;
-            m_aControls[(int)enControl::Respawn ].m_iTouchID = a_cEvent.TouchInput.ID;
-          }
-          if (l_cTouch.Y >= m_cViewport.getHeight() - m_iThrottleHeight) {
-            if (l_cTouch.X < m_cViewport.getWidth() / 2) {
-              m_aControls[(int)enControl::BrakeL].m_bTouched = true;
-              m_aControls[(int)enControl::BrakeL].m_iTouchID = a_cEvent.TouchInput.ID;
-            } else {
-              m_aControls[(int)enControl::BrakeR].m_bTouched = true;
-              m_aControls[(int)enControl::BrakeR].m_iTouchID = a_cEvent.TouchInput.ID;
-            }
-          }
-
+          m_mTouch[a_cEvent.TouchInput.ID] = irr::core::vector2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
           calculateSteer();
         }
         else if (a_cEvent.TouchInput.Event == irr::ETIE_LEFT_UP) {
-          for (int i = 0; i < (int)enControl::Count; i++) {
-            if (m_aControls[i].m_iTouchID == a_cEvent.TouchInput.ID) {
-              m_aControls[i].m_iTouchID = -1;
-              m_aControls[i].m_bTouched = false;
-            }
-          }
+          if (m_mTouch.find(a_cEvent.TouchInput.ID) != m_mTouch.end())
+            m_mTouch.erase(a_cEvent.TouchInput.ID);
+
           calculateSteer();
         }
         else if (a_cEvent.TouchInput.Event == irr::ETIE_MOVED) {
-          if (m_aControls[(int)enControl::Left].m_bTouched && m_aControls[(int)enControl::Left].m_iTouchID == a_cEvent.TouchInput.ID) {
-            m_aControls[(int)enControl::BrakeL].m_bTouched = a_cEvent.TouchInput.Y >= m_cViewport.getHeight() - m_iThrottleHeight;
-            m_aControls[(int)enControl::BrakeL].m_iTouchID = a_cEvent.TouchInput.ID;
-          }
-
-          if (m_aControls[(int)enControl::Right].m_bTouched && m_aControls[(int)enControl::Right].m_iTouchID == a_cEvent.TouchInput.ID) {
-            m_aControls[(int)enControl::BrakeR].m_bTouched = a_cEvent.TouchInput.Y >= m_cViewport.getHeight() - m_iThrottleHeight;
-            m_aControls[(int)enControl::BrakeR].m_iTouchID = a_cEvent.TouchInput.ID;
-          }
+          m_mTouch[a_cEvent.TouchInput.ID] = irr::core::vector2di(a_cEvent.TouchInput.X, a_cEvent.TouchInput.Y);
+          calculateSteer();
         }
       }
 #endif
@@ -158,12 +146,31 @@ namespace dustbin {
     }
 
     void CControllerTouchSteerOnly::calculateSteer() {
-      if (m_aControls[(int)enControl::Left].m_bTouched)
-        m_fSteer = -1.0f;
-      else if (m_aControls[(int)enControl::Right].m_bTouched)
-        m_fSteer = 1.0f;
-      else
-        m_fSteer = 0.0f;
+      m_fSteer    = 0.0f;
+      m_fThrottle = 1.0f;
+      m_bRearView = false;
+      m_bRespawn  = false;
+
+      for (std::map<size_t, irr::core::vector2di>::iterator l_itTouch = m_mTouch.begin(); l_itTouch != m_mTouch.end(); l_itTouch++) {
+        for (int i = 0; i < (int)enControlAreas::Count; i++) {
+          if (m_aCtrlRects[i].isPointInside(l_itTouch->second)) {
+            switch ((enControlAreas)i) {
+              case enControlAreas::Left    : m_fSteer    -=  1.0f; break;
+              case enControlAreas::Right   : m_fSteer    +=  1.0f; break;
+              case enControlAreas::Brake   : m_fThrottle  = -1.0f; break;
+              case enControlAreas::Rearview: m_bRearView  =  true; break;
+              case enControlAreas::Respawn : m_bRespawn   =  true; break;
+            }
+          }
+        }
+      }
+
+      m_aControls[(int)enControl::Left    ].m_bTouched = m_fSteer    < 0.0f;
+      m_aControls[(int)enControl::Right   ].m_bTouched = m_fSteer    > 0.0f;
+      m_aControls[(int)enControl::BrakeR  ].m_bTouched = m_fThrottle < 0.0f;
+      m_aControls[(int)enControl::BrakeL  ].m_bTouched = m_fThrottle < 0.0f;
+      m_aControls[(int)enControl::Rearview].m_bTouched = m_bRearView;
+      m_aControls[(int)enControl::Respawn ].m_bTouched = m_bRespawn;
     }
   }
 }
