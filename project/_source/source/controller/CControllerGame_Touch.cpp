@@ -1,9 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
-#include <controller/touch/CControllerTouchSide_Right.h>
-#include <controller/touch/CControllerTouchSide_Left.h>
 #include <controller/touch/CControllerTouchSteerOnly.h>
-#include <controller/touch/CControllerTouchCentral.h>
 #include <controller/CControllerGame_Touch.h>
 #include <CGlobal.h>
 
@@ -24,18 +21,6 @@ namespace dustbin {
 
       switch (a_eType) {
         case IControllerGame::enType::Touch:
-          // m_pController = new CControllerTouchCentral(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
-          // break;
-
-        case IControllerGame::enType::TouchSteerLeft:
-          // m_pController = new CControllerTouchSide_Left(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
-          // break;
-
-        case IControllerGame::enType::TouchSteerRight:
-          // m_pController = new CControllerTouchSide_Right(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
-          // break;
-
-        case IControllerGame::enType::TouchSteer:
           m_pController = new CControllerTouchSteerOnly(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
           break;
 
@@ -108,7 +93,10 @@ namespace dustbin {
     * @return true if the button was pressed since the last query, false otherwise
     */
     bool CControllerGame_Touch::withdrawFromRace() {
-      return false;
+      if (m_pController != nullptr)
+        return m_pController->withdrawFromRace();
+      else
+        return false;
     }
 
     /**
@@ -116,7 +104,10 @@ namespace dustbin {
     * @return true if the button was pressed since the last query, false otherwise
     */
     bool CControllerGame_Touch::pause() {
-      return false;
+      if (m_pController != nullptr)
+        return m_pController->pause();
+      else
+        return false;
     }
 
     /**

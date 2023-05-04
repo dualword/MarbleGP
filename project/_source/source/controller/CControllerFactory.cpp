@@ -28,9 +28,6 @@ namespace dustbin {
       std::string l_aCtrl[] = {
         "DustbinController"    ,
         "DustbinTouchControl"  ,
-        "DustbinTouchSteerLeft",
-        "DustbinTouchSteerRight",
-        "DustbinTouchSteerOnly",
         "DustbinGyroscope"     ,
         ""                      
       };
@@ -40,7 +37,7 @@ namespace dustbin {
         if (l_sSub == l_sCtrl) {
           l_bDataValid = true;
 
-          a_bShowRaking = l_sSub == "DustbinController" || l_sSub == "DustbinGyroscope";
+          a_bShowRaking = l_sSub == "DustbinController";
 
           break;
         }

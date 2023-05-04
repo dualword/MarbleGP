@@ -139,7 +139,7 @@ namespace dustbin {
       m_bDebugAIDice (false),
 #ifdef _ANDROID
       m_bVirtualKeys (true),
-      m_sController("DustbinTouchSteerLeft"),
+      m_sController("DustbinTouchControl"),
 #else
       m_bVirtualKeys (false),
       m_sController  ("DustbinController;control;f%3bl%3bForward%3bh%3ba%3bn%3bM%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBackward%3bh%3ba%3bn%3bO%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bLeft%3bh%3ba%3bn%3bL%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRight%3bh%3ba%3bn%3bN%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBrake%3bh%3ba%3bn%3bG%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRearview%3bh%3ba%3bn%3bj%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRespawn%3bh%3ba%3bn%3bn%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bPause%3bh%3ba%3bn%3bt%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bCancel%2520Race%3bh%3ba%3bn%3bB%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb"),

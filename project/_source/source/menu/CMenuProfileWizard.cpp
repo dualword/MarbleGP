@@ -351,9 +351,6 @@ namespace dustbin {
 
                 std::map<std::wstring, std::string> l_mItemMap = {
                   { L"Touch Control"                , "DustbinTouchControl"    },
-                  { L"Touch Control, Steering Left" , "DustbinTouchSteerLeft"  },
-                  { L"Touch Control, Steering Right", "DustbinTouchSteerRight" },
-                  { L"Touch Steer Only"             , "DustbinTouchSteerOnly"  },
                   { L"Gyroscope"                    , "DustbinGyroscope"       }
                 };
 
@@ -486,9 +483,6 @@ namespace dustbin {
                   if (l_pType != nullptr && l_pImage != nullptr) {
                     std::vector<std::tuple<std::string, std::string, std::wstring>> l_mItemMap = {
                       { "DustbinTouchControl"   , "data/images/ctrl_config_touch.png"      , L"Touch Control"                 },
-                      { "DustbinTouchSteerLeft" , "data/images/ctrl_config_touch_left.png" , L"Touch Control, Steering Left"  },
-                      { "DustbinTouchSteerRight", "data/images/ctrl_config_touch_right.png", L"Touch Control, Steering Right" },
-                      { "DustbinTouchSteerOnly" , "data/images/ctrl_config_touch_steer.png", L"Touch Steer Only"              },
                       { "DustbinGyroscope"      , "data/images/ctrl_config_gyro.png"       , L"Gyroscope"                     }
                     };
 
@@ -657,12 +651,6 @@ namespace dustbin {
             if (l_pType != nullptr && l_pImage != nullptr) {
               l_pType->addItem(L"Gamepad"); 
               l_pType->addItem(L"Touch Control");
-              l_pType->addItem(L"Touch Control, Steering Left");
-              l_pType->addItem(L"Touch Control, Steering Right");
-
-              if (m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::Medium || m_cPlayer.m_eAiHelp == data::SPlayerData::enAiHelp::High)
-                l_pType->addItem(L"Touch Steer Only"); 
-
               l_pType->addItem(L"Gyroscope");
             }
           }
@@ -1046,8 +1034,6 @@ namespace dustbin {
 
                       std::map<std::wstring, std::string> l_mItemMap = {
                         { L"Touch Control"                , "data/images/ctrl_config_touch.png"       },
-                        { L"Touch Control, Steering Left" , "data/images/ctrl_config_touch_left.png"  },
-                        { L"Touch Control, Steering Right", "data/images/ctrl_config_touch_right.png" },
                         { L"Touch Steer Only"             , "data/images/ctrl_config_touch_steer.png" },
                         { L"Gyroscope"                    , "data/images/ctrl_config_gyro.png"        }
                       };

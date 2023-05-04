@@ -94,21 +94,9 @@ namespace dustbin {
             if (m_pControl != nullptr)
               m_pControl->setText(L"Controls: Touch");
           }
-          else if (l_sCtrl == "DustbinTouchSteerOnly") {
-            if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Touch Steer Only");
-          }
           else if (l_sCtrl == "DustbinGyroscope") {
             if (m_pControl != nullptr)
               m_pControl->setText(L"Controls: Gyroscope");
-          }
-          else if (l_sCtrl == "DustbinTouchSteerLeft") {
-            if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Steering Left");
-          }
-          else if (l_sCtrl == "DustbinTouchSteerRight") {
-            if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Steering Right");
           }
           else {
             controller::CControllerGame l_cCtrl;

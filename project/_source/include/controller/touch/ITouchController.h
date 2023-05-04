@@ -65,12 +65,23 @@ namespace dustbin {
         virtual bool getRespawn() = 0;
 
         /**
+        * Get the cancel button state
+        * @return true if the button was pressed since the last query, false otherwise
+        */
+        virtual bool withdrawFromRace() = 0;
+
+        /**
+        * Get the pause button state
+        * @return true if the button was pressed since the last query, false otherwise
+        */
+        virtual bool pause() = 0;
+
+        /**
         * Handle an event
         * @param a_cEvent the event to handle
         * @return true if the event was handled, false otherwise
         */
         virtual bool handleEvent(const irr::SEvent &a_cEvent) = 0;
-
         /**
         * Draw the controller
         */

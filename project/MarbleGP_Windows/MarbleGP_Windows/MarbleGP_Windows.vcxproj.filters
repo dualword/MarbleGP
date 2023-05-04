@@ -645,19 +645,7 @@
     <ClCompile Include="..\..\_source\source\controller\touch\ITouchController.cpp">
       <Filter>Quelldateien\controller\touch</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchCentral.cpp">
-      <Filter>Quelldateien\controller\touch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide.cpp">
-      <Filter>Quelldateien\controller\touch</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp">
-      <Filter>Quelldateien\controller\touch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Right.cpp">
-      <Filter>Quelldateien\controller\touch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSide_Left.cpp">
       <Filter>Quelldateien\controller\touch</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1079,19 +1067,7 @@
     <ClInclude Include="..\..\_source\include\controller\touch\ITouchController.h">
       <Filter>Headerdateien\controller\touch</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchCentral.h">
-      <Filter>Headerdateien\controller\touch</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSteerOnly.h">
-      <Filter>Headerdateien\controller\touch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide.h">
-      <Filter>Headerdateien\controller\touch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide_Left.h">
-      <Filter>Headerdateien\controller\touch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSide_Right.h">
       <Filter>Headerdateien\controller\touch</Filter>
     </ClInclude>
   </ItemGroup>

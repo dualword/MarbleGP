@@ -40,18 +40,6 @@ namespace dustbin {
         l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::Touch, a_cViewport);
         m_bOwnsCtrl   = false;
       }
-      else if (a_sControls.substr(0, std::string("DustbinTouchSteerLeft").size()) == "DustbinTouchSteerLeft") {
-        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchSteerLeft, a_cViewport);
-        m_bOwnsCtrl   = false;
-      }
-      else if (a_sControls.substr(0, std::string("DustbinTouchSteerRight").size()) == "DustbinTouchSteerRight") {
-        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchSteerRight, a_cViewport);
-        m_bOwnsCtrl   = false;
-      }
-      else if (a_sControls.substr(0, std::string("DustbinTouchSteerOnly").size()) == "DustbinTouchSteerOnly") {
-        l_pController = new controller::CControllerGame_Touch(controller::CControllerGame::enType::TouchSteer, a_cViewport);
-        m_bOwnsCtrl   = false;
-      }
       else if (a_sControls.substr(0, std::string("DustbinGyroscope").size()) == "DustbinGyroscope") {
         l_pController = new controller::CControllerGame_Gyro(controller::CControllerGame::enType::Gyroscope, a_cViewport, a_eAiHelp == data::SPlayerData::enAiHelp::High || a_eAiHelp == data::SPlayerData::enAiHelp::Medium);
         m_bOwnsCtrl = false;
