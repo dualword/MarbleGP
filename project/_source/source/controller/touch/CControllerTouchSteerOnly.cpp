@@ -8,14 +8,21 @@ namespace dustbin {
       irr::core::vector2di l_cCenter = a_cViewport.getCenter();
       irr::core::dimension2du l_cSize = irr::core::dimension2du (m_iThrottleHeight, m_iThrottleHeight);
 
-      addToControlMap(enControl::Left    , irr::core::recti(irr::core::vector2di(                                            0 , m_cViewport.getHeight() / 2 - m_iThrottleHeight / 2), l_cSize), irr::video::SColor(128,    0,  0, 255), "data/images/ctrl_left_off.png"    , "data/images/ctrl_left.png");
-      addToControlMap(enControl::Right   , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -    m_iThrottleHeight , m_cViewport.getHeight() / 2 - m_iThrottleHeight / 2), l_cSize), irr::video::SColor(128,    0,  0, 255), "data/images/ctrl_right_off.png"   , "data/images/ctrl_right.png");
-      addToControlMap(enControl::Rearview, irr::core::recti(irr::core::vector2di(                                            0 ,                                                   0), l_cSize), irr::video::SColor(128, 255, 255,   0), "data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png");
-      addToControlMap(enControl::Respawn , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -    m_iThrottleHeight ,                                                   0), l_cSize), irr::video::SColor(128, 255, 255,   0), "data/images/ctrl_respawn_off.png" , "data/images/ctrl_respawn.png");
-      addToControlMap(enControl::BrakeL  , irr::core::recti(irr::core::vector2di(                                            0 , m_cViewport.getHeight()     - m_iThrottleHeight    ), l_cSize), irr::video::SColor(128, 255,   0,   0), "data/images/ctrl_brake_off.png"   , "data/images/ctrl_brake.png");
-      addToControlMap(enControl::BrakeR  , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -     m_iThrottleHeight, m_cViewport.getHeight()     - m_iThrottleHeight    ), l_cSize), irr::video::SColor(128, 255,   0,   0), "data/images/ctrl_brake_off.png"   , "data/images/ctrl_brake.png");
-      addToControlMap(enControl::Pause   , irr::core::recti(irr::core::vector2di(                         2 * m_iThrottleHeight,                                                   0), l_cSize), irr::video::SColor(128, 128, 128, 128), "data/images/ctrl_pause_off.png"   , "data/images/ctrl_pause.png");
-      addToControlMap(enControl::Withdraw, irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - 3 * m_iThrottleHeight,                                                   0), l_cSize), irr::video::SColor(128, 128, 128, 128), "data/images/ctrl_withdraw_off.png", "data/images/ctrl_withdraw.png");
+      irr::s32 l_iOffset = m_iThrottleHeight / 4;
+
+      addToControlMap(enControl::Left    , irr::core::recti(irr::core::vector2di(                                                 l_iOffset , m_cViewport.getHeight() / 2 - m_iThrottleHeight / 2       ), l_cSize), irr::video::SColor(128,    0,  0, 255), "data/images/ctrl_left_off.png"    , "data/images/ctrl_left.png");
+      addToControlMap(enControl::Right   , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -     m_iThrottleHeight - l_iOffset , m_cViewport.getHeight() / 2 - m_iThrottleHeight / 2       ), l_cSize), irr::video::SColor(128,    0,  0, 255), "data/images/ctrl_right_off.png"   , "data/images/ctrl_right.png");
+      addToControlMap(enControl::Rearview, irr::core::recti(irr::core::vector2di(                                                 l_iOffset,                                                   l_iOffset), l_cSize), irr::video::SColor(128, 255, 255,   0), "data/images/ctrl_rearview_off.png", "data/images/ctrl_rearview.png");
+      addToControlMap(enControl::Respawn , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -     m_iThrottleHeight - l_iOffset,                                                   l_iOffset), l_cSize), irr::video::SColor(128, 255, 255,   0), "data/images/ctrl_respawn_off.png" , "data/images/ctrl_respawn.png");
+      addToControlMap(enControl::BrakeL  , irr::core::recti(irr::core::vector2di(                                                 l_iOffset, m_cViewport.getHeight()     - m_iThrottleHeight - l_iOffset), l_cSize), irr::video::SColor(128, 255,   0,   0), "data/images/ctrl_brake_off.png"   , "data/images/ctrl_brake.png");
+      addToControlMap(enControl::BrakeR  , irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -     m_iThrottleHeight - l_iOffset, m_cViewport.getHeight()     - m_iThrottleHeight - l_iOffset), l_cSize), irr::video::SColor(128, 255,   0,   0), "data/images/ctrl_brake_off.png"   , "data/images/ctrl_brake.png");
+      addToControlMap(enControl::Pause   , irr::core::recti(irr::core::vector2di(                         2 * m_iThrottleHeight            ,                                                   l_iOffset), l_cSize), irr::video::SColor(128, 128, 128, 128), "data/images/ctrl_pause_off.png"   , "data/images/ctrl_pause.png");
+      addToControlMap(enControl::Withdraw, irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() - 3 * m_iThrottleHeight            ,                                                   l_iOffset), l_cSize), irr::video::SColor(128, 128, 128, 128), "data/images/ctrl_withdraw_off.png", "data/images/ctrl_withdraw.png");
+      addToControlMap(enControl::GyroRstL, irr::core::recti(irr::core::vector2di(                                                 l_iOffset , m_cViewport.getHeight() / 2 - m_iThrottleHeight / 2       ), l_cSize), irr::video::SColor(128,    0,  0, 255), "data/images/gyro_reset_off.png"   , "data/images/gyro_reset.png");
+      addToControlMap(enControl::GyroRstR, irr::core::recti(irr::core::vector2di(m_cViewport.getWidth() -     m_iThrottleHeight - l_iOffset , m_cViewport.getHeight() / 2 - m_iThrottleHeight / 2       ), l_cSize), irr::video::SColor(128,    0,  0, 255), "data/images/gyro_reset_off.png"   , "data/images/gyro_reset.png");
+
+      m_aControls[(int)enControl::GyroRstL].m_bActive = false;
+      m_aControls[(int)enControl::GyroRstR].m_bActive = false;
 
       m_aCtrlRects[(int)enControlAreas::Left] = irr::core::recti(
         irr::core::vector2di(0, 2 * l_cSize.Height),
@@ -29,7 +36,7 @@ namespace dustbin {
 
       m_aCtrlRects[(int)enControlAreas::Brake] = irr::core::recti(
         irr::core::vector2di(0, 3 * m_cViewport.getHeight() / 4),
-        irr::core::dimension2du(m_cViewport.getWidth(), m_cViewport.getHeight() / 3)
+        irr::core::dimension2du(m_cViewport.getWidth(), 3 * m_cViewport.getHeight() / 4)
       );
     }
 
@@ -120,21 +127,23 @@ namespace dustbin {
     */
     void CControllerTouchSteerOnly::draw() {
       for (int i = 0; i < (int)enControl::Count; i++) {
-        irr::video::ITexture *l_pTexture = m_aControls[i].m_bTouched ? m_aControls[i].m_pTextureOn : m_aControls[i].m_pTextureOff;
+        if (m_aControls[i].m_bActive) {
+          irr::video::ITexture *l_pTexture = m_aControls[i].m_bTouched ? m_aControls[i].m_pTextureOn : m_aControls[i].m_pTextureOff;
 
-        if (l_pTexture != nullptr) {
-          m_pDrv->draw2DImage(
-            l_pTexture,
-            m_aControls[i].m_cDestination,
-            m_aControls[i].m_cSource,
-            nullptr,
-            nullptr,
-            true
-          );
-        }
-        else {
-          m_pDrv->draw2DRectangle(m_aControls[i].m_cBackground, m_aControls[i].m_cDestination);
-        }
+          if (l_pTexture != nullptr) {
+            m_pDrv->draw2DImage(
+              l_pTexture,
+              m_aControls[i].m_cDestination,
+              m_aControls[i].m_cSource,
+              nullptr,
+              nullptr,
+              true
+            );
+          }
+          else {
+            m_pDrv->draw2DRectangle(m_aControls[i].m_cBackground, m_aControls[i].m_cDestination);
+          }
+          }
       }
     }
 
@@ -181,6 +190,8 @@ namespace dustbin {
         enControl::Respawn,
         enControl::Pause,
         enControl::Withdraw,
+        enControl::GyroRstL,
+        enControl::GyroRstR,
 
         enControl::Count
       };
@@ -204,12 +215,12 @@ namespace dustbin {
         }
 
         for (int i = 0; l_aBtns[i] != enControl::Count; i++) {
-          m_aControls[(int)l_aBtns[i]].m_bTouched |= m_aControls[(int)l_aBtns[i]].m_cDestination.isPointInside(l_itTouch->second);
+          m_aControls[(int)l_aBtns[i]].m_bTouched |= m_aControls[(int)l_aBtns[i]].m_bActive && m_aControls[(int)l_aBtns[i]].m_cDestination.isPointInside(l_itTouch->second);
         }
       }
 
-      m_aControls[(int)enControl::Left    ].m_bTouched = m_fSteer    < 0.0f;
-      m_aControls[(int)enControl::Right   ].m_bTouched = m_fSteer    > 0.0f;
+      m_aControls[(int)enControl::Left    ].m_bTouched = m_fSteer    < 0.0f && m_aControls[(int)enControl::Left ].m_bActive;
+      m_aControls[(int)enControl::Right   ].m_bTouched = m_fSteer    > 0.0f && m_aControls[(int)enControl::Right].m_bActive;
       m_aControls[(int)enControl::BrakeR  ].m_bTouched = m_fThrottle < 0.0f;
       m_aControls[(int)enControl::BrakeL  ].m_bTouched = m_fThrottle < 0.0f;
     }

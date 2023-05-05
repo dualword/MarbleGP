@@ -1034,7 +1034,6 @@ namespace dustbin {
 
                       std::map<std::wstring, std::string> l_mItemMap = {
                         { L"Touch Control"                , "data/images/ctrl_config_touch.png"       },
-                        { L"Touch Steer Only"             , "data/images/ctrl_config_touch_steer.png" },
                         { L"Gyroscope"                    , "data/images/ctrl_config_gyro.png"        }
                       };
                     

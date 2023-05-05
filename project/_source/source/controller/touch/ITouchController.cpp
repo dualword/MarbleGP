@@ -4,7 +4,7 @@
 
 namespace dustbin {
   namespace controller {
-    ITouchController::SControl::SControl() : m_pTextureOff(nullptr), m_pTextureOn(nullptr), m_bTouched(false), m_iTouchID(-1) {
+    ITouchController::SControl::SControl() : m_pTextureOff(nullptr), m_pTextureOn(nullptr), m_bTouched(false), m_bActive(true), m_iTouchID(-1) {
     }
 
     ITouchController::SControl::SControl(
@@ -17,6 +17,7 @@ namespace dustbin {
       m_pTextureOff(a_pOff),
       m_pTextureOn (a_pOn),
       m_bTouched   (false),
+      m_bActive    (true),
       m_iTouchID   (-1)
     {
       m_cDestination = a_cDestination;

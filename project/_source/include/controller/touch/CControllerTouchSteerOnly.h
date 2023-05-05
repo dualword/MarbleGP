@@ -14,7 +14,7 @@ namespace dustbin {
     * This controller is for AI help marbles, only steering, brake, rearview and respawn are available
     */
     class CControllerTouchSteerOnly : public controller::ITouchController {
-      private:
+      protected:
         enum class enControl {
           Left     = 0,
           Right    = 1,
@@ -24,8 +24,10 @@ namespace dustbin {
           Respawn  = 5,
           Pause    = 6,
           Withdraw = 7,
+          GyroRstL = 8,
+          GyroRstR = 9,
 
-          Count    = 8
+          Count    = 10
         };
 
         enum class enControlAreas {

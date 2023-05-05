@@ -20,6 +20,7 @@ namespace dustbin {
           irr::video::ITexture *m_pTextureOff;      /**< The image of the button drawn when the control is inactive */
           irr::video::ITexture *m_pTextureOn;       /**< The image of the button drawn when the control is active */
           bool                  m_bTouched;         /**< Is the control touched? */
+          bool                  m_bActive;          /**< Is this item active? */
           size_t                m_iTouchID;         /**< ID which is touching this control element, -1 if not touched */
 
           SControl();

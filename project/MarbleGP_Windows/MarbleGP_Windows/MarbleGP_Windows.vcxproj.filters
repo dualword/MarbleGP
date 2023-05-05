@@ -648,6 +648,9 @@
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp">
       <Filter>Quelldateien\controller\touch</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchGyro.cpp">
+      <Filter>Quelldateien\controller\touch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1068,6 +1071,9 @@
       <Filter>Headerdateien\controller\touch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSteerOnly.h">
+      <Filter>Headerdateien\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchGyro.h">
       <Filter>Headerdateien\controller\touch</Filter>
     </ClInclude>
   </ItemGroup>

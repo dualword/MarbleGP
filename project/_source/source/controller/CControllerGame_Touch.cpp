@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <controller/touch/CControllerTouchSteerOnly.h>
+#include <controller/touch/CControllerTouchGyro.h>
 #include <controller/CControllerGame_Touch.h>
 #include <CGlobal.h>
 
@@ -22,6 +23,10 @@ namespace dustbin {
       switch (a_eType) {
         case IControllerGame::enType::Touch:
           m_pController = new CControllerTouchSteerOnly(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
+          break;
+
+        case IControllerGame::enType::Gyroscope:
+          m_pController = new CControllerTouchGyro(CGlobal::getInstance()->getVideoDriver(), l_cViewport);
           break;
 
         default:
