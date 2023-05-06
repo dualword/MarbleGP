@@ -7,7 +7,6 @@ namespace dustbin {
     CControllerTouchGyro::CControllerTouchGyro(irr::video::IVideoDriver* a_pDrv, const irr::core::recti& a_cViewport) :
       CControllerTouchSteerOnly(a_pDrv, a_cViewport),
       m_fGyroX  (0.0f),
-      m_fGyroY  (0.0f),
       m_pGyroOne(nullptr),
       m_pGyroTwo(nullptr)
     {
@@ -52,7 +51,6 @@ namespace dustbin {
 #ifdef _ANDROID
       if (a_cEvent.EventType == irr::EET_GYROSCOPE_EVENT) {
         m_fGyroX -= a_cEvent.GyroscopeEvent.Z;
-        m_fGyroY += a_cEvent.GyroscopeEvent.Y;
 
         l_bRet = true;
       }
@@ -89,7 +87,6 @@ namespace dustbin {
 
       if (m_aControls[(int)enControl::GyroRstL].m_bTouched || m_aControls[(int)enControl::GyroRstR].m_bTouched) {
         m_fGyroX = 0.0f;
-        m_fGyroY = 0.0f;
       }
     }
   }

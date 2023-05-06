@@ -16,7 +16,6 @@ namespace dustbin {
     class CControllerTouchGyro : public CControllerTouchSteerOnly {
       private:
         irr::f32 m_fGyroX;
-        irr::f32 m_fGyroY;
 
         irr::video::ITexture *m_pGyroOne;       /**< The circle shown in the center */
         irr::video::ITexture *m_pGyroTwo;       /**< The filled circle showing the current controls */
