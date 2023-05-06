@@ -893,19 +893,19 @@ namespace dustbin {
         // Rearview is possible even if the marble is not yet active
         m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
 
-        if (m_aMarbles[l_iIndex]->m_bActive) {
-          // Update the controls of the marble. Will be
-          // applied before the simulation step.
-          m_aMarbles[l_iIndex]->m_iCtrlX    = a_CtrlX;
-          m_aMarbles[l_iIndex]->m_iCtrlY    = a_CtrlY;
-          m_aMarbles[l_iIndex]->m_bBrake    = a_Brake;
-          m_aMarbles[l_iIndex]->m_bRespawn  = a_Respawn;
-          m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
-        }
-        else {
-          if (true) { // abs(a_CtrlX > 32) || abs(a_CtrlY > 32)) {
-            m_aMarbles[l_iIndex]->m_bActive = true;
-          }
+      }
+      if (m_aMarbles[l_iIndex]->m_bActive) {
+        // Update the controls of the marble. Will be
+        // applied before the simulation step.
+        m_aMarbles[l_iIndex]->m_iCtrlX    = a_CtrlX;
+        m_aMarbles[l_iIndex]->m_iCtrlY    = a_CtrlY;
+        m_aMarbles[l_iIndex]->m_bBrake    = a_Brake;
+        m_aMarbles[l_iIndex]->m_bRespawn  = a_Respawn;
+        m_aMarbles[l_iIndex]->m_bRearView = a_RearView;
+      }
+      else {
+        if (true) { // abs(a_CtrlX > 32) || abs(a_CtrlY > 32)) {
+          m_aMarbles[l_iIndex]->m_bActive = true;
         }
       }
     }

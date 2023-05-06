@@ -3,7 +3,7 @@
 
 namespace dustbin {
   namespace controller {
-    CControllerTouchSteerOnly::CControllerTouchSteerOnly(irr::video::IVideoDriver* a_pDrv, const irr::core::recti &a_cViewport) : ITouchController(a_pDrv, a_cViewport), m_iThrottleHeight(0), m_fSteer(0.0f), m_fThrottle(0.0f), m_bPause(false), m_bWithdraw(false) {
+    CControllerTouchSteerOnly::CControllerTouchSteerOnly(irr::video::IVideoDriver* a_pDrv, const irr::core::recti &a_cViewport) : ITouchController(a_pDrv, a_cViewport), m_iThrottleHeight(0), m_fSteer(0.0f), m_fThrottle(1.0f), m_bPause(false), m_bWithdraw(false) {
       m_iThrottleHeight = m_cViewport.getHeight() / 8;
       irr::core::vector2di l_cCenter = a_cViewport.getCenter();
       irr::core::dimension2du l_cSize = irr::core::dimension2du (m_iThrottleHeight, m_iThrottleHeight);
