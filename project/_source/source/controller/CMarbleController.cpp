@@ -189,9 +189,9 @@ namespace dustbin {
                 if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
                 if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
               }
-              l_iCtrlY     = (!a_bAutomatic && l_bBrake) ? -127 : l_iBotY;
-              l_bBrake     = l_bBrakeBot;
-              l_bRespawn  |= l_bRspnBot;
+              l_iCtrlY    = (!a_bAutomatic && l_bBrake) ? -127 : l_iBotY;
+              l_bBrake   |= l_bBrakeBot;
+              l_bRespawn |= l_bRspnBot;
               break;
 
             // Medium: The speed is controller by the AI, the rest is up to the player
@@ -206,7 +206,6 @@ namespace dustbin {
               }
               l_iCtrlY      = l_bBrake ? -127 : l_iBotY;
               l_bBrake     |= l_bBrakeBot;
-              l_bRespawn   |= l_bRspnBot;
               a_bAutomatic  = a_bAutomatic || l_bRspnBot;
               break;
 
@@ -217,7 +216,6 @@ namespace dustbin {
                 l_bBrake     |= l_bBrakeBot;
                 a_bAutomatic  = true;
               }
-              l_bRespawn  |= l_bRspnBot;
               break;
 
             case data::SPlayerData::enAiHelp::Display:

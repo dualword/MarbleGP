@@ -15,15 +15,24 @@ namespace dustbin {
     * @param a_eAiHelp the AI help level for the player
     */
     CHudAiHelp::CHudAiHelp(irr::video::IVideoDriver* a_pDrv, const irr::core::recti& a_cRect, data::SPlayerData::enAiHelp a_eAiHelp) : m_pDrv(a_pDrv) {
+      /*
+      Left      = 0,
+      Forward   = 1,
+      Brake     = 2,
+      Automatic = 3,
+      Respawn   = 4,
+      Right     = 5,
+      Backward  = 6,
+      */
       // The base filenames
       std::tuple<data::SPlayerData::enAiHelp, std::string> l_aFiles[] = {
-        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_accelerate"),
         std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_left"      ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low ,  "data/images/ctrl_back"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_right"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_accelerate"),
         std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_brake"     ),
         std::make_tuple(data::SPlayerData::enAiHelp::Off , "data/images/ctrl_automatic" ),
         std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_respawn"   ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_back"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_right"     ),
         std::make_tuple(data::SPlayerData::enAiHelp::Off , ""                           )
       };
 
@@ -57,15 +66,15 @@ namespace dustbin {
 
       int l_iRaster = CGlobal::getInstance()->getRasterSize();
 
+#ifdef _ANDROID
+      irr::core::dimension2du l_cSize = irr::core::dimension2du(2 * l_iRaster, 2 * l_iRaster);
+#else
       irr::core::dimension2du l_cSize = irr::core::dimension2du(3 * l_iRaster, 3 * l_iRaster);
+#endif
 
-      m_aRects[0] = irr::core::recti(irr::core::vector2di(-(irr::s32)l_cSize.Width / 2, 0), l_cSize);
-
-      int l_iStartX = -((int)l_cSize.Width + (int)l_cSize.Width / 2);
+      int l_iStartX = -(3 * (int)l_cSize.Width + (int)l_cSize.Width / 2);
 
       irr::core::position2di l_cPos = irr::core::position2di(l_iStartX, l_cSize.Height);
-
-      int l_iIndex = 1;
 
       irr::core::recti l_cTotal;
 
@@ -73,21 +82,13 @@ namespace dustbin {
         l_cPos.Y += l_cSize.Width;
       }
 
-      for (int y = 0; y < 2; y++) {
-        for (int x = 0; x < 3; x++) {
-          m_aRects[l_iIndex] = irr::core::recti(l_cPos, l_cSize);
+      for (int l_iIndex = 0; l_iIndex < (int)enIcons::Count; l_iIndex++) {
+        m_aRects[l_iIndex] = irr::core::recti(l_cPos, l_cSize);
 
-          l_cTotal.addInternalPoint(m_aRects[l_iIndex].UpperLeftCorner);
-          l_cTotal.addInternalPoint(m_aRects[l_iIndex].LowerRightCorner);
+        l_cTotal.addInternalPoint(m_aRects[l_iIndex].UpperLeftCorner);
+        l_cTotal.addInternalPoint(m_aRects[l_iIndex].LowerRightCorner);
 
-          l_cPos.X += l_cSize.Width;
-
-          l_iIndex++;
-        }
-        l_cPos.X = l_iStartX;
-
-        if (a_eAiHelp != data::SPlayerData::enAiHelp::High && a_eAiHelp != data::SPlayerData::enAiHelp::Medium)
-          l_cPos.Y += l_cSize.Width;
+        l_cPos.X += l_cSize.Width;
       }
 
       m_cOffset.X = 0;

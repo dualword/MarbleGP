@@ -17,13 +17,13 @@ namespace dustbin {
         * Enum of all the icons this class renders
         */
         enum class enIcons {
-          Forward   = 0,
-          Left      = 1,
-          Backward  = 2,
-          Right     = 3,
-          Brake     = 4,
-          Automatic = 5,
-          Respawn   = 6,
+          Left      = 0,
+          Forward   = 1,
+          Brake     = 2,
+          Automatic = 3,
+          Respawn   = 4,
+          Backward  = 5,
+          Right     = 6,
           Count     = 7
         };
 
