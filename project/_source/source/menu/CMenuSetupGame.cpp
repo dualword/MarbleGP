@@ -124,6 +124,17 @@ namespace dustbin {
           }
         }
 
+        void resetJoystickOfPlayer(const std::string& a_sName) {
+          for (auto& l_cPlayer : m_vProfiles) {
+            if (l_cPlayer.m_sName == a_sName) {
+              controller::CControllerGame l_cCtrl = controller::CControllerGame();
+              l_cCtrl.deserialize(l_cPlayer.m_sControls);
+              l_cCtrl.resetJoystick();
+              l_cPlayer.m_sControls = l_cCtrl.serialize();
+            }
+          }
+        }
+
       public:
         CMenuSetupGame(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
@@ -217,8 +228,8 @@ namespace dustbin {
               irr::gui::IGUIStaticText *l_pNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p)),
                                        *l_pName   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_name" , irr::gui::EGUIET_STATIC_TEXT, p));
 
-              gui::CMenuButton *l_pDelete = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p)),
-                               *l_pAdd    = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
+              gui::CMenuButton *l_pDelete = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
+              gui::CMenuButton *l_pAdd    = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
 
               if (l_pNumber != nullptr && l_pName != nullptr && l_pDelete != nullptr && l_pAdd != nullptr) {
                 l_pNumber->setText(std::to_wstring(i + 1).c_str());
@@ -246,8 +257,9 @@ namespace dustbin {
           for (int i = 0; i < 8; i++) {
             std::string s = "add_pl" + std::to_string(i + 1);
             gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType(s.c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-            if (p != nullptr)
+            if (p != nullptr) {
               m_vSelectPlayer.push_back(p);
+            }
           }
 
           m_pOk         = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_MenuButtonId    , m_pGui->getRootGUIElement()));
@@ -496,18 +508,24 @@ namespace dustbin {
                   if (*it == a_cEvent.GUIEvent.Caller && a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId) {
                     std::string l_sName = helpers::ws2s(reinterpret_cast<gui::CMenuButton *>(a_cEvent.GUIEvent.Caller)->getText());
                     m_vSelectedPlayers.push_back(l_sName);
+                    resetJoystickOfPlayer(l_sName);
                     updateSelectedPlayers();
                     checkAiElements();
 
                     for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
-                      controller::CControllerGame l_cCtrl;
-                      l_cCtrl.deserialize((*l_itPlr).m_sControls);
+                      for (auto l_sSelected: m_vSelectedPlayers) {
+                        if (l_sSelected == (*l_itPlr).m_sName) {
+                          controller::CControllerGame l_cCtrl;
+                          l_cCtrl.deserialize((*l_itPlr).m_sControls);
 
-                      if (l_cCtrl.usesJoystick() && !l_cCtrl.isJoystickAssigned() && m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
-                        (*l_itPlr).m_sControls = l_cCtrl.serialize();
+                          if (l_cCtrl.usesJoystick() && !l_cCtrl.isJoystickAssigned() && m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
+                            (*l_itPlr).m_sControls = l_cCtrl.serialize();
 
-                        m_pSelectCtrl->setVisible(true);
-                        m_vAssignJoystick.push_back((*l_itPlr).m_sName);
+                            m_pSelectCtrl->setVisible(true);
+                            m_vAssignJoystick.push_back((*l_itPlr).m_sName);
+                          }
+                          break;
+                        }
                       }
                     }
 
