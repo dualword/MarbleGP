@@ -202,6 +202,7 @@ namespace dustbin {
 
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
+            l_pSelector->setSelected(m_cSettings.m_iGridSize);
             checkAiElements();
           }
           else printf("Ui element \"gridsize\" not found.");
