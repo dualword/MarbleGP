@@ -94,39 +94,41 @@ namespace dustbin {
     * @param a_sNumber the starting number
     * @return the default texture string for the starting number
     */
-    std::string createDefaultTextureString(const std::string& l_sNumber) {
+    std::string createDefaultTextureString(const std::string& l_sNumber, int a_iClass) {
+      std::string l_sPattern = a_iClass == 2 ? "texture_rookie.png" : a_iClass == 1 ? "texture_marbles3.png" : "texture_marbles2.png";
+
       if (l_sNumber == "1")
-        return "generate://numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9&pattern=" + l_sPattern;
       else if (l_sNumber == "2")
-        return "generate://numbercolor=000000&numberback=fd5320&numberborder=fd5320&ringcolor=ba3b15&patterncolor=000000&patternback=fd5320&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=fd5320&numberborder=fd5320&ringcolor=ba3b15&patterncolor=000000&patternback=fd5320&pattern=" + l_sPattern;
       else if (l_sNumber == "3")
-        return "generate://numbercolor=000000&numberback=3aec1e&numberborder=3aec1e&ringcolor=28ae13&patterncolor=000000&patternback=3aec1e&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=3aec1e&numberborder=3aec1e&ringcolor=28ae13&patterncolor=000000&patternback=3aec1e&pattern=" + l_sPattern;
       else if (l_sNumber == "4")
-        return "generate://numbercolor=000000&numberback=c0c000&numberborder=c0c000&ringcolor=8d8d00&patterncolor=000000&patternback=c0c000&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=c0c000&numberborder=c0c000&ringcolor=8d8d00&patterncolor=000000&patternback=c0c000&pattern=" + l_sPattern;
       else if (l_sNumber == "5")
-        return "generate://numbercolor=000000&numberback=ffc0cb&numberborder=ffc0cb&ringcolor=bc8d95&patterncolor=000000&patternback=ffc0cb&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=ffc0cb&numberborder=ffc0cb&ringcolor=bc8d95&patterncolor=000000&patternback=ffc0cb&pattern=" + l_sPattern;
       else if (l_sNumber == "6")
-        return "generate://numbercolor=ffffff&numberback=6a0dad&numberborder=6a0dad&ringcolor=c1bbcc&patterncolor=ffffff&patternback=6a0dad&pattern=texture_marbles2.png";
+        return "generate://numbercolor=ffffff&numberback=6a0dad&numberborder=6a0dad&ringcolor=c1bbcc&patterncolor=ffffff&patternback=6a0dad&pattern=" + l_sPattern;
       else if (l_sNumber == "7")
-        return "generate://numbercolor=000000&numberback=00ffff&numberborder=00ffff&ringcolor=00bcbc&patterncolor=000000&patternback=00ffff&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=00ffff&numberborder=00ffff&ringcolor=00bcbc&patterncolor=000000&patternback=00ffff&pattern=" + l_sPattern;
       else if (l_sNumber == "8")
-        return "generate://numbercolor=ffffff&numberback=000000&numberborder=000000&ringcolor=bbbbbb&patterncolor=ffffff&patternback=000000&pattern=texture_marbles2.png";
+        return "generate://numbercolor=ffffff&numberback=000000&numberborder=000000&ringcolor=bbbbbb&patterncolor=ffffff&patternback=000000&pattern=" + l_sPattern;
       else if (l_sNumber == "9")
-        return "generate://numbercolor=000000&numberback=ffdab9&numberborder=ffdab9&ringcolor=b9906b&patterncolor=000000&patternback=ffdab9&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=ffdab9&numberborder=ffdab9&ringcolor=b9906b&patterncolor=000000&patternback=ffdab9&pattern=" + l_sPattern;
       else if (l_sNumber == "10")
-        return "generate://numbercolor=000000&numberback=87cefa&numberborder=87cefa&ringcolor=8ebfdd&patterncolor=000000&patternback=87cefa&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=87cefa&numberborder=87cefa&ringcolor=8ebfdd&patterncolor=000000&patternback=87cefa&pattern=" + l_sPattern;
       else if (l_sNumber == "11")
-        return "generate://numbercolor=000000&numberback=daa520&numberborder=daa520&ringcolor=b8860b&patterncolor=000000&patternback=daa520&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=daa520&numberborder=daa520&ringcolor=b8860b&patterncolor=000000&patternback=daa520&pattern=" + l_sPattern;
       else if (l_sNumber == "12")
-        return "generate://numbercolor=000000&numberback=9932cc&numberborder=9932cc&ringcolor=da70d6&patterncolor=000000&patternback=9932cc&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=9932cc&numberborder=9932cc&ringcolor=da70d6&patterncolor=000000&patternback=9932cc&pattern=" + l_sPattern;
       else if (l_sNumber == "13")
-        return "generate://numbercolor=ffffff&numberback=00008b&numberborder=00008b&ringcolor=0000ff&patterncolor=ffffff&patternback=00008b&pattern=texture_marbles2.png";
+        return "generate://numbercolor=ffffff&numberback=00008b&numberborder=00008b&ringcolor=0000ff&patterncolor=ffffff&patternback=00008b&pattern=" + l_sPattern;
       else if (l_sNumber == "14")
-        return "generate://numbercolor=000000&numberback=ffdead&numberborder=ffdead&ringcolor=ffefd5&patterncolor=000000&patternback=ffdead&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=ffdead&numberborder=ffdead&ringcolor=ffefd5&patterncolor=000000&patternback=ffdead&pattern=" + l_sPattern;
       else if (l_sNumber == "15")
-        return "generate://numbercolor=000000&numberback=20b2aa&numberborder=20b2aa&ringcolor=7fffd4&patterncolor=000000&patternback=20b2aa&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=20b2aa&numberborder=20b2aa&ringcolor=7fffd4&patterncolor=000000&patternback=20b2aa&pattern=" + l_sPattern;
       else
-        return "generate://numbercolor=000000&numberback=ffffff&numberborder=ffffff&ringcolor=dddddd&patterncolor=000000&patternback=ffffff&pattern=texture_marbles2.png";
+        return "generate://numbercolor=000000&numberback=ffffff&numberborder=ffffff&ringcolor=dddddd&patterncolor=000000&patternback=ffffff&pattern=" + l_sPattern;
     }
 
     /**
@@ -272,7 +274,13 @@ namespace dustbin {
               l_sNumber = "1";
 
             if (l_sType == "default") {
-              std::string l_sTexture = createDefaultTextureString(l_sNumber);
+              std::string l_sClass = findTextureParameter(l_mParameters, "class");
+              int l_iClass = 0;
+
+              if (l_sClass != "")
+                l_iClass = std::atoi(l_sClass.c_str());
+
+              std::string l_sTexture = createDefaultTextureString(l_sNumber, l_iClass);
               l_mParameters = parseParameters(l_sType, l_sTexture);
             }
 

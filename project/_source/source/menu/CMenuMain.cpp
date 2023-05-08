@@ -113,8 +113,36 @@ namespace dustbin {
 #endif
             }
             else if (l_sButton == "credits") {
+#ifdef _DEBUG
+              data::SRacePlayers l_cPlayers;
+
+              for (int i = 0; i < (m_pState->getGlobal()->getSetting("show_ai_data") == "1" ? 1 : 16); i++) {
+                data::SPlayerData l_cData;
+                l_cData.m_eType      = data::enPlayerType::Ai;
+                l_cData.m_iGridPos   = i;
+                l_cData.m_iPlayerId  = i + 1;
+                l_cData.m_sName      = "AI Demo Player #" + std::to_string(i + 1);
+                l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
+                l_cData.m_sTexture   = "default://number=" + std::to_string(i + 1) + "&class=" + std::to_string(i % 3);
+                l_cData.m_sShortName = "Ai#" + std::to_string(i + 1);
+
+                switch (i % 3) {
+                  case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
+                  case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sName = "AI Marble3 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                  case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sName = "AI Marble2 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                }
+
+                l_cPlayers.m_vPlayers.push_back(l_cData);
+              }
+
+              m_pState->getGlobal()->setGlobal("raceplayers", l_cPlayers.serialize());
+
+              platform::consumeBackEvent(true);
+              createMenu("menu_selecttrack", m_pDevice, m_pManager, m_pState);
+#else
               platform::consumeBackEvent(true);
               createMenu("menu_credits", m_pDevice, m_pManager, m_pState);
+#endif
             }
             else if (l_sButton == "race_replay") {
               m_pState->getGlobal()->setGlobal("message_headline", "To be Implemented");

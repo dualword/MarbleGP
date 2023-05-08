@@ -84,7 +84,7 @@ namespace dustbin {
       m_sNumber = helpers::s2ws(helpers::findTextureParameter(l_mParams, "number"));
 
       if (l_sType == "default") {
-        l_mParams = helpers::parseParameters(l_sType, helpers::createDefaultTextureString(helpers::ws2s(m_sNumber)));
+        l_mParams = helpers::parseParameters(l_sType, helpers::createDefaultTextureString(helpers::ws2s(m_sNumber), 0));
       }
 
       if (helpers::findTextureParameter(l_mParams, "numbercolor" ) != "") helpers::fillColorFromString(m_cText, helpers::findTextureParameter(l_mParams, "numbercolor" ));

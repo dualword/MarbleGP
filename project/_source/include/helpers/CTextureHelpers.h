@@ -45,9 +45,10 @@ namespace dustbin {
     /**
     * Create the default texture string
     * @param a_sNumber the starting number
+    * @param a_iClass the class of the marble (0 == MarbleGP, 1 == Marble2, 2 == Marble3)
     * @return the default texture string for the starting number
     */
-    std::string createDefaultTextureString(const std::string &a_sNumber);
+    std::string createDefaultTextureString(const std::string &a_sNumber, int a_iClass);
   }
 }
 
