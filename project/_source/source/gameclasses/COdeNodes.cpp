@@ -356,6 +356,8 @@ namespace dustbin {
       m_bBrake        (false),
       m_bRearView     (false),
       m_bRespawn      (false),
+      m_fThrustPower  (60.0),
+      m_fSteerPower   (70.0),
       m_vRespawnPos   (irr::core::vector3df(1.0f, 0.0f, 0.0f)),
       m_vRespawnDir   (a_cDirection),
       m_eState        (enMarbleState::Countdown)

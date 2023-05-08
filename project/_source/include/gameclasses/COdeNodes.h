@@ -204,6 +204,9 @@ namespace dustbin {
         bool m_bRearView;      /**< The Rearview Control state updated in "onMarblecontrol" */
         bool m_bRespawn;       /**< The Respawn Control state updated in "onMarblecontrol" */
 
+        float m_fThrustPower;   /**< The power of acceleration (only used for AI marbles ) */
+        float m_fSteerPower;    /**< The power of steering (only used for AI marbles ) */
+
         irr::core::vector3df m_vRespawnPos;   /**< The respawn position taken from the last checkpoint */
         irr::core::vector3df m_vRespawnDir;   /**< The respawn direction taken from the last checkpoint */
 

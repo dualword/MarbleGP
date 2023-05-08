@@ -1553,6 +1553,12 @@ namespace dustbin {
             else
               m_fCtrlY = std::min(1.0f, m_fCtrlY + m_cAiData.m_fThrottleAdd);
 
+            /*switch (m_eAiMode) {
+              case enAiMode::Marble3 : m_fCtrlY = std::min(0.5f, m_fCtrlY); break;
+              case enAiMode::Marble2 : m_fCtrlY = std::min(0.75f, m_fCtrlY); break;
+              case enAiMode::MarbleGP: break;
+            }*/
+
             a_iCtrlY = (irr::s8)(127.0f * m_fCtrlY);
           }
           else {

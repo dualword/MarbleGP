@@ -374,7 +374,7 @@ namespace dustbin {
               }
 
               // Marble Class Param: Steer Power and Thrust
-              irr::core::vector3df l_vTorque = (p->m_bHasContact ? 20.0f : 70.0f) * l_vSteer.X * v + l_fFac * 60.0f * l_vSteer.Y * p->m_vSideVector;
+              irr::core::vector3df l_vTorque = (p->m_bHasContact ? 20.0f : p->m_fSteerPower) * l_vSteer.X * v + l_fFac * p->m_fThrustPower * l_vSteer.Y * p->m_vSideVector;
 
               dBodyAddTorque(p->m_cBody, (dReal)l_vTorque.X, (dReal)l_vTorque.Y, (dReal)l_vTorque.Z);
 
@@ -764,6 +764,9 @@ namespace dustbin {
         helpers::addToDebugLog("    Fill marble object array");
 
         int l_iIndex = 0;
+
+
+
         for (std::vector<const data::SPlayerData *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
           if ((*it)->m_eType != data::enPlayerType::Ai)
             m_iHuman++;
@@ -787,6 +790,15 @@ namespace dustbin {
 
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
+
+          if ((*it)->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || (*it)->m_sControls == "class=marble3") {
+            l_pMarble->m_fSteerPower  = 0.7f * l_pMarble->m_fSteerPower;
+            l_pMarble->m_fThrustPower = 0.7f * l_pMarble->m_fThrustPower;
+          }
+          else if ((*it)->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || (*it)->m_sControls == "class=marble2") {
+            l_pMarble->m_fSteerPower  = 0.85f * l_pMarble->m_fSteerPower;
+            l_pMarble->m_fThrustPower = 0.85f * l_pMarble->m_fThrustPower;
+          }
 
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
