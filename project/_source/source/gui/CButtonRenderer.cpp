@@ -38,7 +38,57 @@ namespace dustbin {
       irr::core::position2di l_cUpperLeft = a_cRect.UpperLeftCorner;
       irr::core::position2di l_cLowerRght = a_cRect.LowerRightCorner;
 
-      irr::core::recti l_cRects[] = {
+      for (int y = 0; y < l_iHeight; y++) {
+        int l_iLeft1  = a_cRect.UpperLeftCorner .X;
+        int l_iLeft2  = a_cRect.UpperLeftCorner .X + l_iBorder;
+        int l_iRight1 = a_cRect.LowerRightCorner.X;
+        int l_iRight2 = a_cRect.LowerRightCorner.X - l_iBorder;
+
+        if (y < l_iRaster) {
+          double l_fX = sqrt((double)l_iRaster * (double)l_iRaster - (double)(l_iRaster - y) * (double)(l_iRaster - y));
+
+          l_iLeft1  += l_iRaster - (int)l_fX;
+          l_iRight1 -= l_iRaster - (int)l_fX;
+
+          if (y >= l_iBorder) {
+            int y1 = y - l_iBorder;
+
+            l_fX = sqrt((double)l_iRadius * (double)l_iRadius - (double)(l_iRadius - y1) * (double)(l_iRadius - y1));
+
+            l_iLeft2  += l_iRadius - (int)l_fX;
+            l_iRight2 -= l_iRadius - (int)l_fX;
+          }
+        }
+        else if (y > l_iHeight - l_iRaster) {
+          double l_fY = y - l_iHeight + l_iRaster;
+          double l_fX = sqrt((double)l_iRaster * (double)l_iRaster - l_fY * l_fY);
+
+          l_iLeft1  += l_iRaster - (int)l_fX;
+          l_iRight1 -= l_iRaster - (int)l_fX;
+
+          if (y <= l_iHeight - l_iBorder) {
+            int y1 = l_iHeight - l_iBorder - y;
+
+            l_fX = sqrt((double)l_iRadius * (double)l_iRadius - (double)(l_iRadius - y1) * (double)(l_iRadius - y1));
+
+            l_iLeft2  += l_iRadius - (int)l_fX;
+            l_iRight2 -= l_iRadius - (int)l_fX;
+          }
+        }
+
+        int l_iY = a_cRect.UpperLeftCorner.Y + y;
+
+        if (y < l_iBorder || y > l_iHeight - l_iBorder) {
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1, l_iY), irr::core::vector2di(l_iRight1, l_iY), m_cBorder);
+        }
+        else {
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1 , l_iY), irr::core::vector2di(l_iLeft2 , l_iY), m_cBorder);
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft2 , l_iY), irr::core::vector2di(l_iRight1, l_iY), a_cColor);
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iRight1, l_iY), irr::core::vector2di(l_iRight2, l_iY), m_cBorder);
+        }
+      }
+
+      /*irr::core::recti l_cRects[] = {
         irr::core::recti(l_cUpperLeft                                                                                          , irr::core::dimension2di(l_iRaster                         , l_iRaster)),
         irr::core::recti(l_cUpperLeft + irr::core::position2di(l_iRaster                     , 0                              ), irr::core::dimension2di(a_cRect.getWidth() - 2 * l_iRaster, l_iRaster)),
         irr::core::recti(l_cUpperLeft + irr::core::position2di(a_cRect.getWidth() - l_iRaster, 0                              ), irr::core::dimension2di(l_iRaster                         , l_iRaster)),
@@ -137,7 +187,7 @@ namespace dustbin {
             }
           }
         }
-      }
+      }*/
     }
   }
 }
