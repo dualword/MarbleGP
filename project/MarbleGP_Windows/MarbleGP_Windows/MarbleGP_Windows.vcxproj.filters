@@ -651,6 +651,9 @@
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchGyro.cpp">
       <Filter>Quelldateien\controller\touch</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiTrackSelect.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1075,6 +1078,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchGyro.h">
       <Filter>Headerdateien\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiTrackSelect.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

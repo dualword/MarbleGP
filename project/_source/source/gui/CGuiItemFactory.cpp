@@ -2,6 +2,7 @@
 #include <gui/CControllerUi_Game.h>
 #include <gui/CControllerUi_Menu.h>
 #include <gui/CDustbinCheckbox.h>
+#include <gui/CGuiTrackSelect.h>
 #include <gui/CMenuBackground.h>
 #include <gui/CGuiItemFactory.h>
 #include <gui/CGuiLogDisplay.h>
@@ -95,13 +96,18 @@ namespace dustbin {
         p->drop();
         return p;
       }
+      else if (l_sTypeName == g_TrackSelectName) {
+        irr::gui::IGUIElement *p = new gui::CGuiTrackSelect(a_pParent != nullptr ? a_pParent : m_pGui->getRootGUIElement());
+        p->drop();
+        return p;
+      }
 
 			return nullptr;
 		}
 
 		//! Get amount of GUI element types this factory is able to create
 		irr::s32 CGuiItemFactory::getCreatableGUIElementTypeCount() const {
-			return 11;
+			return 12;
 		}
 
 		//! Get type of a createable element type
@@ -151,6 +157,11 @@ namespace dustbin {
 
         case 10:
           return (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiMenuId;
+          break;
+
+        case 11:
+          return (irr::gui::EGUI_ELEMENT_TYPE)g_TrackSelectId;
+          break;
 
 				default:
 					return irr::gui::EGUIET_COUNT;
@@ -207,6 +218,10 @@ namespace dustbin {
           return g_ControllerUiGameName;
           break;
 
+        case 11:
+          return g_TrackSelectName;
+          break;
+
 				default:
 					return nullptr;
 					break;
@@ -260,6 +275,10 @@ namespace dustbin {
 
         case (irr::gui::EGUI_ELEMENT_TYPE)g_ControllerUiMenuId:
           return g_ControllerUiMenuName;
+          break;
+
+        case (irr::gui::EGUI_ELEMENT_TYPE)g_TrackSelectId:
+          return g_TrackSelectName;
           break;
 
 				default:

@@ -16,7 +16,7 @@
         </children>
       </element>
       
-      <element type="DustbinImageList" rect="relative: 1, 9, 49, 30" font="small">
+      <element type="DustbinTrackSelect" rect="relative: 1, 9, 49, 30" font="small">
         <attributes>
           <attribute key="Name" value="TrackList" />
           <attribute key="Rows" value="1" />

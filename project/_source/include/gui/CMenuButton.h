@@ -44,6 +44,7 @@ namespace dustbin {
         virtual irr::gui::EGUI_ELEMENT_TYPE getType();
 
         void setOverrideFont(irr::gui::IGUIFont* a_pFont);
+        void setImage(const std::string &a_sImage);
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent);
 		};

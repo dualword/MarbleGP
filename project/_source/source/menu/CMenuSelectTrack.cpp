@@ -4,10 +4,10 @@
 #include <threads/CMessageQueue.h>
 #include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
+#include <gui/CGuiTrackSelect.h>
 #include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
-#include <gui/CGuiImageList.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
@@ -37,7 +37,7 @@ namespace dustbin {
 
         std::string m_sTrackFilter;   /**< The filter string of the tracks (category). The track name has to start with the filter to be visible */
 
-        gui::CGuiImageList *m_pTrackList; /**< The track list for selection */
+        gui::CGuiTrackSelect *m_pTrackList; /**< The track list for selection */
 
         int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" responsw? */
 
@@ -170,7 +170,7 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pTrackList = reinterpret_cast<gui::CGuiImageList *>(findElementByNameAndType("TrackList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId, m_pGui->getRootGUIElement()));
+          m_pTrackList = reinterpret_cast<gui::CGuiTrackSelect *>(findElementByNameAndType("TrackList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_TrackSelectId, m_pGui->getRootGUIElement()));
 
           m_pLeft  = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("btn_left" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
           m_pRight = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("btn_right", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));

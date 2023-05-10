@@ -8,6 +8,7 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CVirtualKeyboard.h>
 #include <gui/CMenuBackground.h>
+#include <gui/CGuiTrackSelect.h>
 #include <gui/CReactiveLabel.h>
 #include <gui/CControllerUi.h>
 #include <gui/CGuiImageList.h>
@@ -112,7 +113,8 @@ namespace dustbin {
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId:
         case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId:
-        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId: {
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId:
+        case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_TrackSelectId: {
           irr::gui::IGUIElement *l_pTest = m_pGui->getRootGUIElement()->getElementFromPoint(a_pThis->getAbsoluteClippingRect().getCenter());
 
           if (l_pTest == a_pThis)
@@ -598,7 +600,7 @@ namespace dustbin {
       bool                    l_bFound = false;
 
       if (l_pHover != nullptr) {
-        if (l_pHover->getType() == gui::g_ImageListId) {
+        if (l_pHover->getType() == gui::g_ImageListId || l_pHover->getType() == gui::g_TrackSelectId) {
           gui::CGuiImageList *l_pImg = static_cast<gui::CGuiImageList *>(l_pHover);
           if (l_pImg->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption)) {
             m_cMousePos = l_cOption;
@@ -611,7 +613,7 @@ namespace dustbin {
 
       if (p != nullptr || l_bFound) {
         if (!l_bFound) {
-          if (p->getType() == gui::g_ImageListId) {
+          if (p->getType() == gui::g_ImageListId || p->getType() == gui::g_TrackSelectId) {
             gui::CGuiImageList *l_pImg = static_cast<gui::CGuiImageList *>(p);
             if (l_pImg->getMoveOption(m_cMousePos, (int)a_eDirection, l_cOption))
               m_cMousePos = l_cOption;

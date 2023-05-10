@@ -1258,10 +1258,25 @@ namespace dustbin {
         if ((*it).m_iPlayerId == a_playerid) {
           gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_marbleid);
 
+          std::string l_sTexture = (*it).m_sTexture;
+
+          if (l_sTexture == "") {
+            l_sTexture = "default://number=" + std::to_string(a_playerid);
+          }
+
+          if (l_sTexture.substr(0, std::string("default://").size()) == "default://") {
+            if ((*it).m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || (*it).m_sControls == "class=marble3") {
+              l_sTexture += "&class=2";
+            }
+            else if ((*it).m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || (*it).m_sControls == "class=marble2") {
+              l_sTexture += "&class=1";
+            }
+          }
+
           gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
             (*it).m_iPlayerId,
             (*it).m_sName,
-            (*it).m_sTexture != "" ? (*it).m_sTexture : "default://number=" + std::to_string(a_playerid),
+                  l_sTexture,
             (*it).m_sControls,
             (*it).m_sShortName,
             (*it).m_eAiHelp,
