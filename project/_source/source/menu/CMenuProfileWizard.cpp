@@ -42,6 +42,7 @@ namespace dustbin {
         CGlobal     *m_pGlobal;       /**< Instance of the global object */
         std::string  m_sColorEdit;    /**< The currently edited color (Step 5: Texture) */
         std::string  m_sProfile;      /**< Number of the currently edited profile */
+        std::string  m_sNameOriginal; /**< The original name set when the "Name" step is started. Only used to determine whether or not the abbreviation needs an update */
 
         data::SPlayerData m_cPlayer;  /**< The player we edit */
 
@@ -306,8 +307,11 @@ namespace dustbin {
             case enMenuStep::Name: {
               // Copy the name field to the m_sName member
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-              if (l_pEdit != nullptr)
+              if (l_pEdit != nullptr) {
                 m_cPlayer.m_sName = helpers::ws2s(l_pEdit->getText());
+                if (m_cPlayer.m_sName.substr(0, 5) != m_sNameOriginal.substr(0, 5))
+                  m_cPlayer.m_sShortName = m_cPlayer.m_sName.substr(0, 5);
+              }
               break;
             }
 
@@ -395,6 +399,8 @@ namespace dustbin {
               if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
                 m_pGui->setFocus(l_pEdit);
+
+                m_sNameOriginal = m_cPlayer.m_sName;
 
                 irr::SEvent l_cEvent;
                 l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
@@ -868,6 +874,22 @@ namespace dustbin {
                     m_pManager->pushToMenuStack("menu_setupgame");
                     CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
                     m_pState->setState(state::enState::Game);
+                  }
+                }
+                else if (l_sButton == "clear_name") {
+                  if (m_eStep == enMenuStep::Name) {
+                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    if (l_pEdit != nullptr) {
+                      l_pEdit->setText(L"");
+                      toggleButtonVisibility();
+                    }
+                  }
+                  else if (m_eStep == enMenuStep::Abbreviation) {
+                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    if (l_pEdit != nullptr) {
+                      l_pEdit->setText(L"");
+                      toggleButtonVisibility();
+                    }
                   }
                 }
                 else if (l_sButton == "next") {

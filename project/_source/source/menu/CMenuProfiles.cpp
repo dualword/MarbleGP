@@ -340,7 +340,9 @@ namespace dustbin {
                   m_aProfiles[i].m_pDataRoot  ->setVisible(false);
                   m_aProfiles[i].m_pAddProfile->setVisible(i == 0);
                   m_iMaxIndex = i;
+                  printf("==> %i\n", i);
                 }
+                else printf("**> %i\n", i);
               }
             }
 
@@ -356,7 +358,7 @@ namespace dustbin {
 
               l_iIndex++;
 
-              if (l_iIndex >= m_iMaxIndex)
+              if (l_iIndex > m_iMaxIndex)
                 break;
               else if (m_aProfiles[l_iIndex].isValid()) {
                 m_aProfiles[l_iIndex].m_pAddProfile->setVisible(true);

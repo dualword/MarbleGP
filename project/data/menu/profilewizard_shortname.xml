@@ -35,7 +35,14 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 46, 9, 50, 13" tooltip="The short name must at least be 2 characters long.">
+      <element type="MenuButton" rect="relative: 47, 10, 49, 12" tooltip="Clear Name">
+        <attributes>
+          <attribute key="Name" value="clear_name" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 13, 9, 17, 13" tooltip="The short name must at least be 2 characters long.">
         <attributes>
           <attribute key="Name" value="warning" />
           <attribute key="UseAlphaChannel" value="true" />

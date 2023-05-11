@@ -28,7 +28,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 61, 9, 65, 13" tooltip="The profile name must at least be 3 characters long.">
+      <element type="image" rect="relative: 13, 9, 17, 13" tooltip="The profile name must at least be 3 characters long.">
         <attributes>
           <attribute key="Name" value="warning" />
           <attribute key="UseAlphaChannel" value="true" />
@@ -39,6 +39,13 @@
       <element type="editBox" rect="relative: 31, 10, 60, 12">
         <attributes>
           <attribute key="Name" value="name" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 62, 10, 64, 12" tooltip="Clear Name">
+        <attributes>
+          <attribute key="Name" value="clear_name" />
+          <attribute key="ImagePath" value="data/images/btn_cancel.png" />
         </attributes>
       </element>
       
