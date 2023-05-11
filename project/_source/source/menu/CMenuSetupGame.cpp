@@ -522,6 +522,9 @@ namespace dustbin {
                           if (l_cCtrl.usesJoystick() && !l_cCtrl.isJoystickAssigned() && m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
                             (*l_itPlr).m_sControls = l_cCtrl.serialize();
 
+                            std::wstring s = L"Player " + helpers::s2ws((*l_itPlr).m_sName) + L": Select your gamepad by clicking a button.";
+                            m_pSelectName->setText(s.c_str());
+
                             m_pSelectCtrl->setVisible(true);
                             m_vAssignJoystick.push_back((*l_itPlr).m_sName);
                           }
