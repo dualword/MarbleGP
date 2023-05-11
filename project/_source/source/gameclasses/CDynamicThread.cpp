@@ -16,6 +16,7 @@
 #include <CGlobal.h>
 #include <ode/ode.h>
 #include <algorithm>
+#include <cstdlib>
 
 constexpr auto MAX_CONTACTS = 16;
 const double GRAD_PI = 180.0 / 3.1415926535897932384626433832795;
@@ -791,14 +792,22 @@ namespace dustbin {
           l_pMarble->m_vSideVector.normalize();
           l_pMarble->m_vDirection .normalize();
 
+          float l_fPowerFactor = 1.0f;
+
           if ((*it)->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || (*it)->m_sControls == "class=marble3") {
-            l_pMarble->m_fSteerPower  = 0.7f * l_pMarble->m_fSteerPower;
-            l_pMarble->m_fThrustPower = 0.7f * l_pMarble->m_fThrustPower;
+            l_fPowerFactor = 0.7f;
           }
           else if ((*it)->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || (*it)->m_sControls == "class=marble2") {
-            l_pMarble->m_fSteerPower  = 0.85f * l_pMarble->m_fSteerPower;
-            l_pMarble->m_fThrustPower = 0.85f * l_pMarble->m_fThrustPower;
+            l_fPowerFactor = 0.85f;
           }
+
+          float l_fPowerDeviation = (2.0f * ((float)std::rand() / (float)RAND_MAX) - 1.0f) / 100.0f;
+          l_fPowerFactor += l_fPowerDeviation;
+
+          printf("Power Factor: %.5f, %.5f\n", l_fPowerFactor, l_fPowerDeviation);
+
+          l_pMarble->m_fSteerPower  = l_fPowerFactor * l_pMarble->m_fSteerPower;
+          l_pMarble->m_fThrustPower = l_fPowerFactor * l_pMarble->m_fThrustPower;
 
           m_pWorld->m_vObjects.push_back(l_pMarble);
           m_aMarbles[l_iIndex] = l_pMarble;
