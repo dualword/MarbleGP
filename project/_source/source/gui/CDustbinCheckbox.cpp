@@ -47,7 +47,7 @@ namespace dustbin {
 
         if (getAbsoluteClippingRect().isPointInside(m_cMousePos)) {
           if (!m_bHover)
-            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
+            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, CGlobal::getInstance()->getSettingData().m_fSfxMenu, 0.0f);
 
           m_bHover = true;
         }
@@ -80,7 +80,7 @@ namespace dustbin {
               Parent->OnEvent(l_cEvent);
             }
 
-            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
+            CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, CGlobal::getInstance()->getSettingData().m_fSfxMenu, 0.0f);
           }
         }
         else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)

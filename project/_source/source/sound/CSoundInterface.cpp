@@ -549,7 +549,10 @@ namespace dustbin {
 
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
           if (m_a2dSounds[(int)a_eSound] != nullptr && m_pEngine != nullptr) {
-            m_pEngine->play2D(m_a2dSounds[(int)a_eSound]);
+            irrklang::ISound *p = m_pEngine->play2D(m_a2dSounds[(int)a_eSound], false, true);
+            p->setVolume(a_fVolume);
+            p->setPan(a_fPan);
+            p->setIsPaused(false);
           }
         }
 

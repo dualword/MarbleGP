@@ -89,7 +89,7 @@ namespace dustbin {
 
         IGUIElement::OnEvent(l_cEvent);
 
-        CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, 1.0f, 0.0f);
+        CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonPress, CGlobal::getInstance()->getSettingData().m_fSfxMenu, 0.0f);
       }
     }
 
@@ -110,7 +110,7 @@ namespace dustbin {
                 Parent->OnEvent(l_cEvent);
               }
 
-              CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, 1.0f, 0.0f);
+              CGlobal::getInstance()->getSoundInterface()->play2d(en2dSounds::ButtonHover, CGlobal::getInstance()->getSettingData().m_fSfxMenu, 0.0f);
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
               m_bHovered = false;

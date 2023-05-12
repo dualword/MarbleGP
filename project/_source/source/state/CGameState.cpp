@@ -1129,9 +1129,9 @@ namespace dustbin {
         m_pGlobal->getSoundInterface()->startSoundtrack(enSoundTrack::enStRace);
         m_pGlobal->getSoundInterface()->setSoundtrackFade(1.0f);
 
-        m_pGlobal->getSoundInterface()->play2d(en2dSounds::Countdown, 1.0f, 0.0f);
+        m_pGlobal->getSoundInterface()->play2d(en2dSounds::Countdown, CGlobal::getInstance()->getSettingData().m_fSfxGame, 0.0f);
       }
-      else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(en2dSounds::CountdownGo, 1.0f, 0.0f);
+      else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(en2dSounds::CountdownGo, CGlobal::getInstance()->getSettingData().m_fSfxGame, 0.0f);
     }
 
     /**
