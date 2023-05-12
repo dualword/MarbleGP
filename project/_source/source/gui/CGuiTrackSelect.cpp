@@ -526,7 +526,12 @@ namespace dustbin {
 
         if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
           if (m_itSelected != m_vImages.end()) {
-            m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+            int l_iMove = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+            printf("==> %i, %i\n", l_iMove - m_iPos, m_cImageSize.Width / 3);
+
+            if (std::abs(l_iMove - m_iPos) < (int)m_cImageSize.Width / 3)
+              m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+
             checkPositionAndButtons();
             sendImageSelected();
             l_bRet = true;
