@@ -23,6 +23,7 @@ namespace dustbin {
     const irr::s32 c_iPlayerViewPort     = 30;  /**< The player's viewport (if any) */
     const irr::s32 c_iPlayerDataEnd      = 31;  /**< Marker for the player data to end */
     const irr::s32 c_iPlayerShortName    = 32;  /**< Marker for the player's short name (for in-game ranking display) */
+    const irr::s32 c_iPlayerDeviation    = 33;  /**< Marker for the player's power deviation (AI Marbles only) */
 
     // Game Settings
     const irr::s32 c_iGameSettings    = 42;   /**< Marker for the game settings */
@@ -238,6 +239,7 @@ namespace dustbin {
       m_iPlayerId (-1),
       m_iGridPos  (0 ),
       m_iViewPort (-1),
+      m_fDeviation(0.0f),
       m_sName     (""),
       m_sTexture  (""),
       m_sControls (""),
@@ -263,6 +265,7 @@ namespace dustbin {
       m_eAiHelp    = a_cOther.m_eAiHelp;
       m_iGridPos   = a_cOther.m_iGridPos;
       m_iViewPort  = a_cOther.m_iViewPort;
+      m_fDeviation = a_cOther.m_fDeviation;
     }
 
     std::string SPlayerData::serialize() const {
@@ -295,6 +298,9 @@ namespace dustbin {
 
         l_cSerializer.addS32(c_iPlayerShortName);
         l_cSerializer.addString(m_sShortName);
+
+        l_cSerializer.addS32(c_iPlayerDeviation);
+        l_cSerializer.addF32(m_fDeviation);
 
         l_cSerializer.addS32(c_iPlayerDataEnd);
 
@@ -330,7 +336,8 @@ namespace dustbin {
             case c_iPlayerAiHelp   : m_eAiHelp    = (enAiHelp    )l_cSerializer.getS32   (); break;
             case c_iPlayerGridPos  : m_iGridPos   =               l_cSerializer.getS32   (); break;
             case c_iPlayerViewPort : m_iViewPort  =               l_cSerializer.getS32   (); break;
-            case c_iPlayerShortName: m_sShortName =              l_cSerializer.getString(); break;
+            case c_iPlayerShortName: m_sShortName =               l_cSerializer.getString(); break;
+            case c_iPlayerDeviation: m_fDeviation =               l_cSerializer.getF32   (); break;
             case c_iPlayerDataEnd  : return true;
             default:
               printf("Unknown token %i\n", l_iToken);
@@ -359,6 +366,7 @@ namespace dustbin {
       s += "  Controls: \"" + m_sControls + "\"\n";
       s += "  Grid Pos: " + std::to_string(m_iGridPos) + "\n"; 
       s += "  Viewport: " + std::to_string(m_iViewPort) + "\n";
+      s += "  Deviation: " + std::to_string(m_fDeviation) + "\n";
 
       s += "  Ai Help: ";
 

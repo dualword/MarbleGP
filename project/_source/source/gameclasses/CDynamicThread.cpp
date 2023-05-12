@@ -801,10 +801,9 @@ namespace dustbin {
             l_fPowerFactor = 0.85f;
           }
 
-          float l_fPowerDeviation = (2.0f * ((float)std::rand() / (float)RAND_MAX) - 1.0f) / 100.0f;
-          l_fPowerFactor += l_fPowerDeviation;
+          l_fPowerFactor += (*it)->m_fDeviation;
 
-          printf("Power Factor: %.5f, %.5f\n", l_fPowerFactor, l_fPowerDeviation);
+          printf("Power Factor: %.5f, %.5f\n", l_fPowerFactor, (*it)->m_fDeviation);
 
           l_pMarble->m_fSteerPower  = l_fPowerFactor * l_pMarble->m_fSteerPower;
           l_pMarble->m_fThrustPower = l_fPowerFactor * l_pMarble->m_fThrustPower;

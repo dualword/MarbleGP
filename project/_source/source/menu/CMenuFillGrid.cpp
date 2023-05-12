@@ -104,6 +104,7 @@ namespace dustbin {
               l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
               l_cData.m_sTexture   = "default://number=" + std::to_string(l_cData.m_iGridPos + 1);
               l_cData.m_sShortName = "Ai#" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
 
               switch (l_cSettings.m_iRaceClass) {
                 case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
