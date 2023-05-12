@@ -7,7 +7,7 @@
       <attribute key="BackColor" value="96, 200, 200, 200" />
       <attribute key="Name" value="color_dialog" />
       <attribute key="Visible" value="false" />
-      <attribute key="Name" value="texture_generated" />
+      <attribute key="Name" value="texturegen_android" />
     </attributes>
     
     <children>
