@@ -234,18 +234,15 @@ namespace dustbin {
         void updateGeneratedTexture() {
           gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pMode != nullptr) {
-            irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+            gui::CMenuButton  *l_pBtn = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
             if (l_pMode->getSelected() == 0) {
-              if (l_pTab != nullptr) {
-                l_pTab->setVisible(false);
-              }
+              if (l_pBtn != nullptr) l_pBtn->setVisible(false);
+
               updateMarbleTexture(m_cPlayer.m_sTexture);
             }
             else {
-              if (l_pTab != nullptr) {
-                l_pTab->setVisible(true);
-              }
+              if (l_pBtn != nullptr) l_pBtn->setVisible(true);
             }
           }
         }
@@ -519,26 +516,27 @@ namespace dustbin {
             }
 
             case enMenuStep::Texture: {
-              size_t l_iPos = m_cPlayer.m_sTexture.find("://");
+              std::string l_sTexture = m_cPlayer.m_sTexture;
+              if (l_sTexture == "")
+                l_sTexture = "default://number=1";
 
+              size_t l_iPos = l_sTexture.find("://");
               if (l_iPos != std::string::npos) {
-                std::string l_sPrefix  = m_cPlayer.m_sTexture.substr(0, l_iPos);
+                std::string l_sPrefix  = l_sTexture.substr(0, l_iPos);
 
                 printf("Prefix: %s\n", l_sPrefix.c_str());
                 gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
                 gui::CMenuButton  *l_pBtn  = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated" , irr::gui::EGUIET_TAB                            , m_pGui->getRootGUIElement()));
 
                 if (l_pMode != nullptr) {
-                  if (l_pTab != nullptr && l_pBtn == nullptr) {
-                    l_pTab->setVisible(l_sPrefix == "generate");
-                    m_pGui->getRootGUIElement()->bringToFront(l_pTab);
+                  if (l_pBtn != nullptr) {
+                    l_pBtn->setVisible(l_sPrefix == "generate");
                   }
 
                   if (l_sPrefix == "generate") {
                     l_pMode->setSelected(1);
 
-                    std::string l_sTexture = m_cPlayer.m_sTexture.substr(l_iPos + 3);
+                    l_sTexture = m_cPlayer.m_sTexture.substr(l_iPos + 3);
 
                     std::map<std::string, std::string> l_mParamMap{
                       { "numbercolor" , "texture_fg_nb"       },
