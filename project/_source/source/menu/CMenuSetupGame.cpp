@@ -128,9 +128,12 @@ namespace dustbin {
           for (auto& l_cPlayer : m_vProfiles) {
             if (l_cPlayer.m_sName == a_sName) {
               controller::CControllerGame l_cCtrl = controller::CControllerGame();
+
               l_cCtrl.deserialize(l_cPlayer.m_sControls);
-              l_cCtrl.resetJoystick();
-              l_cPlayer.m_sControls = l_cCtrl.serialize();
+              if (l_cCtrl.usesJoystick()) {
+                l_cCtrl.resetJoystick();
+                l_cPlayer.m_sControls = l_cCtrl.serialize();
+              }
             }
           }
         }
@@ -667,8 +670,11 @@ namespace dustbin {
                       if (l_bOk) {
                         controller::CControllerGame l_cCtrl;
                         l_cCtrl.deserialize((*l_itPlayer).m_sControls);
-                        l_cCtrl.setJoystickIndices(a_cEvent.JoystickEvent.Joystick);
-                        (*l_itPlayer).m_sControls = l_cCtrl.serialize();
+
+                        if (l_cCtrl.usesJoystick()) {
+                          l_cCtrl.setJoystickIndices(a_cEvent.JoystickEvent.Joystick);
+                          (*l_itPlayer).m_sControls = l_cCtrl.serialize();
+                        }
 
                         m_vAssignJoystick.erase(m_vAssignJoystick.begin());
                         m_vUsedJoysticks.push_back(a_cEvent.JoystickEvent.Joystick);
