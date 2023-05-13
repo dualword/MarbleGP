@@ -606,6 +606,10 @@ namespace dustbin {
           for (std::vector<CAudioPlayer*>::iterator it = m_vMenuSounds.begin(); it != m_vMenuSounds.end(); it++) {
             (*it)->setVolume(m_fMenuVolume * m_fMasterVolume);
           }
+
+          for (std::map<enSoundTrack, CAudioPlayer*>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
+            it->second->setVolume(m_fSoundtrackVolume * m_fMasterVolume);
+          }
         }
 
         virtual void setSfxVolumeGame(irr::f32 a_fVolume) override {
