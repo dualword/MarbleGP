@@ -464,11 +464,25 @@ namespace dustbin {
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (m_bHover) {
           if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
-            m_bScrollTrack = !m_cCategoryInner.isPointInside(m_cMouse);
-
             m_bMouseDown = true;
             m_cClick = irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
+            m_cMouse = m_cClick;
+
             m_iMDown = m_cClick.X;
+
+            m_bScrollTrack = !m_cCategoryInner.isPointInside(m_cMouse);
+
+            for (int i = 0; i < 2; i++) {
+              if (std::get<0>(m_aButtons[i]).isPointInside(m_cMouse)) {
+                m_aBtnClick[i] = true;
+                if (i == (int)enInternalButtons::NextImage) {
+                  selectNextImage();
+                }
+                else if (i == (int)enInternalButtons::PrevImage) {
+                  selectPrevImage();
+                }
+              }
+            }
 
             for (std::vector<std::tuple<std::wstring, irr::core::recti>>::iterator it = m_vCategories.begin(); it != m_vCategories.end(); it++) {
               irr::core::recti r = std::get<1>(*it);
@@ -492,20 +506,19 @@ namespace dustbin {
               }
             }
 
-            for (int i = 0; i < 2; i++) {
-              m_aBtnClick[i] = std::get<0>(m_aButtons[i]).isPointInside(m_cMouse);
-            }
-
             l_bRet = true;
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-            if (std::get<0>(m_aButtons[(int)enInternalButtons::NextImage   ]).isPointInside(m_cMouse) && m_aBtnClick[(int)enInternalButtons::NextImage   ]) { selectNextImage   (); m_aBtnClick[(int)enInternalButtons::NextImage   ] = false; }
-            if (std::get<0>(m_aButtons[(int)enInternalButtons::PrevImage   ]).isPointInside(m_cMouse) && m_aBtnClick[(int)enInternalButtons::PrevImage   ]) { selectPrevImage   (); m_aBtnClick[(int)enInternalButtons::PrevImage   ] = false; }
+            for (int i = 0; i < 2; i++)
+              m_aBtnClick[i] = false;
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
             m_cMouse = irr::core::position2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
 
-            if (m_bMouseDown) {
+            for (int i = 0; i < 2; i++)
+              m_aBtnHover[i] = std::get<0>(m_aButtons[i]).isPointInside(m_cMouse);
+
+            if (m_bMouseDown && !m_aBtnClick[0] && !m_aBtnClick[1]) {
               if (m_bScrollTrack || m_bOneCatPage) {
                 m_iPos += m_cClick.X - a_cEvent.MouseInput.X;
                 checkSelection();
@@ -535,6 +548,9 @@ namespace dustbin {
             sendImageSelected();
             l_bRet = true;
           }
+
+          m_aBtnClick[0] = false;
+          m_aBtnClick[1] = false;
 
           m_bMouseDown = false;
           l_bRet = true;
