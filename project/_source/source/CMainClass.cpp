@@ -271,9 +271,9 @@ namespace dustbin {
 #ifdef _ANDROID
     m_pSoundInterface->assignSoundtracks(
       {
-        { enSoundTrack::enStMenu  , std::make_tuple("data/sounds/theme_menu.wav"  , true  ) },
-        { enSoundTrack::enStRace  , std::make_tuple("data/sounds/theme_race.wav"  , true  ) },
-        { enSoundTrack::enStFinish, std::make_tuple("data/sounds/theme_result.wav", false ) }
+        { enSoundTrack::enStMenu  , std::make_tuple("data/sounds/theme_menu.ogg"  , true  ) },
+        { enSoundTrack::enStRace  , std::make_tuple("data/sounds/theme_race.ogg"  , true  ) },
+        { enSoundTrack::enStFinish, std::make_tuple("data/sounds/theme_result.ogg", false ) }
       }
     );
 #else

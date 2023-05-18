@@ -27,6 +27,7 @@ list(REMOVE_ITEM src ../../_source/source/menu/CMenuStandings.cpp)
 message(NOTICE "VCPKG_HOME=$ENV{VCPKG_ROOT}")
 message(NOTICE "ANDROID_NDK=${ANDROID_NDK}")
 message(NOTICE "IRRLICHT_ES_FOLDER=$ENV{IRRLICHT_ES_FOLDER}")
+message(NOTICE "ANDROID_OGG=$ENV{ANDROID_OGG}")
 
 add_definitions(-D_ANDROID -DNO_XEFFECT -D_IRR_STATIC_LIB_ -D_OPENGL_ES -D_TOUCH_CONTROL -ferror-limit=0)
 
@@ -46,17 +47,23 @@ add_library(enet STATIC IMPORTED)
 add_library(lua STATIC IMPORTED)
 add_library(ode STATIC IMPORTED)
 add_library(Irrlicht STATIC IMPORTED)
+add_library(ogg STATIC IMPORTED)
+add_library(vorbis STATIC IMPORTED)
 
 if (${ANDROID_ABI} STREQUAL "arm64-v8a")
     set_target_properties(enet PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libenet.a)
     set_target_properties(lua PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/liblua.a)
     set_target_properties(ode PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libode.a)
     set_target_properties(Irrlicht PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libIrrlicht.a)
+    set_target_properties(ogg PROPERTIES IMPORTED_LOCATION $ENV{ANDROID_OGG}/lib/arm64-v8a/libogg.a)
+    set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION $ENV{ANDROID_OGG}/lib/arm64-v8a/libvorbis.a)
 elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
     set_target_properties(enet PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libenet.a)
     set_target_properties(lua PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/liblua.a)
     set_target_properties(ode PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libode.a)
     set_target_properties(Irrlicht PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libIrrlicht.a)
+    set_target_properties(ogg PROPERTIES IMPORTED_LOCATION $ENV{ANDROID_OGG}/lib/armeabi-v7a/libogg.a)
+    set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION $ENV{ANDROID_OGG}/lib/armeabi-v7a/libvorbis.a)
 endif()
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
@@ -90,6 +97,7 @@ target_include_directories(marblegp PUBLIC
         ../../_source/include
         $ENV{IRRLICHT_ES_FOLDER}/include
         $ENV{IRRLICHT_ES_FOLDER}/source/Irrlicht
+        $ENV{ANDROID_OGG}/inc
         )
 
 if (${ANDROID_ABI} STREQUAL "arm64-v8a")
@@ -121,5 +129,7 @@ target_link_libraries( # Specifies the target library.
         enet
         lua
         mediandk
+        ogg
+        vorbis
         games-controller::paddleboat_static
         )
