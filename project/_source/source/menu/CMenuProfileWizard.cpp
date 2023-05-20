@@ -459,13 +459,16 @@ namespace dustbin {
 
               if (m_pCtrl != nullptr) {
                 if (m_cPlayer.m_sControls == "") {
+#ifdef _ANDROID
+                  m_cPlayer.m_sControls = "DustbinTouchControl ";
+#else
                   controller::CControllerGame l_cCtrl;
                   m_cPlayer.m_sControls = l_cCtrl.serialize();
+#endif
                 }
 
-                m_pCtrl->setController(m_cPlayer.m_sControls);
-
                 if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
+                  m_pCtrl->setController(m_cPlayer.m_sControls);
                   gui::CSelector *l_pType  = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
                   if (l_pType != nullptr) {
