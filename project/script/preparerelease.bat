@@ -1,7 +1,7 @@
 @echo off
+echo !!! Make Sure to run updateversion.bat and rebuild the Android version before preparing the release
 echo *** Enter code signing certificate password
 set /P password=Password: 
-python updateversion.py
 rd /S /Q temp_android
 rd /S /Q temp_es
 rd /S /Q temp_gl

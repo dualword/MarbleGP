@@ -1,0 +1,2 @@
+python updateversion.py
+@pause
