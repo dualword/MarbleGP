@@ -11,7 +11,7 @@ android {
         minSdk 29
         targetSdk 33
         versionCode 19
-        versionName "1.0"
+        versionName "1.0 build 221"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk.abiFilters 'armeabi-v7a', 'arm64-v8a'
