@@ -22,7 +22,8 @@ namespace dustbin {
       m_bHover         (false),
       m_bMouseDown     (false),
       m_bOneCatPage    (false),
-      m_bScrollTrack   (true),
+      m_bScrollTrack   (false),
+      m_bCategory      (false),
       m_bImgChangeEv   (false),
       m_pFontSelected  (nullptr),
       m_pFontCategory  (nullptr),
@@ -470,7 +471,8 @@ namespace dustbin {
 
             m_iMDown = m_cClick.X;
 
-            m_bScrollTrack = !m_cCategoryInner.isPointInside(m_cMouse);
+            m_bCategory    = m_cCategoryOuter .isPointInside(m_cMouse);
+            m_bScrollTrack = !m_bCategory;
 
             for (int i = 0; i < 2; i++) {
               if (std::get<0>(m_aButtons[i]).isPointInside(m_cMouse)) {
@@ -498,9 +500,20 @@ namespace dustbin {
                       m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
                       checkPositionAndButtons();
                       sendImageSelected();
+                      m_bMouseDown = false;
                       break;
                     }
                   }
+                }
+                else {
+                  m_itSelected++;
+                  if (m_itSelected == m_vImages.end() || (*m_itSelected).m_sCategory != m_sCategory) {
+                    for (m_itSelected = m_vImages.begin(); m_itSelected != m_vImages.end() && (*m_itSelected).m_sCategory != m_sCategory; m_itSelected++);
+                  }
+                  m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
+                  checkPositionAndButtons();
+                  sendImageSelected();
+                  printf("==> %i, %s\n", m_iPos, (*m_itSelected).m_sName.c_str());
                 }
                 break;
               }

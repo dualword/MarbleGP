@@ -56,6 +56,7 @@ namespace dustbin {
         bool m_bMouseDown;    /**< Was a button pressed while hovering? */
         bool m_bOneCatPage;   /**< Categories fit on one page */
         bool m_bScrollTrack;  /**< Scroll the track list (true) or the categories (false)? */
+        bool m_bCategory;     /**< Was the category rectangle clicked? */
         bool m_bImgChangeEv;  /**< Send image change events */
 
         bool m_aBtnHover[2];    /**< Is any of the internal buttons hovered? */
