@@ -460,7 +460,7 @@ namespace dustbin {
               if (m_pCtrl != nullptr) {
                 if (m_cPlayer.m_sControls == "") {
 #ifdef _ANDROID
-                  m_cPlayer.m_sControls = "DustbinTouchControl ";
+                  m_cPlayer.m_sControls = "DustbinTouchControl";
 #else
                   controller::CControllerGame l_cCtrl;
                   m_cPlayer.m_sControls = l_cCtrl.serialize();
