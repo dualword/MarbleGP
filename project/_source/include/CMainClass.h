@@ -29,6 +29,8 @@ namespace dustbin {
       irr::gui::IGUIEnvironment *m_pGui;        /**< The GUI environment */
       irr::io::IFileSystem      *m_pFs;         /**< The Irrlicht file system */
 
+      bool m_bFocused;        /**< Is the window focused? */
+
       std::map<std::string, std::string> m_mSettings;   /**< All the settings of the program */
       std::map<std::string, std::string> m_mGlobals;    /**< The global variables */
 

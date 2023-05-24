@@ -36,6 +36,7 @@ namespace dustbin {
     m_pDrv            (nullptr),
     m_pGui            (nullptr),
     m_pFs             (nullptr),
+    m_bFocused        (false),
     m_iRasterSize     (-1),
     m_pCtrlMenu       (nullptr),
     m_pCtrlGame       (nullptr),
@@ -985,6 +986,14 @@ namespace dustbin {
         m_pActiveState = m_mStates[l_eState];
         m_pActiveState->activate();
       }
+    }
+
+    if (m_pDevice->isWindowFocused() != m_bFocused) {
+      m_bFocused = m_pDevice->isWindowFocused();
+      if (m_bFocused)
+        m_pSoundInterface->unmuteAudio();
+      else
+        m_pSoundInterface->muteAudio();
     }
 
     return l_eState;

@@ -636,8 +636,17 @@ namespace dustbin {
         }
 
         virtual void muteAudio() override {
-          // for (std::map<en2dSounds, CAudioPlayer *>::iterator it = m_mSounds.begin(); it != m_mSounds.end(); it++)
-          //   it->second->setVolume(0.0f);
+          for (std::vector<CAudioPlayer*>::iterator it = m_vGameSounds.begin(); it != m_vGameSounds.end(); it++) {
+            (*it)->setVolume(0.0f);
+          }
+
+          for (std::vector<CAudioPlayer*>::iterator it = m_vMenuSounds.begin(); it != m_vMenuSounds.end(); it++) {
+            (*it)->setVolume(0.0f);
+          }
+
+          for (std::map<enSoundTrack, CAudioPlayer *>::iterator it = m_mSoundTracks.begin(); it != m_mSoundTracks.end(); it++) {
+            it->second->setVolume(0.0f);
+          }
         }
 
         virtual void unmuteAudio() override {
