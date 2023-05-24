@@ -5,7 +5,7 @@ g_Lines = g_File.readlines()
 g_File.close()
 
 g_Output = [ ]
-g_Build  = " build "
+g_Build  = " Build "
 
 for l_Line in g_Lines:
   if l_Line.find("<attribute key=\"Caption\"") != -1 and l_Line.find(g_Build) != -1:
@@ -19,6 +19,8 @@ for l_Line in g_Lines:
     l_NewLine = l_Line[:l_Index + len(g_Build)] + l_NewVersion + l_Sub[l_Index2:]
     
     g_Output.append(l_NewLine)
+    
+    g_NewVersion = l_Line[l_NewLine.find("Version ") + len("Version "):l_NewLine.rfind("\"")]
   else:
     g_Output.append(l_Line)
 
@@ -33,16 +35,15 @@ g_File.close()
 
 g_Output = [ ]
 
+print("New Version: \"" + g_NewVersion + "\"")
+
 for l_Line in g_Lines:
   if l_Line.find("versionCode") != -1:
     l_Index   = l_Line.rfind(" ")
     l_Code    = int(l_Line[l_Index:]) + 1
     g_Output.append(l_Line[:l_Index] + " " + str(l_Code) + "\n")
   elif l_Line.find("versionName") != -1:
-    l_Index    = l_Line.find(g_Build)
-    l_Sub      = l_Line[l_Index + len(g_Build):]
-    l_Index2   = l_Sub.rfind(" ")
-    g_Output.append(l_Line[:l_Index + len(g_Build)] + l_NewVersion + "\"\n")
+    g_Output.append(l_Line[:l_Line.find("versionName ") + len("versionName ")] + "\"" + g_NewVersion + "\"\n")
   else:
     g_Output.append(l_Line)
     
