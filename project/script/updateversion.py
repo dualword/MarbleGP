@@ -20,7 +20,7 @@ for l_Line in g_Lines:
     
     g_Output.append(l_NewLine)
     
-    g_NewVersion = l_Line[l_NewLine.find("Version ") + len("Version "):l_NewLine.rfind("\"")]
+    g_NewVersion = l_NewLine[l_NewLine.find("Version ") + len("Version "):l_NewLine.rfind("\"")]
   else:
     g_Output.append(l_Line)
 
