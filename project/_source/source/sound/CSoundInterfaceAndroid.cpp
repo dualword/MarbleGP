@@ -489,6 +489,8 @@ namespace dustbin {
 
         irr::f32 m_fMarbleParams[4];
 
+        irr::f32 m_fOneShot[(int)enOneShots::Count];
+
         irr::core::vector3df m_cPosition;     /**< Position of the listener */
         irr::core::vector3df m_cDirection;    /**< Looking direction of the listener */
         irr::core::vector3df m_cVelocity;     /**< Velocity of the listener */
@@ -581,6 +583,13 @@ namespace dustbin {
           for (int i = 0; l_aOneShots[i] != ""; i++) {
             LOGD("Loading one shot sound %s", l_aOneShots[i].c_str());
             m_aShots[i] = new CAudioPlayer(l_aOneShots[i], false);
+
+            if (m_mParameters.find(helpers::s2ws(l_aOneShots[i])) != m_mParameters.end()) {
+              m_fOneShot[i] = m_mParameters[helpers::s2ws(l_aOneShots[i])];
+            }
+            else {
+              m_fOneShot[i] = 1.0f;
+            }
           }
         }
 
@@ -775,7 +784,7 @@ namespace dustbin {
         */
         virtual void playMarbleOneShotSound(int a_iMarble, enOneShots a_eSound) override {
           if (a_iMarble == m_iPlayerMarble) {
-            m_aShots[(int)a_eSound]->setVolume(m_fMasterVolume * m_fGameVolume);
+            m_aShots[(int)a_eSound]->setVolume(m_fMasterVolume * m_fGameVolume * m_fOneShot[(int)a_eSound]);
             m_aShots[(int)a_eSound]->setPlaying(true, true);
           }
         }
@@ -790,7 +799,20 @@ namespace dustbin {
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
           if (m_aSounds2d[(int)a_eSound] != nullptr) {
             m_aSounds2d[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
-            m_aSounds2d[(int)a_eSound]->setVolume(a_fVolume * m_fMasterVolume * (a_eSound == en2dSounds::ButtonHover || a_eSound == en2dSounds::ButtonPress ? m_fMenuVolume : m_fGameVolume));
+
+            if (a_eSound == en2dSounds::ButtonHover || a_eSound == en2dSounds::ButtonPress) {
+              m_aSounds2d[(int) a_eSound]->setVolume(a_fVolume * m_fMasterVolume * m_fMenuVolume);
+            }
+            else {
+              irr::f32 l_fVolume = a_fVolume * m_fGameVolume;
+
+              switch (a_eSound) {
+                case en2dSounds::Countdown  : if (m_mParameters.find(L"data/sounds/countdown.ogg"   ) != m_mParameters.end()) l_fVolume *= m_mParameters[L"data/sounds/countdown.ogg"   ]; break;
+                case en2dSounds::CountdownGo: if (m_mParameters.find(L"data/sounds/countdown_go.ogg") != m_mParameters.end()) l_fVolume *= m_mParameters[L"data/sounds/countdown_go.ogg"]; break;
+              }
+
+              m_aSounds2d[(int)a_eSound]->setVolume(l_fVolume);
+            }
           }
         }
 
