@@ -5,6 +5,7 @@
 #include <controller/ICustomEventReceiver.h>
 #include <paddleboat/paddleboat.h>
 #include <sys/system_properties.h>
+#include <sound/ISoundInterface.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
 #include <android/log.h>
@@ -218,6 +219,8 @@ irr::s32 overrideInputReceiver(android_app* a_pApp, AInputEvent* a_pAndroidEvent
   return (*g_IrrlichtInputHandler)(a_pApp, a_pAndroidEvent);
 }
 
+void (*g_pOriginalAppCmd)(struct android_app* app, int32_t cmd) = nullptr;
+
 void overrideAppCmd(struct android_app* app, int32_t cmd) {
   switch (cmd) {
     case (int32_t)APP_CMD_INPUT_CHANGED: break;
@@ -237,6 +240,9 @@ void overrideAppCmd(struct android_app* app, int32_t cmd) {
     case (int32_t)APP_CMD_STOP: g_Quit = true; break;
     case (int32_t)APP_CMD_DESTROY: g_Quit = true; break;
   }
+
+  if (g_pOriginalAppCmd != nullptr)
+    g_pOriginalAppCmd(app, cmd);
 }
 
 void AutoHideNavBar(struct android_app* state)
@@ -305,6 +311,8 @@ void android_main(struct android_app* a_pApp) {
   if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {
     printf("Oops");
   }
+
+  a_pApp->onAppCmd = overrideAppCmd;
 
   /*Paddleboat_ErrorCode l_iError = Paddleboat_init(l_pJni, a_pApp->activity->clazz);
 
@@ -410,6 +418,20 @@ void android_main(struct android_app* a_pApp) {
         l_cEvent.UserEvent.UserData1 = c_iEventNewFrame;
         l_cEvent.UserEvent.UserData2 = c_iEventNewFrame;
         l_pDevice->postEventFromUser(l_cEvent);
+
+        if (a_pApp->activityState == APP_CMD_PAUSE || a_pApp->activityState == APP_CMD_STOP || a_pApp->activityState == APP_CMD_LOST_FOCUS) {
+          g_Focused = false;
+          l_pMainClass->getSoundInterface()->muteAudio();
+        }
+        else if (a_pApp->activityState == APP_CMD_DESTROY) {
+          g_Quit = true;
+        }
+      }
+      else {
+        if (a_pApp->activityState == APP_CMD_START || a_pApp->activityState == APP_CMD_RESUME || a_pApp->activityState == APP_CMD_GAINED_FOCUS) {
+          g_Focused = true;
+          l_pMainClass->getSoundInterface()->unmuteAudio();
+        }
       }
 
       if (g_Restart) {
@@ -425,9 +447,10 @@ void android_main(struct android_app* a_pApp) {
     delete l_pMainClass;
     l_pMainClass = nullptr;
   }
-  while (l_eState != dustbin::state::enState::Quit);
+  while (l_eState != dustbin::state::enState::Quit && !g_Quit);
 
   // Paddleboat_destroy(l_pJni);
 
   ANativeActivity_finish(a_pApp->activity);
+  exit(0);
 }
