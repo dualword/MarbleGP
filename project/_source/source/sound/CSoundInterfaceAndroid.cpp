@@ -313,7 +313,7 @@ namespace dustbin {
         */
         CAudioPlayer(const std::string &a_sSound, bool a_bLooped) :
           m_iReadFrameIndex(0        ),
-          m_fVolume        (1.0f     ),
+          m_fVolume        (0.0f     ),
           m_bPlaying       (false    ),
           m_bLooped        (a_bLooped),
           m_pSource        (nullptr  ),
@@ -499,7 +499,7 @@ namespace dustbin {
 
       public:
         CSoundInterface(irr::IrrlichtDevice *a_pDevice) : 
-          m_fMasterVolume    (1.0f),
+          m_fMasterVolume    (0.0f),
           m_fSoundtrackVolume(1.0f),
           m_fGameVolume      (1.0f),
           m_fMenuVolume      (1.0f),
@@ -798,13 +798,11 @@ namespace dustbin {
 
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
           if (m_aSounds2d[(int)a_eSound] != nullptr) {
-            m_aSounds2d[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
-
             if (a_eSound == en2dSounds::ButtonHover || a_eSound == en2dSounds::ButtonPress) {
               m_aSounds2d[(int) a_eSound]->setVolume(a_fVolume * m_fMasterVolume * m_fMenuVolume);
             }
             else {
-              irr::f32 l_fVolume = a_fVolume * m_fGameVolume;
+              irr::f32 l_fVolume = a_fVolume * m_fGameVolume * m_fMasterVolume;
 
               switch (a_eSound) {
                 case en2dSounds::Countdown  : if (m_mParameters.find(L"data/sounds/countdown.ogg"   ) != m_mParameters.end()) l_fVolume *= m_mParameters[L"data/sounds/countdown.ogg"   ]; break;
@@ -813,6 +811,8 @@ namespace dustbin {
 
               m_aSounds2d[(int)a_eSound]->setVolume(l_fVolume);
             }
+
+            m_aSounds2d[(int)a_eSound]->setPlaying(true, a_fPan == 0.0f);
           }
         }
 

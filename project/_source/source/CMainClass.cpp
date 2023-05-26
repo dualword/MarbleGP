@@ -254,7 +254,11 @@ namespace dustbin {
 
     m_pSoundInterface = sound::createSoundInterface(m_pDevice);
 
-    m_pSoundInterface->setMasterVolume(0.0f);
+    m_pSoundInterface->setSoundtrackVolume(m_cSettings.m_fSoundTrack);
+    m_pSoundInterface->setSfxVolumeMenu   (m_cSettings.m_fSfxMenu   );
+    m_pSoundInterface->setSfxVolumeGame   (m_cSettings.m_fSfxGame   );
+    m_pSoundInterface->setMasterVolume    (m_cSettings.m_fSfxMaster );
+
 
     m_pSoundInterface->preloadSound(L"data/sounds/theme_menu.ogg"   , true );
     m_pSoundInterface->preloadSound(L"data/sounds/theme_race.ogg"   , false);
@@ -286,11 +290,6 @@ namespace dustbin {
       }
     );
 #endif
-
-    m_pSoundInterface->setSoundtrackVolume(m_cSettings.m_fSoundTrack);
-    m_pSoundInterface->setSfxVolumeMenu   (m_cSettings.m_fSfxMenu   );
-    m_pSoundInterface->setSfxVolumeGame   (m_cSettings.m_fSfxGame   );
-    m_pSoundInterface->setMasterVolume    (m_cSettings.m_fSfxMaster );
 
     m_mStates[state::enState::Menu] = new state::CMenuState(m_pDevice, this);
     m_mStates[state::enState::Game] = new state::CGameState(m_pDevice, this);
