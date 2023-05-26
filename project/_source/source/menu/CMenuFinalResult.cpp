@@ -5,6 +5,7 @@
 #endif
 
 #include <shader/CShaderHandlerBase.h>
+#include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <shader/CMyShaderNone.h>
 #include <helpers/CMenuLoader.h>
@@ -48,6 +49,9 @@ namespace dustbin {
           l_pCam->setPosition(irr::core::vector3df(0.0f, 0.0f, -20.0f));
           l_pCam->setTarget(irr::core::vector3df(0.0f, 0.0f, 0.0f));
 
+#ifdef _OPENGL_ES
+          helpers::adjustNodeMaterials(m_pSmgr->getRootSceneNode());
+#endif
           CGlobal::getInstance()->stopGameClient();
 
           irr::scene::IMeshSceneNode *l_pTrophy = reinterpret_cast<irr::scene::IMeshSceneNode *>(m_pSmgr->getSceneNodeFromName("trophy"));

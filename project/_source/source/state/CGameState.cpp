@@ -388,7 +388,7 @@ namespace dustbin {
       }
 
 #ifdef _OPENGL_ES
-      adjustNodeMaterials(m_pSmgr->getRootSceneNode());
+      helpers::adjustNodeMaterials(m_pSmgr->getRootSceneNode());
 #endif
 
       helpers::addToDebugLog("Fill Checkpoint List...");
@@ -1767,22 +1767,5 @@ namespace dustbin {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->onplayerwithdrawn(a_MarbleId);
     }
-
-
-#ifdef _OPENGL_ES
-    /**
-    * Adjust the materials of the node to get proper lighting when using
-    * with OpenGL-ES on the raspberry PI
-    * @param a_pNode the node to adjust
-    */
-    void CGameState::adjustNodeMaterials(irr::scene::ISceneNode* a_pNode) {
-      for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++) {
-        a_pNode->getMaterial(i).Lighting = false;
-      }
-
-      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator it = a_pNode->getChildren().begin(); it != a_pNode->getChildren().end(); it++)
-        adjustNodeMaterials(*it);
-    }
-#endif
   }
 }

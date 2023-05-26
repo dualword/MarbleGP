@@ -49,6 +49,15 @@ namespace dustbin {
     * @return the default texture string for the starting number
     */
     std::string createDefaultTextureString(const std::string &a_sNumber, int a_iClass);
+
+#ifdef _OPENGL_ES
+    /**
+    * Adjust the materials of the node to get proper lighting when using
+    * with OpenGL-ES on the raspberry PI
+    * @param a_pNode the node to adjust
+    */
+    void adjustNodeMaterials(irr::scene::ISceneNode* a_pNode);
+#endif
   }
 }
 
