@@ -35,6 +35,8 @@ copyContent("../../project/data"        , g_TempFolderAndroid)
 copyContent("../../project/data_es"     , g_TempFolderAndroid)
 copyContent("../../project/data_android", g_TempFolderAndroid)
 
+shutil.rmtree("temp_android/data/sounds")
+
 os.chdir("temp_gl")
 os.system("7z.exe a -r -tzip marblegp.dat data")
 os.chdir("../temp_es")
