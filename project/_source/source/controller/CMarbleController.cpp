@@ -200,13 +200,9 @@ namespace dustbin {
                 l_iCtrlX     = l_iBotX;
                 a_bAutomatic = true;
               }
-              else {
-                if (l_iCtrlX > 0 && l_iBotX > 0) l_iCtrlX = l_iBotX;
-                if (l_iCtrlX < 0 && l_iBotX < 0) l_iCtrlX = l_iBotX;
-              }
               l_iCtrlY      = l_bBrake ? -127 : l_iBotY;
               l_bBrake     |= l_bBrakeBot;
-              a_bAutomatic  = a_bAutomatic || l_bRspnBot;
+              a_bAutomatic  = a_bAutomatic || l_bRspnBot || l_eMode == IControllerAI::enMarbleMode::Jump;
               break;
 
             // Low: the player controls the marble, only in jump mode is the speed adjusted by AI

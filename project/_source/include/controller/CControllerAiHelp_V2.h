@@ -25,6 +25,15 @@ namespace dustbin {
       private:
         bool m_bStarting;   /**< The race is starting. Necessary for the inital path selection */
 
+        /**
+        * Find the next collision (if any) of the velocity line with a border of the 2d path data
+        * @param a_cVelocity the current velocity of the marble (with factor depending on the level of help)
+        * @param a_pLine the current line to check
+        * @param a_cOut the colliding point
+        * @return true if the was a collision
+        */
+        bool findNextCollision(const irr::core::line2df &a_cVelocity, SPathLine2d *a_pLine, irr::core::vector2df &a_cOut);
+
       public:
         /**
         * The constructor

@@ -276,7 +276,7 @@ namespace dustbin {
                 break;
 
               case 4:
-                l_pInfo->setText(L"Speed is controlled by the AI, and when you approach a jump the AI takes over complete control. But you have the option to override the speed control by using the brake.");
+                l_pInfo->setText(L"The AI adjusts your steering if necessary and speed is controlled by the AI, and when you approach a jump the AI takes over complete control. But you have the option to override the speed control by using the brake.");
                 break;
 
               case 5:
