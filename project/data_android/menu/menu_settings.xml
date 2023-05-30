@@ -216,7 +216,7 @@
     </attributes>
     
     <children>
-      <element type="Selector" rect="center: -3, -7, 12, -5">
+      <element type="Selector" rect="center: 5, -7, 23, -5">
         <attributes>
           <attribute key="Name" value="misc_menuctrl" />
           <attribute key="Id" value="23026" />
@@ -227,7 +227,7 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="center: -24, -7, -4, -5">
+      <element type="staticText" rect="center: -24, -7, 4, -5">
         <attributes>
           <attribute key="Name" value="label_misc_use" />
           <attribute key="Caption" value="Use game controller to navigate menues." />
