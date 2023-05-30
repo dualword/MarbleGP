@@ -500,6 +500,7 @@ namespace dustbin {
     */
     void CControllerUi::setMode(enMode a_eMode) {
       m_eMode = a_eMode;
+      m_iWizard = 0;
     }
 
     /**
