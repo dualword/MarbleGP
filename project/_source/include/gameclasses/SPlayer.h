@@ -33,6 +33,7 @@ namespace dustbin {
       std::wstring m_sNumber;           /**< The player's starting number */
       bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
       bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
+      bool         m_bAutoThrottle;     /**< Flag for the auto throttle option of the controller */
       int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
 
       irr::video::SColor m_cText;   /**< The text color (for the starting number in the ranking display) */
@@ -65,7 +66,16 @@ namespace dustbin {
       * @param a_sController the controller configuration string of the player
       * @param a_pMarble the marble of the player
       */
-      SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType);
+      SPlayer(
+        int a_iPlayer, 
+        const std::string& a_sName, 
+        const std::string& a_sTexture, 
+        const std::string &a_sController, 
+        const std::string &a_sShortName, 
+        bool a_bAutoThrottle,
+        data::SPlayerData::enAiHelp a_eAiHelp, 
+        gameclasses::SMarbleNodes* a_pMarble, 
+        data::enPlayerType a_eType);
 
       void setName(const std::string &a_sName);
       bool isBot();

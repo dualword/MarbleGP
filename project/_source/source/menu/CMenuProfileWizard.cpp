@@ -6,6 +6,7 @@
 #include <helpers/CStringHelpers.h>
 #include <gui/CControllerUi_Game.h>
 #include <helpers/CDataHelpers.h>
+#include <gui/CDustbinCheckbox.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
@@ -366,11 +367,16 @@ namespace dustbin {
                 }
               }
 
+              gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              if (l_pAuto != nullptr && !l_bSaved) {
+                m_cPlayer.m_bAutoThrottle = l_pAuto->isChecked();
+              }
+
               // Serialize the controls and save it to m_sControls
               if (m_pCtrl != nullptr && !l_bSaved) {
                 m_cPlayer.m_sControls = m_pCtrl->serialize();
-                m_pCtrl = nullptr;
               }
+              m_pCtrl = nullptr;
               break;
             }
 
@@ -455,6 +461,8 @@ namespace dustbin {
             }
 
             case enMenuStep::Controls: {
+              bool l_bTouchGyro = false;
+
               m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
 
               if (m_pCtrl != nullptr) {
@@ -501,6 +509,8 @@ namespace dustbin {
                         l_pImage->setVisible(true );
                         l_pImage->setImage(m_pDrv->getTexture(std::get<1>(*l_itCtrl).c_str()));
 
+                        l_bTouchGyro = true;
+
                         for (unsigned i = 0; i < l_pType->getItemCount(); i++) {
                           if (std::get<2>(*l_itCtrl) == l_pType->getItem(i)) {
                             l_pType->setSelected(i);
@@ -518,6 +528,14 @@ namespace dustbin {
                   if (l_pTest != nullptr) l_pTest->setVisible(false);
                 }
               }
+
+              gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+
+              if (l_pAuto != nullptr) {
+                l_pAuto->setChecked(m_cPlayer.m_bAutoThrottle || l_bTouchGyro);
+                l_pAuto->setEnabled(!l_bTouchGyro);
+              }
+
               break;
             }
 
@@ -1083,11 +1101,18 @@ namespace dustbin {
 
                         if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController;").size()) != "DustbinController;") {
                           m_cPlayer.m_sControls = data::c_sDefaultControls;
-                          m_pCtrl->deserialize(m_cPlayer.m_sControls);
+                          m_pCtrl->setController(m_cPlayer.m_sControls);
                         }
                       }
                       if (l_pEdit != nullptr) l_pEdit->setVisible(!l_bFound);
                       if (l_pTest != nullptr) l_pTest->setVisible(!l_bFound);
+
+                      gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+
+                      if (l_pAuto != nullptr) {
+                        l_pAuto->setChecked(m_cPlayer.m_bAutoThrottle || l_bFound);
+                        l_pAuto->setEnabled(!l_bFound);
+                      }
                     }
                     else {
                       // The control image is only available on Android, and the keyboard controls are only available on Windows

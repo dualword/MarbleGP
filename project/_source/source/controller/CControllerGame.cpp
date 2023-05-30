@@ -5,8 +5,15 @@
 
 namespace dustbin {
   namespace controller {
+    CControllerGame::CControllerGame() : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false), m_bAutoThrottle(true) {
+      setupControls();
+    }
 
-    CControllerGame::CControllerGame() : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false) {
+    CControllerGame::CControllerGame(bool a_bAutoThrottle) : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false), m_bAutoThrottle(a_bAutoThrottle) {
+      setupControls();
+    }
+
+    void CControllerGame::setupControls() {
       SCtrlInput l_cInput;
 
 #ifdef _ANDROID
@@ -41,7 +48,10 @@ namespace dustbin {
     * @return the throttle state
     */
     irr::f32 CControllerGame::getThrottle() {
-      return m_vControls[0].m_fValue - m_vControls[1].m_fValue;
+      if (m_bAutoThrottle)
+        return m_vControls[4].m_fValue > 0.5f ? -1.0f : 1.0f;
+      else
+        return m_vControls[0].m_fValue - m_vControls[1].m_fValue;
     }
 
     /**

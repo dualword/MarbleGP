@@ -1279,6 +1279,7 @@ namespace dustbin {
                   l_sTexture,
             (*it).m_sControls,
             (*it).m_sShortName,
+            (*it).m_bAutoThrottle,
             (*it).m_eAiHelp,
             l_pMarble,
             (*it).m_eType
@@ -1314,6 +1315,7 @@ namespace dustbin {
               l_pPlayer->m_pController = l_pFactory->createController(
                 l_pPlayer->m_pMarble->m_pPositional->getID(), 
                 l_pPlayer->m_sController, 
+                l_pPlayer->m_bAutoThrottle,
                 l_pPlayer->m_eAiHelp, 
                 reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
                 "data/levels/" + m_cGameData.m_sTrack,

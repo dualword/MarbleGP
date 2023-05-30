@@ -33,6 +33,7 @@ namespace dustbin {
         IController* createController(
           int                          a_iMarbleId, 
           const std::string           &a_sControls, 
+          bool                         a_bAutoThrottle,
           data::SPlayerData::enAiHelp  a_eAiHelp, 
           scenenodes::CAiNode         *a_pAiNode, 
           const std::string           &a_sAiScript,

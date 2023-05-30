@@ -19,7 +19,7 @@ namespace dustbin {
     void CControllerUi_Game::setController(const std::string& a_sCtrl) {
       CControllerUi::setController(a_sCtrl);
 
-      controller::CControllerBase l_pCtrl = controller::CControllerGame();
+      controller::CControllerBase l_pCtrl = controller::CControllerGame(false);
 
       if (!m_pController->compareTo(&l_pCtrl)) {
         m_pController->getInputs().clear();
@@ -63,6 +63,9 @@ namespace dustbin {
     * @param a_eCtrl the new controller type
     */
     void CControllerUi_Game::resetToDefaultForMode(enControl a_eCtrl) {
+      if (m_pController == nullptr)
+        m_pController = new controller::CControllerGame();
+
       if (a_eCtrl == enControl::Keyboard) {
         m_pController->deserialize("DustbinController;control;f%3bl%3bForward%3bh%3ba%3bn%3bM%3br%3ba%3bt%3ba%3bx%3bc%3bD%3b-b%3bF%3bmZm;control;f%3bl%3bBackward%3bh%3ba%3bn%3bO%3br%3ba%3bt%3ba%3bx%3bc%3bD%3bb%3bF%3bmZm;control;f%3bl%3bLeft%3bh%3ba%3bn%3bL%3br%3ba%3bt%3ba%3bx%3ba%3bD%3b-b%3bF%3bmZm;control;f%3bl%3bRight%3bh%3ba%3bn%3bN%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bBrake%3bh%3ba%3bn%3bG%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bRearview%3bh%3ba%3bn%3bj%3br%3ba%3bt%3be%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bRespawn%3bh%3ba%3bn%3bn%3br%3ba%3bt%3bf%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bPause%3bh%3ba%3bn%3bqb%3br%3ba%3bt%3bh%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bCancel%2520Race%3bh%3ba%3bn%3bB%3br%3ba%3bt%3bg%3bx%3ba%3bD%3bb%3bF%3bmZm");
       }

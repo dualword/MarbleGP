@@ -91,12 +91,13 @@ namespace dustbin {
         BotMb3    /**< Complete AI control (Marble3) */
       };
 
-      enPlayerType m_eType;       /**< The type of player */
-      enAiHelp     m_eAiHelp;     /**< The level of AI help */
-      int          m_iPlayerId;   /**< The ID of the player */
-      int          m_iGridPos;    /**< Position in the grid (1..16) */
-      int          m_iViewPort;   /**< The viewport of this player (if any) */
-      float        m_fDeviation;  /**< The deviation in power for this marble (AI only) */
+      enPlayerType m_eType;         /**< The type of player */
+      enAiHelp     m_eAiHelp;       /**< The level of AI help */
+      int          m_iPlayerId;     /**< The ID of the player */
+      int          m_iGridPos;      /**< Position in the grid (1..16) */
+      int          m_iViewPort;     /**< The viewport of this player (if any) */
+      float        m_fDeviation;    /**< The deviation in power for this marble (AI only) */
+      bool         m_bAutoThrottle; /**< The "Auto Throttle" option */
 
       std::string m_sName;      /**< The player's name */
       std::string m_sTexture;   /**< The player's texture generation string */

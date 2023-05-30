@@ -18,6 +18,7 @@ namespace dustbin {
     CMarbleController::CMarbleController(
       int                          a_iMarbleId, 
       const std::string           &a_sControls, 
+      bool                         a_bAutoThrottle,
       scenenodes::CAiNode         *a_pAiNode, 
       data::SPlayerData::enAiHelp  a_eAiHelp, 
       threads::IQueue             *a_pQueue, 
@@ -45,7 +46,7 @@ namespace dustbin {
         m_bOwnsCtrl = false;
       }
       else {
-        controller::CControllerGame *p = new controller::CControllerGame();
+        controller::CControllerGame *p = new controller::CControllerGame(a_bAutoThrottle);
         p->deserialize(a_sControls);
         l_pController = p;
       }

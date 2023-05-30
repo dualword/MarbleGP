@@ -20,15 +20,15 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 7, 16, 9" font="default">
+      <element type="staticText" rect="relative: 7, 7, 13, 9" font="default">
         <attributes>
-          <attribute key="Caption" value="Controller Type:" />
+          <attribute key="Caption" value="Controller:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 17 , 7, 43, 9" font="huge" tooltip="Select the controller you want to use">
+      <element type="Selector" rect="relative: 14, 7, 31, 9" font="huge" tooltip="Select the controller you want to use">
         <attributes>
           <attribute key="Name" value="controller_type" />
           <attribute key="Selected" value="0" />
@@ -36,6 +36,19 @@
         <custom>
           <attribute key="options" value="" />
         </custom>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 41, 7, 43, 9" tooltip="If this box is checked the controller will always apply full acceleration unless you hit the brake">
+        <attributes>
+          <attribute key="Name" value="auto_throttle" />
+        </attributes>
+      </element>
+
+      <element type="staticText" rect="relative: 32, 7, 40, 9" font="default" tooltip="If this box is checked the controller will always apply full acceleration unless you hit the brake">
+        <attributes>
+          <attribute key="Caption" value="Auto Throttle:" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
       </element>
       
       <element type="image" rect="relative: 7, 10, 43, 29" font="huge" tooltip="Selected Controller">

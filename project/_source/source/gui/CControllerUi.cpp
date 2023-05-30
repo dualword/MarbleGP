@@ -312,10 +312,16 @@ namespace dustbin {
     }
 
     void CControllerUi::draw() {
-      if (IsVisible) {
+      if (IsVisible && m_pController != nullptr) {
         irr::gui::IGUIElement::draw();
 
         m_pDrv->draw2DRectangleOutline(AbsoluteClippingRect, irr::video::SColor(0xFF, 0, 0, 0));
+
+        if (m_pFont == nullptr)
+          calculateGui();
+
+        if (m_pFont == nullptr)
+          return;
 
         std::wstring l_sMode = m_eMode == enMode::Display ? L"Display" : m_eMode == enMode::Wizard ? L"Configure" : L"Test";
         irr::core::dimension2du l_cDimMode = m_pFont->getDimension(l_sMode.c_str());
