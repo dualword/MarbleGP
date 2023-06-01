@@ -39,10 +39,14 @@ namespace dustbin {
         };
 
         SControl m_aControls[(int)enControl::Count];
-
+      
         irr::core::recti m_aCtrlRects[(int)enControlAreas::Count];
 
         std::map<size_t, irr::core::vector2di> m_mTouch;
+
+        irr::s32 m_aHighLight[(int)enControl::Count];   /**< Highlighting items (for the tutorial HUD) */
+
+        irr::ITimer *m_pTimer;
 
         irr::s32 m_iThrottleHeight;
         irr::f32 m_fSteer;
@@ -87,17 +91,25 @@ namespace dustbin {
         * @return true if control >= 0.5, false otherwise
         */
         virtual bool getRespawn() override;
-      /**
-      * Get the cancel button state
-      * @return true if the button was pressed since the last query, false otherwise
-      */
-      virtual bool withdrawFromRace() override;
 
-      /**
-      * Get the pause button state
-      * @return true if the button was pressed since the last query, false otherwise
-      */
-      virtual bool pause() override;
+        /**
+        * Get the cancel button state
+        * @return true if the button was pressed since the last query, false otherwise
+        */
+        virtual bool withdrawFromRace() override;
+
+        /**
+        * Get the pause button state
+        * @return true if the button was pressed since the last query, false otherwise
+        */
+        virtual bool pause() override;
+
+        /**
+        * Get the text shown in the tutorial
+        * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+        * @return the text shown in the tutorial
+        */
+        virtual std::wstring getTutorialText(bool a_bFirst) override;
 
         /**
         * Handle an event

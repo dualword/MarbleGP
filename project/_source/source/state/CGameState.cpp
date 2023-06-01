@@ -1346,7 +1346,7 @@ namespace dustbin {
       m_pSoundIntf->startGame();
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-
+        // it->second.m_pPlayer->m_pPlayer->m_pController
         if (m_cGameData.m_bIsTutorial)
           it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition, m_pOutputQueue);
         else
@@ -1408,6 +1408,11 @@ namespace dustbin {
         m_pLuaScript = new lua::CLuaScript_scene(l_sSceneScript);
         m_pLuaScript->initializesingleton();
         m_pLuaScript->initialize();
+      }
+
+      for (auto l_cPlayer: m_vPlayers) {
+        if (l_cPlayer->m_pController != nullptr)
+          l_cPlayer->m_pController->moveGuiToFront();
       }
     }
 

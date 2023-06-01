@@ -2,6 +2,7 @@
 #pragma once
 
 #include <irrlicht.h>
+#include <string>
 
 namespace dustbin {
   namespace controller {
@@ -78,11 +79,19 @@ namespace dustbin {
         virtual bool pause() = 0;
 
         /**
+        * Get the text shown in the tutorial
+        * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+        * @return the text shown in the tutorial
+        */
+        virtual std::wstring getTutorialText(bool a_bFirst) = 0;
+
+        /**
         * Handle an event
         * @param a_cEvent the event to handle
         * @return true if the event was handled, false otherwise
         */
         virtual bool handleEvent(const irr::SEvent &a_cEvent) = 0;
+
         /**
         * Draw the controller
         */

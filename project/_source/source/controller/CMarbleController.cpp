@@ -351,5 +351,28 @@ namespace dustbin {
       if (m_pController != nullptr)
         m_pController->playerFinished();
     }
+
+    /**
+     * If this controller has an UI this method will move it to the front.
+     * The Android touch and gyroscope controllers have an UI
+     */
+    void CMarbleController::moveGuiToFront() {
+      if (m_pController != nullptr)
+        m_pController->moveGuiToFront();
+    }
+
+    /**
+    * Get the text shown in the tutorial
+    * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+    * @return the text shown in the tutorial
+    */
+    std::wstring CMarbleController::getTutorialText(bool a_bFirst) {
+      std::wstring s = m_pController != nullptr ? m_pController->getTutorialText(a_bFirst) : L"";
+
+      if (m_pAiControls != nullptr && a_bFirst)
+        s += L"\n\n" + m_pAiControls->getTutorialText(m_eAiHelp);
+
+      return s;
+    }
  }
 }

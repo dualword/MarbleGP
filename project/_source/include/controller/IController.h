@@ -4,6 +4,7 @@
 #include <messages/IMessage.h>
 #include <threads/IQueue.h>
 #include <irrlicht.h>
+#include <string>
 
 namespace dustbin {
   namespace controller {
@@ -101,6 +102,19 @@ namespace dustbin {
         * @return the AI controller
         */
         virtual IControllerAI *getAiController() = 0;
+
+        /**
+         * If this controller has an UI this method will move it to the front.
+         * The Android touch and gyroscope controllers have an UI
+         */
+        virtual void moveGuiToFront() = 0;
+
+        /**
+         * Get the text shown in the tutorial
+         * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+         * @return the text shown in the tutorial
+         */
+        virtual std::wstring getTutorialText(bool a_bFirst) = 0;
     };
   }
 }

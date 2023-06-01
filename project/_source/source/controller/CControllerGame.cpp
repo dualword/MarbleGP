@@ -2,6 +2,7 @@
 
 #include <controller/CControllerGame.h>
 #include <controller/IController.h>
+#include <helpers/CStringHelpers.h>
 
 namespace dustbin {
   namespace controller {
@@ -143,6 +144,42 @@ namespace dustbin {
     */
     void CControllerGame::playerFinished() {
       // Nothing to do in this case
+    }
+
+    /**
+     * If this controller has an UI this method will move it to the front.
+     * The Android touch and gyroscope controllers have an UI
+     */
+    void CControllerGame::moveGuiToFront() {
+      // Nothing to do here
+    }
+
+    /**
+    * Get the text shown in the tutorial
+    * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+    * @return the text shown in the tutorial
+    */
+    std::wstring CControllerGame::getTutorialText(bool a_bFirst) {
+      std::wstring s = L"";
+
+      if (a_bFirst) {
+        s += L"Steer the marble left and right using the following controls:\n";
+
+        s += helpers::s2ws(m_vControls[2].toString()) + L"\n" + helpers::s2ws(m_vControls[3].toString()) + L".\n\n";
+
+        if (m_bAutoThrottle) {
+          s += L"The marble accelerated automatically unless you activate the brake using " + helpers::s2ws(m_vControls[4].toString()) + L". ";
+        }
+        else {
+          s += L"Accelerate the marble forward using " + helpers::s2ws(m_vControls[0].toString()) + L" and backward with " + helpers::s2ws(m_vControls[1].toString()) + L".\n";
+          s += L"The brake is activated using " + helpers::s2ws(m_vControls[4].toString()) + L". ";
+        }
+      }
+      else {
+        s = L"You can manually respawn the marble by pressing " + helpers::s2ws(m_vControls[6].toString()) + L" for two seconds.";
+      }
+
+      return s;
     }
   } // namespace controller
 } // namespace dustbin

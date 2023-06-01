@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <data/CDataStructs.h>
 #include <irrlicht.h>
 #include <string>
 
@@ -123,6 +124,12 @@ namespace dustbin {
         * @param a_Data String for any further information
         */
         virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) = 0;
+
+        /**
+        * Get a tutorial string
+        * @return a tutorial string
+        */
+        virtual std::wstring getTutorialText(data::SPlayerData::enAiHelp a_eAiHelp) = 0;
     };
   }
 }

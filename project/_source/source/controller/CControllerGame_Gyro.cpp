@@ -202,6 +202,14 @@ namespace dustbin {
       setVisible(false);
     }
 
+    /**
+     * If this controller has an UI this method will move it to the front.
+     * The Android touch and gyroscope controllers have an UI
+     */
+    void CControllerGame_Gyro::moveGuiToFront() {
+      CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement()->bringToFront(this);
+    }
+
     void CControllerGame_Gyro::draw() {
       if (IsVisible) {
         irr::video::ITexture *l_pImage = m_pReset;

@@ -1,9 +1,20 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/touch/CControllerTouchSteerOnly.h>
 
+#include <CGlobal.h>
+#include <Defines.h>
+
 namespace dustbin {
   namespace controller {
-    CControllerTouchSteerOnly::CControllerTouchSteerOnly(irr::video::IVideoDriver* a_pDrv, const irr::core::recti &a_cViewport) : ITouchController(a_pDrv, a_cViewport), m_iThrottleHeight(0), m_fSteer(0.0f), m_fThrottle(1.0f), m_bPause(false), m_bWithdraw(false) {
+    CControllerTouchSteerOnly::CControllerTouchSteerOnly(irr::video::IVideoDriver* a_pDrv, const irr::core::recti &a_cViewport) :
+      ITouchController (a_pDrv, a_cViewport),
+      m_pTimer         (CGlobal::getInstance()->getIrrlichtDevice()->getTimer()),
+      m_iThrottleHeight(0),
+      m_fSteer         (0.0f),
+      m_fThrottle      (1.0f),
+      m_bPause         (false),
+      m_bWithdraw      (false)
+    {
       m_iThrottleHeight = m_cViewport.getHeight() / 8;
       irr::core::vector2di l_cCenter = a_cViewport.getCenter();
       irr::core::dimension2du l_cSize = irr::core::dimension2du (m_iThrottleHeight, m_iThrottleHeight);
@@ -38,6 +49,9 @@ namespace dustbin {
         irr::core::vector2di(0, 3 * m_cViewport.getHeight() / 4),
         irr::core::dimension2du(m_cViewport.getWidth(), 3 * m_cViewport.getHeight() / 4)
       );
+
+      for (int i = 0; i < (int)enControl::Count; i++)
+        m_aHighLight[i] = -1;
     }
 
     CControllerTouchSteerOnly::~CControllerTouchSteerOnly() {
@@ -123,12 +137,36 @@ namespace dustbin {
     }
 
     /**
+    * Get the text shown in the tutorial
+    * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+    * @return the text shown in the tutorial
+    */
+    std::wstring CControllerTouchSteerOnly::getTutorialText(bool a_bFirst) {
+      std::wstring s = L"";
+
+      if (a_bFirst) {
+        s = L"Steer the marble by touching the arrows on the left and the right side of the display. The marble accelerates automatically unless you hit the brake buttons located on the lower border of the screen.";
+      }
+      else {
+        s = L"You can manually respawn your marble by pressing the Respawn button (right button on top of the screen) for two seconds.";
+      }
+
+      return s;
+    }
+
+    /**
     * Draw the controller
     */
     void CControllerTouchSteerOnly::draw() {
       for (int i = 0; i < (int)enControl::Count; i++) {
         if (m_aControls[i].m_bActive) {
-          irr::video::ITexture *l_pTexture = m_aControls[i].m_bTouched ? m_aControls[i].m_pTextureOn : m_aControls[i].m_pTextureOff;
+          bool l_bBlink = m_aHighLight[i] != -1;
+
+          if (l_bBlink) {
+            l_bBlink = (((m_pTimer->getRealTime() - m_aHighLight[i]) / 500) % 2) == 0;
+          }
+
+          irr::video::ITexture *l_pTexture = (m_aControls[i].m_bTouched || l_bBlink) ? m_aControls[i].m_pTextureOn : m_aControls[i].m_pTextureOff;
 
           if (l_pTexture != nullptr) {
             m_pDrv->draw2DImage(
@@ -172,7 +210,39 @@ namespace dustbin {
           calculateSteer();
         }
       }
+      else
 #endif
+      if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn || a_cEvent.UserEvent.UserData1 == c_iHighlightControlOff) {
+          switch (a_cEvent.UserEvent.UserData2) {
+            case (int)enControlHiLight::Steer:
+              m_aHighLight[(int)enControl::Left ] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              m_aHighLight[(int)enControl::Right] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              break;
+
+            case (int)enControlHiLight::Brake:
+              m_aHighLight[(int)enControl::BrakeL] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              m_aHighLight[(int)enControl::BrakeR] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              break;
+
+            case (int)enControlHiLight::Pause:
+              m_aHighLight[(int)enControl::Pause] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              break;
+
+            case (int)enControlHiLight::Respawn:
+              m_aHighLight[(int)enControl::Respawn] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              break;
+
+            case (int)enControlHiLight::Gyro:
+              break;
+
+            case (int)enControlHiLight::Count:
+              for (int i = 0; i < (int)enControl::Count; i++)
+                m_aHighLight[i] = a_cEvent.UserEvent.UserData1 == c_iHighlightControlOn ? (irr::s32)m_pTimer->getRealTime() : -1;
+              break;
+          }
+        }
+      }
 
       return a_bRet;
     }

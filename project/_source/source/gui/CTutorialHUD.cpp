@@ -1,9 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <_generated/messages/CMessages.h>
+#include <controller/CControllerAI.h>
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
+#include <gameclasses/SPlayer.h>
 #include <gui/CTutorialHUD.h>
 #include <CGlobal.h>
+#include <Defines.h>
 
 namespace dustbin {
   namespace gui {
@@ -52,11 +55,7 @@ namespace dustbin {
       m_pRoot->setDrawBackground(true);
       m_pRoot->setVisible(false);
 
-#ifdef _ANDROID
-      std::wstring l_sContinue = L"Press the Pause key or swipe right to left to continue!";
-#else
-      std::wstring l_sContinue = L"Press the Pause key to continue with the turorial!";
-#endif
+      std::wstring l_sContinue = L"Unpause to continue with the turorial!";
 
       irr::core::dimension2du l_cSize = CGlobal::getInstance()->getFont(dustbin::enFont::Regular, irr::core::dimension2du(a_cRect.getSize().Width, a_cRect.getSize().Height))->getDimension(l_sContinue.c_str());
 
@@ -106,7 +105,41 @@ namespace dustbin {
             m_mHintObj[m_iCurrent]->setVisible(false);
 
           if (m_mHints.find(m_iCurrent) != m_mHints.end()) {
-            m_pHint->setText(helpers::s2ws(m_mHints[m_iCurrent]).c_str());
+            std::wstring l_sHint = helpers::s2ws(m_mHints[m_iCurrent]);
+            
+
+            if (m_iCurrent == 1) {
+              int l_iBlink[] = {
+                (int)enControlHiLight::Steer,
+                (int)enControlHiLight::Brake,
+                (int)enControlHiLight::Count
+              };
+
+              for (int i = 0; l_iBlink[i] != (int)enControlHiLight::Count; i++) {
+                irr::SEvent l_cEvent;
+                l_cEvent.EventType = irr::EET_USER_EVENT;
+                l_cEvent.UserEvent.UserData1 = c_iHighlightControlOn;
+                l_cEvent.UserEvent.UserData2 = l_iBlink[i];
+                CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
+              }
+
+              if (m_pPlayer != nullptr && m_pPlayer->m_pController != nullptr) {
+                l_sHint += L"\n\n" + m_pPlayer->m_pController->getTutorialText(true);
+              }
+            }
+            else if (m_iCurrent == 4) {
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iHighlightControlOn;
+              l_cEvent.UserEvent.UserData2 = (int)enControlHiLight::Respawn;
+              CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
+
+              if (m_pPlayer != nullptr && m_pPlayer->m_pController != nullptr) {
+                l_sHint += L"\n\n" + m_pPlayer->m_pController->getTutorialText(false);
+              }
+            }
+
+            m_pHint->setText(l_sHint.c_str());
             pauseGame();
           }
         }
@@ -124,6 +157,12 @@ namespace dustbin {
     */
     void CTutorialHUD::onPausechanged(bool a_Paused) {
       m_pRoot->setVisible(a_Paused);
+
+      irr::SEvent l_cEvent;
+      l_cEvent.EventType = irr::EET_USER_EVENT;
+      l_cEvent.UserEvent.UserData1 = a_Paused ? c_iHighlightControlOn : c_iHighlightControlOff;
+      l_cEvent.UserEvent.UserData2 = a_Paused ? (size_t)enControlHiLight::Pause : (size_t)enControlHiLight::Count;
+      CGlobal::getInstance()->getIrrlichtDevice()->postEventFromUser(l_cEvent);
     }
 
     /**

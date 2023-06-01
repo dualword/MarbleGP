@@ -11,6 +11,8 @@ namespace dustbin {
   #define c_iEventHideCursor 8
   #define c_iEventOkClicked 9
   #define c_iEventCancelClicked 10
+  #define c_iHighlightControlOn 11
+  #define c_iHighlightControlOff 12
 
   // Some constants for profile serialization
   #define c_iProfileHead 42
@@ -29,5 +31,15 @@ namespace dustbin {
     ControlCenter = 5,
     ControlLeft   = 6,
     ControlRight  = 7
+  };
+
+  enum class enControlHiLight {
+    Steer   = 0,
+    Brake   = 1,
+    Respawn = 2,
+    Pause   = 3,
+    Gyro    = 4,
+
+    Count   = 5
   };
 }

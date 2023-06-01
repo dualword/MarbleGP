@@ -126,6 +126,19 @@ namespace dustbin {
         * @param a_ObjectId ID of the marble that caused the trigger
         */
         virtual void onTrigger(irr::s32 a_iTriggerId, irr::s32 a_iObjectId) override;
+
+        /**
+         * If this controller has an UI this method will move it to the front.
+         * The Android touch and gyroscope controllers have an UI
+         */
+        virtual void moveGuiToFront() override;
+
+        /**
+        * Get the text shown in the tutorial
+        * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+        * @return the text shown in the tutorial
+        */
+        virtual std::wstring getTutorialText(bool a_bFirst) override;
     };
   }
 }

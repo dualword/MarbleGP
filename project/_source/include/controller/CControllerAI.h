@@ -154,6 +154,14 @@ namespace dustbin {
         */
         virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string& a_Data) override {
         }
+
+        /**
+        * Get a tutorial string
+        * @return a tutorial string
+        */
+        virtual std::wstring getTutorialText(data::SPlayerData::enAiHelp a_eAiHelp) override {
+          return L"";
+        }
     };
   }
 }

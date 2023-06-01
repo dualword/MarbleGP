@@ -118,6 +118,12 @@ namespace dustbin {
         */
         virtual void playerFinished() override;
 
+        /**
+         * If this controller has an UI this method will move it to the front.
+         * The Android touch and gyroscope controllers have an UI
+         */
+        virtual void moveGuiToFront() override;
+
         virtual void draw() override;
     };
   }

@@ -145,6 +145,23 @@ namespace dustbin {
     }
 
     /**
+     * If this controller has an UI this method will move it to the front.
+     * The Android touch and gyroscope controllers have an UI
+     */
+    void CControllerGame_Touch::moveGuiToFront() {
+      CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement()->bringToFront(this);
+    }
+
+    /**
+    * Get the text shown in the tutorial
+    * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+    * @return the text shown in the tutorial
+    */
+    std::wstring CControllerGame_Touch::getTutorialText(bool a_bFirst) {
+      return m_pController != nullptr ? m_pController->getTutorialText(a_bFirst) : L"";
+    }
+
+    /**
     * handle Irrlicht events
     * @param a_cEvent the Irrlicht event to handle
     */

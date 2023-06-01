@@ -1145,6 +1145,14 @@ namespace dustbin {
     }
 
     /**
+    * Get a tutorial string
+    * @return a tutorial string
+    */
+    std::wstring CControllerAi_V2::getTutorialText(data::SPlayerData::enAiHelp a_eAiHelp) {
+      return L"";
+    }
+
+    /**
     * This function receives messages of type "LuaMessage"
     * @param a_NumberOne First number for any information
     * @param a_NumberTwo Other number for any information

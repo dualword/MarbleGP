@@ -41,6 +41,24 @@ namespace dustbin {
     }
 
     /**
+    * Get the text shown in the tutorial
+    * @param a_bFirst true if this is the first help point (controls), false if it's the fourth (respawn)
+    * @return the text shown in the tutorial
+    */
+    std::wstring CControllerTouchGyro::getTutorialText(bool a_bFirst) {
+      std::wstring s = L"";
+
+      if (a_bFirst) {
+        s = L"Steer the marble by tilting the phone. The marble accelerates automatically unless you hit the brake buttons located on the lower border of the screen.";
+      }
+      else {
+        s = CControllerTouchSteerOnly::getTutorialText(a_bFirst);
+      }
+
+      return s;
+    }
+
+    /**
     * Handle an event
     * @param a_cEvent the event to handle
     * @return true if the event was handled, false otherwise

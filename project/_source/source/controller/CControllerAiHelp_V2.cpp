@@ -60,6 +60,32 @@ namespace dustbin {
     }
 
     /**
+    * Get a tutorial string
+    * @return a tutorial string
+    */
+    std::wstring CControllerAiHelp_V2::getTutorialText(data::SPlayerData::enAiHelp a_eAiHelp) {
+      std::wstring s = L"";
+
+      switch (a_eAiHelp) {
+        case data::SPlayerData::enAiHelp::High: 
+          s = L"The AI helps you by keeping a good speed and taking complete control when approaching a jump.";
+          break;
+
+        case data::SPlayerData::enAiHelp::Medium:
+          s = L"The AI helps you by keeping a good speed.";
+          break;
+
+        case data::SPlayerData::enAiHelp::Low:
+          s = L"The AI helps you by keeping a good speed when approaching a jump.";
+          break;
+      }
+
+      s += L" You can however adjust the speed by using the marble's brake, this way you can improve your lap time.";
+
+      return s;
+    }
+
+    /**
     * Get the control values for the marble
     * @param a_iMarbleId [out] ID of the marble this controller controls
     * @param a_iCtrlX [out] the steering value 

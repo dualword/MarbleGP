@@ -66,6 +66,12 @@ namespace dustbin {
           bool &a_bRespawn, 
           enMarbleMode &a_eMode
         ) override;
+
+        /**
+        * Get a tutorial string
+        * @return a tutorial string
+        */
+        virtual std::wstring getTutorialText(data::SPlayerData::enAiHelp a_eAiHelp) override;
     };
   }
 }
