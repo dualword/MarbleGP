@@ -20,7 +20,7 @@ AI Names:
 Random profile names:
 
 1. Octavia Minor
-2. Marcus Aurelius
+2. Marcus Aurelius (Regensburg)
 3. Lucius Commodus
 4. Bruttia Crispina
 5. Flavia Iulia
@@ -48,4 +48,4 @@ Random profile names:
 27. Aurelius Theo
 28. Cassius Longinus (Cäsarmörder)
 29. Marcus Iunius (Cäsarmörder)
-30. Decimus Brutus
+30. Decimus Albinus (Brutus)
