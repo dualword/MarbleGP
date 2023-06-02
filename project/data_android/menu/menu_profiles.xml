@@ -57,4 +57,5 @@
   <include file="data/menu/dialog_select_pattern.xml" />
   <include file="data/menu/dialog_controls.xml" />
   <include file="data/menu/dialog_confirm.xml" />
+  <include file="data/menu/dialog_select_joystick.xml" />
 </dialog>

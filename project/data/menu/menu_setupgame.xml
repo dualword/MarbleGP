@@ -268,56 +268,6 @@
   
   <include file="data/menu/button_ok.xml" />
   <include file="data/menu/button_cancel.xml" />
-  
-  <element type="tab" rect="fillwindow">
-    <attributes>
-      <attribute key="DrawBackground" value="true" />
-      <attribute key="BackColor" value="96, 200, 200, 200" />
-      <attribute key="Visible" value="false" />
-      <attribute key="Name" value="selectctrl_dialog" />
-    </attributes>
-    
-    <children>
-      <element type="MenuBackground" rect="center: -23, -6, 23, 9">
-        <attributes>
-          <attribute key="UseOverrideColor" value="true" />
-          <attribute key="OverrideColor" value="230, 239, 239, 255" />
-          <attribute key="ZLayer" value="94" />
-        </attributes>
-        
-        <children>
-          <element type="staticText" rect="center: -19, -6, 19, -2" font="big">
-            <attributes>
-              <attribute key="Caption" value="Select Controller" />
-              <attribute key="HTextAlign" value="center" />
-              <attribute key="VTextAlign" value="center" />
-            </attributes>
-          </element>
-          
-          <element type="staticText" rect="center: -22, -1, 22, 3">
-            <attributes>
-              <attribute key="Caption" value="DummyText" />
-              <attribute key="Name" value="selectctrl_player" />
-              <attribute key="HTextAlign" value="center" />
-              <attribute key="VTextAlign" value="center" />
-            </attributes>
-          </element>
-              
-          <element type="MenuButton" rect="center: 0, 4, 4, 8" tooltip="Cancel Gamepad Assignment">
-            <attributes>
-              <attribute key="Name" value="CancelAssignJoystick" />
-              <attribute key="Id" value="30001" />
-              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
-            </attributes>
-            <custom>
-              <attribute key="Cancel" value="true" />
-            </custom>
-          </element>
-        </children>
-      </element>
-    </children>
-  </element>
-
-  
+  <include file="data/menu/dialog_select_joystick.xml" />
   <include file="data/menu/dialog_select_player.xml" />
 </dialog>

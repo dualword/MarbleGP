@@ -108,4 +108,5 @@
   <include file="data/menu/button_cancel.xml" />
   
   <include file="data/menu/dialog_confirm.xml" />
+  <include file="data/menu/dialog_select_joystick.xml" />
 </dialog>

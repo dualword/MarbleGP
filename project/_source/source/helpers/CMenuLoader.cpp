@@ -455,6 +455,7 @@ namespace dustbin {
     * @return "true" on success
     */
     void loadMenuFromXML(const std::string& a_sFile, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui) {
+      printf("Include: \"%s\"\n", a_sFile.c_str());
       std::vector<irr::gui::IGUIElement *> l_vRet;
 
       irr::io::IXMLReaderUTF8 *l_pXml = a_pGui->getFileSystem()->createXMLReaderUTF8(a_sFile.c_str());
