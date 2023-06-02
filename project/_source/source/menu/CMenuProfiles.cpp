@@ -375,8 +375,6 @@ namespace dustbin {
             if (m_pMySmgr) m_pMySmgr->drop();
           }
 
-          int joyevent = 0;
-
           virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
             // A guard to make sure joystick events are only handled once per change
             if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
@@ -414,8 +412,6 @@ namespace dustbin {
 
                 if (l_bSkip)
                   return true;
-
-                printf("Process joystick event (%i).\n", joyevent++);
               }
             }
 
