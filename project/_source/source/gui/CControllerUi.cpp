@@ -143,6 +143,9 @@ namespace dustbin {
               m_mJoysticks[a_cEvent.JoystickEvent.Joystick] = SJoystickState();
               m_mJoysticks[a_cEvent.JoystickEvent.Joystick].update(a_cEvent);
 
+              m_mNeutral[a_cEvent.JoystickEvent.Joystick] = SJoystickState();
+              m_mNeutral[a_cEvent.JoystickEvent.Joystick].update(a_cEvent);
+
               printf("Joystick %i added.\n", a_cEvent.JoystickEvent.Joystick);
             }
             
@@ -190,41 +193,46 @@ namespace dustbin {
                   }
                 }
                 else {
-                  if (m_iNextSet != -1) {
-                    m_iNextSet++;
-                    if (m_iNextSet > 16)
-                      m_iNextSet = -1;
+                  if (m_mNeutral.find(a_cEvent.JoystickEvent.Joystick) != m_mNeutral.end() && m_mNeutral[a_cEvent.JoystickEvent.Joystick].hasChanged(a_cEvent)) {
+                    printf("Wait for joystick to return to neutral...\n");
                   }
-
-                  /*if (
-                    m_iNextSet == -1 &&
-                    (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyAxis   && std::abs(a_cEvent.JoystickEvent.Axis[m_pController->getInputs()[m_iWizard].m_iAxis]) < 1000) || 
-                    (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyButton && !a_cEvent.JoystickEvent.IsButtonPressed(m_pController->getInputs()[m_iWizard].m_iButton)) ||
-                    (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyPov    && a_cEvent.JoystickEvent.POV == 0xFFFF)
-                  ) */
-                  if (m_pController->getInputs()[m_iWizard].nextWizardStep(a_cEvent)) {
-                    m_bError = false;
-
-                    for (int i = 0; i < m_iWizard; i++) {
-                      if (m_pController->getInputs()[i].equals(&m_pController->getInputs()[m_iWizard])) {
-                        m_iErrorCnt  = 0;
-                        m_iErrorCtrl = i;
-                        m_iErrorTime = m_pTimer->getRealTime();
-                        m_bError     = true;
-                        m_bSet       = true;
-                        break;
-                      }
+                  else {
+                    if (m_iNextSet != -1) {
+                      m_iNextSet++;
+                      if (m_iNextSet > 16)
+                        m_iNextSet = -1;
                     }
 
-                    if (!m_bError) {
-                      m_bSet = true;
-                      m_iNextSet = -1;
-                      m_iWizard++;
+                    /*if (
+                      m_iNextSet == -1 &&
+                      (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyAxis   && std::abs(a_cEvent.JoystickEvent.Axis[m_pController->getInputs()[m_iWizard].m_iAxis]) < 1000) || 
+                      (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyButton && !a_cEvent.JoystickEvent.IsButtonPressed(m_pController->getInputs()[m_iWizard].m_iButton)) ||
+                      (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyPov    && a_cEvent.JoystickEvent.POV == 0xFFFF)
+                    ) */
+                    if (m_pController->getInputs()[m_iWizard].nextWizardStep(a_cEvent)) {
+                      m_bError = false;
 
-                      m_mJoysticks[m_iJoystick].update(a_cEvent);
+                      for (int i = 0; i < m_iWizard; i++) {
+                        if (m_pController->getInputs()[i].equals(&m_pController->getInputs()[m_iWizard])) {
+                          m_iErrorCnt  = 0;
+                          m_iErrorCtrl = i;
+                          m_iErrorTime = m_pTimer->getRealTime();
+                          m_bError     = true;
+                          m_bSet       = true;
+                          break;
+                        }
+                      }
 
-                      if (m_iWizard >= m_pController->getInputs().size())
-                        setMode(enMode::Display);
+                      if (!m_bError) {
+                        m_bSet = true;
+                        m_iNextSet = -1;
+                        m_iWizard++;
+
+                        m_mJoysticks[m_iJoystick].update(a_cEvent);
+
+                        if (m_iWizard >= m_pController->getInputs().size())
+                          setMode(enMode::Display);
+                      }
                     }
                   }
                 }

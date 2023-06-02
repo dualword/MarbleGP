@@ -92,6 +92,7 @@ namespace dustbin {
         std::vector<SGuiElement> m_vGui;
 
         std::map<irr::u8, SJoystickState> m_mJoysticks;
+        std::map<irr::u8, SJoystickState> m_mNeutral;   /**< We assume that the joysticks are in neutral state */
 
         void calculateGui();
 
