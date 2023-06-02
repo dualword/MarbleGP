@@ -417,154 +417,152 @@ namespace dustbin {
 
             bool l_bRet = false;
 
-            if (!l_bRet) {
-              if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-                std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();
+            if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+              std::string l_sSender = a_cEvent.GUIEvent.Caller->getName();
 
-                if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
+              if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_EDITBOX_CHANGED) {
+                for (int i = 0; i <= m_iMaxIndex; i++) {
+                  if (m_aProfiles[i].m_pName == a_cEvent.GUIEvent.Caller) {
+                    bool l_bUpdateShort = m_aProfiles[i].m_cData.m_sName.substr(0, 5) == m_aProfiles[i].m_cData.m_sShortName || m_aProfiles[i].m_cData.m_sShortName == "";
+
+                    m_aProfiles[i].m_cData.m_sName = helpers::ws2s(m_aProfiles[i].m_pName->getText()).c_str();
+
+                    if (l_bUpdateShort) {
+                      m_aProfiles[i].m_cData.m_sShortName = m_aProfiles[i].m_cData.m_sName.substr(0, 5);
+                      m_aProfiles[i].m_pShort->setText(helpers::s2ws(m_aProfiles[i].m_cData.m_sShortName).c_str());
+                    }
+
+                    break;
+                  }
+                  else if (m_aProfiles[i].m_pShort == a_cEvent.GUIEvent.Caller) {
+                    m_aProfiles[i].m_cData.m_sShortName = helpers::ws2s(m_aProfiles[i].m_pShort->getText()).c_str();
+                  }
+                }
+              }
+              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+                if (l_sSender == "ok") {
+                  buttonOkClicked();
+                  l_bRet = true;
+                }
+                else if (l_sSender == "cancel") {
+                  buttonCancelClicked();
+                  l_bRet = true;
+                }
+                else if (l_sSender == "btn_add") {
                   for (int i = 0; i <= m_iMaxIndex; i++) {
-                    if (m_aProfiles[i].m_pName == a_cEvent.GUIEvent.Caller) {
-                      bool l_bUpdateShort = m_aProfiles[i].m_cData.m_sName.substr(0, 5) == m_aProfiles[i].m_cData.m_sShortName || m_aProfiles[i].m_cData.m_sShortName == "";
+                    if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pAddProfile == a_cEvent.GUIEvent.Caller) {
+                      CGlobal::getInstance()->setGlobal("edit_profileno", "-1");
+                      CGlobal::getInstance()->setGlobal("edit_profile", "");
+                      m_pManager->pushToMenuStack("menu_profiles");
+                      createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
 
-                      m_aProfiles[i].m_cData.m_sName = helpers::ws2s(m_aProfiles[i].m_pName->getText()).c_str();
+                      break;
+                    }
+                  }
+                }
+                else if (l_sSender == "btn_delete") {
+                  int l_iDeleted = -1;
+                  bool l_bFirstEmpty = true;
 
-                      if (l_bUpdateShort) {
-                        m_aProfiles[i].m_cData.m_sShortName = m_aProfiles[i].m_cData.m_sName.substr(0, 5);
-                        m_aProfiles[i].m_pShort->setText(helpers::s2ws(m_aProfiles[i].m_cData.m_sShortName).c_str());
+                  // Search for the delete button that was clicked
+                  for (int i = 0; i <= m_iMaxIndex; i++) {
+                    // if found ..
+                    if (m_aProfiles[i].m_pDelete == a_cEvent.GUIEvent.Caller && m_aProfiles[i].isValid()) {
+                      l_iDeleted = i;
+                      // .. we iterate all following profiles and copy
+                      // the data of the next profile to the iterated
+                      for (int j = i; j < m_iMaxIndex; j++) {
+                        if (m_aProfiles[j].isValid() && m_aProfiles[j + 1].isValid()) {
+                          m_aProfiles[j].m_cData.copyFrom(m_aProfiles[j + 1].m_cData);
+
+                          // If the profile is used (m_iPlayerId set) the we fill the UI ...
+                          if (m_aProfiles[j].m_cData.m_iPlayerId > 0)
+                            m_aProfiles[j].fillUI();
+                          else {
+                            // .. Otherwise we hide the data ..
+                            m_aProfiles[j].m_pDataRoot->setVisible(false);
+                            if (m_aProfiles[j].m_cData.m_iPlayerId <= 0) {
+                              // .. and if it's the first empty profile we show the add button
+                              if (l_bFirstEmpty) {
+                                l_bFirstEmpty = false;
+                                m_aProfiles[j].m_pAddProfile->setVisible(true);
+                              }
+                              else m_aProfiles[j].m_pAddProfile->setVisible(false);
+                            }
+                          }
+                        }
+                      }
+
+                      // One of m_iMaxIndex profiles has been deleted, we need 
+                      // to set the last add button to visible if all profiles
+                      // were used before the deletion
+                      if (l_bFirstEmpty) {
+                        if (m_aProfiles[m_iMaxIndex].isValid()) {
+                          m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(true);
+                          m_aProfiles[m_iMaxIndex].m_pDataRoot->setVisible(false);
+                          m_aProfiles[m_iMaxIndex].m_cData.m_iPlayerId = -1;
+                          m_aProfiles[m_iMaxIndex].m_cData.m_sName     = "";
+                          m_aProfiles[m_iMaxIndex].m_cData.m_sControls = "";
+                          m_aProfiles[m_iMaxIndex].m_cData.m_sTexture  = "";
+                        }
+                      }
+                      else m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(false);
+                    }
+                  }
+
+                  for (int i = 0; i <= m_iMaxIndex; i++)
+                    if (m_aProfiles[i].m_cData.m_iPlayerId > 0)
+                      m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
+                }
+                else if (l_sSender == "btn_edit_profile") {
+                  for (int i = 0; i <= m_iMaxIndex; i++) {
+                    if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pEdit == a_cEvent.GUIEvent.Caller) {
+                      saveProfiles();
+                      CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
+                      CGlobal::getInstance()->setGlobal("edit_profile", m_aProfiles[i].m_cData.serialize());
+                      m_pManager->pushToMenuStack("menu_profiles");
+                      createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
+                      break;
+                    }
+                  }
+                }
+                else if (l_sSender == "btn_play_tutorial") {
+                  saveProfiles();
+
+                  for (int i = 0; i <= m_iMaxIndex; i++) {
+                    if (m_aProfiles[i].m_pTutorial == a_cEvent.GUIEvent.Caller) {
+                      m_iTutorialPlr = i;
+
+                      controller::CControllerGame l_cCtrl;
+                      l_cCtrl.deserialize(m_aProfiles[i].m_cData.m_sControls);
+                      m_bJoySelect = l_cCtrl.usesJoystick();
+
+                      if (m_bJoySelect) {
+                        irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+
+                        if (l_pSelect != nullptr) {
+                          irr::gui::IGUIStaticText *l_pPlr = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+                          if (l_pPlr != nullptr) {
+                            std::wstring s = L"Player \"" + helpers::s2ws(m_aProfiles[m_iTutorialPlr].m_cData.m_sName) + L"\": Please select your gamepad by clicking a button.";
+                            l_pPlr->setText(s.c_str());
+                          }
+
+                          l_pSelect->setVisible(true);
+                        }
                       }
 
                       break;
                     }
-                    else if (m_aProfiles[i].m_pShort == a_cEvent.GUIEvent.Caller) {
-                      m_aProfiles[i].m_cData.m_sShortName = helpers::ws2s(m_aProfiles[i].m_pShort->getText()).c_str();
-                    }
                   }
                 }
-                else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-                  if (l_sSender == "ok") {
-                    buttonOkClicked();
-                    l_bRet = true;
-                  }
-                  else if (l_sSender == "cancel") {
-                    buttonCancelClicked();
-                    l_bRet = true;
-                  }
-                  else if (l_sSender == "btn_add") {
-                    for (int i = 0; i <= m_iMaxIndex; i++) {
-                      if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pAddProfile == a_cEvent.GUIEvent.Caller) {
-                        CGlobal::getInstance()->setGlobal("edit_profileno", "-1");
-                        CGlobal::getInstance()->setGlobal("edit_profile", "");
-                        m_pManager->pushToMenuStack("menu_profiles");
-                        createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
+                else if (l_sSender == "CancelAssignJoystick") {
+                  m_iTutorialPlr = -1;
+                  m_bJoySelect   = false;
 
-                        break;
-                      }
-                    }
-                  }
-                  else if (l_sSender == "btn_delete") {
-                    int l_iDeleted = -1;
-                    bool l_bFirstEmpty = true;
-
-                    // Search for the delete button that was clicked
-                    for (int i = 0; i <= m_iMaxIndex; i++) {
-                      // if found ..
-                      if (m_aProfiles[i].m_pDelete == a_cEvent.GUIEvent.Caller && m_aProfiles[i].isValid()) {
-                        l_iDeleted = i;
-                        // .. we iterate all following profiles and copy
-                        // the data of the next profile to the iterated
-                        for (int j = i; j < m_iMaxIndex; j++) {
-                          if (m_aProfiles[j].isValid() && m_aProfiles[j + 1].isValid()) {
-                            m_aProfiles[j].m_cData.copyFrom(m_aProfiles[j + 1].m_cData);
-
-                            // If the profile is used (m_iPlayerId set) the we fill the UI ...
-                            if (m_aProfiles[j].m_cData.m_iPlayerId > 0)
-                              m_aProfiles[j].fillUI();
-                            else {
-                              // .. Otherwise we hide the data ..
-                              m_aProfiles[j].m_pDataRoot->setVisible(false);
-                              if (m_aProfiles[j].m_cData.m_iPlayerId <= 0) {
-                                // .. and if it's the first empty profile we show the add button
-                                if (l_bFirstEmpty) {
-                                  l_bFirstEmpty = false;
-                                  m_aProfiles[j].m_pAddProfile->setVisible(true);
-                                }
-                                else m_aProfiles[j].m_pAddProfile->setVisible(false);
-                              }
-                            }
-                          }
-                        }
-
-                        // One of m_iMaxIndex profiles has been deleted, we need 
-                        // to set the last add button to visible if all profiles
-                        // were used before the deletion
-                        if (l_bFirstEmpty) {
-                          if (m_aProfiles[m_iMaxIndex].isValid()) {
-                            m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(true);
-                            m_aProfiles[m_iMaxIndex].m_pDataRoot->setVisible(false);
-                            m_aProfiles[m_iMaxIndex].m_cData.m_iPlayerId = -1;
-                            m_aProfiles[m_iMaxIndex].m_cData.m_sName     = "";
-                            m_aProfiles[m_iMaxIndex].m_cData.m_sControls = "";
-                            m_aProfiles[m_iMaxIndex].m_cData.m_sTexture  = "";
-                          }
-                        }
-                        else m_aProfiles[m_iMaxIndex].m_pAddProfile->setVisible(false);
-                      }
-                    }
-
-                    for (int i = 0; i <= m_iMaxIndex; i++)
-                      if (m_aProfiles[i].m_cData.m_iPlayerId > 0)
-                        m_aProfiles[i].m_cData.m_iPlayerId = i + 1;
-                  }
-                  else if (l_sSender == "btn_edit_profile") {
-                    for (int i = 0; i <= m_iMaxIndex; i++) {
-                      if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pEdit == a_cEvent.GUIEvent.Caller) {
-                        saveProfiles();
-                        CGlobal::getInstance()->setGlobal("edit_profileno", std::to_string(i));
-                        CGlobal::getInstance()->setGlobal("edit_profile", m_aProfiles[i].m_cData.serialize());
-                        m_pManager->pushToMenuStack("menu_profiles");
-                        createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
-                        break;
-                      }
-                    }
-                  }
-                  else if (l_sSender == "btn_play_tutorial") {
-                    saveProfiles();
-
-                    for (int i = 0; i <= m_iMaxIndex; i++) {
-                      if (m_aProfiles[i].m_pTutorial == a_cEvent.GUIEvent.Caller) {
-                        m_iTutorialPlr = i;
-
-                        controller::CControllerGame l_cCtrl;
-                        l_cCtrl.deserialize(m_aProfiles[i].m_cData.m_sControls);
-                        m_bJoySelect = l_cCtrl.usesJoystick();
-
-                        if (m_bJoySelect) {
-                          irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-
-                          if (l_pSelect != nullptr) {
-                            irr::gui::IGUIStaticText *l_pPlr = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-
-                            if (l_pPlr != nullptr) {
-                              std::wstring s = L"Player \"" + helpers::s2ws(m_aProfiles[m_iTutorialPlr].m_cData.m_sName) + L"\": Please select your gamepad by clicking a button.";
-                              l_pPlr->setText(s.c_str());
-                            }
-
-                            l_pSelect->setVisible(true);
-                          }
-                        }
-
-                        break;
-                      }
-                    }
-                  }
-                  else if (l_sSender == "CancelAssignJoystick") {
-                    m_iTutorialPlr = -1;
-                    m_bJoySelect   = false;
-
-                    irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-                    if (l_pSelect != nullptr)
-                      l_pSelect->setVisible(false);
-                  }
+                  irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+                  if (l_pSelect != nullptr)
+                    l_pSelect->setVisible(false);
                 }
               }
             }
