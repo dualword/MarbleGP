@@ -21,6 +21,21 @@ namespace dustbin {
 
         void setupControls();
 
+        /**
+        * Create the control string for the hints for a single control
+        * @param a_cCtrl the control
+        * @return a string with the description of the control
+        */
+        std::wstring createSingleControlString(SCtrlInput &a_cCtrl);
+
+        /**
+        * Create the control string for the hints for two linked controls
+        * @param a_cCtrl1 the first control
+        * @param a_cCtrl2 the second control
+        * @return a string with the description of the controls
+        */
+        std::wstring createDoubleControlString(SCtrlInput &a_cCtrl1, SCtrlInput &a_cCtrl2);
+
       public:
         CControllerGame();
         CControllerGame(bool a_bAutoThrottle);

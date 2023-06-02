@@ -163,23 +163,116 @@ namespace dustbin {
       std::wstring s = L"";
 
       if (a_bFirst) {
-        s += L"Steer the marble left and right using the following controls:\n";
+        s += L"Steer the marble left and right using " + createDoubleControlString(m_vControls[2], m_vControls[3]) + L", ";
 
-        s += helpers::s2ws(m_vControls[2].toString()) + L"\n" + helpers::s2ws(m_vControls[3].toString()) + L".\n\n";
 
         if (m_bAutoThrottle) {
-          s += L"The marble accelerated automatically unless you activate the brake using " + helpers::s2ws(m_vControls[4].toString()) + L". ";
+          s += L"the marble is accelerated automatically unless you activate the brake using " + createSingleControlString(m_vControls[4]) + L"\n";
         }
         else {
-          s += L"Accelerate the marble forward using " + helpers::s2ws(m_vControls[0].toString()) + L" and backward with " + helpers::s2ws(m_vControls[1].toString()) + L".\n";
-          s += L"The brake is activated using " + helpers::s2ws(m_vControls[4].toString()) + L". ";
+          s += L"accelerate the marble forward and backward using " + createDoubleControlString(m_vControls[0], m_vControls[1]) + L", ";
+          s += L"the brake is activated using " + helpers::s2ws(m_vControls[4].toString()) + L".\n";
         }
       }
       else {
-        s = L"You can manually respawn the marble by pressing " + helpers::s2ws(m_vControls[6].toString()) + L" for two seconds.";
+        s = L"You can manually respawn the marble by pressing " + createSingleControlString(m_vControls[6]) + L" for two seconds.\n";
       }
 
       return s;
     }
+
+
+    /**
+    * Create the control string for the hints for a single control
+    * @param a_cCtrl the control
+    * @return a string with the description of the control
+    */
+    std::wstring CControllerGame::createSingleControlString(SCtrlInput& a_cCtrl) {
+      std::wstring s = L"";
+
+      switch (a_cCtrl.m_eType) {
+        case enInputType::Key:
+          s = L"Key \"" + helpers::keyCodeToString(a_cCtrl.m_eKey) + L"\"";
+          break;
+
+        case enInputType::JoyAxis:
+          s = L"Gamepad axis " + std::to_wstring(a_cCtrl.m_iAxis) + (a_cCtrl.m_iDirection > 0 ? L"+" : L"-");
+          break;
+
+        case enInputType::JoyButton:
+          s = L"Gamepad button " + std::to_wstring(a_cCtrl.m_iButton);
+          break;
+
+        case enInputType::JoyPov:
+          s = L"Gamepad POV ";
+          switch (a_cCtrl.m_iPov) {
+            case     0: s += L"Up"   ; break;
+            case 18000: s += L"Down" ; break;
+            case  9000: s += L"Left" ; break;
+            case 27000: s += L"Right"; break;
+            default:
+              s += std::to_wstring(a_cCtrl.m_iPov);
+              break;
+          }
+          break;
+      }
+
+      return s;
+    }
+
+    /**
+    * Create the control string for the hints for two linked controls
+    * @param a_cCtrl1 the first control
+    * @param a_cCtrl2 the second control
+    * @return a string with the description of the controls
+    */
+    std::wstring CControllerGame::createDoubleControlString(SCtrlInput& a_cCtrl1, SCtrlInput& a_cCtrl2) {
+      std::wstring s = L"";
+      if (a_cCtrl1.m_eType != a_cCtrl2.m_eType)
+        s = createSingleControlString(a_cCtrl1) + L" and " + createSingleControlString(a_cCtrl2);
+      else {
+        switch (a_cCtrl1.m_eType) {
+          case enInputType::Key:
+            s = L"Keys \"" + helpers::keyCodeToString(a_cCtrl1.m_eKey) + L" and " + helpers::keyCodeToString(a_cCtrl2.m_eKey);
+            break;
+
+          case enInputType::JoyAxis:
+            if (a_cCtrl1.m_iAxis == a_cCtrl2.m_iAxis) {
+              s = L"Gamepad Axis " + std::to_wstring(a_cCtrl1.m_iAxis);
+            }
+            else {
+              s = createSingleControlString(a_cCtrl1) + L" and " + createSingleControlString(a_cCtrl2);
+            }
+            break;
+
+          case enInputType::JoyPov:
+            s = L"Gamepad POV ";
+            switch (a_cCtrl1.m_iPov) {
+              case     0: s += L"Up"   ; break;
+              case  9000: s += L"Right"; break;
+              case 18000: s += L"Down" ; break;
+              case 27000: s += L"Left" ; break;
+              default:
+                s += std::to_wstring(a_cCtrl1.m_iPov);
+                break;
+            }
+
+            s += L" and ";
+            switch (a_cCtrl2.m_iPov) {
+              case     0: s += L"Up"   ; break;
+              case  9000: s += L"Right"; break;
+              case 18000: s += L"Down" ; break;
+              case 27000: s += L"Left" ; break;
+              default:
+                s += std::to_wstring(a_cCtrl2.m_iPov);
+                break;
+            }
+            break;
+        }
+      }
+      
+      return s;
+    }
+
   } // namespace controller
 } // namespace dustbin
