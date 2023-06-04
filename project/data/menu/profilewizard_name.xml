@@ -42,10 +42,17 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 62, 10, 64, 12" tooltip="Clear Name">
+      <element type="MenuButton" rect="relative: 61, 9, 65, 13" tooltip="Clear Name">
         <attributes>
           <attribute key="Name" value="clear_name" />
           <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 66, 9, 70, 13" tooltip="Random Name">
+        <attributes>
+          <attribute key="Name" value="random_name" />
+          <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
         </attributes>
       </element>
       

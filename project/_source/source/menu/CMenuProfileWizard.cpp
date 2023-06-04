@@ -61,6 +61,55 @@ namespace dustbin {
         irr::gui::IGUITab     *m_pPatternDialog;    /**< The pattern selection dialog */
         gui::CGuiImageList    *m_pPatternList;      /**< The list of texture patterns */
 
+        void createRandomName() {
+          std::vector<std::tuple<std::string, std::string, std::string>> l_vNames = {
+            { "Octavia Minor"        , "Minor", "generate://numberback=ECF8BA&numberborder=ECF8BA&numbercolor=77EFBD&pattern=texture_hexagon.png&patternback=ECF8BA&patterncolor=59C4EB&ringcolor=5ADFDF" },
+            { "Marcus Aurelius"      , "Rgbg" , "generate://numberback=ffffff&numberborder=ffffff&numbercolor=ff0000&pattern=texture_rgbg.png&patternback=ff0000&patterncolor=ffffff&ringcolor=ff7f7f"        },
+            { "Lucius Commodus"      , "Luciu", "generate://numberback=C7395F&numberborder=C7395F&numbercolor=DED4E8&pattern=texture_atomic.png&patternback=C7395F&patterncolor=E8BA40&ringcolor=DED4E8" },
+            { "Bruttia Crispina"     , "Brtia", "generate://numberback=A95EA3&numberborder=A95EA3&numbercolor=B6E696&pattern=texture_hammer.png&patternback=A95EA3&patterncolor=DC3A79&ringcolor=1686CD" },
+            { "Flavia Iulia"         , "Iulia", "generate://numberback=FAF3DE&numberborder=FAF3DE&numbercolor=78FFC4&pattern=texture_stars.png&patternback=FAF3DE&patterncolor=DCAAE4&ringcolor=FDC2E4" },
+            { "Valerius Constantinus", "Const", "generate://numberback=020202&numberborder=020202&numbercolor=5351A2&pattern=texture_gun.png&patternback=020202&patterncolor=F6C845&ringcolor=A254A1" },
+            { "Aelius Galenus"       , "Doctr", "generate://numberback=576dc1&numberborder=576dc1&numbercolor=f2d328&pattern=texture_stethoscope.png&patternback=576dc1&patterncolor=f2d328&ringcolor=000000" },
+            { "Livia Drusilla"       , "Drusi", "generate://numberback=59C4EB&numberborder=59C4EB&numbercolor=77EFBD&pattern=texture_franconia.png&patternback=59C4EB&patterncolor=ECF8BA&ringcolor=5ADFDF" },
+            { "Publius Vergilius"    , "Publi", "generate://numberback=DD671E&numberborder=DD671E&numbercolor=144058&pattern=texture_bowling.png&patternback=DD671E&patterncolor=4D181C&ringcolor=E58D2E" },
+            { "Claudius Germanicus"  , "Nero" , "generate://numberback=640000&numberborder=640000&numbercolor=ff6400&pattern=texture_flames.png&patternback=ff0000&patterncolor=ff6900&ringcolor=ff9696" },
+            { "Aelius Hadrianus"     , "Hadri", "generate://numberback=E87A5C&numberborder=E87A5C&numbercolor=3B5BA5&pattern=texture_spqr.png&patternback=E87A5C&patterncolor=DE418E&ringcolor=469E48" },
+            { "Magnus Pius"          , "Pius" , "generate://numberback=6A513C&numberborder=6A513C&numbercolor=A4998E&pattern=texture_nuclear.png&patternback=6A513C&patterncolor=507B6A&ringcolor=4B1816" },
+            { "Aurelia Cotta"        , "Cotta", "generate://numberback=E6C17A&numberborder=E6C17A&numbercolor=404041&pattern=texture_lion.png&patternback=E6C17A&patterncolor=F6EDE3&ringcolor=404041" },
+            { "Pompeia Sulla"        , "Sulla", "generate://numberback=E26274&numberborder=E26274&numbercolor=F9EC7E&pattern=texture_rollin.png&patternback=E26274&patterncolor=E3CCB2&ringcolor=F9EC7E" },
+            { "Pompeius Rufus"       , "Rufus", "generate://numberback=3B5BA5&numberborder=3B5BA5&numbercolor=F3B941&pattern=texture_stars.png&patternback=3B5BA5&patterncolor=E87A5D&ringcolor=F3B941" },
+            { "Marcus Caelius"       , "Caeli", "generate://numberback=E3856B&numberborder=E3856B&numbercolor=80C4B7&pattern=texture_bass.png&patternback=E3856B&patterncolor=EDCBD2&ringcolor=80C4B7" },
+            { "Lucius Atratinus"     , "Atrat", "generate://numberback=656E77&numberborder=656E77&numbercolor=CAD4DF&pattern=texture_bomb.png&patternback=656E77&patterncolor=DDDBDE&ringcolor=3B373B" },
+            { "Tullius Cicero"       , "Cicro", "generate://numberback=00246B&numberborder=00246B&numbercolor=CADCFC&pattern=texture_arrow.png&patternback=00246B&patterncolor=8AB6F9&ringcolor=CADCFC" },
+            { "Caecilius Pomponianus", "Pompo", "generate://numberback=1686CD&numberborder=1686CD&numbercolor=DC3A79&pattern=texture_dustbin.png&patternback=1686CD&patterncolor=B6E696&ringcolor=A95EA3" },
+            { "Pomponia Metella"     , "Metel", "generate://numberback=D0944D&numberborder=D0944D&numbercolor=67C2D4&pattern=texture_atomic.png&patternback=D0944D&patterncolor=3988A4&ringcolor=CB625F" },
+            { "Vipsania Agrippina"   , "Agrip", "generate://numberback=E7A339&numberborder=E7A339&numbercolor=91B187&pattern=texture_hearts.png&patternback=E7A339&patterncolor=4AAFD5&ringcolor=91B187" },
+            { "Ludovicus Secundus"   , "Kini" , "generate://numberback=ffffff&numberborder=ffffff&numbercolor=000000&pattern=texture_diamond.png&patternback=ffffff&patterncolor=0000ff&ringcolor=000000" },
+            { "Carolus Magnus"       , "Frnko", "generate://numberback=ff0000&numberborder=ff0000&numbercolor=ffffff&pattern=texture_franconia.png&patternback=ffffff&patterncolor=ff0000&ringcolor=000000" },
+            { "Avidius Cassius"      , "AvCas", "generate://numberback=F2EC9B&numberborder=F2EC9B&numbercolor=96FFBD&pattern=texture_hippo.png&patternback=F2EC9B&patterncolor=1803A5&ringcolor=96FFBD" },
+            { "Septimius Severus"    , "SepSe", "generate://numberback=866C69&numberborder=866C69&numbercolor=CD8C8C&pattern=texture_explosion.png&patternback=866C69&patterncolor=D4B8B1&ringcolor=53331F" },
+            { "Licinius Varus"       , "Varus", "generate://numberback=FEFAAE&numberborder=FEFAAE&numbercolor=7EE05F&pattern=texture_pommesgabel.png&patternback=FEFAAE&patterncolor=2249AE&ringcolor=223E8B" },
+            { "Aurelius Theo"        , "Theo" , "generate://numberback=7EE05F&numberborder=7EE05F&numbercolor=223E8B&pattern=texture_samurai.png&patternback=7EE05F&patterncolor=2249AE&ringcolor=FEFAAE" },
+            { "Cassius Longinus"     , "CasLo", "generate://numberback=ffffff&numberborder=ffffff&numbercolor=000000&pattern=texture_skull.png&patternback=000000&patterncolor=ffffff&ringcolor=ff3200" },
+            { "Marcus Iunius"        , "MaIun", "generate://numberback=646464&numberborder=646464&numbercolor=ffffff&pattern=texture_jollyroger.png&patternback=000000&patterncolor=ffffff&ringcolor=ffffff" },
+            { "Decimus Albinus"      , "Brtus", "generate://numberback=ae5439&numberborder=ae5439&numbercolor=000000&pattern=texture_gun.png&patternback=eee951&patterncolor=ae5439&ringcolor=000000" }                      
+          };
+
+          {
+            std::random_device l_cRd { };
+            std::default_random_engine l_cRe { l_cRd() };
+            std::shuffle(l_vNames.begin(), l_vNames.end(), l_cRe);
+          }
+
+          std::tuple<std::string, std::string, std::string> l_tName = *l_vNames.begin();
+
+          m_cPlayer.m_sName      = std::get<0>(l_tName);
+          m_cPlayer.m_sShortName = std::get<1>(l_tName);
+          m_cPlayer.m_sTexture   = std::get<2>(l_tName);
+
+          m_sNameOriginal = m_cPlayer.m_sName;
+        }
+
         /**
         * Update the pattern images starting with "m_iPatternPage"
         * @see m_iPatternPage
@@ -151,6 +200,7 @@ namespace dustbin {
             }
           }
 
+          printf("\n%s\n", helpers::ws2s(l_sTexture).c_str());
           return l_sTexture;
         }
 
@@ -409,7 +459,7 @@ namespace dustbin {
 
                 m_sNameOriginal = m_cPlayer.m_sName;
 
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent {};
                 l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
                 l_cEvent.KeyInput.Shift       = false;
                 l_cEvent.KeyInput.Control     = false;
@@ -427,7 +477,7 @@ namespace dustbin {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sShortName).c_str());
                 m_pGui->setFocus(l_pEdit);
 
-                irr::SEvent l_cEvent;
+                irr::SEvent l_cEvent{};
                 l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
                 l_cEvent.KeyInput.Shift       = false;
                 l_cEvent.KeyInput.Control     = false;
@@ -775,8 +825,7 @@ namespace dustbin {
           m_cPlayer.m_iPlayerId = 1;
 
           if (m_sProfile == "commit_profile") {
-            m_cPlayer.m_sName = "Player 1";
-            m_cPlayer.m_sShortName = "Pl#1";
+            createRandomName();
           }
           else if (m_sProfile != "") {  
             m_cPlayer.deserialize(m_sProfile);
@@ -801,8 +850,7 @@ namespace dustbin {
                 l_iIndex++;
               }
               else {
-                m_cPlayer.m_sName = "Player " + std::to_string(l_iIndex);
-                m_cPlayer.m_sShortName = "Pl#" + std::to_string(l_iIndex);
+                createRandomName();
                 break;
               }
             }
@@ -827,7 +875,7 @@ namespace dustbin {
             if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
               if (a_cEvent.KeyInput.Key == irr::KEY_RETURN && !a_cEvent.KeyInput.PressedDown) {
                 if ((m_pBtnNext != nullptr && m_pBtnNext->isVisible()) || (m_pBtnSave != nullptr && m_pBtnSave->isVisible())) {
-                  irr::SEvent l_cEvent;
+                  irr::SEvent l_cEvent {};
 
                   l_cEvent.EventType = irr::EET_GUI_EVENT;
                   l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
@@ -962,6 +1010,12 @@ namespace dustbin {
                       m_pCtrl->setMode(gui::CControllerUi::enMode::Display);
                   }
                 }
+                else if (l_sButton == "random_name") {
+                  createRandomName();
+                  irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                  if (l_pEdit != nullptr)
+                    l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
+                }
                 else {
                   if (m_eStep == enMenuStep::Texture) {
                     if (l_sButton == "btn_color_ok") {
@@ -983,9 +1037,6 @@ namespace dustbin {
                             }
                           }
                         }
-
-
-                        printf("\n******\n%s\n******\n\n", getTextureString().c_str());
 
                         m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
                         updateMarbleTexture(m_cPlayer.m_sTexture);
@@ -1042,7 +1093,7 @@ namespace dustbin {
 
                       l_pMode->setSelected(1);
 
-                      irr::SEvent l_cEvent;
+                      irr::SEvent l_cEvent {};
                       l_cEvent.EventType = irr::EET_GUI_EVENT;
                       l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
                       l_cEvent.GUIEvent.Caller    = l_pMode;
@@ -1135,7 +1186,6 @@ namespace dustbin {
                           "texture_plane.png",
                           "texture_pommesgabel.png",
                           "texture_rollin.png",
-                          "texture_rookie.png",
                           "texture_samurai.png",
                           "texture_skull.png",
                           "texture_spqr.png",
