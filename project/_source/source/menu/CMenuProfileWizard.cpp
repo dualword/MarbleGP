@@ -455,7 +455,6 @@ namespace dustbin {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
-                m_pGui->setFocus(l_pEdit);
 
                 m_sNameOriginal = m_cPlayer.m_sName;
 
@@ -475,7 +474,6 @@ namespace dustbin {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sShortName).c_str());
-                m_pGui->setFocus(l_pEdit);
 
                 irr::SEvent l_cEvent{};
                 l_cEvent.EventType = irr::EET_KEY_INPUT_EVENT;
@@ -1015,6 +1013,9 @@ namespace dustbin {
                   irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                   if (l_pEdit != nullptr)
                     l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
+
+                  toggleButtonVisibility();
+                  m_pGui->setFocus(m_pGui->getRootGUIElement());
                 }
                 else {
                   if (m_eStep == enMenuStep::Texture) {

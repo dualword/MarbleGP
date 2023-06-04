@@ -20,7 +20,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 15, 10, 18">
+      <element type="staticText" rect="relative: 1, 10, 10, 13">
         <attributes>
           <attribute key="Caption" value="Profile Name:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -28,7 +28,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 11, 15, 33, 18" font="huge">
+      <element type="editBox" rect="relative: 11, 10, 45, 13" font="huge">
         <attributes>
           <attribute key="Name" value="name" />
         </attributes>
@@ -41,7 +41,7 @@
         </attributes>
       </element>
       
-       <element type="MenuButton" rect="relative: 40, 14, 45, 19" tooltip="Clear Name">
+       <element type="MenuButton" rect="relative: 40, 14, 45, 19" tooltip="Random Name">
         <attributes>
           <attribute key="Name" value="random_name" />
           <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
