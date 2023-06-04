@@ -57,6 +57,13 @@
           <attribute key="options" value="Default;Generated" />
         </custom>
       </element>
+      
+      <element type="MenuButton" rect="relative: 66, 8, 70, 12" tooltip="Generate randome Texture">
+        <attributes>
+          <attribute key="Name" value="btn_random_texture" />
+          <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
+        </attributes>
+      </element>
 
       <element type="tab" rect="relative: 32, 13, 70, 39">
         <attributes>
@@ -226,7 +233,7 @@
             </attributes>
           </element>
         </children>
-      </element>      
+      </element>
     </children>
   </element>
   

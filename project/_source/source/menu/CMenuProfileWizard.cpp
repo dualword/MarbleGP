@@ -18,6 +18,7 @@
 #include <irrlicht.h>
 #include <CGlobal.h>
 #include <Defines.h>
+#include <random>
 
 namespace dustbin {
   namespace menu {
@@ -983,6 +984,9 @@ namespace dustbin {
                           }
                         }
 
+
+                        printf("\n******\n%s\n******\n\n", getTextureString().c_str());
+
                         m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
                         updateMarbleTexture(m_cPlayer.m_sTexture);
                       
@@ -1032,6 +1036,177 @@ namespace dustbin {
                       irr::gui::IGUIElement *l_pTab = findElementByName("texturegen_android", m_pGui->getRootGUIElement());
                       if (l_pTab != nullptr)
                         l_pTab->setVisible(false);
+                    }
+                    else if (l_sButton == "btn_random_texture") {
+                      gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+                      l_pMode->setSelected(1);
+
+                      irr::SEvent l_cEvent;
+                      l_cEvent.EventType = irr::EET_GUI_EVENT;
+                      l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
+                      l_cEvent.GUIEvent.Caller    = l_pMode;
+                      l_cEvent.GUIEvent.Element   = l_pMode;
+                      OnEvent(l_cEvent);
+
+                      if (l_pMode != nullptr) {
+                        // Four colors
+                        std::vector<std::tuple<std::string, std::string, std::string, std::string>> l_vColors = {
+                          std::make_tuple("DED4E8", "E8BA40", "C7395F", ""),
+                          std::make_tuple("80C4B7", "EDCBD2", "E3856B", ""),
+                          std::make_tuple("E87A5D", "F3B941", "3B5BA5", ""),
+                          std::make_tuple("D49BAE", "BBCB50", "678CEC", ""),
+                          std::make_tuple("4AAFD5", "91B187", "E7A339", ""),
+                          std::make_tuple("E3CCB2", "F9EC7E", "E26274", ""),
+                          std::make_tuple("FBEAE7", "B2456E", "552619", ""),
+                          std::make_tuple("EDF4F2", "31473A", "7C8363", ""),
+                          std::make_tuple("CADCFC", "00246B", "8AB6F9", ""),
+                          std::make_tuple("E6C17A", "404041", "F6EDE3", ""),
+                          std::make_tuple("E1E5EB", "E59462", "D5CAE4", ""),
+                          std::make_tuple("81CAD6", "EDCD44", "DC3E26", ""),
+                          std::make_tuple("1803A5", "F2EC9B", "96FFBD", ""),
+                          std::make_tuple("D9DAD9", "68A4A5", "4C8055", ""),
+                          std::make_tuple("6F9BD1", "DF3C5F", "224193", ""),
+                          std::make_tuple("E17888", "AE3B8B", "1C5789", "341514"),
+                          std::make_tuple("D0944D", "3988A4", "CB625F", "67C2D4"),
+                          std::make_tuple("71B379", "B25690", "EDC400", "1D71BA"),
+                          std::make_tuple("D4B8B1", "866C69", "CD8C8C", "53331F"),
+                          std::make_tuple("72C2C9", "9FA65A", "2963A2", "4CAABC"),
+                          std::make_tuple("D8D0CD", "DF5587", "B46543", "B46543"),
+                          std::make_tuple("E58D2E", "4D181C", "144058", "DD671E"),
+                          std::make_tuple("9EE8E1", "D2385A", "DE9DC2", "573C33"),
+                          std::make_tuple("D1B5A3", "E36858", "D1B5A3", "0C0D0D"),
+                          std::make_tuple("CEE6F2", "E9B796", "E3867D", "962E2A"),
+                          std::make_tuple("EEC95C", "EECCD3", "E3856B", "80C4B7"),
+                          std::make_tuple("57BBBC", "B6818B", "B8912E", "802621"),
+                          std::make_tuple("B6E696", "CD7E2A", "6C3622", "6FA1BB"),
+                          std::make_tuple("B6E696", "A95EA3", "DC3A79", "1686CD"),
+                          std::make_tuple("A4998E", "507B6A", "6A513C", "4B1816"),
+                          std::make_tuple("DDDBDE", "CAD4DF", "656E77", "3B373B"),
+                          std::make_tuple("6FC7E1", "EABDCF", "EFD557", "CE6EA3"),
+                          std::make_tuple("BD5598", "82BB42", "BFCF6E", "DF3C5F"),
+                          std::make_tuple("E88659", "D8BF58", "D1BAA2", "56C1E1"),
+                          std::make_tuple("3B5BA5", "E87A5C", "469E48", "DE418E"),
+                          std::make_tuple("FAEF7C", "E3CCB2", "E26274", "78589F"),
+                          std::make_tuple("355952", "EAB63E", "FAF6E7", "E37769"),
+                          std::make_tuple("6061A8", "CE8F30", "F4F7F7", "ED3224"),
+                          std::make_tuple("3A6D80", "F3CD53", "D56729", "9D402D"),
+                          std::make_tuple("735DA5", "D3C5E5", "8EC9BC", "FBF5AA"),
+                          std::make_tuple("22235F", "7A4D9F", "EB68A0", "A8DACD"),
+                          std::make_tuple("223E8B", "2249AE", "7EE05F", "FEFAAE"),
+                          std::make_tuple("F4B0F7", "9CFAD4", "EDF9A2", "F8B0B3"),
+                          std::make_tuple("78FFC4", "DCAAE4", "FDC2E4", "FAF3DE"),
+                          std::make_tuple("E8338B", "C13979", "5C2C90", "2A2E74"),
+                          std::make_tuple("020202", "5351A2", "A254A1", "F6C845"),
+                          std::make_tuple("EC6D67", "F2AE7F", "FBF5AE", "CEE4B3"),
+                          std::make_tuple("EFC6D4", "D950AE", "AAE847", "EEEDEE"),
+                          std::make_tuple("59C4EB", "5ADFDF", "77EFBD", "ECF8BA")
+                        };
+
+                        {
+                          std::random_device l_cRd { };
+                          std::default_random_engine l_cRe { l_cRd() };
+                          std::shuffle(l_vColors.begin(), l_vColors.end(), l_cRe);
+                        }
+
+                        std::tuple<std::string, std::string, std::string, std::string> l_tColor = *l_vColors.begin();
+
+                        std::vector<std::string> l_vPatterns = {
+                          "texture_ant.png",
+                          "texture_arrow.png",
+                          "texture_atomic.png",
+                          "texture_bass.png",
+                          "texture_bomb.png",
+                          "texture_bowling.png",
+                          "texture_circle.png",
+                          "texture_diamond.png",
+                          "texture_dustbin.png",
+                          "texture_explosion.png",
+                          "texture_flames.png",
+                          "texture_franconia.png",
+                          "texture_gun.png",
+                          "texture_hammer.png",
+                          "texture_hearts.png",
+                          "texture_hexagon.png",
+                          "texture_hippo.png",
+                          "texture_jollyroger.png",
+                          "texture_lion.png",
+                          "texture_nuclear.png",
+                          "texture_plane.png",
+                          "texture_pommesgabel.png",
+                          "texture_rollin.png",
+                          "texture_rookie.png",
+                          "texture_samurai.png",
+                          "texture_skull.png",
+                          "texture_spqr.png",
+                          "texture_stars.png",
+                          "texture_stethoscope.png",
+                          "texture_vulture.png"
+                        };
+
+                        {
+                          std::random_device l_cRd { };
+                          std::default_random_engine l_cRe { l_cRd() };
+                          std::shuffle(l_vPatterns.begin(), l_vPatterns.end(), l_cRe);
+                        }
+
+                        std::string l_sPattern = *l_vPatterns.begin();
+
+                        std::vector<int> l_vIndex = { 0, 1, 2 };
+
+                        std::vector<std::vector<std::string>> l_vElements;
+
+                        if (std::get<3>(l_tColor) == "") {
+                          printf("Three Colors!\n");
+
+                          l_vElements.push_back({ "texture_fg_nb", "texture_nr" });
+                          l_vElements.push_back({ "texture_fg_pt" });
+                          l_vElements.push_back({ "texture_bg_nb", "texture_bg_pt", "texture_nf" });
+                        }
+                        else {
+                          printf("Four Colors!\n");
+                          l_vIndex.push_back(3);
+
+                          l_vElements.push_back({ "texture_fg_nb" });
+                          l_vElements.push_back({ "texture_nr" });
+                          l_vElements.push_back({ "texture_fg_pt" });
+                          l_vElements.push_back({ "texture_bg_nb", "texture_bg_pt", "texture_nf" });
+                        }
+
+                        {
+                          std::random_device l_cRd { };
+                          std::default_random_engine l_cRe { l_cRd() };
+                          std::shuffle(l_vIndex.begin(), l_vIndex.end(), l_cRe);
+                        }
+
+                        std::vector<std::vector<std::string>>::iterator l_itElement = l_vElements.begin();
+
+                        for (std::vector<int>::iterator l_itIndex = l_vIndex.begin(); l_itIndex != l_vIndex.end() && l_itElement != l_vElements.end(); l_itIndex++) {
+                          for (std::vector<std::string>::iterator l_itEdit = (*l_itElement).begin(); l_itEdit != (*l_itElement).end(); l_itEdit++) {
+                            irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(*l_itEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+                            if (l_pEdit != nullptr) {
+                              switch (*l_itIndex) {
+                                case 0: l_pEdit->setText(helpers::s2ws(std::get<0>(l_tColor)).c_str()); break;
+                                case 1: l_pEdit->setText(helpers::s2ws(std::get<1>(l_tColor)).c_str()); break;
+                                case 2: l_pEdit->setText(helpers::s2ws(std::get<2>(l_tColor)).c_str()); break;
+                                case 3: l_pEdit->setText(helpers::s2ws(std::get<3>(l_tColor)).c_str()); break;
+                              }
+                            }
+                            else printf("%s not found.\n", (*l_itEdit).c_str());
+                          }
+
+                          l_itElement++;
+                        }
+
+                        irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+                        if (l_pPattern != nullptr)
+                          l_pPattern->setText(helpers::s2ws(l_sPattern).c_str());
+
+                        m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
+                        updateMarbleTexture(m_cPlayer.m_sTexture);
+                      }
                     }
                     else {
                       std::map<std::string, std::string> l_mButtonLinks = {
