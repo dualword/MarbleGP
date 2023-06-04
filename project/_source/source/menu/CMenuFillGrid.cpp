@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <_generated/messages/CMessages.h>
+#include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <network/CGameServer.h>
 #include <gui/CMenuBackground.h>
@@ -25,11 +26,23 @@ namespace dustbin {
       private:
         network::CGameServer     *m_pServer;    /**< The game server */
 
+        int getAiClass(int a_iIndex, int a_iSetting) {
+          if (a_iSetting == 0)
+            return 0;
+          else if (a_iSetting == 1)
+            return 1;
+          else if (a_iSetting == 2)
+            return 2;
+          else
+            return a_iIndex % 3;
+        }
+
       public:
         CMenuFillGrid(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_pServer   (CGlobal::getInstance()->getGameServer()) 
         {
+
           m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_fillgrid.xml", m_pGui->getRootGUIElement(), m_pGui);
@@ -39,6 +52,26 @@ namespace dustbin {
 
           data::SGameSettings l_cSettings = data::SGameSettings();
           l_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
+
+          // Tuple: "Name", "Short Name", "Texture Index"
+          std::vector<std::tuple<std::string, std::string, std::string>> l_vAiPlayers;
+
+          l_vAiPlayers.push_back(std::make_tuple("Marcus Nerva"          , "Nerva",  "1"));
+          l_vAiPlayers.push_back(std::make_tuple("Titus Vibius"          , "Vibin",  "2"));
+          l_vAiPlayers.push_back(std::make_tuple("Aemilius Lepidus"      , "AeLep",  "3"));
+          l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"           , "CaDio",  "4"));
+          l_vAiPlayers.push_back(std::make_tuple("Cornelius Maluginensis", "CoMal",  "5"));
+          l_vAiPlayers.push_back(std::make_tuple("Lucius Lentulus"       , "LuLen",  "6"));
+          l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus"      , "FlJos",  "7"));
+          l_vAiPlayers.push_back(std::make_tuple("Quintus Amatianus"     , "QuAma",  "8"));
+          l_vAiPlayers.push_back(std::make_tuple("Ulpius Traianus"       , "UlTra",  "9"));
+          l_vAiPlayers.push_back(std::make_tuple("Valerius Messalla"     , "VaMes", "10"));
+          l_vAiPlayers.push_back(std::make_tuple("Pomponius Silvanus"    , "PoSil", "11"));
+          l_vAiPlayers.push_back(std::make_tuple("Ranius Festus"         , "RanFe", "12"));
+          l_vAiPlayers.push_back(std::make_tuple("Iunius Caepio"         , "Iunis", "13"));
+          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus"      , "Pl2nd", "14"));
+          l_vAiPlayers.push_back(std::make_tuple("Claudius Caecus"       , "ClaCa", "15"));
+          l_vAiPlayers.push_back(std::make_tuple("Barbatus Scipio"       , "Barba", "16"));
 
           data::SRacePlayers l_cPlayers = data::SRacePlayers();
           l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
@@ -58,13 +91,13 @@ namespace dustbin {
               l_iGridSize = 16;
           }
 
-          // We fill a vector with the grid positions and ..
+          // We fill a vector with the grid positions
           std::vector<int> l_vGrid;
 
           for (int i = 0; i < (l_cPlayers.m_vPlayers.size() > l_iGridSize ? l_cPlayers.m_vPlayers.size() : l_iGridSize); i++)
             l_vGrid.push_back(i);
 
-          // .. if necessary shuffle the vector
+          // if necessary shuffle the vector
           if (l_cSettings.m_bRandomFirstRace) {
             std::random_device l_cRd { };
             std::default_random_engine l_cRe { l_cRd() };
@@ -73,6 +106,7 @@ namespace dustbin {
           }
 
           int l_iCount = (int)l_cPlayers.m_vPlayers.size();
+          
 
           for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
             (*it).m_iGridPos = *l_vGrid.begin();
@@ -92,6 +126,12 @@ namespace dustbin {
           }
 
           if (l_cSettings.m_bFillGridAI) { // && m_pServer == nullptr) {
+            std::random_device l_cRd { };
+            std::default_random_engine l_cRe { l_cRd() };
+            std::shuffle(l_vAiPlayers.begin(), l_vAiPlayers.end(), l_cRe);
+
+            std::vector<std::tuple<std::string, std::string, std::string>>::iterator l_itAi = l_vAiPlayers.begin();
+
             while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
               l_iCount++;
 
@@ -99,23 +139,22 @@ namespace dustbin {
               l_cData.m_eType      = data::enPlayerType::Ai;
               l_cData.m_iGridPos   = *l_vGrid.begin();
               l_cData.m_iPlayerId  = l_iCount;
-              l_cData.m_sName      = "AI Demo Player #" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_sName      = std::get<0>(*l_itAi);
               l_cData.m_sControls  = "ai_player";
               l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
-              l_cData.m_sTexture   = "default://number=" + std::to_string(l_cData.m_iGridPos + 1);
-              l_cData.m_sShortName = "Ai#" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_sShortName = std::get<1>(*l_itAi);
               l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
 
               switch (l_cSettings.m_iRaceClass) {
-                case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
-                case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sName = "AI Marble3 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
-                case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sName = "AI Marble2 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 0) + "&number=" + std::to_string(l_iCount - 1); break;
+                case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 1) + "&number=" + std::to_string(l_iCount - 1); break;
+                case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 2) + "&number=" + std::to_string(l_iCount - 1); break;
                 default: {
                   int l_iClass = l_cData.m_iGridPos % 3;
                   switch (l_iClass) {
-                    case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sName = "AI MarbleGP #" + std::to_string(l_cData.m_iGridPos + 1); break;
-                    case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sName = "AI Marble3 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
-                    case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sName = "AI Marble2 #"  + std::to_string(l_cData.m_iGridPos + 1); break;
+                    case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 0) + "&number=" + std::to_string(l_iCount - 1); break;
+                    case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 1) + "&number=" + std::to_string(l_iCount - 1); break;
+                    case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 2) + "&number=" + std::to_string(l_iCount - 1); break;
                   }
                   break;
                 }
@@ -129,6 +168,8 @@ namespace dustbin {
                 messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer(l_cData.m_sName, l_cData.m_sTexture, l_cData.m_iPlayerId, l_cData.m_sShortName);
                 m_pServer->getInputQueue()->postMessage(&l_cPlayer);
               }
+
+              l_itAi++;
             }
           }
 
