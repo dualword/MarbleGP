@@ -61,53 +61,265 @@ namespace dustbin {
         irr::gui::IGUITab     *m_pPatternDialog;    /**< The pattern selection dialog */
         gui::CGuiImageList    *m_pPatternList;      /**< The list of texture patterns */
 
-        void createRandomName() {
-          std::vector<std::tuple<std::string, std::string, std::string>> l_vNames = {
-            { "Octavia Minor"        , "Minor", "generate://numberback=ECF8BA&numberborder=ECF8BA&numbercolor=77EFBD&pattern=texture_hexagon.png&patternback=ECF8BA&patterncolor=59C4EB&ringcolor=5ADFDF" },
-            { "Marcus Aurelius"      , "Rgbg" , "generate://numberback=ffffff&numberborder=ffffff&numbercolor=ff0000&pattern=texture_rgbg.png&patternback=ff0000&patterncolor=ffffff&ringcolor=ff7f7f"        },
-            { "Lucius Commodus"      , "Luciu", "generate://numberback=C7395F&numberborder=C7395F&numbercolor=DED4E8&pattern=texture_atomic.png&patternback=C7395F&patterncolor=E8BA40&ringcolor=DED4E8" },
-            { "Bruttia Crispina"     , "Brtia", "generate://numberback=A95EA3&numberborder=A95EA3&numbercolor=B6E696&pattern=texture_hammer.png&patternback=A95EA3&patterncolor=DC3A79&ringcolor=1686CD" },
-            { "Flavia Iulia"         , "Iulia", "generate://numberback=FAF3DE&numberborder=FAF3DE&numbercolor=78FFC4&pattern=texture_stars.png&patternback=FAF3DE&patterncolor=DCAAE4&ringcolor=FDC2E4" },
-            { "Valerius Constantinus", "Const", "generate://numberback=020202&numberborder=020202&numbercolor=5351A2&pattern=texture_gun.png&patternback=020202&patterncolor=F6C845&ringcolor=A254A1" },
-            { "Aelius Galenus"       , "Doctr", "generate://numberback=576dc1&numberborder=576dc1&numbercolor=f2d328&pattern=texture_stethoscope.png&patternback=576dc1&patterncolor=f2d328&ringcolor=000000" },
-            { "Livia Drusilla"       , "Drusi", "generate://numberback=59C4EB&numberborder=59C4EB&numbercolor=77EFBD&pattern=texture_franconia.png&patternback=59C4EB&patterncolor=ECF8BA&ringcolor=5ADFDF" },
-            { "Publius Vergilius"    , "Publi", "generate://numberback=DD671E&numberborder=DD671E&numbercolor=144058&pattern=texture_bowling.png&patternback=DD671E&patterncolor=4D181C&ringcolor=E58D2E" },
-            { "Claudius Germanicus"  , "Nero" , "generate://numberback=640000&numberborder=640000&numbercolor=ff6400&pattern=texture_flames.png&patternback=ff0000&patterncolor=ff6900&ringcolor=ff9696" },
-            { "Aelius Hadrianus"     , "Hadri", "generate://numberback=E87A5C&numberborder=E87A5C&numbercolor=3B5BA5&pattern=texture_spqr.png&patternback=E87A5C&patterncolor=DE418E&ringcolor=469E48" },
-            { "Magnus Pius"          , "Pius" , "generate://numberback=6A513C&numberborder=6A513C&numbercolor=A4998E&pattern=texture_nuclear.png&patternback=6A513C&patterncolor=507B6A&ringcolor=4B1816" },
-            { "Aurelia Cotta"        , "Cotta", "generate://numberback=E6C17A&numberborder=E6C17A&numbercolor=404041&pattern=texture_lion.png&patternback=E6C17A&patterncolor=F6EDE3&ringcolor=404041" },
-            { "Pompeia Sulla"        , "Sulla", "generate://numberback=E26274&numberborder=E26274&numbercolor=F9EC7E&pattern=texture_rollin.png&patternback=E26274&patterncolor=E3CCB2&ringcolor=F9EC7E" },
-            { "Pompeius Rufus"       , "Rufus", "generate://numberback=3B5BA5&numberborder=3B5BA5&numbercolor=F3B941&pattern=texture_stars.png&patternback=3B5BA5&patterncolor=E87A5D&ringcolor=F3B941" },
-            { "Marcus Caelius"       , "Caeli", "generate://numberback=E3856B&numberborder=E3856B&numbercolor=80C4B7&pattern=texture_bass.png&patternback=E3856B&patterncolor=EDCBD2&ringcolor=80C4B7" },
-            { "Lucius Atratinus"     , "Atrat", "generate://numberback=656E77&numberborder=656E77&numbercolor=CAD4DF&pattern=texture_bomb.png&patternback=656E77&patterncolor=DDDBDE&ringcolor=3B373B" },
-            { "Tullius Cicero"       , "Cicro", "generate://numberback=00246B&numberborder=00246B&numbercolor=CADCFC&pattern=texture_arrow.png&patternback=00246B&patterncolor=8AB6F9&ringcolor=CADCFC" },
-            { "Caecilius Pomponianus", "Pompo", "generate://numberback=1686CD&numberborder=1686CD&numbercolor=DC3A79&pattern=texture_dustbin.png&patternback=1686CD&patterncolor=B6E696&ringcolor=A95EA3" },
-            { "Pomponia Metella"     , "Metel", "generate://numberback=D0944D&numberborder=D0944D&numbercolor=67C2D4&pattern=texture_atomic.png&patternback=D0944D&patterncolor=3988A4&ringcolor=CB625F" },
-            { "Vipsania Agrippina"   , "Agrip", "generate://numberback=E7A339&numberborder=E7A339&numbercolor=91B187&pattern=texture_hearts.png&patternback=E7A339&patterncolor=4AAFD5&ringcolor=91B187" },
-            { "Ludovicus Secundus"   , "Kini" , "generate://numberback=ffffff&numberborder=ffffff&numbercolor=000000&pattern=texture_diamond.png&patternback=ffffff&patterncolor=0000ff&ringcolor=000000" },
-            { "Carolus Magnus"       , "Frnko", "generate://numberback=ff0000&numberborder=ff0000&numbercolor=ffffff&pattern=texture_franconia.png&patternback=ffffff&patterncolor=ff0000&ringcolor=000000" },
-            { "Avidius Cassius"      , "AvCas", "generate://numberback=F2EC9B&numberborder=F2EC9B&numbercolor=96FFBD&pattern=texture_hippo.png&patternback=F2EC9B&patterncolor=1803A5&ringcolor=96FFBD" },
-            { "Septimius Severus"    , "SepSe", "generate://numberback=866C69&numberborder=866C69&numbercolor=CD8C8C&pattern=texture_explosion.png&patternback=866C69&patterncolor=D4B8B1&ringcolor=53331F" },
-            { "Licinius Varus"       , "Varus", "generate://numberback=FEFAAE&numberborder=FEFAAE&numbercolor=7EE05F&pattern=texture_pommesgabel.png&patternback=FEFAAE&patterncolor=2249AE&ringcolor=223E8B" },
-            { "Aurelius Theo"        , "Theo" , "generate://numberback=7EE05F&numberborder=7EE05F&numbercolor=223E8B&pattern=texture_samurai.png&patternback=7EE05F&patterncolor=2249AE&ringcolor=FEFAAE" },
-            { "Cassius Longinus"     , "CasLo", "generate://numberback=ffffff&numberborder=ffffff&numbercolor=000000&pattern=texture_skull.png&patternback=000000&patterncolor=ffffff&ringcolor=ff3200" },
-            { "Marcus Iunius"        , "MaIun", "generate://numberback=646464&numberborder=646464&numbercolor=ffffff&pattern=texture_jollyroger.png&patternback=000000&patterncolor=ffffff&ringcolor=ffffff" },
-            { "Decimus Albinus"      , "Brtus", "generate://numberback=ae5439&numberborder=ae5439&numbercolor=000000&pattern=texture_gun.png&patternback=eee951&patterncolor=ae5439&ringcolor=000000" }                      
-          };
+        std::vector<std::tuple<std::string, std::string, std::string, std::string>> m_vDefaultColors;   /**< The default colors for the random textures */
+        std::vector<std::tuple<std::string, std::string, std::string>> m_vDefaultProfiles;              /**< The default profiles for the random profiles */
+
+        std::vector<std::string> m_vDefaultPatterns;      /**< A List of the available patterns */
+        std::vector<std::string> m_vDefaultNames;         /**< A list of first names (for combination with the surnames) */
+        std::vector<std::string> m_vDefaultSurNames;      /**< A list of surnames (for combination with the first names) */
+
+        void fillTextureElements() {
+          std::string l_sTexture = m_cPlayer.m_sTexture;
+          if (l_sTexture == "")
+            l_sTexture = "default://number=1";
+
+          size_t l_iPos = l_sTexture.find("://");
+          if (l_iPos != std::string::npos) {
+            std::string l_sPrefix  = l_sTexture.substr(0, l_iPos);
+
+            gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
+            gui::CMenuButton  *l_pBtn  = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated" , irr::gui::EGUIET_TAB                            , m_pGui->getRootGUIElement()));
+
+            if (l_pMode != nullptr) {
+              if (l_pTab != nullptr) {
+                l_pTab->setVisible(l_sPrefix == "generate");
+              }
+
+              if (l_pBtn != nullptr) {
+                l_pBtn->setVisible(l_sPrefix == "generate");
+              }
+
+              if (l_sPrefix == "generate") {
+                l_pMode->setSelected(1);
+
+                l_sTexture = m_cPlayer.m_sTexture.substr(l_iPos + 3);
+
+                std::map<std::string, std::string> l_mParamMap{
+                  { "numbercolor" , "texture_fg_nb"       },
+                  { "numberback"  , "texture_bg_nb"       },
+                  { "ringcolor"   , "texture_nr"          },
+                  { "numberborder", "texture_nf"          },
+                  { "patterncolor", "texture_fg_pt"       },
+                  { "patternback" , "texture_bg_pt"       },
+                  { "pattern"     , "texture_pattern"     },
+                  { "nameback"    , "imported_name_color" },
+                  { "namecolor"   , "imported_name_back"  }
+                };
+
+                std::vector<std::string> l_vParts = helpers::splitString(l_sTexture, '&');
+
+                for (std::vector<std::string>::iterator l_itPart = l_vParts.begin(); l_itPart != l_vParts.end(); l_itPart++) {
+                  std::vector<std::string> l_vParam = helpers::splitString(*l_itPart, '=');
+
+                  if (l_vParam.size() == 2 && l_mParamMap.find(l_vParam[0]) != l_mParamMap.end()) {
+                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(l_mParamMap[l_vParam[0]], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    if (l_pEdit != nullptr)
+                      l_pEdit->setText(helpers::s2ws(l_vParam[1]).c_str());
+                  }
+                }
+              }
+              else {
+                l_pMode->setSelected(0);
+              }
+            }
+          }
+        }
+
+        std::string createRandomTexture() {
+          std::string l_sRet = "";
 
           {
             std::random_device l_cRd { };
             std::default_random_engine l_cRe { l_cRd() };
-            std::shuffle(l_vNames.begin(), l_vNames.end(), l_cRe);
+            std::shuffle(m_vDefaultColors.begin(), m_vDefaultColors.end(), l_cRe);
           }
 
-          std::tuple<std::string, std::string, std::string> l_tName = *l_vNames.begin();
+          std::tuple<std::string, std::string, std::string, std::string> l_tColor = *m_vDefaultColors.begin();
 
-          m_cPlayer.m_sName      = std::get<0>(l_tName);
-          m_cPlayer.m_sShortName = std::get<1>(l_tName);
-          m_cPlayer.m_sTexture   = std::get<2>(l_tName);
+          {
+            std::random_device l_cRd { };
+            std::default_random_engine l_cRe { l_cRd() };
+            std::shuffle(m_vDefaultPatterns.begin(), m_vDefaultPatterns.end(), l_cRe);
+          }
 
-          m_sNameOriginal = m_cPlayer.m_sName;
+          std::string l_sPattern = *m_vDefaultPatterns.begin();
+
+          std::vector<int> l_vIndex = { 0, 1, 2 };
+
+          std::vector<std::vector<std::string>> l_vElements;
+
+          if (std::get<3>(l_tColor) == "") {
+            l_vElements.push_back({ "numbercolor", "ringcolor" });
+            l_vElements.push_back({ "patterncolor" });
+            l_vElements.push_back({ "numberback", "patternback", "numberborder" });
+          }
+          else {
+            l_vIndex.push_back(3);
+
+            l_vElements.push_back({ "numbercolor" });
+            l_vElements.push_back({ "ringcolor" });
+            l_vElements.push_back({ "patterncolor" });
+            l_vElements.push_back({ "numberback", "patternback", "numberborder" });
+          }
+
+          {
+            std::random_device l_cRd { };
+            std::default_random_engine l_cRe { l_cRd() };
+            std::shuffle(l_vIndex.begin(), l_vIndex.end(), l_cRe);
+          }
+
+          for (std::vector<int>::iterator l_itIndex = l_vIndex.begin(); l_itIndex != l_vIndex.end(); l_itIndex++) {
+            for (std::vector<std::string>::iterator l_itPart = l_vElements[*l_itIndex].begin(); l_itPart != l_vElements[*l_itIndex].end(); l_itPart++) {
+              if (l_sRet == "")
+                l_sRet = "generate://";
+              else
+                l_sRet += "&";
+
+              l_sRet += *l_itPart + "=";
+
+              switch (*l_itIndex) {
+                case 0: l_sRet += std::get<0>(l_tColor); break;
+                case 1: l_sRet += std::get<1>(l_tColor); break;
+                case 2: l_sRet += std::get<2>(l_tColor); break;
+                case 3: l_sRet += std::get<3>(l_tColor); break;
+              }
+            }
+          }
+
+          return l_sRet + "&pattern=" + l_sPattern;
+        }
+
+        std::vector<std::string> readLinesOfFile(const std::string& a_sPath) {
+          std::vector<std::string> l_vRet;
+          std::string l_sDummy = "";
+
+          irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(a_sPath.c_str());
+
+          if (l_pFile != nullptr) {
+            char *l_pBuffer = new char[l_pFile->getSize() + 1];
+            memset(l_pBuffer, 0, l_pFile->getSize() + 1);
+            l_pFile->read(l_pBuffer, l_pFile->getSize());
+
+            l_sDummy = l_pBuffer;
+            
+            delete []l_pBuffer;
+            l_pFile->drop();
+          }
+
+          return helpers::splitString(l_sDummy, '\n');
+        }
+
+        void loadDefaults() {
+          std::vector<std::string> l_vColors = readLinesOfFile("data/colors.txt");
+
+          for (std::vector<std::string>::iterator l_itColor = l_vColors.begin(); l_itColor != l_vColors.end(); l_itColor++) {
+            std::vector<std::string> l_vDefault = helpers::splitString(*l_itColor, ',');
+            while (l_vDefault.size() < 4)
+              l_vDefault.push_back("");
+            m_vDefaultColors.push_back(std::make_tuple(l_vDefault[0], l_vDefault[1], l_vDefault[2], l_vDefault[3]));
+          }
+
+          std::vector<std::string> l_vProfiles = readLinesOfFile("data/profiles.txt");
+
+          for (std::vector<std::string>::iterator l_itProfile = l_vProfiles.begin(); l_itProfile != l_vProfiles.end(); l_itProfile++) {
+            std::vector<std::string> l_vProfile = helpers::splitString(*l_itProfile, ',');
+
+            if (l_vProfile.size() == 3) {
+              m_vDefaultProfiles.push_back(std::make_tuple(l_vProfile[0], l_vProfile[1], l_vProfile[2]));
+            }
+          }
+
+          std::vector<std::string> l_vNames = readLinesOfFile("data/names.txt");
+
+          for (std::vector<std::string>::iterator l_itName = l_vNames.begin(); l_itName != l_vNames.end(); l_itName++) {
+            std::vector<std::string> l_vName = helpers::splitString(*l_itName, ',');
+
+            if (l_vName.size() > 0) {
+              m_vDefaultNames.push_back(l_vName[0]);
+
+              if (l_vName.size() > 1)
+                m_vDefaultSurNames.push_back(l_vName[1]);
+            }
+          }
+
+          irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/patterns/patterns.xml");
+
+          if (l_pXml) {
+            while (l_pXml->read()) {
+              if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+                std::string l_sNode = l_pXml->getNodeName();
+
+                if (l_sNode == "pattern") {
+                  std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
+
+                  if (l_sPattern != "") {
+                    std::string l_sPath = "data/patterns/" + l_sPattern;
+
+                    if (m_pFs->existFile(l_sPath.c_str())) {
+                      m_vDefaultPatterns.push_back(l_sPattern);
+                    }
+                  }
+                }
+              }
+            }
+
+            l_pXml->drop();
+          }
+        }
+
+        void createRandomName() {
+          if (m_vDefaultProfiles.size() > 0 || (m_vDefaultNames.size() > 0 && m_vDefaultSurNames.size() > 0)) {
+            int l_iSize = (int)(m_vDefaultProfiles.size() + (m_vDefaultNames.size() * m_vDefaultSurNames.size()));
+            int l_iRand = std::rand() % l_iSize;
+
+            if (l_iRand < m_vDefaultNames.size() * m_vDefaultSurNames.size()) {
+              int l_iName = std::max(0, (int)std::min(m_vDefaultNames   .size(), l_iRand / m_vDefaultNames.size()));
+              int l_iSurN = std::max(0, (int)std::min(m_vDefaultSurNames.size(), l_iRand % m_vDefaultNames.size()));
+
+              m_cPlayer.m_sName      = m_vDefaultNames[l_iName]              + " " + m_vDefaultSurNames[l_iSurN];
+              m_cPlayer.m_sShortName = m_vDefaultNames[l_iName].substr(0, 2) +       m_vDefaultSurNames[l_iSurN].substr(0, 3);
+              m_cPlayer.m_sTexture   = createRandomTexture();
+            }
+            else {
+              int l_iIndex = std::max(0, (int)std::min(m_vDefaultProfiles.size(), l_iRand - (m_vDefaultNames.size() * m_vDefaultSurNames.size())));
+
+              
+              m_cPlayer.m_sName      = std::get<0>(m_vDefaultProfiles[l_iIndex]);
+              m_cPlayer.m_sShortName = std::get<1>(m_vDefaultProfiles[l_iIndex]);
+              m_cPlayer.m_sTexture   = std::get<2>(m_vDefaultProfiles[l_iIndex]);
+            }
+
+            m_sNameOriginal = m_cPlayer.m_sName;
+          }
+          else {
+            std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(m_pGlobal->getSetting("profiles"));
+            int l_iIndex = 1;
+
+            while (true) {
+              bool l_bFound = false;
+
+              std::string l_sName = "Player " + std::to_string(l_iIndex);
+
+              for (auto& l_cPlayer : l_vPlayers) {
+                if (l_cPlayer.m_sName == l_sName) {
+                  l_bFound = true;
+                  break;
+                }
+              }
+
+              if (l_bFound) {
+                l_iIndex++;
+              }
+              else {
+                m_cPlayer.m_sName = l_sName;
+                m_cPlayer.m_sShortName = "Pl#" + std::to_string(l_iIndex);
+
+                m_sNameOriginal = l_sName;
+                break;
+              }
+            }
+          }
         }
 
         /**
@@ -292,13 +504,13 @@ namespace dustbin {
             if (l_pMode->getSelected() == 0) {
               if (l_pTab != nullptr) l_pTab->setVisible(false);
               if (l_pBtn != nullptr) l_pBtn->setVisible(false);
-
-              updateMarbleTexture(m_cPlayer.m_sTexture);
             }
             else {
               if (l_pTab != nullptr) l_pTab->setVisible(true);
               if (l_pBtn != nullptr) l_pBtn->setVisible(true);
             }
+
+            updateMarbleTexture(m_cPlayer.m_sTexture);
           }
         }
 
@@ -589,64 +801,8 @@ namespace dustbin {
             }
 
             case enMenuStep::Texture: {
-              std::string l_sTexture = m_cPlayer.m_sTexture;
-              if (l_sTexture == "")
-                l_sTexture = "default://number=1";
-
-              size_t l_iPos = l_sTexture.find("://");
-              if (l_iPos != std::string::npos) {
-                std::string l_sPrefix  = l_sTexture.substr(0, l_iPos);
-
-                printf("Prefix: %s\n", l_sPrefix.c_str());
-                gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
-                gui::CMenuButton  *l_pBtn  = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated" , irr::gui::EGUIET_TAB                            , m_pGui->getRootGUIElement()));
-
-                if (l_pMode != nullptr) {
-                  if (l_pTab != nullptr) {
-                    l_pTab->setVisible(l_sPrefix == "generate");
-                  }
-
-                  if (l_pBtn != nullptr) {
-                    l_pBtn->setVisible(l_sPrefix == "generate");
-                  }
-
-                  if (l_sPrefix == "generate") {
-                    l_pMode->setSelected(1);
-
-                    l_sTexture = m_cPlayer.m_sTexture.substr(l_iPos + 3);
-
-                    std::map<std::string, std::string> l_mParamMap{
-                      { "numbercolor" , "texture_fg_nb"       },
-                      { "numberback"  , "texture_bg_nb"       },
-                      { "ringcolor"   , "texture_nr"          },
-                      { "numberborder", "texture_nf"          },
-                      { "patterncolor", "texture_fg_pt"       },
-                      { "patternback" , "texture_bg_pt"       },
-                      { "pattern"     , "texture_pattern"     },
-                      { "nameback"    , "imported_name_color" },
-                      { "namecolor"   , "imported_name_back"  }
-                    };
-
-                    std::vector<std::string> l_vParts = helpers::splitString(l_sTexture, '&');
-
-                    for (std::vector<std::string>::iterator l_itPart = l_vParts.begin(); l_itPart != l_vParts.end(); l_itPart++) {
-                      std::vector<std::string> l_vParam = helpers::splitString(*l_itPart, '=');
-
-                      printf("%s ==> %s\n", l_vParam[0].c_str(), l_vParam[1].c_str());
-
-                      if (l_vParam.size() == 2 && l_mParamMap.find(l_vParam[0]) != l_mParamMap.end()) {
-                        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(l_mParamMap[l_vParam[0]], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-                        if (l_pEdit != nullptr)
-                          l_pEdit->setText(helpers::s2ws(l_vParam[1]).c_str());
-                      }
-                    }
-                  }
-                  else {
-                    l_pMode->setSelected(0);
-                  }
-                }
-              }
+              fillTextureElements();
+              updateGeneratedTexture();
               break;
             }
 
@@ -812,6 +968,8 @@ namespace dustbin {
           m_pPatternDialog(nullptr),
           m_pPatternList  (nullptr)
         {
+          loadDefaults();
+
           m_sProfile = m_pGlobal->getGlobal("edit_profile");
           m_pGlobal->setGlobal("edit_profile", "");
 
@@ -829,29 +987,7 @@ namespace dustbin {
             m_cPlayer.deserialize(m_sProfile);
           }
           else {
-            std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(m_pGlobal->getSetting("profiles"));
-            int l_iIndex = 1;
-
-            while (true) {
-              bool l_bFound = false;
-
-              std::string l_sName = "Player " + std::to_string(l_iIndex);
-
-              for (auto& l_cPlayer : l_vPlayers) {
-                if (l_cPlayer.m_sName == l_sName) {
-                  l_bFound = true;
-                  break;
-                }
-              }
-
-              if (l_bFound) {
-                l_iIndex++;
-              }
-              else {
-                createRandomName();
-                break;
-              }
-            }
+            createRandomName();
           }
 
           changeStep(enMenuStep::Name);
@@ -1090,174 +1226,9 @@ namespace dustbin {
                         l_pTab->setVisible(false);
                     }
                     else if (l_sButton == "btn_random_texture") {
-                      gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-
-                      l_pMode->setSelected(1);
-
-                      irr::SEvent l_cEvent {};
-                      l_cEvent.EventType = irr::EET_GUI_EVENT;
-                      l_cEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED;
-                      l_cEvent.GUIEvent.Caller    = l_pMode;
-                      l_cEvent.GUIEvent.Element   = l_pMode;
-                      OnEvent(l_cEvent);
-
-                      if (l_pMode != nullptr) {
-                        // Four colors
-                        std::vector<std::tuple<std::string, std::string, std::string, std::string>> l_vColors = {
-                          std::make_tuple("DED4E8", "E8BA40", "C7395F", ""),
-                          std::make_tuple("80C4B7", "EDCBD2", "E3856B", ""),
-                          std::make_tuple("E87A5D", "F3B941", "3B5BA5", ""),
-                          std::make_tuple("D49BAE", "BBCB50", "678CEC", ""),
-                          std::make_tuple("4AAFD5", "91B187", "E7A339", ""),
-                          std::make_tuple("E3CCB2", "F9EC7E", "E26274", ""),
-                          std::make_tuple("FBEAE7", "B2456E", "552619", ""),
-                          std::make_tuple("EDF4F2", "31473A", "7C8363", ""),
-                          std::make_tuple("CADCFC", "00246B", "8AB6F9", ""),
-                          std::make_tuple("E6C17A", "404041", "F6EDE3", ""),
-                          std::make_tuple("E1E5EB", "E59462", "D5CAE4", ""),
-                          std::make_tuple("81CAD6", "EDCD44", "DC3E26", ""),
-                          std::make_tuple("1803A5", "F2EC9B", "96FFBD", ""),
-                          std::make_tuple("D9DAD9", "68A4A5", "4C8055", ""),
-                          std::make_tuple("6F9BD1", "DF3C5F", "224193", ""),
-                          std::make_tuple("E17888", "AE3B8B", "1C5789", "341514"),
-                          std::make_tuple("D0944D", "3988A4", "CB625F", "67C2D4"),
-                          std::make_tuple("71B379", "B25690", "EDC400", "1D71BA"),
-                          std::make_tuple("D4B8B1", "866C69", "CD8C8C", "53331F"),
-                          std::make_tuple("72C2C9", "9FA65A", "2963A2", "4CAABC"),
-                          std::make_tuple("D8D0CD", "DF5587", "B46543", "B46543"),
-                          std::make_tuple("E58D2E", "4D181C", "144058", "DD671E"),
-                          std::make_tuple("9EE8E1", "D2385A", "DE9DC2", "573C33"),
-                          std::make_tuple("D1B5A3", "E36858", "D1B5A3", "0C0D0D"),
-                          std::make_tuple("CEE6F2", "E9B796", "E3867D", "962E2A"),
-                          std::make_tuple("EEC95C", "EECCD3", "E3856B", "80C4B7"),
-                          std::make_tuple("57BBBC", "B6818B", "B8912E", "802621"),
-                          std::make_tuple("B6E696", "CD7E2A", "6C3622", "6FA1BB"),
-                          std::make_tuple("B6E696", "A95EA3", "DC3A79", "1686CD"),
-                          std::make_tuple("A4998E", "507B6A", "6A513C", "4B1816"),
-                          std::make_tuple("DDDBDE", "CAD4DF", "656E77", "3B373B"),
-                          std::make_tuple("6FC7E1", "EABDCF", "EFD557", "CE6EA3"),
-                          std::make_tuple("BD5598", "82BB42", "BFCF6E", "DF3C5F"),
-                          std::make_tuple("E88659", "D8BF58", "D1BAA2", "56C1E1"),
-                          std::make_tuple("3B5BA5", "E87A5C", "469E48", "DE418E"),
-                          std::make_tuple("FAEF7C", "E3CCB2", "E26274", "78589F"),
-                          std::make_tuple("355952", "EAB63E", "FAF6E7", "E37769"),
-                          std::make_tuple("6061A8", "CE8F30", "F4F7F7", "ED3224"),
-                          std::make_tuple("3A6D80", "F3CD53", "D56729", "9D402D"),
-                          std::make_tuple("735DA5", "D3C5E5", "8EC9BC", "FBF5AA"),
-                          std::make_tuple("22235F", "7A4D9F", "EB68A0", "A8DACD"),
-                          std::make_tuple("223E8B", "2249AE", "7EE05F", "FEFAAE"),
-                          std::make_tuple("F4B0F7", "9CFAD4", "EDF9A2", "F8B0B3"),
-                          std::make_tuple("78FFC4", "DCAAE4", "FDC2E4", "FAF3DE"),
-                          std::make_tuple("E8338B", "C13979", "5C2C90", "2A2E74"),
-                          std::make_tuple("020202", "5351A2", "A254A1", "F6C845"),
-                          std::make_tuple("EC6D67", "F2AE7F", "FBF5AE", "CEE4B3"),
-                          std::make_tuple("EFC6D4", "D950AE", "AAE847", "EEEDEE"),
-                          std::make_tuple("59C4EB", "5ADFDF", "77EFBD", "ECF8BA")
-                        };
-
-                        {
-                          std::random_device l_cRd { };
-                          std::default_random_engine l_cRe { l_cRd() };
-                          std::shuffle(l_vColors.begin(), l_vColors.end(), l_cRe);
-                        }
-
-                        std::tuple<std::string, std::string, std::string, std::string> l_tColor = *l_vColors.begin();
-
-                        std::vector<std::string> l_vPatterns = {
-                          "texture_ant.png",
-                          "texture_arrow.png",
-                          "texture_atomic.png",
-                          "texture_bass.png",
-                          "texture_bomb.png",
-                          "texture_bowling.png",
-                          "texture_circle.png",
-                          "texture_diamond.png",
-                          "texture_dustbin.png",
-                          "texture_explosion.png",
-                          "texture_flames.png",
-                          "texture_franconia.png",
-                          "texture_gun.png",
-                          "texture_hammer.png",
-                          "texture_hearts.png",
-                          "texture_hexagon.png",
-                          "texture_hippo.png",
-                          "texture_jollyroger.png",
-                          "texture_lion.png",
-                          "texture_nuclear.png",
-                          "texture_plane.png",
-                          "texture_pommesgabel.png",
-                          "texture_rollin.png",
-                          "texture_samurai.png",
-                          "texture_skull.png",
-                          "texture_spqr.png",
-                          "texture_stars.png",
-                          "texture_stethoscope.png",
-                          "texture_vulture.png"
-                        };
-
-                        {
-                          std::random_device l_cRd { };
-                          std::default_random_engine l_cRe { l_cRd() };
-                          std::shuffle(l_vPatterns.begin(), l_vPatterns.end(), l_cRe);
-                        }
-
-                        std::string l_sPattern = *l_vPatterns.begin();
-
-                        std::vector<int> l_vIndex = { 0, 1, 2 };
-
-                        std::vector<std::vector<std::string>> l_vElements;
-
-                        if (std::get<3>(l_tColor) == "") {
-                          printf("Three Colors!\n");
-
-                          l_vElements.push_back({ "texture_fg_nb", "texture_nr" });
-                          l_vElements.push_back({ "texture_fg_pt" });
-                          l_vElements.push_back({ "texture_bg_nb", "texture_bg_pt", "texture_nf" });
-                        }
-                        else {
-                          printf("Four Colors!\n");
-                          l_vIndex.push_back(3);
-
-                          l_vElements.push_back({ "texture_fg_nb" });
-                          l_vElements.push_back({ "texture_nr" });
-                          l_vElements.push_back({ "texture_fg_pt" });
-                          l_vElements.push_back({ "texture_bg_nb", "texture_bg_pt", "texture_nf" });
-                        }
-
-                        {
-                          std::random_device l_cRd { };
-                          std::default_random_engine l_cRe { l_cRd() };
-                          std::shuffle(l_vIndex.begin(), l_vIndex.end(), l_cRe);
-                        }
-
-                        std::vector<std::vector<std::string>>::iterator l_itElement = l_vElements.begin();
-
-                        for (std::vector<int>::iterator l_itIndex = l_vIndex.begin(); l_itIndex != l_vIndex.end() && l_itElement != l_vElements.end(); l_itIndex++) {
-                          for (std::vector<std::string>::iterator l_itEdit = (*l_itElement).begin(); l_itEdit != (*l_itElement).end(); l_itEdit++) {
-                            irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(*l_itEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-
-                            if (l_pEdit != nullptr) {
-                              switch (*l_itIndex) {
-                                case 0: l_pEdit->setText(helpers::s2ws(std::get<0>(l_tColor)).c_str()); break;
-                                case 1: l_pEdit->setText(helpers::s2ws(std::get<1>(l_tColor)).c_str()); break;
-                                case 2: l_pEdit->setText(helpers::s2ws(std::get<2>(l_tColor)).c_str()); break;
-                                case 3: l_pEdit->setText(helpers::s2ws(std::get<3>(l_tColor)).c_str()); break;
-                              }
-                            }
-                            else printf("%s not found.\n", (*l_itEdit).c_str());
-                          }
-
-                          l_itElement++;
-                        }
-
-                        irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
-
-                        if (l_pPattern != nullptr)
-                          l_pPattern->setText(helpers::s2ws(l_sPattern).c_str());
-
-                        m_cPlayer.m_sTexture = helpers::ws2s(getTextureString());
-                        updateMarbleTexture(m_cPlayer.m_sTexture);
-                      }
+                      m_cPlayer.m_sTexture = createRandomTexture();
+                      fillTextureElements();
+                      updateGeneratedTexture();
                     }
                     else {
                       std::map<std::string, std::string> l_mButtonLinks = {

@@ -49,3 +49,27 @@ Random profile names:
 28. Cassius Longinus (Cäsarmörder)
 29. Marcus Iunius (Cäsarmörder)
 30. Decimus Albinus (Brutus)
+
+
+First:              Second:
+
+Globus              Volubilem
+Glans               Lentus
+Saxus               Tardus
+Rupes               Iucundus
+Lapis               Placidus
+Mola                Mendacem
+Gemma               Firmiter
+Testa               Laxus
+Sicius              Solutus
+Latericus           Velox
+Rota                Conversus
+Vitis               Rectus
+Cervisa             Fortis
+Sucus               Gravis
+Ovus                Debilis
+Pila                Parvus
+Rectiangulus        Illustris
+Triangulus          Obsurus
+Orbis               Fuscus
+Circulus            Dilucescit
