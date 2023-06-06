@@ -64,7 +64,7 @@
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="MarbleGP;Marbles2;Marbles3;Random" />
+              <attribute key="options" value="Marble3;Marble3 + 2;Marble2;Marble2 + GP;MarbleGP;All Classes" />
             </custom>
           </element>
           

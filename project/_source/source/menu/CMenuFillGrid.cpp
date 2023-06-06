@@ -132,6 +132,46 @@ namespace dustbin {
 
             std::vector<std::tuple<std::string, std::string, std::string>>::iterator l_itAi = l_vAiPlayers.begin();
 
+            std::vector<std::string> l_vAiClass;
+
+            int l_iAiPlayers = l_iGridSize - (int)l_cPlayers.m_vPlayers.size();
+            printf("Add %i AI Players.\n", l_iAiPlayers);
+
+            for (int i = 0; i < l_iAiPlayers; i++)
+              switch (l_cSettings.m_iRaceClass) {
+                // Marble 3
+                case 0:
+                  l_vAiClass.push_back("marble3");
+                  break;
+
+                // Marble 3 + 2
+                case 1:
+                  l_vAiClass.push_back(i % 2 == 0 ? "marble2" : "marble3");
+                  break;
+
+                // Marble 2
+                case 2:
+                  l_vAiClass.push_back("marble2");
+                  break;
+
+                // Marble 2 + GP
+                case 3:
+                  l_vAiClass.push_back(i % 2 == 0 ? "marblegp" : "marble2");
+                  break;
+
+                // MarbleGP
+                case 4:
+                  l_vAiClass.push_back("marblegp");
+                  break;
+
+                // All Classes
+                default:
+                  l_vAiClass.push_back(i % 3 == 0 ? "marblegp" : i % 2 == 1 ? "marble2" : "marble3");
+                  break;
+              }
+
+            std::shuffle(l_vAiClass.begin(), l_vAiClass.end(), l_cRe);
+
             while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
               l_iCount++;
 
@@ -144,21 +184,9 @@ namespace dustbin {
               l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
               l_cData.m_sShortName = std::get<1>(*l_itAi);
               l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
+              l_cData.m_sControls  = "class=" + (*l_vAiClass.begin());
 
-              switch (l_cSettings.m_iRaceClass) {
-                case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 0) + "&number=" + std::to_string(l_iCount - 1); break;
-                case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 1) + "&number=" + std::to_string(l_iCount - 1); break;
-                case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 2) + "&number=" + std::to_string(l_iCount - 1); break;
-                default: {
-                  int l_iClass = l_cData.m_iGridPos % 3;
-                  switch (l_iClass) {
-                    case 0 : l_cData.m_sControls = "class=marblegp"; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 0) + "&number=" + std::to_string(l_iCount - 1); break;
-                    case 1 : l_cData.m_sControls = "class=marble2" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 1) + "&number=" + std::to_string(l_iCount - 1); break;
-                    case 2 : l_cData.m_sControls = "class=marble3" ; l_cData.m_sTexture = helpers::createDefaultTextureString(std::get<2>(*l_itAi), 2) + "&number=" + std::to_string(l_iCount - 1); break;
-                  }
-                  break;
-                }
-              }
+              l_vAiClass.erase(l_vAiClass.begin());
 
               l_vGrid.erase(l_vGrid.begin());
 
@@ -171,9 +199,9 @@ namespace dustbin {
 
               l_itAi++;
             }
-          }
 
-          printf("\n\n%s\n\n", l_cPlayers.toString().c_str());
+            printf(".\n");
+          }
 
           std::vector<data::SPlayerData> l_cData;
 

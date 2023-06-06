@@ -131,7 +131,7 @@ namespace dustbin {
     * A class for the general game settings
     */
     typedef struct SGameSettings {
-      int m_iRaceClass;   /**< The race class (0 == Marbles3, 1 = Marbles2, 2 = MarbleGP) */
+      int m_iRaceClass;   /**< The race class (0 == Marble3, 1 == Marble3 + 2, 2 == Marble2, 3 == Marble2 + GP, 4 == MarbleGP, 5 == All Classes) */
       int m_iGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
       int m_iGridSize;    /**< The grid size, filled with AI players */
       int m_iAutoFinish;  /**< The auto finish mode (0 == All Players finished, 1 == Second to Last player finished, 2 == First Player Finished, 3 == All Players and AI finished) */
