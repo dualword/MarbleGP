@@ -25,6 +25,17 @@
         </attributes>
       </element>
       
+      <element type="image" rect="relative: 32, 0, 36, 4" font="small" tooltip="AI Class">
+        <attributes>
+          <attribute key="Name" value="ai_class" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="UseAlphaChannel" value="true" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/bot_marblegp.png" />
+        </custom>
+      </element>
+      
       <element type="MenuButton" rect="relative: 32, 1, 34, 3" tooltip="Remove Player">
         <attributes>
           <attribute key="Name" value="remove_player" />

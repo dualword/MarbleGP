@@ -179,8 +179,7 @@ namespace dustbin {
               l_cData.m_eType      = data::enPlayerType::Ai;
               l_cData.m_iGridPos   = *l_vGrid.begin();
               l_cData.m_iPlayerId  = l_iCount;
-              l_cData.m_sName      = std::get<0>(*l_itAi);
-              l_cData.m_sControls  = "ai_player";
+              l_cData.m_sName      = std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin();
               l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
               l_cData.m_sShortName = std::get<1>(*l_itAi);
               l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
@@ -216,6 +215,8 @@ namespace dustbin {
           for (int i = 1; i <= 16; i++) {
             gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType("player" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
             if (p != nullptr) {
+              std::wstring l_sBot = L"";
+
               irr::gui::IGUIStaticText *l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p));
               if (l_pText != nullptr) {
                 l_pText->setText(std::to_wstring(i).c_str());
@@ -227,8 +228,16 @@ namespace dustbin {
               if (l_pText != nullptr) {
                 if (l_cData.size() < i)
                   l_pText->setVisible(false);
-                else
-                  l_pText->setText(helpers::s2ws(l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName).c_str());
+                else {
+                  std::wstring l_sName = helpers::s2ws(l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName);
+
+                  if (l_sName.find_last_of(L'|') != std::wstring::npos) {
+                    l_sBot = L"bot_" + l_sName.substr(l_sName.find_last_of(L'|') + 1);
+                    l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
+                  }
+
+                  l_pText->setText(l_sName.c_str());
+                }
               }
 
               gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
@@ -239,6 +248,21 @@ namespace dustbin {
               l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
               if (l_pBtn != nullptr) {
                 l_pBtn->setVisible(false);
+              }
+
+              irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
+              if (l_pBot != nullptr) {
+                l_pBot->setVisible(l_sBot != L"");
+                if (l_sBot != L"") {
+                  l_pBot->setImage(m_pDrv->getTexture(helpers::ws2s(L"data/images/" + l_sBot + L".png").c_str()));
+
+                  if (l_sBot == L"bot_marble3")
+                    l_pBot->setToolTipText(L"Marble3 AI Player");
+                  else if (l_sBot  == L"bot_marble2")
+                    l_pBot->setToolTipText(L"Marble2 AI Player");
+                  else if (l_sBot  == L"bot_marblegp")
+                    l_pBot->setToolTipText(L"MarbleGP AI Player");
+                }
               }
             }
           }
