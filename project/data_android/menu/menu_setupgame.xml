@@ -30,7 +30,7 @@
       
       <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
         <children>
-          <element type="staticText" rect="relative: 24, 1, 35, 3" tooltip="Network Game">
+          <element type="staticText" rect="relative: 20, 1, 31, 3" tooltip="Network Game">
             <attributes>
               <attribute key="Caption" value="Network Game:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -38,7 +38,7 @@
             </attributes>
           </element>
           
-          <element type="Selector" rect="relative: 36, 1, 47, 3">
+          <element type="Selector" rect="relative: 32, 1, 47, 3">
             <attributes>
               <attribute key="Name" value="network_game" />
               <attribute key="Selected" value="0" />
@@ -48,7 +48,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 26, 12, 35, 14" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
+          <element type="staticText" rect="relative: 26, 12, 31, 14" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
             <attributes>
               <attribute key="Caption" value="Ai Class:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -58,7 +58,7 @@
             </attributes>
           </element>
           
-          <element type="Selector" rect="relative: 36, 12, 47, 14">
+          <element type="Selector" rect="relative: 32, 12, 47, 14">
             <attributes>
               <attribute key="Name" value="raceclass" />
               <attribute key="Selected" value="0" />
@@ -68,7 +68,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 24, 4, 35, 6" tooltip="Select the starting Order of the Races">
+          <element type="staticText" rect="relative: 20, 4, 31, 6" tooltip="Select the starting Order of the Races">
             <attributes>
               <attribute key="Caption" value="Grid Positions:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -77,7 +77,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 36, 4, 47, 6">
+          <element type="Selector" rect="relative: 32, 4, 47, 6">
             <attributes>
               <attribute key="Name" value="starting_positions" />
               <attribute key="Selected" value="0" />
@@ -87,7 +87,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 1, 1, 20, 3" tooltip="Reverse Starting Positions">
+          <element type="staticText" rect="relative: 1, 1, 16, 3" tooltip="Reverse Starting Positions">
             <attributes>
               <attribute key="Caption" value="Reverse Grid:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -96,13 +96,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 21, 1, 23, 3">
+          <element type="DustbinCheckbox" rect="relative: 17, 1, 19, 3">
             <attributes>
               <attribute key="Name" value="reverse_grid" />
             </attributes>
           </element>
                     
-          <element type="staticText" rect="relative: 1, 4, 20, 6" tooltip="Randomize Starting Positions of the First Race">
+          <element type="staticText" rect="relative: 1, 4, 16, 6" tooltip="Randomize Starting Positions of the First Race">
             <attributes>
               <attribute key="Caption" value="Shuffle First Race:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -111,13 +111,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 21, 4, 23, 6">
+          <element type="DustbinCheckbox" rect="relative: 17, 4, 19, 6">
             <attributes>
               <attribute key="Name" value="randomize_first" />
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 1, 9, 20, 11" tooltip="Fill the Grid with AI Marbles">
+          <element type="staticText" rect="relative: 1, 9, 16, 11" tooltip="Fill the Grid with AI Marbles">
             <attributes>
               <attribute key="Caption" value="Add AI Players:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -126,13 +126,13 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 21, 9, 23, 11">
+          <element type="DustbinCheckbox" rect="relative: 17, 9, 19, 11">
             <attributes>
               <attribute key="Name" value="fillgrid_ai" />
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 26, 9, 35, 11" tooltip="Select the Grid Size">
+          <element type="staticText" rect="relative: 26, 9, 31, 11" tooltip="Select the Grid Size">
             <attributes>
               <attribute key="Caption" value="Grid Size:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -141,7 +141,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 36, 9, 47, 11">
+          <element type="Selector" rect="relative: 32, 9, 47, 11">
             <attributes>
               <attribute key="Name" value="gridsize" />
               <attribute key="Selected" value="3" />
@@ -151,7 +151,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 0, 18, 20, 20" tooltip="When do you want the race to end?">
+          <element type="staticText" rect="relative: 0, 18, 16, 20" tooltip="When do you want the race to end?">
             <attributes>
               <attribute key="Caption" value="Race Auto Finish:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -160,7 +160,7 @@
             </attributes>
           </element> 
           
-          <element type="Selector" rect="relative: 21, 18, 47, 20">
+          <element type="Selector" rect="relative: 17, 18, 47, 20">
             <attributes>
               <attribute key="Name" value="race_finish" />
               <attribute key="Selected" value="0" />
