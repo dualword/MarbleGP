@@ -15,12 +15,12 @@
       
       <element type="staticText" rect="relative: 1, 5, 49, 7" font="default">
         <attributes>
-          <attribute key="Caption" value="Profile Wizard Step 2 / 5. Use the input file below to define the short name of the selected player" />
+          <attribute key="Caption" value="Profile Wizard Step 2 / 5. Use this step to define the short name of the player" />
           <attribute key="HTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 15, 14, 18">
+      <element type="staticText" rect="relative: 1, 10, 14, 13">
         <attributes>
           <attribute key="Caption" value="Short Name:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -28,14 +28,14 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 16, 15, 32, 18" font="huge">
+      <element type="editBox" rect="relative: 16, 10, 32, 13" font="huge">
         <attributes>
           <attribute key="MaxChars" value="5" />
           <attribute key="Name" value="shortname" />
         </attributes>
       </element>
       
-       <element type="MenuButton" rect="relative: 33, 15, 36, 18" tooltip="Clear Name">
+       <element type="MenuButton" rect="relative: 34, 14, 39, 19" tooltip="Clear Name">
         <attributes>
           <attribute key="Name" value="clear_name" />
           <attribute key="ImagePath" value="data/images/btn_cancel.png" />
