@@ -112,41 +112,30 @@ namespace dustbin {
             irr::u32 l_iHeight = 5 * l_pFont->getDimension(L"Hello World").Height / 4;
             irr::u32 l_iWidth  = l_pTab->getAbsoluteClippingRect().getWidth();
 
-            irr::gui::IGUIStaticText *p = m_pGui->addStaticText(L"Pos", irr::core::recti(l_cColPos, irr::core::dimension2du( 5 * l_iWidth / 100, l_iHeight)), true, true);
-            p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-            p->setDrawBackground(true);
-            p->setOverrideFont(l_pFont);
-            p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
-            l_cColPos.X += 5 * l_iWidth / 100;
+            enum class enColumn {
+              Pos,
+              Name,
+              Racetime,
+              Respawn,
+              Stunned
+            };
 
-            p = m_pGui->addStaticText(L"Name", irr::core::recti(l_cColPos, irr::core::dimension2du(45 * l_iWidth / 100, l_iHeight)), true, true);
-            p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-            p->setDrawBackground(true);
-            p->setOverrideFont(l_pFont);
-            p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
-            l_cColPos.X += 45 * l_iWidth / 100;
+            std::vector<std::tuple<irr::s32, std::wstring, enColumn, irr::gui::EGUI_ALIGNMENT>> l_vColums = {
+              {  5, L"Pos"     , enColumn::Pos     , irr::gui::EGUIA_CENTER     },
+              { 45, L"Name"    , enColumn::Name    , irr::gui::EGUIA_UPPERLEFT  },
+              { 15, L"Racetime", enColumn::Racetime, irr::gui::EGUIA_LOWERRIGHT },
+              { 15, L"Respawn" , enColumn::Respawn , irr::gui::EGUIA_LOWERRIGHT },
+              { 15, L"Stunned" , enColumn::Stunned , irr::gui::EGUIA_LOWERRIGHT },
+            };
 
-            p = m_pGui->addStaticText(L"Racetime", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
-            p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-            p->setDrawBackground(true);
-            p->setOverrideFont(l_pFont);
-            p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
-            l_cColPos.X += 15 * l_iWidth / 100;
-
-            p = m_pGui->addStaticText(L"Respawn", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
-            p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-            p->setDrawBackground(true);
-            p->setOverrideFont(l_pFont);
-            p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
-            l_cColPos.X += 15 * l_iWidth / 100;
-
-            p = m_pGui->addStaticText(L"Stunned", irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
-            p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-            p->setDrawBackground(true);
-            p->setOverrideFont(l_pFont);
-            p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
-            l_cColPos.X += 15 * l_iWidth / 100;
-
+            for (auto l_tColumn : l_vColums) {
+              irr::gui::IGUIStaticText *p = m_pGui->addStaticText(std::get<1>(l_tColumn).c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100, l_iHeight)), true, true);
+              p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+              p->setDrawBackground(true);
+              p->setOverrideFont(l_pFont);
+              p->setBackgroundColor(irr::video::SColor(0xFF, 192, 192, 192));
+              l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
+            }
 
             for (int i = 0; i < l_pRace->m_iPlayers && i < 16; i++) {
               l_cRowPos.Y += l_iHeight;
@@ -154,14 +143,14 @@ namespace dustbin {
 
               m_vTable.push_back(std::vector<irr::gui::IGUIStaticText *>());
 
-              std::wstring l_sName = L"-";
+              std::wstring l_sName   = L"-";
+              std::wstring l_sAiMode = L"-";
 
               if (l_pRace->m_mAssignment.find(l_pRace->m_aResult[i].m_iId) != l_pRace->m_mAssignment.end()) {
                 int l_iPlayer = l_pRace->m_mAssignment[l_pRace->m_aResult[i].m_iId];
                 for (std::vector<data::SChampionshipPlayer>::iterator it = l_cChampionship.m_vPlayers.begin(); it != l_cChampionship.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == l_iPlayer) {
                     l_sName = helpers::s2ws((*it).m_sName);
-                    break;
                   }
                 }
               }
@@ -188,50 +177,23 @@ namespace dustbin {
                 }
               }
 
-              p = m_pGui->addStaticText(std::to_wstring(i + 1).c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(5 * l_iWidth / 100, l_iHeight)), true, true);
-              p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-              p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
-              p->setDrawBackground(false);
-              p->setOverrideFont(l_pFont);
-              l_cColPos.X += 5 * l_iWidth / 100;
+              for (auto l_tColumn : l_vColums) {
+                std::wstring l_sText =
+                  std::get<2>(l_tColumn) == enColumn::Pos      ? std::to_wstring(i + 1) :
+                  std::get<2>(l_tColumn) == enColumn::Name     ? l_sName    :
+                  std::get<2>(l_tColumn) == enColumn::Racetime ? l_sDeficit :
+                  std::get<2>(l_tColumn) == enColumn::Respawn  ? std::to_wstring(l_pRace->m_aResult[i].m_iRespawn) + L" " :
+                  std::get<2>(l_tColumn) == enColumn::Stunned  ? std::to_wstring(l_pRace->m_aResult[i].m_iStunned) + L" " : L"";
 
-              m_vTable.back().push_back(p);
+                irr::gui::IGUIStaticText *p = m_pGui->addStaticText(l_sText.c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100, l_iHeight)), true, true);
+                p->setTextAlignment(std::get<3>(l_tColumn), irr::gui::EGUIA_CENTER);
+                p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
+                p->setDrawBackground(false);
+                p->setOverrideFont(l_pFont);
+                l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
 
-              p = m_pGui->addStaticText((L" " + l_sName).c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(45 * l_iWidth / 100, l_iHeight)), true, true);
-              p->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
-              p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
-              p->setDrawBackground(false);
-              p->setOverrideFont(l_pFont);
-              l_cColPos.X += 45 * l_iWidth / 100;
-
-              m_vTable.back().push_back(p);
-
-              p = m_pGui->addStaticText((l_sDeficit + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
-              p->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
-              p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
-              p->setDrawBackground(false);
-              p->setOverrideFont(l_pFont);
-              l_cColPos.X += 15 * l_iWidth / 100;
-
-              m_vTable.back().push_back(p);
-
-              p = m_pGui->addStaticText((std::to_wstring(l_pRace->m_aResult[i].m_iRespawn) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
-              p->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
-              p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
-              p->setDrawBackground(false);
-              p->setOverrideFont(l_pFont);
-              l_cColPos.X += 15 * l_iWidth / 100;
-
-              m_vTable.back().push_back(p);
-
-              p = m_pGui->addStaticText((std::to_wstring(l_pRace->m_aResult[i].m_iStunned) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(15 * l_iWidth / 100, l_iHeight)), true, true);
-              p->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
-              p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
-              p->setDrawBackground(false);
-              p->setOverrideFont(l_pFont);
-              l_cColPos.X += 15 * l_iWidth / 100;
-
-              m_vTable.back().push_back(p);
+                m_vTable.back().push_back(p);
+              }
             }
           }
 
