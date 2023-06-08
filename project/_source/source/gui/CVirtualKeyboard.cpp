@@ -25,7 +25,7 @@ namespace dustbin {
       m_iMouseDown (0),
       m_pTimer     (nullptr),
       m_pTarget    (nullptr),
-      m_eMode      (enMode::VirtualKeys)
+      m_eMode      (a_bCtrlActive ? enMode::Scrolling : enMode::VirtualKeys)
     {
       m_pDrv = CGlobal::getInstance()->getVideoDriver();
 
@@ -435,68 +435,70 @@ namespace dustbin {
       setVisible(true);
 
       if (m_eMode == enMode::Scrolling) {
-        irr::core::recti        l_cRect = m_pTarget->getAbsoluteClippingRect();
-        irr::core::dimension2du l_cText = m_pTarget->getTextDimension();
+        if (m_pTarget != nullptr) {
+          irr::core::recti        l_cRect = m_pTarget->getAbsoluteClippingRect();
+          irr::core::dimension2du l_cText = m_pTarget->getTextDimension();
 
-        m_pFont = m_pTarget->getOverrideFont();
+          m_pFont = m_pTarget->getOverrideFont();
 
-        if (m_pFont == nullptr)
-          m_pFont = CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont();
+          if (m_pFont == nullptr)
+            m_pFont = CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont();
 
-        if (l_cText.Width > (irr::u32)l_cRect.getWidth())
-          l_cText.Width = l_cRect.getWidth();
+          if (l_cText.Width > (irr::u32)l_cRect.getWidth())
+            l_cText.Width = l_cRect.getWidth();
 
-        irr::core::dimension2du l_cChar = m_pFont->getDimension(L"X");
+          irr::core::dimension2du l_cChar = m_pFont->getDimension(L"X");
 
-        if (l_cChar.Height < (irr::u32)l_cRect.getHeight())
-          l_cChar.Height = l_cRect.getHeight();
+          if (l_cChar.Height < (irr::u32)l_cRect.getHeight())
+            l_cChar.Height = l_cRect.getHeight();
 
-        l_cChar.Width = l_cChar.Height;
+          l_cChar.Width = l_cChar.Height;
 
-        m_cChar = irr::core::recti(
-          l_cRect.UpperLeftCorner .X + l_cText.Width,
-          l_cRect.UpperLeftCorner .Y,
-          l_cRect.UpperLeftCorner .X + l_cText.Width + l_cChar.Width,
-          l_cRect.LowerRightCorner.Y
-        );
+          m_cChar = irr::core::recti(
+            l_cRect.UpperLeftCorner .X + l_cText.Width,
+            l_cRect.UpperLeftCorner .Y,
+            l_cRect.UpperLeftCorner .X + l_cText.Width + l_cChar.Width,
+            l_cRect.LowerRightCorner.Y
+          );
 
-        m_cUp = irr::core::recti(
-          m_cChar.UpperLeftCorner - irr::core::vector2di(0, 2 * l_cChar.Height),
-          m_cChar.UpperLeftCorner + irr::core::vector2di(l_cChar.Width, 0)
-        );
+          m_cUp = irr::core::recti(
+            m_cChar.UpperLeftCorner - irr::core::vector2di(0, 2 * l_cChar.Height),
+            m_cChar.UpperLeftCorner + irr::core::vector2di(l_cChar.Width, 0)
+          );
 
-        m_cDown = irr::core::recti(
-          m_cChar.UpperLeftCorner + irr::core::vector2di(0            ,     m_cChar.getHeight()),
-          m_cChar.UpperLeftCorner + irr::core::vector2di(l_cChar.Width, 3 * m_cChar.getHeight())
-        );
+          m_cDown = irr::core::recti(
+            m_cChar.UpperLeftCorner + irr::core::vector2di(0            ,     m_cChar.getHeight()),
+            m_cChar.UpperLeftCorner + irr::core::vector2di(l_cChar.Width, 3 * m_cChar.getHeight())
+          );
 
-        m_cInner = irr::core::recti(
-          m_cUp  .UpperLeftCorner,
-          m_cDown.LowerRightCorner
-        );
+          m_cInner = irr::core::recti(
+            m_cUp  .UpperLeftCorner,
+            m_cDown.LowerRightCorner
+          );
 
-        AbsoluteClippingRect = m_cInner;
+          AbsoluteClippingRect = m_cInner;
 
-        irr::gui::ICursorControl *l_pCursor = m_pDevice->getCursorControl();
-        if (l_pCursor != nullptr && m_bCtrlActive) {
-          l_pCursor->setPosition(AbsoluteClippingRect.getCenter());
+          irr::gui::ICursorControl *l_pCursor = m_pDevice->getCursorControl();
+          if (l_pCursor != nullptr && m_bCtrlActive) {
+            l_pCursor->setPosition(AbsoluteClippingRect.getCenter());
+          }
+          else {
+            irr::SEvent l_cEvent{};
+            l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+            l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
+            l_cEvent.MouseInput.X = AbsoluteClippingRect.getCenter().X;
+            l_cEvent.MouseInput.Y = AbsoluteClippingRect.getCenter().Y;
+            m_pDevice->postEventFromUser(l_cEvent);
+          }
+
+          /*irr::SEvent l_cEvent{};
+
+          l_cEvent.EventType = irr::EET_USER_EVENT;
+          l_cEvent.UserEvent.UserData1 = c_iEventHideCursor;
+          l_cEvent.UserEvent.UserData2 = 1;
+
+          m_pDevice->postEventFromUser(l_cEvent);*/
         }
-        else {
-          irr::SEvent l_cEvent{};
-          l_cEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-          l_cEvent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-          l_cEvent.MouseInput.X = AbsoluteClippingRect.getCenter().X;
-          l_cEvent.MouseInput.Y = AbsoluteClippingRect.getCenter().Y;
-          m_pDevice->postEventFromUser(l_cEvent);
-        }
-
-        /*irr::SEvent l_cEvent{};
-
-        l_cEvent.EventType = irr::EET_USER_EVENT;
-        l_cEvent.UserEvent.UserData1 = c_iEventHideCursor;
-        l_cEvent.UserEvent.UserData2 = 1;
-
-        m_pDevice->postEventFromUser(l_cEvent);*/
       }
       else {
         m_pFont = CGlobal::getInstance()->getFont(enFont::Big, m_pDrv->getScreenSize());
