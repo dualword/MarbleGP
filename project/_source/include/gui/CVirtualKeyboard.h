@@ -16,6 +16,22 @@ namespace dustbin {
     */
     class CVirtualKeyboard : public irr::gui::IGUIElement {
       private:
+        enum class enMode {
+          VirtualKeys,
+          Scrolling
+        };
+
+        typedef struct SVirtualKey {
+          irr::core::recti m_cRect;
+          irr::EKEY_CODE   m_eKey;
+          std::wstring     m_sChar;
+          bool             m_bHover;
+          bool             m_bHasUpper;
+
+          SVirtualKey(const irr::core::recti &a_cRect, irr::EKEY_CODE a_eKey, const std::wstring &a_sChar, bool a_bHasUpper);
+        }
+        SVirtualKey;
+
         irr::IrrlichtDevice *m_pDevice;
 
         std::vector<wchar_t> m_vKeys;
@@ -42,8 +58,16 @@ namespace dustbin {
         bool m_bMoved;
         bool m_bCtrlActive;
         bool m_bMoving;
+        bool m_bShift;
 
         int m_iMouseDown;
+
+        enMode m_eMode;
+
+        std::vector<SVirtualKey> m_vVirtualKeys;
+
+        irr::core::position2di  m_cVkOffset;
+        irr::core::dimension2du m_cVkSize;
 
         irr::ITimer           *m_pTimer;
         irr::gui::IGUIEditBox *m_pTarget;
