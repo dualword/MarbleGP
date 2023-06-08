@@ -185,6 +185,7 @@ namespace dustbin {
               l_cData.m_sShortName = std::get<1>(*l_itAi);
               l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
               l_cData.m_sControls  = "class=" + (*l_vAiClass.begin());
+              l_cData.m_sTexture   = helpers::createDefaultTextureString(std::get<2>(*l_itAi), *l_vAiClass.begin() == "marblegp" ? 0 : *l_vAiClass.begin() == "marble2" ? 1 : 2) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
 
               l_vAiClass.erase(l_vAiClass.begin());
 
