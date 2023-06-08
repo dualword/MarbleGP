@@ -165,6 +165,8 @@ namespace dustbin {
           m_cMousePos.X = a_cEvent.MouseInput.X;
           m_cMousePos.Y = a_cEvent.MouseInput.Y;
 
+          m_bOnText &= m_cMousePos.Y >= AbsoluteClippingRect.UpperLeftCorner.Y - 2 * AbsoluteClippingRect.getHeight() && m_cMousePos.Y < AbsoluteClippingRect.LowerRightCorner.Y + 2 * AbsoluteClippingRect.getHeight();
+
           if (m_bOnText) {
             if (m_cMousePos.X > m_cTextDown.X + AbsoluteClippingRect.getHeight()) {
               if (m_iSelected < m_vItems.size() - 1) {
