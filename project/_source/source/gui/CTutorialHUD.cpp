@@ -178,6 +178,14 @@ namespace dustbin {
       else return false;
     }
 
+    /**
+    * Should this HUD be in front of the rest? Necessary for the Tutorial HUD
+    * @return true if this HUD should be in front of the rest
+    */
+    bool CTutorialHUD::moveToFront() {
+      return true;
+    }
+
 
     /**
     * Find a scene node by it's name

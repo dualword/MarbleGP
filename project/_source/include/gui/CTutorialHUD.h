@@ -79,6 +79,12 @@ namespace dustbin {
         * @return true if the event was handled, false otherwise
         */
         virtual bool onWithdrawButton() override;
+
+        /**
+        * Should this HUD be in front of the rest? Necessary for the Tutorial HUD
+        * @return true if this HUD should be in front of the rest
+        */
+        virtual bool moveToFront() override;
     };
   }
 }

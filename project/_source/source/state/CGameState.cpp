@@ -1411,8 +1411,9 @@ namespace dustbin {
       }
 
       for (auto l_cPlayer: m_vPlayers) {
-        if (l_cPlayer->m_pController != nullptr)
+        if (l_cPlayer->m_pController != nullptr && l_cPlayer->m_pMarble != nullptr && l_cPlayer->m_pMarble->m_pViewport != nullptr && l_cPlayer->m_pMarble->m_pViewport->m_pHUD != nullptr && l_cPlayer->m_pMarble->m_pViewport->m_pHUD->moveToFront()) {
           l_cPlayer->m_pController->moveGuiToFront();
+        }
       }
     }
 

@@ -1193,5 +1193,13 @@ namespace dustbin {
       // Nothing to do here
       return false;
     }
+
+    /**
+    * Should this HUD be in front of the rest? Necessary for the Tutorial HUD
+    * @return true if this HUD should be in front of the rest
+    */
+    bool CGameHUD::moveToFront() {
+      return false;
+    }
   }
 }
