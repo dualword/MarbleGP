@@ -114,7 +114,7 @@
       
 
       <!-- Player 9 -->
-      <element type="MenuBackground" rect="relative: 26, 6, 49, 8">
+      <element type="MenuBackground" rect="relative: 27, 6, 49, 8">
         <attributes>
           <attribute key="Name" value="player9" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -126,7 +126,7 @@
       </element>
        
       <!-- Player 10 -->
-      <element type="MenuBackground" rect="relative: 26, 9, 49, 11">
+      <element type="MenuBackground" rect="relative: 27, 9, 49, 11">
         <attributes>
           <attribute key="Name" value="player10" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -138,7 +138,7 @@
       </element>
        
       <!-- Player 11 -->
-      <element type="MenuBackground" rect="relative: 26, 12, 49, 14">
+      <element type="MenuBackground" rect="relative: 27, 12, 49, 14">
         <attributes>
           <attribute key="Name" value="player11" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -150,7 +150,7 @@
       </element>
        
       <!-- Player 12 -->
-      <element type="MenuBackground" rect="relative: 26, 15, 49, 17">
+      <element type="MenuBackground" rect="relative: 27, 15, 49, 17">
         <attributes>
           <attribute key="Name" value="player12" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -162,7 +162,7 @@
       </element>
        
       <!-- Player 13 -->
-      <element type="MenuBackground" rect="relative: 26, 18, 49, 20">
+      <element type="MenuBackground" rect="relative: 27, 18, 49, 20">
         <attributes>
           <attribute key="Name" value="player13" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -174,7 +174,7 @@
       </element>
        
       <!-- Player 14 -->
-      <element type="MenuBackground" rect="relative: 26, 21, 49, 23">
+      <element type="MenuBackground" rect="relative: 27, 21, 49, 23">
         <attributes>
           <attribute key="Name" value="player14" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -186,7 +186,7 @@
       </element>
        
       <!-- Player 15 -->
-      <element type="MenuBackground" rect="relative: 26, 24, 49, 26">
+      <element type="MenuBackground" rect="relative: 27, 24, 49, 26">
         <attributes>
           <attribute key="Name" value="player15" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />
@@ -198,7 +198,7 @@
       </element>
        
       <!-- Player 16 -->
-      <element type="MenuBackground" rect="relative: 26, 27, 49, 29">
+      <element type="MenuBackground" rect="relative: 27, 27, 49, 29">
         <attributes>
           <attribute key="Name" value="player16" />
           <attribute key="OverrideColor" value="0, 0, 0, 0" />

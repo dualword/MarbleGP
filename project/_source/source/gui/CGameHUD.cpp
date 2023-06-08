@@ -852,6 +852,7 @@ namespace dustbin {
     void CGameHUD::renderNearbyRanking(const irr::core::position2di& a_cPos, const irr::core::recti &a_cTotal) {
       for (std::map<enTextElements, STextElement>::iterator it = m_mTextElements.begin(); it != m_mTextElements.end(); it++)
         it->second.render();
+
       irr::core::dimension2di l_cPosSize = m_mTextElements[enTextElements::PosHead].m_cThisRect.getSize();
 
       m_mTextElements[enTextElements::PosHead].setPosition(a_cTotal.UpperLeftCorner - irr::core::position2di(10 * l_cPosSize.Width / 9, 0));
@@ -905,7 +906,14 @@ namespace dustbin {
                   l_cRects[i], &m_cRect
                 );
 
-                std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + (*it)->m_sWName;
+                std::string l_sName = (*it)->m_sName;
+
+                if (l_sName.find_last_of('|') != std::string::npos) {
+                  l_sName = l_sName.substr(0, l_sName.find_last_of('|'));
+                }
+
+
+                std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + helpers::s2ws(l_sName);
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
 
                 std::wstring l_sDeficit;

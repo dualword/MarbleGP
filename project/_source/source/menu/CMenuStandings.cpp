@@ -68,29 +68,32 @@ namespace dustbin {
               Respawn,
               Stunned,
               Dnf,
-              Positions
+              Positions,
+              AiClass
             };
 
 #ifdef _ANDROID
             //                     width  headline    columd ID  height alignment
             std::vector<std::tuple<int, std::wstring, enColumn, int, irr::gui::EGUI_ALIGNMENT>> l_vColumns = {
-              {  10, L"Pos"      , enColumn::Pos      , 2, irr::gui::EGUIA_CENTER     },
-              {  30, L"Name"     , enColumn::Name     , 2, irr::gui::EGUIA_UPPERLEFT  },
-              {  15, L"Points"   , enColumn::Points   , 2, irr::gui::EGUIA_LOWERRIGHT },
+              {   9, L"Pos"      , enColumn::Pos      , 2, irr::gui::EGUIA_CENTER     },
+              {  29, L"Name"     , enColumn::Name     , 2, irr::gui::EGUIA_UPPERLEFT  },
+              {  14, L"Points"   , enColumn::Points   , 2, irr::gui::EGUIA_LOWERRIGHT },
               {  15, L"Respawn"  , enColumn::Respawn  , 2, irr::gui::EGUIA_LOWERRIGHT },
               {  15, L"Stunned"  , enColumn::Stunned  , 2, irr::gui::EGUIA_LOWERRIGHT },
-              {  15, L"D.N.F."   , enColumn::Dnf      , 2, irr::gui::EGUIA_LOWERRIGHT }
+              {  15, L"D.N.F."   , enColumn::Dnf      , 2, irr::gui::EGUIA_LOWERRIGHT },
+              {   3, L"Ai"       , enColumn::AiClass  , 2, irr::gui::EGUIA_CENTER     }
             };
 #else
             //                     width  headline    columd ID  height alignment
             std::vector<std::tuple<int, std::wstring, enColumn, int, irr::gui::EGUI_ALIGNMENT>> l_vColumns = {
-              {   5, L"Pos"      , enColumn::Pos      , 2, irr::gui::EGUIA_CENTER     },
-              {  25, L"Name"     , enColumn::Name     , 2, irr::gui::EGUIA_UPPERLEFT  },
-              {   8, L"Points"   , enColumn::Points   , 2, irr::gui::EGUIA_LOWERRIGHT },
+              {   4, L"Pos"      , enColumn::Pos      , 2, irr::gui::EGUIA_CENTER     },
+              {  24, L"Name"     , enColumn::Name     , 2, irr::gui::EGUIA_UPPERLEFT  },
+              {   7, L"Points"   , enColumn::Points   , 2, irr::gui::EGUIA_LOWERRIGHT },
               {   8, L"Respawn"  , enColumn::Respawn  , 2, irr::gui::EGUIA_LOWERRIGHT },
               {   8, L"Stunned"  , enColumn::Stunned  , 2, irr::gui::EGUIA_LOWERRIGHT },
               {   8, L"D.N.F."   , enColumn::Dnf      , 2, irr::gui::EGUIA_LOWERRIGHT },
               {  38, L"Positions", enColumn::Positions, 1, irr::gui::EGUIA_LOWERRIGHT },
+              {   3, L"Ai"       , enColumn::AiClass  , 2, irr::gui::EGUIA_CENTER     }
             };
 #endif
 
@@ -133,7 +136,22 @@ namespace dustbin {
               m_vTable.push_back(std::vector<irr::gui::IGUIStaticText *>());
 
               irr::core::dimension2du l_cDim = irr::core::dimension2du(25 * l_iWidth / 100, l_iHeight);
-              std::wstring l_sName   = helpers::fitString(L" " + helpers::s2ws((*it).m_sName), l_pRegular, l_cDim);
+              std::wstring l_sName   = helpers::s2ws((*it).m_sName);
+              int l_iAi = -1;
+
+              if (l_sName.find_last_of(L'|') != std::wstring::npos) {
+                std::wstring l_sAiClass = l_sName.substr(l_sName.find_last_of(L'|') + 1);
+                l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
+
+                if (l_sAiClass == L"marble3")
+                  l_iAi = 2;
+                else if (l_sAiClass == L"marble2")
+                  l_iAi = 1;
+                else if (l_sAiClass == L"marblegp")
+                  l_iAi = 0;
+              }
+
+              l_sName   = helpers::fitString(l_sName, l_pRegular, l_cDim);
 
               for (auto l_tColumn : l_vColumns) {
                 std::wstring l_sText = 
@@ -145,7 +163,7 @@ namespace dustbin {
                   std::get<2>(l_tColumn) == enColumn::Dnf     ? std::to_wstring((*it).m_iDidNotFinish) + L" " : L"";
                 ;
 
-                if (std::get<2>(l_tColumn) != enColumn::Positions) {
+                if (std::get<2>(l_tColumn) != enColumn::Positions && std::get<2>(l_tColumn) != enColumn::AiClass) {
                   irr::gui::IGUIStaticText *p = m_pGui->addStaticText(l_sText.c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100, l_iHeight)), true, true);
                   p->setTextAlignment(std::get<4>(l_tColumn), irr::gui::EGUIA_CENTER);
                   p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
@@ -166,6 +184,15 @@ namespace dustbin {
                   else m_vTable.back().push_back(p);
 
                   l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
+                }
+                else if (std::get<2>(l_tColumn) == enColumn::AiClass) {
+                  irr::gui::IGUIStaticText *p = m_pGui->addStaticText(L"", irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100, l_iHeight)), true, true);
+
+                  switch (l_iAi) {
+                    case 0: p->setBackgroundColor(irr::video::SColor(0x80, 0xff, 0x20, 0x00)); break;
+                    case 1: p->setBackgroundColor(irr::video::SColor(0x80, 0xff, 0x80, 0x00)); break;
+                    case 2: p->setBackgroundColor(irr::video::SColor(0x80, 0xff, 0xff, 0x00)); break;
+                  }
                 }
                 else {
                   for (int i = 0; i < 16; i++) {

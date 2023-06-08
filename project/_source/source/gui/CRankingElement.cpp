@@ -14,16 +14,31 @@ namespace dustbin {
       m_cOriginal  (a_cBackground),
       m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
       m_cHlColor   (irr::video::SColor(232, 0, 255, 0)),
+      m_cBotColor  (irr::video::SColor(255, 255, 255, 255)),
       m_pFont      (a_pFont),
       m_bHighLight (false),
       m_bWithdrawn (false),
-      m_bVisible   (true)
+      m_bVisible   (true),
+      m_pBotClass  (nullptr)
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
       l_cDimPos.Height = a_cRect.getHeight();
 
       m_cRect = a_cRect;
+
+      if (m_cRect.UpperLeftCorner.X < (irr::s32)m_pDrv->getScreenSize().Width / 2) {
+        m_cBot = irr::core::recti(
+          irr::core::position2di(m_cRect.UpperLeftCorner.X - m_cRect.getHeight(), m_cRect.UpperLeftCorner.Y),
+          irr::core::dimension2du(m_cRect.getHeight(), m_cRect.getHeight())
+        );
+      }
+      else {
+        m_cBot = irr::core::recti(
+          irr::core::position2di(m_cRect.LowerRightCorner.X, m_cRect.UpperLeftCorner.Y),
+          irr::core::dimension2du(m_cRect.getHeight(), m_cRect.getHeight())
+        );
+      }
 
       m_cPosition = irr::core::recti(a_cRect.UpperLeftCorner, a_cRect.UpperLeftCorner + irr::core::vector2di(l_cDimPos.Width, l_cDimPos.Height));
 
@@ -67,13 +82,36 @@ namespace dustbin {
     * @param a_iDeficit deficit to the leader
     */
     void CRankingElement::setData(const std::wstring& a_sName, int a_iDeficit, bool a_bWithdrawn) {
-      m_sName      = helpers::fitString(a_sName, m_pFont, irr::core::dimension2du(m_cName.getWidth(), m_cName.getHeight()));
+      std::wstring l_sName = a_sName;
+
+      if (l_sName.find_last_of(L'|') != std::wstring::npos) {
+        std::string l_sIcon = "data/images/bot_" + helpers::ws2s(l_sName.substr(l_sName.find_last_of(L'|') + 1)) + ".png";
+        l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
+        m_pBotClass = m_pDrv->getTexture(l_sIcon.c_str());
+
+        if (m_pBotClass != nullptr) {
+          m_cBotSrc = irr::core::recti(irr::core::position2di(0, 0), m_pBotClass->getOriginalSize());
+        }
+      }
+      else m_pBotClass = nullptr;
+
+      m_sName      = helpers::fitString(l_sName, m_pFont, irr::core::dimension2du(m_cName.getWidth(), m_cName.getHeight()));
       m_iDeficit   = a_iDeficit;
       m_bWithdrawn = a_bWithdrawn;
     }
 
     void CRankingElement::draw() {
       if (m_bVisible) {
+        if (m_pBotClass != nullptr) {
+          irr::video::SColor l_cColors[] = {
+            m_cBotColor,
+            m_cBotColor,
+            m_cBotColor,
+            m_cBotColor
+          };
+
+          m_pDrv->draw2DImage(m_pBotClass, m_cBot, m_cBotSrc, nullptr, l_cColors, true);
+        }
         renderBackground(m_cRect, m_cBackground);
 
         m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &m_cRect);
@@ -111,6 +149,7 @@ namespace dustbin {
       m_cBorder    .setAlpha((irr::u32)(255.0f * a_fAlpha));
       m_cTextColor .setAlpha((irr::u32)(255.0f * a_fAlpha));
       m_cHlColor   .setAlpha((irr::u32)(232.0f * a_fAlpha));
+      m_cBotColor  .setAlpha((irr::u32)(232.0f * a_fAlpha));
     }
 
     /**

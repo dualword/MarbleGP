@@ -117,15 +117,17 @@ namespace dustbin {
               Name,
               Racetime,
               Respawn,
-              Stunned
+              Stunned,
+              AiClass
             };
 
             std::vector<std::tuple<irr::s32, std::wstring, enColumn, irr::gui::EGUI_ALIGNMENT>> l_vColums = {
               {  5, L"Pos"     , enColumn::Pos     , irr::gui::EGUIA_CENTER     },
               { 45, L"Name"    , enColumn::Name    , irr::gui::EGUIA_UPPERLEFT  },
-              { 15, L"Racetime", enColumn::Racetime, irr::gui::EGUIA_LOWERRIGHT },
-              { 15, L"Respawn" , enColumn::Respawn , irr::gui::EGUIA_LOWERRIGHT },
-              { 15, L"Stunned" , enColumn::Stunned , irr::gui::EGUIA_LOWERRIGHT },
+              { 14, L"Racetime", enColumn::Racetime, irr::gui::EGUIA_LOWERRIGHT },
+              { 14, L"Respawn" , enColumn::Respawn , irr::gui::EGUIA_LOWERRIGHT },
+              { 14, L"Stunned" , enColumn::Stunned , irr::gui::EGUIA_LOWERRIGHT },
+              {  3, L"Ai"      , enColumn::AiClass , irr::gui::EGUIA_CENTER     }
             };
 
             for (auto l_tColumn : l_vColums) {
@@ -144,13 +146,27 @@ namespace dustbin {
               m_vTable.push_back(std::vector<irr::gui::IGUIStaticText *>());
 
               std::wstring l_sName   = L"-";
-              std::wstring l_sAiMode = L"-";
+              int          l_iAi     = -1;
 
               if (l_pRace->m_mAssignment.find(l_pRace->m_aResult[i].m_iId) != l_pRace->m_mAssignment.end()) {
                 int l_iPlayer = l_pRace->m_mAssignment[l_pRace->m_aResult[i].m_iId];
                 for (std::vector<data::SChampionshipPlayer>::iterator it = l_cChampionship.m_vPlayers.begin(); it != l_cChampionship.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == l_iPlayer) {
                     l_sName = helpers::s2ws((*it).m_sName);
+
+                    if (l_sName.find_last_of(L'|') != std::wstring::npos) {
+                      std::wstring l_sAiClass = l_sName.substr(l_sName.find_last_of(L'|') + 1);
+                      l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
+
+                      if (l_sAiClass == L"marble3")
+                        l_iAi = 2;
+                      else if (l_sAiClass == L"marble2")
+                        l_iAi = 1;
+                      else if (l_sAiClass == L"marblegp")
+                        l_iAi = 0;
+                    }
+
+                    
                   }
                 }
               }
@@ -192,7 +208,16 @@ namespace dustbin {
                 p->setOverrideFont(l_pFont);
                 l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
 
-                m_vTable.back().push_back(p);
+                if (std::get<2>(l_tColumn) == enColumn::AiClass) {
+                  switch (l_iAi) {
+                    case 0: p->setBackgroundColor(irr::video::SColor(0x80, 0xff, 0x20, 0x00)); break;
+                    case 1: p->setBackgroundColor(irr::video::SColor(0x80, 0xff, 0x80, 0x00)); break;
+                    case 2: p->setBackgroundColor(irr::video::SColor(0x80, 0xff, 0xff, 0x00)); break;
+                  }
+                }
+                else {
+                  m_vTable.back().push_back(p);
+                }
               }
             }
           }

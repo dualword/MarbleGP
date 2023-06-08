@@ -24,11 +24,14 @@ namespace dustbin {
         irr::core::recti m_cName;       /**< Rendering rect for the name */
         irr::core::recti m_cDeficit;    /**< Rendering rect for the deficit */
         irr::core::recti m_cRect;       /**< The rendering rectangle */
+        irr::core::recti m_cBot;        /**< The target rect of the bot icon */
+        irr::core::recti m_cBotSrc;     /**< The source rect of the bot icon */
 
         irr::video::SColor m_cBackground;   /**< The background color */
         irr::video::SColor m_cOriginal;     /**< The original background color */
         irr::video::SColor m_cTextColor;    /**< The text color */
         irr::video::SColor m_cHlColor;      /**< The highlight color */
+        irr::video::SColor m_cBotColor;     /**< The color to fade out the bot icon */
 
         irr::gui::IGUIFont *m_pFont;  /**< The font to use */
 
@@ -38,8 +41,9 @@ namespace dustbin {
 
         irr::core::vector2di  m_cHighLight;   /**< The hightlight position */
 
-        std::vector<irr::core::line2di> m_vHightLight;  /**< The highlight 3d lines for drawing */
-        irr::core::dimension2du         m_cHlSize;      /**< Size of the highlight */
+        std::vector<irr::core::line2di>  m_vHightLight;  /**< The highlight 3d lines for drawing */
+        irr::core::dimension2du          m_cHlSize;      /**< Size of the highlight */
+        irr::video::ITexture            *m_pBotClass;    /**< Texture of the bot class */
 
       public:
         CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui);

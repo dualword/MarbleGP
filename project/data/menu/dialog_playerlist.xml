@@ -25,7 +25,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 32, 0, 36, 4" font="small" tooltip="AI Class">
+      <element type="image" rect="relative: 31, 0, 35, 4" font="small" tooltip="AI Class">
         <attributes>
           <attribute key="Name" value="ai_class" />
           <attribute key="ScaleImage" value="true" />

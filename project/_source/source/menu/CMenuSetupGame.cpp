@@ -248,6 +248,10 @@ namespace dustbin {
 
                 m_iMaxIndex = i;
               }
+
+              irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
+              if (l_pBot != nullptr)
+                l_pBot->setVisible(false);
             }
             else {
               printf("Menu for player #%i not found.\n", i + 1);
