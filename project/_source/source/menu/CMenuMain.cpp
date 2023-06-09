@@ -32,10 +32,6 @@ namespace dustbin {
 
           std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
-          for (std::vector<data::SPlayerData>::iterator l_itPlayer = l_vProfiles.begin(); l_itPlayer != l_vProfiles.end(); l_itPlayer++) {
-            printf("\n%s\n", (*l_itPlayer).m_sControls.c_str());
-          }
-
           platform::consumeBackEvent(false);
         }
 
@@ -53,6 +49,7 @@ namespace dustbin {
               createMenu("menu_settings", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "profiles") {
+              CGlobal::getInstance()->setGlobal("profiles_old", CGlobal::getInstance()->getSetting("profiles"));
               platform::consumeBackEvent(true);
               createMenu("menu_profiles", m_pDevice, m_pManager, m_pState);
             }

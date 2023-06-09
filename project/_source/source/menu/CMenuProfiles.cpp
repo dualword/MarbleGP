@@ -220,6 +220,13 @@ namespace dustbin {
         * and the main menu is loaded
         */
         void buttonCancelClicked() {
+          std::string l_sOld = CGlobal::getInstance()->getGlobal("profiles_old");
+
+          if (l_sOld != "") {
+            CGlobal::getInstance()->setSetting("profiles", l_sOld);
+          }
+          
+          CGlobal::getInstance()->setGlobal("profiles_old", "");
           createMenu("menu_main", m_pDevice, m_pManager, m_pState);
         }
 
