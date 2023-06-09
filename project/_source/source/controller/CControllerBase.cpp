@@ -19,14 +19,6 @@ namespace dustbin {
 
     /** Implementation of SCtrlInput */
     CControllerBase::SCtrlInput::SCtrlInput() : m_sName(""), m_eType(enInputType::Key), m_eKey(irr::KEY_SPACE), m_iJoystick(0), m_iButton(0), m_iAxis(0), m_iPov(0xFFFF), m_iDirection(1), m_fValue(0.0f), m_bError(false) {
-      m_sName      = "";
-      m_eType      = enInputType::Key;
-      m_eKey       = irr::KEY_SPACE;
-      m_iJoystick  = 0;
-      m_iButton    = 0;
-      m_iAxis      = 0;
-      m_iDirection = 1;
-      m_fValue     = 0.0f;
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(enInputType a_eType, const std::string& a_sName) : m_bError(false) {

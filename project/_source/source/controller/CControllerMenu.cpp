@@ -694,5 +694,13 @@ namespace dustbin {
         }
       }
     }
+
+    /**
+    * Check if the joystick is already assigned
+    * @return true if the joystick is already assigned, false otherwise
+    */
+    bool CControllerMenu::isJoystickAssigned() {
+      return m_bGamepad && m_iGamepad != -1;
+    }
   } // namespace controller
 } // namespace dustbin

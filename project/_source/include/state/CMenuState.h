@@ -142,6 +142,12 @@ namespace dustbin {
         * @param a_bFlag on / off flag
         */
         virtual void enableMenuController(bool a_bFlag) override;
+
+        /**
+        * Is the menu controlled by gamepad?
+        * @return true if the menu is controlled by a gamepad
+        */
+        virtual bool isMenuControlledByGamepad() override;
     };
   }
 }

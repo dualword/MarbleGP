@@ -645,7 +645,7 @@ namespace dustbin {
           irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(a_cEvent.GUIEvent.Caller);
 
           if (m_pKeyBoard == nullptr) {
-            m_pKeyBoard = new gui::CVirtualKeyboard(CGlobal::getInstance()->getSettingData().m_sMenuCtrl == "Keyboard" || CGlobal::getInstance()->getSettingData().m_sMenuCtrl == "Gamepad");
+            m_pKeyBoard = new gui::CVirtualKeyboard(m_pActiveState != nullptr && m_pActiveState->isMenuControlledByGamepad());
             m_pKeyBoard->drop();
           }
 

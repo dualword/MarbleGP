@@ -343,5 +343,14 @@ namespace dustbin {
     void CMenuState::enableMenuController(bool a_bFlag) {
       m_bMenuCtrl = a_bFlag;
     }
+
+    /**
+    * Is the menu controlled by gamepad?
+    * @return true if the menu is controlled by a gamepad
+    */
+    bool CMenuState::isMenuControlledByGamepad() {
+      std::string l_sCtrl = m_pGlobal->getSettingData().m_sMenuCtrl;
+      return l_sCtrl == "Gamepad" && m_pController->isJoystickAssigned();
+    }
   }
 }

@@ -123,6 +123,15 @@ namespace dustbin {
         */
         virtual void enableMenuController(bool a_bFlag) {
         }
+
+        /**
+        * Is the menu controlled by gamepad?
+        * @return true if the menu is controlled by a gamepad
+        * @see CMenuState::isMenuControlledByGamepad
+        */
+        virtual bool isMenuControlledByGamepad() {
+          return false;
+        }
     };
   }
 }

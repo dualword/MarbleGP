@@ -151,6 +151,12 @@ namespace dustbin {
         * @param a_bVisible the new visibility flag
         */
         void setVisible(bool a_bVisible);
+
+        /**
+        * Check if the joystick is already assigned
+        * @return true if the joystick is already assigned, false otherwise
+        */
+        virtual bool isJoystickAssigned() override;
     };
 
   } // namespace controller

@@ -137,7 +137,7 @@ namespace dustbin {
         * Check if the joystick is already assigned
         * @return true if the joystick is already assigned, false otherwise
         */
-        bool isJoystickAssigned();
+        virtual bool isJoystickAssigned();
 
         /**
         * Get the index of the joystick assigned to this controller
