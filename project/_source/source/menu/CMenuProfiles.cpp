@@ -453,6 +453,7 @@ namespace dustbin {
                     if (m_aProfiles[i].isValid() && m_aProfiles[i].m_pAddProfile == a_cEvent.GUIEvent.Caller) {
                       CGlobal::getInstance()->setGlobal("edit_profileno", "-1");
                       CGlobal::getInstance()->setGlobal("edit_profile", "");
+                      saveProfiles();
                       m_pManager->pushToMenuStack("menu_profiles");
                       createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
 
