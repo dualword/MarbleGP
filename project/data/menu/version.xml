@@ -3,7 +3,7 @@
 <dialog>
   <element type="staticText" rect="lowermiddle: -6, -2, 6, 0" tooltip="MarbleGP Version" font="small">
     <attributes>
-      <attribute key="Caption" value="Version 1.1 Build 229" />
+      <attribute key="Caption" value="Version 1.1 Build 230" />
       <attribute key="HTextAlign" value="center" />
       <attribute key="VTextAlign" value="center" />
     </attributes>
