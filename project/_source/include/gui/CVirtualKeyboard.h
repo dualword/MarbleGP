@@ -64,6 +64,8 @@ namespace dustbin {
 
         enMode m_eMode;
 
+        std::wstring m_sText;   /**< Text of the target Edit Box */
+
         std::vector<SVirtualKey> m_vVirtualKeys;
 
         irr::core::position2di  m_cVkOffset;

@@ -343,6 +343,16 @@ namespace dustbin {
     void CVirtualKeyboard::draw() {
       if (IsVisible) {
         if (m_eMode == enMode::VirtualKeys) {
+          if (m_pTarget != nullptr) {
+            std::wstring l_sText = m_pTarget->getText();
+            if (l_sText != m_sText) {
+              m_sText = l_sText;
+              if (m_sText.size() == 0 || m_sText.substr(m_sText.size() - 1, 1) == L" ") {
+                m_bShift = true;
+              }
+            }
+          }
+
           for (auto l_cKey : m_vVirtualKeys) {
             irr::core::recti l_cRect = l_cKey.m_cRect + m_cVkOffset;
 
@@ -428,6 +438,8 @@ namespace dustbin {
 
           Parent->OnEvent(l_cEvent);
         }
+
+        m_sText = m_pTarget->getText();
       }
     }
 
