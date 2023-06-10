@@ -48,7 +48,7 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 26, 12, 31, 14" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
+          <element type="staticText" rect="relative: 20, 12, 31, 14" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
             <attributes>
               <attribute key="Caption" value="Ai Class:" />
               <attribute key="HTextAlign" value="lowerRight" />
@@ -132,7 +132,7 @@
             </attributes>
           </element>
           
-          <element type="staticText" rect="relative: 26, 9, 31, 11" tooltip="Select the Grid Size">
+          <element type="staticText" rect="relative: 20, 9, 31, 11" tooltip="Select the Grid Size">
             <attributes>
               <attribute key="Caption" value="Grid Size:" />
               <attribute key="HTextAlign" value="lowerRight" />

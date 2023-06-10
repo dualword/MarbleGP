@@ -20,7 +20,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 15, 14, 18">
+      <element type="staticText" rect="relative: 1, 10, 14, 13">
         <attributes>
           <attribute key="Caption" value="AI Help Level:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -28,7 +28,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 16, 15, 43, 18" font="huge" tooltip="Let the AI help you">
+      <element type="Selector" rect="relative: 16, 10, 43, 13" font="huge" tooltip="Let the AI help you">
         <attributes>
           <attribute key="Name" value="ai_help" />
           <attribute key="Selected" value="0" />
