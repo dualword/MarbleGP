@@ -1,0 +1,2 @@
+@python getVersionInfo.py
+@pause

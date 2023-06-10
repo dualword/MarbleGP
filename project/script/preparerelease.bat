@@ -15,4 +15,5 @@ copy ..\MarbleGP_Android\app\release\app-release.apk ..\release\marblegp.apk
 setup.iss
 release_backup.bat
 set password=
+getVersionInfo.bat
 pause
