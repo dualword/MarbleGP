@@ -28,7 +28,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 2, 9, 21, 27">
+      <element type="image" rect="relative: 2, 9, 21, 27" tooltip="Preview of your marble's texture">
         <attributes>
           <attribute key="ScaleImage" value="true" />
           <attribute key="Name" value="texture_image" />
@@ -38,15 +38,16 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="relative: 23, 8, 32, 10">
+      <element type="staticText" rect="relative: 23, 8, 32, 10" tooltip="Select the mode of your marble's texture">
         <attributes>
           <attribute key="Caption" value="Texture Mode:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_texture_mode" />
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 33, 8, 48, 10">
+      <element type="Selector" rect="relative: 33, 8, 48, 10" tooltip="Select the mode of your marble's texture">
         <attributes>
           <attribute key="Name" value="texture_mode" />
           <attribute key="Selected" value="0" />

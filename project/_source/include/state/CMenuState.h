@@ -5,6 +5,7 @@
 #include <irrlicht.h>
 #include <string>
 #include <vector>
+#include <tuple>
 
 namespace dustbin {
   class CGlobal;  /**< Forward declration of the global singleton class */
@@ -46,6 +47,18 @@ namespace dustbin {
         controller::ICustomEventReceiver *m_pTouchCtrl;     /**< Touch controller for the menu */
 
         std::vector<std::string> m_vMenuStack;    /**< A stack for the menues that shall be activated */
+
+        std::string m_sMenu;
+
+#ifdef _DEBUG
+        /**
+        * Create the CSS and JavaScript data necessary for the currently active menu
+        * @param a_pElement the element to add to the manual data
+        * @param a_sData the manual data (0 == Name of the element, 1 == tooltip text, 2 == the rect of the element in percent)
+        * @param a_sElements Names that are already stored in the data vector
+        */
+        void createManualData(irr::gui::IGUIElement *l_pElement, std::vector<std::tuple<std::string, std::string, irr::core::rect<irr::f32>>> &a_sData, std::vector<std::string> &a_sElements);
+#endif
 
       protected:
         network::CGameClient *m_pClient;

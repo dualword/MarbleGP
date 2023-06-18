@@ -17,7 +17,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: -18, -12, -7, -9" font="big">
+  <element type="MenuButton" rect="center: -18, -12, -7, -9" font="big" tooltip="Graphics Settings">
     <attributes>
       <attribute key="Name" value="gfx" />
       <attribute key="Id" value="23001" />
@@ -26,7 +26,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: -6, -12, 6, -9" font="big">
+  <element type="MenuButton" rect="center: -6, -12, 6, -9" font="big" tooltip="Sound Settings">
     <attributes>
       <attribute key="Name" value="sfx" />
       <attribute key="Id" value="23002" />
@@ -35,7 +35,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: 7, -12, 18, -9" font="big">
+  <element type="MenuButton" rect="center: 7, -12, 18, -9" font="big" tooltip="Other Settings">
     <attributes>
       <attribute key="Name" value="misc" />
       <attribute key="Id" value="23003" />
@@ -53,7 +53,7 @@
       <attribute key="Id" value="23051" />
     </attributes>
     <children>
-      <element type="DustbinCheckbox" rect="center: -17, -1, -15, 1">
+      <element type="DustbinCheckbox" rect="center: -17, -1, -15, 1" tooltip="Show an arrow above the leading marble">
         <attributes>
           <attribute key="Caption" value="Hightlight Leader" />
           <attribute key="Id" value="23014" />
@@ -61,7 +61,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: -14, -1, 1, 1">
+      <element type="staticText" rect="center: -14, -1, 1, 1" tooltip="Show an arrow above the leading marble">
         <attributes>
           <attribute key="Name" value="label_highlight" />
           <attribute key="Caption" value="Highlight Leader" />
@@ -69,14 +69,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 1, -1, 3, 1">
+      <element type="DustbinCheckbox" rect="center: 1, -1, 3, 1" tooltip="Show the controls you are applying while racing">
         <attributes>
           <attribute key="Id" value="23015" />
           <attribute key="Name" value="show_controls" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 4, -1, 18, 1">
+      <element type="staticText" rect="center: 4, -1, 18, 1" tooltip="Show the controls you are applying while racing">
         <attributes>
           <attribute key="Name" value="label_showctrl" />
           <attribute key="Caption" value="Show Marble Controls" />
@@ -84,14 +84,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: -17, 2, -15, 4">
+      <element type="DustbinCheckbox" rect="center: -17, 2, -15, 4" tooltip="Show the in-game ranking. Not available on Android when using Touch or Gyroscope controls">
         <attributes>
           <attribute key="Id" value="23016" />
           <attribute key="Name" value="show_ranking" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: -14, 2, 1, 4">
+      <element type="staticText" rect="center: -14, 2, 1, 4" tooltip="Show the in-game ranking. Not available on Android when using Touch or Gyroscope controls">
         <attributes>
           <attribute key="Name" value="label_showranking" />
           <attribute key="Caption" value="Show Ranking" />
@@ -99,14 +99,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 1, 2, 3, 4">
+      <element type="DustbinCheckbox" rect="center: 1, 2, 3, 4" tooltip="Show the lap times while racing. Not available on Android when using Touch or Gyroscope controls">
         <attributes>
           <attribute key="Id" value="23017" />
-          <attribute key="Name" value="show_ranking" />
+          <attribute key="Name" value="show_laptimes" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 4, 2, 18, 4">
+      <element type="staticText" rect="center: 4, 2, 18, 4" tooltip="Show the lap times while racing. Not available on Android when using Touch or Gyroscope controls">
         <attributes>
           <attribute key="Name" value="label_laptimes" />
           <attribute key="Caption" value="Show Laptimes" />
@@ -137,7 +137,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, -6, 23, -4">
+      <element type="scrollBar" rect="center: -8, -6, 23, -4" tooltip="The overall sound volume">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23018" />
@@ -156,7 +156,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, -2, 23, 0">
+      <element type="scrollBar" rect="center: -8, -2, 23, 0" tooltip="The volume of the soundtrack">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23020" />
@@ -175,7 +175,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, 2, 23, 4">
+      <element type="scrollBar" rect="center: -8, 2, 23, 4" tooltip="The volume of the menu sound effects, e.g. when moving the mouse over a button">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23022" />
@@ -194,7 +194,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, 6, 23, 8">
+      <element type="scrollBar" rect="center: -8, 6, 23, 8" tooltip="The volume of the sound effects during gameplay">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23024" />
@@ -216,7 +216,7 @@
     </attributes>
     
     <children>
-      <element type="Selector" rect="center: 5, -7, 23, -5">
+      <element type="Selector" rect="center: 5, -7, 23, -5" tooltip="You use your gamepad to control the menues">
         <attributes>
           <attribute key="Name" value="misc_menuctrl" />
           <attribute key="Id" value="23026" />
@@ -227,7 +227,7 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="center: -24, -7, 4, -5">
+      <element type="staticText" rect="center: -23, -7, 4, -5" tooltip="You use your gamepad to control the menues">
         <attributes>
           <attribute key="Name" value="label_misc_use" />
           <attribute key="Caption" value="Use game controller to navigate menues." />
@@ -235,7 +235,7 @@
         </attributes>
       </element>
       
-      <element type="ControllerUiMenu" rect="center: -23, -4, 23, 12" font="tiny">
+      <element type="ControllerUiMenu" rect="center: -23, -4, 23, 12" font="tiny" tooltip="Settings of the menu controller">
         <attributes>
           <attribute key="Name" value="controller_ui" />
           <attribute key="UseOverrideColor" value="true" />
@@ -244,14 +244,14 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="center: 18, 7, 22, 11" tooltip="Edit Controls">
+      <element type="MenuButton" rect="center: 18, 7, 22, 11" tooltip="Edit Menu Controls">
         <attributes>
           <attribute key="Name" value="editMenuCtrl" />
           <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="center: 18, 2, 22, 6" tooltip="Test Controls">
+      <element type="MenuButton" rect="center: 18, 2, 22, 6" tooltip="Test Menu Controls">
         <attributes>
           <attribute key="Name" value="testMenuCtrl" />
           <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />
@@ -271,7 +271,7 @@
     </attributes>
     
     <children>
-      <element type="LogDisplay" rect="center: -23, -7, 23, 12">
+      <element type="LogDisplay" rect="center: -23, -7, 23, 12" tooltip="This display shows you the internal log of the game">
         <attributes>
           <attribute key="Name" value="log_display" />
         </attributes>
@@ -303,7 +303,7 @@
     </custom>
   </element>
   
-  <element type="MenuButton" rect="lowermiddle: 10, -4, 24, 0" font="big">
+  <element type="MenuButton" rect="lowermiddle: 10, -4, 24, 0" font="big" tooltip="Show the internal log of the game">
     <attributes>
       <attribute key="Name" value="log" />
       <attribute key="Id" value="24000" />

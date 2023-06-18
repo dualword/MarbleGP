@@ -8,7 +8,7 @@
     </attributes>
     
     <children>
-      <element type="staticText" rect="relative: 0, 0, 4, 2" font="regular">
+      <element type="staticText" rect="relative: 0, 0, 4, 2" font="regular" tooltip="The position in the starting grid">
         <attributes>
           <attribute key="Caption" value="1" />
           <attribute key="HTextAlign" value="center" />
@@ -17,7 +17,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 20, 0, 22, 2" font="small" tooltip="AI Class">
+      <element type="image" rect="relative: 20, 0, 22, 2" font="small" tooltip="AI Class of the player (if it's a computer controlled marble)">
         <attributes>
           <attribute key="Name" value="ai_class" />
           <attribute key="ScaleImage" value="true" />
@@ -28,7 +28,7 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="relative: 5, 0, 42, 2" font="regular">
+      <element type="staticText" rect="relative: 5, 0, 19, 2" font="regular" tooltip="The name of the player">
         <attributes>
           <attribute key="Name" value="player_name" />
           <attribute key="Caption" value="Mr. Nukular" />

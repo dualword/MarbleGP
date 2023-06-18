@@ -13,6 +13,7 @@
 
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <menu/IMenuHandler.h>
 #include <CGlobal.h>
 #include <vector>
 #include <tuple>
@@ -471,6 +472,6 @@ namespace dustbin {
         CGlobal::getInstance()->menuLoaded();
         l_pXml->drop();
       }
-    }
+   }
   }
 }

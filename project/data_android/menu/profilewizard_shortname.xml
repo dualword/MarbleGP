@@ -20,15 +20,16 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 10, 14, 13">
+      <element type="staticText" rect="relative: 1, 10, 14, 13" tooltip="Short name of the profile, used in in-race ranking">
         <attributes>
           <attribute key="Caption" value="Short Name:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_shortname" />
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 16, 10, 32, 13" font="huge">
+      <element type="editBox" rect="relative: 16, 10, 32, 13" font="huge" tooltip="Short name of the profile, used in in-race ranking">
         <attributes>
           <attribute key="MaxChars" value="5" />
           <attribute key="Name" value="shortname" />

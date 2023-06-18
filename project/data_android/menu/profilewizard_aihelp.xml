@@ -20,11 +20,12 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 10, 14, 13">
+      <element type="staticText" rect="relative: 1, 10, 14, 13" tooltip="Let the AI help you">
         <attributes>
           <attribute key="Caption" value="AI Help Level:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_ai_help" />
         </attributes>
       </element>
       

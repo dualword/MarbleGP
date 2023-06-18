@@ -20,11 +20,12 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 7, 7, 13, 9" font="default">
+      <element type="staticText" rect="relative: 7, 7, 13, 9" font="default" tooltip="Select the controller you want to use">
         <attributes>
           <attribute key="Caption" value="Controller:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_controller_type" />
         </attributes>
       </element>
       
@@ -48,6 +49,7 @@
         <attributes>
           <attribute key="Caption" value="Auto Throttle:" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_auto_throttle" />
         </attributes>
       </element>
       

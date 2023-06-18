@@ -16,7 +16,7 @@
         </children>
       </element>
       
-      <element type="DustbinTrackSelect" rect="relative: 1, 9, 49, 30" font="small">
+      <element type="DustbinTrackSelect" rect="relative: 1, 9, 49, 30" font="small" tooltip="Select the track you want to race">
         <attributes>
           <attribute key="Name" value="TrackList" />
           <attribute key="Rows" value="1" />
@@ -32,10 +32,11 @@
           <attribute key="Caption" value="Number of Laps:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_nolaps" />
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 18, 5, 31, 7">
+      <element type="Selector" rect="relative: 18, 5, 31, 7" tooltip="Select the number of laps of the race">
         <attributes>
           <attribute key="Name" value="nolaps" />
           <attribute key="Selected" value="1" />

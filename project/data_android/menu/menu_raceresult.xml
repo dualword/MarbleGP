@@ -12,15 +12,16 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 10, 4, 16, 7" font="small">
+      <element type="staticText" rect="relative: 10, 4, 16, 7" font="small" tooltip="The track which was raced">
         <attributes>
           <attribute key="Caption" value="Track: " />
           <attribute key="HTextAlign" value="lowerright" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_label_trackname" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 16, 4, 26, 7" font="small">
+      <element type="staticText" rect="relative: 16, 4, 26, 7" font="small" tooltip="The track which was raced">
         <attributes>
           <attribute key="Caption" value="Complex: Eight Hi-Lo" />
           <attribute key="VTextAlign" value="center" />
@@ -28,15 +29,16 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 10, 6, 16, 7" font="small">
+      <element type="staticText" rect="relative: 10, 6, 16, 7" font="small" tooltip="The number of laps of the race">
         <attributes>
           <attribute key="Caption" value="Laps: " />
           <attribute key="HTextAlign" value="lowerright" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_label_laps" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 16, 6, 26, 7" font="small">
+      <element type="staticText" rect="relative: 16, 6, 26, 7" font="small" tooltip="The number of laps of the race">
         <attributes>
           <attribute key="Caption" value="3" />
           <attribute key="VTextAlign" value="center" />
@@ -44,7 +46,7 @@
         </attributes>
       </element>
       
-      <element type="tab" rect="relative: 1, 8, 50, 30" font="regular">
+      <element type="tab" rect="relative: 1, 8, 50, 30" font="regular" tooltip="The result of the race">
         <attributes>
           <attribute key="Name" value="tab_result" />
         </attributes>

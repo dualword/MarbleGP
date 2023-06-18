@@ -20,15 +20,16 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 1, 10, 10, 13">
+      <element type="staticText" rect="relative: 1, 10, 10, 13" tooltip="Name of the profile">
         <attributes>
           <attribute key="Caption" value="Profile Name:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_name" />
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 11, 10, 45, 13" font="huge">
+      <element type="editBox" rect="relative: 11, 10, 45, 13" font="huge" tooltip="Name of the profile">
         <attributes>
           <attribute key="Name" value="name" />
         </attributes>

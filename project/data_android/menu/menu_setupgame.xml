@@ -35,10 +35,11 @@
               <attribute key="Caption" value="Network Game:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
+              <attribute key="Name" value="label_network_game" />
             </attributes>
           </element>
           
-          <element type="Selector" rect="relative: 32, 1, 47, 3">
+          <element type="Selector" rect="relative: 32, 1, 47, 3" tooltip="Network Game">
             <attributes>
               <attribute key="Name" value="network_game" />
               <attribute key="Selected" value="0" />
@@ -58,7 +59,7 @@
             </attributes>
           </element>
           
-          <element type="Selector" rect="relative: 32, 12, 47, 14">
+          <element type="Selector" rect="relative: 32, 12, 47, 14" tooltip="Select the class of the AI marbles, i.e. how fast the AI Marbles are">
             <attributes>
               <attribute key="Name" value="raceclass" />
               <attribute key="Selected" value="0" />
@@ -77,7 +78,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 32, 4, 47, 6">
+          <element type="Selector" rect="relative: 32, 4, 47, 6" tooltip="Select the starting Order of the Races">
             <attributes>
               <attribute key="Name" value="starting_positions" />
               <attribute key="Selected" value="0" />
@@ -96,7 +97,7 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 17, 1, 19, 3">
+          <element type="DustbinCheckbox" rect="relative: 17, 1, 19, 3" tooltip="Reverse Starting Positions">
             <attributes>
               <attribute key="Name" value="reverse_grid" />
             </attributes>
@@ -111,7 +112,7 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 17, 4, 19, 6">
+          <element type="DustbinCheckbox" rect="relative: 17, 4, 19, 6" tooltip="Randomize Starting Positions of the First Race">
             <attributes>
               <attribute key="Name" value="randomize_first" />
             </attributes>
@@ -126,7 +127,7 @@
             </attributes>
           </element>          
           
-          <element type="DustbinCheckbox" rect="relative: 17, 9, 19, 11">
+          <element type="DustbinCheckbox" rect="relative: 17, 9, 19, 11" tooltip="Fill the Grid with AI Marbles">
             <attributes>
               <attribute key="Name" value="fillgrid_ai" />
             </attributes>
@@ -141,7 +142,7 @@
             </attributes>
           </element>          
           
-          <element type="Selector" rect="relative: 32, 9, 47, 11">
+          <element type="Selector" rect="relative: 32, 9, 47, 11" tooltip="Select the Grid Size">
             <attributes>
               <attribute key="Name" value="gridsize" />
               <attribute key="Selected" value="3" />
@@ -160,7 +161,7 @@
             </attributes>
           </element> 
           
-          <element type="Selector" rect="relative: 17, 18, 47, 20">
+          <element type="Selector" rect="relative: 17, 18, 47, 20" tooltip="When do you want the race to end?">
             <attributes>
               <attribute key="Name" value="race_finish" />
               <attribute key="Selected" value="0" />
