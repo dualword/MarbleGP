@@ -113,11 +113,30 @@ namespace dustbin {
     * @param a_cClip the clipping rectangle
     */
     void CHudAiHelp::render(const irr::core::position2di a_cPosition, const irr::core::recti &a_cClip) {
-      for (int i = 0; i < (int)enIcons::Count; i++) {
+      int l_iSteer[] = {
+        (int)enIcons::Left,
+        (int)enIcons::Right,
+        -1
+      };
+
+      for (int i = 0; l_iSteer[i] != -1; i++)
+        if (m_aIcons[l_iSteer[i]][(int)m_aState[i]] != nullptr)
+          m_pDrv->draw2DImage(m_aIcons[l_iSteer[i]][(int)m_aState[l_iSteer[i]]], m_aRects[l_iSteer[i]] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+
+      if (m_aState[(int)enIcons::Automatic] == enState::Active)
+        m_pDrv->draw2DImage(m_aIcons[(int)enIcons::Automatic][0], m_aRects[(int)enIcons::Automatic] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+      else if (m_aState[(int)enIcons::Forward] == enState::Active)
+        m_pDrv->draw2DImage(m_aIcons[(int)enIcons::Forward][0], m_aRects[(int)enIcons::Automatic] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+      else if (m_aState[(int)enIcons::Backward] == enState::Active)
+        m_pDrv->draw2DImage(m_aIcons[(int)enIcons::Backward][0], m_aRects[(int)enIcons::Automatic] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+      else
+        m_pDrv->draw2DImage(m_aIcons[(int)enIcons::Automatic][1], m_aRects[(int)enIcons::Automatic] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
+
+      /*for (int i = 0; i < (int)enIcons::Count; i++) {
         if (m_aIcons[i][(int)m_aState[i]] != nullptr) {
           m_pDrv->draw2DImage(m_aIcons[i][(int)m_aState[i]], m_aRects[i] + m_cOffset + a_cPosition, m_cSource, &a_cClip, nullptr, true);
         }
-      }
+      }*/
     }
   }
 }
