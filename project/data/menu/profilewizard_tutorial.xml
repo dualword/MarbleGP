@@ -17,6 +17,7 @@
         <attributes>
           <attribute key="Caption" value="Do you want to play a basic tutorial to get used to MarbleGP? You can start the tutorial later from the Profiles menu if you don't want to play it now." />
           <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       

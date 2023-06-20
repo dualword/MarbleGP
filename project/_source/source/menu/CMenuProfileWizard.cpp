@@ -820,7 +820,7 @@ namespace dustbin {
             m_pBtnBack->setVisible(m_eStep != enMenuStep::Initialize && m_eStep != enMenuStep::Name);
 
           if (m_pBtnNext != nullptr) {
-            bool l_bVisible = m_eStep != enMenuStep::Texture;
+            bool l_bVisible = true;
 
             if (m_eStep == enMenuStep::Name) {
               irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
@@ -1028,12 +1028,13 @@ namespace dustbin {
 
                 if (l_sButton == "cancel") {
                   if (m_pBtnCancel != nullptr && m_pBtnCancel->isVisible()) {
-                    if (m_eStep != enMenuStep::Tutorial)
-                      m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
-                    else {
+                    if (m_eStep == enMenuStep::Tutorial && m_sProfile == "commit_profile") {
                       prepareSetupGame();
                       m_pManager->pushToMenuStack("menu_selecttrack");
                       m_pManager->changeMenu(createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState));
+                    }
+                    else {
+                      m_pManager->changeMenu(createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState));
                     }
                   }
                 }
@@ -1108,8 +1109,7 @@ namespace dustbin {
                     case enMenuStep::Abbreviation: changeStep(enMenuStep::AiHelp      ); break;
                     case enMenuStep::AiHelp      : changeStep(enMenuStep::Controls    ); break;
                     case enMenuStep::Controls    : changeStep(enMenuStep::Texture     ); break;
-                    case enMenuStep::Texture     :
-                      break;
+                    case enMenuStep::Texture     : changeStep(enMenuStep::Tutorial    ); break;
 
                     case enMenuStep::Initialize  :
                       // This button is not visible here, so let's ignore it
