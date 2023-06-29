@@ -1225,6 +1225,10 @@ namespace dustbin {
                 l_iFastestTime = a_cRace.m_aResult[i].m_iFastest;
               }
 
+              if (a_cRace.m_aResult[i].m_iWithdrawn >= 0) {
+                (*it).m_iDidNotFinish++;
+              }
+
               break;
             }
           }
