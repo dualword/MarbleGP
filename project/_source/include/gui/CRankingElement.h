@@ -30,19 +30,13 @@ namespace dustbin {
         irr::video::SColor m_cBackground;   /**< The background color */
         irr::video::SColor m_cOriginal;     /**< The original background color */
         irr::video::SColor m_cTextColor;    /**< The text color */
-        irr::video::SColor m_cHlColor;      /**< The highlight color */
         irr::video::SColor m_cBotColor;     /**< The color to fade out the bot icon */
 
         irr::gui::IGUIFont *m_pFont;  /**< The font to use */
 
-        bool m_bHighLight;    /**< Highlight this player */
         bool m_bWithdrawn;    /**< did the player withdraw from the race (true) or finish normally (false)? */
         bool m_bVisible;      /**< Visibility flag */
 
-        irr::core::vector2di  m_cHighLight;   /**< The hightlight position */
-
-        std::vector<irr::core::line2di>  m_vHightLight;  /**< The highlight 3d lines for drawing */
-        irr::core::dimension2du          m_cHlSize;      /**< Size of the highlight */
         irr::video::ITexture            *m_pBotClass;    /**< Texture of the bot class */
 
         irr::video::SColor m_cNumberBack;   /**< The background color of the number icon */
@@ -76,12 +70,6 @@ namespace dustbin {
         * @param a_fAlpha the alpha value
         */
         void setAlpha(irr::f32 a_fAlpha);
-
-        /**
-        * Highlight this player (to mark the marble of the HUD in the starting grid)
-        * @para a_bHighLight Hightlight or don't
-        */
-        void highlight(bool a_bHighLight);
 
         /**
         * Set the item visible or invisible

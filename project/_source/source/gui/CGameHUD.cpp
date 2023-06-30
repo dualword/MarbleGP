@@ -262,7 +262,6 @@ namespace dustbin {
         for (int i = 0; i < 16; i++) {
           if (m_aRanking[i] != nullptr) {
             m_aRanking[i]->setAlpha(1.0f);
-            m_aRanking[i]->highlight (false);
             m_aRanking[i]->setVisible(false);
           }
         }
@@ -620,9 +619,6 @@ namespace dustbin {
           nullptr,
           a_pGui
         );
-
-        if ((*m_vRanking)[i]->m_iId == m_iMarble)
-          m_aRanking[i]->highlight(true);
 
         m_aRanking[i]->setData((
           *m_vRanking)[i]->m_sWName, 
