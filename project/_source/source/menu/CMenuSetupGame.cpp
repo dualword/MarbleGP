@@ -56,8 +56,10 @@ namespace dustbin {
 
         gui::CMenuButton *m_pOk;  /**< The OK button */
 
+#ifndef _ANDROID
         irr::gui::IGUITab        *m_pSelectCtrl;    /**< The root element of the "select controller" dialog */
         irr::gui::IGUIStaticText *m_pSelectName;    /**< The name element of the "select controller" dialog */
+#endif
 
         std::vector<irr::u8> m_vUsedJoysticks;
 
@@ -87,12 +89,14 @@ namespace dustbin {
             l_iNum++;
           }
 
+#ifndef _ANDROID
           if (m_pSelectCtrl != nullptr && m_pSelectName != nullptr && m_vAssignJoystick.size() > 0) {
             m_pSelectCtrl->setVisible(true);
 
             std::wstring s = L"Player " + helpers::s2ws(*m_vAssignJoystick.begin()) + L": Select your gamepad by clicking a button.";
             m_pSelectName->setText(s.c_str());
           }
+#endif
 
           if (m_pOk != nullptr)
             m_pOk->setVisible(m_vSelectedPlayers.size() > 0);
@@ -145,8 +149,10 @@ namespace dustbin {
           m_itAdd        (m_vPlayerUI.end()),
           m_pSelectPlayer(nullptr),
           m_pOk          (nullptr),
+#ifndef _ANDROID
           m_pSelectCtrl  (nullptr),
           m_pSelectName  (nullptr),
+#endif
           m_iAssigned    (-1)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
@@ -271,11 +277,15 @@ namespace dustbin {
           }
 
           m_pOk         = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_MenuButtonId    , m_pGui->getRootGUIElement()));
+
+#ifndef _ANDROID
           m_pSelectCtrl = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("selectctrl_dialog",                              irr::gui::EGUIET_TAB        , m_pGui->getRootGUIElement()));
           m_pSelectName = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player",                              irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+#endif
 
           updateSelectedPlayers();
 
+#ifndef _ANDROID
           if (m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
             for (std::vector<std::string>::iterator l_itName = m_vSelectedPlayers.begin(); l_itName != m_vSelectedPlayers.end(); l_itName++) {
               for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
@@ -298,6 +308,7 @@ namespace dustbin {
               }
             }
           }
+#endif
 
           std::string l_sGameSetup[] = {
             "label_gridpos",
@@ -487,6 +498,7 @@ namespace dustbin {
                 l_bRet = true;
               }
               else if (l_sSender == "CancelAssignJoystick") {
+#ifndef _ANDROID
                 if (m_vAssignJoystick.size() > 0 && m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
                   std::string l_sName = (*m_vAssignJoystick.begin());
 
@@ -510,6 +522,7 @@ namespace dustbin {
                     m_pSelectCtrl->setVisible(false);
                   }
                 }
+#endif
               } 
               else {
                 for (std::vector<gui::CMenuButton *>::iterator it = m_vSelectPlayer.begin(); it != m_vSelectPlayer.end(); it++) {
@@ -520,6 +533,7 @@ namespace dustbin {
                     updateSelectedPlayers();
                     checkAiElements();
 
+#ifndef _ANDROID
                     for (std::vector<data::SPlayerData>::iterator l_itPlr = m_vProfiles.begin(); l_itPlr != m_vProfiles.end(); l_itPlr++) {
                       for (auto l_sSelected: m_vSelectedPlayers) {
                         if (l_sSelected == (*l_itPlr).m_sName) {
@@ -539,6 +553,7 @@ namespace dustbin {
                         }
                       }
                     }
+#endif
 
                     if (m_pSelectPlayer != nullptr)
                       m_pSelectPlayer->setVisible(false);
@@ -654,6 +669,7 @@ namespace dustbin {
               }
             }
             else {
+#ifndef _ANDROID
               if (m_pSelectCtrl != nullptr && m_pSelectCtrl->isVisible() && m_vAssignJoystick.size() > 0) {
                 if (a_cEvent.JoystickEvent.ButtonStates != 0) {
                   m_iAssigned = a_cEvent.JoystickEvent.Joystick;
@@ -696,6 +712,7 @@ namespace dustbin {
                   }
                 }
               }
+#endif
             }
           }
 

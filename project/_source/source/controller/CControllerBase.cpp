@@ -18,7 +18,18 @@ namespace dustbin {
     const int c_iPov  = 31;
 
     /** Implementation of SCtrlInput */
-    CControllerBase::SCtrlInput::SCtrlInput() : m_sName(""), m_eType(enInputType::Key), m_eKey(irr::KEY_SPACE), m_iJoystick(0), m_iButton(0), m_iAxis(0), m_iPov(0xFFFF), m_iDirection(1), m_fValue(0.0f), m_bError(false) {
+    CControllerBase::SCtrlInput::SCtrlInput() :
+      m_sName     (""),
+      m_eType     (enInputType::Key),
+      m_eKey      (irr::KEY_SPACE),
+      m_iJoystick (0),
+      m_iButton   (0),
+      m_iAxis     (0),
+      m_iPov      (0xFFFF),
+      m_iDirection(1),
+      m_fValue    (0.0f),
+      m_bError    (false)
+    {
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(enInputType a_eType, const std::string& a_sName) : m_bError(false) {
@@ -383,7 +394,11 @@ namespace dustbin {
     void CControllerBase::resetJoystick() {
       if (usesJoystick()) {
         for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
+#ifdef _ANDROID
+          (*it).m_iJoystick = 0;
+#else
           (*it).m_iJoystick = 255;
+#endif
         }
       }
     }

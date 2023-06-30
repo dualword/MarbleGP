@@ -197,9 +197,6 @@ struct SJoystickInput {
         l_bRet = g_Consume;
       }
     }
-    
-    if (l_bRet && m_pDevice)
-      m_pDevice->postEventFromUser(m_cJoypadEvent);
 
     if (l_bPad && !m_bEventHandled) {
       dustbin::CGlobal::getInstance()->getSettingData().m_bMenuPad = true;
@@ -207,6 +204,11 @@ struct SJoystickInput {
     }
 
     return l_bRet;
+  }
+
+  void postJoystickEvent() {
+    if (m_pDevice)
+      m_pDevice->postEventFromUser(m_cJoypadEvent);
   }
 };
 
@@ -438,6 +440,8 @@ void android_main(struct android_app* a_pApp) {
         g_Restart = false;
         l_eState = dustbin::state::enState::Restart;
       }
+
+      g_cJoystickInput.postJoystickEvent();
     }
     while (l_eState != dustbin::state::enState::Restart && l_eState != dustbin::state::enState::Quit && !g_Quit);
 

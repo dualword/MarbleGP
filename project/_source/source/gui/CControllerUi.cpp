@@ -161,7 +161,7 @@ namespace dustbin {
                         m_pController->getInputs()[m_iWizard].m_eType      = controller::CControllerBase::enInputType::JoyAxis;
                         m_pController->getInputs()[m_iWizard].m_iAxis      = i;
                         m_pController->getInputs()[m_iWizard].m_iDirection = a_cEvent.JoystickEvent.Axis[i] > m_mJoysticks[m_iJoystick].m_iAxis[i] ? 1 : -1;
-                        m_mJoysticks[m_iJoystick].update(a_cEvent);
+
                         m_iNextSet = 0;
                         m_bSet = false;
                         break;
@@ -190,11 +190,12 @@ namespace dustbin {
                         m_bSet = false;
                       }
                     }
+                    m_mJoysticks[m_iJoystick].update(a_cEvent);
                   }
                 }
                 else {
                   if (m_mNeutral.find(a_cEvent.JoystickEvent.Joystick) != m_mNeutral.end() && m_mNeutral[a_cEvent.JoystickEvent.Joystick].hasChanged(a_cEvent)) {
-                    printf("Wait for joystick to return to neutral...\n");
+                    // printf("Wait for joystick to return to neutral...\n");
                   }
                   else {
                     if (m_iNextSet != -1) {
@@ -203,12 +204,6 @@ namespace dustbin {
                         m_iNextSet = -1;
                     }
 
-                    /*if (
-                      m_iNextSet == -1 &&
-                      (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyAxis   && std::abs(a_cEvent.JoystickEvent.Axis[m_pController->getInputs()[m_iWizard].m_iAxis]) < 1000) || 
-                      (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyButton && !a_cEvent.JoystickEvent.IsButtonPressed(m_pController->getInputs()[m_iWizard].m_iButton)) ||
-                      (m_pController->getInputs()[m_iWizard].m_eType == controller::CControllerBase::enInputType::JoyPov    && a_cEvent.JoystickEvent.POV == 0xFFFF)
-                    ) */
                     if (m_pController->getInputs()[m_iWizard].nextWizardStep(a_cEvent)) {
                       m_bError = false;
 
