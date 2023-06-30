@@ -149,7 +149,7 @@
       "comment": "A player has finished the race",
       "fields": [
         { "name": "MarbleId", "type": "irr::s32", "comment": "ID of the finished marble" },
-        { "name": "RaceTime", "type": "irr::u32", "comment": "Racetime of the finished player in simulation steps" },
+        { "name": "RaceTime", "type": "irr::s32", "comment": "Racetime of the finished player in simulation steps" },
         { "name": "Laps"    , "type": "irr::s32", "comment": "The number of laps the player has done" }
       ]
     },

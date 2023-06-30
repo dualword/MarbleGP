@@ -79,7 +79,7 @@ namespace dustbin {
     * @param a_RaceTime Racetime of the finished player in simulation steps
     * @param a_Laps The number of laps the player has done
     */
-    void CGameHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+    void CGameHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::s32 a_RaceTime, irr::s32 a_Laps) {
       int l_iId = a_MarbleId - 10000;
 
       printf("Player %i finished (%i)\n", l_iId, a_MarbleId);

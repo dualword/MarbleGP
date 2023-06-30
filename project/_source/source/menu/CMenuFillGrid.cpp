@@ -57,19 +57,19 @@ namespace dustbin {
           std::vector<std::tuple<std::string, std::string, std::string>> l_vAiPlayers;
 
           l_vAiPlayers.push_back(std::make_tuple("Tiberius Claudius"  , "Claud",  "1"));
-          l_vAiPlayers.push_back(std::make_tuple("Germanicus Caligula", "Calgl",  "2"));
+          l_vAiPlayers.push_back(std::make_tuple("Caracalla"          , "Carac",  "2"));
           l_vAiPlayers.push_back(std::make_tuple("Titus Domitianus"   , "Dmiti",  "3"));
           l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"        , "Dio  ",  "4"));
           l_vAiPlayers.push_back(std::make_tuple("Flavius Vespasianus", "Vspia",  "5"));
-          l_vAiPlayers.push_back(std::make_tuple("Lucius Lentulus"    , "LuLen",  "6"));
+          l_vAiPlayers.push_back(std::make_tuple("Pertinax"           , "Pertx",  "6"));
           l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus"   , "FlJos",  "7"));
           l_vAiPlayers.push_back(std::make_tuple("Gaius Octavius"     , "Gaius",  "8"));
           l_vAiPlayers.push_back(std::make_tuple("Porcius Cato"       , "Cato" ,  "9"));
           l_vAiPlayers.push_back(std::make_tuple("Marcus Aurelius"    , "Aurel", "10"));
-          l_vAiPlayers.push_back(std::make_tuple("Caligula"           , "Clgla", "11"));
+          l_vAiPlayers.push_back(std::make_tuple("Caligula"           , "Calgl", "11"));
           l_vAiPlayers.push_back(std::make_tuple("Aurelius Commodus"  , "Comod", "12"));
           l_vAiPlayers.push_back(std::make_tuple("Claudius Augustus"  , "Nero" , "13"));
-          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus"   , "Pl2nd", "14"));
+          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus"   , "Plnus", "14"));
           l_vAiPlayers.push_back(std::make_tuple("Septimius Severus"  , "Sever", "15"));
           l_vAiPlayers.push_back(std::make_tuple("Quintus Scipio"     , "Qints", "16"));
 

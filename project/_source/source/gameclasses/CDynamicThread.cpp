@@ -1000,6 +1000,7 @@ namespace dustbin {
             }
 
             sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+            printf("Withdraw@dynamics: %i, pos: %i\n", l_pPlayer->m_iId, l_pPlayer->m_iPos);
             sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
 
             if (m_pLuaScript != nullptr) {

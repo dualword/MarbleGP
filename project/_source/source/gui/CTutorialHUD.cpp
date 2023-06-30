@@ -228,7 +228,7 @@ namespace dustbin {
     * @param a_RaceTime Racetime of the finished player in simulation steps
     * @param a_Laps The number of laps the player has done
     */
-    void CTutorialHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+    void CTutorialHUD::onPlayerfinished(irr::s32 a_MarbleId, irr::s32 a_RaceTime, irr::s32 a_Laps) {
       CGameHUD::onPlayerfinished(a_MarbleId, a_RaceTime, a_Laps);
 
       if (m_mHints.find(8) != m_mHints.end()) {

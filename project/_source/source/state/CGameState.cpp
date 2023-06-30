@@ -1516,7 +1516,7 @@ namespace dustbin {
      * @param a_RaceTime Racetime of the finished player in simulation steps
      * @param a_Laps The number of laps the player has done
      */
-    void CGameState::onPlayerfinished(irr::s32 a_MarbleId, irr::u32 a_RaceTime, irr::s32 a_Laps) {
+    void CGameState::onPlayerfinished(irr::s32 a_MarbleId, irr::s32 a_RaceTime, irr::s32 a_Laps) {
       if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
         irr::s32 l_iIndex = a_MarbleId - 10000;
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
@@ -1719,6 +1719,19 @@ namespace dustbin {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->onluamessage(a_NumberOne, a_NumberTwo, a_Data);
     }
+    /**
+    * Update the race positions
+    */
+    void CGameState::updateRacePositions() {
+      std::sort(m_vPosition.begin(), m_vPosition.end(), [](gameclasses::SPlayer* p1, gameclasses::SPlayer* p2) {
+        if (p1->m_iPosition != p2->m_iPosition)
+          return p1->m_iPosition < p2->m_iPosition;
+        else if (p1->m_pMarble->m_pPlayer->m_bWithdrawn != p2->m_pMarble->m_pPlayer->m_bWithdrawn)
+          return !p1->m_bWithdrawn;
+        else
+          return p1->m_iLastPosUpdate > p2->m_iLastPosUpdate;
+        });
+    }
 
     /**
     * This function receives messages of type "RacePosition"
@@ -1735,12 +1748,7 @@ namespace dustbin {
         m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffAhead     = a_DeficitAhead;
         m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffLeader    = a_DeficitLeader;
 
-        std::sort(m_vPosition.begin(), m_vPosition.end(), [](gameclasses::SPlayer* p1, gameclasses::SPlayer* p2) {
-          if (p1->m_iPosition != p2->m_iPosition)
-            return p1->m_iPosition < p2->m_iPosition;
-          else
-            return p1->m_iLastPosUpdate > p2->m_iLastPosUpdate;
-        });
+        updateRacePositions();
 
         for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
           if (it->second.m_pHUD != nullptr) {
@@ -1767,6 +1775,8 @@ namespace dustbin {
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         m_aMarbles[l_iIndex]->m_pPlayer->m_bWithdrawn = true;
       }
+
+      updateRacePositions();
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++)
         if (it->second.m_pHUD != nullptr)
