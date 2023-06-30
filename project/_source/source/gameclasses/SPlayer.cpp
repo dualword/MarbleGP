@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <gui/CButtonRenderer.h>
 #include <gameclasses/SPlayer.h>
 
 namespace dustbin {
@@ -88,12 +89,9 @@ namespace dustbin {
         l_mParams = helpers::parseParameters(l_sType, helpers::createDefaultTextureString(helpers::ws2s(m_sNumber), 0));
       }
 
-      if (helpers::findTextureParameter(l_mParams, "numbercolor" ) != "") helpers::fillColorFromString(m_cText, helpers::findTextureParameter(l_mParams, "numbercolor" ));
-      if (helpers::findTextureParameter(l_mParams, "numberback"  ) != "") helpers::fillColorFromString(m_cBack, helpers::findTextureParameter(l_mParams, "numberback"  ));
-      if (helpers::findTextureParameter(l_mParams, "numberborder") != "") helpers::fillColorFromString(m_cBack, helpers::findTextureParameter(l_mParams, "numberborder"));
-
-      m_cBack.setAlpha(0x80);
-      m_cFrme.setAlpha(0x80);
+      if (helpers::findTextureParameter(l_mParams, "numbercolor") != "") helpers::fillColorFromString(m_cText, helpers::findTextureParameter(l_mParams, "numbercolor"));
+      if (helpers::findTextureParameter(l_mParams, "numberback" ) != "") helpers::fillColorFromString(m_cBack, helpers::findTextureParameter(l_mParams, "numberback" ));
+      if (helpers::findTextureParameter(l_mParams, "ringcolor"  ) != "") helpers::fillColorFromString(m_cFrme, helpers::findTextureParameter(l_mParams, "ringcolor"  ));
     }
 
     void SPlayer::setName(const std::string& a_sName) {

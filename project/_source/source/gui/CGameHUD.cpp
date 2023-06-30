@@ -624,7 +624,14 @@ namespace dustbin {
         if ((*m_vRanking)[i]->m_iId == m_iMarble)
           m_aRanking[i]->highlight(true);
 
-        m_aRanking[i]->setData((*m_vRanking)[i]->m_sWName, 0, (*m_vRanking)[i]->m_bWithdrawn);
+        m_aRanking[i]->setData((
+          *m_vRanking)[i]->m_sWName, 
+          0, 
+          (*m_vRanking)[i]->m_bWithdrawn, 
+          (*m_vRanking)[i]->m_cBack, 
+          (*m_vRanking)[i]->m_cText, 
+          (*m_vRanking)[i]->m_cFrme,
+          (*m_vRanking)[i]->m_pMarble->m_pPlayer->m_sNumber);
 
         if (i == (m_iPlayers / 2) - 1)
           l_iOffsetY = 0;
@@ -1062,7 +1069,7 @@ namespace dustbin {
       int l_iIndex = 0;
       for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         if (m_aRanking[l_iIndex] != nullptr) {
-          m_aRanking[l_iIndex]->setData((*it)->m_sWName, (*it)->m_iDiffLeader, (*it)->m_bWithdrawn);
+          m_aRanking[l_iIndex]->setData((*it)->m_sWName, (*it)->m_iDiffLeader, (*it)->m_bWithdrawn, (*it)->m_cBack, (*it)->m_cText, (*it)->m_cFrme, (*it)->m_pMarble->m_pPlayer->m_sNumber);
         }
         l_iIndex++;
       }

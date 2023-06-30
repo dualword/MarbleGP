@@ -30,8 +30,9 @@ namespace dustbin {
         * Render the button-style background
         * @param a_cRect the rectangle to render to
         * @param a_cColor the background color
+        * @param a_cBorder the border color
         */
-        void renderBackground(const irr::core::recti& a_cRect, const irr::video::SColor &a_cColor);
+        void renderBackground(const irr::core::recti& a_cRect, const irr::video::SColor &a_cColor, irr::video::SColor *a_pBorder = nullptr);
     };
   }
 }

@@ -19,7 +19,7 @@ namespace dustbin {
     * @param a_cRect the rectangle to render to
     * @param a_cColor the background color
     */
-    void CButtonRenderer::renderBackground(const irr::core::recti& a_cRect, const irr::video::SColor& a_cColor) {
+    void CButtonRenderer::renderBackground(const irr::core::recti& a_cRect, const irr::video::SColor& a_cColor, irr::video::SColor *a_pBorder) {
       int l_iHeight = a_cRect.getHeight();
       int l_iBorder = m_iBorder;
       int l_iRaster = m_iRaster;
@@ -79,12 +79,12 @@ namespace dustbin {
         int l_iY = a_cRect.UpperLeftCorner.Y + y;
 
         if (y < l_iBorder || y > l_iHeight - l_iBorder) {
-          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1, l_iY), irr::core::vector2di(l_iRight1, l_iY), m_cBorder);
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1, l_iY), irr::core::vector2di(l_iRight1, l_iY), a_pBorder != nullptr ? *a_pBorder : m_cBorder);
         }
         else {
-          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1 , l_iY), irr::core::vector2di(l_iLeft2 , l_iY), m_cBorder);
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1 , l_iY), irr::core::vector2di(l_iLeft2 , l_iY), a_pBorder != nullptr ? *a_pBorder : m_cBorder);
           m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft2 , l_iY), irr::core::vector2di(l_iRight1, l_iY), a_cColor);
-          m_pDrv->draw2DLine(irr::core::vector2di(l_iRight1, l_iY), irr::core::vector2di(l_iRight2, l_iY), m_cBorder);
+          m_pDrv->draw2DLine(irr::core::vector2di(l_iRight1, l_iY), irr::core::vector2di(l_iRight2, l_iY), a_pBorder != nullptr ? *a_pBorder : m_cBorder);
         }
       }
     }

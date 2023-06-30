@@ -45,6 +45,14 @@ namespace dustbin {
         irr::core::dimension2du          m_cHlSize;      /**< Size of the highlight */
         irr::video::ITexture            *m_pBotClass;    /**< Texture of the bot class */
 
+        irr::video::SColor m_cNumberBack;   /**< The background color of the number icon */
+        irr::video::SColor m_cNumberText;   /**< The text color of the number icon */
+        irr::video::SColor m_cNumberFrame;  /**< The border color of the number icon */
+
+        irr::core::recti m_cNumberRect;     /**< The rectangle for the number icon */
+
+        std::wstring m_sNumber;     /**< The number to show in the number icon */
+
       public:
         CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui);
         virtual ~CRankingElement();
@@ -54,8 +62,12 @@ namespace dustbin {
         * @param a_sName name of the player
         * @param a_iDeficit deficit to the leader
         * @param a_bWithdrawn did the player withdraw from the race (true) or finish normally (false)?
+        * @param a_cBack the background color of the number icon
+        * @param a_cNumber the number color of the number icon
+        * @param a_cFrame the frame color of the number icon
+        * @param a_sNumber the starting number for the number icon
         */
-        void setData(const std::wstring &a_sName, int a_iDeficit, bool a_bWithdrawn);
+        void setData(const std::wstring &a_sName, int a_iDeficit, bool a_bWithdrawn, const irr::video::SColor &a_cBack, const irr::video::SColor &a_cNumber, const irr::video::SColor &a_cFrame, const std::wstring &a_sNumber);
 
         void draw();
 

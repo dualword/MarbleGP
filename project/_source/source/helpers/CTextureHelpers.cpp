@@ -70,9 +70,14 @@ namespace dustbin {
       char* l_pEnd = nullptr;
 
       a_cColor.setAlpha(0xFF);
-      a_cColor.setRed(strtol(a_sColor.substr(0, 2).c_str(), &l_pEnd, 16));
-      a_cColor.setGreen(strtol(a_sColor.substr(2, 2).c_str(), &l_pEnd, 16));
-      a_cColor.setBlue(strtol(a_sColor.substr(4, 2).c_str(), &l_pEnd, 16));
+
+      irr::u32 l_iRed   = strtol(a_sColor.substr(0, 2).c_str(), &l_pEnd, 16);
+      irr::u32 l_iGreen = strtol(a_sColor.substr(2, 2).c_str(), &l_pEnd, 16);
+      irr::u32 l_iBlue  = strtol(a_sColor.substr(4, 2).c_str(), &l_pEnd, 16);
+
+      a_cColor.setRed  (l_iRed);
+      a_cColor.setGreen(l_iGreen);
+      a_cColor.setBlue (l_iBlue);
     }
 
     /**

@@ -40,13 +40,12 @@ namespace dustbin {
       irr::video::SColor m_cBack;   /**< The background color (for the starting number in the ranking display) */
       irr::video::SColor m_cFrme;   /**< The frame color (for the starting number in the ranking display) */
 
-      data::enPlayerType m_eType;
+      data::enPlayerType m_eType;   /**< The type of player (local, AI, network) */
 
-      data::SPlayerData::enAiHelp m_eAiHelp;
+      data::SPlayerData::enAiHelp m_eAiHelp;    /**< The AI help level of this player */
 
-      gameclasses::SMarbleNodes *m_pMarble;  /**< The marble of the player */
-
-      controller::IController* m_pController;
+      gameclasses::SMarbleNodes *m_pMarble;       /**< The marble of the player */
+      controller::IController   *m_pController;   /**< The controller of this player */
 
       /**
       * The default constructor

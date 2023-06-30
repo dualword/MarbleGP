@@ -19,7 +19,8 @@ namespace dustbin {
       m_bHighLight (false),
       m_bWithdrawn (false),
       m_bVisible   (true),
-      m_pBotClass  (nullptr)
+      m_pBotClass  (nullptr),
+      m_sNumber    (L"")
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
@@ -46,7 +47,7 @@ namespace dustbin {
       l_cDimDeficit.Width  = 3 * l_cDimDeficit.Width / 2;
       l_cDimDeficit.Height = a_cRect.getHeight();
 
-      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width, a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X, a_cRect.LowerRightCorner.Y);
+      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width - m_cRect.getHeight(), a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X - m_cRect.getHeight(), a_cRect.LowerRightCorner.Y);
 
       m_iDeficit = 0;
 
@@ -70,6 +71,8 @@ namespace dustbin {
       }
 
       m_cHighLight = irr::core::vector2di(m_cName.LowerRightCorner.X - m_cName.getHeight(), m_cName.UpperLeftCorner.Y);
+
+      m_cNumberRect = irr::core::recti(m_cRect.LowerRightCorner.X - m_cRect.getHeight() + 2 * m_iBorder, m_cRect.UpperLeftCorner.Y + 2 * m_iBorder, m_cRect.LowerRightCorner.X - 2 * m_iBorder, m_cRect.LowerRightCorner.Y - 2 * m_iBorder);
     }
 
     CRankingElement::~CRankingElement() {
@@ -78,10 +81,16 @@ namespace dustbin {
 
     /**
     * Update the data
+    * Update the data
     * @param a_sName name of the player
     * @param a_iDeficit deficit to the leader
+    * @param a_bWithdrawn did the player withdraw from the race (true) or finish normally (false)?
+    * @param a_cBack the background color of the number icon
+    * @param a_cNumber the number color of the number icon
+    * @param a_cFFrame the frame color of the number icon
+    * @param a_sNumber the starting number for the number icon
     */
-    void CRankingElement::setData(const std::wstring& a_sName, int a_iDeficit, bool a_bWithdrawn) {
+    void CRankingElement::setData(const std::wstring& a_sName, int a_iDeficit, bool a_bWithdrawn, const irr::video::SColor &a_cBack, const irr::video::SColor &a_cNumber, const irr::video::SColor &a_cFrame, const std::wstring &a_sNumber) {
       std::wstring l_sName = a_sName;
 
       if (l_sName.find_last_of(L'|') != std::wstring::npos) {
@@ -95,9 +104,14 @@ namespace dustbin {
       }
       else m_pBotClass = nullptr;
 
-      m_sName      = helpers::fitString(l_sName, m_pFont, irr::core::dimension2du(m_cName.getWidth(), m_cName.getHeight()));
-      m_iDeficit   = a_iDeficit;
-      m_bWithdrawn = a_bWithdrawn;
+      m_sName       = helpers::fitString(l_sName, m_pFont, irr::core::dimension2du(m_cName.getWidth(), m_cName.getHeight()));
+      m_iDeficit    = a_iDeficit;
+      m_bWithdrawn  = a_bWithdrawn;
+
+      m_cNumberBack  = a_cBack;
+      m_cNumberText  = a_cNumber;
+      m_cNumberFrame = a_cFrame;
+      m_sNumber      = a_sNumber;
     }
 
     void CRankingElement::draw() {
@@ -134,6 +148,9 @@ namespace dustbin {
             m_pDrv->draw2DLine(l_cPos + (*it).start, l_cPos + (*it).end, m_cHlColor);
           }
         }
+
+        renderBackground(m_cNumberRect, m_cNumberBack, &m_cNumberFrame);
+        m_pFont->draw(m_sNumber.c_str(), m_cNumberRect, m_cNumberText, true, true, &m_cNumberRect);
       }
     }
 
@@ -145,11 +162,14 @@ namespace dustbin {
     void CRankingElement::setAlpha(irr::f32 a_fAlpha) {
       m_cBackground = m_cOriginal;
       irr::u32 l_iAlpha = (irr::u32)(((irr::f32)m_cOriginal.getAlpha()) * a_fAlpha);
-      m_cBackground.setAlpha(l_iAlpha);
-      m_cBorder    .setAlpha((irr::u32)(255.0f * a_fAlpha));
-      m_cTextColor .setAlpha((irr::u32)(255.0f * a_fAlpha));
-      m_cHlColor   .setAlpha((irr::u32)(232.0f * a_fAlpha));
-      m_cBotColor  .setAlpha((irr::u32)(232.0f * a_fAlpha));
+      m_cBackground .setAlpha(l_iAlpha);
+      m_cBorder     .setAlpha((irr::u32)(255.0f * a_fAlpha));
+      m_cTextColor  .setAlpha((irr::u32)(255.0f * a_fAlpha));
+      m_cHlColor    .setAlpha((irr::u32)(232.0f * a_fAlpha));
+      m_cBotColor   .setAlpha((irr::u32)(232.0f * a_fAlpha));
+      m_cNumberBack .setAlpha((irr::u32)(232.0f * a_fAlpha));
+      m_cNumberText .setAlpha((irr::u32)(232.0f * a_fAlpha));
+      m_cNumberFrame.setAlpha((irr::u32)(232.0f * a_fAlpha));
     }
 
     /**
