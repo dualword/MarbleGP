@@ -56,22 +56,22 @@ namespace dustbin {
           // Tuple: "Name", "Short Name", "Texture Index"
           std::vector<std::tuple<std::string, std::string, std::string>> l_vAiPlayers;
 
-          l_vAiPlayers.push_back(std::make_tuple("Marcus Nerva"          , "Nerva",  "1"));
-          l_vAiPlayers.push_back(std::make_tuple("Titus Vibius"          , "Vibin",  "2"));
-          l_vAiPlayers.push_back(std::make_tuple("Aemilius Lepidus"      , "AeLep",  "3"));
-          l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"           , "CaDio",  "4"));
-          l_vAiPlayers.push_back(std::make_tuple("Cornelius Maluginensis", "CoMal",  "5"));
-          l_vAiPlayers.push_back(std::make_tuple("Lucius Lentulus"       , "LuLen",  "6"));
-          l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus"      , "FlJos",  "7"));
-          l_vAiPlayers.push_back(std::make_tuple("Quintus Amatianus"     , "QuAma",  "8"));
-          l_vAiPlayers.push_back(std::make_tuple("Ulpius Traianus"       , "UlTra",  "9"));
-          l_vAiPlayers.push_back(std::make_tuple("Valerius Messalla"     , "VaMes", "10"));
-          l_vAiPlayers.push_back(std::make_tuple("Pomponius Silvanus"    , "PoSil", "11"));
-          l_vAiPlayers.push_back(std::make_tuple("Ranius Festus"         , "RanFe", "12"));
-          l_vAiPlayers.push_back(std::make_tuple("Iunius Caepio"         , "Iunis", "13"));
-          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus"      , "Pl2nd", "14"));
-          l_vAiPlayers.push_back(std::make_tuple("Claudius Caecus"       , "ClaCa", "15"));
-          l_vAiPlayers.push_back(std::make_tuple("Barbatus Scipio"       , "Barba", "16"));
+          l_vAiPlayers.push_back(std::make_tuple("Tiberius Claudius"  , "Claud",  "1"));
+          l_vAiPlayers.push_back(std::make_tuple("Germanicus Caligula", "Calgl",  "2"));
+          l_vAiPlayers.push_back(std::make_tuple("Titus Domitianus"   , "Dmiti",  "3"));
+          l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"        , "Dio  ",  "4"));
+          l_vAiPlayers.push_back(std::make_tuple("Flavius Vespasianus", "Vspia",  "5"));
+          l_vAiPlayers.push_back(std::make_tuple("Lucius Lentulus"    , "LuLen",  "6"));
+          l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus"   , "FlJos",  "7"));
+          l_vAiPlayers.push_back(std::make_tuple("Gaius Octavius"     , "Gaius",  "8"));
+          l_vAiPlayers.push_back(std::make_tuple("Porcius Cato"       , "Cato" ,  "9"));
+          l_vAiPlayers.push_back(std::make_tuple("Marcus Aurelius"    , "Aurel", "10"));
+          l_vAiPlayers.push_back(std::make_tuple("Caligula"           , "Clgla", "11"));
+          l_vAiPlayers.push_back(std::make_tuple("Aurelius Commodus"  , "Comod", "12"));
+          l_vAiPlayers.push_back(std::make_tuple("Claudius Augustus"  , "Nero" , "13"));
+          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus"   , "Pl2nd", "14"));
+          l_vAiPlayers.push_back(std::make_tuple("Septimius Severus"  , "Sever", "15"));
+          l_vAiPlayers.push_back(std::make_tuple("Quintus Scipio"     , "Qints", "16"));
 
           data::SRacePlayers l_cPlayers = data::SRacePlayers();
           l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
