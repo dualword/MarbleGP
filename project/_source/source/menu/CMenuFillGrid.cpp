@@ -53,25 +53,25 @@ namespace dustbin {
           data::SGameSettings l_cSettings = data::SGameSettings();
           l_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
 
-          // Tuple: "Name", "Short Name", "Texture Index"
-          std::vector<std::tuple<std::string, std::string, std::string>> l_vAiPlayers;
+          // Tuple: "Name", "Short Name", "Texture Index", "Preferred Class One", "Preferred class Two"
+          std::vector<std::tuple<std::string, std::string, std::string, int, int>> l_vAiPlayers;
 
-          l_vAiPlayers.push_back(std::make_tuple("Tiberius Claudius", "Claud",  "1"));
-          l_vAiPlayers.push_back(std::make_tuple("Caracalla"        , "Carac",  "2"));
-          l_vAiPlayers.push_back(std::make_tuple("Titus Domitianus" , "Dmiti",  "3"));
-          l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"      , "Dio  ",  "4"));
-          l_vAiPlayers.push_back(std::make_tuple("Vespasianus"      , "Vspia",  "5"));
-          l_vAiPlayers.push_back(std::make_tuple("Pertinax"         , "Pertx",  "6"));
-          l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus" , "FlJos",  "7"));
-          l_vAiPlayers.push_back(std::make_tuple("Gaius Octavius"   , "Gaius",  "8"));
-          l_vAiPlayers.push_back(std::make_tuple("Porcius Cato"     , "Cato" ,  "9"));
-          l_vAiPlayers.push_back(std::make_tuple("Marcus Aurelius"  , "Aurel", "10"));
-          l_vAiPlayers.push_back(std::make_tuple("Caligula"         , "Calgl", "11"));
-          l_vAiPlayers.push_back(std::make_tuple("Commodus"         , "Comod", "12"));
-          l_vAiPlayers.push_back(std::make_tuple("Nero"             , "Nero" , "13"));
-          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus" , "Plnus", "14"));
-          l_vAiPlayers.push_back(std::make_tuple("Septimius Severus", "Sever", "15"));
-          l_vAiPlayers.push_back(std::make_tuple("Quintus Scipio"   , "Qints", "16"));
+          l_vAiPlayers.push_back(std::make_tuple("Tiberius Claudius", "Claud",  "1", 0, 1));
+          l_vAiPlayers.push_back(std::make_tuple("Caracalla"        , "Carac",  "2", 0, 1));
+          l_vAiPlayers.push_back(std::make_tuple("Titus Domitianus" , "Dmiti",  "3", 2, 3));
+          l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"      , "Dio  ",  "4", 0, 1));
+          l_vAiPlayers.push_back(std::make_tuple("Vespasianus"      , "Vspia",  "5", 1, 2));
+          l_vAiPlayers.push_back(std::make_tuple("Pertinax"         , "Pertx",  "6", 2, 3));
+          l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus" , "FlJos",  "7", 0, 1));
+          l_vAiPlayers.push_back(std::make_tuple("Gaius Octavius"   , "Gaius",  "8", 1, 2));
+          l_vAiPlayers.push_back(std::make_tuple("Porcius Cato"     , "Cato" ,  "9", 2, 3));
+          l_vAiPlayers.push_back(std::make_tuple("Marcus Aurelius"  , "Aurel", "10", 0, 1));
+          l_vAiPlayers.push_back(std::make_tuple("Caligula"         , "Calgl", "11", 1, 2));
+          l_vAiPlayers.push_back(std::make_tuple("Commodus"         , "Comod", "12", 2, 3));
+          l_vAiPlayers.push_back(std::make_tuple("Nero"             , "Nero" , "13", 1, 2));
+          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus" , "Plnus", "14", 0, 1));
+          l_vAiPlayers.push_back(std::make_tuple("Septimius Severus", "Sever", "15", 2, 3));
+          l_vAiPlayers.push_back(std::make_tuple("Quintus Scipio"   , "Qints", "16", 1, 2));
 
           data::SRacePlayers l_cPlayers = data::SRacePlayers();
           l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
@@ -130,8 +130,6 @@ namespace dustbin {
             std::default_random_engine l_cRe { l_cRd() };
             std::shuffle(l_vAiPlayers.begin(), l_vAiPlayers.end(), l_cRe);
 
-            std::vector<std::tuple<std::string, std::string, std::string>>::iterator l_itAi = l_vAiPlayers.begin();
-
             std::vector<std::string> l_vAiClass;
 
             int l_iAiPlayers = l_iGridSize - (int)l_cPlayers.m_vPlayers.size();
@@ -173,6 +171,27 @@ namespace dustbin {
             std::shuffle(l_vAiClass.begin(), l_vAiClass.end(), l_cRe);
 
             while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
+              std::vector<std::tuple<std::string, std::string, std::string, int, int>>::iterator l_itAi = l_vAiPlayers.end();
+
+              int l_iAiClass = *l_vAiClass.begin() == "marblegp" ? 0 : *l_vAiClass.begin() == "marble2" ? 1 : 2;
+
+              for (l_itAi = l_vAiPlayers.begin(); l_itAi != l_vAiPlayers.end(); l_itAi++) {
+                if (std::get<3>(*l_itAi) == l_iAiClass) {
+                  break;
+                }
+              }
+
+              if (l_itAi == l_vAiPlayers.end()) {
+                for (l_itAi = l_vAiPlayers.begin(); l_itAi != l_vAiPlayers.end(); l_itAi++) {
+                  if (std::get<4>(*l_itAi) == l_iAiClass) {
+                    break;
+                  }
+                }
+              }
+
+              if (l_itAi == l_vAiPlayers.end())
+                l_itAi = l_vAiPlayers.begin();
+
               l_iCount++;
 
               data::SPlayerData l_cData;
@@ -184,7 +203,7 @@ namespace dustbin {
               l_cData.m_sShortName = std::get<1>(*l_itAi);
               l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
               l_cData.m_sControls  = "class=" + (*l_vAiClass.begin());
-              l_cData.m_sTexture   = helpers::createDefaultTextureString(std::get<2>(*l_itAi), *l_vAiClass.begin() == "marblegp" ? 0 : *l_vAiClass.begin() == "marble2" ? 1 : 2) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_sTexture   = helpers::createDefaultTextureString(std::get<2>(*l_itAi), l_iAiClass) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
 
               l_vAiClass.erase(l_vAiClass.begin());
 
@@ -197,7 +216,7 @@ namespace dustbin {
                 m_pServer->getInputQueue()->postMessage(&l_cPlayer);
               }
 
-              l_itAi++;
+              l_vAiPlayers.erase(l_itAi);
             }
 
             printf(".\n");
