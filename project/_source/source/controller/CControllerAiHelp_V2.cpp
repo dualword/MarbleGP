@@ -207,7 +207,7 @@ namespace dustbin {
             draw2dDebugLine(l_cSpecial, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
 
           irr::core::vector2df v;
-          if (l_cSpecial.intersectWith(irr::core::line2df(irr::core::vector2df(0.0f), l_cVelocity2d), v)) {
+          if (l_cSpecial.intersectWith(irr::core::line2df(irr::core::vector2df(0.0f), l_cVelocity2d), v) && l_pSpecial->m_pParent->m_pParent->m_fBestVel > 0.0f) {
             if (l_cVelocity2d.getLength() < 0.95f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
               a_iCtrlY = 127;
               a_bBrake = false;
