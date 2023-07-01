@@ -258,6 +258,10 @@ namespace dustbin {
               irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
               if (l_pBot != nullptr)
                 l_pBot->setVisible(false);
+
+              irr::gui::IGUIStaticText *l_pStartingNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, p));
+              if (l_pStartingNumber != nullptr)
+                l_pStartingNumber->setVisible(false);
             }
             else {
               printf("Menu for player #%i not found.\n", i + 1);
@@ -657,7 +661,7 @@ namespace dustbin {
                     (*l_itElement)->setVisible(l_bVisible);
                   }
                 }
-                else printf("Unkown selector \"%s\"\n", l_sSender.c_str());
+                else printf("Unknown selector \"%s\"\n", l_sSender.c_str());
               }
               else printf("Scrollbar is not a selector!\n");
             }

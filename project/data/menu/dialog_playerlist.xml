@@ -25,6 +25,15 @@
         </attributes>
       </element>
       
+      <element type="staticText" rect="relative: 27, 1, 29, 3" font="regular">
+        <attributes>
+          <attribute key="Name" value="starting_number" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="Caption" value="66" />
+        </attributes>
+      </element>
+      
       <element type="image" rect="relative: 31, 0, 35, 4" font="small" tooltip="AI Class">
         <attributes>
           <attribute key="Name" value="ai_class" />

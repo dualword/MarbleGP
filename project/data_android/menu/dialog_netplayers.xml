@@ -17,6 +17,15 @@
         </attributes>
       </element>
       
+      <element type="staticText" rect="relative: 17, 0, 19, 2" font="small">
+        <attributes>
+          <attribute key="Name" value="starting_number" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="Caption" value="66" />
+        </attributes>
+      </element>
+      
       <element type="image" rect="relative: 20, 0, 22, 2" font="small" tooltip="AI Class of the player (if it's a computer controlled marble)">
         <attributes>
           <attribute key="Name" value="ai_class" />
@@ -28,7 +37,7 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="relative: 5, 0, 19, 2" font="regular" tooltip="The name of the player">
+      <element type="staticText" rect="relative: 5, 0, 16, 2" font="regular" tooltip="The name of the player">
         <attributes>
           <attribute key="Name" value="player_name" />
           <attribute key="Caption" value="Mr. Nukular" />
