@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
+#include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
@@ -127,6 +128,10 @@ namespace dustbin {
 
             int l_iPos = 1;
 
+            data::SRacePlayers l_cPlayers;
+            std::string l_sPlayers = CGlobal::getInstance()->getGlobal("raceplayers");
+            l_cPlayers.deserialize(l_sPlayers);
+
             for (std::vector<data::SChampionshipPlayer>::iterator it = l_vStandings.begin(); it != l_vStandings.end(); it++) {
               l_cRowPos.Y += l_iHeight;
               l_cColPos = l_cRowPos;
@@ -135,7 +140,7 @@ namespace dustbin {
 
               m_vTable.push_back(std::vector<irr::gui::IGUIStaticText *>());
 
-              irr::core::dimension2du l_cDim = irr::core::dimension2du(25 * l_iWidth / 100, l_iHeight);
+              irr::core::dimension2du l_cDim = irr::core::dimension2du(25 * l_iWidth / 100 - 5 * l_iHeight / 2, l_iHeight);
               std::wstring l_sName   = helpers::s2ws((*it).m_sName);
               int l_iAi = -1;
 
@@ -163,7 +168,7 @@ namespace dustbin {
                   std::get<2>(l_tColumn) == enColumn::Dnf     ? std::to_wstring((*it).m_iDidNotFinish) + L" " : L"";
                 ;
 
-                if (std::get<2>(l_tColumn) != enColumn::Positions && std::get<2>(l_tColumn) != enColumn::AiClass) {
+                if (std::get<2>(l_tColumn) != enColumn::Positions && std::get<2>(l_tColumn) != enColumn::AiClass && std::get<2>(l_tColumn) != enColumn::Name) {
                   irr::gui::IGUIStaticText *p = m_pGui->addStaticText(l_sText.c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100, l_iHeight)), true, true);
                   p->setTextAlignment(std::get<4>(l_tColumn), irr::gui::EGUIA_CENTER);
                   p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
@@ -182,6 +187,53 @@ namespace dustbin {
                     }
                   }
                   else m_vTable.back().push_back(p);
+
+                  l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
+                }
+                else if (std::get<2>(l_tColumn) == enColumn::Name) {
+                  irr::core::recti l_cRect = irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100 - 3 * l_iHeight / 2, l_iHeight));
+
+                  std::wstring s = helpers::fitString(l_sText, l_pRegular, irr::core::dimension2du(l_cRect.getSize()));
+
+                  irr::gui::IGUIStaticText *p = m_pGui->addStaticText(s.c_str(), l_cRect, true, true);
+                  p->setTextAlignment(std::get<4>(l_tColumn), irr::gui::EGUIA_CENTER);
+                  p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
+                  p->setDrawBackground(false);
+                  p->setOverrideFont(l_pRegular);
+
+                  m_vTable.back().push_back(p);
+
+                  irr::core::recti l_cNumber = irr::core::recti(irr::core::vector2di(l_cColPos.X + std::get<0>(l_tColumn) * l_iWidth / 100 - 3 * l_iHeight / 2, l_cColPos.Y), irr::core::dimension2du(3 * l_iHeight / 2, l_iHeight));
+
+                  p = m_pGui->addStaticText(L"", l_cNumber, true, true);
+                  p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+                  p->setOverrideFont(l_pRegular);
+
+                  for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
+                    if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
+                      std::string l_sType = "";
+
+                      std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_cPlayer.m_sTexture);
+
+                      std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
+                      std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
+                      std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
+
+                      if (l_sNumber != "") p->setText(helpers::s2ws(l_sNumber).c_str());
+                      if (l_sBack   != "") {
+                        irr::video::SColor l_cColor;
+                        helpers::fillColorFromString(l_cColor, l_sBack);
+                        p->setBackgroundColor(l_cColor);
+                      }
+                      if (l_sColor != "") {
+                        irr::video::SColor l_cColor;
+                        helpers::fillColorFromString(l_cColor, l_sColor);
+                        p->setOverrideColor(l_cColor);
+                      }
+
+                      break;
+                    }
+                  }
 
                   l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
                 }
