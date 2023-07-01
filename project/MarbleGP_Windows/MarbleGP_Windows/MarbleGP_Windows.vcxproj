@@ -586,6 +586,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>1.1</Version>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -610,6 +611,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>1.1</Version>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
