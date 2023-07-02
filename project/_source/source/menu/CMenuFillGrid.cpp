@@ -297,29 +297,32 @@ namespace dustbin {
                 l_cRect.LowerRightCorner -= irr::core::vector2di(l_iBorder);
                 l_pNumber->setRelativePosition(l_cRect);
 #endif
-                std::string l_sTexture = l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sTexture;
-                printf("Texture: %s\n", l_sTexture.c_str());
+                if (i <= l_cData.size()) {
+                  std::string l_sTexture = l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sTexture;
+                  printf("Texture: %s\n", l_sTexture.c_str());
 
-                if (l_sTexture != "") {
-                  std::string l_sType = "";
+                  if (l_sTexture != "") {
+                    std::string l_sType = "";
 
-                  std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_sTexture);
+                    std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_sTexture);
 
-                  std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
-                  std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
-                  std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
+                    std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
+                    std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
+                    std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
 
-                  if (l_sNumber != "") l_pNumber->setText(helpers::s2ws(l_sNumber).c_str());
-                  if (l_sBack   != "") {
-                    irr::video::SColor l_cColor;
-                    helpers::fillColorFromString(l_cColor, l_sBack);
-                    l_pNumber->setBackgroundColor(l_cColor);
+                    if (l_sNumber != "") l_pNumber->setText(helpers::s2ws(l_sNumber).c_str());
+                    if (l_sBack   != "") {
+                      irr::video::SColor l_cColor;
+                      helpers::fillColorFromString(l_cColor, l_sBack);
+                      l_pNumber->setBackgroundColor(l_cColor);
+                    }
+                    if (l_sColor != "") {
+                      irr::video::SColor l_cColor;
+                      helpers::fillColorFromString(l_cColor, l_sColor);
+                      l_pNumber->setOverrideColor(l_cColor);
+                    }
                   }
-                  if (l_sColor != "") {
-                    irr::video::SColor l_cColor;
-                    helpers::fillColorFromString(l_cColor, l_sColor);
-                    l_pNumber->setOverrideColor(l_cColor);
-                  }
+                  else l_pNumber->setVisible(false);
                 }
                 else l_pNumber->setVisible(false);
               }
