@@ -111,6 +111,26 @@ def CreatePull(a_Name, a_Type, a_Json, a_Default, a_StatePrefix):
     l_Ret = l_Ret + a_Name + " = lua_toboolean(" + a_StatePrefix + "pState, lua_gettop(" + a_StatePrefix + "pState)); lua_pop(" + a_StatePrefix + "pState, 1);"
   elif IsEnum(a_Type, a_Json):
     l_Ret = l_Ret + a_Name + " = (" + a_Type + ")lua_tointeger(" + a_StatePrefix + "pState, lua_gettop(" + a_StatePrefix + "pState)); lua_pop(" + a_StatePrefix + "pState, 1);"
+  elif a_Type.startswith("std::vector"):
+    l_Type = extract(a_Type, "<", ">")
+    
+    l_Ret = "\n    // Found an array of type \"" + l_Type + "\"\n"
+    
+    l_Ret = l_Ret + "      if (lua_istable(a_pState, lua_gettop(a_pState))) {\n"
+    l_Ret = l_Ret + "        lua_pushnil(a_pState);\n\n"
+    l_Ret = l_Ret + "        while (lua_next(a_pState, -2)) {\n"
+    l_Ret = l_Ret + "          " + l_Type + " l_temp;\n"
+    l_Ret = l_Ret + "          " + CreatePull("l_temp", l_Type, a_Json, a_Default, a_StatePrefix) + "\n"
+    l_Ret = l_Ret + "          l_" + a_Name + ".push_back(l_temp);\n"
+    l_Ret = l_Ret + "        }\n"
+    l_Ret = l_Ret + "        lua_pop(a_pState, 1);\n"
+    l_Ret = l_Ret + "      }\n"
+    l_Ret = l_Ret + "      else {\n"
+    l_Ret = l_Ret + "        luaL_error(a_pState, \"Argument is not an array!\");\n"
+    l_Ret = l_Ret + "        return 0;\n"
+    l_Ret = l_Ret + "      }\n\n"
+    
+    return l_Ret
   else:
     l_Found = False
     
@@ -401,8 +421,6 @@ def FindHeaderFor(a_Type, a_Json, a_Array):
         a_Array.append(l_Include)
         
   for l_Script in a_Json["scripts"]:
-    if a_Type.startswith("CLuaScript_phyiscs"):
-      print(a_Type[11:] + " / " + l_Script)
     if a_Type[11:].startswith(l_Script):
       l_Include = g_IncludePath + "/CLuaScript_" + l_Script + ".h"
       if l_Include not in a_Array:
@@ -715,7 +733,11 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
               if l_Check != "":
                 a_Source.write("    " + l_Check)
                 
-              a_Source.write("        l_" + CreatePull(l_Arg["name"], l_Arg["type"], a_Json, "", "a_"))
+              if l_Arg["type"].startswith("std::vector"):
+                a_Source.write("        ")
+              else:
+                a_Source.write("        l_")
+              a_Source.write(CreatePull(l_Arg["name"], l_Arg["type"], a_Json, "", "a_"))
               a_Source.write("      }\n  else {\n")
               a_Source.write("        l_" + l_Arg["name"] + " = " + l_Arg["default"] + ";\n")
               a_Source.write("      }\n")
@@ -725,7 +747,11 @@ def CreateClassBinding(a_Source, a_Name, a_Class, a_Type, a_Json):
               if l_Check != "":
                 a_Source.write("      " + l_Check)
                 
-              a_Source.write("      l_" + CreatePull(l_Arg["name"], l_Arg["type"], a_Json, "", "a_"))
+              if l_Arg["type"].startswith("std::vector"):
+                a_Source.write("      ")
+              else:
+                a_Source.write("      l_")
+              a_Source.write(CreatePull(l_Arg["name"], l_Arg["type"], a_Json, "", "a_"))
             
             l_MaxArgs = l_MaxArgs - 1
             
