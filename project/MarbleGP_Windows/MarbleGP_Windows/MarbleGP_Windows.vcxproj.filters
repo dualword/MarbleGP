@@ -151,6 +151,12 @@
     <Filter Include="Quelldateien\controller\touch">
       <UniqueIdentifier>{a87aa1ad-427b-4a98-befb-877ab1b816f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\_generated\luamesh">
+      <UniqueIdentifier>{1f81c1e3-e73e-487b-baef-65fddc90c9de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\_generated\luamesh">
+      <UniqueIdentifier>{ac0437df-38a3-4e0a-89f5-c2bffdc5e396}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -654,6 +660,24 @@
     <ClCompile Include="..\..\_source\source\gui\CGuiTrackSelect.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_binding.cpp">
+      <Filter>Quelldateien\_generated\luamesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_enums.cpp">
+      <Filter>Quelldateien\_generated\luamesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_tables.cpp">
+      <Filter>Quelldateien\_generated\luamesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_meshbuilder.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_luamesh.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CLuaMeshLoader.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1081,6 +1105,21 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CGuiTrackSelect.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\CLuaScript_meshbuilder.h">
+      <Filter>Headerdateien\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\CLuaSingleton_luamesh.h">
+      <Filter>Headerdateien\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\luamesh_enums.h">
+      <Filter>Headerdateien\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\luamesh_tables.h">
+      <Filter>Headerdateien\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CLuaMeshLoader.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

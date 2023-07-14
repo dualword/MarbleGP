@@ -4,6 +4,7 @@
 
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <controller/CControllerBase.h>
+#include <scenenodes/CLuaMeshLoader.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
@@ -191,6 +192,11 @@ namespace dustbin {
 #else
     m_pDevice->activateJoysticks(m_aJoysticks);
 #endif
+
+    // Add the file loader for our LUA meshes
+    dustbin::scenenodes::CLuaMeshLoader *l_pLoader = new dustbin::scenenodes::CLuaMeshLoader(m_pDevice, m_pSmgr);
+    m_pSmgr->addExternalMeshLoader(l_pLoader);
+    l_pLoader->drop();
 
     if (m_pFs->existFile("marblegp.dat")) {
       bool b = m_pFs->addFileArchive("marblegp.dat", true, false, irr::io::EFAT_ZIP);

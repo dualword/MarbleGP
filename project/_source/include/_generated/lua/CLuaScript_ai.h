@@ -14,7 +14,7 @@ namespace dustbin {
      * @author Dustbin::Games LuaBind Python Script
      * A LUA script to help the AI make decisions
      */
-    class CLuaScript_ai : public ILuaClass {
+    class CLuaScript_ai : public lua::ILuaClass {
       protected:
 
         CLuaSingleton_system *m_LuaSgt_system;

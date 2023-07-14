@@ -145,9 +145,11 @@
     <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_meshbuilder.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_ai.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_luamesh.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLUASingleton_system.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_scene.cpp" />
@@ -196,6 +198,7 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CLuaMeshLoader.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp" />
@@ -236,6 +239,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_binding.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_enums.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_tables.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\lua\lua_binding.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\lua\lua_enums.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\lua\lua_tables.cpp" />
@@ -342,6 +348,7 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CLuaMeshLoader.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h" />
@@ -372,6 +379,10 @@
     <ClInclude Include="..\..\_source\include\xeffects\EffectHandler.h" />
     <ClInclude Include="..\..\_source\include\xeffects\EffectShaders.h" />
     <ClInclude Include="..\..\_source\include\xeffects\XEffects.h" />
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\CLuaScript_meshbuilder.h" />
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\CLuaSingleton_luamesh.h" />
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\luamesh_enums.h" />
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\luamesh_tables.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_ai.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_physics.h" />
     <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_scene.h" />

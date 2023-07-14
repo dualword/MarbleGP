@@ -1,0 +1,222 @@
+{
+  "folders": {
+    "header": "../_source/include/_generated/luamesh",
+    "source": "../_source/source/_generated/luamesh",
+    "include": "_generated/luamesh"
+  },
+  "datatypes": [
+    { "name": "irr::scene::ISceneManager"  , "include": "irrlicht.h" },
+    { "name": "irr::scene::ISceneNode"     , "include": "irrlicht.h" },
+    { "name": "irr::scene::SMesh"          , "include": "irrlicht.h" },
+    { "name": "irr::io::IFileSystem"       , "include": "irrlicht.h" },
+    { "name": "irr::IrrlichtDevice"        , "include": "irrlicht.h" },
+    { "name": "irr::core::vector3df"       , "include": "irrlicht.h" }
+  ],
+  "baseclasses": {
+  },
+  "basetypes": {
+    "std::string": {
+      "prefix" : "const ",
+      "postfix": "&"
+    },
+    "irr::core::vector3df": {
+      "prefix" : "const ",
+      "postfix": "&"
+    },
+    "irr::core::recti": {
+      "prefix" : "const ",
+      "postfix": "&"
+    }
+  },
+  "tables": {
+    "SVector2d": {
+      "comment": "2d vector",
+      "fields": [
+        { "name": "x", "type": "float" },
+        { "name": "y", "type": "float" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SVector3d": {
+      "comment": "3d vector",
+      "fields": [
+        { "name": "x", "type": "float" },
+        { "name": "y", "type": "float" },
+        { "name": "z", "type": "float" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SColor": {
+      "comment": "Data structure for the color",
+      "fields": [
+        { "name": "a", "type": "int" },
+        { "name": "r", "type": "int" },
+        { "name": "g", "type": "int" },
+        { "name": "b", "type": "int" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SVertex3d": {
+      "comment": "A 3d vertex used for the mesh buffer",
+      "fields": [
+        { "name": "position", "type": "SVector3d" },
+        { "name": "normal"  , "type": "SVector3d" },
+        { "name": "color"   , "type": "SColor"    },
+        { "name": "texture" , "type": "SVector2d" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SMaterial": {
+      "comment": "The material of a mesh buffer",
+      "fields": [
+        { "name": "AmbientColor"       , "type": "SColor" },
+        { "name": "AntiAliasing"       , "type": "int" },
+        { "name": "BackfaceCulling"    , "type": "bool" },
+        { "name": "BlendOperation"     , "type": "MaterialBlendOperations" },
+        { "name": "DiffuseColor"       , "type": "SColor" },
+        { "name": "EmissiveColor"      , "type": "SColor" },
+        { "name": "FogEnable"          , "type": "bool" },
+        { "name": "GouraudShading"     , "type": "bool" },
+        { "name": "Lighting"           , "type": "bool" },
+        { "name": "MaterialType"       , "type": "MaterialType" },
+        { "name": "NormalizeNormals"   , "type": "bool" },
+        { "name": "Shininess"          , "type": "float" },
+        { "name": "SpecularColor"      , "type": "SColor" },
+        { "name": "Thickness"          , "type": "float" },
+        { "name": "Wireframe"          , "type": "bool" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    }
+  },
+  "enumerations": {
+    "MaterialBlendOperations": [
+      { "name": "EBO_NONE" }, 
+      { "name": "EBO_ADD" },
+      { "name": "EBO_SUBTRACT" },
+      { "name": "EBO_REVSUBTRACT" },
+      { "name": "EBO_MIN" },
+      { "name": "EBO_MAX" },
+      { "name": "EBO_MIN_FACTOR" },
+      { "name": "EBO_MAX_FACTOR" },
+      { "name": "EBO_MIN_ALPHA" },	
+      { "name": "EBO_MAX_ALPHA" }
+    ],
+    "MaterialType": [
+      { "name": "EMT_SOLID" },
+      { "name": "EMT_SOLID_2_LAYER" },
+      { "name": "EMT_LIGHTMAP" },
+      { "name": "EMT_LIGHTMAP_ADD" },
+      { "name": "EMT_LIGHTMAP_M2" },
+      { "name": "EMT_LIGHTMAP_M4" },
+      { "name": "EMT_LIGHTMAP_LIGHTING" },
+      { "name": "EMT_LIGHTMAP_LIGHTING_M2" },
+      { "name": "EMT_LIGHTMAP_LIGHTING_M4" },
+      { "name": "EMT_DETAIL_MAP" },
+      { "name": "EMT_SPHERE_MAP" },
+      { "name": "EMT_REFLECTION_2_LAYER" },
+      { "name": "EMT_TRANSPARENT_ADD_COLOR" },
+      { "name": "EMT_TRANSPARENT_ALPHA_CHANNEL" },
+      { "name": "EMT_TRANSPARENT_ALPHA_CHANNEL_REF" },
+      { "name": "EMT_TRANSPARENT_VERTEX_ALPHA" },
+      { "name": "EMT_TRANSPARENT_REFLECTION_2_LAYER" },
+      { "name": "EMT_NORMAL_MAP_SOLID" },
+      { "name": "EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR" },
+      { "name": "EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA" },
+      { "name": "EMT_PARALLAX_MAP_SOLID" },
+      { "name": "EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR" },
+      { "name": "EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA" },
+      { "name": "EMT_ONETEXTURE_BLEND" }
+    ]
+  },
+  "classes": {
+  },
+  "singletons": {
+    "luamesh": {
+      "comment": "Object used for creating a mesh from LUA code",
+      "globalidentifier": "meshsingleton_cinstance",
+      "members": [
+        { "name": "device", "type": "irr::IrrlichtDevice *", "comment": "The Irrlicht device", "constructor": "true" },
+        { "name": "mesh"  , "type": "irr::scene::SMesh *"  , "comment": "The mesh that will be filled" }
+      ],
+      "methods": {
+        "lua_from": {
+          "addmeshbuffer": {
+            "comment": "Add a mesh buffer to the mesh",
+            "arguments": [
+            ],
+            "return": { "type": "int", "comment": "Index of the newly added meshbuffer" }
+          },
+          "addvertices": {
+            "comment": "Add a list of vertices to a meshbuffer",
+            "arguments": [
+              { "name": "meshbuffer", "type": "int"                   , "comment": "Index of the mesh buffer to add the vertices to" },
+              { "name": "vertices"  , "type": "std::vector<SVertex3d>", "comment": "The vertices to add."                            },
+              { "name": "indices"   , "type": "std::vector<int>"      , "comment": "The indices to add."                             }
+            ]
+          },
+          "getmaterial": {
+            "comment": "Get the material table of a meshbuffer",
+            "arguments": [
+              { "name": "index", "type": "int", "comment": "Index of the mesh buffer" }
+            ],
+            "return": { "type": "SMaterial", "comment": "The material of the requested meshbuffer. Can be modified and set using setmaterial" }
+          },
+          "setmaterial": {
+            "comment": "Set the material table of a meshbuffer",
+            "arguments": [
+              { "name": "index"   , "type": "int"      , "comment": "Index of the mesh buffer" },
+              { "name": "material", "type": "SMaterial", "comment": "The material parameters for the mesh buffer" }
+            ]
+          },
+          "settexture": {
+            "comment": "Set the texture of a mesh buffer material",
+            "arguments": [
+              { "name": "index"   , "type": "int"        , "comment": "Index of the mesh buffer" },
+              { "name": "texture" , "type": "int"        , "comment": "Index of the texture"     },
+              { "name": "filename", "type": "std::string", "comment": "Filename of the texture"  }
+            ]
+          }
+        },
+        "lua_none": {
+          "getmesh": {
+            "comment": "Get the mesh created by the script",
+            "return": { "type": "irr::scene::SMesh *", "comment": "The mesh created by the script" }
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "meshbuilder": {
+      "comment": "LUA script to create a mesh which is rendered by Irrlicht",
+      "globalidentifier": "meshbuilder_cinstance",
+      "exports": [
+      ],
+      "implements": [
+      ],
+      "members": [
+        { "name": "device", "type": "irr::IrrlichtDevice *", "comment": "The Irrlicht device", "constructor": "true" }
+      ],
+      "singletons": [
+        "luamesh"
+      ],
+      "methods": {
+        "lua_to": {
+        },
+        "lua_from": {
+        },
+        "lua_none": {
+          "getmesh": {
+            "comment": "Get the mesh created by the script",
+            "return": { "type": "irr::scene::SMesh *", "comment": "The mesh created by the script" }
+          }
+        }
+      }
+    }
+  }
+}
