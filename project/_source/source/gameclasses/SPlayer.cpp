@@ -21,7 +21,7 @@ namespace dustbin {
       m_sNumber        (L""),
       m_bWithdrawn     (false),
       m_bShowRanking   (true),
-      m_bAutoThrottle  (true),
+      m_bAutoThrottle  (false),
       m_iState         (0),
       m_eType          (data::enPlayerType::Local),
       m_eAiHelp        (data::SPlayerData::enAiHelp::Off),
@@ -54,6 +54,7 @@ namespace dustbin {
     */
     SPlayer::SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, bool a_bAutoThrottle, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
       m_iPlayer       (a_iPlayer),
+      m_iId            (-1),
       m_iPosition     (99),
       m_iLastPosUpdate(0),
       m_iDiffLeader   (0),
@@ -64,6 +65,9 @@ namespace dustbin {
       m_sController   (a_sController),
       m_sShortName    (a_sShortName),
       m_bWithdrawn    (false),
+      m_bShowRanking  (true),
+      m_bAutoThrottle (a_bAutoThrottle),
+      m_iState         (0),
       m_eType         (a_eType),
       m_eAiHelp       (a_eAiHelp),
       m_pMarble       (a_pMarble),
