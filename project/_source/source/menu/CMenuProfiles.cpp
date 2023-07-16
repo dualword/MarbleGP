@@ -92,11 +92,11 @@ namespace dustbin {
 
           if (l_sCtrl == "DustbinTouchControl") {
             if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Touch");
+              m_pControl->setText(L"Touch");
           }
           else if (l_sCtrl == "DustbinGyroscope") {
             if (m_pControl != nullptr)
-              m_pControl->setText(L"Controls: Gyroscope");
+              m_pControl->setText(L"Gyroscope");
           }
           else {
             controller::CControllerGame l_cCtrl;
@@ -105,11 +105,11 @@ namespace dustbin {
               case controller::CControllerBase::enInputType::JoyAxis:
               case controller::CControllerBase::enInputType::JoyButton:
               case controller::CControllerBase::enInputType::JoyPov:
-                if (m_pControl != nullptr) m_pControl->setText(L"Controls: Gamepad");
+                if (m_pControl != nullptr) m_pControl->setText(L"Gamepad");
                 break;
 
               case controller::CControllerBase::enInputType::Key:
-                if (m_pControl != nullptr) m_pControl->setText(L"Controls: Keyboard");
+                if (m_pControl != nullptr) m_pControl->setText(L"Keyboard");
                 break;
             }
           }
@@ -133,16 +133,24 @@ namespace dustbin {
       }
 
       void updateAiHelp() {
-        if (m_pLblAiHelp != nullptr)
+        if (m_pLblAiHelp != nullptr) {
+          std::wstring l_sAiHelp = L"";
+
           switch (m_cData.m_eAiHelp) {
-            case data::SPlayerData::enAiHelp::Off    : m_pLblAiHelp->setText(L"Off"              ); break;
-            case data::SPlayerData::enAiHelp::Display: m_pLblAiHelp->setText(L"Display"          ); break;
-            case data::SPlayerData::enAiHelp::Low    : m_pLblAiHelp->setText(L"Low"              ); break;
-            case data::SPlayerData::enAiHelp::Medium : m_pLblAiHelp->setText(L"Medium"           ); break;
-            case data::SPlayerData::enAiHelp::High   : m_pLblAiHelp->setText(L"High"             ); break;
-            case data::SPlayerData::enAiHelp::BotMgp : m_pLblAiHelp->setText(L"AI Bot (MarbleGP)"); break;
-            case data::SPlayerData::enAiHelp::BotMb2 : m_pLblAiHelp->setText(L"AI Bot (Marble2)" ); break;
-            case data::SPlayerData::enAiHelp::BotMb3 : m_pLblAiHelp->setText(L"AI Bot (Marble3)" ); break;
+            case data::SPlayerData::enAiHelp::Off    : l_sAiHelp += L"Off"              ; break;
+            case data::SPlayerData::enAiHelp::Display: l_sAiHelp += L"Display"          ; break;
+            case data::SPlayerData::enAiHelp::Low    : l_sAiHelp += L"Low"              ; break;
+            case data::SPlayerData::enAiHelp::Medium : l_sAiHelp += L"Medium"           ; break;
+            case data::SPlayerData::enAiHelp::High   : l_sAiHelp += L"High"             ; break;
+            case data::SPlayerData::enAiHelp::BotMgp : l_sAiHelp += L"AI Bot (MarbleGP)"; break;
+            case data::SPlayerData::enAiHelp::BotMb2 : l_sAiHelp += L"AI Bot (Marble2)" ; break;
+            case data::SPlayerData::enAiHelp::BotMb3 : l_sAiHelp += L"AI Bot (Marble3)" ; break;
+        }
+
+          if (m_cData.m_bAutoThrottle && (m_cData.m_eAiHelp == data::SPlayerData::enAiHelp::Off || m_cData.m_eAiHelp == data::SPlayerData::enAiHelp::Display || m_cData.m_eAiHelp == data::SPlayerData::enAiHelp::Low))
+            l_sAiHelp += L" [Auto Throttle]";
+
+          m_pLblAiHelp->setText(l_sAiHelp.c_str());
         }
       }
     };

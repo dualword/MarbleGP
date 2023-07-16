@@ -64,11 +64,19 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 11, 4, 37, 7" font="regular">
+      <element type="staticText" rect="relative: 11, 3, 37, 6" font="regular">
         <attributes>
           <attribute key="Name" value="label_controls" />
           <attribute key="VTextAlign" value="center" />
           <attribute key="Caption" value="This is the controller" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 11, 5, 37, 8" font="regular">
+        <attributes>
+          <attribute key="Name" value="label_aihelp" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Caption" value="Show the active AI help (if any)" />
         </attributes>
       </element>
     </children>
