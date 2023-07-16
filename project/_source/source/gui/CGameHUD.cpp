@@ -586,7 +586,7 @@ namespace dustbin {
         m_aRostrum[i] = false;
       }
 
-      irr::core::dimension2du l_cRankSize = getDimension(L"ThisStringReallyIsEnough", 
+      irr::core::dimension2du l_cRankSize = getDimension(L"ThisStringReallyIsLongEnough", 
 #ifdef _ANDROID
         l_pRegular
 #else

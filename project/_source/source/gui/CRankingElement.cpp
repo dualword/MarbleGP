@@ -26,18 +26,10 @@ namespace dustbin {
 
       m_cRect = a_cRect;
 
-      if (m_cRect.UpperLeftCorner.X < (irr::s32)m_pDrv->getScreenSize().Width / 2) {
-        m_cBot = irr::core::recti(
-          irr::core::position2di(m_cRect.UpperLeftCorner.X - m_cRect.getHeight(), m_cRect.UpperLeftCorner.Y),
-          irr::core::dimension2du(m_cRect.getHeight(), m_cRect.getHeight())
-        );
-      }
-      else {
-        m_cBot = irr::core::recti(
-          irr::core::position2di(m_cRect.LowerRightCorner.X, m_cRect.UpperLeftCorner.Y),
-          irr::core::dimension2du(m_cRect.getHeight(), m_cRect.getHeight())
-        );
-      }
+      m_cBot = irr::core::recti(
+        irr::core::position2di(m_cRect.LowerRightCorner.X - m_cRect.getHeight(), m_cRect.UpperLeftCorner.Y),
+        irr::core::dimension2du(m_cRect.getHeight(), m_cRect.getHeight())
+      );
 
       m_cPosition = irr::core::recti(a_cRect.UpperLeftCorner, a_cRect.UpperLeftCorner + irr::core::vector2di(l_cDimPos.Width, l_cDimPos.Height));
 
@@ -45,7 +37,7 @@ namespace dustbin {
       l_cDimDeficit.Width  = 3 * l_cDimDeficit.Width / 2;
       l_cDimDeficit.Height = a_cRect.getHeight();
 
-      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width - m_cRect.getHeight(), a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X - m_cRect.getHeight(), a_cRect.LowerRightCorner.Y);
+      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width - 2 * m_cRect.getHeight(), a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X - m_cRect.getHeight(), a_cRect.LowerRightCorner.Y);
 
       m_iDeficit = 0;
 
@@ -57,7 +49,7 @@ namespace dustbin {
       if (m_iRaster < 8) m_iRaster = 8;
       if (m_iBorder < 1) m_iBorder = 1;
 
-      m_cNumberRect = irr::core::recti(m_cRect.LowerRightCorner.X - m_cRect.getHeight() + 2 * m_iBorder, m_cRect.UpperLeftCorner.Y + 2 * m_iBorder, m_cRect.LowerRightCorner.X - 2 * m_iBorder, m_cRect.LowerRightCorner.Y - 2 * m_iBorder);
+      m_cNumberRect = irr::core::recti(m_cRect.LowerRightCorner.X - 2 * m_cRect.getHeight() + 2 * m_iBorder, m_cRect.UpperLeftCorner.Y + 2 * m_iBorder, m_cRect.LowerRightCorner.X - 2 * m_iBorder - m_cRect.getHeight(), m_cRect.LowerRightCorner.Y - 2 * m_iBorder);
     }
 
     CRankingElement::~CRankingElement() {
@@ -101,16 +93,6 @@ namespace dustbin {
 
     void CRankingElement::draw() {
       if (m_bVisible) {
-        if (m_pBotClass != nullptr) {
-          irr::video::SColor l_cColors[] = {
-            m_cBotColor,
-            m_cBotColor,
-            m_cBotColor,
-            m_cBotColor
-          };
-
-          m_pDrv->draw2DImage(m_pBotClass, m_cBot, m_cBotSrc, nullptr, l_cColors, true);
-        }
         renderBackground(m_cRect, m_cBackground);
 
         m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &m_cRect);
@@ -128,6 +110,17 @@ namespace dustbin {
 
         renderBackground(m_cNumberRect, m_cNumberBack, &m_cNumberFrame);
         m_pFont->draw(m_sNumber.c_str(), m_cNumberRect, m_cNumberText, true, true, &m_cNumberRect);
+
+        if (m_pBotClass != nullptr) {
+          irr::video::SColor l_cColors[] = {
+            m_cBotColor,
+            m_cBotColor,
+            m_cBotColor,
+            m_cBotColor
+          };
+
+          m_pDrv->draw2DImage(m_pBotClass, m_cBot, m_cBotSrc, nullptr, l_cColors, true);
+        }
       }
     }
 
