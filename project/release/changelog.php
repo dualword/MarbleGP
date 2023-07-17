@@ -1,11 +1,11 @@
 <ul>
   <li>
-    <b>2023-07-16 [1.1 Build 237]</br>
+    <b>2023-07-17 [1.1 Build 238]</b>
     <ul>
       <li>Fixed a bug with the auto-throttle feature being (in)active by random</li>
       <li>Little re-design of the in-game standings screen</li>
       <li>Track &quot;Flat: Oval&quot; redone</li>
-    </ul>
+      <li>Added some missing respawn triggers on the tracks &quot;Moving: The Gates&quot; and &quot;Moving: Four Obstacles&quot;</li>
   </li>
   <li>
     <b>2023-07-02 [1.1 Build 236]</b>
