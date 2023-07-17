@@ -596,8 +596,11 @@ namespace dustbin {
       irr::core::position2di  l_cRankPos  = irr::core::position2di(a_cRect.getWidth() / 2, a_cRect.getHeight() - 2 * l_cRankSize.Height);
 
       l_cRankSize.Height += l_cRankSize.Height / 8;
-
       l_cRankPos.Y -= 16 * 3 * l_cRankSize.Height / 4;
+
+#ifdef _ANDROID
+      l_cRankPos.Y += l_pGlobal->getRasterSize();
+#endif
 
       int l_iOffsetY = 0;
 
