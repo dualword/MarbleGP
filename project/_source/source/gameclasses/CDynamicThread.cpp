@@ -985,8 +985,10 @@ namespace dustbin {
             m_pLuaScript->onracefinished(true);
         }
         else if (m_aMarbles[l_iIndex]->m_iWithdraw == -1) {
-          sendConfirmwithdraw(a_MarbleId, 120, m_pOutputQueue);
-          m_aMarbles[l_iIndex]->m_iWithdraw = m_pWorld->m_iWorldStep + 120;
+          if (!m_bPaused) {
+            sendConfirmwithdraw(a_MarbleId, 120, m_pOutputQueue);
+            m_aMarbles[l_iIndex]->m_iWithdraw = m_pWorld->m_iWorldStep + 120;
+          }
         }
         else {
           if (m_pWorld->m_iWorldStep < m_aMarbles[l_iIndex]->m_iWithdraw && m_aMarbles[l_iIndex]->m_eState != CObjectMarble::enMarbleState::Withdrawn) {
