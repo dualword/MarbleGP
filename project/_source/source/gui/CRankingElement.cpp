@@ -37,7 +37,7 @@ namespace dustbin {
       l_cDimDeficit.Width  = 3 * l_cDimDeficit.Width / 2;
       l_cDimDeficit.Height = a_cRect.getHeight();
 
-      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width - 2 * m_cRect.getHeight(), a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X - m_cRect.getHeight(), a_cRect.LowerRightCorner.Y);
+      m_cDeficit = irr::core::recti(a_cRect.LowerRightCorner.X - l_cDimDeficit.Width - 3 * m_cRect.getHeight(), a_cRect.UpperLeftCorner.Y, a_cRect.LowerRightCorner.X - m_cRect.getHeight(), a_cRect.LowerRightCorner.Y);
 
       m_iDeficit = 0;
 
