@@ -4,15 +4,15 @@ io.write("Generating mesh...\n")
 -- The mesh buffers that will be filled
 -- by this script and sent to Irrlicht
 g_MeshBuffers = {
-  road      = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/road.png"        , vertices = { }, indices = { }, index = 0, textureOffset = 0.0 },    -- the vertices, indices, the current vertex index and the texture offset of the road
-  bottom    = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/warning.png"     , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the road
-  respawn   = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/plane.png"       , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the respawn points
-  respbtn   = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/warning.png"     , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
-  yellow    = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/yellow.png"      , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
-  black     = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/black.png"       , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
-  ground    = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/ground.png"      , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
-  wallouter = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/wall_outer.png"  , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
-  wall      = { buffer = luamesh:addmeshbuffer(), texture = "data/textures/wall.png"        , vertices = { }, indices = { }, index = 0 },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
+  road      = { buffer = luamesh:addmeshbuffer(), texture = "road.png"      , vertices = { }, indices = { }, index = 0, textureOffset = 0.0 },    -- the vertices, indices, the current vertex index and the texture offset of the road
+  bottom    = { buffer = luamesh:addmeshbuffer(), texture = "warning.png"   , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the road
+  respawn   = { buffer = luamesh:addmeshbuffer(), texture = "plane.png"     , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the respawn points
+  respbtn   = { buffer = luamesh:addmeshbuffer(), texture = "warning.png"   , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
+  yellow    = { buffer = luamesh:addmeshbuffer(), texture = "yellow.png"    , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
+  black     = { buffer = luamesh:addmeshbuffer(), texture = "black.png"     , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
+  ground    = { buffer = luamesh:addmeshbuffer(), texture = "ground.png"    , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
+  wallouter = { buffer = luamesh:addmeshbuffer(), texture = "wall_outer.png", vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
+  wall      = { buffer = luamesh:addmeshbuffer(), texture = "wall.png"      , vertices = { }, indices = { }, index = 0, },    -- the vertices, indices and the current vertex index of the bottom of the respawn points
 }
 
 io.write("Got Mesh buffer indices.\n")
@@ -23,18 +23,34 @@ g_Bounds = {
 }
 
 g_Points      = { [1] = { -1, -1 }, [2] = { -1, -1 } }
-g_Color       = { a = 255, r = 255, g = 255, b = 255 }
-g_NormalRd    = { x = 0.0, y = 1.0, z = 0.0 }
 g_BlackYellow = false
 g_BlkYlwIndex = 0
+
+function writeIndent(a_Indent)
+  for i = 1, a_Indent do
+    io.write(" ")
+  end
+end
+
+function dumpTable(a_Table, a_Indent)
+  if type(a_Table) == "table" then
+    io.write("{\n")
+    for k, v in pairs(a_Table) do
+      writeIndent(a_Indent)
+      io.write(tostring(k) .. " = ")
+      dumpTable(v, a_Indent + 2)
+    end
+    writeIndent(a_Indent - 2)
+    io.write("}\n")
+  else
+    io.write(tostring(a_Table) .. "\n")
+  end
+end
 
 -- Add vertices and indices to the top or
 -- bottom mesh buffers
 function addToTopBottom(a_Buffer, a_Vertices, a_Indices)
   if #a_Vertices == 2 then
-    if a_Vertices[1]["color"] == nil then a_Vertices[1]["color"] = { a = 255, r = 255, g = 255, b = 255 } end
-    if a_Vertices[2]["color"] == nil then a_Vertices[2]["color"] = { a = 255, r = 255, g = 255, b = 255 } end
-    
     table.insert(g_MeshBuffers[a_Buffer]["vertices"], a_Vertices[1])
     table.insert(g_MeshBuffers[a_Buffer]["vertices"], a_Vertices[2])
     
@@ -62,11 +78,6 @@ end
 
 function addRectVertices(a_Buffer, a_Vertices, a_Indices, a_UpdateBounds)
   if #a_Vertices == 4 then
-    if a_Vertices[1]["color"] == nil then a_Vertices[1]["color"] = { a = 255, r = 255, g = 255, b = 255 } end
-    if a_Vertices[2]["color"] == nil then a_Vertices[2]["color"] = { a = 255, r = 255, g = 255, b = 255 } end
-    if a_Vertices[3]["color"] == nil then a_Vertices[3]["color"] = { a = 255, r = 255, g = 255, b = 255 } end
-    if a_Vertices[4]["color"] == nil then a_Vertices[4]["color"] = { a = 255, r = 255, g = 255, b = 255 } end
-    
     table.insert(g_MeshBuffers[a_Buffer]["vertices"], a_Vertices[1])
     table.insert(g_MeshBuffers[a_Buffer]["vertices"], a_Vertices[2])
     table.insert(g_MeshBuffers[a_Buffer]["vertices"], a_Vertices[3])
@@ -97,28 +108,28 @@ end
 function addWallVertices(a_Vertices, a_OffsetOuter, a_Texture)
   addRectVertices("wallouter", 
     { 
-      { position = { x = a_Vertices[1]["x"], y =  0.0, z = a_Vertices[1]["z"] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[1], y = 0.0 } },
-      { position = { x = a_Vertices[1]["x"], y = 75.0, z = a_Vertices[1]["z"] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[1], y = 6.0 } },
-      { position = { x = a_Vertices[2]["x"], y =  0.0, z = a_Vertices[2]["z"] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[2], y = 0.0 } },
-      { position = { x = a_Vertices[2]["x"], y = 75.0, z = a_Vertices[2]["z"] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[2], y = 6.0 } }
+      { position = { x = a_Vertices[1]["x"], y =  5.0, z = a_Vertices[1]["z"] }, texture = { x = a_Texture[1], y = 0.0 } },
+      { position = { x = a_Vertices[1]["x"], y = 80.0, z = a_Vertices[1]["z"] }, texture = { x = a_Texture[1], y = 6.0 } },
+      { position = { x = a_Vertices[2]["x"], y =  5.0, z = a_Vertices[2]["z"] }, texture = { x = a_Texture[2], y = 0.0 } },
+      { position = { x = a_Vertices[2]["x"], y = 80.0, z = a_Vertices[2]["z"] }, texture = { x = a_Texture[2], y = 6.0 } }
     },
     { 0, 1, 2, 3, 2, 1 }, false)
     
   addRectVertices("wall", 
     { 
-      { position = { x = a_Vertices[1]["x"] + a_OffsetOuter[1][1], y = -5.0, z = a_Vertices[1]["z"] + a_OffsetOuter[1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[1], y = 0.0 } },
-      { position = { x = a_Vertices[1]["x"] + a_OffsetOuter[1][1], y = 75.0, z = a_Vertices[1]["z"] + a_OffsetOuter[1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[1], y = 6.0 } },
-      { position = { x = a_Vertices[2]["x"] + a_OffsetOuter[2][1], y = -5.0, z = a_Vertices[2]["z"] + a_OffsetOuter[2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[2], y = 0.0 } },
-      { position = { x = a_Vertices[2]["x"] + a_OffsetOuter[2][1], y = 75.0, z = a_Vertices[2]["z"] + a_OffsetOuter[2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = a_Texture[2], y = 6.0 } }
+      { position = { x = a_Vertices[1]["x"] + a_OffsetOuter[1][1], y = -5.0, z = a_Vertices[1]["z"] + a_OffsetOuter[1][2] }, texture = { x = a_Texture[1], y = 0.0 } },
+      { position = { x = a_Vertices[1]["x"] + a_OffsetOuter[1][1], y = 80.0, z = a_Vertices[1]["z"] + a_OffsetOuter[1][2] }, texture = { x = a_Texture[1], y = 6.0 } },
+      { position = { x = a_Vertices[2]["x"] + a_OffsetOuter[2][1], y = -5.0, z = a_Vertices[2]["z"] + a_OffsetOuter[2][2] }, texture = { x = a_Texture[2], y = 0.0 } },
+      { position = { x = a_Vertices[2]["x"] + a_OffsetOuter[2][1], y = 80.0, z = a_Vertices[2]["z"] + a_OffsetOuter[2][2] }, texture = { x = a_Texture[2], y = 6.0 } }
     },
     { 2, 1, 0, 1, 2, 3 }, false)
     
   addRectVertices("respbtn",
     {
-      { position = { x = a_Vertices[1]["x"]                      , y = 75.0, z = a_Vertices[1]["z"]                       }, normal = g_NormalRd, texture = { x = a_Vertices[1]["x"]                        / 25.0, y =  a_Vertices[1]["z"]                        / 25.0 } },
-      { position = { x = a_Vertices[1]["x"] + a_OffsetOuter[1][1], y = 75.0, z = a_Vertices[1]["z"] + a_OffsetOuter[1][2] }, normal = g_NormalRd, texture = { x =(a_Vertices[1]["x"] + a_OffsetOuter[1][1]) / 25.0, y = (a_Vertices[1]["z"] + a_OffsetOuter[1][2]) / 25.0 } },
-      { position = { x = a_Vertices[2]["x"]                      , y = 75.0, z = a_Vertices[2]["z"]                       }, normal = g_NormalRd, texture = { x = a_Vertices[2]["x"]                        / 25.0, y =  a_Vertices[2]["z"]                        / 25.0 } },
-      { position = { x = a_Vertices[2]["x"] + a_OffsetOuter[2][1], y = 75.0, z = a_Vertices[2]["z"] + a_OffsetOuter[2][2] }, normal = g_NormalRd, texture = { x =(a_Vertices[2]["x"] + a_OffsetOuter[2][1]) / 25.0, y = (a_Vertices[2]["z"] + a_OffsetOuter[2][2]) / 25.0 } }
+      { position = { x = a_Vertices[1]["x"]                      , y = 80.0, z = a_Vertices[1]["z"]                       }, texture = { x = a_Vertices[1]["x"]                        / 25.0, y =  a_Vertices[1]["z"]                        / 25.0 } },
+      { position = { x = a_Vertices[1]["x"] + a_OffsetOuter[1][1], y = 80.0, z = a_Vertices[1]["z"] + a_OffsetOuter[1][2] }, texture = { x =(a_Vertices[1]["x"] + a_OffsetOuter[1][1]) / 25.0, y = (a_Vertices[1]["z"] + a_OffsetOuter[1][2]) / 25.0 } },
+      { position = { x = a_Vertices[2]["x"]                      , y = 80.0, z = a_Vertices[2]["z"]                       }, texture = { x = a_Vertices[2]["x"]                        / 25.0, y =  a_Vertices[2]["z"]                        / 25.0 } },
+      { position = { x = a_Vertices[2]["x"] + a_OffsetOuter[2][1], y = 80.0, z = a_Vertices[2]["z"] + a_OffsetOuter[2][2] }, texture = { x =(a_Vertices[2]["x"] + a_OffsetOuter[2][1]) / 25.0, y = (a_Vertices[2]["z"] + a_OffsetOuter[2][2]) / 25.0 } }
     },
     { 0, 1, 2, 3, 2, 1 }, false)
 end
@@ -161,16 +172,16 @@ function calcCorner(a_Index)
       
       local l_Side = {
         {
-          { position = { x = g_Points   [1][1], y = 10.0, z = g_Points   [1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 1.0 } },
-          { position = { x = g_Points   [1][1], y =  0.0, z = g_Points   [1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 1.0 } },
-          { position = { x = l_NewPoints[1][1], y =  0.0, z = l_NewPoints[1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 0.0 } }
+          { position = { x = g_Points   [1][1], y = 10.0, z = g_Points   [1][2] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = g_Points   [1][1], y =  5.0, z = g_Points   [1][2] }, texture = { x = 1.0, y = 1.0 } },
+          { position = { x = l_NewPoints[1][1], y =  5.0, z = l_NewPoints[1][2] }, texture = { x = 1.0, y = 0.0 } }
         },
         {
-          { position = { x = g_Points   [2][1], y = 10.0, z = g_Points   [2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 1.0 } },
-          { position = { x = g_Points   [2][1], y =  0.0, z = g_Points   [2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 1.0 } },
-          { position = { x = l_NewPoints[2][1], y =  0.0, z = l_NewPoints[2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 0.0 } }
+          { position = { x = g_Points   [2][1], y = 10.0, z = g_Points   [2][2] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = g_Points   [2][1], y =  5.0, z = g_Points   [2][2] }, texture = { x = 1.0, y = 1.0 } },
+          { position = { x = l_NewPoints[2][1], y =  5.0, z = l_NewPoints[2][2] }, texture = { x = 1.0, y = 0.0 } }
         }
       }
       
@@ -194,15 +205,15 @@ function calcCorner(a_Index)
     
     addToTopBottom("road",  
       {
-        { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, normal = g_NormalRd, texture = { x = 0.0, y = g_MeshBuffers["road"]["textureOffset"] } },
-        { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, normal = g_NormalRd, texture = { x = 1.0, y = g_MeshBuffers["road"]["textureOffset"] } }
+        { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, texture = { x = 0.0, y = g_MeshBuffers["road"]["textureOffset"] } },
+        { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, texture = { x = 1.0, y = g_MeshBuffers["road"]["textureOffset"] } }
       },
       { -2, -1, 0, 1, 0, -1 })
       
     addToTopBottom("bottom",
       {
-        { position = { x = l_NewPoints[1][1], y = 0.0, z = l_NewPoints[1][2] }, normal = g_NormalRd, texture = { x = l_NewPoints[1][1] / 25.0, y = l_NewPoints[1][2] / 25.0 } },
-        { position = { x = l_NewPoints[2][1], y = 0.0, z = l_NewPoints[2][2] }, normal = g_NormalRd, texture = { x = l_NewPoints[2][1] / 25.0, y = l_NewPoints[2][2] / 25.0 } }
+        { position = { x = l_NewPoints[1][1], y = 5.0, z = l_NewPoints[1][2] }, texture = { x = l_NewPoints[1][1] / 25.0, y = l_NewPoints[1][2] / 25.0 } },
+        { position = { x = l_NewPoints[2][1], y = 5.0, z = l_NewPoints[2][2] }, texture = { x = l_NewPoints[2][1] / 25.0, y = l_NewPoints[2][2] / 25.0 } }
       },
       { -2, 0, -1, -1, 0, 1 })
       
@@ -259,41 +270,41 @@ function calcStraight(a_Index)
       addRectVertices(
         "respawn",
         {
-          { position = l_Respawn[1], normal = g_NormalRd, texture = { x = 0.0, y = 0.0 }},
-          { position = l_Respawn[2], normal = g_NormalRd, texture = { x = 1.0, y = 0.0 }},
-          { position = l_Respawn[3], normal = g_NormalRd, texture = { x = 0.0, y = 1.0 }},
-          { position = l_Respawn[4], normal = g_NormalRd, texture = { x = 1.0, y = 1.0 }}
+          { position = l_Respawn[1], texture = { x = 0.0, y = 0.0 }},
+          { position = l_Respawn[2], texture = { x = 1.0, y = 0.0 }},
+          { position = l_Respawn[3], texture = { x = 0.0, y = 1.0 }},
+          { position = l_Respawn[4], texture = { x = 1.0, y = 1.0 }}
         },
         { 1, 0, 2, 1, 2, 3 }, true)
       
       addRectVertices(
         "respbtn",
         {
-          { position = { x = l_Respawn[1]["x"], y = 0.0, z = l_Respawn[1]["z"] }, normal = g_NormalRd, color = g_Color, texture = { x = l_Respawn[1]["x"] / 25.0, y = l_Respawn[1]["z"] / 25.0 } },
-          { position = { x = l_Respawn[2]["x"], y = 0.0, z = l_Respawn[2]["z"] }, normal = g_NormalRd, color = g_Color, texture = { x = l_Respawn[2]["x"] / 25.0, y = l_Respawn[2]["z"] / 25.0 } },
-          { position = { x = l_Respawn[3]["x"], y = 0.0, z = l_Respawn[3]["z"] }, normal = g_NormalRd, color = g_Color, texture = { x = l_Respawn[3]["x"] / 25.0, y = l_Respawn[3]["z"] / 25.0 } },
-          { position = { x = l_Respawn[4]["x"], y = 0.0, z = l_Respawn[4]["z"] }, normal = g_NormalRd, color = g_Color, texture = { x = l_Respawn[4]["x"] / 25.0, y = l_Respawn[4]["z"] / 25.0 } }
+          { position = { x = l_Respawn[1]["x"], y = 5.0, z = l_Respawn[1]["z"] }, texture = { x = l_Respawn[1]["x"] / 25.0, y = l_Respawn[1]["z"] / 25.0 } },
+          { position = { x = l_Respawn[2]["x"], y = 5.0, z = l_Respawn[2]["z"] }, texture = { x = l_Respawn[2]["x"] / 25.0, y = l_Respawn[2]["z"] / 25.0 } },
+          { position = { x = l_Respawn[3]["x"], y = 5.0, z = l_Respawn[3]["z"] }, texture = { x = l_Respawn[3]["x"] / 25.0, y = l_Respawn[3]["z"] / 25.0 } },
+          { position = { x = l_Respawn[4]["x"], y = 5.0, z = l_Respawn[4]["z"] }, texture = { x = l_Respawn[4]["x"] / 25.0, y = l_Respawn[4]["z"] / 25.0 } }
         },
         { 2, 0, 1, 3, 2, 1 }, true)
       
       local l_Side = {
         {
-          { position = { x = l_Respawn[1]["x"], y = l_Respawn[1]["y"], z = l_Respawn[1]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_Respawn[2]["x"], y = l_Respawn[2]["y"], z = l_Respawn[2]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 1.0 } },
-          { position = { x = l_Respawn[1]["x"], y = 0.0              , z = l_Respawn[1]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_Respawn[2]["x"], y = 0.0              , z = l_Respawn[2]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = l_Respawn[1]["x"], y = l_Respawn[1]["y"], z = l_Respawn[1]["z"] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_Respawn[2]["x"], y = l_Respawn[2]["y"], z = l_Respawn[2]["z"] }, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = l_Respawn[1]["x"], y = 5.0              , z = l_Respawn[1]["z"] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_Respawn[2]["x"], y = 5.0              , z = l_Respawn[2]["z"] }, texture = { x = 0.0, y = 1.0 } },
         },
         {
-          { position = { x = l_Respawn[2]["x"], y = l_Respawn[1]["y"], z = l_Respawn[2]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_Respawn[4]["x"], y = l_Respawn[2]["y"], z = l_Respawn[4]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 1.0 } },
-          { position = { x = l_Respawn[2]["x"], y = 0.0              , z = l_Respawn[2]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_Respawn[4]["x"], y = 0.0              , z = l_Respawn[4]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = l_Respawn[2]["x"], y = l_Respawn[1]["y"], z = l_Respawn[2]["z"] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_Respawn[4]["x"], y = l_Respawn[2]["y"], z = l_Respawn[4]["z"] }, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = l_Respawn[2]["x"], y = 5.0              , z = l_Respawn[2]["z"] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_Respawn[4]["x"], y = 5.0              , z = l_Respawn[4]["z"] }, texture = { x = 0.0, y = 1.0 } },
         },
         {
-          { position = { x = l_Respawn[4]["x"], y = l_Respawn[1]["y"], z = l_Respawn[4]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_Respawn[3]["x"], y = l_Respawn[2]["y"], z = l_Respawn[3]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 1.0 } },
-          { position = { x = l_Respawn[4]["x"], y = 0.0              , z = l_Respawn[4]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 0.0 } },
-          { position = { x = l_Respawn[3]["x"], y = 0.0              , z = l_Respawn[3]["z"] }, normal = g_NormalRd, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = l_Respawn[4]["x"], y = l_Respawn[1]["y"], z = l_Respawn[4]["z"] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_Respawn[3]["x"], y = l_Respawn[2]["y"], z = l_Respawn[3]["z"] }, texture = { x = 0.0, y = 1.0 } },
+          { position = { x = l_Respawn[4]["x"], y = 5.0              , z = l_Respawn[4]["z"] }, texture = { x = 0.0, y = 0.0 } },
+          { position = { x = l_Respawn[3]["x"], y = 5.0              , z = l_Respawn[3]["z"] }, texture = { x = 0.0, y = 1.0 } },
         }
       }
       
@@ -313,16 +324,16 @@ function calcStraight(a_Index)
     
     local l_Side = {
       {
-        { position = { x = g_Points   [1][1], y = 10.0, z = g_Points   [1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 0.0 } },
-        { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 1.0 } },
-        { position = { x = g_Points   [1][1], y =  0.0, z = g_Points   [1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 1.0 } },
-        { position = { x = l_NewPoints[1][1], y =  0.0, z = l_NewPoints[1][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 0.0 } }
+        { position = { x = g_Points   [1][1], y = 10.0, z = g_Points   [1][2] }, texture = { x = 0.0, y = 0.0 } },
+        { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, texture = { x = 0.0, y = 1.0 } },
+        { position = { x = g_Points   [1][1], y =  5.0, z = g_Points   [1][2] }, texture = { x = 1.0, y = 1.0 } },
+        { position = { x = l_NewPoints[1][1], y =  5.0, z = l_NewPoints[1][2] }, texture = { x = 1.0, y = 0.0 } }
       },
       {
-        { position = { x = g_Points   [2][1], y = 10.0, z = g_Points   [2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 0.0 } },
-        { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 0.0, y = 1.0 } },
-        { position = { x = g_Points   [2][1], y =  0.0, z = g_Points   [2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 1.0 } },
-        { position = { x = l_NewPoints[2][1], y =  0.0, z = l_NewPoints[2][2] }, normal = { x = 0.0, y = 1.0, z = 0.0 }, texture = { x = 1.0, y = 0.0 } }
+        { position = { x = g_Points   [2][1], y = 10.0, z = g_Points   [2][2] }, texture = { x = 0.0, y = 0.0 } },
+        { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, texture = { x = 0.0, y = 1.0 } },
+        { position = { x = g_Points   [2][1], y =  5.0, z = g_Points   [2][2] }, texture = { x = 1.0, y = 1.0 } },
+        { position = { x = l_NewPoints[2][1], y =  5.0, z = l_NewPoints[2][2] }, texture = { x = 1.0, y = 0.0 } }
       }
     }
     
@@ -337,15 +348,16 @@ function calcStraight(a_Index)
     
     io.write(tostring(l_NewPoints[1][1]) .. " .. ")
     io.write(tostring(l_NewPoints[2][1]) .. "\n")
+    
     addToTopBottom("road", {
-        { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, normal = g_NormalRd, texture = { x = 0.0, y = g_MeshBuffers["road"]["textureOffset"] }},
-        { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, normal = g_NormalRd, texture = { x = 1.0, y = g_MeshBuffers["road"]["textureOffset"] }}
+        { position = { x = l_NewPoints[1][1], y = 10.0, z = l_NewPoints[1][2] }, texture = { x = 0.0, y = g_MeshBuffers["road"]["textureOffset"] } },
+        { position = { x = l_NewPoints[2][1], y = 10.0, z = l_NewPoints[2][2] }, texture = { x = 1.0, y = g_MeshBuffers["road"]["textureOffset"] } }
       },
       { -2, -1, 0, 1, 0, -1 })
     
     addToTopBottom("bottom", {
-        { position = { x = l_NewPoints[1][1], y = 0.0, z = l_NewPoints[1][2] }, normal = g_NormalRd, texture = { x = l_NewPoints[1][1] / 25.0, y = l_NewPoints[1][2] / 25.0 }},
-        { position = { x = l_NewPoints[2][1], y = 0.0, z = l_NewPoints[2][2] }, normal = g_NormalRd, texture = { x = l_NewPoints[2][1] / 25.0, y = l_NewPoints[2][2] / 25.0 }}
+        { position = { x = l_NewPoints[1][1], y = 5.0, z = l_NewPoints[1][2] }, texture = { x = l_NewPoints[1][1] / 25.0, y = l_NewPoints[1][2] / 25.0 }},
+        { position = { x = l_NewPoints[2][1], y = 5.0, z = l_NewPoints[2][2] }, texture = { x = l_NewPoints[2][1] / 25.0, y = l_NewPoints[2][2] / 25.0 }}
       },
       { 0, -1, -2, -1, 0, 1 })
       
@@ -373,10 +385,10 @@ g_Ground = {
 
 addRectVertices("ground",
   {
-    { position = { x = g_Bounds["min"]["x"], y = 0.0, z = g_Bounds["min"]["z"] }, normal = g_NormalRd, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } },
-    { position = { x = g_Bounds["min"]["x"], y = 0.0, z = g_Bounds["max"]["z"] }, normal = g_NormalRd, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
-    { position = { x = g_Bounds["max"]["x"], y = 0.0, z = g_Bounds["max"]["z"] }, normal = g_NormalRd, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
-    { position = { x = g_Bounds["max"]["x"], y = 0.0, z = g_Bounds["min"]["z"] }, normal = g_NormalRd, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } }
+    { position = { x = g_Bounds["min"]["x"], y = 5.0, z = g_Bounds["min"]["z"] }, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } },
+    { position = { x = g_Bounds["min"]["x"], y = 5.0, z = g_Bounds["max"]["z"] }, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
+    { position = { x = g_Bounds["max"]["x"], y = 5.0, z = g_Bounds["max"]["z"] }, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
+    { position = { x = g_Bounds["max"]["x"], y = 5.0, z = g_Bounds["min"]["z"] }, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } }
   },
   { 0, 1, 2, 3, 0, 2}, false)
 
@@ -388,21 +400,25 @@ addWallVertices( { { x = g_Bounds["max"]["x"], z = g_Bounds["min"]["z"] }, { x =
 
 addRectVertices("respbtn",
   {
-    { position = { x = g_Bounds["min"]["x"] - 5.0, y = -5.0, z = g_Bounds["min"]["z"] - 5.0 }, normal = g_NormalRd, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } },
-    { position = { x = g_Bounds["min"]["x"] - 5.0, y = -5.0, z = g_Bounds["max"]["z"] + 5.0 }, normal = g_NormalRd, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
-    { position = { x = g_Bounds["max"]["x"] + 5.0, y = -5.0, z = g_Bounds["max"]["z"] + 5.0 }, normal = g_NormalRd, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
-    { position = { x = g_Bounds["max"]["x"] + 5.0, y = -5.0, z = g_Bounds["min"]["z"] - 5.0 }, normal = g_NormalRd, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } }
+    { position = { x = g_Bounds["min"]["x"] - 5.0, y = -5.0, z = g_Bounds["min"]["z"] - 5.0 }, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } },
+    { position = { x = g_Bounds["min"]["x"] - 5.0, y = -5.0, z = g_Bounds["max"]["z"] + 5.0 }, texture = { x = g_Bounds["min"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
+    { position = { x = g_Bounds["max"]["x"] + 5.0, y = -5.0, z = g_Bounds["max"]["z"] + 5.0 }, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["max"]["z"] / 25.0 } },
+    { position = { x = g_Bounds["max"]["x"] + 5.0, y = -5.0, z = g_Bounds["min"]["z"] - 5.0 }, texture = { x = g_Bounds["max"]["x"] / 25.0, y = g_Bounds["min"]["z"] / 25.0 } }
   },
   { 2, 1, 0, 2, 0, 3}, false)
   
 io.write("Creating mesh...\n")
 for k,v in pairs(g_MeshBuffers) do
   io.write("Creating mesh buffer \"" .. tostring(k) .. "\"\n")
+  
+  local l_Parameters = luamesh:getmaterial(v["buffer"])
+  l_Parameters["Lighting"] = false
+  
   luamesh:addvertices(v["buffer"], v["vertices"], v["indices"])
-  g_Parameters = luamesh:getmaterial(v["buffer"])
-  g_Parameters["Lighting"] = false
-  luamesh:setmaterial(v["buffer"], g_Parameters)
-  luamesh:settexture(v["buffer"], 0, v["texture"])
+  luamesh:settexture(v["buffer"], 0, "data/textures/" .. v["texture"])
+  
+  luamesh:setmaterial(v["buffer"], l_Parameters)
 end
 
+luamesh:finish()
 io.write("Ready.\n")

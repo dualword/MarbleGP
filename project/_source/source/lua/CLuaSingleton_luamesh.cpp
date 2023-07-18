@@ -1,3 +1,4 @@
+/// (w) 2023 by Dustbin::Games - This file is licensed under the terms of the ZLib License (like Irrlicht)
 #include <_generated/luamesh/CLuaSingleton_luamesh.h>
 
 namespace dustbin {
@@ -52,8 +53,6 @@ namespace dustbin {
         m_mesh = new irr::scene::SMesh();
       }
 
-      irr::core::aabbox3df l_cBox = m_mesh->getBoundingBox();
-
       if ((irr::u32)a_meshbuffer > m_mesh->getMeshBufferCount()) {
         printf("Invalid mesh buffer index #%i\n", a_meshbuffer);
         return;
@@ -70,12 +69,55 @@ namespace dustbin {
           (*l_itVtx).m_position.m_x,
           (*l_itVtx).m_position.m_y,
           (*l_itVtx).m_position.m_z,
-          (*l_itVtx).m_normal.m_x,
-          (*l_itVtx).m_normal.m_y,
-          (*l_itVtx).m_normal.m_z,
-          luaColorToIrrColor((*l_itVtx).m_color),
+          0.0f,
+          1.0f,
+          0.0f,
+          irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF),
           (*l_itVtx).m_texture.m_x,
           (*l_itVtx).m_texture.m_y
+        ));
+      }
+
+      m_mesh->getMeshBuffer(a_meshbuffer)->append((void *)l_vertices.data(), (irr::u32)a_vertices.size(), l_indices.data(), (irr::u32)l_indices.size());
+    }
+
+    /**
+    * Add a list of vertices to a meshbuffer
+    * @param a_meshbuffer index of the mesh buffer to add the vertices to
+    * @param a_vertices The vertices to add
+    * @param a_indices The indices to add
+    */
+    void CLuaSingleton_luamesh::addvertices_2TextureCoords(int a_meshbuffer, std::vector<SVertex3d_2TextureCoords> a_vertices, std::vector<int> a_indices) {
+      if (m_mesh == nullptr) {
+        m_mesh = new irr::scene::SMesh();
+      }
+
+      irr::core::aabbox3df l_cBox = m_mesh->getBoundingBox();
+
+      if ((irr::u32)a_meshbuffer > m_mesh->getMeshBufferCount()) {
+        printf("Invalid mesh buffer index #%i\n", a_meshbuffer);
+        return;
+      }
+
+      std::vector<irr::u16> l_indices;
+      for (std::vector<int>::iterator l_itIdx = a_indices.begin(); l_itIdx != a_indices.end(); l_itIdx++)
+        l_indices.push_back((irr::u16)*l_itIdx);
+
+      std::vector<irr::video::S3DVertex> l_vertices;
+
+      for (std::vector<SVertex3d_2TextureCoords>::iterator l_itVtx = a_vertices.begin(); l_itVtx != a_vertices.end(); l_itVtx++) {
+        l_vertices.push_back(irr::video::S3DVertex2TCoords(
+          (*l_itVtx).m_position.m_x,
+          (*l_itVtx).m_position.m_y,
+          (*l_itVtx).m_position.m_z,
+          0.0f,
+          1.0f,
+          0.0f,
+          irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF),
+          (*l_itVtx).m_texture.m_x,
+          (*l_itVtx).m_texture.m_y,
+          (*l_itVtx).m_texture2.m_x,
+          (*l_itVtx).m_texture2.m_y
         ));
 
         l_cBox.addInternalPoint(irr::core::vector3df((*l_itVtx).m_position.m_x, (*l_itVtx).m_position.m_y, (*l_itVtx).m_position.m_z));
@@ -128,23 +170,21 @@ namespace dustbin {
     */
     void CLuaSingleton_luamesh::setmaterial(int a_index, const SMaterial& a_material) {
       if (m_mesh != nullptr && a_index >= 0 && a_index < (int)m_mesh->getMeshBufferCount()) {
-        irr::video::SMaterial l_cMaterial = m_mesh->getMeshBuffer(a_index)->getMaterial();
-
-        l_cMaterial.AmbientColor     = luaColorToIrrColor(a_material.m_AmbientColor);
-        l_cMaterial.AntiAliasing     = a_material.m_AntiAliasing;
-        l_cMaterial.BackfaceCulling  = a_material.m_BackfaceCulling;
-        l_cMaterial.BlendOperation   = (irr::video::E_BLEND_OPERATION)a_material.m_BlendOperation;
-        l_cMaterial.DiffuseColor     = luaColorToIrrColor( a_material.m_DiffuseColor);
-        l_cMaterial.EmissiveColor    = luaColorToIrrColor(a_material.m_EmissiveColor);
-        l_cMaterial.FogEnable        = a_material.m_FogEnable;
-        l_cMaterial.GouraudShading   = a_material.m_GouraudShading;
-        l_cMaterial.Lighting         = a_material.m_Lighting; 
-        l_cMaterial.MaterialType     = (irr::video::E_MATERIAL_TYPE)a_material.m_MaterialType;
-        l_cMaterial.NormalizeNormals = a_material.m_NormalizeNormals;
-        l_cMaterial.Shininess        = a_material.m_Shininess;
-        l_cMaterial.SpecularColor    = luaColorToIrrColor(a_material.m_SpecularColor);
-        l_cMaterial.Thickness        = a_material.m_Thickness;
-        l_cMaterial.Wireframe        = a_material.m_Wireframe;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().AmbientColor     = luaColorToIrrColor(a_material.m_AmbientColor);
+        m_mesh->getMeshBuffer(a_index)->getMaterial().AntiAliasing     = a_material.m_AntiAliasing;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().BackfaceCulling  = a_material.m_BackfaceCulling;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().BlendOperation   = (irr::video::E_BLEND_OPERATION)a_material.m_BlendOperation;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().DiffuseColor     = luaColorToIrrColor( a_material.m_DiffuseColor);
+        m_mesh->getMeshBuffer(a_index)->getMaterial().EmissiveColor    = luaColorToIrrColor(a_material.m_EmissiveColor);
+        m_mesh->getMeshBuffer(a_index)->getMaterial().FogEnable        = a_material.m_FogEnable;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().GouraudShading   = a_material.m_GouraudShading;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().Lighting         = a_material.m_Lighting; 
+        m_mesh->getMeshBuffer(a_index)->getMaterial().MaterialType     = (irr::video::E_MATERIAL_TYPE)a_material.m_MaterialType;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().NormalizeNormals = a_material.m_NormalizeNormals;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().Shininess        = a_material.m_Shininess;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().SpecularColor    = luaColorToIrrColor(a_material.m_SpecularColor);
+        m_mesh->getMeshBuffer(a_index)->getMaterial().Thickness        = a_material.m_Thickness;
+        m_mesh->getMeshBuffer(a_index)->getMaterial().Wireframe        = a_material.m_Wireframe;
       }
     }
 
@@ -161,6 +201,15 @@ namespace dustbin {
         if (l_pTexture != nullptr)
           m_mesh->getMeshBuffer(a_index)->getMaterial().setTexture((irr::u32)a_texture, l_pTexture);
       }
+    }
+
+    /**
+    * End the creation of the mesh
+    */
+    void CLuaSingleton_luamesh::finish() {
+      irr::scene::IMeshManipulator *l_pManipulator = m_device->getSceneManager()->getMeshManipulator();
+      l_pManipulator->recalculateNormals(m_mesh, true);
+      m_mesh->recalculateBoundingBox();
     }
   }
 }

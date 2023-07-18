@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_meshbuilder.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp" />
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingletonSystem.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_ai.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_luamesh.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLUASingleton_system.cpp" />

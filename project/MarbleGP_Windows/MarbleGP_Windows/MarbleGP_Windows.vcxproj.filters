@@ -678,6 +678,9 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CLuaMeshLoader.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingletonSystem.cpp">
+      <Filter>Quelldateien\lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

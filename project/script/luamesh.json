@@ -63,9 +63,17 @@
       "comment": "A 3d vertex used for the mesh buffer",
       "fields": [
         { "name": "position", "type": "SVector3d" },
-        { "name": "normal"  , "type": "SVector3d" },
-        { "name": "color"   , "type": "SColor"    },
         { "name": "texture" , "type": "SVector2d" }
+      ],
+      "prefix": "const ",
+      "postfix": "&"
+    },
+    "SVertex3d_2TextureCoords": {
+      "comment": "A 3d vertex used for the mesh buffer",
+      "fields": [
+        { "name": "position", "type": "SVector3d" },
+        { "name": "texture" , "type": "SVector2d" },
+        { "name": "texture2", "type": "SVector2d" }
       ],
       "prefix": "const ",
       "postfix": "&"
@@ -136,6 +144,23 @@
   "classes": {
   },
   "singletons": {
+    "system": {
+      "comment": "A singleton with some helper function",
+      "globalidentifier": "systemsingletonluamesh_cinstance",
+      "members": [
+        { "name": "device", "type": "irr::IrrlichtDevice *", "comment": "The Irrlicht device", "constructor": "true" }
+      ],
+      "methods": {
+        "lua_from": {
+          "loadscript": {
+            "comment": "Load another LUA script",
+            "arguments": [
+              { "name": "script", "type": "std::string", "comment": "The script file to load" }
+            ]
+          }
+        }
+      }
+    },
     "luamesh": {
       "comment": "Object used for creating a mesh from LUA code",
       "globalidentifier": "meshsingleton_cinstance",
@@ -159,6 +184,14 @@
               { "name": "indices"   , "type": "std::vector<int>"      , "comment": "The indices to add."                             }
             ]
           },
+          "addvertices_2TextureCoords": {
+            "comment": "Add a list of vertices to a meshbuffer",
+            "arguments": [
+              { "name": "meshbuffer", "type": "int"                                  , "comment": "Index of the mesh buffer to add the vertices to" },
+              { "name": "vertices"  , "type": "std::vector<SVertex3d_2TextureCoords>", "comment": "The vertices to add."                            },
+              { "name": "indices"   , "type": "std::vector<int>"                     , "comment": "The indices to add."                             }
+            ]
+          },
           "getmaterial": {
             "comment": "Get the material table of a meshbuffer",
             "arguments": [
@@ -180,6 +213,9 @@
               { "name": "texture" , "type": "int"        , "comment": "Index of the texture"     },
               { "name": "filename", "type": "std::string", "comment": "Filename of the texture"  }
             ]
+          },
+          "finish": {
+            "comment": "End the creation of the mesh"
           }
         },
         "lua_none": {
@@ -203,7 +239,12 @@
         { "name": "device", "type": "irr::IrrlichtDevice *", "comment": "The Irrlicht device", "constructor": "true" }
       ],
       "singletons": [
-        "luamesh"
+        "luamesh",
+        "system"
+      ],
+      "enums": [
+        "MaterialBlendOperations",
+        "MaterialType"
       ],
       "methods": {
         "lua_to": {
