@@ -90,11 +90,11 @@ namespace dustbin {
         if (l_bMarbleCollision) {
           for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
             l_cContact[i].surface.bounce = (dReal)0.5;
+            l_cContact[i].surface.bounce_vel = 25.0;
             l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2 | dContactSoftCFM | dContactSoftERP;
             l_cContact[i].surface.mu = (dReal)0;
             l_cContact[i].surface.mu2 = (dReal)0;
-            l_cContact[i].surface.bounce_vel = (dReal)0.00001;
-            l_cContact[i].surface.soft_cfm = (dReal)0.004;
+            l_cContact[i].surface.soft_cfm = (dReal)0.001;
             l_cContact[i].surface.soft_erp = (dReal)0.2;
             l_cContact[i].surface.rho = (dReal)0.9;
             l_cContact[i].surface.rho2 = (dReal)0.9;
@@ -127,6 +127,8 @@ namespace dustbin {
 
           irr::core::vector3df l_cVel = irr::core::vector3df();
 
+          bool l_bInCfm = false;
+
           if (l_pOdeNode1->m_cBody != 0)
             l_cVel = vectorOdeToIrr(dBodyGetLinearVel(l_pOdeNode1->m_cBody));
           else if (l_pOdeNode2->m_cBody != 0)
@@ -134,25 +136,28 @@ namespace dustbin {
 
           irr::f32 l_fVel = l_cVel.getLengthSQ();
 
-          if (l_fVel < 100.0f)
-            l_fVel = 100.0f;
-          else if (l_fVel > 900.0f)
-            l_fVel = 900.0f;
+          if (l_fVel < 50.0f)
+            l_fVel = 50.0f;
+          else if (l_fVel > 500.0f)
+            l_fVel = 500.0f;
 
-          l_fVel = (l_fVel - 100.0f) / 800.0f;
+          l_fVel = (l_fVel - 50.0f) / 400.0f;
 
-          dReal l_fSoftErp = l_fMaxERP * l_fVel;
+          dReal l_fSoftErp = std::min(0.8, l_fMaxERP * l_fVel);
 
           for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
             l_cContact[i].surface.bounce = (dReal)0.15;
-            l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2;
+            l_cContact[i].surface.mode = dContactBounce | dContactSlip1 | dContactSlip2 | dContactRolling;
 
             if (l_fSoftErp > 0.0) l_cContact[i].surface.mode |= dContactSoftERP;
 
+            if (l_pMarble->m_bInCfm)
+              l_cContact[i].surface.mode |= dContactSoftCFM;
+
             l_cContact[i].surface.mu = (dReal)1500;
             l_cContact[i].surface.mu2 = (dReal)0;
-            l_cContact[i].surface.bounce_vel = (dReal)0.0003;
-            l_cContact[i].surface.soft_cfm = 0.0;
+            l_cContact[i].surface.bounce_vel = (dReal)25.0;
+            l_cContact[i].surface.soft_cfm = 0.01;
             l_cContact[i].surface.soft_erp = l_fSoftErp;
             l_cContact[i].surface.rho = (dReal)0.9;
             l_cContact[i].surface.rho2 = (dReal)0.9;
@@ -175,7 +180,7 @@ namespace dustbin {
 
               x = l_pOdeNode2;
 
-              if (l_pOdeNode2->m_bTrigger || l_pOdeNode2->m_bRespawn || l_pOdeNode2->m_bMarbleTouch)
+              if (l_pOdeNode2->m_bTrigger || l_pOdeNode2->m_bRespawn || l_pOdeNode2->m_bMarbleTouch || l_pOdeNode2->m_bCfmEnter || l_pOdeNode2->m_bCfmExit)
                 o = l_pOdeNode2;
 
               if (l_pWorld->m_mCheckpoints.find(l_pOdeNode2->m_iId) != l_pWorld->m_mCheckpoints.end())
@@ -186,7 +191,7 @@ namespace dustbin {
 
               x = l_pOdeNode1;
 
-              if (l_pOdeNode1->m_bTrigger || l_pOdeNode1->m_bRespawn || l_pOdeNode2->m_bMarbleTouch)
+              if (l_pOdeNode1->m_bTrigger || l_pOdeNode1->m_bRespawn || l_pOdeNode1->m_bMarbleTouch || l_pOdeNode1->m_bCfmEnter || l_pOdeNode1->m_bCfmExit)
                 o = l_pOdeNode1;
 
               if (l_pWorld->m_mCheckpoints.find(l_pOdeNode1->m_iId) != l_pWorld->m_mCheckpoints.end())
@@ -224,6 +229,20 @@ namespace dustbin {
                 // The other object has a marble-touch trigger
                 if (o->m_bMarbleTouch) {
                   l_pWorld->handleMarbleTouch(p->m_iId, o->m_iId);
+                }
+
+                static int s_iCfm = 0;
+
+                if (o->m_bCfmEnter && !p->m_bInCfm) {
+                  s_iCfm++;
+                  printf("Cfm+ %i\n", s_iCfm);
+                  p->m_bInCfm = true;
+                }
+
+                if (o->m_bCfmExit && p->m_bInCfm) {
+                  s_iCfm--;
+                  printf("Cfm- %i\n", s_iCfm);
+                  p->m_bInCfm = false;
                 }
               }
 
@@ -1047,6 +1066,7 @@ namespace dustbin {
 
         m_aMarbles[l_iId]->m_eState = CObjectMarble::enMarbleState::Respawn1;
         m_aMarbles[l_iId]->m_iRespawnStart = m_pWorld->m_iWorldStep;
+        m_aMarbles[l_iId]->m_bInCfm = false;
 
         sendPlayerrespawn(a_iMarble, 1, m_pOutputQueue);
 

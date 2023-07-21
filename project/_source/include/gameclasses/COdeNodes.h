@@ -59,6 +59,8 @@ namespace dustbin {
         bool m_bSliderJoint;  /**< Is the joint attached to the object (if any) a slider? */
         bool m_bMarbleTouch;  /**< This object has a "Marble Touch" trigger */
         bool m_bMarbleOnly;   /**< This object does only collide with marbles */
+        bool m_bCfmEnter;     /**< Is this object an entry of a CFM zone? */
+        bool m_bCfmExit;      /**< Is this object an exit of a CFM zone? */
 
         int m_iTrigger;
         int m_iJoint;         /**< The joint type (0 == hinge, 1 == slider) */
@@ -178,6 +180,7 @@ namespace dustbin {
 
         bool m_bActive;     /**< The player has already shown some activity */
         bool m_bAiPlayer;   /**< Is this an AI player? */
+        bool m_bInCfm;      /**< Is this marble inside a CFM zone? */
 
         irr::core::vector3df m_vCamera;     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
         irr::core::vector3df m_vOffset;

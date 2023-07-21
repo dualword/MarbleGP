@@ -15,6 +15,8 @@ namespace dustbin {
     CPhysicsNode::CPhysicsNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) :
       ISceneNode (a_pParent, a_pMgr, a_iId),
       m_bCollides  (true),
+      m_bCfmEnter  (false),
+      m_bCfmExit   (false),
       m_bStatic    (true),
       m_bMarbleOnly(false),
       m_fMass      (1.0),
@@ -59,6 +61,9 @@ namespace dustbin {
       a_pOut->addBool ("collides", m_bCollides);
 
       a_pOut->addBool("CollideMarbleOnly", m_bMarbleOnly);
+      
+      a_pOut->addBool("CfmEnter", m_bCfmEnter);
+      a_pOut->addBool("CfmExit" , m_bCfmExit);
 
       if (!m_bStatic)
         a_pOut->addFloat("mass", m_fMass);
@@ -92,6 +97,12 @@ namespace dustbin {
 
         if (a_pIn->existsAttribute("CollideMarbleOnly"))
           m_bMarbleOnly = a_pIn->getAttributeAsBool("CollideMarbleOnly");
+
+        if (a_pIn->existsAttribute("CfmEnter"))
+          m_bCfmEnter = a_pIn->getAttributeAsBool("CfmEnter");
+
+        if (a_pIn->existsAttribute("CfmExit"))
+          m_bCfmExit = a_pIn->getAttributeAsBool("CfmExit");
 
         if (a_pIn->existsAttribute("mass"))
           m_fMass = a_pIn->getAttributeAsFloat("mass");
@@ -144,6 +155,8 @@ namespace dustbin {
       l_pNew->m_bCollides = m_bCollides;
       l_pNew->m_bStatic   = m_bStatic;
       l_pNew->m_fMass     = m_fMass;
+      l_pNew->m_bCfmEnter = m_bCfmEnter;
+      l_pNew->m_bCfmExit  = m_bCfmExit;
 
       for (std::vector<std::tuple<bool, irr::u8> >::iterator it = m_vTrigger.begin(); it != m_vTrigger.end(); it++) {
         l_pNew->m_vTrigger.push_back(std::make_tuple(std::get<0>(*it), std::get<1>(*it)));
@@ -170,6 +183,13 @@ namespace dustbin {
 
     irr::f32 CPhysicsNode::getMass() {
       return m_fMass;
+    }
+
+    bool CPhysicsNode::cfmEnter() {
+      return m_bCfmEnter;
+    }
+    bool CPhysicsNode::cfmExit() {
+      return m_bCfmExit;
     }
   }
 }

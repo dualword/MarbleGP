@@ -113,6 +113,8 @@ namespace dustbin {
       m_bSliderJoint(false),
       m_bMarbleTouch(false),
       m_bMarbleOnly (false),
+      m_bCfmEnter   (false),
+      m_bCfmExit    (false),
       m_iTrigger    (-1),
       m_iJoint      (-1),
       m_pWorld      (a_pWorld),
@@ -138,6 +140,8 @@ namespace dustbin {
         if (l_pAttr->existsAttribute(("Trigger_"         + std::to_string(a_iMaterial + 1)).c_str())) m_iTrigger    = l_pAttr->getAttributeAsInt (("Trigger_"     + std::to_string(a_iMaterial + 1)).c_str());
         if (l_pAttr->existsAttribute(("Respawn_"         + std::to_string(a_iMaterial + 1)).c_str())) m_bRespawn    = l_pAttr->getAttributeAsBool(("Respawn_"     + std::to_string(a_iMaterial + 1)).c_str());
         if (l_pAttr->existsAttribute("CollideMarbleOnly"                                                )) m_bMarbleOnly = l_pAttr->getAttributeAsBool("CollideMarbleOnly");
+        if (l_pAttr->existsAttribute("CfmEnter"                                                         )) m_bCfmEnter   = l_pAttr->getAttributeAsBool("CfmEnter");
+        if (l_pAttr->existsAttribute("CfmExit"                                                          )) m_bCfmExit    = l_pAttr->getAttributeAsBool("CfmExit");
 
         l_pAttr->drop();
       }
@@ -338,6 +342,8 @@ namespace dustbin {
       m_iGroundContact(0),
       m_iLastJump     (0),
       m_bActive       (false),
+      m_bAiPlayer     (false),
+      m_bInCfm        (false),
       m_vCamera       (irr::core::vector3df()),
       m_vUpVector     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),
       m_vUpOffset     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),

@@ -30,6 +30,8 @@ namespace dustbin {
         bool m_bCollides;     /**< Does this object collide. If not it can still produce triggers */
         bool m_bStatic;       /**< Is this a static object? */
         bool m_bMarbleOnly;   /**< Does this object only collide with marbles? */
+        bool m_bCfmEnter;     /**< Does this node trigger a CFM entry? */
+        bool m_bCfmExit;      /**< Does this node trigger a CFM exit? */
 
         float m_fMass;  /**< Mass of the object, only used for non-static objects */
 
@@ -58,6 +60,9 @@ namespace dustbin {
         bool isStatic();
         bool collidesWithMarblesOnly();
         irr::f32 getMass();
+
+        bool cfmEnter();
+        bool cfmExit();
     };
   }
 }
