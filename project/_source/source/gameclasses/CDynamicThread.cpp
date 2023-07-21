@@ -231,17 +231,11 @@ namespace dustbin {
                   l_pWorld->handleMarbleTouch(p->m_iId, o->m_iId);
                 }
 
-                static int s_iCfm = 0;
-
                 if (o->m_bCfmEnter && !p->m_bInCfm) {
-                  s_iCfm++;
-                  printf("Cfm+ %i\n", s_iCfm);
                   p->m_bInCfm = true;
                 }
 
                 if (o->m_bCfmExit && p->m_bInCfm) {
-                  s_iCfm--;
-                  printf("Cfm- %i\n", s_iCfm);
                   p->m_bInCfm = false;
                 }
               }
