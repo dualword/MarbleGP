@@ -23,6 +23,7 @@ const double GRAD_PI = 180.0 / 3.1415926535897932384626433832795;
 
 namespace dustbin {
   namespace gameclasses {
+
     /**
     * Factory function for the game logic
     * @param a_sType type of game logic
@@ -143,7 +144,7 @@ namespace dustbin {
 
           l_fVel = (l_fVel - 50.0f) / 400.0f;
 
-          dReal l_fSoftErp = std::min(0.8, l_fMaxERP * l_fVel);
+          dReal l_fSoftErp = std::min((float)0.8, (float)(l_fMaxERP * l_fVel));
 
           for (irr::u32 i = 0; i < MAX_CONTACTS; i++) {
             l_cContact[i].surface.bounce = (dReal)0.15;
@@ -151,7 +152,7 @@ namespace dustbin {
 
             if (l_fSoftErp > 0.0) l_cContact[i].surface.mode |= dContactSoftERP;
 
-            if (l_pMarble->m_bInCfm)
+            if (l_pMarble->m_bInCfm && l_fVel > 100)
               l_cContact[i].surface.mode |= dContactSoftCFM;
 
             l_cContact[i].surface.mu = (dReal)1500;
@@ -953,6 +954,7 @@ namespace dustbin {
           if (m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished) {
             m_aMarbles[i]->m_eState        = CObjectMarble::enMarbleState::Finished;
             m_aMarbles[i]->m_iStunnedStart = -1;
+            m_aMarbles[i]->m_bInCfm        = false;
             sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
 
             if (m_pLuaScript != nullptr)
