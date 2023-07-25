@@ -24,6 +24,10 @@ const double GRAD_PI = 180.0 / 3.1415926535897932384626433832795;
 namespace dustbin {
   namespace gameclasses {
 
+#ifdef _DEBUG
+    int g_iCfm;
+#endif
+
     /**
     * Factory function for the game logic
     * @param a_sType type of game logic
@@ -152,8 +156,9 @@ namespace dustbin {
 
             if (l_fSoftErp > 0.0) l_cContact[i].surface.mode |= dContactSoftERP;
 
-            if (l_pMarble->m_bInCfm && l_fVel > 100)
+            if (l_pMarble->m_bInCfm) {
               l_cContact[i].surface.mode |= dContactSoftCFM;
+            }
 
             l_cContact[i].surface.mu = (dReal)1500;
             l_cContact[i].surface.mu2 = (dReal)0;
@@ -233,10 +238,22 @@ namespace dustbin {
                 }
 
                 if (o->m_bCfmEnter && !p->m_bInCfm) {
+#ifdef _DEBUG
+                  if (!p->m_bInCfm) {
+                    g_iCfm++;
+                    printf("Cfm: %i [+]\n", g_iCfm);
+                  }
+#endif
                   p->m_bInCfm = true;
                 }
 
                 if (o->m_bCfmExit && p->m_bInCfm) {
+#ifdef _DEBUG
+                  if (p->m_bInCfm) {
+                    g_iCfm--;
+                    printf("Cfm: %i [-]\n", g_iCfm);
+                  }
+#endif
                   p->m_bInCfm = false;
                 }
               }
@@ -406,9 +423,16 @@ namespace dustbin {
                 if (!p->m_bRespawn)
                   p->m_iManualRespawn = -1;
                 else if (m_pWorld->m_iWorldStep - p->m_iManualRespawn > 120) {
+#ifdef _DEBUG
+                  if (p->m_bInCfm) {
+                    g_iCfm--;
+                    printf("Cfm: %i [Respawn M]\n", g_iCfm);
+                  }
+#endif
                   p->m_iManualRespawn = -1;
                   p->m_iRespawnStart = m_pWorld->m_iWorldStep;
                   p->m_eState = CObjectMarble::enMarbleState::Respawn1;
+                  p->m_bInCfm = false;
 
                   sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
 
@@ -741,6 +765,7 @@ namespace dustbin {
       m_pLuaScript  (nullptr),
       m_sLuaError   ("")
     {
+      g_iCfm = 0;
     }
 
     bool CDynamicThread::setupGame(
@@ -952,6 +977,12 @@ namespace dustbin {
       for (int i = 0; i < 16; i++) {
         if (m_aMarbles[i] != nullptr) {
           if (m_aMarbles[i]->m_eState != CObjectMarble::enMarbleState::Finished) {
+#ifdef _DEBUG
+            if (m_aMarbles[i]->m_bInCfm) {
+              g_iCfm--;
+              printf("Cfm: %i [Cancel]\n", g_iCfm);
+            }
+#endif
             m_aMarbles[i]->m_eState        = CObjectMarble::enMarbleState::Finished;
             m_aMarbles[i]->m_iStunnedStart = -1;
             m_aMarbles[i]->m_bInCfm        = false;
@@ -1060,6 +1091,13 @@ namespace dustbin {
           sendPlayerstunned(m_aMarbles[l_iId]->m_iId, 0, m_pOutputQueue);
         }
 
+#ifdef _DEBUG
+        if (m_aMarbles[l_iId]->m_bInCfm) {
+          g_iCfm--;
+          printf("Cfm: %i [Respawn]\n", g_iCfm);
+        }
+#endif
+
         m_aMarbles[l_iId]->m_eState = CObjectMarble::enMarbleState::Respawn1;
         m_aMarbles[l_iId]->m_iRespawnStart = m_pWorld->m_iWorldStep;
         m_aMarbles[l_iId]->m_bInCfm = false;
@@ -1141,6 +1179,14 @@ namespace dustbin {
           m_aMarbles[l_iIndex]->m_eState      = CObjectMarble::enMarbleState::Finished;
           m_aMarbles[l_iIndex]->m_iFinishTime = m_pWorld->m_iWorldStep;
         }
+
+#ifdef _DEBUG
+        if (m_aMarbles[l_iIndex]->m_bInCfm) {
+          g_iCfm--;
+          printf("Cfm: %i [Finish]\n", g_iCfm);
+        }
+#endif
+        m_aMarbles[l_iIndex]->m_bInCfm = false;
 
         printf("Finished: %i\n", l_iIndex);
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);
