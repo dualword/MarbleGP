@@ -239,7 +239,7 @@ namespace dustbin {
 
                 if (o->m_bCfmEnter && !p->m_bInCfm) {
 #ifdef _DEBUG
-                  if (!p->m_bInCfm) {
+                  if (!p->m_bInCfm && p->m_eState == gameclasses::CObjectMarble::enMarbleState::Rolling) {
                     g_iCfm++;
                     printf("Cfm: %i [+]\n", g_iCfm);
                   }
