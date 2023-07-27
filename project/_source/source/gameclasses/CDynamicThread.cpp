@@ -765,7 +765,9 @@ namespace dustbin {
       m_pLuaScript  (nullptr),
       m_sLuaError   ("")
     {
+#ifdef _DEBUG
       g_iCfm = 0;
+#endif
     }
 
     bool CDynamicThread::setupGame(
