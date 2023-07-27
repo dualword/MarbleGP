@@ -274,6 +274,9 @@ namespace dustbin {
             if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump) {
               p->m_fMinVel  = (*l_itSection)->m_fMinSpeed;
               p->m_fMaxVel  = (*l_itSection)->m_fMaxSpeed;
+            }
+
+            if (p->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || p->m_eType == scenenodes::CAiPathNode::enSegmentType::Steep) {
               p->m_fBestVel = (*l_itSection)->m_fBestSpeed;
             }
 
@@ -612,7 +615,8 @@ namespace dustbin {
           m_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
           m_eMode == enMarbleMode::Respawn    ? L"Respawn"    :
           m_eMode == enMarbleMode::Respawn2   ? L"Respawn2"   :
-          m_eMode == enMarbleMode::TimeAttack ? L"TimeAttack" : L"- unknwon -"
+          m_eMode == enMarbleMode::TimeAttack ? L"TimeAttack" :
+          m_eMode == enMarbleMode::Steep      ? L"Steep Turn" : L"- unknwon -"
         ;
 
         drawDebugDice(L"Marble Mode", l_sMode.c_str(), l_cPos, irr::video::SColor(0xFF, 0xD0, 0xD0, 0xD0));
@@ -670,7 +674,10 @@ namespace dustbin {
     void CControllerAi_V2::processNextSpecial(SPathLine2d *a_pSpecial, irr::f32 a_fVel) {
       if (a_pSpecial != nullptr) {
         // We have found a jump
-        if (a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
+        if (a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || 
+            a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop ||
+            a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Steep) 
+        {
           // Now we check for the segment after the jump, to see if we need to switch to jump mode
           // we create two lines from our position to the borders of the end of the segment and see
           // if these lines do not cross any border (therefore the 0.1 * limitation) we are ready to jump
@@ -682,7 +689,9 @@ namespace dustbin {
 
           // Mark: we also need to check if the jump if in front of use, i.e. the Y part of the 2d coordinate is negatve
           if (l_cLine1.end.Y < 0.0f && l_cLine2.end.Y < 0.0f && !doLinesCollide(l_cLine1, l_cLine2, m_p2dPath)) {
-            switchMarbleMode(a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump ? enMarbleMode::Jump : enMarbleMode::Loop);
+            switchMarbleMode(
+              a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump ? enMarbleMode::Jump :
+              a_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Steep ? enMarbleMode::Steep : enMarbleMode::Loop);
           }
           else 
             if (m_eMode == enMarbleMode::Jump)
@@ -690,7 +699,7 @@ namespace dustbin {
         }
         else {
           // No jump ahead but still jumping? Switch to default
-          if (m_eMode == enMarbleMode::Jump)
+          if (m_eMode == enMarbleMode::Jump || m_eMode == enMarbleMode::Loop || m_eMode == enMarbleMode::Steep)
             switchMarbleMode(enMarbleMode::Default);
         }
 
@@ -714,7 +723,7 @@ namespace dustbin {
       }
       else {
         // No jump ahead but still in jump or loop mood? Switch to default
-        if (m_eMode == enMarbleMode::Jump || m_eMode == enMarbleMode::Loop)
+        if (m_eMode == enMarbleMode::Jump || m_eMode == enMarbleMode::Loop || m_eMode == enMarbleMode::Steep)
           switchMarbleMode(enMarbleMode::Default);
       }
     }
@@ -930,7 +939,7 @@ namespace dustbin {
             if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
               // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
               // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
-              if (m_eMode != enMarbleMode::Respawn && m_eMode != enMarbleMode::Respawn2)
+              if (m_eMode != enMarbleMode::Respawn && m_eMode != enMarbleMode::Respawn2 && m_eMode != enMarbleMode::Steep)
                 switchMarbleMode(enMarbleMode::OffTrack);
             }
             else {
@@ -1001,7 +1010,10 @@ namespace dustbin {
             // If debugging is active we paint the two calculated lines the determine how we move
             m_pDrv->setRenderTarget(m_pDebugPathRTT, true, false);
             if (l_pSpecial != nullptr) {
-              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop) {
+              if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump || 
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop ||
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Steep) 
+              {
                 irr::core::line2df l_cLine1 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[1].end);
                 irr::core::line2df l_cLine2 = irr::core::line2df(irr::core::vector2df(), l_pSpecial->m_cLines[2].end);
 
@@ -1011,8 +1023,17 @@ namespace dustbin {
                 bool l_bCollide1 = doesLineCollide(l_cLine1, m_p2dPath);
                 bool l_bCollide2 = doesLineCollide(l_cLine2, m_p2dPath);
 
-                draw2dDebugLine(l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
-                draw2dDebugLine(l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
+                irr::video::SColor l_cColor = 
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Default ? irr::video::SColor(0xFF,    0, 0xFF,    0) : 
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Jump    ? irr::video::SColor(0xFF,    0,    0, 0xFF) : 
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Block   ? irr::video::SColor(0xFF, 0xFF, 0xFF,    0) : 
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Loop    ? irr::video::SColor(0xFF, 0xFF,    0, 0xFF) :
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Respawn ? irr::video::SColor(0xFF, 0x40, 0x40, 0x40) :
+                  l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Steep   ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF) : irr::video::SColor(0xFF, 0, 0xFF, 0xFF);
+                ;
+
+                draw2dDebugLine(l_cLine1, m_fScale, l_bCollide1 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : l_cColor, m_cOffset);
+                draw2dDebugLine(l_cLine2, m_fScale, l_bCollide2 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : l_cColor, m_cOffset);
               }
             }
             if (l_fClosest != 0.0f && m_pDebugPathRTT != nullptr) {
@@ -1065,6 +1086,10 @@ namespace dustbin {
 
               case enMarbleMode::Respawn2:
                 s = L"Ai Mode: Respawn2";
+                break;
+
+              case enMarbleMode::Steep:
+                s = L"Ai Mode: Steep Turn";
                 break;
             }
             draw2dDebugText(s.c_str(), m_pFont, irr::core::vector2df());
@@ -1433,13 +1458,41 @@ namespace dustbin {
             // just set the "respawn" flag to true
             a_bRespawn = true;
             break;
+
+          case enMarbleMode::Steep: {
+            irr::f32 l_fBst = a_pSpecial->m_pParent->m_pParent->m_fBestVel;
+
+            irr::core::line2df l_cSteep = irr::core::line2df(irr::core::vector2df(), a_pSpecial->m_cLines[0].end);
+
+            irr::f64 l_fAngle = l_cVelocityLine.getAngleWith(l_cSteep);
+
+            if (l_cSteep.end.X < 0.0f)
+              l_fAngle = -l_fAngle;
+
+            a_iCtrlX = (irr::s8)std::max(-127.0, std::min(127.0, (127.0 * l_fAngle / 10.0)));
+
+            if (l_fBst > 0.0) {
+              if (l_fVel / l_fBst < 0.05) {
+                a_iCtrlY = 127;
+              }
+              else if (l_fVel > l_fBst) {
+                a_iCtrlY = -127;
+                a_bBrake = l_fVel / l_fBst > 0.1;
+              }
+            }
+            else {
+              a_iCtrlY = std::abs(l_fAngle < 30.0) ? 127 : 0;
+              a_bBrake = std::abs(l_fAngle) > 40.0;
+            }
+            return;
+          }
         }
 
         bool l_bOvertake = false;
         bool l_bCollide  = false;
         bool l_bOTBrake  = true;
 
-        if (m_eMode != enMarbleMode::Jump) {
+        if (m_eMode != enMarbleMode::Jump && m_eMode != enMarbleMode::Steep) {
           if (m_iSkills[(int)enSkill::OtherMarbleMode] < m_cAiData.m_iAvoid) {
             // Avoid collisions
             irr::core::vector2df l_cCollision = l_cVelocityLine.getClosestPoint(a_cCloseMb);

@@ -111,8 +111,9 @@ namespace dustbin {
             { "flat"   , 1 },
             { "jump"   , 2 },
             { "loop"   , 3 },
-            { "complex", 4 },
-            { "moving" , 5 }
+            { "steep"  , 4 },
+            { "complex", 5 },
+            { "moving" , 6 }
           };
 
           m_itStart = m_vTracks.begin();

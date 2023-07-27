@@ -254,7 +254,6 @@ namespace dustbin {
           sendImagePosition();
         }
 
-        printf("%i\n", l_cPos.Y);
         (*it).m_cDrawRect = irr::core::recti(
           l_cPos,
           m_cImageSize

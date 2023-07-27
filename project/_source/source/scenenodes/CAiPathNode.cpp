@@ -226,7 +226,10 @@ namespace dustbin {
 
     void CAiPathNode::SAiPathSection::draw(irr::video::IVideoDriver* a_pDrv, bool a_bIsSelected) {
       irr::core::line3df l_cThis = getSegmentLine();
-      irr::video::SColor l_cColor = m_eType == enSegmentType::Default ? irr::video::SColor(0xFF, 0, 0xFF, 0) : m_eType == enSegmentType::Jump ? irr::video::SColor(0xFF, 0, 0, 0xFF) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
+      irr::video::SColor l_cColor = 
+        m_eType == enSegmentType::Default ? irr::video::SColor(0xFF,    0, 0xFF,    0) : 
+        m_eType == enSegmentType::Jump    ? irr::video::SColor(0xFF,    0,    0, 0xFF) :
+        m_eType == enSegmentType::Steep   ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
 
       a_pDrv->draw3DLine(l_cThis.start, l_cThis.end, a_bIsSelected ? irr::video::SColor(0xFF, 0xFF, 0, 0) : l_cColor);
       a_pDrv->draw3DLine(l_cThis.getMiddle(), l_cThis.getMiddle() + 5.0f * m_cNormal, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));

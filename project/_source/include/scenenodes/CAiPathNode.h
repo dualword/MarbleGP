@@ -25,7 +25,8 @@ namespace dustbin {
           Block,      /**< A blocker is coming */
           Loop,       /**< A loop segment, ignore state "off-track" */
           Startup,    /**< Marks a startup segment option */
-          Respawn     /**< This segment is connected to a respawn */
+          Respawn,    /**< This segment is connected to a respawn */
+          Steep       /**< A steep turn segment */
         };
 
         typedef struct SAiPathSection {

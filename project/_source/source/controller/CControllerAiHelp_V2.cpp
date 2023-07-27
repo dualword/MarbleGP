@@ -206,28 +206,33 @@ namespace dustbin {
           if (m_pDebugDiceRTT != nullptr)
             draw2dDebugLine(l_cSpecial, m_fScale, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cOffset);
 
-          irr::core::vector2df v;
-          if (l_cSpecial.intersectWith(irr::core::line2df(irr::core::vector2df(0.0f), l_cVelocity2d), v) && l_pSpecial->m_pParent->m_pParent->m_fBestVel > 0.0f) {
-            if (l_cVelocity2d.getLength() < 0.95f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
-              a_iCtrlY = 127;
-              a_bBrake = false;
+          if (l_pSpecial->m_pParent->m_pParent->m_eType == scenenodes::CAiPathNode::enSegmentType::Steep) {
+            a_eMode = enMarbleMode::Steep;
+          }
+          else {
+            irr::core::vector2df v;
+            if (l_cSpecial.intersectWith(irr::core::line2df(irr::core::vector2df(0.0f), l_cVelocity2d), v) && l_pSpecial->m_pParent->m_pParent->m_fBestVel > 0.0f) {
+              if (l_cVelocity2d.getLength() < 0.95f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
+                a_iCtrlY = 127;
+                a_bBrake = false;
+              }
+              else if (l_cVelocity2d.getLength() > 1.1f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
+                a_iCtrlY = -127;
+                a_bBrake = true;
+              }
+              else if (l_cVelocity2d.getLength() > 1.05f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
+                a_iCtrlY = -127;
+                a_bBrake = false;
+              }
+              else {
+                a_iCtrlY = 0;
+              }
+              a_eMode  = enMarbleMode::Jump;
             }
-            else if (l_cVelocity2d.getLength() > 1.1f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
-              a_iCtrlY = -127;
-              a_bBrake = true;
-            }
-            else if (l_cVelocity2d.getLength() > 1.05f * l_pSpecial->m_pParent->m_pParent->m_fBestVel) {
-              a_iCtrlY = -127;
-              a_bBrake = false;
-            }
-            else {
-              a_iCtrlY = 0;
-            }
-            a_eMode  = enMarbleMode::Jump;
           }
         }
 
-        if (a_eMode != enMarbleMode::Jump) {
+        if (a_eMode != enMarbleMode::Jump && a_eMode != enMarbleMode::Steep) {
           // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
           // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
           if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 == m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
