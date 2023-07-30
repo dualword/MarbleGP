@@ -65,6 +65,8 @@ namespace dustbin {
         int m_iTrigger;
         int m_iJoint;         /**< The joint type (0 == hinge, 1 == slider) */
 
+        float m_fCfmValue;    /**< The CFM value, only used if the "m_bCfmEnter" flag is true */
+
         CWorld* m_pWorld;
 
         dGeomID  m_cGeom;
@@ -181,6 +183,8 @@ namespace dustbin {
         bool m_bActive;     /**< The player has already shown some activity */
         bool m_bAiPlayer;   /**< Is this an AI player? */
         bool m_bInCfm;      /**< Is this marble inside a CFM zone? */
+
+        float m_fCfmZone;  /**< The CFM value of the zone the marble is in */
 
         irr::core::vector3df m_vCamera;     /**< The standard camera position. Depending on the "rearview" flag this value or "m_vRearview" is sent */
         irr::core::vector3df m_vOffset;

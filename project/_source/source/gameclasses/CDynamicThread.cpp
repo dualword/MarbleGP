@@ -158,12 +158,14 @@ namespace dustbin {
 
             if (l_pMarble->m_bInCfm) {
               l_cContact[i].surface.mode |= dContactSoftCFM;
+              l_cContact[i].surface.soft_cfm = l_pMarble->m_fCfmZone;
             }
+            else l_cContact[i].surface.soft_cfm = 0.0;
 
             l_cContact[i].surface.mu = (dReal)1500;
             l_cContact[i].surface.mu2 = (dReal)0;
             l_cContact[i].surface.bounce_vel = (dReal)25.0;
-            l_cContact[i].surface.soft_cfm = 0.01;
+            
             l_cContact[i].surface.soft_erp = l_fSoftErp;
             l_cContact[i].surface.rho = (dReal)0.9;
             l_cContact[i].surface.rho2 = (dReal)0.9;
@@ -237,16 +239,15 @@ namespace dustbin {
                   l_pWorld->handleMarbleTouch(p->m_iId, o->m_iId);
                 }
 
-                if (o->m_bCfmEnter && !p->m_bInCfm) {
+                if (o->m_bCfmEnter && !p->m_bInCfm && p->m_eState == CObjectMarble::enMarbleState::Rolling) {
+                  p->m_bInCfm   = true;
+                  p->m_fCfmZone = o->m_fCfmValue;
 #ifdef _DEBUG
-                  if (!p->m_bInCfm && p->m_eState == gameclasses::CObjectMarble::enMarbleState::Rolling) {
-                    g_iCfm++;
-                    printf("Cfm: %i [+]\n", g_iCfm);
-                  }
+                  g_iCfm++;
+                  printf("Cfm: %i [+] - %.4f\n", g_iCfm, p->m_fCfmZone);
 #endif
-                  p->m_bInCfm = true;
                 }
-
+                 
                 if (o->m_bCfmExit && p->m_bInCfm) {
 #ifdef _DEBUG
                   if (p->m_bInCfm) {
@@ -431,8 +432,9 @@ namespace dustbin {
 #endif
                   p->m_iManualRespawn = -1;
                   p->m_iRespawnStart = m_pWorld->m_iWorldStep;
-                  p->m_eState = CObjectMarble::enMarbleState::Respawn1;
-                  p->m_bInCfm = false;
+                  p->m_eState        = CObjectMarble::enMarbleState::Respawn1;
+                  p->m_bInCfm        = false;
+                  p->m_fCfmValue     = 0.01f;
 
                   sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
 
@@ -988,6 +990,7 @@ namespace dustbin {
             m_aMarbles[i]->m_eState        = CObjectMarble::enMarbleState::Finished;
             m_aMarbles[i]->m_iStunnedStart = -1;
             m_aMarbles[i]->m_bInCfm        = false;
+            m_aMarbles[i]->m_fCfmZone      = 0.01f;
             sendPlayerfinished(m_aMarbles[i]->m_iId, -1, m_aMarbles[i]->m_iLapNo, m_pOutputQueue);
 
             if (m_pLuaScript != nullptr)
@@ -1103,6 +1106,7 @@ namespace dustbin {
         m_aMarbles[l_iId]->m_eState = CObjectMarble::enMarbleState::Respawn1;
         m_aMarbles[l_iId]->m_iRespawnStart = m_pWorld->m_iWorldStep;
         m_aMarbles[l_iId]->m_bInCfm = false;
+        m_aMarbles[l_iId]->m_fCfmZone = 0.01f;
 
         sendPlayerrespawn(a_iMarble, 1, m_pOutputQueue);
 
@@ -1189,6 +1193,7 @@ namespace dustbin {
         }
 #endif
         m_aMarbles[l_iIndex]->m_bInCfm = false;
+        m_aMarbles[l_iIndex]->m_fCfmZone = 0.01f;
 
         printf("Finished: %i\n", l_iIndex);
         sendPlayerfinished(a_iMarbleId, a_iRaceTime, a_iLaps, m_pOutputQueue);

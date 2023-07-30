@@ -117,6 +117,7 @@ namespace dustbin {
       m_bCfmExit    (false),
       m_iTrigger    (-1),
       m_iJoint      (-1),
+      m_fCfmValue   (0.01f),
       m_pWorld      (a_pWorld),
       m_cGeom       (0),
       m_cBody       (0),
@@ -142,6 +143,7 @@ namespace dustbin {
         if (l_pAttr->existsAttribute("CollideMarbleOnly"                                                )) m_bMarbleOnly = l_pAttr->getAttributeAsBool("CollideMarbleOnly");
         if (l_pAttr->existsAttribute("CfmEnter"                                                         )) m_bCfmEnter   = l_pAttr->getAttributeAsBool("CfmEnter");
         if (l_pAttr->existsAttribute("CfmExit"                                                          )) m_bCfmExit    = l_pAttr->getAttributeAsBool("CfmExit");
+        if (l_pAttr->existsAttribute("CfmValue"                                                         )) m_fCfmValue   = l_pAttr->getAttributeAsFloat("CfmValue");
 
         l_pAttr->drop();
       }
@@ -344,6 +346,7 @@ namespace dustbin {
       m_bActive       (false),
       m_bAiPlayer     (false),
       m_bInCfm        (false),
+      m_fCfmZone      (0.01f),
       m_vCamera       (irr::core::vector3df()),
       m_vUpVector     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),
       m_vUpOffset     (irr::core::vector3df(0.0f, 1.0f, 0.0f)),

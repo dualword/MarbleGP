@@ -20,6 +20,7 @@ namespace dustbin {
       m_bStatic    (true),
       m_bMarbleOnly(false),
       m_fMass      (1.0),
+      m_fCfm       (0.01f),
       m_eType      (enNodeType::Trimesh)
     {
       m_cBox.reset(getPosition());
@@ -65,6 +66,8 @@ namespace dustbin {
       a_pOut->addBool("CfmEnter", m_bCfmEnter);
       a_pOut->addBool("CfmExit" , m_bCfmExit);
 
+      a_pOut->addFloat("CfmValue", m_fCfm);
+
       if (!m_bStatic)
         a_pOut->addFloat("mass", m_fMass);
 
@@ -103,6 +106,9 @@ namespace dustbin {
 
         if (a_pIn->existsAttribute("CfmExit"))
           m_bCfmExit = a_pIn->getAttributeAsBool("CfmExit");
+
+        if (a_pIn->existsAttribute("CfmValue"))
+          m_fCfm = a_pIn->getAttributeAsFloat("CfmValue");
 
         if (a_pIn->existsAttribute("mass"))
           m_fMass = a_pIn->getAttributeAsFloat("mass");
@@ -188,8 +194,13 @@ namespace dustbin {
     bool CPhysicsNode::cfmEnter() {
       return m_bCfmEnter;
     }
+
     bool CPhysicsNode::cfmExit() {
       return m_bCfmExit;
+    }
+
+    irr::f32 CPhysicsNode::cfmValue() {
+      return m_fCfm;
     }
   }
 }

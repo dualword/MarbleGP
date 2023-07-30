@@ -34,6 +34,7 @@ namespace dustbin {
         bool m_bCfmExit;      /**< Does this node trigger a CFM exit? */
 
         float m_fMass;  /**< Mass of the object, only used for non-static objects */
+        float m_fCfm;   /**< The CFM value of this node (only used if the "CFM Enter" flag is true) */
 
         irr::core::aabbox3df m_cBox;
 
@@ -63,6 +64,7 @@ namespace dustbin {
 
         bool cfmEnter();
         bool cfmExit();
+        irr::f32 cfmValue();
     };
   }
 }
