@@ -3,6 +3,7 @@
 #include <controller/CControllerAi_V2.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CAiPathNode.h>
+#include <helpers/CStringHelpers.h>
 #include <data/CDataStructs.h>
 #include <gui/CGameHUD.h>
 #include <CGlobal.h>
@@ -538,6 +539,23 @@ namespace dustbin {
     }
 
     /**
+    * Get a string representation of a marble mode
+    * @param a_eMode the mode to convert
+    * @return the current mode as string
+    */
+    std::wstring CControllerAi_V2::getModeString(enMarbleMode a_eMode) {
+      return a_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
+             a_eMode == enMarbleMode::Default    ? L"Default"    :
+             a_eMode == enMarbleMode::Cruise     ? L"Cruise"     :
+             a_eMode == enMarbleMode::Jump       ? L"Jump"       :
+             a_eMode == enMarbleMode::Loop       ? L"Loop"       :
+             a_eMode == enMarbleMode::Respawn    ? L"Respawn"    :
+             a_eMode == enMarbleMode::Respawn2   ? L"Respawn2"   :
+             a_eMode == enMarbleMode::TimeAttack ? L"TimeAttack" :
+             a_eMode == enMarbleMode::Steep      ? L"Steep Turn" : L"- unknwon -";
+    }
+
+    /**
     * Update the skill values using random number generation
     */
     void CControllerAi_V2::rollDice() {
@@ -606,18 +624,7 @@ namespace dustbin {
 #endif
           l_cPos, irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0));
 
-        std::wstring l_sMode = 
-          m_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
-          m_eMode == enMarbleMode::Default    ? L"Default"    :
-          m_eMode == enMarbleMode::Cruise     ? L"Cruise"     :
-          m_eMode == enMarbleMode::Jump       ? L"Jump"       :
-          m_eMode == enMarbleMode::Loop       ? L"Loop"       :
-          m_eMode == enMarbleMode::OffTrack   ? L"Offtrack"   :
-          m_eMode == enMarbleMode::Respawn    ? L"Respawn"    :
-          m_eMode == enMarbleMode::Respawn2   ? L"Respawn2"   :
-          m_eMode == enMarbleMode::TimeAttack ? L"TimeAttack" :
-          m_eMode == enMarbleMode::Steep      ? L"Steep Turn" : L"- unknwon -"
-        ;
+        std::wstring l_sMode = getModeString(m_eMode);
 
         drawDebugDice(L"Marble Mode", l_sMode.c_str(), l_cPos, irr::video::SColor(0xFF, 0xD0, 0xD0, 0xD0));
       }
@@ -799,8 +806,9 @@ namespace dustbin {
           a_bSucceed = m_eMode != enMarbleMode::Loop;
         }
 
-        if (a_bSucceed)
+        if (a_bSucceed) {
           m_eMode = a_eMode;
+        }
       }
     }
 
@@ -939,7 +947,7 @@ namespace dustbin {
             if (m_p2dPath->m_cLines[1].getPointOrientation(irr::core::vector2df()) > 0 ==  m_p2dPath->m_cLines[2].getPointOrientation(irr::core::vector2df()) > 0) {
               // If we detected that we are off track (the orientation of both border lines of the segment to our position is the same, i.e. if we are on the track we
               // have one border on the left and the other one on the right) and we are currently not requesting a respawn we switch the mode to "off-track"
-              if (m_eMode != enMarbleMode::Respawn && m_eMode != enMarbleMode::Respawn2 && m_eMode != enMarbleMode::Steep)
+              if (m_eMode != enMarbleMode::Respawn && m_eMode != enMarbleMode::Respawn2 && m_eMode != enMarbleMode::Steep && m_eMode != enMarbleMode::Loop)
                 switchMarbleMode(enMarbleMode::OffTrack);
             }
             else {
@@ -1100,6 +1108,11 @@ namespace dustbin {
       if (m_pDebugPathRTT != nullptr) {
         m_pDrv->setRenderTarget(nullptr);
       } 
+
+      if (m_eMode == enMarbleMode::Loop && m_fOldAngle < 10.0) {
+        a_iCtrlY = 127;
+        a_bBrake = false;
+      }
 
       return true;
     }
@@ -1387,8 +1400,12 @@ namespace dustbin {
             break;
 
           case enMarbleMode::TimeAttack:
+            l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
+            break;
+
           case enMarbleMode::Loop:
             l_iLines = getControlLines_TimeAttack(l_cLine, l_cOther, *l_itEnd);
+            m_fVCalc = 200.0;
             break;
 
           case enMarbleMode::Jump: {
@@ -1505,11 +1522,11 @@ namespace dustbin {
 
               if ((l_cCollision - a_cCloseMb).getLength() <= l_fSideVal && a_cCloseSp.getLength() < l_fVelFact * l_fVel && l_cCollision.getLength() < l_fColFact * l_fVel) {
                 m_fVCalc = l_fMultiply * a_cCloseSp.getLength();
-                l_bCollide = true;
+                l_bCollide = m_eMode != enMarbleMode::Loop;
               }
               else if (abs(l_cCollision.X) < abs(l_cCollision.Y) && a_cCloseSp.getLength() < l_fVel) {
                 m_fVCalc = l_fMultiply * a_cCloseSp.getLength();
-                l_bCollide = true;
+                l_bCollide = m_eMode != enMarbleMode::Loop;
               }
             }
           }

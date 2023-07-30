@@ -25,6 +25,13 @@ namespace dustbin {
     */
     class CControllerAi_V2 : public IControllerAI {
       protected:
+        /**
+        * Get a string representation of a marble mode
+        * @param a_eMode the mode to convert
+        * @return the current mode as string
+        */
+        std::wstring getModeString(enMarbleMode a_eMode);
+
         struct SAiPathSection;
         struct SPathLine3d;
 
