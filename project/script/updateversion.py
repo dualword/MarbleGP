@@ -1,3 +1,4 @@
+from datetime import date
 import sys, os, shutil
 
 g_File = open("../data/menu/version.xml", "r")
@@ -51,7 +52,39 @@ print("Updating build.gradle ...")
 g_NewFile = open("../MarbleGP_Android/app/build.gradle", "w")
 g_NewFile.writelines(g_Output)
 g_NewFile.close()
-    
+
+print("Updating \"version.php\" ...")
+
+g_NewFile = open("../release/version.php", "w")
+g_NewFile.write("Version " + g_NewVersion)
+g_NewFile.close()
+
+print("Updating \"changelog.php\" ...")
+
+g_File = open("../release/changelog.php", "r")
+g_Lines = g_File.readlines()
+g_File.close()
+
+g_Output = [ ]
+
+for l_Line in g_Lines:
+  g_Output.append(l_Line)
+  
+  if l_Line[:4] == "<ul>":
+    l_Now =  date.today()
+    print(l_Now)
+    g_Output.append("  <li>\n")
+    g_Output.append("    <b>" + str(date.today()) + " [" + g_NewVersion + "]</b>\n")
+    g_Output.append("    <ul>\n")
+    g_Output.append("      <li>Put some release information here</li>\n")
+    g_Output.append("    </ul>\n")
+    g_Output.append("  </li>\n")
+
+
+g_NewFile = open("../release/changelog.php", "w")
+g_NewFile.writelines(g_Output)
+g_NewFile.close()
+
 g_CopyFile = open("release_backup.bat", "w")
 g_CopyFile.write("copy ..\\release\\MarbleGP.zip %RELEASE_BACKUP%\\MarbleGP_" + l_NewVersion + ".zip\n")
 g_CopyFile.write("copy ..\\release\\MarbleGP_Setup.exe %RELEASE_BACKUP%\\MarbleGP_Setup_" + l_NewVersion + ".exe\n")
