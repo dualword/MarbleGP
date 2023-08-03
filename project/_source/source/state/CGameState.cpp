@@ -21,6 +21,7 @@
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
 #include <sound/ISoundInterface.h>
+#include <scenenodes/CSpeedNode.h>
 #include <shader/CMyShaderNone.h>
 #include <network/CGameClient.h>
 #include <network/CGameServer.h>
@@ -107,6 +108,13 @@ namespace dustbin {
         if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
           if (!reinterpret_cast<scenenodes::CPhysicsNode*>(a_pNode)->isStatic())
             m_mMoving[a_pNode->getID()] = a_pNode->getParent();
+        }
+
+        if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_SpeedNodeId) {
+          scenenodes::CSpeedNode *l_pNode = reinterpret_cast<scenenodes::CSpeedNode *>(a_pNode);
+          l_pNode->fillTextureMaps();
+          l_pNode->setMarbleSpeed(-1, 0);
+          m_vSpeed.push_back(l_pNode);
         }
 
         a_pNode->setDebugDataVisible(0);
@@ -709,6 +717,7 @@ namespace dustbin {
       helpers::addToDebugLog("Clear checkpoint and camera vectors");
       m_mCheckpoints.clear();
       m_vCameras    .clear();
+      m_vSpeed      .clear();
 
       if (m_pRace != nullptr) {
         helpers::addToDebugLog("Delete race object");
@@ -934,6 +943,10 @@ namespace dustbin {
 
         if (a_pViewPort->m_pHUD != nullptr) {
           a_pViewPort->m_pHUD->beforeDrawScene();
+        }
+
+        for (std::vector<scenenodes::CSpeedNode*>::iterator l_itNode = m_vSpeed.begin(); l_itNode != m_vSpeed.end(); l_itNode++) {
+          (*l_itNode)->setMarbleSpeed(std::sqrt(a_pViewPort->m_pPlayer->m_fVeclocity), m_iStep);
         }
       }
     }

@@ -681,6 +681,9 @@
     <ClCompile Include="..\..\_source\source\lua\CLuaSingletonSystem.cpp">
       <Filter>Quelldateien\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CSpeedNode.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1122,6 +1125,9 @@
       <Filter>Headerdateien\_generated\luamesh</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CLuaMeshLoader.h">
+      <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CSpeedNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>

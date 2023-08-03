@@ -32,6 +32,7 @@ namespace dustbin {
     class CDustbinCamera;
     class CRostrumNode;
     class CStartingGridSceneNode;
+    class CSpeedNode;
   }
 
   namespace sound {
@@ -133,9 +134,9 @@ namespace dustbin {
         threads::CInputQueue * m_pInputQueue;
         threads::COutputQueue* m_pOutputQueue;
 
-        int m_iStep,      /**< The current world step. 120 steps / second */
-            m_iFinished,  /**< The game step when the race was finishes */
-            m_iFadeOut;   /**< The game step when fading out starts */
+        int m_iStep;      /**< The current world step. 120 steps / second */
+        int m_iFinished;  /**< The game step when the race was finishes */
+        int m_iFadeOut;   /**< The game step when fading out starts */
 
         irr::f32 m_fSfxVolume;  /**< The volume of the in-game sound effects */
 
@@ -170,6 +171,8 @@ namespace dustbin {
         irr::scene::ICameraSceneNode* m_pCamera;     /**< The camera for the "view track" mode */
 
         std::vector<scenenodes::CDustbinCamera *> m_vCameras;   /**< Static cameras for the "replay" and "view track" modes */
+
+        std::vector<scenenodes::CSpeedNode *> m_vSpeed;   /**< The scene nodes indicating the speed before a jump */
 
         controller::CAiControlThread *m_pAiThread;
 

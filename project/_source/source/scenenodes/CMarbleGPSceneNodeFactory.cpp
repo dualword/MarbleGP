@@ -10,6 +10,7 @@
 #include <scenenodes/CWorldNode.h>
 #include <scenenodes/CJointNode.h>
 #include <scenenodes/CDustbinId.h>
+#include <scenenodes/CSpeedNode.h>
 #include <scenenodes/CAiNode.h>
 #include <string>
 
@@ -65,6 +66,10 @@ namespace dustbin {
           p = new CAiPathNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_SpeedNodeId:
+          p = new CSpeedNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
+          break;
+
         default:
           break;
       }
@@ -80,7 +85,7 @@ namespace dustbin {
     }
 
     irr::u32 CMarbleGPSceneNodeFactory::getCreatableSceneNodeTypeCount() const {
-      return 10;
+      return 11;
     }
 
     const irr::c8* CMarbleGPSceneNodeFactory::getCreateableSceneNodeTypeName(irr::u32 a_iIdx) const {
@@ -95,6 +100,7 @@ namespace dustbin {
         case  7: return g_DustbinCameraNodeName;
         case  8: return g_RostrumNodeName;
         case  9: return g_AiPathNodeName;
+        case 10: return g_SpeedNodeName;
       }
 
       return nullptr;
@@ -112,6 +118,7 @@ namespace dustbin {
         case  7: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
         case  8: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
         case  9: return (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId;
+        case 10: return (irr::scene::ESCENE_NODE_TYPE)g_SpeedNodeId;
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -149,6 +156,9 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId:
           return g_AiPathNodeName;
 
+        case (irr::scene::ESCENE_NODE_TYPE)g_SpeedNodeId:
+          return g_SpeedNodeName;
+
         default:
           return nullptr;
       }
@@ -177,6 +187,8 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
       else if (l_sName == g_AiPathNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId;
+      else if (l_sName == g_SpeedNodeName)
+        return (irr::scene::ESCENE_NODE_TYPE)g_SpeedNodeId;
 
       return irr::scene::ESNT_UNKNOWN;
     }
