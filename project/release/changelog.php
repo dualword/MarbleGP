@@ -1,5 +1,12 @@
 <ul>
   <li>
+    <b>2023-08-05 [1.1 Build 240]</b>
+    <ul>
+      <li>New traffic signs indicating the correct speed before a jump</li>
+      <li>Two new tracks: &quot;Loop: Single&quot; and &quot;Loop: Double&quot;</li>
+    </ul>
+  </li>
+  <li>
     <b>2023-07-17 [1.1 Build 239]</b>
     <ul>
       <li>With the update the marble rolling get smoother</li>
