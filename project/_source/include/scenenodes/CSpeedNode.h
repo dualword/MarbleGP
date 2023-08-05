@@ -25,7 +25,7 @@ namespace dustbin {
 
         irr::video::ITexture *m_aArrowUp  [2];    /**< The "Up" Arrows    (0 == red, 1 == green) */
         irr::video::ITexture *m_aArrowDown[2];    /**< The "Down" Arrows  (0 == red, 1 == green) */
-        irr::video::ITexture *m_aSpeed    [3];    /**< The Speed textures (0 == red, 1 == green, 2 == white) */
+        irr::video::ITexture *m_aSpeed    [3];    /**< The Speed textures (0 == red, 1 == green, 2 == blue) */
 
         /**
         * Update the textures of all "IMeshSceneNode" children

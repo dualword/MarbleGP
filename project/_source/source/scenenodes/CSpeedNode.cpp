@@ -125,7 +125,7 @@ namespace dustbin {
               if (a_fSpeed > m_fMaxSpeed)
                 l_pTexture = m_aArrowDown[0];
               else if (a_fSpeed < m_fMinSpeed)
-                l_pTexture = m_aArrowUp[0];
+                l_pTexture = m_aArrowUp[1];
               else if (a_fSpeed < m_fBestSpeed)
                 l_pTexture = m_aArrowUp[1];
               else
@@ -135,11 +135,9 @@ namespace dustbin {
               if (a_fSpeed > m_fMaxSpeed)
                 l_pTexture = m_aSpeed[0];
               else if (a_fSpeed < m_fMinSpeed)
-                l_pTexture = m_aSpeed[0];
-              else if (a_fSpeed < m_fBestSpeed)
                 l_pTexture = m_aSpeed[1];
               else
-                l_pTexture = m_aSpeed[1];
+                l_pTexture = m_aSpeed[2];
             }
           }
         }
@@ -182,8 +180,8 @@ namespace dustbin {
       }
 
       for (int i = 0; i < 2; i++) {
-        m_aArrowUp  [i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_red_up.png"   : "data/textures/speed_green_up.png"  );
-        m_aArrowDown[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_red_down.png" : "data/textures/speed_green_down.png");
+        m_aArrowUp  [i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_yellow_up.png" : "data/textures/speed_green_up.png"   );
+        m_aArrowDown[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_red_down.png"  : "data/textures/speed_yellow_down.png");
       }
 
       updateTexture(m_aSpeed[2]);
