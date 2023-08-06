@@ -16,11 +16,11 @@ namespace dustbin {
       sceneNodeIdUsed(a_iId);
 
       for (int i = 0; i < 2; i++) {
-        m_aArrowUp  [i] = nullptr;
-        m_aArrowDown[i] = nullptr;
+        m_aArrow[i] = nullptr;
+        m_aWarn[i] = nullptr;
       }
 
-      for (int i = 0; i < 3; i++)
+      for (int i = 0; i < 4; i++)
         m_aSpeed[i] = nullptr;
     }
 
@@ -112,37 +112,41 @@ namespace dustbin {
     */
     void CSpeedNode::setMarbleSpeed(irr::f32 a_fSpeed, int a_iStep) {
       if (IsVisible) {
-        irr::video::ITexture *l_pTexture = m_aSpeed[2];
-
-        bool l_bArrow = (a_iStep / 120) % 2 == 0;
+        irr::video::ITexture *l_pTexture = m_aSpeed[3];
 
         if (a_fSpeed > 0.0f) {
-          if (a_fSpeed >= m_fBestSpeed - 2.5f && a_fSpeed <= m_fBestSpeed + 2.5f) {
-            l_pTexture = m_aSpeed[2];
-          }
-          else {
-            if (l_bArrow) {
-              if (a_fSpeed > m_fMaxSpeed)
-                l_pTexture = m_aArrowDown[0];
-              else if (a_fSpeed < m_fMinSpeed)
-                l_pTexture = m_aArrowUp[1];
-              else if (a_fSpeed < m_fBestSpeed)
-                l_pTexture = m_aArrowUp[1];
-              else
-                l_pTexture = m_aArrowDown[1];
+          // the velocity is in the correct range
+          if (a_fSpeed >= m_fMinSpeed && a_fSpeed <= m_fMaxSpeed) {
+            if (a_fSpeed >= m_fBestSpeed - 2.5f && a_fSpeed <= m_fBestSpeed + 2.5f) {
+              // The velocity is close to perfect
+              l_pTexture = m_aSpeed[2];
             }
             else {
-              if (a_fSpeed > m_fMaxSpeed)
-                l_pTexture = m_aSpeed[0];
-              else if (a_fSpeed < m_fMinSpeed)
-                l_pTexture = m_aSpeed[1];
-              else
-                l_pTexture = m_aSpeed[2];
+              bool l_bArrow = (a_iStep / 120) % 2 == 0;
+
+              if (a_fSpeed < m_fBestSpeed) {
+                // The player is a little too slow
+                l_pTexture = l_bArrow ? m_aArrow[0] : m_aSpeed[0];
+              }
+              else {
+                // the player is a little too fast
+                l_pTexture = l_bArrow ? m_aArrow[1] : m_aSpeed[1];
+              }
             }
           }
-        }
-        else {
-          l_pTexture = m_aSpeed[2];
+          else {
+            // The speed is totally wrong
+            int l_iTexture = (a_iStep / 120) % 3;
+
+            if (a_fSpeed < m_fBestSpeed) {
+              // The player is way too slow
+              l_pTexture = l_iTexture == 0 ? m_aArrow[0] : l_iTexture == 1 ? m_aWarn[0] : m_aSpeed[0];
+            }
+            else {
+              // The player is way too fast
+              l_pTexture = l_iTexture == 0 ? m_aArrow[1] : l_iTexture == 1 ? m_aWarn[1] : m_aSpeed[1];
+            }
+          }
         }
 
         updateTexture(l_pTexture);
@@ -165,26 +169,31 @@ namespace dustbin {
 
       irr::core::recti l_cRect = irr::core::recti(0, 0, l_cDim.Width, l_cDim.Height);
 
-      for (int i = 0; i < 3; i++) {
-        std::string l_sName = "speedtexture_" + std::to_string((int)m_fBestSpeed) + (i == 0 ? "_red" : i == 1 ? "_green" : "_blue");
+      for (int i = 0; i < 4; i++) {
+        std::string l_sName = "speedtexture_" + std::to_string((int)m_fBestSpeed) + (i == 0 ? "_orange" : i == 1 ? "_red" : i == 2 ? "_green" : "_gray");
 
         m_aSpeed[i] = l_pDrv->getTexture(l_sName.c_str());
 
         if (m_aSpeed[i] == nullptr && l_pFont != nullptr) {
           m_aSpeed[i] = l_pDrv->addRenderTargetTexture(l_cDim, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
           l_pDrv->setRenderTarget(m_aSpeed[i]);
-          l_pDrv->beginScene(true, true, i == 0 ? irr::video::SColor(0xFF, 0xff, 0x20, 0) : i == 1 ? irr::video::SColor(0xFF, 0, 0x80, 0) : irr::video::SColor(0xFF, 0x20, 0x20, 0xFF));
+
+          l_pDrv->beginScene(true, true, 
+            i == 0 ? irr::video::SColor(0xFF, 0xFF, 0x80, 0) : 
+            i == 1 ? irr::video::SColor(0xFF, 0xFF, 0x20, 0) :
+            i == 2 ? irr::video::SColor(0xFF,    0, 0x80, 0) : irr::video::SColor(0xFF, 0xF5, 0xF5, 0xF5));
+
           l_pFont->draw(std::to_wstring((int)m_fBestSpeed).c_str(), l_cRect, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), true, true);
           l_pDrv->setRenderTarget(nullptr);
         }
       }
 
       for (int i = 0; i < 2; i++) {
-        m_aArrowUp  [i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_yellow_up.png" : "data/textures/speed_green_up.png"   );
-        m_aArrowDown[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_red_down.png"  : "data/textures/speed_yellow_down.png");
+        m_aArrow[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_orange_up.png"   : "data/textures/speed_red_down.png");
+        m_aWarn [i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_orange_warn.png" : "data/textures/speed_red_warn.png");
       }
 
-      updateTexture(m_aSpeed[2]);
+      updateTexture(m_aSpeed[3]);
     }
 
     /**
