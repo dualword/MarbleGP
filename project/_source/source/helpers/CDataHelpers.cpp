@@ -59,7 +59,7 @@ namespace dustbin {
               int l_iClass1  = l_pXml->getAttributeValueAsInt(L"class1", 0);
               int l_iClass2  = l_pXml->getAttributeValueAsInt(L"class2", 0);
 
-              float l_fDeviation = l_pXml->getAttributeValueAsFloat(L"deviation", 0.0f);
+              float l_fDeviation = std::max(-2.5f, std::min(2.5f, l_pXml->getAttributeValueAsFloat(L"deviation", 0.0f)));
 
               if (l_sName    == "") l_sName    = "Ai Player #" + std::to_string(l_iNum);
               if (l_sShort   == "") l_sShort   = "Ai#" + std::to_string(l_iNum);
