@@ -132,8 +132,10 @@ namespace dustbin {
         return "generate://numbercolor=000000&numberback=ffdead&numberborder=ffdead&ringcolor=ffefd5&patterncolor=000000&patternback=ffdead&pattern=" + l_sPattern;
       else if (l_sNumber == "15")
         return "generate://numbercolor=000000&numberback=20b2aa&numberborder=20b2aa&ringcolor=7fffd4&patterncolor=000000&patternback=20b2aa&pattern=" + l_sPattern;
-      else
+      else if (l_sNumber == "16")
         return "generate://numbercolor=000000&numberback=ffffff&numberborder=ffffff&ringcolor=dddddd&patterncolor=000000&patternback=ffffff&pattern=" + l_sPattern;
+      else
+        return l_sNumber + "&pattern=" + l_sPattern;
     }
 
     /**

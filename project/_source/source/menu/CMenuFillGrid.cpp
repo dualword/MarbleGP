@@ -3,6 +3,7 @@
 #include <_generated/messages/CMessages.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <network/CGameServer.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
@@ -54,24 +55,9 @@ namespace dustbin {
           l_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
 
           // Tuple: "Name", "Short Name", "Texture Index", "Preferred Class One", "Preferred class Two"
-          std::vector<std::tuple<std::string, std::string, std::string, int, int>> l_vAiPlayers;
+          std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> l_vAiPlayers;
 
-          l_vAiPlayers.push_back(std::make_tuple("Tiberius Claudius", "Claud",  "1", 0, 1));
-          l_vAiPlayers.push_back(std::make_tuple("Caracalla"        , "Carac",  "2", 0, 1));
-          l_vAiPlayers.push_back(std::make_tuple("Titus Domitianus" , "Dmiti",  "3", 2, 3));
-          l_vAiPlayers.push_back(std::make_tuple("Cassius Dio"      , "Dio  ",  "4", 0, 1));
-          l_vAiPlayers.push_back(std::make_tuple("Vespasianus"      , "Vspia",  "5", 1, 2));
-          l_vAiPlayers.push_back(std::make_tuple("Pertinax"         , "Pertx",  "6", 2, 3));
-          l_vAiPlayers.push_back(std::make_tuple("Flavius Josephus" , "FlJos",  "7", 0, 1));
-          l_vAiPlayers.push_back(std::make_tuple("Gaius Octavius"   , "Gaius",  "8", 1, 2));
-          l_vAiPlayers.push_back(std::make_tuple("Porcius Cato"     , "Cato" ,  "9", 2, 3));
-          l_vAiPlayers.push_back(std::make_tuple("Marcus Aurelius"  , "Aurel", "10", 0, 1));
-          l_vAiPlayers.push_back(std::make_tuple("Caligula"         , "Calgl", "11", 1, 2));
-          l_vAiPlayers.push_back(std::make_tuple("Commodus"         , "Comod", "12", 2, 3));
-          l_vAiPlayers.push_back(std::make_tuple("Nero"             , "Nero" , "13", 1, 2));
-          l_vAiPlayers.push_back(std::make_tuple("Plinius Secundus" , "Plnus", "14", 0, 1));
-          l_vAiPlayers.push_back(std::make_tuple("Septimius Severus", "Sever", "15", 2, 3));
-          l_vAiPlayers.push_back(std::make_tuple("Quintus Scipio"   , "Qints", "16", 1, 2));
+          helpers::loadAiProfiles(l_vAiPlayers);
 
           data::SRacePlayers l_cPlayers = data::SRacePlayers();
           l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
@@ -171,7 +157,7 @@ namespace dustbin {
             std::shuffle(l_vAiClass.begin(), l_vAiClass.end(), l_cRe);
 
             while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
-              std::vector<std::tuple<std::string, std::string, std::string, int, int>>::iterator l_itAi = l_vAiPlayers.end();
+              std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.end();
 
               int l_iAiClass = *l_vAiClass.begin() == "marblegp" ? 0 : *l_vAiClass.begin() == "marble2" ? 1 : 2;
 
@@ -201,7 +187,7 @@ namespace dustbin {
               l_cData.m_sName      = std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin();
               l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
               l_cData.m_sShortName = std::get<1>(*l_itAi);
-              l_cData.m_fDeviation = (5.0f * ((float)std::rand() / (float)RAND_MAX) - 2.5f) / 100.0f;
+              l_cData.m_fDeviation = std::get<5>(*l_itAi) / 100.0f;
               l_cData.m_sControls  = "class=" + (*l_vAiClass.begin());
               l_cData.m_sTexture   = helpers::createDefaultTextureString(std::get<2>(*l_itAi), l_iAiClass) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
 
@@ -299,7 +285,7 @@ namespace dustbin {
 #endif
                 if (i <= l_cData.size()) {
                   std::string l_sTexture = l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sTexture;
-                  printf("Texture: %s\n", l_sTexture.c_str());
+                  printf("Texture: (%s) %s\n", l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName.c_str(), l_sTexture.c_str());
 
                   if (l_sTexture != "") {
                     std::string l_sType = "";
