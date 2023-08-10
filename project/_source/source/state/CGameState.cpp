@@ -946,7 +946,7 @@ namespace dustbin {
         }
 
         for (std::vector<scenenodes::CSpeedNode*>::iterator l_itNode = m_vSpeed.begin(); l_itNode != m_vSpeed.end(); l_itNode++) {
-          (*l_itNode)->setMarbleSpeed(std::sqrt(a_pViewPort->m_pPlayer->m_fVeclocity), m_iStep);
+          (*l_itNode)->setMarbleSpeed(a_pViewPort->m_pPlayer->m_eState != gameclasses::SMarbleNodes::enMarbleState::Finished ? std::sqrt(a_pViewPort->m_pPlayer->m_fVeclocity) : -1.0f, m_iStep);
         }
       }
     }
