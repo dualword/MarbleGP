@@ -183,7 +183,7 @@ namespace dustbin {
             i == 1 ? irr::video::SColor(0xFF, 0xFF, 0x20, 0) :
             i == 2 ? irr::video::SColor(0xFF,    0, 0x80, 0) : irr::video::SColor(0xFF, 0xF5, 0xF5, 0xF5));
 
-          l_pFont->draw(std::to_wstring((int)m_fBestSpeed).c_str(), l_cRect, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), true, true);
+          l_pFont->draw(std::to_wstring((int)m_fBestSpeed).c_str(), l_cRect, i == 3 ? irr::video::SColor(0xFF, 0, 0, 0) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), true, true);
           l_pDrv->setRenderTarget(nullptr);
         }
       }
