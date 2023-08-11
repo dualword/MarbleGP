@@ -2,7 +2,7 @@
   <li>
     <b>2023-08-11 [1.1 Build 241]</b>
     <ul>
-      <li>Dynamic signs before each jump were added showing whether or not the player rolls at the correct speed</li>
+      <li>Dynamic signs before each jump showing whether or not the player rolls at the correct speed were enhanced</li>
       <li>Added new track &quot;Jump: Eight&quot;</li>
     </ul>
   </li>
