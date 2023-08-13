@@ -842,6 +842,9 @@ namespace dustbin {
         void setMenuFlag(bool a_bMenu) override {
           m_bMenu = a_bMenu;
         }
+
+      virtual void stopEverything() override {
+      }
     };
 
     ISoundInterface* createSoundInterface(irr::IrrlichtDevice* a_pDevice) {

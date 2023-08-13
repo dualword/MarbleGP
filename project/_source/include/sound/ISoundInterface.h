@@ -110,6 +110,8 @@ namespace dustbin {
         virtual void assignSoundtracks(const std::map<enSoundTrack, std::tuple<std::string, bool>> &a_mSoundTracks) = 0;
 
         virtual void setMenuFlag(bool a_bMenu) = 0;
+
+        virtual void stopEverything() = 0;
     };
 
     ISoundInterface* createSoundInterface(irr::IrrlichtDevice* a_pDevice);
