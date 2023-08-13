@@ -289,6 +289,11 @@ namespace dustbin {
               m_aOneShots[i] = nullptr;
             }
 
+          if (m_pSoundTrack != nullptr) {
+            m_pSoundTrack->stop();
+            m_pSoundTrack->drop();
+          }
+
           irrklang::ISoundEngine *p = m_pEngine;
           m_pEngine = nullptr;
           p->drop();
