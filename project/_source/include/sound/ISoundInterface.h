@@ -97,6 +97,7 @@ namespace dustbin {
 
         /**
         * Define a marble controlled by a local player
+        * @param a_iMarble ID of the player's marble
         */
         virtual void setViewportMarble(int a_iMarble) = 0;
         

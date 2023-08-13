@@ -228,17 +228,11 @@ namespace dustbin {
 
             for (int i = 0; i < 16; i++) {
               for (int j = 0; l_aMarbleSounds[j] != L""; j++) {
-                if (m_aMarbles[i].m_bViewport) {
-                  m_aMarbles[i].m_aSounds[j] = m_pEngine->play2D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), true, true);
-                  m_aMarbles[i].m_aSounds[j]->setVolume(0.0f);
-                }
-                else {
-                  m_aMarbles[i].m_aSounds[j] = m_pEngine->play3D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
-                  m_aMarbles[i].m_aSounds[j]->setMinDistance( 25.0f);
-                  m_aMarbles[i].m_aSounds[j]->setMaxDistance(250.0f);
-                  m_aMarbles[i].m_aSounds[j]->setVolume     (  0.0f);
-                  m_aMarbles[i].m_aSounds[j]->setIsPaused   (false );
-                }
+                m_aMarbles[i].m_aSounds[j] = m_pEngine->play3D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
+                m_aMarbles[i].m_aSounds[j]->setMinDistance( 25.0f);
+                m_aMarbles[i].m_aSounds[j]->setMaxDistance(250.0f);
+                m_aMarbles[i].m_aSounds[j]->setVolume     (  0.0f);
+                m_aMarbles[i].m_aSounds[j]->setIsPaused   (false );
 
                 if (m_mSoundParameters.find(l_aMarbleSounds[j]) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[j] = m_mSoundParameters[l_aMarbleSounds[j]]; else m_aMarbles[i].m_aParam[j] = 1.0f;
               }
@@ -295,9 +289,9 @@ namespace dustbin {
               m_aOneShots[i] = nullptr;
             }
 
-          // irrklang::ISoundEngine *p = m_pEngine;
-          // m_pEngine = nullptr;
-          // p->drop();
+          irrklang::ISoundEngine *p = m_pEngine;
+          m_pEngine = nullptr;
+          p->drop();
           printf("Sound Interface deleted.\n");
         }
 
@@ -392,12 +386,53 @@ namespace dustbin {
         * Start a game, i.e. the sounds are initialized
         */
         virtual void startGame() override {
+          std::wstring l_aMarbleSounds[] = {
+            L"data/sounds/rolling.ogg",
+            L"data/sounds/wind.ogg",
+            L"data/sounds/skid.ogg",
+            L"data/sounds/stunned.ogg",
+            L""
+          };
+
+          for (int i = 0; i < 16; i++) {
+            for (int j = 0; l_aMarbleSounds[j] != L""; j++) {
+              if (m_aMarbles[i].m_bViewport) {
+                m_aMarbles[i].m_aSounds[j] = m_pEngine->play2D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), true, true);
+                m_aMarbles[i].m_aSounds[j]->setVolume(0.0f);
+                m_aMarbles[i].m_aSounds[j]->setIsPaused(false);
+              }
+              else {
+                m_aMarbles[i].m_aSounds[j] = m_pEngine->play3D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
+                m_aMarbles[i].m_aSounds[j]->setMinDistance( 25.0f);
+                m_aMarbles[i].m_aSounds[j]->setMaxDistance(250.0f);
+                m_aMarbles[i].m_aSounds[j]->setVolume     (  0.0f);
+                m_aMarbles[i].m_aSounds[j]->setIsPaused   (false );
+              }
+
+              if (m_mSoundParameters.find(l_aMarbleSounds[j]) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[j] = m_mSoundParameters[l_aMarbleSounds[j]]; else m_aMarbles[i].m_aParam[j] = 1.0f;
+            }
+          }
         }
 
         /**
         * Stop a game, i.e. the sounds are muted
         */
         virtual void stopGame() override {
+          std::wstring l_aMarbleSounds[] = {
+            L"data/sounds/rolling.ogg",
+            L"data/sounds/wind.ogg",
+            L"data/sounds/skid.ogg",
+            L"data/sounds/stunned.ogg",
+            L""
+          };
+
+          for (int i = 0; i < 16; i++) {
+            for (int j = 0; l_aMarbleSounds[j] != L""; j++) {
+              m_aMarbles[i].m_aSounds[j]->stop();
+              m_aMarbles[i].m_aSounds[j]->drop();
+              m_aMarbles[i].m_aSounds[j] = nullptr;
+            }
+          }
         }
 
         /**
@@ -432,52 +467,54 @@ namespace dustbin {
         * @param a_HasContact does the marble have a contact?
         */
         virtual void playMarbleSounds(int a_iMarble, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_cVelocity, irr::f32 a_fHit, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
-          int l_iIndex = a_iMarble - 10000;
+          if (m_pEngine != nullptr) {
+            int l_iIndex = a_iMarble - 10000;
 
-          if (l_iIndex >= 0 && l_iIndex < 16) {
-            m_aMarbles[l_iIndex].m_cPosition = irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z);
+            if (l_iIndex >= 0 && l_iIndex < 16) {
+              m_aMarbles[l_iIndex].m_cPosition = irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z);
 
-            irrklang::vec3df l_cVel = irrklang::vec3df(a_cVelocity.X, a_cVelocity.Y, a_cVelocity.Z) - irrklang::vec3df(m_vVelListener.X, m_vVelListener.Y, m_vVelListener.Z);
-            irrklang::vec3df l_cPos = irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z);
+              irrklang::vec3df l_cVel = irrklang::vec3df(a_cVelocity.X, a_cVelocity.Y, a_cVelocity.Z) - irrklang::vec3df(m_vVelListener.X, m_vVelListener.Y, m_vVelListener.Z);
+              irrklang::vec3df l_cPos = irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z);
 
-            if (!m_aMarbles[l_iIndex].m_bViewport) {
-              for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
-                if (m_aMarbles[l_iIndex].m_aSounds[i] != nullptr) {
-                  m_aMarbles[l_iIndex].m_aSounds[i]->setPosition(l_cPos);
-                  m_aMarbles[l_iIndex].m_aSounds[i]->setVelocity(l_cVel);
+              if (!m_aMarbles[l_iIndex].m_bViewport) {
+                for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
+                  if (m_aMarbles[l_iIndex].m_aSounds[i] != nullptr) {
+                    m_aMarbles[l_iIndex].m_aSounds[i]->setPosition(l_cPos);
+                    m_aMarbles[l_iIndex].m_aSounds[i]->setVelocity(l_cVel);
+                  }
                 }
               }
-            }
 
-            if (m_aMarbles[l_iIndex].m_bViewport)
-              a_fVolume *= m_fViewportVolume;
+              if (m_aMarbles[l_iIndex].m_bViewport)
+                a_fVolume *= m_fViewportVolume;
 
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Rolling] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Skid   ] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Wind   ]->setVolume(                            m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Wind   ] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume       );
+              m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Rolling]->setVolume(            a_bHasContact ? m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Rolling] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
+              m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Skid   ]->setVolume(a_bBrake && a_bHasContact ? m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Skid   ] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume : 0.0f);
+              m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Wind   ]->setVolume(                            m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Wind   ] * m_fMasterVolume * m_fSoundFXVolumeGame * a_fVolume       );
             
-            if (a_fHit > 0.0f) {
-              if (m_aMarbles[l_iIndex].m_bViewport) {
-                irrklang::ISound *p = m_pEngine->play2D(m_aOneShots[(int)enOneShots::Hit], false, true, false);
-                p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters[L"data/sounds/hit.ogg"]);
-                p->setIsPaused(false);
-                p->drop();
-              }
-              else {
-                irrklang::ISound *p = m_pEngine->play3D(m_aOneShots[(int)enOneShots::Hit], irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z), false, true, false);
-                if (p != nullptr) {
+              if (a_fHit > 0.0f && m_aOneShots[(int)enOneShots::Hit] != nullptr) {
+                if (m_aMarbles[l_iIndex].m_bViewport) {
+                  irrklang::ISound *p = m_pEngine->play2D(m_aOneShots[(int)enOneShots::Hit], false, true, false);
                   p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters[L"data/sounds/hit.ogg"]);
                   p->setIsPaused(false);
                   p->drop();
                 }
+                else {
+                  irrklang::ISound *p = m_pEngine->play3D(m_aOneShots[(int)enOneShots::Hit], irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z), false, true, false);
+                  if (p != nullptr) {
+                    p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters[L"data/sounds/hit.ogg"]);
+                    p->setIsPaused(false);
+                    p->drop();
+                  }
+                }
               }
-            }
 
-            for (int i = 0; i < (int)enOneShots::Count; i++) {
-              if (m_aMarbles[l_iIndex].m_aOneShots[i] != nullptr) {
-                if (m_aMarbles[l_iIndex].m_aOneShots[i]->isFinished()) {
-                  m_aMarbles[l_iIndex].m_aOneShots[i]->drop();
-                  m_aMarbles[l_iIndex].m_aOneShots[i] = nullptr;
+              for (int i = 0; i < (int)enOneShots::Count; i++) {
+                if (m_aMarbles[l_iIndex].m_aOneShots[i] != nullptr) {
+                  if (m_aMarbles[l_iIndex].m_aOneShots[i]->isFinished()) {
+                    m_aMarbles[l_iIndex].m_aOneShots[i]->drop();
+                    m_aMarbles[l_iIndex].m_aOneShots[i] = nullptr;
+                  }
                 }
               }
             }
@@ -513,11 +550,13 @@ namespace dustbin {
         * @param a_cPosition position of the stunned marble
         */
         virtual void playMarbleStunned(int a_iMarble, const irr::core::vector3df& a_cPosition) override {
-          int l_iIndex = a_iMarble - 10000;
+          if (m_pEngine != nullptr) {
+            int l_iIndex = a_iMarble - 10000;
 
-          if (l_iIndex >= 0 && l_iIndex < 16) {
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setIsPaused(false);
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setVolume(m_fMasterVolume * m_fSoundFXVolumeGame * m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Stunned]);
+            if (l_iIndex >= 0 && l_iIndex < 16) {
+              m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setIsPaused(false);
+              m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setVolume(m_fMasterVolume * m_fSoundFXVolumeGame * m_aMarbles[l_iIndex].m_aParam[(int)enMarbleSounds::Stunned]);
+            }
           }
         }
 
@@ -526,10 +565,12 @@ namespace dustbin {
         * @param a_iMarble ID of the no longer stunned marbel
         */
         virtual void stopMarbleStunned(int a_iMarble) override {
-          int l_iIndex = a_iMarble - 10000;
+          if (m_pEngine != nullptr) {
+            int l_iIndex = a_iMarble - 10000;
 
-          if (l_iIndex >= 0 && l_iIndex < 16) {
-            m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setIsPaused(true);
+            if (l_iIndex >= 0 && l_iIndex < 16) {
+              m_aMarbles[l_iIndex].m_aSounds[(int)enMarbleSounds::Stunned]->setIsPaused(true);
+            }
           }
         }
 
@@ -544,7 +585,6 @@ namespace dustbin {
         * @param a_HasContact does the marble have a contact?
         */
         virtual void playViewportMarbleSound(int a_iMarble, const irr::core::vector3df& a_cPosition, const irr::core::vector3df& a_vVelocity, irr::f32 a_fVolume, bool a_bBrake, bool a_bHasContact) override {
-
         }
 
         virtual void play2d(en2dSounds a_eSound, irr::f32 a_fVolume, irr::f32 a_fPan) override {
