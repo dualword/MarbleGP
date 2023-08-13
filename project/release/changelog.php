@@ -4,6 +4,7 @@
     <ul>
       <li>Dynamic signs before each jump showing whether or not the player rolls at the correct speed were enhanced</li>
       <li>Added new track &quot;Jump: Eight&quot;</li>
+      <li>Fixed in-game sounds of the Windows version</li>
     </ul>
   </li>
   <li>
