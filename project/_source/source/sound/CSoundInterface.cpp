@@ -272,7 +272,7 @@ namespace dustbin {
         }
 
         virtual ~CSoundInterface() {
-          // m_pEngine->stopAllSounds();
+          m_pEngine->stopAllSounds();
 
           for (int i = 0; i < 16; i++) {
             for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
