@@ -233,6 +233,7 @@
     <ClCompile Include="..\..\_source\source\state\CGameState.cpp" />
     <ClCompile Include="..\..\_source\source\state\CMenuState.cpp" />
     <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp" />
+    <ClCompile Include="..\..\_source\source\webserver\CWebServerBase.cpp" />
     <ClCompile Include="..\..\_source\source\xeffects\CShaderPre.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
@@ -376,6 +377,8 @@
     <ClInclude Include="..\..\_source\include\threads\CMessageQueue.h" />
     <ClInclude Include="..\..\_source\include\threads\IQueue.h" />
     <ClInclude Include="..\..\_source\include\threads\IThread.h" />
+    <ClInclude Include="..\..\_source\include\webserver\CWebServerBase.h" />
+    <ClInclude Include="..\..\_source\include\webserver\IWebServer.h" />
     <ClInclude Include="..\..\_source\include\xeffects\CScreenQuad.h" />
     <ClInclude Include="..\..\_source\include\xeffects\CShaderPre.h" />
     <ClInclude Include="..\..\_source\include\xeffects\EffectCB.h" />

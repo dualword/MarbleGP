@@ -157,6 +157,12 @@
     <Filter Include="Headerdateien\_generated\luamesh">
       <UniqueIdentifier>{ac0437df-38a3-4e0a-89f5-c2bffdc5e396}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\webserver">
+      <UniqueIdentifier>{8997ac06-fc54-4d6f-9be5-b11df3711240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\webserver">
+      <UniqueIdentifier>{0bee87c8-e049-42bd-8327-f0521ad72ada}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -684,6 +690,9 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CSpeedNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\webserver\CWebServerBase.cpp">
+      <Filter>Quelldateien\webserver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1129,6 +1138,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CSpeedNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\webserver\CWebServerBase.h">
+      <Filter>Headerdateien\webserver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\webserver\IWebServer.h">
+      <Filter>Headerdateien\webserver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

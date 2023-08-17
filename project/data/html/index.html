@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test</title>
+    <style>
+      
+      #mainframe, #headline {
+        width: 80%;
+        border-radius: 1em;
+        border: 2px solid black;
+        background-color: rgba(224, 224, 244, 128);
+        padding: 1em;
+      }
+      
+      #mainframe {
+        height: 70vh;
+        overflow: auto;
+      }
+      
+      #headline {
+        height: 5vh;
+        margin-bottom: 1em;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.5em;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      
+      .container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+      }
+      
+      body {
+        background-image: url("background.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center; 
+        font-family: Arial;
+      }
+      
+      table {
+        width: 100%;
+      }
+      
+      .logoimg {
+        height: 5em;
+        width: auto;
+        padding: 0px;
+        margin: 0px;
+      }
+      
+      table, tr, td {
+        padding: 0px;
+        margin: 0px;
+        border: 0px;
+      }
+      
+      .button {
+        border: 2px solid black;
+        border-radius: 0.5em;
+        width: 20em;
+        height: 1.5em;
+        background-color: #b8c8ff;
+        margin-bottom: 1em;
+        text-align: center;
+        padding-top: auto;
+        padding-bottom: auto;
+        font-size: 2em;
+        line-height: 1.5em;
+        cursor: pointer;
+        color: #000000;
+        text-decoration: none;
+      }
+      
+      .button:hover { background-color: #3367b8; }
+      .button:active { background-color: #ecf163; }
+      
+      a {
+        text-decoration: none;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="headline">
+        Dustbin::Games MarbleGP - Remote Setup
+      </div>
+    </div>
+    <div class="container">
+      <div id="mainframe">
+        <div class="container"><a href="#"><div class="button">Championship Results</div></a></div>
+        <div class="container"><a href="#"><div class="button">Settings</div></div>
+        <div class="container"><a href="#"><div class="button">Player Profiles</div></a></div>
+        <div class="container"><a href="#"><div class="button">AI Profiles</div></a></div>
+      </div>
+    </div>
+    <div class="container" style="padding-top: 1em"><img src="marblegp_logo.png" class="logoimg" /></div>
+  </body>
+</html>
