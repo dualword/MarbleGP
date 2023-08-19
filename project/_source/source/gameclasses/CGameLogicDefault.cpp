@@ -49,17 +49,18 @@ namespace dustbin {
     bool CGameLogicDefault::onLapStart(int a_iMarble) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
+        if (m_aPlayers[l_iId].m_vLapCheckpoints.size() > 0) {
+          int l_iLapTime = m_aPlayers[l_iId].m_vLapCheckpoints.back().back() - *m_aPlayers[l_iId].m_vLapCheckpoints.back().begin();
+          if (m_aPlayers[l_iId].m_iFastest == 0 || l_iLapTime < m_aPlayers[l_iId].m_iFastest)
+            m_aPlayers[l_iId].m_iFastest = l_iLapTime;
+        }
+
         if (m_aPlayers[l_iId].m_vLapCheckpoints.size() >= m_iLapCount || m_bRaceFinished) {
           m_aPlayers[l_iId].m_bFinished = true;
           m_bRaceFinished = true;
           return true;
         }
         else {
-          if (m_aPlayers[l_iId].m_vLapCheckpoints.size() > 0) {
-            int l_iLapTime = m_aPlayers[l_iId].m_vLapCheckpoints.back().back() - *m_aPlayers[l_iId].m_vLapCheckpoints.back().begin();
-            if (m_aPlayers[l_iId].m_iFastest == 0 || l_iLapTime < m_aPlayers[l_iId].m_iFastest)
-              m_aPlayers[l_iId].m_iFastest = l_iLapTime;
-          }
           m_aPlayers[l_iId].m_vLapCheckpoints.push_back(std::vector<int>());
 
           if (m_iLapNo < m_aPlayers[l_iId].m_vLapCheckpoints.size())
