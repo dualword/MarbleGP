@@ -1,5 +1,6 @@
 #pragma once
 
+#include <_generated/messages/IWebLogSender.h>
 #include <webserver/IWebServer.h>
 #include <irrlicht.h>
 
@@ -16,6 +17,11 @@
 #include <map>
 
 namespace dustbin {
+  namespace threads {
+    class CInputQueue;
+    class COutputQueue;
+  }
+
   namespace webserver {
     /**
     * @class CWebServerBase
@@ -31,6 +37,8 @@ namespace dustbin {
         int         m_iPortNo;      /**< The port to listen to */
         int         m_iError;       /**< Error code (0 == no error) */
         std::string m_sHostName;    /**< Name of the host */
+
+        threads::COutputQueue *m_pQueue;
 
 #ifdef _WINDOWS
         SOCKET      m_iSocket;  /**< Server ID */
@@ -56,9 +64,10 @@ namespace dustbin {
       public:
         /**
         * The constructor. Takes the port number to listen to as argument
+        * @param a_pQueue the input queue of the remote menu, we add an output queue to this queue
         * @param a_iPortNo the port number to listen to 
         */
-        CWebServerBase(int a_iPortNo);
+        CWebServerBase(int a_iPortNo, threads::CInputQueue *a_pQueue);
 
         virtual ~CWebServerBase();
 
@@ -103,7 +112,7 @@ namespace dustbin {
     * @author Christian Keimel
     * A base class sending 404s to all requests
     */
-    class CWebServerRequestBase : public IWebServerRequest {
+    class CWebServerRequestBase : public IWebServerRequest, public messages::IWebLogSender {
       protected:
         std::thread m_cThread;      /**< The main thread of the server */
         bool        m_bFinished;    /**< Is processing this request finished? */
@@ -112,6 +121,8 @@ namespace dustbin {
 #else
         int m_iSocket;
 #endif
+
+        threads::COutputQueue *m_pQueue;
 
         irr::io::IFileSystem *m_pFs;  /**< The Irrlicht file system */
 
@@ -160,9 +171,10 @@ namespace dustbin {
       public:
         /**
         * The constructor
+        * @param a_pQueue the message queue for the log messages
         * @param a_iSocket socket identifier to use
         */
-        CWebServerRequestBase(
+        CWebServerRequestBase(threads::COutputQueue *a_pQueue,
 #ifdef _WINDOWS
           SOCKET a_iSocket
 #else

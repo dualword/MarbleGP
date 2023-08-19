@@ -105,7 +105,7 @@
           
           $.get("/championship.xml", function(a_Data) {
             var l_MainFrame = $("#mainframe");
-            var l_Html = "";
+            var l_Html = "<a href=\"/championship.xml\" target=\"_blank\">Download plain result XML</a><br />";
             
             var l_Settings = a_Data.getElementsByTagName("race_settings")[0];
             

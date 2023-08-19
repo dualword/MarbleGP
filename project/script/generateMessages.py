@@ -435,38 +435,42 @@ def CreateInterfaces(a_Interfaces, a_Messages, a_Static):
     l_Source.write("      I" + l_Interface["name"] + "::~I" + l_Interface["name"] + "() {\n      }\n\n")
     l_Source.write("      bool I" + l_Interface["name"] + "::handleMessage(dustbin::messages::IMessage *a_pMessage, bool a_bDelete) {\n")
     l_Source.write("        bool l_bRet = false;\n")
+    
     l_Source.write("        if (a_pMessage != nullptr) {\n")
-    l_Source.write("          dustbin::messages::enMessageIDs l_eMsgId = a_pMessage->getMessageId();\n\n")
-    l_Source.write("          switch (l_eMsgId) {\n")
     
-    for l_Receive in l_Interface["receive"]:
-      l_Source.write("            case dustbin::messages::enMessageIDs::" + l_Receive + ": {\n")
+    if len(l_Interface["receive"]) > 0:
+      l_Source.write("          dustbin::messages::enMessageIDs l_eMsgId = a_pMessage->getMessageId();\n\n")
+      l_Source.write("          switch (l_eMsgId) {\n")
       
-      if len(a_Messages[l_Receive]["fields"]) > 0:
-        l_Source.write("              dustbin::messages::C" + l_Receive + " *p = reinterpret_cast<dustbin::messages::C" + l_Receive + " *>(a_pMessage);\n")
+      for l_Receive in l_Interface["receive"]:
+        l_Source.write("            case dustbin::messages::enMessageIDs::" + l_Receive + ": {\n")
         
-      l_Source.write("              on" + l_Receive.capitalize() + "(")
-      
-      l_Message = a_Messages[l_Receive]
-      
-      l_First = True
-      for l_Field in l_Message["fields"]:
-        if l_First:
-          l_First = False
-        else:
-          l_Source.write(", ")
+        if len(a_Messages[l_Receive]["fields"]) > 0:
+          l_Source.write("              dustbin::messages::C" + l_Receive + " *p = reinterpret_cast<dustbin::messages::C" + l_Receive + " *>(a_pMessage);\n")
           
-        l_Source.write("p->get" + l_Field["name"] + "()")
+        l_Source.write("              on" + l_Receive.capitalize() + "(")
         
+        l_Message = a_Messages[l_Receive]
+        
+        l_First = True
+        for l_Field in l_Message["fields"]:
+          if l_First:
+            l_First = False
+          else:
+            l_Source.write(", ")
+            
+          l_Source.write("p->get" + l_Field["name"] + "()")
+          
+        
+        l_Source.write(");\n")
+        l_Source.write("              break;\n")
+        l_Source.write("            }\n")
       
-      l_Source.write(");\n")
+      
+      l_Source.write("            default:\n")
       l_Source.write("              break;\n")
-      l_Source.write("            }\n")
-    
-    
-    l_Source.write("            default:\n")
-    l_Source.write("              break;\n")
-    l_Source.write("          }\n\n")
+      l_Source.write("          }\n\n")
+      
     l_Source.write("          if (a_bDelete) {\n")
     l_Source.write("            delete a_pMessage;\n")
     l_Source.write("            l_bRet = true;\n")

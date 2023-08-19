@@ -1817,3 +1817,7 @@
 /project/_source/include/_generated/luamesh
 /project/_source/source/_generated/luamesh
 /project/tracks_and_models/Levels.lnk
+/project/_source/include/_generated/messages/IWebLogReceiver.h
+/project/_source/include/_generated/messages/IWebLogSender.h
+/project/_source/source/_generated/messages/IWebLogReceiver.cpp
+/project/_source/source/_generated/messages/IWebLogSender.cpp

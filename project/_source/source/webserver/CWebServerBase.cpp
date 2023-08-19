@@ -1,9 +1,13 @@
 #include <webserver/CWebServerBase.h>
 #include <helpers/CStringHelpers.h>
+#include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <CGlobal.h>
+#include <iostream>
+#include <iomanip>
 #include <fstream>
+#include <ctime>
 #include <ios>
 
 namespace dustbin {
@@ -12,7 +16,7 @@ namespace dustbin {
     * The constructor. Takes the port number to listen to as argument
     * @param a_iPortNo the port number to listen to 
     */
-    CWebServerBase::CWebServerBase(int a_iPortNo) : m_bRunning(false), m_bStop(false), m_iPortNo(a_iPortNo), m_iError(0),
+    CWebServerBase::CWebServerBase(int a_iPortNo, threads::CInputQueue *a_pQueue) : m_bRunning(false), m_bStop(false), m_iPortNo(a_iPortNo), m_iError(0), m_pQueue(nullptr),
 #ifdef _WINDOWS
       m_iSocket(INVALID_SOCKET)
 #else
@@ -73,12 +77,22 @@ namespace dustbin {
       }
 
       freeaddrinfo(l_pData);
+
+      if (a_pQueue != nullptr) {
+        m_pQueue = new threads::COutputQueue();
+        a_pQueue->addSender(m_pQueue);
+        m_pQueue->addListener(a_pQueue);
+      }
 #endif
     }
 
     CWebServerBase::~CWebServerBase() {
 #ifdef _WINDOWS
 #endif
+      if (m_pQueue != nullptr) {
+        delete m_pQueue;
+        m_pQueue = nullptr;
+      }
     }
 
     /**
@@ -102,7 +116,7 @@ namespace dustbin {
 #endif
     )
     {
-      return new CWebServerRequestBase(a_iSocket);
+      return new CWebServerRequestBase(m_pQueue, a_iSocket);
     }
 
     /**
@@ -251,13 +265,13 @@ namespace dustbin {
   * The constructor
   * @param a_iSocket socket identifier to use
   */
-    CWebServerRequestBase::CWebServerRequestBase(
+    CWebServerRequestBase::CWebServerRequestBase(threads::COutputQueue *a_pQueue,
 #ifdef _WINDOWS
       SOCKET a_iSocket
 #else
       int a_iSocket
 #endif
-    ) : m_iSocket(a_iSocket), m_bFinished(false), m_pFs(nullptr) {
+    ) : m_iSocket(a_iSocket), m_bFinished(false), m_pFs(nullptr), m_pQueue(a_pQueue) {
       m_pFs = CGlobal::getInstance()->getFileSystem();
 
       m_cThread = std::thread([this] { execute(); m_bFinished = true; detach(); delete(this); });
@@ -355,12 +369,24 @@ namespace dustbin {
           }
 
           if (l_iRead > 0 && l_sMethod != "" && l_sVersion != "" && l_sMethod != "") {
+            std::time_t l_cTime = std::time(nullptr);
+
+            char s[0xFF];
+            std::strftime(s, 255, "%Y/%M/%D_%H:%M:%S", std::localtime(& l_cTime));
+
+            std::string l_sLog = std::string(s) + ": " + l_sMethod + " \"" + l_sPath + "\"";
+
             printf("Method: \"%s\", Path: \"%s\", Version: \"%s\"\n", l_sMethod.c_str(), l_sPath.c_str(), l_sVersion.c_str());
 
+            int l_iResult = -1;
+
             if (l_sMethod == "GET") {
-              handleGet(l_sPath, l_mHeaders);
-              return;
+              l_iResult = handleGet(l_sPath, l_mHeaders);
             }
+
+            l_sLog += " (" + std::to_string(l_iResult) + ")";
+            sendWeblogmessage((irr::s32)(l_iResult < 400 ? irr::ELL_INFORMATION : irr::ELL_WARNING), l_sLog, m_pQueue);
+            return;
           }
           else {
             return;

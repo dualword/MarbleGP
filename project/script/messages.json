@@ -54,7 +54,8 @@
     [ "DiscoveryStep"         , "43" ],
     [ "GameServerFound"       , "44" ],
     [ "SetTexture"            , "45" ],
-    [ "LuaMessage"            , "46" ]
+    [ "LuaMessage"            , "46" ],
+    [ "WebLogMessage"         , "47" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -373,6 +374,13 @@
         { "name": "NumberTwo", "type": "irr::s32"   , "comment": "Other number for any information" },
         { "name": "Data"     , "type": "std::string", "comment": "String for any further information" }
       ]
+    },
+    "WebLogMessage": {
+      "comment": "A log message for the remote configuration service",
+      "fields": [
+        { "name": "Level", "type": "irr::s32"   , "comment": "The log level of the message" },
+        { "name": "Data" , "type": "std::string", "comment": "The log message" }
+      ]
     }
   },
   "interfaces": [
@@ -479,6 +487,16 @@
         "PlayerFinished",
         "LuaMessage"
       ]
+    },
+    {
+      "name": "WebLogReceiver",
+      "send": [ ],
+      "receive": [ "WebLogMessage" ]
+    },
+    {
+      "name": "WebLogSender",
+      "send": [ "WebLogMessage" ],
+      "receive": [ ]
     }
   ]
 }

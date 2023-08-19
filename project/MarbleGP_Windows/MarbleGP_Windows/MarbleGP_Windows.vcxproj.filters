@@ -696,6 +696,12 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuRemote.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogReceiver.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogSender.cpp">
+      <Filter>Quelldateien\_generated\messages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1147,6 +1153,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\webserver\IWebServer.h">
       <Filter>Headerdateien\webserver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogReceiver.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogSender.h">
+      <Filter>Headerdateien\_generated\messages</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

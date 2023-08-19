@@ -255,6 +255,8 @@
     <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameHUD.cpp" />
     <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogReceiver.cpp" />
+    <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogSender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\callbacks.h" />
@@ -406,6 +408,8 @@
     <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h" />
     <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogReceiver.h" />
+    <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogSender.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
