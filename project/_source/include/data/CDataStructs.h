@@ -217,7 +217,7 @@ namespace dustbin {
       * Get the race time of the player
       * @return the race time of the player
       */
-      int getRaceTime();
+      int getRaceTime() const;
 
       /**
       * Get the current lap of the player
