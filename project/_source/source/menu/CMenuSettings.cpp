@@ -344,6 +344,10 @@ namespace dustbin {
                   }
                 }
               }
+              else if (l_sSender == "remote") {
+                m_pManager->pushToMenuStack("menu_settings");
+                createMenu("menu_remote", m_pDevice, m_pManager, m_pState);
+              }
               else printf("Button clicked (%s, %i, CMenuMain).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {

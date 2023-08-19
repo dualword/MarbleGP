@@ -510,6 +510,14 @@
         </attributes>
       </element>
       
+      <element type="MenuButton" rect="center: 4, 0, 30, 4" font="big">
+        <attributes>
+          <attribute key="Name" value="remote" />
+          <attribute key="Id" value="23456" />
+          <attribute key="Caption" value="Remote Management" />
+          <attribute key="AllZLayers" value="true" />
+        </attributes>
+      </element>
     </children>
   </element>
   

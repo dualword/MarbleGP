@@ -78,5 +78,66 @@ namespace dustbin {
 
       return true;
     }
+
+    /**
+    * Get the data of all tracks
+    * @return a std map with the track folder as key and the corresponding name as value
+    */
+    std::map<std::string, std::string> getTrackNameMap() {
+      std::map<std::string, std::string> l_mResult;
+
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+      irr::io::IReadFile *l_pFile = l_pFs->createAndOpenFile("data/levels/tracks.dat");
+
+      if (l_pFile != nullptr) {
+        long l_iSize = l_pFile->getSize();
+        char *s = new char[l_iSize + 1];
+        memset(s, 0, static_cast<size_t>(l_iSize) + 1);
+        l_pFile->read(s, l_iSize);
+        std::vector<std::string> l_vTracks = helpers::splitString(s, '\n');
+        delete []s;
+
+        for (std::vector<std::string>::iterator it = l_vTracks.begin(); it != l_vTracks.end(); it++) {
+          std::string l_sTrack = *it;
+          if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
+            l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
+
+          std::string l_sFile = "data/levels/" + l_sTrack + "/track.xml";
+
+          if (l_pFs->existFile(l_sFile.c_str())) {
+            std::string l_sXml = "data/levels/" + l_sTrack + "/info.xml", l_sName = l_sTrack;
+
+            if (l_pFs->existFile(l_sXml.c_str())) {
+              irr::io::IXMLReaderUTF8 *l_pXml = l_pFs->createXMLReaderUTF8(l_sXml.c_str());
+              if (l_pXml) {
+                bool l_bName = false;
+
+                while (l_pXml->read()) {
+                  std::string l_sNode = l_pXml->getNodeName();
+
+                  if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+                    if (l_sNode == "name")
+                      l_bName = true;
+                  }
+                  else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
+                    if (l_bName)
+                      l_mResult[l_sTrack] = l_pXml->getNodeData();
+                  }
+                  else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+                    if (l_sNode == "name")
+                      l_bName = false;
+                  }
+                }
+                l_pXml->drop();
+              }
+            }
+          }
+        }
+
+        l_pFile->drop();
+      }
+      return l_mResult;
+    }
   }
 }

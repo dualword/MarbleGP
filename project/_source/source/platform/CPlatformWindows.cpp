@@ -48,7 +48,11 @@ namespace dustbin {
 
         if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
 
+#ifdef _DEBUG
+        PathAppend(l_sPath, L"\\MarbleGP_debug\\");
+#else
         PathAppend(l_sPath, L"\\MarbleGP\\");
+#endif
 
         if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
 

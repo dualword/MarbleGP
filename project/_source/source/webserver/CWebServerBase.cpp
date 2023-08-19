@@ -1,4 +1,8 @@
 #include <webserver/CWebServerBase.h>
+#include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
+#include <platform/CPlatform.h>
+#include <CGlobal.h>
 #include <fstream>
 #include <ios>
 
@@ -47,10 +51,25 @@ namespace dustbin {
         return;
       }
 
+      int l_iBufLen = 0;
+      m_iError = setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char *)&l_iBufLen, sizeof(int));
+      if (m_iError != 0) {
+        printf("Error while setting socket options: %i\n", WSAGetLastError());
+        return;
+      }
+
       m_iError = bind(m_iSocket, l_pData->ai_addr, (int)l_pData->ai_addrlen);
       if (m_iError != 0) {
         printf("Bind failed with error %i\n", WSAGetLastError());
         return;
+      }
+
+      char l_sHost[255];
+      memset(l_sHost, 0, 255);
+
+      if (gethostname(l_sHost, 255) == 0) {
+        printf("Host name: \"%s\"\n", l_sHost);
+        m_sHostName = l_sHost;
       }
 
       freeaddrinfo(l_pData);
@@ -59,11 +78,15 @@ namespace dustbin {
 
     CWebServerBase::~CWebServerBase() {
 #ifdef _WINDOWS
-      if (m_iSocket != INVALID_SOCKET) {
-        WSACleanup();
-        closesocket(m_iSocket);
-      }
 #endif
+    }
+
+    /**
+    * Get the name of the host
+    * @return the name of the host
+    */
+    std::string CWebServerBase::hostName() {
+      return m_sHostName;
     }
 
     /**
@@ -104,6 +127,7 @@ namespace dustbin {
     */
     void CWebServerBase::stopServer() {
       m_bStop = true;
+      closesocket(m_iSocket);
     }
 
     /**
@@ -118,7 +142,7 @@ namespace dustbin {
     * Join the threat, i.e. wait until it has finished
     */
     void CWebServerBase::join() {
-
+      m_cThread.join();
     }
 
     void CWebServerBase::execute() {
@@ -151,6 +175,7 @@ namespace dustbin {
     */
     int CWebServerRequestBase::sendData(const char* a_pData, int a_iLen) {
       int l_iSent = send(m_iSocket, a_pData, a_iLen, 0);
+      printf("\t%i of %i bytes sent.\n", l_iSent, a_iLen);
       return l_iSent;
     }
 
@@ -189,6 +214,14 @@ namespace dustbin {
         return "image/jpeg";
       else if (a_sExtension == ".png")
         return "image/png";
+      else if (a_sExtension == ".ico")
+        return "image/vnd.microsoft.icon";
+      else if (a_sExtension == ".js")
+        return "text/javascript";
+      else if (a_sExtension == ".json")
+        return "application/json";
+      else if (a_sExtension == ".txt")
+        return "text/plain";
       else
         return "application/octet-stream";
     }
@@ -224,13 +257,16 @@ namespace dustbin {
 #else
       int a_iSocket
 #endif
-    ) : m_iSocket(a_iSocket), m_bFinished(false) {
+    ) : m_iSocket(a_iSocket), m_bFinished(false), m_pFs(nullptr) {
+      m_pFs = CGlobal::getInstance()->getFileSystem();
+
       m_cThread = std::thread([this] { execute(); m_bFinished = true; detach(); delete(this); });
     }
 
     CWebServerRequestBase::~CWebServerRequestBase() {
-      if (m_iSocket != INVALID_SOCKET)
-        closesocket(m_iSocket);
+      if (m_iSocket != INVALID_SOCKET) {
+        // closesocket(m_iSocket);
+      }
     }
 
     /**
@@ -326,6 +362,9 @@ namespace dustbin {
               return;
             }
           }
+          else {
+            return;
+          }
         }
       }
       else printf("Invalid socket!\n");
@@ -355,43 +394,143 @@ namespace dustbin {
     * @return the HTTP result code 
     */
     int CWebServerRequestBase::handleGet(const std::string a_sUrl, const std::map<std::string, std::string> a_mHeader) {
+      const std::string l_sPathThumbnails = "/thumbnails/";
+      const std::string l_sPathResultXML  = "/championship.xml";
+      const std::string l_sPathTrackNames = "/tracknames.json";
+
       std::string l_sPath = a_sUrl;
 
-      if (l_sPath == "/")
-        l_sPath = "/index.html";
+      std::map<std::string, std::string> l_mHeader;
 
-      std::string l_sExtension = l_sPath.find_last_of('.') != std::string::npos ? l_sPath.substr(l_sPath.find_last_of('.')) : "";
+      std::string l_sExtension = "";
 
-      std::ifstream l_cStream("html_docs" + l_sPath, std::ios::binary);
+      char *l_aBuffer = nullptr;
+      int   l_iBufLen = 0;
+      int   l_iResult = 0;
 
-      if (l_cStream.is_open()) {
-        std::streampos l_iBegin = l_cStream.tellg();
-        l_cStream.seekg(0, std::ios::end);
-        std::streampos l_iEnd = l_cStream.tellg();
-        l_cStream.seekg(0, std::ios::beg);
+      if (l_sPath == l_sPathResultXML) {
+        std::string l_sPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
 
-        std::map<std::string, std::string> l_mHeader;
+        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sPath.c_str());
 
+        if (l_pFile != nullptr) {
+          l_iBufLen = l_pFile->getSize();
+          l_aBuffer = new char[l_iBufLen];
+          l_pFile->read(l_aBuffer, l_iBufLen);
+
+          l_pFile->drop();
+
+          l_sExtension = ".xml";
+        }
+      }
+      else if (l_sPath == l_sPathTrackNames) {
+        std::map<std::string, std::string> l_mTracks = helpers::getTrackNameMap();
+
+        std::string l_sReturn = "{\n";
+
+        for (std::map<std::string, std::string>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
+          if (l_itName != l_mTracks.begin())
+            l_sReturn += ",\n";
+
+          l_sReturn += "  \"" + l_itName->first + "\": \"" + l_itName->second + "\"";
+        }
+
+        l_sReturn += "\n}\n";
+
+        l_iBufLen = (int)l_sReturn.size();
+        l_aBuffer = new char[l_iBufLen];
+
+        memcpy(l_aBuffer, l_sReturn.c_str(), l_iBufLen);
+
+        l_sExtension = ".txt";
+      }
+      else if (l_sPath.substr(0, l_sPathThumbnails.size()) == l_sPathThumbnails) {
+        std::string l_sImage = "data/levels/" + l_sPath.substr(l_sPathThumbnails.size()) + "/thumbnail.png";
+
+        printf("Thumbnail: \"%s\"\n", l_sImage.c_str());
+        if (m_pFs->existFile(l_sImage.c_str())) {
+          irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sImage.c_str());
+
+          if (l_pFile != nullptr) {
+            l_iBufLen = l_pFile->getSize();
+            l_aBuffer = new char[l_iBufLen];
+            memset(l_aBuffer, 0, l_iBufLen);
+            l_pFile->read(l_aBuffer, l_iBufLen);
+            l_pFile->drop();
+
+            l_sExtension = ".png";
+          }
+        }
+      }
+
+      if (l_aBuffer == nullptr) {
+        if (l_sPath == "/")
+          l_sPath = "/index.html";
+
+        l_sExtension = l_sPath.find_last_of('.') != std::string::npos ? l_sPath.substr(l_sPath.find_last_of('.')) : "";
+
+        std::string l_sRelativePath = "data/html/" + l_sPath;
+
+        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sRelativePath.c_str());
+
+        if (l_pFile != nullptr) {
+          l_aBuffer = new char[l_pFile->getSize()];
+          l_iBufLen = l_pFile->getSize();
+
+          l_pFile->read(l_aBuffer, l_iBufLen);
+          l_pFile->drop();
+
+          l_iResult = 200;
+        }
+      }
+
+      if (l_aBuffer != nullptr && l_iBufLen > 0) {
         l_mHeader["Content-Type"  ] = getContentType(l_sExtension);
-        l_mHeader["Content-Length"] = std::to_string(l_iEnd - l_iBegin);
+        l_mHeader["Content-Length"] = std::to_string(l_iBufLen);
+        l_mHeader["Connection"    ] = "close";
 
-        printf("File \"%s\": Size = %i, Type = \"%s\"\n", l_sPath.c_str(), (int)(l_iEnd - l_iBegin), getContentType(l_sExtension).c_str());
+        char *l_aToDelete = l_aBuffer;
 
-        sendHeader(200, l_mHeader);
-      
-        char *l_aBuffer = new char[l_iEnd - l_iBegin];
-        l_cStream.read(l_aBuffer, l_iEnd - l_iBegin);
-        sendData(l_aBuffer, (int)(l_iEnd - l_iBegin));
+        printf("File \"%s\": Size = %i, Type = \"%s\" (Result %i)\n", l_sPath.c_str(), l_iBufLen, l_sExtension.c_str(), l_iResult);
 
+        sendHeader(l_iResult, l_mHeader);
+        while (l_iBufLen > 0) {
+          sendData(l_aBuffer, l_iBufLen > 1024 ? 1024 : l_iBufLen);
+          if (l_iBufLen > 1024) {
+            l_iBufLen -= 1024;
+            l_aBuffer += 1024;
+          }
+          else l_iBufLen = 0;
+        }
+        send(m_iSocket, "", 0, 0);
+
+        delete l_aToDelete;
 
         return 200;
       }
       else {
-        std::map<std::string, std::string> l_mHeader;
-        sendHeader(404, l_mHeader);
-
-        return 404;
+        return send404(l_sPath);
       }
+    }
+
+    /**
+    * Send a 404
+    * @param a_sPath the path of the not-found file
+    * @return 404
+    */
+    int CWebServerRequestBase::send404(const std::string &a_sPath) {
+      std::map<std::string, std::string> l_mHeader;
+
+      std::string l_s404 = "<!DOCTYPE html>\n<html><head><title>404 - not found</title></head><body>Error 404 - Page &quot;" + a_sPath + "&quot; not found.</body></html>";
+
+      l_mHeader["Content-Type"] = getContentType(".html");
+      l_mHeader["Content-Length"] = std::to_string(l_s404.size());
+
+      sendHeader(404, l_mHeader);
+
+      sendData(l_s404.c_str(), (int)l_s404.size());
+
+      return 404;
     }
 
     /**

@@ -693,6 +693,9 @@
     <ClCompile Include="..\..\_source\source\webserver\CWebServerBase.cpp">
       <Filter>Quelldateien\webserver</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuRemote.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

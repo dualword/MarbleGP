@@ -33,6 +33,7 @@ namespace dustbin {
     IMenuHandler *createMenuCredits      (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuSelectCup    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
+    IMenuHandler *createMenuRemote       (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
   }
 }
 

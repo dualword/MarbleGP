@@ -1,6 +1,7 @@
 #pragma once
 
 #include <webserver/IWebServer.h>
+#include <irrlicht.h>
 
 #ifdef _WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -24,11 +25,12 @@ namespace dustbin {
     */
     class CWebServerBase : public IWebServer {
       private:
-        std::thread m_cThread;  /**< The main thread of the server */
-        bool        m_bRunning; /**< The "running" flag of the server */
-        bool        m_bStop;    /**< "Stop" flag */
-        int         m_iPortNo;  /**< The port to listen to */
-        int         m_iError;   /**< Error code (0 == no error) */
+        std::thread m_cThread;      /**< The main thread of the server */
+        bool        m_bRunning;     /**< The "running" flag of the server */
+        bool        m_bStop;        /**< "Stop" flag */
+        int         m_iPortNo;      /**< The port to listen to */
+        int         m_iError;       /**< Error code (0 == no error) */
+        std::string m_sHostName;    /**< Name of the host */
 
 #ifdef _WINDOWS
         SOCKET      m_iSocket;  /**< Server ID */
@@ -87,6 +89,12 @@ namespace dustbin {
         * Join the threat, i.e. wait until it has finished
         */
         virtual void join() override;
+
+        /**
+        * Get the name of the host
+        * @return the name of the host
+        */
+        std::string hostName();
     };
 
 
@@ -104,6 +112,8 @@ namespace dustbin {
 #else
         int m_iSocket;
 #endif
+
+        irr::io::IFileSystem *m_pFs;  /**< The Irrlicht file system */
 
         /**
         * Send data to the client
@@ -133,6 +143,19 @@ namespace dustbin {
         * @return the string representation of the HTTP status core
         */
         std::string getHttpStatusCode(int a_iStatus);
+
+        /**
+        * Get the name of the host
+        * @return the name of the host
+        */
+        std::string hostName();
+
+        /**
+        * Send a 404
+        * @param a_sPath the path of the not-found file
+        * @return 404
+        */
+        int send404(const std::string &a_sPath);
 
       public:
         /**

@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuProfileWizard.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuRemote.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSearchServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectCup.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp" />

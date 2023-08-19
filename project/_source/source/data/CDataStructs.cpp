@@ -1447,7 +1447,7 @@ namespace dustbin {
       else printf("Invalid header for the race player (%i)\n", l_iHead);
     }
 
-    int SRacePlayer::getRaceTime() {
+    int SRacePlayer::getRaceTime() const {
       if (m_vLapCheckpoints.size() > 0) {
         if (m_vLapCheckpoints.back().size() > 0) {
           return (int)m_vLapCheckpoints.back().back();
@@ -1536,7 +1536,7 @@ namespace dustbin {
       s += "        <fastest>"  + std::to_string(m_iFastest ) + "</fastest>\n";
       s += "        <stunned>"  + std::to_string(m_iStunned ) + "</stunned>\n";
       s += "        <respawn>"  + std::to_string(m_iRespawn ) + "</respawn>\n";
-      s += "        <racetime>\n";
+      s += "        <racetime total=\"" + std::to_string(getRaceTime()) + "\">\n";
 
       for (std::vector<std::vector<int>>::const_iterator l_itLap = m_vLapCheckpoints.begin(); l_itLap != m_vLapCheckpoints.end(); l_itLap++) {
         s += "          <lap>\n";
