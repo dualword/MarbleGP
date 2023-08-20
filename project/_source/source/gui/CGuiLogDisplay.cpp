@@ -8,12 +8,13 @@ namespace dustbin {
     CGuiLogDisplay::CGuiLogDisplay(irr::gui::IGUIElement* a_pParent) :
       IGUIElement  ((irr::gui::EGUI_ELEMENT_TYPE)g_GuiLogDisplayId, CGlobal::getInstance()->getGuiEnvironment(), a_pParent != nullptr ? a_pParent : CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement(), -1, irr::core::recti()),
       m_pDrv       (CGlobal::getInstance()->getVideoDriver()),
-      m_pFont      (CGlobal::getInstance()->getGuiEnvironment()->getSkin()->getFont()),
+      m_pFont      (nullptr),
       m_iLineHeight(0),
       m_pScroll    (nullptr),
       m_bDragging  (false),
       m_bHover     (false)
     {
+      m_pFont = CGlobal::getInstance()->getFont(dustbin::enFont::Regular, m_pDrv->getScreenSize());
       m_iLineHeight = 4 * m_pFont->getDimension(L"TesTexT").Height / 3;
     }
 
