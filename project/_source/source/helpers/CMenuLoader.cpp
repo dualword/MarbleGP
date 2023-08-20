@@ -282,7 +282,8 @@ namespace dustbin {
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId: 
           case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId: 
-          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId: {
+          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId:
+          case (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId: {
             enFont l_eFont = enFont::Regular;
 
             if (a_sFont == "tiny")

@@ -779,25 +779,25 @@ namespace dustbin {
     }
 
     std::string SChampionshipPlayer::to_xml() const {
-      std::string s = "    <player>\n";
+      std::string s = "<player>";
 
-      s += "      <playerid>" + std::to_string(m_iPlayerId) + "</playerid>\n";
-      s += "      <name>"              +                m_sName          + "</name>\n";
-      s += "      <points>"            + std::to_string(m_iPoints      ) + "</points>\n";
-      s += "      <respawn>"           + std::to_string(m_iRespawn     ) + "</respawn>\n";
-      s += "      <stunned>"           + std::to_string(m_iStunned     ) + "</stunned>\n";
-      s += "      <fastest_laps>"      + std::to_string(m_iFastestLaps ) + "</fastest_laps>\n";
-      s += "      <did_not_finish>"    + std::to_string(m_iDidNotFinish) + "</did_not_finish>\n";
-      s += "      <first_best_finish>" + std::to_string(m_iBestFinish  ) + "</first_best_finish>\n";
+      s += "<playerid>" + std::to_string(m_iPlayerId) + "</playerid>";
+      s += "<name>"              +                m_sName          + "</name>";
+      s += "<points>"            + std::to_string(m_iPoints      ) + "</points>";
+      s += "<respawn>"           + std::to_string(m_iRespawn     ) + "</respawn>";
+      s += "<stunned>"           + std::to_string(m_iStunned     ) + "</stunned>";
+      s += "<fastest_laps>"      + std::to_string(m_iFastestLaps ) + "</fastest_laps>";
+      s += "<did_not_finish>"    + std::to_string(m_iDidNotFinish) + "</did_not_finish>";
+      s += "<first_best_finish>" + std::to_string(m_iBestFinish  ) + "</first_best_finish>";
 
-      s += "      <race_results>\n";
+      s += "<race_results>";
 
       for (int i = 0; i < 16; i++)
-        s += "        <position pos=\"" + std::to_string(i + 1) + "\">" + std::to_string(m_aResult[i]) + "</position>\n";
+        s += "<position pos=\"" + std::to_string(i + 1) + "\">" + std::to_string(m_aResult[i]) + "</position>";
 
-      s += "      </race_results>\n";
+      s += "</race_results>";
 
-      s += "    </player>\n";
+      s += "</player>";
 
       return s;
     }
@@ -967,28 +967,28 @@ namespace dustbin {
     }
 
     std::string SChampionshipRace::to_xml() const {
-      std::string s = "    <race>\n";
+      std::string s = "<race>";
 
-      s += "      <track>"       +                m_sTrack    + "</track>\n";
-      s += "      <playercount>" + std::to_string(m_iPlayers) + "</playercount>\n";
-      s += "      <laps>"        + std::to_string(m_iLaps   ) + "</laps>\n";
+      s += "<track>"       +                m_sTrack    + "</track>";
+      s += "<playercount>" + std::to_string(m_iPlayers) + "</playercount>";
+      s += "<laps>"        + std::to_string(m_iLaps   ) + "</laps>";
 
-      s += "      <result>\n";
+      s += "<result>";
 
       for (int i = 0; i < m_iPlayers; i++) {
         s += m_aResult[i].to_xml();
       }
 
-      s += "      </result>\n";
+      s += "</result>";
 
-      s += "      <marble_assignment>\n";
+      s += "<marble_assignment>";
 
       for (std::map<int, int>::const_iterator it = m_mAssignment.begin(); it != m_mAssignment.end(); it++)
-        s += "          <assignment marble=\"" + std::to_string(it->first) + "\" player=\"" + std::to_string(it->second) + "\" />\n";
+        s += "<assignment marble=\"" + std::to_string(it->first) + "\" player=\"" + std::to_string(it->second) + "\" />";
 
-      s += "        </marble_assignment>\n";
+      s += "</marble_assignment>";
 
-      s += "      </race>\n";
+      s += "</race>";
 
       return s;
     }
@@ -1130,33 +1130,33 @@ namespace dustbin {
     * @param a_sPath the path to save the file to
     */
     void SChampionship::saveToXML(const std::string& a_sPath) {
-      std::string l_sFile = "<?xml version=\"1.0\"?>\n";
-      l_sFile += "<marblegp_championship>\n";
+      std::string l_sFile = ""; // "<?xml version=\"1.0\"?>\n";
+      l_sFile += "<marblegp_championship>";
 
-      l_sFile += "  <race_settings>\n";
-      l_sFile += "    <class>"     + std::to_string(m_iClass    ) + "</class>\n";
-      l_sFile += "    <gridsize>"  + std::to_string(m_iGridSize ) + "</gridsize>\n";
-      l_sFile += "    <gridorder>" + std::to_string(m_iGridOrder) + "</gridorder>\n";
-      l_sFile += std::string("    <reversegrid>") + (m_bReverseGrid ? "true" : "false") + "</reversegrid>\n";
-      l_sFile += "  </race_settings>\n";
+      l_sFile += "<race_settings>";
+      l_sFile += "<class>"     + std::to_string(m_iClass    ) + "</class>";
+      l_sFile += "<gridsize>"  + std::to_string(m_iGridSize ) + "</gridsize>";
+      l_sFile += "<gridorder>" + std::to_string(m_iGridOrder) + "</gridorder>";
+      l_sFile += std::string("<reversegrid>") + (m_bReverseGrid ? "true" : "false") + "</reversegrid>";
+      l_sFile += "</race_settings>";
 
-      l_sFile += "  <players>\n";
+      l_sFile += "<players>";
 
       std::vector<SChampionshipPlayer> l_vResult = getStandings();
 
       for (std::vector<SChampionshipPlayer>::const_iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
         l_sFile += (*it).to_xml();
 
-      l_sFile += "  </players>\n";
+      l_sFile += "</players>";
 
-      l_sFile += "  <races>\n";
+      l_sFile += "<races>";
 
       for (std::vector<SChampionshipRace>::const_iterator it = m_vRaces.begin(); it != m_vRaces.end(); it++)
         l_sFile += (*it).to_xml();
 
-      l_sFile += "  </races>\n";
+      l_sFile += "</races>";
 
-      l_sFile += "</marblegp_championship>\n";
+      l_sFile += "</marblegp_championship>";
 
       const char *s = a_sPath.c_str();
       irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(s);
@@ -1528,29 +1528,29 @@ namespace dustbin {
     }
 
     std::string SRacePlayer::to_xml() const {
-      std::string s = "      <raceplayer>\n";
+      std::string s = "<raceplayer>";
 
-      s += "        <id>"       + std::to_string(m_iId      ) + "</id>\n";
-      s += "        <pos>"      + std::to_string(m_iPos     ) + "</pos>\n";
-      s += "        <deficit>"  + std::to_string(m_iDeficitL) + "</deficit>\n";
-      s += "        <fastest>"  + std::to_string(m_iFastest ) + "</fastest>\n";
-      s += "        <stunned>"  + std::to_string(m_iStunned ) + "</stunned>\n";
-      s += "        <respawn>"  + std::to_string(m_iRespawn ) + "</respawn>\n";
-      s += "        <racetime total=\"" + std::to_string(getRaceTime()) + "\">\n";
+      s += "<id>"       + std::to_string(m_iId      ) + "</id>";
+      s += "<pos>"      + std::to_string(m_iPos     ) + "</pos>";
+      s += "<deficit>"  + std::to_string(m_iDeficitL) + "</deficit>";
+      s += "<fastest>"  + std::to_string(m_iFastest ) + "</fastest>";
+      s += "<stunned>"  + std::to_string(m_iStunned ) + "</stunned>";
+      s += "<respawn>"  + std::to_string(m_iRespawn ) + "</respawn>";
+      s += "<racetime total=\"" + std::to_string(getRaceTime()) + "\">";
 
       for (std::vector<std::vector<int>>::const_iterator l_itLap = m_vLapCheckpoints.begin(); l_itLap != m_vLapCheckpoints.end(); l_itLap++) {
-        s += "          <lap>\n";
+        s += "<lap>";
         
         for (std::vector<int>::const_iterator l_itCp = (*l_itLap).begin(); l_itCp != (*l_itLap).end(); l_itCp++) {
-          s += "            <checkpoint>" + std::to_string(*l_itCp) + "</checkpoint>\n";
+          s += "<checkpoint>" + std::to_string(*l_itCp) + "</checkpoint>";
         }
 
-        s += "          </lap>\n";
+        s += "</lap>";
       }
 
-      s += "        </racetime>\n";
+      s += "</racetime>";
 
-      s += "      </raceplayer>\n";
+      s += "</raceplayer>";
 
       return s;
     }

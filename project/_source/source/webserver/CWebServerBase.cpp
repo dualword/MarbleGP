@@ -501,6 +501,51 @@ namespace dustbin {
       m_cThread.detach();
     }
 
+
+    /**
+    * Create the track name JSON
+    * @return a string with a JSON representation of the track name map
+    */
+    std::string CWebServerRequestBase::createTrackNameJSON() {
+      std::map<std::string, std::string> l_mTracks = helpers::getTrackNameMap();
+
+      std::string l_sReturn = "{ ";
+
+      for (std::map<std::string, std::string>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
+        if (l_itName != l_mTracks.begin())
+          l_sReturn += ", ";
+
+        l_sReturn += "\"" + l_itName->first + "\": \"" + l_itName->second + "\"";
+      }
+
+      l_sReturn += "}";
+      return l_sReturn;
+    }
+
+    /**
+    * Get the XML with the results of the last championship
+    * @return the XML with the results of the last championship
+    */
+    std::string CWebServerRequestBase::getChampionshipXML() {
+      std::string l_sXmlPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
+      std::string l_sReturn  = "";
+
+      irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXmlPath.c_str());
+
+      if (l_pFile != nullptr) {
+        int l_iBufLen = l_pFile->getSize();
+        char *l_aBuffer = new char[l_iBufLen + 1];
+        memset(l_aBuffer, 0, l_iBufLen + 1);
+        l_pFile->read(l_aBuffer, l_iBufLen);
+
+        l_pFile->drop();
+
+        l_sReturn = l_aBuffer;
+      }
+
+      return l_sReturn;
+    }
+
     /**
     * Handle a GET request
     * @param a_sUrl the requested URL
@@ -588,13 +633,47 @@ namespace dustbin {
         irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sRelativePath.c_str());
 
         if (l_pFile != nullptr) {
-          l_aBuffer = new char[l_pFile->getSize()];
+          l_aBuffer = new char[l_pFile->getSize() + 1];
+          memset(l_aBuffer, 0, l_pFile->getSize() + 1);
           l_iBufLen = l_pFile->getSize();
 
           l_pFile->read(l_aBuffer, l_iBufLen);
           l_pFile->drop();
 
           l_iResult = 200;
+
+          if (l_sExtension == ".html") {
+            std::string l_sFile = l_aBuffer;
+
+            bool l_bReplace = false;
+
+            while (l_sFile.find("{!") != std::string::npos) {
+              std::string l_sSub = l_sFile.substr(l_sFile.find("{!") + 2);
+              if (l_sSub.find("}") != std::string::npos) {
+                l_bReplace = true;
+
+                std::string l_sReplace = l_sSub.substr(0, l_sSub.find("}"));
+                
+                if (l_sReplace == "tracknames") {
+                  l_sReplace = createTrackNameJSON();
+                }
+                else if (l_sReplace == "championship") {
+                  l_sReplace = getChampionshipXML();
+                }
+
+                std::string l_sNewFile = l_sFile.substr(0, l_sFile.find("{!")) + l_sReplace + l_sSub.substr(l_sSub.find("}") + 1);
+                l_sFile = l_sNewFile;
+              }
+            }
+
+            if (l_bReplace) {
+              delete[] l_aBuffer;
+              l_iBufLen = (int)l_sFile.size();
+              l_aBuffer = new char[l_iBufLen];
+              memset(l_aBuffer, 0, l_iBufLen);
+              memcpy(l_aBuffer, l_sFile.c_str(), l_iBufLen);
+            }
+          }
         }
       }
 
@@ -618,7 +697,7 @@ namespace dustbin {
         }
         send(m_iSocket, "", 0, 0);
 
-        delete l_aToDelete;
+        delete[] l_aToDelete;
 
         return 200;
       }

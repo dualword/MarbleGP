@@ -168,6 +168,18 @@ namespace dustbin {
         */
         int send404(const std::string &a_sPath);
 
+        /**
+        * Create the track name JSON
+        * @return a string with a JSON representation of the track name map
+        */
+        std::string createTrackNameJSON();
+
+        /**
+        * Get the XML with the results of the last championship
+        * @return the XML with the results of the last championship
+        */
+        std::string getChampionshipXML();
+
       public:
         /**
         * The constructor
