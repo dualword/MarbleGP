@@ -10,6 +10,14 @@
 #include <ctime>
 #include <ios>
 
+#ifndef _WINDOWS
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
+#include <unistd.h>
+#endif
+
 namespace dustbin {
   namespace webserver {
     /**
@@ -20,22 +28,33 @@ namespace dustbin {
 #ifdef _WINDOWS
       m_iSocket(INVALID_SOCKET)
 #else
-      m_iServer(-1) 
+      m_iSocket(-1)
 #endif
     {
+      if (a_pQueue != nullptr) {
+        m_pQueue = new threads::COutputQueue();
+        a_pQueue->addSender(m_pQueue);
+        m_pQueue->addListener(a_pQueue);
+      }
+
 #ifdef _WINDOWS
       WSADATA l_cWsa;
 
       m_iError = WSAStartup(MAKEWORD(2, 2), &l_cWsa);
       if (m_iError != 0) {
-        printf("WSAStartup failed with code %i\n", m_iError);
+        std::string l_sError = "WSAStartup failed with code " + std::to_string(m_iError);
+        printf((l_sError + "\n").c_str());
+        
         return;
       }
+#endif
 
+#ifdef _WINDOWS
       struct addrinfo  l_cAddr;
       struct addrinfo *l_pData;
 
       ZeroMemory(&l_cAddr, sizeof(l_cAddr));
+
       l_cAddr.ai_family   = AF_INET;
       l_cAddr.ai_socktype = SOCK_STREAM;
       l_cAddr.ai_protocol = IPPROTO_TCP;
@@ -43,28 +62,37 @@ namespace dustbin {
 
       m_iError = getaddrinfo(nullptr, std::to_string(a_iPortNo).c_str(), &l_cAddr, &l_pData);
       if (m_iError != 0) {
-        printf("getaddrinfo failed with error %i\n", WSAGetLastError());
+        std::string l_sError = "getaddrinfo failes with error " + std::to_string(WSAGetLastError());
+        printf((l_sError + "\n").c_str());
+        sendWeblogmessage((irr::s32)irr::ELL_ERROR, l_sError, m_pQueue);
         freeaddrinfo(l_pData);
         WSACleanup();
         return;
       }
 
-      m_iSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP  );
+      m_iSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
       if (m_iSocket == INVALID_SOCKET) {
-        printf("Socket failed with error code %i\n", WSAGetLastError());
+        std::string l_sError = "Socket failed with error code " + std::to_string(WSAGetLastError());
+        printf((l_sError + "\n").c_str());
+        sendWeblogmessage((irr::s32)irr::ELL_ERROR, l_sError, m_pQueue);
         return;
       }
 
       int l_iBufLen = 0;
       m_iError = setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char *)&l_iBufLen, sizeof(int));
       if (m_iError != 0) {
-        printf("Error while setting socket options: %i\n", WSAGetLastError());
+        std::string l_sError = "Error while setting socket options: " + std::to_string(WSAGetLastError());
+        printf((l_sError + "\n").c_str());
+        sendWeblogmessage((irr::s32)irr::ELL_ERROR, l_sError, m_pQueue);
         return;
       }
 
       m_iError = bind(m_iSocket, l_pData->ai_addr, (int)l_pData->ai_addrlen);
       if (m_iError != 0) {
-        printf("Bind failed with error %i\n", WSAGetLastError());
+        std::string l_sError = "Bind failed with error " + std::to_string(WSAGetLastError());
+        printf((l_sError + "\"").c_str());
+        sendWeblogmessage((irr::s32)irr::ELL_ERROR, l_sError, m_pQueue);
         return;
       }
 
@@ -73,22 +101,64 @@ namespace dustbin {
 
       if (gethostname(l_sHost, 255) == 0) {
         printf("Host name: \"%s\"\n", l_sHost);
+        sendWeblogmessage((irr::s32)irr::ELL_INFORMATION, std::string("Host Name: \"") + l_sHost + "\"" , m_pQueue);
         m_sHostName = l_sHost;
       }
 
       freeaddrinfo(l_pData);
+#else
+      struct sockaddr_in l_cAddr;
 
-      if (a_pQueue != nullptr) {
-        m_pQueue = new threads::COutputQueue();
-        a_pQueue->addSender(m_pQueue);
-        m_pQueue->addListener(a_pQueue);
+      memset(&l_cAddr, 0, sizeof(l_cAddr));
+
+      l_cAddr.sin_family = AF_INET; // sets to use IP
+      l_cAddr.sin_addr.s_addr = htonl(INADDR_ANY); // sets our local IP address
+      l_cAddr.sin_port = htons(a_iPortNo); // sets the server port number #endif
+
+      m_iSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+      if (m_iSocket < 0) {
+        std::string l_sError = "Socket has failed with error " + std::to_string(m_iSocket);
+        sendWeblogmessage((irr::s32)irr::ELL_ERROR, l_sError, m_pQueue);
+        return;
+      }
+
+      m_iError = bind(m_iSocket, (struct sockaddr *)&l_cAddr, sizeof(struct sockaddr));
+      if (m_iError < 0) {
+        std::string l_sError ="Error binding socket: " + std::to_string(m_iError);
+        sendWeblogmessage((irr::s32)irr::ELL_ERROR, l_sError, m_pQueue);
+        return;
+      }
+
+      struct ifaddrs *l_pAddr = nullptr;
+      int l_iCount = getifaddrs(&l_pAddr);
+
+      if (l_pAddr != nullptr) {
+        for (struct  ifaddrs *l_pThis = l_pAddr; l_pThis != nullptr; l_pThis = l_pThis->ifa_next) {
+          if (l_pThis->ifa_addr->sa_family == AF_INET) {
+            if(l_pThis->ifa_addr != nullptr ){
+              char l_sBuffer[INET_ADDRSTRLEN] = {0, };
+              inet_ntop(
+                AF_INET,
+                &((struct sockaddr_in*)(l_pThis->ifa_addr))->sin_addr,
+                l_sBuffer,
+                INET_ADDRSTRLEN
+              );
+
+              std::string s = std::string(l_sBuffer);
+
+              if (s != "127.0.0.1") {
+                sendWeblogmessage((irr::s32) irr::ELL_INFORMATION, s, m_pQueue);
+                m_sHostName = s;
+              }
+            }
+          }
+        }
       }
 #endif
     }
 
     CWebServerBase::~CWebServerBase() {
-#ifdef _WINDOWS
-#endif
       if (m_pQueue != nullptr) {
         delete m_pQueue;
         m_pQueue = nullptr;
@@ -141,7 +211,11 @@ namespace dustbin {
     */
     void CWebServerBase::stopServer() {
       m_bStop = true;
+#ifdef _WINDOWS
       closesocket(m_iSocket);
+#else
+      shutdown(m_iSocket, SHUT_RDWR);
+#endif
     }
 
     /**
@@ -163,21 +237,33 @@ namespace dustbin {
       printf("Waiting for incoming connections.\n");
 
       while (!m_bStop) {
-#ifdef _WINDOWS
         int l_iResult = listen(m_iSocket, SOMAXCONN);
+#ifdef _WINDOWS
         if (l_iResult == SOCKET_ERROR) {
           printf("Listen error %i\n", WSAGetLastError());
+#else
+        if (l_iResult < 0) {
+          printf("Socket error %i\n", l_iResult);
+#endif
           break;
         }
 
+#ifdef _WINDOWS
         SOCKET l_iRequest = accept(m_iSocket, nullptr, nullptr);
         if (l_iRequest == INVALID_SOCKET) {
           printf("Accept error %i\n", WSAGetLastError());
           break;
         }
+#else
+        int l_iRequest = accept(m_iSocket, nullptr, nullptr);
+        if (l_iRequest < 0) {
+          printf("Accept error %i\n", l_iRequest);
+        }
+#endif
 
         IWebServerRequest *l_pRequest = createRequest(l_iRequest);
-#endif
+        l_pRequest->execute();
+        delete l_pRequest;
       }
     }
 
@@ -274,20 +360,24 @@ namespace dustbin {
     ) : m_iSocket(a_iSocket), m_bFinished(false), m_pFs(nullptr), m_pQueue(a_pQueue) {
       m_pFs = CGlobal::getInstance()->getFileSystem();
 
-      m_cThread = std::thread([this] { execute(); m_bFinished = true; detach(); delete(this); });
+      // m_cThread = std::thread([this] { execute(); m_bFinished = true; detach(); delete(this); });
     }
 
     CWebServerRequestBase::~CWebServerRequestBase() {
-      if (m_iSocket != INVALID_SOCKET) {
+      // if (m_iSocket != INVALID_SOCKET) {
         // closesocket(m_iSocket);
-      }
+      // }
     }
 
     /**
     * The execution method
     */
     void CWebServerRequestBase::execute() {
+#ifdef _WINDOWS
       if (m_iSocket != INVALID_SOCKET) {
+#else
+      if (m_iSocket >= 0) {
+#endif
         while (true) {
           enum class enHTTPState {
             HttpMethod,
@@ -316,11 +406,9 @@ namespace dustbin {
           while (l_eState != enHTTPState::HeaderEnd) {
             char c;
 
-  #ifdef _WINDOWS
             int l_iThisRead = recv(m_iSocket, &c, 1, 0);
             if (l_iThisRead != 0) {
               l_iRead += l_iThisRead;
-  #endif
               l_sLine += c;
 
               switch (l_eState) {
@@ -435,9 +523,9 @@ namespace dustbin {
       int   l_iResult = 0;
 
       if (l_sPath == l_sPathResultXML) {
-        std::string l_sPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
+        std::string l_sXmlPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
 
-        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sPath.c_str());
+        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXmlPath.c_str());
 
         if (l_pFile != nullptr) {
           l_iBufLen = l_pFile->getSize();
@@ -495,7 +583,7 @@ namespace dustbin {
 
         l_sExtension = l_sPath.find_last_of('.') != std::string::npos ? l_sPath.substr(l_sPath.find_last_of('.')) : "";
 
-        std::string l_sRelativePath = "data/html/" + l_sPath;
+        std::string l_sRelativePath = "data/html" + l_sPath;
 
         irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sRelativePath.c_str());
 

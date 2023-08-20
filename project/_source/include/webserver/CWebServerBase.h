@@ -29,7 +29,7 @@ namespace dustbin {
     * This is the base class for the web server. The actual implementation must
     * be derived from this class and override the methods for the HTTP methods
     */
-    class CWebServerBase : public IWebServer {
+    class CWebServerBase : public IWebServer, public messages::IWebLogSender {
       private:
         std::thread m_cThread;      /**< The main thread of the server */
         bool        m_bRunning;     /**< The "running" flag of the server */
@@ -43,7 +43,7 @@ namespace dustbin {
 #ifdef _WINDOWS
         SOCKET      m_iSocket;  /**< Server ID */
 #else
-        int         m_iServer;  /**< Server ID */
+        int         m_iSocket;  /**< Server ID */
 #endif
 
         void execute();

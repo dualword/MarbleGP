@@ -303,11 +303,20 @@
     </custom>
   </element>
   
-  <element type="MenuButton" rect="lowermiddle: 10, -4, 24, 0" font="big" tooltip="Show the internal log of the game">
+  <element type="MenuButton" rect="lowermiddle: 7, -4, 24, 0" font="big" tooltip="Show the internal log of the game">
     <attributes>
       <attribute key="Name" value="log" />
       <attribute key="Id" value="24000" />
       <attribute key="Caption" value="Log" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: -24, -4, -7, 0" font="big" tooltip="Show the internal log of the game">
+    <attributes>
+      <attribute key="Name" value="remote" />
+      <attribute key="Id" value="23456" />
+      <attribute key="Caption" value="Remote Config" />
       <attribute key="AllZLayers" value="true" />
     </attributes>
   </element>
