@@ -84,6 +84,11 @@
       .button:hover { background-color: #3367b8; }
       .button:active { background-color: #ecf163; }
       
+      .thumbnail {
+        width: 50%;
+        height: auto;
+      }
+      
       a {
         text-decoration: none;
       }
@@ -292,7 +297,7 @@
             l_Html += ", " + l_Marbles + " Marbles";
             l_Html += "</h3>";
             l_Html += "      <div>\n";
-            l_Html += "        <img src=\"/thumbnails/" + l_TrackId + "\" alt=\"Tumbnail of track &quot;" + l_Track + "&quot;\" /><br />\n";
+            l_Html += "        <img src=\"/thumbnails/" + l_TrackId + "\" alt=\"Tumbnail of track &quot;" + l_Track + "&quot;\" class=\"thumbnail\" /><br />\n";
             l_Html += "        <table>\n";
             l_Html += "          <tr>\n";
             l_Html += "            <th>Position</th>\n";

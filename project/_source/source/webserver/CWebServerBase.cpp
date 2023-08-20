@@ -237,6 +237,7 @@ namespace dustbin {
       printf("Waiting for incoming connections.\n");
 
       while (!m_bStop) {
+        printf("Listening...\n");
         int l_iResult = listen(m_iSocket, SOMAXCONN);
 #ifdef _WINDOWS
         if (l_iResult == SOCKET_ERROR) {
@@ -248,6 +249,7 @@ namespace dustbin {
           break;
         }
 
+        printf("Done.\nAccepting...\n");
 #ifdef _WINDOWS
         SOCKET l_iRequest = accept(m_iSocket, nullptr, nullptr);
         if (l_iRequest == INVALID_SOCKET) {
@@ -261,6 +263,7 @@ namespace dustbin {
         }
 #endif
 
+        printf("Ready.\n");
         IWebServerRequest *l_pRequest = createRequest(l_iRequest);
         l_pRequest->execute();
         delete l_pRequest;
@@ -456,7 +459,7 @@ namespace dustbin {
             else break;
           }
 
-          if (l_iRead > 0 && l_sMethod != "" && l_sVersion != "" && l_sMethod != "") {
+          if (l_iRead > 0 && l_sMethod != "" && l_sVersion != "") {
             std::time_t l_cTime = std::time(nullptr);
 
             char s[0xFF];
@@ -477,6 +480,7 @@ namespace dustbin {
             return;
           }
           else {
+            printf("Method: %s, Read: %i, Version: %s\n", l_sMethod.c_str(), l_iRead, l_sVersion.c_str());
             return;
           }
         }
@@ -681,6 +685,7 @@ namespace dustbin {
         l_mHeader["Content-Type"  ] = getContentType(l_sExtension);
         l_mHeader["Content-Length"] = std::to_string(l_iBufLen);
         l_mHeader["Connection"    ] = "close";
+        l_mHeader["Cache-Control" ] = "max-age=0";
 
         char *l_aToDelete = l_aBuffer;
 
