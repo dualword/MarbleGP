@@ -148,7 +148,7 @@ namespace dustbin {
               std::string s = std::string(l_sBuffer);
 
               if (s != "127.0.0.1") {
-                sendWeblogmessage((irr::s32) irr::ELL_INFORMATION, s, m_pQueue);
+                sendWeblogmessage((irr::s32) irr::ELL_INFORMATION, std::string("Host Address: \"") + s + "\"", m_pQueue);
                 m_sHostName = s;
               }
             }
