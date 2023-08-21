@@ -100,8 +100,8 @@ namespace dustbin {
       memset(l_sHost, 0, 255);
 
       if (gethostname(l_sHost, 255) == 0) {
-        printf("Host name: \"%s\"\n", l_sHost);
-        sendWeblogmessage((irr::s32)irr::ELL_INFORMATION, std::string("Host Name: \"") + l_sHost + "\"" , m_pQueue);
+        printf("HTTP server running on: \"%s\":4693\n", l_sHost);
+        sendWeblogmessage((irr::s32)irr::ELL_INFORMATION, std::string("HTTP server running on: \"") + l_sHost + ":4693\"" , m_pQueue);
         m_sHostName = l_sHost;
       }
 

@@ -306,20 +306,55 @@
             l_Html += "            <th>Stunned</th>\n";
             l_Html += "            <th>Racetime</th>\n";
             l_Html += "            <th>Fastest&nbsp;Laptime</th>\n";
+            l_Html += "            <th>Deficit&nbsp;(Leader)</th>\n";
+            l_Html += "            <th>Deficit&nbsp;(Ahead)</th>\n";
             l_Html += "          </tr>\n";
             
             var l_Pos = 1;
+            
+            l_RaceTime = "Fastest";
+            l_WinrTime = "Fastest";
             
             for (l_Player of l_Result.childNodes) {
               if (l_Player.tagName == "raceplayer") {
                 var l_Name = getNodeValue(l_Player.getElementsByTagName("id"));
                 var l_Fast = parseInt(getNodeValue(l_Player.getElementsByTagName("fastest"))) / 120.0;
                 var l_Time = parseInt(l_Player.getElementsByTagName("racetime")[0].getAttribute("total")) / 120.0;
+                var l_Ahed = 0.0;
+                var l_Ledr = 0.0;
+                
+                if (l_Fast == 0.0) {
+                  l_Fast = "No laptime set.";
+                }
+                else {
+                  l_Fast = l_Fast.toFixed(2) + "&nbsp;sec.";
+                }
+                
+                if (l_RaceTime == "Fastest") {
+                  l_RaceTime = l_Time;
+                }
+                
+                if (l_WinrTime == "Fastest") {
+                  l_WinrTime = l_Time;
+                }
+                
+                console.log(l_Time + " / " + l_RaceTime);
+                
+                if (l_Time < l_RaceTime) {
+                  l_Time = "Did not finish.";
+                  l_Ledr = "Did not finish.";
+                  l_Ahed = "Did not finish.";
+                }
+                else {
+                  l_Ahed = (l_Time - l_RaceTime).toFixed(2) + "&nbsp;sec.";
+                  l_Ledr = (l_Time - l_WinrTime).toFixed(2) + "&nbsp;sec.";
+                  l_RaceTime = l_Time;
+                  l_Time = l_Time.toFixed(2) + "&nbsp;sec.";
+                }
                 
                 for (l_Marble of l_Assignment.childNodes) {
                   if (l_Marble.tagName == "assignment") {
                     if (parseInt(l_Name) == parseInt(l_Marble.getAttribute("marble"))) {
-                      console.log(l_Name + " ==> " + l_Marble.getAttribute("marble"));
                       l_Name = l_Marble.getAttribute("player");
                       
                       for (l_ThePlayer of l_PlayerList) {
@@ -337,8 +372,10 @@
                 l_Html += "            <td>" + l_Name + "</td>\n";
                 l_Html += "            <td style=\"text-align: right\">" + getNodeValue(l_Player.getElementsByTagName("respawn")) + "</td>\n";
                 l_Html += "            <td style=\"text-align: right\">" + getNodeValue(l_Player.getElementsByTagName("stunned")) + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + l_Time.toFixed(2) + "&nbsp;sec.</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + l_Fast.toFixed(2) + "&nbsp;sec.</td>\n";
+                l_Html += "            <td style=\"text-align: right\">" + l_Time + "</td>\n";
+                l_Html += "            <td style=\"text-align: right\">" + l_Fast + "</td>\n";
+                l_Html += "            <td style=\"text-align: right\">" + l_Ledr + "</td>\n";
+                l_Html += "            <td style=\"text-align: right\">" + l_Ahed + "</td>\n";
                 l_Html += "          </tr>\n";
                 l_Pos++;
               }
