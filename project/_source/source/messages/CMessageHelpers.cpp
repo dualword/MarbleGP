@@ -6,6 +6,17 @@
 
 namespace dustbin {
   namespace messages {
+    static const char* base64_chars[2] = {
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz"
+      "0123456789"
+      "+/",
+
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz"
+      "0123456789"
+      "-_"};
+
     unsigned char hexToChar(const std::string &str) {
       short c = 0;
 
@@ -74,6 +85,54 @@ namespace dustbin {
       }
 
       return out.str();
+    }
+
+
+    /**
+    * Base64 encode a chunk of data
+    * @param a_pData pointer to the data
+    * @param a_iSize size of the data chunk
+    * @param a_bUrl encode the data for use in URLs?
+    * @return a base64 encoded string containing the data
+    */
+    std::string base64Encode(unsigned char const *a_pData, size_t a_iSize, bool a_bUrl) {
+      size_t len_encoded = (a_iSize + 2) / 3 * 4;
+
+      unsigned char l_cTrailingChar = a_bUrl ? '.' : '=';
+
+      const char* l_pBase64Chars = base64_chars[a_bUrl];
+
+      std::string l_sReturn;
+      l_sReturn.reserve(len_encoded);
+
+      unsigned int pos = 0;
+
+      while (pos < a_iSize) {
+        l_sReturn.push_back(l_pBase64Chars[(a_pData[pos + 0] & 0xfc) >> 2]);
+
+        if (pos + 1 < a_iSize) {
+          l_sReturn.push_back(l_pBase64Chars[((a_pData[pos + 0] & 0x03) << 4) + ((a_pData[pos + 1] & 0xf0) >> 4)]);
+
+          if (pos + 2 < a_iSize) {
+            l_sReturn.push_back(l_pBase64Chars[((a_pData[pos + 1] & 0x0f) << 2) + ((a_pData[pos + 2] & 0xc0) >> 6)]);
+            l_sReturn.push_back(l_pBase64Chars[  a_pData[pos + 2] & 0x3f]);
+          }
+          else {
+            l_sReturn.push_back(l_pBase64Chars[(a_pData[pos + 1] & 0x0f) << 2]);
+            l_sReturn.push_back(l_cTrailingChar);
+          }
+        }
+        else {
+          l_sReturn.push_back(l_pBase64Chars[(a_pData[pos + 0] & 0x03) << 4]);
+          l_sReturn.push_back(l_cTrailingChar);
+          l_sReturn.push_back(l_cTrailingChar);
+        }
+
+        pos += 3;
+      }
+
+
+      return l_sReturn;    
     }
   }
 }
