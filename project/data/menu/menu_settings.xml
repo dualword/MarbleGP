@@ -509,16 +509,16 @@
           <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />
         </attributes>
       </element>
-      
-      <element type="MenuButton" rect="center: 4, 0, 30, 4" font="big">
-        <attributes>
-          <attribute key="Name" value="remote" />
-          <attribute key="Id" value="23456" />
-          <attribute key="Caption" value="Remote Management" />
-          <attribute key="AllZLayers" value="true" />
-        </attributes>
-      </element>
     </children>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: -35, -4, -12, 0" font="big">
+    <attributes>
+      <attribute key="Name" value="remote" />
+      <attribute key="Id" value="23456" />
+      <attribute key="Caption" value="Remote Management" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
   </element>
   
   <element type="MenuButton" rect="lowermiddle: 1, -4, 5, 0" tooltip="OK">
