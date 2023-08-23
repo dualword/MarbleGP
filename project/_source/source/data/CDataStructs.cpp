@@ -399,6 +399,36 @@ namespace dustbin {
       return m_eAiHelp == enAiHelp::BotMgp || m_eAiHelp == enAiHelp::BotMb2 || m_eAiHelp == enAiHelp::BotMb3;
     }
 
+    /**
+    * Convert this profile to a JSON string
+    * @return a JSON string with the data of this profile
+    */
+    std::string SPlayerData::to_json() {
+      std::string l_sReturn = "{";
+
+      l_sReturn += "\"name\": \"" + m_sName + "\", ";
+      l_sReturn += "\"short\": \"" + m_sShortName + "\", ";
+      l_sReturn += "\"ai_help\": \"";
+
+      switch (m_eAiHelp) {
+        case enAiHelp::Off: l_sReturn += "Off"; break;
+        case enAiHelp::Display: l_sReturn += "Display"       ; break;
+        case enAiHelp::Low    : l_sReturn += "Low"           ; break;
+        case enAiHelp::Medium : l_sReturn += "Medium"        ; break;
+        case enAiHelp::High   : l_sReturn += "High"          ; break;
+        case enAiHelp::BotMgp : l_sReturn += "Bot (MarbleGP)"; break;
+        case enAiHelp::BotMb2 : l_sReturn += "Bot (Marble2)" ; break;
+        case enAiHelp::BotMb3 : l_sReturn += "Bot (Marble3)" ; break;
+      }
+
+      l_sReturn += "\", \"auto_throttle\": " + std::string(m_bAutoThrottle == true ? "true" : "false") + ",";
+
+      l_sReturn += "\"texture\": \"" + m_sTexture + "\"";
+
+
+      return l_sReturn + "}";
+    }
+
     std::vector<SPlayerData> SPlayerData::createPlayerVector(const std::string a_sSerialized) {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sSerialized.c_str());
       std::vector<SPlayerData> l_vRet;
@@ -802,6 +832,34 @@ namespace dustbin {
       return s;
     }
 
+    std::string SChampionshipPlayer::to_json() const {
+      std::string s = "{";
+
+      s += "\"playerid\":" + std::to_string(m_iPlayerId) + ",";
+      s += "\"name\":\""            +                     m_sName          + "\",";
+      s += "\"points\":"            + std::to_string(m_iPoints      ) + ",";
+      s += "\"respawn\":"           + std::to_string(m_iRespawn     ) + ",";
+      s += "\"stunned\":"           + std::to_string(m_iStunned     ) + ",";
+      s += "\"fastest_laps\":"      + std::to_string(m_iFastestLaps ) + ",";
+      s += "\"did_not_finish\":"    + std::to_string(m_iDidNotFinish) + ",";
+      s += "\"first_best_finish\":" + std::to_string(m_iBestFinish  ) + ",";
+
+      s += "\"race_results\": [ ";
+
+      for (int i = 0; i < 16; i++) {
+        if (i != 0)
+          s += ",";
+
+        s += std::to_string(m_aResult[i]);
+      }
+
+      s += " ] ";
+
+      s += "}";
+
+      return s;
+    }
+
     std::string SChampionshipPlayer::to_string() {
       std::string s = "SChampionshipPlayer: " +
         std::string("player id=") + std::to_string(m_iPlayerId) + ", " +
@@ -993,6 +1051,39 @@ namespace dustbin {
       return s;
     }
 
+    std::string SChampionshipRace::to_json() const {
+      std::string s = "{";
+
+      s += "\"track\": \""       +                m_sTrack    + "\",";
+      s += "\"playercount\":" + std::to_string(m_iPlayers) + ",";
+      s += "\"laps\":"        + std::to_string(m_iLaps   ) + ",";
+
+      s += "\"result\": [";
+
+      for (int i = 0; i < m_iPlayers; i++) {
+        if (i != 0)
+          s += ",";
+        s += m_aResult[i].to_json();
+      }
+
+      s += "] ,";
+
+      s += "\"marble_assignment\": {";
+
+      for (std::map<int, int>::const_iterator it = m_mAssignment.begin(); it != m_mAssignment.end(); it++) {
+        if (it != m_mAssignment.begin())
+          s += ",";
+
+        s += "\"" + std::to_string(it->first) + "\":  " + std::to_string(it->second);
+      }
+
+      s += "}";
+
+      s += "}";
+
+      return s;
+    }
+
     SChampionship::SChampionship() : m_iClass(0), m_iGridSize(0), m_iGridOrder(0), m_bReverseGrid(false) {
     }
 
@@ -1125,6 +1216,44 @@ namespace dustbin {
         return nullptr;
     }
 
+
+    /**
+    * Save the result of the championship to a JSON file
+    */
+    void SChampionship::saveToJSON(const std::string& a_sPath) {
+      std::string l_sFile = "{";
+
+      l_sFile += "\"class\": "       + std::to_string(m_iClass) + ",";
+      l_sFile += "\"gridsize\": "    + std::to_string(m_iGridSize) + ",";
+      l_sFile += "\"gridorder\": "   + std::to_string(m_iGridOrder) + ",";
+      l_sFile += "\"reversegrid\": " + std::string((m_bReverseGrid ? "true" : "false")) + ",";
+      l_sFile += "\"players\": [ ";
+
+      for (std::vector<SChampionshipPlayer>::const_iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        if (it != m_vPlayers.begin())
+          l_sFile += ",";
+
+        l_sFile += (*it).to_json();
+      }
+
+      l_sFile += "], \"races\": [";
+
+      for (std::vector<SChampionshipRace>::const_iterator it = m_vRaces.begin(); it != m_vRaces.end(); it++)  {
+        if (it != m_vRaces.begin())
+          l_sFile += ",";
+
+        l_sFile += (*it).to_json();
+      }
+
+      l_sFile += "] }";
+      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(a_sPath.c_str());
+
+      if (l_pFile != nullptr) {
+        l_pFile->write(l_sFile.c_str(), l_sFile.size());
+        l_pFile->drop();
+      }
+    }
+
     /**
     * Save the result of the championship to an XML file
     * @param a_sPath the path to save the file to
@@ -1141,8 +1270,6 @@ namespace dustbin {
       l_sFile += "</race_settings>";
 
       l_sFile += "<players>";
-
-      std::vector<SChampionshipPlayer> l_vResult = getStandings();
 
       for (std::vector<SChampionshipPlayer>::const_iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
         l_sFile += (*it).to_xml();
@@ -1241,6 +1368,9 @@ namespace dustbin {
 
       std::string l_sPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
       saveToXML(l_sPath);
+      
+      l_sPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.json";
+      saveToJSON(l_sPath);
     }
 
     std::string SChampionship::to_string() {
@@ -1551,6 +1681,41 @@ namespace dustbin {
       s += "</racetime>";
 
       s += "</raceplayer>";
+
+      return s;
+    }
+
+    std::string SRacePlayer::to_json() const {
+      std::string s = "{";
+
+      s += "\"id\":"       + std::to_string(m_iId      ) + ",";
+      s += "\"pos\":"      + std::to_string(m_iPos     ) + ",";
+      s += "\"deficit\":"  + std::to_string(m_iDeficitL) + ",";
+      s += "\"fastest\":"  + std::to_string(m_iFastest ) + ",";
+      s += "\"stunned\":"  + std::to_string(m_iStunned ) + ",";
+      s += "\"respawn\":"  + std::to_string(m_iRespawn ) + ",";
+      s += "\"racetime\":" + std::to_string(getRaceTime()) + ",";
+      s += "\"laps\": [";
+
+      for (std::vector<std::vector<int>>::const_iterator l_itLap = m_vLapCheckpoints.begin(); l_itLap != m_vLapCheckpoints.end(); l_itLap++) {
+        if (l_itLap != m_vLapCheckpoints.begin())
+          s += ",";
+
+        s += "[";
+        
+        for (std::vector<int>::const_iterator l_itCp = (*l_itLap).begin(); l_itCp != (*l_itLap).end(); l_itCp++) {
+          if (l_itCp != (*l_itLap).begin())
+            s += ",";
+
+          s += std::to_string(*l_itCp);
+        }
+
+        s += "]";
+      }
+
+      s += "]";
+
+      s += "}";
 
       return s;
     }

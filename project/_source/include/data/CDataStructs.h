@@ -122,6 +122,12 @@ namespace dustbin {
       */
       bool isBot();
 
+      /**
+      * Convert this profile to a JSON string
+      * @return a JSON string with the data of this profile
+      */
+      std::string to_json();
+
       static std::vector<SPlayerData> createPlayerVector(const std::string a_sSerialized);
     } SPlayerData;
 
@@ -243,6 +249,12 @@ namespace dustbin {
       * @return a XML string
       */
       std::string to_xml() const;
+
+      /**
+      * Convert the data structure to a JSON string
+      * @return a XML string
+      */
+      std::string to_json() const;
     } SRacePlayer;
 
     /**
@@ -268,7 +280,8 @@ namespace dustbin {
       std::string serialize();
 
       std::string to_xml() const;
-
+      std::string to_json() const;
+      
       std::string to_string();
     } SChampionshipPlayer;
 
@@ -294,6 +307,7 @@ namespace dustbin {
       std::string serialize();
 
       std::string to_xml() const;
+      std::string to_json() const;
 
       std::string to_string();
     } SChampionshipRace;
@@ -331,6 +345,11 @@ namespace dustbin {
       * @param a_sPath the path to save the file to
       */
       void saveToXML(const std::string &a_sPath);
+
+      /**
+      * Save the result of the championship to a JSON file
+      */
+      void saveToJSON(const std::string &a_sPath);
 
       std::string to_string();
     } SChampionship;
