@@ -527,11 +527,30 @@ namespace dustbin {
     }
 
     /**
-    * Get the XML with the results of the last championship
-    * @return the XML with the results of the last championship
+    * Return a string with a JSON representation of the profiles
+    * @return a string with a JSON representation of the profiles
     */
-    std::string CWebServerRequestBase::getChampionshipXML() {
-      std::string l_sXmlPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
+    std::string CWebServerRequestBase::getProfileData() {
+      std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(CGlobal::getInstance()->getSetting("profiles"));
+
+      std::string l_sReturn = "[";
+
+      for (std::vector<data::SPlayerData>::iterator l_itPlr = l_vPlayers.begin(); l_itPlr != l_vPlayers.end(); l_itPlr++) {
+        if (l_itPlr != l_vPlayers.begin())
+          l_sReturn += ",";
+
+        l_sReturn += (*l_itPlr).to_json();
+      }
+
+      return l_sReturn + "]";
+    }
+
+    /**
+    * Get the JSON with the results of the last championship
+    * @return the JSON with the results of the last championship
+    */
+    std::string CWebServerRequestBase::getChampionshipData() {
+      std::string l_sXmlPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.json";
       std::string l_sReturn  = "";
 
       irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXmlPath.c_str());
@@ -558,8 +577,7 @@ namespace dustbin {
     */
     int CWebServerRequestBase::handleGet(const std::string a_sUrl, const std::map<std::string, std::string> a_mHeader) {
       const std::string l_sPathThumbnails = "/thumbnails/";
-      const std::string l_sPathResultXML  = "/championship.xml";
-      const std::string l_sPathTrackNames = "/tracknames.json";
+      const std::string l_sPathTexture    = "/texture/";
 
       std::string l_sPath = a_sUrl;
 
@@ -571,41 +589,7 @@ namespace dustbin {
       int   l_iBufLen = 0;
       int   l_iResult = 0;
 
-      if (l_sPath == l_sPathResultXML) {
-        std::string l_sXmlPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.xml";
-
-        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXmlPath.c_str());
-
-        if (l_pFile != nullptr) {
-          l_iBufLen = l_pFile->getSize();
-          l_aBuffer = new char[l_iBufLen];
-          l_pFile->read(l_aBuffer, l_iBufLen);
-
-          l_pFile->drop();
-
-          l_sExtension = ".xml";
-        }
-      }
-      else if (l_sPath == l_sPathTrackNames) {
-        std::map<std::string, std::string> l_mTracks = helpers::getTrackNameMap();
-
-        std::string l_sReturn = "{\n";
-
-        for (std::map<std::string, std::string>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
-          if (l_itName != l_mTracks.begin())
-            l_sReturn += ",\n";
-
-          l_sReturn += "  \"" + l_itName->first + "\": \"" + l_itName->second + "\"";
-        }
-
-        l_sReturn += "\n}\n";
-
-        l_iBufLen = (int)l_sReturn.size();
-        l_aBuffer = new char[l_iBufLen];
-
-        memcpy(l_aBuffer, l_sReturn.c_str(), l_iBufLen);
-
-        l_sExtension = ".txt";
+      if (l_sPath.substr(0, l_sPathTexture.size()) == l_sPathTexture) {
       }
       else if (l_sPath.substr(0, l_sPathThumbnails.size()) == l_sPathThumbnails) {
         std::string l_sImage = "data/levels/" + l_sPath.substr(l_sPathThumbnails.size()) + "/thumbnail.png";
@@ -662,7 +646,17 @@ namespace dustbin {
                   l_sReplace = createTrackNameJSON();
                 }
                 else if (l_sReplace == "championship") {
-                  l_sReplace = getChampionshipXML();
+                  l_sReplace = getChampionshipData();
+                }
+                else if (l_sReplace == "profiles") {
+                  l_sReplace = getProfileData();
+                }
+                else if (l_sReplace == "profilecount") {
+#ifdef _WINDOWS
+                  l_sReplace = "8";
+#else
+                  l_sReplace = "3";
+#endif
                 }
 
                 std::string l_sNewFile = l_sFile.substr(0, l_sFile.find("{!")) + l_sReplace + l_sSub.substr(l_sSub.find("}") + 1);

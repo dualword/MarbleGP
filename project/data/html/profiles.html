@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dustbin::Game MarbleGP - Remote Management</title>
+    <link href="jquery-ui.min.css" rel="stylesheet">
+    <link href="jquery-ui.structure.min.css" rel="stylesheet">
+    <link href="jquery-ui.theme.min.css" rel="stylesheet">
+    <link href="jquery.treemenu.min.css" rel="stylesheet">
+    <style>
+      
+      #mainframe, #headline {
+        width: 80%;
+        border-radius: 1em;
+        border: 2px solid black;
+        background-color: rgba(224, 224, 244, 128);
+        padding: 1em;
+      }
+      
+      #headline {
+        height: 5vh;
+        margin-bottom: 1em;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.5em;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      
+      .container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+      }
+      
+      body {
+        background-image: url("background.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center; 
+        font-family: Arial;
+      }
+      
+      .logoimg {
+        height: 5em;
+        width: auto;
+        padding: 0px;
+        margin: 0px;
+      }
+      
+      table, tr, td {
+        padding: 0px;
+        margin: 0px;
+        border: 0px;
+      }
+      
+      .button {
+        border: 2px solid black;
+        border-radius: 0.5em;
+        width: 20em;
+        height: 1.5em;
+        background-color: #b8c8ff;
+        margin-bottom: 1em;
+        text-align: center;
+        padding-top: auto;
+        padding-bottom: auto;
+        font-size: 2em;
+        line-height: 1.5em;
+        cursor: pointer;
+        color: #000000;
+        text-decoration: none;
+      }
+      
+      .button:hover { background-color: #3367b8; }
+      .button:active { background-color: #ecf163; }
+      
+      a {
+        text-decoration: none;
+      }
+      
+    </style>
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery-ui.min.js" type="text/javascript"></script>
+    <script>
+      
+      function createProfileForm(a_Index, a_Profile) {
+        var l_Texture = a_Profile.texture;
+        
+        l_Texture = l_Texture.replace("://", "/");
+        
+        var l_Html = "<div>\n";
+        l_Html += "  <table>\n";
+        l_Html += "    <tr>\n";
+        l_Html += "      <td><b>Name:</b></td><td><input type=\"text\" name=\"name_" + a_Index + "\" value=\"" + a_Profile.name + "\" /></td>\n";
+        l_Html += "      <td rowspan = \"4\"><img src=\"/texture/" + l_Texture + "\" alt=\"Texture of " + a_Profile.name + " /></td>\n";
+        l_Html += "    </tr>\n";
+        l_Html += "    <tr><td><b>Short:</b></td><td><input type=\"text\" name=\"short_" + a_Index + "\" value=\"" + a_Profile.short + "\" /></td></tr>\n";
+        l_Html += "    <tr><td><b>AI&nbsp;Help:</b></td><td><input type=\"text\" name=\"aihelp_" + a_Index + "\" value=\"" + a_Profile.ai_help + "\" /></td></tr>\n";
+        l_Html += "    <tr><td><b>Auto&nbsp;Throttle:</b></td><td><input type=\"checkbox\" name=\"autothrottle_" + a_Index + "\"";
+
+        if (a_Profile.auto_throttle) l_Html += "checked=\"true\"";
+        
+        l_Html += "\" /></td></tr>\n";
+        l_Html += "  </table>\n";
+        l_Html += "</div>\n<hr />\n";
+        
+        return l_Html;
+      }
+      
+      g_Profiles = {!profiles};
+      g_Count    = {!profilecount};
+      
+      $(document).ready(function() {
+        var l_MainFrame = $("#mainframe");
+        var l_Html = "";
+        
+        for (i = 0; i < g_Profiles.length; i++) {
+          l_Html += createProfileForm(i, g_Profiles[i]);
+        }
+        
+        l_MainFrame.html(l_Html);
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="headline">
+        Dustbin::Games MarbleGP - Player Profiles [<a href="#" onclick="history.back()">Main Menu</a>]
+      </div>
+    </div>
+    <div class="container">
+      <div id="mainframe">
+      </div>
+    </div>
+    <div class="container" style="padding-top: 1em"><img src="marblegp_logo.png" class="logoimg" /></div>
+  </body>
+</html>

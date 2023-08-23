@@ -178,7 +178,13 @@ namespace dustbin {
         * Get the XML with the results of the last championship
         * @return the XML with the results of the last championship
         */
-        std::string getChampionshipXML();
+        std::string getChampionshipData();
+
+        /**
+        * Return a string with a JSON representation of the profiles
+        * @return a string with a JSON representation of the profiles
+        */
+        std::string getProfileData();
 
       public:
         /**

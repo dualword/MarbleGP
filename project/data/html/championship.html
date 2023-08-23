@@ -93,6 +93,14 @@
         text-decoration: none;
       }
       
+      .td_rght {
+        text-align: right;
+      }
+      
+      .td_cntr {
+        text-align: center;
+      }
+      
     </style>
     <script src="jquery.js" type="text/javascript"></script>
     <script src="jquery-ui.min.js" type="text/javascript"></script>
@@ -100,49 +108,58 @@
       
       g_TrackNames = {!tracknames};
       
-      g_Championship = '{!championship}';
+      g_Championship = {!championship};
       
-      function getNodeValue(a_Node) {
-        return a_Node[0].firstChild.nodeValue;
+      function makeAiCell(a_Ai) {
+        var l_Html = "<td style=\"text-align: center; ";
+        
+        switch (a_Ai) {
+          case "marblegp": l_Html += " background-color: #FF0000"; break;
+          case "marble2" : l_Html += " background-color: #FF8000"; break;
+          case "marble3" : l_Html += " background-color: #FFFF00"; break;
+          default: break;
+        }
+        
+        l_Html += "\">";
+        if (a_Ai == "") l_Html += "&nbsp;"; else l_Html += a_Ai;
+        l_Html += "</td>\n";
+        
+        l_Html += "      </tr>\n";
+        return l_Html;
       }
-    
+      
       $(document).ready(function() {
-        a_Data = $.parseXML(g_Championship);
-        
         var l_MainFrame = $("#mainframe");
-        var l_Settings = a_Data.getElementsByTagName("race_settings")[0];
         
-        var l_Html = "<a href=\"/championship.xml\" target=\"_blank\">Download plain result XML</a><br />";
+        var l_Html = "<a href=\"/championship.xml\" target=\"_blank\" id=\"JSON_download\">Download plain result JSON</a><br />";
         l_Html += "  <h3>Setup</h3>\n";
         l_Html += "  <div><ul>\n";
         l_Html += "    <li><b>Race Class:</b> ";
         
-        switch (getNodeValue(l_Settings.getElementsByTagName("class"))) {
-          case "0": l_Html += "Marble3"; break;
-          case "1": l_Html += "Marble3 + Marble2"; break;
-          case "2": l_Html += "Marble2"; break;
-          case "3": l_Html += "Marble2 + MarbleGP"; break;
-          case "4":l_Html += "MarbleGP"; break;
-          case "5": l_Html += "All Classes"; break;
-          default: l_Html += getNodeValue(l_Settings.getElementsByTagName("class"));
+        switch (g_Championship.class) {
+          case 0: l_Html += "Marble3"; break;
+          case 1: l_Html += "Marble3 + Marble2"; break;
+          case 2: l_Html += "Marble2"; break;
+          case 3: l_Html += "Marble2 + MarbleGP"; break;
+          case 4: l_Html += "MarbleGP"; break;
+          case 5: l_Html += "All Classes"; break;
+          default: l_Html += g_Championship.class;
         }
         
         l_Html += "</li>\n";
-        l_Html += "    <li><b>Grid Size:</b> " + getNodeValue(l_Settings.getElementsByTagName("gridsize")) + "</li>\n";
+        l_Html += "    <li><b>Grid Size:</b> " + g_Championship.gridsize + "</li>\n";
         l_Html += "    <li><b>Grid Order:</b> ";
         
-        var l_Reverse = getNodeValue(l_Settings.getElementsByTagName("reversegrid")) == "true";
-        
-        switch (getNodeValue(l_Settings.getElementsByTagName("gridorder"))) {
-          case "0": l_Html += "Fixed (All races have the same starting order)"; break;
-          case "1": l_Html += "Last Race "; if (l_Reverse) l_Html += "Reverse Grid (Winner of the last race starts from the end)"; else l_Html += "Winner of the last race starts from pole position)"; break;
-          case "2": l_Html += "Standings "; if (l_Reverse) l_Html += "Reverse Grid (Leader of the chanpionship starts from the end)"; else l_Html += "Leader of the championship starts from pole position)"; break;
-          case "3": l_Html += "Random"; break;
+        switch (g_Championship.gridorder) {
+          case 0: l_Html += "Fixed (All races have the same starting order)"; break;
+          case 1: l_Html += "Last Race "; if (g_Championship.reversegrid) l_Html += "Reverse Grid (Winner of the last race starts from the end)"; else l_Html += "Winner of the last race starts from pole position)"; break;
+          case 2: l_Html += "Standings "; if (g_Championship.reversegrid) l_Html += "Reverse Grid (Leader of the chanpionship starts from the end)"; else l_Html += "Leader of the championship starts from pole position)"; break;
+          case 3: l_Html += "Random"; break;
         }
         
         l_Html += "</li>\n";
         
-        var l_Players = a_Data.getElementsByTagName("players");
+        var l_Players = g_Championship.players;
 
         l_Html += "  </ul></div>\n";
         l_Html += "  <h3>Final Result</h3>\n";
@@ -158,7 +175,7 @@
         l_Html += "        <th rowspan=\"2\">D.N.F.</th>\n";
         l_Html += "        <th rowspan=\"2\">Best&nbsp;Race</th>\n";
         l_Html += "        <th colspan=\"16\">Race Results</th>\n";
-        l_Html += "        <th rowspan=\"2\">AI Class</th>\n";
+        l_Html += "        <th rowspan=\"2\">AI&nbsp;Class</th>\n";
         l_Html += "      </tr>";
         l_Html += "      <tr>";
         
@@ -168,46 +185,7 @@
         
         l_Html += "      </tr>";
         
-        var l_PlayerList = [ ];
-        
-        for (l_Player of l_Players[0].childNodes) {
-          if (l_Player.tagName == "player") {
-            var l_Data = { };
-            
-            var l_Name = getNodeValue(l_Player.getElementsByTagName("name"));
-            var l_Ai   = "";
-            
-            if (l_Name.indexOf("|") != -1) {
-              l_Ai   = l_Name.substr(   l_Name.indexOf("|") + 1);
-              l_Name = l_Name.substr(0, l_Name.indexOf("|")    );
-            }
-            
-            l_Data["id"               ] = getNodeValue(l_Player.getElementsByTagName("playerid"));
-            l_Data["name"             ] = l_Name;
-            l_Data["ai"               ] = l_Ai;
-            l_Data["points"           ] = getNodeValue(l_Player.getElementsByTagName("points"));
-            l_Data["respawn"          ] = getNodeValue(l_Player.getElementsByTagName("respawn"));
-            l_Data["stunned"          ] = getNodeValue(l_Player.getElementsByTagName("stunned"));
-            l_Data["fastest_laps"     ] = getNodeValue(l_Player.getElementsByTagName("fastest_laps"));
-            l_Data["did_not_finish"   ] = getNodeValue(l_Player.getElementsByTagName("did_not_finish"));
-            l_Data["first_best_finish"] = getNodeValue(l_Player.getElementsByTagName("first_best_finish"));
-            
-            l_Data["results"] = [ ];
-            
-            for (l_Result of l_Player.getElementsByTagName("race_results")[0].childNodes) {
-              if (l_Result.tagName == "position") {
-                var l_Pos   = l_Result.getAttribute("pos");
-                var l_Count = l_Result.firstChild.nodeValue;
-                
-                l_Data["results"][parseInt(l_Pos)] = parseInt(l_Count);
-              }
-            }
-                          
-            l_PlayerList.push(l_Data);
-          }
-        }
-        
-        l_PlayerList.sort(function(a_Player1, a_Player2) {
+        g_Championship.players.sort(function(a_Player1, a_Player2) {
           if (a_Player1["points"] != a_Player2["points"]) {
             return a_Player2["points"] - a_Player1["points"];
           }
@@ -230,37 +208,39 @@
         
         var l_Pos = 1;
         
-        for (l_Data of l_PlayerList) {
+        for (i = 0; i < g_Championship.players.length; i++) {
+          var l_Player = g_Championship.players[i];
+          var l_Name   = l_Player.name;
+          var l_Ai     = "";
+          
+          if (l_Name.indexOf("|") != -1) {
+            l_Ai   = l_Name.substr(   l_Name.indexOf("|") + 1);
+            l_Name = l_Name.substr(0, l_Name.indexOf("|")    );
+            
+            l_Player.name = l_Name;
+            l_Player.ai   = l_Ai;
+          }
+          else l_Player.ai = "";
+
+          
           l_Html += "      <tr>\n";
           l_Html += "        <td style=\"text-align: center\">" + l_Pos + "</td>\n";
-          l_Html += "        <td>" + l_Data["name"             ] + "</td>\n";
-          l_Html += "        <td style=\"text-align: right\">" + l_Data["points"           ] + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Data["respawn"          ] + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Data["stunned"          ] + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Data["fastest_laps"     ] + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Data["did_not_finish"   ] + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Data["first_best_finish"] + "</td>\n";
+          l_Html += "        <td>" + l_Name + "</td>\n";
+          l_Html += "        <td style=\"text-align: right\">"  + l_Player.points            + "</td>\n";
+          l_Html += "        <td style=\"text-align: center\">" + l_Player.respawn           + "</td>\n";
+          l_Html += "        <td style=\"text-align: center\">" + l_Player.stunned           + "</td>\n";
+          l_Html += "        <td style=\"text-align: center\">" + l_Player.fastest_laps      + "</td>\n";
+          l_Html += "        <td style=\"text-align: center\">" + l_Player.did_not_finish    + "</td>\n";
+          l_Html += "        <td style=\"text-align: center\">" + l_Player.first_best_finish + "</td>\n";
           
-          for (i = 1; i <= 16; i++) {
-            if (l_Data["results"][i] != undefined)
-              l_Html += "        <td style=\"text-align: center\">" + l_Data["results"][i] + "</td>\n";
+          for (j = 0; j < 16; j++) {
+            if (l_Player.race_results[j] != undefined)
+              l_Html += "        <td style=\"text-align: center\">" + l_Player.race_results[j] + "</td>\n";
             else
               l_Html += "        <td>&nbsp;</td>\n";
           }
           
-          l_Html += "        <td";
-          
-          switch (l_Data["ai"]) {
-            case "marblegp": l_Html += " style=\"background-color: #FF0000\""; break;
-            case "marble2" : l_Html += " style=\"background-color: #FF8000\""; break;
-            case "marble3" : l_Html += " style=\"background-color: #FFFF00\""; break;
-            default: break;
-          }
-          
-          l_Html += ">";
-          if (l_Data["ai"] == "") l_Html += "&nbsp;"; else l_Html += l_Data["ai"];
-          l_Html += "</td>\n";
-          
+          l_Html += "        " + makeAiCell(l_Ai);
           l_Html += "      </tr>\n";
           
           l_Pos++;
@@ -268,130 +248,122 @@
         
         l_Html += "    </table>\n";
         l_Html += "  </div>\n";
+        l_Html += "</div>\n";
         l_Html += "<h3>Races</h3>\n";
-        l_Html += "    <div id=\"accordion\">\n";
+        l_Html += "<div id=\"accordion\">\n";
         
-        var l_Races = a_Data.getElementsByTagName("races")[0];
-        var l_Count = 1;
-       
-        for (l_Race of l_Races.childNodes) {
-          if (l_Race.tagName == "race") {
-            var l_Assignment = l_Race.getElementsByTagName("marble_assignment")[0];
-            var l_Result     = l_Race.getElementsByTagName("result")[0];
+        for (i = 0; i < g_Championship.races.length; i++) {
+          var l_ThisRace = g_Championship.races[i];
+          
+          l_Html += "  <h3>Race " + (i + 1) + ": <b>" + g_TrackNames[l_ThisRace.track] + "</b> (" + l_ThisRace.laps;
+          if (l_ThisRace.laps == 1) l_Html += " Lap, " ; else l_Html += " Laps, ";
+          l_Html += l_ThisRace.playercount + " Marbles)</h3>\n";
+          
+          l_Html += "  <div>\n";
+          l_Html += "    <img src=\"/thumbnails/" + l_ThisRace.track + "\" alt=\"Thumbnail " + g_TrackNames[l_ThisRace.track] + "\" class=\"thumbnail\" /><br />\n";
+          l_Html += "    <table>\n";
+          l_Html += "      <tr>\n";
+          l_Html += "        <th>Position</th>\n";
+          l_Html += "        <th>Name</th>\n";
+          l_Html += "        <th>Racetime</th>\n";
+          l_Html += "        <th>Respawn</th>\n";
+          l_Html += "        <th>Stunned</th>\n";
+          l_Html += "        <th>Best&nbsp;Lap&nbsp;Time</th>\n";
+          l_Html += "        <th>Lag&nbsp;(Leader)</th>\n";
+          l_Html += "        <th>Lag&nbsp;(Player Ahead)</th>\n";
+          l_Html += "        <th>AI&nbsp;Class</th>\n";
+          l_Html += "      </tr>\n";
+          
+          var l_Assignment = l_ThisRace.marble_assignment;
+          var l_CpCount    = l_ThisRace.result[0].laps[l_ThisRace.result[0].laps.length - 1].length;
+          
+          for (j = 0; j < l_ThisRace.result.length; j++) {
+            var l_ThisResult = l_ThisRace.result[j];
             
-            l_Html += "      <h3>Race " + l_Count + ": ";
+            var l_Name = l_ThisResult.id;
+            var l_Ai   = "";
             
-            var l_TrackId = getNodeValue(l_Race.getElementsByTagName("track"));
-            var l_Laps    = getNodeValue(l_Race.getElementsByTagName("laps"));
-            var l_Marbles = getNodeValue(l_Race.getElementsByTagName("playercount"));
-            
-            var l_Track = l_TrackId;
-            
-            if (g_TrackNames != undefined && g_TrackNames[l_Track] != undefined)
-              l_Track = g_TrackNames[l_Track];
-            
-            l_Html += "<b>" + l_Track + "</b>, " + l_Laps + ", ";
-            
-            if (l_Laps == "1") l_Html += " lap"; else l_Html += " laps";
-            
-            l_Html += ", " + l_Marbles + " Marbles";
-            l_Html += "</h3>";
-            l_Html += "      <div>\n";
-            l_Html += "        <img src=\"/thumbnails/" + l_TrackId + "\" alt=\"Tumbnail of track &quot;" + l_Track + "&quot;\" class=\"thumbnail\" /><br />\n";
-            l_Html += "        <table>\n";
-            l_Html += "          <tr>\n";
-            l_Html += "            <th>Position</th>\n";
-            l_Html += "            <th>Player</th>\n";
-            l_Html += "            <th>Respawn</th>\n";
-            l_Html += "            <th>Stunned</th>\n";
-            l_Html += "            <th>Racetime</th>\n";
-            l_Html += "            <th>Fastest&nbsp;Laptime</th>\n";
-            l_Html += "            <th>Deficit&nbsp;(Leader)</th>\n";
-            l_Html += "            <th>Deficit&nbsp;(Ahead)</th>\n";
-            l_Html += "          </tr>\n";
-            
-            var l_Pos = 1;
-            
-            l_RaceTime = "Fastest";
-            l_WinrTime = "Fastest";
-            
-            for (l_Player of l_Result.childNodes) {
-              if (l_Player.tagName == "raceplayer") {
-                var l_Name = getNodeValue(l_Player.getElementsByTagName("id"));
-                var l_Fast = parseInt(getNodeValue(l_Player.getElementsByTagName("fastest"))) / 120.0;
-                var l_Time = parseInt(l_Player.getElementsByTagName("racetime")[0].getAttribute("total")) / 120.0;
-                var l_Ahed = 0.0;
-                var l_Ledr = 0.0;
-                
-                if (l_Fast == 0.0) {
-                  l_Fast = "No laptime set.";
+            if (l_Assignment[l_Name] != undefined) {
+              l_Name = l_Assignment[l_Name];
+              
+              for (k = 0; k <  g_Championship.players.length; k++) {
+                if (g_Championship.players[k].playerid == l_Name) {
+                  l_Name = g_Championship.players[k].name;
+                  l_Ai   = g_Championship.players[k].ai;
+                  break;
                 }
-                else {
-                  l_Fast = l_Fast.toFixed(2) + "&nbsp;sec.";
-                }
-                
-                if (l_RaceTime == "Fastest") {
-                  l_RaceTime = l_Time;
-                }
-                
-                if (l_WinrTime == "Fastest") {
-                  l_WinrTime = l_Time;
-                }
-                
-                console.log(l_Time + " / " + l_RaceTime);
-                
-                if (l_Time < l_RaceTime) {
-                  l_Time = "Did not finish.";
-                  l_Ledr = "Did not finish.";
-                  l_Ahed = "Did not finish.";
-                }
-                else {
-                  l_Ahed = (l_Time - l_RaceTime).toFixed(2) + "&nbsp;sec.";
-                  l_Ledr = (l_Time - l_WinrTime).toFixed(2) + "&nbsp;sec.";
-                  l_RaceTime = l_Time;
-                  l_Time = l_Time.toFixed(2) + "&nbsp;sec.";
-                }
-                
-                for (l_Marble of l_Assignment.childNodes) {
-                  if (l_Marble.tagName == "assignment") {
-                    if (parseInt(l_Name) == parseInt(l_Marble.getAttribute("marble"))) {
-                      l_Name = l_Marble.getAttribute("player");
-                      
-                      for (l_ThePlayer of l_PlayerList) {
-                        if (l_Name == l_ThePlayer["id"]) {
-                          l_Name = l_ThePlayer["name"];
-                        }
-                      }
-                      break;
-                    }
-                  }
-                }
-                
-                l_Html += "          <tr>\n";
-                l_Html += "            <td style=\"text-align: center\">" + l_Pos + "</td>\n";
-                l_Html += "            <td>" + l_Name + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + getNodeValue(l_Player.getElementsByTagName("respawn")) + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + getNodeValue(l_Player.getElementsByTagName("stunned")) + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + l_Time + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + l_Fast + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + l_Ledr + "</td>\n";
-                l_Html += "            <td style=\"text-align: right\">" + l_Ahed + "</td>\n";
-                l_Html += "          </tr>\n";
-                l_Pos++;
               }
             }
+            else console.log("Assignment undefined (" + l_Name + ")!");
             
-            l_Html += "        </table>\n";
-            l_Html += "      </div>\n";
-          
-            l_Count++;
+            l_Html += "      <tr>\n";
+            l_Html += "        <td>" + (j + 1) + "</td>\n";
+            l_Html += "        <td>" + l_Name + "</td>\n";
+            l_Html += "        <td class=\"td_rght\">";
+            var l_RaceTime = l_ThisResult.racetime;
+            
+            var l_NotFinished = l_RaceTime <= 0 || l_ThisResult.laps.length < l_ThisRace.laps || l_ThisResult.laps[l_ThisResult.laps.length - 1].length < l_CpCount;
+            
+            if (l_NotFinished) {
+              l_Html += "Did&nbsp;not&nbsp;Finish";
+            }
+            else {
+              l_Html += (l_ThisResult.racetime / 120).toFixed(2) + "&nbsp;sec.";
+            }
+            
+            l_Html += "</td>\n";
+            l_Html += "      <td class=\"td_cntr\">" + l_ThisResult.respawn + "</td>\n";
+            l_Html += "      <td class=\"td_cntr\">" + l_ThisResult.stunned + "</td>\n";
+            
+            if (l_ThisResult.fastest > 0)
+              l_Html += "      <td class=\"td_rght\">" + (l_ThisResult.fastest / 120.0).toFixed(2) + "&nbsp;sec.</td>\n";
+            else
+              l_Html += "      <td class=\"td_rght\">No&nbsp;Laptime&nbsp;Set</td>\n";
+            
+            if (l_ThisResult.deficit == 0 || l_NotFinished)
+              l_Html += "      <td>&nbsp;</td>\n";
+            else if (l_ThisResult.deficit > 0)
+              l_Html += "      <td class=\"td_rght\">" + (l_ThisResult.deficit / 120.0).toFixed(2) + "&nbsp;sec.</td>\n";
+            else {
+              if (l_ThisResult.deficit == -1)
+                l_Html += "      <td class=\"td_rght\">+1&nbsp Lap</td>";
+              else
+                l_Html += "      <td class=\"td_rght\">+" + (-l_ThisResult.deficit) + "&nbsp;Laps</td>";
+            }
+            
+            l_Html += "      <td class=\"td_rght\">";
+            
+            if (j == 0)
+              l_Html += "&nbsp;";
+            else {
+              var l_Lap = l_ThisResult.laps.length - 1;
+              var l_Cp  = l_ThisResult.laps[l_Lap].length - 1;
+              
+              if (l_ThisRace.result[j - 1].laps[l_Lap].length <= l_Cp)
+                l_Cp = l_ThisRace.result[j - 1].laps[l_Lap].length - 1
+              
+              l_Html += ((l_ThisResult.laps[l_Lap][l_Cp] - l_ThisRace.result[j - 1].laps[l_Lap][l_Cp]) / 120.0).toFixed(2) + "&nbsp;sec.";
+            }
+            
+            l_Html += "</td>\n";
+            l_Html += "         " + makeAiCell(l_Ai) + "\n";
+            l_Html += "      </tr>\n";
           }
+          
+          l_Html += "    </table>\n";
+          l_Html += "  </div>\n";
         }
         
-        l_Html += "        <div>\n";
-        
         l_MainFrame.html(l_Html);
+        
         $("#accordion").accordion();
+        
+        var l_Data = new Blob([ JSON.stringify(g_Championship) ], { type: "text/json" });
+        var l_Url  = window.URL.createObjectURL(l_Data);
+        
+        console.log(l_Data);
+        
+        document.getElementById("JSON_download").href = l_Url;
       });
     
     </script>
@@ -399,7 +371,7 @@
   <body>
     <div class="container">
       <div id="headline">
-        Dustbin::Games MarbleGP - Result of last Championship
+        Dustbin::Games MarbleGP - Result of last Championship [<a href="#" onclick="history.back()">Main Menu</a>]
       </div>
     </div>
     <div class="container">

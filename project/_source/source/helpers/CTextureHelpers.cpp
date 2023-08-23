@@ -151,7 +151,7 @@ namespace dustbin {
       irr::video::ITexture* l_pTexture = a_pDrv->addRenderTargetTexture(irr::core::dimension2du(256, 256), "FadingBorder_dummy", irr::video::ECF_A8R8G8B8);
       a_pDrv->setRenderTarget(l_pTexture, true, true, irr::video::SColor(0, a_cBorderColor.getRed(), a_cBorderColor.getGreen(), a_cBorderColor.getBlue()));
 
-      std::string s = "data/textures/numbers/" + a_sNumber + ".png";
+      std::string s = "data/textures/numbers/" + a_sNumber + ".png\0";
 
       irr::video::ITexture *l_pNumber = a_pDrv->getTexture(s.c_str());
 
@@ -318,8 +318,8 @@ namespace dustbin {
 
             // Render Texture
 
-            std::string l_sFilePattern = std::string("data/patterns/") + l_sPattern,
-                        l_sFileTop     = std::string("data/textures/texture_top.png");
+            std::string l_sFilePattern = std::string("data/patterns/") + l_sPattern;
+            std::string l_sFileTop     = std::string("data/textures/texture_top.png");
 
             if (!a_pFs->existFile(l_sFilePattern.c_str())) {
               CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture pattern \"") + l_sPattern + "\".");
