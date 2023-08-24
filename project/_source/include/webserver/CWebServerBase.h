@@ -186,6 +186,19 @@ namespace dustbin {
         */
         std::string getProfileData();
 
+        /**
+        * Get the Base64 representation of an image
+        * @param a_sImage path to the image
+        * @return the Base64 representation of the image
+        */
+        std::string getBase64Image(const std::string &a_sImage);
+
+        /**
+        * Get a JavaScript snippet filling the texture pattern dictionary
+        * @return a JavaScript snippet filling the texture pattern dictionary
+        */
+        std::string getTexturePatternJS();
+
       public:
         /**
         * The constructor

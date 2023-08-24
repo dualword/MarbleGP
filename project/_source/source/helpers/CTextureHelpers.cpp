@@ -139,6 +139,50 @@ namespace dustbin {
     }
 
     /**
+    * Get a vector with all the available texture patterns
+    * @return a vector with all the available texture patterns
+    */
+    std::vector<std::string> getTexturePatterns() {
+      std::vector<std::string> l_vReturn;
+
+      irr::io::IXMLReaderUTF8 *l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLReaderUTF8("data/patterns/patterns.xml");
+
+      if (l_pXml) {
+        while (l_pXml->read()) {
+          if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+            std::string l_sNode = l_pXml->getNodeName();
+
+            if (l_sNode == "pattern") {
+              std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
+
+              if (l_sPattern != "") {
+                std::string l_sPath = "data/patterns/" + l_sPattern;
+
+                if (CGlobal::getInstance()->getFileSystem()->existFile(l_sPath.c_str())) {
+                  l_vReturn.push_back(l_sPattern);
+                }
+              }
+            }
+          }
+        }
+
+        l_pXml->drop();
+      }
+
+      return l_vReturn;
+    }
+
+    /**
+    * Get the default color combinations
+    * @return the default color combinations
+    */
+    std::vector<std::tuple<std::string, std::string, std::string, std::string>> getDefaultColors() {
+      std::vector<std::tuple<std::string, std::string, std::string, std::string>> l_vRet;
+
+      return l_vRet;
+    }
+
+    /**
     * Add a fading border to the starting numbers
     * @param a_sNumber the number
     * @param a_cNumberColor the color of the number

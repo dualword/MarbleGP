@@ -3,6 +3,7 @@
 
 #include <irrlicht.h>
 #include <string>
+#include <vector>
 #include <map>
 
 namespace dustbin {
@@ -49,6 +50,18 @@ namespace dustbin {
     * @return the default texture string for the starting number
     */
     std::string createDefaultTextureString(const std::string &a_sNumber, int a_iClass);
+
+    /**
+    * Get a vector with all the available texture patterns
+    * @return a vector with all the available texture patterns
+    */
+    std::vector<std::string> getTexturePatterns();
+
+    /**
+    * Get the default color combinations
+    * @return the default color combinations
+    */
+    std::vector<std::tuple<std::string, std::string, std::string, std::string>> getDefaultColors();
 
 #ifdef _OPENGL_ES
     /**

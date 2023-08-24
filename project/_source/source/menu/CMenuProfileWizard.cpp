@@ -243,29 +243,7 @@ namespace dustbin {
             }
           }
 
-          irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/patterns/patterns.xml");
-
-          if (l_pXml) {
-            while (l_pXml->read()) {
-              if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-                std::string l_sNode = l_pXml->getNodeName();
-
-                if (l_sNode == "pattern") {
-                  std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
-
-                  if (l_sPattern != "") {
-                    std::string l_sPath = "data/patterns/" + l_sPattern;
-
-                    if (m_pFs->existFile(l_sPath.c_str())) {
-                      m_vDefaultPatterns.push_back(l_sPattern);
-                    }
-                  }
-                }
-              }
-            }
-
-            l_pXml->drop();
-          }
+          m_vDefaultPatterns = helpers::getTexturePatterns();
         }
 
         void createRandomName() {

@@ -1,4 +1,6 @@
 #include <webserver/CWebServerBase.h>
+#include <messages/CMessageHelpers.h>
+#include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
@@ -546,6 +548,48 @@ namespace dustbin {
     }
 
     /**
+    * Get the Base64 representation of an image
+    * @param a_sImage path to the image
+    * @return the Base64 representation of the image
+    */
+    std::string CWebServerRequestBase::getBase64Image(const std::string& a_sImage) {
+      std::string l_sReturn = "";
+
+      irr::io::IReadFile* l_pFile = m_pFs->createAndOpenFile(a_sImage.c_str());
+
+      if (l_pFile != nullptr) {
+        unsigned char *l_pBuffer = new unsigned char[l_pFile->getSize()];
+        l_pFile->read((void *)l_pBuffer, l_pFile->getSize());
+
+        l_sReturn = messages::base64Encode(l_pBuffer, l_pFile->getSize(), false);
+
+        l_pFile->drop();
+        delete []l_pBuffer;
+      }
+
+      return l_sReturn;
+    }
+
+
+    /**
+    * Get a JavaScript snippet filling the texture pattern dictionary
+    * @return a JavaScript snippet filling the texture pattern dictionary
+    */
+    std::string CWebServerRequestBase::getTexturePatternJS() {
+      std::string l_sReturn = "";
+
+      std::vector<std::string> l_vPatterns = helpers::getTexturePatterns();
+
+      for (std::vector<std::string>::iterator l_itTexture = l_vPatterns.begin(); l_itTexture != l_vPatterns.end(); l_itTexture++) {
+        l_sReturn += "      g_Patterns[\"" + *l_itTexture + "\"] = new Image();\n";
+        l_sReturn += "      g_Patterns[\"" + *l_itTexture + "\"].src = \"data:image/png;base64," + getBase64Image("data/patterns/" + *l_itTexture) + "\"\n";
+      }
+
+      return l_sReturn;
+    }
+
+
+    /**
     * Get the JSON with the results of the last championship
     * @return the JSON with the results of the last championship
     */
@@ -658,6 +702,32 @@ namespace dustbin {
                   l_sReplace = "3";
 #endif
                 }
+                else if (l_sReplace == "controloptions") {
+#ifdef _WINDOWS
+                  l_sReplace = "[ \"Gamepad\", \"Keyboard\" ]";
+#else
+                  l_sReplace = "[ \"Gamepad\", \"TouchControl\", \"Gyroscope\" ]";
+#endif
+                }
+                else if (l_sReplace == "defaultcontrol") {
+#ifdef _WINDOWS
+                  l_sReplace = "\"Keyboard\"";
+#else
+                  l_sReplace = "\"TouchControl\""
+#endif
+                }
+                else if (l_sReplace == "textureframe") {
+                  l_sReplace = "data:image/png;base64," + getBase64Image("data/textures/texture_top.png");
+                }
+                else if (l_sReplace == "texturenumber") {
+                  l_sReplace = "data:image/png;base64," + getBase64Image("data/textures/one.png");
+                }
+                else if (l_sReplace == "texturenumberglow") {
+                  l_sReplace = "data:image/png;base64," + getBase64Image("data/textures/one_glow.png");
+                }
+                else if (l_sReplace == "texturepatterns") {
+                  l_sReplace = getTexturePatternJS();
+                }
 
                 std::string l_sNewFile = l_sFile.substr(0, l_sFile.find("{!")) + l_sReplace + l_sSub.substr(l_sSub.find("}") + 1);
                 l_sFile = l_sNewFile;
@@ -679,7 +749,6 @@ namespace dustbin {
         l_mHeader["Content-Type"  ] = getContentType(l_sExtension);
         l_mHeader["Content-Length"] = std::to_string(l_iBufLen);
         l_mHeader["Connection"    ] = "close";
-        l_mHeader["Cache-Control" ] = "max-age=0";
 
         char *l_aToDelete = l_aBuffer;
 

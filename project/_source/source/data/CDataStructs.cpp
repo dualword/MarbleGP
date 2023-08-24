@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <controller/CControllerGame.h>
 #include <messages/CMessageHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
@@ -423,8 +424,30 @@ namespace dustbin {
 
       l_sReturn += "\", \"auto_throttle\": " + std::string(m_bAutoThrottle == true ? "true" : "false") + ",";
 
-      l_sReturn += "\"texture\": \"" + m_sTexture + "\"";
+      l_sReturn += "\"texture\": \"" + m_sTexture + "\", \"controller\": ";
 
+      controller::CControllerGame l_cCtrl;
+
+      if (m_sControls == "DustbinTouchControl") {
+        l_sReturn += "\"TouchControl\"";
+      }
+      else if (m_sControls == "DustbinGyroscope") {
+        l_sReturn += "\"Gyroscope\"";
+      }
+      else {
+        l_cCtrl.deserialize(m_sControls);
+        switch ((*l_cCtrl.getInputs().begin()).m_eType) {
+          case controller::CControllerBase::enInputType::JoyAxis:
+          case controller::CControllerBase::enInputType::JoyButton:
+          case controller::CControllerBase::enInputType::JoyPov:
+            l_sReturn += "\"Gamepad\"";
+            break;
+
+          case controller::CControllerBase::enInputType::Key:
+            l_sReturn += "\"Keyboard\"";
+            break;
+        }
+      }
 
       return l_sReturn + "}";
     }
