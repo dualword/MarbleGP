@@ -78,29 +78,103 @@
         text-decoration: none;
       }
       
+      button {
+        width: 10em;
+      }
+      
     </style>
     <script src="jquery.js" type="text/javascript"></script>
     <script src="jquery-ui.min.js" type="text/javascript"></script>
     <script>
       
+      var g_CtrlOptions = {!controloptions};
+      var g_CtrlDefault = {!defaultcontrol};
+      
+      var g_Patterns = { };
+      
+      g_Patterns["__frame"] = new Image();
+      g_Patterns["__frame"].src = "{!textureframe}";
+      
+      g_Patterns["__number"] = new Image;
+      g_Patterns["__number"].src = "{!texturenumber}";;
+      
+      g_Patterns["__numberglow"] = new Image;
+      g_Patterns["__numberglow"].src = "{!texturenumberglow}";;
+      
+      function uploadProfile(a_File) {
+        // Check if the file is an image.
+        if (a_File.type && !a_File.type.startsWith('text/')) {
+          alert('File is not a MarbleGP Profile.', file.type, file);
+          return;
+        }
+
+        var l_Reader = new FileReader();
+        l_Reader.addEventListener('load', (a_Event) => {
+          var l_Data = a_Event.target.result;
+          if (l_Data.indexOf(",") != -1) {
+            l_Data = atob(l_Data.substring(l_Data.indexOf(",") + 1));
+            l_Json = JSON.parse(l_Data);
+            
+            g_Profiles.push(l_Json);
+            
+            documentReady();
+          }
+        });
+        l_Reader.readAsDataURL(a_File);
+      }
+      
+      function downloadProfile(a_Index) {
+        var l_Data = new Blob([ JSON.stringify(g_Profiles[a_Index]) ], { type: "text/mgpprofile" });
+        var l_Url  = window.URL.createObjectURL(l_Data);
+        
+        var l_Link = document.createElement('a');
+        l_Link.download = g_Profiles[a_Index].name + ".mgpprofile";
+        l_Link.href = URL.createObjectURL(l_Data);
+        l_Link.click();
+        URL.revokeObjectURL(l_Link.href);
+      }
+      
+{!texturepatterns}
+      
       function createProfileForm(a_Index, a_Profile) {
         var l_Texture = a_Profile.texture;
-        
-        l_Texture = l_Texture.replace("://", "/");
         
         var l_Html = "<div>\n";
         l_Html += "  <table>\n";
         l_Html += "    <tr>\n";
         l_Html += "      <td><b>Name:</b></td><td><input type=\"text\" name=\"name_" + a_Index + "\" value=\"" + a_Profile.name + "\" /></td>\n";
-        l_Html += "      <td rowspan = \"4\"><img src=\"/texture/" + l_Texture + "\" alt=\"Texture of " + a_Profile.name + "\" /></td>\n";
+        l_Html += "      <td rowspan=\"6\" style=\"width: 3em\">&nbsp;</td>\n";
+        l_Html += "      <td rowspan=\"6\" style=\"width: 128px\"><canvas id=\"texture_" + a_Index + "\" width=\"512\" height=\"512\" style=\"width: 80%; height: auto\"></canvas></td>\n";
+        l_Html += "      <td><button onclick=\"alert('Save profile " + a_Index + "');\">Save Profile</button></td>\n";
         l_Html += "    </tr>\n";
-        l_Html += "    <tr><td><b>Short:</b></td><td><input type=\"text\" name=\"short_" + a_Index + "\" value=\"" + a_Profile.short + "\" /></td></tr>\n";
+        l_Html += "    <tr><td><b>Short:</b></td><td><input type=\"text\" name=\"short_" + a_Index + "\" value=\"" + a_Profile.short + "\" /></td><td><button onclick=\"downloadProfile(" + a_Index + ");\">Download Profile</button></tr>\n";
         l_Html += "    <tr><td><b>AI&nbsp;Help:</b></td><td><input type=\"text\" name=\"aihelp_" + a_Index + "\" value=\"" + a_Profile.ai_help + "\" /></td></tr>\n";
-        l_Html += "    <tr><td><b>Auto&nbsp;Throttle:</b></td><td><input type=\"checkbox\" name=\"autothrottle_" + a_Index + "\"";
+        l_Html += "    <tr><td><b>Controls:</b></td><td><select id=\"controls_" + a_Index + "\">";
+        
+        var l_CtrlOk = false;
+        
+        for (var i = 0; i < g_CtrlOptions.length; i++) {
+          if (a_Profile.controller == g_CtrlOptions[i]) {
+            l_CtrlOk = true;
+          }
+        }
+        
+        if (!l_CtrlOk)
+          a_Profile.controller = g_CtrlDefault;
+        
+        for (var i = 0; i < g_CtrlOptions.length; i++) {
+          if (a_Profile.controller == g_CtrlOptions[i])
+            l_Html += "<option selected=\"selected\">" + g_CtrlOptions[i] + "</option>";
+          else
+            l_Html += "<option >" + g_CtrlOptions[i] + "</option>";
+        }
+        
+        l_Html += "</select></td></tr>\n";
 
+        l_Html += "    <tr><td><b>Auto&nbsp;Throttle:</b></td><td><input type=\"checkbox\" name=\"autothrottle_" + a_Index + "\"";
         if (a_Profile.auto_throttle) l_Html += "checked=\"true\"";
         
-        l_Html += "\" /></td></tr>\n";
+        l_Html += "\" /></td><td><button onclick=\"alert('Edit Texture " + a_Index + "');\">Edit Texture</button></tr>\n";
         l_Html += "  </table>\n";
         l_Html += "</div>\n<hr />\n";
         
@@ -108,17 +182,112 @@
       }
       
       g_Profiles = {!profiles};
-      g_Count    = {!profilecount};
+      g_MaxPrfls = {!profilecount};
       
-      $(document).ready(function() {
+      function getColorArray(a_Color) {
+        return [ "0x" + a_Color.substring(0, 2), "0x" + a_Color.substring(2, 4), "0x" + a_Color.substring(4, 6), "0xFF" ];
+      }
+      
+      function drawRect(a_Image, a_Rect, a_Color) {
+        for (var x = a_Rect.upperleft.x; x < a_Rect.lowerright.x; x++) {
+          for (var y = a_Rect.upperleft.y; y < a_Rect.lowerright.y; y++) {
+            var l_Index = (x + 512 * y) * 4;
+            for (var i = 0; i < 4; i++) {
+              a_Image.data[l_Index + i] = a_Color[i];
+            }
+          }
+        }
+      }
+      
+      function drawPattern(a_Image, a_Pattern, a_NewColor, a_Pos) {
+        var l_Image  = g_Patterns[a_Pattern];
+        
+        var l_Canvas = document.createElement("canvas");
+        l_Canvas.width  = l_Image.width;
+        l_Canvas.height = l_Image.height;
+        
+        var l_Contxt = l_Canvas.getContext("2d");
+        
+        l_Contxt.drawImage(l_Image, 0, 0);
+        
+        var l_Data = l_Contxt.getImageData(0, 0, l_Canvas.width, l_Canvas.height);
+        
+        for (var y = 0; y < l_Canvas.height; y++) {
+          for (var x = 0; x < l_Canvas.width; x++) {
+            var l_Target = (x + a_Pos["x"] + 512 * (y + a_Pos["y"])) * 4;
+            var l_Index = (x + l_Canvas.width * y) * 4;
+            var l_Mix = l_Data.data[l_Index + 3] / 255;
+            
+            for (var i = 0; i < 3; i++) {
+              a_Image.data[l_Target + i] = l_Mix * a_NewColor[i] + (1.0 - l_Mix) * a_Image.data[l_Target + i];
+            }
+          }
+        }
+      }
+      
+      function updateTexture(a_TextureId, a_Texture, a_Player) {
+        var l_Canvas = document.getElementById(a_TextureId);
+        var l_Contxt = l_Canvas.getContext("2d");
+        var l_Texture = g_Profiles[a_Player].texture;
+        
+        var l_Buffer = l_Contxt.createImageData(512, 512);
+        
+        var l_Split = a_Texture.split("://");
+        
+        if (l_Split[0] == "generate") {
+          var l_ParamArray = l_Split[1].split("&");
+          var l_ParamMap = { };
+          
+          for (var l_ParamNo = 0; l_ParamNo < l_ParamArray.length; l_ParamNo++) {
+            var l_Param = l_ParamArray[l_ParamNo].split("=");
+            if (l_Param.length == 2) {
+              l_ParamMap[l_Param[0]] = l_Param[1];
+            }
+          }
+          
+          drawRect(l_Buffer, { "upperleft": { "x": 0, "y":   0 }, "lowerright": { "x": 512, "y": 256 }}, getColorArray(l_ParamMap["numberback" ]));
+          drawRect(l_Buffer, { "upperleft": { "x": 0, "y": 256 }, "lowerright": { "x": 512, "y": 512 }}, getColorArray(l_ParamMap["patternback"]));
+          
+          drawPattern(l_Buffer, "__frame"            , getColorArray(l_ParamMap["ringcolor"   ]), { "x":   0, "y":   0 });
+          drawPattern(l_Buffer, l_ParamMap["pattern"], getColorArray(l_ParamMap["patterncolor"]), { "x":   0, "y": 256 });
+          drawPattern(l_Buffer, "__numberglow"       , getColorArray(l_ParamMap["numberborder"]), { "x":   0, "y" :  0 });
+          drawPattern(l_Buffer, "__numberglow"       , getColorArray(l_ParamMap["numberborder"]), { "x": 256, "y" :  0 });
+          drawPattern(l_Buffer, "__number"           , getColorArray(l_ParamMap["numbercolor" ]), { "x":   0, "y" :  0 });
+          drawPattern(l_Buffer, "__number"           , getColorArray(l_ParamMap["numbercolor" ]), { "x": 256, "y" :  0 });
+        }
+        
+        l_Contxt.putImageData(l_Buffer, 0, 0);
+      }
+      
+      function documentReady() {
         var l_MainFrame = $("#mainframe");
         var l_Html = "";
         
-        for (i = 0; i < g_Profiles.length; i++) {
+        for (var i = 0; i < g_Profiles.length; i++) {
           l_Html += createProfileForm(i, g_Profiles[i]);
         }
         
+        if (g_Profiles.length < g_MaxPrfls) {
+          l_Html += "  <div>Upload MarbleGP Profile: <input type=\"file\" id=\"upload_profile\" accept=\".mgpprofile\"></div>\n";
+        }
+        
         l_MainFrame.html(l_Html);
+        
+        var l_Pattern = null;
+        
+        for (var i = 0; i < g_Profiles.length; i++) {
+          updateTexture("texture_" + i, g_Profiles[i].texture, i);
+        }
+        
+        var l_Selector = document.getElementById("upload_profile");
+        l_Selector.addEventListener('change', (event) => {
+          const fileList = event.target.files;
+          uploadProfile(fileList[0]);
+        });
+      }
+      
+      $(document).ready(function() {
+        documentReady();
       });
     </script>
   </head>
