@@ -21,5 +21,11 @@ namespace dustbin {
     * @return a std map with the track folder as key and the corresponding name as value
     */
     std::map<std::string, std::string> getTrackNameMap();
+
+    /**
+    * Get the possible AI help options
+    * @return a vector with the possible AI help options
+    */
+    std::vector<std::string> getAiHelpOptions();
   }
 }

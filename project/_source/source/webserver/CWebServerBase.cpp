@@ -5,6 +5,7 @@
 #include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
+#include <json/json.h>
 #include <CGlobal.h>
 #include <iostream>
 #include <iomanip>
@@ -253,7 +254,11 @@ namespace dustbin {
 
         printf("Done.\nAccepting...\n");
 #ifdef _WINDOWS
-        SOCKET l_iRequest = accept(m_iSocket, nullptr, nullptr);
+        struct sockaddr_in l_cClient;
+        int l_iClientSize = sizeof(l_cClient);
+
+        SOCKET l_iRequest = WSAAccept(m_iSocket, (SOCKADDR *)&l_cClient, &l_iClientSize, nullptr, NULL);
+
         if (l_iRequest == INVALID_SOCKET) {
           printf("Accept error %i\n", WSAGetLastError());
           break;
@@ -262,6 +267,7 @@ namespace dustbin {
         int l_iRequest = accept(m_iSocket, nullptr, nullptr);
         if (l_iRequest < 0) {
           printf("Accept error %i\n", l_iRequest);
+          break;
         }
 #endif
 
@@ -280,7 +286,6 @@ namespace dustbin {
     */
     int CWebServerRequestBase::sendData(const char* a_pData, int a_iLen) {
       int l_iSent = send(m_iSocket, a_pData, a_iLen, 0);
-      printf("\t%i of %i bytes sent.\n", l_iSent, a_iLen);
       return l_iSent;
     }
 
@@ -292,14 +297,17 @@ namespace dustbin {
     */
     void CWebServerRequestBase::sendHeader(int a_iResult, const std::map<std::string, std::string>& a_mHeader) {
       std::string l_sResponse = "HTTP/1.1 " + std::to_string(a_iResult) + " " + getHttpStatusCode(a_iResult) + "\r\n";
-      sendData(l_sResponse.c_str(), (int)l_sResponse.size());
+      int l_iSent = sendData(l_sResponse.c_str(), (int)l_sResponse.size());
+      printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
 
       for (std::map<std::string, std::string>::const_iterator l_itHeader = a_mHeader.begin(); l_itHeader != a_mHeader.end(); l_itHeader++) {
         std::string l_sHeader = l_itHeader->first + ": " + l_itHeader->second + "\r\n";
-        sendData(l_sHeader.c_str(), (int)l_sHeader.size());
+        l_iSent = sendData(l_sHeader.c_str(), (int)l_sHeader.size());
+        printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
       }
 
-      sendData("\r\n", 2);
+      l_iSent = sendData("\r\n", 2);
+      printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
     }
 
 
@@ -369,9 +377,10 @@ namespace dustbin {
     }
 
     CWebServerRequestBase::~CWebServerRequestBase() {
-      // if (m_iSocket != INVALID_SOCKET) {
-        // closesocket(m_iSocket);
-      // }
+      if (m_iSocket != INVALID_SOCKET) {
+        closesocket(m_iSocket);
+        printf("Socket closed.\n");
+      }
     }
 
     /**
@@ -461,6 +470,8 @@ namespace dustbin {
             else break;
           }
 
+          printf("Method: \"%s\", Path: \"%s\", Version: \"%s\"\n", l_sMethod.c_str(), l_sPath.c_str(), l_sVersion.c_str());
+
           if (l_iRead > 0 && l_sMethod != "" && l_sVersion != "") {
             std::time_t l_cTime = std::time(nullptr);
 
@@ -468,8 +479,6 @@ namespace dustbin {
             std::strftime(s, 255, "%Y/%M/%D_%H:%M:%S", std::localtime(& l_cTime));
 
             std::string l_sLog = std::string(s) + ": " + l_sMethod + " \"" + l_sPath + "\"";
-
-            printf("Method: \"%s\", Path: \"%s\", Version: \"%s\"\n", l_sMethod.c_str(), l_sPath.c_str(), l_sVersion.c_str());
 
             int l_iResult = -1;
 
@@ -526,6 +535,25 @@ namespace dustbin {
 
       l_sReturn += "}";
       return l_sReturn;
+    }
+
+    /**
+    * Create a JSON with the possible AI Help options
+    * @return a JSON with the possible AI Help options
+    */
+    std::string CWebServerRequestBase::createAiHelpOptionJSON() {
+      std::string l_sReturn = "[";
+
+      std::vector<std::string> l_vOpts = helpers::getAiHelpOptions();
+
+      for (std::vector<std::string>::iterator l_itAi = l_vOpts.begin(); l_itAi != l_vOpts.end(); l_itAi++) {
+        if (l_itAi != l_vOpts.begin())
+          l_sReturn += ",";
+
+        l_sReturn += "\"" + *l_itAi + "\"";
+      }
+
+      return l_sReturn + "]";
     }
 
     /**
@@ -621,7 +649,8 @@ namespace dustbin {
     */
     int CWebServerRequestBase::handleGet(const std::string a_sUrl, const std::map<std::string, std::string> a_mHeader) {
       const std::string l_sPathThumbnails = "/thumbnails/";
-      const std::string l_sPathTexture    = "/texture/";
+      const std::string l_sReplaceInclude = "include:";
+      const std::string l_sPathSave       = "/saveprofiles?";
 
       std::string l_sPath = a_sUrl;
 
@@ -633,7 +662,24 @@ namespace dustbin {
       int   l_iBufLen = 0;
       int   l_iResult = 0;
 
-      if (l_sPath.substr(0, l_sPathTexture.size()) == l_sPathTexture) {
+      if (l_sPath.substr(0, l_sPathSave.size()) == l_sPathSave) {
+        std::string l_sJSON = messages::urlDecode(l_sPath.substr(l_sPathSave.length() + 1));
+        printf("\n\n%s\n\n", l_sJSON.c_str());
+
+        Json::Reader l_cReader;
+        Json::Value  l_cRoot;
+
+        std::string l_sResponse = "Profiles Saved.";
+
+        if (!l_cReader.parse(l_sJSON, l_cRoot))
+          l_sResponse = "Error while parsing JSON.";
+
+        
+
+        l_aBuffer = new char[l_sResponse.size() + 1];
+        memset(l_aBuffer,0, l_sResponse.size() + 1);
+        memcpy(l_aBuffer, l_sResponse.c_str(), l_sResponse.size());
+        l_iBufLen = (int)l_sResponse.size();
       }
       else if (l_sPath.substr(0, l_sPathThumbnails.size()) == l_sPathThumbnails) {
         std::string l_sImage = "data/levels/" + l_sPath.substr(l_sPathThumbnails.size()) + "/thumbnail.png";
@@ -728,6 +774,24 @@ namespace dustbin {
                 else if (l_sReplace == "texturepatterns") {
                   l_sReplace = getTexturePatternJS();
                 }
+                else if (l_sReplace == "aihelpoptions") {
+                  l_sReplace = createAiHelpOptionJSON();
+                }
+                else if (l_sReplace.substr(0, l_sReplaceInclude.size()) == l_sReplaceInclude) {
+                  printf("Include: \"%s\"\n", l_sReplace.substr(l_sReplaceInclude.size()).c_str());
+                  irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile((std::string("data/html/") + l_sReplace.substr(l_sReplaceInclude.size())).c_str());
+                  if (l_pFile != nullptr) {
+                    char *p = new char[l_pFile->getSize() + 1];
+                    memset(p, 0, l_pFile->getSize() + 1);
+                    l_pFile->read(p, l_pFile->getSize());
+                    l_sReplace = p;
+                    delete []p;
+                  }
+                  else l_sReplace = std::string("<!-- File not found: ") + l_sReplace.substr(l_sReplaceInclude.size()).c_str() + " -->";
+                }
+                else {
+                  l_sReplace = "<!-- Unkonw replacement " + l_sReplace + " -->";
+                }
 
                 std::string l_sNewFile = l_sFile.substr(0, l_sFile.find("{!")) + l_sReplace + l_sSub.substr(l_sSub.find("}") + 1);
                 l_sFile = l_sNewFile;
@@ -754,14 +818,20 @@ namespace dustbin {
 
         printf("File \"%s\": Size = %i, Type = \"%s\" (Result %i)\n", l_sPath.c_str(), l_iBufLen, l_sExtension.c_str(), l_iResult);
 
+        int l_iTotal = 0;
+        int l_iSize  = l_iBufLen;
+
         sendHeader(l_iResult, l_mHeader);
         while (l_iBufLen > 0) {
-          sendData(l_aBuffer, l_iBufLen > 1024 ? 1024 : l_iBufLen);
-          if (l_iBufLen > 1024) {
-            l_iBufLen -= 1024;
-            l_aBuffer += 1024;
+          int l_iSent = sendData(l_aBuffer, l_iBufLen > 1024 ? 1024 : l_iBufLen);
+          if (l_iBufLen > l_iSent) {
+            l_iBufLen -= l_iSent;
+            l_aBuffer += l_iSent;
           }
           else l_iBufLen = 0;
+          l_iTotal  += l_iSent;
+
+          printf("\t%i of %i Bytes sent (Total: %i).\n", l_iSent, l_iSize, l_iTotal);
         }
         send(m_iSocket, "", 0, 0);
 

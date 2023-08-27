@@ -139,5 +139,14 @@ namespace dustbin {
       }
       return l_mResult;
     }
+
+
+    /**
+    * Get the possible AI help options
+    * @return a vector with the possible AI help options
+    */
+    std::vector<std::string> getAiHelpOptions() {
+      return std::vector<std::string> { "Off", "Display", "Low", "Medium", "High", "Bot (MarbleGP)", "Bot (Marble2)", "Bot (Marble3)" };
+    }
   }
 }

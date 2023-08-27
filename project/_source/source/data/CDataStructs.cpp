@@ -3,12 +3,15 @@
 #include <messages/CMessageHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <Defines.h>
 #include <CGlobal.h>
 #include <algorithm>
 #include <ostream>
+#include <vector>
+#include <string>
 
 namespace dustbin {
   namespace data {
@@ -378,16 +381,10 @@ namespace dustbin {
 
       s += "  Ai Help: ";
 
-      switch (m_eAiHelp) {
-        case enAiHelp::Off    : s += "\"Off\"\n"    ; break;
-        case enAiHelp::Display: s += "\"Display\"\n"; break;
-        case enAiHelp::Low    : s += "\"Low\"\n"    ; break;
-        case enAiHelp::Medium : s += "\"Medium\"\n" ; break;
-        case enAiHelp::High   : s += "\"High\"\n"   ; break;
-        case enAiHelp::BotMgp : s += "\"Ai Bot (MarbleGP)\"\n" ; break;
-        case enAiHelp::BotMb2 : s += "\"Ai Bot (Marble2)\"\n" ; break;
-        case enAiHelp::BotMb3 : s += "\"Ai Bot (Marble3)\"\n" ; break;
-      }
+      std::vector<std::string> l_vAiOptions = helpers::getAiHelpOptions();
+
+      if ((int)m_eAiHelp >= 0 && (int)m_eAiHelp < l_vAiOptions.size())
+        s += "\"" + l_vAiOptions[(int)m_eAiHelp] + "\"";
 
       return s;
     }
@@ -409,20 +406,9 @@ namespace dustbin {
 
       l_sReturn += "\"name\": \"" + m_sName + "\", ";
       l_sReturn += "\"short\": \"" + m_sShortName + "\", ";
-      l_sReturn += "\"ai_help\": \"";
+      l_sReturn += "\"ai_help\": " + std::to_string((int)m_eAiHelp) + ",";
 
-      switch (m_eAiHelp) {
-        case enAiHelp::Off: l_sReturn += "Off"; break;
-        case enAiHelp::Display: l_sReturn += "Display"       ; break;
-        case enAiHelp::Low    : l_sReturn += "Low"           ; break;
-        case enAiHelp::Medium : l_sReturn += "Medium"        ; break;
-        case enAiHelp::High   : l_sReturn += "High"          ; break;
-        case enAiHelp::BotMgp : l_sReturn += "Bot (MarbleGP)"; break;
-        case enAiHelp::BotMb2 : l_sReturn += "Bot (Marble2)" ; break;
-        case enAiHelp::BotMb3 : l_sReturn += "Bot (Marble3)" ; break;
-      }
-
-      l_sReturn += "\", \"auto_throttle\": " + std::string(m_bAutoThrottle == true ? "true" : "false") + ",";
+      l_sReturn += "\"auto_throttle\": " + std::string(m_bAutoThrottle == true ? "true" : "false") + ",";
 
       l_sReturn += "\"texture\": \"" + m_sTexture + "\", \"controller\": ";
 

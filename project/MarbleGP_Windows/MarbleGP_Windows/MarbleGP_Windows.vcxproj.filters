@@ -163,6 +163,12 @@
     <Filter Include="Headerdateien\webserver">
       <UniqueIdentifier>{0bee87c8-e049-42bd-8327-f0521ad72ada}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\json">
+      <UniqueIdentifier>{74ef9242-0139-4c1a-b8d2-21ae11a2f5de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\json">
+      <UniqueIdentifier>{549b9aed-d9b7-4d73-b38c-1c1f1676703c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -702,6 +708,9 @@
     <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogSender.cpp">
       <Filter>Quelldateien\_generated\messages</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\json\jsoncpp.cpp">
+      <Filter>Quelldateien\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1159,6 +1168,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogSender.h">
       <Filter>Headerdateien\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\json\json.h">
+      <Filter>Headerdateien\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\json\json-forwards.h">
+      <Filter>Headerdateien\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

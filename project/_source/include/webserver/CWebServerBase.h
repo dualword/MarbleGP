@@ -175,6 +175,12 @@ namespace dustbin {
         std::string createTrackNameJSON();
 
         /**
+        * Create a JSON with the possible AI Help options
+        * @return a JSON with the possible AI Help options
+        */
+        std::string createAiHelpOptionJSON();
+
+        /**
         * Get the XML with the results of the last championship
         * @return the XML with the results of the last championship
         */

@@ -136,16 +136,10 @@ namespace dustbin {
         if (m_pLblAiHelp != nullptr) {
           std::wstring l_sAiHelp = L"";
 
-          switch (m_cData.m_eAiHelp) {
-            case data::SPlayerData::enAiHelp::Off    : l_sAiHelp += L"Off"              ; break;
-            case data::SPlayerData::enAiHelp::Display: l_sAiHelp += L"Display"          ; break;
-            case data::SPlayerData::enAiHelp::Low    : l_sAiHelp += L"Low"              ; break;
-            case data::SPlayerData::enAiHelp::Medium : l_sAiHelp += L"Medium"           ; break;
-            case data::SPlayerData::enAiHelp::High   : l_sAiHelp += L"High"             ; break;
-            case data::SPlayerData::enAiHelp::BotMgp : l_sAiHelp += L"AI Bot (MarbleGP)"; break;
-            case data::SPlayerData::enAiHelp::BotMb2 : l_sAiHelp += L"AI Bot (Marble2)" ; break;
-            case data::SPlayerData::enAiHelp::BotMb3 : l_sAiHelp += L"AI Bot (Marble3)" ; break;
-        }
+          std::vector<std::string> l_vAiOptions = helpers::getAiHelpOptions();
+
+          if ((int)m_cData.m_eAiHelp >= 0 && (int)m_cData.m_eAiHelp < l_vAiOptions.size())
+            l_sAiHelp += helpers::s2ws(l_vAiOptions[(int)m_cData.m_eAiHelp]);
 
           if (m_cData.m_bAutoThrottle && (m_cData.m_eAiHelp == data::SPlayerData::enAiHelp::Off || m_cData.m_eAiHelp == data::SPlayerData::enAiHelp::Display || m_cData.m_eAiHelp == data::SPlayerData::enAiHelp::Low))
             l_sAiHelp += L" [Auto Throttle]";
