@@ -435,7 +435,7 @@ namespace dustbin {
         }
       }
 
-      return l_sReturn + "}";
+      return l_sReturn + ",\"ctrl_data\": \"" + messages::urlEncode(m_sControls) + "\" }";
     }
 
     std::vector<SPlayerData> SPlayerData::createPlayerVector(const std::string a_sSerialized) {

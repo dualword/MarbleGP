@@ -1,3 +1,5 @@
+// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <controller/CControllerGame.h>
 #include <webserver/CWebServerBase.h>
 #include <messages/CMessageHelpers.h>
 #include <helpers/CTextureHelpers.h>
@@ -5,7 +7,7 @@
 #include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
-#include <json/json.h>
+#include <json/CIrrJSON.h>
 #include <CGlobal.h>
 #include <iostream>
 #include <iomanip>
@@ -298,16 +300,16 @@ namespace dustbin {
     void CWebServerRequestBase::sendHeader(int a_iResult, const std::map<std::string, std::string>& a_mHeader) {
       std::string l_sResponse = "HTTP/1.1 " + std::to_string(a_iResult) + " " + getHttpStatusCode(a_iResult) + "\r\n";
       int l_iSent = sendData(l_sResponse.c_str(), (int)l_sResponse.size());
-      printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
+      // printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
 
       for (std::map<std::string, std::string>::const_iterator l_itHeader = a_mHeader.begin(); l_itHeader != a_mHeader.end(); l_itHeader++) {
         std::string l_sHeader = l_itHeader->first + ": " + l_itHeader->second + "\r\n";
         l_iSent = sendData(l_sHeader.c_str(), (int)l_sHeader.size());
-        printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
+        // printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
       }
 
       l_iSent = sendData("\r\n", 2);
-      printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
+      // printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
     }
 
 
@@ -642,6 +644,14 @@ namespace dustbin {
     }
 
     /**
+    * Save the profiles transmitted by the browser
+    * @param a_sData JSON encoded profile data
+    */
+    bool CWebServerRequestBase::saveProfileData(const std::string& a_sData) {
+      return true;
+    }
+
+    /**
     * Handle a GET request
     * @param a_sUrl the requested URL
     * @param a_mHeader a map with the header data
@@ -663,23 +673,116 @@ namespace dustbin {
       int   l_iResult = 0;
 
       if (l_sPath.substr(0, l_sPathSave.size()) == l_sPathSave) {
-        std::string l_sJSON = messages::urlDecode(l_sPath.substr(l_sPathSave.length() + 1));
+        std::string l_sJSON = messages::urlDecode(l_sPath.substr(l_sPathSave.length()));
+        std::string l_sResponse = "Profiles Saved.";
         printf("\n\n%s\n\n", l_sJSON.c_str());
 
-        Json::Reader l_cReader;
-        Json::Value  l_cRoot;
+        json::CIrrJSON l_cJson = json::CIrrJSON(l_sJSON);
 
-        std::string l_sResponse = "Profiles Saved.";
+        std::vector<data::SPlayerData> l_vPlayers;
 
-        if (!l_cReader.parse(l_sJSON, l_cRoot))
-          l_sResponse = "Error while parsing JSON.";
+        int l_eState = 0;
+        std::string l_sKey;
+        std::string l_sCtrl = "";
+        std::string l_sCtrlData = "";
 
-        
+        while (l_cJson.read()) {
+          switch (l_eState) {
+            case 0:
+              if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectStart) {
+                l_vPlayers.push_back(data::SPlayerData());
+                l_eState = 1;
+              }
+              else if (l_cJson.getType() == json::CIrrJSON::enToken::ArrayEnd) {
+                printf("End Reached.\n");
+              }
+              break;
+
+            case 1:
+              if (l_cJson.getType() == json::CIrrJSON::enToken::ValueString) {
+                l_sKey = l_cJson.asString();
+                printf("Key: \"%s\"\n", l_sKey.c_str());
+                l_eState = 2;
+              }
+              break;
+
+            case 2:
+              if (l_cJson.getType() == json::CIrrJSON::enToken::Colon)
+                l_eState = 3;
+              break;
+
+            case 3:
+              if (l_cJson.isValueType()) {
+                if (l_sKey == "name")
+                  l_vPlayers.back().m_sName = l_cJson.asString();
+                else if (l_sKey == "short")
+                  l_vPlayers.back().m_sShortName = l_cJson.asString();
+                else if (l_sKey == "ai_help")
+                  l_vPlayers.back().m_eAiHelp = (dustbin::data::SPlayerData::enAiHelp)l_cJson.asInt();
+                else if (l_sKey == "auto_throttle")
+                  l_vPlayers.back().m_bAutoThrottle = l_cJson.asBool();
+                else if (l_sKey == "texture")
+                  l_vPlayers.back().m_sTexture = l_cJson.asString();
+                else if (l_sKey == "controller")
+                  l_sCtrl = l_cJson.asString();
+                else if (l_sKey == "ctrl_data")
+                  l_sCtrlData = l_cJson.asString();
+                else
+                  printf("Unknown key \"%s\"\n", l_sKey.c_str());
+              }
+              l_eState = 4;
+              break;
+
+            case 4:
+              if (l_cJson.getType() == json::CIrrJSON::enToken::Separator)
+                l_eState = 1;
+              else if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectEnd) {
+                if (l_sCtrl != "" && l_sCtrlData != "") {
+                  if (l_sCtrl == "TouchControl")
+                    l_vPlayers.back().m_sControls = "DustbinTouchControl";
+                  else if (l_sCtrl == "Gyroscope")
+                    l_vPlayers.back().m_sControls = "DustbinGyroscope";
+                  else {
+                    controller::CControllerGame l_cCtrl;
+                    l_cCtrl.deserialize(l_sCtrlData);
+
+                    switch ((*l_cCtrl.getInputs().begin()).m_eType) {
+                      case controller::CControllerBase::enInputType::JoyAxis:
+                      case controller::CControllerBase::enInputType::JoyButton:
+                      case controller::CControllerBase::enInputType::JoyPov:
+                        if (l_sCtrl == "Gamepad") {
+                          l_vPlayers.back().m_sControls = l_sCtrlData;
+                        }
+                        else {
+                          l_vPlayers.back().m_sControls = helpers::getDefaultGameCtrl_Keyboard();
+                        }
+                        break;
+
+                      case controller::CControllerBase::enInputType::Key:
+                        if (l_sCtrl == "Keyboard") {
+                          l_vPlayers.back().m_sControls = l_sCtrlData;
+                        }
+                        else {
+                          l_vPlayers.back().m_sControls = helpers::getDefaultGameCtrl_Gamepad();
+                        }
+                        break;
+                    }
+                  }
+                }
+                l_eState = 0;
+              }
+              break;
+          }
+        }
+
+
+        helpers::saveProfiles(l_vPlayers);
 
         l_aBuffer = new char[l_sResponse.size() + 1];
         memset(l_aBuffer,0, l_sResponse.size() + 1);
         memcpy(l_aBuffer, l_sResponse.c_str(), l_sResponse.size());
         l_iBufLen = (int)l_sResponse.size();
+        l_sExtension = ".txt";
       }
       else if (l_sPath.substr(0, l_sPathThumbnails.size()) == l_sPathThumbnails) {
         std::string l_sImage = "data/levels/" + l_sPath.substr(l_sPathThumbnails.size()) + "/thumbnail.png";
@@ -816,8 +919,6 @@ namespace dustbin {
 
         char *l_aToDelete = l_aBuffer;
 
-        printf("File \"%s\": Size = %i, Type = \"%s\" (Result %i)\n", l_sPath.c_str(), l_iBufLen, l_sExtension.c_str(), l_iResult);
-
         int l_iTotal = 0;
         int l_iSize  = l_iBufLen;
 
@@ -831,7 +932,7 @@ namespace dustbin {
           else l_iBufLen = 0;
           l_iTotal  += l_iSent;
 
-          printf("\t%i of %i Bytes sent (Total: %i).\n", l_iSent, l_iSize, l_iTotal);
+          // printf("\t%i of %i Bytes sent (Total: %i).\n", l_iSent, l_iSize, l_iTotal);
         }
         send(m_iSocket, "", 0, 0);
 
@@ -872,6 +973,7 @@ namespace dustbin {
     * @return the HTTP result code 
     */
     int CWebServerRequestBase::handlePost(const std::string a_sUrl, const std::vector<unsigned char> a_vBody, const std::map<std::string, std::string> a_mHeader) {
+      send404(a_sUrl);
       return 404;
     }
 
@@ -883,6 +985,7 @@ namespace dustbin {
     * @return the HTTP result code 
     */
     int CWebServerRequestBase::handlePut(const std::string a_sUrl, const std::vector<unsigned char> a_vBody, const std::map<std::string, std::string> a_mHeader) {
+      send404(a_sUrl);
       return 404;
     }
 
@@ -893,6 +996,7 @@ namespace dustbin {
     * @return the HTTP result code 
     */
     int CWebServerRequestBase::handleDelete(const std::string a_sUrl, const std::map<std::string, std::string> a_mHeader) {
+      send404(a_sUrl);
       return 404;
     }
 

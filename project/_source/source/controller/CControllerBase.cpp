@@ -330,7 +330,8 @@ namespace dustbin {
         std::string l_sHead = l_cSerializer.getString();
 
         if (l_sHead == "DustbinController") {
-          while (l_cSerializer.getString() == "control") {
+          std::string l_sIdentifier = l_cSerializer.getString();
+          while (l_sIdentifier == "control") {
             messages::CSerializer64 l_cCtrlData = messages::CSerializer64(l_cSerializer.getString().c_str());
             SCtrlInput l_cCtrl(&l_cCtrlData);
 
@@ -347,6 +348,7 @@ namespace dustbin {
                 }
               }
             }
+            l_sIdentifier = l_cSerializer.getString();
           }
         }
         else {

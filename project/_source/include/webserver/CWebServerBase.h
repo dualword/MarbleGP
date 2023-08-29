@@ -205,6 +205,12 @@ namespace dustbin {
         */
         std::string getTexturePatternJS();
 
+        /**
+        * Save the profiles transmitted by the browser
+        * @param a_sData JSON encoded profile data
+        */
+        bool saveProfileData(const std::string &a_sData);
+
       public:
         /**
         * The constructor

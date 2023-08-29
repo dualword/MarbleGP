@@ -27,5 +27,17 @@ namespace dustbin {
     * @return a vector with the possible AI help options
     */
     std::vector<std::string> getAiHelpOptions();
+
+    /**
+    * Get the default controller string for Keyboard game controls
+    * @return the default controller string for Keyboard game controls
+    */
+    std::string getDefaultGameCtrl_Keyboard();
+
+    /**
+    * Get the default controller string for Gamepad game controls
+    * @return the default controller string for Keyboard game controls
+    */
+    std::string getDefaultGameCtrl_Gamepad();
   }
 }

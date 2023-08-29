@@ -182,6 +182,13 @@
         }
       }
       
+      function controllerChanged(a_This) {
+        var l_Index = a_This.id.substring("controls_".length);
+        var l_Ctrl  = a_This.value;
+        
+        g_Profiles[l_Index].controller = l_Ctrl;
+      }
+      
       function editShort(a_This) {
         var l_Index = a_This.id.substring("short_".length);
         var l_Name  = a_This.value;
@@ -232,7 +239,7 @@
         }
         
         l_Html += "</select></td></tr>\n";
-        l_Html += "    <tr><td><b>Controls:</b></td><td><select id=\"controls_" + a_Index + "\">";
+        l_Html += "    <tr><td><b>Controls:</b></td><td><select id=\"controls_" + a_Index + "\" onchange=\"controllerChanged(this);\">";
         
         var l_CtrlOk = false;
         

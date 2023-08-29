@@ -145,7 +145,7 @@
     <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
-    <ClCompile Include="..\..\_source\source\json\jsoncpp.cpp" />
+    <ClCompile Include="..\..\_source\source\json\CIrrJSON.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_meshbuilder.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp" />
     <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp" />
@@ -332,8 +332,7 @@
     <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h" />
     <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />
-    <ClInclude Include="..\..\_source\include\json\json-forwards.h" />
-    <ClInclude Include="..\..\_source\include\json\json.h" />
+    <ClInclude Include="..\..\_source\include\json\CIrrJSON.h" />
     <ClInclude Include="..\..\_source\include\lua\ILuaClass.h" />
     <ClInclude Include="..\..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\..\_source\include\menu\CMenuFactory.h" />
