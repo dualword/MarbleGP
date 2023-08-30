@@ -400,31 +400,54 @@ namespace dustbin {
         bool l_bStop = false;
 
         while (!l_bStop) {
-          std::string l_sData = "";
-          char l_pBuffer[0xFFFF];
-          memset(l_pBuffer, 0, 0xFFFF);
           int l_iData = 0;
           int l_iRead = 0;
 
+          std::vector<std::string> l_vHeaders;
+
+          enum class enState {
+            HeaderLine,
+            LineBreak,
+            EndOfHeader
+          };
+
+          enState l_eState = enState::HeaderLine;
+
+          std::string l_sLine = "";
+
           do {
-            printf("Receiving data ... ");
-            l_iData = recv(m_iSocket, l_pBuffer, 0xFFFE, 0);
+            char l_cData = '\0';
+            l_iData = recv(m_iSocket, &l_cData, 1, 0);
             l_iRead += l_iData;
 
-            printf("%i Bytes read.\n", l_iData);
-            if (l_iData > 0)
-              l_sData += l_pBuffer;
+            if (l_iRead > 0) {
+              switch (l_eState) {
+                case enState::HeaderLine:
+                  if (l_cData == '\r')
+                    l_eState = enState::LineBreak;
+                  else
+                    l_sLine += l_cData;
+                  break;
+
+                case enState::LineBreak:
+                  if (l_cData == '\n') {
+                    if (l_sLine != "") {
+                      l_vHeaders.push_back(l_sLine);
+                      l_eState = enState::HeaderLine;
+                      l_sLine = "";
+                    }
+                    else l_eState = enState::EndOfHeader;
+                  }
+                  break;
+
+                case enState::EndOfHeader:
+                  break;
+              }
+            }
           }
-          while (l_iData == 0xFFFE && l_iData > 0);
+          while (l_iData > 0 && l_eState != enState::EndOfHeader);
           
           if (l_iRead > 0) {
-            std::vector<std::string> l_vDummy = helpers::splitString(l_sData, '\n');
-            std::vector<std::string> l_vData;
-
-            for (auto l_sHead: l_vDummy) {
-              l_vData.push_back(helpers::trimString(l_sHead));
-            }
-
             std::string l_sMethod  = "";
             std::string l_sPath    = "";
             std::string l_sLine    = "";
@@ -434,8 +457,8 @@ namespace dustbin {
 
             std::map<std::string, std::string> l_mHeaders;
 
-            for (std::vector<std::string>::iterator l_itHead = l_vData.begin(); l_itHead != l_vData.end(); l_itHead++) {
-              if (l_itHead == l_vData.begin()) {
+            for (std::vector<std::string>::iterator l_itHead = l_vHeaders.begin(); l_itHead != l_vHeaders.end(); l_itHead++) {
+              if (l_itHead == l_vHeaders.begin()) {
                 printf("First Line: \"%s\"\n", (*l_itHead).c_str());
                 std::vector<std::string> l_vTokens = helpers::splitString(*l_itHead, ' ');
 
