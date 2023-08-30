@@ -69,5 +69,12 @@ namespace dustbin {
     * @return the string representation
     */
     std::wstring keyCodeToString(irr::EKEY_CODE e);
+
+    /**
+    * Trim a string
+    * @param a_sInput the string to trim
+    * @return the trimmed string
+    */
+    std::string trimString(const std::string& a_sInput);
   }
 }

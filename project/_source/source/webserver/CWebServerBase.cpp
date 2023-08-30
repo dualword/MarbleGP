@@ -265,6 +265,10 @@ namespace dustbin {
           printf("Accept error %i\n", WSAGetLastError());
           break;
         }
+
+        DWORD l_iTimeout = 2500;
+        setsockopt(l_iRequest, SOL_SOCKET, SO_RCVTIMEO, (const char *)&l_iTimeout, sizeof(DWORD));
+
 #else
         int l_iRequest = accept(m_iSocket, nullptr, nullptr);
         if (l_iRequest < 0) {
@@ -275,8 +279,7 @@ namespace dustbin {
 
         printf("Ready.\n");
         IWebServerRequest *l_pRequest = createRequest(l_iRequest);
-        l_pRequest->execute();
-        delete l_pRequest;
+        l_pRequest->startThread();
       }
     }
 
@@ -300,16 +303,13 @@ namespace dustbin {
     void CWebServerRequestBase::sendHeader(int a_iResult, const std::map<std::string, std::string>& a_mHeader) {
       std::string l_sResponse = "HTTP/1.1 " + std::to_string(a_iResult) + " " + getHttpStatusCode(a_iResult) + "\r\n";
       int l_iSent = sendData(l_sResponse.c_str(), (int)l_sResponse.size());
-      // printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
 
       for (std::map<std::string, std::string>::const_iterator l_itHeader = a_mHeader.begin(); l_itHeader != a_mHeader.end(); l_itHeader++) {
         std::string l_sHeader = l_itHeader->first + ": " + l_itHeader->second + "\r\n";
         l_iSent = sendData(l_sHeader.c_str(), (int)l_sHeader.size());
-        // printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
       }
 
       l_iSent = sendData("\r\n", 2);
-      // printf("\t%i of %i Bytes sent.\n", l_iSent, l_sResponse.size());
     }
 
 
@@ -385,6 +385,9 @@ namespace dustbin {
       }
     }
 
+    void CWebServerRequestBase::startThread() {
+      m_cThread = std::thread([this] { printf("HTTP Request running.\n"); execute(); printf("HTTP Request stopped.\n"); detach(); delete this; });
+    }
     /**
     * The execution method
     */
@@ -394,107 +397,97 @@ namespace dustbin {
 #else
       if (m_iSocket >= 0) {
 #endif
-        while (true) {
-          enum class enHTTPState {
-            HttpMethod,
-            UrlPath,
-            HttpVersion,
-            HeaderKey,
-            HeaderValue,
-            LineBreak,
-            HeaderEnd,
-            Body
-          };
+        bool l_bStop = false;
 
-          enHTTPState l_eState = enHTTPState::HttpMethod;
-
-          std::string l_sMethod  = "";
-          std::string l_sPath    = "";
-          std::string l_sLine    = "";
-          std::string l_sVersion = "";
-          std::string l_sKey     = "";
-          std::string l_sValue   = "";
-
-          std::map<std::string, std::string> l_mHeaders;
-
+        while (!l_bStop) {
+          std::string l_sData = "";
+          char l_pBuffer[0xFFFF];
+          memset(l_pBuffer, 0, 0xFFFF);
+          int l_iData = 0;
           int l_iRead = 0;
 
-          while (l_eState != enHTTPState::HeaderEnd) {
-            char c;
+          do {
+            printf("Receiving data ... ");
+            l_iData = recv(m_iSocket, l_pBuffer, 0xFFFE, 0);
+            l_iRead += l_iData;
 
-            int l_iThisRead = recv(m_iSocket, &c, 1, 0);
-            if (l_iThisRead != 0) {
-              l_iRead += l_iThisRead;
-              l_sLine += c;
+            printf("%i Bytes read.\n", l_iData);
+            if (l_iData > 0)
+              l_sData += l_pBuffer;
+          }
+          while (l_iData == 0xFFFE && l_iData > 0);
+          
+          if (l_iRead > 0) {
+            std::vector<std::string> l_vDummy = helpers::splitString(l_sData, '\n');
+            std::vector<std::string> l_vData;
 
-              switch (l_eState) {
-                case enHTTPState::HttpMethod : if (c != ' ' ) l_sMethod  += c; else l_eState = enHTTPState::UrlPath    ; break;
-                case enHTTPState::UrlPath    : if (c != ' ' ) l_sPath    += c; else l_eState = enHTTPState::HttpVersion; break;
-                case enHTTPState::HttpVersion: if (c != '\r') l_sVersion += c; else l_eState = enHTTPState::LineBreak  ; break;
+            for (auto l_sHead: l_vDummy) {
+              l_vData.push_back(helpers::trimString(l_sHead));
+            }
 
-                case enHTTPState::HeaderKey: 
-                  if (c == '\r' && l_sKey == "")
-                    l_eState = enHTTPState::HeaderEnd;
-                  else if (c != ':') 
-                    l_sKey += c; 
-                  else
-                    l_eState = enHTTPState::HeaderValue; 
-                  break;
+            std::string l_sMethod  = "";
+            std::string l_sPath    = "";
+            std::string l_sLine    = "";
+            std::string l_sVersion = "";
+            std::string l_sKey     = "";
+            std::string l_sValue   = "";
 
-                case enHTTPState::HeaderValue:
-                  if (c == '\r') {
-                    if (l_sKey == "" && l_sValue == "") {
-                      l_eState = enHTTPState::Body;
-                    }
-                    else {
-                      l_mHeaders[l_sKey] = l_sValue;
+            std::map<std::string, std::string> l_mHeaders;
 
-                      l_sKey   = "";
-                      l_sValue = "";
+            for (std::vector<std::string>::iterator l_itHead = l_vData.begin(); l_itHead != l_vData.end(); l_itHead++) {
+              if (l_itHead == l_vData.begin()) {
+                printf("First Line: \"%s\"\n", (*l_itHead).c_str());
+                std::vector<std::string> l_vTokens = helpers::splitString(*l_itHead, ' ');
 
-                      l_eState = enHTTPState::LineBreak;
-                    }
-                  }
-                  else 
-                    if (c != ' ' || l_sValue != "")
-                      l_sValue += c;
-                  break;
+                for (auto l_sToken: l_vTokens) {
+                  printf("Header: \"%s\"\n", l_sToken.c_str());
+                }
 
-                case enHTTPState::LineBreak:
-                  if (c == '\n') l_eState = enHTTPState::HeaderKey;
-                  l_sLine = "";
-                  break;
-
-                case enHTTPState::Body:
-                  break;
+                if (l_vTokens.size() == 3) {
+                  l_sMethod  = l_vTokens[0];
+                  l_sPath    = l_vTokens[1];
+                  l_sVersion = l_vTokens[2];
+                }
+              }
+              else {
+                std::vector<std::string> l_vLine = helpers::splitString(*l_itHead, ':');
+                if (l_vLine.size() == 2) {
+                  l_mHeaders[helpers::trimString(l_vLine[0])] = helpers::trimString(l_vLine[1]);
+                }
               }
             }
-            else break;
-          }
 
-          printf("Method: \"%s\", Path: \"%s\", Version: \"%s\"\n", l_sMethod.c_str(), l_sPath.c_str(), l_sVersion.c_str());
+          
 
-          if (l_iRead > 0 && l_sMethod != "" && l_sVersion != "") {
-            std::time_t l_cTime = std::time(nullptr);
+            printf("Connection: \"%s\"\"", l_mHeaders.find("Connection") != l_mHeaders.end() ? l_mHeaders["Connection"].c_str() : "-- Not Found --");
+            printf("Method: \"%s\", Path: \"%s\", Version: \"%s\"\n", l_sMethod.c_str(), l_sPath.c_str(), l_sVersion.c_str());
 
-            char s[0xFF];
-            std::strftime(s, 255, "%Y/%M/%D_%H:%M:%S", std::localtime(& l_cTime));
+            if (l_iRead > 0 && l_sMethod != "" && l_sVersion != "") {
+              std::time_t l_cTime = std::time(nullptr);
 
-            std::string l_sLog = std::string(s) + ": " + l_sMethod + " \"" + l_sPath + "\"";
+              char s[0xFF];
+              std::strftime(s, 255, "%Y/%M/%D_%H:%M:%S", std::localtime(& l_cTime));
 
-            int l_iResult = -1;
+              std::string l_sLog = std::string(s) + ": " + l_sMethod + " \"" + l_sPath + "\"";
 
-            if (l_sMethod == "GET") {
-              l_iResult = handleGet(l_sPath, l_mHeaders);
+              int l_iResult = -1;
+
+              if (l_sMethod == "GET") {
+                l_iResult = handleGet(l_sPath, l_mHeaders);
+              }
+
+              l_sLog += " (" + std::to_string(l_iResult) + ")";
+              sendWeblogmessage((irr::s32)(l_iResult < 400 ? irr::ELL_INFORMATION : irr::ELL_WARNING), l_sLog, m_pQueue);
+              // return;
             }
-
-            l_sLog += " (" + std::to_string(l_iResult) + ")";
-            sendWeblogmessage((irr::s32)(l_iResult < 400 ? irr::ELL_INFORMATION : irr::ELL_WARNING), l_sLog, m_pQueue);
-            return;
+            else {
+              printf("Method: %s, Read: %i, Version: %s\n", l_sMethod.c_str(), l_iRead, l_sVersion.c_str());
+              // return;
+            }
           }
           else {
-            printf("Method: %s, Read: %i, Version: %s\n", l_sMethod.c_str(), l_iRead, l_sVersion.c_str());
-            return;
+            printf("Timeout, stopping thread.\n");
+            l_bStop = true;
           }
         }
       }
@@ -646,9 +639,112 @@ namespace dustbin {
     /**
     * Save the profiles transmitted by the browser
     * @param a_sData JSON encoded profile data
+    * @param a_sResponse the message sent to the client
     */
-    bool CWebServerRequestBase::saveProfileData(const std::string& a_sData) {
-      return true;
+    bool CWebServerRequestBase::saveProfileData(const std::string& a_sData, std::string &a_sResponse) {
+      bool l_bRet = true;
+
+      json::CIrrJSON l_cJson = json::CIrrJSON(a_sData);
+
+      std::vector<data::SPlayerData> l_vPlayers;
+
+      int l_eState = 0;
+      std::string l_sKey;
+      std::string l_sCtrl = "";
+      std::string l_sCtrlData = "";
+
+      while (l_cJson.read()) {
+        switch (l_eState) {
+        case 0:
+          if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectStart) {
+            l_vPlayers.push_back(data::SPlayerData());
+            l_eState = 1;
+          }
+          else if (l_cJson.getType() == json::CIrrJSON::enToken::ArrayEnd) {
+            printf("End Reached.\n");
+          }
+          break;
+
+        case 1:
+          if (l_cJson.getType() == json::CIrrJSON::enToken::ValueString) {
+            l_sKey = l_cJson.asString();
+            l_eState = 2;
+          }
+          break;
+
+        case 2:
+          if (l_cJson.getType() == json::CIrrJSON::enToken::Colon)
+            l_eState = 3;
+          break;
+
+        case 3:
+          if (l_cJson.isValueType()) {
+            if (l_sKey == "name")
+              l_vPlayers.back().m_sName = l_cJson.asString();
+            else if (l_sKey == "short")
+              l_vPlayers.back().m_sShortName = l_cJson.asString();
+            else if (l_sKey == "ai_help")
+              l_vPlayers.back().m_eAiHelp = (dustbin::data::SPlayerData::enAiHelp)l_cJson.asInt();
+            else if (l_sKey == "auto_throttle")
+              l_vPlayers.back().m_bAutoThrottle = l_cJson.asBool();
+            else if (l_sKey == "texture")
+              l_vPlayers.back().m_sTexture = l_cJson.asString();
+            else if (l_sKey == "controller")
+              l_sCtrl = l_cJson.asString();
+            else if (l_sKey == "ctrl_data")
+              l_sCtrlData = l_cJson.asString();
+            else
+              printf("Unknown key \"%s\"\n", l_sKey.c_str());
+          }
+          l_eState = 4;
+          break;
+
+        case 4:
+          if (l_cJson.getType() == json::CIrrJSON::enToken::Separator)
+            l_eState = 1;
+          else if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectEnd) {
+            if (l_sCtrl != "" && l_sCtrlData != "") {
+              if (l_sCtrl == "TouchControl")
+                l_vPlayers.back().m_sControls = "DustbinTouchControl";
+              else if (l_sCtrl == "Gyroscope")
+                l_vPlayers.back().m_sControls = "DustbinGyroscope";
+              else {
+                controller::CControllerGame l_cCtrl;
+                l_cCtrl.deserialize(l_sCtrlData);
+
+                switch ((*l_cCtrl.getInputs().begin()).m_eType) {
+                case controller::CControllerBase::enInputType::JoyAxis:
+                case controller::CControllerBase::enInputType::JoyButton:
+                case controller::CControllerBase::enInputType::JoyPov:
+                  if (l_sCtrl == "Gamepad") {
+                    l_vPlayers.back().m_sControls = l_sCtrlData;
+                  }
+                  else {
+                    l_vPlayers.back().m_sControls = helpers::getDefaultGameCtrl_Keyboard();
+                  }
+                  break;
+
+                case controller::CControllerBase::enInputType::Key:
+                  if (l_sCtrl == "Keyboard") {
+                    l_vPlayers.back().m_sControls = l_sCtrlData;
+                  }
+                  else {
+                    l_vPlayers.back().m_sControls = helpers::getDefaultGameCtrl_Gamepad();
+                  }
+                  break;
+                }
+              }
+            }
+            l_eState = 0;
+          }
+          break;
+        }
+      }
+
+
+      helpers::saveProfiles(l_vPlayers);
+
+      return l_bRet;
     }
 
     /**
@@ -675,108 +771,8 @@ namespace dustbin {
       if (l_sPath.substr(0, l_sPathSave.size()) == l_sPathSave) {
         std::string l_sJSON = messages::urlDecode(l_sPath.substr(l_sPathSave.length()));
         std::string l_sResponse = "Profiles Saved.";
-        printf("\n\n%s\n\n", l_sJSON.c_str());
 
-        json::CIrrJSON l_cJson = json::CIrrJSON(l_sJSON);
-
-        std::vector<data::SPlayerData> l_vPlayers;
-
-        int l_eState = 0;
-        std::string l_sKey;
-        std::string l_sCtrl = "";
-        std::string l_sCtrlData = "";
-
-        while (l_cJson.read()) {
-          switch (l_eState) {
-            case 0:
-              if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectStart) {
-                l_vPlayers.push_back(data::SPlayerData());
-                l_eState = 1;
-              }
-              else if (l_cJson.getType() == json::CIrrJSON::enToken::ArrayEnd) {
-                printf("End Reached.\n");
-              }
-              break;
-
-            case 1:
-              if (l_cJson.getType() == json::CIrrJSON::enToken::ValueString) {
-                l_sKey = l_cJson.asString();
-                printf("Key: \"%s\"\n", l_sKey.c_str());
-                l_eState = 2;
-              }
-              break;
-
-            case 2:
-              if (l_cJson.getType() == json::CIrrJSON::enToken::Colon)
-                l_eState = 3;
-              break;
-
-            case 3:
-              if (l_cJson.isValueType()) {
-                if (l_sKey == "name")
-                  l_vPlayers.back().m_sName = l_cJson.asString();
-                else if (l_sKey == "short")
-                  l_vPlayers.back().m_sShortName = l_cJson.asString();
-                else if (l_sKey == "ai_help")
-                  l_vPlayers.back().m_eAiHelp = (dustbin::data::SPlayerData::enAiHelp)l_cJson.asInt();
-                else if (l_sKey == "auto_throttle")
-                  l_vPlayers.back().m_bAutoThrottle = l_cJson.asBool();
-                else if (l_sKey == "texture")
-                  l_vPlayers.back().m_sTexture = l_cJson.asString();
-                else if (l_sKey == "controller")
-                  l_sCtrl = l_cJson.asString();
-                else if (l_sKey == "ctrl_data")
-                  l_sCtrlData = l_cJson.asString();
-                else
-                  printf("Unknown key \"%s\"\n", l_sKey.c_str());
-              }
-              l_eState = 4;
-              break;
-
-            case 4:
-              if (l_cJson.getType() == json::CIrrJSON::enToken::Separator)
-                l_eState = 1;
-              else if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectEnd) {
-                if (l_sCtrl != "" && l_sCtrlData != "") {
-                  if (l_sCtrl == "TouchControl")
-                    l_vPlayers.back().m_sControls = "DustbinTouchControl";
-                  else if (l_sCtrl == "Gyroscope")
-                    l_vPlayers.back().m_sControls = "DustbinGyroscope";
-                  else {
-                    controller::CControllerGame l_cCtrl;
-                    l_cCtrl.deserialize(l_sCtrlData);
-
-                    switch ((*l_cCtrl.getInputs().begin()).m_eType) {
-                      case controller::CControllerBase::enInputType::JoyAxis:
-                      case controller::CControllerBase::enInputType::JoyButton:
-                      case controller::CControllerBase::enInputType::JoyPov:
-                        if (l_sCtrl == "Gamepad") {
-                          l_vPlayers.back().m_sControls = l_sCtrlData;
-                        }
-                        else {
-                          l_vPlayers.back().m_sControls = helpers::getDefaultGameCtrl_Keyboard();
-                        }
-                        break;
-
-                      case controller::CControllerBase::enInputType::Key:
-                        if (l_sCtrl == "Keyboard") {
-                          l_vPlayers.back().m_sControls = l_sCtrlData;
-                        }
-                        else {
-                          l_vPlayers.back().m_sControls = helpers::getDefaultGameCtrl_Gamepad();
-                        }
-                        break;
-                    }
-                  }
-                }
-                l_eState = 0;
-              }
-              break;
-          }
-        }
-
-
-        helpers::saveProfiles(l_vPlayers);
+        saveProfileData(l_sJSON, l_sResponse);
 
         l_aBuffer = new char[l_sResponse.size() + 1];
         memset(l_aBuffer,0, l_sResponse.size() + 1);
@@ -915,7 +911,7 @@ namespace dustbin {
       if (l_aBuffer != nullptr && l_iBufLen > 0) {
         l_mHeader["Content-Type"  ] = getContentType(l_sExtension);
         l_mHeader["Content-Length"] = std::to_string(l_iBufLen);
-        l_mHeader["Connection"    ] = "close";
+        l_mHeader["Connection"    ] = "keep-alive";
 
         char *l_aToDelete = l_aBuffer;
 
@@ -931,8 +927,6 @@ namespace dustbin {
           }
           else l_iBufLen = 0;
           l_iTotal  += l_iSent;
-
-          // printf("\t%i of %i Bytes sent (Total: %i).\n", l_iSent, l_iSize, l_iTotal);
         }
         send(m_iSocket, "", 0, 0);
 

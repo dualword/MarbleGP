@@ -96,6 +96,8 @@ namespace dustbin {
         * Detach from the thread
         */
         virtual void detach() = 0;
+
+        virtual void startThread() = 0;
     };
   }
 }

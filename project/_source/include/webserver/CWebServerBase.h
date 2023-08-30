@@ -208,8 +208,9 @@ namespace dustbin {
         /**
         * Save the profiles transmitted by the browser
         * @param a_sData JSON encoded profile data
+        * @param a_sResponse the message sent to the client
         */
-        bool saveProfileData(const std::string &a_sData);
+        bool saveProfileData(const std::string &a_sData, std::string &a_sResponse);
 
       public:
         /**
@@ -230,6 +231,8 @@ namespace dustbin {
         * Execute the request in a thread of it's own
         */
         virtual void execute() override;
+
+        virtual void startThread() override;
 
         /**
         * Has the request finished?
