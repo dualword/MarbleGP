@@ -556,6 +556,27 @@ namespace dustbin {
     }
 
     /**
+    * Create a JSON with the AI profile data
+    * @return a JSON with the AI profile data
+    */
+    std::string CWebServerRequestBase::createAiProfileJSON() {
+      std::string l_sAi = "[";
+
+      std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> l_vAiPlayers;
+
+      helpers::loadAiProfiles(l_vAiPlayers);
+
+      for (std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.begin(); l_itAi != l_vAiPlayers.end(); l_itAi++) {
+        if (l_itAi != l_vAiPlayers.begin())
+          l_sAi += ",";
+
+        l_sAi += "{\"name\":\"" + std::get<0>(*l_itAi) + "\",\"short\":\"" + std::get<1>(*l_itAi) + "\",\"texture\":\"" + std::get<2>(*l_itAi) + "\"}";
+      }
+
+      return l_sAi + "]";
+    }
+
+    /**
     * Create a JSON with the possible AI Help options
     * @return a JSON with the possible AI Help options
     */
@@ -631,6 +652,12 @@ namespace dustbin {
         l_sReturn += "      g_Patterns[\"" + *l_itTexture + "\"].src = \"data:image/png;base64," + getBase64Image("data/patterns/" + *l_itTexture) + "\"\n";
       }
 
+      l_sReturn += "      g_Patterns[\"data/textures/texture_marblemann.png\"] = new Image();\n";
+      l_sReturn += "      g_Patterns[\"data/textures/texture_marblemann.png\"].src = \"data:image/png;base64," + getBase64Image("data/textures/texture_marblemann.png") + "\"\n";
+
+      l_sReturn += "      g_Patterns[\"data/textures/texture_rollgaas.png\"] = new Image();\n";
+      l_sReturn += "      g_Patterns[\"data/textures/texture_rollgaas.png\"].src = \"data:image/png;base64," + getBase64Image("data/textures/texture_rollgaas.png") + "\"\n";
+
       return l_sReturn;
     }
 
@@ -657,6 +684,83 @@ namespace dustbin {
       }
 
       return l_sReturn;
+    }
+
+    /**
+    * Save the AI profiles transmitted by the browser
+    * @param a_sData JSON encoded AI profile data
+    * @param a_sResponse the message sent to the client
+    */
+    bool CWebServerRequestBase::saveAiProfileData(const std::string& a_sData, std::string &a_sResponse) {
+      bool l_bRet = true;
+
+      printf("\n\n%s\n\n", a_sData.c_str());
+
+      std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> l_vAiPlayers;
+      helpers::loadAiProfiles(l_vAiPlayers);
+
+      std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.begin();
+
+      json::CIrrJSON l_cJson = json::CIrrJSON(a_sData);
+
+      int l_iCount = 0;   // We update a maxmimum of 16 profiles!!
+      int l_iState = 0;
+
+      std::string l_sKey = "";
+
+      while (l_cJson.read() && l_iCount < 16 && l_itAi != l_vAiPlayers.end()) {
+        switch (l_iState) {
+          case 0:
+            if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectStart) {
+              l_iState = 1;
+            }
+            else if (l_cJson.getType() == json::CIrrJSON::enToken::ArrayEnd) {
+              l_itAi = l_vAiPlayers.end();
+            }
+            break;
+
+          case 1:
+            if (l_cJson.getType() == json::CIrrJSON::enToken::ValueString) {
+              l_sKey = l_cJson.asString();
+              l_iState = 2;
+            }
+            break;
+
+          case 2:
+            if (l_cJson.getType() == json::CIrrJSON::enToken::Colon) {
+              l_iState = 3;
+            }
+
+          case 3:
+            if (l_cJson.getType() == json::CIrrJSON::enToken::ValueString) {
+              printf("\"%s\": \"%s\" (%i)\n", l_sKey.c_str(), l_cJson.asString().c_str(), l_iCount);
+              if (l_sKey == "name")
+                std::get<0>(*l_itAi) = l_cJson.asString();
+              else if (l_sKey == "short")
+                std::get<1>(*l_itAi) = l_cJson.asString();
+              else if (l_sKey == "texture")
+                std::get<2>(*l_itAi) = l_cJson.asString();
+
+              l_iState = 4;
+            }
+            break;
+
+          case 4:
+            if (l_cJson.getType() == json::CIrrJSON::enToken::Separator)
+              l_iState = 1;
+            else if (l_cJson.getType() == json::CIrrJSON::enToken::ObjectEnd) {
+              l_itAi++;
+              l_iCount++;
+              l_iState = 0;
+            }
+            break;
+        }
+      }
+
+      if (!helpers::saveAiProfiles(l_vAiPlayers))
+        a_sResponse = "Saving AI profiles failed.";
+
+      return l_bRet;
     }
 
     /**
@@ -780,6 +884,7 @@ namespace dustbin {
       const std::string l_sPathThumbnails = "/thumbnails/";
       const std::string l_sReplaceInclude = "include:";
       const std::string l_sPathSave       = "/saveprofiles?";
+      const std::string l_sPathSaveAi     = "/saveaiprofiles?";
 
       std::string l_sPath = a_sUrl;
 
@@ -796,6 +901,18 @@ namespace dustbin {
         std::string l_sResponse = "Profiles Saved.";
 
         saveProfileData(l_sJSON, l_sResponse);
+
+        l_aBuffer = new char[l_sResponse.size() + 1];
+        memset(l_aBuffer,0, l_sResponse.size() + 1);
+        memcpy(l_aBuffer, l_sResponse.c_str(), l_sResponse.size());
+        l_iBufLen = (int)l_sResponse.size();
+        l_sExtension = ".txt";
+      }
+      else if (l_sPath.substr(0, l_sPathSaveAi.size()) == l_sPathSaveAi) {
+        std::string l_sJSON = messages::urlDecode(l_sPath.substr(l_sPathSaveAi.length()));
+        std::string l_sResponse = "AI Profiles Saved.";
+
+        saveAiProfileData(l_sJSON, l_sResponse);
 
         l_aBuffer = new char[l_sResponse.size() + 1];
         memset(l_aBuffer,0, l_sResponse.size() + 1);
@@ -828,7 +945,9 @@ namespace dustbin {
 
         l_sExtension = l_sPath.find_last_of('.') != std::string::npos ? l_sPath.substr(l_sPath.find_last_of('.')) : "";
 
-        std::string l_sRelativePath = "data/html" + l_sPath;
+        std::string l_sRelativePath = l_sPath;
+
+        l_sRelativePath = "data/html" + l_sPath;
 
         irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sRelativePath.c_str());
 
@@ -910,6 +1029,9 @@ namespace dustbin {
                     delete []p;
                   }
                   else l_sReplace = std::string("<!-- File not found: ") + l_sReplace.substr(l_sReplaceInclude.size()).c_str() + " -->";
+                }
+                else if (l_sReplace == "aiprofiles") {
+                  l_sReplace = createAiProfileJSON();
                 }
                 else {
                   l_sReplace = "<!-- Unkonw replacement " + l_sReplace + " -->";

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dustbin::Game MarbleGP - AI Profiles</title>
+    <link href="jquery-ui.min.css" rel="stylesheet">
+    <link href="jquery-ui.structure.min.css" rel="stylesheet">
+    <link href="jquery-ui.theme.min.css" rel="stylesheet">
+    <link href="jquery.treemenu.min.css" rel="stylesheet">
+    <style>
+
+      #mainframe, #headline {
+        width: 80%;
+        border-radius: 1em;
+        border: 2px solid black;
+        background-color: rgba(224, 224, 244, 128);
+        padding: 1em;
+      }
+      
+      #headline {
+        height: 5vh;
+        margin-bottom: 1em;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.5em;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      
+      .container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+      }
+      
+      body {
+        background-image: url("background.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center; 
+        font-family: Arial;
+      }
+      
+      td, th {
+        border-bottom: 1px solid black;
+        margin: 0.1em;
+        padding: 0.1em;
+      }
+      
+      .logoimg {
+        height: 5em;
+        width: auto;
+        padding: 0px;
+        margin: 0px;
+      }
+      
+      table, tr {
+        padding: 0px;
+        margin: 0px;
+        border: 0px;
+      }
+
+{!include:texturedialog.css}
+
+    </style>
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery-ui.min.js" type="text/javascript"></script>
+    <script>
+    
+{!include:texturerenderer.js}
+
+      function saveProfiles() {
+        var l_Json = JSON.stringify(g_Profiles);
+        $.get("/saveaiprofiles?" + l_Json, {
+        },
+        function(a_Data) {
+          alert(a_Data);
+        });
+      }
+
+      function editName(a_This) {
+        var l_Index = a_This.id.substring("name_".length);
+        var l_Name  = a_This.value;
+        
+        if (l_Name.length < 3) {
+          a_This.style["background-color"] = "#FF8844";
+        }
+        else {
+          a_This.style["background-color"] = "#FFFFFF";
+          g_Profiles[l_Index].name = a_This.value
+        }
+      }
+      
+      function editShort(a_This) {
+        var l_Index = a_This.id.substring("short_".length);
+        var l_Name  = a_This.value;
+        
+        if (l_Name.length < 2) {
+          a_This.style["background-color"] = "#FF8844";
+        }
+        else {
+          a_This.style["background-color"] = "#FFFFFF";
+          g_Profiles[l_Index].short = a_This.value
+        }
+      }
+      
+      function downloadProfiles() {
+        var l_Data = new Blob([ JSON.stringify(g_Profiles) ], { type: "text/mgpai" });
+        var l_Url  = window.URL.createObjectURL(l_Data);
+        
+        var l_Link = document.createElement('a');
+        l_Link.download = "marblegp_ai.mgpai";
+        l_Link.href = URL.createObjectURL(l_Data);
+        l_Link.click();
+        URL.revokeObjectURL(l_Link.href);
+      }
+      
+      function createProfileForm(a_Index, a_Profile) {
+        var l_Html = "<div>\n";
+        l_Html += "  <table>\n";
+        l_Html += "    <tr>\n";
+        l_Html += "      <td><b>Name:</b></td><td><input type=\"text\" id=\"name_" + a_Index + "\" value=\"" + a_Profile.name + "\" maxlength=\"20\" oninput=\"editName(this);\" /></td>\n";
+        l_Html += "      <td rowspan=\"3\" style=\"width: 3em\">&nbsp;</td>\n";
+        l_Html += "      <td rowspan=\"3\" style=\"width: 128px\"><canvas id=\"texture_" + a_Index + "\" width=\"512\" height=\"512\" style=\"width: 80%; height: auto\"></canvas></td>\n";
+        l_Html += "    </tr>\n";
+        l_Html += "    <tr><td><b>Short:</b></td><td><input type=\"text\" id=\"short_" + a_Index + "\" value=\"" + a_Profile.short + "\" maxlength=\"6\" oninput=\"editShort(this);\" /></td></tr>\n";
+        l_Html += "    <tr><td colspan=\"2\">\n";
+        l_Html += "      <button onclick=\"editTexture(" + a_Index + ");\">Edit Texture</button>\n";
+        l_Html += "    </td></tr>\n";
+        
+        l_Html += "  </table>\n";
+        l_Html += "</div>\n<hr />\n";
+        
+        return l_Html;
+      }
+      
+      function uploadProfiles(a_File) {
+        // Check if the file is an image.
+        if (a_File.type && !a_File.type.startsWith('text/')) {
+          alert('File is not a MarbleGP Profile.', file.type, file);
+          return;
+        }
+
+        var l_Reader = new FileReader();
+        l_Reader.addEventListener('load', (a_Event) => {
+          var l_Data = a_Event.target.result;
+          if (l_Data.indexOf(",") != -1) {
+            l_Data = atob(l_Data.substring(l_Data.indexOf(",") + 1));
+            g_Profiles = JSON.parse(l_Data);
+            
+            documentReady();
+          }
+        });
+        l_Reader.readAsDataURL(a_File);
+      }
+      
+      function documentReady() {
+        var l_MainFrame = $("#mainframe");
+        var l_Html = "  <div><button id=\"saveProfiles\" onclick=\"saveProfiles();\">Save Profiles</button>\n";
+        l_Html += "<button id=\"downloadProfiles\" onclick=\"downloadProfiles();\">Download Profiles</button></div>\n  <hr />";
+        
+        for (var i = 0; i < g_Profiles.length; i++) {
+          l_Html += createProfileForm(i, g_Profiles[i]);
+        }
+        
+        l_Html += "  <div>Upload MarbleGP AI Profiles: <input type=\"file\" id=\"upload_profile\" accept=\".mgpai\"></div>\n";
+        
+        l_MainFrame.html(l_Html);
+        
+        for (var i = 0; i < g_Profiles.length; i++) {
+          updateTexture("texture_" + i, g_Profiles[i].texture, i);
+        }
+        
+        var l_Selector = document.getElementById("upload_profile");
+        l_Selector.addEventListener('change', (event) => {
+          const fileList = event.target.files;
+          uploadProfiles(fileList[0]);
+        });
+      }
+      
+      var g_Patterns = { };
+      
+      g_Patterns["__frame"] = new Image();
+      g_Patterns["__frame"].src = "{!textureframe}";
+      
+      g_Patterns["__number"] = new Image;
+      g_Patterns["__number"].src = "{!texturenumber}";;
+      
+      g_Patterns["__numberglow"] = new Image;
+      g_Patterns["__numberglow"].src = "{!texturenumberglow}";;
+
+{!texturepatterns}
+
+      var g_Profiles = {!aiprofiles};
+      
+      $(document).ready(function() {
+        documentReady();
+        
+        $("#TextureDialog").dialog({
+          width: 640,
+          height: 480
+        });
+        $("#TextureDialog").dialog("close");
+        
+        for (var l_Key in g_Patterns) {
+          if (l_Key.substring(0, 2) != "__" && !l_Key.includes("marblemann") && !l_Key.includes("rollgaas")) {
+            $("#TexturePattern").append("<option>" + l_Key + "</option>");
+          }
+        }
+      });
+
+
+{!include:texturedialog.js}
+    
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="headline">
+        Dustbin::Games MarbleGP - Edit AI Profiles [<a href="/index.html">Main Menu</a>]
+      </div>
+    </div>
+    <div class="container">
+      <div id="mainframe">
+      </div>
+    </div>
+    <div class="container" style="padding-top: 1em"><img src="marblegp_logo.png" class="logoimg" /></div>
+    
+{!include:texturedialog.html}
+    
+  </body>
+</html>

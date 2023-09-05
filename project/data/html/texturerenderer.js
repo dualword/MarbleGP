@@ -2,6 +2,24 @@
         return [ "0x" + a_Color.substring(0, 2), "0x" + a_Color.substring(2, 4), "0x" + a_Color.substring(4, 6), "0xFF" ];
       }
       
+      function getTextureArray(a_Texture) {
+        var l_Return = { }
+        var l_Split = a_Texture.split("://");
+        
+        l_Return["type"] = l_Split[0];
+        
+        var l_ParamArray = l_Split[1].split("&");
+        
+        for (var l_ParamNo = 0; l_ParamNo < l_ParamArray.length; l_ParamNo++) {
+          var l_Param = l_ParamArray[l_ParamNo].split("=");
+          if (l_Param.length == 2) {
+            l_Return[l_Param[0]] = l_Param[1];
+          }
+        }
+        
+        return l_Return;
+      }
+            
       function drawRect(a_Image, a_Rect, a_Color) {
         for (var x = a_Rect.upperleft.x; x < a_Rect.lowerright.x; x++) {
           for (var y = a_Rect.upperleft.y; y < a_Rect.lowerright.y; y++) {
@@ -47,16 +65,24 @@
         
         var l_ParamMap = getTextureArray(a_Texture);
         
-        drawRect(l_Buffer, { "upperleft": { "x": 0, "y":   0 }, "lowerright": { "x": 512, "y": 256 }}, getColorArray(l_ParamMap["numberback" ]));
-        drawRect(l_Buffer, { "upperleft": { "x": 0, "y": 256 }, "lowerright": { "x": 512, "y": 512 }}, getColorArray(l_ParamMap["patternback"]));
-        
-        drawPattern(l_Buffer, "__frame"            , getColorArray(l_ParamMap["ringcolor"   ]), { "x":   0, "y":   0 });
-        drawPattern(l_Buffer, l_ParamMap["pattern"], getColorArray(l_ParamMap["patterncolor"]), { "x":   0, "y": 256 });
-        drawPattern(l_Buffer, "__numberglow"       , getColorArray(l_ParamMap["numberborder"]), { "x":   0, "y" :  0 });
-        drawPattern(l_Buffer, "__numberglow"       , getColorArray(l_ParamMap["numberborder"]), { "x": 256, "y" :  0 });
-        drawPattern(l_Buffer, "__number"           , getColorArray(l_ParamMap["numbercolor" ]), { "x":   0, "y" :  0 });
-        drawPattern(l_Buffer, "__number"           , getColorArray(l_ParamMap["numbercolor" ]), { "x": 256, "y" :  0 });
-        
-        l_Contxt.putImageData(l_Buffer, 0, 0);
+        if (l_ParamMap["type"] == "generate") {
+          if (l_ParamMap["pattern"] == undefined)
+            l_ParamMap["pattern"] = "texture_marbles2.png";
+          
+          drawRect(l_Buffer, { "upperleft": { "x": 0, "y":   0 }, "lowerright": { "x": 512, "y": 256 }}, getColorArray(l_ParamMap["numberback" ]));
+          drawRect(l_Buffer, { "upperleft": { "x": 0, "y": 256 }, "lowerright": { "x": 512, "y": 512 }}, getColorArray(l_ParamMap["patternback"]));
+          
+          drawPattern(l_Buffer, "__frame"            , getColorArray(l_ParamMap["ringcolor"   ]), { "x":   0, "y":   0 });
+          drawPattern(l_Buffer, l_ParamMap["pattern"], getColorArray(l_ParamMap["patterncolor"]), { "x":   0, "y": 256 });
+          drawPattern(l_Buffer, "__numberglow"       , getColorArray(l_ParamMap["numberborder"]), { "x":   0, "y" :  0 });
+          drawPattern(l_Buffer, "__numberglow"       , getColorArray(l_ParamMap["numberborder"]), { "x": 256, "y" :  0 });
+          drawPattern(l_Buffer, "__number"           , getColorArray(l_ParamMap["numbercolor" ]), { "x":   0, "y" :  0 });
+          drawPattern(l_Buffer, "__number"           , getColorArray(l_ParamMap["numbercolor" ]), { "x": 256, "y" :  0 });
+          
+          l_Contxt.putImageData(l_Buffer, 0, 0);
+        }
+        else if (l_ParamMap["type"] == "file") {
+          l_Contxt.drawImage(g_Patterns[l_ParamMap["file"]], 0, 0, 512, 512, 0, 0, 512, 512);
+        }
       }
       

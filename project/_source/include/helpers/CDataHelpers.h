@@ -13,8 +13,16 @@ namespace dustbin {
     /**
     * Load the AI players from ai_profiles.xml
     * @param a_vAiPlayers the vector that will be filled (0 == Name, 1 == Abbreviation, 2 == Texture, 3 == Preferred Class 1, 4 == Preferred Class 2, 5 == Deviation)
+    * @return true if loading succeeded, false otherwise
     */
     bool loadAiProfiles(std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> &a_vAiPlayers);
+
+    /**
+    * Save the AI profiles to ai_profiles.xml
+    * @param a_vAiPlayers the vector that will be filled (0 == Name, 1 == Abbreviation, 2 == Texture, 3 == Preferred Class 1, 4 == Preferred Class 2, 5 == Deviation)
+    * @return true if saving succeeded, false otherwise
+    */
+    bool saveAiProfiles(const std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> &a_vAiPlayers);
 
     /**
     * Get the data of all tracks

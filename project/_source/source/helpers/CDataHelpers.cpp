@@ -32,8 +32,47 @@ namespace dustbin {
     }
 
     /**
+    * Save the AI profiles to ai_profiles.xml
+    * @param a_vAiPlayers the vector that will be filled (0 == Name, 1 == Abbreviation, 2 == Texture, 3 == Preferred Class 1, 4 == Preferred Class 2, 5 == Deviation)
+    * @return true if saving succeeded, false otherwise
+    */
+    bool saveAiProfiles(const std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>& a_vAiPlayers) {
+      bool l_bRet = false;
+
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+      std::string l_sFile = helpers::ws2s(platform::portableGetDataPath() + L"ai_profiles.xml");
+
+      irr::io::IWriteFile *l_pFile = l_pFs->createAndWriteFile(l_sFile.c_str());
+
+      if (l_pFile) {
+        std::string l_sBuffer = "<?xml version=\"1.0\" ?>\n";
+        l_pFile->write(l_sBuffer.c_str(), l_sBuffer.size());
+
+        l_sBuffer = "<marblegp>\n";
+        l_pFile->write(l_sBuffer.c_str(), l_sBuffer.size());
+
+        for (auto l_cProfile : a_vAiPlayers) {
+          char s[0xFF];
+          sprintf(s, "%.2f", std::get<5>(l_cProfile));
+          l_sBuffer = "  <ai_player name=\"" + std::get<0>(l_cProfile) + "\" abbreviation=\"" + std::get<1>(l_cProfile) + "\" texture=\"" + std::get<2>(l_cProfile) + "\" class1=\"" + std::to_string(std::get<3>(l_cProfile)) + "\" class2=\"" + std::to_string(std::get<4>(l_cProfile)) + "\" deviation=\"" + s + "\" / >\n";
+
+          l_pFile->write(l_sBuffer.c_str(), l_sBuffer.size());
+        }
+
+        l_sBuffer = "</marblegp>\n";
+        l_pFile->write(l_sBuffer.c_str(), l_sBuffer.size());
+        l_pFile->drop();
+
+        l_bRet = true;
+      }
+
+      return l_bRet;
+    }
+
+    /**
     * Load the AI players from ai_profiles.xml
     * @param a_vAiPlayers the vector that will be filled (0 == Name, 1 == Abbreviation, 2 == Texture, 3 == Preferred Class 1, 4 == Preferred Class 2, 5 == Deviation)
+    * @return true if loading succeeded, false otherwise
     */
     bool loadAiProfiles(std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>& a_vAiPlayers) {
       irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();

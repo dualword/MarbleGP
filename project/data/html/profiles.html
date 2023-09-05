@@ -136,26 +136,6 @@
         URL.revokeObjectURL(l_Link.href);
       }
       
-      function getTextureArray(a_Texture) {
-        var l_Return = { }
-        var l_Split = a_Texture.split("://");
-        
-        l_Return["type"] = l_Split[0];
-        
-        if (l_Split[0] == "generate") {
-          var l_ParamArray = l_Split[1].split("&");
-          
-          for (var l_ParamNo = 0; l_ParamNo < l_ParamArray.length; l_ParamNo++) {
-            var l_Param = l_ParamArray[l_ParamNo].split("=");
-            if (l_Param.length == 2) {
-              l_Return[l_Param[0]] = l_Param[1];
-            }
-          }
-        }
-        
-        return l_Return;
-      }
-      
       function deleteProfile(a_Index) {
         if (window.confirm("Do you want to delete the profile \"" + g_Profiles[a_Index].name + "\"?")) {
           g_Profiles.splice(a_Index, 1);
@@ -205,7 +185,6 @@
       function saveProfiles() {
         var l_Json = JSON.stringify(g_Profiles);
         $.get("/saveprofiles?" + l_Json, {
-          async: false
         },
         function(a_Data) {
           alert(a_Data);
@@ -325,7 +304,7 @@
   <body>
     <div class="container">
       <div id="headline">
-        Dustbin::Games MarbleGP - Player Profiles [<a href="#" onclick="history.back()">Main Menu</a>]
+        Dustbin::Games MarbleGP - Player Profiles [<a href="/index.html">Main Menu</a>]
       </div>
     </div>
     <div class="container">

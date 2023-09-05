@@ -181,6 +181,12 @@ namespace dustbin {
         std::string createAiHelpOptionJSON();
 
         /**
+        * Create a JSON with the AI profile data
+        * @return a JSON with the AI profile data
+        */
+        std::string createAiProfileJSON();
+
+        /**
         * Get the XML with the results of the last championship
         * @return the XML with the results of the last championship
         */
@@ -204,6 +210,13 @@ namespace dustbin {
         * @return a JavaScript snippet filling the texture pattern dictionary
         */
         std::string getTexturePatternJS();
+
+        /**
+        * Save the profiles transmitted by the browser
+        * @param a_sData JSON encoded profile data
+        * @param a_sResponse the message sent to the client
+        */
+        bool saveAiProfileData(const std::string &a_sData, std::string &a_sResponse);
 
         /**
         * Save the profiles transmitted by the browser
