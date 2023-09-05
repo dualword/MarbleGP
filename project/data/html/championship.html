@@ -302,7 +302,7 @@
             l_Html += "        <td class=\"td_rght\">";
             var l_RaceTime = l_ThisResult.racetime;
             
-            var l_NotFinished = l_RaceTime <= 0 || l_ThisResult.laps.length < l_ThisRace.laps || l_ThisResult.laps[l_ThisResult.laps.length - 1].length < l_CpCount;
+            var l_NotFinished = l_RaceTime == 0;
             
             if (l_NotFinished) {
               l_Html += "Did&nbsp;not&nbsp;Finish";
@@ -323,7 +323,7 @@
             if (l_ThisResult.deficit == 0 || l_NotFinished)
               l_Html += "      <td>&nbsp;</td>\n";
             else if (l_ThisResult.deficit > 0)
-              l_Html += "      <td class=\"td_rght\">" + (l_ThisResult.deficit / 120.0).toFixed(2) + "&nbsp;sec.</td>\n";
+              l_Html += "      <td class=\"td_rght\">" + (Math.abs(l_ThisResult.deficit / 120.0)).toFixed(2) + "&nbsp;sec.</td>\n";
             else {
               if (l_ThisResult.deficit == -1)
                 l_Html += "      <td class=\"td_rght\">+1&nbsp Lap</td>";
@@ -342,7 +342,7 @@
               if (l_ThisRace.result[j - 1].laps[l_Lap].length <= l_Cp)
                 l_Cp = l_ThisRace.result[j - 1].laps[l_Lap].length - 1
               
-              l_Html += ((l_ThisResult.laps[l_Lap][l_Cp] - l_ThisRace.result[j - 1].laps[l_Lap][l_Cp]) / 120.0).toFixed(2) + "&nbsp;sec.";
+              l_Html += (Math.abs((l_ThisResult.laps[l_Lap][l_Cp] - l_ThisRace.result[j - 1].laps[l_Lap][l_Cp]) / 120.0)).toFixed(2) + "&nbsp;sec.";
             }
             
             l_Html += "</td>\n";
