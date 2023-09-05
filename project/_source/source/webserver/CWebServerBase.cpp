@@ -25,6 +25,29 @@
 
 namespace dustbin {
   namespace webserver {
+    typedef struct SWebFileBuffer {
+      char *m_pBuffer;
+      int   m_iSize;
+
+      SWebFileBuffer() : m_pBuffer(nullptr), m_iSize(0) {
+      }
+
+      ~SWebFileBuffer() {
+        if (m_pBuffer != nullptr)
+          delete []m_pBuffer;
+      }
+    }
+    SWebFileBuffer;
+
+    std::map<std::string, SWebFileBuffer *> g_mFiles;
+    std::map<std::string, SWebFileBuffer *> g_mTracks;
+    std::map<std::string, std::string     > g_mPatterns;
+
+    std::string g_sChampionshipData;
+    std::string g_sTrackNames;
+    std::string g_sProfileData;
+    std::string g_sAiProfileData;
+
     /**
     * The constructor. Takes the port number to listen to as argument
     * @param a_iPortNo the port number to listen to 
@@ -161,6 +184,18 @@ namespace dustbin {
         }
       }
 #endif
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+      fillHtmlFileMap (l_pFs);
+      loadChampionship(l_pFs);
+      fillThumbnailMap(l_pFs);
+
+      fillTexturePatterns();
+      loadTrackMapping   ();
+      loadProfileData    ();
+      loadAiProfileData  ();
+
+      printf("Setup done.\n");
     }
 
     CWebServerBase::~CWebServerBase() {
@@ -168,6 +203,222 @@ namespace dustbin {
         delete m_pQueue;
         m_pQueue = nullptr;
       }
+
+      for (auto l_cFile : g_mFiles) {
+        delete l_cFile.second;
+        l_cFile.second = nullptr;
+      }
+
+      for (auto l_cTrack: g_mTracks) {
+        delete l_cTrack.second;
+        l_cTrack.second = nullptr;
+      }
+
+      g_mFiles   .clear();
+      g_mTracks  .clear();
+      g_mPatterns.clear();
+    }
+
+    /**
+    * Load AI profile data into a JavaScript string
+    * @param a_pFs the file system to use
+    */
+    void CWebServerBase::loadAiProfileData() {
+      g_sAiProfileData = "[";
+
+      std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> l_vAiPlayers;
+
+      helpers::loadAiProfiles(l_vAiPlayers);
+
+      for (std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.begin(); l_itAi != l_vAiPlayers.end(); l_itAi++) {
+        if (l_itAi != l_vAiPlayers.begin())
+          g_sAiProfileData += ",";
+
+        g_sAiProfileData += "{\"name\":\"" + std::get<0>(*l_itAi) + "\",\"short\":\"" + std::get<1>(*l_itAi) + "\",\"texture\":\"" + std::get<2>(*l_itAi) + "\"}";
+      }
+
+      g_sAiProfileData += "]";
+    }
+
+    /**
+    * Load profile data into a JavaScript string
+    * @param a_pFs the file system to use
+    */
+    void CWebServerBase::loadProfileData() {
+      std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(CGlobal::getInstance()->getSetting("profiles"));
+
+      g_sProfileData = "[";
+
+      for (std::vector<data::SPlayerData>::iterator l_itPlr = l_vPlayers.begin(); l_itPlr != l_vPlayers.end(); l_itPlr++) {
+        if (l_itPlr != l_vPlayers.begin())
+          g_sProfileData += ",";
+
+        g_sProfileData += (*l_itPlr).to_json();
+      }
+
+      g_sProfileData += "]";
+    }
+
+    /**
+    * Load the mapping from track identifier to name into a global string
+    * @param a_pFs the file system to use
+    */
+    void CWebServerBase::loadTrackMapping() {
+      std::map<std::string, std::string> l_mTracks = helpers::getTrackNameMap();
+
+      g_sTrackNames = "{ ";
+
+      for (std::map<std::string, std::string>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
+        if (l_itName != l_mTracks.begin())
+          g_sTrackNames += ", ";
+
+        g_sTrackNames += "\"" + l_itName->first + "\": \"" + l_itName->second + "\"";
+      }
+
+      g_sTrackNames += "}";
+    }
+
+    /**
+    * fill the global map of track thumbnails
+    * @param a_pFs the file system to use
+    */
+    void CWebServerBase::fillThumbnailMap(irr::io::IFileSystem* a_pFs) {
+      irr::io::IReadFile *l_pFile = a_pFs->createAndOpenFile("data/levels/tracks.dat");
+
+      if (l_pFile != nullptr) {
+        long l_iSize = l_pFile->getSize();
+        char *s = new char[l_iSize + 1];
+        memset(s, 0, static_cast<size_t>(l_iSize) + 1);
+        l_pFile->read(s, l_iSize);
+        std::vector<std::string> l_vTracks = helpers::splitString(s, '\n');
+        delete []s;
+        l_pFile->drop();
+
+        for (auto s: l_vTracks) {
+          std::string l_sTrack = s;
+          if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
+            l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
+
+          std::string l_sPath = "data/levels/" + l_sTrack + "/thumbnail.png";
+
+          if (a_pFs->existFile(l_sPath.c_str())) {
+            l_pFile = a_pFs->createAndOpenFile(l_sPath.c_str());
+
+            if (l_pFile != nullptr) {
+              SWebFileBuffer *p = new SWebFileBuffer();
+              p->m_iSize = l_pFile->getSize();
+              p->m_pBuffer = new char[p->m_iSize];
+              l_pFile->read(p->m_pBuffer, p->m_iSize);
+              l_pFile->drop();
+              g_mTracks[l_sTrack] = p;
+            }
+          }
+        }
+      }
+    }
+
+    /**
+    * Load the championship data into a global string
+    * @param a_pFs the file system to use
+    */
+    void CWebServerBase::loadChampionship(irr::io::IFileSystem* a_pFs) {
+      std::string l_sJsonPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.json";
+
+      irr::io::IReadFile *l_pFile = a_pFs->createAndOpenFile(l_sJsonPath.c_str());
+
+      if (l_pFile != nullptr) {
+        int l_iBufLen = l_pFile->getSize();
+        char *l_aBuffer = new char[l_iBufLen + 1];
+        memset(l_aBuffer, 0, l_iBufLen + 1);
+        l_pFile->read(l_aBuffer, l_iBufLen);
+        l_pFile->drop();
+        g_sChampionshipData = l_aBuffer;
+      }
+    }
+
+    /**
+    * Fill the global map of base64 encoded texture patterns
+    */
+    void CWebServerBase::fillTexturePatterns() {
+      std::vector<std::string> l_vPatterns = helpers::getTexturePatterns();
+
+      for (auto l_cPattern: l_vPatterns) {
+        g_mPatterns[l_cPattern] = getBase64Image("data/patterns/" + l_cPattern);
+      }
+
+      g_mPatterns["texture_marblemann.png"] = getBase64Image("data/textures/texture_marblemann.png");
+      g_mPatterns["texture_rollgaas.png"  ] = getBase64Image("data/textures/texture_rollgaas.png");
+      g_mPatterns["__frame"               ] = getBase64Image("data/textures/texture_top.png");
+      g_mPatterns["__number"              ] = getBase64Image("data/textures/one.png");
+      g_mPatterns["__numberglow"          ] = getBase64Image("data/textures/one_glow.png");
+    }
+
+    /**
+    * Fill the global map of HTML files
+    * @param a_pFs the file system to use
+    */
+    void CWebServerBase::fillHtmlFileMap(irr::io::IFileSystem* a_pFs) {
+      irr::io::IXMLReaderUTF8 *l_pList = a_pFs->createXMLReaderUTF8("data/htmlfiles.xml");
+
+      if (l_pList != nullptr) {
+        while (l_pList->read()) {
+          if (l_pList->getNodeType() == irr::io::EXN_ELEMENT && std::string(l_pList->getNodeName()) == "file") {
+            std::string l_sFile = std::string("data/html/") + l_pList->getAttributeValue("name");
+
+            if (a_pFs->existFile(l_sFile.c_str())) {
+              irr::io::IReadFile *l_pFile = a_pFs->createAndOpenFile(l_sFile.c_str());
+
+              if (l_pFile != nullptr) {
+                std::string l_sExtension = l_sFile.find_last_of('.') != std::string::npos ? l_sFile.substr(l_sFile.find_last_of('.')) : "";
+
+                bool l_bIsTextFile = l_sExtension == ".html" || l_sExtension == ".css" || l_sExtension == ".js";
+
+                SWebFileBuffer *p = new SWebFileBuffer();
+
+                p->m_iSize   = (int)l_pFile->getSize();
+
+                if (l_bIsTextFile) {
+                  p->m_pBuffer = new char[p->m_iSize + 1];
+                  memset(p->m_pBuffer, 0, p->m_iSize + 1);
+                }
+                else {  
+                  p->m_pBuffer = new char[p->m_iSize];
+                }
+
+                l_pFile->read(p->m_pBuffer, p->m_iSize);
+                g_mFiles[l_pList->getAttributeValue("name")] = p;
+
+                l_pFile->drop();
+              }
+            }
+          }
+        }
+
+        l_pList->drop();
+      }
+    }
+
+    /**
+    * Get the Base64 representation of an image
+    * @param a_sImage path to the image
+    * @return the Base64 representation of the image
+    */
+    std::string CWebServerBase::getBase64Image(const std::string& a_sImage) {
+      std::string l_sReturn = "";
+
+      irr::io::IReadFile* l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile(a_sImage.c_str());
+
+      if (l_pFile != nullptr) {
+        unsigned char *l_pBuffer = new unsigned char[l_pFile->getSize()];
+        l_pFile->read((void *)l_pBuffer, l_pFile->getSize());
+
+        l_sReturn = messages::base64Encode(l_pBuffer, l_pFile->getSize(), false);
+
+        l_pFile->drop();
+        delete []l_pBuffer;
+      }
+
+      return l_sReturn;
     }
 
     /**
@@ -275,6 +526,12 @@ namespace dustbin {
           printf("Accept error %i\n", l_iRequest);
           break;
         }
+
+        struct timeval l_cTimeout;
+        l_cTimeout.tv_sec  = 3;
+        l_cTimeout.tv_usec = 0;
+
+        setsockopt (l_iRequest, SOL_SOCKET, SO_RCVTIMEO, &l_cTimeout, sizeof l_cTimeout);
 #endif
 
         printf("Ready.\n");
@@ -372,17 +629,22 @@ namespace dustbin {
 #else
       int a_iSocket
 #endif
-    ) : m_iSocket(a_iSocket), m_bFinished(false), m_pFs(nullptr), m_pQueue(a_pQueue) {
-      m_pFs = CGlobal::getInstance()->getFileSystem();
-
-      // m_cThread = std::thread([this] { execute(); m_bFinished = true; detach(); delete(this); });
+    ) : m_iSocket(a_iSocket), m_bFinished(false), m_pQueue(a_pQueue) {
     }
 
     CWebServerRequestBase::~CWebServerRequestBase() {
+#ifdef _WINDOWS
       if (m_iSocket != INVALID_SOCKET) {
         closesocket(m_iSocket);
         printf("Socket closed.\n");
       }
+#else
+      if (m_iSocket >= 0) {
+        close(m_iSocket);
+        printf("Socket closed.\n");
+        sendWeblogmessage((irr::s32) irr::ELL_INFORMATION, "Web request handler stopped.", m_pQueue);
+      }
+#endif
     }
 
     void CWebServerRequestBase::startThread() {
@@ -534,48 +796,6 @@ namespace dustbin {
       m_cThread.detach();
     }
 
-
-    /**
-    * Create the track name JSON
-    * @return a string with a JSON representation of the track name map
-    */
-    std::string CWebServerRequestBase::createTrackNameJSON() {
-      std::map<std::string, std::string> l_mTracks = helpers::getTrackNameMap();
-
-      std::string l_sReturn = "{ ";
-
-      for (std::map<std::string, std::string>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
-        if (l_itName != l_mTracks.begin())
-          l_sReturn += ", ";
-
-        l_sReturn += "\"" + l_itName->first + "\": \"" + l_itName->second + "\"";
-      }
-
-      l_sReturn += "}";
-      return l_sReturn;
-    }
-
-    /**
-    * Create a JSON with the AI profile data
-    * @return a JSON with the AI profile data
-    */
-    std::string CWebServerRequestBase::createAiProfileJSON() {
-      std::string l_sAi = "[";
-
-      std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> l_vAiPlayers;
-
-      helpers::loadAiProfiles(l_vAiPlayers);
-
-      for (std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.begin(); l_itAi != l_vAiPlayers.end(); l_itAi++) {
-        if (l_itAi != l_vAiPlayers.begin())
-          l_sAi += ",";
-
-        l_sAi += "{\"name\":\"" + std::get<0>(*l_itAi) + "\",\"short\":\"" + std::get<1>(*l_itAi) + "\",\"texture\":\"" + std::get<2>(*l_itAi) + "\"}";
-      }
-
-      return l_sAi + "]";
-    }
-
     /**
     * Create a JSON with the possible AI Help options
     * @return a JSON with the possible AI Help options
@@ -596,91 +816,15 @@ namespace dustbin {
     }
 
     /**
-    * Return a string with a JSON representation of the profiles
-    * @return a string with a JSON representation of the profiles
-    */
-    std::string CWebServerRequestBase::getProfileData() {
-      std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(CGlobal::getInstance()->getSetting("profiles"));
-
-      std::string l_sReturn = "[";
-
-      for (std::vector<data::SPlayerData>::iterator l_itPlr = l_vPlayers.begin(); l_itPlr != l_vPlayers.end(); l_itPlr++) {
-        if (l_itPlr != l_vPlayers.begin())
-          l_sReturn += ",";
-
-        l_sReturn += (*l_itPlr).to_json();
-      }
-
-      return l_sReturn + "]";
-    }
-
-    /**
-    * Get the Base64 representation of an image
-    * @param a_sImage path to the image
-    * @return the Base64 representation of the image
-    */
-    std::string CWebServerRequestBase::getBase64Image(const std::string& a_sImage) {
-      std::string l_sReturn = "";
-
-      irr::io::IReadFile* l_pFile = m_pFs->createAndOpenFile(a_sImage.c_str());
-
-      if (l_pFile != nullptr) {
-        unsigned char *l_pBuffer = new unsigned char[l_pFile->getSize()];
-        l_pFile->read((void *)l_pBuffer, l_pFile->getSize());
-
-        l_sReturn = messages::base64Encode(l_pBuffer, l_pFile->getSize(), false);
-
-        l_pFile->drop();
-        delete []l_pBuffer;
-      }
-
-      return l_sReturn;
-    }
-
-
-    /**
     * Get a JavaScript snippet filling the texture pattern dictionary
     * @return a JavaScript snippet filling the texture pattern dictionary
     */
     std::string CWebServerRequestBase::getTexturePatternJS() {
       std::string l_sReturn = "";
 
-      std::vector<std::string> l_vPatterns = helpers::getTexturePatterns();
-
-      for (std::vector<std::string>::iterator l_itTexture = l_vPatterns.begin(); l_itTexture != l_vPatterns.end(); l_itTexture++) {
-        l_sReturn += "      g_Patterns[\"" + *l_itTexture + "\"] = new Image();\n";
-        l_sReturn += "      g_Patterns[\"" + *l_itTexture + "\"].src = \"data:image/png;base64," + getBase64Image("data/patterns/" + *l_itTexture) + "\"\n";
-      }
-
-      l_sReturn += "      g_Patterns[\"data/textures/texture_marblemann.png\"] = new Image();\n";
-      l_sReturn += "      g_Patterns[\"data/textures/texture_marblemann.png\"].src = \"data:image/png;base64," + getBase64Image("data/textures/texture_marblemann.png") + "\"\n";
-
-      l_sReturn += "      g_Patterns[\"data/textures/texture_rollgaas.png\"] = new Image();\n";
-      l_sReturn += "      g_Patterns[\"data/textures/texture_rollgaas.png\"].src = \"data:image/png;base64," + getBase64Image("data/textures/texture_rollgaas.png") + "\"\n";
-
-      return l_sReturn;
-    }
-
-
-    /**
-    * Get the JSON with the results of the last championship
-    * @return the JSON with the results of the last championship
-    */
-    std::string CWebServerRequestBase::getChampionshipData() {
-      std::string l_sXmlPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.json";
-      std::string l_sReturn  = "";
-
-      irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sXmlPath.c_str());
-
-      if (l_pFile != nullptr) {
-        int l_iBufLen = l_pFile->getSize();
-        char *l_aBuffer = new char[l_iBufLen + 1];
-        memset(l_aBuffer, 0, l_iBufLen + 1);
-        l_pFile->read(l_aBuffer, l_iBufLen);
-
-        l_pFile->drop();
-
-        l_sReturn = l_aBuffer;
+      for (auto l_sPattern: g_mPatterns) {
+        l_sReturn += "      g_Patterns[\"" + l_sPattern.first + "\"] = new Image();\n";
+        l_sReturn += "      g_Patterns[\"" + l_sPattern.first + "\"].src = \"data:image/png;base64," + l_sPattern.second + "\"\n";
       }
 
       return l_sReturn;
@@ -921,21 +1065,12 @@ namespace dustbin {
         l_sExtension = ".txt";
       }
       else if (l_sPath.substr(0, l_sPathThumbnails.size()) == l_sPathThumbnails) {
-        std::string l_sImage = "data/levels/" + l_sPath.substr(l_sPathThumbnails.size()) + "/thumbnail.png";
-
-        printf("Thumbnail: \"%s\"\n", l_sImage.c_str());
-        if (m_pFs->existFile(l_sImage.c_str())) {
-          irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sImage.c_str());
-
-          if (l_pFile != nullptr) {
-            l_iBufLen = l_pFile->getSize();
-            l_aBuffer = new char[l_iBufLen];
-            memset(l_aBuffer, 0, l_iBufLen);
-            l_pFile->read(l_aBuffer, l_iBufLen);
-            l_pFile->drop();
-
-            l_sExtension = ".png";
-          }
+        std::string l_sTrack = l_sPath.substr(l_sPathThumbnails.size());
+        if (g_mTracks.find(l_sTrack) != g_mTracks.end()) {
+          l_iBufLen = g_mTracks[l_sTrack]->m_iSize;
+          l_aBuffer = new char[l_iBufLen];
+          memset(l_aBuffer, 0, l_iBufLen);
+          memcpy(l_aBuffer, g_mTracks[l_sTrack]->m_pBuffer, l_iBufLen);
         }
       }
 
@@ -943,26 +1078,16 @@ namespace dustbin {
         if (l_sPath == "/")
           l_sPath = "/index.html";
 
-        l_sExtension = l_sPath.find_last_of('.') != std::string::npos ? l_sPath.substr(l_sPath.find_last_of('.')) : "";
+        l_sPath = l_sPath.substr(1);
 
-        std::string l_sRelativePath = l_sPath;
-
-        l_sRelativePath = "data/html" + l_sPath;
-
-        irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sRelativePath.c_str());
-
-        if (l_pFile != nullptr) {
-          l_aBuffer = new char[l_pFile->getSize() + 1];
-          memset(l_aBuffer, 0, l_pFile->getSize() + 1);
-          l_iBufLen = l_pFile->getSize();
-
-          l_pFile->read(l_aBuffer, l_iBufLen);
-          l_pFile->drop();
-
+        if (g_mFiles.find(l_sPath) != g_mFiles.end()) {
           l_iResult = 200;
 
+          if (l_sPath.find_last_of('.') != std::string::npos)
+            l_sExtension = l_sPath.substr(l_sPath.find_last_of('.'));
+
           if (l_sExtension == ".html") {
-            std::string l_sFile = l_aBuffer;
+            std::string l_sFile = g_mFiles[l_sPath]->m_pBuffer;
 
             bool l_bReplace = false;
 
@@ -974,13 +1099,13 @@ namespace dustbin {
                 std::string l_sReplace = l_sSub.substr(0, l_sSub.find("}"));
                 
                 if (l_sReplace == "tracknames") {
-                  l_sReplace = createTrackNameJSON();
+                  l_sReplace = g_sTrackNames;
                 }
                 else if (l_sReplace == "championship") {
-                  l_sReplace = getChampionshipData();
+                  l_sReplace = g_sChampionshipData;
                 }
                 else if (l_sReplace == "profiles") {
-                  l_sReplace = getProfileData();
+                  l_sReplace = g_sProfileData;
                 }
                 else if (l_sReplace == "profilecount") {
 #ifdef _WINDOWS
@@ -1000,17 +1125,8 @@ namespace dustbin {
 #ifdef _WINDOWS
                   l_sReplace = "\"Keyboard\"";
 #else
-                  l_sReplace = "\"TouchControl\""
+                  l_sReplace = "\"TouchControl\"";
 #endif
-                }
-                else if (l_sReplace == "textureframe") {
-                  l_sReplace = "data:image/png;base64," + getBase64Image("data/textures/texture_top.png");
-                }
-                else if (l_sReplace == "texturenumber") {
-                  l_sReplace = "data:image/png;base64," + getBase64Image("data/textures/one.png");
-                }
-                else if (l_sReplace == "texturenumberglow") {
-                  l_sReplace = "data:image/png;base64," + getBase64Image("data/textures/one_glow.png");
                 }
                 else if (l_sReplace == "texturepatterns") {
                   l_sReplace = getTexturePatternJS();
@@ -1019,19 +1135,16 @@ namespace dustbin {
                   l_sReplace = createAiHelpOptionJSON();
                 }
                 else if (l_sReplace.substr(0, l_sReplaceInclude.size()) == l_sReplaceInclude) {
-                  printf("Include: \"%s\"\n", l_sReplace.substr(l_sReplaceInclude.size()).c_str());
-                  irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile((std::string("data/html/") + l_sReplace.substr(l_sReplaceInclude.size())).c_str());
-                  if (l_pFile != nullptr) {
-                    char *p = new char[l_pFile->getSize() + 1];
-                    memset(p, 0, l_pFile->getSize() + 1);
-                    l_pFile->read(p, l_pFile->getSize());
-                    l_sReplace = p;
-                    delete []p;
+                  std::string l_sInclude = l_sReplace.substr(l_sReplaceInclude.size());
+                  printf("Include: \"%s\"\n", l_sInclude.c_str());
+
+                  if (g_mFiles.find(l_sInclude) != g_mFiles.end()) {
+                    l_sReplace = g_mFiles[l_sInclude]->m_pBuffer;
                   }
-                  else l_sReplace = std::string("<!-- File not found: ") + l_sReplace.substr(l_sReplaceInclude.size()).c_str() + " -->";
+                  else l_sReplace = std::string("<!-- File not found: ") + l_sInclude + " -->";
                 }
                 else if (l_sReplace == "aiprofiles") {
-                  l_sReplace = createAiProfileJSON();
+                  l_sReplace = g_sAiProfileData;
                 }
                 else {
                   l_sReplace = "<!-- Unkonw replacement " + l_sReplace + " -->";
@@ -1042,13 +1155,19 @@ namespace dustbin {
               }
             }
 
-            if (l_bReplace) {
+            if (l_aBuffer != nullptr)
               delete[] l_aBuffer;
-              l_iBufLen = (int)l_sFile.size();
-              l_aBuffer = new char[l_iBufLen];
-              memset(l_aBuffer, 0, l_iBufLen);
-              memcpy(l_aBuffer, l_sFile.c_str(), l_iBufLen);
-            }
+
+            l_iBufLen = (int)l_sFile.size();
+            l_aBuffer = new char[l_iBufLen];
+            memset(l_aBuffer, 0, l_iBufLen);
+            memcpy(l_aBuffer, l_sFile.c_str(), l_iBufLen);
+          }
+          else {
+            l_iBufLen = (int)g_mFiles[l_sPath]->m_iSize;
+            l_aBuffer = new char[l_iBufLen];
+            memset(l_aBuffer, 0, l_iBufLen);
+            memcpy(l_aBuffer, g_mFiles[l_sPath]->m_pBuffer, l_iBufLen);
           }
         }
       }

@@ -58,11 +58,9 @@
       }
       
       function updateTexture(a_TextureId, a_Texture, a_Player) {
-        var l_Canvas = document.getElementById(a_TextureId);
-        var l_Contxt = l_Canvas.getContext("2d");
-        
-        var l_Buffer = l_Contxt.createImageData(512, 512);
-        
+        var l_Canvas   = document.getElementById(a_TextureId);
+        var l_Contxt   = l_Canvas.getContext("2d");
+        var l_Buffer   = l_Contxt.createImageData(512, 512);
         var l_ParamMap = getTextureArray(a_Texture);
         
         if (l_ParamMap["type"] == "generate") {
@@ -82,7 +80,12 @@
           l_Contxt.putImageData(l_Buffer, 0, 0);
         }
         else if (l_ParamMap["type"] == "file") {
-          l_Contxt.drawImage(g_Patterns[l_ParamMap["file"]], 0, 0, 512, 512, 0, 0, 512, 512);
+          var l_File = l_ParamMap["file"];
+          
+          if (l_File.startsWith("data/textures/"))
+            l_File = l_File.substring("data/textures/".length);
+          
+          l_Contxt.drawImage(g_Patterns[l_File], 0, 0, 512, 512, 0, 0, 512, 512);
         }
       }
       

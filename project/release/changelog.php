@@ -1,5 +1,11 @@
 <ul>
   <li>
+    <b>2023-09-05 [1.1 Build 242]</b>
+    <ul>
+      <li>Put some release information here</li>
+    </ul>
+  </li>
+  <li>
     <b>2023-08-11 [1.1 Build 241]</b>
     <ul>
       <li>Dynamic signs before each jump showing whether or not the player rolls at the correct speed were enhanced</li>

@@ -94,15 +94,6 @@
       
       var g_Patterns = { };
       
-      g_Patterns["__frame"] = new Image();
-      g_Patterns["__frame"].src = "{!textureframe}";
-      
-      g_Patterns["__number"] = new Image;
-      g_Patterns["__number"].src = "{!texturenumber}";;
-      
-      g_Patterns["__numberglow"] = new Image;
-      g_Patterns["__numberglow"].src = "{!texturenumberglow}";;
-      
       function uploadProfile(a_File) {
         // Check if the file is an image.
         if (a_File.type && !a_File.type.startsWith('text/')) {

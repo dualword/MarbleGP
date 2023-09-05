@@ -61,6 +61,55 @@ namespace dustbin {
 #endif
         ) override;
 
+        /**
+        * Get the Base64 representation of an image
+        * @param a_sImage path to the image
+        * @return the Base64 representation of the image
+        */
+        std::string getBase64Image(const std::string &a_sImage);
+
+        /**
+        * Fill the global map of HTML files
+        * @param a_pFs the file system to use
+        */
+        void fillHtmlFileMap(irr::io::IFileSystem *a_pFs);
+
+        /**
+        * Load the championship data into a global string
+        * @param a_pFs the file system to use
+        */
+        void loadChampionship(irr::io::IFileSystem *a_pFs);
+
+        /**
+        * Load the mapping from track identifier to name into a global string
+        * @param a_pFs the file system to use
+        */
+        void loadTrackMapping();
+
+        /**
+        * Load profile data into a JavaScript string
+        * @param a_pFs the file system to use
+        */
+        void loadProfileData();
+
+        /**
+        * Load AI profile data into a JavaScript string
+        * @param a_pFs the file system to use
+        */
+        void loadAiProfileData();
+
+        /**
+        * fill the global map of track thumbnails
+        * @param a_pFs the file system to use
+        */
+        void fillThumbnailMap(irr::io::IFileSystem *a_pFs);
+
+        /**
+        * Fill the global map of base64 encoded texture patterns
+        * @param a_pFs the file system to use
+        */
+        void fillTexturePatterns();
+
       public:
         /**
         * The constructor. Takes the port number to listen to as argument
@@ -124,8 +173,6 @@ namespace dustbin {
 
         threads::COutputQueue *m_pQueue;
 
-        irr::io::IFileSystem *m_pFs;  /**< The Irrlicht file system */
-
         /**
         * Send data to the client
         * @param a_pData the data to send
@@ -169,41 +216,10 @@ namespace dustbin {
         int send404(const std::string &a_sPath);
 
         /**
-        * Create the track name JSON
-        * @return a string with a JSON representation of the track name map
-        */
-        std::string createTrackNameJSON();
-
-        /**
         * Create a JSON with the possible AI Help options
         * @return a JSON with the possible AI Help options
         */
         std::string createAiHelpOptionJSON();
-
-        /**
-        * Create a JSON with the AI profile data
-        * @return a JSON with the AI profile data
-        */
-        std::string createAiProfileJSON();
-
-        /**
-        * Get the XML with the results of the last championship
-        * @return the XML with the results of the last championship
-        */
-        std::string getChampionshipData();
-
-        /**
-        * Return a string with a JSON representation of the profiles
-        * @return a string with a JSON representation of the profiles
-        */
-        std::string getProfileData();
-
-        /**
-        * Get the Base64 representation of an image
-        * @param a_sImage path to the image
-        * @return the Base64 representation of the image
-        */
-        std::string getBase64Image(const std::string &a_sImage);
 
         /**
         * Get a JavaScript snippet filling the texture pattern dictionary
