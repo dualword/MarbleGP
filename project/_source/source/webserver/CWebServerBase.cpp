@@ -1078,13 +1078,50 @@ namespace dustbin {
         if (l_sPath == "/")
           l_sPath = "/index.html";
 
+        if (l_sPath.find_last_of('.') != std::string::npos)
+          l_sExtension = l_sPath.substr(l_sPath.find_last_of('.'));
+
+#ifdef _DEBUG
+        std::string l_sFile = "data/html" + l_sPath;
+
+        irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+        if (l_pFs->existFile(l_sFile.c_str())) {
+          irr::io::IReadFile *l_pFile = l_pFs->createAndOpenFile(l_sFile.c_str());
+          if (l_pFile) {
+            std::string s = l_sPath.substr(1);
+
+            if (g_mFiles.find(s) != g_mFiles.end()) {
+              SWebFileBuffer *p = g_mFiles[s];
+              delete p;
+            }
+
+            SWebFileBuffer *l_pNew = new SWebFileBuffer();
+
+            bool l_bIsTextFile = l_sExtension == ".html" || l_sExtension == ".css" || l_sExtension == ".js";
+
+            l_pNew->m_iSize   = l_pFile->getSize();
+
+            if (l_bIsTextFile) {
+              l_pNew->m_pBuffer = new char[l_pNew->m_iSize + 1];
+              memset(l_pNew->m_pBuffer, 0, l_pNew->m_iSize + 1);
+            }
+            else l_pNew->m_pBuffer = new char[l_pNew->m_iSize];
+            l_pFile->read(l_pNew->m_pBuffer, l_pFile->getSize());
+
+            g_mFiles[s] = l_pNew;
+
+            l_pFile->drop();
+          }
+          else send404(l_sPath);
+        }
+        else send404(l_sPath);
+#endif
+
         l_sPath = l_sPath.substr(1);
 
         if (g_mFiles.find(l_sPath) != g_mFiles.end()) {
           l_iResult = 200;
-
-          if (l_sPath.find_last_of('.') != std::string::npos)
-            l_sExtension = l_sPath.substr(l_sPath.find_last_of('.'));
 
           if (l_sExtension == ".html") {
             std::string l_sFile = g_mFiles[l_sPath]->m_pBuffer;
