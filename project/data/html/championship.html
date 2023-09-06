@@ -47,8 +47,10 @@
       
       td, th {
         border-bottom: 1px solid black;
-        margin: 0.1em;
-        padding: 0.1em;
+        margin: 0px;
+        padding: 0px;
+        border-left: 0px;
+        border-right: 0px;
       }
       
       .logoimg {
@@ -84,11 +86,6 @@
       .button:hover { background-color: #3367b8; }
       .button:active { background-color: #ecf163; }
       
-      .thumbnail {
-        width: 50%;
-        height: auto;
-      }
-      
       a {
         text-decoration: none;
       }
@@ -101,6 +98,20 @@
         text-align: center;
       }
       
+      .main_row:hover {
+        background-color: #CCCCFF;
+        cursor: pointer;
+      }
+      
+      .detail_row:hover {
+        background-color: #FFDDDD;
+        cursor: pointer;
+      }
+      
+      .raceresult_row:hover {
+        background-color: #EEEEEE;
+      }
+      
     </style>
     <script src="jquery.js" type="text/javascript"></script>
     <script src="jquery-ui.min.js" type="text/javascript"></script>
@@ -109,6 +120,23 @@
       g_TrackNames = {!tracknames};
       
       g_Championship = {!championship};
+      
+      g_OpenResult = "";
+      
+      function toggleResultDetail(a_Id) {
+        if (g_OpenResult != "" && $(g_OpenResult).is(":visible") == true) {
+          $(g_OpenResult).toggle("slow");
+        }
+        
+        $("#" + a_Id).toggle("slow", function() { });
+        
+        g_OpenResult = "#" + a_Id;
+      }
+      
+      function toggleRace(a_Id) {
+        $("#accordion").accordion({ active: a_Id, autoHeight: false });
+        $('html, body').animate({ scrollTop: ($("#race_" + a_Id).offset().top)}, "slow");
+      }
       
       function makeAiCell(a_Ai) {
         var l_Html = "<td style=\"text-align: center; ";
@@ -122,9 +150,9 @@
         
         l_Html += "\">";
         if (a_Ai == "") l_Html += "&nbsp;"; else l_Html += a_Ai;
-        l_Html += "</td>\n";
+        l_Html += "</td>";
         
-        l_Html += "      </tr>\n";
+        l_Html += "</tr>";
         return l_Html;
       }
       
@@ -132,9 +160,9 @@
         var l_MainFrame = $("#mainframe");
         
         var l_Html = "<a href=\"/championship.xml\" target=\"_blank\" id=\"JSON_download\">Download plain result JSON</a><br />";
-        l_Html += "  <h3>Setup</h3>\n";
-        l_Html += "  <div><ul>\n";
-        l_Html += "    <li><b>Race Class:</b> ";
+        l_Html += "<h3>Setup</h3>";
+        l_Html += "<div><ul>";
+        l_Html += "<li><b>Race Class:</b> ";
         
         switch (g_Championship.class) {
           case 0: l_Html += "Marble3"; break;
@@ -146,9 +174,9 @@
           default: l_Html += g_Championship.class;
         }
         
-        l_Html += "</li>\n";
-        l_Html += "    <li><b>Grid Size:</b> " + g_Championship.gridsize + "</li>\n";
-        l_Html += "    <li><b>Grid Order:</b> ";
+        l_Html += "</li>";
+        l_Html += "<li><b>Grid Size:</b> " + g_Championship.gridsize + "</li>";
+        l_Html += "<li><b>Grid Order:</b> ";
         
         switch (g_Championship.gridorder) {
           case 0: l_Html += "Fixed (All races have the same starting order)"; break;
@@ -157,33 +185,33 @@
           case 3: l_Html += "Random"; break;
         }
         
-        l_Html += "</li>\n";
+        l_Html += "</li>";
         
         var l_Players = g_Championship.players;
 
-        l_Html += "  </ul></div>\n";
-        l_Html += "  <h3>Final Result</h3>\n";
-        l_Html += "  <div>\n";
-        l_Html += "    <table>\n";
-        l_Html += "      <tr>\n";
-        l_Html += "        <th rowspan=\"2\">Pos</th>\n";
-        l_Html += "        <th rowspan=\"2\">Name</th>\n";
-        l_Html += "        <th rowspan=\"2\">Points</th>\n";
-        l_Html += "        <th rowspan=\"2\">Respawn</th>\n";
-        l_Html += "        <th rowspan=\"2\">Stunned</th>\n";
-        l_Html += "        <th rowspan=\"2\">Fastest&nbsp;Laps</th>\n";
-        l_Html += "        <th rowspan=\"2\">D.N.F.</th>\n";
-        l_Html += "        <th rowspan=\"2\">Best&nbsp;Race</th>\n";
-        l_Html += "        <th colspan=\"16\">Race Results</th>\n";
-        l_Html += "        <th rowspan=\"2\">AI&nbsp;Class</th>\n";
-        l_Html += "      </tr>";
-        l_Html += "      <tr>";
+        l_Html += "</ul></div>";
+        l_Html += "<h3>Final Result</h3>";
+        l_Html += "<div>";
+        l_Html += "<table>";
+        l_Html += "<tr>";
+        l_Html += "<th rowspan=\"2\">Pos</th>";
+        l_Html += "<th rowspan=\"2\">Name</th>";
+        l_Html += "<th rowspan=\"2\">Points</th>";
+        l_Html += "<th rowspan=\"2\">Respawn</th>";
+        l_Html += "<th rowspan=\"2\">Stunned</th>";
+        l_Html += "<th rowspan=\"2\">Fastest&nbsp;Laps</th>";
+        l_Html += "<th rowspan=\"2\">D.N.F.</th>";
+        l_Html += "<th rowspan=\"2\">Best&nbsp;Race</th>";
+        l_Html += "<th colspan=\"16\">Race Results</th>";
+        l_Html += "<th rowspan=\"2\">AI&nbsp;Class</th>";
+        l_Html += "</tr>";
+        l_Html += "<tr>";
         
         for (i = 1; i <= 16; i++) {
-          l_Html += "        <th>" + i + "</th>\n";
+          l_Html += "<th>" + i + "</th>";
         }
         
-        l_Html += "      </tr>";
+        l_Html += "</tr>";
         
         g_Championship.players.sort(function(a_Player1, a_Player2) {
           if (a_Player1["points"] != a_Player2["points"]) {
@@ -223,56 +251,130 @@
           else l_Player.ai = "";
 
           
-          l_Html += "      <tr>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Pos + "</td>\n";
-          l_Html += "        <td>" + l_Name + "</td>\n";
-          l_Html += "        <td style=\"text-align: right\">"  + l_Player.points            + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Player.respawn           + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Player.stunned           + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Player.fastest_laps      + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Player.did_not_finish    + "</td>\n";
-          l_Html += "        <td style=\"text-align: center\">" + l_Player.first_best_finish + "</td>\n";
+          l_Html += "<tr onclick=\"toggleResultDetail('result_detail_" + i + "');\" class=\"main_row\">";
+          l_Html += "<td style=\"text-align: center\">" + l_Pos + "</td>";
+          l_Html += "<td>" + l_Name + "</td>";
+          l_Html += "<td style=\"text-align: right\">"+ l_Player.points            + "</td>";
+          l_Html += "<td style=\"text-align: center\">" + l_Player.respawn           + "</td>";
+          l_Html += "<td style=\"text-align: center\">" + l_Player.stunned           + "</td>";
+          l_Html += "<td style=\"text-align: center\">" + l_Player.fastest_laps      + "</td>";
+          l_Html += "<td style=\"text-align: center\">" + l_Player.did_not_finish    + "</td>";
+          l_Html += "<td style=\"text-align: center\">" + l_Player.first_best_finish + "</td>";
           
           for (j = 0; j < 16; j++) {
             if (l_Player.race_results[j] != undefined)
-              l_Html += "        <td style=\"text-align: center\">" + l_Player.race_results[j] + "</td>\n";
+              l_Html += "<td style=\"text-align: center\">" + l_Player.race_results[j] + "</td>";
             else
-              l_Html += "        <td>&nbsp;</td>\n";
+              l_Html += "<td>&nbsp;</td>";
           }
           
-          l_Html += "        " + makeAiCell(l_Ai);
-          l_Html += "      </tr>\n";
+          l_Html += "" + makeAiCell(l_Ai);
+          l_Html += "</tr>";
+          l_Html += "<tr class=\"result_detail\" id=\"result_detail_" + i + "\">";
+          l_Html += "<td>&nbsp;</td>";
+          l_Html += "<td colspan=\"24\">";
+          l_Html += "<table style=\"background-color: #AAAAFF\">";
+          l_Html += "<tr><th>&nbsp;</th><th>Track</th><th>Position</th><th>Racetime</th><th>Deficit</th><th>Fastest&nbsp;Lap</th><th>Stunned</th><th>Respawn</th>\n";
+          
+          for (var j = 0; j < g_Championship.races.length; j++) {
+            var l_Race = g_Championship.races[j];
+            var l_Marble = -1;
+            
+            for (var l_Key in l_Race.marble_assignment) {
+              if (l_Race.marble_assignment[l_Key] == l_Player.playerid) {
+                l_Marble = l_Key;
+                break;
+              }
+            }
+            
+            var l_Result = null;
+            
+            if (l_Marble >= 10000 && l_Marble <= 10016) {
+              for (var k = 0; k < l_Race.result.length; k++) {
+                if (l_Race.result[k].id == l_Marble) {
+                  l_Result = l_Race.result[k];
+                  break;
+                }
+              }
+            }
+            
+            l_Html += "<tr class=\"detail_row\" onclick=\"toggleRace(" + j + ");\">";
+            l_Html += "<td>Race " + (j + 1) + " of " + g_Championship.races.length + "</td>";
+            l_Html += "<td>" + g_TrackNames[l_Race.track] + "</td>";
+            
+            if (l_Result != null) {
+              l_Html += "<td class=\"td_rght\">" + l_Result.pos + "</td>";
+              
+              if (l_Result.racetime > 0)
+                l_Html += "<td class=\"td_rght\">" + (l_Result.racetime / 120.0).toFixed(2) + " sec.</td>";
+              else
+                l_Html += "<td class=\"td_rght\">&nbsp;</td>";
+                
+              if (l_Result.pos > 1) {
+                if (l_Result.deficit > 0) {
+                  l_Html += "<td class=\"td_rght\">+" + (l_Result.deficit / 120.0).toFixed(2) + " sec.</td>";
+                }
+                else if (l_Result.deficit == -1) {
+                  l_Html += "<td class=\"td_rght\">+1 lap</td>";
+                }
+                else if (l_Result.deficit < 0) {
+                  l_Html += "<td class=\"td_rght\">+" + Math.abs(l_Result.deficit) + " laps</td>";
+                }
+                else l_Html += "<td>&nbsp;</td>";
+              }
+              else l_Html += "<td>&nbsp;</td>";
+              
+              if (l_Result.fastest > 0)
+                l_Html += "<td class=\"td_rght\">" + (l_Result.fastest / 120.0).toFixed(2) + " sec.</td>";
+              else
+                l_Html += "<td>&nbsp;</td>";
+                
+              l_Html += "<td class=\"td_rght\">" + l_Result.stunned + "</td>";
+              l_Html += "<td class=\"td_rght\">" + l_Result.respawn + "</td>";
+            }
+            else {
+              l_Html += "<td colspan=\"6\">&nbsp;</td>";
+            }
+            l_Html += "</tr>";
+          }
+          
+          l_Html += "</table>";
+          l_Html += "</td>";
+          l_Html += "</tr>";
           
           l_Pos++;
         }
         
-        l_Html += "    </table>\n";
-        l_Html += "  </div>\n";
-        l_Html += "</div>\n";
-        l_Html += "<h3>Races</h3>\n";
-        l_Html += "<div id=\"accordion\">\n";
+        l_Html += "</table>";
+        l_Html += "</div>";
+        l_Html += "</div>";
+        l_Html += "<h3>Races</h3>";
+        l_Html += "<div id=\"accordion\">";
         
         for (i = 0; i < g_Championship.races.length; i++) {
           var l_ThisRace = g_Championship.races[i];
           
-          l_Html += "  <h3>Race " + (i + 1) + ": <b>" + g_TrackNames[l_ThisRace.track] + "</b> (" + l_ThisRace.laps;
+          l_Html += "<h3 id=\"race_" + i + "\">Race " + (i + 1) + ": <b>" + g_TrackNames[l_ThisRace.track] + "</b> (" + l_ThisRace.laps;
           if (l_ThisRace.laps == 1) l_Html += " Lap, " ; else l_Html += " Laps, ";
-          l_Html += l_ThisRace.playercount + " Marbles)</h3>\n";
+          l_Html += l_ThisRace.playercount + " Marbles)</h3>";
           
-          l_Html += "  <div>\n";
-          l_Html += "    <img src=\"/thumbnails/" + l_ThisRace.track + "\" alt=\"Thumbnail " + g_TrackNames[l_ThisRace.track] + "\" class=\"thumbnail\" /><br />\n";
-          l_Html += "    <table>\n";
-          l_Html += "      <tr>\n";
-          l_Html += "        <th>Position</th>\n";
-          l_Html += "        <th>Name</th>\n";
-          l_Html += "        <th>Racetime</th>\n";
-          l_Html += "        <th>Respawn</th>\n";
-          l_Html += "        <th>Stunned</th>\n";
-          l_Html += "        <th>Best&nbsp;Lap&nbsp;Time</th>\n";
-          l_Html += "        <th>Lag&nbsp;(Leader)</th>\n";
-          l_Html += "        <th>Lag&nbsp;(Player Ahead)</th>\n";
-          l_Html += "        <th>AI&nbsp;Class</th>\n";
-          l_Html += "      </tr>\n";
+          l_Html += "<div>";
+          
+          l_Html += "<table>";
+          l_Html += "<tr>";
+          l_Html += "<td rowspan=\"" + (l_ThisRace.result.length + 1) + "\" style=\"border: 0px\">";
+          l_Html += "<img src=\"/thumbnails/" + l_ThisRace.track + "\" alt=\"Thumbnail " + g_TrackNames[l_ThisRace.track] + "\" class=\"thumbnail\" /><br />";
+          l_Html += "</td>";
+          l_Html += "<th>Position</th>";
+          l_Html += "<th>Name</th>";
+          l_Html += "<th>Racetime</th>";
+          l_Html += "<th>Respawn</th>";
+          l_Html += "<th>Stunned</th>";
+          l_Html += "<th>Best&nbsp;Lap&nbsp;Time</th>";
+          l_Html += "<th>Lag&nbsp;(Leader)</th>";
+          l_Html += "<th>Lag&nbsp;(Player Ahead)</th>";
+          l_Html += "<th>AI&nbsp;Class</th>";
+          l_Html += "</tr>";
           
           var l_Assignment = l_ThisRace.marble_assignment;
           var l_CpCount    = l_ThisRace.result[0].laps[l_ThisRace.result[0].laps.length - 1].length;
@@ -296,10 +398,10 @@
             }
             else console.log("Assignment undefined (" + l_Name + ")!");
             
-            l_Html += "      <tr>\n";
-            l_Html += "        <td>" + (j + 1) + "</td>\n";
-            l_Html += "        <td>" + l_Name + "</td>\n";
-            l_Html += "        <td class=\"td_rght\">";
+            l_Html += "<tr class=\"raceresult_row\">";
+            l_Html += "<td class=\"td_cntr\">" + (j + 1) + "</td>";
+            l_Html += "<td>" + l_Name + "</td>";
+            l_Html += "<td class=\"td_rght\">";
             var l_RaceTime = l_ThisResult.racetime;
             
             var l_NotFinished = l_RaceTime == 0;
@@ -311,27 +413,27 @@
               l_Html += (l_ThisResult.racetime / 120).toFixed(2) + "&nbsp;sec.";
             }
             
-            l_Html += "</td>\n";
-            l_Html += "      <td class=\"td_cntr\">" + l_ThisResult.respawn + "</td>\n";
-            l_Html += "      <td class=\"td_cntr\">" + l_ThisResult.stunned + "</td>\n";
+            l_Html += "</td>";
+            l_Html += "<td class=\"td_cntr\">" + l_ThisResult.respawn + "</td>";
+            l_Html += "<td class=\"td_cntr\">" + l_ThisResult.stunned + "</td>";
             
             if (l_ThisResult.fastest > 0)
-              l_Html += "      <td class=\"td_rght\">" + (l_ThisResult.fastest / 120.0).toFixed(2) + "&nbsp;sec.</td>\n";
+              l_Html += "<td class=\"td_rght\">" + (l_ThisResult.fastest / 120.0).toFixed(2) + "&nbsp;sec.</td>";
             else
-              l_Html += "      <td class=\"td_rght\">No&nbsp;Laptime&nbsp;Set</td>\n";
+              l_Html += "<td class=\"td_rght\">No&nbsp;Laptime&nbsp;Set</td>";
             
             if (l_ThisResult.deficit == 0 || l_NotFinished)
-              l_Html += "      <td>&nbsp;</td>\n";
+              l_Html += "<td>&nbsp;</td>";
             else if (l_ThisResult.deficit > 0)
-              l_Html += "      <td class=\"td_rght\">" + (Math.abs(l_ThisResult.deficit / 120.0)).toFixed(2) + "&nbsp;sec.</td>\n";
+              l_Html += "<td class=\"td_rght\">" + (Math.abs(l_ThisResult.deficit / 120.0)).toFixed(2) + "&nbsp;sec.</td>";
             else {
               if (l_ThisResult.deficit == -1)
-                l_Html += "      <td class=\"td_rght\">+1&nbsp Lap</td>";
+                l_Html += "<td class=\"td_rght\">+1&nbsp Lap</td>";
               else
-                l_Html += "      <td class=\"td_rght\">+" + (-l_ThisResult.deficit) + "&nbsp;Laps</td>";
+                l_Html += "<td class=\"td_rght\">+" + (-l_ThisResult.deficit) + "&nbsp;Laps</td>";
             }
             
-            l_Html += "      <td class=\"td_rght\">";
+            l_Html += "<td class=\"td_rght\">";
             
             if (j == 0)
               l_Html += "&nbsp;";
@@ -345,25 +447,25 @@
               l_Html += (Math.abs((l_ThisResult.laps[l_Lap][l_Cp] - l_ThisRace.result[j - 1].laps[l_Lap][l_Cp]) / 120.0)).toFixed(2) + "&nbsp;sec.";
             }
             
-            l_Html += "</td>\n";
-            l_Html += "         " + makeAiCell(l_Ai) + "\n";
-            l_Html += "      </tr>\n";
+            l_Html += "</td>";
+            l_Html += " " + makeAiCell(l_Ai);
+            l_Html += "</tr>";
           }
           
-          l_Html += "    </table>\n";
-          l_Html += "  </div>\n";
+          l_Html += "</table>";
+          l_Html += "</div>";
         }
         
         l_MainFrame.html(l_Html);
         
-        $("#accordion").accordion();
+        $("#accordion").accordion({ autoHeight: false });
         
         var l_Data = new Blob([ JSON.stringify(g_Championship) ], { type: "text/json" });
         var l_Url  = window.URL.createObjectURL(l_Data);
         
-        console.log(l_Data);
-        
         document.getElementById("JSON_download").href = l_Url;
+        
+        $(".result_detail").hide();
       });
     
     </script>

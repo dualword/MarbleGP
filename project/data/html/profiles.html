@@ -187,16 +187,16 @@
       function createProfileForm(a_Index, a_Profile) {
         var l_Texture = a_Profile.texture;
         
-        var l_Html = "<div>\n";
-        l_Html += "  <table>\n";
-        l_Html += "    <tr>\n";
-        l_Html += "      <td><b>Name:</b></td><td><input type=\"text\" id=\"name_" + a_Index + "\" value=\"" + a_Profile.name + "\" maxlength=\"20\" oninput=\"editName(this);\" /></td>\n";
-        l_Html += "      <td rowspan=\"6\" style=\"width: 3em\">&nbsp;</td>\n";
-        l_Html += "      <td rowspan=\"6\" style=\"width: 128px\"><canvas id=\"texture_" + a_Index + "\" width=\"512\" height=\"512\" style=\"width: 80%; height: auto\"></canvas></td>\n";
-        l_Html += "      <td><button onclick=\"downloadProfile(" + a_Index + ");\">Download Profile</button></td>\n";
-        l_Html += "    </tr>\n";
-        l_Html += "    <tr><td><b>Short:</b></td><td><input type=\"text\" id=\"short_" + a_Index + "\" value=\"" + a_Profile.short + "\" maxlength=\"6\" oninput=\"editShort(this);\" /></td><td><button onclick=\"deleteProfile(" + a_Index + ");\">Delete Profile</button></td></tr>\n";
-        l_Html += "    <tr><td><b>AI&nbsp;Help:</b></td><td><select id=\"ai_help_" + a_Index + "\" onchange=\"aiHelpChanged(this);\">";
+        var l_Html = "<div>";
+        l_Html += "<table>";
+        l_Html += "<tr>";
+        l_Html += "<td><b>Name:</b></td><td><input type=\"text\" id=\"name_" + a_Index + "\" value=\"" + a_Profile.name + "\" maxlength=\"20\" oninput=\"editName(this);\" /></td>";
+        l_Html += "<td rowspan=\"6\" style=\"width: 3em\">&nbsp;</td>";
+        l_Html += "<td rowspan=\"6\" style=\"width: 128px\"><canvas id=\"texture_" + a_Index + "\" width=\"512\" height=\"512\" style=\"width: 80%; height: auto\"></canvas></td>";
+        l_Html += "<td><button onclick=\"downloadProfile(" + a_Index + ");\">Download Profile</button></td>";
+        l_Html += "</tr>";
+        l_Html += "<tr><td><b>Short:</b></td><td><input type=\"text\" id=\"short_" + a_Index + "\" value=\"" + a_Profile.short + "\" maxlength=\"6\" oninput=\"editShort(this);\" /></td><td><button onclick=\"deleteProfile(" + a_Index + ");\">Delete Profile</button></td></tr>";
+        l_Html += "<tr><td><b>AI&nbsp;Help:</b></td><td><select id=\"ai_help_" + a_Index + "\" onchange=\"aiHelpChanged(this);\">";
         
         for (var i = 0; i < g_AiHelpOpts.length; i++) {
           l_Html += "<option value=\"" + i + "\"";
@@ -207,8 +207,8 @@
           l_Html += ">" + g_AiHelpOpts[i] + "</option>";
         }
         
-        l_Html += "</select></td></tr>\n";
-        l_Html += "    <tr><td><b>Controls:</b></td><td><select id=\"controls_" + a_Index + "\" onchange=\"controllerChanged(this);\">";
+        l_Html += "</select></td></tr>";
+        l_Html += "<tr><td><b>Controls:</b></td><td><select id=\"controls_" + a_Index + "\" onchange=\"controllerChanged(this);\">";
         
         var l_CtrlOk = false;
         
@@ -228,14 +228,14 @@
             l_Html += "<option >" + g_CtrlOptions[i] + "</option>";
         }
         
-        l_Html += "</select></td></tr>\n";
+        l_Html += "</select></td></tr>";
 
-        l_Html += "    <tr><td><b>Auto&nbsp;Throttle:</b></td><td><input type=\"checkbox\" name=\"autothrottle_" + a_Index + "\"";
+        l_Html += "<tr><td><b>Auto&nbsp;Throttle:</b></td><td><input type=\"checkbox\" name=\"autothrottle_" + a_Index + "\"";
         if (a_Profile.auto_throttle) l_Html += "checked=\"true\"";
         
-        l_Html += "\" /></td><td><button onclick=\"editTexture(" + a_Index + ");\">Edit Texture</button></tr>\n";
-        l_Html += "  </table>\n";
-        l_Html += "</div>\n<hr />\n";
+        l_Html += "\" /></td><td><button onclick=\"editTexture(" + a_Index + ");\">Edit Texture</button></tr>";
+        l_Html += "</table>";
+        l_Html += "</div>\n<hr />";
         
         return l_Html;
       }
@@ -247,14 +247,14 @@
 
       function documentReady() {
         var l_MainFrame = $("#mainframe");
-        var l_Html = "  <div><button id=\"saveProfiles\" onclick=\"saveProfiles();\">Save Profiles</div>\n  <hr />";
+        var l_Html = "<div><button id=\"saveProfiles\" onclick=\"saveProfiles();\">Save Profiles</div>\n  <hr />";
         
         for (var i = 0; i < g_Profiles.length; i++) {
           l_Html += createProfileForm(i, g_Profiles[i]);
         }
         
         if (g_Profiles.length < g_MaxPrfls) {
-          l_Html += "  <div>Upload MarbleGP Profile: <input type=\"file\" id=\"upload_profile\" accept=\".mgpprofile\"></div>\n";
+          l_Html += "<div>Upload MarbleGP Profile: <input type=\"file\" id=\"upload_profile\" accept=\".mgpprofile\"></div>";
         }
         
         l_MainFrame.html(l_Html);
