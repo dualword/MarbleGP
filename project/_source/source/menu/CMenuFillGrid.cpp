@@ -269,7 +269,8 @@ namespace dustbin {
               if (l_pBot != nullptr) {
                 l_pBot->setVisible(l_sBot != L"");
                 if (l_sBot != L"") {
-                  l_pBot->setImage(m_pDrv->getTexture(helpers::ws2s(L"data/images/" + l_sBot + L".png").c_str()));
+                  std::string l_sIcon = helpers::getIconFolder(m_pDrv->getScreenSize().Height) + helpers::ws2s(l_sBot + L".png");
+                  l_pBot->setImage(m_pDrv->getTexture(l_sIcon.c_str()));
 
                   if (l_sBot == L"bot_marble3")
                     l_pBot->setToolTipText(L"Marble3 AI Player");

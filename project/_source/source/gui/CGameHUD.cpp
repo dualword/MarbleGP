@@ -620,7 +620,8 @@ namespace dustbin {
           l_pRegular,
 #endif
           nullptr,
-          a_pGui
+          a_pGui,
+          m_cRect
         );
 
         m_aRanking[i]->setData((

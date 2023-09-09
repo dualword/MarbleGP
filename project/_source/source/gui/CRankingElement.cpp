@@ -1,17 +1,19 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <gui/CRankingElement.h>
 #include <CGlobal.h>
 
 namespace dustbin {
   namespace gui {
-    CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui) :
+    CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui, const irr::core::recti &a_cViewport) :
       m_iDeficit   (0),
       m_sName      (L""),
       m_sPosition  (std::to_wstring(a_iPosition) + L": "),
       m_cBackground(a_cBackground),
       m_cOriginal  (a_cBackground),
+      m_cViewport  (a_cViewport),
       m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
       m_cBotColor  (irr::video::SColor(255, 255, 255, 255)),
       m_pFont      (a_pFont),
@@ -72,7 +74,7 @@ namespace dustbin {
       std::wstring l_sBot  = L"";
 
       if (helpers::splitStringNameBot(a_sName, l_sName, l_sBot)) {
-        std::string l_sIcon = "data/images/bot_" + helpers::ws2s(l_sBot) + ".png";
+        std::string l_sIcon = helpers::getIconFolder(m_cViewport.getHeight()) + "bot_" + helpers::ws2s(l_sBot) + ".png";
         m_pBotClass = m_pDrv->getTexture(l_sIcon.c_str());
 
         if (m_pBotClass != nullptr) {

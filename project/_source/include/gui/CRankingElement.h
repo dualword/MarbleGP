@@ -26,6 +26,7 @@ namespace dustbin {
         irr::core::recti m_cRect;       /**< The rendering rectangle */
         irr::core::recti m_cBot;        /**< The target rect of the bot icon */
         irr::core::recti m_cBotSrc;     /**< The source rect of the bot icon */
+        irr::core::recti m_cViewport;   /**< The viewport */
 
         irr::video::SColor m_cBackground;   /**< The background color */
         irr::video::SColor m_cOriginal;     /**< The original background color */
@@ -48,7 +49,7 @@ namespace dustbin {
         std::wstring m_sNumber;     /**< The number to show in the number icon */
 
       public:
-        CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui);
+        CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui, const irr::core::recti &a_cViewport);
         virtual ~CRankingElement();
 
         /**

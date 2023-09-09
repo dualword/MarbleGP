@@ -154,7 +154,7 @@ namespace dustbin {
                   l_iAi = 0;
               }
 
-              l_sName   = helpers::fitString(l_sName, l_pRegular, l_cDim);
+              l_sName = helpers::fitString(l_sName, l_pRegular, l_cDim);
 
               for (auto l_tColumn : l_vColumns) {
                 std::wstring l_sText = 
