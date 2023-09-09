@@ -194,7 +194,7 @@
         $("#TextureDialog").dialog("close");
         
         for (var l_Key in g_Patterns) {
-          if (l_Key.substring(0, 2) != "__" && !l_Key.includes("marblemann") && !l_Key.includes("rollgaas")) {
+          if (l_Key.substring(0, 2) != "__") {
             $("#TexturePattern").append("<option>" + l_Key + "</option>");
           }
         }
