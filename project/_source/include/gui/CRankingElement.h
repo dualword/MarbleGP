@@ -47,6 +47,7 @@ namespace dustbin {
         irr::core::recti m_cNumberRect;     /**< The rectangle for the number icon */
 
         std::wstring m_sNumber;     /**< The number to show in the number icon */
+        std::string m_sIconPath;    /**< Path of the icons to use */
 
       public:
         CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui, const irr::core::recti &a_cViewport);

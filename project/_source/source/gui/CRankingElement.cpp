@@ -20,7 +20,8 @@ namespace dustbin {
       m_bWithdrawn (false),
       m_bVisible   (true),
       m_pBotClass  (nullptr),
-      m_sNumber    (L"")
+      m_sNumber    (L""),
+      m_sIconPath  (helpers::getIconFolder(m_cViewport.getHeight()))
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
@@ -74,7 +75,7 @@ namespace dustbin {
       std::wstring l_sBot  = L"";
 
       if (helpers::splitStringNameBot(a_sName, l_sName, l_sBot)) {
-        std::string l_sIcon = helpers::getIconFolder(m_cViewport.getHeight()) + "bot_" + helpers::ws2s(l_sBot) + ".png";
+        std::string l_sIcon = m_sIconPath + "bot_" + helpers::ws2s(l_sBot) + ".png";
         m_pBotClass = m_pDrv->getTexture(l_sIcon.c_str());
 
         if (m_pBotClass != nullptr) {
