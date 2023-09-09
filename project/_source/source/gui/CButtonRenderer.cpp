@@ -78,7 +78,7 @@ namespace dustbin {
 
         int l_iY = a_cRect.UpperLeftCorner.Y + y;
 
-        if (y < l_iBorder || y > l_iHeight - l_iBorder) {
+        if (y < l_iBorder || y >= l_iHeight - l_iBorder) {
           m_pDrv->draw2DLine(irr::core::vector2di(l_iLeft1, l_iY), irr::core::vector2di(l_iRight1, l_iY), a_pBorder != nullptr ? *a_pBorder : m_cBorder);
         }
         else {
