@@ -324,5 +324,47 @@ namespace dustbin {
 
       return std::string(start, end + 1);    
     }
+
+    /**
+    * Divide a name string into name and bot class (input: "<name>|<class>"
+    * @param a_sInput the original string
+    * @param a_sName [out] the name
+    * @param a_sBot [out] the bot class, if the name is not a bot the string is empty
+    * @return true if a bot class was found, false otherwise
+    */
+    bool splitStringNameBot(const std::string& a_sInput, std::string& a_sName, std::string& a_sBot) {
+      size_t l_iPos = a_sInput.find_last_of('|');
+
+      if (l_iPos == std::string::npos) {
+        a_sName = a_sInput;
+        return false;
+      }
+      else {
+        a_sName = a_sInput.substr(0, l_iPos);
+        a_sBot  = a_sInput.substr(l_iPos + 1);
+        return true;
+      }
+    }
+
+    /**
+    * Divide a name string into name and bot class (input: "<name>|<class>"
+    * @param a_sInput the original string
+    * @param a_sName [out] the name
+    * @param a_sBot [out] the bot class, if the name is not a bot the string is empty
+    * @return true if a bot class was found, false otherwise
+    */
+    bool splitStringNameBot(const std::wstring& a_sInput, std::wstring& a_sName, std::wstring& a_sBot) {
+      size_t l_iPos = a_sInput.find_last_of(L'|');
+
+      if (l_iPos == std::string::npos) {
+        a_sName = a_sInput;
+        return false;
+      }
+      else {
+        a_sName = a_sInput.substr(0, l_iPos);
+        a_sBot  = a_sInput.substr(l_iPos + 1);
+        return true;
+      }
+    }
   }
 }

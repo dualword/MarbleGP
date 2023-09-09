@@ -912,12 +912,10 @@ namespace dustbin {
                   l_cRects[i], &m_cRect
                 );
 
-                std::string l_sName = (*it)->m_sName;
+                std::string l_sName = "";
+                std::string l_sBot  = "";
 
-                if (l_sName.find_last_of('|') != std::string::npos) {
-                  l_sName = l_sName.substr(0, l_sName.find_last_of('|'));
-                }
-
+                helpers::splitStringNameBot((*it)->m_sName, l_sName, l_sBot);
 
                 std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + helpers::s2ws(l_sName);
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);

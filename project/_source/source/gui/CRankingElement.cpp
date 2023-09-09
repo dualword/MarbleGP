@@ -68,11 +68,11 @@ namespace dustbin {
     * @param a_sNumber the starting number for the number icon
     */
     void CRankingElement::setData(const std::wstring& a_sName, int a_iDeficit, bool a_bWithdrawn, const irr::video::SColor &a_cBack, const irr::video::SColor &a_cNumber, const irr::video::SColor &a_cFrame, const std::wstring &a_sNumber) {
-      std::wstring l_sName = a_sName;
+      std::wstring l_sName = L"";
+      std::wstring l_sBot  = L"";
 
-      if (l_sName.find_last_of(L'|') != std::wstring::npos) {
-        std::string l_sIcon = "data/images/bot_" + helpers::ws2s(l_sName.substr(l_sName.find_last_of(L'|') + 1)) + ".png";
-        l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
+      if (helpers::splitStringNameBot(a_sName, l_sName, l_sBot)) {
+        std::string l_sIcon = "data/images/bot_" + helpers::ws2s(l_sBot) + ".png";
         m_pBotClass = m_pDrv->getTexture(l_sIcon.c_str());
 
         if (m_pBotClass != nullptr) {

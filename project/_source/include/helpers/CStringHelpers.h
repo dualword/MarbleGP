@@ -76,5 +76,23 @@ namespace dustbin {
     * @return the trimmed string
     */
     std::string trimString(const std::string& a_sInput);
+
+    /**
+    * Divide a name string into name and bot class (input: "<name>|<class>"
+    * @param a_sInput the original string
+    * @param a_sName [out] the name
+    * @param a_sBot [out] the bot class, if the name is not a bot the string is empty
+    * @return true if a bot class was found, false otherwise
+    */
+    bool splitStringNameBot(const std::string &a_sInput, std::string &a_sName, std::string &a_sBot);
+
+    /**
+    * Divide a name string into name and bot class (input: "<name>|<class>"
+    * @param a_sInput the original string
+    * @param a_sName [out] the name
+    * @param a_sBot [out] the bot class, if the name is not a bot the string is empty
+    * @return true if a bot class was found, false otherwise
+    */
+    bool splitStringNameBot(const std::wstring &a_sInput, std::wstring &a_sName, std::wstring &a_sBot);
   }
 }

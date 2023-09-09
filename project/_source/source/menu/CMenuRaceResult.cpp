@@ -158,11 +158,9 @@ namespace dustbin {
                 for (std::vector<data::SChampionshipPlayer>::iterator it = l_cChampionship.m_vPlayers.begin(); it != l_cChampionship.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == l_iPlayer) {
                     l_sName = helpers::s2ws((*it).m_sName);
+                    std::wstring l_sAiClass= L"";
 
-                    if (l_sName.find_last_of(L'|') != std::wstring::npos) {
-                      std::wstring l_sAiClass = l_sName.substr(l_sName.find_last_of(L'|') + 1);
-                      l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
-
+                    if (helpers::splitStringNameBot(helpers::s2ws((*it).m_sName), l_sName, l_sAiClass)) {
                       if (l_sAiClass == L"marble3")
                         l_iAi = 2;
                       else if (l_sAiClass == L"marble2")

@@ -141,13 +141,11 @@ namespace dustbin {
               m_vTable.push_back(std::vector<irr::gui::IGUIStaticText *>());
 
               irr::core::dimension2du l_cDim = irr::core::dimension2du(25 * l_iWidth / 100 - 5 * l_iHeight / 2, l_iHeight);
-              std::wstring l_sName   = helpers::s2ws((*it).m_sName);
+              std::wstring l_sName    = L"";
+              std::wstring l_sAiClass = L"";
               int l_iAi = -1;
 
-              if (l_sName.find_last_of(L'|') != std::wstring::npos) {
-                std::wstring l_sAiClass = l_sName.substr(l_sName.find_last_of(L'|') + 1);
-                l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
-
+              if (helpers::splitStringNameBot(helpers::s2ws((*it).m_sName), l_sName, l_sAiClass)) {
                 if (l_sAiClass == L"marble3")
                   l_iAi = 2;
                 else if (l_sAiClass == L"marble2")

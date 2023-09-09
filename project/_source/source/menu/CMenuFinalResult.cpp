@@ -82,11 +82,10 @@ namespace dustbin {
           if (l_pFontBig != nullptr && l_pFontSmall != nullptr) {
             if (l_vStandings.size() > 0 && l_pTrophy != nullptr) {
               data::SChampionshipPlayer l_cPlayer = l_vStandings[0];
-              std::string l_sName = l_cPlayer.m_sName;
+              std::string l_sName = "";
+              std::string l_sBot  = "";
 
-              if (l_sName.find_last_of('|') != std::string::npos) {
-                l_sName = l_sName.substr(0, l_sName.find_last_of('|'));
-              }
+              helpers::splitStringNameBot(l_cPlayer.m_sName, l_sName, l_sBot);
 
               helpers::fitString(helpers::s2ws(l_sName), l_pFontBig, irr::core::dimension2du(1024, 128));
 
@@ -110,11 +109,10 @@ namespace dustbin {
 
             if (l_vStandings.size() > 1 && l_pSilver != nullptr) {
               data::SChampionshipPlayer l_cPlayer = l_vStandings[1];
-              std::string l_sName = l_cPlayer.m_sName;
+              std::string l_sName = "";
+              std::string l_sBot  = "";
 
-              if (l_sName.find_last_of('|') != std::string::npos) {
-                l_sName = l_sName.substr(0, l_sName.find_last_of('|'));
-              }
+              helpers::splitStringNameBot(l_cPlayer.m_sName, l_sName, l_sBot);
 
               helpers::fitString(helpers::s2ws(l_sName), l_pFontSmall, irr::core::dimension2du(1024, 128));
 
@@ -142,11 +140,10 @@ namespace dustbin {
 
             if (l_vStandings.size() > 2 && l_pBronze != nullptr) {
               data::SChampionshipPlayer l_cPlayer = l_vStandings[2];
-              std::string l_sName = l_cPlayer.m_sName;
+              std::string l_sName = "";
+              std::string l_sBot  = "";
 
-              if (l_sName.find_last_of('|') != std::string::npos) {
-                l_sName = l_sName.substr(0, l_sName.find_last_of('|'));
-              }
+              helpers::splitStringNameBot(l_cPlayer.m_sName, l_sName, l_sBot);
 
               helpers::fitString(helpers::s2ws(l_sName), l_pFontSmall, irr::core::dimension2du(1024, 128));
 

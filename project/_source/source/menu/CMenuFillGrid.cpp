@@ -243,14 +243,15 @@ namespace dustbin {
                 if (l_cData.size() < i)
                   l_pText->setVisible(false);
                 else {
-                  std::wstring l_sName = helpers::s2ws(l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName);
+                  std::string l_sName  = "";
+                  std::string l_sDummy = "";
 
-                  if (l_sName.find_last_of(L'|') != std::wstring::npos) {
-                    l_sBot = L"bot_" + l_sName.substr(l_sName.find_last_of(L'|') + 1);
-                    l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
+                  
+                  if (helpers::splitStringNameBot(l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName, l_sName, l_sDummy)) {
+                    l_sBot = L"bot_" + helpers::s2ws(l_sDummy);
                   }
 
-                  l_pText->setText(l_sName.c_str());
+                  l_pText->setText(helpers::s2ws(l_sName).c_str());
                 }
               }
 
