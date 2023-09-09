@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <gui/hud_items/CHudAiHelp.h>
+#include <helpers/CDataHelpers.h>
 #include <CGlobal.h>
 #include <string>
 #include <tuple>
@@ -15,6 +16,8 @@ namespace dustbin {
     * @param a_eAiHelp the AI help level for the player
     */
     CHudAiHelp::CHudAiHelp(irr::video::IVideoDriver* a_pDrv, const irr::core::recti& a_cRect, data::SPlayerData::enAiHelp a_eAiHelp) : m_pDrv(a_pDrv) {
+      std::string l_sPath = helpers::getIconFolder(a_cRect.getHeight());
+
       /*
       Left      = 0,
       Forward   = 1,
@@ -26,14 +29,14 @@ namespace dustbin {
       */
       // The base filenames
       std::tuple<data::SPlayerData::enAiHelp, std::string> l_aFiles[] = {
-        std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_left"      ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_accelerate"),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_brake"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Off , "data/images/ctrl_automatic" ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_respawn"   ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Low , "data/images/ctrl_back"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::High, "data/images/ctrl_right"     ),
-        std::make_tuple(data::SPlayerData::enAiHelp::Off , ""                           )
+        std::make_tuple(data::SPlayerData::enAiHelp::High, l_sPath + "aihelp_left"      ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , l_sPath + "aihelp_accelerate"),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , l_sPath + "aihelp_brake"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Off , l_sPath + "aihelp_automatic" ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , l_sPath + "aihelp_respawn"   ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Low , l_sPath + "aihelp_back"      ),
+        std::make_tuple(data::SPlayerData::enAiHelp::High, l_sPath + "aihelp_right"     ),
+        std::make_tuple(data::SPlayerData::enAiHelp::Off , ""                              )
       };
 
       // The postfix strings for the filenames

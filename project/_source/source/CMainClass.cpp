@@ -8,6 +8,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
+#include <helpers/CDataHelpers.h>
 #include <gui/CVirtualKeyboard.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
@@ -860,7 +861,7 @@ namespace dustbin {
     m_pDrv->setRenderTarget(0, false, false);
 
     if (m_pLogo == nullptr) {
-      m_pLogo = m_pDrv->getTexture("data/images/logo.png");
+      m_pLogo = m_pDrv->getTexture((helpers::getIconFolder(m_pDrv->getScreenSize().Height) + "logo.png").c_str());
       m_cLogo = irr::core::dimension2du(m_pDrv->getScreenSize().Height / 5, m_pDrv->getScreenSize().Height / 5);
     }
   }

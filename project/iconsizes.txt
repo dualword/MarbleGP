@@ -1,0 +1,5 @@
+2160    controls: 83x83   aihelp: 114x114   laurel: 250x250   logo: 424x424   text: 2560x250
+1600    controls: 55x55   aihelp: 87x87     laurel: 166x166   logo: 320x320   text: 1706x166
+1080    controls: 36x36   aihelp: 57x57     laurel: 125x125   logo: 216x216   text: 1280x125
+768     controls: 27x27   aihelp: 39x39     laurel: 88x88     logo: 153x153   text: 910x88
+480     controls: 16x16   aihelp: 24x24     laurel: 88x88     logo: 96x96     text: 480x46

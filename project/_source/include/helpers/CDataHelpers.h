@@ -47,5 +47,12 @@ namespace dustbin {
     * @return the default controller string for Keyboard game controls
     */
     std::string getDefaultGameCtrl_Gamepad();
+
+    /**
+    * Get the icon folder depending on the viewport height
+    * @param a_iHeight the viewport height
+    * @return the corresponding icon folder
+    */
+    std::string getIconFolder(irr::s32 a_iHeight);
   }
 }

@@ -6,6 +6,7 @@
 #include <irrlicht.h>
 #include <CGlobal.h>
 #include <Defines.h>
+#include <fstream>
 
 namespace dustbin {
   namespace helpers {
@@ -202,6 +203,35 @@ namespace dustbin {
     */
     std::string getDefaultGameCtrl_Gamepad() {
       return "DustbinController;control;f%3bl%3bForward%3bh%3bb%3bn%3bM%3br%3ba%3bt%3ba%3bx%3bc%3bD%3b-b%3bF%3bmZm;control;f%3bl%3bBackward%3bh%3bb%3bn%3bO%3br%3ba%3bt%3ba%3bx%3bc%3bD%3bb%3bF%3bmZm;control;f%3bl%3bLeft%3bh%3bb%3bn%3bL%3br%3ba%3bt%3ba%3bx%3ba%3bD%3b-b%3bF%3bmZm;control;f%3bl%3bRight%3bh%3bb%3bn%3bN%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bBrake%3bh%3bc%3bn%3bG%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bRearview%3bh%3bc%3bn%3bj%3br%3ba%3bt%3be%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bRespawn%3bh%3bc%3bn%3bn%3br%3ba%3bt%3bf%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bPause%3bh%3bc%3bn%3bt%3br%3ba%3bt%3bh%3bx%3ba%3bD%3bb%3bF%3bmZm;control;f%3bl%3bCancel%2520Race%3bh%3bc%3bn%3bB%3br%3ba%3bt%3bg%3bx%3ba%3bD%3bb%3bF%3bmZm";
+    }
+
+    /**
+    * Get the icon folder depending on the viewport height
+    * @param a_iHeight the viewport height
+    * @return the corresponding icon folder
+    */
+    std::string getIconFolder(irr::s32 a_iHeight) {
+      std::vector<int> l_vHeight;
+
+      std::ifstream l_cFile("data/icons/icons.txt");
+      int l_iHeight = 0;
+
+      while (l_cFile >> l_iHeight) {
+        l_vHeight.push_back(l_iHeight);
+      }
+
+      l_cFile.close();
+
+      l_iHeight = *l_vHeight.begin();
+
+      for (auto l_itHeight : l_vHeight) {
+        if (l_itHeight < a_iHeight)
+          break;
+        
+        l_iHeight = l_itHeight;
+      }
+
+      return "data/icons/" + std::to_string(l_iHeight) + "/";
     }
   }
 }

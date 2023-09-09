@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <gui/hud_items/CHudSteering.h>
+#include <helpers/CDataHelpers.h>
 #include <CGlobal.h>
 
 namespace dustbin {
@@ -27,14 +28,16 @@ namespace dustbin {
       m_cSize.Width  = a_cViewport.getWidth () / 4;
       m_cSize.Height = l_pFont != nullptr ? 4 * l_pFont->getDimension(L"Test").Height / 3 : a_cViewport.getHeight() / 56;
 
+      std::string l_sFolder = helpers::getIconFolder(a_cViewport.getHeight());
+
       std::string l_sIcons[] = {
-        "data/images/ctrl_left",
-        "data/images/ctrl_right",
-        "data/images/ctrl_accelerate",
-        "data/images/ctrl_back",
-        "data/images/ctrl_brake",
-        "data/images/ctrl_respawn",
-        "data/images/ctrl_nothrottle"
+        l_sFolder + "ctrl_left",
+        l_sFolder + "ctrl_right",
+        l_sFolder + "ctrl_accelerate",
+        l_sFolder + "ctrl_back",
+        l_sFolder + "ctrl_brake",
+        l_sFolder + "ctrl_respawn",
+        l_sFolder + "ctrl_nothrottle"
       };
 
       std::string l_sPostfix[] = {

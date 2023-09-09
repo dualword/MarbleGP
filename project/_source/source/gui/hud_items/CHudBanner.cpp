@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <gui/hud_items/CHudBanner.h>
+#include <helpers/CDataHelpers.h>
 #include <string>
 
 namespace dustbin {
@@ -15,22 +16,24 @@ namespace dustbin {
     {
       m_cViewport = a_cViewport;
 
-      m_pBanners[(int)enBanners::CountdownReady] = m_pDrv->getTexture("data/images/countdown_ready.png");
-      m_pBanners[(int)enBanners::Countdown3    ] = m_pDrv->getTexture("data/images/countdown_three.png");
-      m_pBanners[(int)enBanners::Countdown2    ] = m_pDrv->getTexture("data/images/countdown_two.png");
-      m_pBanners[(int)enBanners::Countdown1    ] = m_pDrv->getTexture("data/images/countdown_one.png");
-      m_pBanners[(int)enBanners::CountdownGo   ] = m_pDrv->getTexture("data/images/countdown_go.png");
-      m_pBanners[(int)enBanners::Stunned       ] = m_pDrv->getTexture("data/images/text_stunned.png");
-      m_pBanners[(int)enBanners::Respawn       ] = m_pDrv->getTexture("data/images/text_respawn.png");
-      m_pBanners[(int)enBanners::Finished      ] = m_pDrv->getTexture("data/images/text_finished.png");
-      m_pBanners[(int)enBanners::Laurel        ] = m_pDrv->getTexture("data/images/text_finished.png");
-      m_pBanners[(int)enBanners::Paused        ] = m_pDrv->getTexture("data/images/pause.png");
+      std::string l_sFolder = helpers::getIconFolder(a_cViewport.getHeight());
+
+      m_pBanners[(int)enBanners::CountdownReady] = m_pDrv->getTexture((l_sFolder + "countdown_ready.png").c_str());
+      m_pBanners[(int)enBanners::Countdown3    ] = m_pDrv->getTexture((l_sFolder + "countdown_three.png").c_str());
+      m_pBanners[(int)enBanners::Countdown2    ] = m_pDrv->getTexture((l_sFolder + "countdown_two.png"  ).c_str());
+      m_pBanners[(int)enBanners::Countdown1    ] = m_pDrv->getTexture((l_sFolder + "countdown_one.png"  ).c_str());
+      m_pBanners[(int)enBanners::CountdownGo   ] = m_pDrv->getTexture((l_sFolder + "countdown_go.png"   ).c_str());
+      m_pBanners[(int)enBanners::Stunned       ] = m_pDrv->getTexture((l_sFolder + "text_stunned.png"   ).c_str());
+      m_pBanners[(int)enBanners::Respawn       ] = m_pDrv->getTexture((l_sFolder + "text_respawn.png"   ).c_str());
+      m_pBanners[(int)enBanners::Finished      ] = m_pDrv->getTexture((l_sFolder + "text_finished.png"  ).c_str());
+      m_pBanners[(int)enBanners::Laurel        ] = m_pDrv->getTexture((l_sFolder + "text_finished.png"  ).c_str());
+      m_pBanners[(int)enBanners::Paused        ] = m_pDrv->getTexture((l_sFolder + "text_pause.png"     ).c_str());
 
       
-      m_pLaurel[0] = m_pDrv->getTexture("data/images/laurel_gold.png");
-      m_pLaurel[1] = m_pDrv->getTexture("data/images/laurel_silver.png");
-      m_pLaurel[2] = m_pDrv->getTexture("data/images/laurel_bronze.png");
-      m_pLaurel[3] = m_pDrv->getTexture("data/images/laurel_rest.png");
+      m_pLaurel[0] = m_pDrv->getTexture((l_sFolder + "laurel_gold.png"  ).c_str());
+      m_pLaurel[1] = m_pDrv->getTexture((l_sFolder + "laurel_silver.png").c_str());
+      m_pLaurel[2] = m_pDrv->getTexture((l_sFolder + "laurel_bronze.png").c_str());
+      m_pLaurel[3] = m_pDrv->getTexture((l_sFolder + "laurel_rest.png"  ).c_str());
 
       if (m_pBanners[0] != nullptr) {
         m_cSource = irr::core::recti(irr::core::vector2di(0, 0), m_pBanners[0]->getOriginalSize());
