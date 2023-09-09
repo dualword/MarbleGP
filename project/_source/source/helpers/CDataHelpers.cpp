@@ -213,25 +213,38 @@ namespace dustbin {
     std::string getIconFolder(irr::s32 a_iHeight) {
       std::vector<int> l_vHeight;
 
-      std::ifstream l_cFile("data/icons/icons.txt");
-      int l_iHeight = 0;
+      irr::io::IReadFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile("data/icons/icons.txt");
+      if (l_pFile != nullptr) {
+        char *p = new char[l_pFile->getSize() + 1];
+        memset(p, 0, l_pFile->getSize() + 1);
 
-      while (l_cFile >> l_iHeight) {
-        l_vHeight.push_back(l_iHeight);
+        l_pFile->read(p, l_pFile->getSize());
+
+        std::vector<std::string> l_vLines = helpers::splitString(p, '\n');
+
+        for (auto l_sLine : l_vLines) {
+          if (l_sLine != "")
+            l_vHeight.push_back(std::atoi(l_sLine.c_str()));
+        }
+
+        l_pFile->drop();
+        delete p;
       }
+      else return "data/images/";
 
-      l_cFile.close();
+      if (l_vHeight.size() > 0) {
+        int l_iHeight = *l_vHeight.begin();
 
-      l_iHeight = *l_vHeight.begin();
-
-      for (auto l_itHeight : l_vHeight) {
-        if (l_itHeight < a_iHeight)
-          break;
+        for (auto l_itHeight : l_vHeight) {
+          if (l_itHeight < a_iHeight)
+            break;
         
-        l_iHeight = l_itHeight;
-      }
+          l_iHeight = l_itHeight;
+        }
 
-      return "data/icons/" + std::to_string(l_iHeight) + "/";
+        return "data/icons/" + std::to_string(l_iHeight) + "/";
+      }
+      else return "data/images/";
     }
   }
 }
