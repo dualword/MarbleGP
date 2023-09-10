@@ -115,6 +115,11 @@
         URL.revokeObjectURL(l_Link.href);
       }
       
+      function resetProfiles() {
+        g_Profiles = g_Original;
+        documentReady();
+      }
+      
       function createProfileForm(a_Index, a_Profile) {
         var l_Html = "<div>";
         l_Html += "<table>";
@@ -157,7 +162,8 @@
       function documentReady() {
         var l_MainFrame = $("#mainframe");
         var l_Html = "<div><button id=\"saveProfiles\" onclick=\"saveProfiles();\">Save Profiles</button>";
-        l_Html += "<button id=\"downloadProfiles\" onclick=\"downloadProfiles();\">Download Profiles</button></div>\n  <hr />";
+        l_Html += "<button id=\"downloadProfiles\" onclick=\"downloadProfiles();\">Download Profiles</button>";
+        l_Html += "<button id=\"resetProfiles\" onclick=\"resetProfiles()\">Reset Profiles to Default</button></div>\n  <hr />";
         
         for (var i = 0; i < g_Profiles.length; i++) {
           l_Html += createProfileForm(i, g_Profiles[i]);
@@ -183,6 +189,7 @@
 {!texturepatterns}
 
       var g_Profiles = {!aiprofiles};
+      var g_Original = [{"name":"Tiberius Claudius","short":"Claud","texture":"generate://numbercolor=000000&numberback=4b64f9&numberborder=4b64f9&ringcolor=3548b7&patterncolor=000000&patternback=4b64f9"},{"name":"Caracalla","short":"Carac","texture":"generate://numbercolor=000000&numberback=fd5320&numberborder=fd5320&ringcolor=ba3b15&patterncolor=000000&patternback=fd5320"},{"name":"Titus Domitianus","short":"Titus","texture":"generate://numbercolor=000000&numberback=3aec1e&numberborder=3aec1e&ringcolor=28ae13&patterncolor=000000&patternback=3aec1e"},{"name":"Cassius Dio","short":"Dio","texture":"generate://numbercolor=000000&numberback=c0c000&numberborder=c0c000&ringcolor=8d8d00&patterncolor=000000&patternback=c0c000"},{"name":"Vespasianus","short":"Vspia","texture":"generate://numbercolor=000000&numberback=ffc0cb&numberborder=ffc0cb&ringcolor=bc8d95&patterncolor=000000&patternback=ffc0cb"},{"name":"Pertinax","short":"Pertx","texture":"generate://numbercolor=ffffff&numberback=6a0dad&numberborder=6a0dad&ringcolor=c1bbcc&patterncolor=ffffff&patternback=6a0dad"},{"name":"Flavius Josephus","short":"FlJos","texture":"generate://numbercolor=000000&numberback=00ffff&numberborder=00ffff&ringcolor=00bcbc&patterncolor=000000&patternback=00ffff"},{"name":"Gaius Octavius","short":"Gaius","texture":"generate://numbercolor=ffffff&numberback=000000&numberborder=000000&ringcolor=bbbbbb&patterncolor=ffffff&patternback=000000"},{"name":"Porcius Cato","short":"Cato","texture":"generate://numbercolor=000000&numberback=ffdab9&numberborder=ffdab9&ringcolor=b9906b&patterncolor=000000&patternback=ffdab9"},{"name":"Marcus Aurelius","short":"Aurel","texture":"generate://numbercolor=000000&numberback=87cefa&numberborder=87cefa&ringcolor=8ebfdd&patterncolor=000000&patternback=87cefa"},{"name":"Caligula","short":"Calgl","texture":"generate://numbercolor=000000&numberback=daa520&numberborder=daa520&ringcolor=b8860b&patterncolor=000000&patternback=daa520"},{"name":"Commodus","short":"Comod","texture":"generate://numbercolor=000000&numberback=9932cc&numberborder=9932cc&ringcolor=da70d6&patterncolor=000000&patternback=9932cc"},{"name":"Nero","short":"Nero","texture":"generate://numbercolor=ffffff&numberback=00008b&numberborder=00008b&ringcolor=0000ff&patterncolor=ffffff&patternback=00008b"},{"name":"Plinius Secundus","short":"Plnus","texture":"generate://numbercolor=000000&numberback=ffdead&numberborder=ffdead&ringcolor=ffefd5&patterncolor=000000&patternback=ffdead"},{"name":"Septimius Severus","short":"Sever","texture":"generate://numbercolor=000000&numberback=20b2aa&numberborder=20b2aa&ringcolor=7fffd4&patterncolor=000000&patternback=20b2aa"},{"name":"Quintus Scipio","short":"Qints","texture":"generate://numbercolor=000000&numberback=ffffff&numberborder=ffffff&ringcolor=dddddd&patterncolor=000000&patternback=ffffff"}];
       
       $(document).ready(function() {
         documentReady();
