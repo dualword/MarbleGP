@@ -1,8 +1,16 @@
 <ul>
   <li>
+    <b>2023-09-05 [1.1 Build 243]</b>
+    <ul>
+      <li>Added two new texture patterns</li>
+      <li>Track &quot;Jump: Stepstones&quot; has been re-done</li>
+    </ul>
+  </li>
+  <li>
     <b>2023-09-05 [1.1 Build 242]</b>
     <ul>
-      <li>Put some release information here</li>
+      <li>Some fine-tuning and polishing</li>
+      <li>Added a remove management functionality which allows some management using a web browser</li>
     </ul>
   </li>
   <li>
