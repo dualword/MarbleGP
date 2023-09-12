@@ -113,6 +113,10 @@
       </element>
       
       <element type="MenuBackground" rect="relative: 42, 6, 77, 45">
+        <attributes>
+          <attribute key="Name" value="OptionsCustom" />
+          <attribute key="Visible" value="false" />
+        </attributes>
         <children>
           <element type="staticText" rect="relative: 0, 0, 35, 3" font="big">
             <attributes>
@@ -244,25 +248,321 @@
             </custom>
           </element>
           
-          <element type="staticText" rect="relative: 5, 36, 17, 38" tooltip="Network Game">
+          <element type="staticText" rect="relative: 1, 36, 10, 38" tooltip="Network Game">
             <attributes>
-              <attribute key="Caption" value="Network Game:" />
+              <attribute key="Caption" value="Game Type:" />
               <attribute key="HTextAlign" value="lowerRight" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>
           
-          <element type="Selector" rect="relative: 18, 36, 33, 38">
+          <element type="Selector" rect="relative: 11, 36, 33, 38">
             <attributes>
               <attribute key="Name" value="network_game" />
               <attribute key="Selected" value="0" />
             </attributes>
             <custom>
-              <attribute key="options" value="None;Start Server;Join Server" />
+              <attribute key="options" value="Free Racing;MarbleGP Cup;Network Free Racing;Network MarbleGP Cup;Join Server" />
             </custom>
           </element>
         </children>
       </element>
+      
+      <element type="MenuBackground" rect="relative: 42, 6, 77, 45">
+        <attributes>
+          <attribute key="Name" value="OptionsPlayers" />
+          <attribute key="Visible" value="true" />
+        </attributes>
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 35, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Select Players" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 1, 6, 34, 22" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Use the field on the left to select the players for the game. On Windows up to eight players can compete in thrilling splitscreen games against each other, and the grid can be filled up with AI players. 
+              
+Use the OK button on the bottom to go to the next step of initializing the game, the cancel button gets you back one step." />
+            </attributes>
+          </element>
+        </children>
+      </element>
+      
+      <element type="MenuBackground" rect="relative: 42, 6, 77, 45">
+        <attributes>
+          <attribute key="Name" value="OptionsGameLevel" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 35, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Level of Difficulty" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 0, 4, 35, 6" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Select how hard you want the game to be" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 8, 4, 10">
+            <attributes>
+              <attribute key="Name" value="dl_0" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 7, 35, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Too easy" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 13, 7, 33, 11" font="small">
+            <attributes>
+              <attribute key="Caption" value="The grid will be filled to 12 marbles with Marble3 AI players only." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 13, 4, 15">
+            <attributes>
+              <attribute key="Name" value="dl_1" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 12, 35, 16" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Easy" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 13, 12, 33, 16" font="small">
+            <attributes>
+              <attribute key="Caption" value="The grid will be filled to 12 marbles with Marble3 and Marble2 AI players." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 18, 4, 20">
+            <attributes>
+              <attribute key="Name" value="dl_2" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 17, 35, 21" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Average" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 13, 17, 33, 21" font="small">
+            <attributes>
+              <attribute key="Caption" value="The grid will be filled to 12 marbles with Marble2 AI players only." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 23, 4, 25">
+            <attributes>
+              <attribute key="Name" value="dl_3" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 22, 35, 26" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Medium" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 13, 22, 33, 26" font="small">
+            <attributes>
+              <attribute key="Caption" value="The grid will be filled to 16 marbles with Marble2 and MarbleGP AI players." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 28, 4, 30">
+            <attributes>
+              <attribute key="Name" value="dl_4" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 27, 35, 31" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Hard" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 13, 27, 33, 31" font="small">
+            <attributes>
+              <attribute key="Caption" value="The grid will be filled to 16 marbles with AI players of all classes." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 33, 4, 35">
+            <attributes>
+              <attribute key="Name" value="dl_5" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 32, 12, 36" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Very Hard" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 13, 32, 33, 36" font="small">
+            <attributes>
+              <attribute key="Caption" value="The grid will be filled to 16 marbles with MarbleGP AI players only." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+        </children>
+      </element>
+      
+      
+      <element type="MenuBackground" rect="relative: 42, 6, 77, 45">
+        <attributes>
+          <attribute key="Name" value="OptionsGameMode" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 35, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Game Mode" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 0, 4, 35, 6" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Select which game mode you want to play" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 8, 4, 10">
+            <attributes>
+              <attribute key="Name" value="gm_0" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 7, 18, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Free Racing" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 19, 7, 33, 11" font="small">
+            <attributes>
+              <attribute key="Caption" value="Local game with free track selection." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 13, 4, 15">
+            <attributes>
+              <attribute key="Name" value="gm_1" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 12, 18, 16" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Cup" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 19, 12, 33, 16" font="small">
+            <attributes>
+              <attribute key="Caption" value="Play a MarbleGP cup locally." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 18, 4, 20">
+            <attributes>
+              <attribute key="Name" value="gm_2" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 17, 18, 21" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Network | Free Racing" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 19, 17, 33, 21" font="small">
+            <attributes>
+              <attribute key="Caption" value="Start a network game with free track selection." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 23, 4, 25">
+            <attributes>
+              <attribute key="Name" value="gm_3" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 22, 18, 26" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Network | Cup" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 19, 22, 33, 26" font="small">
+            <attributes>
+              <attribute key="Caption" value="Start a network MarbleGP cup." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 28, 4, 30">
+            <attributes>
+              <attribute key="Name" value="gm_4" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 27, 18, 31" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Join Network Game" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 19, 27, 33, 31" font="small">
+            <attributes>
+              <attribute key="Caption" value="Search for a network game and join it." />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+        </children>
+      </element>
+      
     </children>
   </element>  
   

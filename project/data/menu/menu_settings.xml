@@ -254,6 +254,21 @@
         </attributes>
       </element>
       
+      <element type="DustbinCheckbox" rect="center: 5, 15, 7, 17">
+        <attributes>
+          <attribute key="Id" value="23093" />
+          <attribute key="Name" value="game_wizard" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 8, 15, 34, 17">
+        <attributes>
+          <attribute key="Name" value="label_gamewizard" />
+          <attribute key="Caption" value="Use Game Wizard" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
     </children>
   </element>
   

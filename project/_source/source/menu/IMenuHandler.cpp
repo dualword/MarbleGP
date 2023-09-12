@@ -21,6 +21,9 @@ namespace dustbin {
     * @return the queried element or "nullptr" if it was not found
     */
     irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement) {
+      if (a_pElement == nullptr)
+        return nullptr;
+
       if (a_pElement->getID() == a_iId && a_pElement->getType() == a_eType)
         return a_pElement;
 
@@ -36,6 +39,9 @@ namespace dustbin {
     }
 
     irr::gui::IGUIElement* findElementByNameAndType(const std::string& a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement* a_pElement) {
+      if (a_pElement == nullptr)
+        return nullptr;
+
       std::string l_sName = a_pElement->getName();
       if (l_sName == a_sName && a_pElement->getType() == a_eType)
         return a_pElement;
@@ -52,6 +58,9 @@ namespace dustbin {
     }
 
     irr::gui::IGUIElement* findElementByName(const std::string& a_sName, irr::gui::IGUIElement* a_pElement) {
+      if (a_pElement == nullptr)
+        return nullptr;
+
       std::string l_sName = a_pElement->getName();
       if (l_sName == a_sName)
         return a_pElement;

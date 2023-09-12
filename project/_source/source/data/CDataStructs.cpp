@@ -134,6 +134,8 @@ namespace dustbin {
       m_iResolutionH (1080), 
       m_iShadows     (2), 
       m_iAmbient     (2),
+      m_iWizardDfc   (1),
+      m_iWizardGmt   (0),
       m_fSfxMaster   (1.0f),
       m_fSoundTrack  (1.0f),
       m_fSfxMenu     (1.0f),
@@ -150,6 +152,7 @@ namespace dustbin {
       m_bVirtualKeys (false),
       m_sController  ("DustbinController;control;f%3bl%3bForward%3bh%3ba%3bn%3bM%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBackward%3bh%3ba%3bn%3bO%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bLeft%3bh%3ba%3bn%3bL%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRight%3bh%3ba%3bn%3bN%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bBrake%3bh%3ba%3bn%3bG%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRearview%3bh%3ba%3bn%3bj%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bRespawn%3bh%3ba%3bn%3bn%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bPause%3bh%3ba%3bn%3bt%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb;control;f%3bl%3bCancel%2520Race%3bh%3ba%3bn%3bB%3br%3ba%3bt%3ba%3bx%3ba%3bD%3bb"),
 #endif
+      m_bGameWizard  (true),
       m_sMenuCtrl    ("Off")
     {
     }
@@ -159,10 +162,13 @@ namespace dustbin {
       if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH  = std::atoi(a_mData.at("resolution_h").c_str());
       if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
       if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
+      if (a_mData.find("wizardfdc"   ) != a_mData.end()) m_iWizardDfc    = std::atoi(a_mData.at("wizardfdc"   ).c_str());
+      if (a_mData.find("wizardgmt"   ) != a_mData.end()) m_iWizardDfc    = std::atoi(a_mData.at("wizardgmt"   ).c_str());
 
       if (a_mData.find("fullscreen" ) != a_mData.end()) m_bFullscreen  = a_mData.at("fullscreen" ) == "true";
       if (a_mData.find("debugaipath") != a_mData.end()) m_bDebugAIPath = a_mData.at("debugaipath") == "true";
       if (a_mData.find("debugaidice") != a_mData.end()) m_bDebugAIDice = a_mData.at("debugaidice") == "true";
+      if (a_mData.find("gamewizard" ) != a_mData.end()) m_bGameWizard  = a_mData.at("gamewizard" ) == "true";
 
       if (a_mData.find("sfx_master") != a_mData.end()) m_fSfxMaster  = (float)std::atof(a_mData.at("sfx_master").c_str());
       if (a_mData.find("soundtrack") != a_mData.end()) m_fSoundTrack = (float)std::atof(a_mData.at("soundtrack").c_str());
@@ -190,10 +196,13 @@ namespace dustbin {
       a_mData["resolution_h"] = std::to_string(m_iResolutionH);
       a_mData["shadows"     ] = std::to_string(m_iShadows    );
       a_mData["ambient"     ] = std::to_string(m_iAmbient    );
+      a_mData["wizardfdc"   ] = std::to_string(m_iWizardDfc  );
+      a_mData["wizardgmt"   ] = std::to_string(m_iWizardDfc  );
 
       a_mData["fullscreen"  ] = m_bFullscreen  ? "true" : "false";
       a_mData["debugaipath" ] = m_bDebugAIPath ? "true" : "false";
       a_mData["debugaidice" ] = m_bDebugAIDice ? "true" : "false";
+      a_mData["gamewizard"  ] = m_bGameWizard  ? "true" : "false";
 
 #ifdef _ANDROID
       a_mData["virtualkeys"] = "true";
@@ -233,6 +242,7 @@ namespace dustbin {
       m_bDebugAIPath  = a_cOther.m_bDebugAIPath;
       m_bDebugAIDice  = a_cOther.m_bDebugAIDice;
       m_sMenuCtrl     = a_cOther.m_sMenuCtrl;
+      m_bGameWizard   = a_cOther.m_bGameWizard;
 
       for (int i = 0; i < 8; i++)
         m_aGameGFX[i].copyFrom(a_cOther.m_aGameGFX[i]);

@@ -5,6 +5,7 @@
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <helpers/CMenuLoader.h>
+#include <platform/CPlatform.h>
 #include <gui/CGuiLogDisplay.h>
 #include <menu/IMenuHandler.h>
 #include <state/IState.h>
@@ -99,6 +100,7 @@ namespace dustbin {
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "ok") {
                 l_bRet = true;
+                platform::saveSettings();
                 createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
               }
             }

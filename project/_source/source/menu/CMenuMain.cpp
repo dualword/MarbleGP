@@ -129,17 +129,19 @@ namespace dustbin {
               int l_iGridPos = 0;
 
               for (auto l_itAi : l_vAiPlayers) {
-                int l_iAiClass = 0;
+                int l_iAiClass = l_iGridPos % 3;
+
+                std::string l_sAiClass = l_iAiClass == 0 ? "marblegp" : l_iAiClass == 1 ? "marble2" : "marble3";
 
                 data::SPlayerData l_cData;
                 l_cData.m_eType      = data::enPlayerType::Ai;
                 l_cData.m_iGridPos   = l_iGridPos;
                 l_cData.m_iPlayerId  = l_iGridPos + 1;
-                l_cData.m_sName      = std::get<0>(l_itAi) + "|marblegp";
+                l_cData.m_sName      = std::get<0>(l_itAi) + "|" + l_sAiClass;
                 l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
                 l_cData.m_sShortName = std::get<1>(l_itAi);
                 l_cData.m_fDeviation = std::get<5>(l_itAi) / 100.0f;
-                l_cData.m_sControls  = "class=marblegp";
+                l_cData.m_sControls  = "class=" + l_sAiClass;
                 l_cData.m_sTexture   = helpers::createDefaultTextureString(std::get<2>(l_itAi), l_iAiClass) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
 
                 l_cPlayers.m_vPlayers.push_back(l_cData);

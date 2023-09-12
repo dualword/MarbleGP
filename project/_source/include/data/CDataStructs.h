@@ -45,6 +45,8 @@ namespace dustbin {
       int m_iResolutionH;   /**< Selected window height */
       int m_iShadows;       /**< Shadow details */
       int m_iAmbient;       /**< Ambient light */
+      int m_iWizardDfc;     /**< Game Wizard: Difficulty */
+      int m_iWizardGmt;     /**< Game Wizard: Game Type */
 
       float m_fSfxMaster;   /**< Sound master volume */
       float m_fSoundTrack;  /**< Sound track volume */
@@ -57,6 +59,7 @@ namespace dustbin {
       bool m_bDebugAIPath;  /**< Show the AI path debug image (lower left) */
       bool m_bDebugAIDice;  /**< Show the AI dice debug image (lower right) */
       bool m_bVirtualKeys;  /**< Use virtual keyboard (always true for Android) */
+      bool m_bGameWizard;   /**< Use the game wizard (true) or show all options */
 
       std::string m_sController;  /**< The serialized menu controller configuration */
       std::string m_sMenuCtrl;    /**< The menu controller setting (off, keyboard, gamepad) */

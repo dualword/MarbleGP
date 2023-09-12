@@ -52,6 +52,8 @@ namespace dustbin {
 
         irr::s32 m_iAssigned;   /**< Was a joystick assigned in the last frame? Store the joystick index here. */
 
+        bool m_bGameWizard;     /**< Is the game wizard mode active? */
+
         std::vector<std::string> m_vAssignJoystick;   /**< Vector of the players which need to assign a joystick */
 
         gui::CMenuButton *m_pOk;  /**< The OK button */
@@ -61,7 +63,122 @@ namespace dustbin {
 
         std::vector<irr::u8> m_vUsedJoysticks;
 
-        std::vector<irr::gui::IGUIElement *> m_vSetupUI;   /**< All elements relevant for game setup, hidden if Network Client is selected */
+        std::map<std::string, irr::gui::IGUIElement *> m_mSetupUI;   /**< All elements relevant for game setup, hidden if Network Client is selected */
+
+        irr::gui::IGUIElement *m_aWizard[4];     /**< The game wizard parent elements (first element == all options, wizard disabled) */
+
+        int m_iWizardStep;    /**< The current wizard step (1 .. 3 if the wizard is active) */
+
+        /**
+        * Update the setting modified by a checkbox
+        * @param a_sSender name of the checkbox
+        * @param a_bChecked checked state of the checkbox
+        * @return true if the checkbox was found, false otherwise
+        */
+        bool checkboxChange(const std::string& a_sSender, bool a_bChecked) {
+          bool l_bRet = false;
+
+          if (a_sSender == "reverse_grid")
+            m_cSettings.m_bReverseGrid = a_bChecked;
+          else if (a_sSender == "randomize_first")
+            m_cSettings.m_bRandomFirstRace = a_bChecked;
+          else if (a_sSender == "fillgrid_ai") {
+            m_cSettings.m_bFillGridAI = a_bChecked;
+
+            checkAiElements();
+            l_bRet = true;
+          }
+          else if (a_sSender.substr(0, 3) == "dl_") {
+            int l_iLevel = std::atoi(a_sSender.substr(3).c_str());
+            wizardUpdateUI(true, l_iLevel);
+          }
+          else if (a_sSender.substr(0, 3) == "gm_") {
+            int l_iLevel = std::atoi(a_sSender.substr(3).c_str());
+            wizardUpdateUI(false, l_iLevel);
+          }
+          else printf("Unknown checkbox: \"%s\"\n", a_sSender.c_str());
+
+          return l_bRet;
+        }
+        
+
+        /**
+        * Update the setting modified by a scrollbar
+        * @param a_sSender name of the scrollbar
+        * @param a_iSelected the selected item
+        * @return true if the scrollbar was found, false otherwise
+        */
+        bool scrollbarChange(const std::string &a_sSender, int a_iSelected) {
+          bool l_bRet = false;
+
+          if (a_sSender == "gridsize") {
+            m_cSettings.m_iGridSize = a_iSelected;
+            checkAiElements();
+            l_bRet = true;
+          }
+          else if (a_sSender == "race_finish") {
+            m_cSettings.m_iAutoFinish = a_iSelected;
+            l_bRet = true;
+          }
+          else if (a_sSender == "raceclass") {
+            m_cSettings.m_iRaceClass = a_iSelected;
+            l_bRet = true;
+          }
+          else if (a_sSender == "starting_positions") {
+            m_cSettings.m_iGridPos = a_iSelected;
+            l_bRet = true;
+          }
+          else if (a_sSender == "touchcontrol") {
+            // If a touch controller was selected we need to reset the "menu pad" flag
+            CGlobal::getInstance()->getSettingData().m_bMenuPad = false;
+          }
+          else if (a_sSender == "network_game") {
+            bool l_bVisible = a_iSelected != 4;
+
+            for (std::map<std::string, irr::gui::IGUIElement*>::iterator l_itElement = m_mSetupUI.begin(); l_itElement != m_mSetupUI.end(); l_itElement++) {
+              l_itElement->second->setVisible(l_bVisible);
+            }
+          }
+          else printf("Unknown selector \"%s\"\n", a_sSender.c_str());
+
+          return l_bRet;
+        }
+
+        /**
+        * Update the UI from the wizard inputs
+        * @param a_bDifficult are we in the second step selecting the difficulty?
+        * @param a_iLevel the selected item of the list
+        */
+        void wizardUpdateUI(bool a_bDifficult, int a_iLevel) {
+          if (a_bDifficult) {
+            for (int i = 0; i < 6; i++) {
+              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("dl_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              if (p != nullptr)
+                p->setChecked(i == a_iLevel);
+            }
+
+            checkboxChange("reverse_grid"   , a_iLevel >= 3);
+            checkboxChange("randomize_first", a_iLevel >= 2);
+            checkboxChange("fillgrid_ai"    , true);
+
+            scrollbarChange("raceclass"         , a_iLevel < 4 ? a_iLevel : a_iLevel == 4 ? 5 : 4);
+            scrollbarChange("gridsize"          , a_iLevel < 3 ? 3 : 4);
+            scrollbarChange("starting_positions", 1);
+
+            m_pState->getGlobal()->getSettingData().m_iWizardDfc = a_iLevel;
+          }
+          else {
+            for (int i = 0; i < 5; i++) {
+              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("gm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              if (p != nullptr)
+                p->setChecked(i == a_iLevel);
+            }
+
+            scrollbarChange("network_game", a_iLevel);
+
+            m_pState->getGlobal()->getSettingData().m_iWizardGmt = a_iLevel;
+          }
+        }
 
         /**
         * Update the list of selected players
@@ -147,7 +264,9 @@ namespace dustbin {
           m_pOk          (nullptr),
           m_pSelectCtrl  (nullptr),
           m_pSelectName  (nullptr),
-          m_iAssigned    (-1)
+          m_iAssigned    (-1),
+          m_bGameWizard  (m_pState->getGlobal()->getSettingData().m_bGameWizard),
+          m_iWizardStep  (m_pState->getGlobal()->getSettingData().m_bGameWizard ? 1 : 0)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
@@ -325,12 +444,32 @@ namespace dustbin {
           for (int i = 0; l_sGameSetup[i] != ""; i++) {
             irr::gui::IGUIElement *p = findElementByName(l_sGameSetup[i], m_pGui->getRootGUIElement());
             if (p != nullptr)
-              m_vSetupUI.push_back(p);
+              m_mSetupUI[l_sGameSetup[i]] = p;
             else
               printf("%s not found.\n", l_sGameSetup[i].c_str());
           }
 
           checkAiElements();
+
+          std::string l_aWizard[] = {
+            "OptionsCustom",
+            "OptionsPlayers",
+            "OptionsGameLevel",
+            "OptionsGameMode",
+            ""
+          };
+
+          for (int i = 0; l_aWizard[i] != ""; i++) {
+            m_aWizard[i] = findElementByNameAndType(l_aWizard[i], (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement());
+
+            if (m_aWizard[i] != nullptr) {
+              m_aWizard[i]->setVisible((!m_bGameWizard && i == 0) || (m_bGameWizard && i == 1));
+            }
+          }
+
+          wizardUpdateUI(true , m_pState->getGlobal()->getSettingData().m_iWizardDfc);
+          wizardUpdateUI(false, m_pState->getGlobal()->getSettingData().m_iWizardGmt);
+
           printf("Ready.\n");
         }
 
@@ -346,96 +485,109 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "ok") {
-                bool l_bFillGridAI = false;
-                int  l_iGridSize   = 1;
-                irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
+                if (m_bGameWizard && m_iWizardStep < 3) {
+                  if (m_aWizard[m_iWizardStep] != nullptr)
+                    m_aWizard[m_iWizardStep]->setVisible(false);
 
-                gui::CDustbinCheckbox *l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
-                if (l_pCheckbox != nullptr && l_pCheckbox->isChecked())
-                  l_bFillGridAI = true;
+                  m_iWizardStep++;
 
-                gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                if (l_pSelector != nullptr)
-                  l_iGridSize = std::wcstol(l_pSelector->getItem(l_pSelector->getSelected()).c_str(), nullptr, 10);
-
-                messages::CSerializer64 l_cSerializer;
-
-                for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++)
-                  l_cSerializer.addString(*it);
-
-                m_pState->getGlobal()->setSetting("selectedplayers", l_cSerializer.getMessageAsString());
-                m_pState->getGlobal()->setSetting("gamesetup"      , m_cSettings.serialize());
-
-                // We fill a vector with the grid positions and ..
-                std::vector<int> l_vGrid;
-
-                for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++)
-                  l_vGrid.push_back(i);
-
-                // .. if necessary shuffle the vector
-                if (m_cSettings.m_bRandomFirstRace) {
-                  std::random_device l_cRd { };
-                  std::default_random_engine l_cRe { l_cRd() };
-
-                  std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
+                  if (m_aWizard[m_iWizardStep] != nullptr)
+                    m_aWizard[m_iWizardStep]->setVisible(true);
                 }
+                else {
+                  platform::saveSettings();
 
-                data::SRacePlayers l_cPlayers;
+                  bool l_bFillGridAI = false;
+                  int  l_iGridSize   = 1;
+                  irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
 
-                int l_iNum = 1;
+                  gui::CDustbinCheckbox *l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
+                  if (l_pCheckbox != nullptr && l_pCheckbox->isChecked())
+                    l_bFillGridAI = true;
 
-                // Now we iterate all selected players ..
-                for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++) {
-                  // .. search for the matching profile ..
-                  for (std::vector<data::SPlayerData>::iterator it2 = m_vProfiles.begin(); it2 != m_vProfiles.end(); it2++) {
-                    if (*it == (*it2).m_sName) {
-                      // .. and create a copy of the player element (will be modified for each game)
-                      data::SPlayerData l_cPlayer;
-                      l_cPlayer.copyFrom(*it2);
+                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  if (l_pSelector != nullptr)
+                    l_iGridSize = std::wcstol(l_pSelector->getItem(l_pSelector->getSelected()).c_str(), nullptr, 10);
+
+                  messages::CSerializer64 l_cSerializer;
+
+                  for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++)
+                    l_cSerializer.addString(*it);
+
+                  m_pState->getGlobal()->setSetting("selectedplayers", l_cSerializer.getMessageAsString());
+                  m_pState->getGlobal()->setSetting("gamesetup"      , m_cSettings.serialize());
+
+                  // We fill a vector with the grid positions and ..
+                  std::vector<int> l_vGrid;
+
+                  for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++)
+                    l_vGrid.push_back(i);
+
+                  // .. if necessary shuffle the vector
+                  if (m_cSettings.m_bRandomFirstRace) {
+                    std::random_device l_cRd { };
+                    std::default_random_engine l_cRe { l_cRd() };
+
+                    std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
+                  }
+
+                  data::SRacePlayers l_cPlayers;
+
+                  int l_iNum = 1;
+
+                  // Now we iterate all selected players ..
+                  for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++) {
+                    // .. search for the matching profile ..
+                    for (std::vector<data::SPlayerData>::iterator it2 = m_vProfiles.begin(); it2 != m_vProfiles.end(); it2++) {
+                      if (*it == (*it2).m_sName) {
+                        // .. and create a copy of the player element (will be modified for each game)
+                        data::SPlayerData l_cPlayer;
+                        l_cPlayer.copyFrom(*it2);
                       
-                      // The grid position for the player is the first element of the grid vector
-                      l_cPlayer.m_iGridPos = *l_vGrid.begin();
-                      // Remove the first element that was just assigned
-                      l_vGrid.erase(l_vGrid.begin());
+                        // The grid position for the player is the first element of the grid vector
+                        l_cPlayer.m_iGridPos = *l_vGrid.begin();
+                        // Remove the first element that was just assigned
+                        l_vGrid.erase(l_vGrid.begin());
 
-                      l_cPlayer.m_iViewPort = l_iNum;
-                      l_cPlayer.m_iPlayerId = l_iNum++;
-                      l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+                        l_cPlayer.m_iViewPort = l_iNum;
+                        l_cPlayer.m_iPlayerId = l_iNum++;
+                        l_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
-                      break;
+                        break;
+                      }
                     }
                   }
-                }
 
-                data::SFreeGameSlots l_cSlots = data::SFreeGameSlots();
-                l_cSlots.m_vSlots = l_vGrid;
-                m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
+                  data::SFreeGameSlots l_cSlots = data::SFreeGameSlots();
+                  l_cSlots.m_vSlots = l_vGrid;
+                  m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
-                gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
-                m_pManager->pushToMenuStack("menu_fillgrid");
+                  m_pManager->pushToMenuStack("menu_fillgrid");
 
-                if (l_pNet != nullptr) {
-                  if (l_pNet->getSelected() == 1) {
-                    m_pManager->pushToMenuStack("menu_startserver");
+                  if (l_pNet != nullptr) {
+                    if (l_pNet->getSelected() == 2 || l_pNet->getSelected() == 3) {
+                      m_pManager->pushToMenuStack("menu_startserver");
+                    }
+                    else if (l_pNet->getSelected() == 4) {
+                      // We don't want to go to the "fill grid" menu when connecting to a server
+                      m_pManager->popMenuStack();
+
+                      m_pManager->pushToMenuStack("menu_joinserver"  );
+                      m_pManager->pushToMenuStack("menu_searchserver");
+                    }
                   }
-                  else if (l_pNet->getSelected() == 2) {
-                    // We don't want to go to the "fill grid" menu when connecting to a server
-                    m_pManager->popMenuStack();
 
-                    m_pManager->pushToMenuStack("menu_joinserver"  );
-                    m_pManager->pushToMenuStack("menu_searchserver");
-                  }
+                  std::string l_sPlayers = l_cPlayers.serialize();
+                  std::string l_sNext    = m_pManager->popMenuStack();
+
+                  m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
+
+                  platform::saveSettings();
+
+                  createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
                 }
-
-                std::string l_sPlayers = l_cPlayers.serialize();
-                std::string l_sNext    = m_pManager->popMenuStack();
-
-                m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
-
-                platform::saveSettings();
-
-                createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
 
                 l_bRet = true;
               }
@@ -600,17 +752,7 @@ namespace dustbin {
               if (a_cEvent.GUIEvent.Caller->getType() == gui::g_DustbinCheckboxId) {
                 gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller);
 
-                if (l_sSender == "reverse_grid")
-                  m_cSettings.m_bReverseGrid = p->isChecked();
-                else if (l_sSender == "randomize_first")
-                  m_cSettings.m_bRandomFirstRace = p->isChecked();
-                else if (l_sSender == "fillgrid_ai") {
-                  m_cSettings.m_bFillGridAI = p->isChecked();
-
-                  checkAiElements();
-                  l_bRet = true;
-                }
-                else printf("Unknown checkbox: \"%s\"\n", l_sSender.c_str());
+                checkboxChange(l_sSender, p->isChecked());
               }
               else printf("Checkbox is not Dustbin!\n");
             }
@@ -618,36 +760,7 @@ namespace dustbin {
               if (a_cEvent.GUIEvent.Caller->getType() == gui::g_SelectorId) {
                 gui::CSelector *p = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller);
 
-                if (l_sSender == "gridsize") {
-                  m_cSettings.m_iGridSize = p->getSelected();
-                  checkAiElements();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "race_finish") {
-                  m_cSettings.m_iAutoFinish = p->getSelected();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "raceclass") {
-                  m_cSettings.m_iRaceClass = p->getSelected();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "starting_positions") {
-                  m_cSettings.m_iGridPos = p->getSelected();
-                  l_bRet = true;
-                }
-                else if (l_sSender == "touchcontrol") {
-                  // If a touch controller was selected we need to reset the "menu pad" flag
-                  CGlobal::getInstance()->getSettingData().m_bMenuPad = false;
-                }
-                else if (l_sSender == "network_game") {
-                  gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller);
-                  bool l_bVisible = l_pNet->getSelectedItem() != L"Join Server";
-
-                  for (std::vector<irr::gui::IGUIElement*>::iterator l_itElement = m_vSetupUI.begin(); l_itElement != m_vSetupUI.end(); l_itElement++) {
-                    (*l_itElement)->setVisible(l_bVisible);
-                  }
-                }
-                else printf("Unknown selector \"%s\"\n", l_sSender.c_str());
+                l_bRet = scrollbarChange(l_sSender, p->getSelected());
               }
               else printf("Scrollbar is not a selector!\n");
             }
