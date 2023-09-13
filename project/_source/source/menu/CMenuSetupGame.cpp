@@ -68,6 +68,7 @@ namespace dustbin {
         irr::gui::IGUIElement *m_aWizard[4];     /**< The game wizard parent elements (first element == all options, wizard disabled) */
 
         int m_iWizardStep;    /**< The current wizard step (1 .. 3 if the wizard is active) */
+        int m_iGameMode;      /**< The selected game mode (0 == Free Racing, 1 == Cup, 2 == Network | Free Racing, 3 = Network | Cup, 4 = Network | Client) */
 
         /**
         * Update the setting modified by a checkbox
@@ -175,6 +176,7 @@ namespace dustbin {
             }
 
             scrollbarChange("network_game", a_iLevel);
+            m_iGameMode = a_iLevel;
 
             m_pState->getGlobal()->getSettingData().m_iWizardGmt = a_iLevel;
           }
@@ -266,7 +268,8 @@ namespace dustbin {
           m_pSelectName  (nullptr),
           m_iAssigned    (-1),
           m_bGameWizard  (m_pState->getGlobal()->getSettingData().m_bGameWizard),
-          m_iWizardStep  (m_pState->getGlobal()->getSettingData().m_bGameWizard ? 1 : 0)
+          m_iWizardStep  (m_pState->getGlobal()->getSettingData().m_bGameWizard ? 1 : 0),
+          m_iGameMode    (0)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
@@ -497,17 +500,8 @@ namespace dustbin {
                 else {
                   platform::saveSettings();
 
-                  bool l_bFillGridAI = false;
-                  int  l_iGridSize   = 1;
+                  int l_iGridSize = m_cSettings.m_iGridSize == 0 ? 2 : m_cSettings.m_iGridSize == 1 ? 4 : m_cSettings.m_iGridSize == 2 ? 8 : m_cSettings.m_iGridSize == 3 ? 12 : 16;
                   irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
-
-                  gui::CDustbinCheckbox *l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
-                  if (l_pCheckbox != nullptr && l_pCheckbox->isChecked())
-                    l_bFillGridAI = true;
-
-                  gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  if (l_pSelector != nullptr)
-                    l_iGridSize = std::wcstol(l_pSelector->getItem(l_pSelector->getSelected()).c_str(), nullptr, 10);
 
                   messages::CSerializer64 l_cSerializer;
 
@@ -562,21 +556,17 @@ namespace dustbin {
                   l_cSlots.m_vSlots = l_vGrid;
                   m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
-                  gui::CSelector *l_pNet = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("network_game", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-
                   m_pManager->pushToMenuStack("menu_fillgrid");
 
-                  if (l_pNet != nullptr) {
-                    if (l_pNet->getSelected() == 2 || l_pNet->getSelected() == 3) {
-                      m_pManager->pushToMenuStack("menu_startserver");
-                    }
-                    else if (l_pNet->getSelected() == 4) {
-                      // We don't want to go to the "fill grid" menu when connecting to a server
-                      m_pManager->popMenuStack();
+                  if (m_iGameMode == 2 || m_iGameMode == 3) {
+                    m_pManager->pushToMenuStack("menu_startserver");
+                  }
+                  else if (m_iGameMode == 4) {
+                    // We don't want to go to the "fill grid" menu when connecting to a server
+                    m_pManager->popMenuStack();
 
-                      m_pManager->pushToMenuStack("menu_joinserver"  );
-                      m_pManager->pushToMenuStack("menu_searchserver");
-                    }
+                    m_pManager->pushToMenuStack("menu_joinserver"  );
+                    m_pManager->pushToMenuStack("menu_searchserver");
                   }
 
                   std::string l_sPlayers = l_cPlayers.serialize();
@@ -594,6 +584,15 @@ namespace dustbin {
               else if (l_sSender == "cancel") {
                 if (m_pSelectPlayer != nullptr && m_pSelectPlayer->isVisible()) {
                   playerSelectCancel();
+                }
+                else if (m_bGameWizard && m_iWizardStep > 1) {
+                  if (m_aWizard[m_iWizardStep] != nullptr)
+                    m_aWizard[m_iWizardStep]->setVisible(false);
+
+                  m_iWizardStep--;
+
+                  if (m_aWizard[m_iWizardStep] != nullptr)
+                    m_aWizard[m_iWizardStep]->setVisible(true);
                 }
                 else createMenu("menu_main", m_pDevice, m_pManager, m_pState);
 
