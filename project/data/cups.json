@@ -1,0 +1,95 @@
+[
+  {
+    "name": "Rookie Cup",
+    "races": [
+      { "track": "noob_oval", "laps": 8 },
+      { "track": "noob_eight_crossing", "laps": 5 },
+      { "track": "noob_complex", "laps": 2 }
+    ]
+  },
+  {
+    "name": "Flat out Cup",
+    "races": [
+      { "track": "oval", "laps": 8 },
+      { "track": "eight_crossing", "laps": 5 },
+      { "track": "flat_counter_crossings", "laps": 2 }
+    ]
+  },
+  {
+    "name": "Jumpin' Cup Flash",
+    "races": [
+      { "track": "stepstones", "laps": 4 },
+      { "track": "hi_jump", "laps": 5 },
+      { "track": "long_jump", "laps": 3 },
+      { "track": "jump_eight", "laps": 8 }
+    ]
+  },
+  {
+    "name": "Loops only Cup",
+    "races": [
+      { "track": "loop_single", "laps": 6 },
+      { "track": "loop_double", "laps": 4 }
+    ]
+  },
+  {
+    "name": "Too Complex Cup",
+    "races": [
+      { "track": "small", "laps": 4 },
+      { "track": "eight_hi_lo", "laps": 5 },
+      { "track": "hopping", "laps": 6 },
+      { "track": "tower_ascend", "laps": 3 }
+    ]
+  },
+  {
+    "name": "Cup on the Move",
+    "races": [
+      { "track": "rotor", "laps": 5 },
+      { "track": "the_gates", "laps": 8 },
+      { "track": "four_obstacles", "laps": 9 }
+    ]
+  },
+  {
+    "name": "All in Cup",
+    "races": [
+      { "track" : "noob_oval", "laps": 8 },
+      { "track" : "noob_eight_crossing", "laps": 5 },
+      { "track" : "noob_complex", "laps": 2 },
+      { "track" : "oval", "laps": 8 },
+      { "track" : "eight_crossing", "laps": 5 },
+      { "track" : "flat_counter_crossings", "laps": 2 },
+      { "track" : "stepstones", "laps": 4 },
+      { "track" : "hi_jump", "laps": 5 },
+      { "track" : "long_jump", "laps": 4 },
+      { "track" : "jump_eight", "laps": 8 },
+      { "track" : "loop_double", "laps": 6 },
+      { "track" : "loop_single", "laps": 4 },
+      { "track" : "steep_oval", "laps": 12 },
+      { "track" : "steep_eight", "laps": 9 },
+      { "track" : "small", "laps": 4 },
+      { "track" : "eight_hi_lo", "laps": 5 },
+      { "track" : "hopping", "laps": 6 },
+      { "track" : "tower_ascend", "laps": 3 },
+      { "track" : "rotor", "laps": 5 },
+      { "track" : "the_gates", "laps": 8 },
+      { "track" : "four_obstacles", "laps": 9 }
+    ]
+  },
+  {
+    "name": "Dustbin::Games Cup",
+    "races": [
+      { "track" : "eight_crossing", "laps": 5 },
+      { "track" : "flat_counter_crossings", "laps": 2 },
+      { "track" : "stepstones", "laps": 4 },
+      { "track" : "hi_jump", "laps": 5 },
+      { "track" : "jump_eight", "laps": 8 },
+      { "track" : "loop_double", "laps": 6 },
+      { "track" : "loop_single", "laps": 4 },
+      { "track" : "small", "laps": 4 },
+      { "track" : "eight_hi_lo", "laps": 5 },
+      { "track" : "hopping", "laps": 6 },
+      { "track" : "rotor", "laps": 5 },
+      { "track" : "the_gates", "laps": 8 },
+      { "track" : "four_obstacles", "laps": 9 }
+    ]
+  }
+]
