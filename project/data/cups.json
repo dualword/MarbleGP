@@ -1,6 +1,7 @@
 [
   {
     "name": "Rookie Cup",
+    "description": "This is a cup for you to start if you are new to the game",
     "races": [
       { "track": "noob_oval", "laps": 8 },
       { "track": "noob_eight_crossing", "laps": 5 },
@@ -9,6 +10,7 @@
   },
   {
     "name": "Flat out Cup",
+    "description": "Like Flat Track racing? Here's your cup.",
     "races": [
       { "track": "oval", "laps": 8 },
       { "track": "eight_crossing", "laps": 5 },
@@ -17,6 +19,7 @@
   },
   {
     "name": "Jumpin' Cup Flash",
+    "description": "Only tracks with jumps are included in this cup",
     "races": [
       { "track": "stepstones", "laps": 4 },
       { "track": "hi_jump", "laps": 5 },
@@ -26,6 +29,7 @@
   },
   {
     "name": "Loops only Cup",
+    "description": "Do you like the tracks with loops? Get going, here they are.",
     "races": [
       { "track": "loop_single", "laps": 6 },
       { "track": "loop_double", "laps": 4 }
@@ -33,6 +37,7 @@
   },
   {
     "name": "Too Complex Cup",
+    "description": "If you are smart and can handle complex tracks you're the right person for this cup.",
     "races": [
       { "track": "small", "laps": 4 },
       { "track": "eight_hi_lo", "laps": 5 },
@@ -42,6 +47,7 @@
   },
   {
     "name": "Cup on the Move",
+    "description": "Only tracks with moving objects are allowed for this cup",
     "races": [
       { "track": "rotor", "laps": 5 },
       { "track": "the_gates", "laps": 8 },
@@ -50,6 +56,7 @@
   },
   {
     "name": "All in Cup",
+    "description": "This is the cup for everyone who likes Poker: all in for this cup",
     "races": [
       { "track" : "noob_oval", "laps": 8 },
       { "track" : "noob_eight_crossing", "laps": 5 },
@@ -76,6 +83,7 @@
   },
   {
     "name": "Dustbin::Games Cup",
+    "description": "A cup comprised of the favorite tracks selected by Dustbin::Games",
     "races": [
       { "track" : "eight_crossing", "laps": 5 },
       { "track" : "flat_counter_crossings", "laps": 2 },
