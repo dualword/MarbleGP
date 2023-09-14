@@ -29,6 +29,10 @@
       </element>
       
       <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
+        <attributes>
+          <attribute key="Name" value="OptionsCustom" />
+          <attribute key="Visible" value="false" />
+        </attributes>
         <children>
           <element type="staticText" rect="relative: 20, 1, 31, 3" tooltip="Network Game">
             <attributes>
@@ -173,6 +177,223 @@
           
         </children>
       </element>
+      
+      <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
+        <attributes>
+          <attribute key="Name" value="OptionsPlayers" />
+          <attribute key="Visible" value="true" />
+        </attributes>
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 48, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Select Players" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 1, 6, 47, 22" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Use the field on the top to select the players for the game. On Android you can either play against the AI or start / join a network game (provided all players are connected to the same Wifi).
+              
+Use the OK button on the bottom to go to the next step of initializing the game, the cancel button gets you back one step." />
+            </attributes>
+          </element>
+        </children>
+      </element>
+      
+      <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
+        <attributes>
+          <attribute key="Name" value="OptionsGameLevel" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 48, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Level of Difficulty" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 1, 4, 47, 6" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Select how hard you want the game to be" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 8, 4, 10">
+            <attributes>
+              <attribute key="Name" value="dl_0" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 7, 15, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Too easy" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 17, 8, 19, 10">
+            <attributes>
+              <attribute key="Name" value="dl_1" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 20, 7, 30, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Easy" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 31, 8, 33, 10">
+            <attributes>
+              <attribute key="Name" value="dl_2" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 34, 7, 39, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Average" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 13, 4, 15">
+            <attributes>
+              <attribute key="Name" value="dl_3" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 12, 15, 16" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Medium" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 17, 13, 19, 15">
+            <attributes>
+              <attribute key="Name" value="dl_4" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 20, 12, 30, 16" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Hard" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 31, 13, 33, 15">
+            <attributes>
+              <attribute key="Name" value="dl_5" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 34, 12, 39, 16" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Very Hard" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+            
+      <element type="MenuBackground" rect="relative: 1, 9, 49, 30">
+        <attributes>
+          <attribute key="Name" value="OptionsGameMode" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <children>
+          <element type="staticText" rect="relative: 0, 0, 48, 3" font="big">
+            <attributes>
+              <attribute key="Caption" value="Game Mode" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 1, 4, 47, 6" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Select which game mode you want to play" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 8, 4, 10">
+            <attributes>
+              <attribute key="Name" value="gm_0" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 7, 15, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Free Racing" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 2, 12, 4, 14">
+            <attributes>
+              <attribute key="Name" value="gm_1" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 5, 11, 15, 15" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Cup" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 28, 8, 30, 10">
+            <attributes>
+              <attribute key="Name" value="gm_2" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 31, 7, 48, 11" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Network | Free Racing" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 28, 12, 30, 14">
+            <attributes>
+              <attribute key="Name" value="gm_3" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 31, 11, 48, 15" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Network | Cup" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="DustbinCheckbox" rect="relative: 28, 16, 30, 18">
+            <attributes>
+              <attribute key="Name" value="gm_4" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 31, 15, 48, 19" font="regular">
+            <attributes>
+              <attribute key="Caption" value="Join Network Game" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+        </children>
+      </element>      
+      
     </children>
   </element>  
   

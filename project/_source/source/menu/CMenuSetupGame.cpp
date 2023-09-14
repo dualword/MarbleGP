@@ -162,7 +162,7 @@ namespace dustbin {
             checkboxChange("randomize_first", a_iLevel >= 2);
             checkboxChange("fillgrid_ai"    , true);
 
-            scrollbarChange("raceclass"         , a_iLevel < 4 ? a_iLevel : a_iLevel == 4 ? 5 : 4);
+            scrollbarChange("raceclass"         , a_iLevel < 3 ? a_iLevel : a_iLevel == 3 ? 5 : a_iLevel == 4 ? 3 : 4);
             scrollbarChange("gridsize"          , a_iLevel < 3 ? 3 : 4);
             scrollbarChange("starting_positions", 1);
 

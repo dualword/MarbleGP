@@ -389,7 +389,7 @@ Use the OK button on the bottom to go to the next step of initializing the game,
           
           <element type="staticText" rect="relative: 13, 22, 33, 26" font="small">
             <attributes>
-              <attribute key="Caption" value="The grid will be filled to 16 marbles with Marble2 and MarbleGP AI players." />
+              <attribute key="Caption" value="The grid will be filled to 16 marbles with AI players of all classes." />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>
@@ -409,7 +409,7 @@ Use the OK button on the bottom to go to the next step of initializing the game,
           
           <element type="staticText" rect="relative: 13, 27, 33, 31" font="small">
             <attributes>
-              <attribute key="Caption" value="The grid will be filled to 16 marbles with AI players of all classes." />
+              <attribute key="Caption" value="The grid will be filled to 16 marbles with Marble2 and MarbleGP AI players." />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>
