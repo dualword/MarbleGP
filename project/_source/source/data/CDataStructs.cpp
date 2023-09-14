@@ -6,6 +6,7 @@
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
+#include <json/CIrrJSON.h>
 #include <Defines.h>
 #include <CGlobal.h>
 #include <algorithm>
@@ -1887,6 +1888,28 @@ namespace dustbin {
       l_cSerializer.addS32(m_iModeMap);
 
       return l_cSerializer.getMessageAsString();
+    }
+
+    SMarbleGpCup::SMarbleGpCup() : m_sName(""), m_sDescription("") {
+    }
+
+    SMarbleGpCup::SMarbleGpCup(const SMarbleGpCup& a_cOther) : m_sName(a_cOther.m_sName), m_sDescription(a_cOther.m_sDescription) {
+      for (std::vector<std::tuple<std::string, int>>::const_iterator l_itRace = m_vRaces.begin(); l_itRace != m_vRaces.end(); l_itRace++) {
+        m_vRaces.push_back(std::make_tuple(std::get<0>(*l_itRace), std::get<1>(*l_itRace)));
+      }
+    }
+
+    /**
+    * Load the cup definition from a JSON. The json must be located at the start of the cup object
+    * @param a_pJson the JSON object to parse
+    */
+    void SMarbleGpCup::loadFromJson(json::CIrrJSON* a_pJson) {
+      int l_iState = 0;
+      std::string l_sKey = "";
+
+      while (a_pJson->read()) {
+
+      }
     }
   }
 }
