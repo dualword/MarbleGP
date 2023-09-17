@@ -184,6 +184,9 @@ namespace dustbin {
       else if (a_sName == "menu_remote") {
         l_pRet = a_pManager->changeMenu(createMenuRemote(a_pDevice, a_pManager, a_pState));
       }
+      else if (a_sName == "menu_nextrace") {
+        l_pRet = a_pManager->changeMenu(createMenuNextRace(a_pDevice, a_pManager, a_pState));
+      }
 
       if (l_pRet == nullptr)
         printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());

@@ -64,13 +64,11 @@ namespace dustbin {
                 CGlobal::getInstance()->setGlobal("edit_profileno", "-1");
                 CGlobal::getInstance()->setGlobal("edit_profile", "");
 
-                m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_setupgame");
                 platform::consumeBackEvent(true);
                 createMenu("menu_profilewizard", m_pDevice, m_pManager, m_pState);
               }
               else {
-                m_pManager->pushToMenuStack("menu_selecttrack");
                 platform::consumeBackEvent(true);
                 createMenu("menu_setupgame", m_pDevice, m_pManager, m_pState);
               }

@@ -54,5 +54,11 @@ namespace dustbin {
     * @return the corresponding icon folder
     */
     std::string getIconFolder(irr::s32 a_iHeight);
+
+    /**
+    * Load all cup definitions
+    * @return a vector with all cup definitions
+    */
+    std::vector<data::SMarbleGpCup> loadCupDefinitions();
   }
 }

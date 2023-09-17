@@ -711,6 +711,9 @@
     <ClCompile Include="..\..\_source\source\json\CIrrJSON.cpp">
       <Filter>Quelldateien\json</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuNextRace.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

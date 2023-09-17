@@ -115,6 +115,11 @@ namespace dustbin {
     const irr::s32 c_iMarbleClass = -171;   /**< Marker for the marble class */
     const irr::s32 c_iMarbleModes = -172;   /**< Marker for the AI mode flags */
 
+    // MarbleGP Cup
+    const irr::s32 c_iMarbleGpCupHead   = -200;   /**< Header for MarbleGP Cup data */
+    const irr::s32 c_iMarbleGpCupRace   = -201;   /**< Header for a cup race */
+    const irr::s32 c_iMarbleGpCupFooter = -202;   /**< End of the MarbleGP Cup data */
+
     // Free Game Slots
     const irr::s32 c_iFreeGameSlots = -180; /**< Marker for free game slots */
 
@@ -164,7 +169,7 @@ namespace dustbin {
       if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
       if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
       if (a_mData.find("wizardfdc"   ) != a_mData.end()) m_iWizardDfc    = std::atoi(a_mData.at("wizardfdc"   ).c_str());
-      if (a_mData.find("wizardgmt"   ) != a_mData.end()) m_iWizardDfc    = std::atoi(a_mData.at("wizardgmt"   ).c_str());
+      if (a_mData.find("wizardgmt"   ) != a_mData.end()) m_iWizardGmt    = std::atoi(a_mData.at("wizardgmt"   ).c_str());
 
       if (a_mData.find("fullscreen" ) != a_mData.end()) m_bFullscreen  = a_mData.at("fullscreen" ) == "true";
       if (a_mData.find("debugaipath") != a_mData.end()) m_bDebugAIPath = a_mData.at("debugaipath") == "true";
@@ -198,7 +203,7 @@ namespace dustbin {
       a_mData["shadows"     ] = std::to_string(m_iShadows    );
       a_mData["ambient"     ] = std::to_string(m_iAmbient    );
       a_mData["wizardfdc"   ] = std::to_string(m_iWizardDfc  );
-      a_mData["wizardgmt"   ] = std::to_string(m_iWizardDfc  );
+      a_mData["wizardgmt"   ] = std::to_string(m_iWizardGmt  );
 
       a_mData["fullscreen"  ] = m_bFullscreen  ? "true" : "false";
       a_mData["debugaipath" ] = m_bDebugAIPath ? "true" : "false";
@@ -1890,13 +1895,62 @@ namespace dustbin {
       return l_cSerializer.getMessageAsString();
     }
 
-    SMarbleGpCup::SMarbleGpCup() : m_sName(""), m_sDescription("") {
+    SMarbleGpCup::SMarbleGpCup() : m_sName(""), m_sDescription(""), m_bUserDefined(false), m_iRaceCount(-1) {
     }
 
-    SMarbleGpCup::SMarbleGpCup(const SMarbleGpCup& a_cOther) : m_sName(a_cOther.m_sName), m_sDescription(a_cOther.m_sDescription) {
-      for (std::vector<std::tuple<std::string, int>>::const_iterator l_itRace = m_vRaces.begin(); l_itRace != m_vRaces.end(); l_itRace++) {
+    SMarbleGpCup::SMarbleGpCup(const SMarbleGpCup& a_cOther) : m_sName(a_cOther.m_sName), m_sDescription(a_cOther.m_sDescription), m_bUserDefined(false), m_iRaceCount(a_cOther.m_iRaceCount) {
+      for (std::vector<std::tuple<std::string, int>>::const_iterator l_itRace = a_cOther.m_vRaces.begin(); l_itRace != a_cOther.m_vRaces.end(); l_itRace++) {
         m_vRaces.push_back(std::make_tuple(std::get<0>(*l_itRace), std::get<1>(*l_itRace)));
       }
+    }
+
+    SMarbleGpCup::SMarbleGpCup(json::CIrrJSON *a_pJson) : m_sName(""), m_sDescription(""), m_bUserDefined(false), m_iRaceCount(-1) {
+      loadFromJson(a_pJson);
+      m_iRaceCount = (int)m_vRaces.size();
+    }
+
+    SMarbleGpCup::SMarbleGpCup(const std::string& a_cSerialized) : m_sName(""), m_sDescription(""), m_bUserDefined(false), m_iRaceCount(-1) {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_cSerialized.c_str());
+
+      while (l_cSerializer.hasMoreMessages()) {
+        irr::s32 l_iData = l_cSerializer.getS32();
+
+        if (l_iData == c_iMarbleGpCupHead) {
+          m_sName        = l_cSerializer.getString();
+          m_sDescription = l_cSerializer.getString();
+        }
+        else if (l_iData == c_iMarbleGpCupRace) {
+          std::string l_sTrack =      l_cSerializer.getString();
+          int         l_iLaps  = (int)l_cSerializer.getS32   ();
+          m_vRaces.push_back(std::make_tuple(l_sTrack, l_iLaps));
+        }
+        else if (l_iData == c_iMarbleGpCupFooter) {
+          m_iRaceCount = (int)m_vRaces.size();
+          break;
+        }
+      }
+    }
+
+    /**
+    * Serialize the cup for storage in the global data map
+    * @return serialized string with the cup data
+    */
+    std::string SMarbleGpCup::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      l_cSerializer.addS32(c_iMarbleGpCupHead);
+      l_cSerializer.addString(m_sName);
+      l_cSerializer.addString(m_sDescription);
+
+      for (auto l_cRace : m_vRaces) {
+        l_cSerializer.addS32(c_iMarbleGpCupRace);
+        l_cSerializer.addString(std::get<0>(l_cRace));
+        l_cSerializer.addS32(std::get<1>(l_cRace));
+      }
+
+      l_cSerializer.addS32(c_iMarbleGpCupFooter);
+
+      return l_cSerializer.getMessageAsString();
     }
 
     /**
@@ -1904,11 +1958,99 @@ namespace dustbin {
     * @param a_pJson the JSON object to parse
     */
     void SMarbleGpCup::loadFromJson(json::CIrrJSON* a_pJson) {
-      int l_iState = 0;
-      std::string l_sKey = "";
+      if (a_pJson->getType() == json::CIrrJSON::enToken::ObjectStart) {
+        int l_iState = 0;
+        std::string l_sKey = "";
+        std::string l_sTrack = "";
+        int l_iLaps = 0;
 
-      while (a_pJson->read()) {
+        while (a_pJson->read()) {
+          json::CIrrJSON::enToken l_eToken = a_pJson->getType();
 
+          switch (l_iState) {
+            case 0:
+              if (l_eToken == json::CIrrJSON::enToken::ValueString) {
+                l_sKey = a_pJson->asString();
+                l_iState = 1;
+              }
+              break;
+
+            case 1:
+              if (l_eToken == json::CIrrJSON::enToken::Colon) {
+                if (l_sKey == "name")
+                  l_iState = 2;
+                else if (l_sKey == "description")
+                  l_iState = 3;
+                else if (l_sKey == "races")
+                  l_iState = 4;
+              }
+              break;
+
+            case 2:
+              if (l_eToken == json::CIrrJSON::enToken::ValueString) {
+                m_sName = a_pJson->asString();
+                l_iState = 0;
+              }
+              break;
+
+            case 3:
+              if (l_eToken == json::CIrrJSON::enToken::ValueString) {
+                m_sDescription = a_pJson->asString();
+                l_iState = 0;
+              }
+              break;
+
+            case 4:
+              if (l_eToken == json::CIrrJSON::enToken::ArrayStart)
+                l_iState = 5;
+              else if (l_eToken == json::CIrrJSON::enToken::ObjectEnd)
+                return;
+              break;
+
+            case 5:
+              if (l_eToken == json::CIrrJSON::enToken::ObjectStart) 
+                l_iState = 6;
+              else if (l_eToken == json::CIrrJSON::enToken::ArrayEnd)
+                l_iState = 4;
+              break;
+
+            case 6:
+              if (l_eToken == json::CIrrJSON::enToken::ValueString) {
+                if (a_pJson->asString() == "track")
+                  l_iState = 7;
+                else if (a_pJson->asString() == "laps")
+                  l_iState = 8;
+                else
+                  printf("Unexpected key \"%s\"\n", a_pJson->asString().c_str());
+              }
+              else if (l_eToken == json::CIrrJSON::enToken::ObjectEnd) {
+                if (l_sTrack != "" && l_iLaps > 0)
+                  m_vRaces.push_back(std::make_tuple(l_sTrack, l_iLaps));
+
+                l_sTrack = "";
+                l_iLaps  = -1;
+                l_iState = 5;
+              }
+              break;
+
+            case 7:
+              if (l_eToken == json::CIrrJSON::enToken::ValueString) {
+                l_sTrack = a_pJson->asString();
+                l_iState = 6;
+              }
+              break;
+
+            case 8:
+              if (l_eToken == json::CIrrJSON::enToken::ValueInt) {
+                l_iLaps = a_pJson->asInt();
+                l_iState = 6;
+              }
+              break;
+          }
+        }
+      }
+      else {
+        printf("Invalid cup definition!\n");
       }
     }
   }

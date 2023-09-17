@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Cup Selection" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 5, 24, 7">
+        <attributes>
+          <attribute key="Caption" value="Available Cups:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 25, 5, 55, 7">
+        <attributes>
+          <attribute key="Name" value="CupSelector" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 10, 80, 12" font="big">
+        <attributes>
+          <attribute key="Caption" value="Insert Name of the Cup here" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_name" />
+        </attributes>
+      </element>      
+      <element type="staticText" rect="relative: 0, 13, 80, 15">
+        <attributes>
+          <attribute key="Caption" value="Insert Description of the Cup here" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_description" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 59, 16, 79, 23">
+        <attributes>
+          <attribute key="Caption" value="Race 46 / 66" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_raceno" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 59, 23, 79, 43">
+        <attributes>
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Name" value="Thumbnail" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/levels/rotor/thumbnail.png" />
+        </custom>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 4, 23, 6, 25">
+        <attributes>
+          <attribute key="Name" value="cm_0" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 4, 28, 6, 30">
+        <attributes>
+          <attribute key="Name" value="cm_1" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 4, 33, 6, 35">
+        <attributes>
+          <attribute key="Name" value="cm_2" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+      </element>
+      
+      
+      <element type="staticText" rect="relative: 7, 22, 35, 26">
+        <attributes>
+          <attribute key="Caption" value="Default Mode (Number of Laps as defined)" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 7, 27, 35, 31">
+        <attributes>
+          <attribute key="Caption" value="Black Lap Mode (One Lap per Race)" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 7, 32, 35, 36">
+        <attributes>
+          <attribute key="Caption" value="Blue Lap Mode (Fixed Number of Laps per Race)" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 4, 37, 12, 39">
+        <attributes>
+          <attribute key="Name" value="nolaps" />
+          <attribute key="Selected" value="1" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="1;2;3;4;5;6;7;8;9;10;11;12;13;14;15" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 13, 36, 35, 40">
+        <attributes>
+          <attribute key="Caption" value="Number of Laps (Blue Cup)" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+    </children>
+  </element>  
+  
+  <include file="data/menu/button_cancel.xml" />
+  <include file="data/menu/button_ok.xml" />
+</dialog>

@@ -556,6 +556,13 @@ namespace dustbin {
                   l_cSlots.m_vSlots = l_vGrid;
                   m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
+                  if (m_iGameMode == 0 || m_iGameMode == 2) {
+                    m_pManager->pushToMenuStack("menu_selecttrack");
+                  }
+                  else if (m_iGameMode == 1 || m_iGameMode == 3) {
+                    m_pManager->pushToMenuStack("menu_selectcup");
+                  }
+
                   m_pManager->pushToMenuStack("menu_fillgrid");
 
                   if (m_iGameMode == 2 || m_iGameMode == 3) {

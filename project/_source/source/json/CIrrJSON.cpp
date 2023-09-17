@@ -21,6 +21,15 @@ namespace dustbin {
       m_pReader = m_sJSON.c_str();
     }
 
+    CIrrJSON::CIrrJSON(irr::io::IReadFile* a_pFile) : m_sJSON(""), m_sCurrent(""), m_sError(""), m_pReader(nullptr), m_eToken(enToken::Unknown) {
+      char *p = new char[a_pFile->getSize() + 1];
+      memset(p, 0, a_pFile->getSize() + 1);
+      a_pFile->read(p, a_pFile->getSize());
+      m_sJSON = p;
+      delete []p;
+      m_pReader = m_sJSON.c_str();
+    }
+
     CIrrJSON::~CIrrJSON() {
     }
 
@@ -152,6 +161,22 @@ namespace dustbin {
 
     bool CIrrJSON::hasError() {
       return m_eToken == enToken::Error;
+    }
+
+    const std::string CIrrJSON::getTokenTypeAsString() {
+      return m_eToken == json::CIrrJSON::enToken::ArrayEnd    ? "ArrayEnd"    :
+             m_eToken == json::CIrrJSON::enToken::ArrayStart  ? "ArrayStart"  :
+             m_eToken == json::CIrrJSON::enToken::Colon       ? "Colon"       :
+             m_eToken == json::CIrrJSON::enToken::EndOfJSON   ? "EndOfJson"   :
+             m_eToken == json::CIrrJSON::enToken::Error       ? "Error"       :
+             m_eToken == json::CIrrJSON::enToken::ObjectEnd   ? "ObjectEnd"   :
+             m_eToken == json::CIrrJSON::enToken::ObjectStart ? "ObjectStart" :
+             m_eToken == json::CIrrJSON::enToken::Separator   ? "Separator"   :
+             m_eToken == json::CIrrJSON::enToken::Unknown     ? "Unkown"      :
+             m_eToken == json::CIrrJSON::enToken::ValueBool   ? "ValueBool"   :
+             m_eToken == json::CIrrJSON::enToken::ValueString ? "ValueString" :
+             m_eToken == json::CIrrJSON::enToken::ValueFloat  ? "ValueFloat"  :
+             m_eToken == json::CIrrJSON::enToken::ValueInt    ? "ValueInt"    : "?";
     }
   }
 }

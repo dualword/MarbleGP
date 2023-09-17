@@ -3,6 +3,7 @@
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
+#include <json/CIrrJSON.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
 #include <Defines.h>
@@ -245,6 +246,52 @@ namespace dustbin {
         return "data/icons/" + std::to_string(l_iHeight) + "/";
       }
       else return "data/images/";
+    }
+
+
+    /**
+    * Load all cup definitions
+    * @return a vector with all cup definitions
+    */
+    std::vector<data::SMarbleGpCup> loadCupDefinitions() {
+      std::vector<data::SMarbleGpCup> l_vCups;
+
+      std::string l_aFiles[] = {
+        "data/cups.json",
+        helpers::ws2s(platform::portableGetDataPath()) + "/cups.json",
+        ""
+      };
+
+      for (int i = 0; l_aFiles[i] != ""; i++) {
+        irr::io::IReadFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile(l_aFiles[i].c_str());
+
+        if (l_pFile != nullptr) {
+          json::CIrrJSON *l_pJson = new json::CIrrJSON(l_pFile);
+
+          int l_iState = 0;
+
+          while (l_pJson->read()) {
+            switch (l_iState) {
+              case 0:
+                if (l_pJson->getType() == json::CIrrJSON::enToken::ArrayStart)
+                  l_iState = 1;
+                break;
+
+              case 1:
+                if (l_pJson->getType() == json::CIrrJSON::enToken::ObjectStart) {
+                  l_vCups.push_back(data::SMarbleGpCup(l_pJson));
+                  l_vCups.back().m_bUserDefined = i != 0;
+                }
+                break;
+            }
+          }
+
+          delete l_pJson;
+          l_pFile->drop();
+        }
+      }
+
+      return l_vCups;
     }
   }
 }

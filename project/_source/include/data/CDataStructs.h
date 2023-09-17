@@ -404,16 +404,28 @@ namespace dustbin {
       std::string m_sName;          /**< The name of the cup */
       std::string m_sDescription;   /**< The description of the cup */
 
+      bool m_bUserDefined;    /**< Is this cup user defined? */
+
+      int m_iRaceCount;   /**< The original number of races (During a cup races will be removed from m_vRaces) */
+
       std::vector<std::tuple<std::string, int>> m_vRaces;   /**< The cup's races (0 == track, 1 == laps) */
 
       SMarbleGpCup();
       SMarbleGpCup(const SMarbleGpCup &a_cOther);
+      SMarbleGpCup(json::CIrrJSON *a_pJson);
+      SMarbleGpCup(const std::string &a_cSerialized);
 
       /**
       * Load the cup definition from a JSON. The json must be located at the start of the cup object
       * @param a_pJson the JSON object to parse
       */
       void loadFromJson(json::CIrrJSON *a_pJson);
+
+      /**
+      * Serialize the cup for storage in the global data map
+      * @return serialized string with the cup data
+      */
+      std::string serialize();
     }
     SMarbleGpCup;
 

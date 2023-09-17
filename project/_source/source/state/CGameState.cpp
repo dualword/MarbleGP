@@ -650,10 +650,12 @@ namespace dustbin {
         messages::IMessage *l_pMsg = nullptr;
 
         do {
-          l_pMsg = m_pInputQueue->popMessage();
-          if (l_pMsg != nullptr && !m_bWillBeDeleted) {
-            helpers::addToDebugLog("Delete message" + std::to_string((int)l_pMsg->getMessageId()));
-            handleMessage(l_pMsg);
+          if (m_pInputQueue != nullptr) {
+            l_pMsg = m_pInputQueue->popMessage();
+            if (l_pMsg != nullptr && !m_bWillBeDeleted) {
+              helpers::addToDebugLog("Delete message" + std::to_string((int)l_pMsg->getMessageId()));
+              handleMessage(l_pMsg);
+            }
           }
         }
         while (l_pMsg != nullptr);
@@ -998,29 +1000,31 @@ namespace dustbin {
 #endif
 
       do {
-        l_pMsg = m_pInputQueue->popMessage();
-        if (l_pMsg != nullptr) {
-          for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-            if (it->second.m_pHUD != nullptr) {
-              it->second.m_pHUD->handleMessage(l_pMsg, false);
-            }
-          }
-
-          if (l_pMsg->getMessageId() == messages::enMessageIDs::ObjectMoved || l_pMsg->getMessageId() == messages::enMessageIDs::MarbleMoved) {
-            m_vMoveMessages.push_back(l_pMsg);
-          }
-          else {
-            if (l_pMsg->getMessageId() == messages::enMessageIDs::StepMsg) {
-              for (std::vector<messages::IMessage*>::iterator it = m_vMoveMessages.begin(); it != m_vMoveMessages.end(); it++) {
-                handleMessage(*it, true);
+        if (m_pInputQueue != nullptr) {
+          l_pMsg = m_pInputQueue->popMessage();
+          if (l_pMsg != nullptr) {
+            for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
+              if (it->second.m_pHUD != nullptr) {
+                it->second.m_pHUD->handleMessage(l_pMsg, false);
               }
-              m_vMoveMessages.clear();
             }
 
-            handleMessage(l_pMsg, true);
+            if (l_pMsg->getMessageId() == messages::enMessageIDs::ObjectMoved || l_pMsg->getMessageId() == messages::enMessageIDs::MarbleMoved) {
+              m_vMoveMessages.push_back(l_pMsg);
+            }
+            else {
+              if (l_pMsg->getMessageId() == messages::enMessageIDs::StepMsg) {
+                for (std::vector<messages::IMessage*>::iterator it = m_vMoveMessages.begin(); it != m_vMoveMessages.end(); it++) {
+                  handleMessage(*it, true);
+                }
+                m_vMoveMessages.clear();
+              }
+
+              handleMessage(l_pMsg, true);
+            }
           }
-        }
-      } 
+        } 
+      }
       while (l_pMsg != nullptr);
 
       if (!m_pDevice->run())

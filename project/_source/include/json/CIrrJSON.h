@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <irrlicht.h>
 #include <string>
 #include <vector>
 
@@ -50,6 +51,7 @@ namespace dustbin {
 
     public:
       CIrrJSON(const std::string &a_sJSON);
+      CIrrJSON(irr::io::IReadFile *a_pFile);
       virtual ~CIrrJSON();
 
       bool read();
@@ -68,6 +70,8 @@ namespace dustbin {
       bool hasError();
 
       const std::string &getError();
+
+      const std::string getTokenTypeAsString();
     };
   }
 }
