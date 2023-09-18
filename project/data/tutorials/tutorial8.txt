@@ -1,1 +1,1 @@
-You have finished the tutorial and are now ready for a first race. I suggest limiting the grid size to four marbles and to compete against Marble3 AI for the start.
+You have finished the tutorial and are now ready for a first race. Using the difficulty level "Too Easy" for the first race is a good idea I think.

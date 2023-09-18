@@ -68,6 +68,8 @@ namespace dustbin {
         std::vector<std::string> m_vDefaultNames;         /**< A list of first names (for combination with the surnames) */
         std::vector<std::string> m_vDefaultSurNames;      /**< A list of surnames (for combination with the first names) */
 
+        bool m_bJoySelect;
+
         void fillTextureElements() {
           std::string l_sTexture = m_cPlayer.m_sTexture;
           if (l_sTexture == "")
@@ -927,6 +929,33 @@ namespace dustbin {
           m_pState->getGlobal()->setSetting("selectedplayers", m_cPlayer.serialize());
         }
 
+        void setupTutorialRace() {
+          data::SGameData l_cData;
+
+          l_cData.m_eType       = data::SGameData::enType::Local;
+          l_cData.m_iClass      = 0;
+          l_cData.m_iLaps       = 1;
+          l_cData.m_sTrack      = "tutorial";
+          l_cData.m_bIsTutorial = true;
+
+          CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+
+          data::SGameSettings l_cSettings;
+
+          m_cPlayer.m_iViewPort = 1;
+          m_cPlayer.m_iGridPos  = 1;
+          m_cPlayer.m_iPlayerId = 1;
+
+          data::SRacePlayers l_cPlayers;
+          l_cPlayers.m_vPlayers.push_back(m_cPlayer);
+
+          prepareSetupGame();
+          m_pManager->pushToMenuStack("menu_selecttrack");
+          m_pManager->pushToMenuStack("menu_setupgame");
+          CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
+          m_pState->setState(state::enState::Game);
+        }
+
       public:
         CMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler    (a_pDevice, a_pManager, a_pState),
@@ -944,7 +973,8 @@ namespace dustbin {
           m_pBtnSave      (nullptr),
           m_pWarning      (nullptr),
           m_pPatternDialog(nullptr),
-          m_pPatternList  (nullptr)
+          m_pPatternList  (nullptr),
+          m_bJoySelect    (false)
         {
           loadDefaults();
 
@@ -1016,7 +1046,7 @@ namespace dustbin {
                     }
                   }
                 }
-                else if (l_sButton == "save") {
+                else if (l_sButton == "save" || l_sButton == "CancelAssignJoystick") {
                   if (m_eStep != enMenuStep::Tutorial) {
                     std::string l_sEditProfileNo = m_pState->getGlobal()->getGlobal("edit_profileno");
                     int l_iEditProfileNo = std::atoi(l_sEditProfileNo.c_str());
@@ -1039,30 +1069,26 @@ namespace dustbin {
                     }
                   }
                   else {
-                    data::SGameData l_cData;
+                    controller::CControllerGame l_cCtrl;
+                    l_cCtrl.deserialize(m_cPlayer.m_sControls);
+                    m_bJoySelect = l_cCtrl.usesJoystick();
 
-                    l_cData.m_eType       = data::SGameData::enType::Local;
-                    l_cData.m_iClass      = 0;
-                    l_cData.m_iLaps       = 1;
-                    l_cData.m_sTrack      = "tutorial";
-                    l_cData.m_bIsTutorial = true;
+                    if (!m_bJoySelect)
+                      setupTutorialRace();
+                    else {
+                      irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
 
-                    CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+                      if (l_pSelect != nullptr) {
+                        irr::gui::IGUIStaticText *l_pPlr = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
-                    data::SGameSettings l_cSettings;
+                        if (l_pPlr != nullptr) {
+                          std::wstring s = L"Player \"" + helpers::s2ws(m_cPlayer.m_sName) + L"\": Please select your gamepad by clicking a button.";
+                          l_pPlr->setText(s.c_str());
+                        }
 
-                    m_cPlayer.m_iViewPort = 1;
-                    m_cPlayer.m_iGridPos  = 1;
-                    m_cPlayer.m_iPlayerId = 1;
-
-                    data::SRacePlayers l_cPlayers;
-                    l_cPlayers.m_vPlayers.push_back(m_cPlayer);
-
-                    prepareSetupGame();
-                    m_pManager->pushToMenuStack("menu_selecttrack");
-                    m_pManager->pushToMenuStack("menu_setupgame");
-                    CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
-                    m_pState->setState(state::enState::Game);
+                        l_pSelect->setVisible(true);
+                      }
+                    }
                   }
                 }
                 else if (l_sButton == "clear_name") {
@@ -1337,8 +1363,19 @@ namespace dustbin {
               }
             }
             else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-              if (m_pCtrl != nullptr)
-                l_bRet = m_pCtrl->OnJoystickEvent(a_cEvent);
+              if (!m_bJoySelect) {
+                if (m_pCtrl != nullptr)
+                  l_bRet = m_pCtrl->OnJoystickEvent(a_cEvent);
+              }
+              else {
+                if (a_cEvent.JoystickEvent.ButtonStates != 0) {
+                  controller::CControllerGame l_cCtrl;
+                  l_cCtrl.deserialize(m_cPlayer.m_sControls);
+                  l_cCtrl.setJoystickIndices(a_cEvent.JoystickEvent.Joystick);
+                  m_cPlayer.m_sControls = l_cCtrl.serialize();
+                  setupTutorialRace();
+                }
+              }
             }
           }
 
@@ -1365,7 +1402,7 @@ namespace dustbin {
           printf("Editing: %s\n", a_bEditing ? "true" : "false");
           m_pState->enableMenuController(!a_bEditing);
         }
-   };
+    };
 
     IMenuHandler* createMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState) {
       return new CMenuProfileWizard(a_pDevice, a_pManager, a_pState);

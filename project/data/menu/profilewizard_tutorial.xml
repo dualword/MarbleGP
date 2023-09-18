@@ -46,4 +46,5 @@
       
     </children>
   </element>
+  <include file="data/menu/dialog_select_joystick.xml" />
 </dialog>

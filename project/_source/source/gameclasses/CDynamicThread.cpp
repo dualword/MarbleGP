@@ -156,7 +156,7 @@ namespace dustbin {
 
             if (l_fSoftErp > 0.0) l_cContact[i].surface.mode |= dContactSoftERP;
 
-            if (l_pMarble->m_bInCfm) {
+            if (l_pMarble != nullptr && l_pMarble->m_bInCfm) {
               l_cContact[i].surface.mode |= dContactSoftCFM;
               l_cContact[i].surface.soft_cfm = l_pMarble->m_fCfmZone;
             }

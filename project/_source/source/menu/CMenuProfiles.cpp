@@ -49,7 +49,6 @@ namespace dustbin {
 
       gui::CMenuButton *m_pDelete;      /**< The "remove profile" button */
       gui::CMenuButton *m_pEdit;        /**< The "edit controls" button */
-      gui::CMenuButton *m_pTutorial;    /**< The "play tutorial" button */
       gui::CMenuButton *m_pAddProfile;  /**< The "add profile" button */
 
       data::SPlayerData m_cData;   /**< The Player Data structure linked to this profile UI */
@@ -65,7 +64,6 @@ namespace dustbin {
         m_pLblAiHelp  (nullptr),
         m_pDelete     (nullptr),
         m_pEdit       (nullptr),
-        m_pTutorial   (nullptr),
         m_pAddProfile (nullptr)
       {
       }
@@ -179,9 +177,6 @@ namespace dustbin {
 
         std::map<irr::u8, irr::SEvent> m_mJoyStates;    /**< Joystick states to make sure events are only passed when the joystick state changes */
 
-        int m_iTutorialPlr;     /**< The player who wants to start a tutorial. -1 means no tutorial is to be started */
-        bool m_bJoySelect;      /**< Are we currently waiting for the player to select a gamepad? */
-
         /**
         * The general OK button has been clicked. The profiles are serialized and stored
         * as string in the "profiles" setting, the last step loads the main menu
@@ -255,9 +250,7 @@ namespace dustbin {
             m_pMySmgr        (nullptr),
             m_pMyRtt         (nullptr),
             m_pMarble        (nullptr),
-            m_iMaxIndex      (-1),
-            m_iTutorialPlr   (-1),
-            m_bJoySelect     (false)
+            m_iMaxIndex      (-1)
           {
             m_pState->getGlobal()->clearGui();
 
@@ -347,7 +340,6 @@ namespace dustbin {
                 m_aProfiles[i].m_pLblAiHelp   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_aihelp"     , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
                 m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_delete"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 m_aProfiles[i].m_pEdit        = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_edit_profile" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pTutorial    = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_play_tutorial", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 m_aProfiles[i].m_pAddProfile  = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_add"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
 
                 if (m_aProfiles[i].isValid()) {
@@ -387,41 +379,30 @@ namespace dustbin {
           virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
             // A guard to make sure joystick events are only handled once per change
             if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-              if (m_bJoySelect && m_iTutorialPlr != -1) {
-                if (a_cEvent.JoystickEvent.ButtonStates != 0) {
-                  controller::CControllerGame l_cCtrl;
-                  l_cCtrl.deserialize(m_aProfiles[m_iTutorialPlr].m_cData.m_sControls);
-                  l_cCtrl.setJoystickIndices(a_cEvent.JoystickEvent.Joystick);
-                  m_aProfiles[m_iTutorialPlr].m_cData.m_sControls = l_cCtrl.serialize();
-                  m_bJoySelect = false;
-                }
-              }
-              else {
-                irr::u8 l_iIndex = a_cEvent.JoystickEvent.Joystick;
-                bool    l_bSkip  = false;
+              irr::u8 l_iIndex = a_cEvent.JoystickEvent.Joystick;
+              bool    l_bSkip  = false;
 
-                if (m_mJoyStates.find(l_iIndex) != m_mJoyStates.end()) {
-                  l_bSkip = m_mJoyStates[l_iIndex].JoystickEvent.ButtonStates == a_cEvent.JoystickEvent.ButtonStates &&
-                            m_mJoyStates[l_iIndex].JoystickEvent.POV          == a_cEvent.JoystickEvent.POV;
+              if (m_mJoyStates.find(l_iIndex) != m_mJoyStates.end()) {
+                l_bSkip = m_mJoyStates[l_iIndex].JoystickEvent.ButtonStates == a_cEvent.JoystickEvent.ButtonStates &&
+                          m_mJoyStates[l_iIndex].JoystickEvent.POV          == a_cEvent.JoystickEvent.POV;
 
-                  if (l_bSkip) {
-                    for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES && l_bSkip; i++) {
-                      int l_iOld = m_mJoyStates[l_iIndex].JoystickEvent.Axis[i];
-                      int l_iNew = a_cEvent              .JoystickEvent.Axis[i];
+                if (l_bSkip) {
+                  for (int i = 0; i < a_cEvent.JoystickEvent.NUMBER_OF_AXES && l_bSkip; i++) {
+                    int l_iOld = m_mJoyStates[l_iIndex].JoystickEvent.Axis[i];
+                    int l_iNew = a_cEvent              .JoystickEvent.Axis[i];
 
-                      if (abs(l_iOld) < 16000) l_iOld = 0;
-                      if (abs(l_iNew) < 16000) l_iNew = 0;
+                    if (abs(l_iOld) < 16000) l_iOld = 0;
+                    if (abs(l_iNew) < 16000) l_iNew = 0;
 
-                      l_bSkip &= l_iOld > 0 == l_iNew > 0 && l_iOld < 0 == l_iNew < 0;
-                    }
+                    l_bSkip &= l_iOld > 0 == l_iNew > 0 && l_iOld < 0 == l_iNew < 0;
                   }
                 }
-
-                m_mJoyStates[l_iIndex] = irr::SEvent(a_cEvent);
-
-                if (l_bSkip)
-                  return true;
               }
+
+              m_mJoyStates[l_iIndex] = irr::SEvent(a_cEvent);
+
+              if (l_bSkip)
+                return true;
             }
 
             bool l_bRet = false;
@@ -536,44 +517,6 @@ namespace dustbin {
                     }
                   }
                 }
-                else if (l_sSender == "btn_play_tutorial") {
-                  saveProfiles();
-
-                  for (int i = 0; i <= m_iMaxIndex; i++) {
-                    if (m_aProfiles[i].m_pTutorial == a_cEvent.GUIEvent.Caller) {
-                      m_iTutorialPlr = i;
-
-                      controller::CControllerGame l_cCtrl;
-                      l_cCtrl.deserialize(m_aProfiles[i].m_cData.m_sControls);
-                      m_bJoySelect = l_cCtrl.usesJoystick();
-
-                      if (m_bJoySelect) {
-                        irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-
-                        if (l_pSelect != nullptr) {
-                          irr::gui::IGUIStaticText *l_pPlr = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-
-                          if (l_pPlr != nullptr) {
-                            std::wstring s = L"Player \"" + helpers::s2ws(m_aProfiles[m_iTutorialPlr].m_cData.m_sName) + L"\": Please select your gamepad by clicking a button.";
-                            l_pPlr->setText(s.c_str());
-                          }
-
-                          l_pSelect->setVisible(true);
-                        }
-                      }
-
-                      break;
-                    }
-                  }
-                }
-                else if (l_sSender == "CancelAssignJoystick") {
-                  m_iTutorialPlr = -1;
-                  m_bJoySelect   = false;
-
-                  irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-                  if (l_pSelect != nullptr)
-                    l_pSelect->setVisible(false);
-                }
               }
             }
 
@@ -587,34 +530,6 @@ namespace dustbin {
             m_pDrv->setRenderTarget(m_pMyRtt, true, true);
             m_pMySmgr->drawAll();
             m_pDrv->setRenderTarget(nullptr, false, false);
-
-            if (m_iTutorialPlr != -1 && !m_bJoySelect) {
-              data::SGameData l_cData;
-
-              l_cData.m_eType       = data::SGameData::enType::Local;
-              l_cData.m_iClass      = 0;
-              l_cData.m_iLaps       = 1;
-              l_cData.m_sTrack      = "tutorial";
-              l_cData.m_bIsTutorial = true;
-
-              CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
-
-              data::SGameSettings l_cSettings;
-
-              m_aProfiles[m_iTutorialPlr].m_cData.m_iViewPort = 1;
-              m_aProfiles[m_iTutorialPlr].m_cData.m_iGridPos  = 1;
-              m_aProfiles[m_iTutorialPlr].m_cData.m_iPlayerId = 1;
-
-              data::SRacePlayers l_cPlayers;
-              l_cPlayers.m_vPlayers.push_back(m_aProfiles[m_iTutorialPlr].m_cData);
-
-              CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
-
-              m_pState->setState(state::enState::Game);
-              m_pManager->pushToMenuStack("menu_profiles");
-
-              m_iTutorialPlr = -1;
-            }
 
             return false;
           }
