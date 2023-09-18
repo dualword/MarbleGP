@@ -1918,6 +1918,7 @@ namespace dustbin {
         if (l_iData == c_iMarbleGpCupHead) {
           m_sName        = l_cSerializer.getString();
           m_sDescription = l_cSerializer.getString();
+          m_iRaceCount   = l_cSerializer.getS32();
         }
         else if (l_iData == c_iMarbleGpCupRace) {
           std::string l_sTrack =      l_cSerializer.getString();
@@ -1925,7 +1926,6 @@ namespace dustbin {
           m_vRaces.push_back(std::make_tuple(l_sTrack, l_iLaps));
         }
         else if (l_iData == c_iMarbleGpCupFooter) {
-          m_iRaceCount = (int)m_vRaces.size();
           break;
         }
       }
@@ -1941,6 +1941,7 @@ namespace dustbin {
       l_cSerializer.addS32(c_iMarbleGpCupHead);
       l_cSerializer.addString(m_sName);
       l_cSerializer.addString(m_sDescription);
+      l_cSerializer.addS32(m_iRaceCount);
 
       for (auto l_cRace : m_vRaces) {
         l_cSerializer.addS32(c_iMarbleGpCupRace);

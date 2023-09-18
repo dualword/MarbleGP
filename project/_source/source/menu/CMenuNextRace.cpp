@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
 #include <platform/CPlatform.h>
@@ -36,22 +37,41 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          std::string l_sHeadline = m_pState->getGlobal()->getGlobal("message_headline");
-          if (l_sHeadline != "") {
-            irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-            if (p != nullptr)
-              p->setText(helpers::s2ws(l_sHeadline).c_str());
+          data::SMarbleGpCup l_cCup = data::SMarbleGpCup(m_pState->getGlobal()->getGlobal("current_cup"));
 
-            m_pState->getGlobal()->setGlobal("message_headline", "");
+          std::map<std::string, std::string> l_mTrackNames = helpers::getTrackNameMap();
+
+          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          if (p != nullptr && l_cCup.m_vRaces.size() > 0) {
+            std::string l_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
+
+            if (l_mTrackNames.find(l_sTrack) != l_mTrackNames.end())
+              l_sTrack = l_mTrackNames[l_sTrack];
+
+            p->setText(helpers::s2ws(l_sTrack).c_str());
           }
 
-          std::string l_sText = m_pState->getGlobal()->getGlobal("message_text");
-          if (l_sText != "") {
-            irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_message", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-            if (p != nullptr)
-              p->setText(helpers::s2ws(l_sText).c_str());
+          p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          if (p != nullptr) {
+            std::wstring s = 
+              L"\"" + helpers::s2ws(l_cCup.m_sName) +
+              L"\" Race " + 
+              std::to_wstring(l_cCup.m_iRaceCount - l_cCup.m_vRaces.size() + 1) + 
+              L" of " + 
+              std::to_wstring(l_cCup.m_iRaceCount) +
+              L" (" + 
+              std::to_wstring(l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0) +
+              L" Laps)";
+            p->setText(s.c_str());
+          }
 
-            m_pState->getGlobal()->setGlobal("message_text", "");
+          irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          if (l_pThumbnail != nullptr) {
+            std::string l_sImg = "data/levels/" + std::get<0>(*l_cCup.m_vRaces.begin()) + "/thumbnail.png";
+            if (m_pFs->existFile(l_sImg.c_str()))
+              l_pThumbnail->setImage(m_pDrv->getTexture(l_sImg.c_str()));
+            else
+              l_pThumbnail->setImage(m_pDrv->getTexture("data/images/no_image.png"));
           }
         }
 
@@ -108,6 +128,11 @@ namespace dustbin {
                     m_pState->setState(state::enState::Game);
                   }
                 }
+              }
+              else if (l_sSender == "cancel") {
+                m_pManager->clearMenuStack();
+                createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+                l_bRet = true;
               }
             }
           }

@@ -1,22 +1,18 @@
 <?xml version="1.0"?>
 <!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
 <dialog>
-  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
     <children>
-      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+      <element type="staticText" rect="relative: 0, 1, 50, 3" font="big">
         <attributes>
           <attribute key="Caption" value="Dustbin::Games MarbleGP - Next Race" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
           <attribute key="Name" value="label_headline" />
         </attributes>
-        
-        <children>
-          
-        </children>
       </element>
        
-      <element type="staticText" rect="relative: 1, 7, 79, 9" font="big">
+      <element type="staticText" rect="relative: 0, 4, 50, 6">
         <attributes>
           <attribute key="Name" value="label_race" />
           <attribute key="HTextAlign" value="center" />
@@ -24,7 +20,7 @@
         </attributes>
       </element>
        
-      <element type="staticText" rect="relative: 1, 10, 79, 12">
+      <element type="staticText" rect="relative: 0, 6, 50, 8" font="small">
         <attributes>
           <attribute key="Name" value="label_details" />
           <attribute key="HTextAlign" value="center" />
@@ -32,7 +28,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 25, 13, 55, 43">
+      <element type="image" rect="relative: 15, 9, 35, 29">
         <attributes>
           <attribute key="UseAlphaChannel" value="true" />
           <attribute key="ScaleImage" value="true" />
