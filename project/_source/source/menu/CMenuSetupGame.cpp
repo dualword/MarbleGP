@@ -179,6 +179,7 @@ namespace dustbin {
             m_iGameMode = a_iLevel;
 
             m_pState->getGlobal()->getSettingData().m_iWizardGmt = a_iLevel;
+            checkboxChange("fillgrid_ai", a_iLevel < 2);
           }
         }
 
@@ -457,8 +458,8 @@ namespace dustbin {
           std::string l_aWizard[] = {
             "OptionsCustom",
             "OptionsPlayers",
-            "OptionsGameLevel",
             "OptionsGameMode",
+            "OptionsGameLevel",
             ""
           };
 
@@ -488,7 +489,7 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "ok") {
-                if (m_bGameWizard && m_iWizardStep < 3) {
+                if (m_bGameWizard && (m_iWizardStep < 3 && (m_iGameMode < 2 || m_iWizardStep != 2))) {
                   if (m_aWizard[m_iWizardStep] != nullptr)
                     m_aWizard[m_iWizardStep]->setVisible(false);
 
