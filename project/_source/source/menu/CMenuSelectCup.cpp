@@ -116,13 +116,13 @@ namespace dustbin {
 
           m_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
+          m_iMode = std::atoi(CGlobal::getInstance()->getSetting("cupmode").c_str());
+
           if (m_pLaps != nullptr) {
             std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
             m_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
-            m_pLaps->setEnabled(false);
+            m_pLaps->setEnabled(m_iMode == 2);
           }
-
-          m_iMode = std::atoi(CGlobal::getInstance()->getSetting("cupmode").c_str());
 
           for (int i = 0; i < 3; i++) {
             m_aMode[i] = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("cm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
