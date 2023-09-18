@@ -287,6 +287,9 @@ namespace dustbin {
             return true;
           }
 
+          case messages::enMessageIDs::PauseChanged:
+            return true;
+
           default:
             break;
         }

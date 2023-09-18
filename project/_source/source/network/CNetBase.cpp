@@ -11,8 +11,9 @@
 namespace dustbin {
   namespace network {
     CNetBase::CNetBase(CGlobal* a_pGlobal) :
-      m_pGlobal(a_pGlobal),
-      m_pHost  (nullptr)
+      m_pGlobal   (a_pGlobal),
+      m_pHost     (nullptr),
+      m_bSendMoved(true)
     {
       if (m_pGlobal->getGlobal("enet_initialized") != "true") {
         if (enet_initialize() != 0) {
@@ -39,8 +40,6 @@ namespace dustbin {
 
       messages::CMessageFactory l_cFactory;
 
-      bool l_bSendStep = false;
-
       while (!m_bStopThread && m_pHost != nullptr) {
         messages::IMessage *l_pMsg = m_pInputQueue->popMessage();
 
@@ -52,15 +51,14 @@ namespace dustbin {
 
             if (l_eMsg == messages::enMessageIDs::StepMsg) {
               messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(l_pMsg);
-              l_bSendStep = p->getStepNo() % 4 == 0;
+              m_bSendMoved = p->getStepNo() % 2 == 0;
             }
-            else l_bSendStep = true;
 
             // The most frequent messages are sent using a non-reliable packet
-            if (l_eMsg == messages::enMessageIDs::StepMsg || l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved) {
-              // if (l_bSendStep) {
+            if (l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved) {
+              if (m_bSendMoved) {
                 broadcastMessage(l_pMsg, false);
-                // }
+              }
             }
             else {
               broadcastMessage(l_pMsg, true);
@@ -150,7 +148,7 @@ namespace dustbin {
       a_pMessage->serialize(&l_cSerializer);
       std::string l_sMsg = l_cSerializer.getMessageAsString();
 
-      ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, a_bReliable ? ENET_PACKET_FLAG_RELIABLE : 0);
+      ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, a_bReliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
       enet_host_broadcast(m_pHost, a_bReliable ? 0 : 1, p);
 
       enet_host_flush(m_pHost);

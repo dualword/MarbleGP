@@ -22,6 +22,7 @@ namespace dustbin {
         CGlobal     *m_pGlobal;
         ENetHost    *m_pHost;
         ENetAddress  m_cAddress;
+        bool         m_bSendMoved;
 
         messages::CMessageFactory l_cFactory;
 
