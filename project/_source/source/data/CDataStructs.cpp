@@ -266,7 +266,8 @@ namespace dustbin {
       m_sName        (""),
       m_sTexture     (""),
       m_sControls    (""),
-      m_sShortName   ("")
+      m_sShortName   (""),
+      m_wsShortName  (L"")
     {
       m_sControls = c_sDefaultControls;
     }
@@ -284,6 +285,7 @@ namespace dustbin {
       m_sTexture      = a_cOther.m_sTexture;
       m_sControls     = a_cOther.m_sControls;
       m_sShortName    = a_cOther.m_sShortName;
+      m_wsShortName   = a_cOther.m_wsShortName;
       m_iPlayerId     = a_cOther.m_iPlayerId;
       m_eAiHelp       = a_cOther.m_eAiHelp;
       m_iGridPos      = a_cOther.m_iGridPos;
@@ -363,7 +365,7 @@ namespace dustbin {
             case c_iPlayerAiHelp      : m_eAiHelp       = (enAiHelp    )l_cSerializer.getS32   ()     ; break;
             case c_iPlayerGridPos     : m_iGridPos      =               l_cSerializer.getS32   ()     ; break;
             case c_iPlayerViewPort    : m_iViewPort     =               l_cSerializer.getS32   ()     ; break;
-            case c_iPlayerShortName   : m_sShortName    =               l_cSerializer.getString()     ; break;
+            case c_iPlayerShortName   : m_sShortName    =               l_cSerializer.getString()     ; m_wsShortName = helpers::s2ws(m_sShortName); break;
             case c_iPlayerDeviation   : m_fDeviation    =               l_cSerializer.getF32   ()     ; break;
             case c_iPlayerAutoThrottle: m_bAutoThrottle =               l_cSerializer.getS16   () != 0; break;
             case c_iPlayerDataEnd     : return true;

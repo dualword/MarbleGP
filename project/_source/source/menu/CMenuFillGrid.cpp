@@ -181,15 +181,16 @@ namespace dustbin {
               l_iCount++;
 
               data::SPlayerData l_cData;
-              l_cData.m_eType      = data::enPlayerType::Ai;
-              l_cData.m_iGridPos   = *l_vGrid.begin();
-              l_cData.m_iPlayerId  = l_iCount;
-              l_cData.m_sName      = std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin();
-              l_cData.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
-              l_cData.m_sShortName = std::get<1>(*l_itAi);
-              l_cData.m_fDeviation = std::get<5>(*l_itAi) / 100.0f;
-              l_cData.m_sControls  = "class=" + (*l_vAiClass.begin());
-              l_cData.m_sTexture   = std::get<2>(*l_itAi) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
+              l_cData.m_eType       = data::enPlayerType::Ai;
+              l_cData.m_iGridPos    = *l_vGrid.begin();
+              l_cData.m_iPlayerId   = l_iCount;
+              l_cData.m_sName       = std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin();
+              l_cData.m_eAiHelp     = data::SPlayerData::enAiHelp::Off;
+              l_cData.m_sShortName  = std::get<1>(*l_itAi);
+              l_cData.m_wsShortName = helpers::s2ws(l_cData.m_sShortName);
+              l_cData.m_fDeviation  = std::get<5>(*l_itAi) / 100.0f;
+              l_cData.m_sControls   = "class=" + (*l_vAiClass.begin());
+              l_cData.m_sTexture    = std::get<2>(*l_itAi) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
 
               if (l_cData.m_sTexture.find("pattern=") == std::string::npos) {
                 if (*l_vAiClass.begin() == "marble3")
