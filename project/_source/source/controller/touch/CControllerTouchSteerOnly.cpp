@@ -280,6 +280,7 @@ namespace dustbin {
               case enControlAreas::Left    : m_fSteer    -=  1.0f; break;
               case enControlAreas::Right   : m_fSteer    +=  1.0f; break;
               case enControlAreas::Brake   : m_fThrottle  = -1.0f; break;
+              case enControlAreas::Count   : break;
             }
           }
         }

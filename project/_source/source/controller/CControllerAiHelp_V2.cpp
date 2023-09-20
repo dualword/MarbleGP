@@ -78,6 +78,9 @@ namespace dustbin {
         case data::SPlayerData::enAiHelp::Low:
           s = L"The AI helps you by keeping a good speed when approaching a jump.";
           break;
+
+        default:
+          break;
       }
 
       s += L" You can however adjust the speed by using the marble's brake, this way you can improve your lap time.";

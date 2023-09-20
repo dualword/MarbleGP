@@ -78,7 +78,7 @@ namespace dustbin {
         virtual ~CMenuNextRace() {
         }
 
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
 

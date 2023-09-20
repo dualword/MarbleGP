@@ -240,6 +240,12 @@ namespace dustbin {
       int getLapNo();
 
       /**
+      * Auto finish the player, i.e. add checkpoint times until the current lap is finished
+      * @param a_pOther the player ahead of the current, used for the calculation
+      */
+      void finishPlayer(SRacePlayer *a_pOther);
+
+      /**
       * Serialize the data structure to the internal data format
       * using the 64-char serializer
       * @return the serialized string

@@ -137,7 +137,7 @@ namespace dustbin {
         * Event handler for this input
         * @param a_cEvent the event to handle
         */
-        virtual bool update(const irr::SEvent& a_cEvent);
+        virtual bool update(const irr::SEvent& a_cEvent) override;
 
         /**
         * Reset all necessary members as a new menu was loaded

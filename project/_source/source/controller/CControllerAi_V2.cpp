@@ -1498,7 +1498,7 @@ namespace dustbin {
               }
             }
             else {
-              a_iCtrlY = std::abs(l_fAngle < 30.0) ? 127 : 0;
+              a_iCtrlY = std::abs(l_fAngle) < 30.0 ? 127 : 0;
               a_bBrake = std::abs(l_fAngle) > 40.0;
             }
             return;

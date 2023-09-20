@@ -807,6 +807,7 @@ namespace dustbin {
               switch (a_eSound) {
                 case en2dSounds::Countdown  : if (m_mParameters.find(L"data/sounds/countdown.ogg"   ) != m_mParameters.end()) l_fVolume *= m_mParameters[L"data/sounds/countdown.ogg"   ]; break;
                 case en2dSounds::CountdownGo: if (m_mParameters.find(L"data/sounds/countdown_go.ogg") != m_mParameters.end()) l_fVolume *= m_mParameters[L"data/sounds/countdown_go.ogg"]; break;
+                default: break;
               }
 
               m_aSounds2d[(int)a_eSound]->setVolume(l_fVolume);

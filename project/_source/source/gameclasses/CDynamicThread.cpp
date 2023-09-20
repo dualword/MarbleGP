@@ -735,38 +735,18 @@ namespace dustbin {
       const std::vector<data::SRacePlayer *> l_vResult = m_pGameLogic->getRacePositions();
 
       int l_iDiff = 0;
-      int l_iWinr = 0;
 
       data::SRacePlayer *l_pOther = nullptr;
 
       for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
         if (it != l_vResult.begin() && !(*it)->m_bFinished) {
-          int l_iIndex = (int)(*it)->m_vLapCheckpoints.size();
-
-          if (l_pOther->m_vLapCheckpoints.size() >= l_iIndex) {
-            l_iIndex--;
-
-            int l_iDiff = 0;
-
-            for (int i = 0; i < l_pOther->m_vLapCheckpoints[l_iIndex].size(); i++) {
-              if (i < (*it)->m_vLapCheckpoints[l_iIndex].size()) {
-                l_iDiff = std::abs((*it)->m_vLapCheckpoints[l_iIndex][i] - l_pOther->m_vLapCheckpoints[l_iIndex][i]);
-              }
-              else {
-                if (i == l_pOther->m_vLapCheckpoints[l_iIndex].size() - 1)
-                  (*it)->m_vLapCheckpoints[l_iIndex].push_back(l_iWinr + l_iDiff);
-                else
-                  (*it)->m_vLapCheckpoints[l_iIndex].push_back(l_pOther->m_vLapCheckpoints[l_iIndex][i] + l_iDiff);
-              }
-            }
-
-            if (l_pOther->m_vLapCheckpoints.size() == (*it)->m_vLapCheckpoints.size())
-              (*it)->m_iDeficitA = l_iDiff;
-          }
+          (*it)->finishPlayer(l_pOther);
         }
-        else l_iWinr = (*it)->m_vLapCheckpoints.back().back();
 
         l_pOther = *it;
+      }
+
+      for (std::vector<data::SRacePlayer*>::const_iterator it = l_vResult.begin(); it != l_vResult.end(); it++) {
         sendRaceresult((*it)->serialize(), m_pOutputQueue);
       }
 

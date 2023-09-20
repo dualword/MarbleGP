@@ -11,6 +11,7 @@
 #include <CGlobal.h>
 #include <algorithm>
 #include <ostream>
+#include <random>
 #include <vector>
 #include <string>
 
@@ -1614,6 +1615,31 @@ namespace dustbin {
 
     int SRacePlayer::getLapNo() {
       return (int)m_vLapCheckpoints.size();
+    }
+
+    /**
+    * Auto finish the player, i.e. add checkpoint times until the current lap is finished
+    * @param a_pOther the player ahead of the current, used for the calculation
+    */
+    void SRacePlayer::finishPlayer(SRacePlayer* a_pOther) {
+      printf("Finishing player %i (%i)\n", m_iId, m_iPos);
+      if (m_vLapCheckpoints.size() == 0) {
+        m_iWithdrawn = 0;
+      }
+      else if (a_pOther->m_vLapCheckpoints.size() >= m_vLapCheckpoints.size()) {
+        if (m_iDeficitA <= 0)
+          m_iDeficitA = 90 + (90 * std::rand() / RAND_MAX);
+
+        printf("  Deficit: %.2f\n", (double)m_iDeficitA / 120.0);
+        size_t l_iIndex = m_vLapCheckpoints.size() - 1;
+
+        for (size_t i = 0; i < a_pOther->m_vLapCheckpoints[l_iIndex].size(); i++) {
+          if (i >= m_vLapCheckpoints.back().size()) {
+            m_vLapCheckpoints.back().push_back(a_pOther->m_vLapCheckpoints[l_iIndex][i] + m_iDeficitA);
+            printf("    Checkpoint time %i: %.2f (%.2f)\n", (int)i, (double)(a_pOther->m_vLapCheckpoints[l_iIndex][i] + m_iDeficitA) / 120.0f, (double)(a_pOther->m_vLapCheckpoints[l_iIndex][i]) / 120.0f);
+          }
+        }
+      }
     }
 
     std::string SRacePlayer::serialize() {

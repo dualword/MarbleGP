@@ -229,7 +229,7 @@ namespace dustbin {
         }
 
         l_pFile->drop();
-        delete p;
+        delete[] p;
       }
       else return "data/images/";
 
