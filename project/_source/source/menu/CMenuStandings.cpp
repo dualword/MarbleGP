@@ -278,11 +278,12 @@ namespace dustbin {
               std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
               if (l_sButton == "ok") {
+                std::string l_sNext = m_pManager->popMenuStack();
                 if (m_pServer != nullptr) {
-                  m_pServer->changeState("menu_netlobby");
+                  m_pServer->changeState(l_sNext == "menu_finalresult" ? "menu_finalresult" : "menu_netlobby");
                 }
 
-                createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                createMenu(l_sNext, m_pDevice, m_pManager, m_pState);
                 l_bRet = true;
               }
             }
