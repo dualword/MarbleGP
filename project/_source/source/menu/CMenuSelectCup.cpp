@@ -62,18 +62,25 @@ namespace dustbin {
           std::wstring s = L"Race " + std::to_wstring(m_iCurrent + 1) + L" of " + std::to_wstring(m_vCups[m_iSelectedCup].m_vRaces.size()) + L": ";
           s += helpers::s2ws(m_mTrackNames[l_sTrack]) + L" (";
 
+          bool l_bSingleLap = false;
+
           switch (m_iMode) {
-            case 0: s += std::to_wstring(std::get<1>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent])); break;
-            case 1: s += L"1"; break;
+            case 0: s += std::to_wstring(std::get<1>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent])); l_bSingleLap = std::get<1>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent]) == 1; break;
+            case 1: s += L"1"; l_bSingleLap = true; break;
             case 2:
               if (m_pLaps != nullptr)
                 s += m_pLaps->getSelectedItem();
               else
                 s += L"X";
+
+              l_bSingleLap = m_pLaps->getSelected() == 0;
               break;
           }
 
-          s += L" Laps)";
+          if (l_bSingleLap)
+            s += L" Lap)";
+          else
+            s += L" Laps)";
 
           irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_raceno", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
