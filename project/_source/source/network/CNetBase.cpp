@@ -55,7 +55,7 @@ namespace dustbin {
             }
 
             // The most frequent messages are sent using a non-reliable packet
-            if (l_eMsg == messages::enMessageIDs::MarbleMoved || l_eMsg == messages::enMessageIDs::ObjectMoved) {
+            if (l_eMsg == messages::enMessageIDs::ObjectMoved) {
               if (m_bSendMoved) {
                 broadcastMessage(l_pMsg, false);
               }
