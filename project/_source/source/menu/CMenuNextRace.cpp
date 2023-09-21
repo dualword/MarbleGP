@@ -4,6 +4,7 @@
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
 #include <platform/CPlatform.h>
+#include <helpers/CAutoMenu.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
@@ -24,11 +25,14 @@ namespace dustbin {
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
+        helpers::CAutoMenu *m_pAuto;    /**< Auto menu (for debugging) */
+
       public:
         CMenuNextRace(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_iClientState(0),
           m_pServer     (a_pState->getGlobal()->getGameServer()),
-          m_pClient     (a_pState->getGlobal()->getGameClient())
+          m_pClient     (a_pState->getGlobal()->getGameClient()),
+          m_pAuto       (nullptr)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -73,9 +77,15 @@ namespace dustbin {
             else
               l_pThumbnail->setImage(m_pDrv->getTexture("data/images/no_image.png"));
           }
+
+          m_pAuto = new helpers::CAutoMenu(m_pDevice,  this);
         }
 
         virtual ~CMenuNextRace() {
+          if (m_pAuto != nullptr) {
+            delete m_pAuto;
+            m_pAuto = nullptr;
+          }
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
@@ -87,6 +97,11 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "ok") {
+                if (m_pAuto != nullptr) {
+                  delete m_pAuto;
+                  m_pAuto = nullptr;
+                }
+
                 l_bRet = true;
                 
                 data::SMarbleGpCup l_cCup = data::SMarbleGpCup(m_pState->getGlobal()->getGlobal("current_cup"));
@@ -145,6 +160,9 @@ namespace dustbin {
         * This method is called every frame after "scenemanager::drawall" is called
         */
         virtual bool run() override { 
+          if (m_pAuto != nullptr)
+            m_pAuto->process();
+
           if (m_pServer != nullptr) {
             if (m_iClientState == 1) {
               if (m_pServer->allClientsAreInState("gamedata")) {

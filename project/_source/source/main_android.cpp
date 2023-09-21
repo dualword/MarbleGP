@@ -308,6 +308,8 @@ void android_main(struct android_app* a_pApp) {
   AutoHideNavBar(a_pApp);
   JNIEnv *l_pJni = nullptr;
 
+  ANativeActivity_setWindowFlags(a_pApp->activity, 0x00000080, 0);
+
   dustbin::platform::g_pApp = a_pApp;
 
   if (0 != a_pApp->activity->vm->AttachCurrentThread(&l_pJni, nullptr)) {

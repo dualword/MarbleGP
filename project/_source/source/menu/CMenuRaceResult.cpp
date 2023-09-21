@@ -7,6 +7,7 @@
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
+#include <helpers/CAutoMenu.h>
 #include <gui/CMenuButton.h>
 #include <state/IState.h>
 #include <irrlicht.h>
@@ -26,11 +27,14 @@ namespace dustbin {
         network::CGameServer *m_pServer;
         network::CGameClient *m_pClient;
 
+        helpers::CAutoMenu *m_pAuto;
+
       public:
         CMenuRaceResult(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState),
           m_pServer   (a_pState->getGlobal()->getGameServer()),
-          m_pClient   (a_pState->getGlobal()->getGameClient())
+          m_pClient   (a_pState->getGlobal()->getGameClient()),
+          m_pAuto     (nullptr)
         {
           m_pGui ->clear();
           m_pSmgr->clear();
@@ -275,6 +279,15 @@ namespace dustbin {
             if (p != nullptr)
               p->setVisible(false);
           }
+
+          m_pAuto = new helpers::CAutoMenu(m_pDevice, this);
+        }
+
+        virtual ~CMenuRaceResult() {
+          if (m_pAuto != nullptr) {
+            delete m_pAuto;
+            m_pAuto = nullptr;
+          }
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
@@ -285,6 +298,11 @@ namespace dustbin {
               std::string l_sButton = a_cEvent.GUIEvent.Caller->getName();
 
               if (l_sButton == "ok") {
+                if (m_pAuto != nullptr) {
+                  delete m_pAuto;
+                  m_pAuto = nullptr;
+                }
+
                 if (m_pServer != nullptr) {
                   m_pServer->changeState(m_pManager->peekMenuStack());
                 }
@@ -324,6 +342,13 @@ namespace dustbin {
           }
 
           return l_bRet;
+        }
+
+        virtual bool run() override { 
+          if (m_pAuto != nullptr)
+            m_pAuto->process();
+
+          return false;
         }
       };
 

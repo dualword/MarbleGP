@@ -714,6 +714,9 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuNextRace.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CAutoMenu.cpp">
+      <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1174,6 +1177,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\json\CIrrJSON.h">
       <Filter>Headerdateien\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CAutoMenu.h">
+      <Filter>Headerdateien\helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
