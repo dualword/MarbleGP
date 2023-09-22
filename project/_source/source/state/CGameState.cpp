@@ -1752,6 +1752,7 @@ namespace dustbin {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->onluamessage(a_NumberOne, a_NumberTwo, a_Data);
     }
+
     /**
     * Update the race positions
     */
@@ -1762,13 +1763,17 @@ namespace dustbin {
         else if (p1->m_iLapCp != p2->m_iLapCp)
           return p1->m_iLapCp > p2->m_iLapCp;
         else
-          return p1->m_iLastCp < p2->m_iLastCp;
+          if ((p1->m_iLastCp == 0) != (p2->m_iLastCp == 0))
+            return p1->m_iLapCp > p2->m_iLapCp;
+          else
+            return p1->m_iLastCp < p2->m_iLastCp;
         });
 
       int l_iPos = 1;
 
-      for (auto &l_cPos: m_vPosition)
-        l_cPos->m_iPosition = l_iPos++;
+      for (std::vector<gameclasses::SPlayer *>::iterator l_itPlr = m_vPosition.begin(); l_itPlr != m_vPosition.end(); l_itPlr++) {
+        (*l_itPlr)->m_iPosition = l_iPos++;
+      }
     }
 
     /**
