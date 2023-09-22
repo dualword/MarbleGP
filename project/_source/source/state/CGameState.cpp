@@ -1763,13 +1763,6 @@ namespace dustbin {
           return p1->m_iLapCp > p2->m_iLapCp;
         else
           return p1->m_iLastCp < p2->m_iLastCp;
-        /*
-        if (p1->m_iPosition != p2->m_iPosition)
-          return p1->m_iPosition < p2->m_iPosition;
-        else if (p1->m_pMarble->m_pPlayer->m_bWithdrawn != p2->m_pMarble->m_pPlayer->m_bWithdrawn)
-          return !p1->m_bWithdrawn;
-        else
-          return p1->m_iLastPosUpdate > p2->m_iLastPosUpdate;*/
         });
 
       int l_iPos = 1;
