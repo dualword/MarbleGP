@@ -36,6 +36,9 @@ namespace dustbin {
       bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
       bool         m_bAutoThrottle;     /**< Flag for the auto throttle option of the controller */
       int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
+      int          m_iLapNo;            /**< The player's current lap */
+      int          m_iLapCp;            /**< The checkpoint number of the player's current lap */
+      int          m_iLastCp;           /**< Time when the player passed the last checkpoint */
 
       irr::video::SColor m_cText;   /**< The text color (for the starting number in the ranking display) */
       irr::video::SColor m_cBack;   /**< The background color (for the starting number in the ranking display) */
