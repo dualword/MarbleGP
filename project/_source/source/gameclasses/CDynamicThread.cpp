@@ -1128,16 +1128,14 @@ namespace dustbin {
     void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
       if (m_pGameLogic != nullptr) {
-        const std::vector<data::SRacePlayer *> l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
-        for (std::vector<data::SRacePlayer *>::const_iterator l_itPlayer = l_pPlayer.begin(); l_itPlayer != l_pPlayer.end(); l_itPlayer++) {
-          int l_iIndex = (*l_itPlayer)->m_iId - 10000;
-          if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr)
-            m_aMarbles[l_iIndex]->m_iPosition = (*l_itPlayer)->m_iPos;
+        data::SRacePlayer *l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
 
-          sendRaceposition((*l_itPlayer)->m_iId, (*l_itPlayer)->m_iPos, (*l_itPlayer)->getLapNo(), (*l_itPlayer)->m_iDeficitA, (*l_itPlayer)->m_iDeficitL, m_pOutputQueue);
-
-          if (m_pLuaScript != nullptr)
-            m_pLuaScript->onraceposition((*l_itPlayer)->m_iId, (*l_itPlayer)->m_iPos, (*l_itPlayer)->getLapNo(), (*l_itPlayer)->m_iDeficitA, (*l_itPlayer)->m_iDeficitL);
+        if (l_pPlayer != nullptr) {
+          int l_iIndex = l_pPlayer->m_iId - 10000;
+          if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+            m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
+            sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->m_iLapNo, l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+          }
         }
       }
 

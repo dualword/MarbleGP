@@ -1493,6 +1493,9 @@ namespace dustbin {
       m_iPos      (99),     // Use very high initial position
       m_iFastest  (0), 
       m_iWithdrawn(-1), 
+      m_iLapNo    (0),
+      m_iLapCp    (0),
+      m_iLastCp   (0),
       m_bWithdrawn(false),
       m_bFinished (false)
     {
@@ -1507,6 +1510,9 @@ namespace dustbin {
       m_iPos      (a_cOther.m_iPos), 
       m_iFastest  (a_cOther.m_iFastest), 
       m_iWithdrawn(a_cOther.m_iWithdrawn),
+      m_iLapNo    (a_cOther.m_iLapNo),
+      m_iLapCp    (a_cOther.m_iLapCp),
+      m_iLastCp   (a_cOther.m_iLastCp),
       m_bWithdrawn(a_cOther.m_bWithdrawn),
       m_bFinished (a_cOther.m_bFinished)
     {
@@ -1528,6 +1534,9 @@ namespace dustbin {
       m_iPos      (0), 
       m_iFastest  (0), 
       m_iWithdrawn(-1), 
+      m_iLapNo    (0),
+      m_iLapCp    (0),
+      m_iLastCp   (0),
       m_bWithdrawn(false),
       m_bFinished (false)
     {

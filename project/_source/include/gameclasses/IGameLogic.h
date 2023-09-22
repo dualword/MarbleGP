@@ -55,7 +55,7 @@ namespace dustbin {
         * @param a_iCheckpoint the checkpoint ID
         * @param a_iStep the current step
         */
-        virtual const std::vector<data::SRacePlayer *> &onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) = 0;
+        virtual data::SRacePlayer *onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) = 0;
 
         /**
         * A method called when a marble is stunned

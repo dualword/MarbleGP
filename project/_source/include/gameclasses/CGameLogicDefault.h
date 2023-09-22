@@ -24,7 +24,6 @@ namespace dustbin {
         bool m_bRaceFinished;   /**< Will turn true once the first player has finished, thereafter all players will have finished when ending their lap */
 
         std::vector<data::SRacePlayer *> m_vPositions;  /**< This vector is used to keep track of the positions in a race */
-        std::vector<int                > m_vCpTimes;    /**< Time when the leader has passed a checkpoint of the race */
 
         /**
         * Update the positions in the race
@@ -79,7 +78,7 @@ namespace dustbin {
         * @param a_iCheckpoint the checkpoint ID
         * @param a_iStep the current simulation step
         */
-        virtual const std::vector<data::SRacePlayer *> &onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) override;
+        virtual data::SRacePlayer *onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) override;
 
         /**
         * A method called when a marble is stunned

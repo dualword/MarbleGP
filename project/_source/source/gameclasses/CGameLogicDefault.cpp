@@ -49,6 +49,9 @@ namespace dustbin {
     bool CGameLogicDefault::onLapStart(int a_iMarble) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
+        m_aPlayers[l_iId].m_iLapNo++;
+        m_aPlayers[l_iId].m_iLapCp = 0;
+
         if (m_aPlayers[l_iId].m_vLapCheckpoints.size() > 0) {
           int l_iLapTime = m_aPlayers[l_iId].m_vLapCheckpoints.back().back() - *m_aPlayers[l_iId].m_vLapCheckpoints.back().begin();
           if (m_aPlayers[l_iId].m_iFastest == 0 || l_iLapTime < m_aPlayers[l_iId].m_iFastest)
@@ -101,7 +104,7 @@ namespace dustbin {
     }
 
     int CGameLogicDefault::calculateLead(data::SRacePlayer* a_pAhead, data::SRacePlayer* a_pThis) {
-      if (a_pAhead->m_vLapCheckpoints.size() < a_pAhead->m_vLapCheckpoints.size() || a_pAhead->m_vLapCheckpoints[a_pThis->m_vLapCheckpoints.size() - 1].size() < a_pThis->m_vLapCheckpoints.back().size())
+      if (a_pAhead->m_iLapNo < a_pAhead->m_iLapNo || a_pAhead->m_vLapCheckpoints[a_pThis->m_vLapCheckpoints.size() - 1].size() < a_pThis->m_vLapCheckpoints.back().size())
         return 0;
 
       int l_iRet = a_pThis->m_vLapCheckpoints.back().back() - a_pAhead->m_vLapCheckpoints[a_pThis->m_vLapCheckpoints.size() - 1][a_pThis->m_vLapCheckpoints.back().size() - 1];
@@ -120,26 +123,26 @@ namespace dustbin {
         if (p1->m_bWithdrawn == true && p2->m_bWithdrawn == true) {
           return p1->m_iWithdrawn > p2->m_iWithdrawn;
         }
-        else if (p1->m_bWithdrawn == true && p2-> m_bWithdrawn == false) {
+        else if (p1->m_bWithdrawn == true && p2->m_bWithdrawn == false) {
           return false;
         }
         else if (p1->m_bWithdrawn == false && p2->m_bWithdrawn == true) {
           return true;
         }
         else {
-          if (p1->m_vLapCheckpoints.size() == 0 && p2->m_vLapCheckpoints.size() == 0)
+          if (p1->m_iLapNo == 0 && p2->m_iLapNo == 0)
             return p1->m_iId < p2->m_iId;
 
           // The number of laps of the players differ
           // ==> the player with more passed laps is in front
-          if (p1->m_vLapCheckpoints.size() != p2->m_vLapCheckpoints.size())
-            return p1->m_vLapCheckpoints.size() > p2->m_vLapCheckpoints.size();
+          if (p1->m_iLapNo != p2->m_iLapNo)
+            return p1->m_iLapNo > p2->m_iLapNo;
           // The number of checkpoints the players have passed differs
           // ==> the player with more passed checkpoints is in front
-          else if (p1->m_vLapCheckpoints.back().size() != p2->m_vLapCheckpoints.back().size())
-            return p1->m_vLapCheckpoints.back().size() > p2->m_vLapCheckpoints.back().size();
+          else if (p1->m_iLapCp != p2->m_iLapCp)
+            return p1->m_iLapCp > p2->m_iLapCp;
           else
-            return p1->m_vLapCheckpoints.back().back() < p2->m_vLapCheckpoints.back().back(); // The player who has passed the checkpoint earlier is in front
+            return p1->m_iLastCp < p2->m_iLastCp; // The player who has passed the checkpoint earlier is in front
         }
       });
 
@@ -173,11 +176,11 @@ namespace dustbin {
             }
             else {
               // Laps differ
-              int l_iLapDiff = (int)(l_pAhead[i]->m_vLapCheckpoints.size() - (*l_itPlayer)->m_vLapCheckpoints.size());
+              int l_iLapDiff = (int)(l_pAhead[i]->m_iLapNo - (*l_itPlayer)->m_iLapNo);
 
               // The player ahead has not passed more checkpoints in his current lap than the current player,
               // i.e. on lap less of difference than calculated above
-              if (l_pAhead[i]->m_vLapCheckpoints.back().size() < (*l_itPlayer)->m_vLapCheckpoints.back().size()) {
+              if (l_pAhead[i]->m_iLapCp < (*l_itPlayer)->m_iLapCp) {
                 l_iLapDiff--;
                 // If lap diff == 0 then the player ahead has not yet lapped the current player
                 if (l_iLapDiff == 0) {
@@ -197,8 +200,8 @@ namespace dustbin {
               // If the player and the marble ahead have in their respective laps passed the same amount
               // of checkpoints we need to check who has passed earlier, and if the player ahead passed
               // the last checkpoint later we decrement the lap diff by one and check then
-              else if ((*l_itPlayer)->m_vLapCheckpoints.back().size() == l_pAhead[i]->m_vLapCheckpoints.back().size()) {
-                if ((*l_itPlayer)->m_vLapCheckpoints.back().back() < l_pAhead[i]->m_vLapCheckpoints.back().back()) {
+              else if ((*l_itPlayer)->m_iLapCp == l_pAhead[i]->m_iLapCp) {
+                if ((*l_itPlayer)->m_iLastCp < l_pAhead[i]->m_iLastCp) {
                   l_iLapDiff--;
                   // If lap diff == 0 then the player ahead has not yet lapped the current player
                   if (l_iLapDiff == 0) {
@@ -236,16 +239,20 @@ namespace dustbin {
     * @param a_iCheckpoint the checkpoint ID
     * @param a_iStep the current simulation step 
     */
-    const std::vector<data::SRacePlayer *> &CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
+    data::SRacePlayer *CGameLogicDefault::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       int l_iId = a_iMarble - 10000;
       if (l_iId >= 0 && l_iId < m_iPlayerCount) {
         if (m_aPlayers[l_iId].m_vLapCheckpoints.size() > 0) {
+          m_aPlayers[l_iId].m_iLapCp++;
+          m_aPlayers[l_iId].m_iLastCp = a_iStep;
+
           m_aPlayers[l_iId].m_vLapCheckpoints.back().push_back(a_iStep);
           updatePositions(l_iId);
+          return &m_aPlayers[l_iId];
         }
       }
 
-      return m_vPositions;
+      return nullptr;
     }
 
     /**

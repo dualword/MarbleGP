@@ -219,6 +219,9 @@ namespace dustbin {
       int m_iPos;         /**< The position of the player in the race */
       int m_iFastest;     /**< Fastest lap of the player */
       int m_iWithdrawn;   /**< The step when the player has withdrawn from the race */
+      int m_iLapNo;       /**< The current lap of the player */
+      int m_iLapCp;       /**< The current checkpoint in the lap */
+      int m_iLastCp;      /**< Time of the last passed checkpoint */
       bool m_bWithdrawn;  /**< Has the player withdrawn from the race? */
       bool m_bFinished;   /**< Has the player finished the race? */
 
