@@ -99,7 +99,7 @@ namespace dustbin {
     }
 
     irr::core::vector3df CRostrumNode::getCameraPosition() {
-      irr::core::vector3df l_cPos = irr::core::vector3df(0.0f, 0.75f, -2.25f);
+      irr::core::vector3df l_cPos = irr::core::vector3df(0.0f, 0.5f, -2.25f);
       AbsoluteTransformation.transformVect(l_cPos);
       return l_cPos;
     }
