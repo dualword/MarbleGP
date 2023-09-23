@@ -560,11 +560,6 @@ namespace dustbin {
             m_pServer->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
           }
 
-          helpers::addToDebugLog("  sort players");
-          // std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
-          //   return a_cPlayer1.m_iPlayerId < a_cPlayer2.m_iPlayerId;
-          // });
-
           helpers::addToDebugLog("  Load physics script");
           std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
 
