@@ -532,51 +532,56 @@ namespace dustbin {
       hideAiNode();
 
       helpers::addToDebugLog("Start physics thread...");
-      if (m_pClient == nullptr) {
-        helpers::addToDebugLog("  Find world node");
-        l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
+      helpers::addToDebugLog("  Find world node");
+      l_pNode = findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode());
       
-        if (l_pNode != nullptr) {
-          helpers::addToDebugLog("  World node found");
-          gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
+      if (l_pNode != nullptr) {
+        helpers::addToDebugLog("  World node found");
+        gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
 
-          helpers::addToDebugLog("  Check auto finish");
-          switch (l_iAutoFinish) {
-            case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
-            case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
-            case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
-            case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
-          }
-
-          helpers::addToDebugLog("  Create dynamics thread");
-          m_pDynamics = new gameclasses::CDynamicThread();
-
-          helpers::addToDebugLog("  Add queues and listeners");
-          m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
-          m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
-
-          if (m_pServer != nullptr) {
-            m_pDynamics->getOutputQueue()->addListener(m_pServer->getInputQueue());
-            m_pServer->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
-          }
-
-          helpers::addToDebugLog("  Load physics script");
-          std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
-
-          helpers::addToDebugLog("  Setup game");
-          if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
-            handleError("LUA Error.", m_pDynamics->getLuaError());
-            return;
-          }
+        helpers::addToDebugLog("  Check auto finish");
+        switch (l_iAutoFinish) {
+          case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
+          case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
+          case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
+          case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
         }
-        else {
-          handleError("Error while starting game state.", "No world node found..");
+
+        helpers::addToDebugLog("  Create dynamics thread");
+        m_pDynamics = new gameclasses::CDynamicThread(m_pClient != nullptr);
+
+        helpers::addToDebugLog("  Add queues and listeners");
+        m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
+        m_pOutputQueue->addListener(m_pDynamics->getInputQueue());
+
+        if (m_pServer != nullptr) {
+          m_pDynamics->getOutputQueue()->addListener(m_pServer  ->getInputQueue());
+          m_pServer  ->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
+        }
+
+        if (m_pClient != nullptr) {
+          m_pDynamics->getOutputQueue()->addListener(m_pClient  ->getInputQueue());
+          m_pClient  ->getOutputQueue()->addListener(m_pDynamics->getInputQueue());
+        }
+
+        helpers::addToDebugLog("  Load physics script");
+        std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
+
+        helpers::addToDebugLog("  Setup game");
+        if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
+          handleError("LUA Error.", m_pDynamics->getLuaError());
           return;
         }
       }
       else {
-        m_pOutputQueue->addListener(m_pClient->getInputQueue());
-        m_pClient->getOutputQueue()->addListener(m_pInputQueue);
+        handleError("Error while starting game state.", "No world node found..");
+        return;
+      }
+      
+      if (m_pClient != nullptr) {
+        // m_pOutputQueue->addListener(m_pClient->getInputQueue());
+        // m_pClient->getOutputQueue()->addListener(m_pInputQueue);
+
         m_pClient->stateChanged("state_game");
       }
 
@@ -721,6 +726,9 @@ namespace dustbin {
         delete m_pRace;
         m_pRace = nullptr;
       }
+
+      if (m_pClient != nullptr) m_pClient->resetMyMarbles();
+      if (m_pServer != nullptr) m_pServer->resetMyMarbles();
 
       helpers::addToDebugLog("Stop game sounds");
       m_pSoundIntf->stopGame();
@@ -1154,7 +1162,7 @@ namespace dustbin {
      * @param a_LinearVelocity The linear velocity
      * @param a_AngularVelocity The angualar (rotation) velocity
      */
-    void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity) {
+    void CGameState::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, const irr::core::vector3df &a_AngularVelocity) {
       if (m_mMoving.find(a_ObjectId) != m_mMoving.end()) {
         m_mMoving[a_ObjectId]->setPosition(a_Position);
 
@@ -1166,7 +1174,7 @@ namespace dustbin {
         if (it->second.m_pPlayer != nullptr && it->second.m_pPlayer->m_pPlayer != nullptr && it->second.m_pPlayer->m_pPlayer->m_pController != nullptr) {
           controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();
           if (l_pCtrl != nullptr) {
-            l_pCtrl->onObjectMoved(a_ObjectId, a_Position, a_Rotation, a_LinearVelocity, a_AngularVelocity);
+            l_pCtrl->onObjectMoved(a_ObjectId, a_Position, a_Rotation, a_LinearVelocity, a_AngularVelocity.getLength());
           }
         }
       }
@@ -1188,7 +1196,7 @@ namespace dustbin {
      * @param a_ControlRearView Flag indicating whether or not the marble's player looks behind
      * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed
      */
-    void CGameState::onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, irr::f32 a_AngularVelocity, const irr::core::vector3df& a_CameraPosition, const irr::core::vector3df& a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) {
+    void CGameState::onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, const irr::core::vector3df &a_AngularVelocity, const irr::core::vector3df& a_CameraPosition, const irr::core::vector3df& a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) {
       irr::f32 l_fRolling = m_fSfxVolume * std::fmin((float)(a_LinearVelocity.getLengthSQ() / 10000.0), (float)1.0);
 
       if (a_ObjectId >= 10000 && a_ObjectId < 10016) {
@@ -1334,6 +1342,12 @@ namespace dustbin {
                 l_pPlayer->m_pMarble->m_pViewport->m_cRect,
                 l_pPlayer->m_bShowRanking
               );
+
+              if (m_pClient != nullptr)
+                m_pClient->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
+
+              if (m_pServer != nullptr)
+                m_pServer->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
             }
             else if ((*it).m_eType == data::enPlayerType::Ai) {
               if (m_pAiThread == nullptr) {
@@ -1341,6 +1355,12 @@ namespace dustbin {
               }
 
               m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, "data/levels/" + m_cGameData.m_sTrack);
+
+              if (m_pClient != nullptr)
+                m_pClient->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
+
+              if (m_pServer != nullptr)
+                m_pServer->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
             }
 
             delete l_pFactory;

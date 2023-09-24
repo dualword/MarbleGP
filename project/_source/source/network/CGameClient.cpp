@@ -154,7 +154,7 @@ namespace dustbin {
           case messages::enMessageIDs::RacePlayer: {
             messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(a_pMessage);
 
-            printf("Race player %i: \"%s\"\n", p->getplayerid(), p->getname().c_str());
+            printf("Race player %i: \"%s\" [%s]\n", p->getplayerid(), p->getname().c_str(), p->getshortname().c_str());
             m_pOutputQueue->postMessage(a_pMessage);
 
             return true;

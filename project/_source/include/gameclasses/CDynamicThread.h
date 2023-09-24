@@ -76,6 +76,8 @@ namespace dustbin {
         lua::CLuaScript_physics *m_pLuaScript;
         std::string              m_sLuaError;
 
+        bool m_bNetworkClient;
+
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
         void run();
@@ -115,10 +117,49 @@ namespace dustbin {
         */
         virtual void onPlayerremoved(irr::s32 a_playerid) override;
 
+        /**
+        * This function receives messages of type "ObjectMoved"
+        * @param a_ObjectId The ID of the object
+        * @param a_Position The current position
+        * @param a_Rotation The current rotation (Euler angles)
+        * @param a_LinearVelocity The linear velocity
+        * @param a_AngularVelocity The angualar (rotation) velocity
+        */
+        virtual void onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, const irr::core::vector3df &a_AngularVelocity) override;
+
+        /**
+        * This function receives messages of type "MarbleMoved"
+        * @param a_ObjectId The ID of the object
+        * @param a_Position The current position
+        * @param a_Rotation The current rotation (Euler angles)
+        * @param a_LinearVelocity The linear velocity
+        * @param a_AngularVelocity The angualar (rotation) velocity
+        * @param a_CameraPosition The position of the camera
+        * @param a_CameraUp The Up-Vector of the camera
+        * @param a_ControlX The marble's current controller state in X-Direction
+        * @param a_ControlY The marble's current controller state in Y-Direction
+        * @param a_Contact A Flag indicating whether or not the marble is in contact with another object
+        * @param a_ControlBrake Flag indicating whether or not the marble's brake is active
+        * @param a_ControlRearView Flag indicating whether or not the marble's player looks behind
+        * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed 
+        */
+        virtual void onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Rotation, const irr::core::vector3df &a_LinearVelocity, const irr::core::vector3df &a_AngularVelocity, const irr::core::vector3df &a_CameraPosition, const irr::core::vector3df &a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) override;
+
+        /**
+        * This function receives messages of type "StepUpdate"
+        * @param a_StepNo The step received from the server
+        */
+        virtual void onStepupdate(irr::s32 a_StepNo) override;
+
+        /**
+        * This function receives messages of type "ServerDisconnect"
+        */
+        virtual void onServerdisconnect() override;
+
         virtual void execute() override;
 
       public:
-        CDynamicThread();
+        CDynamicThread(bool a_bNetworkClient);
 
         virtual ~CDynamicThread();
 

@@ -7,6 +7,7 @@
 #include <irrlicht.h>
 #include <enet/enet.h>
 #include <vector>
+#include <tuple>
 
 namespace dustbin {
   class CGlobal;  /**< Forward declaration of the global class */
@@ -23,8 +24,11 @@ namespace dustbin {
         ENetHost    *m_pHost;
         ENetAddress  m_cAddress;
         bool         m_bSendMoved;
+        int          m_iStep;
 
         messages::CMessageFactory l_cFactory;
+
+        std::tuple<int, messages::CMarbleMoved> m_aMyMarbles[16];   /**< Data of all marbles (0 == last update time (-1 == not my marble), 1 == last sent message) */
 
         /**
         * Handle an event in a subclass
@@ -45,6 +49,21 @@ namespace dustbin {
         * @param a_pMsg the message the will be sent
         */
         virtual void beforeSendMessage(messages::IMessage *a_pMsg) { }
+
+        /**
+        * Shall a marble moved message be sent?
+        * @param a_iIndex index of the marble
+        * @param a_pMsg the new marble moved message
+        * @return true if the controls have changed or the last send message is more than c_iSendInterval steps in the past
+        */
+        bool marbleMessageNecessary(int a_iIndex, messages::CMarbleMoved *a_pMsg);
+
+        /**
+        * Get the Marble ID (10000 .. 10016) from a message (if applicable)
+        * @param a_pMsg the message to check
+        * @return ID of the marble of the message, -1 if message contains no marble information
+        */
+        int getMarbleId(messages::IMessage *a_pMsg);
 
       public:
         CNetBase(CGlobal *a_pGlobal);
@@ -68,6 +87,17 @@ namespace dustbin {
         * @param a_pMessage the message to send
         */
         void sendMessage(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
+
+        /**
+        * Mark a marble as a marble of mine
+        * @param a_iMarbleId scene node ID of the marble (10000 .. 10016)
+        */
+        void setMyMarble(int a_iMarbleId);
+
+        /**
+        * Reset the my marbles array after the game
+        */
+        void resetMyMarbles();
     };
   }
 }

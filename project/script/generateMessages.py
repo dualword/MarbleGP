@@ -84,7 +84,7 @@ def CreateMessages(a_Data, a_Static):
     
     l_Header.write("     */\n")
     l_Header.write("    class C" + l_MessageName + " : public IMessage {\n")
-    l_Header.write("      private:\n")
+    l_Header.write("      public:\n")
     
     l_Flags   = { }
     l_FlagCnt = 0
@@ -136,7 +136,11 @@ def CreateMessages(a_Data, a_Static):
     
     l_Header.write(");\n")
     l_Header.write("        C" + l_MessageName + "(ISerializer *a_pSerializer);\n")
-    l_Header.write("        C" + l_MessageName + "(C" + l_MessageName + " *a_pOther);\n\n")
+    l_Header.write("        C" + l_MessageName + "(C" + l_MessageName + " *a_pOther);\n")
+    
+    if len(l_Message["fields"]) > 0:
+      l_Header.write("        C" + l_MessageName + "();\n\n")
+      
     l_Header.write("        virtual ~C" + l_MessageName + "();\n\n")
     
     l_Header.write("        // Getters\n")
@@ -183,6 +187,10 @@ def CreateMessages(a_Data, a_Static):
       l_Source.write("      if (a_" + l_Flag + ") m_Flags |= " + str(1 << l_Flags[l_Flag]) + ";\n")
       
     l_Source.write("    }\n\n")
+    
+    if len(l_Message["fields"]) > 0:
+      l_Source.write("    C" + l_MessageName + "::C" + l_MessageName + "() {\n")
+      l_Source.write("    }\n\n")
     
     l_Source.write("    C" + l_MessageName + "::C" + l_MessageName + "(ISerializer *a_pSerializer) {\n")
     

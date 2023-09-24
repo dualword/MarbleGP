@@ -55,7 +55,8 @@
     [ "GameServerFound"       , "44" ],
     [ "SetTexture"            , "45" ],
     [ "LuaMessage"            , "46" ],
-    [ "WebLogMessage"         , "47" ]
+    [ "WebLogMessage"         , "47" ],
+    [ "StepUpdate"            , "48" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -65,7 +66,7 @@
         { "name": "Position"       , "type": "irr::core::vector3df", "comment": "The current position" },
         { "name": "Rotation"       , "type": "irr::core::vector3df", "comment": "The current rotation (Euler angles)" },
         { "name": "LinearVelocity" , "type": "irr::core::vector3df", "comment": "The linear velocity" },
-        { "name": "AngularVelocity", "type": "irr::f32"            , "comment": "The angualar (rotation) velocity" }
+        { "name": "AngularVelocity", "type": "irr::core::vector3df", "comment": "The angualar (rotation) velocity" }
       ]
     },
     "MarbleMoved": {
@@ -75,7 +76,7 @@
         { "name": "Position"       , "type": "irr::core::vector3df", "comment": "The current position" },
         { "name": "Rotation"       , "type": "irr::core::vector3df", "comment": "The current rotation (Euler angles)" },
         { "name": "LinearVelocity" , "type": "irr::core::vector3df", "comment": "The linear velocity" },
-        { "name": "AngularVelocity", "type": "irr::f32"            , "comment": "The angualar (rotation) velocity" },
+        { "name": "AngularVelocity", "type": "irr::core::vector3df", "comment": "The angualar (rotation) velocity" },
         { "name": "CameraPosition" , "type": "irr::core::vector3df", "comment": "The position of the camera" },
         { "name": "CameraUp"       , "type": "irr::core::vector3df", "comment": "The Up-Vector of the camera" },
         { "name": "ControlX"       , "type": "irr::s8"             , "comment": "The marble's current controller state in X-Direction" },
@@ -87,7 +88,7 @@
       ]
     },
     "StepMsg": {
-      "comment": "Message sent for every step (60 per second)",
+      "comment": "Message sent for every step (120 per second)",
       "fields": [
         { "name": "StepNo", "type": "irr::u32", "comment": "The current step number" }
       ]
@@ -381,6 +382,12 @@
         { "name": "Level", "type": "irr::s32"   , "comment": "The log level of the message" },
         { "name": "Data" , "type": "std::string", "comment": "The log message" }
       ]
+    },
+    "StepUpdate": {
+      "comment": "The net game client uses this message to inform the dynamics thread that the server has updated the step number",
+      "fields": [
+        { "name": "StepNo", "type": "irr::s32", "comment": "The step received from the server" }
+      ]
     }
   },
   "interfaces": [
@@ -416,7 +423,11 @@
         "CancelRace",
         "TogglePause",
         "PlayerWithdraw",
-        "PlayerRemoved"
+        "PlayerRemoved",
+        "ObjectMoved",
+        "MarbleMoved",
+        "StepUpdate",
+        "ServerDisconnect"
       ]
     },
     {

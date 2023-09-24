@@ -3,6 +3,7 @@
 #include <_generated/lua/CLuaSingleton_physics.h>
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <_generated/lua/CLuaScript_physics.h>
+#include <_generated/messages/CMessages.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CRostrumNode.h>
@@ -618,7 +619,7 @@ namespace dustbin {
               p->m_vPosition, 
               quaternionToEuler(l_aRot), 
               l_vLinVel, 
-              vectorOdeToIrr(l_aAngVel).getLength(), 
+              vectorOdeToIrr(l_aAngVel),
               p->m_vCamera,
               p->m_vUpOffset, 
               p->m_iCtrlX,
@@ -666,12 +667,12 @@ namespace dustbin {
 
         // Send all other moving objects to the game state
         for (std::vector<CObject*>::iterator it = m_pWorld->m_vMoving.begin(); it != m_pWorld->m_vMoving.end(); it++) {
-          const dReal* l_aPos    = dBodyGetPosition  ((*it)->m_cBody),
-                     * l_aRot    = dBodyGetQuaternion((*it)->m_cBody),
-                     * l_aLinVel = dBodyGetLinearVel ((*it)->m_cBody),
-                     * l_aAngVel = dBodyGetAngularVel((*it)->m_cBody);
+          const dReal *l_aPos    = dBodyGetPosition  ((*it)->m_cBody);
+          const dReal *l_aRot    = dBodyGetQuaternion((*it)->m_cBody);
+          const dReal *l_aLinVel = dBodyGetLinearVel ((*it)->m_cBody);
+          const dReal *l_aAngVel = dBodyGetAngularVel((*it)->m_cBody);
 
-          sendObjectmoved((*it)->m_iId, vectorOdeToIrr(l_aPos), quaternionToEuler(l_aRot), vectorOdeToIrr(l_aLinVel), vectorOdeToIrr(l_aAngVel).getLength(), m_pOutputQueue);
+          sendObjectmoved((*it)->m_iId, vectorOdeToIrr(l_aPos), quaternionToEuler(l_aRot), vectorOdeToIrr(l_aLinVel), vectorOdeToIrr(l_aAngVel), m_pOutputQueue);
         }
 
         if (m_eGameState == enGameState::Countdown) {
@@ -725,6 +726,94 @@ namespace dustbin {
       std::this_thread::sleep_until(m_cNextStep);
     }
 
+    /**
+    * This function receives messages of type "ObjectMoved"
+    * @param a_ObjectId The ID of the object
+    * @param a_Position The current position
+    * @param a_Rotation The current rotation (Euler angles)
+    * @param a_LinearVelocity The linear velocity
+    * @param a_AngularVelocity The angualar (rotation) velocity
+    */
+    void CDynamicThread::onObjectmoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, const irr::core::vector3df &a_AngularVelocity) {
+      if (m_pWorld != nullptr) {
+        for (auto& p: m_pWorld->m_vMoving) {
+          if (p->m_iId == a_ObjectId) {
+            dBodySetPosition  (p->m_cBody, (dReal)a_Position      .X, (dReal)a_Position      .Y, (dReal)a_Position      .Z);
+            dBodySetLinearVel (p->m_cBody, (dReal)a_LinearVelocity.X, (dReal)a_LinearVelocity.Y, (dReal)a_LinearVelocity.Z);
+            dBodySetAngularVel(p->m_cBody, (dReal)a_AngularVelocity.X, (dReal)a_AngularVelocity.Y, (dReal)a_AngularVelocity.Z);
+
+            dMatrix3 l_cRotation;
+            dRFromEulerAngles(l_cRotation, (dReal)a_Rotation.X, (dReal)a_Rotation.Y, (dReal)a_Rotation.Z);
+            dBodySetRotation (p->m_cBody, l_cRotation);
+
+            break;
+          }
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "MarbleMoved"
+    * @param a_ObjectId The ID of the object
+    * @param a_Position The current position
+    * @param a_Rotation The current rotation (Euler angles)
+    * @param a_LinearVelocity The linear velocity
+    * @param a_AngularVelocity The angualar (rotation) velocity
+    * @param a_CameraPosition The position of the camera
+    * @param a_CameraUp The Up-Vector of the camera
+    * @param a_ControlX The marble's current controller state in X-Direction
+    * @param a_ControlY The marble's current controller state in Y-Direction
+    * @param a_Contact A Flag indicating whether or not the marble is in contact with another object
+    * @param a_ControlBrake Flag indicating whether or not the marble's brake is active
+    * @param a_ControlRearView Flag indicating whether or not the marble's player looks behind
+    * @param a_ControlRespawn Flag indicating whether or not the manual respawn button is pressed 
+    */
+    void CDynamicThread::onMarblemoved(irr::s32 a_ObjectId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Rotation, const irr::core::vector3df& a_LinearVelocity, const irr::core::vector3df &a_AngularVelocity, const irr::core::vector3df& a_CameraPosition, const irr::core::vector3df& a_CameraUp, irr::s8 a_ControlX, irr::s8 a_ControlY, bool a_Contact, bool a_ControlBrake, bool a_ControlRearView, bool a_ControlRespawn) {
+      int l_iIndex = a_ObjectId - 10000;
+
+      if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
+        // printf("Got marble update for   %i\n", l_iIndex - 10000);
+        gameclasses::CObjectMarble *p = m_aMarbles[l_iIndex];
+
+        p->m_bActive = true;
+
+        dBodySetPosition  (p->m_cBody, (dReal)a_Position      .X, (dReal)a_Position      .Y, (dReal)a_Position      .Z);
+        dBodySetLinearVel (p->m_cBody, (dReal)a_LinearVelocity.X, (dReal)a_LinearVelocity.Y, (dReal)a_LinearVelocity.Z);
+        dBodySetAngularVel(p->m_cBody, (dReal)a_AngularVelocity.X, (dReal)a_AngularVelocity.Y, (dReal)a_AngularVelocity.Z);
+
+        dMatrix3 l_cRotation;
+        dRFromEulerAngles(l_cRotation, (dReal)a_Rotation.X, (dReal)a_Rotation.Y, (dReal)a_Rotation.Z);
+        dBodySetRotation (p->m_cBody, l_cRotation);
+
+        p->m_bBrake    = a_ControlBrake;
+        p->m_bCollides = a_Contact;
+        p->m_vCamera   = a_CameraPosition;
+        p->m_bRearView = a_ControlRearView;
+        p->m_bRespawn  = a_ControlRespawn;
+        p->m_iCtrlX    = (int)a_ControlX;
+        p->m_iCtrlY    = (int)a_ControlY;
+      }
+    }
+
+    /**
+    * This function receives messages of type "StepUpdate"
+    * @param a_StepNo The step received from the server
+    */
+    void CDynamicThread::onStepupdate(irr::s32 a_StepNo) {
+      if (m_pWorld != nullptr) {
+        printf("Got step update: %i / %i\n", a_StepNo, m_pWorld->m_iWorldStep);
+        m_pWorld->m_iWorldStep = a_StepNo;
+      }
+    }
+
+    /**
+    * This function receives messages of type "ServerDisconnect"
+    */
+    void CDynamicThread::onServerdisconnect() {
+      messages::CServerDisconnect l_cMsg = messages::CServerDisconnect();
+      m_pOutputQueue->postMessage(&l_cMsg);
+    }
+
     void CDynamicThread::execute() {
       m_cNextStep = std::chrono::high_resolution_clock::now();
 
@@ -754,18 +843,19 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread() :
-      m_eGameState  (enGameState::Countdown),
-      m_eAutoFinish (enAutoFinish::AllPlayers),
-      m_pWorld      (nullptr),
-      m_bPaused     (false),
-      m_fGridAngle  (0.0f),
-      m_iPlayers    (0),
-      m_iHuman      (0),
-      m_pGameLogic  (nullptr),
-      m_pRostrumNode(nullptr),
-      m_pLuaScript  (nullptr),
-      m_sLuaError   ("")
+    CDynamicThread::CDynamicThread(bool a_bNetworkClient) :
+      m_eGameState    (enGameState::Countdown),
+      m_eAutoFinish   (enAutoFinish::AllPlayers),
+      m_pWorld        (nullptr),
+      m_bPaused       (false),
+      m_fGridAngle    (0.0f),
+      m_iPlayers      (0),
+      m_iHuman        (0),
+      m_pGameLogic    (nullptr),
+      m_pRostrumNode  (nullptr),
+      m_pLuaScript    (nullptr),
+      m_sLuaError     (""),
+      m_bNetworkClient(a_bNetworkClient)
     {
 #ifdef _DEBUG
       g_iCfm = 0;
@@ -805,11 +895,7 @@ namespace dustbin {
         m_aMarbles[i] = nullptr;
 
       if (m_pWorld != nullptr) {
-        helpers::addToDebugLog("    Fill marble object array");
-
         int l_iIndex = 0;
-
-
 
         for (std::vector<const data::SPlayerData *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
           if ((*it)->m_eType != data::enPlayerType::Ai)
@@ -859,15 +945,15 @@ namespace dustbin {
             if (it->second->m_bLapStart)
               l_pMarble->m_vNextCheckpoints.push_back(it->first);
           }
-
-          printf("Marble assignment: %i to player %s\n", l_pMarbleNode->getID(), (*it)->m_sName.c_str()); 
+          
+          printf("Marble assignment: %i to player %s\n", l_pMarbleNode->getID(), (*it)->m_sName.c_str());
           sendPlayerassignmarble((*it)->m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
 
           sendMarblemoved(l_pMarble->m_iId,
             l_pMarbleNode->getAbsolutePosition(),
             l_pMarbleNode->getRotation(),
             irr::core::vector3df(0.0f, 0.0f, 0.0f),
-            0.0f,
+            irr::core::vector3df(0.0f, 0.0f, 0.0f),
             l_pMarble->m_vCamera,
             irr::core::vector3df(0.0f, 1.0f, 0.0f),
             0,

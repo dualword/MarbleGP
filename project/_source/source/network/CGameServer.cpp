@@ -314,6 +314,14 @@ namespace dustbin {
           }
         }
       }
+      else if (a_pMsg->getMessageId() == messages::enMessageIDs::StepMsg) {
+        if (m_bSendMoved) {
+          messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(a_pMsg);
+
+          messages::CStepUpdate l_cUpdate = messages::CStepUpdate(p->getStepNo());
+          broadcastMessage(&l_cUpdate, true);
+        }
+      }
     }
   }
 }
