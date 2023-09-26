@@ -2,6 +2,7 @@
 #include <helpers/CStringHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
+#include <helpers/CDataHelpers.h>
 #include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CGuiTrackSelect.h>
@@ -293,9 +294,7 @@ namespace dustbin {
                   m_pState->getGlobal()->setSetting("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
 
-                  data::SGameData l_cData(data::SGameData::enType::Local, m_pTrackList->getSelectedData(), l_iLaps, l_cChampionship.m_iClass);
-                  m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
-                  m_pState->getGlobal()->initNextRaceScreen();
+                  helpers::prepareNextRace(m_pTrackList->getSelectedData(), l_iLaps);
 
                   platform::saveSettings();
                   if (m_pServer != nullptr) {

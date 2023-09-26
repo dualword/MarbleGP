@@ -105,11 +105,10 @@ namespace dustbin {
 
     // Game data
     const irr::s32 c_iGameHead  = -150;   /**< Header for the game data */
-    const irr::s32 c_iGameType  = -151;   /**< The type of the game */
-    const irr::s32 c_iGameTrack = -152;   /**< The track of the upcoming race */
-    const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
-    const irr::s32 c_iGameClass = -154;   /**< The class of the race */
-    const irr::s32 c_iTutorial  = -155;   /**< Is this race a tutorial race? */
+    const irr::s32 c_iGameTrack = -151;   /**< The track of the upcoming race */
+    const irr::s32 c_iGameLaps  = -152;   /**< The laps of the race */
+    const irr::s32 c_iTutorial  = -153;   /**< Is this race a tutorial race? */
+    const irr::s32 c_iGrid      = -154;   /**< A starting grid position */
 
     // Marble AI Class
     const irr::s32 c_iMarbleData  = -170;   /**< Header for the Marble AI data */
@@ -485,10 +484,10 @@ namespace dustbin {
     }
 
     SGameSettings::SGameSettings() :
-      m_iRaceClass      (2),
-      m_iGridPos        (1),
+      m_eRaceClass      (enRaceClass::Marble2),
+      m_eGridPos        (enGridPos::LastRace),
+      m_eAutoFinish     (enAutoFinish::AllPlayers),
       m_iGridSize       (1),
-      m_iAutoFinish     (0),
       m_bReverseGrid    (false),
       m_bRandomFirstRace(true),
       m_bFillGridAI     (true)
@@ -500,10 +499,10 @@ namespace dustbin {
       messages::CSerializer64 l_cSerializer;
 
       l_cSerializer.addS32(c_iGameSettings   );
-      l_cSerializer.addS32(c_iRaceClass      ); l_cSerializer.addS32(m_iRaceClass );
-      l_cSerializer.addS32(c_iGridPos        ); l_cSerializer.addS32(m_iGridPos   );
+      l_cSerializer.addS32(c_iRaceClass      ); l_cSerializer.addS32((irr::s32)m_eRaceClass );
+      l_cSerializer.addS32(c_iGridPos        ); l_cSerializer.addS32((irr::s32)m_eGridPos   );
       l_cSerializer.addS32(c_iGridSize       ); l_cSerializer.addS32(m_iGridSize  );
-      l_cSerializer.addS32(c_iAutoFinish     ); l_cSerializer.addS32(m_iAutoFinish);
+      l_cSerializer.addS32(c_iAutoFinish     ); l_cSerializer.addS32((irr::s32)m_eAutoFinish);
       l_cSerializer.addS32(c_iReverseGrid    ); l_cSerializer.addS32(m_bReverseGrid     ? 1 : 0);
       l_cSerializer.addS32(c_iFirstRaceRandom); l_cSerializer.addS32(m_bRandomFirstRace ? 1 : 0);
       l_cSerializer.addS32(c_iFillGrid       ); l_cSerializer.addS32(m_bFillGridAI      ? 1 : 0);
@@ -517,13 +516,13 @@ namespace dustbin {
       if (l_cSerializer.getS32() == c_iGameSettings) {
         while (l_cSerializer.hasMoreMessages()) {
           switch (l_cSerializer.getS32()) {
-            case c_iRaceClass      : m_iRaceClass       = l_cSerializer.getS32()     ; break;
-            case c_iGridPos        : m_iGridPos         = l_cSerializer.getS32()     ; break;
-            case c_iGridSize       : m_iGridSize        = l_cSerializer.getS32()     ; break;
-            case c_iAutoFinish     : m_iAutoFinish      = l_cSerializer.getS32()     ; break;
-            case c_iReverseGrid    : m_bReverseGrid     = l_cSerializer.getS32() != 0; break;
-            case c_iFirstRaceRandom: m_bRandomFirstRace = l_cSerializer.getS32() != 0; break;
-            case c_iFillGrid       : m_bFillGridAI      = l_cSerializer.getS32() != 0; break;
+            case c_iRaceClass      : m_eRaceClass       = (enRaceClass )l_cSerializer.getS32()     ; break;
+            case c_iGridPos        : m_eGridPos         = (enGridPos   )l_cSerializer.getS32()     ; break;
+            case c_iGridSize       : m_iGridSize        =               l_cSerializer.getS32()     ; break;
+            case c_iAutoFinish     : m_eAutoFinish      = (enAutoFinish)l_cSerializer.getS32()     ; break;
+            case c_iReverseGrid    : m_bReverseGrid     =               l_cSerializer.getS32() != 0; break;
+            case c_iFirstRaceRandom: m_bRandomFirstRace =               l_cSerializer.getS32() != 0; break;
+            case c_iFillGrid       : m_bFillGridAI      =               l_cSerializer.getS32() != 0; break;
           }
         }
       }
@@ -534,10 +533,10 @@ namespace dustbin {
       return true;
     }
 
-    SGameData::SGameData() : m_eType(enType::Local), m_sTrack(""), m_iLaps(1), m_iClass(0), m_bIsTutorial(false) {
+    SGameData::SGameData() : m_sTrack(""), m_iLaps(1), m_bIsTutorial(false) {
     }
 
-    SGameData::SGameData(enType a_eType, const std::string& a_sTrack, int a_iLaps, int a_iClass) : m_eType(a_eType), m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_iClass(a_iClass), m_bIsTutorial(false) {
+    SGameData::SGameData(const std::string& a_sTrack, int a_iLaps) : m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_bIsTutorial(false) {
     }
 
     SGameData::SGameData(const std::string& a_sData) {
@@ -550,10 +549,6 @@ namespace dustbin {
           irr::s32 l_iData = l_cSerializer.getS32();
 
           switch (l_iData) {
-            case c_iGameType:
-              m_eType = (enType)l_cSerializer.getS32();
-              break;
-
             case c_iGameTrack:
               m_sTrack = l_cSerializer.getString();
               break;
@@ -562,12 +557,12 @@ namespace dustbin {
               m_iLaps = l_cSerializer.getS32();
               break;
 
-            case c_iGameClass:
-              m_iClass = l_cSerializer.getS32();
-              break;
-
             case c_iTutorial:
               m_bIsTutorial = l_cSerializer.getS32() != 0;
+              break;
+
+            case c_iGrid:
+              m_vStartingGrid.push_back(l_cSerializer.getS32());
               break;
 
             default:
@@ -584,10 +579,6 @@ namespace dustbin {
 
       l_cSerializer.addS32(c_iGameHead);
 
-      // The type of the game
-      l_cSerializer.addS32(c_iGameType);
-      l_cSerializer.addS32((irr::s32)m_eType);
-
       // The track
       l_cSerializer.addS32(c_iGameTrack);
       l_cSerializer.addString(m_sTrack);
@@ -596,13 +587,15 @@ namespace dustbin {
       l_cSerializer.addS32(c_iGameLaps);
       l_cSerializer.addS32(m_iLaps);
 
-      // The race class
-      l_cSerializer.addS32(c_iGameClass);
-      l_cSerializer.addS32(m_iClass);
-
       // Is this race a tutorial?
       l_cSerializer.addS32(c_iTutorial);
       l_cSerializer.addS32(m_bIsTutorial ? 1 : 0);
+
+      // Add the starting grid
+      for (std::vector<int>::iterator l_itGrid = m_vStartingGrid.begin(); l_itGrid != m_vStartingGrid.end(); l_itGrid++) {
+        l_cSerializer.addS32(c_iGrid);
+        l_cSerializer.addS32(*l_itGrid);
+      }
 
       return l_cSerializer.getMessageAsString();
     }
@@ -679,6 +672,20 @@ namespace dustbin {
       }
 
       return s;
+    }
+
+    /**
+    * Get a player by ID
+    * @param a_iId player ID
+    * @return pointer to the player data structure with the ID, nullptr if the ID was not found
+    */
+    SPlayerData *SRacePlayers::getPlayer(int a_iId) {
+      for (std::vector<SPlayerData>::iterator l_itPlayer = m_vPlayers.begin(); l_itPlayer != m_vPlayers.end(); l_itPlayer++) {
+        if ((*l_itPlayer).m_iPlayerId == a_iId) {
+          return &(*l_itPlayer);
+        }
+      }
+      return nullptr;
     }
 
     SChampionshipPlayer::SChampionshipPlayer(int a_iPlayerId, const std::string &a_sName) : 

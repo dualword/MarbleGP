@@ -118,15 +118,15 @@ namespace dustbin {
             l_bRet = true;
           }
           else if (a_sSender == "race_finish") {
-            m_cSettings.m_iAutoFinish = a_iSelected;
+            m_cSettings.m_eAutoFinish = (data::SGameSettings::enAutoFinish)a_iSelected;
             l_bRet = true;
           }
           else if (a_sSender == "raceclass") {
-            m_cSettings.m_iRaceClass = a_iSelected;
+            m_cSettings.m_eRaceClass = (data::SGameSettings::enRaceClass)a_iSelected;
             l_bRet = true;
           }
           else if (a_sSender == "starting_positions") {
-            m_cSettings.m_iGridPos = a_iSelected;
+            m_cSettings.m_eGridPos = (data::SGameSettings::enGridPos)a_iSelected;
             l_bRet = true;
           }
           else if (a_sSender == "touchcontrol") {
@@ -321,10 +321,10 @@ namespace dustbin {
           gui::CSelector        *l_pSelector = nullptr;
 
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("raceclass", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
-          if (l_pSelector != nullptr) l_pSelector->setSelected(m_cSettings.m_iRaceClass); else printf("Ui element \"raceclass\" not found.");
+          if (l_pSelector != nullptr) l_pSelector->setSelected((int)m_cSettings.m_eRaceClass); else printf("Ui element \"raceclass\" not found.");
 
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("starting_positions", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
-          if (l_pSelector != nullptr) l_pSelector->setSelected(m_cSettings.m_iGridPos); else printf("Ui element \"starting_positions\" not found.");
+          if (l_pSelector != nullptr) l_pSelector->setSelected((int)m_cSettings.m_eGridPos); else printf("Ui element \"starting_positions\" not found.");
 
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
@@ -335,7 +335,7 @@ namespace dustbin {
 
           l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("race_finish", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
-            l_pSelector->setSelected(m_cSettings.m_iAutoFinish); 
+            l_pSelector->setSelected((int)m_cSettings.m_eAutoFinish); 
           }
           
           l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("reverse_grid", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));

@@ -425,17 +425,17 @@ namespace dustbin {
       helpers::addToDebugLog("Setup grid...");
       m_fGridAngle = m_pGridNode->getAngle();
 
-      int  l_iGridOrder   = 0;
-      int  l_iAutoFinish  = 0;
+      data::SGameSettings::enGridPos    l_eGridOrder   = data::SGameSettings::enGridPos::Fixed;
+      data::SGameSettings::enAutoFinish l_eAutoFinish  = data::SGameSettings::enAutoFinish::AllPlayers;
       bool l_bGridReverse = false;
 
       std::string l_sSettings = m_pGlobal->getSetting("gamesetup");
       if (l_sSettings != "") {
         data::SGameSettings l_cSettings;
         l_cSettings.deserialize(l_sSettings);
-        l_iGridOrder  = l_cSettings.m_iGridPos;
+        l_eGridOrder   = l_cSettings.m_eGridPos;
         l_bGridReverse = l_cSettings.m_bReverseGrid;
-        l_iAutoFinish = l_cSettings.m_iAutoFinish;
+        l_eAutoFinish  = l_cSettings.m_eAutoFinish;
       }
 
       helpers::addToDebugLog("Load Championship...");
@@ -456,10 +456,10 @@ namespace dustbin {
           m_iNumOfViewports++;
       }
 
-      helpers::addToDebugLog("Check grid order...");
-      if (l_pLastRace != nullptr && l_iGridOrder != 0) {
+      /*helpers::addToDebugLog("Check grid order...");
+      if (l_pLastRace != nullptr && l_eGridOrder != data::SGameSettings::enGridPos::Fixed) {
         // Grid order: Result of last race
-        if (l_iGridOrder == 1) {
+        if (l_eGridOrder == data::SGameSettings::enGridPos::LastRace) {
           // Go through the players ..
           for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
             // .. next go through the last race result ..
@@ -474,7 +474,7 @@ namespace dustbin {
             }
           }
         }
-        else if (l_iGridOrder == 2) {
+        else if (l_eGridOrder == data::SGameSettings::enGridPos::Standings) {
           // Get the current standings ..
           std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();
           // .. iterate of the standings ..
@@ -489,7 +489,7 @@ namespace dustbin {
             l_iPos++;
           }
         }
-        else if (l_iGridOrder == 3) {
+        else if (l_eGridOrder == data::SGameSettings::enGridPos::Random) {
           std::vector<int> l_vGrid;
           for (int i = 1; i <= (int)m_cPlayers.m_vPlayers.size(); i++)
             l_vGrid.push_back(i);
@@ -505,13 +505,24 @@ namespace dustbin {
         }
       }
 
-      if (l_bGridReverse && l_iGridOrder != 3 && l_pLastRace != nullptr) {
+      if (l_bGridReverse && l_eGridOrder != data::SGameSettings::enGridPos::Random && l_pLastRace != nullptr) {
         for (auto &l_cPlayer: m_cPlayers.m_vPlayers) {
           printf("Reverse Grid: %i ==> ", l_cPlayer.m_iGridPos);
           l_cPlayer.m_iGridPos = (int)m_cPlayers.m_vPlayers.size() - 1 - l_cPlayer.m_iGridPos;
           printf("%i (%s)\n", l_cPlayer.m_iGridPos, l_cPlayer.m_sName.c_str());
         }
         printf("Grid reversed.\n");
+      }*/
+      helpers::addToDebugLog("Create championship race struct...");
+      m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
+
+      int l_iPos = 0;
+
+      for (std::vector<int>::iterator l_itGrid = m_cGameData.m_vStartingGrid.begin(); l_itGrid != m_cGameData.m_vStartingGrid.end(); l_itGrid++) {
+        data::SPlayerData *p = m_cPlayers.getPlayer(*l_itGrid);
+        if (p != nullptr) {
+          p->m_iGridPos = l_iPos++;
+        }
       }
 
       helpers::addToDebugLog("Apply grid order...");
@@ -519,9 +530,6 @@ namespace dustbin {
       std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
         return a_cPlayer1.m_iGridPos < a_cPlayer2.m_iGridPos;
       });
-
-      helpers::addToDebugLog("Create championship race struct...");
-      m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
 
       helpers::addToDebugLog("Fill object maps...");
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
@@ -537,15 +545,6 @@ namespace dustbin {
       
       if (l_pNode != nullptr) {
         helpers::addToDebugLog("  World node found");
-        gameclasses::CDynamicThread::enAutoFinish l_eAutoFinish;
-
-        helpers::addToDebugLog("  Check auto finish");
-        switch (l_iAutoFinish) {
-          case 0: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::AllPlayers  ; break;
-          case 1: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::SecondToLast; break;
-          case 2: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::FirstPlayer ; break;
-          case 3: l_eAutoFinish = gameclasses::CDynamicThread::enAutoFinish::PlayersAndAI; break;
-        }
 
         helpers::addToDebugLog("  Create dynamics thread");
         m_pDynamics = new gameclasses::CDynamicThread(m_pClient != nullptr);
@@ -572,6 +571,16 @@ namespace dustbin {
           handleError("LUA Error.", m_pDynamics->getLuaError());
           return;
         }
+
+
+        int l_iIndex = 0;
+        for (std::vector<data::SPlayerData>::iterator l_itPlr = m_cPlayers.m_vPlayers.begin(); l_itPlr != m_cPlayers.m_vPlayers.end(); l_itPlr++) {
+          irr::scene::ISceneNode *l_pMarble = assignMarbleToPlayer((*l_itPlr).m_iPlayerId, 10000 + l_iIndex);
+          if (l_pMarble != nullptr) {
+            m_pDynamics->assignPlayerToMarble(&(*l_itPlr), l_pMarble);
+          }
+          l_iIndex++;
+        }
       }
       else {
         handleError("Error while starting game state.", "No world node found..");
@@ -579,9 +588,6 @@ namespace dustbin {
       }
       
       if (m_pClient != nullptr) {
-        // m_pOutputQueue->addListener(m_pClient->getInputQueue());
-        // m_pClient->getOutputQueue()->addListener(m_pInputQueue);
-
         m_pClient->stateChanged("state_game");
       }
 
@@ -609,6 +615,7 @@ namespace dustbin {
       }
 #endif
 
+      raceSetupDone();
       helpers::addToDebugLog("CGameState::activate }\n");
     }
 
@@ -1075,10 +1082,10 @@ namespace dustbin {
       if (m_eState == enGameState::Countdown) {
         irr::f32 l_fFade = 0.0f;
 
-        if (m_iStep < 120)
-          l_fFade = 1.0f;
-        else
-          l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
+        // if (m_iStep < 120)
+        //   l_fFade = 1.0f;
+        // else
+        //   l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
 
         if (l_fFade < 0.1f && l_fFade > 0.0f)
           m_pSoundIntf->setMenuFlag(false);
@@ -1269,19 +1276,21 @@ namespace dustbin {
 
     /**
     * This function receives messages of type "PlayerAssignMarble"
-    * @param a_playerid The ID of the player
-    * @param a_marbleid The ID of the marble for the player
+    * @param a_iPlayerId The ID of the player
+    * @param a_iMarbleId The ID of the marble for the player
     */
-    void CGameState::onPlayerassignmarble(irr::s32 a_playerid, irr::s32 a_marbleid) {
-      printf("Assign Marble %i to player %i\n", a_marbleid, a_playerid);
+    irr::scene::ISceneNode *CGameState::assignMarbleToPlayer(irr::s32 a_iPlayerId, irr::s32 a_iMarbleId) {
+      irr::scene::ISceneNode *l_pRet = nullptr;
+
+      printf("Assign Marble %i to player %i\n", a_iMarbleId, a_iPlayerId);
       for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-        if ((*it).m_iPlayerId == a_playerid) {
-          gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_marbleid);
+        if ((*it).m_iPlayerId == a_iPlayerId) {
+          gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_iMarbleId);
 
           std::string l_sTexture = (*it).m_sTexture;
 
           if (l_sTexture == "") {
-            l_sTexture = "default://number=" + std::to_string(a_playerid);
+            l_sTexture = "default://number=" + std::to_string(a_iPlayerId);
           }
 
           if (l_sTexture.substr(0, std::string("default://").size()) == "default://") {
@@ -1311,7 +1320,8 @@ namespace dustbin {
 
           m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
 
-          assignViewport(m_fGridAngle, l_pPlayer);
+          if ((*it).m_eType == data::enPlayerType::Local)
+            assignViewport(m_fGridAngle, l_pPlayer);
 
           m_vPlayers .push_back(l_pPlayer);
           m_vPosition.push_back(l_pPlayer);
@@ -1367,14 +1377,17 @@ namespace dustbin {
           }
 
           m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
+          l_pRet = l_pMarble->m_pPositional;
         }
       }
+
+      return l_pRet;
     }
 
     /**
-    * This function receives messages of type "RaceSetupDone"
+    * This function is called after setup has finished
     */
-    void CGameState::onRacesetupdone() {
+    void CGameState::raceSetupDone() {
       m_pSoundIntf->startGame();
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {

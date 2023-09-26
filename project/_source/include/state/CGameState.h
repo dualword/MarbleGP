@@ -296,15 +296,14 @@ namespace dustbin {
 
         /**
         * This function receives messages of type "PlayerAssignMarble"
-        * @param a_playerid The ID of the player
-        * @param a_marbleid The ID of the marble for the player
+        * @param a_iPlayerId The ID of the player
+        * @param a_iMarbleId The ID of the marble for the player
         */
-        virtual void onPlayerassignmarble(irr::s32 a_playerid, irr::s32 a_marbleid) override;
-
+        irr::scene::ISceneNode *assignMarbleToPlayer(irr::s32 a_iPlayerId, irr::s32 a_iMarbleId);
         /**
-        * This function receives messages of type "RaceSetupDone"
+        * This function is called after setup has finished
         */
-        virtual void onRacesetupdone() override;
+        void raceSetupDone();
 
         /**
          * This function receives messages of type "PlayerRespawn"

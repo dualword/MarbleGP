@@ -122,29 +122,29 @@ namespace dustbin {
             printf("Add %i AI Players.\n", l_iAiPlayers);
 
             for (int i = 0; i < l_iAiPlayers; i++)
-              switch (l_cSettings.m_iRaceClass) {
+              switch (l_cSettings.m_eRaceClass) {
                 // Marble 3
-                case 0:
+              case data::SGameSettings::enRaceClass::Marble3:
                   l_vAiClass.push_back("marble3");
                   break;
 
                 // Marble 3 + 2
-                case 1:
+                case data::SGameSettings::enRaceClass::Marble3_2:
                   l_vAiClass.push_back(i % 2 == 0 ? "marble2" : "marble3");
                   break;
 
                 // Marble 2
-                case 2:
+                case data::SGameSettings::enRaceClass::Marble2:
                   l_vAiClass.push_back("marble2");
                   break;
 
                 // Marble 2 + GP
-                case 3:
+                case data::SGameSettings::enRaceClass::Marble2_GP:
                   l_vAiClass.push_back(i % 2 == 0 ? "marblegp" : "marble2");
                   break;
 
                 // MarbleGP
-                case 4:
+                case data::SGameSettings::enRaceClass::MarbleGP:
                   l_vAiClass.push_back("marblegp");
                   break;
 
@@ -329,7 +329,7 @@ namespace dustbin {
 
           m_pState->getGlobal()->setGlobal("raceplayers", l_cPlayers.serialize());
 
-          data::SChampionship l_cChampionship = data::SChampionship(l_cSettings.m_iRaceClass, (int)l_cPlayers.m_vPlayers.size(), l_cSettings.m_iGridPos, l_cSettings.m_bReverseGrid);
+          data::SChampionship l_cChampionship = data::SChampionship((int)l_cSettings.m_eRaceClass, (int)l_cPlayers.m_vPlayers.size(), (int)l_cSettings.m_eGridPos, l_cSettings.m_bReverseGrid);
 
           for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
             l_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer((*it).m_iPlayerId, (*it).m_sName));

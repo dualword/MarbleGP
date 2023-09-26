@@ -7,6 +7,7 @@
 #include <gameclasses/ITriggerHandler.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/SPlayer.h>
+#include <data/CDataStructs.h>
 #include <threads/IThread.h>
 #include <vector>
 #include <chrono>
@@ -39,14 +40,6 @@ namespace dustbin {
     * This class computes all the dynamics of the actual game
     */
     class CDynamicThread : public threads::IThread, public messages::IDynamicThread, public ITriggerHandler {
-      public:
-        enum class enAutoFinish {
-          AllPlayers,
-          SecondToLast,
-          FirstPlayer,
-          PlayersAndAI
-        };
-
       private:
         enum class enGameState {
           Countdown,
@@ -55,8 +48,8 @@ namespace dustbin {
           Cancelled
         };
 
-        enGameState  m_eGameState;
-        enAutoFinish m_eAutoFinish;
+        enGameState                       m_eGameState;
+        data::SGameSettings::enAutoFinish m_eAutoFinish;
 
         CWorld        *m_pWorld;
         CObjectMarble *m_aMarbles[16];
@@ -169,7 +162,7 @@ namespace dustbin {
           const std::vector<data::SPlayerData> &a_vPlayers, 
           int a_iLaps,
           const std::string &a_sLuaScript,
-          enAutoFinish a_eAutoFinish);
+          data::SGameSettings::enAutoFinish a_eAutoFinish);
 
         /**
          * Callback to handle a trigger
@@ -234,6 +227,13 @@ namespace dustbin {
         * @param a_iObjectID the object that has triggered
         */
         void sendTriggerToUI(int a_iTriggerID, int a_iObjectID);
+
+        /**
+        * Assign a player to a marble
+        * @param a_pPlayer the player
+        * @param a_pMarbleNode scene node of the marble
+        */
+        void assignPlayerToMarble(data::SPlayerData *a_pPlayer, irr::scene::ISceneNode *a_pMarbleNode);
 
         /**
         * Retrieve the world of the race

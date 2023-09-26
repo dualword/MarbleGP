@@ -60,5 +60,12 @@ namespace dustbin {
     * @return a vector with all cup definitions
     */
     std::vector<data::SMarbleGpCup> loadCupDefinitions();
+
+    /**
+    * Prepare and update the global data for the next race
+    * @param a_sTrack the next track identifier
+    * @param a_iLaps the number of laps
+    */
+    void prepareNextRace(const std::string &a_sTrack, int a_iLaps);
   }
 }

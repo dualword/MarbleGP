@@ -932,8 +932,6 @@ namespace dustbin {
         void setupTutorialRace() {
           data::SGameData l_cData;
 
-          l_cData.m_eType       = data::SGameData::enType::Local;
-          l_cData.m_iClass      = 0;
           l_cData.m_iLaps       = 1;
           l_cData.m_sTrack      = "tutorial";
           l_cData.m_bIsTutorial = true;

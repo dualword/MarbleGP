@@ -127,11 +127,7 @@ namespace dustbin {
                   m_pState->getGlobal()->setSetting("track", l_sTrack);
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
 
-                  data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-
-                  data::SGameData l_cData(data::SGameData::enType::Local, l_sTrack, l_iLaps, l_cChampionship.m_iClass);
-                  m_pState->getGlobal()->setGlobal("gamedata", l_cData.serialize());
-                  m_pState->getGlobal()->initNextRaceScreen();
+                  helpers::prepareNextRace(l_sTrack, l_iLaps);
 
                   platform::saveSettings();
                   if (m_pServer != nullptr) {

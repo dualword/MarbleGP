@@ -37,7 +37,6 @@ namespace dustbin {
 
         irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager);
 
-        gameclasses::SMarbleNodes *getNextMarble();
         gameclasses::SMarbleNodes *getMarble(int a_iMarbleID);
         void removeUnusedMarbles();
 

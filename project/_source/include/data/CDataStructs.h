@@ -146,10 +146,34 @@ namespace dustbin {
     * A class for the general game settings
     */
     typedef struct SGameSettings {
-      int m_iRaceClass;   /**< The race class (0 == Marble3, 1 == Marble3 + 2, 2 == Marble2, 3 == Marble2 + GP, 4 == MarbleGP, 5 == All Classes) */
-      int m_iGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
+      enum class enRaceClass {
+        Marble3    = 0,     /**< The AI players of the race are Marble3 */
+        Marble3_2  = 1,     /**< The field is filled with a mix of Marble3 and Marble2 AI players */
+        Marble2    = 2,     /**< Every AI player of the race is Marble2 */
+        Marble2_GP = 3,     /**< Some Marble2 and some MarbleGP AI players are added if wanted */
+        MarbleGP   = 4,     /**< All AI opponents are MarbleGP, so this is the hardest class */
+        AllClasses = 5      /**< A mixture of all classes is added if the field is filled */
+      };
+
+      enum class enGridPos {
+        Fixed     = 0,        /**< All races start with the same order */
+        LastRace  = 1,        /**< The result of the last race determines the starting grid order of the next race */
+        Standings = 2,        /**< The current championship standings define the grid order */
+        Random    = 3         /**< For all races the grid is randomized */
+      };
+
+      enum class enAutoFinish {
+        AllPlayers   = 0,       /**< The race is ended once all players have reached the finish line */
+        SecondToLast = 1,       /**< Race ends once all players except for the last one have finished */
+        FirstPlayer  = 2,       /**< The race ends once the first player has crossed the finish line */
+        AllAndAi     = 3        /**< All marbles, human and AI alike, must have finished for the race to end */
+      };
+
+      enRaceClass  m_eRaceClass;   /**< The race class (0 == Marble3, 1 == Marble3 + 2, 2 == Marble2, 3 == Marble2 + GP, 4 == MarbleGP, 5 == All Classes) */
+      enGridPos    m_eGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
+      enAutoFinish m_eAutoFinish;  /**< The auto finish mode (0 == All Players finished, 1 == Second to Last player finished, 2 == First Player Finished, 3 == All Players and AI finished) */
+
       int m_iGridSize;    /**< The grid size, filled with AI players */
-      int m_iAutoFinish;  /**< The auto finish mode (0 == All Players finished, 1 == Second to Last player finished, 2 == First Player Finished, 3 == All Players and AI finished) */
 
       bool m_bReverseGrid;      /**< Shall the grid be reversed? */
       bool m_bRandomFirstRace;  /**< Shall the grid of the first race be randomized? */
@@ -167,24 +191,14 @@ namespace dustbin {
     * This struct holds the data for the upcoming race
     */
     typedef struct SGameData {
-      /**
-      * The type of race for this instance of the application
-      */
-      enum class enType {
-        Local,      /**< The race is local. Might be a network race running on the server */
-        Network,    /**< The instance is a network client */
-        ViewTrack,  /**< The race is a view track race */
-        Replay      /**< The race is a race replay */
-      };
-
-      enType      m_eType;        /**< The type of race */
       std::string m_sTrack;       /**< The track */
       int         m_iLaps;        /**< The number of laps */
-      int         m_iClass;       /**< The race class */
       bool        m_bIsTutorial;  /**< Is this a tutorial race? If so we create a CTutorialHUD instead of a CGameHUD instance */
 
+      std::vector<int> m_vStartingGrid;   /**< Starting grid containing the player IDs */
+
       SGameData();
-      SGameData(enType a_eType, const std::string &a_sTrack, int a_iLaps, int a_iClass);
+      SGameData(const std::string &a_sTrack, int a_iLaps);
       SGameData(const std::string &a_sData);
 
       std::string serialize();
@@ -202,6 +216,13 @@ namespace dustbin {
       bool deserialize(const std::string &a_sSerialized);
 
       std::string toString();
+
+      /**
+      * Get a player by ID
+      * @param a_iId player ID
+      * @return pointer to the player data structure with the ID, nullptr if the ID was not found
+      */
+      SPlayerData *getPlayer(int a_iId);
     } SRacePlayers;
 
     /**

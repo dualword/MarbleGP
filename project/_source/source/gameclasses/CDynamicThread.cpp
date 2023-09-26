@@ -343,6 +343,7 @@ namespace dustbin {
               break;
 
             case scenenodes::CPhysicsNode::enNodeType::Trimesh:
+              printf("\n*** Create Trimesh: %s (%i)\n\n", l_pNode->getName(), l_pNode->getID());
               l_pObject = new CObjectTrimesh(l_pNode, m_pWorld, l_pNode->getName());
               break;
           }
@@ -373,6 +374,7 @@ namespace dustbin {
       do {
         messages::IMessage* l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
+          m_pOutputQueue->postMessage(l_pMsg);
           if (!handleMessage(l_pMsg)) 
             delete l_pMsg;
         }
@@ -845,7 +847,7 @@ namespace dustbin {
 
     CDynamicThread::CDynamicThread(bool a_bNetworkClient) :
       m_eGameState    (enGameState::Countdown),
-      m_eAutoFinish   (enAutoFinish::AllPlayers),
+      m_eAutoFinish   (data::SGameSettings::enAutoFinish::AllPlayers),
       m_pWorld        (nullptr),
       m_bPaused       (false),
       m_fGridAngle    (0.0f),
@@ -868,7 +870,7 @@ namespace dustbin {
       const std::vector<data::SPlayerData> &a_vPlayers, 
       int a_iLaps, 
       const std::string &a_sLuaScript,
-      enAutoFinish a_eAutoFinish
+      data::SGameSettings::enAutoFinish a_eAutoFinish
     )
     {
       helpers::addToDebugLog("    CDynamicThread::setupGame {");
@@ -898,92 +900,22 @@ namespace dustbin {
         int l_iIndex = 0;
 
         for (std::vector<const data::SPlayerData *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
-          if ((*it)->m_eType != data::enPlayerType::Ai)
-            m_iHuman++;
-
-          irr::scene::ISceneNode *l_pMarbleNode = a_pGrid->getMarbleById(l_iIndex + 10000);
-
-          l_pMarbleNode->updateAbsolutePosition();
-          irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, 10.0f);
-          l_vOffset.rotateXZBy(m_fGridAngle);
-
-          CObjectMarble* l_pMarble = new CObjectMarble(l_pMarbleNode, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(l_iIndex + 1));
-
-          l_pMarble->m_vDirection  = l_vOffset;
-          l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
-          l_pMarble->m_vUpOffset   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
-          l_pMarble->m_vContact    = irr::core::vector3df();
-          l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
-          l_pMarble->m_vOffset     = l_vOffset;
-          l_pMarble->m_vCamera     = l_vOffset;
-          l_pMarble->m_bAiPlayer   = (*it)->m_eType == data::enPlayerType::Ai;
-
-          l_pMarble->m_vSideVector.normalize();
-          l_pMarble->m_vDirection .normalize();
-
-          float l_fPowerFactor = 1.0f;
-
-          if ((*it)->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || (*it)->m_sControls == "class=marble3") {
-            l_fPowerFactor = 0.7f;
-          }
-          else if ((*it)->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || (*it)->m_sControls == "class=marble2") {
-            l_fPowerFactor = 0.85f;
-          }
-
-          l_fPowerFactor += (*it)->m_fDeviation;
-
-          printf("Power Factor: %.5f, %.5f\n", l_fPowerFactor, (*it)->m_fDeviation);
-
-          l_pMarble->m_fSteerPower  = l_fPowerFactor * l_pMarble->m_fSteerPower;
-          l_pMarble->m_fThrustPower = l_fPowerFactor * l_pMarble->m_fThrustPower;
-
-          m_pWorld->m_vObjects.push_back(l_pMarble);
-          m_aMarbles[l_iIndex] = l_pMarble;
-          printf("*** Marble with id %i stored in array index %i\n", l_pMarbleNode->getID(), l_iIndex);
-
-          for (std::map<irr::s32, CObjectCheckpoint*>::iterator it = m_pWorld->m_mCheckpoints.begin(); it != m_pWorld->m_mCheckpoints.end(); it++) {
-            if (it->second->m_bLapStart)
-              l_pMarble->m_vNextCheckpoints.push_back(it->first);
-          }
-          
-          printf("Marble assignment: %i to player %s\n", l_pMarbleNode->getID(), (*it)->m_sName.c_str());
-          sendPlayerassignmarble((*it)->m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
-
-          sendMarblemoved(l_pMarble->m_iId,
-            l_pMarbleNode->getAbsolutePosition(),
-            l_pMarbleNode->getRotation(),
-            irr::core::vector3df(0.0f, 0.0f, 0.0f),
-            irr::core::vector3df(0.0f, 0.0f, 0.0f),
-            l_pMarble->m_vCamera,
-            irr::core::vector3df(0.0f, 1.0f, 0.0f),
-            0,
-            0,
-            false,
-            false,
-            false,
-            false,
-            m_pOutputQueue);
+         
 
           l_iIndex++;
         }
       }
 
       helpers::addToDebugLog("    Check auto finish");
-      if (m_eAutoFinish == enAutoFinish::SecondToLast && m_iHuman <= 2)
-        m_eAutoFinish = enAutoFinish::FirstPlayer;
+      if (m_eAutoFinish == data::SGameSettings::enAutoFinish::SecondToLast && m_iHuman <= 2)
+        m_eAutoFinish = data::SGameSettings::enAutoFinish::FirstPlayer;
 
       helpers::addToDebugLog("    Create game logic");
-      std::vector<int> l_vMarbleIDs;
 
       m_pGameLogic = createGameLogic("");
       m_pGameLogic->setNumberOfLaps(a_iLaps);
 
       helpers::addToDebugLog("    Save marble IDs");
-      for (int i = 0; i < 16; i++)
-        if (m_aMarbles[i] != nullptr) {
-          l_vMarbleIDs.push_back (m_aMarbles[i]->m_iId);
-          m_pGameLogic->addMarble(m_aMarbles[i]->m_iId);
-        }
 
       if (a_sLuaScript != "") {
         helpers::addToDebugLog("    Create LUA script");
@@ -999,8 +931,8 @@ namespace dustbin {
         }
       }
 
-      helpers::addToDebugLog("    Send race setup done");
-      sendRacesetupdone(m_pOutputQueue);
+      // helpers::addToDebugLog("    Send race setup done");
+      // sendRacesetupdone(m_pOutputQueue);
 
       helpers::addToDebugLog("    CDynamicThread::setupGame }");
       return true;
@@ -1024,6 +956,84 @@ namespace dustbin {
       }
 
       helpers::addToDebugLog("CDynamicThread::~CDynamicThread() }");
+    }
+
+    /**
+    * Assign a player to a marble
+    * @param a_pPlayer the player
+    * @param a_pMarbleNode scene node of the marble
+    */
+    void CDynamicThread::assignPlayerToMarble(data::SPlayerData* a_pPlayer, irr::scene::ISceneNode* a_pMarbleNode) {
+      if (a_pPlayer->m_eType != data::enPlayerType::Ai)
+        m_iHuman++;
+
+      a_pMarbleNode->updateAbsolutePosition();
+      irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, 10.0f);
+      l_vOffset.rotateXZBy(m_fGridAngle);
+
+      CObjectMarble* l_pMarble = new CObjectMarble(a_pMarbleNode, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(a_pPlayer->m_iGridPos));
+
+      l_pMarble->m_vDirection  = l_vOffset;
+      l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+      l_pMarble->m_vUpOffset   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+      l_pMarble->m_vContact    = irr::core::vector3df();
+      l_pMarble->m_vSideVector = l_pMarble->m_vDirection.crossProduct(l_pMarble->m_vUpVector);
+      l_pMarble->m_vOffset     = l_vOffset;
+      l_pMarble->m_vCamera     = l_vOffset;
+      l_pMarble->m_bAiPlayer   = a_pPlayer->m_eType == data::enPlayerType::Ai;
+
+      l_pMarble->m_vSideVector.normalize();
+      l_pMarble->m_vDirection .normalize();
+
+      float l_fPowerFactor = 1.0f;
+
+      if (a_pPlayer->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || a_pPlayer->m_sControls == "class=marble3") {
+        l_fPowerFactor = 0.7f;
+      }
+      else if (a_pPlayer->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || a_pPlayer->m_sControls == "class=marble2") {
+        l_fPowerFactor = 0.85f;
+      }
+
+      l_fPowerFactor += a_pPlayer->m_fDeviation;
+
+      printf("Power Factor: %.5f, %.5f\n", l_fPowerFactor, a_pPlayer->m_fDeviation);
+
+      l_pMarble->m_fSteerPower  = l_fPowerFactor * l_pMarble->m_fSteerPower;
+      l_pMarble->m_fThrustPower = l_fPowerFactor * l_pMarble->m_fThrustPower;
+
+      m_pWorld->m_vObjects.push_back(l_pMarble);
+
+      for (int i = 0; i < 16; i++) {
+        if (m_aMarbles[i] == nullptr) {
+          m_aMarbles[i] = l_pMarble;
+          m_pGameLogic->addMarble(m_aMarbles[i]->m_iId);
+          printf("*** Marble with id %i stored in array index %i\n", a_pMarbleNode->getID(), i);
+          break;
+        }
+      }
+
+      for (std::map<irr::s32, CObjectCheckpoint*>::iterator it = m_pWorld->m_mCheckpoints.begin(); it != m_pWorld->m_mCheckpoints.end(); it++) {
+        if (it->second->m_bLapStart)
+          l_pMarble->m_vNextCheckpoints.push_back(it->first);
+      }
+
+      printf("Marble assignment: %i to player %s\n", a_pMarbleNode->getID(), a_pPlayer->m_sName.c_str());
+      // sendPlayerassignmarble((*it)->m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
+
+      sendMarblemoved(l_pMarble->m_iId,
+        a_pMarbleNode->getAbsolutePosition(),
+        a_pMarbleNode->getRotation(),
+        irr::core::vector3df(0.0f, 0.0f, 0.0f),
+        irr::core::vector3df(0.0f, 0.0f, 0.0f),
+        l_pMarble->m_vCamera,
+        irr::core::vector3df(0.0f, 1.0f, 0.0f),
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        m_pOutputQueue);
     }
 
     /**
@@ -1291,7 +1301,7 @@ namespace dustbin {
         for (int i = 0; i < 16; i++) {
           if (m_aMarbles[i] != nullptr && 
               (m_aMarbles[i]->m_eState == CObjectMarble::enMarbleState::Finished || m_aMarbles[i]->m_eState == CObjectMarble::enMarbleState::Withdrawn) && 
-              (!m_aMarbles[i]->m_bAiPlayer || m_eAutoFinish == enAutoFinish::PlayersAndAI)
+              (!m_aMarbles[i]->m_bAiPlayer || m_eAutoFinish == data::SGameSettings::enAutoFinish::AllAndAi)
             )
           {
             l_iFinished++;
@@ -1301,10 +1311,10 @@ namespace dustbin {
         bool l_bFinish = false;
 
         switch (m_eAutoFinish) {
-          case enAutoFinish::AllPlayers  : l_bFinish = l_iFinished == m_iHuman    ; break;
-          case enAutoFinish::SecondToLast: l_bFinish = l_iFinished == m_iHuman - 1; break;
-          case enAutoFinish::FirstPlayer : l_bFinish = l_iFinished >  0           ; break;
-          case enAutoFinish::PlayersAndAI: l_bFinish = l_iFinished == m_iPlayers  ; break;
+          case data::SGameSettings::enAutoFinish::AllPlayers  : l_bFinish = l_iFinished == m_iHuman    ; break;
+          case data::SGameSettings::enAutoFinish::SecondToLast: l_bFinish = l_iFinished == m_iHuman - 1; break;
+          case data::SGameSettings::enAutoFinish::FirstPlayer : l_bFinish = l_iFinished >  0           ; break;
+          case data::SGameSettings::enAutoFinish::AllAndAi    : l_bFinish = l_iFinished == m_iPlayers  ; break;
         }
 
         if (l_bFinish) {

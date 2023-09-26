@@ -8,6 +8,7 @@
 #include <CGlobal.h>
 #include <Defines.h>
 #include <fstream>
+#include <random>
 
 namespace dustbin {
   namespace helpers {
@@ -292,6 +293,84 @@ namespace dustbin {
       }
 
       return l_vCups;
+    }
+
+
+    /**
+    * Prepare and update the global data for the next race
+    * @param a_sTrack the next track identifier
+    * @param a_iLaps the number of laps
+    */
+    void prepareNextRace(const std::string& a_sTrack, int a_iLaps) {
+      data::SGameData l_cData(a_sTrack, a_iLaps);
+
+      CGlobal *l_pGlobal = CGlobal::getInstance();
+
+      data::SGameSettings l_cSettings;
+      l_cSettings.deserialize(l_pGlobal->getSetting("gamesetup"));
+      data::SChampionship l_cChampionship = data::SChampionship(l_pGlobal->getGlobal("championship"));
+      data::SRacePlayers l_cPlayers;
+
+      l_cPlayers.deserialize(l_pGlobal->getGlobal("raceplayers"));
+
+      if (l_cChampionship.m_vRaces.size() == 0 || l_cSettings.m_eGridPos == data::SGameSettings::enGridPos::Fixed) {
+        // First Race
+        for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
+          l_cData.m_vStartingGrid.push_back(l_cPlayer.m_iPlayerId);
+        }
+
+        if (l_cSettings.m_bRandomFirstRace && l_cSettings.m_eGridPos != data::SGameSettings::enGridPos::Fixed) {
+          std::random_device l_cRd { };
+          std::default_random_engine l_cRe { l_cRd() };
+
+          std::shuffle(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end(), l_cRe);
+        }
+      }
+      else {
+        // Now we need to specify the starting grid of the next race
+
+        switch (l_cSettings.m_eGridPos) {
+          case data::SGameSettings::enGridPos::LastRace:
+            for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
+              if (l_cChampionship.m_vRaces.back().m_mAssignment.find(l_cChampionship.m_vRaces.back().m_aResult[i].m_iId) != l_cChampionship.m_vRaces.back().m_mAssignment.end()) {
+                l_cData.m_vStartingGrid.push_back(l_cChampionship.m_vRaces.back().m_mAssignment[l_cChampionship.m_vRaces.back().m_aResult[i].m_iId]);
+              }
+            }
+
+            break;
+
+          case data::SGameSettings::enGridPos::Standings: {
+            std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();
+
+            for (std::vector<data::SChampionshipPlayer>::iterator l_itPlayer = l_vStanding.begin(); l_itPlayer != l_vStanding.end(); l_itPlayer++) {
+              l_cData.m_vStartingGrid.push_back((*l_itPlayer).m_iPlayerId);
+            }
+
+            break;
+          }
+
+          case data::SGameSettings::enGridPos::Random: {
+            for (std::vector<data::SChampionshipPlayer>::iterator l_itPlayer = l_cChampionship.m_vPlayers.begin(); l_itPlayer != l_cChampionship.m_vPlayers.end(); l_itPlayer++) {
+              l_cData.m_vStartingGrid.push_back((*l_itPlayer).m_iPlayerId);
+            }
+            std::random_device l_cRd { };
+            std::default_random_engine l_cRe { l_cRd() };
+
+            std::shuffle(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end(), l_cRe);
+            break;
+          }
+
+          default:
+            break;
+        }
+
+        if ((l_cSettings.m_eGridPos == data::SGameSettings::enGridPos::LastRace || l_cSettings.m_eGridPos == data::SGameSettings::enGridPos::Standings) && l_cSettings.m_bReverseGrid) {
+          std::reverse(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end());
+        }
+      }
+
+      l_pGlobal->setGlobal("gamedata", l_cData.serialize());
+      l_pGlobal->initNextRaceScreen();
     }
   }
 }

@@ -43,32 +43,13 @@ namespace dustbin {
 
     CStartingGridSceneNode::~CStartingGridSceneNode() {
       for (int i = 0; i < 16; i++)
-        if (m_pMarbles[i] != nullptr)
+        if (m_pMarbles[i] != nullptr) {
           delete m_pMarbles[i];
+          m_pMarbles[i] = nullptr;
+        }
     }
 
     void CStartingGridSceneNode::render() {
-    }
-
-    gameclasses::SMarbleNodes *CStartingGridSceneNode::getNextMarble() {
-      gameclasses::SMarbleNodes* l_pRet = nullptr;
-
-      if (m_iNextMarble < 16) {
-        l_pRet = m_pMarbles[m_iNextMarble];
-        if (l_pRet != nullptr) {
-          // Move the marble to our parent
-          l_pRet->m_pPositional->updateAbsolutePosition();
-          irr::core::vector3df l_cPos = l_pRet->m_pPositional->getAbsolutePosition();
-
-          l_pRet->m_pPositional->setParent(getParent());
-          l_pRet->m_pPositional->setPosition(l_cPos);
-
-          m_pMarbles[m_iNextMarble] = nullptr;
-        }
-        m_iNextMarble++;
-      }
-
-      return l_pRet;
     }
 
     /**
@@ -77,13 +58,16 @@ namespace dustbin {
     * @return the marble's positional scene node
     */
     irr::scene::ISceneNode *CStartingGridSceneNode::getMarbleById(int a_iMarbleID) {
+      irr::scene::ISceneNode *l_pRet = nullptr;
+
       for (int i = 0; i < 16; i++) {
         if (m_pMarbles[i] != nullptr && m_pMarbles[i]->m_pPositional != nullptr && m_pMarbles[i]->m_pPositional->getID() == a_iMarbleID) {
-          return m_pMarbles[i]->m_pPositional;
+          l_pRet = m_pMarbles[i]->m_pPositional;
+          m_pMarbles[i] = nullptr;
         }
       }
 
-      return nullptr;
+      return l_pRet;
     }
 
     gameclasses::SMarbleNodes *CStartingGridSceneNode::getMarble(int a_iMarbleID) {
@@ -112,6 +96,8 @@ namespace dustbin {
         if (m_pMarbles[i] != nullptr) {
           m_pMarbles[i]->m_pPositional->setVisible(false);
           m_pMarbles[i]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[i]->m_pPositional);
+          delete m_pMarbles[i];
+          m_pMarbles[i] = nullptr;
         }
       }
     }
