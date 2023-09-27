@@ -92,7 +92,6 @@ namespace dustbin {
           }
 
           int l_iCount = (int)l_cPlayers.m_vPlayers.size();
-          
 
           for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
             (*it).m_iGridPos = *l_vGrid.begin();

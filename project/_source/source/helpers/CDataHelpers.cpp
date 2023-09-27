@@ -313,20 +313,8 @@ namespace dustbin {
 
       l_cPlayers.deserialize(l_pGlobal->getGlobal("raceplayers"));
 
-      if (l_cChampionship.m_vRaces.size() == 0 || l_cSettings.m_eGridPos == data::SGameSettings::enGridPos::Fixed) {
-        // First Race
-        for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
-          l_cData.m_vStartingGrid.push_back(l_cPlayer.m_iPlayerId);
-        }
-
-        if (l_cSettings.m_bRandomFirstRace && l_cSettings.m_eGridPos != data::SGameSettings::enGridPos::Fixed) {
-          std::random_device l_cRd { };
-          std::default_random_engine l_cRe { l_cRd() };
-
-          std::shuffle(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end(), l_cRe);
-        }
-      }
-      else {
+      // The grid positions of the first race (or fixed order) have already been set in "CMenuFillGrid"
+      if (l_cChampionship.m_vRaces.size() > 0 && l_cSettings.m_eGridPos != data::SGameSettings::enGridPos::Fixed) {
         // Now we need to specify the starting grid of the next race
 
         switch (l_cSettings.m_eGridPos) {
