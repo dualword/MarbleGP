@@ -40,7 +40,7 @@ namespace dustbin {
 
         gui::CGuiTrackSelect *m_pTrackList; /**< The track list for selection */
 
-        int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" responsw? */
+        int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" response? */
 
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
