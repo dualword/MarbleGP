@@ -46,11 +46,6 @@ namespace dustbin {
       else
         m_iFade &= ~(int)a_eFade;
 
-      for (int i = 0; i < 10; i++)
-        printf("%i", (m_iFade & i) == i ? 1 : 0);
-
-      printf("@step #%i\n", m_iStep);
-
       switch (a_eFade) {
         case enFade::NextRace   : m_iAlphaStep[c_iAlphaIdxNextRace   ] = m_iStep; break;
         case enFade::RaceGrey   : m_iAlphaStep[c_iAlphaIdxRaceGrey   ] = m_iStep; break;

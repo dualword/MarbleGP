@@ -22,7 +22,6 @@ namespace dustbin {
     void CShaderHandlerXEffect::addToShadow(irr::scene::ISceneNode *a_pNode) {
       if (a_pNode->isVisible()) {
         if (a_pNode->getType() == irr::scene::ESNT_MESH) {
-          printf("Add node \"%s\" to shader\n", a_pNode->getName());
           m_pEffect->addShadowToNode(a_pNode, EFT_16PCF);
 
           irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);

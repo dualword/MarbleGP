@@ -59,8 +59,6 @@ namespace dustbin {
           }
         }
       }
-
-      printf("constructor: %s\n", toString().c_str());
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) : m_fValue(0.0f) {
@@ -343,7 +341,6 @@ namespace dustbin {
             else {
               for (std::vector<SCtrlInput>::iterator it = m_vControls.begin(); it != m_vControls.end(); it++) {
                 if ((*it).m_sName == l_cCtrl.m_sName) {
-                  printf("%s <==> %s\n", (*it).m_sName.c_str(), l_cCtrl.m_sName.c_str());
                   (*it) = l_cCtrl;
                 }
               }

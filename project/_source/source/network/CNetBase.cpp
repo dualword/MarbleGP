@@ -29,11 +29,15 @@ namespace dustbin {
       resetMyMarbles();
     }
 
+    // int blub = 0;
+
     CNetBase::~CNetBase() {
       if (m_pGlobal->getGlobal("enet_initialized") != "") {
         enet_deinitialize();
         m_pGlobal->setGlobal("enet_initialized", "");
       }
+
+      // blub = 0;
     }
 
     /**
@@ -137,9 +141,16 @@ namespace dustbin {
                   if (!onMessageReceived(l_cEvent.peer, l_pMsg)) {
                     int l_iMarble = getMarbleId(l_pMsg);
 
-                    if (l_pMsg->getMessageId() == messages::enMessageIDs::MarbleMoved) {
-                      printf("Got update for Marble %i | %i\n", reinterpret_cast<messages::CMarbleMoved *>(l_pMsg)->m_ObjectId, std::get<0>(m_aMyMarbles[l_iMarble - 10000]));
-                    }
+                    // if (l_pMsg->getMessageId() == messages::enMessageIDs::MarbleMoved && blub % 10 == 0) {
+                      // printf("Got update for Marble %i | ", reinterpret_cast<messages::CMarbleMoved *>(l_pMsg)->m_ObjectId);
+
+                      // for (int i = 0; i < 16; i++) {
+                      //   printf("%5i ", std::get<0>(m_aMyMarbles[i]));
+                      // }
+                      // printf("\n");
+                      // }
+
+                      // blub++;
 
                     if (l_iMarble == -1 || std::get<0>(m_aMyMarbles[l_iMarble - 10000]) == -1)
                       m_pOutputQueue->postMessage(l_pMsg);
@@ -228,8 +239,13 @@ namespace dustbin {
     * Reset the my marbles array after the game
     */
     void CNetBase::resetMyMarbles() {
+      // printf("resetMyMarbles: ");
       for (int i = 0; i < 16; i++)
         std::get<0>(m_aMyMarbles[i]) = -1;
+
+      // for (int i = 0; i < 16; i++)
+      //   printf("%5i ", std::get<0>(m_aMyMarbles[i]));
+      // printf("\n");
     }
 
     /**

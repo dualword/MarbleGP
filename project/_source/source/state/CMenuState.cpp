@@ -337,6 +337,7 @@ namespace dustbin {
       if (m_pInputQueue != nullptr) {
         messages::IMessage *l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
+          printf("Got Message %i\n", (int)l_pMsg->getMessageId());
           if (l_pMsg->getMessageId() == messages::enMessageIDs::ChangeState) {
             if (!m_pMenu->handlesNetworkStateChange()) {
               messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);

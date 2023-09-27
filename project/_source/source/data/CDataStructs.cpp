@@ -931,7 +931,6 @@ namespace dustbin {
     }
 
     SChampionshipRace::~SChampionshipRace() {
-      printf("Delete championship race\n");
     }
 
     SChampionshipRace::SChampionshipRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {

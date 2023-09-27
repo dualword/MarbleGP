@@ -343,7 +343,6 @@ namespace dustbin {
               break;
 
             case scenenodes::CPhysicsNode::enNodeType::Trimesh:
-              printf("\n*** Create Trimesh: %s (%i)\n\n", l_pNode->getName(), l_pNode->getID());
               l_pObject = new CObjectTrimesh(l_pNode, m_pWorld, l_pNode->getName());
               break;
           }
@@ -374,7 +373,6 @@ namespace dustbin {
       do {
         messages::IMessage* l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
-          m_pOutputQueue->postMessage(l_pMsg);
           if (!handleMessage(l_pMsg)) 
             delete l_pMsg;
         }
@@ -803,7 +801,6 @@ namespace dustbin {
     */
     void CDynamicThread::onStepupdate(irr::s32 a_StepNo) {
       if (m_pWorld != nullptr) {
-        printf("Got step update: %i / %i\n", a_StepNo, m_pWorld->m_iWorldStep);
         m_pWorld->m_iWorldStep = a_StepNo;
       }
     }
@@ -996,8 +993,6 @@ namespace dustbin {
 
       l_fPowerFactor += a_pPlayer->m_fDeviation;
 
-      printf("Power Factor: %.5f, %.5f\n", l_fPowerFactor, a_pPlayer->m_fDeviation);
-
       l_pMarble->m_fSteerPower  = l_fPowerFactor * l_pMarble->m_fSteerPower;
       l_pMarble->m_fThrustPower = l_fPowerFactor * l_pMarble->m_fThrustPower;
 
@@ -1007,7 +1002,6 @@ namespace dustbin {
         if (m_aMarbles[i] == nullptr) {
           m_aMarbles[i] = l_pMarble;
           m_pGameLogic->addMarble(m_aMarbles[i]->m_iId);
-          printf("*** Marble with id %i stored in array index %i\n", a_pMarbleNode->getID(), i);
           break;
         }
       }
@@ -1016,9 +1010,6 @@ namespace dustbin {
         if (it->second->m_bLapStart)
           l_pMarble->m_vNextCheckpoints.push_back(it->first);
       }
-
-      printf("Marble assignment: %i to player %s\n", a_pMarbleNode->getID(), a_pPlayer->m_sName.c_str());
-      // sendPlayerassignmarble((*it)->m_iPlayerId, l_pMarbleNode->getID(), m_pOutputQueue);
 
       sendMarblemoved(l_pMarble->m_iId,
         a_pMarbleNode->getAbsolutePosition(),

@@ -287,7 +287,6 @@ namespace dustbin {
             (*it)->m_pNext = *cit;
             (*it)->m_cLinkLine = irr::core::line3df(m_cPos + 2.5f * m_cNormal, (*cit)->m_cPos + 2.5f * (*cit)->m_cNormal);
             (*it)->m_fLinkLength = (*it)->m_cLinkLine.getLength();
-            printf("Link %i to %i\n", m_iIndex, (*cit)->m_iIndex);
             break;
           }
         }
