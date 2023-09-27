@@ -919,7 +919,7 @@ namespace dustbin {
         m_pLuaScript = new lua::CLuaScript_physics(a_sLuaScript);
 
         if (m_pLuaScript->getError() == "") {
-          m_pLuaScript->setWorld(m_pWorld, m_aMarbles, this);
+          m_pLuaScript->setWorld(m_pWorld, this);
           m_pLuaScript->initialize();
         }
         else {
@@ -1002,6 +1002,10 @@ namespace dustbin {
         if (m_aMarbles[i] == nullptr) {
           m_aMarbles[i] = l_pMarble;
           m_pGameLogic->addMarble(m_aMarbles[i]->m_iId);
+
+          if (m_pLuaScript != nullptr)
+            m_pLuaScript->addmarble(m_aMarbles[i], m_aMarbles[i]->m_iId);
+
           break;
         }
       }

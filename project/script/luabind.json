@@ -131,8 +131,14 @@
             "comment": "Set the ODE world this singleton can modify",
             "arguments": [
               { "name": "world"      , "type": "gameclasses::CWorld *"        , "comment": "The world" },
-              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *" , "comment": "Array with the marbles" },
               { "name": "dynamics"   , "type": "gameclasses::CDynamicThread *", "comment": "The dynamics thread running this script" }
+            ]
+          },
+          "addmarble": {
+            "comment": "Add a marble to the LUA physics script",
+            "arguments": [
+              { "name": "marble", "type": "gameclasses::CObjectMarble *", "comment": "The marble to add" },
+              { "name": "id"    , "type": "int"                         , "comment": "ID of the marble (10000 .. 100016)" }
             ]
           }
         }
@@ -394,8 +400,14 @@
             "comment": "Tell the script about the world it's managing",
             "arguments": [
               { "name": "world"      , "type": "gameclasses::CWorld *"       , "comment": "The physics world" },
-              { "name": "marbles[16]", "type": "gameclasses::CObjectMarble *", "comment": "Array with the marbles" },
               { "name": "dynamics"   , "type": "gameclasses::CDynamicThread *", "comment": "The dynamics thread running this script" }
+            ]
+          },
+          "addmarble": {
+            "comment": "Add a marble to the LUA physics script",
+            "arguments": [
+              { "name": "marble", "type": "gameclasses::CObjectMarble *", "comment": "The marble to add" },
+              { "name": "id"    , "type": "int"                         , "comment": "ID of the marble (10000 .. 100016)" }
             ]
           }
         }

@@ -184,12 +184,21 @@ namespace dustbin {
     * Set the ODE world this singleton can modify
     * @param The world
     */
-    void CLuaSingleton_physics::setworld(gameclasses::CWorld *a_world, gameclasses::CObjectMarble * a_marbles[16], gameclasses::CDynamicThread * a_dynamics) {
+    void CLuaSingleton_physics::setworld(gameclasses::CWorld *a_world, gameclasses::CDynamicThread * a_dynamics) {
       m_world    = a_world;
       m_dynamics = a_dynamics;
-      
-      for (int i = 0; i < 16; i++)
-        m_marbles[i] = a_marbles[i];
+    }
+
+    /**
+    * Add a marble to the LUA physics script
+    * @param The marble to add
+    * @param ID of the marble (10000 .. 100016)
+    */
+    void CLuaSingleton_physics::addmarble(gameclasses::CObjectMarble* a_marble, int a_id) {
+      int l_iIndex = a_id - 10000;
+
+      if (l_iIndex >= 0 && l_iIndex < 16)
+        m_marbles[l_iIndex] = a_marble;
     }
   }
 }
