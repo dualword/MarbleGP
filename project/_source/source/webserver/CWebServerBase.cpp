@@ -1171,7 +1171,6 @@ namespace dustbin {
                 }
                 else if (l_sReplace.substr(0, l_sReplaceInclude.size()) == l_sReplaceInclude) {
                   std::string l_sInclude = l_sReplace.substr(l_sReplaceInclude.size());
-                  printf("Include: \"%s\"\n", l_sInclude.c_str());
 
                   if (g_mFiles.find(l_sInclude) != g_mFiles.end()) {
                     l_sReplace = g_mFiles[l_sInclude]->m_pBuffer;

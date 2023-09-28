@@ -49,7 +49,6 @@ namespace dustbin {
           sendbuf.data = (void *)l_sMessage.data();
           sendbuf.dataLength = l_sMessage.length();
           int l_iSent = enet_socket_send(m_cScanner, &l_cAddress, &sendbuf, 1);
-          printf("%i Bytes sent.\n", l_iSent);
 
           int l_iSelect = 0;
 
@@ -69,7 +68,6 @@ namespace dustbin {
 
               enet_uint32 l_iServer = l_cAddr.host;
               std::string l_sServerIP = std::to_string(l_iServer & 0xFF) + "." + std::to_string((l_iServer & 0xFF00) / 256) + "." + std::to_string((l_iServer & 0xFF0000) / 65536) + "." + std::to_string((l_iServer & 0xFF000000) / 16777216);
-              printf("%i Bytes read from %s (%s)\n", l_iRead, l_sServerIP.c_str(), l_aBuffer);
 
               if (l_iRead > 0) {
                 messages::CMessageFactory l_cFactory;

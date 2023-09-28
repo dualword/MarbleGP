@@ -142,7 +142,7 @@ namespace dustbin {
 
             for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
               if ((*it).m_iPlayerId == p->getoriginal_id()) {
-                printf("ID of player %s changed from %i to %i\n", (*it).m_sName.c_str(), p->getoriginal_id(), p->getnetgame_id());
+                printf("\tID of player %s changed from %i to %i\n", (*it).m_sName.c_str(), p->getoriginal_id(), p->getnetgame_id());
                 (*it).m_iPlayerId = p->getnetgame_id();
               }
             }
@@ -153,8 +153,6 @@ namespace dustbin {
 
           case messages::enMessageIDs::RacePlayer: {
             messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(a_pMessage);
-
-            printf("Race player %i: \"%s\" [%s]\n", p->getplayerid(), p->getname().c_str(), p->getshortname().c_str());
             m_pOutputQueue->postMessage(a_pMessage);
 
             return true;

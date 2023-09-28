@@ -106,8 +106,6 @@ namespace dustbin {
             std::string l_sName  = l_pXml->getAttributeValueSafe("name" );
             std::string l_sValue = l_pXml->getAttributeValueSafe("value");
 
-            printf("\t%s = %s\n", l_sName.c_str(), l_sValue.c_str());
-
             if (l_sName != "" && l_sValue != "")
               m_mSettings[l_sName] = l_sValue;
           }
@@ -426,7 +424,6 @@ namespace dustbin {
     }
 
     if (m_mFonts.find(l_iFontFile) == m_mFonts.end()) {
-      printf("Loading font with size %i\n", a_iSize);
       std::string l_sFile = "data/fonts/font_" + std::to_string(l_iFontFile) + ".xml";
       m_mFonts[l_iFontFile] = m_pGui->getFont(l_sFile.c_str());
     }
@@ -462,7 +459,6 @@ namespace dustbin {
     }
 
     if (m_mFonts.find(l_iFontFile) == m_mFonts.end()) {
-      printf("Loading font with size %i\n", l_iSize);
       std::string l_sFile = "data/fonts/font_" + std::to_string(l_iFontFile) + ".xml";
       m_mFonts[l_iFontFile] = m_pGui->getFont(l_sFile.c_str());
     }

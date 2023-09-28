@@ -346,9 +346,7 @@ namespace dustbin {
                   m_aProfiles[i].m_pDataRoot  ->setVisible(false);
                   m_aProfiles[i].m_pAddProfile->setVisible(i == 0);
                   m_iMaxIndex = i;
-                  printf("==> %i\n", i);
                 }
-                else printf("**> %i\n", i);
               }
             }
 

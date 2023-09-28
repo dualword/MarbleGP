@@ -232,7 +232,6 @@ namespace dustbin {
           if (l_pGridSize != nullptr) {
             int l_iSize = std::wcstol(l_pGridSize->getSelectedItem().c_str(), nullptr, 10);
             bool l_bEnabled = l_iSize > m_vSelectedPlayers.size();
-            printf("==> %i, %i (%s)\n", l_iSize, (int)m_vSelectedPlayers.size(), l_bEnabled ? "true" : "false");
 
             if (l_pRaceclass != nullptr)
               l_pRaceclass->setEnabled(l_bEnabled && m_cSettings.m_bFillGridAI);
@@ -654,7 +653,6 @@ namespace dustbin {
                 if (m_vAssignJoystick.size() > 0 && m_pSelectCtrl != nullptr && m_pSelectName != nullptr) {
                   std::string l_sName = (*m_vAssignJoystick.begin());
 
-                  printf("==> %s\n", l_sName.c_str());
                   m_vAssignJoystick.erase(m_vAssignJoystick.begin());
 
                   for (std::vector<std::string>::iterator l_itSelected = m_vSelectedPlayers.begin(); l_itSelected != m_vSelectedPlayers.end(); l_itSelected++) {

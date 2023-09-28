@@ -183,7 +183,6 @@ namespace dustbin {
                   }
 
                   if (l_sName != L"") {
-                    printf("SFX Param: \"%ls\": %.2f\n", l_sName.c_str(), l_fVolume);
                     m_mSoundParameters[l_sName] = l_fVolume;
                   }
                 }

@@ -75,7 +75,6 @@ namespace dustbin {
           l_cRecvBuf.dataLength = 1024;
 
           int l_iRead = enet_socket_receive(m_cListen, &l_cAddr, &l_cRecvBuf, 1);
-          printf("%i Bytes read: %s\n", l_iRead, l_aBuf);
           if (l_iRead > 0) {
             messages::CMessageFactory l_cFactory;
             messages::CSerializer64 l_cDeSerializer = messages::CSerializer64(l_aBuf);
@@ -91,7 +90,6 @@ namespace dustbin {
                   replybuf.data = (void *)l_sResponse.data();
                   replybuf.dataLength = l_sResponse.length();
                   int l_iSent = enet_socket_send(m_cListen, &l_cAddr, &replybuf, 1);
-                  printf("%i Bytes sent as response (%s).\n", l_iSent, l_sResponse.c_str());
 #ifdef WIN32
                   if (l_iSent == SOCKET_ERROR) {
                     printSocketError();

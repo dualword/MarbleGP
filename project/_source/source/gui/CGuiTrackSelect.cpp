@@ -512,7 +512,6 @@ namespace dustbin {
                   m_iPos = (*m_itSelected).m_cDrawRect.getCenter().X - m_cImages.getCenter().X;
                   checkPositionAndButtons();
                   sendImageSelected();
-                  printf("==> %i, %s\n", m_iPos, (*m_itSelected).m_sName.c_str());
                 }
                 break;
               }

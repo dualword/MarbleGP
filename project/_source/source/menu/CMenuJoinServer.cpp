@@ -67,8 +67,6 @@ namespace dustbin {
 
           m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
 
-          printf("%s\n\n", m_cPlayers.toString().c_str());
-
           m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
           m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
@@ -261,8 +259,6 @@ namespace dustbin {
 
                 m_pState->getGlobal()->setGlobal("raceplayers" , m_cPlayers     .serialize());
                 m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
-
-                printf("\n\n%s\n\n", m_cChampionship.to_string().c_str());
 
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
               }
