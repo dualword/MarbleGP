@@ -391,8 +391,8 @@ namespace dustbin {
         case enPlayerType::Network: s += "\"Network\"\n"; break;
       }
 
-      s += "  Texture: \"" + m_sTexture + "\"\n";
-      s += "  Controls: \"" + m_sControls + "\"\n";
+      // s += "  Texture: \"" + m_sTexture + "\"\n";
+      // s += "  Controls: \"" + m_sControls + "\"\n";
       s += "  Grid Pos: " + std::to_string(m_iGridPos) + "\n"; 
       s += "  Viewport: " + std::to_string(m_iViewPort) + "\n";
       s += "  Deviation: " + std::to_string(m_fDeviation) + "\n";
@@ -572,6 +572,24 @@ namespace dustbin {
         }
       }
       else printf("Invalid game data header #%i\n", l_iHead);
+    }
+
+    std::string SGameData::toString() {
+      std::string l_sRet = "GameData: {\n";
+
+      l_sRet += "  Track: \"" + m_sTrack + "\"\n";
+      l_sRet += "  Laps: " + std::to_string(m_iLaps) + "\n";
+
+      l_sRet += "  Grid (size: " + std::to_string(m_vStartingGrid.size()) + "): [ ";
+
+      for (std::vector<int>::iterator l_itGrid = m_vStartingGrid.begin(); l_itGrid != m_vStartingGrid.end(); l_itGrid++) {
+        if (l_itGrid != m_vStartingGrid.begin())
+          l_sRet += ", ";
+
+        l_sRet += std::to_string(*l_itGrid);
+      }
+
+      return l_sRet + " ]\n}\n";
     }
 
     std::string SGameData::serialize() {

@@ -202,6 +202,8 @@ namespace dustbin {
       SGameData(const std::string &a_sData);
 
       std::string serialize();
+
+      std::string toString();
     } SGameData;
 
     /**
