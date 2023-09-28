@@ -69,6 +69,8 @@ namespace dustbin {
         lua::CLuaScript_physics *m_pLuaScript;
         std::string              m_sLuaError;
 
+        int m_iCountDown;
+
         bool m_bNetworkClient;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);

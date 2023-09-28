@@ -316,7 +316,6 @@ namespace dustbin {
       // The grid positions of the first race (or fixed order) have already been set in "CMenuFillGrid"
       if (l_cChampionship.m_vRaces.size() > 0 && l_cSettings.m_eGridPos != data::SGameSettings::enGridPos::Fixed) {
         // Now we need to specify the starting grid of the next race
-
         switch (l_cSettings.m_eGridPos) {
           case data::SGameSettings::enGridPos::LastRace:
             for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
@@ -356,6 +355,16 @@ namespace dustbin {
           std::reverse(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end());
         }
       }
+      else {
+        std::sort(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end(), [](data::SPlayerData& a_Pl1, data::SPlayerData& a_Pl2) {
+          return a_Pl1.m_iGridPos < a_Pl2.m_iGridPos;
+        });
+
+        for (auto l_cPlr: l_cPlayers.m_vPlayers)
+          l_cData.m_vStartingGrid.push_back(l_cPlr.m_iPlayerId);
+      }
+
+      printf("%s\n", l_cData.toString().c_str());
 
       l_pGlobal->setGlobal("gamedata", l_cData.serialize());
       l_pGlobal->initNextRaceScreen();

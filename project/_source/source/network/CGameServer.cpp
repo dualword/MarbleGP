@@ -287,6 +287,13 @@ namespace dustbin {
             return true;
           }
 
+          case messages::enMessageIDs::MarbleMoved: {
+            messages::CMarbleMoved *p = reinterpret_cast<messages::CMarbleMoved *>(a_pMessage);
+            if (std::get<0>(m_aMyMarbles[p->m_ObjectId - 10000]) == -1)
+              broadcastMessage(a_pMessage, true);
+            break;
+          }
+
           case messages::enMessageIDs::PauseChanged:
             return true;
 
@@ -317,7 +324,6 @@ namespace dustbin {
       else if (a_pMsg->getMessageId() == messages::enMessageIDs::StepMsg) {
         if (m_bSendMoved) {
           messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(a_pMsg);
-
           messages::CStepUpdate l_cUpdate = messages::CStepUpdate(p->getStepNo());
           broadcastMessage(&l_cUpdate, true);
         }

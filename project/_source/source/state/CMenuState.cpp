@@ -337,7 +337,6 @@ namespace dustbin {
       if (m_pInputQueue != nullptr) {
         messages::IMessage *l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
-          printf("Got Message %i\n", (int)l_pMsg->getMessageId());
           if (l_pMsg->getMessageId() == messages::enMessageIDs::ChangeState) {
             if (!m_pMenu->handlesNetworkStateChange()) {
               messages::CChangeState *p = reinterpret_cast<messages::CChangeState *>(l_pMsg);
@@ -355,7 +354,8 @@ namespace dustbin {
               }
             }
           }
-          else if (l_pMsg->getMessageId() == messages::enMessageIDs::ServerDisconnect) {
+
+          if (l_pMsg->getMessageId() == messages::enMessageIDs::ServerDisconnect) {
             m_pGlobal->setGlobal("message_headline", "Server Disconnected");
             m_pGlobal->setGlobal("message_text"    , "The server has closed the connection.");
             m_pMenu->createMenu("menu_message", m_pDevice, m_pMenu->getMenuManager(), this);

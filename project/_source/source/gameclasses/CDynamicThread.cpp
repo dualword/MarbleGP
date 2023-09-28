@@ -676,32 +676,33 @@ namespace dustbin {
         }
 
         if (m_eGameState == enGameState::Countdown) {
-          auto l_cOnCountDown = [](int a_iTick, int a_iStep) {
-          };
-
           if (m_pWorld->m_iWorldStep == 0) {
             sendCountdown(4, m_pOutputQueue);
-            l_cOnCountDown(4, m_pWorld->m_iWorldStep);
+            m_iCountDown = 4;
           }
           else {
             int l_iStep = m_pWorld->m_iWorldStep - 240;
 
-            if (l_iStep == 120) {
+            if (m_iCountDown == 4 && l_iStep >= 120) {
+              printf("Countdown 3 on step %i\n", l_iStep);
               sendCountdown(3, m_pOutputQueue);
-              l_cOnCountDown(3, m_pWorld->m_iWorldStep);
+              m_iCountDown = 3;
             }
-            else if (l_iStep == 240) {
+            else if (m_iCountDown == 3 && l_iStep >= 240) {
               sendCountdown(2, m_pOutputQueue);
-              l_cOnCountDown(2, m_pWorld->m_iWorldStep);
+              printf("Countdown 2 on step %i\n", l_iStep);
+              m_iCountDown = 2;
             }
-            else if (l_iStep == 360) {
+            else if (m_iCountDown == 2 &&  l_iStep >= 360) {
               sendCountdown(1, m_pOutputQueue);
-              l_cOnCountDown(1, m_pWorld->m_iWorldStep);
+              printf("Countdown 1 on step %i\n", l_iStep);
+              m_iCountDown = 1;
             }
-            else if (l_iStep == 480) {
+            else if (m_iCountDown == 1 && l_iStep >= 480) {
               sendCountdown(0, m_pOutputQueue);
-              l_cOnCountDown(0, m_pWorld->m_iWorldStep);
               m_eGameState = enGameState::Racing;
+              printf("Countdown 0 on step %i\n", l_iStep);
+              m_iCountDown = 0;
 
               for (int i = 0; i < 16; i++)
                 if (m_aMarbles[i] != nullptr)
@@ -781,9 +782,9 @@ namespace dustbin {
         dBodySetLinearVel (p->m_cBody, (dReal)a_LinearVelocity.X, (dReal)a_LinearVelocity.Y, (dReal)a_LinearVelocity.Z);
         dBodySetAngularVel(p->m_cBody, (dReal)a_AngularVelocity.X, (dReal)a_AngularVelocity.Y, (dReal)a_AngularVelocity.Z);
 
-        dMatrix3 l_cRotation;
-        dRFromEulerAngles(l_cRotation, (dReal)a_Rotation.X, (dReal)a_Rotation.Y, (dReal)a_Rotation.Z);
-        dBodySetRotation (p->m_cBody, l_cRotation);
+        dQuaternion l_cRotation;
+        eulerToQuaternion(a_Rotation, l_cRotation);
+        dBodySetQuaternion(p->m_cBody, l_cRotation);
 
         p->m_bBrake    = a_ControlBrake;
         p->m_bCollides = a_Contact;
@@ -854,7 +855,8 @@ namespace dustbin {
       m_pRostrumNode  (nullptr),
       m_pLuaScript    (nullptr),
       m_sLuaError     (""),
-      m_bNetworkClient(a_bNetworkClient)
+      m_bNetworkClient(a_bNetworkClient),
+      m_iCountDown    (4)
     {
 #ifdef _DEBUG
       g_iCfm = 0;
