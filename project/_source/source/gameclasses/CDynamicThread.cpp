@@ -373,6 +373,13 @@ namespace dustbin {
       do {
         messages::IMessage* l_pMsg = m_pInputQueue->popMessage();
         if (l_pMsg != nullptr) {
+          
+          if (m_bNetworkClient) {
+            if (l_pMsg->getMessageId() == messages::enMessageIDs::RaceFinished   ||
+                l_pMsg->getMessageId() == messages::enMessageIDs::PlayerFinished)
+              m_pOutputQueue->postMessage(l_pMsg);
+          }
+
           if (!handleMessage(l_pMsg)) 
             delete l_pMsg;
         }
@@ -673,6 +680,17 @@ namespace dustbin {
           const dReal *l_aAngVel = dBodyGetAngularVel((*it)->m_cBody);
 
           sendObjectmoved((*it)->m_iId, vectorOdeToIrr(l_aPos), quaternionToEuler(l_aRot), vectorOdeToIrr(l_aLinVel), vectorOdeToIrr(l_aAngVel), m_pOutputQueue);
+
+          switch ((*it)->m_eJoint) {
+            case gameclasses::CObject::enJointType::Hinge: {
+              sendJointsetposition((*it)->m_iId, dJointGetHingeAngle((*it)->m_cJoint), m_pOutputQueue);
+              break;
+            }
+
+            case gameclasses::CObject::enJointType::Slider: {
+              break;
+            }
+          }
         }
 
         if (m_eGameState == enGameState::Countdown) {
@@ -778,8 +796,8 @@ namespace dustbin {
 
         p->m_bActive = true;
 
-        dBodySetPosition  (p->m_cBody, (dReal)a_Position      .X, (dReal)a_Position      .Y, (dReal)a_Position      .Z);
-        dBodySetLinearVel (p->m_cBody, (dReal)a_LinearVelocity.X, (dReal)a_LinearVelocity.Y, (dReal)a_LinearVelocity.Z);
+        dBodySetPosition  (p->m_cBody, (dReal)a_Position       .X, (dReal)a_Position       .Y, (dReal)a_Position       .Z);
+        dBodySetLinearVel (p->m_cBody, (dReal)a_LinearVelocity .X, (dReal)a_LinearVelocity .Y, (dReal)a_LinearVelocity .Z);
         dBodySetAngularVel(p->m_cBody, (dReal)a_AngularVelocity.X, (dReal)a_AngularVelocity.Y, (dReal)a_AngularVelocity.Z);
 
         dQuaternion l_cRotation;
@@ -801,7 +819,7 @@ namespace dustbin {
     * @param a_StepNo The step received from the server
     */
     void CDynamicThread::onStepupdate(irr::s32 a_StepNo) {
-      if (m_pWorld != nullptr) {
+      if (m_pWorld != nullptr && m_bNetworkClient) {
         m_pWorld->m_iWorldStep = a_StepNo;
       }
     }
@@ -812,6 +830,43 @@ namespace dustbin {
     void CDynamicThread::onServerdisconnect() {
       messages::CServerDisconnect l_cMsg = messages::CServerDisconnect();
       m_pOutputQueue->postMessage(&l_cMsg);
+    }
+
+    /**
+    * This function receives messages of type "PlayerRespawn"
+    * @param a_MarbleId ID of the marble
+    * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
+    */
+    void CDynamicThread::onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) {
+
+    }
+
+    /**
+    * This function receives messages of type "CameraRespawn"
+    * @param a_MarbleId The ID of the marble which is respawning
+    * @param a_Position The new position of the camera
+    * @param a_Target The new target of the camera, i.e. the future position of the marble
+    */
+    void CDynamicThread::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target) {
+
+    }
+
+    /**
+    * This function receives messages of type "PlayerStunned"
+    * @param a_MarbleId ID of the marble
+    * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
+    */
+    void CDynamicThread::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
+
+    }
+
+    /**
+    * This function receives messages of type "Checkpoint"
+    * @param a_MarbleId ID of the marble
+    * @param a_Checkpoint The checkpoint ID the player has passed
+    */
+    void CDynamicThread::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_StepNo) {
+
     }
 
     void CDynamicThread::execute() {
@@ -1123,7 +1178,8 @@ namespace dustbin {
 
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         if (m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Finished || m_aMarbles[l_iIndex]->m_eState == CObjectMarble::enMarbleState::Withdrawn) {
-          sendRacefinished(1, m_pOutputQueue);
+          if (!m_bNetworkClient)
+            sendRacefinished(1, m_pOutputQueue);
 
           if (m_pLuaScript != nullptr)
             m_pLuaScript->onracefinished(true);
@@ -1145,9 +1201,12 @@ namespace dustbin {
               m_aMarbles[l_iIndex]->m_iPosition = l_pPlayer->m_iPos;
             }
 
-            sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
             printf("Withdraw@dynamics: %i, pos: %i\n", l_pPlayer->m_iId, l_pPlayer->m_iPos);
-            sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
+
+            if (!m_bNetworkClient) {
+              sendRaceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL, m_pOutputQueue);
+              sendPlayerwithdrawn(a_MarbleId, m_pOutputQueue);
+            }
 
             if (m_pLuaScript != nullptr) {
               m_pLuaScript->onraceposition(l_pPlayer->m_iId, l_pPlayer->m_iPos, l_pPlayer->getLapNo(), l_pPlayer->m_iDeficitA, l_pPlayer->m_iDeficitL);
@@ -1217,11 +1276,12 @@ namespace dustbin {
     * Callback for sending a "Checkpoint" message
     * @param a_iMarble Id of the marble
     * @param a_iCheckpoint Checkpoint id
+    * @param a_iStepNo The simulation step when the checkpoint was triggered
     */
-    void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
-      sendCheckpoint(a_iMarbleId, a_iCheckpoint, m_pOutputQueue);
+    void CDynamicThread::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint, int a_iStepNo) {
+      sendCheckpoint(a_iMarbleId, a_iCheckpoint, a_iStepNo, m_pOutputQueue);
       if (m_pGameLogic != nullptr) {
-        data::SRacePlayer *l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, m_pWorld->m_iWorldStep);
+        data::SRacePlayer *l_pPlayer = m_pGameLogic->onCheckpoint(a_iMarbleId, a_iCheckpoint, a_iStepNo);
 
         if (l_pPlayer != nullptr) {
           int l_iIndex = l_pPlayer->m_iId - 10000;
@@ -1314,7 +1374,7 @@ namespace dustbin {
           case data::SGameSettings::enAutoFinish::AllAndAi    : l_bFinish = l_iFinished == m_iPlayers  ; break;
         }
 
-        if (l_bFinish) {
+        if (l_bFinish && !m_bNetworkClient) {
           sendRacefinished(0, m_pOutputQueue);
           if (m_pLuaScript != nullptr)
             m_pLuaScript->onracefinished(false);
@@ -1369,5 +1429,201 @@ namespace dustbin {
     const std::string& CDynamicThread::getLuaError() {
       return m_sLuaError;
     }
+
+    /**
+    * Send "joint set hi stop" message
+    * @param a_iBody ID of the body the joint is attached to
+    * @param a_fHiStop New hi-stop value
+    */
+    void CDynamicThread::setJointHiStop(irr::s32 a_iBody, irr::f64 a_fHiStop) {
+      if (!m_bNetworkClient)
+        sendJointsethistop(a_iBody, a_fHiStop, m_pOutputQueue);
+    }
+
+    /**
+    * Send "joint set Lo stop" message
+    * @param a_iBody ID of the body the joint is attached to
+    * @param a_fLoStop New lo-stop value
+    */
+    void CDynamicThread::setJointLoStop(irr::s32 a_iBody, irr::f64 a_fLoStop) {
+      if (!m_bNetworkClient)
+        sendJointsetlostop(a_iBody, a_fLoStop, m_pOutputQueue);
+    }
+
+    /**
+    * Send "joint axis" message
+    * @param a_iBody ID of the body the joint is attached to
+    * @param a_cAxis the new axis of the joint
+    */
+    void CDynamicThread::setJointAxis(irr::s32 a_iBody, const irr::core::vector3df& a_cAxis) {
+      if (!m_bNetworkClient)
+        sendJointsetaxis(a_iBody, a_cAxis, m_pOutputQueue);
+    }
+
+    /**
+    * Send the "joint start motor" message
+    * @param a_iBody ID of the body the joint is attached to
+    * @param a_fSpeed speed value for the motor
+    * @param a_fForce force value for the motor
+    */
+    void CDynamicThread::jointStartMotor(irr::s32 a_iBody, irr::f64 a_fSpeed, irr::f64 a_fForce, gameclasses::CObject::enJointType a_eJoint) {
+      if (!m_bNetworkClient) {
+        sendJointstartmotor(a_iBody, a_fSpeed, a_fForce, m_pOutputQueue);
+      }
+    }
+
+    /**
+    * Send the "Joint set position" message
+    * @param a_iBody ID of the body the joint is attached to
+    * @param a_fPosition new position (slider joint) or angle (hinge joint)
+    */
+    void CDynamicThread::jointSetPosition(irr::s32 a_iBody, irr::f64 a_fPosition) {
+      if (!m_bNetworkClient)
+        sendJointsetposition(a_iBody, a_fPosition, m_pOutputQueue);
+    }
+
+    /**
+    * This function receives messages of type "JointSetAxis"
+    * @param a_NodeId ID of the node the joint is attached to 
+    * @param a_Axis New axis for the joint
+    */
+    void CDynamicThread::onJointsetaxis(irr::s32 a_NodeId, const irr::core::vector3df &a_Axis) {
+      if (!m_bNetworkClient && m_pWorld != nullptr) {
+        for (auto &l_pMoving : m_pWorld->m_vMoving) {
+          if (l_pMoving->m_iId == a_NodeId && l_pMoving->m_cJoint != nullptr) {
+            printf("joint Set Axis\n");
+            switch (l_pMoving->m_eJoint) {
+              case gameclasses::CObject::enJointType::Hinge: {
+                dJointSetHingeAxis(l_pMoving->m_cJoint, a_Axis.X, a_Axis.Y, a_Axis.Z);
+                break;
+              }
+
+              case gameclasses::CObject::enJointType::Slider: {
+                dJointSetSliderAxis(l_pMoving->m_cJoint, a_Axis.X, a_Axis.Y, a_Axis.Z);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "JointSetHiStop"
+    * @param a_NodeId ID of the node the joint is attached to 
+    * @param a_HiStop New value for high stop of the joint
+    */
+    void CDynamicThread::onJointsethistop(irr::s32 a_NodeId, irr::f64 a_HiStop) {
+      if (m_bNetworkClient && m_pWorld != nullptr) {
+        for (auto &l_pMoving : m_pWorld->m_vMoving) {
+          if (l_pMoving->m_iId == a_NodeId && l_pMoving->m_cJoint != nullptr) {
+            printf("joint Set Hi Stop\n");
+            switch (l_pMoving->m_eJoint) {
+              case gameclasses::CObject::enJointType::Hinge: {
+                dJointSetHingeParam(l_pMoving->m_cJoint, dParamHiStop, (dReal)a_HiStop);
+                break;
+              }
+
+              case gameclasses::CObject::enJointType::Slider: {
+                dJointSetSliderParam(l_pMoving->m_cJoint, dParamHiStop, (dReal)a_HiStop);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "JointSetLoStop"
+    * @param a_NodeId ID of the node the joint is attached to 
+    * @param a_LoStop New value for low stop of the joint
+    */
+    void CDynamicThread::onJointsetlostop(irr::s32 a_NodeId, irr::f64 a_LoStop) {
+      if (m_bNetworkClient && m_pWorld != nullptr) {
+        for (auto &l_pMoving : m_pWorld->m_vMoving) {
+          if (l_pMoving->m_iId == a_NodeId && l_pMoving->m_cJoint != nullptr) {
+            printf("joint Set Lo Stop\n");
+            switch (l_pMoving->m_eJoint) {
+              case gameclasses::CObject::enJointType::Hinge: {
+                dJointSetHingeParam(l_pMoving->m_cJoint, dParamLoStop, (dReal)a_LoStop);
+                break;
+              }
+
+              case gameclasses::CObject::enJointType::Slider: {
+                dJointSetSliderParam(l_pMoving->m_cJoint, dParamLoStop, (dReal)a_LoStop);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "JointStartMotor"
+    * @param a_NodeId ID of the node the joint is attached to 
+    * @param a_Speed Desired speed for the joint
+    * @param a_Force Force used to get to the speed
+    */
+    void CDynamicThread::onJointstartmotor(irr::s32 a_NodeId, irr::f64 a_Speed, irr::f64 a_Force) {
+      if (m_bNetworkClient && m_pWorld != nullptr) {
+        for (auto &l_pMoving : m_pWorld->m_vMoving) {
+          if (l_pMoving->m_iId == a_NodeId && l_pMoving->m_cJoint != nullptr) {
+            printf("Joint start motor\n");
+            switch (l_pMoving->m_eJoint) {
+              case gameclasses::CObject::enJointType::Hinge: {
+                dJointSetHingeParam(l_pMoving->m_cJoint, dParamFMax, a_Force);
+                dJointSetHingeParam(l_pMoving->m_cJoint, dParamVel , a_Speed);
+                break;
+              }
+
+              case gameclasses::CObject::enJointType::Slider: {
+                dJointSetSliderParam(l_pMoving->m_cJoint, dParamFMax, a_Force);
+                dJointSetSliderParam(l_pMoving->m_cJoint, dParamVel , a_Speed);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /**
+    * This function receives messages of type "JointSetPosition"
+    * @param a_NodeId ID of the node the joint is attached to 
+    * @param a_Position New position of the joint
+    */
+    void CDynamicThread::onJointsetposition(irr::s32 a_NodeId, irr::f64 a_Position) {
+      if (m_bNetworkClient && m_pWorld != nullptr) {
+        for (auto &l_pMoving : m_pWorld->m_vMoving) {
+          if (l_pMoving->m_iId == a_NodeId && l_pMoving->m_cJoint != nullptr) {
+            switch (l_pMoving->m_eJoint) {
+              case gameclasses::CObject::enJointType::Hinge: {
+                printf("Set Hinge Position: %.2f\n", a_Position);
+                dVector3 l_cOdeAxis;
+                dJointGetHingeAxis(l_pMoving->m_cJoint, l_cOdeAxis);
+                irr::core::vector3df l_cAxis = irr::core::vector3df((irr::f32)l_cOdeAxis[0], (irr::f32)l_cOdeAxis[1], (irr::f32)l_cOdeAxis[2]);
+                l_cAxis = l_cAxis * (irr::f32)a_Position;
+
+                l_cAxis.X = l_cAxis.X * 180.0f / (irr::f32)M_PI;
+                l_cAxis.Y = l_cAxis.Y * 180.0f / (irr::f32)M_PI;
+                l_cAxis.Z = l_cAxis.Z * 180.0f / (irr::f32)M_PI;
+
+                dQuaternion l_cQuat;
+                eulerToQuaternion(l_cAxis, l_cQuat);
+                dBodySetQuaternion(l_pMoving->m_cBody, l_cQuat);
+                break;
+              }
+
+              case gameclasses::CObject::enJointType::Slider: {
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
   }
 }

@@ -30,7 +30,7 @@ namespace dustbin {
     void CLuaSingleton_physics::startmotor(int a_id, float a_speed, float a_force) {
       for (std::vector<gameclasses::CObject*>::iterator l_itObj = m_world->m_vMoving.begin(); l_itObj != m_world->m_vMoving.end(); l_itObj++) {
         if ((*l_itObj)->m_iId == a_id && (*l_itObj)->m_cJoint != nullptr) {
-          if ((*l_itObj)->m_bSliderJoint) {
+          if ((*l_itObj)->m_eJoint == dustbin::gameclasses::CObject::enJointType::Slider) {
             dJointSetSliderParam((*l_itObj)->m_cJoint, dParamFMax, a_force);
             dJointSetSliderParam((*l_itObj)->m_cJoint, dParamVel , a_speed);
           }
@@ -38,6 +38,13 @@ namespace dustbin {
             dJointSetHingeParam((*l_itObj)->m_cJoint, dParamFMax, a_force);
             dJointSetHingeParam((*l_itObj)->m_cJoint, dParamVel , a_speed);
           }
+
+          if (m_dynamics != nullptr && (m_mMotorParams.find(a_id) == m_mMotorParams.end() || std::get<0>(m_mMotorParams[a_id]) != a_speed || std::get<1>(m_mMotorParams[a_id]) != a_force)) {
+            m_mMotorParams[a_id] = std::make_tuple(a_speed, a_force);
+            m_dynamics->jointStartMotor((*l_itObj)->m_iId, a_speed, a_force, (*l_itObj)->m_eJoint);
+          }
+
+          break;
         }
       }
     }
@@ -112,11 +119,15 @@ namespace dustbin {
       for (std::vector<gameclasses::CObject*>::iterator l_itObj = m_world->m_vMoving.begin(); l_itObj != m_world->m_vMoving.end(); l_itObj++) {
         if ((*l_itObj)->m_iId == a_id) {
           if ((*l_itObj)->m_cJoint != nullptr) {
-            if ((*l_itObj)->m_bSliderJoint)
+            if ((*l_itObj)->m_eJoint == dustbin::gameclasses::CObject::enJointType::Slider)
               dJointSetSliderParam((*l_itObj)->m_cJoint, dParamHiStop, a_histop);
             else
               dJointSetHingeParam((*l_itObj)->m_cJoint, dParamHiStop, a_histop);
           }
+
+          if (m_dynamics != nullptr)
+            m_dynamics->setJointHiStop(a_id, a_histop);
+
           break;
         }
       }
@@ -130,11 +141,15 @@ namespace dustbin {
       for (std::vector<gameclasses::CObject*>::iterator l_itObj = m_world->m_vMoving.begin(); l_itObj != m_world->m_vMoving.end(); l_itObj++) {
         if ((*l_itObj)->m_iId == a_id) {
           if ((*l_itObj)->m_cJoint != nullptr) {
-            if ((*l_itObj)->m_bSliderJoint)
+            if ((*l_itObj)->m_eJoint == dustbin::gameclasses::CObject::enJointType::Slider)
               dJointSetSliderParam((*l_itObj)->m_cJoint, dParamLoStop, a_lostop);
             else
               dJointSetHingeParam((*l_itObj)->m_cJoint, dParamLoStop, a_lostop);
           }
+
+          if (m_dynamics != nullptr)
+            m_dynamics->setJointLoStop(a_id, a_lostop);
+
           break;
         }
       }
@@ -149,11 +164,15 @@ namespace dustbin {
       for (std::vector<gameclasses::CObject*>::iterator l_itObj = m_world->m_vMoving.begin(); l_itObj != m_world->m_vMoving.end(); l_itObj++) {
         if ((*l_itObj)->m_iId == a_id) {
           if ((*l_itObj)->m_cJoint != nullptr) {
-            if ((*l_itObj)->m_bSliderJoint)
+            if ((*l_itObj)->m_eJoint == dustbin::gameclasses::CObject::enJointType::Slider)
               dJointSetSliderAxis((*l_itObj)->m_cJoint, a_axis.m_x, a_axis.m_y, a_axis.m_z);
             else
               dJointSetHingeAxis((*l_itObj)->m_cJoint, a_axis.m_x, a_axis.m_y, a_axis.m_z);
           }
+
+          if (m_dynamics != nullptr)
+            m_dynamics->setJointAxis(a_id, irr::core::vector3df(a_axis.m_x, a_axis.m_y, a_axis.m_z));
+
           break;
         }
       }

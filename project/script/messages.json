@@ -54,7 +54,12 @@
     [ "SetTexture"            , "43" ],
     [ "LuaMessage"            , "44" ],
     [ "WebLogMessage"         , "45" ],
-    [ "StepUpdate"            , "46" ]
+    [ "StepUpdate"            , "46" ],
+    [ "JointSetHiStop"        , "47" ],
+    [ "JointSetLoStop"        , "48" ],
+    [ "JointSetAxis"          , "49" ],
+    [ "JointStartMotor"       , "50" ],
+    [ "JointSetPosition"      , "51" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -124,7 +129,8 @@
       "comment": "A player has passed a checkpoint",
       "fields": [
         { "name": "MarbleId"  , "type": "irr::s32", "comment": "ID of the marble" },
-        { "name": "Checkpoint", "type": "irr::s32", "comment": "The checkpoint ID the player has passed" }
+        { "name": "Checkpoint", "type": "irr::s32", "comment": "The checkpoint ID the player has passed" },
+        { "name": "StepNo"    , "type": "irr::s32", "comment": "The step when the checkpoint was passed" }
       ]
     },
     "LapStart": {
@@ -375,6 +381,42 @@
       "fields": [
         { "name": "StepNo", "type": "irr::s32", "comment": "The step received from the server" }
       ]
+    },
+    "JointSetHiStop": {
+      "comment": "",
+      "fields": [
+        { "name": "NodeId", "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
+        { "name": "HiStop", "type": "irr::f64", "comment": "New value for high stop of the joint" }
+      ]
+    },
+    "JointSetLoStop": {
+      "comment": "",
+      "fields": [
+        { "name": "NodeId", "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
+        { "name": "LoStop", "type": "irr::f64", "comment": "New value for low stop of the joint" }
+      ]
+    },
+    "JointSetAxis": {
+      "comment": "",
+      "fields": [
+        { "name": "NodeId", "type": "irr::s32"            , "comment": "ID of the node the joint is attached to " },
+        { "name": "Axis"  , "type": "irr::core::vector3df", "comment": "New axis for the joint" }
+      ]
+    },
+    "JointStartMotor": {
+      "comment": "",
+      "fields": [
+        { "name": "NodeId", "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
+        { "name": "Speed" , "type": "irr::f64", "comment": "Desired speed for the joint" },
+        { "name": "Force" , "type": "irr::f64", "comment": "Force used to get to the speed" }
+      ]
+    },
+    "JointSetPosition": {
+      "comment": "",
+      "fields": [
+        { "name": "NodeId"  , "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
+        { "name": "Position", "type": "irr::f64", "comment": "New position of the joint" }
+      ]
     }
   },
   "interfaces": [
@@ -401,7 +443,12 @@
         "RaceResult",
         "EndRaceState",
         "PlayerRemoved",
-        "LuaMessage"
+        "LuaMessage",
+        "JointSetAxis",
+        "JointSetHiStop",
+        "JointSetLoStop",
+        "JointStartMotor",
+        "JointSetPosition"
       ],
       "receive": [
         "MarbleControl",
@@ -412,7 +459,16 @@
         "ObjectMoved",
         "MarbleMoved",
         "StepUpdate",
-        "ServerDisconnect"
+        "ServerDisconnect",
+        "PlayerRespawn",
+        "CameraRespawn",
+        "PlayerStunned",
+        "Checkpoint",
+        "JointSetAxis",
+        "JointSetHiStop",
+        "JointSetLoStop",
+        "JointStartMotor",
+        "JointSetPosition"
       ]
     },
     {

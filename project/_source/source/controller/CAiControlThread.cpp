@@ -92,7 +92,7 @@ namespace dustbin {
     * @param a_MarbleId ID of the marble
     * @param a_Checkpoint The checkpoint ID the player has passed
     */
-    void CAiControlThread::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
+    void CAiControlThread::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_StepNo) {
       for (int i = 0; m_aControllers[i] != nullptr; i++)
         m_aControllers[i]->onCheckpoint(a_MarbleId, a_Checkpoint);
     }

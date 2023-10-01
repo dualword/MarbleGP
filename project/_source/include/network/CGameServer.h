@@ -62,8 +62,9 @@ namespace dustbin {
         /**
         * React to a message before it's sent to all clients
         * @param a_pMsg the message the will be sent
+        * @return true if the message shall be sent, false otherwise
         */
-        virtual void beforeSendMessage(messages::IMessage *a_pMsg) override;
+        virtual bool beforeSendMessage(messages::IMessage *a_pMsg) override;
 
       public:
         CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal *a_pGlobal);

@@ -5,6 +5,7 @@
 
 #include <_generated/messages/IDynamicThread.h>
 #include <gameclasses/ITriggerHandler.h>
+#include <gameclasses/COdeNodes.h>
 #include <scenenodes/CWorldNode.h>
 #include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
@@ -147,9 +148,75 @@ namespace dustbin {
         virtual void onStepupdate(irr::s32 a_StepNo) override;
 
         /**
+        * This function receives messages of type "JointSetAxis"
+        * @param a_NodeId ID of the node the joint is attached to 
+        * @param a_Axis New axis for the joint
+        */
+        virtual void onJointsetaxis(irr::s32 a_NodeId, const irr::core::vector3df &a_Axis) override;
+
+        /**
+        * This function receives messages of type "JointSetHiStop"
+        * @param a_NodeId ID of the node the joint is attached to 
+        * @param a_HiStop New value for high stop of the joint
+        */
+        virtual void onJointsethistop(irr::s32 a_NodeId, irr::f64 a_HiStop) override;
+
+        /**
+        * This function receives messages of type "JointSetLoStop"
+        * @param a_NodeId ID of the node the joint is attached to 
+        * @param a_LoStop New value for low stop of the joint
+        */
+        virtual void onJointsetlostop(irr::s32 a_NodeId, irr::f64 a_LoStop) override;
+
+        /**
+        * This function receives messages of type "JointStartMotor"
+        * @param a_NodeId ID of the node the joint is attached to 
+        * @param a_Speed Desired speed for the joint
+        * @param a_Force Force used to get to the speed
+        */
+        virtual void onJointstartmotor(irr::s32 a_NodeId, irr::f64 a_Speed, irr::f64 a_Force) override;
+
+        /**
+        * This function receives messages of type "JointSetPosition"
+        * @param a_NodeId ID of the node the joint is attached to 
+        * @param a_Position New position of the joint
+        */
+        virtual void onJointsetposition(irr::s32 a_NodeId, irr::f64 a_Position) override;
+
+
+        /**
         * This function receives messages of type "ServerDisconnect"
         */
         virtual void onServerdisconnect() override;
+
+        /**
+        * This function receives messages of type "PlayerRespawn"
+        * @param a_MarbleId ID of the marble
+        * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
+        */
+        virtual void onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) override;
+
+        /**
+        * This function receives messages of type "CameraRespawn"
+        * @param a_MarbleId The ID of the marble which is respawning
+        * @param a_Position The new position of the camera
+        * @param a_Target The new target of the camera, i.e. the future position of the marble
+        */
+        virtual void onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df &a_Position, const irr::core::vector3df &a_Target) override;
+
+        /**
+        * This function receives messages of type "PlayerStunned"
+        * @param a_MarbleId ID of the marble
+        * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
+        */
+        virtual void onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) override;
+
+        /**
+        * This function receives messages of type "Checkpoint"
+        * @param a_MarbleId ID of the marble
+        * @param a_Checkpoint The checkpoint ID the player has passed
+        */
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_StepNo) override;
 
         virtual void execute() override;
 
@@ -185,8 +252,9 @@ namespace dustbin {
         * Callback for sending a "Checkpoint" message
         * @param a_iMarble Id of the marble
         * @param a_iCheckpoint Checkpoint id
+        * @param a_iStepNo The simulation step when the checkpoint was triggered
         */
-        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) override;
+        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint, int a_iStepNo) override;
 
         /**
         * Callback for sending a "LapStart" message
@@ -248,6 +316,43 @@ namespace dustbin {
         * @return the LUA error
         */
         const std::string &getLuaError();
+
+        /**
+        * Send "joint set hi stop" message
+        * @param a_iBody ID of the body the joint is attached to
+        * @param a_fHiStop New hi-stop value
+        */
+        void setJointHiStop(irr::s32 a_iBody, irr::f64 a_fHiStop);
+
+        /**
+        * Send "joint set Lo stop" message
+        * @param a_iBody ID of the body the joint is attached to
+        * @param a_fLoStop New lo-stop value
+        */
+        void setJointLoStop(irr::s32 a_iBody, irr::f64 a_fLoStop);
+
+        /**
+        * Send "joint axis" message
+        * @param a_iBody ID of the body the joint is attached to
+        * @param a_cAxis the new axis of the joint
+        */
+        void setJointAxis(irr::s32 a_iBody, const irr::core::vector3df &a_cAxis);
+
+        /**
+        * Send the "joint start motor" message
+        * @param a_iBody ID of the body the joint is attached to
+        * @param a_fSpeed speed value for the motor
+        * @param a_fForce force value for the motor
+        * @param e_eJoint the joint type
+        */
+        void jointStartMotor(irr::s32 a_iBody, irr::f64 a_fSpeed, irr::f64 a_fForce, gameclasses::CObject::enJointType a_eJoint);
+
+        /**
+        * Send the "Joint set position" message
+        * @param a_iBody ID of the body the joint is attached to
+        * @param a_fPosition new position (slider joint) or angle (hinge joint)
+        */
+        void jointSetPosition(irr::s32 a_iBody, irr::f64 a_fPosition);
     };
   }
 }

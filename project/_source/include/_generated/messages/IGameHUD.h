@@ -114,8 +114,9 @@ namespace dustbin {
          * This function receives messages of type "Checkpoint"
          * @param a_MarbleId ID of the marble
          * @param a_Checkpoint The checkpoint ID the player has passed
+         * @param a_StepNo The step when the checkpoint was passed
          */
-        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) = 0;
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_StepNo) = 0;
 
         /**
          * This function receives messages of type "CameraRespawn"

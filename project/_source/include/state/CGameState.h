@@ -345,8 +345,9 @@ namespace dustbin {
          * This function receives messages of type "Checkpoint"
          * @param a_MarbleId ID of the marble
          * @param a_Checkpoint The checkpoint ID the player has passed
+         * @param a_iStepNo The simulation step when the checkpoint was triggered
          */
-        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) override;
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_iStepNo) override;
 
         /**
          * This function receives messages of type "LapStart"

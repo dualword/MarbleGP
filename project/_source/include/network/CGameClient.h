@@ -41,7 +41,15 @@ namespace dustbin {
         */
         virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
 
-      public:
+
+        /**
+        * React to a message before it's sent to all clients
+        * @param a_pMsg the message the will be sent
+        * @return true if the message shall be sent, false otherwise
+        */
+        virtual bool beforeSendMessage(messages::IMessage *a_pMsg) override;
+
+    public:
         CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal *a_pGlobal);
         ~CGameClient();
 

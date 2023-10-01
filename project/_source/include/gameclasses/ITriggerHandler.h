@@ -33,8 +33,9 @@ namespace dustbin {
         * Callback for sending a "Checkpoint" message
         * @param a_iMarble Id of the marble
         * @param a_iCheckpoint Checkpoint id
+        * @param a_iStepNo The simulation step when the checkpoint was triggered
         */
-        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) = 0;
+        virtual void handleCheckpoint(int a_iMarbleId, int a_iCheckpoint, int a_iStepNo) = 0;
 
         /**
         * Callback for sending a "LapStart" message

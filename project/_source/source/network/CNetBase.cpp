@@ -53,7 +53,7 @@ namespace dustbin {
 
         do {
           if (l_pMsg != nullptr) {
-            beforeSendMessage(l_pMsg);
+            bool l_bSend = beforeSendMessage(l_pMsg);
 
             messages::enMessageIDs l_eMsg = l_pMsg->getMessageId();
 
@@ -66,9 +66,14 @@ namespace dustbin {
               }
 
               case messages::enMessageIDs::ObjectMoved:
-                if (m_bSendMoved) {
+                /*if (m_bSendMoved && l_bSend) {
                   broadcastMessage(l_pMsg, true);
-                }
+                }*/
+                break;
+
+              case messages::enMessageIDs::JointSetPosition:
+                if (m_bSendMoved)
+                  broadcastMessage(l_pMsg, true);
                 break;
 
               case messages::enMessageIDs::Checkpoint: 
@@ -104,7 +109,8 @@ namespace dustbin {
               }
 
               default:
-                broadcastMessage(l_pMsg, true);
+                if (l_bSend)
+                  broadcastMessage(l_pMsg, true);
                 break;
             }
 

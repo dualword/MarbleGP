@@ -71,7 +71,7 @@ namespace dustbin {
         * @param a_MarbleId ID of the marble
         * @param a_Checkpoint The checkpoint ID the player has passed
         */
-        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) override;
+        virtual void onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_StepNo) override;
 
         /**
         * This function receives messages of type "RacePosition"

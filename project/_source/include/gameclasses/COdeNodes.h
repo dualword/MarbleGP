@@ -50,20 +50,27 @@ namespace dustbin {
         void createJoint(irr::scene::ISceneNode* a_pNode);
 
       public:
+        /**
+        * The joint type
+        */
+        enum class enJointType {
+          None,
+          Hinge,
+          Slider
+        };
+
         int m_iId;
 
         bool m_bStatic;       /**< Is this a static object? */
         bool m_bCollides;     /**< Does this object collide with others. Hint: triggers do not have to */
         bool m_bTrigger;      /**< Does this object trigger? */
         bool m_bRespawn;      /**< Does the collision of a marble with this object respawn the marble? */
-        bool m_bSliderJoint;  /**< Is the joint attached to the object (if any) a slider? */
         bool m_bMarbleTouch;  /**< This object has a "Marble Touch" trigger */
         bool m_bMarbleOnly;   /**< This object does only collide with marbles */
         bool m_bCfmEnter;     /**< Is this object an entry of a CFM zone? */
         bool m_bCfmExit;      /**< Is this object an exit of a CFM zone? */
 
         int m_iTrigger;
-        int m_iJoint;         /**< The joint type (0 == hinge, 1 == slider) */
 
         float m_fCfmValue;    /**< The CFM value, only used if the "m_bCfmEnter" flag is true */
 
@@ -72,6 +79,8 @@ namespace dustbin {
         dGeomID  m_cGeom;
         dBodyID  m_cBody;
         dJointID m_cJoint;
+
+        enJointType m_eJoint;
 
         std::string m_sName;
 

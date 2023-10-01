@@ -183,5 +183,20 @@ namespace dustbin {
       messages::CStateChanged l_cMsg = messages::CStateChanged(a_sState);
       broadcastMessage(&l_cMsg, true);
     }
+
+
+    /**
+    * React to a message before it's sent to all clients
+    * @param a_pMsg the message the will be sent
+    * @return true if the message shall be sent, false otherwise
+    */
+    bool CGameClient::beforeSendMessage(messages::IMessage *a_pMsg) { 
+      return a_pMsg->getMessageId() != messages::enMessageIDs::ObjectMoved      &&
+             a_pMsg->getMessageId() != messages::enMessageIDs::JointSetAxis     &&
+             a_pMsg->getMessageId() != messages::enMessageIDs::JointSetHiStop   &&
+             a_pMsg->getMessageId() != messages::enMessageIDs::JointSetLoStop   &&
+             a_pMsg->getMessageId() != messages::enMessageIDs::JointSetPosition &&
+             a_pMsg->getMessageId() != messages::enMessageIDs::JointStartMotor;
+    }
   }
 }

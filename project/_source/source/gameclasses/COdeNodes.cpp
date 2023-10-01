@@ -52,9 +52,8 @@ namespace dustbin {
               // the axis is not calculated correctly!
               dJointAttach(m_cJoint, m_cBody, 0);
               dJointSetHingeAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
-              
-              m_bSliderJoint = false;
-              m_iJoint = 0;
+
+              m_eJoint = enJointType::Hinge;
               break;
 
             case 1: // Slider Joint
@@ -64,8 +63,7 @@ namespace dustbin {
               dJointAttach(m_cJoint, m_cBody, 0);
               dJointSetSliderAxis(m_cJoint, l_pJoint->m_vAxis.X, l_pJoint->m_vAxis.Y, l_pJoint->m_vAxis.Z);
 
-              m_bSliderJoint = true;
-              m_iJoint = 1;
+              m_eJoint = enJointType::Slider;
               break;
 
             default:
@@ -110,18 +108,17 @@ namespace dustbin {
       m_bCollides   (true),
       m_bTrigger    (false),
       m_bRespawn    (false),
-      m_bSliderJoint(false),
       m_bMarbleTouch(false),
       m_bMarbleOnly (false),
       m_bCfmEnter   (false),
       m_bCfmExit    (false),
       m_iTrigger    (-1),
-      m_iJoint      (-1),
       m_fCfmValue   (0.01f),
       m_pWorld      (a_pWorld),
       m_cGeom       (0),
       m_cBody       (0),
       m_cJoint      (0),
+      m_eJoint      (enJointType::None),
       m_sName       (a_sName)
     {
       if (a_pNode == nullptr && m_eType != enObjectType::Marble) {
@@ -430,7 +427,7 @@ namespace dustbin {
 
     void CWorld::handleCheckpoint(int a_iMarbleId, int a_iCheckpoint) {
       if (m_pTriggerHandler != nullptr)
-        m_pTriggerHandler->handleCheckpoint(a_iMarbleId, a_iCheckpoint);
+        m_pTriggerHandler->handleCheckpoint(a_iMarbleId, a_iCheckpoint, m_iWorldStep);
     }
 
     void CWorld::handleLapStart(int a_iMarbleId, int a_iLapNo) {

@@ -28,8 +28,6 @@ namespace dustbin {
 
         messages::CMessageFactory l_cFactory;
 
-        std::tuple<int, messages::CMarbleMoved> m_aMyMarbles[16];   /**< Data of all marbles (0 == last update time (-1 == not my marble), 1 == last sent message) */
-
         /**
         * Handle an event in a subclass
         * @return "true" if the event was handled
@@ -47,8 +45,9 @@ namespace dustbin {
         /**
         * React to a message before it's sent to all clients
         * @param a_pMsg the message the will be sent
+        * @return true if the message shall be sent, false otherwise
         */
-        virtual void beforeSendMessage(messages::IMessage *a_pMsg) { }
+        virtual bool beforeSendMessage(messages::IMessage *a_pMsg) { return true; }
 
         /**
         * Shall a marble moved message be sent?
@@ -98,6 +97,8 @@ namespace dustbin {
         * Reset the my marbles array after the game
         */
         void resetMyMarbles();
+
+        std::tuple<int, messages::CMarbleMoved> m_aMyMarbles[16];   /**< Data of all marbles (0 == last update time (-1 == not my marble), 1 == last sent message) */
     };
   }
 }

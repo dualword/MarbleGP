@@ -294,6 +294,18 @@ namespace dustbin {
             break;
           }
 
+          case messages::enMessageIDs::PlayerRespawn:
+          case messages::enMessageIDs::CameraRespawn:
+          case messages::enMessageIDs::PlayerStunned:
+          case messages::enMessageIDs::Checkpoint: {
+            int l_iMarble = getMarbleId(a_pMessage) - 10000;
+
+            if (l_iMarble >= 0 && l_iMarble < 16 && std::get<0>(m_aMyMarbles[l_iMarble]) == -1)
+              broadcastMessage(a_pMessage, true);
+
+            break;
+          }
+
           case messages::enMessageIDs::PauseChanged:
             return true;
 
@@ -307,27 +319,35 @@ namespace dustbin {
     /**
     * React to a message before it's sent to all clients
     * @param a_pMsg the message the will be sent
+    * @return true if the message shall be sent, false otherwise
     */
-    void CGameServer::beforeSendMessage(messages::IMessage* a_pMsg) {
-      if (a_pMsg->getMessageId() == messages::enMessageIDs::Countdown) {
-        messages::CCountdown *p = reinterpret_cast<messages::CCountdown *>(a_pMsg);
+    bool CGameServer::beforeSendMessage(messages::IMessage* a_pMsg) {
+      switch (a_pMsg->getMessageId()) {
+        case messages::enMessageIDs::Countdown:{
+          messages::CCountdown *p = reinterpret_cast<messages::CCountdown *>(a_pMsg);
 
-        if (p->getTick() == 2) {
-          for (std::vector<int>::iterator it = m_vDisconnected.begin(); it != m_vDisconnected.end(); it++) {
-            messages::CPlayerRemoved l_cRemove = messages::CPlayerRemoved(*it);
-            printf("Game Server: Remove player %i\n", *it);
-            broadcastMessage(&l_cRemove, true);
-            m_pOutputQueue->postMessage(&l_cRemove);
+          if (p->getTick() == 2) {
+            for (std::vector<int>::iterator it = m_vDisconnected.begin(); it != m_vDisconnected.end(); it++) {
+              messages::CPlayerRemoved l_cRemove = messages::CPlayerRemoved(*it);
+              printf("Game Server: Remove player %i\n", *it);
+              broadcastMessage(&l_cRemove, true);
+              m_pOutputQueue->postMessage(&l_cRemove);
+            }
           }
+          break;
+        }
+
+        case messages::enMessageIDs::StepMsg: {
+          if (m_bSendMoved) {
+            messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(a_pMsg);
+            messages::CStepUpdate l_cUpdate = messages::CStepUpdate(p->getStepNo());
+            broadcastMessage(&l_cUpdate, true);
+          }
+          break;
         }
       }
-      else if (a_pMsg->getMessageId() == messages::enMessageIDs::StepMsg) {
-        if (m_bSendMoved) {
-          messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(a_pMsg);
-          messages::CStepUpdate l_cUpdate = messages::CStepUpdate(p->getStepNo());
-          broadcastMessage(&l_cUpdate, true);
-        }
-      }
+
+      return true;
     }
   }
 }

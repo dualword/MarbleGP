@@ -313,10 +313,11 @@ namespace dustbin {
     * This function receives messages of type "Checkpoint"
     * @param a_MarbleId ID of the marble
     * @param a_Checkpoint The checkpoint ID the player has passed
+    * @param a_iStepNo The simulation step when the checkpoint was triggered
     */
-    void CGameHUD::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint) {
+    void CGameHUD::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_iStepNo) {
       if (m_pLapTimes != nullptr)
-        m_pLapTimes->onCheckpoint(m_iStep, a_MarbleId);
+        m_pLapTimes->onCheckpoint(a_iStepNo, a_MarbleId);
     }
 
     /**
