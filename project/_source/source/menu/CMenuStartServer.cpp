@@ -158,11 +158,12 @@ namespace dustbin {
 
                 data::SPlayerData l_cPlayer = data::SPlayerData();
 
-                l_cPlayer.m_sName     = p->getname   ();
-                l_cPlayer.m_sTexture  = p->gettexture();
-                l_cPlayer.m_iPlayerId = p->getident  ();
-                l_cPlayer.m_sControls = "Network";
-                l_cPlayer.m_eType     = data::enPlayerType::Network;
+                l_cPlayer.m_sName      = p->getname     ();
+                l_cPlayer.m_sTexture   = p->gettexture  ();
+                l_cPlayer.m_iPlayerId  = p->getident    ();
+                l_cPlayer.m_sShortName = p->getshortname();
+                l_cPlayer.m_sControls  = "Network";
+                l_cPlayer.m_eType      = data::enPlayerType::Network;
 
                 m_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
