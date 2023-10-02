@@ -59,7 +59,8 @@
     [ "JointSetLoStop"        , "48" ],
     [ "JointSetAxis"          , "49" ],
     [ "JointStartMotor"       , "50" ],
-    [ "JointSetPosition"      , "51" ]
+    [ "JointSetPosition"      , "51" ],
+    [ "UpdateRaceInfo"        , "52" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -383,28 +384,28 @@
       ]
     },
     "JointSetHiStop": {
-      "comment": "",
+      "comment": "Modify Hi Stop of a Joint",
       "fields": [
         { "name": "NodeId", "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
         { "name": "HiStop", "type": "irr::f64", "comment": "New value for high stop of the joint" }
       ]
     },
     "JointSetLoStop": {
-      "comment": "",
+      "comment": "Modify Lo stop of a joint",
       "fields": [
         { "name": "NodeId", "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
         { "name": "LoStop", "type": "irr::f64", "comment": "New value for low stop of the joint" }
       ]
     },
     "JointSetAxis": {
-      "comment": "",
+      "comment": "Update the axis of a joint",
       "fields": [
         { "name": "NodeId", "type": "irr::s32"            , "comment": "ID of the node the joint is attached to " },
         { "name": "Axis"  , "type": "irr::core::vector3df", "comment": "New axis for the joint" }
       ]
     },
     "JointStartMotor": {
-      "comment": "",
+      "comment": "Start the motor of a joint",
       "fields": [
         { "name": "NodeId", "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
         { "name": "Speed" , "type": "irr::f64", "comment": "Desired speed for the joint" },
@@ -412,10 +413,17 @@
       ]
     },
     "JointSetPosition": {
-      "comment": "",
+      "comment": "Set the position or angle of a joint",
       "fields": [
         { "name": "NodeId"  , "type": "irr::s32", "comment": "ID of the node the joint is attached to " },
         { "name": "Position", "type": "irr::f64", "comment": "New position of the joint" }
+      ]
+    },
+    "UpdateRaceInfo": {
+      "comment": "Message for the network lobby to show the settings for the next race",
+      "fields": [
+        { "name": "track", "type": "std::string", "comment": "The new selected track" },
+        { "name": "info" , "type": "std::string", "comment": "Race information like laps, race x of y..." }
       ]
     }
   },

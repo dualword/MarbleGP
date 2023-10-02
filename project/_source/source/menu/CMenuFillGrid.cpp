@@ -25,7 +25,8 @@ namespace dustbin {
     */
     class CMenuFillGrid : public IMenuHandler {
       private:
-        network::CGameServer     *m_pServer;    /**< The game server */
+        network::CGameServer *m_pServer;    /**< The game server */
+        bool                  m_bWaiting;   /**< Waiting for the clients to be in network lobby */
 
         int getAiClass(int a_iIndex, int a_iSetting) {
           if (a_iSetting == 0)
@@ -41,7 +42,8 @@ namespace dustbin {
       public:
         CMenuFillGrid(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
-          m_pServer   (CGlobal::getInstance()->getGameServer()) 
+          m_pServer   (CGlobal::getInstance()->getGameServer()),
+          m_bWaiting  (false)
         {
 
           m_pState->getGlobal()->clearGui();

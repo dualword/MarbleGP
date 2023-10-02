@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <_generated/messages/CMessages.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
@@ -27,12 +28,20 @@ namespace dustbin {
 
         helpers::CAutoMenu *m_pAuto;    /**< Auto menu (for debugging) */
 
+        std::string m_sTrack;   /**< The next race track */
+        std::string m_sInfo;    /**< Information about the next race */
+
+        bool m_bInfoSent;     /**< The information about the next race was sent to the clients (if this is a network game) */
+
       public:
         CMenuNextRace(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_iClientState(0),
           m_pServer     (a_pState->getGlobal()->getGameServer()),
           m_pClient     (a_pState->getGlobal()->getGameClient()),
-          m_pAuto       (nullptr)
+          m_pAuto       (nullptr),
+          m_bInfoSent   (false),
+          m_sTrack      (""),
+          m_sInfo       ("")
         {
           m_pState->getGlobal()->clearGui();
 
@@ -65,13 +74,22 @@ namespace dustbin {
               std::to_wstring(l_cCup.m_iRaceCount) +
               L" (" + 
               std::to_wstring(l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0) +
-              L" Laps)";
+              L" Lap";
+
+            if (std::get<1>(*l_cCup.m_vRaces.begin()) != 1)
+              s += L"s)";
+            else
+              s += L")";
+
             p->setText(s.c_str());
+
+            m_sInfo = helpers::ws2s(s);
           }
 
           irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
           if (l_pThumbnail != nullptr) {
-            std::string l_sImg = "data/levels/" + std::get<0>(*l_cCup.m_vRaces.begin()) + "/thumbnail.png";
+            m_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
+            std::string l_sImg = "data/levels/" + m_sTrack + "/thumbnail.png";
             if (m_pFs->existFile(l_sImg.c_str()))
               l_pThumbnail->setImage(m_pDrv->getTexture(l_sImg.c_str()));
             else
@@ -160,21 +178,31 @@ namespace dustbin {
             m_pAuto->process();
 
           if (m_pServer != nullptr) {
-            if (m_iClientState == 1) {
-              if (m_pServer->allClientsAreInState("gamedata")) {
-                m_iClientState = 2;
-
-                m_pServer->changeState("state_game");
-                printf("Ready to go, start game.\n");
+            if (!m_bInfoSent) {
+              if (m_pServer->allClientsAreInState("menu_netlobby")) {
+                printf("Send race information to clients.\n");
+                messages::CUpdateRaceInfo l_cMsg = messages::CUpdateRaceInfo(m_sTrack, m_sInfo);
+                m_pServer->getInputQueue()->postMessage(&l_cMsg);
+                m_bInfoSent = true;
               }
-
-              m_pState->getGlobal()->drawNextRaceScreen(1.0f);
             }
-            else if (m_iClientState == 2) {
-              m_pState->getGlobal()->drawNextRaceScreen(1.0f);
+            else {
+              if (m_iClientState == 1) {
+                if (m_pServer->allClientsAreInState("gamedata")) {
+                  m_iClientState = 2;
 
-              if (m_pServer->allClientsAreInState("state_game")) {
-                m_pState->setState(state::enState::Game);
+                  m_pServer->changeState("state_game");
+                  printf("Ready to go, start game.\n");
+                }
+
+                m_pState->getGlobal()->drawNextRaceScreen(1.0f);
+              }
+              else if (m_iClientState == 2) {
+                m_pState->getGlobal()->drawNextRaceScreen(1.0f);
+
+                if (m_pServer->allClientsAreInState("state_game")) {
+                  m_pState->setState(state::enState::Game);
+                }
               }
             }
           }

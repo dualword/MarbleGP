@@ -136,6 +136,7 @@ namespace dustbin {
                 printf("\n*********\n");
 
                 m_pServer->setConnectionAllowed(false);
+
                 createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
               }
             }
