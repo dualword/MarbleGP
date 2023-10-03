@@ -30,6 +30,10 @@ namespace dustbin {
 
         std::string m_sTrack;   /**< The next race track */
         std::string m_sInfo;    /**< Information about the next race */
+        
+        int m_iLaps;    /**< The number of laps of the next race */
+
+        bool m_bLastRace;   /**< Is the next race the last race of the cup? */
 
         bool m_bInfoSent;     /**< The information about the next race was sent to the clients (if this is a network game) */
 
@@ -39,9 +43,11 @@ namespace dustbin {
           m_pServer     (a_pState->getGlobal()->getGameServer()),
           m_pClient     (a_pState->getGlobal()->getGameClient()),
           m_pAuto       (nullptr),
-          m_bInfoSent   (false),
           m_sTrack      (""),
-          m_sInfo       ("")
+          m_sInfo       (""),
+          m_iLaps       (0),
+          m_bLastRace   (false),
+          m_bInfoSent   (false)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -52,22 +58,23 @@ namespace dustbin {
 
           data::SMarbleGpCup l_cCup = data::SMarbleGpCup(m_pState->getGlobal()->getGlobal("current_cup"));
 
+          m_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
+          m_iLaps  = l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0;
+
           std::map<std::string, std::string> l_mTrackNames = helpers::getTrackNameMap();
 
           irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr && l_cCup.m_vRaces.size() > 0) {
-            std::string l_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
+            std::string l_sName = m_sTrack;
 
-            if (l_mTrackNames.find(l_sTrack) != l_mTrackNames.end())
-              l_sTrack = l_mTrackNames[l_sTrack];
+            if (l_mTrackNames.find(l_sName) != l_mTrackNames.end())
+              l_sName = l_mTrackNames[l_sName];
 
-            p->setText(helpers::s2ws(l_sTrack).c_str());
+            p->setText(helpers::s2ws(l_sName).c_str());
           }
 
           p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr) {
-            int l_iLaps = l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0;
-
             std::wstring s = 
               L"\"" + helpers::s2ws(l_cCup.m_sName) +
               L"\" Race " + 
@@ -75,10 +82,10 @@ namespace dustbin {
               L" of " + 
               std::to_wstring(l_cCup.m_iRaceCount) +
               L" (" + 
-              std::to_wstring(l_iLaps) +
+              std::to_wstring(m_iLaps) +
               L" Lap";
 
-            if (l_iLaps != 1)
+            if (m_iLaps != 1)
               s += L"s)";
             else
               s += L")";
@@ -86,17 +93,26 @@ namespace dustbin {
             p->setText(s.c_str());
 
             m_sInfo = helpers::ws2s(s);
+
           }
 
           irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
           if (l_pThumbnail != nullptr) {
-            m_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
             std::string l_sImg = "data/levels/" + m_sTrack + "/thumbnail.png";
             if (m_pFs->existFile(l_sImg.c_str()))
               l_pThumbnail->setImage(m_pDrv->getTexture(l_sImg.c_str()));
             else
               l_pThumbnail->setImage(m_pDrv->getTexture("data/images/no_image.png"));
           }
+
+          l_cCup.m_vRaces.erase(l_cCup.m_vRaces.begin());
+
+          m_bLastRace = l_cCup.m_vRaces.size() > 0;
+
+          if (m_bLastRace)
+            m_pState->getGlobal()->setGlobal("current_cup", "");
+          else
+            m_pState->getGlobal()->setGlobal("current_cup", l_cCup.serialize());
 
           m_pAuto = new helpers::CAutoMenu(m_pDevice,  this);
         }
@@ -124,40 +140,29 @@ namespace dustbin {
 
                 l_bRet = true;
                 
-                data::SMarbleGpCup l_cCup = data::SMarbleGpCup(m_pState->getGlobal()->getGlobal("current_cup"));
+                if (!m_bLastRace) {
+                  m_pManager->pushToMenuStack("menu_nextrace");
+                }
+                else {
+                  m_pManager->pushToMenuStack("menu_finalresult");
+                }
 
-                if (l_cCup.m_vRaces.size() > 0) {
-                  std::string l_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
-                  int         l_iLaps  = std::get<1>(*l_cCup.m_vRaces.begin());
+                m_pManager->pushToMenuStack("menu_standings"  );
+                m_pManager->pushToMenuStack("menu_raceresult" );
 
-                  l_cCup.m_vRaces.erase(l_cCup.m_vRaces.begin());
+                m_pState->getGlobal()->setSetting("track", m_sTrack);
+                m_pState->getGlobal()->setSetting("laps" , std::to_string(m_iLaps));
 
-                  if (l_cCup.m_vRaces.size() > 0) {
-                    m_pManager->pushToMenuStack("menu_nextrace");
-                    m_pState->getGlobal()->setGlobal("current_cup", l_cCup.serialize());
-                  }
-                  else {
-                    m_pManager->pushToMenuStack("menu_finalresult");
-                    m_pState->getGlobal()->setGlobal("current_cup", "");
-                  }
+                helpers::prepareNextRace(m_sTrack, m_iLaps);
 
-                  m_pManager->pushToMenuStack("menu_standings"  );
-                  m_pManager->pushToMenuStack("menu_raceresult" );
-
-                  m_pState->getGlobal()->setSetting("track", l_sTrack);
-                  m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
-
-                  helpers::prepareNextRace(l_sTrack, l_iLaps);
-
-                  platform::saveSettings();
-                  if (m_pServer != nullptr) {
-                    m_pServer->sendGlobalData("gamedata");
-                    m_iClientState = 1;
-                  }
-                  else {
-                    m_pState->getGlobal()->initNextRaceScreen();
-                    m_pState->setState(state::enState::Game);
-                  }
+                platform::saveSettings();
+                if (m_pServer != nullptr) {
+                  m_pServer->sendGlobalData("gamedata");
+                  m_iClientState = 1;
+                }
+                else {
+                  m_pState->getGlobal()->initNextRaceScreen();
+                  m_pState->setState(state::enState::Game);
                 }
               }
               else if (l_sSender == "cancel") {
