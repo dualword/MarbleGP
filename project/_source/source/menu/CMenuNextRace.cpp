@@ -107,7 +107,7 @@ namespace dustbin {
 
           l_cCup.m_vRaces.erase(l_cCup.m_vRaces.begin());
 
-          m_bLastRace = l_cCup.m_vRaces.size() > 0;
+          m_bLastRace = l_cCup.m_vRaces.size() == 0;
 
           if (m_bLastRace)
             m_pState->getGlobal()->setGlobal("current_cup", "");
