@@ -30,20 +30,25 @@ namespace dustbin {
       private:
         std::vector<std::tuple<int, std::string, std::string>> m_vTracks;         /**< The name of the installed tracks */
         
-        std::vector<std::tuple<int, std::string, std::string>>::iterator m_itStart;   /**< The current start of the shown tracks */
-
         gui::CMenuButton *m_pLeft;    /**< The "Left" button */
         gui::CMenuButton *m_pRight;   /**< The "Right" button */
         gui::CMenuButton *m_pOk;      /**< The "OK" button */
 
-        std::string m_sTrackFilter;   /**< The filter string of the tracks (category). The track name has to start with the filter to be visible */
-
         gui::CGuiTrackSelect *m_pTrackList; /**< The track list for selection */
 
-        int m_iClientState;  /**< Is a server active and we are waiting for a "global data set" response? */
+        int m_iClientState;   /**< Is a server active and we are waiting for a "global data set" response? */
+        int m_iLaps;          /**< The currently selected number of laps */
+
+        std::string m_sTrack;   /**< The currently selected racetrack */
+
+        bool m_bRaceInfoSent;   /**< Was the information about the currently selected race transferred? */
 
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
+
+        data::SChampionship m_cChampionship;    /**< The current championship */
+
+        std::map<std::string, std::string> m_mTracks;   /**< Map with the track names (key == track identifier) */
 
         /**
         * Fill the vector of track names
@@ -117,8 +122,6 @@ namespace dustbin {
             { "moving" , 6 }
           };
 
-          m_itStart = m_vTracks.begin();
-
           if (m_pTrackList != nullptr) {
             m_pTrackList->setCategoryRanking(l_mCategoryScore);
 
@@ -140,6 +143,8 @@ namespace dustbin {
 
             m_pTrackList->setImageList(l_vTracks);
             m_pTrackList->setSelected(m_pState->getGlobal()->getSetting("track"), true);
+            m_sTrack = m_pTrackList->getSelectedData();
+            printf("Track %s\n", m_sTrack.c_str());
 
             std::string l_sData = m_pTrackList->getSelectedData();
 
@@ -156,15 +161,15 @@ namespace dustbin {
 
       public:
         CMenuSelectTrack(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler  (a_pDevice, a_pManager, a_pState), 
-          m_pLeft       (nullptr), 
-          m_pRight      (nullptr),
-          m_pOk         (nullptr),
-          m_sTrackFilter(""),
-          m_pTrackList  (nullptr),
-          m_iClientState(0),
-          m_pServer     (a_pState->getGlobal()->getGameServer()),
-          m_pClient     (a_pState->getGlobal()->getGameClient())
+          IMenuHandler   (a_pDevice, a_pManager, a_pState), 
+          m_pLeft        (nullptr), 
+          m_pRight       (nullptr),
+          m_pOk          (nullptr),
+          m_pTrackList   (nullptr),
+          m_iClientState (0),
+          m_pServer      (a_pState->getGlobal()->getGameServer()),
+          m_pClient      (a_pState->getGlobal()->getGameClient()),
+          m_bRaceInfoSent(false)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -184,19 +189,16 @@ namespace dustbin {
           fillTrackNames();
           updateTrackFilter();
 
-          if (m_vTracks.size() > 0)
-            m_itStart = m_vTracks.begin();
-          else
-            m_itStart = m_vTracks.end();
-
           gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pLaps != nullptr) {
             std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
             l_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
+            m_iLaps = l_pLaps->getSelected() + 1;
+            printf("%i laps selected.\n", m_iLaps);
           }
 
-          data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-          std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();
+          m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+          std::vector<data::SChampionshipPlayer> l_vStanding = m_cChampionship.getStandings();
 
           printf("\n********************************");
           printf(  "**** Championship Standings ****\n");
@@ -204,14 +206,14 @@ namespace dustbin {
 
           printf("   |      Name       | Pts |");
 
-          for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
+          for (int i = 0; i < m_cChampionship.m_vPlayers.size(); i++)
             printf("%2i |", i + 1);
 
           printf(" Rs | St | Bf | Fl | DNF |\n");
 
           printf("---+-----------------+-----+");
 
-          for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
+          for (int i = 0; i < m_cChampionship.m_vPlayers.size(); i++)
             printf("---+");
 
           printf("----+----+----+----+-----+\n");
@@ -228,7 +230,7 @@ namespace dustbin {
 
             printf("%2i | %s | %3i |", l_iPos, s.c_str(), (*it).m_iPoints);
 
-            for (int i = 0; i < l_cChampionship.m_vPlayers.size(); i++)
+            for (int i = 0; i < m_cChampionship.m_vPlayers.size(); i++)
               if ((*it).m_aResult[i] != 0)
                 printf("%2i |", (*it).m_aResult[i]);
               else
@@ -242,6 +244,8 @@ namespace dustbin {
           printf("\n********************************\n");
 
           printf("Path: \"%s\"\n", helpers::ws2s(platform::portableGetDataPath()).c_str());
+
+          m_mTracks = helpers::getTrackNameMap();
         }
 
         virtual ~CMenuSelectTrack() {
@@ -271,7 +275,7 @@ namespace dustbin {
               }
               else if (l_sCaller == "ok" && (m_pOk == nullptr || m_pOk->isVisible())) {
                 if (m_pTrackList != nullptr) {
-                  printf("Track selected: \"%s\"\n", m_pTrackList->getSelectedName().c_str());
+                  printf("Track selected: \"%s\"\n", m_pTrackList->getSelectedData().c_str());
 
                   int l_iLaps = 2;
 
@@ -310,7 +314,12 @@ namespace dustbin {
               else printf("Button clicked: \"%s\"\n", l_sCaller.c_str());
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
-              printf("Scrollbar changed: \"%s\"\n", l_sCaller.c_str());
+              if (l_sCaller == "nolaps") {
+                gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller);
+                m_iLaps = l_pLaps->getSelected() + 1;
+                m_bRaceInfoSent = false;
+              }
+              else printf("Scrollbar changed: \"%s\"\n", l_sCaller.c_str());
             }
           }
           else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
@@ -320,6 +329,8 @@ namespace dustbin {
                 (a_cEvent.UserEvent.UserData1 == c_iEventImagePosChanged && a_cEvent.UserEvent.UserData2 == c_iEventImagePosChanged)
               )
             ) {
+              m_sTrack = m_pTrackList->getSelectedData();
+              m_bRaceInfoSent = false;
               if (m_pOk != nullptr)
                 m_pOk->setVisible(true);
             }
@@ -333,7 +344,24 @@ namespace dustbin {
         */
         virtual bool run() override { 
           if (m_pServer != nullptr) {
-            if (m_iClientState == 1) {
+            if (m_iClientState == 0) {
+              if (!m_bRaceInfoSent) {
+                if (m_pServer->allClientsAreInState("menu_netlobby")) {
+                  std::string l_sTrack = m_sTrack;
+
+                  if (m_mTracks.find(l_sTrack) != m_mTracks.end()) {
+                    l_sTrack = m_mTracks[l_sTrack];
+                  }
+
+                  std::string l_sInfo = "Race " + std::to_string(m_cChampionship.m_vRaces.size() + 1) + ": " + l_sTrack + ", " + std::to_string(m_iLaps) + " Lap" + (m_iLaps == 1 ? "" : "s");
+
+                  messages::CUpdateRaceInfo l_cMsg(m_sTrack, l_sInfo);
+                  m_pServer->getInputQueue()->postMessage(&l_cMsg);
+                  m_bRaceInfoSent = true;
+                }
+              }
+            }
+            else if (m_iClientState == 1) {
               if (m_pServer->allClientsAreInState("gamedata")) {
                 m_iClientState = 2;
 
