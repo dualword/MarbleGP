@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <_generated/messages/CMessages.h>
+#include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <gui/CMenuBackground.h>
@@ -34,14 +35,26 @@ namespace dustbin {
         irr::gui::IGUIStaticText *m_pConnecting;    /**< The "connecting" label */
         gui::CMenuBackground     *m_pMainFrame;     /**< The main frame */
 
-        std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
+        std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
         void updatePlayerList() {
-          for (std::vector<std::tuple<gui::CMenuBackground*, irr::gui::IGUITab*, irr::gui::IGUIStaticText*>>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+          for (std::vector<std::tuple<gui::CMenuBackground*, irr::gui::IGUITab*, irr::gui::IGUIStaticText*, irr::gui::IGUIStaticText*>>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
             std::get<1>(*it)->setVisible(false);
           }
 
           std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &l_cPlayer1, const data::SPlayerData &l_cPlayer2) {
+            if (l_cPlayer1.m_sTexture.find("number=") != std::string::npos && l_cPlayer2.m_sTexture.find("number=") != std::string::npos) {
+              std::string l_sType = "";
+
+              std::map<std::string, std::string> l_mParams1 = helpers::parseParameters(l_sType, l_cPlayer1.m_sTexture);
+              std::map<std::string, std::string> l_mParams2 = helpers::parseParameters(l_sType, l_cPlayer2.m_sTexture);
+
+              int l_iNum1 = std::atoi(l_mParams1["number"].c_str());
+              int l_iNum2 = std::atoi(l_mParams2["number"].c_str());
+
+              return l_iNum1 < l_iNum2;
+            }
+
             return l_cPlayer1.m_iPlayerId < l_cPlayer2.m_iPlayerId;
           });
 
@@ -50,10 +63,46 @@ namespace dustbin {
             if (i < m_vPlayers.size()) {
               std::get<1>(m_vPlayers[i])->setVisible(true);
               std::get<2>(m_vPlayers[i])->setText(helpers::s2ws((*it).m_sName).c_str());
+
+              if ((*it).m_sTexture.find("number=") != std::string::npos) {
+                printf("Texture: %s\n", (*it).m_sTexture.c_str());
+                std::string l_sType = "";
+
+                std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, (*it).m_sTexture);
+
+                std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
+                std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
+                std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
+
+                if (l_sBack   != "" && l_sColor != "" && l_sNumber != "") {
+                  std::get<3>(m_vPlayers[i])->setText(helpers::s2ws(l_sNumber).c_str());
+
+                  irr::video::SColor l_cColor;
+                  helpers::fillColorFromString(l_cColor, l_sBack);
+                  std::get<3>(m_vPlayers[i])->setBackgroundColor(l_cColor);
+
+                  helpers::fillColorFromString(l_cColor, l_sColor);
+                  std::get<3>(m_vPlayers[i])->setOverrideColor(l_cColor);
+
+                  std::get<3>(m_vPlayers[i])->setVisible(true);
+                }
+              }
+
+              if ((*it).m_sName.find("|") != std::string::npos)
+                printf("AI Class: %s\n", (*it).m_sName.substr((*it).m_sName.find("|")).c_str());
             }
 
             i++;
           }
+        }
+
+        void hideAiAndNumber(irr::gui::IGUIElement* a_pElement) {
+          if (std::string("ai_class") == a_pElement->getName() || std::string("starting_number") == a_pElement->getName()) {
+            a_pElement->setVisible(false);
+          }
+
+          for (irr::core::list<irr::gui::IGUIElement *>::ConstIterator l_itChild = a_pElement->getChildren().begin(); l_itChild != a_pElement->getChildren().end(); l_itChild++)
+            hideAiAndNumber(*l_itChild);
         }
 
       public:
@@ -93,10 +142,11 @@ namespace dustbin {
               irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_name" , irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
               irr::gui::IGUIStaticText *l_pNum  = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
               irr::gui::IGUITab        *l_pTab  = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("player_tab"  , irr::gui::EGUIET_TAB        , l_pRoot));
+              irr::gui::IGUIStaticText *l_pStrt = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
 
-              if (l_pName != nullptr && l_pNum != nullptr && l_pTab != nullptr) {
+              if (l_pName != nullptr && l_pNum != nullptr && l_pTab != nullptr && l_pStrt) {
                 l_pNum->setText(std::to_wstring(i + 1).c_str());
-                m_vPlayers.push_back(std::make_tuple(l_pRoot, l_pTab, l_pName));
+                m_vPlayers.push_back(std::make_tuple(l_pRoot, l_pTab, l_pName, l_pStrt));
                 l_pTab->setVisible(false);
 
                 gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
@@ -110,6 +160,7 @@ namespace dustbin {
             }
           }
 
+          hideAiAndNumber(m_pGui->getRootGUIElement());
           updatePlayerList();
         }
 
@@ -268,7 +319,7 @@ namespace dustbin {
                 for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
                   if ((*it).m_iPlayerId == p->getplayerid() && (*it).m_sTexture.find("number=") == std::string::npos) {
                     (*it).m_sTexture = p->gettexture();
-                    printf("Texture of player %s set: %s\n", (*it).m_sName.c_str(), (*it).m_sTexture.c_str());
+                    updatePlayerList();
                     break;
                   }
                 }

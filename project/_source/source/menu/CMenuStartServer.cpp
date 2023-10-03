@@ -49,6 +49,15 @@ namespace dustbin {
           }
         }
 
+        void hideAiAndNumber(irr::gui::IGUIElement* a_pElement) {
+          if (std::string("ai_class") == a_pElement->getName() || std::string("starting_number") == a_pElement->getName()) {
+            a_pElement->setVisible(false);
+          }
+
+          for (irr::core::list<irr::gui::IGUIElement *>::ConstIterator l_itChild = a_pElement->getChildren().begin(); l_itChild != a_pElement->getChildren().end(); l_itChild++)
+            hideAiAndNumber(*l_itChild);
+        }
+
       public:
         CMenuStartServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState) {
           m_pState->getGlobal()->clearGui();
@@ -101,6 +110,7 @@ namespace dustbin {
 
           m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
+          hideAiAndNumber(m_pGui->getRootGUIElement());
           updatePlayerList();
         }
 
