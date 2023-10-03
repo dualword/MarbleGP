@@ -5,7 +5,7 @@
     <children>
       <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
         <attributes>
-          <attribute key="Caption" value="Dustbin::Games MarbleGP - Netgame Lobby" />
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Network Game" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
           <attribute key="Name" value="label_headline" />
@@ -16,12 +16,32 @@
         </children>
       </element>
        
-      <element type="staticText" rect="relative: 1, 5, 79, 49" font="big">
+      <element type="staticText" rect="relative: 1, 7, 79, 9" font="big">
         <attributes>
-          <attribute key="Name" value="label_message" />
+          <attribute key="Name" value="label_race" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Caption" value="Waiting for the server to select a race" />
+        </attributes>
+      </element>
+       
+      <element type="staticText" rect="relative: 1, 10, 79, 12">
+        <attributes>
+          <attribute key="Name" value="label_details" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 25, 13, 55, 43">
+        <attributes>
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Name" value="Thumbnail" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/logo.png" />
+        </custom>
       </element>
     </children>
   </element>  

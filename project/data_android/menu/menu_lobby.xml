@@ -5,19 +5,38 @@
     <children>
       <element type="staticText" rect="relative: 0, 1, 50, 3" font="big">
         <attributes>
-          <attribute key="Caption" value="Dustbin::Games MarbleGP - Netgame Lobby" />
+          <attribute key="Caption" value="Dustbin::Games MarbleGP - Network Game" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
           <attribute key="Name" value="label_headline" />
         </attributes>
       </element>
        
-      <element type="staticText" rect="relative: 1, 5, 49, 22" font="big">
+      <element type="staticText" rect="relative: 0, 4, 50, 6">
         <attributes>
-          <attribute key="Name" value="label_message" />
+          <attribute key="Name" value="label_race" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
+      </element>
+       
+      <element type="staticText" rect="relative: 0, 6, 50, 8" font="small">
+        <attributes>
+          <attribute key="Name" value="label_details" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 15, 9, 35, 29">
+        <attributes>
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Name" value="Thumbnail" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/logo.png" />
+        </custom>
       </element>
     </children>
   </element>  
