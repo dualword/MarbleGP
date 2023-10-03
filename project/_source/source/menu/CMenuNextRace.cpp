@@ -66,6 +66,8 @@ namespace dustbin {
 
           p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr) {
+            int l_iLaps = l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0;
+
             std::wstring s = 
               L"\"" + helpers::s2ws(l_cCup.m_sName) +
               L"\" Race " + 
@@ -73,10 +75,10 @@ namespace dustbin {
               L" of " + 
               std::to_wstring(l_cCup.m_iRaceCount) +
               L" (" + 
-              std::to_wstring(l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0) +
+              std::to_wstring(l_iLaps) +
               L" Lap";
 
-            if (std::get<1>(*l_cCup.m_vRaces.begin()) != 1)
+            if (l_iLaps != 1)
               s += L"s)";
             else
               s += L")";
