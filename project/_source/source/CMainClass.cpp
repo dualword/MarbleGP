@@ -819,12 +819,14 @@ namespace dustbin {
   * Init the next game screen. Must be called when the race data is defined
   */
   void CMainClass::initNextRaceScreen() {
-    irr::gui::IGUIFont *l_pFont = getFont(enFont::Big, m_pDrv->getScreenSize());
+    irr::gui::IGUIFont *l_pFont    = getFont(enFont::Big, m_pDrv->getScreenSize());
+    irr::gui::IGUIFont *l_pRegular = getFont(enFont::Regular, m_pDrv->getScreenSize());
+
     irr::core::dimension2du l_cDim = l_pFont->getDimension(L"ThisTextShouldBeLongEnoughForThisScreenAtLeastIHopeSo");
-    irr::core::dimension2du l_cImg = irr::core::dimension2du(l_cDim.Width, 4 * l_cDim.Height);
+    irr::core::dimension2du l_cImg = irr::core::dimension2du(l_cDim.Width, 6 * l_cDim.Height);
 
     if (m_pNextRaceScreen == nullptr) {
-      m_pNextRaceScreen = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(l_cDim.Width, 4 * l_cDim.Height), "__NextRaceScreen");
+      m_pNextRaceScreen = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(l_cDim.Width, 6 * l_cDim.Height), "__NextRaceScreen");
     }
 
     m_pDrv->setRenderTarget(m_pNextRaceScreen, true, true, irr::video::SColor(128, 192, 192, 192));
@@ -853,6 +855,11 @@ namespace dustbin {
     l_cRect.LowerRightCorner.Y += 2 * l_cDim.Height;
 
     l_pFont->draw((std::to_wstring(l_cData.m_iLaps) + L" Lap" + (l_cData.m_iLaps == 1 ? L"" : L"s")).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
+
+    l_cRect.UpperLeftCorner .Y += 2 * l_cDim.Height;
+    l_cRect.LowerRightCorner.Y += 2 * l_cDim.Height;
+
+    l_pRegular->draw(helpers::s2ws(l_cData.m_sInfo).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
 
     m_pDrv->setRenderTarget(0, false, false);
 

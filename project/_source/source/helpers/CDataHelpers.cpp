@@ -299,10 +299,11 @@ namespace dustbin {
     /**
     * Prepare and update the global data for the next race
     * @param a_sTrack the next track identifier
+    * @param a_sInfo additional race information
     * @param a_iLaps the number of laps
     */
-    void prepareNextRace(const std::string& a_sTrack, int a_iLaps) {
-      data::SGameData l_cData(a_sTrack, a_iLaps);
+    void prepareNextRace(const std::string& a_sTrack, const std::string &a_sInfo, int a_iLaps) {
+      data::SGameData l_cData(a_sTrack, a_sInfo, a_iLaps);
 
       CGlobal *l_pGlobal = CGlobal::getInstance();
 

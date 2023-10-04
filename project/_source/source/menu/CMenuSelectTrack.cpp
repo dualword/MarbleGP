@@ -298,7 +298,7 @@ namespace dustbin {
                   m_pState->getGlobal()->setSetting("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
 
-                  helpers::prepareNextRace(m_pTrackList->getSelectedData(), l_iLaps);
+                  helpers::prepareNextRace(m_pTrackList->getSelectedData(), "Free Racing / Race #" + std::to_string(m_cChampionship.m_vRaces.size() + 1), l_iLaps);
 
                   platform::saveSettings();
                   if (m_pServer != nullptr) {
@@ -353,7 +353,7 @@ namespace dustbin {
                     l_sTrack = m_mTracks[l_sTrack];
                   }
 
-                  std::string l_sInfo = "Race " + std::to_string(m_cChampionship.m_vRaces.size() + 1) + ": " + l_sTrack + ", " + std::to_string(m_iLaps) + " Lap" + (m_iLaps == 1 ? "" : "s");
+                  std::string l_sInfo = "Free Racing / Race " + std::to_string(m_cChampionship.m_vRaces.size() + 1) + " (" + std::to_string(m_iLaps) + " Lap" + (m_iLaps == 1 ? "" : "s") + ")";
 
                   messages::CUpdateRaceInfo l_cMsg(m_sTrack, l_sInfo);
                   m_pServer->getInputQueue()->postMessage(&l_cMsg);

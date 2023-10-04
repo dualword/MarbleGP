@@ -106,9 +106,10 @@ namespace dustbin {
     // Game data
     const irr::s32 c_iGameHead  = -150;   /**< Header for the game data */
     const irr::s32 c_iGameTrack = -151;   /**< The track of the upcoming race */
-    const irr::s32 c_iGameLaps  = -152;   /**< The laps of the race */
-    const irr::s32 c_iTutorial  = -153;   /**< Is this race a tutorial race? */
-    const irr::s32 c_iGrid      = -154;   /**< A starting grid position */
+    const irr::s32 c_iGameInfo  = -152;   /**< Additional information about the race */
+    const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
+    const irr::s32 c_iTutorial  = -154;   /**< Is this race a tutorial race? */
+    const irr::s32 c_iGrid      = -155;   /**< A starting grid position */
 
     // Marble AI Class
     const irr::s32 c_iMarbleData  = -170;   /**< Header for the Marble AI data */
@@ -536,7 +537,7 @@ namespace dustbin {
     SGameData::SGameData() : m_sTrack(""), m_iLaps(1), m_bIsTutorial(false) {
     }
 
-    SGameData::SGameData(const std::string& a_sTrack, int a_iLaps) : m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_bIsTutorial(false) {
+    SGameData::SGameData(const std::string& a_sTrack, const std::string &a_sInfo, int a_iLaps) : m_sTrack(a_sTrack), m_sInfo(a_sInfo), m_iLaps(a_iLaps), m_bIsTutorial(false) {
     }
 
     SGameData::SGameData(const std::string& a_sData) {
@@ -551,6 +552,10 @@ namespace dustbin {
           switch (l_iData) {
             case c_iGameTrack:
               m_sTrack = l_cSerializer.getString();
+              break;
+
+            case c_iGameInfo:
+              m_sInfo = l_cSerializer.getString();
               break;
 
             case c_iGameLaps:
@@ -600,6 +605,10 @@ namespace dustbin {
       // The track
       l_cSerializer.addS32(c_iGameTrack);
       l_cSerializer.addString(m_sTrack);
+
+      // Race information
+      l_cSerializer.addS32(c_iGameInfo);
+      l_cSerializer.addString(m_sInfo);
 
       // The number of laps
       l_cSerializer.addS32(c_iGameLaps);

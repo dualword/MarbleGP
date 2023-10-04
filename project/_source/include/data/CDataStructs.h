@@ -192,13 +192,14 @@ namespace dustbin {
     */
     typedef struct SGameData {
       std::string m_sTrack;       /**< The track */
+      std::string m_sInfo;        /**< Info of the race */
       int         m_iLaps;        /**< The number of laps */
       bool        m_bIsTutorial;  /**< Is this a tutorial race? If so we create a CTutorialHUD instead of a CGameHUD instance */
 
       std::vector<int> m_vStartingGrid;   /**< Starting grid containing the player IDs */
 
       SGameData();
-      SGameData(const std::string &a_sTrack, int a_iLaps);
+      SGameData(const std::string &a_sTrack, const std::string &a_sInfo, int a_iLaps);
       SGameData(const std::string &a_sData);
 
       std::string serialize();
