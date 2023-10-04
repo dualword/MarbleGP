@@ -24,8 +24,8 @@ namespace dustbin {
         irr::f32 m_fBestSpeed;  /**< The best speed for the jump */
 
         irr::video::ITexture *m_aSpeed[4];      /**< The textures indicating the speed (0 == orange, 1 == red, 2 == green, 3 == gray) */
-        irr::video::ITexture *m_aWarn [2];      /**< The warning textures notofying the player of a completely wrong velocity (0 == orange, 1 == red) */
-        irr::video::ITexture *m_aArrow[2];      /**< The arrows showing the player that the speed can be changed (0 == orange, 1 == red) */
+        irr::video::ITexture *m_aWarn [3];      /**< The warning textures notofying the player of a completely wrong velocity (0 == orange, 1 == red, 2 == green) */
+        irr::video::ITexture *m_aArrow[4];      /**< The arrows showing the player that the speed can be changed (0 == orange, 1 == red, 2 == green up, 3 == green down) */
 
         /**
         * Update the textures of all "IMeshSceneNode" children

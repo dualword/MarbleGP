@@ -15,10 +15,11 @@ namespace dustbin {
       m_cBox.reset(getPosition());
       sceneNodeIdUsed(a_iId);
 
-      for (int i = 0; i < 2; i++) {
+      for (int i = 0; i < 4; i++)
         m_aArrow[i] = nullptr;
+
+      for (int i = 0; i < 3; i++)
         m_aWarn[i] = nullptr;
-      }
 
       for (int i = 0; i < 4; i++)
         m_aSpeed[i] = nullptr;
@@ -126,11 +127,11 @@ namespace dustbin {
 
               if (a_fSpeed < m_fBestSpeed) {
                 // The player is a little too slow
-                l_pTexture = l_bArrow ? m_aArrow[0] : m_aSpeed[0];
+                l_pTexture = l_bArrow ? m_aArrow[2] : m_aSpeed[2];
               }
               else {
                 // the player is a little too fast
-                l_pTexture = l_bArrow ? m_aArrow[1] : m_aSpeed[1];
+                l_pTexture = l_bArrow ? m_aArrow[3] : m_aSpeed[2];
               }
             }
           }
@@ -188,9 +189,11 @@ namespace dustbin {
         }
       }
 
-      for (int i = 0; i < 2; i++) {
-        m_aArrow[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_orange_up.png"   : "data/textures/speed_red_down.png");
-        m_aWarn [i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_orange_warn.png" : "data/textures/speed_red_warn.png");
+      for (int i = 0; i < 4; i++) {
+        m_aArrow[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_orange_up.png" : i == 1 ? "data/textures/speed_red_down.png" : i == 2 ? "data/textures/speed_green_up.png" : "speed_green_down.png");
+
+        if (i < 3)
+          m_aWarn[i] = l_pDrv->getTexture(i == 0 ? "data/textures/speed_orange_warn.png" : i == 1 ? "data/textures/speed_red_warn.png" : "data/textures/speed_green_warn.png");
       }
 
       updateTexture(m_aSpeed[3]);
