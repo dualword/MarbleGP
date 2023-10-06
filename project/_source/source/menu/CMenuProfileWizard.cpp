@@ -79,9 +79,9 @@ namespace dustbin {
           if (l_iPos != std::string::npos) {
             std::string l_sPrefix  = l_sTexture.substr(0, l_iPos);
 
-            gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(findElementByNameAndType("texture_mode"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
-            gui::CMenuButton  *l_pBtn  = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-            irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated" , irr::gui::EGUIET_TAB                            , m_pGui->getRootGUIElement()));
+            gui::CSelector    *l_pMode = reinterpret_cast<gui::CSelector    *>(helpers::findElementByNameAndType("texture_mode"      , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
+            gui::CMenuButton  *l_pBtn  = reinterpret_cast<gui::CMenuButton  *>(helpers::findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            irr::gui::IGUITab *l_pTab  = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("texture_generated" , irr::gui::EGUIET_TAB                            , m_pGui->getRootGUIElement()));
 
             if (l_pMode != nullptr) {
               if (l_pTab != nullptr) {
@@ -115,7 +115,7 @@ namespace dustbin {
                   std::vector<std::string> l_vParam = helpers::splitString(*l_itPart, '=');
 
                   if (l_vParam.size() == 2 && l_mParamMap.find(l_vParam[0]) != l_mParamMap.end()) {
-                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(l_mParamMap[l_vParam[0]], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType(l_mParamMap[l_vParam[0]], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                     if (l_pEdit != nullptr)
                       l_pEdit->setText(helpers::s2ws(l_vParam[1]).c_str());
                   }
@@ -333,7 +333,7 @@ namespace dustbin {
 
               m_pPatternList->setImageList(l_vPatterns);
 
-              irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
               if (l_pPattern != nullptr)
                 m_pPatternList->setSelected(helpers::ws2s(l_pPattern->getText()), false);
@@ -358,7 +358,7 @@ namespace dustbin {
         * @return the texture string from the texture dialog
         */
         std::wstring getTextureString() {
-          gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           std::wstring l_sTexture = L"default://";
 
           if (l_pMode != nullptr) {
@@ -379,7 +379,7 @@ namespace dustbin {
               };
 
               for (std::map<std::wstring, std::string>::iterator it = l_mParameters.begin(); it != l_mParameters.end(); it++) {
-                irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(it->second, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType(it->second, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                 if (p != nullptr) {
                   if (l_sTexture == L"")
                     l_sTexture = L"generate://";
@@ -409,7 +409,7 @@ namespace dustbin {
             };
 
             for (std::map<int, std::string>::iterator l_itColor = l_mMap.begin(); l_itColor != l_mMap.end(); l_itColor++) {
-              irr::gui::IGUIScrollBar  *l_pColor = reinterpret_cast<irr::gui::IGUIScrollBar  *>(findElementByNameAndType(l_itColor->second, irr::gui::EGUIET_SCROLL_BAR , m_pGui->getRootGUIElement()));
+              irr::gui::IGUIScrollBar  *l_pColor = reinterpret_cast<irr::gui::IGUIScrollBar  *>(helpers::findElementByNameAndType(l_itColor->second, irr::gui::EGUIET_SCROLL_BAR , m_pGui->getRootGUIElement()));
               if (l_pColor != nullptr) {
                 char *p = nullptr;
                 std::string l_sSub = helpers::ws2s(a_sColor.substr(l_itColor->first, 2));
@@ -417,7 +417,7 @@ namespace dustbin {
               }
             }
 
-            irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_display", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+            irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_display", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
             if (l_pTab != nullptr)
               l_pTab->setBackgroundColor(getColorFromColorDialog());
@@ -454,8 +454,8 @@ namespace dustbin {
           irr::video::SColor l_cColor = irr::video::SColor(0xFF, 0, 0, 0);
 
           for (std::map<std::string, std::string>::iterator l_itColor = l_mColorParts.begin(); l_itColor != l_mColorParts.end(); l_itColor++) {
-            irr::gui::IGUIScrollBar  *l_pColor = reinterpret_cast<irr::gui::IGUIScrollBar  *>(findElementByNameAndType(l_itColor->first , irr::gui::EGUIET_SCROLL_BAR , m_pGui->getRootGUIElement()));
-            irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType(l_itColor->second, irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIScrollBar  *l_pColor = reinterpret_cast<irr::gui::IGUIScrollBar  *>(helpers::findElementByNameAndType(l_itColor->first , irr::gui::EGUIET_SCROLL_BAR , m_pGui->getRootGUIElement()));
+            irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType(l_itColor->second, irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
 
             if (l_pColor != nullptr && l_pLabel != nullptr) {
@@ -476,10 +476,10 @@ namespace dustbin {
         * Update the generated texture of the preview marble
         */
         void updateGeneratedTexture() {
-          gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          gui::CSelector *l_pMode = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("texture_mode", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pMode != nullptr) {
-            irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("texture_generated", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
-            gui::CMenuButton  *l_pBtn = reinterpret_cast<gui::CMenuButton  *>(findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("texture_generated", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+            gui::CMenuButton  *l_pBtn = reinterpret_cast<gui::CMenuButton  *>(helpers::findElementByNameAndType("btn_texture_params", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
             if (l_pMode->getSelected() == 0) {
               if (l_pTab != nullptr) l_pTab->setVisible(false);
@@ -498,8 +498,8 @@ namespace dustbin {
         * Update the info text for the AI help
         */
         void updateAiHelpInfo() {
-          irr::gui::IGUIStaticText *l_pInfo  = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("aihelp_info", irr::gui::EGUIET_STATIC_TEXT                  , m_pGui->getRootGUIElement()));
-          gui::CSelector           *l_pLevel = reinterpret_cast<gui::CSelector           *>(findElementByNameAndType("ai_help"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *l_pInfo  = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("aihelp_info", irr::gui::EGUIET_STATIC_TEXT                  , m_pGui->getRootGUIElement()));
+          gui::CSelector           *l_pLevel = reinterpret_cast<gui::CSelector           *>(helpers::findElementByNameAndType("ai_help"    , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
           if (l_pLevel != nullptr && l_pInfo != nullptr) {
             switch (l_pLevel->getSelected()) {
@@ -550,7 +550,7 @@ namespace dustbin {
 
             case enMenuStep::Name: {
               // Copy the name field to the m_sName member
-              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr) {
                 m_cPlayer.m_sName = helpers::ws2s(l_pEdit->getText());
                 if (m_cPlayer.m_sName.substr(0, 5) != m_sNameOriginal.substr(0, 5))
@@ -561,7 +561,7 @@ namespace dustbin {
 
             case enMenuStep::Abbreviation: {
               // Copy the short name to the m_sShort member
-              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr)
                 m_cPlayer.m_sShortName = helpers::ws2s(l_pEdit->getText());
               break;
@@ -569,7 +569,7 @@ namespace dustbin {
 
             case enMenuStep::AiHelp: {
               // Save the selected AI help to the member m_eAiHelp
-              gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+              gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
               if (l_pSelector != nullptr) {
                 switch (l_pSelector->getSelected()) {
                   case 0: m_cPlayer.m_eAiHelp = data::SPlayerData::enAiHelp::Off    ; break;
@@ -586,8 +586,8 @@ namespace dustbin {
             }
 
             case enMenuStep::Controls: {
-              gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-              irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+              gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(helpers::findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
 
               bool l_bSaved = false;
 
@@ -610,7 +610,7 @@ namespace dustbin {
                 }
               }
 
-              gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
               if (l_pAuto != nullptr && !l_bSaved) {
                 m_cPlayer.m_bAutoThrottle = l_pAuto->isChecked();
               }
@@ -644,7 +644,7 @@ namespace dustbin {
               break;
 
             case enMenuStep::Name: {
-              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
 
@@ -663,7 +663,7 @@ namespace dustbin {
             }
 
             case enMenuStep::Abbreviation: {
-              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
               if (l_pEdit != nullptr) {
                 l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sShortName).c_str());
 
@@ -680,7 +680,7 @@ namespace dustbin {
             }
 
             case enMenuStep::AiHelp: {
-              gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+              gui::CSelector *l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("ai_help", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
               if (l_pSelector != nullptr) {
                 switch (m_cPlayer.m_eAiHelp) {
@@ -704,7 +704,7 @@ namespace dustbin {
             case enMenuStep::Controls: {
               bool l_bTouchGyro = false;
 
-              m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
+              m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(helpers::findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
 
               if (m_pCtrl != nullptr) {
                 if (m_cPlayer.m_sControls == "") {
@@ -718,7 +718,7 @@ namespace dustbin {
 
                 if (m_cPlayer.m_sControls.substr(0, std::string("DustbinController").size()) == "DustbinController") {
                   m_pCtrl->setController(m_cPlayer.m_sControls);
-                  gui::CSelector *l_pType  = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  gui::CSelector *l_pType  = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
                   if (l_pType != nullptr) {
                     controller::CControllerGame l_cCtrl;
@@ -735,8 +735,8 @@ namespace dustbin {
                   }
                 }
                 else {
-                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(helpers::findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
 
                   if (l_pType != nullptr && l_pImage != nullptr) {
                     std::vector<std::tuple<std::string, std::string, std::wstring>> l_mItemMap = {
@@ -762,15 +762,15 @@ namespace dustbin {
                       }
                     }
                   }
-                  gui::CMenuButton    *l_pEdit  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("editGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                  gui::CMenuButton    *l_pTest  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("testGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pEdit  = reinterpret_cast<gui::CMenuButton    *>(helpers::findElementByNameAndType("editGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pTest  = reinterpret_cast<gui::CMenuButton    *>(helpers::findElementByNameAndType("testGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
                   if (l_pEdit != nullptr) l_pEdit->setVisible(false);
                   if (l_pTest != nullptr) l_pTest->setVisible(false);
                 }
               }
 
-              gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
 
               if (l_pAuto != nullptr) {
                 l_pAuto->setChecked(m_cPlayer.m_bAutoThrottle || l_bTouchGyro);
@@ -803,7 +803,7 @@ namespace dustbin {
             bool l_bVisible = true;
 
             if (m_eStep == enMenuStep::Name) {
-              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
               if (l_pEdit != nullptr) {
                 std::wstring s = l_pEdit->getText();
@@ -814,7 +814,7 @@ namespace dustbin {
               }
             }
             else if (m_eStep == enMenuStep::Abbreviation) {
-              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
               if (l_pEdit != nullptr) {
                 std::wstring s = l_pEdit->getText();
@@ -855,14 +855,14 @@ namespace dustbin {
           );
 
           if (a_eStep == enMenuStep::Name) {
-            irr::gui::IGUIElement *l_pBack = findElementByName("back", m_pGui->getRootGUIElement());
+            irr::gui::IGUIElement *l_pBack = helpers::findElementByName("back", m_pGui->getRootGUIElement());
 
             if (l_pBack != nullptr)
               l_pBack->setVisible(false);
           }
           else if (a_eStep == enMenuStep::Controls) {
-            gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-            irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
+            gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(helpers::findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                        , m_pGui->getRootGUIElement()));
 
             // If we find the selector for the controller type
             // we assume that we are on Android
@@ -874,13 +874,13 @@ namespace dustbin {
           }
           else if (a_eStep == enMenuStep::Texture) {
             // In the texture dialog we hide the "next" button ...
-            irr::gui::IGUIElement *l_pNext = findElementByName("next", m_pGui->getRootGUIElement());
+            irr::gui::IGUIElement *l_pNext = helpers::findElementByName("next", m_pGui->getRootGUIElement());
 
             if (l_pNext != nullptr)
               l_pNext->setVisible(false);
 
             // ... and we shot the "save" button
-            irr::gui::IGUIElement *l_pSave = findElementByName("save", m_pGui->getRootGUIElement());
+            irr::gui::IGUIElement *l_pSave = helpers::findElementByName("save", m_pGui->getRootGUIElement());
 
             if (l_pSave != nullptr)
               l_pSave->setVisible(true);
@@ -896,7 +896,7 @@ namespace dustbin {
               m_pMyRtt = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "texture_rtt");
             }
 
-            irr::gui::IGUIImage *l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("texture_image", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIImage *l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("texture_image", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
 
             if (l_pTexture != nullptr && m_pMyRtt != nullptr)
               l_pTexture->setImage(m_pMyRtt);
@@ -909,12 +909,12 @@ namespace dustbin {
 
           m_eStep = a_eStep;
 
-          m_pBtnBack   = findElementByName("back"  , m_pGui->getRootGUIElement());
-          m_pBtnCancel = findElementByName("cancel", m_pGui->getRootGUIElement());
-          m_pBtnNext   = findElementByName("next"  , m_pGui->getRootGUIElement());
-          m_pBtnSave   = findElementByName("save"  , m_pGui->getRootGUIElement());
+          m_pBtnBack   = helpers::findElementByName("back"  , m_pGui->getRootGUIElement());
+          m_pBtnCancel = helpers::findElementByName("cancel", m_pGui->getRootGUIElement());
+          m_pBtnNext   = helpers::findElementByName("next"  , m_pGui->getRootGUIElement());
+          m_pBtnSave   = helpers::findElementByName("save"  , m_pGui->getRootGUIElement());
 
-          m_pWarning   = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("warning", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          m_pWarning   = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("warning", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
 
           if (m_pWarning != nullptr) {
             m_pWarning->setImage(m_pDrv->getTexture("data/images/edit_warning.png"));
@@ -1074,10 +1074,10 @@ namespace dustbin {
                     if (!m_bJoySelect)
                       setupTutorialRace();
                     else {
-                      irr::gui::IGUIElement *l_pSelect = findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+                      irr::gui::IGUIElement *l_pSelect = helpers::findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
 
                       if (l_pSelect != nullptr) {
-                        irr::gui::IGUIStaticText *l_pPlr = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                        irr::gui::IGUIStaticText *l_pPlr = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
                         if (l_pPlr != nullptr) {
                           std::wstring s = L"Player \"" + helpers::s2ws(m_cPlayer.m_sName) + L"\": Please select your gamepad by clicking a button.";
@@ -1091,14 +1091,14 @@ namespace dustbin {
                 }
                 else if (l_sButton == "clear_name") {
                   if (m_eStep == enMenuStep::Name) {
-                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                     if (l_pEdit != nullptr) {
                       l_pEdit->setText(L"");
                       toggleButtonVisibility();
                     }
                   }
                   else if (m_eStep == enMenuStep::Abbreviation) {
-                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                    irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("shortname", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                     if (l_pEdit != nullptr) {
                       l_pEdit->setText(L"");
                       toggleButtonVisibility();
@@ -1148,7 +1148,7 @@ namespace dustbin {
                 }
                 else if (l_sButton == "random_name") {
                   createRandomName();
-                  irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("name", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                   if (l_pEdit != nullptr)
                     l_pEdit->setText(helpers::s2ws(m_cPlayer.m_sName).c_str());
 
@@ -1158,10 +1158,10 @@ namespace dustbin {
                 else {
                   if (m_eStep == enMenuStep::Texture) {
                     if (l_sButton == "btn_color_ok") {
-                      irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                      irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
                       if (l_pColor != nullptr) {
-                        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(m_sColorEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType(m_sColorEdit, irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
                         if (l_pEdit != nullptr) {
                           std::wstring l_sNewColor = helpers::s2ws(colorToString(getColorFromColorDialog()));
@@ -1170,7 +1170,7 @@ namespace dustbin {
                           l_pEdit->setText(l_sNewColor.c_str());
 
                           if (m_sColorEdit == "texture_bg_nb") {
-                            irr::gui::IGUIEditBox *l_pFrame = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_nf", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                            irr::gui::IGUIEditBox *l_pFrame = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("texture_nf", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
                             if (l_pFrame != nullptr && l_sOldColor == l_pFrame->getText()) {
                               l_pFrame->setText(l_sNewColor.c_str());
                             }
@@ -1186,7 +1186,7 @@ namespace dustbin {
                       m_sColorEdit = "";
                     }
                     else if (l_sButton == "btn_color_cancel") {
-                      irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                      irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
                       if (l_pColor != nullptr) {
                         l_pColor->setVisible(false);
@@ -1199,10 +1199,10 @@ namespace dustbin {
                       initializeColorDialog(helpers::s2ws(colorToString(c)));
                     }
                     else if (l_sButton == "btn_select_pattern") {
-                      m_pPatternDialog = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("pattern_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                      m_pPatternDialog = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("pattern_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
                       if (m_pPatternDialog != nullptr) {
-                        m_pPatternList = reinterpret_cast<gui::CGuiImageList *>(findElementByNameAndType("PatternList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId, m_pGui->getRootGUIElement()));
+                        m_pPatternList = reinterpret_cast<gui::CGuiImageList *>(helpers::findElementByNameAndType("PatternList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId, m_pGui->getRootGUIElement()));
 
                         if (m_pPatternList != nullptr) {
                           updatePatterns();
@@ -1218,12 +1218,12 @@ namespace dustbin {
                       }
                     }
                     else if (l_sButton == "btn_texture_params") {
-                      irr::gui::IGUIElement *l_pTab = findElementByName("texturegen_android", m_pGui->getRootGUIElement());
+                      irr::gui::IGUIElement *l_pTab = helpers::findElementByName("texturegen_android", m_pGui->getRootGUIElement());
                       if (l_pTab != nullptr)
                         l_pTab->setVisible(true);
                     }
                     else if (l_sButton == "btn_close_texture") {
-                      irr::gui::IGUIElement *l_pTab = findElementByName("texturegen_android", m_pGui->getRootGUIElement());
+                      irr::gui::IGUIElement *l_pTab = helpers::findElementByName("texturegen_android", m_pGui->getRootGUIElement());
                       if (l_pTab != nullptr)
                         l_pTab->setVisible(false);
                     }
@@ -1247,8 +1247,8 @@ namespace dustbin {
                       printf("Button: %s\n", l_sButton.c_str());
 
                       if (l_mButtonLinks.find(l_sButton) != l_mButtonLinks.end()) {
-                        irr::gui::IGUITab     *l_pColor = reinterpret_cast<irr::gui::IGUITab     *>(findElementByNameAndType("color_dialog"           , irr::gui::EGUIET_TAB     , m_pGui->getRootGUIElement()));
-                        irr::gui::IGUIEditBox *l_pEdit  = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(l_mButtonLinks[l_sButton], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                        irr::gui::IGUITab     *l_pColor = reinterpret_cast<irr::gui::IGUITab     *>(helpers::findElementByNameAndType("color_dialog"           , irr::gui::EGUIET_TAB     , m_pGui->getRootGUIElement()));
+                        irr::gui::IGUIEditBox *l_pEdit  = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType(l_mButtonLinks[l_sButton], irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
                         if (l_pColor != nullptr && l_pEdit != nullptr) {
                           m_sColorEdit = l_mButtonLinks[l_sButton];
@@ -1268,10 +1268,10 @@ namespace dustbin {
                   updateGeneratedTexture();
                 }
                 else if (l_sScrollbar == "controller_type") {
-                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
-                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                          , m_pGui->getRootGUIElement()));
-                  gui::CMenuButton    *l_pEdit  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("editGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-                  gui::CMenuButton    *l_pTest  = reinterpret_cast<gui::CMenuButton    *>(findElementByNameAndType("testGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  gui::CSelector      *l_pType  = reinterpret_cast<gui::CSelector      *>(helpers::findElementByNameAndType("controller_type", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId  , m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIImage *l_pImage = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("controller_img" , irr::gui::EGUIET_IMAGE                          , m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pEdit  = reinterpret_cast<gui::CMenuButton    *>(helpers::findElementByNameAndType("editGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                  gui::CMenuButton    *l_pTest  = reinterpret_cast<gui::CMenuButton    *>(helpers::findElementByNameAndType("testGameCtrl"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
                   if (l_pType != nullptr) {
                     if (l_pImage != nullptr) {
@@ -1306,7 +1306,7 @@ namespace dustbin {
                       if (l_pEdit != nullptr) l_pEdit->setVisible(!l_bFound);
                       if (l_pTest != nullptr) l_pTest->setVisible(!l_bFound);
 
-                      gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+                      gui::CDustbinCheckbox *l_pAuto = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("auto_throttle", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
 
                       if (l_pAuto != nullptr) {
                         l_pAuto->setChecked(m_cPlayer.m_bAutoThrottle || l_bFound);
@@ -1329,7 +1329,7 @@ namespace dustbin {
                 }
                 else if (m_eStep == enMenuStep::Texture) {
                   if (m_sColorEdit != "") {
-                    irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_display", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                    irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_display", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
                     if (l_pTab != nullptr)
                       l_pTab->setBackgroundColor(getColorFromColorDialog());
@@ -1345,7 +1345,7 @@ namespace dustbin {
                 std::string s = m_pPatternList->getSelectedData();
 
                 if (s != "") {
-                  irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                  irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("texture_pattern", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
                   if (l_pPattern != nullptr)
                     l_pPattern ->setText(helpers::s2ws(s).c_str());

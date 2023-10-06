@@ -118,12 +118,12 @@ namespace dustbin {
 
           m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
-          m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (m_pConnecting)
             m_pConnecting->setVisible(true);
 
-          m_pMainFrame = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType("main_frame", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pMainFrame = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType("main_frame", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
 
           if (m_pMainFrame != nullptr)
             m_pMainFrame->setVisible(false);
@@ -137,23 +137,23 @@ namespace dustbin {
           m_pClient = a_pState->getGlobal()->getGameClient();
 
           for (int i = 0; i < 16; i++) {
-            gui::CMenuBackground *l_pRoot = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType(("player" + std::to_string(i + 1)).c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+            gui::CMenuBackground *l_pRoot = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType(("player" + std::to_string(i + 1)).c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
             if (l_pRoot != nullptr) {
-              irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_name" , irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
-              irr::gui::IGUIStaticText *l_pNum  = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
-              irr::gui::IGUITab        *l_pTab  = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("player_tab"  , irr::gui::EGUIET_TAB        , l_pRoot));
-              irr::gui::IGUIStaticText *l_pStrt = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
+              irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_name" , irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
+              irr::gui::IGUIStaticText *l_pNum  = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
+              irr::gui::IGUITab        *l_pTab  = reinterpret_cast<irr::gui::IGUITab        *>(helpers::findElementByNameAndType("player_tab"  , irr::gui::EGUIET_TAB        , l_pRoot));
+              irr::gui::IGUIStaticText *l_pStrt = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
 
               if (l_pName != nullptr && l_pNum != nullptr && l_pTab != nullptr && l_pStrt) {
                 l_pNum->setText(std::to_wstring(i + 1).c_str());
                 m_vPlayers.push_back(std::make_tuple(l_pRoot, l_pTab, l_pName, l_pStrt));
                 l_pTab->setVisible(false);
 
-                gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 if (l_pBtn != nullptr)
                   l_pBtn->setVisible(false);
 
-                l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                l_pBtn = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
                 if (l_pBtn != nullptr)
                   l_pBtn->setVisible(false);
               }

@@ -472,6 +472,99 @@ namespace dustbin {
         CGlobal::getInstance()->menuLoaded();
         l_pXml->drop();
       }
-   }
+    }
+
+    /**
+    * Find the first element with a specific ID and type
+    * @param a_iId the id of the requested GUI element
+    * @param a_eType the type of the requested GUI element
+    * @param a_pElement the root element to search from
+    * @return the requested element, "nullptr" if no element was found
+    */
+    irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement) {
+      if (a_pElement == nullptr)
+        return nullptr;
+
+      if (a_pElement->getID() == a_iId && a_pElement->getType() == a_eType)
+        return a_pElement;
+
+      irr::gui::IGUIElement *p = nullptr;
+
+      for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pElement->getChildren().begin(); it != a_pElement->getChildren().end(); it++) {
+        p = findElementByIdAndType(a_iId, a_eType, *it);
+        if (p != nullptr)
+          return p;
+      }
+
+      return p;
+    }
+
+    /**
+    * Find the first element with a specific Name and type
+    * @param a_sName the name of the requested GUI element
+    * @param a_eType the type of the requested GUI element
+    * @param a_pElement the root element to search from
+    * @return the requested element, "nullptr" if no element was found
+    */
+    irr::gui::IGUIElement* findElementByNameAndType(const std::string& a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement* a_pElement) {
+      if (a_pElement == nullptr)
+        return nullptr;
+
+      std::string l_sName = a_pElement->getName();
+      if (l_sName == a_sName && a_pElement->getType() == a_eType)
+        return a_pElement;
+
+      irr::gui::IGUIElement *p = nullptr;
+
+      for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pElement->getChildren().begin(); it != a_pElement->getChildren().end(); it++) {
+        p = findElementByNameAndType(a_sName, a_eType, *it);
+        if (p != nullptr)
+          return p;
+      }
+
+      return p;
+    }
+
+    /**
+    * Find the first element with a specific Name
+    * @param a_sName the name of the requested GUI element
+    * @param a_pElement the root element to search from
+    * @return the requested element, "nullptr" if no element was found
+    */
+    irr::gui::IGUIElement* findElementByName(const std::string& a_sName, irr::gui::IGUIElement* a_pElement) {
+      if (a_pElement == nullptr)
+        return nullptr;
+
+      std::string l_sName = a_pElement->getName();
+      if (l_sName == a_sName)
+        return a_pElement;
+
+      irr::gui::IGUIElement *p = nullptr;
+
+      for (auto l_cChild : a_pElement->getChildren()) {
+        p = findElementByName(a_sName, l_cChild);
+        if (p != nullptr)
+          return p;
+      }
+
+      return p;
+    }
+
+    /**
+    * Find all elements with a specific name and type
+    * @param a_sName name of the requested elements
+    * @param a_eType type of the requested elements
+    * @param a_pElement the root element to search from
+    * @param a_vOutput [out] vector to be filled
+    */
+    void findAllElementsByNameAndType(const std::string& a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement* a_pElement, std::vector<irr::gui::IGUIElement*>& a_vOutput) {
+      if (a_sName == a_pElement->getName() && a_eType == a_eType) {
+        a_vOutput.push_back(a_pElement);
+      }
+
+      for (auto l_cChild : a_pElement->getChildren()) {
+        findAllElementsByNameAndType(a_sName, a_eType, l_cChild, a_vOutput);
+      }
+    }
   }
 }

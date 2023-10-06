@@ -46,7 +46,7 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pStep = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("LabelStep", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_pStep = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("LabelStep", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           m_pQueue = new threads::CInputQueue();
 
@@ -55,7 +55,7 @@ namespace dustbin {
           m_pClient->getOutputQueue()->addListener(m_pQueue);
 
           for (int i = 0; i < 4; i++) {
-            m_pButtons[i] = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("GameServer" + std::to_string(i + 1), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            m_pButtons[i] = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("GameServer" + std::to_string(i + 1), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
           }
         }
 

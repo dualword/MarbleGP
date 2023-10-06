@@ -2,19 +2,8 @@
   <li>
     <b>2023-09-22 [1.1 Build 246]</b>
     <ul>
-      <li>Put some release information here</li>
-    </ul>
-  </li>
-  <li>
-    <b>2023-09-21 [1.1 Build 245]</b>
-    <ul>
-      <li>Put some release information here</li>
-    </ul>
-  </li>
-  <li>
-    <b>2023-09-18 [1.1 Build 244]</b>
-    <ul>
-      <li>Put some release information here</li>
+      <li>First version of the &quot;New Game&quot; wizard for easier game setup</li>
+      <li>First step refactoring the network game mode</li>
     </ul>
   </li>
   <li>

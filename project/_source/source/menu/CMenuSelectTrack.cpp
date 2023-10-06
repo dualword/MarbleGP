@@ -177,11 +177,11 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          m_pTrackList = reinterpret_cast<gui::CGuiTrackSelect *>(findElementByNameAndType("TrackList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_TrackSelectId, m_pGui->getRootGUIElement()));
+          m_pTrackList = reinterpret_cast<gui::CGuiTrackSelect *>(helpers::findElementByNameAndType("TrackList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_TrackSelectId, m_pGui->getRootGUIElement()));
 
-          m_pLeft  = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("btn_left" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-          m_pRight = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("btn_right", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
-          m_pOk    = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+          m_pLeft  = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("btn_left" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+          m_pRight = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("btn_right", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+          m_pOk    = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
           if (m_pOk != nullptr)
             m_pOk->setVisible(false);
@@ -189,7 +189,7 @@ namespace dustbin {
           fillTrackNames();
           updateTrackFilter();
 
-          gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pLaps != nullptr) {
             std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
             l_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
@@ -279,7 +279,7 @@ namespace dustbin {
 
                   int l_iLaps = 2;
 
-                  gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+                  gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
                   if (l_pLaps)
                     l_iLaps = l_pLaps->getSelected() + 1;

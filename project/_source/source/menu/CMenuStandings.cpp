@@ -47,7 +47,7 @@ namespace dustbin {
 
           printf("\n\n%s\n\n", m_pState->getGlobal()->getGlobal("championship").c_str());
 
-          irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("tab_result", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+          irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("tab_result", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
           if (l_pTab != nullptr) {
             irr::core::position2di l_cRowPos = l_pTab->getAbsoluteClippingRect().UpperLeftCorner;
@@ -268,7 +268,7 @@ namespace dustbin {
           }
 
           if (m_pClient != nullptr) {
-            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
             if (p != nullptr)
               p->setVisible(false);
           }

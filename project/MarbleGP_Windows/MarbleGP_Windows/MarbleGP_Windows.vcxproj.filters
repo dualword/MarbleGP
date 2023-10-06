@@ -169,6 +169,12 @@
     <Filter Include="Quelldateien\json">
       <UniqueIdentifier>{549b9aed-d9b7-4d73-b38c-1c1f1676703c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\menu\datahandlers">
+      <UniqueIdentifier>{82870c00-cf95-4e18-9c24-0e047ec409ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\menu\datahandlers">
+      <UniqueIdentifier>{0501a52d-d838-450e-9cca-e1a4132c3d49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -717,6 +723,15 @@
     <ClCompile Include="..\..\_source\source\helpers\CAutoMenu.cpp">
       <Filter>Quelldateien\helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuNewGameWizard.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_SelectPlayers.cpp">
+      <Filter>Quelldateien\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Controls.cpp">
+      <Filter>Quelldateien\menu\datahandlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1180,6 +1195,15 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\helpers\CAutoMenu.h">
       <Filter>Headerdateien\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\IMenuDataHandler.h">
+      <Filter>Headerdateien\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_SelectPlayers.h">
+      <Filter>Headerdateien\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_Controls.h">
+      <Filter>Headerdateien\menu\datahandlers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

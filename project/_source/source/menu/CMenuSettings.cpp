@@ -50,7 +50,7 @@ namespace dustbin {
         void updateSoundSetting(float& a_fSetting, int a_iLabelId, irr::gui::IGUIScrollBar *a_pScrollbar) {
           if (a_pScrollbar != nullptr) {
             a_fSetting = (float)a_pScrollbar->getPos() / 1000.0f; 
-            irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByIdAndType(a_iLabelId, irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByIdAndType(a_iLabelId, irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
             if (l_pLabel != nullptr) {
               wchar_t s[0xFF];
@@ -61,8 +61,8 @@ namespace dustbin {
         }
 
         void updateSoundUI(int a_iScrollbarId, int a_iLabelId, float a_fValue) {
-          irr::gui::IGUIScrollBar  *l_pScroll = reinterpret_cast<irr::gui::IGUIScrollBar  *>(findElementByIdAndType(a_iScrollbarId, irr::gui::EGUIET_SCROLL_BAR , m_pGui->getRootGUIElement()));
-          irr::gui::IGUIStaticText *l_pLabel  = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByIdAndType(a_iLabelId    , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIScrollBar  *l_pScroll = reinterpret_cast<irr::gui::IGUIScrollBar  *>(helpers::findElementByIdAndType(a_iScrollbarId, irr::gui::EGUIET_SCROLL_BAR , m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *l_pLabel  = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByIdAndType(a_iLabelId    , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pScroll != nullptr) {
             l_pScroll->setPos((irr::s32)(1000.0f * a_fValue));
@@ -94,12 +94,12 @@ namespace dustbin {
           if (l_iIndex >= 0 && l_iIndex < 8) {
             irr::gui::EGUI_ELEMENT_TYPE l_eType = (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId;
 
-            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bHighlight  , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
-            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));
-            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
-            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bHighlight  , reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking , reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
 
-            updateCheckboxUI(m_cSettings.m_bGameWizard, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23093, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_bGameWizard, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23093, l_eType, m_pGui->getRootGUIElement())));
 
             m_iSplitIdx = l_iIndex;
           }
@@ -116,16 +116,16 @@ namespace dustbin {
 
           for (int i = 7; i >= l_iIndex; i--) {
             if (m_cSettings.m_aGameGFX[i].m_bHighlight == m_cSettings.m_aGameGFX[l_iIndex].m_bHighlight)
-              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bHighlight, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
+              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bHighlight, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23014, l_eType, m_pGui->getRootGUIElement())));
 
             if (m_cSettings.m_aGameGFX[i].m_bShowControls == m_cSettings.m_aGameGFX[l_iIndex].m_bShowControls)
-              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));
+              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowControls, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23015, l_eType, m_pGui->getRootGUIElement())));
 
             if (m_cSettings.m_aGameGFX[i].m_bShowRanking == m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking)
-              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowRanking, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
+              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowRanking, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
 
             if (m_cSettings.m_aGameGFX[i].m_bShowLapTimes == m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes)
-              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
+              updateCheckboxSettings(m_cSettings.m_aGameGFX[i].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
           }
         }
 
@@ -145,23 +145,23 @@ namespace dustbin {
 
           m_cSettings.copyFrom(m_pState->getGlobal()->getSettingData());
 
-          m_pResolution  = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23010, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
-          m_pSplitScreen = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23042, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          m_pResolution  = reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23010, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          m_pSplitScreen = reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23042, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
-          m_pGfxG = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23050, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pGfxM = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23051, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pSfx  = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23052, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pMisc = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(23053, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pLog  = reinterpret_cast<gui::CMenuBackground *>(findElementByIdAndType(24001, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pGfxG = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23050, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pGfxM = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23051, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pSfx  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23052, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pMisc = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23053, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pLog  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(24001, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
 
-          m_mHeadLines["gfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("headline_gfx" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["sfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("sfx_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["misc"] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("misc_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["log" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("log_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["gfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("headline_gfx" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["sfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("sfx_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["misc"] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("misc_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["log" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("log_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           std::string l_sCtrl = m_cSettings.m_sController;
 
-          m_pController = reinterpret_cast<gui::CControllerUi_Menu *>(findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId, m_pGui->getRootGUIElement()));
+          m_pController = reinterpret_cast<gui::CControllerUi_Menu *>(helpers::findElementByNameAndType("controller_ui", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiMenuId, m_pGui->getRootGUIElement()));
 
           if (m_pController != nullptr) {
             m_pController->setController(l_sCtrl);
@@ -173,13 +173,13 @@ namespace dustbin {
             else
               m_pController->setControlType(gui::CControllerUi::enControl::Off);
 
-            gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
             if (l_pBtn != nullptr) {
               l_pBtn->setVisible(m_pController->getControlType() != gui::CControllerUi::enControl::Off);
             }
 
-            gui::CSelector *l_pOption = reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+            gui::CSelector *l_pOption = reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
             if (l_pOption != nullptr) {
               l_pOption->setSelectedItem(helpers::s2ws(m_cSettings.m_sMenuCtrl));
@@ -212,14 +212,14 @@ namespace dustbin {
               m_pResolution->setSelected(m_pResolution->getItemCount() - 1);
           }
 
-          updateCheckboxUI(m_cSettings.m_bFullscreen , reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23011, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
-          updateCheckboxUI(m_cSettings.m_bVirtualKeys, reinterpret_cast<gui::CDustbinCheckbox *>(findElementByIdAndType(23046, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
+          updateCheckboxUI(m_cSettings.m_bFullscreen , reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23011, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
+          updateCheckboxUI(m_cSettings.m_bVirtualKeys, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23046, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement())));
 
           updateSplitscreenUI();
 
-          updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
-          updateSelectorUI(m_cSettings.m_iAmbient, reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23013, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
-          updateSelectorUI(m_cSettings.m_sMenuCtrl,reinterpret_cast<gui::CSelector *>(findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+          updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+          updateSelectorUI(m_cSettings.m_iAmbient, reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23013, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+          updateSelectorUI(m_cSettings.m_sMenuCtrl,reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
 
           updateSoundUI(23018, 30000, m_cSettings.m_fSfxMaster );
           updateSoundUI(23020, 30001, m_cSettings.m_fSoundTrack);
@@ -228,7 +228,7 @@ namespace dustbin {
 
           updateSplitscreenUI();
 
-          gui::CGuiLogDisplay *l_pLog = reinterpret_cast<gui::CGuiLogDisplay *>(findElementByNameAndType("log_display", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId, m_pGui->getRootGUIElement()));
+          gui::CGuiLogDisplay *l_pLog = reinterpret_cast<gui::CGuiLogDisplay *>(helpers::findElementByNameAndType("log_display", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId, m_pGui->getRootGUIElement()));
 
           if (l_pLog != nullptr) {
             const std::vector<std::tuple<irr::ELOG_LEVEL, std::string>> l_vLog = CGlobal::getInstance()->getLogMessages();
@@ -369,7 +369,7 @@ namespace dustbin {
                 else
                   m_pController->setControlType(gui::CControllerUi::enControl::Off);
 
-                gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("editMenuCtrl", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
 
                 if (l_pBtn != nullptr) {
                   l_pBtn->setVisible(m_pController->getControlType() != gui::CControllerUi::enControl::Off);

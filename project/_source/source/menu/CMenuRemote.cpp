@@ -51,9 +51,9 @@ namespace dustbin {
 
           m_pServer = new webserver::CWebServerBase(4693, m_pQueue);
 
-          irr::gui::IGUIStaticText *l_pInfo = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_server", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *l_pInfo = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_server", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
-          m_pLog = reinterpret_cast<gui::CGuiLogDisplay *>(findElementByNameAndType("log_display", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId, m_pGui->getRootGUIElement()));
+          m_pLog = reinterpret_cast<gui::CGuiLogDisplay *>(helpers::findElementByNameAndType("log_display", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_GuiLogDisplayId, m_pGui->getRootGUIElement()));
 
           m_pServer->startServer();
 

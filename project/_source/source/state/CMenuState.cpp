@@ -122,7 +122,7 @@ namespace dustbin {
             l_bRet = true;
           }
           else if (a_cEvent.UserEvent.UserData1 == c_iEventOkClicked) {
-            irr::gui::IGUIElement *p = menu::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
+            irr::gui::IGUIElement *p = helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
             if (p != nullptr && m_pMenu != nullptr) {
               irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_GUI_EVENT;
@@ -134,7 +134,7 @@ namespace dustbin {
             l_bRet = true;
           }
           else if (a_cEvent.UserEvent.UserData1 == c_iEventCancelClicked) {
-            irr::gui::IGUIElement *p = menu::findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
+            irr::gui::IGUIElement *p = helpers::findElementByNameAndType("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement());
             if (p != nullptr && m_pMenu != nullptr) {
               irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_GUI_EVENT;

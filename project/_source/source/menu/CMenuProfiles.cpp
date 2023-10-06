@@ -197,7 +197,7 @@ namespace dustbin {
               }
 
             if (!l_bClose && m_pConfirmDialog != nullptr) {
-              irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("confirmDialog_text", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("confirmDialog_text", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
               if (p != nullptr)
                 l_sErrors += L"You must add at least one profile before you can start a game.";
 
@@ -269,8 +269,8 @@ namespace dustbin {
 
             irr::gui::IGUIElement *l_pRoot = m_pGui->getRootGUIElement();
 
-            m_pConfirmDialog  = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("confirmDialog"    , irr::gui::EGUIET_TAB                                  , l_pRoot));
-            m_pButtonTab      = reinterpret_cast<irr::gui::IGUITab            *>(findElementByNameAndType("ButtonTab"        , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pConfirmDialog  = reinterpret_cast<irr::gui::IGUITab            *>(helpers::findElementByNameAndType("confirmDialog"    , irr::gui::EGUIET_TAB                                  , l_pRoot));
+            m_pButtonTab      = reinterpret_cast<irr::gui::IGUITab            *>(helpers::findElementByNameAndType("ButtonTab"        , irr::gui::EGUIET_TAB                                  , l_pRoot));
 
             std::string l_sCtrls[] = {
               "controller_ui",
@@ -282,7 +282,7 @@ namespace dustbin {
             };
 
             for (int i = 0; l_sCtrls[i] != ""; i++) {
-              irr::gui::IGUIElement *p = findElementByName(l_sCtrls[i], l_pRoot);
+              irr::gui::IGUIElement *p = helpers::findElementByName(l_sCtrls[i], l_pRoot);
               if (p != nullptr) {
                 m_mCtrlTypes[l_sCtrls[i]] = p;
               }
@@ -300,47 +300,47 @@ namespace dustbin {
             };
 
             for (std::vector<std::string>::iterator it = l_vKeys.begin(); it != l_vKeys.end(); it++) {
-              m_mGeneratedEd[*it] = reinterpret_cast<irr::gui::IGUIEditBox *>(findElementByNameAndType(*it, irr::gui::EGUIET_EDIT_BOX, l_pRoot));
+              m_mGeneratedEd[*it] = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType(*it, irr::gui::EGUIET_EDIT_BOX, l_pRoot));
             }
 
             l_vKeys = { "_red", "_green", "_blue" };
 
             for (std::vector<std::string>::iterator it = l_vKeys.begin(); it != l_vKeys.end(); it++) {
-              irr::gui::IGUIScrollBar  *l_pKey   = reinterpret_cast<irr::gui::IGUIScrollBar  *>(findElementByNameAndType(std::string("scrollbar") + *it, irr::gui::EGUIET_SCROLL_BAR , l_pRoot));
-              irr::gui::IGUIStaticText *l_pValue = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType(std::string("value"    ) + *it, irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
+              irr::gui::IGUIScrollBar  *l_pKey   = reinterpret_cast<irr::gui::IGUIScrollBar  *>(helpers::findElementByNameAndType(std::string("scrollbar") + *it, irr::gui::EGUIET_SCROLL_BAR , l_pRoot));
+              irr::gui::IGUIStaticText *l_pValue = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType(std::string("value"    ) + *it, irr::gui::EGUIET_STATIC_TEXT, l_pRoot));
 
               m_mColorLink[l_pKey] = l_pValue;
             }
 
             // Link the buttons (key) to the edit fields (value)
             m_mButtonLinks = {
-              { "btn_select_fg_nb"     , std::make_tuple("texture_fg_nb"      , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_bg_nb"     , std::make_tuple("texture_bg_nb"      , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_nr"        , std::make_tuple("texture_nr"         , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_nf"        , std::make_tuple("texture_nf"         , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_fg_pt"     , std::make_tuple("texture_fg_pt"      , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_bg_pt"     , std::make_tuple("texture_bg_pt"      , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_name_color", std::make_tuple("imported_name_color", reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
-              { "btn_select_name_back" , std::make_tuple("imported_name_back" , reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) }
+              { "btn_select_fg_nb"     , std::make_tuple("texture_fg_nb"      , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_bg_nb"     , std::make_tuple("texture_bg_nb"      , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_nr"        , std::make_tuple("texture_nr"         , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_nf"        , std::make_tuple("texture_nf"         , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_fg_pt"     , std::make_tuple("texture_fg_pt"      , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_bg_pt"     , std::make_tuple("texture_bg_pt"      , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_name_color", std::make_tuple("imported_name_color", reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) },
+              { "btn_select_name_back" , std::make_tuple("imported_name_back" , reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("color_dialog", irr::gui::EGUIET_TAB, l_pRoot))) }
             };
 
             for (int i = 0; i < 8; i++) {
               std::string s = "root_player" + std::to_string(i + 1);
 
-              m_aProfiles[i].m_pRoot = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType(s, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, l_pRoot));
+              m_aProfiles[i].m_pRoot = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType(s, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, l_pRoot));
 
               if (m_aProfiles[i].m_pRoot != nullptr) {
                 irr::gui::IGUIElement *l_pRoot = m_aProfiles[i].m_pRoot;
 
-                m_aProfiles[i].m_pDataRoot    = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("tab"              , irr::gui::EGUIET_TAB                            , l_pRoot));
-                m_aProfiles[i].m_pName        = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_name"        , irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
-                m_aProfiles[i].m_pShort       = reinterpret_cast<irr::gui::IGUIEditBox    *>(findElementByNameAndType("edit_abbreviation", irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
-                m_aProfiles[i].m_pControl     = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_controls"   , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
-                m_aProfiles[i].m_pTextureType = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_texture"    , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
-                m_aProfiles[i].m_pLblAiHelp   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_aihelp"     , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
-                m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_delete"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pEdit        = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_edit_profile" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
-                m_aProfiles[i].m_pAddProfile  = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("btn_add"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pDataRoot    = reinterpret_cast<irr::gui::IGUITab        *>(helpers::findElementByNameAndType("tab"              , irr::gui::EGUIET_TAB                            , l_pRoot));
+                m_aProfiles[i].m_pName        = reinterpret_cast<irr::gui::IGUIEditBox    *>(helpers::findElementByNameAndType("edit_name"        , irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
+                m_aProfiles[i].m_pShort       = reinterpret_cast<irr::gui::IGUIEditBox    *>(helpers::findElementByNameAndType("edit_abbreviation", irr::gui::EGUIET_EDIT_BOX                       , l_pRoot));
+                m_aProfiles[i].m_pControl     = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_controls"   , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pTextureType = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_texture"    , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pLblAiHelp   = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_aihelp"     , irr::gui::EGUIET_STATIC_TEXT                    , l_pRoot));
+                m_aProfiles[i].m_pDelete      = reinterpret_cast<gui::CMenuButton         *>(helpers::findElementByNameAndType("btn_delete"       , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pEdit        = reinterpret_cast<gui::CMenuButton         *>(helpers::findElementByNameAndType("btn_edit_profile" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+                m_aProfiles[i].m_pAddProfile  = reinterpret_cast<gui::CMenuButton         *>(helpers::findElementByNameAndType("btn_add"          , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
 
                 if (m_aProfiles[i].isValid()) {
                   m_aProfiles[i].m_pDataRoot  ->setVisible(false);

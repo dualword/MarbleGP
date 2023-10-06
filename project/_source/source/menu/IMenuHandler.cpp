@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <menu/datahandlers/IMenuDataHandler.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
@@ -13,82 +14,22 @@
 
 namespace dustbin {
   namespace menu {
-    /**
-    * Find an element by id and type
-    * @param a_iId the ID of the element to find
-    * @param a_eType the type of the element to find
-    * @param a_pElement the element to check (all children will be checked as well)
-    * @return the queried element or "nullptr" if it was not found
-    */
-    irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement) {
-      if (a_pElement == nullptr)
-        return nullptr;
-
-      if (a_pElement->getID() == a_iId && a_pElement->getType() == a_eType)
-        return a_pElement;
-
-      irr::gui::IGUIElement *p = nullptr;
-
-      for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pElement->getChildren().begin(); it != a_pElement->getChildren().end(); it++) {
-        p = findElementByIdAndType(a_iId, a_eType, *it);
-        if (p != nullptr)
-          return p;
-      }
-
-      return p;
-    }
-
-    irr::gui::IGUIElement* findElementByNameAndType(const std::string& a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement* a_pElement) {
-      if (a_pElement == nullptr)
-        return nullptr;
-
-      std::string l_sName = a_pElement->getName();
-      if (l_sName == a_sName && a_pElement->getType() == a_eType)
-        return a_pElement;
-
-      irr::gui::IGUIElement *p = nullptr;
-
-      for (irr::core::list<irr::gui::IGUIElement*>::ConstIterator it = a_pElement->getChildren().begin(); it != a_pElement->getChildren().end(); it++) {
-        p = findElementByNameAndType(a_sName, a_eType, *it);
-        if (p != nullptr)
-          return p;
-      }
-
-      return p;
-    }
-
-    irr::gui::IGUIElement* findElementByName(const std::string& a_sName, irr::gui::IGUIElement* a_pElement) {
-      if (a_pElement == nullptr)
-        return nullptr;
-
-      std::string l_sName = a_pElement->getName();
-      if (l_sName == a_sName)
-        return a_pElement;
-
-      irr::gui::IGUIElement *p = nullptr;
-
-      for (auto l_cChild : a_pElement->getChildren()) {
-        p = findElementByName(a_sName, l_cChild);
-        if (p != nullptr)
-          return p;
-      }
-
-      return p;
-    }
 
     IMenuHandler::IMenuHandler(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) :
-      m_pDevice (a_pDevice),
-      m_pFs     (a_pDevice->getFileSystem    ()),
-      m_pGui    (a_pDevice->getGUIEnvironment()),
-      m_pDrv    (a_pDevice->getVideoDriver   ()),
-      m_pSmgr   (a_pDevice->getSceneManager  ()),
-      m_pManager(a_pManager),
-      m_pState  (a_pState)
+      m_pDevice     (a_pDevice),
+      m_pFs         (a_pDevice->getFileSystem    ()),
+      m_pGui        (a_pDevice->getGUIEnvironment()),
+      m_pDrv        (a_pDevice->getVideoDriver   ()),
+      m_pSmgr       (a_pDevice->getSceneManager  ()),
+      m_pManager    (a_pManager),
+      m_pState      (a_pState),
+      m_pDataHandler(nullptr)
     {
     }
 
     IMenuHandler::~IMenuHandler() {
-
+      if (m_pDataHandler != nullptr)
+        delete m_pDataHandler;
     }
 
     /**
@@ -114,6 +55,10 @@ namespace dustbin {
     */
     bool IMenuHandler::run() {
       return false;
+    }
+
+    bool IMenuHandler::OnEvent(const irr::SEvent& a_cEvent) {
+      return m_pDataHandler != nullptr ? m_pDataHandler->handleIrrlichtEvent(a_cEvent) : false;
     }
 
     /**
@@ -186,6 +131,9 @@ namespace dustbin {
       }
       else if (a_sName == "menu_nextrace") {
         l_pRet = a_pManager->changeMenu(createMenuNextRace(a_pDevice, a_pManager, a_pState));
+      }
+      else if (a_sName == "menu_newgamewizard") {
+        l_pRet = a_pManager->changeMenu(createMenuNewGameWizard(a_pDevice, a_pManager, a_pState));
       }
 
       if (l_pRet == nullptr)

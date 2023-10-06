@@ -38,11 +38,11 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr)
             p->setText(L"MarbleGP Network Lobby");
 
-          p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_message", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_message", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr)
             p->setText(L"Waiting for the server to select a race.");
 
@@ -68,12 +68,12 @@ namespace dustbin {
 
                 printf("Got race information: \"%s\", \"%s\"\n", l_pUpdate->gettrack().c_str(), l_pUpdate->getinfo().c_str());
 
-                irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
                 if (p != nullptr) {
                   p->setText(helpers::s2ws(l_pUpdate->getinfo()).c_str());
                 }
 
-                p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
                 if (p != nullptr) {
                   std::map<std::string, std::string> l_mTrackNames = helpers::getTrackNameMap();
                   std::string l_sTrack = l_pUpdate->gettrack();
@@ -83,7 +83,7 @@ namespace dustbin {
                   p->setText(helpers::s2ws(l_sTrack).c_str());
                 }
 
-                irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
                 if (l_pThumbnail != nullptr) {
                   std::string l_sImg = "data/levels/" + l_pUpdate->gettrack() + "/thumbnail.png";
                   if (m_pFs->existFile(l_sImg.c_str()))

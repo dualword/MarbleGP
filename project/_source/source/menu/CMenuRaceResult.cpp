@@ -50,7 +50,7 @@ namespace dustbin {
           std::string l_sPlayers = CGlobal::getInstance()->getGlobal("raceplayers");
           l_cPlayers.deserialize(l_sPlayers);
 
-          irr::gui::IGUIStaticText *l_pTrack = reinterpret_cast<irr::gui::IGUIStaticText*>(findElementByNameAndType("label_trackname", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *l_pTrack = reinterpret_cast<irr::gui::IGUIStaticText*>(helpers::findElementByNameAndType("label_trackname", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pTrack != nullptr) {
             irr::io::IFileSystem *l_pFs = m_pGui->getFileSystem();
@@ -85,19 +85,19 @@ namespace dustbin {
             l_pTrack->setText(helpers::s2ws(l_sName).c_str());
           }
 
-          irr::gui::IGUIStaticText *l_pLaps = reinterpret_cast<irr::gui::IGUIStaticText*>(findElementByNameAndType("label_laps", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *l_pLaps = reinterpret_cast<irr::gui::IGUIStaticText*>(helpers::findElementByNameAndType("label_laps", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pLaps != nullptr) {
             l_pLaps->setText(std::to_wstring(l_pRace->m_iLaps).c_str());
           }
 
-          irr::gui::IGUIStaticText *l_pPlayers = reinterpret_cast<irr::gui::IGUIStaticText*>(findElementByNameAndType("label_players", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *l_pPlayers = reinterpret_cast<irr::gui::IGUIStaticText*>(helpers::findElementByNameAndType("label_players", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pPlayers != nullptr) {
             l_pPlayers->setText(std::to_wstring(l_pRace->m_iPlayers).c_str());
           }
 
-          irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
           if (l_pThumbnail != nullptr) {
             irr::io::IFileSystem *l_pFs = m_pGui->getFileSystem();
             std::string l_sPath = "data/levels/" + l_pRace->m_sTrack + "/thumbnail.png";
@@ -106,7 +106,7 @@ namespace dustbin {
             }
           }
 
-          irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("tab_result", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+          irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("tab_result", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
           if (l_pTab != nullptr) {
             irr::core::position2di l_cRowPos = l_pTab->getAbsoluteClippingRect().UpperLeftCorner;
@@ -275,7 +275,7 @@ namespace dustbin {
           }
 
           if (m_pClient != nullptr) {
-            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
             if (p != nullptr)
               p->setVisible(false);
           }

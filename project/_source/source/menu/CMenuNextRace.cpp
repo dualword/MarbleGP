@@ -63,7 +63,7 @@ namespace dustbin {
 
           std::map<std::string, std::string> l_mTrackNames = helpers::getTrackNameMap();
 
-          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr && l_cCup.m_vRaces.size() > 0) {
             std::string l_sName = m_sTrack;
 
@@ -73,7 +73,7 @@ namespace dustbin {
             p->setText(helpers::s2ws(l_sName).c_str());
           }
 
-          p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_details", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr) {
             std::wstring s = 
               L"\"" + helpers::s2ws(l_cCup.m_sName) +
@@ -96,7 +96,7 @@ namespace dustbin {
 
           }
 
-          irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
           if (l_pThumbnail != nullptr) {
             std::string l_sImg = "data/levels/" + m_sTrack + "/thumbnail.png";
             if (m_pFs->existFile(l_sImg.c_str()))

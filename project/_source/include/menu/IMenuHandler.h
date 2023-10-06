@@ -3,6 +3,7 @@
 
 #include <irrlicht.h>
 #include <string>
+#include <vector>
 
 namespace dustbin {
   namespace state {
@@ -10,7 +11,8 @@ namespace dustbin {
   }
 
   namespace menu {
-    class IMenuManager;   /**< Forward declaration of the menu manager */
+    class IMenuDataHandler; /**< Forward declaration of the menu handler */
+    class IMenuManager;     /**< Forward declaration of the menu manager */
 
     /**
     * @class IMenuHandler
@@ -29,11 +31,13 @@ namespace dustbin {
 
         state::IState *m_pState;
 
+        IMenuDataHandler *m_pDataHandler;
+
       public:
         IMenuHandler(irr::IrrlichtDevice *a_pDevice, IMenuManager *a_pManager, state::IState *a_pState);
         virtual ~IMenuHandler();
 
-        virtual bool OnEvent(const irr::SEvent &a_cEvent) = 0;
+        virtual bool OnEvent(const irr::SEvent &a_cEvent);
 
         /**
         * This method is called to activate the menu.
@@ -66,9 +70,5 @@ namespace dustbin {
         */
         virtual bool handlesNetworkStateChange();
     };
-
-    irr::gui::IGUIElement* findElementByIdAndType(irr::s32 a_iId, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement);
-    irr::gui::IGUIElement* findElementByNameAndType(const std::string &a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType, irr::gui::IGUIElement *a_pElement);
-    irr::gui::IGUIElement* findElementByName(const std::string& a_sName, irr::gui::IGUIElement* a_pElement);
   }
 }

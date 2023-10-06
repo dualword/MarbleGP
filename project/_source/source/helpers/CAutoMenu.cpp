@@ -1,3 +1,4 @@
+#include <helpers/CMenuLoader.h>
 #include <helpers/CAutoMenu.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CMenuButton.h>
@@ -36,7 +37,7 @@ namespace dustbin {
     void CAutoMenu::process() {
       irr::u32 l_iTime = m_pTimer->getRealTime();
       if (m_bBotsOnly && l_iTime - m_iTime > 5000 && m_pReciever != nullptr) {
-        irr::gui::IGUIButton *l_pBtn = reinterpret_cast<irr::gui::IGUIButton *>(menu::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement()));
+        irr::gui::IGUIButton *l_pBtn = reinterpret_cast<irr::gui::IGUIButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement()));
 
         if (l_pBtn != nullptr) {
           irr::SEvent l_cEvent;

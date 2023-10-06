@@ -45,7 +45,7 @@ namespace dustbin {
               };
 
               for (int i = 0; std::get<0>(l_aData[i]) != ""; i++) {
-                irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType(std::get<0>(l_aData[i]).c_str(), irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType(std::get<0>(l_aData[i]).c_str(), irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
                 if (p != nullptr)
                   p->setText(helpers::s2ws(std::get<1>(l_aData[i])).c_str());
               }
@@ -82,12 +82,12 @@ namespace dustbin {
           else
             s += L" Laps)";
 
-          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("label_raceno", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_raceno", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (p != nullptr)
             p->setText(s.c_str());
 
-          irr::gui::IGUIImage *l_pImg = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIImage *l_pImg = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("Thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
           if (l_pImg != nullptr) {
             std::string l_sImg = "data/levels/" + std::get<0>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent]) + "/thumbnail.png";
             if (m_pFs->existFile(l_sImg.c_str()))
@@ -111,7 +111,7 @@ namespace dustbin {
           m_vCups = helpers::loadCupDefinitions();
 
           m_iSelectedCup = std::atoi(CGlobal::getInstance()->getSetting("selectedcup").c_str());;
-          m_pCups = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("CupSelector", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          m_pCups = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("CupSelector", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
           if (m_pCups != nullptr) {
             for (auto l_cCup : m_vCups) {
@@ -121,7 +121,7 @@ namespace dustbin {
             updateCupData();
           }
 
-          m_pLaps = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          m_pLaps = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
           m_iMode = std::atoi(CGlobal::getInstance()->getSetting("cupmode").c_str());
 
@@ -132,7 +132,7 @@ namespace dustbin {
           }
 
           for (int i = 0; i < 3; i++) {
-            m_aMode[i] = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("cm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+            m_aMode[i] = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("cm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
             if (m_aMode[i] != nullptr)
               m_aMode[i]->setChecked(i == m_iMode);
           }

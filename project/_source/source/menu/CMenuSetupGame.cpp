@@ -153,7 +153,7 @@ namespace dustbin {
         void wizardUpdateUI(bool a_bDifficult, int a_iLevel) {
           if (a_bDifficult) {
             for (int i = 0; i < 6; i++) {
-              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("dl_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("dl_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
               if (p != nullptr)
                 p->setChecked(i == a_iLevel);
             }
@@ -170,7 +170,7 @@ namespace dustbin {
           }
           else {
             for (int i = 0; i < 5; i++) {
-              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("gm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("gm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
               if (p != nullptr)
                 p->setChecked(i == a_iLevel);
             }
@@ -225,9 +225,9 @@ namespace dustbin {
         }
 
         void checkAiElements() {
-          gui::CSelector        *l_pRaceclass = reinterpret_cast<gui::CSelector        *>(findElementByNameAndType("raceclass"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId       , m_pGui->getRootGUIElement()));
-          gui::CSelector        *l_pGridSize  = reinterpret_cast<gui::CSelector        *>(findElementByNameAndType("gridsize"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId       , m_pGui->getRootGUIElement()));
-          gui::CDustbinCheckbox *l_pFillGrid  = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
+          gui::CSelector        *l_pRaceclass = reinterpret_cast<gui::CSelector        *>(helpers::findElementByNameAndType("raceclass"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId       , m_pGui->getRootGUIElement()));
+          gui::CSelector        *l_pGridSize  = reinterpret_cast<gui::CSelector        *>(helpers::findElementByNameAndType("gridsize"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId       , m_pGui->getRootGUIElement()));
+          gui::CDustbinCheckbox *l_pFillGrid  = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
 
           if (l_pGridSize != nullptr) {
             int l_iSize = std::wcstol(l_pGridSize->getSelectedItem().c_str(), nullptr, 10);
@@ -314,48 +314,48 @@ namespace dustbin {
             m_cSettings.deserialize(l_sSettings);
           }
 
-          m_pSelectPlayer = reinterpret_cast<irr::gui::IGUITab *>(findElementByNameAndType("addplayer_dialog", irr::gui::EGUIET_TAB, l_pRoot));
+          m_pSelectPlayer = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("addplayer_dialog", irr::gui::EGUIET_TAB, l_pRoot));
 
           gui::CDustbinCheckbox *l_pCheckbox = nullptr;
           gui::CSelector        *l_pSelector = nullptr;
 
-          l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("raceclass", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
+          l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("raceclass", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) l_pSelector->setSelected((int)m_cSettings.m_eRaceClass); else printf("Ui element \"raceclass\" not found.");
 
-          l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("starting_positions", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
+          l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("starting_positions", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) l_pSelector->setSelected((int)m_cSettings.m_eGridPos); else printf("Ui element \"starting_positions\" not found.");
 
-          l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
+          l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("gridsize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
             l_pSelector->setSelected(m_cSettings.m_iGridSize);
             checkAiElements();
           }
           else printf("Ui element \"gridsize\" not found.");
 
-          l_pSelector = reinterpret_cast<gui::CSelector *>(findElementByNameAndType("race_finish", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
+          l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("race_finish", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pRoot));
           if (l_pSelector != nullptr) {
             l_pSelector->setSelected((int)m_cSettings.m_eAutoFinish); 
           }
           
-          l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("reverse_grid", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
+          l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("reverse_grid", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
           if (l_pCheckbox != nullptr) l_pCheckbox->setChecked(m_cSettings.m_bReverseGrid); else printf("Ui element \"reverse_grid\" not found.");
           
-          l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("randomize_first", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
+          l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("randomize_first", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
           if (l_pCheckbox != nullptr) l_pCheckbox->setChecked(m_cSettings.m_bRandomFirstRace); else printf("Ui element \"randomize_first\" not found.");
           
-          l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
+          l_pCheckbox = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("fillgrid_ai", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pRoot));
           if (l_pCheckbox != nullptr) l_pCheckbox->setChecked(m_cSettings.m_bFillGridAI); else printf("Ui element \"fillgrid_ai\" not found.");
 
           for (int i = 0; i < 8 && m_iMaxIndex == -1; i++) {
             std::string s = "player" + std::to_string(i + 1);
-            gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType(s.c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, l_pRoot));
+            gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType(s.c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, l_pRoot));
 
             if (p != nullptr) {
-              irr::gui::IGUIStaticText *l_pNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p)),
-                                       *l_pName   = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_name" , irr::gui::EGUIET_STATIC_TEXT, p));
+              irr::gui::IGUIStaticText *l_pNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p)),
+                                       *l_pName   = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_name" , irr::gui::EGUIET_STATIC_TEXT, p));
 
-              gui::CMenuButton *l_pDelete = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
-              gui::CMenuButton *l_pAdd    = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
+              gui::CMenuButton *l_pDelete = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
+              gui::CMenuButton *l_pAdd    = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("add_player"   , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
 
               if (l_pNumber != nullptr && l_pName != nullptr && l_pDelete != nullptr && l_pAdd != nullptr) {
                 l_pNumber->setText(std::to_wstring(i + 1).c_str());
@@ -371,11 +371,11 @@ namespace dustbin {
                 m_iMaxIndex = i;
               }
 
-              irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
+              irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
               if (l_pBot != nullptr)
                 l_pBot->setVisible(false);
 
-              irr::gui::IGUIStaticText *l_pStartingNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, p));
+              irr::gui::IGUIStaticText *l_pStartingNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, p));
               if (l_pStartingNumber != nullptr)
                 l_pStartingNumber->setVisible(false);
             }
@@ -390,16 +390,16 @@ namespace dustbin {
 
           for (int i = 0; i < 8; i++) {
             std::string s = "add_pl" + std::to_string(i + 1);
-            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType(s.c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
+            gui::CMenuButton *p = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType(s.c_str(), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, l_pRoot));
             if (p != nullptr) {
               m_vSelectPlayer.push_back(p);
             }
           }
 
-          m_pOk         = reinterpret_cast<gui::CMenuButton         *>(findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_MenuButtonId    , m_pGui->getRootGUIElement()));
+          m_pOk         = reinterpret_cast<gui::CMenuButton         *>(helpers::findElementByNameAndType("ok"               , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_MenuButtonId    , m_pGui->getRootGUIElement()));
 
-          m_pSelectCtrl = reinterpret_cast<irr::gui::IGUITab        *>(findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB        , m_pGui->getRootGUIElement()));
-          m_pSelectName = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_pSelectCtrl = reinterpret_cast<irr::gui::IGUITab        *>(helpers::findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB        , m_pGui->getRootGUIElement()));
+          m_pSelectName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           updateSelectedPlayers();
 
@@ -445,7 +445,7 @@ namespace dustbin {
           };
 
           for (int i = 0; l_sGameSetup[i] != ""; i++) {
-            irr::gui::IGUIElement *p = findElementByName(l_sGameSetup[i], m_pGui->getRootGUIElement());
+            irr::gui::IGUIElement *p = helpers::findElementByName(l_sGameSetup[i], m_pGui->getRootGUIElement());
             if (p != nullptr)
               m_mSetupUI[l_sGameSetup[i]] = p;
             else
@@ -463,7 +463,7 @@ namespace dustbin {
           };
 
           for (int i = 0; l_aWizard[i] != ""; i++) {
-            m_aWizard[i] = findElementByNameAndType(l_aWizard[i], (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement());
+            m_aWizard[i] = helpers::findElementByNameAndType(l_aWizard[i], (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement());
 
             if (m_aWizard[i] != nullptr) {
               m_aWizard[i]->setVisible((!m_bGameWizard && i == 0) || (m_bGameWizard && i == 1));

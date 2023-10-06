@@ -229,18 +229,18 @@ namespace dustbin {
           });
 
           for (int i = 1; i <= 16; i++) {
-            gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(findElementByNameAndType("player" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+            gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType("player" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
             if (p != nullptr) {
               std::wstring l_sBot = L"";
 
-              irr::gui::IGUIStaticText *l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p));
+              irr::gui::IGUIStaticText *l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p));
               if (l_pText != nullptr) {
                 l_pText->setText(std::to_wstring(i).c_str());
                 if (l_cData.size() < i)
                   l_pText->setVisible(false);
               }
 
-              l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("player_name", irr::gui::EGUIET_STATIC_TEXT, p));
+              l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_name", irr::gui::EGUIET_STATIC_TEXT, p));
               if (l_pText != nullptr) {
                 if (l_cData.size() < i)
                   l_pText->setVisible(false);
@@ -257,17 +257,17 @@ namespace dustbin {
                 }
               }
 
-              gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
+              gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("remove_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
               if (l_pBtn != nullptr) {
                 l_pBtn->setVisible(false);
               }
 
-              l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
+              l_pBtn = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("add_player", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, p));
               if (l_pBtn != nullptr) {
                 l_pBtn->setVisible(false);
               }
 
-              irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
+              irr::gui::IGUIImage *l_pBot = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("ai_class", irr::gui::EGUIET_IMAGE, p));
               if (l_pBot != nullptr) {
                 l_pBot->setVisible(l_sBot != L"");
                 if (l_sBot != L"") {
@@ -283,7 +283,7 @@ namespace dustbin {
                 }
               }
 
-              irr::gui::IGUIStaticText *l_pNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, p));
+              irr::gui::IGUIStaticText *l_pNumber = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("starting_number", irr::gui::EGUIET_STATIC_TEXT, p));
 
               if (l_pNumber != nullptr) {
 #ifdef _ANDROID
