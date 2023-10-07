@@ -8,12 +8,14 @@
 #include <gui/CDustbinCheckbox.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
+#include <platform/CPlatform.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CMenuButton.h>
 #include <state/IState.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
 #include <algorithm>
+#include <random>
 #include <vector>
 #include <tuple>
 
@@ -38,18 +40,108 @@ namespace dustbin {
           Profiles,
           EditProfile,
           Controllers,
-          GameLevel
+          GameType,
+          GameLevel,
+          Custom
         };
+
+        /**
+        * The selected game cup.
+        */
+        enum class enGameType {
+          Unknown,
+          FreeRacing,
+          Cup,
+          NetworkFree,
+          NetworkCup,
+          NetworkClient
+        };
+
+        enGameType m_eGameType;
 
         data::SRacePlayers  m_cRacePlayers;     /**< The available race players */
         data::SChampionship m_cChampionship;    /**< The championship that might be started */
+        data::SGameSettings m_cSettings;        /**< The game settings */
 
         std::vector<irr::gui::IGUIElement *> m_vSteps;      /**< The root GUI element for each available step */
         std::vector<data::SPlayerData      > m_vProfiles;   /**< A vector with all player data */
 
-        data::SGameSettings m_cSettings;    /**< The game settings data struct */
+        std::vector<std::string> m_vSelectedPlayers;
 
         enWizardStep m_eStep;   /**< The active wizard step */
+
+        /**
+        * Save the championship to the global data
+        * @param a_bNetClient true if the setup is for a game as network client
+        */
+        void saveChampionship(bool a_bNetClient) {
+          m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
+
+          int l_iGridSize = 1;
+
+          if (m_cSettings.m_bFillGridAI && !a_bNetClient) {
+            if (m_cSettings.m_bFillGridAI) {
+              if (m_cSettings.m_iGridSize == 0)
+                l_iGridSize = 2;
+              else if (m_cSettings.m_iGridSize == 1)
+                l_iGridSize = 4;
+              else if (m_cSettings.m_iGridSize == 2)
+                l_iGridSize = 8;
+              else if (m_cSettings.m_iGridSize == 3)
+                l_iGridSize = 12;
+              else if (m_cSettings.m_iGridSize == 4)
+                l_iGridSize = 16;
+            }
+          }
+
+          // We fill a vector with the grid positions and ..
+          std::vector<int> l_vGrid;
+
+          for (int i = 0; i < (m_cChampionship.m_vPlayers.size() > l_iGridSize ? m_cChampionship.m_vPlayers.size() : l_iGridSize); i++)
+            l_vGrid.push_back(i);
+
+          // .. if necessary shuffle the vector
+          if (m_cSettings.m_bRandomFirstRace) {
+            std::random_device l_cRd { };
+            std::default_random_engine l_cRe { l_cRd() };
+
+            std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
+          }
+          data::SRacePlayers l_cPlayers;
+
+          int l_iNum = 1;
+
+          // Now we iterate all selected players ..
+          for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++) {
+            // .. search for the matching profile ..
+            for (std::vector<data::SPlayerData>::iterator it2 = m_vProfiles.begin(); it2 != m_vProfiles.end(); it2++) {
+              if (*it == (*it2).m_sName) {
+                // .. and create a copy of the player element (will be modified for each game)
+                data::SPlayerData l_cPlayer;
+                l_cPlayer.copyFrom(*it2);
+
+                // The grid position for the player is the first element of the grid vector
+                l_cPlayer.m_iGridPos = *l_vGrid.begin();
+                // Remove the first element that was just assigned
+                l_vGrid.erase(l_vGrid.begin());
+
+                l_cPlayer.m_iViewPort = l_iNum;
+                l_cPlayer.m_iPlayerId = l_iNum++;
+                l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+
+                break;
+              }
+            }
+          }
+
+          data::SFreeGameSlots l_cSlots = data::SFreeGameSlots();
+
+          l_cSlots.m_vSlots = l_vGrid;
+          m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots  .serialize());
+          m_pState->getGlobal()->setGlobal("raceplayers"    , l_cPlayers.serialize());
+
+          platform::saveSettings();
+        }
 
         /**
         * Fill a player element with the provided data
@@ -96,6 +188,19 @@ namespace dustbin {
             }
 
             case enWizardStep::Profiles: {
+              std::vector<std::string> m_vSelectedPlayers = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
+
+              int l_iPlayerId = 1;
+              for (auto l_sName : m_vSelectedPlayers) {
+                for (auto &l_cPlayer: m_vProfiles) {
+                  if (l_cPlayer.m_sName == l_sName) {
+                    printf("Player \"%s\" selected.\n", l_sName.c_str());
+                    l_cPlayer.m_iPlayerId = l_iPlayerId++;
+                    m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(l_cPlayer.m_iPlayerId, l_cPlayer.m_sName));
+                    break;
+                  }
+                }
+              }
               break;
             }
 
@@ -107,8 +212,17 @@ namespace dustbin {
               break;
             }
 
-            case enWizardStep::GameLevel:
+            case enWizardStep::Custom: {
               break;
+            }
+
+            case enWizardStep::GameType: {
+              break;
+            }
+              
+            case enWizardStep::GameLevel: {
+              break;
+            }
           }
 
           m_eStep = a_eStep;
@@ -125,14 +239,14 @@ namespace dustbin {
           switch (m_eStep) {
             case enWizardStep::Profiles: {
               std::string l_sSelected = m_pState->getGlobal()->getSetting("selectedplayers");
-              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, &m_cChampionship, l_sSelected);
+              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, &m_cChampionship, m_vProfiles, l_sSelected);
 
               if (m_vSteps.size() > 0)
                 m_vSteps[0]->setVisible(true);
 
               std::vector<irr::gui::IGUIElement *> l_vRoot;
 
-              std::vector<std::string> l_vSelected = helpers::splitString(l_sSelected, ';');
+              m_vSelectedPlayers = helpers::splitString(l_sSelected, ';');
 
               for (int i = 0; i < c_iMaxProfiles; i++) {
                 irr::gui::IGUIElement *p = helpers::findElementByNameAndType("TabPlayer" + std::to_string(i + 1), irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
@@ -143,12 +257,16 @@ namespace dustbin {
                     
                   if (i < m_vProfiles.size()) {
                     std::string l_sName = messages::urlEncode(m_vProfiles[i].m_sName);
-                    l_bChecked = std::find(l_vSelected.begin(), l_vSelected.end(), l_sName) != l_vSelected.end();
+                    l_bChecked = std::find(m_vSelectedPlayers.begin(), m_vSelectedPlayers.end(), l_sName) != m_vSelectedPlayers.end();
                   }
 
                   fillPlayer(i < m_vProfiles.size() ? &m_vProfiles[i] : nullptr, p, l_bChecked, i == (int)m_vProfiles.size());
                 }
               }
+
+              gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+              if (l_pOk != nullptr)
+                l_pOk->setVisible(true);
 
               break;
             }
@@ -159,7 +277,7 @@ namespace dustbin {
 
               if (l_pHandler->allControllersAssigned()) {
                 printf("No Joystick Assignment necessary.");
-                setWizardStep(enWizardStep::GameLevel);
+                setWizardStep(enWizardStep::GameType);
                 return;
               }
               
@@ -167,6 +285,39 @@ namespace dustbin {
               if (l_pRoot != nullptr) {
                 l_pRoot->setVisible(true);
               }
+
+              break;
+            }
+
+            case enWizardStep::GameType: {
+              if (m_vSteps.size() > 1)
+                m_vSteps[1]->setVisible(true);
+
+              gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+              if (l_pOk != nullptr)
+                l_pOk->setVisible(false);
+
+              break;
+            }
+
+            case enWizardStep::GameLevel: {
+              if (m_vSteps.size() > 2)
+                m_vSteps[2]->setVisible(true);
+
+              gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+              if (l_pOk != nullptr)
+                l_pOk->setVisible(false);
+
+              break;
+            }
+
+            case enWizardStep::Custom: {
+              if (m_vSteps.size() > 3)
+                m_vSteps[3]->setVisible(true);
+
+              gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+              if (l_pOk != nullptr)
+                l_pOk->setVisible(true);
 
               break;
             }
@@ -189,6 +340,7 @@ namespace dustbin {
       public:
         CMenuNewGameWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState),
+          m_eGameType (enGameType  ::Unknown),
           m_eStep     (enWizardStep::Unknown)
         {
           m_pState->getGlobal()->clearGui();
@@ -215,7 +367,7 @@ namespace dustbin {
 
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
 
-          m_cSettings   .deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
+          m_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
 
           printf("%i profiles found.\n", (int)m_vProfiles.size());
 
@@ -237,29 +389,37 @@ namespace dustbin {
                   switch (m_eStep) {
                     case enWizardStep::Profiles: {
                       if (m_pDataHandler != nullptr) {
-                        std::vector<std::string> l_vSelected = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
-
-                        int l_iPlayerId = 0;
-                        for (auto l_sName : l_vSelected) {
-                          for (auto &l_cPlayer: m_vProfiles) {
-                            if (l_cPlayer.m_sName == l_sName) {
-                              printf("Player \"%s\" selected.\n", l_sName.c_str());
-                              l_cPlayer.m_iPlayerId = l_iPlayerId++;
-                              m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(l_cPlayer.m_iPlayerId, l_cPlayer.m_sName));
-                              break;
-                            }
-                          }
-                        }
-
                         setWizardStep(enWizardStep::Controllers);
                       }
+                      break;
                     }
+
+                    default:
+                      break;
                   }
 
                   l_bRet = true;
                 }
                 else if (l_sSender == "cancel") {
-                  createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+                  switch (m_eStep) {
+                    case enWizardStep::Profiles:
+                      createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+                      break;
+
+                    case enWizardStep::GameType:
+                      setWizardStep(enWizardStep::Profiles);
+                      break;
+
+                    case enWizardStep::GameLevel:
+                      setWizardStep(enWizardStep::GameType);
+                      break;
+
+                    case enWizardStep::Custom:
+                      setWizardStep(enWizardStep::GameLevel);
+                      break;
+
+                  }
+                  
                   l_bRet = true;
                 }
                 else if (l_sSender == "PlayerAdd") {
@@ -284,6 +444,132 @@ namespace dustbin {
                   printf("==> %s [%i]\n", l_pParent->getName(), l_iIndex);
                   l_bRet = true;
                 }
+                else if (l_sSender.substr(0, std::string("GameType").length()) == "GameType") {
+                  int l_iType = std::atoi(l_sSender.substr(std::string("GameType").length()).c_str());
+
+                  switch (l_iType) {
+                    case 0:
+                      m_eGameType = enGameType::FreeRacing;
+                      printf("GameType: Free Racing\n");
+                      break;
+
+                    case 1:   // MarbleGP Cup
+                      m_eGameType = enGameType::Cup;
+                      printf("GameType: MarbleGP Cup\n");
+                      break;
+
+                    case 2:   // Network | Free Racing
+                      m_eGameType = enGameType::NetworkFree;
+                      printf("GameType: Network | Free Racing\n");
+                      break;
+
+                    case 3:   // Network | MarbleGP Cup
+                      m_eGameType = enGameType::NetworkCup;
+                      printf("GameType: Network | MarbleGP Cup\n");
+                      break;
+
+                    case 4:   // Network | Join Server
+                      saveChampionship(true);
+                      m_pManager->pushToMenuStack("menu_joinserver"  );
+                      createMenu("menu_searchserver", m_pDevice, m_pManager, m_pState);
+                      m_eGameType = enGameType::NetworkClient;
+                      break;
+                  }
+
+                  if (l_iType >= 0 && l_iType < 4) {
+                    setWizardStep(enWizardStep::GameLevel);
+                  }
+                }
+                else if (l_sSender.substr(0, std::string("AiLevel").size()) == "AiLevel") {
+                  int l_iAiLevel = std::atoi(l_sSender.substr(std::string("AiLevel").length()).c_str());
+                  printf("Ai Level: %i\n", l_iAiLevel);
+
+                  switch (l_iAiLevel) {
+                    case 0:
+                      m_cSettings.m_bFillGridAI = false;
+                      break;
+
+                    case 1:
+                      m_cSettings.m_bFillGridAI      = true;
+                      m_cSettings.m_iGridSize        = 1;
+                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble3_2;
+                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
+                      m_cSettings.m_bRandomFirstRace = false;
+                      m_cSettings.m_bReverseGrid     = false;
+                      break;
+
+                    case 2:
+                      m_cSettings.m_bFillGridAI      = true;
+                      m_cSettings.m_iGridSize        = 2;
+                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble2;
+                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
+                      m_cSettings.m_bRandomFirstRace = false;
+                      m_cSettings.m_bReverseGrid     = false;
+                      break;
+
+                    case 3:
+                      m_cSettings.m_bFillGridAI      = true;
+                      m_cSettings.m_iGridSize        = 4;
+                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::AllClasses;
+                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
+                      m_cSettings.m_bRandomFirstRace = true;
+                      m_cSettings.m_bReverseGrid     = true;
+                      break;
+
+                    case 4:
+                      m_cSettings.m_bFillGridAI      = true;
+                      m_cSettings.m_iGridSize        = 4;
+                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble2_GP;
+                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
+                      m_cSettings.m_bRandomFirstRace = true;
+                      m_cSettings.m_bReverseGrid     = true;
+                      break;
+
+                    case 5:
+                      m_cSettings.m_bFillGridAI      = true;
+                      m_cSettings.m_iGridSize        = 4;
+                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::MarbleGP;
+                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
+                      m_cSettings.m_bRandomFirstRace = true;
+                      m_cSettings.m_bReverseGrid     = true;
+                      break;
+
+                    case 6:
+                      printf("Custom!\n");
+                      break;
+                  }
+
+                  if (l_iAiLevel >= 0 && l_iAiLevel < 6) {
+                    switch (m_eGameType) {
+                      case enGameType::FreeRacing:
+                        m_pManager->pushToMenuStack("menu_selecttrack");
+                        m_pManager->pushToMenuStack("menu_fillgrid");
+                        break;
+
+                      case enGameType::Cup:
+                        m_pManager->pushToMenuStack("menu_selectcup");
+                        m_pManager->pushToMenuStack("menu_fillgrid");
+                        break;
+
+                      case enGameType::NetworkFree:
+                        m_pManager->pushToMenuStack("menu_selecttrack");
+                        m_pManager->pushToMenuStack("menu_fillgrid");
+                        m_pManager->pushToMenuStack("menu_startserver");
+                        break;
+
+                      case enGameType::NetworkCup:
+                        m_pManager->pushToMenuStack("menu_selectcup");
+                        m_pManager->pushToMenuStack("menu_fillgrid");
+                        m_pManager->pushToMenuStack("menu_startserver");
+                        break;
+                    }
+
+                    m_pState->getGlobal()->setSetting("gamesetup", m_cSettings.serialize());
+                    saveChampionship(false);
+                    createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                  }
+                  else if (l_iAiLevel == 6) setWizardStep(enWizardStep::Custom);
+                } 
                 else printf("Button \"%s\" clicked.\n", l_sSender.c_str());
               }
             }
@@ -298,7 +584,7 @@ namespace dustbin {
               CDataHandler_Controls *l_pHandler = reinterpret_cast<CDataHandler_Controls *>(m_pDataHandler);
 
               if (l_pHandler->allControllersAssigned())
-                setWizardStep(enWizardStep::GameLevel);
+                setWizardStep(enWizardStep::GameType);
             }
           }
           return false;

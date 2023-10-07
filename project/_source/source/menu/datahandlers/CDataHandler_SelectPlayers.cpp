@@ -11,12 +11,14 @@
 
 namespace dustbin {
   namespace menu {
-    CDataHandler_SelectPlayers::CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, data::SChampionship *a_pChampionship, const std::string &a_sSelected) :
+    CDataHandler_SelectPlayers::CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, data::SChampionship *a_pChampionship, std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected) :
       IMenuDataHandler(),
       m_pPlayers      (a_pPlayers),
-      m_pChampionship(a_pChampionship),
-      m_sSelected    (a_sSelected)
+      m_pChampionship (a_pChampionship),
+      m_vProfiles     (a_vProfiles),
+      m_sSelected     (a_sSelected)
     {
+      printf("Selected Players: \"%s\"\n", m_sSelected.c_str());
     }
 
     CDataHandler_SelectPlayers::~CDataHandler_SelectPlayers() {
@@ -38,7 +40,6 @@ namespace dustbin {
           if (l_sCaller == "ok") {
             CGlobal::getInstance()->setSetting("selectedplayers", m_sSelected);
           }
-          else printf("Button clicked: \"%s\"\n", l_sCaller.c_str());
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
           if (l_sCaller == "PlayerSelect") {
@@ -49,19 +50,35 @@ namespace dustbin {
 
             for (auto l_pTab : l_vTabs) {
               gui::CDustbinCheckbox *l_pCheck = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("PlayerSelect", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pTab));
-              if (l_pCheck != nullptr && l_pCheck->isChecked()) {
-                irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerName", irr::gui::EGUIET_STATIC_TEXT, l_pTab));
+              if (l_pCheck != nullptr) {
+                if (l_pCheck->isChecked()) {
+                  irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerName", irr::gui::EGUIET_STATIC_TEXT, l_pTab));
 
-                if (l_pName != nullptr) {
-                  if (m_sSelected != "")
-                    m_sSelected += ";";
+                  if (l_pName != nullptr) {
+                    if (m_sSelected != "")
+                      m_sSelected += ";";
 
-                  m_sSelected += messages::urlEncode(helpers::ws2s(l_pName->getText()));
+                    m_sSelected += messages::urlEncode(helpers::ws2s(l_pName->getText()));
+                  }
                 }
               }
             }
 
-            printf("Selected Players: \"%s\"\n", m_sSelected.c_str());
+            gui::CDustbinCheckbox *l_pBox = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller);
+            irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerName", irr::gui::EGUIET_STATIC_TEXT, l_pBox->getParent()));
+
+            if (l_pName != nullptr) {
+              std::string l_sName = helpers::ws2s(l_pName->getText());
+
+              if (l_pBox->isChecked()) {
+                printf("Add player \"%s\" to raceplayers\n", l_sName.c_str());
+              }
+              else {
+                printf("Remove player \"%s\" from list\n", l_sName.c_str());
+              }
+            }
+            else printf("Name field not found.\n");
+
             l_bRet = true;
           }
           else printf("Checkbox changed: \"%s\"\n", l_sCaller.c_str());
