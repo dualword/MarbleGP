@@ -1,0 +1,49 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Name" value="GameWizardEditProfile" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -38, -23, 38, 23">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="23" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="relative: 0, 1, 76, 3" font="huge">
+            <attributes>
+              <attribute key="Name" value="EditProfileHeadline" />
+              <attribute key="Caption" value="Add new Profile" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: 1, 18, 5, 22">
+            <attributes>
+              <attribute key="Name" value="BtnProfileOK" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_ok.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: -4, 18, 0, 22">
+            <attributes>
+              <attribute key="Name" value="BtnProfileCancel" />
+              <attribute key="Id" value="12345" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

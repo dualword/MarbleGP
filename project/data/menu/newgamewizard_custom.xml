@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -40, -25, 40, 25">
+    <attributes>
+      <attribute key="Name" value="gamewizard_step4" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 80, 4" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - New Game - Step 4" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 5, 80, 7" font="big">
+        <attributes>
+          <attribute key="Caption" value="Customize your game in this dialog." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 10, 30, 12">
+        <attributes>
+          <attribute key="Caption" value="Grid Positions:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 31, 10, 46, 12">
+        <attributes>
+          <attribute key="Name" value="CustomGridPos" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="Fixed;Last race;Standings;Random" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 14, 30, 16">
+        <attributes>
+          <attribute key="Caption" value="Reverse Starting Grid:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 31, 14, 33, 16">
+        <attributes>
+          <attribute key="Name" value="CustomReverseGrid" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 18, 30, 20">
+        <attributes>
+          <attribute key="Caption" value="Fill Grid with AI Marbles:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 31, 18, 33, 20">
+        <attributes>
+          <attribute key="Name" value="CustomFillGrid" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 22, 30, 24">
+        <attributes>
+          <attribute key="Caption" value="Grid Size:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 31, 22, 46, 24">
+        <attributes>
+          <attribute key="Name" value="CustomGridSize" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="2;4;8;12;16" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 26, 30, 28">
+        <attributes>
+          <attribute key="Caption" value="AI Class:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 31, 26, 46, 28">
+        <attributes>
+          <attribute key="Name" value="CustomAiClass" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="Marble3;Marble3 + 2;Marble2;Marble2 + GP;MarbleGP;All Classes" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 30, 30, 32">
+        <attributes>
+          <attribute key="Caption" value="Randomize First Race:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 31, 30, 33, 32">
+        <attributes>
+          <attribute key="Name" value="CustomRandomizeFirst" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 10, 34, 30, 36">
+        <attributes>
+          <attribute key="Caption" value="Race Auto Finish:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 31, 34, 56, 36">
+        <attributes>
+          <attribute key="Name" value="CustomAutoFinish" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="All Players finished;Second to Last finished;First Player finished;All Players and AI finished" />
+        </custom>
+      </element>
+      
+    </children>
+  </element>
+</dialog>

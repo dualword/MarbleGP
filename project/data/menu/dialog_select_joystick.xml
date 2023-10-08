@@ -18,7 +18,7 @@
         </attributes>
         
         <children>
-          <element type="staticText" rect="center: -19, -6, 19, -2" font="big">
+          <element type="staticText" rect="center: -19, -6, 20, -2" font="big">
             <attributes>
               <attribute key="Caption" value="Select Controller" />
               <attribute key="HTextAlign" value="center" />
@@ -26,7 +26,7 @@
             </attributes>
           </element>
           
-          <element type="staticText" rect="center: -22, -1, 22, 3">
+          <element type="staticText" rect="center: -22, -1, 23, 3">
             <attributes>
               <attribute key="Caption" value="DummyText" />
               <attribute key="Name" value="selectctrl_player" />

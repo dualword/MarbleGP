@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <include file="data/menu/newgamewizard_profiles.xml" />
+  <include file="data/menu/newgamewizard_gametype.xml" />
+  <include file="data/menu/newgamewizard_level.xml" />
+  <include file="data/menu/newgamewizard_custom.xml" />
+  <include file="data/menu/button_ok.xml" />
+  <include file="data/menu/button_cancel.xml" />
+  <include file="data/menu/dialog_confirm.xml" />
+  <include file="data/menu/dialog_select_joystick.xml" />
+  <include file="data/menu/dialog_gamewizard_editprofile.xml" />
+</dialog>
