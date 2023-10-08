@@ -39,11 +39,15 @@ namespace dustbin {
         enum class enWizardStep {
           Unknown,
           Profiles,
-          EditProfile,
           Controllers,
           GameType,
           GameLevel,
-          Custom
+          Custom,
+          EditProfile_Name,
+          EditProfile_Short,
+          EditProfile_AiHelp,
+          EditProfile_Ctrl,
+          EditProfile_Texture
         };
 
         /**
@@ -215,7 +219,31 @@ namespace dustbin {
         */
         void setWizardStep(enWizardStep a_eStep) {
           switch (m_eStep) {
-            case enWizardStep::EditProfile: {
+            case enWizardStep::EditProfile_Name: {
+              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
+              break;
+            }
+
+            case enWizardStep::EditProfile_Short: {
+              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
+              break;
+            }
+
+            case enWizardStep::EditProfile_AiHelp: {
+              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
+              break;
+            }
+
+            case enWizardStep::EditProfile_Ctrl: {
+              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
+              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
+              break;
+            }
+
+            case enWizardStep::EditProfile_Texture: {
               irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
               if (l_pRoot != nullptr) l_pRoot->setVisible(false);
               break;
@@ -357,7 +385,7 @@ namespace dustbin {
               break;
             }
 
-            case enWizardStep::EditProfile: {
+            case enWizardStep::EditProfile_Texture: {
               if (m_vSteps.size() > 0)
                 m_vSteps[0]->setVisible(true);
 
@@ -464,7 +492,7 @@ namespace dustbin {
                   l_bRet = true;
                 }
                 else if (l_sSender == "PlayerAdd") {
-                  setWizardStep(enWizardStep::EditProfile);
+                  setWizardStep(enWizardStep::EditProfile_Name);
                   l_bRet = true;
                 }
                 else if (l_sSender == "BtnProfileOK") {
