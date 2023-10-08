@@ -10,7 +10,7 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="center: -23, -6, 23, 9">
+      <element type="MenuBackground" rect="center: -30, -8, 30, 12">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="230, 239, 239, 255" />
@@ -18,7 +18,7 @@
         </attributes>
         
         <children>
-          <element type="staticText" rect="center: -19, -6, 20, -2" font="big">
+          <element type="staticText" rect="center: -29, -7, 29, -5" font="big">
             <attributes>
               <attribute key="Caption" value="Select Controller" />
               <attribute key="HTextAlign" value="center" />
@@ -26,7 +26,7 @@
             </attributes>
           </element>
           
-          <element type="staticText" rect="center: -22, -1, 23, 3">
+          <element type="staticText" rect="center: -29, -4, 29, 6">
             <attributes>
               <attribute key="Caption" value="DummyText" />
               <attribute key="Name" value="selectctrl_player" />
@@ -35,7 +35,7 @@
             </attributes>
           </element>
               
-          <element type="MenuButton" rect="center: 0, 4, 4, 8" tooltip="Cancel Gamepad Assignment">
+          <element type="MenuButton" rect="center: 0, 7, 4, 11" tooltip="Cancel Gamepad Assignment">
             <attributes>
               <attribute key="Name" value="CancelAssignJoystick" />
               <attribute key="Id" value="30001" />

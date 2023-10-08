@@ -28,17 +28,21 @@ namespace dustbin {
         }
       }
 
-      updateLabel();
+      updateLabel(false);
     }
 
     CDataHandler_Controls::~CDataHandler_Controls() {
     }
 
-    void CDataHandler_Controls::updateLabel() {
+    void CDataHandler_Controls::updateLabel(bool a_bOther) {
       if (m_vUnassigned.size() > 0) {
         irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("selectctrl_player", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
         if (l_pLabel != nullptr) {
           std::wstring l_sText = L"Player \"" + helpers::s2ws(*m_vUnassigned.begin()) + L"\": Select your gamepad by pressing a button.";
+
+          if (a_bOther)
+            l_sText += L"\nThis controller is already in use, please choose other.";
+
           l_pLabel->setText(l_sText.c_str());
         }
       }
@@ -51,6 +55,8 @@ namespace dustbin {
     * @return true if the event was handled, false otherwise
     */
     bool CDataHandler_Controls::handleIrrlichtEvent(const irr::SEvent& a_cEvent) {
+      bool l_bOther = false;
+
       if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
         if (m_iJoystick == 255) {
           if (m_mBtnStates.find(a_cEvent.JoystickEvent.Joystick) == m_mBtnStates.end()) {
@@ -67,13 +73,19 @@ namespace dustbin {
           if (a_cEvent.JoystickEvent.Joystick == m_iJoystick && a_cEvent.JoystickEvent.ButtonStates != m_iBtnState) {
             for (auto& l_cPlayer : m_vProfiles) {
               if (l_cPlayer.m_sName == *m_vUnassigned.begin()) {
-                controller::CControllerGame l_cCtrl;
-                l_cCtrl.deserialize(l_cPlayer.m_sControls);
-                if (l_cCtrl.usesJoystick()) {
-                  l_cCtrl.setJoystickIndices(m_iJoystick);
+                if (std::find(m_vAssigned.begin(), m_vAssigned.end(), m_iJoystick) == m_vAssigned.end()) {
+                  controller::CControllerGame l_cCtrl;
+                  l_cCtrl.deserialize(l_cPlayer.m_sControls);
+                  if (l_cCtrl.usesJoystick()) {
+                    l_cCtrl.setJoystickIndices(m_iJoystick);
+                  }
+                  l_cPlayer.m_sControls = l_cCtrl.serialize();
+                  m_vUnassigned.erase(m_vUnassigned.begin());
+                  m_vAssigned.push_back(m_iJoystick);
                 }
-                l_cPlayer.m_sControls = l_cCtrl.serialize();
-                m_vUnassigned.erase(m_vUnassigned.begin());
+                else {
+                  l_bOther = true;
+                }
                 break;
               }
             }
@@ -83,7 +95,7 @@ namespace dustbin {
             m_iBtnState = 0;
 
             if (m_vUnassigned.size() > 0)
-              updateLabel();
+              updateLabel(l_bOther);
           }
         }
       }
