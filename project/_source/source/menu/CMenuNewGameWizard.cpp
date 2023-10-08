@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <menu/datahandlers/CDataHandler_SelectPlayers.h>
+#include <menu/datahandlers/CDataHandler_EditProfile.h>
 #include <menu/datahandlers/CDataHandler_Customize.h>
 #include <menu/datahandlers/CDataHandler_Controls.h>
 #include <controller/CControllerGame.h>
@@ -36,6 +37,9 @@ namespace dustbin {
     */
     class CMenuNewGameWizard : public IMenuHandler {
       private:
+        /**
+        * Steps of the "New Game" wizard
+        */
         enum class enWizardStep {
           Unknown,
           Profiles,
@@ -43,15 +47,11 @@ namespace dustbin {
           GameType,
           GameLevel,
           Custom,
-          EditProfile_Name,
-          EditProfile_Short,
-          EditProfile_AiHelp,
-          EditProfile_Ctrl,
-          EditProfile_Texture
+          EditProfile
         };
 
         /**
-        * The selected game cup.
+        * The selected game type
         */
         enum class enGameType {
           Unknown,
@@ -62,7 +62,8 @@ namespace dustbin {
           NetworkClient
         };
 
-        enGameType m_eGameType;
+        enWizardStep      m_eStep;      /**< The active wizard step */
+        enGameType        m_eGameType;  /**< The selected game type */
 
         data::SRacePlayers  m_cRacePlayers;     /**< The available race players */
         data::SChampionship m_cChampionship;    /**< The championship that might be started */
@@ -73,7 +74,6 @@ namespace dustbin {
 
         std::vector<std::string> m_vSelectedPlayers;
 
-        enWizardStep m_eStep;   /**< The active wizard step */
 
         /**
         * Save the championship to the global data
@@ -219,31 +219,7 @@ namespace dustbin {
         */
         void setWizardStep(enWizardStep a_eStep) {
           switch (m_eStep) {
-            case enWizardStep::EditProfile_Name: {
-              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
-              break;
-            }
-
-            case enWizardStep::EditProfile_Short: {
-              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
-              break;
-            }
-
-            case enWizardStep::EditProfile_AiHelp: {
-              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
-              break;
-            }
-
-            case enWizardStep::EditProfile_Ctrl: {
-              irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
-              if (l_pRoot != nullptr) l_pRoot->setVisible(false);
-              break;
-            }
-
-            case enWizardStep::EditProfile_Texture: {
+            case enWizardStep::EditProfile: {
               irr::gui::IGUIElement *l_pRoot = helpers::findElementByNameAndType("GameWizardEditProfile", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement());
               if (l_pRoot != nullptr) l_pRoot->setVisible(false);
               break;
@@ -385,7 +361,7 @@ namespace dustbin {
               break;
             }
 
-            case enWizardStep::EditProfile_Texture: {
+            case enWizardStep::EditProfile: {
               if (m_vSteps.size() > 0)
                 m_vSteps[0]->setVisible(true);
 
@@ -403,8 +379,8 @@ namespace dustbin {
       public:
         CMenuNewGameWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState),
-          m_eGameType (enGameType  ::Unknown),
-          m_eStep     (enWizardStep::Unknown)
+          m_eGameType (enGameType   ::Unknown),
+          m_eStep     (enWizardStep ::Unknown)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -463,6 +439,11 @@ namespace dustbin {
                       break;
                     }
 
+                    case enWizardStep::EditProfile: {
+                      printf("Edit Profile ok.\n");
+                      break;
+                    }
+
                     default:
                       break;
                   }
@@ -486,13 +467,21 @@ namespace dustbin {
                     case enWizardStep::Custom:
                       setWizardStep(enWizardStep::GameLevel);
                       break;
-
                   }
                   
                   l_bRet = true;
                 }
+                else if (l_sSender == "EditProfileOk") {
+                  if (m_eStep == enWizardStep::EditProfile)
+                    setWizardStep(enWizardStep::Profiles);
+                }
+                else if (l_sSender == "EditProfileCancel") {
+                  if (m_eStep == enWizardStep::EditProfile)
+                    setWizardStep(enWizardStep::Profiles);
+                }
                 else if (l_sSender == "PlayerAdd") {
-                  setWizardStep(enWizardStep::EditProfile_Name);
+                  setWizardStep(enWizardStep::EditProfile);
+                  m_pDataHandler = new CDataHandler_EditProfile(m_vProfiles.end(), data::SPlayerData());
                   l_bRet = true;
                 }
                 else if (l_sSender == "BtnProfileOK") {
@@ -561,8 +550,8 @@ namespace dustbin {
                     case 1:
                       m_cSettings.m_bFillGridAI      = true;
                       m_cSettings.m_iGridSize        = 1;
-                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble3_2;
-                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
+                      m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble3;
+                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::Fixed;
                       m_cSettings.m_bRandomFirstRace = false;
                       m_cSettings.m_bReverseGrid     = false;
                       break;

@@ -735,6 +735,9 @@
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Customize.cpp">
       <Filter>Quelldateien\menu\datahandlers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_EditProfile.cpp">
+      <Filter>Quelldateien\menu\datahandlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1209,6 +1212,9 @@
       <Filter>Headerdateien\menu\datahandlers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_Customize.h">
+      <Filter>Headerdateien\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_EditProfile.h">
       <Filter>Headerdateien\menu\datahandlers</Filter>
     </ClInclude>
   </ItemGroup>

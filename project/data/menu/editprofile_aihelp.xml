@@ -1,0 +1,125 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="Name" value="EditProfile_AiHelp" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 5, 76, 7" font="big">
+        <attributes>
+          <attribute key="Caption" value="AI Helps" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 10, 71, 14">
+        <attributes>
+          <attribute key="Caption" value="Select the level of AI help you want to use. This ranges from no help at all (Off) to MarbleGP Bot." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 18, 25, 20">
+        <attributes>
+          <attribute key="Caption" value="AI Help:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="Selector" rect="relative: 26, 18, 56, 20">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelp" />
+        </attributes>
+        <custom>
+          <attribute key="options" value="Off;Display;Low;Medium;High;AI Bot (MarbleGP);AI Bot (Marble2);AI Bot (Marble3)" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo0" /
+          <attribute key="Caption" value="AI Help Off: AI Help is turned off, you are on your own." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo1" /
+          <attribute key="Caption" value="AI Help Display: The AI help shows you what it would do using icons above the speed meter." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo2" /
+          <attribute key="Caption" value="AI Help Low: When approaching a jump the AI takes over throttle control for you. Very helpful if you explore a new track." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo3" /
+          <attribute key="Caption" value="AI Help Medium: Speed control is done by the AI so you don't fall off the track easily, though it's not guaranteed to stay on." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo4" /
+          <attribute key="Caption" value="AI Help High: The AI controls your speed, and when approaching a jump it takes complete control of your marble." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo5" /
+          <attribute key="Caption" value="AI Bot MarbleGP: your marble is completely controlled by the AI on the level of a MarbleGP Bot." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo6" /
+          <attribute key="Caption" value="AI Bot MarbleGP: your marble is completely controlled by the AI on the level of a Marble2 Bot." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 22, 71, 28">
+        <attributes>
+          <attribute key="Name" value="EditProfile_AiHelpInfo7" /
+          <attribute key="Caption" value="AI Bot MarbleGP: your marble is completely controlled by the AI on the level of a Marble3 Bot." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>

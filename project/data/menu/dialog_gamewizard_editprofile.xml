@@ -27,18 +27,19 @@
             </attributes>
           </element>
           
+          <include file="data/menu/editprofile_name.xml" />
+          <include file="data/menu/editprofile_aihelp.xml" />
+          
           <element type="MenuButton" rect="center: 1, 18, 5, 22">
             <attributes>
-              <attribute key="Name" value="BtnProfileOK" />
-              <attribute key="Id" value="12345" />
+              <attribute key="Name" value="EditProfileOk" />
               <attribute key="ImagePath" value="data/images/btn_ok.png" />
             </attributes>
           </element>
           
           <element type="MenuButton" rect="center: -4, 18, 0, 22">
             <attributes>
-              <attribute key="Name" value="BtnProfileCancel" />
-              <attribute key="Id" value="12345" />
+              <attribute key="Name" value="EditProfileCancel" />
               <attribute key="ImagePath" value="data/images/btn_cancel.png" />
             </attributes>
           </element>

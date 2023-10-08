@@ -370,5 +370,30 @@ namespace dustbin {
       l_pGlobal->setGlobal("gamedata", l_cData.serialize());
       l_pGlobal->initNextRaceScreen();
     }
+
+    /**
+    * Read the lines of a text file
+    * @param a_sPath the path of the file to read
+    * @return the lines of the file in a std::vector
+    */
+    std::vector<std::string> readLinesOfFile(const std::string& a_sPath) {
+      std::string l_sDummy = "";
+
+      irr::io::IReadFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile(a_sPath.c_str());
+
+      if (l_pFile != nullptr) {
+        char *l_pBuffer = new char[l_pFile->getSize() + 1];
+        memset(l_pBuffer, 0, l_pFile->getSize() + 1);
+        l_pFile->read(l_pBuffer, l_pFile->getSize());
+
+        l_sDummy = l_pBuffer;
+
+        delete []l_pBuffer;
+        l_pFile->drop();
+      }
+
+      return helpers::splitString(l_sDummy, '\n');
+    }
+
   }
 }

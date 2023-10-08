@@ -68,5 +68,12 @@ namespace dustbin {
     * @param a_iLaps the number of laps
     */
     void prepareNextRace(const std::string &a_sTrack, const std::string &a_sInfo, int a_iLaps);
+
+    /**
+    * Read the lines of a text file
+    * @param a_sPath the path of the file to read
+    * @return the lines of the file in a std::vector
+    */
+    std::vector<std::string> readLinesOfFile(const std::string& a_sPath);
   }
 }
