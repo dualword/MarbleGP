@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <menu/datahandlers/CDataHandler_SelectPlayers.h>
+#include <menu/datahandlers/CDataHandler_Customize.h>
 #include <menu/datahandlers/CDataHandler_Controls.h>
 #include <controller/CControllerGame.h>
 #include <messages/CMessageHelpers.h>
@@ -140,7 +141,40 @@ namespace dustbin {
           m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots  .serialize());
           m_pState->getGlobal()->setGlobal("raceplayers"    , l_cPlayers.serialize());
 
+          m_pState->getGlobal()->setSetting("gamesetup", m_cSettings.serialize());
           platform::saveSettings();
+        }
+
+        /**
+        * Start the game
+        */
+        void startGame() {
+          switch (m_eGameType) {
+          case enGameType::FreeRacing:
+            m_pManager->pushToMenuStack("menu_selecttrack");
+            m_pManager->pushToMenuStack("menu_fillgrid");
+            break;
+
+          case enGameType::Cup:
+            m_pManager->pushToMenuStack("menu_selectcup");
+            m_pManager->pushToMenuStack("menu_fillgrid");
+            break;
+
+          case enGameType::NetworkFree:
+            m_pManager->pushToMenuStack("menu_selecttrack");
+            m_pManager->pushToMenuStack("menu_fillgrid");
+            m_pManager->pushToMenuStack("menu_startserver");
+            break;
+
+          case enGameType::NetworkCup:
+            m_pManager->pushToMenuStack("menu_selectcup");
+            m_pManager->pushToMenuStack("menu_fillgrid");
+            m_pManager->pushToMenuStack("menu_startserver");
+            break;
+          }
+
+          saveChampionship(false);
+          createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
         }
 
         /**
@@ -319,6 +353,7 @@ namespace dustbin {
               if (l_pOk != nullptr)
                 l_pOk->setVisible(true);
 
+              m_pDataHandler = new CDataHandler_Customize(m_cSettings);
               break;
             }
 
@@ -391,6 +426,12 @@ namespace dustbin {
                       if (m_pDataHandler != nullptr) {
                         setWizardStep(enWizardStep::Controllers);
                       }
+                      break;
+                    }
+
+                    case enWizardStep::Custom: {
+                      m_cSettings = reinterpret_cast<CDataHandler_Customize *>(m_pDataHandler)->getSettings();
+                      startGame();
                       break;
                     }
 
@@ -483,7 +524,7 @@ namespace dustbin {
                 else if (l_sSender.substr(0, std::string("AiLevel").size()) == "AiLevel") {
                   int l_iAiLevel = std::atoi(l_sSender.substr(std::string("AiLevel").length()).c_str());
                   printf("Ai Level: %i\n", l_iAiLevel);
-
+                  
                   switch (l_iAiLevel) {
                     case 0:
                       m_cSettings.m_bFillGridAI = false;
@@ -540,33 +581,7 @@ namespace dustbin {
                   }
 
                   if (l_iAiLevel >= 0 && l_iAiLevel < 6) {
-                    switch (m_eGameType) {
-                      case enGameType::FreeRacing:
-                        m_pManager->pushToMenuStack("menu_selecttrack");
-                        m_pManager->pushToMenuStack("menu_fillgrid");
-                        break;
-
-                      case enGameType::Cup:
-                        m_pManager->pushToMenuStack("menu_selectcup");
-                        m_pManager->pushToMenuStack("menu_fillgrid");
-                        break;
-
-                      case enGameType::NetworkFree:
-                        m_pManager->pushToMenuStack("menu_selecttrack");
-                        m_pManager->pushToMenuStack("menu_fillgrid");
-                        m_pManager->pushToMenuStack("menu_startserver");
-                        break;
-
-                      case enGameType::NetworkCup:
-                        m_pManager->pushToMenuStack("menu_selectcup");
-                        m_pManager->pushToMenuStack("menu_fillgrid");
-                        m_pManager->pushToMenuStack("menu_startserver");
-                        break;
-                    }
-
-                    m_pState->getGlobal()->setSetting("gamesetup", m_cSettings.serialize());
-                    saveChampionship(false);
-                    createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
+                    startGame();
                   }
                   else if (l_iAiLevel == 6) setWizardStep(enWizardStep::Custom);
                 } 

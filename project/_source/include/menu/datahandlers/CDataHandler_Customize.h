@@ -19,10 +19,10 @@ namespace dustbin {
     */
     class CDataHandler_Customize : public IMenuDataHandler {
       private:
-        data::SGameSettings *m_pSettings;   /**< The game settings */
+        data::SGameSettings m_cSettings;    /**< The game settings */
 
       public:
-        CDataHandler_Customize(data::SGameSettings *a_pSettings);
+        CDataHandler_Customize(data::SGameSettings a_cSettings);
         virtual ~CDataHandler_Customize();
 
         /**
@@ -32,6 +32,8 @@ namespace dustbin {
         * @return true if the event was handled, false otherwise
         */
         virtual bool handleIrrlichtEvent(const irr::SEvent &a_cEvent) override;
+
+        const data::SGameSettings &getSettings();
     };
   }
 }

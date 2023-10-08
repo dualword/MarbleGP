@@ -186,6 +186,7 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\menu\CMenuStartServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Controls.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Customize.cpp" />
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_SelectPlayers.cpp" />
     <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
@@ -343,6 +344,7 @@
     <ClInclude Include="..\..\_source\include\lua\luawrap.hpp" />
     <ClInclude Include="..\..\_source\include\menu\CMenuFactory.h" />
     <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_Controls.h" />
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_Customize.h" />
     <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_SelectPlayers.h" />
     <ClInclude Include="..\..\_source\include\menu\datahandlers\IMenuDataHandler.h" />
     <ClInclude Include="..\..\_source\include\menu\IMenuHandler.h" />
