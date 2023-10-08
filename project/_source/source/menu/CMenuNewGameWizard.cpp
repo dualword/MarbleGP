@@ -250,7 +250,7 @@ namespace dustbin {
             }
 
             case enWizardStep::Profiles: {
-              std::vector<std::string> m_vSelectedPlayers = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
+              m_vSelectedPlayers = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
 
               int l_iPlayerId = 1;
               for (auto l_sName : m_vSelectedPlayers) {
