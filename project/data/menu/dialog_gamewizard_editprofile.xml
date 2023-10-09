@@ -20,8 +20,17 @@
         <children>
           <element type="staticText" rect="relative: 0, 1, 76, 3" font="huge">
             <attributes>
-              <attribute key="Name" value="EditProfileHeadline" />
+              <attribute key="Name" value="EditProfileNew" />
               <attribute key="Caption" value="Add new Profile" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 0, 1, 76, 3" font="huge">
+            <attributes>
+              <attribute key="Name" value="EditProfileEdit" />
+              <attribute key="Caption" value="Edit Profile" />
               <attribute key="HTextAlign" value="center" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
@@ -29,6 +38,9 @@
           
           <include file="data/menu/editprofile_name.xml" />
           <include file="data/menu/editprofile_aihelp.xml" />
+          <include file="data/menu/editprofile_controls.xml" />
+          <include file="data/menu/editprofile_texture.xml" />
+          <include file="data/menu/editprofile_overview.xml" />
           
           <element type="MenuButton" rect="center: 1, 18, 5, 22">
             <attributes>

@@ -2,19 +2,19 @@
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
 #include <random>
 
 namespace dustbin {
   namespace menu {
-    CDataHandler_EditProfile::CDataHandler_EditProfile(std::vector<data::SPlayerData>::iterator a_itEditProfile, const data::SPlayerData& a_cEditProfile) :
+    CDataHandler_EditProfile::CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData& a_cEditProfile) :
       IMenuDataHandler(),
-      m_itEditProfile(a_itEditProfile),
-      m_cEditProfile (a_cEditProfile),
-      m_pGui         (CGlobal::getInstance()->getGuiEnvironment()),
-      m_eStep        (enEditProfileStep::Unknown),
-      m_pAiHelp      (nullptr)
+      m_cEditProfile  (a_cEditProfile),
+      m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
+      m_eStep         (enEditProfileStep::Unknown),
+      m_iProfileIndex (a_iProfileIndex)
     {
       std::vector<std::string> l_vNames = helpers::readLinesOfFile("data/names.txt");
 
@@ -32,6 +32,14 @@ namespace dustbin {
 
       setEditProfileStep(enEditProfileStep::Name);
       updateAiHelp((int)m_cEditProfile.m_eAiHelp);
+
+      irr::gui::IGUIStaticText *l_pHeadline = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("EditProfileNew", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+      if (l_pHeadline != nullptr)
+        l_pHeadline->setVisible(a_iProfileIndex == -1);
+
+      l_pHeadline = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("EditProfileEdit", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+      if (l_pHeadline != nullptr)
+        l_pHeadline->setVisible(a_iProfileIndex != -1);
     }
 
     CDataHandler_EditProfile::~CDataHandler_EditProfile() {
@@ -82,18 +90,19 @@ namespace dustbin {
     }
 
     /**
+    * Get the index of the edited profile (-1 == new profile)
+    * @return the index of the edited profile
+    */
+    int CDataHandler_EditProfile::getProfileIndex() {
+      return m_iProfileIndex;
+    }
+
+    /**
     * Get the edited profile
     * @return the edited profile
     */
     const data::SPlayerData& CDataHandler_EditProfile::getEditedProfile() {
       return m_cEditProfile;
-    }
-
-    /**
-    * Get the iterator of the profile to see if we are editing or adding a new one
-    */
-    std::vector<data::SPlayerData>::iterator &CDataHandler_EditProfile::getProfileIterator() {
-      return m_itEditProfile;
     }
 
     /**
@@ -132,24 +141,49 @@ namespace dustbin {
     bool CDataHandler_EditProfile::setEditProfileStep(enEditProfileStep a_eStep) {
       irr::gui::IGUIElement *l_pRoot = nullptr;
 
-      for (int i = 0; i < 2; i++) {
-        
+      std::string l_sItems[] = {
+        "EditProfile_Name"   ,
+        "EditProfile_AiHelp" ,
+        "EditProfile_Control",
+        "EditProfile_Texture",
+        "EditProfile_Overview",
+        ""
+      };
 
-        switch (m_eStep) {
-          case enEditProfileStep::Name  : l_pRoot = helpers::findElementByName("EditProfile_Name"  , m_pGui->getRootGUIElement()); break;
-          case enEditProfileStep::AiHelp: l_pRoot = helpers::findElementByName("EditProfile_AiHelp", m_pGui->getRootGUIElement()); break;
-        }
-
-        if (l_pRoot != nullptr)
-          l_pRoot->setVisible(i == 0 ? false : true);
-
-        m_eStep = a_eStep;
+      for (int i = 0; l_sItems[i] != ""; i++) {
+        irr::gui::IGUIElement *p = helpers::findElementByName(l_sItems[i], m_pGui->getRootGUIElement());
+        if (p != nullptr)
+          p->setVisible(false);
       }
+
+      m_eStep = a_eStep;
+
+      switch (m_eStep) {
+        case enEditProfileStep::Name    : l_pRoot = helpers::findElementByName("EditProfile_Name"    , m_pGui->getRootGUIElement()); break;
+        case enEditProfileStep::AiHelp  : l_pRoot = helpers::findElementByName("EditProfile_AiHelp"  , m_pGui->getRootGUIElement()); break;
+        case enEditProfileStep::Ctrls   : l_pRoot = helpers::findElementByName("EditProfile_Control" , m_pGui->getRootGUIElement()); break;
+        case enEditProfileStep::Texture : l_pRoot = helpers::findElementByName("EditProfile_Texture" , m_pGui->getRootGUIElement()); break;
+        case enEditProfileStep::Overview: l_pRoot = helpers::findElementByName("EditProfile_Overview", m_pGui->getRootGUIElement()); break;
+      }
+
+      if (l_pRoot != nullptr)
+        l_pRoot->setVisible(true);
 
       switch (m_eStep) {
         case dustbin::menu::enEditProfileStep::Unknown:
           break;
         case dustbin::menu::enEditProfileStep::Name:
+          if (m_cEditProfile.m_sName != "") {
+            irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+            if (p != nullptr)
+              p->setText(helpers::s2ws(m_cEditProfile.m_sName).c_str());
+          }
+
+          if (m_cEditProfile.m_sShortName != "") {
+            irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+            if (p != nullptr)
+              p->setText(helpers::s2ws(m_cEditProfile.m_sShortName).c_str());
+          }
           break;
         case dustbin::menu::enEditProfileStep::AiHelp: {
           gui::CSelector *m_pAiHelp = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("EditProfile_AiHelp", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
@@ -167,6 +201,16 @@ namespace dustbin {
           break;
       }
 
+      gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("EditProfileOk", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+      if (l_pOk != nullptr)
+        l_pOk->setImage(std::string(m_eStep == enEditProfileStep::Overview ? "data/images/btn_ok.png" : "data/images/arrow_right.png"));
+
+      gui::CMenuButton *l_pCancel = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("EditProfileCancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+      if (l_pCancel != nullptr)
+        l_pCancel->setImage(std::string(m_eStep == enEditProfileStep::Name ? "data/images/btn_cancel.png" : "data/images/arrow_left.png"));
+
       return l_pRoot != nullptr;
     }
 
@@ -178,14 +222,11 @@ namespace dustbin {
       if (a_iAiHelp >= (int)data::SPlayerData::enAiHelp::Off && a_iAiHelp <= (int)data::SPlayerData::enAiHelp::BotMb3) {
         m_cEditProfile.m_eAiHelp = (data::SPlayerData::enAiHelp)a_iAiHelp;
 
-        if (m_pAiHelp != nullptr)
-          m_pAiHelp->setVisible(false);
-
-        irr::gui::IGUIElement *l_pHint = helpers::findElementByName("EditProfile_AiHelpInfo" + std::to_string(a_iAiHelp), m_pGui->getRootGUIElement());
-        if (l_pHint != nullptr)
-          l_pHint->setVisible(true);
-
-        m_pAiHelp = l_pHint;
+        for (int i = 0; i < 8; i++) {
+          irr::gui::IGUIElement *l_pHint = helpers::findElementByName("EditProfile_AiHelpInfo" + std::to_string(i), m_pGui->getRootGUIElement());
+          if (l_pHint != nullptr)
+            l_pHint->setVisible(i == a_iAiHelp);
+        }
       }
     }
   }

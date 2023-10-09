@@ -73,9 +73,6 @@ namespace dustbin {
     }
 
     void CMenuButton::setImage(const std::string& a_sImage) {
-      if (m_pImage != nullptr)
-        m_pImage->drop();
-
       m_pImage = m_pDrv->getTexture(a_sImage.c_str());
     }
 

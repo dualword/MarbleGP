@@ -27,15 +27,13 @@ namespace dustbin {
     */
     class CDataHandler_EditProfile : public IMenuDataHandler {
       private:
-        std::vector<data::SPlayerData                   >::iterator  m_itEditProfile;   /**< Iterator pointing to the edited profile, might be end() if we create a new profile */
-        std::vector<std::tuple<std::string, std::string>>            m_vDefaultNames;   /**< Vector with the default names (0 == first name, 1 == surname) */
-        data::SPlayerData                                            m_cEditProfile;    /**< The edited profile */
-        irr::gui::IGUIEnvironment                                   *m_pGui;            /**< The GUI environment */
+        std::vector<std::tuple<std::string, std::string>>  m_vDefaultNames;   /**< Vector with the default names (0 == first name, 1 == surname) */
+        data::SPlayerData                                  m_cEditProfile;    /**< The edited profile */
+        irr::gui::IGUIEnvironment                         *m_pGui;            /**< The GUI environment */
+        int                                                m_iProfileIndex;   /**< Index of the edited profile (-1 == new profile) */
 
         enEditProfileStep m_eStep;    /**< The current edit step */
         
-        irr::gui::IGUIElement *m_pAiHelp;   /**< The currently visible AI help */
-
         /**
         * Generate a random name and fill the edit field
         */
@@ -48,7 +46,7 @@ namespace dustbin {
         void updateAiHelp(int a_iAiHelp);
 
       public:
-        CDataHandler_EditProfile(std::vector<data::SPlayerData>::iterator a_itEditProfile, const data::SPlayerData &a_cEditProfile);
+        CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData &a_cEditProfile);
         virtual ~CDataHandler_EditProfile();
 
         /**
@@ -66,9 +64,10 @@ namespace dustbin {
         const data::SPlayerData &getEditedProfile();
 
         /**
-        * Get the iterator of the profile to see if we are editing or adding a new one
+        * Get the index of the edited profile (-1 == new profile)
+        * @return the index of the edited profile
         */
-        std::vector<data::SPlayerData>::iterator &getProfileIterator();
+        int getProfileIndex();
 
         /**
         * Set to another step in the dialog

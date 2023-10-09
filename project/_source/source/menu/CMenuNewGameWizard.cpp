@@ -200,17 +200,14 @@ namespace dustbin {
                 l_pCheck->setChecked(true);
             }
           }
-          else {
-            irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("PlayerTab", irr::gui::EGUIET_TAB, a_pRoot));
-            if (l_pTab != nullptr)
-              l_pTab->setVisible(false);
 
-            if (a_bAddNew) {
-              irr::gui::IGUIElement *l_pAdd = helpers::findElementByNameAndType("PlayerAdd", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, a_pRoot);
-              if (l_pAdd != nullptr)
-                l_pAdd->setVisible(true);
-            }
-          }
+          irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("PlayerTab", irr::gui::EGUIET_TAB, a_pRoot));
+          if (l_pTab != nullptr)
+            l_pTab->setVisible(a_pPlayer != nullptr);
+
+          irr::gui::IGUIElement *l_pAdd = helpers::findElementByNameAndType("PlayerAdd", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, a_pRoot);
+          if (l_pAdd != nullptr)
+            l_pAdd->setVisible(a_bAddNew);
         }
 
         /**
@@ -472,8 +469,18 @@ namespace dustbin {
                   l_bRet = true;
                 }
                 else if (l_sSender == "EditProfileOk") {
-                  if (m_eStep == enWizardStep::EditProfile)
+                  if (m_eStep == enWizardStep::EditProfile) {
+                    CDataHandler_EditProfile *l_pHandler = reinterpret_cast<CDataHandler_EditProfile *>(m_pDataHandler);
+
+                    if (l_pHandler->getProfileIndex() == -1) {
+                      m_vProfiles.push_back(data::SPlayerData(l_pHandler->getEditedProfile()));
+                    }
+                    else {
+                      m_vProfiles[l_pHandler->getProfileIndex()] = data::SPlayerData(l_pHandler->getEditedProfile());
+                    }
+
                     setWizardStep(enWizardStep::Profiles);
+                  }
                 }
                 else if (l_sSender == "EditProfileCancel") {
                   if (m_eStep == enWizardStep::EditProfile)
@@ -481,7 +488,7 @@ namespace dustbin {
                 }
                 else if (l_sSender == "PlayerAdd") {
                   setWizardStep(enWizardStep::EditProfile);
-                  m_pDataHandler = new CDataHandler_EditProfile(m_vProfiles.end(), data::SPlayerData());
+                  m_pDataHandler = new CDataHandler_EditProfile(-1, data::SPlayerData());
                   l_bRet = true;
                 }
                 else if (l_sSender == "BtnProfileOK") {
@@ -499,7 +506,8 @@ namespace dustbin {
 
                   std::string l_sName = l_pParent->getName();
                   int l_iIndex = std::atoi(l_sName.substr(l_sName.size() - 1).c_str()) - 1;
-                  printf("==> %s [%i]\n", l_pParent->getName(), l_iIndex);
+                  setWizardStep(enWizardStep::EditProfile);
+                  m_pDataHandler = new CDataHandler_EditProfile(l_iIndex, m_vProfiles[l_iIndex]);
                   l_bRet = true;
                 }
                 else if (l_sSender.substr(0, std::string("GameType").length()) == "GameType") {
