@@ -7,6 +7,10 @@
 #include <tuple>
 
 namespace dustbin {
+  namespace gui {
+    class CControllerUi_Game;   /**< Forward declaration */
+  }
+
   namespace menu {
     /**
     * The steps of the "Add / Edit Profile" wizard
@@ -31,6 +35,8 @@ namespace dustbin {
         data::SPlayerData                                  m_cEditProfile;    /**< The edited profile */
         irr::gui::IGUIEnvironment                         *m_pGui;            /**< The GUI environment */
         int                                                m_iProfileIndex;   /**< Index of the edited profile (-1 == new profile) */
+        gui::CControllerUi_Game                           *m_pCtrl;           /**< The controller UI for joystick and gamepad */
+        bool                                               m_bConfigCtrl;     /**< Is the controller being configurated? */
 
         enEditProfileStep m_eStep;    /**< The current edit step */
         
@@ -75,6 +81,11 @@ namespace dustbin {
         * @return true if the new active UI element was found
         */
         bool setEditProfileStep(enEditProfileStep a_eStep);
+
+        /**
+        * Check for controller if we are in the correct state
+        */
+        virtual void runDataHandler() override;
     };
   }
 }

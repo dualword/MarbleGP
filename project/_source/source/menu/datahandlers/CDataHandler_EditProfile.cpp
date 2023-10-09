@@ -1,4 +1,5 @@
 #include <menu/datahandlers/CDataHandler_EditProfile.h>
+#include <gui/CControllerUi_Game.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
@@ -14,7 +15,8 @@ namespace dustbin {
       m_cEditProfile  (a_cEditProfile),
       m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
       m_eStep         (enEditProfileStep::Unknown),
-      m_iProfileIndex (a_iProfileIndex)
+      m_iProfileIndex (a_iProfileIndex),
+      m_bConfigCtrl   (false)
     {
       std::vector<std::string> l_vNames = helpers::readLinesOfFile("data/names.txt");
 
@@ -40,6 +42,9 @@ namespace dustbin {
       l_pHeadline = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("EditProfileEdit", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
       if (l_pHeadline != nullptr)
         l_pHeadline->setVisible(a_iProfileIndex != -1);
+
+      m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(helpers::findElementByNameAndType("EditProfile_ControlUi", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
+      printf("Ready.");
     }
 
     CDataHandler_EditProfile::~CDataHandler_EditProfile() {
@@ -53,6 +58,23 @@ namespace dustbin {
     */
     bool CDataHandler_EditProfile::handleIrrlichtEvent(const irr::SEvent &a_cEvent) {
       bool l_bRet = false;
+
+      if (m_pCtrl != nullptr) {
+        switch (m_pCtrl->getMode()) {
+          case gui::CControllerUi_Game::enMode::Test:
+          case gui::CControllerUi_Game::enMode::Wizard:
+            if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT)
+              l_bRet = m_pCtrl->OnEvent(a_cEvent);
+
+            if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
+              l_bRet = m_pCtrl->OnJoystickEvent(a_cEvent);
+
+            break;
+
+          default:
+            break;
+        }
+      }
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         std::string l_sCaller = a_cEvent.GUIEvent.Caller->getName();
@@ -78,11 +100,80 @@ namespace dustbin {
               case enEditProfileStep::AiHelp  : l_bRet = setEditProfileStep(enEditProfileStep::Name   ); break;
             }
           }
+          else if (l_sCaller == "EditProfile_TestCtrl") {
+            if (m_pCtrl != nullptr) {
+              if (m_pCtrl->getMode() == gui::CControllerUi::enMode::Display)
+                m_pCtrl->startTest();
+              else
+                m_pCtrl->setMode(gui::CControllerUi::enMode::Display);
+            }
+          }
+          else if (l_sCaller == "EditProfile_ConfigCtrl") {
+            if (m_pCtrl != nullptr) {
+              if (m_pCtrl->getMode() == gui::CControllerUi::enMode::Display) {
+                m_pCtrl->startWizard();
+                m_bConfigCtrl = true;
+              }
+              else m_pCtrl->setMode(gui::CControllerUi::enMode::Display);
+            }
+          }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
           if (l_sCaller == "EditProfile_AiHelp") {
             updateAiHelp(reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller)->getSelected());
           }
+          else if (l_sCaller == "EditProfile_ControlType") {
+            irr::gui::IGUIElement* l_pItems[] = {
+              helpers::findElementByNameAndType("EditProfile_JoyKeyTab"     , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()),
+              helpers::findElementByNameAndType("EditProfile_ControlUiTouch",                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement()),
+              helpers::findElementByNameAndType("EditProfile_ControlUiGyro" ,                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement())
+            };
+
+            int l_iCtrl = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller)->getSelected();
+
+            switch (l_iCtrl) {
+              // Keyboard
+              case 0: {
+                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
+                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
+                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+                m_cEditProfile.m_sControls = helpers::getDefaultGameCtrl_Keyboard();
+                if (m_pCtrl != nullptr)
+                  m_pCtrl->setController(m_cEditProfile.m_sControls);
+                break;
+              }
+
+              // Gamepad
+              case 1: {
+                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
+                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
+                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+                m_cEditProfile.m_sControls = helpers::getDefaultGameCtrl_Gamepad();
+                if (m_pCtrl != nullptr)
+                  m_pCtrl->setController(m_cEditProfile.m_sControls);
+                break;
+              }
+
+              // Touch
+              case 2: {
+                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(false);
+                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(true);
+                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+                m_cEditProfile.m_sControls = "DustbinTouchControl";
+                break;
+              }
+
+              // Gyro
+              case 3: {
+                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(false);
+                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
+                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(true);
+                m_cEditProfile.m_sControls = "DustbinGyroscope";
+                break;
+              }
+            }
+          }
+          else printf("Scrollbar Changed: \"%s\"\n", l_sCaller.c_str());
         }
       }
 
@@ -191,8 +282,13 @@ namespace dustbin {
             m_pAiHelp->setSelected((int)m_cEditProfile.m_eAiHelp);
           break;
         }
-        case dustbin::menu::enEditProfileStep::Ctrls:
+        case dustbin::menu::enEditProfileStep::Ctrls: {
+          if (m_pCtrl != nullptr) {
+            m_pCtrl->setController(m_cEditProfile.m_sControls);
+          }
           break;
+        }
+
         case dustbin::menu::enEditProfileStep::Texture:
           break;
         case dustbin::menu::enEditProfileStep::Overview:
@@ -226,6 +322,19 @@ namespace dustbin {
           irr::gui::IGUIElement *l_pHint = helpers::findElementByName("EditProfile_AiHelpInfo" + std::to_string(i), m_pGui->getRootGUIElement());
           if (l_pHint != nullptr)
             l_pHint->setVisible(i == a_iAiHelp);
+        }
+      }
+    }
+
+    /**
+    * Check for controller if we are in the correct state
+    */
+    void CDataHandler_EditProfile::runDataHandler() {
+      if (m_eStep == enEditProfileStep::Ctrls && m_pCtrl != nullptr) {
+        if (m_bConfigCtrl && m_pCtrl->getMode() != gui::CControllerUi_Game::enMode::Wizard) {
+          printf("Update Profile Controls.\n");
+          m_cEditProfile.m_sControls = m_pCtrl->serialize();
+          m_bConfigCtrl = false;
         }
       }
     }

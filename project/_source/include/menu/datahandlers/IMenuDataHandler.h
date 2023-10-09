@@ -22,6 +22,11 @@ namespace dustbin {
         * @return true if the event was handled, false otherwise
         */
         virtual bool handleIrrlichtEvent(const irr::SEvent &a_cEvent) = 0;
+
+        /**
+        * Gets called every frame, maybe it's necessary to implement something
+        */
+        virtual void runDataHandler() { }
     };
   }
 }

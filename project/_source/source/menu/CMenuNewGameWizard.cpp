@@ -619,6 +619,8 @@ namespace dustbin {
         }
 
         virtual bool run() override {
+          IMenuHandler::run();
+
           if (m_eStep == enWizardStep::Controllers) {
             if (m_pDataHandler != nullptr) {
               CDataHandler_Controls *l_pHandler = reinterpret_cast<CDataHandler_Controls *>(m_pDataHandler);

@@ -10,7 +10,7 @@
     <children>
       <element type="staticText" rect="relative: 0, 5, 76, 7" font="big">
         <attributes>
-          <attribute key="Caption" value="Select your marble controller Marble Controls" />
+          <attribute key="Caption" value="Select and configure your Marble Controller" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
@@ -31,16 +31,63 @@
         
         <custom>
           <attribute key="options" value="Keyboard;Gamepad" />
+          <!-- <attribute key="options" value="Keyboard;Gamepad;Touch Control;Gyroscope" /> -->
         </custom>
       </element>
       
-      <element type="ControllerUiGame" rect="relative: 20, 13, 59, 41" font="small">
+      <element type="tab" rect="relative: 23, 13, 52, 40">
         <attributes>
-          <attribute key="Name" value="EditProfile_ControlUi" />
-          <attribute key="UseOverrideColor" value="true" />
-          <attribute key="OverrideColor" value="128, 232, 232, 232" />
-          <attribute key="headline" value="Game Controller Setup" />
+          <attribute key="Name" value="EditProfile_JoyKeyTab" />
         </attributes>
+        
+        <children>
+          <element type="ControllerUiGame" rect="relative: 0, 0, 30, 27" font="small">
+            <attributes>
+              <attribute key="Name" value="EditProfile_ControlUi" />
+              <attribute key="UseOverrideColor" value="true" />
+              <attribute key="OverrideColor" value="128, 232, 232, 232" />
+              <attribute key="headline" value="Game Controller Setup" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 25, 19, 28, 22" tooltip="Configure Controller">
+            <attributes>
+              <attribute key="Name" value="EditProfile_ConfigCtrl" />
+              <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 25, 23, 28, 26" tooltip="Test Controller">
+            <attributes>
+              <attribute key="Name" value="EditProfile_TestCtrl" />
+              <attribute key="ImagePath" value="data/images/btn_testcontrols.png" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+      
+      <element type="image" rect="relative: 15, 13, 62, 39" font="small">
+        <attributes>
+          <attribute key="Name" value="EditProfile_ControlUiTouch" />
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/ctrl_config_touch.png" />
+        </custom>
+      </element>
+      
+      <element type="image" rect="relative: 15, 13, 62, 39" font="small">
+        <attributes>
+          <attribute key="Name" value="EditProfile_ControlUiGyro" />
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/ctrl_config_gyro.png" />
+        </custom>
       </element>
     </children>
   </element>

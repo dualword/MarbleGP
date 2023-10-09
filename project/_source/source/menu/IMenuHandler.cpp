@@ -54,6 +54,9 @@ namespace dustbin {
     * @return true if drawing was done by the menu, false otherwise
     */
     bool IMenuHandler::run() {
+      if (m_pDataHandler != nullptr)
+        m_pDataHandler->runDataHandler();
+
       return false;
     }
 
