@@ -1,4 +1,5 @@
 #include <menu/datahandlers/CDataHandler_EditProfile.h>
+#include <helpers/CTextureHelpers.h>
 #include <gui/CControllerUi_Game.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
@@ -14,10 +15,26 @@ namespace dustbin {
       IMenuDataHandler(),
       m_cEditProfile  (a_cEditProfile),
       m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
+      m_pFs           (CGlobal::getInstance()->getFileSystem()),
+      m_pDrv          (CGlobal::getInstance()->getVideoDriver()),
       m_eStep         (enEditProfileStep::Unknown),
       m_iProfileIndex (a_iProfileIndex),
-      m_bConfigCtrl   (false)
+      m_bConfigCtrl   (false),
+      m_pPreviewSmgr  (nullptr),
+      m_pMarbleNode   (nullptr),
+      m_pTextureRtt   (nullptr)
     {
+      std::vector<std::string> l_vColors = helpers::readLinesOfFile("data/colors.txt");
+
+      for (std::vector<std::string>::iterator l_itColor = l_vColors.begin(); l_itColor != l_vColors.end(); l_itColor++) {
+        std::vector<std::string> l_vDefault = helpers::splitString(*l_itColor, ',');
+        while (l_vDefault.size() < 4)
+          l_vDefault.push_back("");
+        m_vDefaultColors.push_back(std::make_tuple(l_vDefault[0], l_vDefault[1], l_vDefault[2], l_vDefault[3]));
+      }
+
+      m_vDefaultPatterns = helpers::getTexturePatterns();
+
       std::vector<std::string> l_vNames = helpers::readLinesOfFile("data/names.txt");
 
       for (auto l_sName : l_vNames) {
@@ -32,6 +49,9 @@ namespace dustbin {
       if (m_cEditProfile.m_sName == "")
         generateDefaultName();
 
+      if (m_cEditProfile.m_sTexture == "")
+        m_cEditProfile.m_sTexture = createRandomTexture();
+
       setEditProfileStep(enEditProfileStep::Name);
       updateAiHelp((int)m_cEditProfile.m_eAiHelp);
 
@@ -44,10 +64,31 @@ namespace dustbin {
         l_pHeadline->setVisible(a_iProfileIndex != -1);
 
       m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(helpers::findElementByNameAndType("EditProfile_ControlUi", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
-      printf("Ready.");
+
+      m_pPreviewSmgr = CGlobal::getInstance()->getIrrlichtDevice()->getSceneManager()->createNewSceneManager();
+
+      if (m_pPreviewSmgr != nullptr) {
+        m_pPreviewSmgr->loadScene("data/scenes/texture_scene.xml");
+        irr::scene::ICameraSceneNode *l_pCam = m_pPreviewSmgr->addCameraSceneNode(nullptr, irr::core::vector3df(-2.0f, 2.0f, -5.0f), irr::core::vector3df(0.0f));
+        l_pCam->setAspectRatio(1.0f);
+        m_pTextureRtt = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "texture_rtt");
+
+        if (m_pTextureRtt != nullptr) {
+          irr::gui::IGUIImage *l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("EditProfile_TextureRtt", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          if (l_pTexture != nullptr) {
+            l_pTexture->setImage(m_pTextureRtt);
+          }
+
+          m_pMarbleNode = m_pPreviewSmgr->getSceneNodeFromName("marble");
+        }
+      }
+
+      printf("Ready.\n");
     }
 
     CDataHandler_EditProfile::~CDataHandler_EditProfile() {
+      if (m_pPreviewSmgr != nullptr)
+        m_pPreviewSmgr->drop();
     }
 
     /**
@@ -107,6 +148,8 @@ namespace dustbin {
               else
                 m_pCtrl->setMode(gui::CControllerUi::enMode::Display);
             }
+
+            l_bRet = true;
           }
           else if (l_sCaller == "EditProfile_ConfigCtrl") {
             if (m_pCtrl != nullptr) {
@@ -116,6 +159,20 @@ namespace dustbin {
               }
               else m_pCtrl->setMode(gui::CControllerUi::enMode::Display);
             }
+
+            l_bRet = true;
+          }
+          else if (l_sCaller == "EditProfile_EditParams") {
+            gui::CMenuBackground *l_pWindow = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType("EditProfile_TextureParams", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+            if (l_pWindow != nullptr)
+              l_pWindow->setVisible(!l_pWindow->isVisible());
+
+            l_bRet = true;
+          }
+          else if (l_sCaller == "EditProfile_RandomTexture") {
+            m_cEditProfile.m_sTexture = createRandomTexture();
+            updateMarbleTexture(m_cEditProfile.m_sTexture);
+            l_bRet = true;
           }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
@@ -123,54 +180,33 @@ namespace dustbin {
             updateAiHelp(reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller)->getSelected());
           }
           else if (l_sCaller == "EditProfile_ControlType") {
-            irr::gui::IGUIElement* l_pItems[] = {
-              helpers::findElementByNameAndType("EditProfile_JoyKeyTab"     , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()),
-              helpers::findElementByNameAndType("EditProfile_ControlUiTouch",                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement()),
-              helpers::findElementByNameAndType("EditProfile_ControlUiGyro" ,                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement())
-            };
-
             int l_iCtrl = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller)->getSelected();
+            updateCtrlUi(l_iCtrl);
 
             switch (l_iCtrl) {
               // Keyboard
-              case 0: {
-                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
-                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
-                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+              case 0:
                 m_cEditProfile.m_sControls = helpers::getDefaultGameCtrl_Keyboard();
                 if (m_pCtrl != nullptr)
                   m_pCtrl->setController(m_cEditProfile.m_sControls);
                 break;
-              }
 
               // Gamepad
-              case 1: {
-                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
-                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
-                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+              case 1:
                 m_cEditProfile.m_sControls = helpers::getDefaultGameCtrl_Gamepad();
                 if (m_pCtrl != nullptr)
                   m_pCtrl->setController(m_cEditProfile.m_sControls);
                 break;
-              }
 
               // Touch
-              case 2: {
-                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(false);
-                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(true);
-                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+              case 2:
                 m_cEditProfile.m_sControls = "DustbinTouchControl";
                 break;
-              }
 
               // Gyro
-              case 3: {
-                if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(false);
-                if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
-                if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(true);
+              case 3:
                 m_cEditProfile.m_sControls = "DustbinGyroscope";
                 break;
-              }
             }
           }
           else printf("Scrollbar Changed: \"%s\"\n", l_sCaller.c_str());
@@ -283,16 +319,41 @@ namespace dustbin {
           break;
         }
         case dustbin::menu::enEditProfileStep::Ctrls: {
-          if (m_pCtrl != nullptr) {
+          gui::CSelector *p = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("EditProfile_ControlType", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+          if (m_cEditProfile.m_sControls == "DustbinTouchControl") {
+            updateCtrlUi(2);
+            if (p != nullptr)
+              p->setSelected(2);
+          }
+          else if (m_cEditProfile.m_sControls == "DustbinGyroscope") {
+            updateCtrlUi(3);
+            if (p != nullptr)
+              p->setSelected(3);
+          }
+          else if (m_pCtrl != nullptr) {
             m_pCtrl->setController(m_cEditProfile.m_sControls);
+            if (m_pCtrl->getControlType() == gui::CControllerUi::enControl::Joystick) {
+              updateCtrlUi(1);
+              if (p != nullptr)
+                p->setSelected(1);
+            }
+            else {
+              updateCtrlUi(0);
+              if (p != nullptr)
+                p->setSelected(0);
+            }
           }
           break;
         }
 
         case dustbin::menu::enEditProfileStep::Texture:
+          updateMarbleTexture(m_cEditProfile.m_sTexture);
           break;
+
         case dustbin::menu::enEditProfileStep::Overview:
           break;
+
         default:
           break;
       }
@@ -337,6 +398,144 @@ namespace dustbin {
           m_bConfigCtrl = false;
         }
       }
+      else if (m_eStep == enEditProfileStep::Texture) {
+        if (m_pTextureRtt != nullptr && m_pPreviewSmgr != nullptr) {
+          m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
+          m_pPreviewSmgr->drawAll();
+          m_pDrv->setRenderTarget(nullptr, false, false);
+        }
+      }
+    }
+
+
+    /**
+    * Update the texture of the preview marble in the texture wizard step
+    * @param a_sTexture the texture string of the marble
+    */
+    void CDataHandler_EditProfile::updateMarbleTexture(const std::string &a_sTexture) {
+      if (m_pPreviewSmgr != nullptr && m_pMarbleNode != nullptr) {
+        m_pMarbleNode->getMaterial(0).setTexture(0, helpers::createTexture(a_sTexture != "" ? a_sTexture : "default://number=1", m_pDrv, m_pFs));
+      }
+    }
+
+    /**
+    * Update the controller UI
+    * @param a_iCtrl the controller index (0 == keyboard, 1 == gamepad, 2 == touch, 3 == gyroscope)
+    */
+    void CDataHandler_EditProfile::updateCtrlUi(int a_iCtrl) {
+      gui::CSelector *l_pCtrl = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("EditProfile_ControlType", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+
+      if (l_pCtrl != nullptr) {
+        irr::gui::IGUIElement* l_pItems[] = {
+          helpers::findElementByNameAndType("EditProfile_JoyKeyTab"     , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()),
+          helpers::findElementByNameAndType("EditProfile_ControlUiTouch",                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement()),
+          helpers::findElementByNameAndType("EditProfile_ControlUiGyro" ,                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement())
+        };
+
+        int l_iCtrl = l_pCtrl->getSelected();
+
+        switch (l_iCtrl) {
+          // Keyboard
+          case 0: {
+            if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
+            if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
+            if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+            break;
+          }
+
+          // Gamepad
+          case 1: {
+            if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
+            if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
+            if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+            break;
+          }
+
+          // Touch
+          case 2: {
+            if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(false);
+            if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(true);
+            if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(false);
+            break;
+          }
+
+          // Gyro
+          case 3: {
+            if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(false);
+            if (l_pItems[1] != nullptr) l_pItems[1]->setVisible(false);
+            if (l_pItems[2] != nullptr) l_pItems[2]->setVisible(true);
+            break;
+          }
+        }
+      }
+    }
+
+    /**
+    * Generate a random texture
+    * @return a string with random texture parameters
+    */
+    std::string CDataHandler_EditProfile::createRandomTexture() {
+      std::string l_sRet = "";
+
+      {
+        std::random_device l_cRd { };
+        std::default_random_engine l_cRe { l_cRd() };
+        std::shuffle(m_vDefaultColors.begin(), m_vDefaultColors.end(), l_cRe);
+      }
+
+      std::tuple<std::string, std::string, std::string, std::string> l_tColor = *m_vDefaultColors.begin();
+
+      {
+        std::random_device l_cRd { };
+        std::default_random_engine l_cRe { l_cRd() };
+        std::shuffle(m_vDefaultPatterns.begin(), m_vDefaultPatterns.end(), l_cRe);
+      }
+
+      std::string l_sPattern = *m_vDefaultPatterns.begin();
+
+      std::vector<int> l_vIndex = { 0, 1, 2 };
+
+      std::vector<std::vector<std::string>> l_vElements;
+
+      if (std::get<3>(l_tColor) == "") {
+        l_vElements.push_back({ "numbercolor", "ringcolor" });
+        l_vElements.push_back({ "patterncolor" });
+        l_vElements.push_back({ "numberback", "patternback", "numberborder" });
+      }
+      else {
+        l_vIndex.push_back(3);
+
+        l_vElements.push_back({ "numbercolor" });
+        l_vElements.push_back({ "ringcolor" });
+        l_vElements.push_back({ "patterncolor" });
+        l_vElements.push_back({ "numberback", "patternback", "numberborder" });
+      }
+
+      {
+        std::random_device l_cRd { };
+        std::default_random_engine l_cRe { l_cRd() };
+        std::shuffle(l_vIndex.begin(), l_vIndex.end(), l_cRe);
+      }
+
+      for (std::vector<int>::iterator l_itIndex = l_vIndex.begin(); l_itIndex != l_vIndex.end(); l_itIndex++) {
+        for (std::vector<std::string>::iterator l_itPart = l_vElements[*l_itIndex].begin(); l_itPart != l_vElements[*l_itIndex].end(); l_itPart++) {
+          if (l_sRet == "")
+            l_sRet = "generate://";
+          else
+            l_sRet += "&";
+
+          l_sRet += *l_itPart + "=";
+
+          switch (*l_itIndex) {
+          case 0: l_sRet += std::get<0>(l_tColor); break;
+          case 1: l_sRet += std::get<1>(l_tColor); break;
+          case 2: l_sRet += std::get<2>(l_tColor); break;
+          case 3: l_sRet += std::get<3>(l_tColor); break;
+          }
+        }
+      }
+
+      return l_sRet + "&pattern=" + l_sPattern;
     }
   }
 }

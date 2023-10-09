@@ -168,6 +168,12 @@ namespace dustbin {
         */
         void startTest();
 
+        /**
+        * Get the actual controller
+        * @return the actual controller
+        */
+        controller::CControllerBase *getController();
+
         virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions) const override;
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions) override;
     };

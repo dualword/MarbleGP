@@ -558,5 +558,13 @@ namespace dustbin {
       else
         return "";
     }
+
+    /**
+    * Get the actual controller
+    * @return the actual controller
+    */
+    controller::CControllerBase *CControllerUi::getController() {
+      return m_pController;
+    }
   } // namespace controller 
 } // namespace dustbin

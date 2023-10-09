@@ -15,6 +15,101 @@
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
+      
+      <element type="tab" rect="relative: 2, 9, 32, 39">
+        <attributes>
+          <attribute key="BackColor" value="200, 0, 0, 0" />
+          <attribute key="DrawBackground" value="true" /> 
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 3, 10, 31, 38">
+        <attributes>
+          <attribute key="Name" value="EditProfile_TextureRtt" />
+          <attribute key="ScaleImage" value="true" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/no_image.png" />
+        </custom>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 61, 9, 69, 11" tooltip="Edit Texture Parameters">
+        <attributes>
+          <attribute key="Name" value="EditProfile_EditParams" />
+          <attribute key="Caption" value="..." />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 65, 12, 69, 16" tooltip="Generate Random Texture">
+        <attributes>
+          <attribute key="Name" value="EditProfile_RandomTexture" />
+          <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 33, 9, 60, 31">
+        <attributes>
+          <attribute key="Caption" value="Use this dialog to customize the texture of your marble. You can create a random texture by clicking on the lower of the two buttons on the right, or directly modify the parameters using the upper of the buttons." />
+        </attributes>
+      </element>
+      
+      <element type="MenuBackground" rect="relative: 33, 9, 63, 31">
+        <attributes>
+          <attribute key="Name" value="EditProfile_TextureParams" />
+          <attribute key="Visible" value="false" />
+        </attributes>
+        
+        <children>
+          <element type="MenuButton" rect="relative: 1, 1, 29, 3">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnPattern" />
+              <attribute key="Caption" value="Texture Pattern" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 1, 4, 29, 6">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoFore" />
+              <attribute key="Caption" value="Number Foreground Color" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 1, 7, 29, 9">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoBack" />
+              <attribute key="Caption" value="Number Background Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 10, 29, 12">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoRing" />
+              <attribute key="Caption" value="Number Ring Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 13, 29, 15">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoFrame" />
+              <attribute key="Caption" value="Number Frame Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 16, 29, 18">
+            <attributes>
+              <attribute key="Name" value="EditProfile_PattrnBack" />
+              <attribute key="Caption" value="Pattern Background Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 19, 29, 21">
+            <attributes>
+              <attribute key="Name" value="EditProfile_PattrnFore" />
+              <attribute key="Caption" value="Pattern Foreground Color" />
+            </attributes>
+          </element>          
+        </children>
+      </element>
     </children>
   </element>
 </dialog>
