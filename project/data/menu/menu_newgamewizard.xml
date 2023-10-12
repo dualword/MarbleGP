@@ -10,4 +10,6 @@
   <include file="data/menu/dialog_confirm.xml" />
   <include file="data/menu/dialog_select_joystick.xml" />
   <include file="data/menu/dialog_gamewizard_editprofile.xml" />
+  <include file="data/menu/dialog_color.xml" />
+  <include file="data/menu/dialog_select_pattern.xml" />
 </dialog>

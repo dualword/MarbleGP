@@ -53,61 +53,79 @@
         </attributes>
       </element>
       
-      <element type="MenuBackground" rect="relative: 33, 9, 63, 31">
+      <element type="tab" rect="fillwindow">
         <attributes>
+          <attribute key="DrawBackground" value="true" />
+          <attribute key="BackColor" value="128, 128, 128, 128" />
           <attribute key="Name" value="EditProfile_TextureParams" />
           <attribute key="Visible" value="false" />
         </attributes>
         
         <children>
-          <element type="MenuButton" rect="relative: 1, 1, 29, 3">
+          <element type="MenuBackground" rect="relative: 33, 9, 63, 34">
             <attributes>
-              <attribute key="Name" value="EditProfile_BtnPattern" />
-              <attribute key="Caption" value="Texture Pattern" />
+              <attribute key="UseOverrideColor" value="true" />
+              <attribute key="OverrideColor" value="232, 239, 239, 255" />
             </attributes>
+            
+            <children>
+              <element type="MenuButton" rect="relative: 27, 1, 29, 3" tooltip="Edit Texture Parameters">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_EditParamsClose" />
+                  <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+                </attributes>
+              </element>
+      
+              <element type="MenuButton" rect="relative: 1, 4, 29, 6">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_BtnPattern" />
+                  <attribute key="Caption" value="Texture Pattern" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 7, 29, 9">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_BtnNoFore" />
+                  <attribute key="Caption" value="Number Foreground Color" />
+                </attributes>
+              </element>
+              
+              <element type="MenuButton" rect="relative: 1, 10, 29, 12">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_BtnNoBack" />
+                  <attribute key="Caption" value="Number Background Color" />
+                </attributes>
+              </element>          
+              
+              <element type="MenuButton" rect="relative: 1, 13, 29, 15">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_BtnNoRing" />
+                  <attribute key="Caption" value="Number Ring Color" />
+                </attributes>
+              </element>          
+              
+              <element type="MenuButton" rect="relative: 1, 16, 29, 18">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_BtnNoFrame" />
+                  <attribute key="Caption" value="Number Frame Color" />
+                </attributes>
+              </element>          
+              
+              <element type="MenuButton" rect="relative: 1, 19, 29, 21">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_PattrnFore" />
+                  <attribute key="Caption" value="Pattern Foreground Color" />
+                </attributes>
+              </element>          
+              
+              <element type="MenuButton" rect="relative: 1, 22, 29, 24">
+                <attributes>
+                  <attribute key="Name" value="EditProfile_PattrnBack" />
+                  <attribute key="Caption" value="Pattern Background Color" />
+                </attributes>
+              </element>          
+            </children>
           </element>
-          
-          <element type="MenuButton" rect="relative: 1, 4, 29, 6">
-            <attributes>
-              <attribute key="Name" value="EditProfile_BtnNoFore" />
-              <attribute key="Caption" value="Number Foreground Color" />
-            </attributes>
-          </element>
-          
-          <element type="MenuButton" rect="relative: 1, 7, 29, 9">
-            <attributes>
-              <attribute key="Name" value="EditProfile_BtnNoBack" />
-              <attribute key="Caption" value="Number Background Color" />
-            </attributes>
-          </element>          
-          
-          <element type="MenuButton" rect="relative: 1, 10, 29, 12">
-            <attributes>
-              <attribute key="Name" value="EditProfile_BtnNoRing" />
-              <attribute key="Caption" value="Number Ring Color" />
-            </attributes>
-          </element>          
-          
-          <element type="MenuButton" rect="relative: 1, 13, 29, 15">
-            <attributes>
-              <attribute key="Name" value="EditProfile_BtnNoFrame" />
-              <attribute key="Caption" value="Number Frame Color" />
-            </attributes>
-          </element>          
-          
-          <element type="MenuButton" rect="relative: 1, 16, 29, 18">
-            <attributes>
-              <attribute key="Name" value="EditProfile_PattrnBack" />
-              <attribute key="Caption" value="Pattern Background Color" />
-            </attributes>
-          </element>          
-          
-          <element type="MenuButton" rect="relative: 1, 19, 29, 21">
-            <attributes>
-              <attribute key="Name" value="EditProfile_PattrnFore" />
-              <attribute key="Caption" value="Pattern Foreground Color" />
-            </attributes>
-          </element>          
         </children>
       </element>
     </children>
