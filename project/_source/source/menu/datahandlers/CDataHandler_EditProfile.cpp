@@ -4,9 +4,12 @@
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <gui/CReactiveLabel.h>
+#include <gui/CGuiImageList.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <CGlobal.h>
+#include <Defines.h>
 #include <random>
 
 namespace dustbin {
@@ -14,15 +17,13 @@ namespace dustbin {
     CDataHandler_EditProfile::CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData& a_cEditProfile) :
       IMenuDataHandler(),
       m_cEditProfile  (a_cEditProfile),
-      m_pGui          (CGlobal::getInstance()->getGuiEnvironment()),
-      m_pFs           (CGlobal::getInstance()->getFileSystem()),
-      m_pDrv          (CGlobal::getInstance()->getVideoDriver()),
       m_eStep         (enEditProfileStep::Unknown),
       m_iProfileIndex (a_iProfileIndex),
       m_bConfigCtrl   (false),
       m_pPreviewSmgr  (nullptr),
       m_pMarbleNode   (nullptr),
-      m_pTextureRtt   (nullptr)
+      m_pTextureRtt   (nullptr),
+      m_sEditColor    ("")
     {
       std::vector<std::string> l_vColors = helpers::readLinesOfFile("data/colors.txt");
 
@@ -55,15 +56,10 @@ namespace dustbin {
       setEditProfileStep(enEditProfileStep::Name);
       updateAiHelp((int)m_cEditProfile.m_eAiHelp);
 
-      irr::gui::IGUIStaticText *l_pHeadline = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("EditProfileNew", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-      if (l_pHeadline != nullptr)
-        l_pHeadline->setVisible(a_iProfileIndex == -1);
+      setElementVisibility("EditProfileNew" , a_iProfileIndex == -1);
+      setElementVisibility("EditProfileEdit", a_iProfileIndex != -1);
 
-      l_pHeadline = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("EditProfileEdit", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-      if (l_pHeadline != nullptr)
-        l_pHeadline->setVisible(a_iProfileIndex != -1);
-
-      m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(helpers::findElementByNameAndType("EditProfile_ControlUi", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()));
+      m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElement("EditProfile_ControlUi", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId));
 
       m_pPreviewSmgr = CGlobal::getInstance()->getIrrlichtDevice()->getSceneManager()->createNewSceneManager();
 
@@ -74,7 +70,7 @@ namespace dustbin {
         m_pTextureRtt = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "texture_rtt");
 
         if (m_pTextureRtt != nullptr) {
-          irr::gui::IGUIImage *l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("EditProfile_TextureRtt", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIImage *l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(findElement("EditProfile_TextureRtt", irr::gui::EGUIET_IMAGE));
           if (l_pTexture != nullptr) {
             l_pTexture->setImage(m_pTextureRtt);
           }
@@ -83,6 +79,7 @@ namespace dustbin {
         }
       }
 
+      updatePatterns();
       printf("Ready.\n");
     }
 
@@ -163,16 +160,73 @@ namespace dustbin {
             l_bRet = true;
           }
           else if (l_sCaller == "EditProfile_EditParams") {
-            gui::CMenuBackground *l_pWindow = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType("EditProfile_TextureParams", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-            if (l_pWindow != nullptr)
-              l_pWindow->setVisible(!l_pWindow->isVisible());
-
-            l_bRet = true;
+            l_bRet = setElementVisibility("EditProfile_TextureParams", true);
+          }
+          else if (l_sCaller == "EditProfile_EditParamsClose") {
+            l_bRet = setElementVisibility("EditProfile_TextureParams", false);
           }
           else if (l_sCaller == "EditProfile_RandomTexture") {
             m_cEditProfile.m_sTexture = createRandomTexture();
             updateMarbleTexture(m_cEditProfile.m_sTexture);
             l_bRet = true;
+          }
+          else if (l_sCaller == "EditProfile_BtnPattern") {
+            l_bRet = setElementVisibility("pattern_dialog", true);
+          }
+          else if (l_sCaller == "btn_pattern_close") {
+            l_bRet = setElementVisibility("pattern_dialog", false);
+          }
+          else if (l_sCaller == "btn_color_cancel") {
+            l_bRet = setElementVisibility("color_dialog", false);
+          }
+          else if (l_sCaller == "btn_color_ok") {
+            irr::gui::IGUITab *l_pColor = reinterpret_cast<irr::gui::IGUITab *>(findElement("color_display", irr::gui::EGUIET_TAB));
+            if (l_pColor != nullptr) {
+              irr::video::SColor l_cColor = l_pColor->getBackgroundColor();
+
+              irr::u32 l_iR = std::max(0, std::min(255, (int)l_cColor.getRed  ()));
+              irr::u32 l_iG = std::max(0, std::min(255, (int)l_cColor.getGreen()));
+              irr::u32 l_iB = std::max(0, std::min(255, (int)l_cColor.getBlue ()));
+
+              char s[255];
+              memset(s, 0, 255);
+
+              sprintf(s, "%2X%2X%2X", l_iR, l_iG, l_iB);
+              for (int i = 0; i < 255 && s[i] != '\0'; i++)
+                if (s[i] == ' ') s[i] = '0';
+
+              modifyTextureParameter(m_sEditColor, s);
+              setElementVisibility("color_dialog", false);
+              l_bRet = true;
+            }
+          }
+          else if (l_sCaller == "pick_color") {
+            gui::CReactiveLabel *p = reinterpret_cast<gui::CReactiveLabel *>(a_cEvent.GUIEvent.Caller);
+            if (p != nullptr) {
+              initializeColorDialog(helpers::ws2s(p->getText()));
+              l_bRet = true;
+            }
+          }
+          else {
+            std::map<std::string, std::string> l_mBtnColor = {
+              { "EditProfile_BtnNoFore" , "numbercolor"  },
+              { "EditProfile_BtnNoBack" , "numberback"   },
+              { "EditProfile_BtnNoRing" , "ringcolor"    },
+              { "EditProfile_BtnNoFrame", "numberborder" },
+              { "EditProfile_PattrnBack", "patternback"  },
+              { "EditProfile_PattrnFore", "patterncolor" }
+            };
+
+            if (l_mBtnColor.find(l_sCaller) != l_mBtnColor.end()) {
+              std::string l_sType;
+              std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, m_cEditProfile.m_sTexture);
+
+              if (l_mParams.find(l_mBtnColor[l_sCaller]) != l_mParams.end()) {
+                m_sEditColor = l_mBtnColor[l_sCaller];
+                initializeColorDialog(l_mParams[l_mBtnColor[l_sCaller]]);
+                l_bRet = setElementVisibility("color_dialog", true);
+              }
+            }
           }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
@@ -209,7 +263,22 @@ namespace dustbin {
                 break;
             }
           }
+          else if (l_sCaller == "scrollbar_red" || l_sCaller == "scrollbar_green" || l_sCaller == "scrollbar_blue") {
+            updateColorDialog();
+          }
           else printf("Scrollbar Changed: \"%s\"\n", l_sCaller.c_str());
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iEventImageSelected && a_cEvent.UserEvent.UserData2 == c_iEventImageSelected) {
+          gui::CGuiImageList *l_pList = reinterpret_cast<gui::CGuiImageList *>(findElement("PatternList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId));
+          if (l_pList != nullptr) {
+            modifyTextureParameter("pattern", l_pList->getSelectedData());
+
+            irr::gui::IGUIElement *l_pRoot = findElement("pattern_dialog");
+            if (l_pRoot != nullptr)
+              l_pRoot->setVisible(false);
+          }
         }
       }
 
@@ -245,13 +314,13 @@ namespace dustbin {
         m_cEditProfile.m_sName      = l_sName;
         m_cEditProfile.m_sShortName = l_sFirstName.substr(0, 2) + l_sSurName.substr(0, 3);
 
-        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX));
 
         if (l_pEdit != nullptr) {
           l_pEdit->setText(helpers::s2ws(m_cEditProfile.m_sName).c_str());
         }
 
-        l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+        l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX));
 
         if (l_pEdit != nullptr) {
           l_pEdit->setText(helpers::s2ws(m_cEditProfile.m_sShortName).c_str());
@@ -278,7 +347,7 @@ namespace dustbin {
       };
 
       for (int i = 0; l_sItems[i] != ""; i++) {
-        irr::gui::IGUIElement *p = helpers::findElementByName(l_sItems[i], m_pGui->getRootGUIElement());
+        irr::gui::IGUIElement *p = findElement(l_sItems[i]);
         if (p != nullptr)
           p->setVisible(false);
       }
@@ -286,11 +355,11 @@ namespace dustbin {
       m_eStep = a_eStep;
 
       switch (m_eStep) {
-        case enEditProfileStep::Name    : l_pRoot = helpers::findElementByName("EditProfile_Name"    , m_pGui->getRootGUIElement()); break;
-        case enEditProfileStep::AiHelp  : l_pRoot = helpers::findElementByName("EditProfile_AiHelp"  , m_pGui->getRootGUIElement()); break;
-        case enEditProfileStep::Ctrls   : l_pRoot = helpers::findElementByName("EditProfile_Control" , m_pGui->getRootGUIElement()); break;
-        case enEditProfileStep::Texture : l_pRoot = helpers::findElementByName("EditProfile_Texture" , m_pGui->getRootGUIElement()); break;
-        case enEditProfileStep::Overview: l_pRoot = helpers::findElementByName("EditProfile_Overview", m_pGui->getRootGUIElement()); break;
+        case enEditProfileStep::Name    : l_pRoot = findElement("EditProfile_Name"    ); break;
+        case enEditProfileStep::AiHelp  : l_pRoot = findElement("EditProfile_AiHelp"  ); break;
+        case enEditProfileStep::Ctrls   : l_pRoot = findElement("EditProfile_Control" ); break;
+        case enEditProfileStep::Texture : l_pRoot = findElement("EditProfile_Texture" ); break;
+        case enEditProfileStep::Overview: l_pRoot = findElement("EditProfile_Overview"); break;
       }
 
       if (l_pRoot != nullptr)
@@ -301,25 +370,25 @@ namespace dustbin {
           break;
         case dustbin::menu::enEditProfileStep::Name:
           if (m_cEditProfile.m_sName != "") {
-            irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX));
             if (p != nullptr)
               p->setText(helpers::s2ws(m_cEditProfile.m_sName).c_str());
           }
 
           if (m_cEditProfile.m_sShortName != "") {
-            irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+            irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX));
             if (p != nullptr)
               p->setText(helpers::s2ws(m_cEditProfile.m_sShortName).c_str());
           }
           break;
         case dustbin::menu::enEditProfileStep::AiHelp: {
-          gui::CSelector *m_pAiHelp = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("EditProfile_AiHelp", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          gui::CSelector *m_pAiHelp = reinterpret_cast<gui::CSelector *>(findElement("EditProfile_AiHelp", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId));
           if (m_pAiHelp != nullptr)
             m_pAiHelp->setSelected((int)m_cEditProfile.m_eAiHelp);
           break;
         }
         case dustbin::menu::enEditProfileStep::Ctrls: {
-          gui::CSelector *p = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("EditProfile_ControlType", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+          gui::CSelector *p = reinterpret_cast<gui::CSelector *>(findElement("EditProfile_ControlType", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId));
 
           if (m_cEditProfile.m_sControls == "DustbinTouchControl") {
             updateCtrlUi(2);
@@ -358,12 +427,12 @@ namespace dustbin {
           break;
       }
 
-      gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("EditProfileOk", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+      gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(findElement("EditProfileOk", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
 
       if (l_pOk != nullptr)
         l_pOk->setImage(std::string(m_eStep == enEditProfileStep::Overview ? "data/images/btn_ok.png" : "data/images/arrow_right.png"));
 
-      gui::CMenuButton *l_pCancel = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("EditProfileCancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+      gui::CMenuButton *l_pCancel = reinterpret_cast<gui::CMenuButton *>(findElement("EditProfileCancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
 
       if (l_pCancel != nullptr)
         l_pCancel->setImage(std::string(m_eStep == enEditProfileStep::Name ? "data/images/btn_cancel.png" : "data/images/arrow_left.png"));
@@ -380,7 +449,7 @@ namespace dustbin {
         m_cEditProfile.m_eAiHelp = (data::SPlayerData::enAiHelp)a_iAiHelp;
 
         for (int i = 0; i < 8; i++) {
-          irr::gui::IGUIElement *l_pHint = helpers::findElementByName("EditProfile_AiHelpInfo" + std::to_string(i), m_pGui->getRootGUIElement());
+          irr::gui::IGUIElement *l_pHint = findElement("EditProfile_AiHelpInfo" + std::to_string(i));
           if (l_pHint != nullptr)
             l_pHint->setVisible(i == a_iAiHelp);
         }
@@ -423,13 +492,13 @@ namespace dustbin {
     * @param a_iCtrl the controller index (0 == keyboard, 1 == gamepad, 2 == touch, 3 == gyroscope)
     */
     void CDataHandler_EditProfile::updateCtrlUi(int a_iCtrl) {
-      gui::CSelector *l_pCtrl = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("EditProfile_ControlType", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
+      gui::CSelector *l_pCtrl = reinterpret_cast<gui::CSelector *>(findElement("EditProfile_ControlType", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId));
 
       if (l_pCtrl != nullptr) {
         irr::gui::IGUIElement* l_pItems[] = {
-          helpers::findElementByNameAndType("EditProfile_JoyKeyTab"     , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_ControllerUiGameId, m_pGui->getRootGUIElement()),
-          helpers::findElementByNameAndType("EditProfile_ControlUiTouch",                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement()),
-          helpers::findElementByNameAndType("EditProfile_ControlUiGyro" ,                              irr::gui::EGUIET_IMAGE        , m_pGui->getRootGUIElement())
+          findElement("EditProfile_JoyKeyTab"     , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_ControllerUiGameId),
+          findElement("EditProfile_ControlUiTouch",                              irr::gui::EGUIET_IMAGE        ),
+          findElement("EditProfile_ControlUiGyro" ,                              irr::gui::EGUIET_IMAGE        )
         };
 
         int l_iCtrl = l_pCtrl->getSelected();
@@ -536,6 +605,181 @@ namespace dustbin {
       }
 
       return l_sRet + "&pattern=" + l_sPattern;
+    }
+
+    /**
+    * Set the visibility of a GUI element
+    * @param a_sName name of the GUI element
+    * @param a_bVisible new visibility flag
+    * @return true if the element was found
+    */
+    bool CDataHandler_EditProfile::setElementVisibility(const std::string& a_sName, bool a_bVisible) {
+      irr::gui::IGUIElement *p = findElement(a_sName);
+      if (p != nullptr)
+        p->setVisible(a_bVisible);
+
+      return p != nullptr;
+    }
+
+    /**
+    * Initialize the color dialog
+    * @param a_cColor the initial color
+    */
+    void CDataHandler_EditProfile::initializeColorDialog(const std::string& a_sColor) {
+      std::vector<std::tuple<std::string, std::string, int>> l_mData = {
+        std::make_tuple("scrollbar_red"  , "value_red"  , 0),
+        std::make_tuple("scrollbar_green", "value_green", 2),
+        std::make_tuple("scrollbar_blue" , "value_blue" , 4)
+      };
+
+      irr::video::SColor l_cColor;
+
+      for (auto l_cData : l_mData) {
+        irr::gui::IGUIScrollBar  *p = reinterpret_cast<irr::gui::IGUIScrollBar  *>(findElement(std::get<0>(l_cData), irr::gui::EGUIET_SCROLL_BAR ));
+        irr::gui::IGUIStaticText *t = reinterpret_cast<irr::gui::IGUIStaticText *>(findElement(std::get<1>(l_cData), irr::gui::EGUIET_STATIC_TEXT));
+
+        std::string l_sSub = a_sColor.substr(std::get<2>(l_cData), 2);
+        char s[3] = {
+          l_sSub.c_str()[0],
+          l_sSub.c_str()[1],
+          '\0'
+        };
+
+        char *l_pEnd;
+
+        int l_iValue = (int)strtoul(s, &l_pEnd, 16);
+
+        if (p != nullptr)
+          p->setPos(l_iValue);
+
+        if (t != nullptr)
+          t->setText(std::to_wstring(l_iValue).c_str());
+
+        switch (std::get<2>(l_cData)) {
+          case 0: l_cColor.setRed  (l_iValue); break;
+          case 2: l_cColor.setGreen(l_iValue); break;
+          case 4: l_cColor.setBlue (l_iValue); break;
+        }
+      }
+
+      irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElement("color_display", irr::gui::EGUIET_TAB));
+      if (l_pTab != nullptr)
+        l_pTab->setBackgroundColor(l_cColor);
+    }
+
+    /**
+    * Update the color dialog
+    */
+    void CDataHandler_EditProfile::updateColorDialog() {
+      irr::video::SColor l_cColor;
+
+      std::map<std::string, irr::u8> l_mValues = {
+        { "value_red"  , 0 },
+        { "value_green", 0 },
+        { "value_blue" , 0 }
+      };
+
+      std::vector<std::tuple<std::string, std::string>> l_vColors = {
+        std::make_tuple("scrollbar_red"  , "value_red"  ),
+        std::make_tuple("scrollbar_green", "value_green"),
+        std::make_tuple("scrollbar_blue" , "value_blue" )
+      };
+
+      for (auto l_cData : l_vColors) {
+        irr::gui::IGUIScrollBar  *p = reinterpret_cast<irr::gui::IGUIScrollBar  *>(findElement(std::get<0>(l_cData), irr::gui::EGUIET_SCROLL_BAR ));
+        irr::gui::IGUIStaticText *t = reinterpret_cast<irr::gui::IGUIStaticText *>(findElement(std::get<1>(l_cData), irr::gui::EGUIET_STATIC_TEXT));
+
+        if (p != nullptr && t != nullptr) {
+          std::wstring s = std::to_wstring(p->getPos());
+          t->setText(s.c_str());
+          
+          if (l_mValues.find(std::get<1>(l_cData)) != l_mValues.end())
+            l_mValues[std::get<1>(l_cData)] = (irr::u8)p->getPos();
+        }
+
+        if (std::get<1>(l_cData) == "value_red")
+          l_cColor.setRed(p->getPos());
+        else if (std::get<1>(l_cData) == "value_green")
+          l_cColor.setGreen(p->getPos());
+        else if (std::get<1>(l_cData) == "value_blue")
+          l_cColor.setBlue(p->getPos());
+      }
+
+      irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(findElement("color_display", irr::gui::EGUIET_TAB));
+      if (l_pTab != nullptr)
+        l_pTab->setBackgroundColor(l_cColor);
+    }
+
+    /**
+    * Modify a texture parameter
+    * @param a_sKey the parameter key
+    * @param a_sValue the new value
+    */
+    void CDataHandler_EditProfile::modifyTextureParameter(const std::string& a_sKey, const std::string& a_sValue) {
+      std::string l_sTextureType;
+      std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sTextureType, m_cEditProfile.m_sTexture);
+      if (l_mParams.find(a_sKey) != l_mParams.end()) {
+        if (a_sKey == "numberback") {
+          if (l_mParams.find("numberborder") != l_mParams.end() && l_mParams["numberborder"] == l_mParams["numberback"])
+            l_mParams["numberborder"] = a_sValue;
+        }
+
+        l_mParams[a_sKey] = a_sValue;
+        
+        m_cEditProfile.m_sTexture = "";
+
+        for (auto l_cParam : l_mParams) {
+          if (m_cEditProfile.m_sTexture != "")
+            m_cEditProfile.m_sTexture += "&";
+
+          m_cEditProfile.m_sTexture += l_cParam.first + "=" + l_cParam.second;
+        }
+        m_cEditProfile.m_sTexture = "generate://" + m_cEditProfile.m_sTexture;
+        updateMarbleTexture(m_cEditProfile.m_sTexture);
+      }
+    }
+
+    /**
+    * Update the pattern images starting with "m_iPatternPage"
+    * @see m_iPatternPage
+    */
+    void CDataHandler_EditProfile::updatePatterns() {
+      gui::CGuiImageList *l_pPatternList = reinterpret_cast<gui::CGuiImageList *>(findElement("PatternList", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ImageListId));
+
+      if (l_pPatternList != nullptr) {
+        irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/patterns/patterns.xml");
+
+        if (l_pXml) {
+          std::vector<gui::CGuiImageList::SListImage> l_vPatterns;
+
+          while (l_pXml->read()) {
+            if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+              std::string l_sNode = l_pXml->getNodeName();
+
+              if (l_sNode == "pattern") {
+                std::string l_sPattern = l_pXml->getAttributeValueSafe("file");
+
+                if (l_sPattern != "") {
+                  std::string l_sPath = "data/patterns/" + l_sPattern;
+
+                  if (m_pFs->existFile(l_sPath.c_str())) {
+                    l_vPatterns.push_back(gui::CGuiImageList::SListImage(l_sPath, l_sPattern, l_sPattern, -1));
+                  }
+                }
+              }
+            }
+          }
+
+          l_pPatternList->setImageList(l_vPatterns);
+
+          irr::gui::IGUIEditBox *l_pPattern = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("texture_pattern", irr::gui::EGUIET_EDIT_BOX));
+
+          if (l_pPattern != nullptr)
+            l_pPatternList->setSelected(helpers::ws2s(l_pPattern->getText()), false);
+
+          l_pXml->drop();
+        }
+      }
     }
   }
 }

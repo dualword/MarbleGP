@@ -33,6 +33,14 @@ namespace dustbin {
 
         IMenuDataHandler *m_pDataHandler;
 
+        /**
+        * Find a gui element by name
+        * @param a_sName name of the queried element
+        * @param a_eType type of the element, the type doesn't matter if the type is "irr::gui::EGUIET_COUNT"
+        * @return the element, nullptr if no match was found
+        */
+        irr::gui::IGUIElement *findElement(const std::string &a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType = irr::gui::EGUIET_COUNT);
+
       public:
         IMenuHandler(irr::IrrlichtDevice *a_pDevice, IMenuManager *a_pManager, state::IState *a_pState);
         virtual ~IMenuHandler();

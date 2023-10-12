@@ -8,6 +8,7 @@
 #include <helpers/CStringHelpers.h>
 #include <messages/CSerializer64.h>
 #include <gui/CDustbinCheckbox.h>
+#include <helpers/CDataHelpers.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
@@ -81,6 +82,8 @@ namespace dustbin {
         */
         void saveChampionship(bool a_bNetClient) {
           m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
+          
+          helpers::saveProfiles(m_vProfiles);
 
           int l_iGridSize = 1;
 
@@ -133,6 +136,9 @@ namespace dustbin {
                 l_cPlayer.m_iViewPort = l_iNum;
                 l_cPlayer.m_iPlayerId = l_iNum++;
                 l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+
+                controller::CControllerGame p = controller::CControllerGame();
+                p.deserialize(l_cPlayer.m_sControls);
 
                 break;
               }
@@ -224,6 +230,7 @@ namespace dustbin {
 
             case enWizardStep::Profiles: {
               m_vSelectedPlayers = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
+              m_cChampionship.m_vPlayers.clear();
 
               int l_iPlayerId = 1;
               for (auto l_sName : m_vSelectedPlayers) {
@@ -307,7 +314,7 @@ namespace dustbin {
             }
 
             case enWizardStep::Controllers: {
-              CDataHandler_Controls *l_pHandler = new CDataHandler_Controls(m_vProfiles, &m_cChampionship);
+              CDataHandler_Controls *l_pHandler = new CDataHandler_Controls(&m_vProfiles, &m_cChampionship);
               m_pDataHandler = l_pHandler;
 
               if (l_pHandler->allControllersAssigned()) {
@@ -479,6 +486,7 @@ namespace dustbin {
                       m_vProfiles[l_pHandler->getProfileIndex()] = data::SPlayerData(l_pHandler->getEditedProfile());
                     }
 
+                    helpers::saveProfiles(m_vProfiles);
                     setWizardStep(enWizardStep::Profiles);
                   }
                 }

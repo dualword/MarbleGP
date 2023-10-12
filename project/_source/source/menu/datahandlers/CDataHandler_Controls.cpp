@@ -6,16 +6,15 @@
 
 namespace dustbin {
   namespace menu {
-    CDataHandler_Controls::CDataHandler_Controls(std::vector<data::SPlayerData> &a_vProfiles, data::SChampionship *a_pChampionship) :
+    CDataHandler_Controls::CDataHandler_Controls(std::vector<data::SPlayerData> *a_vProfiles, data::SChampionship *a_pChampionship) :
       IMenuDataHandler(),
       m_vProfiles     (a_vProfiles),
       m_pChampionship (a_pChampionship),
       m_iJoystick     (255),
-      m_iBtnState     (0),
-      m_pGui          (CGlobal::getInstance()->getGuiEnvironment())
+      m_iBtnState     (0)
     {
       for (auto l_cPlayer : a_pChampionship->m_vPlayers) {
-        for (auto l_cProfile : a_vProfiles) {
+        for (auto &l_cProfile : *a_vProfiles) {
           if (l_cProfile.m_iPlayerId == l_cPlayer.m_iPlayerId) {
             controller::CControllerGame l_cCtrl;
             l_cCtrl.deserialize(l_cProfile.m_sControls);
@@ -56,8 +55,11 @@ namespace dustbin {
     */
     bool CDataHandler_Controls::handleIrrlichtEvent(const irr::SEvent& a_cEvent) {
       bool l_bOther = false;
+      bool l_bRet   = false;
 
       if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+        l_bRet = true;
+
         if (m_iJoystick == 255) {
           if (m_mBtnStates.find(a_cEvent.JoystickEvent.Joystick) == m_mBtnStates.end()) {
             m_mBtnStates[a_cEvent.JoystickEvent.Joystick] = a_cEvent.JoystickEvent.ButtonStates;
@@ -71,17 +73,21 @@ namespace dustbin {
         }
         else {
           if (a_cEvent.JoystickEvent.Joystick == m_iJoystick && a_cEvent.JoystickEvent.ButtonStates != m_iBtnState) {
-            for (auto& l_cPlayer : m_vProfiles) {
+            printf("Button state of joystick %i has changed again.\n", m_iJoystick);
+            for (auto& l_cPlayer : *m_vProfiles) {
               if (l_cPlayer.m_sName == *m_vUnassigned.begin()) {
+                printf("Player %s found.\n", l_cPlayer.m_sName.c_str());
                 if (std::find(m_vAssigned.begin(), m_vAssigned.end(), m_iJoystick) == m_vAssigned.end()) {
                   controller::CControllerGame l_cCtrl;
                   l_cCtrl.deserialize(l_cPlayer.m_sControls);
                   if (l_cCtrl.usesJoystick()) {
+                    printf("Assign joystick %i to player \"%s\"\n", m_iJoystick, (*m_vUnassigned.begin()).c_str());
                     l_cCtrl.setJoystickIndices(m_iJoystick);
                   }
                   l_cPlayer.m_sControls = l_cCtrl.serialize();
                   m_vUnassigned.erase(m_vUnassigned.begin());
                   m_vAssigned.push_back(m_iJoystick);
+                  printf("%i profiles not assigned.\n", (int)m_vUnassigned.size());
                 }
                 else {
                   l_bOther = true;
@@ -100,7 +106,7 @@ namespace dustbin {
         }
       }
 
-      return false;
+      return l_bRet;
     }
 
     /**

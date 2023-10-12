@@ -19,7 +19,7 @@ namespace dustbin {
     */
     class CDataHandler_Controls : public IMenuDataHandler {
       private:
-        std::vector<data::SPlayerData>  m_vProfiles;        /**< A vector with all player data */
+        std::vector<data::SPlayerData> *m_vProfiles;        /**< A vector with all player data */
         data::SChampionship            *m_pChampionship;    /**< The championship */
 
         std::vector<std::string> m_vUnassigned;   /**< List of the players with unassigned gamepads */
@@ -31,8 +31,6 @@ namespace dustbin {
         irr::u8  m_iJoystick;     /**< The selected joystick */
         irr::u32 m_iBtnState;     /**< The current button state of the joystick */
 
-        irr::gui::IGUIEnvironment *m_pGui;
-
         /**
         * Update the "please choose controller" label
         * @param a_bOther if true the text is set to "gampad already in use, please choose other"
@@ -40,7 +38,7 @@ namespace dustbin {
         void updateLabel(bool a_bOther);
 
       public:
-        CDataHandler_Controls(std::vector<data::SPlayerData> &a_vProfiles, data::SChampionship *a_pChampionship);
+        CDataHandler_Controls(std::vector<data::SPlayerData> *a_vProfiles, data::SChampionship *a_pChampionship);
         virtual ~CDataHandler_Controls();
 
         /**

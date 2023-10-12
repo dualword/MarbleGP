@@ -189,6 +189,7 @@
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Customize.cpp" />
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_EditProfile.cpp" />
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_SelectPlayers.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\IMenuDataHandler.cpp" />
     <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp" />

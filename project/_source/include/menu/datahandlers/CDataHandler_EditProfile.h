@@ -34,15 +34,13 @@ namespace dustbin {
         std::vector<std::tuple<std::string, std::string>>  m_vDefaultNames;     /**< Vector with the default names (0 == first name, 1 == surname) */
         std::vector<std::string>                           m_vDefaultPatterns;  /**< A List of the available patterns */
         data::SPlayerData                                  m_cEditProfile;      /**< The edited profile */
-        irr::gui::IGUIEnvironment                         *m_pGui;              /**< The GUI environment */
-        irr::io::IFileSystem                              *m_pFs;               /**< The Irrlicht file system */
-        irr::video::IVideoDriver                          *m_pDrv;              /**< The Irrlicht video driver */
         int                                                m_iProfileIndex;     /**< Index of the edited profile (-1 == new profile) */
         gui::CControllerUi_Game                           *m_pCtrl;             /**< The controller UI for joystick and gamepad */
         bool                                               m_bConfigCtrl;       /**< Is the controller being configurated? */
         irr::scene::ISceneManager                         *m_pPreviewSmgr;      /**< The scene manager for the marble preview */
         irr::scene::ISceneNode                            *m_pMarbleNode;       /**< The marble node for the texture preview */
         irr::video::ITexture                              *m_pTextureRtt;       /**< Render target texture for the marble with it's custom texture */
+        std::string                                        m_sEditColor;        /**< The currently edited color parameter */
 
         std::vector<std::tuple<std::string, std::string, std::string, std::string>> m_vDefaultColors;     /**< The default colors for the random textures */
 
@@ -76,6 +74,38 @@ namespace dustbin {
         * @return a string with random texture parameters
         */
         std::string createRandomTexture();
+
+        /**
+        * Update the pattern images starting with "m_iPatternPage"
+        * @see m_iPatternPage
+        */
+        void updatePatterns();
+
+        /**
+        * Initialize the color dialog
+        * @param a_cColor the initial color
+        */
+        void initializeColorDialog(const std::string &a_sColor);
+
+        /**
+        * Update the color dialog
+        */
+        void updateColorDialog();
+
+        /**
+        * Modify a texture parameter
+        * @param a_sKey the parameter key
+        * @param a_sValue the new value
+        */
+        void modifyTextureParameter(const std::string &a_sKey, const std::string &a_sValue);
+
+        /**
+        * Set the visibility of a GUI element
+        * @param a_sName name of the GUI element
+        * @param a_bVisible new visibility flag
+        * @return true if the element was found
+        */
+        bool setElementVisibility(const std::string &a_sName, bool a_bVisible);
 
       public:
         CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData &a_cEditProfile);

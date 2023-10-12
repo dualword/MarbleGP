@@ -1,6 +1,7 @@
 #pragma once
 
 #include <irrlicht.h>
+#include <string>
 
 namespace dustbin {
   namespace menu {
@@ -10,10 +11,23 @@ namespace dustbin {
     * This interface must be implmeneted by all menu data handlers
     */
     class IMenuDataHandler {
-      public:
-        IMenuDataHandler() { }
+      protected:
+        irr::IrrlichtDevice       *m_pDevice;   /**< The Irrlicht device */
+        irr::video::IVideoDriver  *m_pDrv;      /**< The Irrlicht video driver */
+        irr::gui::IGUIEnvironment *m_pGui;      /**< The Irrlicht GUI environment */
+        irr::io::IFileSystem      *m_pFs;       /**< The Irrlicht file system */
 
-        virtual ~IMenuDataHandler() { }
+        /**
+        * Find a GUi element by name and optionally type
+        * @param a_sName the name of the UI element
+        * @param a_eType the type of the UI element (if irr::gui::EGUIET_COUNT (default) is passed the type is not considered)
+        */
+        irr::gui::IGUIElement *findElement(const std::string &a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType = irr::gui::EGUIET_COUNT);
+
+      public:
+        IMenuDataHandler();
+
+        virtual ~IMenuDataHandler();
 
         /**
         * This is the main method of this class. Irrlicht events
@@ -26,7 +40,7 @@ namespace dustbin {
         /**
         * Gets called every frame, maybe it's necessary to implement something
         */
-        virtual void runDataHandler() { }
+        virtual void runDataHandler();
     };
   }
 }

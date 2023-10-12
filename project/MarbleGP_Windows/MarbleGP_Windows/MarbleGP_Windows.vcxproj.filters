@@ -738,6 +738,9 @@
     <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_EditProfile.cpp">
       <Filter>Quelldateien\menu\datahandlers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\IMenuDataHandler.cpp">
+      <Filter>Quelldateien\menu\datahandlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">

@@ -2,6 +2,7 @@
 #include <menu/datahandlers/IMenuDataHandler.h>
 #include <helpers/CStringHelpers.h>
 #include <gui/CDustbinCheckbox.h>
+#include <helpers/CMenuLoader.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <menu/CMenuFactory.h>
@@ -30,6 +31,19 @@ namespace dustbin {
     IMenuHandler::~IMenuHandler() {
       if (m_pDataHandler != nullptr)
         delete m_pDataHandler;
+    }
+
+    /**
+    * Find a gui element by name
+    * @param a_sName name of the queried element
+    * @param a_eType type of the element, the type doesn't matter if the type is "irr::gui::EGUIET_COUNT"
+    * @return the element, nullptr if no match was found
+    */
+    irr::gui::IGUIElement* IMenuHandler::findElement(const std::string& a_sName, irr::gui::EGUI_ELEMENT_TYPE a_eType) {
+      if (a_eType == irr::gui::EGUIET_COUNT)
+        return helpers::findElementByName(a_sName, m_pGui->getRootGUIElement());
+      else
+        return helpers::findElementByNameAndType(a_sName, a_eType, m_pGui->getRootGUIElement());
     }
 
     /**

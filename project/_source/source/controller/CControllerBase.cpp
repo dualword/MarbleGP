@@ -59,6 +59,9 @@ namespace dustbin {
           }
         }
       }
+
+      if (m_eType == enInputType::JoyAxis)
+        printf("Joystick %i\n", m_iJoystick);
     }
 
     CControllerBase::SCtrlInput::SCtrlInput(const SCtrlInput& a_cOther) : m_fValue(0.0f) {
