@@ -17,6 +17,7 @@ namespace dustbin {
     */
     enum class enEditProfileStep {
       Unknown,
+      Data,
       Name,
       AiHelp,
       Ctrls,
@@ -31,6 +32,15 @@ namespace dustbin {
     */
     class CDataHandler_EditProfile : public IMenuDataHandler {
       private:
+        /**
+        * The direction for step changes
+        */
+        enum class enDirection {
+          Previous,
+          NoChange,
+          Next
+        };
+
         std::vector<std::tuple<std::string, std::string>>  m_vDefaultNames;     /**< Vector with the default names (0 == first name, 1 == surname) */
         std::vector<std::string>                           m_vDefaultPatterns;  /**< A List of the available patterns */
         data::SPlayerData                                  m_cEditProfile;      /**< The edited profile */
@@ -44,7 +54,9 @@ namespace dustbin {
 
         std::vector<std::tuple<std::string, std::string, std::string, std::string>> m_vDefaultColors;     /**< The default colors for the random textures */
 
-        enEditProfileStep m_eStep;    /**< The current edit step */
+        std::vector<enEditProfileStep> m_vSteps;    /**< The steps of the editor */
+
+        std::vector<enEditProfileStep>::iterator m_itStep;    /**< The current editor step */
         
         /**
         * Generate a random name and fill the edit field
@@ -133,10 +145,10 @@ namespace dustbin {
 
         /**
         * Set to another step in the dialog
-        * @param a_eStep the new step
+        * @param a_eDirection the direction for the next step
         * @return true if the new active UI element was found
         */
-        bool setEditProfileStep(enEditProfileStep a_eStep);
+        bool setEditProfileStep(enDirection a_eDirection);
 
         /**
         * Check for controller if we are in the correct state

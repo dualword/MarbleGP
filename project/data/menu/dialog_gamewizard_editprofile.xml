@@ -36,6 +36,7 @@
             </attributes>
           </element>
           
+          <include file="data/menu/editprofile_data.xml" />
           <include file="data/menu/editprofile_name.xml" />
           <include file="data/menu/editprofile_aihelp.xml" />
           <include file="data/menu/editprofile_controls.xml" />

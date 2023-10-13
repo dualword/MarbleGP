@@ -17,7 +17,6 @@ namespace dustbin {
     CDataHandler_EditProfile::CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData& a_cEditProfile) :
       IMenuDataHandler(),
       m_cEditProfile  (a_cEditProfile),
-      m_eStep         (enEditProfileStep::Unknown),
       m_iProfileIndex (a_iProfileIndex),
       m_bConfigCtrl   (false),
       m_pPreviewSmgr  (nullptr),
@@ -53,7 +52,27 @@ namespace dustbin {
       if (m_cEditProfile.m_sTexture == "")
         m_cEditProfile.m_sTexture = createRandomTexture();
 
-      setEditProfileStep(enEditProfileStep::Name);
+      
+      if (a_iProfileIndex == -1) {
+        // New Profile
+        m_vSteps.push_back(enEditProfileStep::Name    );
+        m_vSteps.push_back(enEditProfileStep::Ctrls   );
+        m_vSteps.push_back(enEditProfileStep::AiHelp  );
+        m_vSteps.push_back(enEditProfileStep::Texture );
+        m_vSteps.push_back(enEditProfileStep::Overview);
+      }
+      else {
+        // Edit existing profile
+        m_vSteps.push_back(enEditProfileStep::Data    );
+        m_vSteps.push_back(enEditProfileStep::Name    );
+        m_vSteps.push_back(enEditProfileStep::Ctrls   );
+        m_vSteps.push_back(enEditProfileStep::AiHelp  );
+        m_vSteps.push_back(enEditProfileStep::Texture );
+      }
+
+      m_itStep = m_vSteps.begin();
+      setEditProfileStep(enDirection::NoChange);
+
       updateAiHelp((int)m_cEditProfile.m_eAiHelp);
 
       setElementVisibility("EditProfileNew" , a_iProfileIndex == -1);
@@ -123,20 +142,10 @@ namespace dustbin {
             l_bRet = true;
           }
           else if (l_sCaller == "EditProfileOk") {
-            switch (m_eStep) {
-              case enEditProfileStep::Name   : l_bRet = setEditProfileStep(enEditProfileStep::AiHelp  ); break;
-              case enEditProfileStep::AiHelp : l_bRet = setEditProfileStep(enEditProfileStep::Ctrls   ); break;
-              case enEditProfileStep::Ctrls  : l_bRet = setEditProfileStep(enEditProfileStep::Texture ); break;
-              case enEditProfileStep::Texture: l_bRet = setEditProfileStep(enEditProfileStep::Overview); break;
-            }
+            l_bRet = setEditProfileStep(enDirection::Next);
           }
           else if (l_sCaller == "EditProfileCancel") {
-            switch (m_eStep) {
-              case enEditProfileStep::Overview: l_bRet = setEditProfileStep(enEditProfileStep::Texture); break;
-              case enEditProfileStep::Texture : l_bRet = setEditProfileStep(enEditProfileStep::Ctrls  ); break;
-              case enEditProfileStep::Ctrls   : l_bRet = setEditProfileStep(enEditProfileStep::AiHelp ); break;
-              case enEditProfileStep::AiHelp  : l_bRet = setEditProfileStep(enEditProfileStep::Name   ); break;
-            }
+            l_bRet = setEditProfileStep(enDirection::Previous);
           }
           else if (l_sCaller == "EditProfile_TestCtrl") {
             if (m_pCtrl != nullptr) {
@@ -334,10 +343,11 @@ namespace dustbin {
     * @param a_eStep the new step
     * @return true if the new active UI element was found
     */
-    bool CDataHandler_EditProfile::setEditProfileStep(enEditProfileStep a_eStep) {
+    bool CDataHandler_EditProfile::setEditProfileStep(enDirection a_eDirection) {
       irr::gui::IGUIElement *l_pRoot = nullptr;
 
       std::string l_sItems[] = {
+        "EditProfile_Data"   ,
         "EditProfile_Name"   ,
         "EditProfile_AiHelp" ,
         "EditProfile_Control",
@@ -352,9 +362,14 @@ namespace dustbin {
           p->setVisible(false);
       }
 
-      m_eStep = a_eStep;
+      switch (a_eDirection) {
+        case enDirection::Previous: if ( m_itStep      == m_vSteps.begin()) return false; else m_itStep--; break;
+        case enDirection::Next    : if ((m_itStep + 1) == m_vSteps.end  ()) return false; else m_itStep++; break;
+        case enDirection::NoChange: break;
+      }
 
-      switch (m_eStep) {
+      switch (*m_itStep) {
+        case enEditProfileStep::Data    : l_pRoot = findElement("EditProfile_Data"    ); break;
         case enEditProfileStep::Name    : l_pRoot = findElement("EditProfile_Name"    ); break;
         case enEditProfileStep::AiHelp  : l_pRoot = findElement("EditProfile_AiHelp"  ); break;
         case enEditProfileStep::Ctrls   : l_pRoot = findElement("EditProfile_Control" ); break;
@@ -365,9 +380,13 @@ namespace dustbin {
       if (l_pRoot != nullptr)
         l_pRoot->setVisible(true);
 
-      switch (m_eStep) {
+      switch (*m_itStep) {
         case dustbin::menu::enEditProfileStep::Unknown:
           break;
+
+        case dustbin::menu::enEditProfileStep::Data:
+          break;
+
         case dustbin::menu::enEditProfileStep::Name:
           if (m_cEditProfile.m_sName != "") {
             irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX));
@@ -430,12 +449,12 @@ namespace dustbin {
       gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(findElement("EditProfileOk", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
 
       if (l_pOk != nullptr)
-        l_pOk->setImage(std::string(m_eStep == enEditProfileStep::Overview ? "data/images/btn_ok.png" : "data/images/arrow_right.png"));
+        l_pOk->setImage(std::string((m_itStep + 1) == m_vSteps.end()  ? "data/images/btn_ok.png" : "data/images/arrow_right.png"));
 
       gui::CMenuButton *l_pCancel = reinterpret_cast<gui::CMenuButton *>(findElement("EditProfileCancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
 
       if (l_pCancel != nullptr)
-        l_pCancel->setImage(std::string(m_eStep == enEditProfileStep::Name ? "data/images/btn_cancel.png" : "data/images/arrow_left.png"));
+        l_pCancel->setImage(std::string(m_itStep == m_vSteps.begin() ? "data/images/btn_cancel.png" : "data/images/arrow_left.png"));
 
       return l_pRoot != nullptr;
     }
@@ -460,14 +479,14 @@ namespace dustbin {
     * Check for controller if we are in the correct state
     */
     void CDataHandler_EditProfile::runDataHandler() {
-      if (m_eStep == enEditProfileStep::Ctrls && m_pCtrl != nullptr) {
+      if (*m_itStep == enEditProfileStep::Ctrls && m_pCtrl != nullptr) {
         if (m_bConfigCtrl && m_pCtrl->getMode() != gui::CControllerUi_Game::enMode::Wizard) {
           printf("Update Profile Controls.\n");
           m_cEditProfile.m_sControls = m_pCtrl->serialize();
           m_bConfigCtrl = false;
         }
       }
-      else if (m_eStep == enEditProfileStep::Texture) {
+      else if (*m_itStep == enEditProfileStep::Texture) {
         if (m_pTextureRtt != nullptr && m_pPreviewSmgr != nullptr) {
           m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
           m_pPreviewSmgr->drawAll();

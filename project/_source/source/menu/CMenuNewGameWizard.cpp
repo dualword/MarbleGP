@@ -280,6 +280,11 @@ namespace dustbin {
 
           switch (m_eStep) {
             case enWizardStep::Profiles: {
+              // First we reset the player IDs
+              for (std::vector<data::SPlayerData>::iterator it2 = m_vProfiles.begin(); it2 != m_vProfiles.end(); it2++) {
+                (*it2).m_iPlayerId = -1;
+              }
+
               std::string l_sSelected = m_pState->getGlobal()->getSetting("selectedplayers");
               m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, &m_cChampionship, m_vProfiles, l_sSelected);
 
@@ -618,6 +623,9 @@ namespace dustbin {
                   }
                   else if (l_iAiLevel == 6) setWizardStep(enWizardStep::Custom);
                 } 
+                else if (l_sSender == "CancelAssignJoystick") {
+                  setWizardStep(enWizardStep::Profiles);
+                }
                 else printf("Button \"%s\" clicked.\n", l_sSender.c_str());
               }
             }
