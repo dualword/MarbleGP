@@ -291,7 +291,7 @@ namespace dustbin {
         case 3:
   #ifndef NO_XEFFECT
           if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);
+            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8192, l_iAmbient);
           }
           else {
             m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);

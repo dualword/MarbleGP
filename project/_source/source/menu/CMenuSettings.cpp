@@ -4,6 +4,7 @@
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
 #include <gui/CDustbinCheckbox.h>
+#include <helpers/CDataHelpers.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
@@ -43,7 +44,7 @@ namespace dustbin {
 
         std::vector<gui::CMenuBackground *> m_vPages;
 
-        int m_iSplitIdx;
+        int  m_iSplitIdx;
 
         data::SSettings m_cSettings;
 
@@ -350,7 +351,14 @@ namespace dustbin {
                 m_pManager->pushToMenuStack("menu_settings");
                 createMenu("menu_remote", m_pDevice, m_pManager, m_pState);
               }
-              else printf("Button clicked (%s, %i, CMenuMain).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
+              else if (l_sSender == "BtnGfxDetect") {
+                printf("Auto-detect GFX Settings...\n");
+                helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
+                m_pSmgr->loadScene("data/scenes/skybox.xml");
+                m_pSmgr->addCameraSceneNode();
+                updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+              }
+              else printf("Button clicked (%s, %i, CMenuSettings).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
               if (l_sSender == "selector_splitscreen") {

@@ -80,5 +80,12 @@ namespace dustbin {
     * @return the lines of the file in a std::vector
     */
     std::vector<std::string> readLinesOfFile(const std::string& a_sPath);
+
+    /**
+    * Function for auto-detection of suitable game graphics settings
+    * @param a_pDevice the Irrlicht device
+    * @param a_pSettings the settings to be adjusted
+    */
+    void gfxAutoDetection(irr::IrrlichtDevice *a_pDevice, data::SSettings *a_pSettings);
   }
 }

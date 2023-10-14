@@ -193,11 +193,7 @@ namespace dustbin {
             case c_iVMax     : m_fMaxSpeed   =                l_cSerializer.getF32      (); break;
             case c_iVBest    : m_fBestSpeed  =                l_cSerializer.getF32      (); break;
             case c_iRespawn  : m_iRespawn    =                l_cSerializer.getS32      (); break;
-            case c_iTag      : 
-              m_iTag        =                l_cSerializer.getS32      (); 
-              if (m_iTag != 0) 
-                printf("Tag %i\n", m_iTag); 
-              break;
+            case c_iTag      : m_iTag        =                l_cSerializer.getS32      (); break;
             case c_iType     : m_eType       = (enSegmentType)l_cSerializer.getS32      (); break;
             case c_iNextStart: {
               while (l_cSerializer.hasMoreMessages()) {

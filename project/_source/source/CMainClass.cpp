@@ -233,6 +233,7 @@ namespace dustbin {
             if (l_sName == L"size") {
               m_vFontSizes.push_back(l_pXml->getAttributeValueAsInt(L"value"));
             }
+            break;
           }
 
           default:

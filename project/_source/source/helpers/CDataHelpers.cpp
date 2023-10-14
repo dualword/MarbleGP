@@ -1,6 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#ifndef NO_XEFFECT
+#include <shader/CShaderHandleXEffectSplitscreen.h>
+#include <shader/CShaderHandlerXEffect.h>
+#endif
+
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
+#include <shader/CMyShaderNone.h>
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <json/CIrrJSON.h>
@@ -415,5 +421,114 @@ namespace dustbin {
       return helpers::splitString(l_sDummy, '\n');
     }
 
+    void setNodeShader(irr::scene::ISceneNode* a_pNode, shader::CShaderHandlerBase* a_pShader) {
+      if (a_pNode->getType() == irr::scene::ESNT_MESH) {
+
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
+        setNodeShader(*l_itChild, a_pShader);
+      }
+    }
+
+    /**
+    * Function for auto-detection of suitable game graphics settings
+    * @param a_pDevice the Irrlicht device
+    * @param a_pSettings the settings to be adjusted
+    */
+    void gfxAutoDetection(irr::IrrlichtDevice* a_pDevice, data::SSettings* a_pSettings) {
+      irr::video::IVideoDriver  *l_pDrv  = a_pDevice->getVideoDriver   ();
+      irr::scene::ISceneManager *l_pSmgr = a_pDevice->getSceneManager  ();
+      irr::gui::IGUIEnvironment *l_pGui  = a_pDevice->getGUIEnvironment();
+
+      a_pSettings->m_iShadows = 0;
+
+      irr::ITimer *l_pTimer = a_pDevice->getTimer();
+
+      std::vector<int> l_vShadowMap = { 2048, 4096, 8192 };
+
+      std::vector<irr::core::recti> l_vViewports;
+
+      irr::core::dimension2du l_cScreen = l_pDrv->getScreenSize();
+      irr::core::dimension2du l_cDim = irr::core::dimension2du(l_cScreen.Width, l_cScreen.Height);
+
+      irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Big, l_cDim);
+
+      irr::core::dimension2du l_cTextSize = l_pFont->getDimension(L"Detect Framerate: 6666 Frames.");
+
+      irr::core::recti l_cTextRect = irr::core::recti(
+        irr::core::vector2di(l_cDim.Width / 2 - l_cTextSize.Width / 2, l_cDim.Height / 2 - l_cTextSize.Height / 2),
+        irr::core::vector2di(l_cDim.Width / 2 + l_cTextSize.Width / 2, l_cDim.Height / 2 + l_cTextSize.Height / 2)
+      );
+
+      l_cTextRect.UpperLeftCorner  -= irr::core::vector2di(l_cTextSize.Height / 6);
+      l_cTextRect.LowerRightCorner += irr::core::vector2di(l_cTextSize.Height / 6);
+
+      l_vViewports.push_back(irr::core::recti(irr::core::position2di(0, 0), l_cDim));
+
+      for (auto l_iShadowMap: l_vShadowMap) {
+        l_pSmgr->clear();
+        l_pSmgr->loadScene("data/levels/four_obstacles/track.xml");
+
+        irr::scene::ISceneNode *l_pNode = l_pSmgr->getSceneNodeFromName("AutoGfxCamera");
+
+        shader::CShaderHandlerBase *l_pShader = nullptr;
+        
+        if (l_vViewports.size() != 1)
+          l_pShader = new shader::CShaderHandleXEffectSplitscreen(a_pDevice, l_cDim, l_iShadowMap, 128);
+        else
+          l_pShader = new shader::CShaderHandlerXEffect(a_pDevice, l_cDim, l_iShadowMap, 128);
+
+        l_pShader->initialize();
+
+        if (l_pNode != nullptr && l_pNode->getType() == irr::scene::ESNT_CAMERA) {
+          l_pSmgr->setActiveCamera(reinterpret_cast<irr::scene::ICameraSceneNode *>(l_pNode));
+        }
+
+        irr::u32 l_iStart = l_pTimer->getRealTime() + 1000;
+        irr::u32 l_iFrame = 0;
+
+        bool l_bCount = false;
+
+        while (a_pDevice->run()) {
+          l_pDrv->beginScene(true, true);
+          l_pShader->beginScene();
+
+          for (auto l_cViewport: l_vViewports)
+            l_pShader->renderScene(l_cViewport);
+
+          l_pDrv->draw2DRectangle(irr::video::SColor(192, 224, 244, 224), l_cTextRect);
+          l_pDrv->draw2DRectangleOutline(l_cTextRect, irr::video::SColor(255, 0, 0, 0));
+          std::wstring l_sInfo = L"Detect Framerate: " + std::to_wstring(l_iFrame) + L" Frames.";
+          l_pFont->draw(l_sInfo.c_str(), l_cTextRect, irr::video::SColor(255, 0, 0, 0), true, true);
+
+          l_pDrv->endScene();
+          std::wstring s = L"Current Framerate: " + std::to_wstring(l_pDrv->getFPS()) + L" FPS";
+          a_pDevice->setWindowCaption(s.c_str());
+
+          if (!l_bCount) {
+            if (l_pTimer->getRealTime() > l_iStart) {
+              printf("Start Frame Count...\n");
+              l_bCount = true;
+            }
+          }
+          else {
+            l_iFrame++;
+            if (l_pTimer->getRealTime() > l_iStart + 4000) {
+              printf("Shadow map size %4i: %i Frames (%i / sec).\n", l_iShadowMap, l_iFrame, l_iFrame / 4);
+              if (l_iFrame / 4 > 100) {
+                a_pSettings->m_iShadows++;
+              }
+              else return;
+              break;
+            }
+          }
+        }
+
+        delete l_pShader;
+      }
+      l_pSmgr->clear();
+      printf("Shadow settings: %i\n", a_pSettings->m_iShadows);
+    }
   }
 }
