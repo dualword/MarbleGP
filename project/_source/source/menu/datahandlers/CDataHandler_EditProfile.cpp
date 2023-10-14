@@ -19,6 +19,8 @@ namespace dustbin {
       m_cEditProfile  (a_cEditProfile),
       m_iProfileIndex (a_iProfileIndex),
       m_bConfigCtrl   (false),
+      m_bConfirmDelete(false),
+      m_bDeleteProfile(false),
       m_pPreviewSmgr  (nullptr),
       m_pMarbleNode   (nullptr),
       m_pTextureRtt   (nullptr),
@@ -94,9 +96,15 @@ namespace dustbin {
             l_pTexture->setImage(m_pTextureRtt);
           }
 
+          l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(findElement("ProfileData_Texture", irr::gui::EGUIET_IMAGE));
+          if (l_pTexture != nullptr)
+            l_pTexture->setImage(m_pTextureRtt);
+
           m_pMarbleNode = m_pPreviewSmgr->getSceneNodeFromName("marble");
         }
       }
+
+      updateMarbleTexture(m_cEditProfile.m_sTexture);
 
       updatePatterns();
       printf("Ready.\n");
@@ -215,6 +223,29 @@ namespace dustbin {
               initializeColorDialog(helpers::ws2s(p->getText()));
               l_bRet = true;
             }
+          }
+          else if (l_sCaller == "ProfileData_Delete") {
+            irr::gui::IGUIStaticText *l_pInfo = reinterpret_cast<irr::gui::IGUIStaticText *>(findElement("YesNoDialog_Text", irr::gui::EGUIET_STATIC_TEXT));
+            if (l_pInfo != nullptr) {
+              std::wstring l_sInfo = L"Do you really want to delete profile \"" + helpers::s2ws(m_cEditProfile.m_sName) + L"\"?\n\nNote that the deletion will be done at once and cannot be undone.";
+              l_pInfo->setText(l_sInfo.c_str());
+            }
+
+            setElementVisibility("YesNoDialog", true);
+            m_bConfirmDelete = true;
+            l_bRet = true;
+          }
+          else if (l_sCaller == "BtnConfirmYes") {
+            setElementVisibility("YesNoDialog", false);
+            if (m_bConfirmDelete) {
+              m_bConfirmDelete = false;
+              m_bDeleteProfile = true;
+            }
+          }
+          else if (l_sCaller == "BtnConfirmNo") {
+            setElementVisibility("YesNoDialog", false);
+            m_bConfirmDelete = false;
+            l_bRet = true;
           }
           else {
             std::map<std::string, std::string> l_mBtnColor = {
@@ -352,7 +383,6 @@ namespace dustbin {
         "EditProfile_AiHelp" ,
         "EditProfile_Control",
         "EditProfile_Texture",
-        "EditProfile_Overview",
         ""
       };
 
@@ -362,6 +392,28 @@ namespace dustbin {
           p->setVisible(false);
       }
 
+      switch (*m_itStep)
+      {
+        case enEditProfileStep::Name: {
+          irr::gui::IGUIEditBox *p = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX));
+          if (p != nullptr)
+            m_cEditProfile.m_sName = helpers::ws2s(p->getText());
+
+          p = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX));
+          if (p != nullptr)
+            m_cEditProfile.m_sShortName = helpers::ws2s(p->getText());
+
+          break;
+        }
+
+        case enEditProfileStep::Texture:
+          setElementVisibility("EditProfile_TextureParams", false);
+          break;
+
+        default:
+          break;
+      }
+
       switch (a_eDirection) {
         case enDirection::Previous: if ( m_itStep      == m_vSteps.begin()) return false; else m_itStep--; break;
         case enDirection::Next    : if ((m_itStep + 1) == m_vSteps.end  ()) return false; else m_itStep++; break;
@@ -369,12 +421,12 @@ namespace dustbin {
       }
 
       switch (*m_itStep) {
-        case enEditProfileStep::Data    : l_pRoot = findElement("EditProfile_Data"    ); break;
-        case enEditProfileStep::Name    : l_pRoot = findElement("EditProfile_Name"    ); break;
-        case enEditProfileStep::AiHelp  : l_pRoot = findElement("EditProfile_AiHelp"  ); break;
-        case enEditProfileStep::Ctrls   : l_pRoot = findElement("EditProfile_Control" ); break;
-        case enEditProfileStep::Texture : l_pRoot = findElement("EditProfile_Texture" ); break;
-        case enEditProfileStep::Overview: l_pRoot = findElement("EditProfile_Overview"); break;
+        case enEditProfileStep::Data    : l_pRoot = findElement("EditProfile_Data"   ); break;
+        case enEditProfileStep::Name    : l_pRoot = findElement("EditProfile_Name"   ); break;
+        case enEditProfileStep::AiHelp  : l_pRoot = findElement("EditProfile_AiHelp" ); break;
+        case enEditProfileStep::Ctrls   : l_pRoot = findElement("EditProfile_Control"); break;
+        case enEditProfileStep::Texture : l_pRoot = findElement("EditProfile_Texture"); break;
+        case enEditProfileStep::Overview: l_pRoot = findElement("EditProfile_Data"   ); break;
       }
 
       if (l_pRoot != nullptr)
@@ -385,7 +437,38 @@ namespace dustbin {
           break;
 
         case dustbin::menu::enEditProfileStep::Data:
+        case dustbin::menu::enEditProfileStep::Overview: {
+          std::string l_sCtrl = "";
+
+          if (m_cEditProfile.m_sControls == "DustbinTouchControl")
+            l_sCtrl = "Touch Controller";
+          else if (m_cEditProfile.m_sControls == "DustbinGyroscope")
+            l_sCtrl = "Gyroscope";
+          else {
+            controller::CControllerBase l_pCtrl;
+            l_pCtrl.deserialize(m_cEditProfile.m_sControls);
+            if (l_pCtrl.usesJoystick())
+              l_sCtrl = "Gamepad";
+            else
+              l_sCtrl = "Keyboard";
+          }
+
+          std::map<std::string, std::wstring> l_mData = {
+            { "ProfileData_Name"  , helpers::s2ws(m_cEditProfile.m_sName      ) },
+            { "ProfileData_Short" , helpers::s2ws(m_cEditProfile.m_sShortName ) },
+            { "ProfileData_Ctrl"  , helpers::s2ws(l_sCtrl                     ) },
+            { "ProfileData_AiHelp", helpers::s2ws(helpers::getAiHelpString(m_cEditProfile.m_eAiHelp)) }
+          };
+
+          for (auto l_cData : l_mData) {
+            irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement(l_cData.first, irr::gui::EGUIET_EDIT_BOX));
+            if (l_pEdit != nullptr)
+              l_pEdit->setText(l_cData.second.c_str());
+          }
+
+          setElementVisibility("ProfileData_Delete", *m_itStep != enEditProfileStep::Overview);
           break;
+        }
 
         case dustbin::menu::enEditProfileStep::Name:
           if (m_cEditProfile.m_sName != "") {
@@ -439,9 +522,6 @@ namespace dustbin {
           updateMarbleTexture(m_cEditProfile.m_sTexture);
           break;
 
-        case dustbin::menu::enEditProfileStep::Overview:
-          break;
-
         default:
           break;
       }
@@ -486,7 +566,7 @@ namespace dustbin {
           m_bConfigCtrl = false;
         }
       }
-      else if (*m_itStep == enEditProfileStep::Texture) {
+      else if (*m_itStep == enEditProfileStep::Texture || *m_itStep == enEditProfileStep::Data || *m_itStep == enEditProfileStep::Overview) {
         if (m_pTextureRtt != nullptr && m_pPreviewSmgr != nullptr) {
           m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
           m_pPreviewSmgr->drawAll();
@@ -799,6 +879,13 @@ namespace dustbin {
           l_pXml->drop();
         }
       }
+    }
+
+    /**
+    * Shall the profile be deleted?
+    */
+    bool CDataHandler_EditProfile::deleteProfile() {
+      return m_bDeleteProfile;
     }
   }
 }

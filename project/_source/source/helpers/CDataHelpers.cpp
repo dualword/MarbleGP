@@ -192,6 +192,26 @@ namespace dustbin {
     }
 
     /**
+    * Get the string value for an AI help option
+    */
+    std::string getAiHelpString(data::SPlayerData::enAiHelp a_eAiHelp) {
+      switch (a_eAiHelp)
+      {
+        case dustbin::data::SPlayerData::enAiHelp::Off    : return "Off"           ; break;
+        case dustbin::data::SPlayerData::enAiHelp::Display: return "Display"       ; break;
+        case dustbin::data::SPlayerData::enAiHelp::Low    : return "Low"           ; break;
+        case dustbin::data::SPlayerData::enAiHelp::Medium : return "Medium"        ; break;
+        case dustbin::data::SPlayerData::enAiHelp::High   : return "High"          ; break;
+        case dustbin::data::SPlayerData::enAiHelp::BotMgp : return "Bot (MarbleGP)"; break;
+        case dustbin::data::SPlayerData::enAiHelp::BotMb2 : return "Bot (Marble2)" ; break;
+        case dustbin::data::SPlayerData::enAiHelp::BotMb3 : return "Bot (Marble3)" ; break;
+        default:
+          return "";
+          break;
+      }
+    }
+
+    /**
     * Get the default controller string for Keyboard game controls
     * @return the default controller string for Keyboard game controls
     */

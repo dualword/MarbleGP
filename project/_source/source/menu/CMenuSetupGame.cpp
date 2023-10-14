@@ -267,8 +267,8 @@ namespace dustbin {
           m_pSelectCtrl  (nullptr),
           m_pSelectName  (nullptr),
           m_iAssigned    (-1),
-          m_bGameWizard  (m_pState->getGlobal()->getSettingData().m_bGameWizard),
-          m_iWizardStep  (m_pState->getGlobal()->getSettingData().m_bGameWizard ? 1 : 0),
+          m_bGameWizard  (m_pState->getGlobal()->getSettingData().m_bNoPlayerRace),
+          m_iWizardStep  (m_pState->getGlobal()->getSettingData().m_bNoPlayerRace ? 1 : 0),
           m_iGameMode    (0)
         {
           m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));

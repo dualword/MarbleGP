@@ -261,10 +261,10 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 8, 15, 34, 17">
+      <element type="staticText" rect="center: 8, 15, 34, 17" tooltip="Races without players can be used to watch the AI play.">
         <attributes>
-          <attribute key="Name" value="label_gamewizard" />
-          <attribute key="Caption" value="Use Game Wizard" />
+          <attribute key="Name" value="label_racewithoutplayers" />
+          <attribute key="Caption" value="Allow races without players" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>

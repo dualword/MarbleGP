@@ -13,10 +13,10 @@ namespace dustbin {
   namespace menu {
     CDataHandler_SelectPlayers::CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, data::SChampionship *a_pChampionship, std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected) :
       IMenuDataHandler(),
-      m_pPlayers      (a_pPlayers),
-      m_pChampionship (a_pChampionship),
-      m_vProfiles     (a_vProfiles),
-      m_sSelected     (a_sSelected)
+      m_pPlayers        (a_pPlayers),
+      m_pChampionship   (a_pChampionship),
+      m_vProfiles       (a_vProfiles),
+      m_sSelected       (a_sSelected)
     {
       printf("Selected Players: \"%s\"\n", m_sSelected.c_str());
     }
@@ -78,8 +78,6 @@ namespace dustbin {
               }
             }
             else printf("Name field not found.\n");
-
-            l_bRet = true;
           }
           else printf("Checkbox changed: \"%s\"\n", l_sCaller.c_str());
         }
@@ -101,6 +99,14 @@ namespace dustbin {
       }
 
       return l_vReturn;
+    }
+
+    /**
+    * Get the number of selected players
+    * @return the number of selected players
+    */
+    int CDataHandler_SelectPlayers::getNumberOfSelectedPlayers() {
+      return (int)helpers::splitString(m_sSelected, ';').size();
     }
   }
 }

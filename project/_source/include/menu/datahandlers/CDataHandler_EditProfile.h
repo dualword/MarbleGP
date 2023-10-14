@@ -47,6 +47,8 @@ namespace dustbin {
         int                                                m_iProfileIndex;     /**< Index of the edited profile (-1 == new profile) */
         gui::CControllerUi_Game                           *m_pCtrl;             /**< The controller UI for joystick and gamepad */
         bool                                               m_bConfigCtrl;       /**< Is the controller being configurated? */
+        bool                                               m_bConfirmDelete;    /**< Are we waiting for a confirmation of a delete profile button click? */
+        bool                                               m_bDeleteProfile;    /**< Shall the profile be deleted? */
         irr::scene::ISceneManager                         *m_pPreviewSmgr;      /**< The scene manager for the marble preview */
         irr::scene::ISceneNode                            *m_pMarbleNode;       /**< The marble node for the texture preview */
         irr::video::ITexture                              *m_pTextureRtt;       /**< Render target texture for the marble with it's custom texture */
@@ -154,6 +156,11 @@ namespace dustbin {
         * Check for controller if we are in the correct state
         */
         virtual void runDataHandler() override;
+
+        /**
+        * Shall the profile be deleted?
+        */
+        bool deleteProfile();
     };
   }
 }

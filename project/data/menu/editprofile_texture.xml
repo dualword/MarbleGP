@@ -1,7 +1,7 @@
  <?xml version="1.0"?>
 <!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
 <dialog>
-  <element type="tab" rect="fillwindow">
+  <element type="tab" rect="relative: 0, 0, 80, 39">
     <attributes>
       <attribute key="Name" value="EditProfile_Texture" />
       <attribute key="Visible" value="false" />

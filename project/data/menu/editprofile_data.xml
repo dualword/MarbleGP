@@ -15,6 +15,95 @@
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
+      
+      <element type="staticText" rect="relative: 0, 10, 20, 12">
+        <attributes>
+          <attribute key="Caption" value="Name:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 21, 10, 35, 12">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Name" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 13, 20, 15">
+        <attributes>
+          <attribute key="Caption" value="Short Name:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 21, 13, 35, 15">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Short" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 16, 20, 18">
+        <attributes>
+          <attribute key="Caption" value="AI Help:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 21, 16, 35, 18">
+        <attributes>
+          <attribute key="Name" value="ProfileData_AiHelp" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 19, 20, 21">
+        <attributes>
+          <attribute key="Caption" value="Controls:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 21, 19, 35, 21">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Ctrl" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 22, 20, 36">
+        <attributes>
+          <attribute key="Caption" value="Texture:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 21, 22, 35, 36">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Texture" />
+          <attribute key="ScaleImage" value="true" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/no_image.png" />
+        </custom>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 51, 10, 69, 14">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Delete" />
+          <attribute key="Caption" value="Delete Profile" />
+        </attributes>
+      </element>
     </children>
   </element>
 </dialog>

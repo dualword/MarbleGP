@@ -64,7 +64,7 @@ namespace dustbin {
       bool m_bDebugAIPath;  /**< Show the AI path debug image (lower left) */
       bool m_bDebugAIDice;  /**< Show the AI dice debug image (lower right) */
       bool m_bVirtualKeys;  /**< Use virtual keyboard (always true for Android) */
-      bool m_bGameWizard;   /**< Use the game wizard (true) or show all options */
+      bool m_bNoPlayerRace; /**< Use the game wizard (true) or show all options */
 
       std::string m_sController;  /**< The serialized menu controller configuration */
       std::string m_sMenuCtrl;    /**< The menu controller setting (off, keyboard, gamepad) */

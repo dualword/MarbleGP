@@ -99,7 +99,7 @@ namespace dustbin {
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowRanking , reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23016, l_eType, m_pGui->getRootGUIElement())));
             updateCheckboxUI(m_cSettings.m_aGameGFX[l_iIndex].m_bShowLapTimes, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23017, l_eType, m_pGui->getRootGUIElement())));
 
-            updateCheckboxUI(m_cSettings.m_bGameWizard, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23093, l_eType, m_pGui->getRootGUIElement())));
+            updateCheckboxUI(m_cSettings.m_bNoPlayerRace, reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByIdAndType(23093, l_eType, m_pGui->getRootGUIElement())));
 
             m_iSplitIdx = l_iIndex;
           }
@@ -440,7 +440,7 @@ namespace dustbin {
                 updateSplitscreenSettings();
               }
               else if (a_cEvent.GUIEvent.Caller->getID() == 23093) {
-                m_cSettings.m_bGameWizard = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
+                m_cSettings.m_bNoPlayerRace = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
               }
             }
           }

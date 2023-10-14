@@ -286,7 +286,6 @@ namespace dustbin {
               }
 
               std::string l_sSelected = m_pState->getGlobal()->getSetting("selectedplayers");
-              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, &m_cChampionship, m_vProfiles, l_sSelected);
 
               if (m_vSteps.size() > 0)
                 m_vSteps[0]->setVisible(true);
@@ -311,9 +310,40 @@ namespace dustbin {
                 }
               }
 
+              std::vector<std::string> l_vToRemove;
+              for (auto l_sSelected : m_vSelectedPlayers) {
+                bool l_bRemove = true;
+                for (auto l_cProfile : m_vProfiles) {
+                  if (l_sSelected == messages::urlEncode(l_cProfile.m_sName)) {
+                    l_bRemove = false;
+                    break;
+                  }
+                }
+                if (l_bRemove)
+                  l_vToRemove.push_back(l_sSelected);
+              }
+
+              for (auto l_sRemove : l_vToRemove) {
+                for (std::vector<std::string>::iterator l_itSelected = m_vSelectedPlayers.begin(); l_itSelected != m_vSelectedPlayers.end(); l_itSelected++) {
+                  if (*l_itSelected == l_sRemove) {
+                    m_vSelectedPlayers.erase(l_itSelected);
+                    break;
+                  }
+                }
+              }
+
+              std::string l_sNewSelected;
+              for (std::vector<std::string>::iterator l_itSeleted = m_vSelectedPlayers.begin(); l_itSeleted != m_vSelectedPlayers.end(); l_itSeleted++) {
+                if (l_itSeleted != m_vSelectedPlayers.begin())
+                  l_sNewSelected += ";";
+                l_sNewSelected += *l_itSeleted;
+              }
+
+              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, &m_cChampionship, m_vProfiles, l_sNewSelected);
+              printf("==> %i\n", (int)m_vSelectedPlayers.size());
               gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
               if (l_pOk != nullptr)
-                l_pOk->setVisible(true);
+                l_pOk->setVisible(m_vSelectedPlayers.size() > 0 || CGlobal::getInstance()->getSettingData().m_bNoPlayerRace);
 
               break;
             }
@@ -492,6 +522,7 @@ namespace dustbin {
                     }
 
                     helpers::saveProfiles(m_vProfiles);
+                    platform::saveSettings();
                     setWizardStep(enWizardStep::Profiles);
                   }
                 }
@@ -626,7 +657,40 @@ namespace dustbin {
                 else if (l_sSender == "CancelAssignJoystick") {
                   setWizardStep(enWizardStep::Profiles);
                 }
+                else if (l_sSender == "BtnConfirmYes") {
+                  CDataHandler_EditProfile *p = reinterpret_cast<CDataHandler_EditProfile *>(m_pDataHandler);
+                  if (p != nullptr) {
+                    int l_iNum = p->getProfileIndex();
+                    if (l_iNum >= 0 && l_iNum < m_vProfiles.size()) {
+                      auto l_itProfile = m_vProfiles.begin();
+                      while (l_iNum > 0 && l_itProfile != m_vProfiles.end()) {
+                        l_itProfile++;
+                        l_iNum--;
+                      }
+
+                      if (l_itProfile != m_vProfiles.end()) {
+                        printf("Delete Profile \"%s\"\n", (*l_itProfile).m_sName.c_str());
+                        m_vProfiles.erase(l_itProfile);
+                        setWizardStep(enWizardStep::Profiles);
+                        helpers::saveProfiles(m_vProfiles);
+                        platform::saveSettings();
+                      }
+                      else printf("Profile with index %i not found.\n", p->getProfileIndex());
+                    }
+                  }
+                  
+                  irr::gui::IGUIElement *l_pEditor = findElement("GameWizardEditProfile");
+                  if (l_pEditor != nullptr)
+                    l_pEditor->setVisible(false);
+                }
                 else printf("Button \"%s\" clicked.\n", l_sSender.c_str());
+              }
+              else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+                if (m_eStep == enWizardStep::Profiles) {
+                  irr::gui::IGUIElement *p = findElement("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId);
+                  if (p != nullptr)
+                    p->setVisible(CGlobal::getInstance()->getSettingData().m_bNoPlayerRace || reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getNumberOfSelectedPlayers() > 0);
+                }
               }
             }
           }

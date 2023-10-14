@@ -44,6 +44,12 @@ namespace dustbin {
         * @return a vector with the names of the selected players
         */
         std::vector<std::string> getSelectedPlayers();
+
+        /**
+        * Get the number of selected players
+        * @return the number of selected players
+        */
+        int getNumberOfSelectedPlayers();
     };
   }
 }

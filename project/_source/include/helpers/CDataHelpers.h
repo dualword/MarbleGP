@@ -37,6 +37,11 @@ namespace dustbin {
     std::vector<std::string> getAiHelpOptions();
 
     /**
+    * Get the string value for an AI help option
+    */
+    std::string getAiHelpString(data::SPlayerData::enAiHelp a_eAiHelp);
+
+    /**
     * Get the default controller string for Keyboard game controls
     * @return the default controller string for Keyboard game controls
     */

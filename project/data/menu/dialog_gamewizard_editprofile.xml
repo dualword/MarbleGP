@@ -40,7 +40,6 @@
           <include file="data/menu/editprofile_name.xml" />
           <include file="data/menu/editprofile_aihelp.xml" />
           <include file="data/menu/editprofile_controls.xml" />
-          <include file="data/menu/editprofile_texture.xml" />
           <include file="data/menu/editprofile_overview.xml" />
           
           <element type="MenuButton" rect="center: 1, 18, 5, 22">
@@ -56,6 +55,9 @@
               <attribute key="ImagePath" value="data/images/btn_cancel.png" />
             </attributes>
           </element>
+          
+          <include file="data/menu/editprofile_texture.xml" />
+          <include file="data/menu/dialog_yesno.xml" />
         </children>
       </element>
     </children>
