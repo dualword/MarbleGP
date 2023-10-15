@@ -165,6 +165,7 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuFillGrid.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuFinalResult.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuIntroduction.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuMessage.cpp" />

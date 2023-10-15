@@ -48,6 +48,12 @@ namespace dustbin {
     * This method is called when the state is activated
     */
     void CMenuState::activate() {
+      if (m_pGlobal->getGlobal("FirstStart") == "true") {
+        m_pGlobal->setGlobal("FirstStart", "false");
+        clearMenuStack();
+        pushToMenuStack("menu_intro");
+      }
+
       m_eState = enState::None;
       std::string l_sState = popMenuStack();
       menu::IMenuHandler::createMenu(l_sState, m_pDevice, this, this);

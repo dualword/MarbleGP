@@ -66,8 +66,8 @@ namespace dustbin {
     */
     class CMemoryReadFile : public irr::io::IFileReadCallBack {
       private:
-        size_t m_iSize,
-               m_iPos;
+        size_t m_iSize;
+        size_t m_iPos;
 
         const char *m_pData;
 
@@ -119,6 +119,8 @@ namespace dustbin {
     }
 
     m_cSettings.loadSettings(m_mSettings);
+
+    setGlobal("FirstStart", m_bFirstStart ? "true" : "false");
   }
 
   CMainClass::~CMainClass() {
@@ -304,7 +306,7 @@ namespace dustbin {
 
 #ifdef _WINDOWS
     if (m_bFirstStart) {
-      helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
+      // helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
     }
 #endif
 

@@ -89,5 +89,18 @@ namespace dustbin {
     */
     void gfxAutoDetection(irr::IrrlichtDevice *a_pDevice, data::SSettings *a_pSettings);
 #endif
+
+    /**
+    * Generate a random profile
+    * @param a_sName [out] name of the profile
+    * @param a_sShort [out] abbreviation of the name
+    */
+    void createRandomProfile(std::string &a_sName, std::string &a_sShort);
+
+    /**
+    * Generate a random texture
+    * @return a random texture string
+    */
+    std::string createRandomTexture();
   }
 }

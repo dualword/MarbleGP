@@ -35,24 +35,11 @@ namespace dustbin {
         m_vDefaultColors.push_back(std::make_tuple(l_vDefault[0], l_vDefault[1], l_vDefault[2], l_vDefault[3]));
       }
 
-      m_vDefaultPatterns = helpers::getTexturePatterns();
-
-      std::vector<std::string> l_vNames = helpers::readLinesOfFile("data/names.txt");
-
-      for (auto l_sName : l_vNames) {
-        std::vector<std::string> l_vSplit = helpers::splitString(l_sName, ',');
-
-        std::string l_sFirstName = l_vSplit.size() > 0 ? l_vSplit[0] : "";
-        std::string l_sSurName   = l_vSplit.size() > 0 ? l_vSplit[1] : "";
-
-        m_vDefaultNames.push_back(std::make_tuple(l_sFirstName, l_sSurName));
-      }
-
       if (m_cEditProfile.m_sName == "")
         generateDefaultName();
 
       if (m_cEditProfile.m_sTexture == "")
-        m_cEditProfile.m_sTexture = createRandomTexture();
+        m_cEditProfile.m_sTexture = helpers::createRandomTexture();
 
       
       if (a_iProfileIndex == -1) {
@@ -183,7 +170,7 @@ namespace dustbin {
             l_bRet = setElementVisibility("EditProfile_TextureParams", false);
           }
           else if (l_sCaller == "EditProfile_RandomTexture") {
-            m_cEditProfile.m_sTexture = createRandomTexture();
+            m_cEditProfile.m_sTexture = helpers::createRandomTexture();
             updateMarbleTexture(m_cEditProfile.m_sTexture);
             l_bRet = true;
           }
@@ -345,28 +332,19 @@ namespace dustbin {
     * Generate a random name and fill the edit field
     */
     void CDataHandler_EditProfile::generateDefaultName() {
-      if (m_vDefaultNames.size() > 0) {
-        std::string l_sFirstName = std::get<0>(m_vDefaultNames[std::rand() % m_vDefaultNames.size()]);
-        std::string l_sSurName   = std::get<1>(m_vDefaultNames[std::rand() % m_vDefaultNames.size()]);
+      helpers::createRandomProfile(m_cEditProfile.m_sName, m_cEditProfile.m_sShortName);
 
-        std::string l_sName = l_sFirstName + " " + l_sSurName;
+      irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX));
 
-        m_cEditProfile.m_sName      = l_sName;
-        m_cEditProfile.m_sShortName = l_sFirstName.substr(0, 2) + l_sSurName.substr(0, 3);
-
-        irr::gui::IGUIEditBox *l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditName", irr::gui::EGUIET_EDIT_BOX));
-
-        if (l_pEdit != nullptr) {
-          l_pEdit->setText(helpers::s2ws(m_cEditProfile.m_sName).c_str());
-        }
-
-        l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX));
-
-        if (l_pEdit != nullptr) {
-          l_pEdit->setText(helpers::s2ws(m_cEditProfile.m_sShortName).c_str());
-        }
+      if (l_pEdit != nullptr) {
+        l_pEdit->setText(helpers::s2ws(m_cEditProfile.m_sName).c_str());
       }
-      else printf("No default names loaded.\n");
+
+      l_pEdit = reinterpret_cast<irr::gui::IGUIEditBox *>(findElement("EditProfile_EditShort", irr::gui::EGUIET_EDIT_BOX));
+
+      if (l_pEdit != nullptr) {
+        l_pEdit->setText(helpers::s2ws(m_cEditProfile.m_sShortName).c_str());
+      }
     }
 
     /**
@@ -636,74 +614,6 @@ namespace dustbin {
           }
         }
       }
-    }
-
-    /**
-    * Generate a random texture
-    * @return a string with random texture parameters
-    */
-    std::string CDataHandler_EditProfile::createRandomTexture() {
-      std::string l_sRet = "";
-
-      {
-        std::random_device l_cRd { };
-        std::default_random_engine l_cRe { l_cRd() };
-        std::shuffle(m_vDefaultColors.begin(), m_vDefaultColors.end(), l_cRe);
-      }
-
-      std::tuple<std::string, std::string, std::string, std::string> l_tColor = *m_vDefaultColors.begin();
-
-      {
-        std::random_device l_cRd { };
-        std::default_random_engine l_cRe { l_cRd() };
-        std::shuffle(m_vDefaultPatterns.begin(), m_vDefaultPatterns.end(), l_cRe);
-      }
-
-      std::string l_sPattern = *m_vDefaultPatterns.begin();
-
-      std::vector<int> l_vIndex = { 0, 1, 2 };
-
-      std::vector<std::vector<std::string>> l_vElements;
-
-      if (std::get<3>(l_tColor) == "") {
-        l_vElements.push_back({ "numbercolor", "ringcolor" });
-        l_vElements.push_back({ "patterncolor" });
-        l_vElements.push_back({ "numberback", "patternback", "numberborder" });
-      }
-      else {
-        l_vIndex.push_back(3);
-
-        l_vElements.push_back({ "numbercolor" });
-        l_vElements.push_back({ "ringcolor" });
-        l_vElements.push_back({ "patterncolor" });
-        l_vElements.push_back({ "numberback", "patternback", "numberborder" });
-      }
-
-      {
-        std::random_device l_cRd { };
-        std::default_random_engine l_cRe { l_cRd() };
-        std::shuffle(l_vIndex.begin(), l_vIndex.end(), l_cRe);
-      }
-
-      for (std::vector<int>::iterator l_itIndex = l_vIndex.begin(); l_itIndex != l_vIndex.end(); l_itIndex++) {
-        for (std::vector<std::string>::iterator l_itPart = l_vElements[*l_itIndex].begin(); l_itPart != l_vElements[*l_itIndex].end(); l_itPart++) {
-          if (l_sRet == "")
-            l_sRet = "generate://";
-          else
-            l_sRet += "&";
-
-          l_sRet += *l_itPart + "=";
-
-          switch (*l_itIndex) {
-          case 0: l_sRet += std::get<0>(l_tColor); break;
-          case 1: l_sRet += std::get<1>(l_tColor); break;
-          case 2: l_sRet += std::get<2>(l_tColor); break;
-          case 3: l_sRet += std::get<3>(l_tColor); break;
-          }
-        }
-      }
-
-      return l_sRet + "&pattern=" + l_sPattern;
     }
 
     /**

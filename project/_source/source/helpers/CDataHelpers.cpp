@@ -4,6 +4,7 @@
 #include <shader/CShaderHandlerXEffect.h>
 #endif
 
+#include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <shader/CMyShaderNone.h>
@@ -532,5 +533,125 @@ namespace dustbin {
       printf("Shadow settings: %i\n", a_pSettings->m_iShadows);
     }
 #endif
+
+    std::vector<std::tuple<std::string, std::string>> g_vDefaultNames;     /**< Vector with the default names (0 == first name, 1 == surname) */
+
+    /**
+    * Generate a random profile
+    * @param a_sName [out] name of the profile
+    * @param a_sShort [out] abbreviation of the name
+    * @param a_sTexture [out] texture of the profile
+    */
+    void createRandomProfile(std::string& a_sName, std::string& a_sShort) {
+      if (g_vDefaultNames.size() == 0) {
+        std::vector<std::string> l_vNames = helpers::readLinesOfFile("data/names.txt");
+
+        for (auto l_sName : l_vNames) {
+          std::vector<std::string> l_vSplit = helpers::splitString(l_sName, ',');
+
+          std::string l_sFirstName = l_vSplit.size() > 0 ? l_vSplit[0] : "";
+          std::string l_sSurName   = l_vSplit.size() > 0 ? l_vSplit[1] : "";
+
+          g_vDefaultNames.push_back(std::make_tuple(l_sFirstName, l_sSurName));
+        }
+      }
+
+      if (g_vDefaultNames.size() > 0) {
+        std::string l_sFirstName = std::get<0>(g_vDefaultNames[std::rand() % g_vDefaultNames.size()]);
+        std::string l_sSurName   = std::get<1>(g_vDefaultNames[std::rand() % g_vDefaultNames.size()]);
+
+        std::string l_sName = l_sFirstName + " " + l_sSurName;
+
+        a_sName  = l_sName;
+        a_sShort = l_sFirstName.substr(0, 2) + l_sSurName.substr(0, 3);
+      }
+      else printf("No default names loaded.\n");
+    }
+
+    std::vector<std::tuple<std::string, std::string, std::string, std::string>> g_vDefaultColors;     /**< The default colors for the random textures */
+    std::vector<std::string>                                                    g_vDefaultPatterns;   /**< A List of the available patterns */
+
+    /**
+    * Generate a random texture
+    * @return a random texture string
+    */
+    std::string createRandomTexture() {
+      std::string l_sRet = "";
+
+      if (g_vDefaultColors.size() == 0) {
+        std::vector<std::string> l_vColors = helpers::readLinesOfFile("data/colors.txt");
+
+        for (std::vector<std::string>::iterator l_itColor = l_vColors.begin(); l_itColor != l_vColors.end(); l_itColor++) {
+          std::vector<std::string> l_vDefault = helpers::splitString(*l_itColor, ',');
+          while (l_vDefault.size() < 4)
+            l_vDefault.push_back("");
+          g_vDefaultColors.push_back(std::make_tuple(l_vDefault[0], l_vDefault[1], l_vDefault[2], l_vDefault[3]));
+        }
+      }
+
+      if (g_vDefaultPatterns.size() == 0) {
+        g_vDefaultPatterns = helpers::getTexturePatterns();
+      }
+
+      {
+        std::random_device l_cRd { };
+        std::default_random_engine l_cRe { l_cRd() };
+        std::shuffle(g_vDefaultColors.begin(), g_vDefaultColors.end(), l_cRe);
+      }
+
+      std::tuple<std::string, std::string, std::string, std::string> l_tColor = *g_vDefaultColors.begin();
+
+      {
+        std::random_device l_cRd { };
+        std::default_random_engine l_cRe { l_cRd() };
+        std::shuffle(g_vDefaultPatterns.begin(), g_vDefaultPatterns.end(), l_cRe);
+      }
+
+      std::string l_sPattern = *g_vDefaultPatterns.begin();
+
+      std::vector<int> l_vIndex = { 0, 1, 2 };
+
+      std::vector<std::vector<std::string>> l_vElements;
+
+      if (std::get<3>(l_tColor) == "") {
+        l_vElements.push_back({ "numbercolor", "ringcolor" });
+        l_vElements.push_back({ "patterncolor" });
+        l_vElements.push_back({ "numberback", "patternback", "numberborder" });
+      }
+      else {
+        l_vIndex.push_back(3);
+
+        l_vElements.push_back({ "numbercolor" });
+        l_vElements.push_back({ "ringcolor" });
+        l_vElements.push_back({ "patterncolor" });
+        l_vElements.push_back({ "numberback", "patternback", "numberborder" });
+      }
+
+      {
+        std::random_device l_cRd { };
+        std::default_random_engine l_cRe { l_cRd() };
+        std::shuffle(l_vIndex.begin(), l_vIndex.end(), l_cRe);
+      }
+
+      for (std::vector<int>::iterator l_itIndex = l_vIndex.begin(); l_itIndex != l_vIndex.end(); l_itIndex++) {
+        for (std::vector<std::string>::iterator l_itPart = l_vElements[*l_itIndex].begin(); l_itPart != l_vElements[*l_itIndex].end(); l_itPart++) {
+          if (l_sRet == "")
+            l_sRet = "generate://";
+          else
+            l_sRet += "&";
+
+          l_sRet += *l_itPart + "=";
+
+          switch (*l_itIndex) {
+            case 0: l_sRet += std::get<0>(l_tColor); break;
+            case 1: l_sRet += std::get<1>(l_tColor); break;
+            case 2: l_sRet += std::get<2>(l_tColor); break;
+            case 3: l_sRet += std::get<3>(l_tColor); break;
+          }
+        }
+      }
+
+      return l_sRet + "&pattern=" + l_sPattern;
+    }
   }
 }

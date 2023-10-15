@@ -41,18 +41,16 @@ namespace dustbin {
           Next
         };
 
-        std::vector<std::tuple<std::string, std::string>>  m_vDefaultNames;     /**< Vector with the default names (0 == first name, 1 == surname) */
-        std::vector<std::string>                           m_vDefaultPatterns;  /**< A List of the available patterns */
-        data::SPlayerData                                  m_cEditProfile;      /**< The edited profile */
-        int                                                m_iProfileIndex;     /**< Index of the edited profile (-1 == new profile) */
-        gui::CControllerUi_Game                           *m_pCtrl;             /**< The controller UI for joystick and gamepad */
-        bool                                               m_bConfigCtrl;       /**< Is the controller being configurated? */
-        bool                                               m_bConfirmDelete;    /**< Are we waiting for a confirmation of a delete profile button click? */
-        bool                                               m_bDeleteProfile;    /**< Shall the profile be deleted? */
-        irr::scene::ISceneManager                         *m_pPreviewSmgr;      /**< The scene manager for the marble preview */
-        irr::scene::ISceneNode                            *m_pMarbleNode;       /**< The marble node for the texture preview */
-        irr::video::ITexture                              *m_pTextureRtt;       /**< Render target texture for the marble with it's custom texture */
-        std::string                                        m_sEditColor;        /**< The currently edited color parameter */
+        data::SPlayerData          m_cEditProfile;        /**< The edited profile */
+        int                        m_iProfileIndex;       /**< Index of the edited profile (-1 == new profile) */
+        gui::CControllerUi_Game   *m_pCtrl;               /**< The controller UI for joystick and gamepad */
+        bool                       m_bConfigCtrl;         /**< Is the controller being configurated? */
+        bool                       m_bConfirmDelete;      /**< Are we waiting for a confirmation of a delete profile button click? */
+        bool                       m_bDeleteProfile;      /**< Shall the profile be deleted? */
+        irr::scene::ISceneManager *m_pPreviewSmgr;        /**< The scene manager for the marble preview */
+        irr::scene::ISceneNode    *m_pMarbleNode;         /**< The marble node for the texture preview */
+        irr::video::ITexture      *m_pTextureRtt;         /**< Render target texture for the marble with it's custom texture */
+        std::string                m_sEditColor;          /**< The currently edited color parameter */
 
         std::vector<std::tuple<std::string, std::string, std::string, std::string>> m_vDefaultColors;     /**< The default colors for the random textures */
 
@@ -82,12 +80,6 @@ namespace dustbin {
         * @param a_iCtrl the controller index (0 == keyboard, 1 == gamepad, 2 == touch, 3 == gyroscope)
         */
         void updateCtrlUi(int a_iCtrl);
-
-        /**
-        * Generate a random texture
-        * @return a string with random texture parameters
-        */
-        std::string createRandomTexture();
 
         /**
         * Update the pattern images starting with "m_iPatternPage"
