@@ -278,6 +278,14 @@ namespace dustbin {
             m_pDataHandler = nullptr;
           }
 
+          gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElement("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
+          if (l_pBtn != nullptr)
+            l_pBtn->setImage(m_eStep == enWizardStep::GameType ? "data/images/btn_ok.png" : "data/images/arrow_right.png");
+
+          l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElement("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
+          if (l_pBtn != nullptr)
+            l_pBtn->setImage(m_eStep == enWizardStep::Profiles ? "data/images/btn_cancel.png" : "data/images/arrow_left.png");
+
           switch (m_eStep) {
             case enWizardStep::Profiles: {
               // First we reset the player IDs
