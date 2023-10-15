@@ -510,7 +510,7 @@ namespace dustbin {
                   
                   l_bRet = true;
                 }
-                else if (l_sSender == "EditProfileOk") {
+                else if (l_sSender == "EditProfileOk" || l_sSender == "ProfileData_Tutorial") {
                   if (m_eStep == enWizardStep::EditProfile) {
                     CDataHandler_EditProfile *l_pHandler = reinterpret_cast<CDataHandler_EditProfile *>(m_pDataHandler);
 
@@ -523,7 +523,41 @@ namespace dustbin {
 
                     helpers::saveProfiles(m_vProfiles);
                     platform::saveSettings();
-                    setWizardStep(enWizardStep::Profiles);
+
+                    if (l_sSender == "ProfileData_Tutorial") {
+                      data::SPlayerData l_cPlayer = reinterpret_cast<CDataHandler_EditProfile *>(m_pDataHandler)->getEditedProfile();
+
+                      std::vector<data::SPlayerData> l_vProfiles = {
+                        l_cPlayer
+                      };
+
+                      data::SGameSettings l_cSettings;
+
+                      l_cPlayer.m_eType     = data::enPlayerType::Local;
+                      l_cPlayer.m_iViewPort = 1;
+                      l_cPlayer.m_iGridPos  = 1;
+                      l_cPlayer.m_iPlayerId = 1;
+
+                      data::SGameData l_cData;
+
+                      l_cData.m_iLaps       = 1;
+                      l_cData.m_sTrack      = "tutorial";
+                      l_cData.m_bIsTutorial = true;
+
+                      CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+
+                      data::SRacePlayers l_cPlayers;
+                      l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+
+                      CGlobal::getInstance()->setSetting("selectedplayers", messages::urlEncode(l_cPlayer.m_sName));
+                      platform:: saveSettings();
+
+                      m_pManager->pushToMenuStack("menu_newgamewizard");
+                      CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
+
+                      m_pState->setState(state::enState::Game);
+                    }
+                    else setWizardStep(enWizardStep::Profiles);
                   }
                 }
                 else if (l_sSender == "EditProfileCancel") {

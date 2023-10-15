@@ -104,6 +104,13 @@
           <attribute key="Caption" value="Delete Profile" />
         </attributes>
       </element>
+      
+      <element type="MenuButton" rect="relative: 51, 32, 69, 36">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Tutorial" />
+          <attribute key="Caption" value="Play Tutorial" />
+        </attributes>
+      </element>
     </children>
   </element>
 </dialog>
