@@ -131,9 +131,9 @@ namespace dustbin {
         PathAppend(l_sPath, L"MarbleGP_Setup.xml");
       }
 
-      /*std::ofstream l_cFile(l_sPath);
+      std::ofstream l_cFile(l_sPath);
       l_cFile << CGlobal::getInstance()->getSettings();;
-      l_cFile.close();*/
+      l_cFile.close();
     }
 
     void consumeBackEvent(bool a_bConsume) {

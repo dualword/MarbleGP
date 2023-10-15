@@ -1,6 +1,9 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <messages/CMessageHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <platform/CPlatform.h>
 #include <menu/IMenuHandler.h>
 #include <state/IState.h>
 #include <irrlicht.h>
@@ -58,9 +61,44 @@ namespace dustbin {
               if (l_sSender == "ok") {
                 l_bRet = true;
 
+                data::SPlayerData l_cPlayer;
+                helpers::createRandomProfile(l_cPlayer.m_sName, l_cPlayer.m_sShortName);
+                l_cPlayer.m_sTexture  = helpers::createRandomTexture();
+                l_cPlayer.m_eAiHelp   = data::SPlayerData::enAiHelp::High;
+                l_cPlayer.m_sControls = helpers::getDefaultGameCtrl_Keyboard();
+                l_cPlayer.m_eType     = data::enPlayerType::Local;
+                
+                std::vector<data::SPlayerData> l_vProfiles = {
+                  l_cPlayer
+                };
 
+                helpers::saveProfiles(l_vProfiles);
 
-                createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+                data::SGameData l_cData;
+
+                l_cData.m_iLaps       = 1;
+                l_cData.m_sTrack      = "tutorial";
+                l_cData.m_bIsTutorial = true;
+
+                CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+
+                data::SGameSettings l_cSettings;
+
+                l_cPlayer.m_iViewPort = 1;
+                l_cPlayer.m_iGridPos  = 1;
+                l_cPlayer.m_iPlayerId = 1;
+
+                data::SRacePlayers l_cPlayers;
+                l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+
+                CGlobal::getInstance()->setSetting("selectedplayers", messages::urlEncode(l_cPlayer.m_sName));
+                platform:: saveSettings();
+
+                m_pManager->pushToMenuStack("menu_selecttrack");
+                m_pManager->pushToMenuStack("menu_newgamewizard");
+                CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
+
+                m_pState->setState(state::enState::Game);
               }
             }
           }

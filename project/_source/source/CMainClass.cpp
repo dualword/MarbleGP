@@ -306,7 +306,7 @@ namespace dustbin {
 
 #ifdef _WINDOWS
     if (m_bFirstStart) {
-      // helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
+      helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
     }
 #endif
 

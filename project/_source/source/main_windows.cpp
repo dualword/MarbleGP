@@ -99,9 +99,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     l_pDevice->setEventReceiver(l_pMainClass);
     l_pMainClass->setIrrlichtDevice(l_pDevice);
 
-    std::vector<dustbin::data::SMarbleGpCup> l_vCups = dustbin::helpers::loadCupDefinitions();
-    printf("%i cups loaded.\n", l_vCups.size());
-
     // On Windows we limit the frame rate to 125 FPS as the simulation runs at 120 FPS
     std::chrono::steady_clock::time_point l_cNextStep = std::chrono::steady_clock::now();
 

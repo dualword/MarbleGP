@@ -75,7 +75,6 @@ namespace dustbin {
     }
 
     CTutorialHUD::~CTutorialHUD() {
-
     }
 
     void CTutorialHUD::pauseGame() {
