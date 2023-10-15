@@ -172,10 +172,10 @@ namespace dustbin {
       if (a_mData.find("wizardfdc"   ) != a_mData.end()) m_iWizardDfc    = std::atoi(a_mData.at("wizardfdc"   ).c_str());
       if (a_mData.find("wizardgmt"   ) != a_mData.end()) m_iWizardGmt    = std::atoi(a_mData.at("wizardgmt"   ).c_str());
 
-      if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen" ) == "true";
-      if (a_mData.find("debugaipath" ) != a_mData.end()) m_bDebugAIPath  = a_mData.at("debugaipath") == "true";
-      if (a_mData.find("debugaidice" ) != a_mData.end()) m_bDebugAIDice  = a_mData.at("debugaidice") == "true";
-      if (a_mData.find("noplayerrace") != a_mData.end()) m_bNoPlayerRace = a_mData.at("gamewizard" ) == "true";
+      if (a_mData.find("fullscreen"  ) != a_mData.end()) m_bFullscreen   = a_mData.at("fullscreen"  ) == "true";
+      if (a_mData.find("debugaipath" ) != a_mData.end()) m_bDebugAIPath  = a_mData.at("debugaipath" ) == "true";
+      if (a_mData.find("debugaidice" ) != a_mData.end()) m_bDebugAIDice  = a_mData.at("debugaidice" ) == "true";
+      if (a_mData.find("noplayerrace") != a_mData.end()) m_bNoPlayerRace = a_mData.at("noplayerrace") == "true";
 
       if (a_mData.find("sfx_master") != a_mData.end()) m_fSfxMaster  = (float)std::atof(a_mData.at("sfx_master").c_str());
       if (a_mData.find("soundtrack") != a_mData.end()) m_fSoundTrack = (float)std::atof(a_mData.at("soundtrack").c_str());
