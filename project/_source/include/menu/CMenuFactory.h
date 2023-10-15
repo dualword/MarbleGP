@@ -18,8 +18,6 @@ namespace dustbin {
 
     IMenuHandler *createMenuMain         (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
     IMenuHandler *createMenuSettings     (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
-    IMenuHandler *createMenuProfiles     (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
-    IMenuHandler *createMenuSetupGame    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
     IMenuHandler *createMenuSelectTrack  (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuRaceResult   (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuStandings    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
@@ -32,7 +30,6 @@ namespace dustbin {
     IMenuHandler *createMenuFinalResult  (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuCredits      (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuSelectCup    (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
-    IMenuHandler *createMenuProfileWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState);
     IMenuHandler *createMenuRemote       (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuNextRace     (irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);
     IMenuHandler *createMenuNewGameWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState* a_pState);

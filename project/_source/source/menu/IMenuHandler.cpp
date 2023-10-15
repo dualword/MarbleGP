@@ -98,12 +98,6 @@ namespace dustbin {
       else if (a_sName == "menu_settings") {
         l_pRet = a_pManager->changeMenu(createMenuSettings(a_pDevice, a_pManager, a_pState));
       }
-      else if (a_sName == "menu_profiles") {
-        l_pRet = a_pManager->changeMenu(createMenuProfiles(a_pDevice, a_pManager, a_pState));
-      }
-      else if (a_sName == "menu_setupgame") {
-        l_pRet = a_pManager->changeMenu(createMenuSetupGame(a_pDevice, a_pManager, a_pState));
-      }
       else if (a_sName == "menu_selecttrack") {
         l_pRet = a_pManager->changeMenu(createMenuSelectTrack(a_pDevice, a_pManager, a_pState));
       }
@@ -139,9 +133,6 @@ namespace dustbin {
       }
       else if (a_sName == "menu_selectcup") {
         l_pRet = a_pManager->changeMenu(createMenuSelectCup(a_pDevice, a_pManager, a_pState));
-      }
-      else if (a_sName == "menu_profilewizard") {
-        l_pRet = a_pManager->changeMenu(createMenuProfileWizard(a_pDevice, a_pManager, a_pState));
       }
       else if (a_sName == "menu_remote") {
         l_pRet = a_pManager->changeMenu(createMenuRemote(a_pDevice, a_pManager, a_pState));

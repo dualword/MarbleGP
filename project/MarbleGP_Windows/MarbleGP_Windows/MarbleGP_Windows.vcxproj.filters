@@ -249,17 +249,11 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp">
-      <Filter>Quelldateien\menu</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp">
       <Filter>Quelldateien\controller</Filter>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\controller\CControllerGame.cpp">
       <Filter>Quelldateien\controller</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\menu\CMenuSetupGame.cpp">
-      <Filter>Quelldateien\menu</Filter>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp">
       <Filter>Quelldateien\menu</Filter>
@@ -653,9 +647,6 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_ai.cpp">
       <Filter>Quelldateien\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\menu\CMenuProfileWizard.cpp">
-      <Filter>Quelldateien\menu</Filter>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\gui\CTutorialHUD.cpp">
       <Filter>Quelldateien\gui</Filter>

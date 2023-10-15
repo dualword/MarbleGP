@@ -172,15 +172,12 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuNetworkLobby.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuNewGameWizard.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuNextRace.cpp" />
-    <ClCompile Include="..\..\_source\source\menu\CMenuProfiles.cpp" />
-    <ClCompile Include="..\..\_source\source\menu\CMenuProfileWizard.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuRemote.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSearchServer.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectCup.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuSettings.cpp" />
-    <ClCompile Include="..\..\_source\source\menu\CMenuSetupGame.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuStandings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
