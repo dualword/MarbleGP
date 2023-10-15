@@ -1,1 +1,1 @@
-You have finished the tutorial and are now ready for a first race. Using the difficulty level "Too Easy" for the first race is a good idea I think.
+You have finished the tutorial and are now ready for a first race. Using the difficulty level "Easy" (3 opponents with Marble3 AI) for the first race is a good idea I think.

@@ -32,7 +32,7 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 25, 15, 55, 19" font="big" tooltip="The Grid will be filled to 4 marbles using Marble2 + 3 AI">
+      <element type="MenuButton" rect="relative: 25, 15, 55, 19" font="big" tooltip="The Grid will be filled to 4 marbles using Marble3 AI">
         <attributes>
           <attribute key="Name" value="AiLevel1" />
           <attribute key="Caption" value="Easy" />
