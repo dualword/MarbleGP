@@ -431,6 +431,7 @@ namespace dustbin {
       }
     }
 
+#ifdef _WINDOWS
     /**
     * Function for auto-detection of suitable game graphics settings
     * @param a_pDevice the Irrlicht device
@@ -475,9 +476,9 @@ namespace dustbin {
         shader::CShaderHandlerBase *l_pShader = nullptr;
         
         if (l_vViewports.size() != 1)
-          l_pShader = new shader::CShaderHandleXEffectSplitscreen(a_pDevice, l_cDim, l_iShadowMap, 128);
+          l_pShader = new shader::CShaderHandleXEffectSplitscreen(a_pDevice, l_cDim, l_iShadowMap, a_pSettings->m_iAmbient);
         else
-          l_pShader = new shader::CShaderHandlerXEffect(a_pDevice, l_cDim, l_iShadowMap, 128);
+          l_pShader = new shader::CShaderHandlerXEffect(a_pDevice, l_cDim, l_iShadowMap, a_pSettings->m_iAmbient);
 
         l_pShader->initialize();
 
@@ -530,5 +531,6 @@ namespace dustbin {
       l_pSmgr->clear();
       printf("Shadow settings: %i\n", a_pSettings->m_iShadows);
     }
+#endif
   }
 }

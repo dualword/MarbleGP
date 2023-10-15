@@ -39,6 +39,7 @@ namespace dustbin {
     m_pGui            (nullptr),
     m_pFs             (nullptr),
     m_bFocused        (false),
+    m_bFirstStart     (a_sSettings == ""),
     m_iRasterSize     (-1),
     m_pCtrlMenu       (nullptr),
     m_pCtrlGame       (nullptr),
@@ -300,6 +301,12 @@ namespace dustbin {
     m_mStates[state::enState::Menu] = new state::CMenuState(m_pDevice, this);
     m_mStates[state::enState::Game] = new state::CGameState(m_pDevice, this);
     m_pActiveState = m_mStates[state::enState::Menu];
+
+#ifdef _WINDOWS
+    if (m_bFirstStart) {
+      helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
+    }
+#endif
 
     m_pActiveState->activate();
   }

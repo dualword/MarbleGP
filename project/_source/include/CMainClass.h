@@ -30,6 +30,7 @@ namespace dustbin {
       irr::io::IFileSystem      *m_pFs;         /**< The Irrlicht file system */
 
       bool m_bFocused;        /**< Is the window focused? */
+      bool m_bFirstStart;     /**< Is this the first start of the game? */
 
       std::map<std::string, std::string> m_mSettings;   /**< All the settings of the program */
       std::map<std::string, std::string> m_mGlobals;    /**< The global variables */
