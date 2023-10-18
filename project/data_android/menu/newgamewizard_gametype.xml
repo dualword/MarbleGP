@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <attributes>
+      <attribute key="Name" value="gamewizard_step2" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 3" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - New Game - Step 2" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 5, 50, 7" font="big">
+        <attributes>
+          <attribute key="Caption" value="Select which type of game you want to play." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 15, 8, 35, 12" font="big">
+        <attributes>
+          <attribute key="Name" value="GameType0" />
+          <attribute key="Caption" value="Free Racing" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 15, 14, 35, 18" font="big">
+        <attributes>
+          <attribute key="Name" value="GameType1" />
+          <attribute key="Caption" value="MarbleGP Cup" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 3, 23, 47, 25">
+        <attributes>
+          <attribute key="Caption" value="If you want to play a network game you need to make sure that all clients are connected to the same Wifi." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 26, 16, 29">
+        <attributes>
+          <attribute key="Name" value="GameType2" />
+          <attribute key="Caption" value="Network | Free Racing" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 17, 26, 33, 29">
+        <attributes>
+          <attribute key="Name" value="GameType3" />
+          <attribute key="Caption" value="Network | MarbleGP Cup" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 34, 26, 49, 29">
+        <attributes>
+          <attribute key="Name" value="GameType4" />
+          <attribute key="Caption" value="Join Network Game" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>

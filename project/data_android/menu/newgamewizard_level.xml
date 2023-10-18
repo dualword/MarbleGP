@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <attributes>
+      <attribute key="Name" value="gamewizard_step3" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 3" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - New Game - Step 3" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 4, 50, 6">
+        <attributes>
+          <attribute key="Caption" value="Select whether or not you want AI opponents and how good they shall be." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 9, 24, 13" font="big" tooltip="No AI marbles will be added">
+        <attributes>
+          <attribute key="Name" value="AiLevel0" />
+          <attribute key="Caption" value="No AI Marbles" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 25, 9, 49, 13" font="big" tooltip="The Grid will be filled to 4 marbles using Marble3 AI">
+        <attributes>
+          <attribute key="Name" value="AiLevel1" />
+          <attribute key="Caption" value="Easy" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 16, 24, 20" font="big" tooltip="The Grid will be filled to 8 marbles using Marble2 AI">
+        <attributes>
+          <attribute key="Name" value="AiLevel2" />
+          <attribute key="Caption" value="Average" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 25, 16, 49, 20" font="big" tooltip="The Grid will be filled to 16 marbles using all AI classes">
+        <attributes>
+          <attribute key="Name" value="AiLevel3" />
+          <attribute key="Caption" value="Medium" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 1, 23, 24, 27" font="big" tooltip="The Grid will be filled to 16 marbles using MarbleGP + 2 AI">
+        <attributes>
+          <attribute key="Name" value="AiLevel4" />
+          <attribute key="Caption" value="Hard" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 25, 23, 49, 27" font="big" tooltip="The Grid will be filled to 16 marbles using MarbleGP AI">
+        <attributes>
+          <attribute key="Name" value="AiLevel5" />
+          <attribute key="Caption" value="Very Hard" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 60, 45, 78, 48" tooltip="You get access to all options for the game setup">
+        <attributes>
+          <attribute key="Name" value="AiLevel6" />
+          <attribute key="Caption" value="Custom" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>

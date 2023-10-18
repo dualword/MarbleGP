@@ -573,9 +573,9 @@ namespace dustbin {
 
       if (l_pCtrl != nullptr) {
         irr::gui::IGUIElement* l_pItems[] = {
-          findElement("EditProfile_JoyKeyTab"     , (irr::gui::EGUI_ELEMENT_TYPE)     gui::g_ControllerUiGameId),
-          findElement("EditProfile_ControlUiTouch",                              irr::gui::EGUIET_IMAGE        ),
-          findElement("EditProfile_ControlUiGyro" ,                              irr::gui::EGUIET_IMAGE        )
+          findElement("EditProfile_JoyKeyTab"     , irr::gui::EGUIET_TAB  ),
+          findElement("EditProfile_ControlUiTouch", irr::gui::EGUIET_IMAGE),
+          findElement("EditProfile_ControlUiGyro" , irr::gui::EGUIET_IMAGE)
         };
 
         int l_iCtrl = l_pCtrl->getSelected();

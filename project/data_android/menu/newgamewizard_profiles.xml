@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <attributes>
+      <attribute key="Name" value="gamewizard_step1" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 3" font="huge">
+        <attributes>
+          <attribute key="Caption" value="MarbleGP - New Game - Step 1" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_headline" />
+        </attributes>
+        
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 4, 50, 6">
+        <attributes>
+          <attribute key="Caption" value="Select the players for the next game by checking the box in front of the names." />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+
+      <element type="tab" rect="relative: 10, 9, 49, 13">
+        <attributes>
+          <attribute key="Name" value="TabPlayer1" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_gamewizard_player.xml" />
+        </children>
+      </element>
+
+      <element type="tab" rect="relative: 10, 13, 49, 17">
+        <attributes>
+          <attribute key="Name" value="TabPlayer2" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_gamewizard_player.xml" />
+        </children>
+      </element>
+
+      <element type="tab" rect="relative: 10, 17, 49, 21">
+        <attributes>
+          <attribute key="Name" value="TabPlayer3" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_gamewizard_player.xml" />
+        </children>
+      </element>
+
+      <element type="tab" rect="relative: 10, 21, 49, 25">
+        <attributes>
+          <attribute key="Name" value="TabPlayer4" />
+        </attributes>
+        
+        <children>
+          <include file="data/menu/dialog_gamewizard_player.xml" />
+        </children>
+      </element>
+       
+    </children>
+  </element>
+  
+</dialog>

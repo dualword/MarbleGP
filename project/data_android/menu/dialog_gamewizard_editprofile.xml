@@ -1,0 +1,65 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Name" value="GameWizardEditProfile" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="23" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="relative: 0, 1, 50, 3" font="huge">
+            <attributes>
+              <attribute key="Name" value="EditProfileNew" />
+              <attribute key="Caption" value="Add new Profile" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="staticText" rect="relative: 0, 1, 50, 3" font="huge">
+            <attributes>
+              <attribute key="Name" value="EditProfileEdit" />
+              <attribute key="Caption" value="Edit Profile" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <include file="data/menu/editprofile_data.xml" />
+          <include file="data/menu/editprofile_name.xml" />
+          <include file="data/menu/editprofile_aihelp.xml" />
+          <include file="data/menu/editprofile_controls.xml" />
+          <include file="data/menu/editprofile_overview.xml" />
+          
+          <element type="MenuButton" rect="lowermiddle: 1, -3, 4, 0">
+            <attributes>
+              <attribute key="Name" value="EditProfileOk" />
+              <attribute key="ImagePath" value="data/images/btn_ok.png" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="lowermiddle: -3, -3, 0 , 0">
+            <attributes>
+              <attribute key="Name" value="EditProfileCancel" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
+          
+          <include file="data/menu/editprofile_texture.xml" />
+          <include file="data/menu/dialog_yesno.xml" />
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

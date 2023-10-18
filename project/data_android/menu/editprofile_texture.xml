@@ -1,0 +1,126 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="relative: 0, 0, 50, 30">
+    <attributes>
+      <attribute key="Name" value="EditProfile_Texture" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 5, 50, 7" font="big">
+        <attributes>
+          <attribute key="Caption" value="Customize the texture of your marble" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 2, 8, 24, 30">
+        <attributes>
+          <attribute key="Name" value="EditProfile_TextureRtt" />
+          <attribute key="ScaleImage" value="true" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/no_image.png" />
+        </custom>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 44, 8, 49, 10" tooltip="Edit Texture Parameters">
+        <attributes>
+          <attribute key="Name" value="EditProfile_EditParams" />
+          <attribute key="Caption" value="..." />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 44, 12, 49, 17" tooltip="Generate Random Texture">
+        <attributes>
+          <attribute key="Name" value="EditProfile_RandomTexture" />
+          <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 25, 8, 43, 30">
+        <attributes>
+          <attribute key="Caption" value="Use this dialog to customize the texture of your marble. You can create a random texture by clicking on the lower of the two buttons on the right, or directly modify the parameters using the upper of the buttons." />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="128, 128, 128, 128" />
+      <attribute key="Name" value="EditProfile_TextureParams" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="relative: 20, 4, 49, 29">
+        <attributes>
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+        </attributes>
+        
+        <children>
+          <element type="MenuButton" rect="relative: 26, 1, 28, 3" tooltip="Edit Texture Parameters">
+            <attributes>
+              <attribute key="Name" value="EditProfile_EditParamsClose" />
+              <attribute key="ImagePath" value="data/images/btn_cancel.png" />
+            </attributes>
+          </element>
+  
+          <element type="MenuButton" rect="relative: 1, 4, 28, 6">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnPattern" />
+              <attribute key="Caption" value="Texture Pattern" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 1, 7, 28, 9">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoFore" />
+              <attribute key="Caption" value="Number Foreground Color" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="relative: 1, 10, 28, 12">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoBack" />
+              <attribute key="Caption" value="Number Background Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 13, 28, 15">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoRing" />
+              <attribute key="Caption" value="Number Ring Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 16, 28, 18">
+            <attributes>
+              <attribute key="Name" value="EditProfile_BtnNoFrame" />
+              <attribute key="Caption" value="Number Frame Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 19, 28, 21">
+            <attributes>
+              <attribute key="Name" value="EditProfile_PattrnFore" />
+              <attribute key="Caption" value="Pattern Foreground Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 22, 28, 24">
+            <attributes>
+              <attribute key="Name" value="EditProfile_PattrnBack" />
+              <attribute key="Caption" value="Pattern Background Color" />
+            </attributes>
+          </element>          
+        </children>
+      </element>
+    </children>
+  </element>
+</dialog>

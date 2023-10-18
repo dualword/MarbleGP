@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="Name" value="EditProfile_Data" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 5, 50, 7" font="big">
+        <attributes>
+          <attribute key="Caption" value="Profile Data" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 10, 10, 12">
+        <attributes>
+          <attribute key="Caption" value="Name:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 11, 10, 25, 12">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Name" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 13, 10, 15">
+        <attributes>
+          <attribute key="Caption" value="Short Name:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 11, 13, 25, 15">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Short" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 16, 10, 18">
+        <attributes>
+          <attribute key="Caption" value="AI Help:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 11, 16, 25, 18">
+        <attributes>
+          <attribute key="Name" value="ProfileData_AiHelp" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 19, 10, 21">
+        <attributes>
+          <attribute key="Caption" value="Controls:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 11, 19, 25, 21">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Ctrl" />
+          <attribute key="MaxChars" value="20" />
+          <attribute key="Enabled" value="false" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 22, 10, 32">
+        <attributes>
+          <attribute key="Caption" value="Texture:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 11, 22, 21, 32">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Texture" />
+          <attribute key="ScaleImage" value="true" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/no_image.png" />
+        </custom>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 31, 10, 49, 14">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Delete" />
+          <attribute key="Caption" value="Delete Profile" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 31, 28, 49, 32">
+        <attributes>
+          <attribute key="Name" value="ProfileData_Tutorial" />
+          <attribute key="Caption" value="Play Tutorial" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>

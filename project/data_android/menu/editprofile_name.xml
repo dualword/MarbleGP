@@ -1,0 +1,65 @@
+ <?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="Name" value="EditProfile_Name" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 5, 50, 7" font="big">
+        <attributes>
+          <attribute key="Caption" value="Player Name" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 25, 49, 32">
+        <attributes>
+          <attribute key="Caption" value="Enter the name of the profile. This name must be unique and is used to identify the player. You can use the button right of the edit field to generate a random name. Click the 'Next' (Arrow to the Right) button to continue." />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 10, 10, 12">
+        <attributes>
+          <attribute key="Caption" value="Player Name:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 11, 10, 30, 12">
+        <attributes>
+          <attribute key="Name" value="EditProfile_EditName" />
+          <attribute key="MaxChars" value="20" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 14, 10, 16">
+        <attributes>
+          <attribute key="Caption" value="Abbreviation:" />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="editBox" rect="relative: 11, 14, 20, 16">
+        <attributes>
+          <attribute key="Name" value="EditProfile_EditShort" />
+          <attribute key="MaxChars" value="5" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="relative: 42, 10, 48, 16" tooltip="Generate new random name">
+        <attributes>
+          <attribute key="Name" value="EditProfile_GenerateName" />
+          <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>
