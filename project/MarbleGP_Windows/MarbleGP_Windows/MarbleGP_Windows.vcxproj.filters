@@ -175,6 +175,12 @@
     <Filter Include="Quelldateien\menu\datahandlers">
       <UniqueIdentifier>{0501a52d-d838-450e-9cca-e1a4132c3d49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\animators">
+      <UniqueIdentifier>{ee012449-55b1-4297-a27f-3afdf585a656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\animators">
+      <UniqueIdentifier>{fa9f1a31-2aca-4bc2-8bae-fe5bc7ad952f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -735,6 +741,18 @@
     <ClCompile Include="..\..\_source\source\menu\CMenuIntroduction.cpp">
       <Filter>Quelldateien\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CAnimatorFactory.cpp">
+      <Filter>Quelldateien\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CMarbleGPTextureAnimator.cpp">
+      <Filter>Quelldateien\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\IAnimatorTextureProvider.cpp">
+      <Filter>Quelldateien\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CInGamePanelRenderer.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1213,6 +1231,18 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_EditProfile.h">
       <Filter>Headerdateien\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CAnimatorFactory.h">
+      <Filter>Headerdateien\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CMarbleGPTextureAnimator.h">
+      <Filter>Headerdateien\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\IAnimatorTextureProvider.h">
+      <Filter>Headerdateien\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CInGamePanelRenderer.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

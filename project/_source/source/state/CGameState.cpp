@@ -15,6 +15,7 @@
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CDustbinCamera.h>
 #include <shader/CShaderHandlerBase.h>
+#include <gui/CInGamePanelRenderer.h>
 #include <controller/CControllerAI.h>
 #include <scenenodes/CRostrumNode.h>
 #include <helpers/CStringHelpers.h>
@@ -72,7 +73,8 @@ namespace dustbin {
       m_pGridNode      (nullptr),
       m_fGridAngle     (0.0f),
       m_pAiNode        (nullptr),
-      m_pLuaScript     (nullptr)
+      m_pLuaScript     (nullptr),
+      m_pPanelRndr     (nullptr)
 #ifdef _TOUCH_CONTROL
       ,m_pTouchControl(nullptr)
 #endif
@@ -84,9 +86,13 @@ namespace dustbin {
       m_pCheckpointTextures[2] = m_pDrv->getTexture("data/textures/checkpoint_flash2.png");
 
       m_pSoundIntf = a_pGlobal->getSoundInterface();
+
+      animators::IAnimatorTextureProvider::m_pInstance = this;
     }
 
     CGameState::~CGameState() {
+      animators::IAnimatorTextureProvider::m_pInstance = nullptr;
+
       if (m_pLuaScript != nullptr) {
         delete m_pLuaScript;
         m_pLuaScript = nullptr;
@@ -685,6 +691,12 @@ namespace dustbin {
 
       helpers::addToDebugLog("Stop game sounds");
       m_pSoundIntf->stopGame();
+
+      if (m_pPanelRndr != nullptr) {
+        delete m_pPanelRndr;
+        m_pPanelRndr = nullptr;
+      }
+
       helpers::addToDebugLog("CGameState::deactivate() }");
     }
 
@@ -986,6 +998,9 @@ namespace dustbin {
       if (!m_pDevice->run())
         return enState::Quit;
 
+      if (m_pPanelRndr != nullptr)
+        m_pPanelRndr->updateTextureIfNecessary();
+
       m_pDrv->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
 
       if (m_pShader != nullptr)
@@ -1028,10 +1043,10 @@ namespace dustbin {
       if (m_eState == enGameState::Countdown) {
         irr::f32 l_fFade = 0.0f;
 
-        // if (m_iStep < 120)
-        //   l_fFade = 1.0f;
-        // else
-        //   l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
+        if (m_iStep < 120)
+          l_fFade = 1.0f;
+        else
+          l_fFade = 1.0f - (((irr::f32)m_iStep - 120) / 180.0f);
 
         if (l_fFade < 0.1f && l_fFade > 0.0f)
           m_pSoundIntf->setMenuFlag(false);
@@ -1105,6 +1120,9 @@ namespace dustbin {
         m_pGlobal->getSoundInterface()->play2d(en2dSounds::Countdown, CGlobal::getInstance()->getSettingData().m_fSfxGame, 0.0f);
       }
       else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(en2dSounds::CountdownGo, CGlobal::getInstance()->getSettingData().m_fSfxGame, 0.0f);
+
+      if (m_pPanelRndr != nullptr)
+        m_pPanelRndr->setCountdownTick(a_Tick);
     }
 
     /**
@@ -1271,6 +1289,9 @@ namespace dustbin {
 
           m_vPlayers .push_back(l_pPlayer);
           m_vPosition.push_back(l_pPlayer);
+
+          if (m_pPanelRndr != nullptr)
+            m_pPanelRndr->updateRanking(m_vPosition);
 
           threads::CInputQueue  *m_pTheInputQueue  = nullptr;
           threads::COutputQueue *m_pTheOutputQueue = nullptr;
@@ -1599,6 +1620,10 @@ namespace dustbin {
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         m_aMarbles[l_iIndex]->m_pPlayer->m_iLapCp = 0;
         m_aMarbles[l_iIndex]->m_pPlayer->m_iLapNo++;
+
+        if (m_pPanelRndr != nullptr)
+          m_pPanelRndr->updateCurrentLap(m_aMarbles[l_iIndex]->m_pPlayer->m_iLapNo);
+        
       }
       m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::Lap);
     }
@@ -1749,6 +1774,9 @@ namespace dustbin {
       for (std::vector<gameclasses::SPlayer *>::iterator l_itPlr = m_vPosition.begin(); l_itPlr != m_vPosition.end(); l_itPlr++) {
         (*l_itPlr)->m_iPosition = l_iPos++;
       }
+
+      if (m_pPanelRndr != nullptr)
+        m_pPanelRndr->updateRanking(m_vPosition);
     }
 
     /**
@@ -1802,6 +1830,30 @@ namespace dustbin {
 
       if (m_pLuaScript != nullptr)
         m_pLuaScript->onplayerwithdrawn(a_MarbleId);
+    }
+
+    /**
+    * Get the texture with the race information
+    * @return the texture with the race information
+    */
+    irr::video::ITexture *CGameState::getRaceInfoTexture() {
+      if (m_pPanelRndr == nullptr) {
+        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_vPlayers, m_cGameData.m_iLaps);
+      }
+
+      return m_pPanelRndr->getRaceInfoRTT();
+    }
+
+    /**
+    * Get the texture for the race counter
+    * @return the texture for the race counter
+    */
+    irr::video::ITexture *CGameState::getLapCountTexture() {
+      if (m_pPanelRndr == nullptr) {
+        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_vPlayers, m_cGameData.m_iLaps);
+      }
+
+      return m_pPanelRndr->getLapCountRTT();
     }
   }
 }

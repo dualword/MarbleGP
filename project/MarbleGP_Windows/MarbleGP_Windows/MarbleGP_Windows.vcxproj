@@ -91,6 +91,9 @@
     <ClCompile Include="..\..\libs\lua-5.4.4\src\lutf8lib.c" />
     <ClCompile Include="..\..\libs\lua-5.4.4\src\lvm.c" />
     <ClCompile Include="..\..\libs\lua-5.4.4\src\lzio.c" />
+    <ClCompile Include="..\..\_source\source\animators\CAnimatorFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\animators\CMarbleGPTextureAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\animators\IAnimatorTextureProvider.cpp" />
     <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
     <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp" />
@@ -120,6 +123,7 @@
     <ClCompile Include="..\..\_source\source\gui\CGameHUDHelpers.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CGuiTrackSelect.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\CInGamePanelRenderer.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CTutorialHUD.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CVirtualKeyboard.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp" />
@@ -274,6 +278,9 @@
     <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\types.h" />
     <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\utility.h" />
     <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\win32.h" />
+    <ClInclude Include="..\..\_source\include\animators\CAnimatorFactory.h" />
+    <ClInclude Include="..\..\_source\include\animators\CMarbleGPTextureAnimator.h" />
+    <ClInclude Include="..\..\_source\include\animators\IAnimatorTextureProvider.h" />
     <ClInclude Include="..\..\_source\include\CGlobal.h" />
     <ClInclude Include="..\..\_source\include\CMainClass.h" />
     <ClInclude Include="..\..\_source\include\controller\CAiControlThread.h" />
@@ -311,6 +318,7 @@
     <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiTextField.h" />
     <ClInclude Include="..\..\_source\include\gui\CGuiTrackSelect.h" />
+    <ClInclude Include="..\..\_source\include\gui\CInGamePanelRenderer.h" />
     <ClInclude Include="..\..\_source\include\gui\CTutorialHUD.h" />
     <ClInclude Include="..\..\_source\include\gui\CVirtualKeyboard.h" />
     <ClInclude Include="..\..\_source\include\gui\CButtonRenderer.h" />

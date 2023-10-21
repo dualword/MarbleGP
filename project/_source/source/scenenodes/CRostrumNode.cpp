@@ -24,6 +24,8 @@ namespace dustbin {
             l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/red_cross.png"));
           else if (i == 3)
             l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/rostrum.png"));
+          else if (i == 4)
+            l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/rostrum_logo.png"));
         }
 
         irr::scene::ISceneNode *l_pPhysics = a_pMgr->addSceneNode(scenenodes::g_PhysicsNodeName, l_pNode);

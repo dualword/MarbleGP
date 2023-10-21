@@ -69,6 +69,7 @@ namespace dustbin {
       m_sController   (a_sController),
       m_sShortName    (a_sShortName),
       m_wsShortName   (helpers::s2ws(a_sShortName)),
+      m_wsName        (helpers::s2ws(a_sName)),
       m_bWithdrawn    (false),
       m_bShowRanking  (true),
       m_bAutoThrottle (a_bAutoThrottle),
@@ -104,6 +105,8 @@ namespace dustbin {
       if (helpers::findTextureParameter(l_mParams, "numbercolor") != "") helpers::fillColorFromString(m_cText, helpers::findTextureParameter(l_mParams, "numbercolor"));
       if (helpers::findTextureParameter(l_mParams, "numberback" ) != "") helpers::fillColorFromString(m_cBack, helpers::findTextureParameter(l_mParams, "numberback" ));
       if (helpers::findTextureParameter(l_mParams, "ringcolor"  ) != "") helpers::fillColorFromString(m_cFrme, helpers::findTextureParameter(l_mParams, "ringcolor"  ));
+
+      setName(m_sName);
     }
 
     void SPlayer::setName(const std::string& a_sName) {

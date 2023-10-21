@@ -3,6 +3,7 @@
 
 #include <irrlicht.h>
 
+#include <animators/IAnimatorTextureProvider.h>
 #include <_generated/messages/IGameState.h>
 #include <threads/CMessageQueue.h>
 #include <gameclasses/SPlayer.h>
@@ -49,6 +50,7 @@ namespace dustbin {
   }
 
   namespace gui {
+    class CInGamePanelRenderer;
 #ifdef _TOUCH_CONTROL
     class IGuiMarbleControl;
 #endif
@@ -121,7 +123,7 @@ namespace dustbin {
     * @author Christian Keimel
     * This is the state that show the error messages
     */
-    class CGameState : public IState, public messages::IGameState {
+    class CGameState : public IState, public messages::IGameState, public animators::IAnimatorTextureProvider {
       private:
         enum class enGameState {
           Countdown,
@@ -197,6 +199,9 @@ namespace dustbin {
         irr::scene::ISceneNode *m_pAiNode;    /**< The scene node with the AI data */
 
         lua::CLuaScript_scene *m_pLuaScript;
+
+        gui::CInGamePanelRenderer *m_pPanelRndr;    /**< The in-game panel renderer */
+
 
 #ifdef _TOUCH_CONTROL
         gui::IGuiMarbleControl *m_pTouchControl;
@@ -455,6 +460,21 @@ namespace dustbin {
         * @return enState::None for running without state change, any other value will switch to the state
         */
         virtual enState run() override;
+
+        /////////////////////////////////////////
+        // Methods of IAnimatorTextureProvider //
+        /////////////////////////////////////////
+        /**
+        * Get the texture with the race information
+        * @return the texture with the race information
+        */
+        virtual irr::video::ITexture *getRaceInfoTexture() override;
+
+        /**
+        * Get the texture for the race counter
+        * @return the texture for the race counter
+        */
+        virtual irr::video::ITexture *getLapCountTexture() override;
     };
   } // namespace state
 } // namespace dustbin

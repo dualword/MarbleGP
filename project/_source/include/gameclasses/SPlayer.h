@@ -32,6 +32,7 @@ namespace dustbin {
       std::string  m_sShortName;        /**< The short name of the player */
       std::wstring m_sNumber;           /**< The player's starting number */
       std::wstring m_wsShortName;       /**< The player's short name as wide string */
+      std::wstring m_wsName;            /**< The player's name as wide string without the AI identifier */
       bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
       bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
       bool         m_bAutoThrottle;     /**< Flag for the auto throttle option of the controller */

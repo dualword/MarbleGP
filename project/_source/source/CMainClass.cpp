@@ -3,6 +3,7 @@
 #include <enet/enet.h>
 
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
+#include <animators/CAnimatorFactory.h>
 #include <controller/CControllerBase.h>
 #include <scenenodes/CLuaMeshLoader.h>
 #include <helpers/CTextureHelpers.h>
@@ -260,6 +261,10 @@ namespace dustbin {
     scenenodes::CMarbleGPSceneNodeFactory *l_pNodeFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pSmgr);
     m_pSmgr->registerSceneNodeFactory(l_pNodeFactory);
     l_pNodeFactory->drop();
+
+    animators::CAnimatorFactory *l_pAnimatorFactory = new animators::CAnimatorFactory();
+    m_pSmgr->registerSceneNodeAnimatorFactory(l_pAnimatorFactory);
+    l_pAnimatorFactory->drop();
 
     m_pSoundInterface = sound::createSoundInterface(m_pDevice);
 
