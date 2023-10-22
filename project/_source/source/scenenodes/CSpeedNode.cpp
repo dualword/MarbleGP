@@ -116,8 +116,21 @@ namespace dustbin {
         irr::video::ITexture *l_pTexture = m_aSpeed[3];
 
         if (a_fSpeed > 0.0f) {
-          // the velocity is in the correct range
-          if (a_fSpeed >= m_fMinSpeed && a_fSpeed <= m_fMaxSpeed) {
+          if (a_fSpeed <= m_fMinSpeed || a_fSpeed >= m_fMaxSpeed) {
+            // The speed is totally wrong
+            int l_iTexture = (a_iStep / 120) % 3;
+
+            if (a_fSpeed < m_fBestSpeed) {
+              // The player is way too slow
+              l_pTexture = l_iTexture == 0 ? m_aArrow[0] : l_iTexture == 1 ? m_aWarn[0] : m_aSpeed[0];
+            }
+            else {
+              // The player is way too fast
+              l_pTexture = l_iTexture == 0 ? m_aArrow[1] : l_iTexture == 1 ? m_aWarn[1] : m_aSpeed[1];
+            }
+          }
+          else {
+            // the velocity is in the correct range
             if (a_fSpeed >= m_fBestSpeed - 2.5f && a_fSpeed <= m_fBestSpeed + 2.5f) {
               // The velocity is close to perfect
               l_pTexture = m_aSpeed[2];
@@ -133,19 +146,6 @@ namespace dustbin {
                 // the player is a little too fast
                 l_pTexture = l_bArrow ? m_aArrow[3] : m_aSpeed[2];
               }
-            }
-          }
-          else {
-            // The speed is totally wrong
-            int l_iTexture = (a_iStep / 120) % 3;
-
-            if (a_fSpeed < m_fBestSpeed) {
-              // The player is way too slow
-              l_pTexture = l_iTexture == 0 ? m_aArrow[0] : l_iTexture == 1 ? m_aWarn[0] : m_aSpeed[0];
-            }
-            else {
-              // The player is way too fast
-              l_pTexture = l_iTexture == 0 ? m_aArrow[1] : l_iTexture == 1 ? m_aWarn[1] : m_aSpeed[1];
             }
           }
         }
