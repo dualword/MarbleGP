@@ -45,13 +45,15 @@ namespace dustbin {
           if (l_sCaller == "PlayerSelect") {
 
 #ifdef _ANDROID
-            std::vector<irr::gui::IGUIElement *> l_vPlayers;
+            if (reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked()) {
+              std::vector<irr::gui::IGUIElement *> l_vPlayers;
 
-            helpers::findAllElementsByNameAndType("PlayerSelect", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement(), l_vPlayers);
+              helpers::findAllElementsByNameAndType("PlayerSelect", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement(), l_vPlayers);
 
-            for (auto l_cPlayer : l_vPlayers) {
-              gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(l_cPlayer);
-              p->setChecked(p == a_cEvent.GUIEvent.Caller);
+              for (auto l_cPlayer : l_vPlayers) {
+                gui::CDustbinCheckbox *p = reinterpret_cast<gui::CDustbinCheckbox *>(l_cPlayer);
+                p->setChecked(p == a_cEvent.GUIEvent.Caller);
+              }
             }
 #endif
 
