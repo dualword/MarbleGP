@@ -14,7 +14,7 @@
 
 namespace dustbin {
   namespace menu {
-    CDataHandler_EditProfile::CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData& a_cEditProfile) :
+    CDataHandler_EditProfile::CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData& a_cEditProfile, irr::video::ITexture *a_pTextureRtt) :
       IMenuDataHandler(),
       m_cEditProfile  (a_cEditProfile),
       m_iProfileIndex (a_iProfileIndex),
@@ -23,7 +23,7 @@ namespace dustbin {
       m_bDeleteProfile(false),
       m_pPreviewSmgr  (nullptr),
       m_pMarbleNode   (nullptr),
-      m_pTextureRtt   (nullptr),
+      m_pTextureRtt   (a_pTextureRtt),
       m_sEditColor    ("")
     {
       std::vector<std::string> l_vColors = helpers::readLinesOfFile("data/colors.txt");
@@ -75,7 +75,6 @@ namespace dustbin {
         m_pPreviewSmgr->loadScene("data/scenes/texture_scene.xml");
         irr::scene::ICameraSceneNode *l_pCam = m_pPreviewSmgr->addCameraSceneNode(nullptr, irr::core::vector3df(-2.0f, 2.0f, -5.0f), irr::core::vector3df(0.0f));
         l_pCam->setAspectRatio(1.0f);
-        m_pTextureRtt = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "texture_rtt");
 
         if (m_pTextureRtt != nullptr) {
           irr::gui::IGUIImage *l_pTexture = reinterpret_cast<irr::gui::IGUIImage *>(findElement("EditProfile_TextureRtt", irr::gui::EGUIET_IMAGE));

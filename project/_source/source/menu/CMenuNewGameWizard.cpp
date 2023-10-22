@@ -5,6 +5,7 @@
 #include <menu/datahandlers/CDataHandler_Controls.h>
 #include <controller/CControllerGame.h>
 #include <messages/CMessageHelpers.h>
+#include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <messages/CSerializer64.h>
 #include <gui/CDustbinCheckbox.h>
@@ -12,6 +13,7 @@
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
+#include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CMenuButton.h>
 #include <state/IState.h>
@@ -75,6 +77,9 @@ namespace dustbin {
 
         std::vector<std::string> m_vSelectedPlayers;
 
+        irr::video::ITexture *m_pTextureRtt;    /**< The render target texture for the texture preview */
+
+        irr::scene::ISceneManager *m_pPreviewSmgr;  /**< The scene manager for the texture preview */
 
         /**
         * Save the championship to the global data
@@ -196,7 +201,7 @@ namespace dustbin {
         */
         void fillPlayer(data::SPlayerData* a_pPlayer, irr::gui::IGUIElement* a_pRoot, bool a_bSelected, bool a_bAddNew) {
           if (a_pPlayer != nullptr) {
-            irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerName", irr::gui::EGUIET_STATIC_TEXT, a_pRoot));
+            gui::CReactiveLabel* l_pName = reinterpret_cast<gui::CReactiveLabel*>(helpers::findElementByNameAndType("PlayerName", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId, a_pRoot));
             if (l_pName != nullptr)
               l_pName->setText(helpers::s2ws(a_pPlayer->m_sName).c_str());
 
@@ -425,9 +430,11 @@ namespace dustbin {
 
       public:
         CMenuNewGameWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler(a_pDevice, a_pManager, a_pState),
-          m_eGameType (enGameType   ::Unknown),
-          m_eStep     (enWizardStep ::Unknown)
+          IMenuHandler  (a_pDevice, a_pManager, a_pState),
+          m_eGameType   (enGameType   ::Unknown),
+          m_eStep       (enWizardStep ::Unknown),
+          m_pTextureRtt (nullptr),
+          m_pPreviewSmgr(nullptr)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -458,6 +465,8 @@ namespace dustbin {
           printf("%i profiles found.\n", (int)m_vProfiles.size());
 
           setWizardStep(enWizardStep::Profiles);
+
+          m_pTextureRtt = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "texture_rtt");
         }
 
         virtual ~CMenuNewGameWizard() {
@@ -574,7 +583,7 @@ namespace dustbin {
                 }
                 else if (l_sSender == "PlayerAdd") {
                   setWizardStep(enWizardStep::EditProfile);
-                  m_pDataHandler = new CDataHandler_EditProfile(-1, data::SPlayerData());
+                  m_pDataHandler = new CDataHandler_EditProfile(-1, data::SPlayerData(), m_pTextureRtt);
                   l_bRet = true;
                 }
                 else if (l_sSender == "BtnProfileOK") {
@@ -593,7 +602,7 @@ namespace dustbin {
                   std::string l_sName = l_pParent->getName();
                   int l_iIndex = std::atoi(l_sName.substr(l_sName.size() - 1).c_str()) - 1;
                   setWizardStep(enWizardStep::EditProfile);
-                  m_pDataHandler = new CDataHandler_EditProfile(l_iIndex, m_vProfiles[l_iIndex]);
+                  m_pDataHandler = new CDataHandler_EditProfile(l_iIndex, m_vProfiles[l_iIndex], m_pTextureRtt);
                   l_bRet = true;
                 }
                 else if (l_sSender.substr(0, std::string("GameType").length()) == "GameType") {
@@ -725,6 +734,59 @@ namespace dustbin {
                   if (l_pEditor != nullptr)
                     l_pEditor->setVisible(false);
                 }
+                else if (l_sSender == "PlayerName") {
+                  if (a_cEvent.GUIEvent.Caller->getType() == (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId) {
+                    printf("Show player details of %s\n", helpers::ws2s(a_cEvent.GUIEvent.Caller->getText()).c_str());
+                    irr::gui::IGUIElement *p = helpers::findElementByName("DialogPlayerDetails", m_pGui->getRootGUIElement());
+                    if (p != nullptr) {
+                      p->setVisible(true);
+
+                      for (auto l_cProfile : m_vProfiles) {
+                        if (l_cProfile.m_sName == helpers::ws2s(a_cEvent.GUIEvent.Caller->getText())) {
+                          irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerDetail_Name", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                          if (l_pLabel != nullptr)
+                            l_pLabel->setText(helpers::s2ws(l_cProfile.m_sName).c_str());
+
+                          l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerDetail_Short", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                          if (l_pLabel != nullptr)
+                            l_pLabel->setText(helpers::s2ws(l_cProfile.m_sShortName).c_str());
+
+                          l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerDetail_AiHelp", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                          if (l_pLabel != nullptr)
+                            l_pLabel->setText(helpers::s2ws(helpers::getAiHelpString(l_cProfile.m_eAiHelp)).c_str());
+
+                          l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerDetail_Ctrl", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                          if (l_pLabel != nullptr)
+                            l_pLabel->setText(helpers::getControllerType(l_cProfile.m_sControls).c_str());
+
+                          irr::gui::IGUIImage *l_pImg = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("PlayerDetail_TextureRtt", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
+                          if (l_pImg != nullptr) {
+                            m_pPreviewSmgr = m_pSmgr->createNewSceneManager();
+                            m_pPreviewSmgr->loadScene("data/scenes/texture_scene.xml");
+                            irr::scene::ICameraSceneNode *l_pCam = m_pPreviewSmgr->addCameraSceneNode(nullptr, irr::core::vector3df(-2.0f, 2.0f, -5.0f), irr::core::vector3df(0.0f));
+                            l_pCam->setAspectRatio(1.0f);
+                            l_pImg->setImage(m_pTextureRtt);
+
+                            irr::scene::ISceneNode *l_pMarbleNode = m_pPreviewSmgr->getSceneNodeFromName("marble");
+                            if (l_pMarbleNode != nullptr) {
+                              l_pMarbleNode->getMaterial(0).setTexture(0, helpers::createTexture(l_cProfile.m_sTexture != "" ? l_cProfile.m_sTexture : "default://number=1", m_pDrv, m_pFs));
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                else if (l_sSender == "BtnClosePlayerDetails") {
+                  irr::gui::IGUIElement *p = helpers::findElementByName("DialogPlayerDetails", m_pGui->getRootGUIElement());
+                  if (p != nullptr)
+                    p->setVisible(false);
+
+                  if (m_pPreviewSmgr != nullptr) {
+                    m_pPreviewSmgr->drop();
+                    m_pPreviewSmgr = nullptr;
+                  }
+                }
                 else printf("Button \"%s\" clicked.\n", l_sSender.c_str());
               }
               else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
@@ -750,6 +812,12 @@ namespace dustbin {
               if (l_pHandler->allControllersAssigned())
                 setWizardStep(enWizardStep::GameType);
             }
+          }
+
+          if (m_pPreviewSmgr != nullptr && m_pTextureRtt != nullptr) {
+            m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
+            m_pPreviewSmgr->drawAll();
+            m_pDrv->setRenderTarget(nullptr, false, false);
           }
           return false;
         }

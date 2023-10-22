@@ -4,6 +4,7 @@
 #include <shader/CShaderHandlerXEffect.h>
 #endif
 
+#include <controller/CControllerGame.h>
 #include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
@@ -216,6 +217,26 @@ namespace dustbin {
           return "";
           break;
       }
+    }
+
+    /**
+    * Get the string of the controller type
+    */
+    std::wstring getControllerType(const std::string& a_sCtrl) {
+      if (a_sCtrl == "DustbinTouchControl")
+        return L"Touch Controller";
+      else if (a_sCtrl == "DustbinGyroscope")
+        return L"Gyroscope";
+      else {
+        controller::CControllerBase l_pCtrl;
+        l_pCtrl.deserialize(a_sCtrl);
+        if (l_pCtrl.usesJoystick())
+          return L"Gamepad";
+        else
+          return L"Keyboard";
+      }
+
+      return L"";
     }
 
     /**

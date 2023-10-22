@@ -114,7 +114,7 @@ namespace dustbin {
         bool setElementVisibility(const std::string &a_sName, bool a_bVisible);
 
       public:
-        CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData &a_cEditProfile);
+        CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData &a_cEditProfile, irr::video::ITexture *a_pTextureRtt);
         virtual ~CDataHandler_EditProfile();
 
         /**

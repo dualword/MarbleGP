@@ -13,11 +13,16 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 4, 0, 25, 4">
+      <element type="ReactiveLabel" rect="relative: 4, 0, 19, 4">
         <attributes>
           <attribute key="Name" value="PlayerName" />
           <attribute key="Caption" value="TesTexT" />
           <attribute key="VTextAlign" value="center" />
+          <attribute key="DrawBorder" value="false" />
+          <attribute key="ClickColor" value="96, 255, 255, 128" />
+          <attribute key="HoverColor" value="32, 128, 255, 128" />
+          <attribute key="DrawBackground" value="true" />
+          <attribute key="BackgroundColor" value="0, 128, 128, 128" />
         </attributes>
       </element>
       

@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <helpers/CStringHelpers.h>
 #include <gui/CReactiveLabel.h>
 #include <state/IState.h>
 #include <CGlobal.h>
@@ -99,31 +100,34 @@ namespace dustbin {
       return m_cBackground;
     }
 
+    int bla = 0;
+
     bool CReactiveLabel::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
       if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-        if (a_cEvent.MouseInput.isLeftPressed()) {
-          m_bLDown = true;
-
-          l_bRet = true;
+        if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          m_bLDown = m_bHovered;
         }
-        else if (!a_cEvent.MouseInput.isLeftPressed()) {
-          if (m_bLDown) {
-            m_bLDown = false;
-            irr::core::vector2di l_cPos = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
-            if (getAbsoluteClippingRect().isPointInside(l_cPos) && Parent != nullptr) {
-              irr::SEvent l_cEvent;
-              l_cEvent.EventType = irr::EET_GUI_EVENT;
-              l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
-              l_cEvent.GUIEvent.Caller    = this;
-              l_cEvent.GUIEvent.Element   = this;
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          if (m_bLDown && m_bHovered) {
+            irr::SEvent l_cEvent;
+            l_cEvent.EventType = irr::EET_GUI_EVENT;
+            l_cEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
+            l_cEvent.GUIEvent.Caller    = this;
+            l_cEvent.GUIEvent.Element   = this;
 
-              Parent->OnEvent(l_cEvent);
-
-              l_bRet = true;
-            }
+            Parent->OnEvent(l_cEvent);
           }
+          m_bLDown = false;
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_GUI_EVENT && a_cEvent.GUIEvent.Caller == this) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_LEFT) {
+          m_bHovered = false;
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_HOVERED) {
+          m_bHovered = true;
         }
       }
 

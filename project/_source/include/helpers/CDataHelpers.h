@@ -42,6 +42,11 @@ namespace dustbin {
     std::string getAiHelpString(data::SPlayerData::enAiHelp a_eAiHelp);
 
     /**
+    * Get the string of the controller type
+    */
+    std::wstring getControllerType(const std::string &a_sCtrl);
+
+    /**
     * Get the default controller string for Keyboard game controls
     * @return the default controller string for Keyboard game controls
     */

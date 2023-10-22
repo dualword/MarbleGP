@@ -12,4 +12,5 @@
   <include file="data/menu/dialog_gamewizard_editprofile.xml" />
   <include file="data/menu/dialog_color.xml" />
   <include file="data/menu/dialog_select_pattern.xml" />
+  <include file="data/menu/dialog_playerdetails.xml" />
 </dialog>
