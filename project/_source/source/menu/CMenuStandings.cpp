@@ -283,7 +283,7 @@ namespace dustbin {
           }
         }
 
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = false;
 
           if (a_cEvent.EventType == irr::EET_GUI_EVENT) {

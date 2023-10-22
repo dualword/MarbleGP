@@ -31,7 +31,7 @@ namespace dustbin {
         * Handle an event in a subclass
         * @return "true" if the event was handled
         */
-        virtual bool OnEnetEvent(ENetEvent *a_cEvent);
+        virtual bool OnEnetEvent(ENetEvent *a_cEvent) override;
 
         /**
         * Handle a received message in a subclass
@@ -39,7 +39,7 @@ namespace dustbin {
         * @param a_pMessage the message to handle
         * @return true if the message was handled
         */
-        virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage);
+        virtual bool onMessageReceived(ENetPeer *a_pPeer, messages::IMessage *a_pMessage) override;
 
 
         /**

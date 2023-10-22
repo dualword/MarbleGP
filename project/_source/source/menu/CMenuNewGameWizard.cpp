@@ -472,7 +472,7 @@ namespace dustbin {
         virtual ~CMenuNewGameWizard() {
         }
 
-        virtual bool OnEvent(const irr::SEvent& a_cEvent) {
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override {
           bool l_bRet = IMenuHandler::OnEvent(a_cEvent);
 
           if (!l_bRet) {
