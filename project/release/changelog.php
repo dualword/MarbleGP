@@ -1,5 +1,11 @@
 <ul>
   <li>
+    <b>2023-10-22 [1.2 Build 247]</b>
+    <ul>
+      <li>Put some release information here</li>
+    </ul>
+  </li>
+  <li>
     <b>2023-09-22 [1.1 Build 246]</b>
     <ul>
       <li>First version of the &quot;New Game&quot; wizard for easier game setup</li>

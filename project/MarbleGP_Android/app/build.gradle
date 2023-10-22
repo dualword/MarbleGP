@@ -10,8 +10,8 @@ android {
         applicationId "com.dustbingames.marblegp"
         minSdk 29
         targetSdk 33
-        versionCode 44
-        versionName "1.1 Build 246"
+        versionCode 45
+        versionName "1.2 Build 247"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk.abiFilters 'armeabi-v7a', 'arm64-v8a'
