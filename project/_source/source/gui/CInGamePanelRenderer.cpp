@@ -161,21 +161,18 @@ namespace dustbin {
           case  3: s = L"3"     ; break;
           case  2: s = L"2"     ; break; 
           case  1: s = L"1"     ; break;
-          default: s = L"Go!!"  ; break;
+          default: s = L"Go!!!" ; break;
         }
       }
       else if (m_iCurrentLap == m_iLapCount) {
-        if (m_iLapCount == 1)
-          s = L"Single Lap";
-        else
-          s = L"Final Lap";
+        s = L"Final Lap";
       }
       else if (m_iCurrentLap > m_iLapCount)
         s = L"Finished";
       else
         s = L"Lap " + std::to_wstring(m_iCurrentLap) + L" / " + std::to_wstring(m_iLapCount);
 
-      m_pFontOne->draw(s.c_str(), a_cRect, irr::video::SColor(0xFF, 0, 0, 0), a_bCenter, true);
+      m_pFontOne->draw(s.c_str(), a_cRect, (a_bCenter && m_iLapCount == 1) ? irr::video::SColor(0xFF, 0xb8, 0xc8, 0xff) : irr::video::SColor(0xFF, 0, 0, 0), a_bCenter, true);
     }
 
     /**
@@ -245,7 +242,7 @@ namespace dustbin {
       }
 
       if (m_pLapCountRtt != nullptr) {
-        m_pDrv->setRenderTarget(m_pLapCountRtt, true, true, irr::video::SColor(0xFF, 0xb8, 0xc8, 0xff));
+        m_pDrv->setRenderTarget(m_pLapCountRtt, true, true, m_iLapCount == 1 ? irr::video::SColor(0xFF, 0, 0, 0) : irr::video::SColor(0xFF, 0xb8, 0xc8, 0xff));
         renderCurrentLap(m_cLapCount, true);
         m_pDrv->setRenderTarget(nullptr);
       }
