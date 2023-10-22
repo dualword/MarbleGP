@@ -218,7 +218,12 @@ namespace dustbin {
           if (l_pPlayer->m_iDiffAhead > 0) {
             double l_fTime = (double)l_pPlayer->m_iDiffAhead / 120.0;
             wchar_t s[50];
+#ifdef _WINDOWS
             swprintf(s, L"%.2f Sec.", l_fTime);
+#else
+            swprintf(s, 50, L"%.2f Sec.", l_fTime);
+#endif
+
             l_sDiff = s;
           }
           else if (l_pPlayer->m_iDiffAhead < 0) {
