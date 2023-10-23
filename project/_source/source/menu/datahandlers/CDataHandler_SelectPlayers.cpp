@@ -3,6 +3,7 @@
 #include <helpers/CStringHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <helpers/CMenuLoader.h>
+#include <gui/CReactiveLabel.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
 #include <irrlicht.h>
@@ -66,7 +67,7 @@ namespace dustbin {
               gui::CDustbinCheckbox *l_pCheck = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("PlayerSelect", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, l_pTab));
               if (l_pCheck != nullptr) {
                 if (l_pCheck->isChecked()) {
-                  irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("PlayerName", irr::gui::EGUIET_STATIC_TEXT, l_pTab));
+                  gui::CReactiveLabel* l_pName = reinterpret_cast<gui::CReactiveLabel*>(helpers::findElementByNameAndType("PlayerName", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ReactiveLabelId, l_pTab));
 
                   if (l_pName != nullptr) {
                     if (m_sSelected != "")

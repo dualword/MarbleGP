@@ -105,7 +105,6 @@ namespace dustbin {
       int          m_iGridPos;      /**< Position in the grid (1..16) */
       int          m_iViewPort;     /**< The viewport of this player (if any) */
       float        m_fDeviation;    /**< The deviation in power for this marble (AI only) */
-      bool         m_bAutoThrottle; /**< The "Auto Throttle" option */
 
       std::string m_sName;      /**< The player's name */
       std::string m_sTexture;   /**< The player's texture generation string */

@@ -17,7 +17,6 @@ namespace dustbin {
       private:
         bool m_bWithdrawDown;   /**< Cancel button pressed? */
         bool m_bPauseDown;      /**< Pause button pressed? */
-        bool m_bAutoThrottle;   /**< Is the player's "Auto Throttle" option enabled? */
 
         void setupControls();
 
@@ -38,7 +37,6 @@ namespace dustbin {
 
       public:
         CControllerGame();
-        CControllerGame(bool a_bAutoThrottle);
         virtual ~CControllerGame();
 
         /**

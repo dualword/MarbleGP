@@ -954,8 +954,6 @@ namespace dustbin {
               l_vPlayers.back().m_sShortName = l_cJson.asString();
             else if (l_sKey == "ai_help")
               l_vPlayers.back().m_eAiHelp = (dustbin::data::SPlayerData::enAiHelp)l_cJson.asInt();
-            else if (l_sKey == "auto_throttle")
-              l_vPlayers.back().m_bAutoThrottle = l_cJson.asBool();
             else if (l_sKey == "texture")
               l_vPlayers.back().m_sTexture = l_cJson.asString();
             else if (l_sKey == "controller")

@@ -35,7 +35,6 @@ namespace dustbin {
       std::wstring m_wsName;            /**< The player's name as wide string without the AI identifier */
       bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
       bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
-      bool         m_bAutoThrottle;     /**< Flag for the auto throttle option of the controller */
       int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
       int          m_iLapNo;            /**< The player's current lap */
       int          m_iLapCp;            /**< The checkpoint number of the player's current lap */
@@ -76,7 +75,6 @@ namespace dustbin {
         const std::string& a_sTexture, 
         const std::string &a_sController, 
         const std::string &a_sShortName, 
-        bool a_bAutoThrottle,
         data::SPlayerData::enAiHelp a_eAiHelp, 
         gameclasses::SMarbleNodes* a_pMarble, 
         data::enPlayerType a_eType);

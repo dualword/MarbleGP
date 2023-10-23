@@ -42,7 +42,6 @@ namespace dustbin {
         CMarbleController(
           int                          a_iMarbleId, 
           const std::string           &a_sControls,
-          bool                         a_bAutoThrottle,
           scenenodes::CAiNode         *a_pAiNode, 
           data::SPlayerData::enAiHelp  a_eAiHelp, 
           threads::IQueue             *a_pQueue, 

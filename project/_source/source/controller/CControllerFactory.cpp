@@ -16,7 +16,6 @@ namespace dustbin {
     IController* CControllerFactory::createController(
       int                          a_iMarbleId, 
       const std::string           &a_sControls, 
-      bool                         a_bAutoThrottle,
       data::SPlayerData::enAiHelp  a_eAiHelp, 
       scenenodes::CAiNode         *a_pAiNode, 
       const std::string           &a_sAiScript,
@@ -45,7 +44,7 @@ namespace dustbin {
       }
 
       if (l_bDataValid) {
-        return new CMarbleController(a_iMarbleId, a_sControls, a_bAutoThrottle, a_pAiNode, a_eAiHelp, m_pQueue, a_sAiScript, a_cViewport);
+        return new CMarbleController(a_iMarbleId, a_sControls, a_pAiNode, a_eAiHelp, m_pQueue, a_sAiScript, a_cViewport);
       }
 
       return nullptr;

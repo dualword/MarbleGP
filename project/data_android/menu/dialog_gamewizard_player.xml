@@ -20,7 +20,7 @@
           <attribute key="VTextAlign" value="center" />
           <attribute key="DrawBorder" value="false" />
           <attribute key="ClickColor" value="96, 255, 255, 128" />
-          <attribute key="HoverColor" value="32, 128, 255, 128" />
+          <attribute key="HoverColor" value="0, 128, 255, 128" />
           <attribute key="DrawBackground" value="true" />
           <attribute key="BackgroundColor" value="0, 128, 128, 128" />
         </attributes>

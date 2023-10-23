@@ -6,11 +6,7 @@
 
 namespace dustbin {
   namespace controller {
-    CControllerGame::CControllerGame() : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false), m_bAutoThrottle(true) {
-      setupControls();
-    }
-
-    CControllerGame::CControllerGame(bool a_bAutoThrottle) : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false), m_bAutoThrottle(a_bAutoThrottle) {
+    CControllerGame::CControllerGame() : IControllerGame(IControllerGame::enType::KeyJoy), m_bWithdrawDown(false), m_bPauseDown(false) {
       setupControls();
     }
 
@@ -49,10 +45,7 @@ namespace dustbin {
     * @return the throttle state
     */
     irr::f32 CControllerGame::getThrottle() {
-      if (m_bAutoThrottle)
-        return m_vControls[4].m_fValue > 0.5f ? -1.0f : 1.0f;
-      else
-        return m_vControls[0].m_fValue - m_vControls[1].m_fValue;
+      return m_vControls[0].m_fValue - m_vControls[1].m_fValue;
     }
 
     /**
@@ -164,15 +157,8 @@ namespace dustbin {
 
       if (a_bFirst) {
         s += L"Steer the marble left and right using " + createDoubleControlString(m_vControls[2], m_vControls[3]) + L", ";
-
-
-        if (m_bAutoThrottle) {
-          s += L"the marble is accelerated automatically unless you activate the brake using " + createSingleControlString(m_vControls[4]) + L"\n";
-        }
-        else {
-          s += L"accelerate the marble forward and backward using " + createDoubleControlString(m_vControls[0], m_vControls[1]) + L", ";
-          s += L"the brake is activated using " + helpers::s2ws(m_vControls[4].toString()) + L".\n";
-        }
+        s += L"accelerate the marble forward and backward using " + createDoubleControlString(m_vControls[0], m_vControls[1]) + L", ";
+        s += L"the brake is activated using " + helpers::s2ws(m_vControls[4].toString()) + L".\n";
       }
       else {
         s = L"You can manually respawn the marble by pressing " + createSingleControlString(m_vControls[6]) + L" for two seconds.\n";

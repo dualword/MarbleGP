@@ -20,7 +20,7 @@ namespace dustbin {
     void CControllerUi_Game::setController(const std::string& a_sCtrl) {
       CControllerUi::setController(a_sCtrl);
 
-      controller::CControllerBase l_pCtrl = controller::CControllerGame(false);
+      controller::CControllerBase l_pCtrl = controller::CControllerGame();
 
       if (!m_pController->compareTo(&l_pCtrl)) {
         m_pController->getInputs().clear();

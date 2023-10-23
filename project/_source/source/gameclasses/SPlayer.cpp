@@ -22,7 +22,6 @@ namespace dustbin {
       m_wsShortName    (L""),
       m_bWithdrawn     (false),
       m_bShowRanking   (true),
-      m_bAutoThrottle  (false),
       m_iState         (0),
       m_iLapNo         (0),
       m_iLapCp         (0),
@@ -56,7 +55,7 @@ namespace dustbin {
     * @param a_sController the controller configuration string of the player
     * @param a_pMarble the marble of the player
     */
-    SPlayer::SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, bool a_bAutoThrottle, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
+    SPlayer::SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
       m_iPlayer       (a_iPlayer),
       m_iId            (-1),
       m_iPosition     (99),
@@ -72,7 +71,6 @@ namespace dustbin {
       m_wsName        (helpers::s2ws(a_sName)),
       m_bWithdrawn    (false),
       m_bShowRanking  (true),
-      m_bAutoThrottle (a_bAutoThrottle),
       m_iState        (0),
       m_iLapNo        (0),
       m_iLapCp        (0),

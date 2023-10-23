@@ -2,7 +2,8 @@
   <li>
     <b>2023-10-22 [1.2 Build 247]</b>
     <ul>
-      <li>Put some release information here</li>
+      <li>&quot;New Game&quot; wizard finished</li>
+      <li>Refactoring of network game finished</li>
     </ul>
   </li>
   <li>

@@ -30,7 +30,6 @@ namespace dustbin {
     const irr::s32 c_iPlayerDataEnd      = 31;  /**< Marker for the player data to end */
     const irr::s32 c_iPlayerShortName    = 32;  /**< Marker for the player's short name (for in-game ranking display) */
     const irr::s32 c_iPlayerDeviation    = 33;  /**< Marker for the player's power deviation (AI Marbles only) */
-    const irr::s32 c_iPlayerAutoThrottle = 34;  /**< Marker for the "Auto Throttle" flag of the player */
 
     // Game Settings
     const irr::s32 c_iGameSettings    = 42;   /**< Marker for the game settings */
@@ -262,7 +261,6 @@ namespace dustbin {
       m_iGridPos     (0 ),
       m_iViewPort    (-1),
       m_fDeviation   (0.0f),
-      m_bAutoThrottle(true),
       m_sName        (""),
       m_sTexture     (""),
       m_sControls    (""),
@@ -291,7 +289,6 @@ namespace dustbin {
       m_iGridPos      = a_cOther.m_iGridPos;
       m_iViewPort     = a_cOther.m_iViewPort;
       m_fDeviation    = a_cOther.m_fDeviation;
-      m_bAutoThrottle = a_cOther.m_bAutoThrottle;
     }
 
     std::string SPlayerData::serialize() const {
@@ -327,9 +324,6 @@ namespace dustbin {
 
         l_cSerializer.addS32(c_iPlayerDeviation);
         l_cSerializer.addF32(m_fDeviation);
-
-        l_cSerializer.addS32(c_iPlayerAutoThrottle);
-        l_cSerializer.addS16(m_bAutoThrottle ? 1 : 0);
 
         l_cSerializer.addS32(c_iPlayerDataEnd);
 
@@ -367,7 +361,6 @@ namespace dustbin {
             case c_iPlayerViewPort    : m_iViewPort     =               l_cSerializer.getS32   ()     ; break;
             case c_iPlayerShortName   : m_sShortName    =               l_cSerializer.getString()     ; m_wsShortName = helpers::s2ws(m_sShortName); break;
             case c_iPlayerDeviation   : m_fDeviation    =               l_cSerializer.getF32   ()     ; break;
-            case c_iPlayerAutoThrottle: m_bAutoThrottle =               l_cSerializer.getS16   () != 0; break;
             case c_iPlayerDataEnd     : return true;
             default:
               printf("Unknown token %i\n", l_iToken);
@@ -426,8 +419,6 @@ namespace dustbin {
       l_sReturn += "\"name\": \"" + m_sName + "\", ";
       l_sReturn += "\"short\": \"" + m_sShortName + "\", ";
       l_sReturn += "\"ai_help\": " + std::to_string((int)m_eAiHelp) + ",";
-
-      l_sReturn += "\"auto_throttle\": " + std::string(m_bAutoThrottle == true ? "true" : "false") + ",";
 
       l_sReturn += "\"texture\": \"" + m_sTexture + "\", \"controller\": ";
 
