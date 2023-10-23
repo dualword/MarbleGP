@@ -212,28 +212,21 @@ Attribute Track: ""
       <attribute key="TabStop" value="true" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: -22, 0, -3, 4" font="big" tooltip="Add, edit and remove player profiles">
-    <attributes>
-      <attribute key="Name" value="profiles" />
-      <attribute key="Id" value="23003" />
-      <attribute key="Caption" value="Profiles" />
-    </attributes>
-  </element>
-  <element type="MenuButton" rect="center: 2, 0, 21, 4" font="big" tooltip="Change graphics and sound settings">
+  <element type="MenuButton" rect="center: -10, 0, 9, 4" font="big" tooltip="Change graphics and sound settings">
     <attributes>
       <attribute key="Name" value="settings" />
       <attribute key="Id" value="23004" />
       <attribute key="Caption" value="Settings" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: -22, 6, -3, 10" font="big" tooltip="Show credits">
+  <element type="MenuButton" rect="center: -10, 5, 9, 9" font="big" tooltip="Show credits">
     <attributes>
       <attribute key="Name" value="credits" />
       <attribute key="Id" value="23007" />
       <attribute key="Caption" value="Credits" />
     </attributes>
   </element>
-  <element type="MenuButton" rect="center: 2, 6, 21, 10" font="big" tooltip="Quit the game if you want to">
+  <element type="MenuButton" rect="center: -10, 10, 9, 14" font="big" tooltip="Quit the game if you want to">
     <attributes>
       <attribute key="Name" value="exit" />
       <attribute key="Id" value="23008" />
