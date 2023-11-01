@@ -53,6 +53,7 @@ namespace dustbin {
               createMenu("menu_settings", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "free_racing") {
+              platform::consumeBackEvent(true);
               createMenu("menu_newgamewizard", m_pDevice, m_pManager, m_pState);
             }
             else if (l_sButton == "credits") {
