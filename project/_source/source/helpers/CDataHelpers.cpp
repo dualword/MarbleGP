@@ -1,9 +1,4 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
-#ifndef NO_XEFFECT
-#include <shader/CShaderHandleXEffectSplitscreen.h>
-#include <shader/CShaderHandlerXEffect.h>
-#endif
-
 #include <controller/CControllerGame.h>
 #include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
@@ -497,10 +492,6 @@ namespace dustbin {
 
         shader::CShaderHandlerBase *l_pShader = nullptr;
         
-        if (l_vViewports.size() != 1)
-          l_pShader = new shader::CShaderHandleXEffectSplitscreen(a_pDevice, l_cDim, l_iShadowMap, a_pSettings->m_iAmbient);
-        else
-          l_pShader = new shader::CShaderHandlerXEffect(a_pDevice, l_cDim, l_iShadowMap, a_pSettings->m_iAmbient);
 
         l_pShader->initialize();
 

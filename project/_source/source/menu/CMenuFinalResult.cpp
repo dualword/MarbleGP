@@ -1,9 +1,4 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
-#ifndef NO_XEFFECT
-#include <shader/CShaderHandleXEffectSplitscreen.h>
-#include <shader/CShaderHandlerXEffect.h>
-#endif
-
 #include <shader/CShaderHandlerBase.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
@@ -186,26 +181,7 @@ namespace dustbin {
 
           irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
-#ifndef NO_XEFFECT
-          switch (l_cSettings.m_iShadows) {
-            case 3:
-              m_pShader = new shader::CShaderHandleXEffectSplitscreen(l_pGlobal->getIrrlichtDevice(), l_cScreen, 8096, l_cSettings.m_iAmbient);
-              break;
-
-            case 2:
-              m_pShader = new shader::CShaderHandleXEffectSplitscreen(l_pGlobal->getIrrlichtDevice(), l_cScreen, 4096, l_cSettings.m_iAmbient);
-              break;
-            case 1:
-              m_pShader = new shader::CShaderHandleXEffectSplitscreen(l_pGlobal->getIrrlichtDevice(), l_cScreen, 2048, l_cSettings.m_iAmbient);
-              break;
-
-            case 0:
-              m_pShader = new shader::CShaderHandlerNone(l_pGlobal->getIrrlichtDevice(), l_cScreen);
-              break;
-          }
-#else
           m_pShader = new shader::CShaderHandlerNone(l_pGlobal->getIrrlichtDevice(), l_cScreen);
-#endif
 
           if (m_pShader != nullptr) {
             m_pShader->initialize();

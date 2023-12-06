@@ -85,12 +85,6 @@
     <Filter Include="Quelldateien\threads">
       <UniqueIdentifier>{04534e8b-56e4-4fb4-8b5d-e1990bee8796}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\xeffects">
-      <UniqueIdentifier>{0b9d6bb8-0d95-4404-b947-539c4900a581}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\xeffects">
-      <UniqueIdentifier>{02c66b3b-ce5a-4f57-be57-3c37f2cda6f9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\_generated">
       <UniqueIdentifier>{ad486936-4590-4050-806d-74f78a0bdd4f}</UniqueIdentifier>
     </Filter>
@@ -279,12 +273,6 @@
     <ClCompile Include="..\..\_source\source\shader\CShaderHandlerNone.cpp">
       <Filter>Quelldateien\shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerXEffect.cpp">
-      <Filter>Quelldateien\shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\shader\CShaderHandleXEffectSplitscreen.cpp">
-      <Filter>Quelldateien\shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
@@ -320,12 +308,6 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp">
       <Filter>Quelldateien\threads</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\xeffects\CShaderPre.cpp">
-      <Filter>Quelldateien\xeffects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\xeffects\EffectHandler.cpp">
-      <Filter>Quelldateien\xeffects</Filter>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp">
       <Filter>Quelldateien\_generated\messages</Filter>
@@ -872,12 +854,6 @@
     <ClInclude Include="..\..\_source\include\shader\CShaderHandlerBase.h">
       <Filter>Headerdateien\shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\_source\include\shader\CShaderHandlerXEffect.h">
-      <Filter>Headerdateien\shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\shader\CShaderHandleXEffectSplitscreen.h">
-      <Filter>Headerdateien\shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h">
       <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
@@ -922,24 +898,6 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\threads\IThread.h">
       <Filter>Headerdateien\threads</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\xeffects\CScreenQuad.h">
-      <Filter>Headerdateien\xeffects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\xeffects\CShaderPre.h">
-      <Filter>Headerdateien\xeffects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\xeffects\EffectCB.h">
-      <Filter>Headerdateien\xeffects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\xeffects\EffectHandler.h">
-      <Filter>Headerdateien\xeffects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\xeffects\EffectShaders.h">
-      <Filter>Headerdateien\xeffects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\xeffects\XEffects.h">
-      <Filter>Headerdateien\xeffects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h">
       <Filter>Headerdateien\_generated\messages</Filter>

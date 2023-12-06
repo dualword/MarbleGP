@@ -1,10 +1,4 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
-
-#ifndef NO_XEFFECT
-#include <shader/CShaderHandleXEffectSplitscreen.h>
-#include <shader/CShaderHandlerXEffect.h>
-#endif
-
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <_generated/lua/CLuaScript_scene.h>
 #include <controller/ICustomEventReceiver.h>
@@ -293,44 +287,7 @@ namespace dustbin {
 
       irr::core::dimension2du l_cDim = irr::core::dimension2du(l_cScreen.Width / l_iCols, l_cScreen.Height / l_iRows);
 
-      switch (m_cSettings.m_iShadows) {
-        case 3:
-  #ifndef NO_XEFFECT
-          if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 8192, l_iAmbient);
-          }
-          else {
-            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 8096, l_iAmbient);
-          }
-          break;
-  #endif
-
-        case 2:
-  #ifndef NO_XEFFECT
-          if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_iAmbient);
-          }
-          else {
-            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 4096, l_iAmbient);
-          }
-          break;
-  #endif
-
-        case 1:
-  #ifndef NO_XEFFECT
-          if (m_mViewports.size() == 1) {
-            m_pShader = new shader::CShaderHandlerXEffect(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_iAmbient);
-          }
-          else {
-            m_pShader = new shader::CShaderHandleXEffectSplitscreen(m_pGlobal->getIrrlichtDevice(), l_cDim, 2048, l_iAmbient);
-          }
-          break;
-  #endif
-
-        case 0:
-          m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);
-          break;
-      }
+      m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);
 
       if (m_pShader != nullptr) {
         m_pShader->initialize();
