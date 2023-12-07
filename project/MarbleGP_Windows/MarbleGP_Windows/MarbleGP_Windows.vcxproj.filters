@@ -64,12 +64,6 @@
     <Filter Include="Headerdateien\gameclasses">
       <UniqueIdentifier>{76812ff3-8ec2-4d2f-94c1-1469aaf84b69}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\shader">
-      <UniqueIdentifier>{01b08324-884a-4f26-95b1-88ef1026cca2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\shader">
-      <UniqueIdentifier>{46f33eff-2cdd-4cc1-9e23-a9292397014a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\scenenodes">
       <UniqueIdentifier>{86b967ec-bbea-451b-9793-204c435da710}</UniqueIdentifier>
     </Filter>
@@ -266,12 +260,6 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerBase.cpp">
-      <Filter>Quelldateien\shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\_source\source\shader\CShaderHandlerNone.cpp">
-      <Filter>Quelldateien\shader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
@@ -847,12 +835,6 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h">
       <Filter>Headerdateien\gameclasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\shader\CMyShaderNone.h">
-      <Filter>Headerdateien\shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\_source\include\shader\CShaderHandlerBase.h">
-      <Filter>Headerdateien\shader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h">
       <Filter>Headerdateien\scenenodes</Filter>

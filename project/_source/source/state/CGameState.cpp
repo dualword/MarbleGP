@@ -8,7 +8,6 @@
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CDustbinCamera.h>
-#include <shader/CShaderHandlerBase.h>
 #include <gui/CInGamePanelRenderer.h>
 #include <controller/CControllerAI.h>
 #include <scenenodes/CRostrumNode.h>
@@ -17,7 +16,6 @@
 #include <scenenodes/CWorldNode.h>
 #include <sound/ISoundInterface.h>
 #include <scenenodes/CSpeedNode.h>
-#include <shader/CMyShaderNone.h>
 #include <network/CGameClient.h>
 #include <network/CGameServer.h>
 #include <scenenodes/CAiNode.h>
@@ -56,7 +54,6 @@ namespace dustbin {
       m_pSoundIntf     (nullptr),
       m_pDynamics      (nullptr),
       m_pRostrum       (nullptr),
-      m_pShader        (nullptr),
       m_pCamAnimator   (nullptr),
       m_pCamera        (nullptr),
       m_pAiThread      (nullptr),
@@ -286,12 +283,6 @@ namespace dustbin {
       int l_iRows = (int)fmax(1, m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows   );
 
       irr::core::dimension2du l_cDim = irr::core::dimension2du(l_cScreen.Width / l_iCols, l_cScreen.Height / l_iRows);
-
-      m_pShader = new shader::CShaderHandlerNone(m_pGlobal->getIrrlichtDevice(), l_cDim);
-
-      if (m_pShader != nullptr) {
-        m_pShader->initialize();
-      }
     }
 
     /**
@@ -629,12 +620,6 @@ namespace dustbin {
       }
       m_vMoveMessages.clear();
 
-      helpers::addToDebugLog("Delete shader");
-      if (m_pShader != nullptr) {
-        delete m_pShader;
-        m_pShader = nullptr;
-      }
-
       helpers::addToDebugLog("Clear checkpoint and camera vectors");
       m_mCheckpoints.clear();
       m_vCameras    .clear();
@@ -844,9 +829,9 @@ namespace dustbin {
                   for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                     l_pVertices[j].Color.setAlpha(l_iAlpha);
                 }
-                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
+                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID;
               }
-              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
+              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID;
             }
           }
 
@@ -863,7 +848,7 @@ namespace dustbin {
         else {
           for (int i = 0; i < 16; i++) {
             if (m_aMarbles[i] != nullptr) {
-              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader == nullptr ? irr::video::EMT_SOLID : m_pShader->getMaterialType();
+              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID;
             }
           }
         }
@@ -960,20 +945,17 @@ namespace dustbin {
 
       m_pDrv->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
 
-      if (m_pShader != nullptr)
-        m_pShader->beginScene();
-
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
-        if (m_pShader != nullptr) {
-          if (it->second.m_pCamera != nullptr)
-            m_pSmgr->setActiveCamera(it->second.m_pCamera);
+        if (it->second.m_pCamera != nullptr)
+          m_pSmgr->setActiveCamera(it->second.m_pCamera);
 
-          beforeDrawScene(&it->second);
-          m_pShader->renderScene(it->second.m_cRect);
-          afterDrawScene(&it->second);
-        }
+        beforeDrawScene(&it->second);
+        m_pDrv->setViewPort(it->second.m_cRect);
+        m_pSmgr->drawAll();
+        afterDrawScene(&it->second);
       }
 
+      m_pDrv->setViewPort(m_cScreen);
       m_pGui->drawAll();
 
       // Fade-out of the HUD after the race must be drawn after the rest of the GUI so that the gray rectangle

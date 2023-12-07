@@ -1,8 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
-#include <shader/CShaderHandlerBase.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
-#include <shader/CMyShaderNone.h>
 #include <helpers/CMenuLoader.h>
 #include <menu/IMenuHandler.h>
 #include <state/IState.h>
@@ -23,8 +21,6 @@ namespace dustbin {
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
-        shader::CShaderHandlerBase* m_pShader;  /**< The shader to use */
-
         irr::core::recti m_cViewport;   /**< The viewport */
 
       public:
@@ -32,8 +28,7 @@ namespace dustbin {
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_sNewState(""), 
           m_pServer  (a_pState->getGlobal()->getGameServer()),
-          m_pClient  (a_pState->getGlobal()->getGameClient()),
-          m_pShader  (nullptr)
+          m_pClient  (a_pState->getGlobal()->getGameClient())
         {
           m_pState->getGlobal()->clearGui();
 
@@ -181,20 +176,14 @@ namespace dustbin {
 
           irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
-          m_pShader = new shader::CShaderHandlerNone(l_pGlobal->getIrrlichtDevice(), l_cScreen);
-
-          if (m_pShader != nullptr) {
-            m_pShader->initialize();
-          }
-
           m_cViewport = irr::core::recti(irr::core::position2di(0, 0), l_cScreen);
 
           printf("Ready.\n");
         }
 
         virtual bool run() override {
-          m_pShader->beginScene();
-          m_pShader->renderScene(m_cViewport);
+          m_pDrv->beginScene();
+          m_pSmgr->drawAll();
           m_pGui->drawAll();
           m_pDrv->endScene();
 

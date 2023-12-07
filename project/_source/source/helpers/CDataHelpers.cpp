@@ -3,7 +3,6 @@
 #include <helpers/CTextureHelpers.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
-#include <shader/CMyShaderNone.h>
 #include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <json/CIrrJSON.h>
@@ -438,16 +437,6 @@ namespace dustbin {
       return helpers::splitString(l_sDummy, '\n');
     }
 
-    void setNodeShader(irr::scene::ISceneNode* a_pNode, shader::CShaderHandlerBase* a_pShader) {
-      if (a_pNode->getType() == irr::scene::ESNT_MESH) {
-
-      }
-
-      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
-        setNodeShader(*l_itChild, a_pShader);
-      }
-    }
-
 #ifdef _WINDOWS
     /**
     * Function for auto-detection of suitable game graphics settings
@@ -490,11 +479,6 @@ namespace dustbin {
 
         irr::scene::ISceneNode *l_pNode = l_pSmgr->getSceneNodeFromName("AutoGfxCamera");
 
-        shader::CShaderHandlerBase *l_pShader = nullptr;
-        
-
-        l_pShader->initialize();
-
         if (l_pNode != nullptr && l_pNode->getType() == irr::scene::ESNT_CAMERA) {
           l_pSmgr->setActiveCamera(reinterpret_cast<irr::scene::ICameraSceneNode *>(l_pNode));
         }
@@ -506,10 +490,7 @@ namespace dustbin {
 
         while (a_pDevice->run()) {
           l_pDrv->beginScene(true, true);
-          l_pShader->beginScene();
-
-          for (auto l_cViewport: l_vViewports)
-            l_pShader->renderScene(l_cViewport);
+          l_pSmgr->drawAll();
 
           l_pDrv->draw2DRectangle(irr::video::SColor(192, 224, 244, 224), l_cTextRect);
           l_pDrv->draw2DRectangleOutline(l_cTextRect, irr::video::SColor(255, 0, 0, 0));
@@ -538,8 +519,6 @@ namespace dustbin {
             }
           }
         }
-
-        delete l_pShader;
       }
       l_pSmgr->clear();
       printf("Shadow settings: %i\n", a_pSettings->m_iShadows);

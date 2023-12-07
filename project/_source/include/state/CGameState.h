@@ -24,7 +24,6 @@ namespace dustbin {
   }
 
   namespace shader {
-    class CShaderHandlerBase;
   }
 
   namespace scenenodes {
@@ -163,8 +162,6 @@ namespace dustbin {
         irr::core::recti m_cScreen; /**< The viewport covering the while screen */
 
         gameclasses::SMarbleNodes *m_aMarbles[16]; /**< For direct access to the marbles */
-
-        shader::CShaderHandlerBase* m_pShader;  /**< The shader to use */
 
         std::map<irr::s32, irr::scene::ISceneNode*> m_mMoving;  /**< All moving non-marble objects of the track */
 
