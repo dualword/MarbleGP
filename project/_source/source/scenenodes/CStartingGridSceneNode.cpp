@@ -29,10 +29,10 @@ namespace dustbin {
 
           m_pMarbles[i]->m_pRotational = a_pMgr->addMeshSceneNode(l_pMesh, m_pMarbles[i]->m_pPositional);
           m_pMarbles[i]->m_pRotational->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
-          m_pMarbles[i]->m_pRotational->getMaterial(0).Lighting = true;
-          m_pMarbles[i]->m_pRotational->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
-          m_pMarbles[i]->m_pRotational->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
-          m_pMarbles[i]->m_pRotational->getMaterial(0).Shininess = 50;
+          // m_pMarbles[i]->m_pRotational->getMaterial(0).Lighting = true;
+          // m_pMarbles[i]->m_pRotational->getMaterial(0).AmbientColor = irr::video::SColor(255, 16, 16, 16);
+          // m_pMarbles[i]->m_pRotational->getMaterial(0).EmissiveColor = irr::video::SColor(255, 32, 32, 32);
+          // m_pMarbles[i]->m_pRotational->getMaterial(0).Shininess = 50;
           m_pMarbles[i]->m_pRotational->setName(std::string("Marble_" + std::to_string(i + 1)).c_str());
 
           m_pMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0)->setDirty();

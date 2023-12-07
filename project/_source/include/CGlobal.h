@@ -37,6 +37,10 @@ namespace dustbin {
     class IMenuHandler; /**< Forward declaration of the menu handler interface */
   }
 
+  namespace shaders {
+    class CDustbinShaders;    /**< Forward declaration of the dustbin shader class */
+  }
+
   // Enum for the font size. The actual size
   // depends on the screen resolution
   enum class enFont {
@@ -304,6 +308,11 @@ namespace dustbin {
       * @return the Irrlicht joystick information
       */
       virtual const irr::core::array<irr::SJoystickInfo> &getJoystickInfo() const = 0;
+
+      /**
+      * Get the shader instance
+      */
+      virtual shaders::CDustbinShaders *getShader() const = 0;
 
 #ifdef _ANDROID
       /**

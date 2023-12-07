@@ -224,6 +224,8 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CSpeedNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp" />
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaderCallbacks.cpp" />
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp" />
     <ClCompile Include="..\..\_source\source\sound\CSoundData.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
@@ -371,6 +373,9 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CSpeedNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h" />
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderCallbacks.h" />
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderDefines.h" />
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaders.h" />
     <ClInclude Include="..\..\_source\include\sound\CSoundData.h" />
     <ClInclude Include="..\..\_source\include\sound\CSoundEnums.h" />
     <ClInclude Include="..\..\_source\include\sound\ISoundInterface.h" />

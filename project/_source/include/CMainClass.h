@@ -16,6 +16,10 @@ namespace dustbin {
     class CVirtualKeyboard;
   }
 
+  namespace shaders {
+    class CDustbinShaders;
+  }
+
   /**
   * @class CMainClass
   * @author Christian Keimel
@@ -43,8 +47,10 @@ namespace dustbin {
 
       data::SSettings m_cSettings;  /**< The game settings */
 
-      controller::ICustomEventReceiver *m_pCtrlMenu,    /**< The custom event receiver for the menu */
-                                       *m_pCtrlGame;    /**< The custom event receiver for the game */
+      controller::ICustomEventReceiver *m_pCtrlMenu;    /**< The custom event receiver for the menu */
+      controller::ICustomEventReceiver *m_pCtrlGame;    /**< The custom event receiver for the game */
+
+      shaders::CDustbinShaders *m_pShader;    /**< The shaders */
 
       state::IState *m_pActiveState;   /**< The active state */
 
@@ -341,6 +347,11 @@ namespace dustbin {
       * @return the Irrlicht joystick information
       */
       virtual const irr::core::array<irr::SJoystickInfo> &getJoystickInfo() const override;
+
+      /**
+      * Get the shader instance
+      */
+      virtual shaders::CDustbinShaders *getShader() const override;
 
 #ifdef _ANDROID
       /**

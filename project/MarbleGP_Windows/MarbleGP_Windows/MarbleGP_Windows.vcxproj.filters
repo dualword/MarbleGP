@@ -169,6 +169,12 @@
     <Filter Include="Quelldateien\animators">
       <UniqueIdentifier>{fa9f1a31-2aca-4bc2-8bae-fe5bc7ad952f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\shaders">
+      <UniqueIdentifier>{d25c7863-e81e-41da-ae1d-03cbd5b7bf54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\shaders">
+      <UniqueIdentifier>{639fdc81-5dd3-4479-9000-45bad632f7a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -723,6 +729,12 @@
     <ClCompile Include="..\..\_source\source\gui\CInGamePanelRenderer.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaderCallbacks.cpp">
+      <Filter>Quelldateien\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp">
+      <Filter>Quelldateien\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1183,6 +1195,15 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\CInGamePanelRenderer.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderCallbacks.h">
+      <Filter>Headerdateien\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderDefines.h">
+      <Filter>Headerdateien\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaders.h">
+      <Filter>Headerdateien\shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

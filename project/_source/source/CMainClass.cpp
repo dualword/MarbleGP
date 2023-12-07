@@ -7,6 +7,7 @@
 #include <controller/CControllerBase.h>
 #include <scenenodes/CLuaMeshLoader.h>
 #include <helpers/CTextureHelpers.h>
+#include <shaders/CDustbinShaders.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
 #include <helpers/CDataHelpers.h>
@@ -169,6 +170,9 @@ namespace dustbin {
       m_pClient = nullptr;
     }
 
+    if (m_pShader != nullptr)
+      delete m_pShader;
+
     m_mStates.clear();
   }
 
@@ -314,6 +318,8 @@ namespace dustbin {
       helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
     }
 #endif
+
+    m_pShader = new shaders::CDustbinShaders(m_pDevice, shaders::enShadowQuality::High);
 
     m_pActiveState->activate();
   }
@@ -988,6 +994,13 @@ namespace dustbin {
     return m_pAndroidApp;
   }
 #endif
+
+  /**
+  * Get the shader instance
+  */
+  shaders::CDustbinShaders *CMainClass::getShader() const {
+    return m_pShader;
+  }
 
   /**
   * This method is called to run the game. If a graphics change

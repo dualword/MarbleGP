@@ -23,7 +23,8 @@ namespace dustbin {
     class CDynamicThread;
   }
 
-  namespace shader {
+  namespace shaders {
+    class CDustbinShaders;
   }
 
   namespace scenenodes {
@@ -142,6 +143,8 @@ namespace dustbin {
         irr::f32 m_fSfxVolume;  /**< The volume of the in-game sound effects */
 
         bool m_bEnded;  /**< A message notifying that the race has ended was received (dynamics thread terminated) */
+
+        shaders::CDustbinShaders *m_pShader;    /**< The Dustbin Shader */
 
         sound::ISoundInterface *m_pSoundIntf;
 

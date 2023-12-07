@@ -7,6 +7,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace shaders {
+    class CDustbinShaders;
+  }
+
   namespace helpers {
     /**
     * Get an image from a string. The following prefixes are possible:
@@ -62,6 +66,13 @@ namespace dustbin {
     * @return the default color combinations
     */
     std::vector<std::tuple<std::string, std::string, std::string, std::string>> getDefaultColors();
+
+    /**
+    * Add a node to the dustbin shader
+    * @param a_pShader the shader to add the node to
+    * @param a_pNode the node to add
+    */
+    void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode);
 
 #ifdef _OPENGL_ES
     /**

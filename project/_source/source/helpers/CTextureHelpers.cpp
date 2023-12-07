@@ -1,4 +1,5 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <shaders/CDustbinShaders.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
@@ -405,6 +406,42 @@ namespace dustbin {
       }
 
       return l_pRet;  
+    }
+
+    /**
+    * Add a material to the Dustbin Shader
+    * @param a_pShader the shader instance
+    * @param a_pNode the node with the material
+    * @param a_iMaterial the material ID
+    */
+    void addMaterialToShader(shaders::CDustbinShaders *a_pShader, irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial) {
+      irr::video::E_MATERIAL_TYPE l_eMaterial = a_pNode->getMaterial(a_iMaterial).MaterialType;
+
+      if (l_eMaterial == irr::video::EMT_SOLID || a_pShader->isShaderMaterial(l_eMaterial)) {
+        shaders::enMaterialType l_eType = 
+          a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr ? shaders::enMaterialType::SolidThree :
+          a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr ? shaders::enMaterialType::SolidTwo   : shaders::enMaterialType::SolidOne
+          ;
+
+        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, a_pShader->getMaterial(l_eType), true);
+      }
+      else if (l_eMaterial == irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL) {
+        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL, true);
+      }
+    }
+
+    void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode) {
+      if (a_pShader != nullptr) {
+        if (a_pNode->getType() == irr::scene::ESNT_MESH) {
+          irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
+          for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++)
+            addMaterialToShader(a_pShader, l_pNode, i);
+        }
+
+        for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
+          addNodeToShader(a_pShader, *l_itChild);
+        }
+      }
     }
 
 #ifdef _OPENGL_ES

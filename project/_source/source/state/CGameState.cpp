@@ -10,6 +10,8 @@
 #include <scenenodes/CDustbinCamera.h>
 #include <gui/CInGamePanelRenderer.h>
 #include <controller/CControllerAI.h>
+#include <helpers/CTextureHelpers.h>
+#include <shaders/CDustbinShaders.h>
 #include <scenenodes/CRostrumNode.h>
 #include <helpers/CStringHelpers.h>
 #include <scenenodes/CSkyBoxFix.h>
@@ -51,6 +53,7 @@ namespace dustbin {
       m_iFadeOut       (-1),
       m_fSfxVolume     (1.0f),
       m_bEnded         (false),
+      m_pShader        (nullptr),
       m_pSoundIntf     (nullptr),
       m_pDynamics      (nullptr),
       m_pRostrum       (nullptr),
@@ -347,9 +350,15 @@ namespace dustbin {
         l_pFix->hideOriginalSkybox(m_pSmgr->getRootSceneNode());
         delete l_pFix;
         addStaticCameras(m_pSmgr->getRootSceneNode());
+
+        m_pShader = m_pGlobal->getShader();
+        m_pShader->addLightCamera();
+
+        helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
       }
       else {
-        // ToDo Error Message
+        handleError("Error while starting game state.", "The specified race track file was not found.");
+        return;
       }
 
 #ifdef _OPENGL_ES
@@ -829,9 +838,9 @@ namespace dustbin {
                   for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                     l_pVertices[j].Color.setAlpha(l_iAlpha);
                 }
-                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID;
+                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
               }
-              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID;
+              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
             }
           }
 
@@ -848,7 +857,7 @@ namespace dustbin {
         else {
           for (int i = 0; i < 16; i++) {
             if (m_aMarbles[i] != nullptr) {
-              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_SOLID;
+              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
             }
           }
         }
@@ -943,6 +952,12 @@ namespace dustbin {
       if (m_pPanelRndr != nullptr)
         m_pPanelRndr->updateTextureIfNecessary();
 
+      m_pShader->startShadowMaps();
+      m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
+      m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
+      m_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+      m_pShader->endShadowMaps();
+
       m_pDrv->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
@@ -951,7 +966,7 @@ namespace dustbin {
 
         beforeDrawScene(&it->second);
         m_pDrv->setViewPort(it->second.m_cRect);
-        m_pSmgr->drawAll();
+        m_pShader->renderScene();
         afterDrawScene(&it->second);
       }
 
@@ -1020,7 +1035,6 @@ namespace dustbin {
       }
 
       m_pDrv->endScene();
-      m_pDrv->setRenderTarget(0, false, false);
 
       return (m_bEnded || (m_pDynamics != nullptr && m_pDynamics->hasFinished())) ? enState::Menu : enState::None;
     }
@@ -1189,6 +1203,7 @@ namespace dustbin {
       for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
         if ((*it).m_iPlayerId == a_iPlayerId) {
           gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_iMarbleId);
+          l_pMarble->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
 
           std::string l_sTexture = (*it).m_sTexture;
 
