@@ -521,5 +521,13 @@ namespace dustbin {
         default: return 512;
       }
     }
+
+    /**
+    * Get the scene manager
+    * @return the scene manager
+    */
+    irr::scene::ISceneManager *CDustbinShaders::getSceneManager() {
+      return m_pSmgr;
+    }
   }
 }

@@ -240,6 +240,12 @@ namespace dustbin {
         * Add a new light camera
         */
         void addLightCamera();
+
+        /**
+        * Get the scene manager
+        * @return the scene manager
+        */
+        irr::scene::ISceneManager *getSceneManager();
     };
   }
 }

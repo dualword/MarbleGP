@@ -165,7 +165,7 @@ namespace dustbin {
         }
       }
       else if (m_iCurrentLap == m_iLapCount) {
-        s = L"Final Lap";
+        s = L"Last Lap";
       }
       else if (m_iCurrentLap > m_iLapCount)
         s = L"Finished";

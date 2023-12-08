@@ -418,10 +418,21 @@ namespace dustbin {
       irr::video::E_MATERIAL_TYPE l_eMaterial = a_pNode->getMaterial(a_iMaterial).MaterialType;
 
       if (l_eMaterial == irr::video::EMT_SOLID || a_pShader->isShaderMaterial(l_eMaterial)) {
-        shaders::enMaterialType l_eType = 
-          a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr ? shaders::enMaterialType::SolidThree :
-          a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr ? shaders::enMaterialType::SolidTwo   : shaders::enMaterialType::SolidOne
-          ;
+        std::string l_sName = a_pNode->getName();
+
+        bool l_bMarble = l_sName.substr(0, 7) == "Marble_";
+
+        shaders::enMaterialType l_eType = shaders::enMaterialType::SolidOne;
+
+        if (!a_pNode->getMaterial(a_iMaterial).Lighting) {
+          // Keep the original material for nodes with the "Lighting" flag turned off
+        }
+        else if (l_bMarble)
+          l_eType = shaders::enMaterialType::Marble;
+        else if (a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr)
+          l_eType = shaders::enMaterialType::SolidThree;
+        else if (a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr)
+          l_eType = shaders::enMaterialType::SolidTwo;
 
         a_pShader->addNodeMaterial(a_pNode, a_iMaterial, a_pShader->getMaterial(l_eType), true);
       }
@@ -433,9 +444,19 @@ namespace dustbin {
     void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode) {
       if (a_pShader != nullptr) {
         if (a_pNode->getType() == irr::scene::ESNT_MESH) {
-          irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
-          for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++)
-            addMaterialToShader(a_pShader, l_pNode, i);
+          bool l_bVisible = true;
+
+          irr::scene::ISceneNode *p = a_pNode;
+          while (p != a_pShader->getSceneManager()->getRootSceneNode() && l_bVisible) {
+            l_bVisible = p->isVisible();
+            p = p->getParent();
+          }
+
+          if (l_bVisible) {
+            irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
+            for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++)
+              addMaterialToShader(a_pShader, l_pNode, i);
+          }
         }
 
         for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {

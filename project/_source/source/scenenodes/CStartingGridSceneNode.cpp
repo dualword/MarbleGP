@@ -1,6 +1,8 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <shaders/CDustbinShaders.h>
 #include <scenenodes/CDustbinId.h>
+#include <CGlobal.h>
 #include <string>
 
 namespace dustbin {

@@ -618,6 +618,7 @@ namespace dustbin {
         m_pCamAnimator = nullptr;
       }
 
+      m_pShader->clear();
       helpers::addToDebugLog("Clear scene manager");
       m_pSmgr->clear();
       helpers::addToDebugLog("Clear GUI");
@@ -838,9 +839,9 @@ namespace dustbin {
                   for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                     l_pVertices[j].Color.setAlpha(l_iAlpha);
                 }
-                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
+                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
               }
-              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
+              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
             }
           }
 
@@ -857,7 +858,7 @@ namespace dustbin {
         else {
           for (int i = 0; i < 16; i++) {
             if (m_aMarbles[i] != nullptr) {
-              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
+              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
             }
           }
         }
@@ -1203,7 +1204,7 @@ namespace dustbin {
       for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
         if ((*it).m_iPlayerId == a_iPlayerId) {
           gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_iMarbleId);
-          l_pMarble->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::SolidOne);
+          l_pMarble->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
 
           std::string l_sTexture = (*it).m_sTexture;
 
