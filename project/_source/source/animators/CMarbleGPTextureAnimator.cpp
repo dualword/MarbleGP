@@ -11,6 +11,9 @@ namespace dustbin {
     };
 
     CMarbleGPTextureAnimator::CMarbleGPTextureAnimator(irr::scene::ISceneNode* a_pNode) : irr::scene::ISceneNodeAnimator(), m_eType(enAnimatorType::Lapcount), m_iTexture(0), m_pNode(a_pNode) {
+      if (a_pNode != nullptr && a_pNode->getType() == irr::scene::ESNT_MESH) {
+        a_pNode->getMaterial(0).Lighting = false;
+      }
     }
 
     CMarbleGPTextureAnimator::~CMarbleGPTextureAnimator() {

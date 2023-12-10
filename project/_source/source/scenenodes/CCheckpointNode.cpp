@@ -17,6 +17,10 @@ namespace dustbin {
       setRotation(irr::core::vector3df(0.0f));
 
       sceneNodeIdUsed(a_iId);
+
+      if (Parent != nullptr && Parent != a_pMgr->getRootSceneNode() && Parent->getType() == irr::scene::ESNT_MESH) {
+        Parent->getMaterial(0).Lighting = false;
+      }
     }
 
     CCheckpointNode::~CCheckpointNode() {

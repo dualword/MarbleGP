@@ -39,16 +39,16 @@ namespace dustbin {
 
         //*** Virtual method inherited from irr::scene::ISceneNode
         virtual irr::u32 getMaterialCount();
-        virtual irr::scene::ESCENE_NODE_TYPE getType() const;
-        virtual void OnRegisterSceneNode();
+        virtual irr::scene::ESCENE_NODE_TYPE getType() const override;
+        virtual void OnRegisterSceneNode() override;
 
-        virtual void render();
-        virtual const irr::core::aabbox3d<irr::f32>& getBoundingBox() const;
+        virtual void render() override;
+        virtual const irr::core::aabbox3d<irr::f32>& getBoundingBox() const override;
 
-        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const;
-        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
+        virtual void serializeAttributes(irr::io::IAttributes* a_pOut, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) const override;
+        virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0) override;
 
-        virtual irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent = 0, irr::scene::ISceneManager* a_pNewManager = 0);
+        virtual irr::scene::ISceneNode* clone(irr::scene::ISceneNode* a_pNewParent = 0, irr::scene::ISceneManager* a_pNewManager = 0) override;
 
         /**
         * Get the minimal speed

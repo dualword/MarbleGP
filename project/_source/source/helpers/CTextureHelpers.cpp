@@ -2,6 +2,7 @@
 #include <shaders/CDustbinShaders.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <scenenodes/CSpeedNode.h>
 #include <platform/CPlatform.h>
 #include <CGlobal.h>
 #include <map>
@@ -421,20 +422,31 @@ namespace dustbin {
         std::string l_sName = a_pNode->getName();
 
         bool l_bMarble = l_sName.substr(0, 7) == "Marble_";
+        bool l_bSolidM = !a_pNode->getMaterial(a_iMaterial).Lighting;
+
+        if (a_pNode->getParent() != nullptr && a_pNode->getParent() != a_pShader->getSceneManager()->getRootSceneNode()) {
+          if (a_pNode->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_SpeedNodeId && a_iMaterial == 0) {
+            l_bSolidM = true;
+          }
+        }
 
         shaders::enMaterialType l_eType = shaders::enMaterialType::SolidOne;
 
-        if (!a_pNode->getMaterial(a_iMaterial).Lighting) {
-          // Keep the original material for nodes with the "Lighting" flag turned off
+        if (!l_bSolidM) {
+          if (l_bMarble)
+            l_eType = shaders::enMaterialType::Marble;
+          else if (a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr)
+            l_eType = shaders::enMaterialType::SolidThree;
+          else if (a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr)
+            l_eType = shaders::enMaterialType::SolidTwo;
         }
-        else if (l_bMarble)
-          l_eType = shaders::enMaterialType::Marble;
-        else if (a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr)
-          l_eType = shaders::enMaterialType::SolidThree;
-        else if (a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr)
-          l_eType = shaders::enMaterialType::SolidTwo;
 
-        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, a_pShader->getMaterial(l_eType), true);
+        a_pShader->addNodeMaterial(
+          a_pNode, 
+          a_iMaterial, 
+          l_bSolidM ? irr::video::EMT_SOLID : a_pShader->getMaterial(l_eType), 
+          true
+        );
       }
       else if (l_eMaterial == irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL) {
         a_pShader->addNodeMaterial(a_pNode, a_iMaterial, irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL, true);
