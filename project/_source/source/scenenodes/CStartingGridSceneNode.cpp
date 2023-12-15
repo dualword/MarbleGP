@@ -27,7 +27,7 @@ namespace dustbin {
 
           m_pMarbles[i]->m_pPositional = a_pMgr->addEmptySceneNode(this, 10000 + i);
           m_pMarbles[i]->m_pPositional->setIsDebugObject(true);
-          m_pMarbles[i]->m_pPositional->setPosition(irr::core::vector3df(0.0f, 2.25f, 0.0f));
+          m_pMarbles[i]->m_pPositional->setPosition(irr::core::vector3df(0.0f, 2.0f, 0.0f));
 
           m_pMarbles[i]->m_pRotational = a_pMgr->addMeshSceneNode(l_pMesh, m_pMarbles[i]->m_pPositional);
           m_pMarbles[i]->m_pRotational->getMaterial(0).setTexture(0, i == 0 ? a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture_blue.png") : a_pMgr->getVideoDriver()->getTexture("data/textures/spheretexture.png"));
@@ -158,8 +158,8 @@ namespace dustbin {
           l_iCol = i % m_iMarblesPerRow;
 
 
-        irr::f32 l_fX = m_iMarblesPerRow == 1 ? 0.0f : (l_iCol * m_fWidth / (m_iMarblesPerRow - 1.0f)) - (m_fWidth / 2.0f),
-          l_fY = (l_iRow * m_fRowLength) + (l_iCol * l_fOffset * m_fRowLength);
+        irr::f32 l_fX = m_iMarblesPerRow == 1 ? 0.0f : (l_iCol * m_fWidth / (m_iMarblesPerRow - 1.0f)) - (m_fWidth / 2.0f);
+        irr::f32 l_fY = (l_iRow * m_fRowLength) + (l_iCol * l_fOffset * m_fRowLength);
 
         irr::core::vector2df v = irr::core::vector2df(l_fX, l_fY);
 

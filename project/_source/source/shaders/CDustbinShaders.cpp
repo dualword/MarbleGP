@@ -1,6 +1,7 @@
 /// (w) 2023 by Dustbin::Games - This file is licensed under the terms of the ZLib License (like Irrlicht)
 #include <shaders/CDustbinShaderCallbacks.h>
 #include <shaders/CDustbinShaderDefines.h>
+#include <scenenodes/CDustbinLight.h>
 #include <shaders/CDustbinShaders.h>
 #include <string>
 
@@ -18,6 +19,7 @@ namespace dustbin {
       m_pSmgr       (a_pDevice->getSceneManager()),
       m_pLightCamera(nullptr),
       m_pActive     (nullptr),
+      m_pDataNode   (nullptr),
       m_pRttShadow1 (),
       m_pRttShadow2 (),
       m_pRttShadow3 (),
@@ -29,16 +31,6 @@ namespace dustbin {
       m_pCallback = new CDustbinShaderCallback(m_pDevice->getVideoDriver(), shadowQualityToSize(a_eQuality));
       m_pCallback->initializeShaders();
       m_pCallback->setShadowMode(m_eMode);
-
-      addLightCamera();
-
-      // Make the camera ortographic
-      irr::core::matrix4 l_cOrtho;
-      l_cOrtho.buildProjectionMatrixOrthoLH(1500.0f, 1500.0f, 5.0f, 2000.0f);
-      m_pLightCamera->setProjectionMatrix(l_cOrtho, true);
-
-      // Notify the callback about the camera
-      m_pCallback->updateLightCamera(m_pLightCamera);
 
       // Initialize all shadow map textures with nullptr (will be created once used)
       for (int i = 0; i < (int)enShadowQuality::Count; i++)
@@ -68,7 +60,7 @@ namespace dustbin {
     }
 
     /**
-    * Find a light camera in the scen
+    * Find a light camera in the scene
     * @param a_pNode the node to check
     * @return the light camera, nullptr if no light camera was found
     */
@@ -93,25 +85,48 @@ namespace dustbin {
     * Add a new light camera
     */
     void CDustbinShaders::addLightCamera() {
+      fillDataNode(m_pSmgr->getRootSceneNode());
+
+      if (m_pDataNode == nullptr) {
+        m_pDataNode = reinterpret_cast<scenenodes::CDustbinLight *>(m_pSmgr->addSceneNode(scenenodes::g_DustbinLightName, m_pSmgr->getRootSceneNode()));
+
+        m_pDataNode->setPosition   (irr::core::vector3df(393.3f, 801.4f, -502.4f));
+        m_pDataNode->setLightTarget(irr::core::vector3df(-392.85f, 800.65f, -501.83f));
+        m_pDataNode->setNearValue  (5.0f);
+        m_pDataNode->setFarValue   (2000.0f);
+        m_pDataNode->setFieldOfView(2000.0f);
+      }
+
       m_pLightCamera = findLightCamera(m_pSmgr->getRootSceneNode());
 
       if (m_pLightCamera == nullptr) {
         // Add a camera for the light and set it up
         m_pLightCamera = m_pSmgr->addCameraSceneNode(
           nullptr, 
-          irr::core::vector3df(393.3f, 801.4f, -502.4f), 
-          irr::core::vector3df(-392.85f, 800.65f, -501.83f), 
+          m_pDataNode->getPosition(),
+          m_pDataNode->getLightTarget(),
           -1, 
           false
         );
-        m_pLightCamera->setFarValue(2000.0f);
-        m_pLightCamera->setNearValue(5.0f);
-
-        m_pLightCamera->setPosition(irr::core::vector3df(393.3f, 801.4f, -502.4f));
-        m_pLightCamera->setTarget  (irr::core::vector3df(0.0f, 0.0f, 0.0f));
-
-        m_pLightCamera->setName(c_sLightCameraDefaultName);
       }
+
+      irr::core::matrix4 l_cMatrix;
+      l_cMatrix.buildProjectionMatrixOrthoLH(
+        m_pDataNode->getFieldOfView(), 
+        m_pDataNode->getFieldOfView(), 
+        m_pDataNode->getNearValue(),
+        m_pDataNode->getFarValue()
+      );
+
+      m_pLightCamera->setProjectionMatrix(l_cMatrix);
+
+      m_pLightCamera->setPosition(m_pDataNode->getPosition());
+      m_pLightCamera->setTarget  (m_pDataNode->getLightTarget());
+
+      m_pLightCamera->setName(c_sLightCameraDefaultName);
+      
+      m_pLightCamera->setIsDebugObject(true);
+      m_pCallback->updateLightCamera(m_pLightCamera);
     }
 
     /**
@@ -186,7 +201,13 @@ namespace dustbin {
     void CDustbinShaders::updateLightCamera() {
       if (m_pLightCamera != nullptr) {
         m_pLightCamera->updateAbsolutePosition();
+
+        m_pDataNode->setPosition   (m_pLightCamera->getAbsolutePosition());
+        m_pDataNode->setLightTarget(m_pLightCamera->getTarget());
+
         m_pCallback->updateLightCamera(m_pLightCamera);
+
+        createLightMatrix();
       }
     }
 
@@ -384,6 +405,10 @@ namespace dustbin {
         l_itMaterial++;
       }
 
+      std::string s = a_pNode->getName();
+      if (s == "TheRotor")
+        printf("*\n");
+
       if (l_itMaterial == (*l_itNode).m_vMaterials.end()) {
         // Add the shadow map textures to the material
         a_pNode->getMaterial(a_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
@@ -424,6 +449,8 @@ namespace dustbin {
     */
     void CDustbinShaders::clear() {
       m_vNodes.clear();
+      m_pLightCamera = nullptr;
+      m_pDataNode    = nullptr;
     }
 
     /**
@@ -438,6 +465,48 @@ namespace dustbin {
         a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::SolidThree) ||
         a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::Marble    )
       ; 
+    }
+
+    /**
+    * Fill the "m_pDataNode" member
+    * @param a_pNode the node to check
+    */
+    void CDustbinShaders::fillDataNode(irr::scene::ISceneNode* a_pNode) {
+      if (a_pNode->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_DustbinLightId) {
+        m_pDataNode = reinterpret_cast<scenenodes::CDustbinLight *>(a_pNode);
+        return;
+      }
+
+      for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
+        fillDataNode(*l_itChild);
+
+        if (m_pDataNode != nullptr)
+          return;
+      }
+    }
+
+    void CDustbinShaders::createLightMatrix() {
+      // Make the camera ortographic
+      irr::core::matrix4 l_cOrtho;
+      l_cOrtho.buildProjectionMatrixOrthoLH(
+        m_pDataNode->getFieldOfView(),
+        m_pDataNode->getFieldOfView(),
+        m_pDataNode->getNearValue(),
+        m_pDataNode->getFarValue()
+      );
+      m_pLightCamera->setProjectionMatrix(l_cOrtho, true);
+      m_pLightCamera->setPosition(m_pDataNode->getPosition());
+      m_pLightCamera->setTarget(m_pDataNode->getLightTarget());
+      m_pLightCamera->updateAbsolutePosition();
+    }
+
+    irr::f32 CDustbinShaders::getFieldOfView() {
+      return m_pDataNode->getFieldOfView();
+    }
+
+    void CDustbinShaders::setFieldOfView(irr::f32 a_fFieldOfView) {
+      m_pDataNode->setFieldOfView(a_fFieldOfView);
+      createLightMatrix();
     }
 
     /**

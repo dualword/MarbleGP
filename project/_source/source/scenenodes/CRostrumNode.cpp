@@ -20,12 +20,10 @@ namespace dustbin {
 
           if (i == 0)
             l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/warning.png"));
-          else if (i == 2)
+          else if (i == 1 || i == 2)
             l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/red_cross.png"));
           else if (i == 3)
             l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/rostrum.png"));
-          else if (i == 4)
-            l_pNode->getMaterial(i).setTexture(0, a_pMgr->getVideoDriver()->getTexture("data/textures/rostrum_logo.png"));
         }
 
         irr::scene::ISceneNode *l_pPhysics = a_pMgr->addSceneNode(scenenodes::g_PhysicsNodeName, l_pNode);

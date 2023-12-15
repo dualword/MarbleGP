@@ -355,6 +355,11 @@ namespace dustbin {
         m_pShader->addLightCamera();
 
         helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
+
+        m_pShader->startShadowMaps();
+        m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
+        m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
+        m_pShader->endShadowMaps();
       }
       else {
         handleError("Error while starting game state.", "The specified race track file was not found.");
@@ -954,8 +959,6 @@ namespace dustbin {
         m_pPanelRndr->updateTextureIfNecessary();
 
       m_pShader->startShadowMaps();
-      m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
-      m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
       m_pShader->renderShadowMap(shaders::enShadowMap::Solid);
       m_pShader->endShadowMaps();
 

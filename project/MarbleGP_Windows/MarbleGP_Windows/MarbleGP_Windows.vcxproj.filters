@@ -735,6 +735,9 @@
     <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp">
       <Filter>Quelldateien\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinLight.cpp">
+      <Filter>Quelldateien\scenenodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1204,6 +1207,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\shaders\CDustbinShaders.h">
       <Filter>Headerdateien\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinLight.h">
+      <Filter>Headerdateien\scenenodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

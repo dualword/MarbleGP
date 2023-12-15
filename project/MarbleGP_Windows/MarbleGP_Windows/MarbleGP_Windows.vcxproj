@@ -210,6 +210,7 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinLight.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CLuaMeshLoader.cpp" />
     <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
@@ -359,6 +360,7 @@
     <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinLight.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CLuaMeshLoader.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />

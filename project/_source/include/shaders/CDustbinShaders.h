@@ -7,6 +7,9 @@
 #include <shaders/CDustbinShaderDefines.h>
 
 namespace dustbin {
+  namespace scenenodes {
+    class CDustbinLight;    /**< Forward declaration of the light scenenode */
+  }
   namespace shaders {
     class CDustbinShaderCallback;   /**< Forward declaration of the callback class */
 
@@ -93,6 +96,8 @@ namespace dustbin {
         irr::scene::ICameraSceneNode *m_pLightCamera;   /**< The camera representing the light source */
         irr::scene::ICameraSceneNode *m_pActive;        /**< The active camera of the scene. Stored in "startShadowMaps" and restored in "endShadowMaps" */
 
+        scenenodes::CDustbinLight *m_pDataNode;   /**< The scene node which stores the light data */
+
         irr::video::ITexture *m_pRttShadow1[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes */
         irr::video::ITexture *m_pRttShadow2[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (transparent) */
         irr::video::ITexture *m_pRttShadow3[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (transparent color) */
@@ -118,6 +123,14 @@ namespace dustbin {
         */
         irr::scene::ICameraSceneNode *findLightCamera(irr::scene::ISceneNode *a_pNode);
 
+        void createLightMatrix();
+
+        /**
+        * Fill the "m_pDataNode" member
+        * @param a_pNode the node to check
+        */
+        void fillDataNode(irr::scene::ISceneNode *a_pNode);
+
       public:
         /**
         * The constructor
@@ -142,6 +155,10 @@ namespace dustbin {
         * This method needs to be called if the light camera has been modified
         */
         void updateLightCamera();
+
+        irr::f32 getFieldOfView();
+
+        void setFieldOfView(irr::f32 a_fFieldOfView);
 
         /**
         * Get the texture the shadow map is currently rendered to
