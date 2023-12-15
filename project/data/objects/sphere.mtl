@@ -5,7 +5,7 @@ d 1.0
 illum 2
 Kd 1.0 1.0 1.0
 Ka 0.0 0.0 0.0
-Ks 0.1 0.1 0.1
+Ks 0.1997422179440134 0.1997422179440134 0.1997422179440134
 Ke 0.0 0.0 0.0
-map_Kd pattern=texture_marbles2.png&numbercolor=000000&numberback=9932cc&numberborder=9932cc&ringcolor=da70d6&patterncolor=000000&patternback=9932cc&number=12.png
+map_Kd spheretexture_blue.png
 
