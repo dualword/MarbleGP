@@ -258,6 +258,7 @@ namespace dustbin {
         */
         void addLightCamera();
 
+
         /**
         * Get the scene manager
         * @return the scene manager

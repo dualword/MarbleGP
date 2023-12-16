@@ -26,7 +26,9 @@ namespace dustbin {
       m_aTextures[(int)enMaterialType::SolidOne  ] = 0;
       m_aTextures[(int)enMaterialType::SolidTwo  ] = 1;
       m_aTextures[(int)enMaterialType::SolidThree] = 2;
-      m_aTextures[(int)enMaterialType::Wall      ] = 1;
+      m_aTextures[(int)enMaterialType::Wall1     ] = 0;
+      m_aTextures[(int)enMaterialType::Wall2     ] = 1;
+      m_aTextures[(int)enMaterialType::Wall3     ] = 2;
       m_aTextures[(int)enMaterialType::ShadowMap ] = 7;
       m_aTextures[(int)enMaterialType::ShadowMap2] = 6;
       m_aTextures[(int)enMaterialType::ShadowMap3] = 5;
@@ -123,7 +125,12 @@ namespace dustbin {
 
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Light], l_aValue, 3);
 
-        irr::s32 l_iNoTextures = l_eType == enMaterialType::SolidThree ? 3 : l_eType == enMaterialType::SolidTwo ? 2 : l_eType == enMaterialType::Wall ? 2 : 1;
+        irr::s32 l_iNoTextures = 
+          l_eType == enMaterialType::SolidThree ? 3 : 
+          l_eType == enMaterialType::SolidTwo   ? 2 : 
+          l_eType == enMaterialType::Wall3      ? 3 :
+          l_eType == enMaterialType::Wall2      ? 2 : 1;
+
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::NoTextures], &l_iNoTextures, 1);
 
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Vertical], &m_fVertical, 1);
@@ -218,12 +225,30 @@ namespace dustbin {
       );
 
       // The shader for the wall material
-      m_aMaterial[(int)enMaterialType::Wall] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+      m_aMaterial[(int)enMaterialType::Wall1] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
         "data/shaders/dustbin_shader_solid.vert",
         "data/shaders/dustbin_shader_solid.frag", 
         this, 
         irr::video::EMT_SOLID, 
-        (irr::s32)enMaterialType::Wall // This is used to identify the material as wall material
+        (irr::s32)enMaterialType::Wall1 // This is used to identify the material as wall material
+      );
+
+      // The shader for the wall material
+      m_aMaterial[(int)enMaterialType::Wall2] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+        "data/shaders/dustbin_shader_solid.vert",
+        "data/shaders/dustbin_shader_solid.frag", 
+        this, 
+        irr::video::EMT_SOLID, 
+        (irr::s32)enMaterialType::Wall2 // This is used to identify the material as wall material
+      );
+
+      // The shader for the wall material
+      m_aMaterial[(int)enMaterialType::Wall3] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+        "data/shaders/dustbin_shader_solid.vert",
+        "data/shaders/dustbin_shader_solid.frag", 
+        this, 
+        irr::video::EMT_SOLID, 
+        (irr::s32)enMaterialType::Wall3 // This is used to identify the material as wall material
       );
 
       // The shader for a single texture

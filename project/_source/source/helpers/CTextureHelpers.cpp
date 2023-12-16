@@ -449,8 +449,14 @@ namespace dustbin {
         if (!l_bSolidM) {
           if (l_bMarble)
             l_eType = shaders::enMaterialType::Marble;
-          else if (l_bWall)
-            l_eType = shaders::enMaterialType::Wall;
+          else if (l_bWall) {
+            if (a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr)
+              l_eType = shaders::enMaterialType::Wall3;
+            else if (a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr)
+              l_eType = shaders::enMaterialType::Wall2;
+            else
+              l_eType = shaders::enMaterialType::Wall1;
+          }
           else if (a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr)
             l_eType = shaders::enMaterialType::SolidThree;
           else if (a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr)
