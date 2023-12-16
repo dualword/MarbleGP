@@ -26,6 +26,7 @@ namespace dustbin {
       m_aTextures[(int)enMaterialType::SolidOne  ] = 0;
       m_aTextures[(int)enMaterialType::SolidTwo  ] = 1;
       m_aTextures[(int)enMaterialType::SolidThree] = 2;
+      m_aTextures[(int)enMaterialType::Wall      ] = 1;
       m_aTextures[(int)enMaterialType::ShadowMap ] = 7;
       m_aTextures[(int)enMaterialType::ShadowMap2] = 6;
       m_aTextures[(int)enMaterialType::ShadowMap3] = 5;
@@ -122,7 +123,7 @@ namespace dustbin {
 
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Light], l_aValue, 3);
 
-        irr::s32 l_iNoTextures = l_eType == enMaterialType::SolidThree ? 3 : l_eType == enMaterialType::SolidTwo ? 2 : 1;
+        irr::s32 l_iNoTextures = l_eType == enMaterialType::SolidThree ? 3 : l_eType == enMaterialType::SolidTwo ? 2 : l_eType == enMaterialType::Wall ? 2 : 1;
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::NoTextures], &l_iNoTextures, 1);
 
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Vertical], &m_fVertical, 1);
@@ -214,6 +215,15 @@ namespace dustbin {
         this, 
         irr::video::EMT_SOLID, 
         (irr::s32)enMaterialType::Marble    // This is used to identify the material as marble material
+      );
+
+      // The shader for the wall material
+      m_aMaterial[(int)enMaterialType::Wall] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+        "data/shaders/dustbin_shader_solid.vert",
+        "data/shaders/dustbin_shader_solid.frag", 
+        this, 
+        irr::video::EMT_SOLID, 
+        (irr::s32)enMaterialType::Wall // This is used to identify the material as wall material
       );
 
       // The shader for a single texture

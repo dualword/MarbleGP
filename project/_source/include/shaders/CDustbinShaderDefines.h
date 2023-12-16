@@ -13,6 +13,7 @@ namespace dustbin {
       SolidTwo,     // Solid with two textures, the second is blended on top of the first one
       SolidThree,   // Solid with three textures, texture two and three are blended in
       Marble,       // Marble texture which comes which uses a bit less of the shadow
+      Wall,         // Wall textures which use the texture coordinates for all texture layers
       ShadowMap,    // The shadow map, must not be used on nodes
       ShadowMap2,   // The transparent shadow map, must not be used on nodes
       ShadowMap3,   // The transparent color map, must not be used on nodes

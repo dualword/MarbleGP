@@ -101,22 +101,13 @@ void main(void) {
     // The position of the color to take from the second texture
     vec2 vTwoPos;
     
-    // If we are in a non-vertical section
-    if (fVertical == 0.0) {
-      // We just calculate the position in the second texture from the world x and z coordinates (+y for beauty)
-      vTwoPos = vec2(12.0 * (vWorldPos.x + vWorldPos.y), 12.0 * (vWorldPos.z + vWorldPos.y));
+    // Are we a wall?
+    if (iMaterial == 4) {
+      vTwoPos = vec2(gl_TexCoord[0]);
     }
     else {
-      // If we are vertical we use the min Y value of the object instead of the world position Y ...
-      vTwoPos = vec2(12.0 * (vWorldPos.x + fMinY), 12.0 * (vWorldPos.z + fMinY));
-      
-      // ... and add some additional offset to the texture's Y coordinate depending on the normal of the fragment
-      if (vNormal.x == 0.0) {
-        vTwoPos.y += 12.0 * (vWorldPos.y - fMinY);
-      }
-      else {
-        vTwoPos.x += 12.0 * (vWorldPos.y - fMinY);
-      }
+      // We just calculate the position in the second texture from the world x and z coordinates (+y for beauty)
+      vTwoPos = vec2(12.0 * (vWorldPos.x + vWorldPos.y), 12.0 * (vWorldPos.z + vWorldPos.y));
     }
     
     vTextureOne = mix(vTextureOne, vShadowColor, min(fFactor, vShadowColor.a));

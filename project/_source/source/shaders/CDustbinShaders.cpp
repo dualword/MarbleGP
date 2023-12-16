@@ -68,7 +68,9 @@ namespace dustbin {
       if (a_pNode->getType() == irr::scene::ESNT_CAMERA) {
         std::string l_sName = a_pNode->getName();
         if (l_sName == c_sLightCameraDefaultName) {
-          return reinterpret_cast<irr::scene::ICameraSceneNode *>(a_pNode);
+          irr::scene::ICameraSceneNode *l_pRet = reinterpret_cast<irr::scene::ICameraSceneNode *>(a_pNode);
+
+          return l_pRet;
         }
       }
 
@@ -79,6 +81,14 @@ namespace dustbin {
       }
 
       return nullptr;
+    }
+
+    /**
+    * Get the scene manager
+    * @return the scene manager
+    */
+    irr::scene::ISceneManager *CDustbinShaders::getSceneManager() {
+      return m_pSmgr;
     }
 
     /**
@@ -463,7 +473,8 @@ namespace dustbin {
         a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::SolidOne  ) ||
         a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::SolidTwo  ) ||
         a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::SolidThree) ||
-        a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::Marble    )
+        a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::Marble    ) ||
+        a_eType == (irr::video::E_MATERIAL_TYPE)m_pCallback->getMaterial(enMaterialType::Wall      )
       ; 
     }
 
@@ -589,14 +600,6 @@ namespace dustbin {
 
         default: return 512;
       }
-    }
-
-    /**
-    * Get the scene manager
-    * @return the scene manager
-    */
-    irr::scene::ISceneManager *CDustbinShaders::getSceneManager() {
-      return m_pSmgr;
     }
   }
 }

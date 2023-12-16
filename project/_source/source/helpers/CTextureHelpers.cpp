@@ -423,6 +423,7 @@ namespace dustbin {
 
         bool l_bMarble = l_sName.substr(0, 7) == "Marble_";
         bool l_bSolidM = !a_pNode->getMaterial(a_iMaterial).Lighting;
+        bool l_bWall   = false;
 
         if (a_pNode->getParent() != nullptr && a_pNode->getParent() != a_pShader->getSceneManager()->getRootSceneNode()) {
           if (a_pNode->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_SpeedNodeId && a_iMaterial == 0) {
@@ -432,9 +433,24 @@ namespace dustbin {
 
         shaders::enMaterialType l_eType = shaders::enMaterialType::SolidOne;
 
+        if (a_pNode->getMaterial(a_iMaterial).getTexture(0) != nullptr) {
+          std::string l_sTexture = a_pNode->getMaterial(a_iMaterial).getTexture(0)->getName().getPath().c_str();
+
+          if (l_sTexture.find_last_of('/') != std::string::npos)
+            l_sTexture = l_sTexture.substr(l_sTexture.find_last_of('/') + 1);
+
+          if (l_sTexture.find_last_of('\\') != std::string::npos)
+            l_sTexture = l_sTexture.substr(l_sTexture.find_last_of('\\') + 1);
+
+          if (l_sTexture == "wall_blue_back.png" || l_sTexture == "wall_orange_back.png")
+            l_bWall = true;
+        }
+
         if (!l_bSolidM) {
           if (l_bMarble)
             l_eType = shaders::enMaterialType::Marble;
+          else if (l_bWall)
+            l_eType = shaders::enMaterialType::Wall;
           else if (a_pNode->getMaterial(a_iMaterial).getTexture(2) != nullptr)
             l_eType = shaders::enMaterialType::SolidThree;
           else if (a_pNode->getMaterial(a_iMaterial).getTexture(1) != nullptr)
