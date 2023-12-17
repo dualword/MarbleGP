@@ -102,7 +102,7 @@ void main(void) {
     vec2 vTwoPos;
     
     // Are we a wall?
-    if (iMaterial == 4) {
+    if (iMaterial == 4 || iMaterial == 5 || iMaterial == 6) {
       vTwoPos = vec2(gl_TexCoord[0]);
     }
     else {
