@@ -22,6 +22,7 @@
 #include <state/CGameState.h>
 #include <state/IState.h>
 #include <CMainClass.h>
+#include <Defines.h>
 #include <cstdlib>
 #include <ctime>
 
@@ -320,6 +321,7 @@ namespace dustbin {
 #endif
 
     m_pShader = new shaders::CDustbinShaders(m_pDevice, shaders::enShadowQuality::High);
+    helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
 
     m_pActiveState->activate();
   }
@@ -662,6 +664,11 @@ namespace dustbin {
     if (a_cEvent.EventType == irr::EET_LOG_TEXT_EVENT) {
       m_vLogMessages.push_back(std::make_tuple(a_cEvent.LogEvent.Level, a_cEvent.LogEvent.Text));
       l_bRet = true;
+    }
+    else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+      if (a_cEvent.UserEvent.UserData1 == c_iEventSettingsChanged) {
+        helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+      }
     }
     else if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
       if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUSED) {

@@ -24,7 +24,8 @@ namespace dustbin {
       m_pRttShadow2 (),
       m_pRttShadow3 (),
       m_pCallback   (nullptr),
-      m_eMode       (enShadowMode::Static),
+      m_eMode       (enShadowMode::SolidTrans),
+      m_eRender     (enShadowRender::All),
       m_eQuality    (enShadowQuality::High)
     {
       // Create the callback and initialize the shaders
@@ -322,7 +323,7 @@ namespace dustbin {
           l_cNode.m_pNode->render();
         }
         
-        if (m_eMode > enShadowMode::Static) {
+        if (m_eRender > enShadowRender::Static) {
           for (auto l_cNode : m_vMoving) {
             l_cNode.m_pNode->render();
           }
@@ -357,6 +358,22 @@ namespace dustbin {
     }
 
     /**
+    * Change the rendering options
+    * @param a_eRender the rendering options
+    */
+    void CDustbinShaders::setRenderOptions(enShadowRender a_eRender) {
+      m_eRender = a_eRender;
+    }
+
+    /**
+    * Get the render option
+    * @return the render option
+    */
+    enShadowRender CDustbinShaders::getRenderOption() {
+      return m_eRender;
+    }
+
+    /**
     * Get the current shadow mode
     * @return the current shadow mode
     */
@@ -369,42 +386,52 @@ namespace dustbin {
     * @param a_eQuality the new shadow quality
     */
     void CDustbinShaders::setShadowQuality(enShadowQuality a_eQuality) {
-      if (m_pRttShadow1[(int)m_eQuality] != nullptr) m_pDrv->removeTexture(m_pRttShadow1[(int)m_eQuality]);
-      if (m_pRttShadow2[(int)m_eQuality] != nullptr) m_pDrv->removeTexture(m_pRttShadow2[(int)m_eQuality]);
-      if (m_pRttShadow3[(int)m_eQuality] != nullptr) m_pDrv->removeTexture(m_pRttShadow3[(int)m_eQuality]);
+      if (m_eQuality != a_eQuality) {
+        if (m_pRttShadow1[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow1[(int)m_eQuality]); m_pRttShadow1[(int)m_eQuality] = nullptr; }
+        if (m_pRttShadow2[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow2[(int)m_eQuality]); m_pRttShadow2[(int)m_eQuality] = nullptr; }
+        if (m_pRttShadow3[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow3[(int)m_eQuality]); m_pRttShadow3[(int)m_eQuality] = nullptr; }
 
-      m_eQuality = a_eQuality;
+        m_eQuality = a_eQuality;
 
-      if (m_pRttShadow1[(int)m_eQuality] == nullptr) {
-        irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
-        std::string l_sName = "__shadow1TextureRtt_" + std::to_string((int)m_eQuality);
+        if (m_pRttShadow1[(int)m_eQuality] == nullptr) {
+          irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
+          std::string l_sName = "__shadow1TextureRtt_" + std::to_string((int)m_eQuality);
 
-        m_pRttShadow1[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
-      }
-
-      if (m_pRttShadow2[(int)m_eQuality] == nullptr) {
-        irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
-        std::string l_sName = "__shadow2TextureRtt_" + std::to_string((int)m_eQuality);
-
-        m_pRttShadow2[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
-      }
-
-      if (m_pRttShadow3[(int)m_eQuality] == nullptr) {
-        irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
-        std::string l_sName = "__shadow3TextureRtt_" + std::to_string((int)m_eQuality);
-
-        m_pRttShadow3[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
-      }
-
-      for (auto l_cNode : m_vStatic) {
-        for (auto &l_cMaterial : l_cNode.m_vMaterials) {
-          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
-          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
-          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+          m_pRttShadow1[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
         }
-      }
 
-      m_pCallback->setShadowRttSize(shadowQualityToSize(m_eQuality));
+        if (m_pRttShadow2[(int)m_eQuality] == nullptr) {
+          irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
+          std::string l_sName = "__shadow2TextureRtt_" + std::to_string((int)m_eQuality);
+
+          m_pRttShadow2[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
+        }
+
+        if (m_pRttShadow3[(int)m_eQuality] == nullptr) {
+          irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
+          std::string l_sName = "__shadow3TextureRtt_" + std::to_string((int)m_eQuality);
+
+          m_pRttShadow3[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
+        }
+
+        for (auto l_cNode : m_vStatic) {
+          for (auto &l_cMaterial : l_cNode.m_vMaterials) {
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+          }
+        }
+
+        for (auto l_cNode : m_vMoving) {
+          for (auto &l_cMaterial : l_cNode.m_vMaterials) {
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+          }
+        }
+
+        m_pCallback->setShadowRttSize(shadowQualityToSize(m_eQuality));
+      }
     }
 
     /**

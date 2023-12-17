@@ -359,6 +359,7 @@ namespace dustbin {
         m_pShader->startShadowMaps();
         m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
         m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
+        m_pShader->renderShadowMap(shaders::enShadowMap::Solid      );
         m_pShader->endShadowMaps();
       }
       else {
@@ -716,6 +717,24 @@ namespace dustbin {
             l_bRet = true;
           }
         }
+        else if (a_cEvent.KeyInput.Key == irr::KEY_PLUS || a_cEvent.KeyInput.Key == irr::KEY_MINUS) {
+          if (m_cSettings.m_iShadows < 5 && a_cEvent.KeyInput.Key == irr::KEY_PLUS) {
+            m_cSettings.m_iShadows++;
+          }
+          else if (m_cSettings.m_iShadows > 0 && a_cEvent.KeyInput.Key == irr::KEY_MINUS) {
+            m_cSettings.m_iShadows--;
+          }
+
+          printf("Shadow Mode: %i\n", m_cSettings.m_iShadows);
+
+          helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+
+          m_pShader->startShadowMaps();
+          m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
+          m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
+          m_pShader->renderShadowMap(shaders::enShadowMap::Solid      );
+          m_pShader->endShadowMaps();
+        }
         else {
           // Not available during gameplay
           if (m_pCamAnimator != nullptr) {
@@ -965,9 +984,11 @@ namespace dustbin {
       if (m_pPanelRndr != nullptr)
         m_pPanelRndr->updateTextureIfNecessary();
 
-      m_pShader->startShadowMaps();
-      m_pShader->renderShadowMap(shaders::enShadowMap::Solid);
-      m_pShader->endShadowMaps();
+      if (m_pShader->getRenderOption() > shaders::enShadowRender::Static) {
+        m_pShader->startShadowMaps();
+        m_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+        m_pShader->endShadowMaps();
+      }
 
       m_pDrv->beginScene(true, true, irr::video::SColor(255, 0, 0, 0));
 

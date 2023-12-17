@@ -1,6 +1,8 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <shaders/CDustbinShaderDefines.h>
+
 #include <irrlicht.h>
 #include <string>
 #include <vector>
@@ -73,6 +75,13 @@ namespace dustbin {
     * @param a_pNode the node to add
     */
     void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode);
+
+    /**
+    * Convert the shadow setting to the values for the shader
+    * @param a_iShadows the shadow setting
+    * @param a_pShader the shader instance to be adjusted
+    */
+    void convertForShader(int a_iShadows, shaders::CDustbinShaders *a_pShader);
 
 #ifdef _OPENGL_ES
     /**

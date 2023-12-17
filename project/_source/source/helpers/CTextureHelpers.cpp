@@ -520,6 +520,57 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Convert the shadow setting to the values for the shader
+    * @param a_iShadows the shadow setting
+    * @param a_pShader the shader instance to be adjusted
+    */
+    void convertForShader(int a_iShadows, shaders::CDustbinShaders* a_pShader) {
+      if (a_pShader != nullptr) {
+        switch (a_iShadows) {
+          // Off
+          case 0:
+            a_pShader->setShadowMode(shaders::enShadowMode::Off);
+            break;
+
+          // Static Solid
+          case 1:
+            a_pShader->setShadowMode   (shaders::enShadowMode::Solid);
+            a_pShader->setShadowQuality(shaders::enShadowQuality::LoMid);
+            a_pShader->setRenderOptions(shaders::enShadowRender::Static);
+            break;
+
+          // Static Transparent
+          case 2:
+            a_pShader->setShadowMode   (shaders::enShadowMode::TransColor);
+            a_pShader->setShadowQuality(shaders::enShadowQuality::HiMid);
+            a_pShader->setRenderOptions(shaders::enShadowRender::Static);
+            break;
+
+          // Low
+          case 3:
+            a_pShader->setShadowMode   (shaders::enShadowMode::Solid);
+            a_pShader->setShadowQuality(shaders::enShadowQuality::LoMid);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All);
+            break;
+
+          // Medium
+          case 4:
+            a_pShader->setShadowMode   (shaders::enShadowMode::TransColor);
+            a_pShader->setShadowQuality(shaders::enShadowQuality::HiMid);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All);
+            break;
+
+          // High
+          default:
+            a_pShader->setShadowMode   (shaders::enShadowMode::TransColor);
+            a_pShader->setShadowQuality(shaders::enShadowQuality::High);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All);
+            break;
+        }
+      }
+    }
+
 #ifdef _OPENGL_ES
     /**
     * Adjust the materials of the node to get proper lighting when using

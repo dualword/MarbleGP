@@ -486,7 +486,7 @@ namespace dustbin {
         for (auto& l_itPath : m_vAiPath) {
           if (l_itPath->m_eType == scenenodes::CAiPathNode::enSegmentType::Respawn && m_iLastCheckpoint == l_itPath->m_iRespawn) {
             m_pCurrent = l_itPath;
-            printf("Found respawn section: %i (%.2f, %.2f, %.2f)\n", m_pCurrent->m_iIndex, m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
+            // printf("Found respawn section: %i (%.2f, %.2f, %.2f)\n", m_pCurrent->m_iIndex, m_pCurrent->m_cLine3d.start.X, m_pCurrent->m_cLine3d.start.Y, m_pCurrent->m_cLine3d.start.Z);
             break;
           }
         }
