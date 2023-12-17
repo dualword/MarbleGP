@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <controller/CControllerGame.h>
 #include <helpers/CTextureHelpers.h>
+#include <shaders/CDustbinShaders.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
@@ -452,8 +453,6 @@ namespace dustbin {
 
       irr::ITimer *l_pTimer = a_pDevice->getTimer();
 
-      std::vector<int> l_vShadowMap = { 2048, 4096, 8192 };
-
       std::vector<irr::core::recti> l_vViewports;
 
       irr::core::dimension2du l_cScreen = l_pDrv->getScreenSize();
@@ -461,11 +460,11 @@ namespace dustbin {
 
       irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Big, l_cDim);
 
-      irr::core::dimension2du l_cTextSize = l_pFont->getDimension(L"Detect Framerate: 6666 Frames.");
+      irr::core::dimension2du l_cTextSize = l_pFont->getDimension(L"Framerate guessing is not too hard if you know what you're doing");
 
       irr::core::recti l_cTextRect = irr::core::recti(
-        irr::core::vector2di(l_cDim.Width / 2 - l_cTextSize.Width / 2, l_cDim.Height / 2 - l_cTextSize.Height / 2),
-        irr::core::vector2di(l_cDim.Width / 2 + l_cTextSize.Width / 2, l_cDim.Height / 2 + l_cTextSize.Height / 2)
+        irr::core::vector2di(l_cDim.Width / 2 - l_cTextSize.Width / 2, l_cDim.Height / 2 - 9 * l_cTextSize.Height / 2),
+        irr::core::vector2di(l_cDim.Width / 2 + l_cTextSize.Width / 2, l_cDim.Height / 2 + 9 * l_cTextSize.Height / 2)
       );
 
       l_cTextRect.UpperLeftCorner  -= irr::core::vector2di(l_cTextSize.Height / 6);
@@ -473,28 +472,50 @@ namespace dustbin {
 
       l_vViewports.push_back(irr::core::recti(irr::core::position2di(0, 0), l_cDim));
 
-      for (auto l_iShadowMap: l_vShadowMap) {
-        l_pSmgr->clear();
-        l_pSmgr->loadScene("data/levels/four_obstacles/track.xml");
+      l_pSmgr->clear();
+      l_pSmgr->loadScene("data/levels/four_obstacles/track.xml");
 
-        irr::scene::ISceneNode *l_pNode = l_pSmgr->getSceneNodeFromName("AutoGfxCamera");
+      irr::scene::ISceneNode *l_pEmpty = l_pSmgr->addEmptySceneNode();
+      l_pEmpty->setPosition(irr::core::vector3df(0.0f, 35.0f, 0.0f));
+      irr::scene::ICameraSceneNode *l_pCamera = l_pSmgr->addCameraSceneNode(l_pEmpty, irr::core::vector3df(550.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f));
+      irr::scene::ISceneNodeAnimator *l_pAnim = l_pSmgr->createRotationAnimator(irr::core::vector3df(0.0f, 0.125f, 0.0f));
+      l_pEmpty->addAnimator(l_pAnim);
+      l_pAnim->drop();
 
-        if (l_pNode != nullptr && l_pNode->getType() == irr::scene::ESNT_CAMERA) {
-          l_pSmgr->setActiveCamera(reinterpret_cast<irr::scene::ICameraSceneNode *>(l_pNode));
-        }
+      shaders::CDustbinShaders *l_pShader = CGlobal::getInstance()->getShader();
+      l_pShader->addLightCamera();
+
+      helpers::addNodeToShader(l_pShader, l_pSmgr->getRootSceneNode());
+
+      std::wstring l_sData = L"";
+
+      for (int i = 0; i < 6; i++) {
+        helpers::convertForShader(i, l_pShader);
 
         irr::u32 l_iStart = l_pTimer->getRealTime() + 1000;
         irr::u32 l_iFrame = 0;
 
         bool l_bCount = false;
 
+        l_pShader->startShadowMaps();
+        l_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
+        l_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
+        l_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+        l_pShader->endShadowMaps();
+
         while (a_pDevice->run()) {
+          if (i > 2) {
+            l_pShader->startShadowMaps();
+            l_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+            l_pShader->endShadowMaps();
+          }
+
           l_pDrv->beginScene(true, true);
-          l_pSmgr->drawAll();
+          l_pShader->renderScene();
 
           l_pDrv->draw2DRectangle(irr::video::SColor(192, 224, 244, 224), l_cTextRect);
           l_pDrv->draw2DRectangleOutline(l_cTextRect, irr::video::SColor(255, 0, 0, 0));
-          std::wstring l_sInfo = L"Detect Framerate: " + std::to_wstring(l_iFrame) + L" Frames.";
+          std::wstring l_sInfo = l_sData + L"\n\nDetect Framerate: " + std::to_wstring(l_iFrame) + L" Frames.";
           l_pFont->draw(l_sInfo.c_str(), l_cTextRect, irr::video::SColor(255, 0, 0, 0), true, true);
 
           l_pDrv->endScene();
@@ -510,9 +531,16 @@ namespace dustbin {
           else {
             l_iFrame++;
             if (l_pTimer->getRealTime() > l_iStart + 4000) {
-              printf("Shadow map size %4i: %i Frames (%i / sec).\n", l_iShadowMap, l_iFrame, l_iFrame / 4);
               if (l_iFrame / 4 > 100) {
-                a_pSettings->m_iShadows++;
+                a_pSettings->m_iShadows = i;
+                l_sData += L"Shadow Mode \"" ;
+                l_sData += (i == 0 ? L"Off" :
+                  i == 1 ? L"Static Low" :
+                  i == 2 ? L"Static High" :
+                  i == 3 ? L"Low" :
+                  i == 4 ? L"Medium" :
+                  L"High");
+                l_sData += L"\": " + std::to_wstring(l_iFrame / 4) + L" FPS.\n";
               }
               else return;
               break;
@@ -521,6 +549,7 @@ namespace dustbin {
         }
       }
       l_pSmgr->clear();
+      l_pShader->clear();
       printf("Shadow settings: %i\n", a_pSettings->m_iShadows);
     }
 #endif
