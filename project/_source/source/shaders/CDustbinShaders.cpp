@@ -24,7 +24,7 @@ namespace dustbin {
       m_pRttShadow2 (),
       m_pRttShadow3 (),
       m_pCallback   (nullptr),
-      m_eMode       (enShadowMode::TransColor),
+      m_eMode       (enShadowMode::Static),
       m_eQuality    (enShadowQuality::High)
     {
       // Create the callback and initialize the shaders
@@ -56,7 +56,7 @@ namespace dustbin {
       if (m_pCallback != nullptr)
         m_pCallback->drop();
 
-      m_vNodes.clear();
+      m_vStatic.clear();
     }
 
     /**
@@ -134,7 +134,13 @@ namespace dustbin {
     * Go through all nodes in the list and set the material to the solid shadow material
     */
     void CDustbinShaders::setShadow1Material() {
-      for (auto l_cNode : m_vNodes) {
+      for (auto l_cNode : m_vStatic) {
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow1;
+        }
+      }
+
+      for (auto l_cNode : m_vMoving) {
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow1;
         }
@@ -145,7 +151,13 @@ namespace dustbin {
     * Go through all nodes in the list and set the material to the transparent shadow material
     */
     void CDustbinShaders::setShadow2Material() {
-      for (auto l_cNode : m_vNodes) {
+      for (auto l_cNode : m_vStatic) {
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow2;
+        }
+      }
+
+      for (auto l_cNode : m_vMoving) {
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow2;
         }
@@ -156,7 +168,13 @@ namespace dustbin {
     * Go through all nodes in the list and set the material to the transparent color material
     */
     void CDustbinShaders::setShadow3Material() {
-      for (auto l_cNode : m_vNodes) {
+      for (auto l_cNode : m_vStatic) {
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow3;
+        }
+      }
+
+      for (auto l_cNode : m_vMoving) {
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow3;
         }
@@ -167,7 +185,14 @@ namespace dustbin {
     * Set the render materials of the nodes
     */
     void CDustbinShaders::setRenderMaterial() {
-      for (auto l_cNode : m_vNodes) {
+      for (auto l_cNode : m_vStatic) {
+        l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eRenderM;
+        }
+      }
+
+      for (auto l_cNode : m_vMoving) {
         l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eRenderM;
@@ -179,7 +204,14 @@ namespace dustbin {
     * Restore the original Irrlicht materials for the nodes 
     */
     void CDustbinShaders::restoreMaterials() {
-      for (auto l_cNode : m_vNodes) {
+      for (auto l_cNode : m_vStatic) {
+        l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eOriginal;
+        }
+      }
+
+      for (auto l_cNode : m_vMoving) {
         l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eOriginal;
@@ -286,16 +318,21 @@ namespace dustbin {
         m_pDrv->setRenderTarget(m_pRttShadow1[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
         setShadow1Material();
 
-        for (auto l_cNode : m_vNodes) {
+        for (auto l_cNode : m_vStatic) {
           l_cNode.m_pNode->render();
         }
         
+        if (m_eMode > enShadowMode::Static) {
+          for (auto l_cNode : m_vMoving) {
+            l_cNode.m_pNode->render();
+          }
+        }
       }
       if (m_eMode > enShadowMode::Solid && a_eToRender == enShadowMap::Transparent) {
         m_pDrv->setRenderTarget(m_pRttShadow2[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
         setShadow2Material();
 
-        for (auto l_cNode : m_vNodes) {
+        for (auto l_cNode : m_vStatic) {
           l_cNode.m_pNode->render();
         }
       }
@@ -304,7 +341,7 @@ namespace dustbin {
         m_pDrv->setRenderTarget(m_pRttShadow3[(int)m_eQuality], true, true, irr::video::SColor(0, 0xFF, 0xFF, 0xFF));
         setShadow3Material();
 
-        for (auto l_cNode : m_vNodes) {
+        for (auto l_cNode : m_vStatic) {
           l_cNode.m_pNode->render();
         }
       }
@@ -359,7 +396,7 @@ namespace dustbin {
         m_pRttShadow3[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
       }
 
-      for (auto l_cNode : m_vNodes) {
+      for (auto l_cNode : m_vStatic) {
         for (auto &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
@@ -377,7 +414,7 @@ namespace dustbin {
     * @param a_eMaterial the new material
     */
     void CDustbinShaders::adjustNodeMaterial(irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eMaterial) {
-      for (std::vector<SShadowNode>::iterator l_itNode = m_vNodes.begin(); l_itNode != m_vNodes.end(); l_itNode++) {
+      for (std::vector<SShadowNode>::iterator l_itNode = m_vStatic.begin(); l_itNode != m_vStatic.end(); l_itNode++) {
         if ((*l_itNode).m_pNode == a_pNode) {
           for (std::vector<SShadowNodeMaterial>::iterator l_itMaterial = (*l_itNode).m_vMaterials.begin(); l_itMaterial != (*l_itNode).m_vMaterials.end(); l_itMaterial++) {
             if ((*l_itMaterial).m_iMaterial == a_iMaterial) {
@@ -395,23 +432,44 @@ namespace dustbin {
     * @param a_iMaterial the index of the material
     * @param a_eNewMaterial the material type to be registered (could also be taken from the scene node)
     * @param a_bCastShadow does this material cast a shadow?
+    * @param a_bStatic is this a static (true) or moving (false) object?
     */
-    void CDustbinShaders::addNodeMaterial(irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow) {
-      std::vector<SShadowNode>::iterator l_itNode = m_vNodes.begin();
+    void CDustbinShaders::addNodeMaterial(irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow, bool a_bStatic) {
+      std::vector<SShadowNode>::iterator l_itNode;
 
-      // Check whether or not the node of the material is already in the list
-      while (l_itNode != m_vNodes.end()) {
-        if ((*l_itNode).m_pNode == a_pNode)
-          break;
+      if (a_bStatic) {
+        l_itNode = m_vStatic.begin();
 
-        l_itNode++;
+        // Check whether or not the node of the material is already in the list
+        while (l_itNode != m_vStatic.end()) {
+          if ((*l_itNode).m_pNode == a_pNode)
+            break;
+
+          l_itNode++;
+        }
+
+        // Node not found? Add it.
+        if (l_itNode == m_vStatic.end()) {
+          m_vStatic.push_back(SShadowNode(a_pNode, a_pNode->isVisible()));
+          l_itNode = m_vStatic.end();
+          l_itNode--;
+        }
       }
+      else {
+        l_itNode = m_vMoving.begin();
 
-      // Node not found? Add it.
-      if (l_itNode == m_vNodes.end()) {
-        m_vNodes.push_back(SShadowNode(a_pNode, a_pNode->isVisible()));
-        l_itNode = m_vNodes.end();
-        l_itNode--;
+        while (l_itNode != m_vMoving.end()) {
+          if ((*l_itNode).m_pNode == a_pNode)
+            break;
+
+          l_itNode++;
+        }
+
+        if (l_itNode == m_vMoving.end()) {
+          m_vMoving.push_back(SShadowNode(a_pNode, a_pNode->isVisible()));
+          l_itNode = m_vMoving.end();
+          l_itNode--;
+        }
       }
 
       std::vector<SShadowNodeMaterial>::iterator l_itMaterial = (*l_itNode).m_vMaterials.begin();
@@ -459,9 +517,9 @@ namespace dustbin {
     * @param a_pNode the node to delete
     */
     void CDustbinShaders::deleteNode(irr::scene::ISceneNode* a_pNode) {
-      for (std::vector<SShadowNode>::iterator l_itNode = m_vNodes.begin(); l_itNode != m_vNodes.end(); l_itNode++) {
+      for (std::vector<SShadowNode>::iterator l_itNode = m_vStatic.begin(); l_itNode != m_vStatic.end(); l_itNode++) {
         if ((*l_itNode).m_pNode == a_pNode) {
-          m_vNodes.erase(l_itNode);
+          m_vStatic.erase(l_itNode);
           return;
         }
       }
@@ -481,7 +539,7 @@ namespace dustbin {
     * Clear the node list
     */
     void CDustbinShaders::clear() {
-      m_vNodes.clear();
+      m_vStatic.clear();
       m_pLightCamera = nullptr;
       m_pDataNode    = nullptr;
     }

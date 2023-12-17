@@ -30,6 +30,7 @@ namespace dustbin {
     */
     enum class enShadowMode {
       Off,          // No shadows
+      Static,       // Only static shadows are rendered
       Solid,        // Solid shadows are rendered
       SolidTrans,   // Solid and transparent shadows are rendered
       TransColor,   // Solid, transparent and transparent color shadows are rendered

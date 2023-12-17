@@ -108,7 +108,8 @@ namespace dustbin {
 
         enShadowQuality m_eQuality;   /**< The currently used shadow quality, i.e. size of the shadow map */
 
-        std::vector<SShadowNode> m_vNodes;  /**< A list of nodes for rendering the shadow map */
+        std::vector<SShadowNode> m_vStatic;   /**< A list of nodes for rendering the shadow map */
+        std::vector<SShadowNode> m_vMoving;   /**< A list of moving nodes for rendering the shadow map */
 
         void setShadow1Material();    /**< Set the materials of all nodes in m_vNodes to the solid shadow material */
         void setShadow2Material();    /**< Set the materials of all nodes in m_vNodes to the transparent shadow material */
@@ -207,8 +208,9 @@ namespace dustbin {
         * @param a_iMaterial the index of the material
         * @param a_eNewMaterial the material type to be registered (could also be taken from the scene node)
         * @param a_bCastShadow does this material cast a shadow?
+        * @param a_bStatic is this a static (true) or moving (false) object?
         */
-        void addNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow);
+        void addNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow, bool a_bStatic);
 
         /**
         * Set the material for the rendering pass of a node

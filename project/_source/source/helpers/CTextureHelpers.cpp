@@ -1,8 +1,11 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+#include <scenenodes/CStartingGridSceneNode.h>
+#include <scenenodes/CPhysicsNode.h>
 #include <shaders/CDustbinShaders.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <scenenodes/CSpeedNode.h>
+#include <scenenodes/CJointNode.h>
 #include <platform/CPlatform.h>
 #include <CGlobal.h>
 #include <map>
@@ -415,7 +418,7 @@ namespace dustbin {
     * @param a_pNode the node with the material
     * @param a_iMaterial the material ID
     */
-    void addMaterialToShader(shaders::CDustbinShaders *a_pShader, irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial) {
+    void addMaterialToShader(shaders::CDustbinShaders *a_pShader, irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, bool a_bStatic) {
       irr::video::E_MATERIAL_TYPE l_eMaterial = a_pNode->getMaterial(a_iMaterial).MaterialType;
 
       if (l_eMaterial == irr::video::EMT_SOLID || a_pShader->isShaderMaterial(l_eMaterial)) {
@@ -467,17 +470,35 @@ namespace dustbin {
           a_pNode, 
           a_iMaterial, 
           l_bSolidM ? irr::video::EMT_SOLID : a_pShader->getMaterial(l_eType), 
-          true
+          true,
+          a_bStatic
         );
       }
       else if (l_eMaterial == irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL) {
-        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL, true);
+        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL, true, a_bStatic);
       }
     }
 
     void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode) {
       if (a_pShader != nullptr) {
         if (a_pNode->getType() == irr::scene::ESNT_MESH) {
+          bool l_bStatic = true;
+
+          if (a_pNode->getParent()->getType() != irr::scene::ESNT_SCENE_MANAGER && a_pNode->getParent()->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId)
+            l_bStatic = false;
+          else {
+            for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
+              if ((*l_itChild)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
+                for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itGrarnChild = (*l_itChild)->getChildren().begin(); l_itGrarnChild != (*l_itChild)->getChildren().end(); l_itGrarnChild++) {
+                  if ((*l_itGrarnChild)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_JointNodeId) {
+                    l_bStatic = false;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
           bool l_bVisible = true;
 
           irr::scene::ISceneNode *p = a_pNode;
@@ -489,7 +510,7 @@ namespace dustbin {
           if (l_bVisible) {
             irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
             for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++)
-              addMaterialToShader(a_pShader, l_pNode, i);
+              addMaterialToShader(a_pShader, l_pNode, i, l_bStatic);
           }
         }
 
