@@ -820,12 +820,12 @@ namespace dustbin {
                 bool l_bBehind = l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK;
                 if (l_bBehind || l_bRespawn) {
                   irr::scene::IMeshBuffer* l_pBuffer = m_aMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0);
-                  m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+                  m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::TransMarble));
 
                   irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
 
                   // The "Behind Camera" Alpha Value
-                  irr::u32 l_iAlpha = 96;
+                  irr::u32 l_iAlpha = 192;
 
                   // If the marble is respawning ..
                   if (l_bRespawn) {
@@ -838,18 +838,22 @@ namespace dustbin {
 
                     // .. and if the marble is behind the camera we make sure
                     // the factor does not exceed "96"
-                    if (l_iAlpha > 96 && l_bBehind)
-                      l_iAlpha = 96;
+                    if (l_iAlpha > 192 && l_bBehind)
+                      l_iAlpha = 192;
                   }
 
                   for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                     l_pVertices[j].Color.setAlpha(l_iAlpha);
 
-                  m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+                  m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::TransMarble));
                 }
-                else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
+                else {
+                  m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
+                }
               }
-              else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
+              else {
+                m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
+              }
             }
           }
 
@@ -866,7 +870,7 @@ namespace dustbin {
         else {
           for (int i = 0; i < 16; i++) {
             if (m_aMarbles[i] != nullptr) {
-              m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
+              m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
             }
           }
         }
@@ -1210,7 +1214,7 @@ namespace dustbin {
       for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
         if ((*it).m_iPlayerId == a_iPlayerId) {
           gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_iMarbleId);
-          l_pMarble->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
+          m_pShader->adjustNodeMaterial(l_pMarble->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
 
           std::string l_sTexture = (*it).m_sTexture;
 

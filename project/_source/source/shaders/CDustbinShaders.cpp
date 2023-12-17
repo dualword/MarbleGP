@@ -371,6 +371,25 @@ namespace dustbin {
     }
 
     /**
+    * Set the material for the rendering pass of a node
+    * @param a_pNode the node to adjust
+    * @param a_iMaterial the material to adjust
+    * @param a_eMaterial the new material
+    */
+    void CDustbinShaders::adjustNodeMaterial(irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eMaterial) {
+      for (std::vector<SShadowNode>::iterator l_itNode = m_vNodes.begin(); l_itNode != m_vNodes.end(); l_itNode++) {
+        if ((*l_itNode).m_pNode == a_pNode) {
+          for (std::vector<SShadowNodeMaterial>::iterator l_itMaterial = (*l_itNode).m_vMaterials.begin(); l_itMaterial != (*l_itNode).m_vMaterials.end(); l_itMaterial++) {
+            if ((*l_itMaterial).m_iMaterial == a_iMaterial) {
+              (*l_itMaterial).m_eRenderM = a_eMaterial;
+              return;
+            }
+          }
+        }
+      }
+    }
+
+    /**
     * Register a material of a node
     * @param a_pNode the node the material belongs to
     * @param a_iMaterial the index of the material

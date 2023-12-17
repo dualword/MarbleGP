@@ -211,6 +211,14 @@ namespace dustbin {
         void addNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow);
 
         /**
+        * Set the material for the rendering pass of a node
+        * @param a_pNode the node to adjust
+        * @param a_iMaterial the material to adjust
+        * @param a_eMaterial the new material
+        */
+        void adjustNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eMaterial);
+
+        /**
         * Delete a node from the list
         * @param a_pNode the node to delete
         */

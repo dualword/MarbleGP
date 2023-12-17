@@ -277,6 +277,15 @@ namespace dustbin {
         irr::video::EMT_SOLID, 
         (irr::s32)enMaterialType::SolidThree    // This identifies the shader as the three texture shader
       );
+
+      // The shader for the transparent marble material
+      m_aMaterial[(int)enMaterialType::TransMarble] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+        "data/shaders/dustbin_shader_solid.vert",
+        "data/shaders/dustbin_shader_solid.frag", 
+        this, 
+        irr::video::EMT_TRANSPARENT_VERTEX_ALPHA, 
+        (irr::s32)enMaterialType::Marble    // This is used to identify the material as marble material
+      );
     }
   }
 }
