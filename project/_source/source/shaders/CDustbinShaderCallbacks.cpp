@@ -79,8 +79,6 @@ namespace dustbin {
         m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow3            ] = a_pServices->getPixelShaderConstantID ("tShadow3"      );
         m_aShaderConsts[l_iPass][(int)enShaderConst::Light              ] = a_pServices->getPixelShaderConstantID ("vLight"        );
         m_aShaderConsts[l_iPass][(int)enShaderConst::NoTextures         ] = a_pServices->getPixelShaderConstantID ("iNoTextures"   );
-        m_aShaderConsts[l_iPass][(int)enShaderConst::Vertical           ] = a_pServices->getPixelShaderConstantID ("fVertical"     );
-        m_aShaderConsts[l_iPass][(int)enShaderConst::MinY               ] = a_pServices->getPixelShaderConstantID ("fMinY"         );
       }
 
       enMaterialType l_eType = (enMaterialType)a_iUserData;
@@ -132,9 +130,6 @@ namespace dustbin {
           l_eType == enMaterialType::Wall2      ? 2 : 1;
 
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::NoTextures], &l_iNoTextures, 1);
-
-        a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Vertical], &m_fVertical, 1);
-        a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::MinY    ], &m_fMinY    , 1);
       }
     }
 

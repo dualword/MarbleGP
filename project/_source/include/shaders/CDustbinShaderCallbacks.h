@@ -44,8 +44,6 @@ namespace dustbin {
           Shadow3,                // The transparent color texture
           Light,                  // The light direction
           NoTextures,             // The number of textures used
-          Vertical,               // Flag indicating whether or not this material is vertical (necessary for the overlay)
-          MinY,                   // The minimum Y of the outbox for vertical textures
           
           Count
         };
