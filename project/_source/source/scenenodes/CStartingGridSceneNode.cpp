@@ -14,7 +14,8 @@ namespace dustbin {
       m_fWidth        (10.0f),
       m_fRowLength    (50.0f),
       m_fOffset       (0.2f),
-      m_fAngle        (0.0f)
+      m_fAngle        (0.0f),
+      m_pShader       (nullptr)
     {
       m_cMaterial.Wireframe = false;
       m_cMaterial.Lighting = false;
@@ -98,6 +99,11 @@ namespace dustbin {
         if (m_pMarbles[i] != nullptr) {
           m_pMarbles[i]->m_pPositional->setVisible(false);
           m_pMarbles[i]->m_pPositional->getSceneManager()->addToDeletionQueue(m_pMarbles[i]->m_pPositional);
+
+          if (m_pShader != nullptr) {
+            m_pShader->deleteNode(m_pMarbles[i]->m_pRotational);
+          }
+
           delete m_pMarbles[i];
           m_pMarbles[i] = nullptr;
         }
@@ -200,6 +206,15 @@ namespace dustbin {
       updateGridPositions();
 
       sceneNodeIdUsed(getID());
+    }
+
+
+    /**
+    * Set the shader
+    * @param a_pShader the shader
+    */
+    void CStartingGridSceneNode::setShader(shaders::CDustbinShaders* a_pShader) {
+      m_pShader = a_pShader;
     }
   }
 }

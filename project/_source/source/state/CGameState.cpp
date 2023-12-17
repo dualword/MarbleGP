@@ -395,6 +395,7 @@ namespace dustbin {
 
       helpers::addToDebugLog("Setup grid...");
       m_fGridAngle = m_pGridNode->getAngle();
+      m_pGridNode->setShader(m_pShader);
 
       data::SGameSettings::enGridPos    l_eGridOrder   = data::SGameSettings::enGridPos::Fixed;
       data::SGameSettings::enAutoFinish l_eAutoFinish  = data::SGameSettings::enAutoFinish::AllPlayers;
@@ -806,8 +807,8 @@ namespace dustbin {
       if (a_pViewPort != nullptr && a_pViewPort->m_iPlayer != 0) {
         if (a_pViewPort->m_pPlayer->m_eState != gameclasses::SMarbleNodes::enMarbleState::Finished) {
           // Make marbles behind the marble node transparent
-          irr::core::vector3df l_cNormal   = (a_pViewPort->m_pCamera->getTarget() - a_pViewPort->m_pCamera->getAbsolutePosition()).normalize(),
-                               l_cPosition = a_pViewPort->m_pCamera->getTarget() + 0.1f * (a_pViewPort->m_pCamera->getAbsolutePosition() - a_pViewPort->m_pCamera->getTarget());
+          irr::core::vector3df l_cNormal   = (a_pViewPort->m_pCamera->getTarget() - a_pViewPort->m_pCamera->getAbsolutePosition()).normalize();
+          irr::core::vector3df l_cPosition = a_pViewPort->m_pCamera->getTarget() + 0.1f * (a_pViewPort->m_pCamera->getAbsolutePosition() - a_pViewPort->m_pCamera->getTarget());
           irr::core::plane3df  l_cPlane    = irr::core::plane3df(l_cPosition, l_cNormal);
 
           for (int i = 0; i < 16; i++) {
@@ -843,6 +844,8 @@ namespace dustbin {
 
                   for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                     l_pVertices[j].Color.setAlpha(l_iAlpha);
+
+                  m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
                 }
                 else m_aMarbles[i]->m_pRotational->getMaterial(0).MaterialType = m_pShader->getMaterial(shaders::enMaterialType::Marble);
               }

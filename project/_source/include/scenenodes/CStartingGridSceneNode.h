@@ -5,6 +5,10 @@
 #include <irrlicht.h>
 
 namespace dustbin {
+  namespace shaders {
+    class CDustbinShaders;
+  }
+
   namespace scenenodes {
     const int g_StartingGridScenenodeId = MAKE_IRR_ID('d', 's', 'g', 's');
     const irr::c8 g_StartingGridScenenodeName[] = "StartingGridScenenode";
@@ -22,10 +26,12 @@ namespace dustbin {
         irr::video::SMaterial m_cMaterial;
 
         int   m_iMarblesPerRow;
-        float m_fWidth,      /**< Total width of the grid*/
-              m_fRowLength,  /**< Total length of the grid*/
-              m_fOffset,     /**< The offset of the first marble in a row to the last marble in a row */
-              m_fAngle;      /**< Angle around the Y-axis of the grid*/
+        float m_fWidth;      /**< Total width of the grid*/
+        float m_fRowLength;  /**< Total length of the grid*/
+        float m_fOffset;     /**< The offset of the first marble in a row to the last marble in a row */
+        float m_fAngle;      /**< Angle around the Y-axis of the grid*/
+
+        shaders::CDustbinShaders *m_pShader;  /**< The dustbin shader instance */
 
         gameclasses::SMarbleNodes *m_pMarbles[16]; /**< The marble nodes */
 
@@ -58,6 +64,12 @@ namespace dustbin {
         virtual void deserializeAttributes(irr::io::IAttributes* a_pIn, irr::io::SAttributeReadWriteOptions* a_pOptions = 0);
 
         virtual void render();
+
+        /**
+        * Set the shader
+        * @param a_pShader the shader
+        */
+        void setShader(shaders::CDustbinShaders *a_pShader);
     };
   }
 }

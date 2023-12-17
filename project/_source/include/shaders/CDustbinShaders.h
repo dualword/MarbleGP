@@ -211,6 +211,12 @@ namespace dustbin {
         void addNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow);
 
         /**
+        * Delete a node from the list
+        * @param a_pNode the node to delete
+        */
+        void deleteNode(irr::scene::ISceneNode *a_pNode);
+
+        /**
         * Change the shadow rendering mode
         * @param a_eMode the new shadow rendering mode
         */

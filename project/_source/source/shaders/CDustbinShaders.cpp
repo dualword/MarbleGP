@@ -436,6 +436,19 @@ namespace dustbin {
     }
 
     /**
+    * Delete a node from the list
+    * @param a_pNode the node to delete
+    */
+    void CDustbinShaders::deleteNode(irr::scene::ISceneNode* a_pNode) {
+      for (std::vector<SShadowNode>::iterator l_itNode = m_vNodes.begin(); l_itNode != m_vNodes.end(); l_itNode++) {
+        if ((*l_itNode).m_pNode == a_pNode) {
+          m_vNodes.erase(l_itNode);
+          return;
+        }
+      }
+    }
+
+    /**
     * Convert a material from the enMaterialType enum to an Irrlicht material type enum value
     * @param a_eType the internal material type
     * @return the corresponding Irrlicht material type enum value
