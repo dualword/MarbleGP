@@ -567,6 +567,7 @@ namespace dustbin {
     */
     void CDustbinShaders::clear() {
       m_vStatic.clear();
+      m_vMoving.clear();
       m_pLightCamera = nullptr;
       m_pDataNode    = nullptr;
     }
