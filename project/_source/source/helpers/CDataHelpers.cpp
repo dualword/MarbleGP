@@ -460,16 +460,6 @@ namespace dustbin {
 
       irr::gui::IGUIFont *l_pFont = CGlobal::getInstance()->getFont(enFont::Big, l_cDim);
 
-      irr::core::dimension2du l_cTextSize = l_pFont->getDimension(L"Framerate guessing is not too hard if you know what you're doing");
-
-      irr::core::recti l_cTextRect = irr::core::recti(
-        irr::core::vector2di(l_cDim.Width / 2 - l_cTextSize.Width / 2, l_cDim.Height / 2 - 9 * l_cTextSize.Height / 2),
-        irr::core::vector2di(l_cDim.Width / 2 + l_cTextSize.Width / 2, l_cDim.Height / 2 + 9 * l_cTextSize.Height / 2)
-      );
-
-      l_cTextRect.UpperLeftCorner  -= irr::core::vector2di(l_cTextSize.Height / 6);
-      l_cTextRect.LowerRightCorner += irr::core::vector2di(l_cTextSize.Height / 6);
-
       l_vViewports.push_back(irr::core::recti(irr::core::position2di(0, 0), l_cDim));
 
       l_pSmgr->clear();
@@ -487,10 +477,58 @@ namespace dustbin {
 
       helpers::addNodeToShader(l_pShader, l_pSmgr->getRootSceneNode());
 
-      std::wstring l_sData = L"";
+      std::wstring l_sHeadline = L"Framerate Detection";
 
-      for (int i = 0; i < 6; i++) {
-        helpers::convertForShader(i, l_pShader);
+      //          Text       Frames FPS         Size                 Position               Position FPS
+      std::tuple<std::wstring, int, int, irr::core::dimension2du, irr::core::vector2di, irr::core::vector2di> l_aData[] = {
+        std::make_tuple(L"Shadows Off: ", 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di()),
+        std::make_tuple(L"Static Low: " , 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di()),
+        std::make_tuple(L"Static High: ", 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di()),
+        std::make_tuple(L"Low: "        , 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di()),
+        std::make_tuple(L"Medium: "     , 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di()),
+        std::make_tuple(L"High: "       , 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di()),
+        std::make_tuple(L""             , 0, 0, irr::core::dimension2du(), irr::core::vector2di(), irr::core::vector2di())
+      };
+
+      irr::core::dimension2du l_cHead = l_pFont->getDimension(l_sHeadline.c_str());
+      irr::core::dimension2du l_cText;
+
+      irr::core::vector2di l_cPos = irr::core::vector2di(0, 5 * l_cHead.Height / 2);
+
+      for (int i = 0; std::get<0>(l_aData[i]) != L""; i++) {
+        std::get<3>(l_aData[i]) = l_pFont->getDimension(std::get<0>(l_aData[i]).c_str());
+        std::get<4>(l_aData[i]) = irr::core::vector2di(0, l_cPos.Y);
+
+        if (std::get<3>(l_aData[i]).Width  > l_cText.Width ) l_cText .Width  = std::get<3>(l_aData[i]).Width;
+        if (std::get<3>(l_aData[i]).Height > l_cText.Height) l_cText .Height = std::get<3>(l_aData[i]).Height;
+
+        l_cPos.Y += 5 * l_cHead.Height / 4;
+      }
+
+      for (int i = 0; std::get<0>(l_aData[i]) != L""; i++) {
+        std::get<4>(l_aData[i]).X = l_cScreen.Width / 2 - std::get<3>(l_aData[i]).Width;
+      }
+
+      l_cPos.Y += l_cHead.Height / 2;
+
+      irr::core::dimension2du l_cBoxSize = irr::core::dimension2du(2 * l_cText.Width, l_cPos.Y);
+
+      irr::core::recti l_cBox = irr::core::recti(
+        irr::core::vector2di(l_cScreen.Width / 2 - l_cBoxSize.Width / 2 - l_cHead.Height, l_cScreen.Height / 2 - l_cBoxSize.Height / 2),
+        l_cBoxSize + irr::core::dimension2du(2 * l_cHead.Height, 0)
+      );
+
+      for (int i = 0; std::get<0>(l_aData[i]) != L""; i++) {
+        std::get<4>(l_aData[i]).Y += l_cBox.UpperLeftCorner.Y;
+
+        std::get<5>(l_aData[i]) = irr::core::vector2di(l_cScreen.Width / 2, std::get<4>(l_aData[i]).Y);
+      }
+
+      irr::core::dimension2du l_cFps = irr::core::dimension2du(l_cBox.getWidth() / 2, l_cHead.Height);
+
+      for (int i = 0; i < 7; i++) {
+        if (i < 6) 
+          helpers::convertForShader(i, l_pShader);
 
         irr::u32 l_iStart = l_pTimer->getRealTime() + 1000;
         irr::u32 l_iFrame = 0;
@@ -513,10 +551,44 @@ namespace dustbin {
           l_pDrv->beginScene(true, true);
           l_pShader->renderScene();
 
-          l_pDrv->draw2DRectangle(irr::video::SColor(192, 224, 244, 224), l_cTextRect);
-          l_pDrv->draw2DRectangleOutline(l_cTextRect, irr::video::SColor(255, 0, 0, 0));
-          std::wstring l_sInfo = l_sData + L"\n\nDetect Framerate: " + std::to_wstring(l_iFrame) + L" Frames.";
-          l_pFont->draw(l_sInfo.c_str(), l_cTextRect, irr::video::SColor(255, 0, 0, 0), true, true);
+          l_pDrv->draw2DRectangle(irr::video::SColor(192, 192, 192, 192), l_cBox);
+          l_pFont->draw(l_sHeadline.c_str(), 
+            irr::core::recti(
+              l_cBox.UpperLeftCorner + irr::core::vector2di(0, l_cHead.Height / 2), 
+              irr::core::dimension2du(l_cBox.getWidth(), l_cHead.Height)
+            ),
+            irr::video::SColor(0xFF, 0, 0, 0),
+            true, 
+            true
+          );
+
+          for (int j = 0; std::get<0>(l_aData[j]) != L""; j++) {
+            l_pFont->draw(
+              std::get<0>(l_aData[j]).c_str(), 
+              irr::core::recti(
+                std::get<4>(l_aData[j]), 
+                std::get<3>(l_aData[j])
+              ),
+              i == j ? irr::video::SColor(0xFF, 0x80, 0x40, 0x00) : irr::video::SColor(0xFF, 0, 0, 0),
+              false,
+              true
+            );
+
+            if (j == i) {
+              if (!l_bCount) {
+                l_pFont->draw(L"Framecount", irr::core::recti(std::get<5>(l_aData[j]), l_cFps), irr::video::SColor(0xFF, 0x80, 0x40, 0x00), false, true);
+              }
+              else {
+                l_pFont->draw(std::to_wstring(l_iFrame).c_str(), irr::core::recti(std::get<5>(l_aData[j]), l_cFps), irr::video::SColor(0xFF, 0x80, 0x40, 0x00), false, true);
+              }
+            }
+            else if (j < i) {
+              l_pFont->draw((std::to_wstring(std::get<2>(l_aData[j])) + L" FPS").c_str(), irr::core::recti(std::get<5>(l_aData[j]), l_cFps), irr::video::SColor(0xFF, 0, 0, 0), false, true);
+            }
+            else {
+              l_pFont->draw(L"---", irr::core::recti(std::get<5>(l_aData[j]), l_cFps), irr::video::SColor(0xFF, 0, 0, 0), false, true);
+            }
+          }
 
           l_pDrv->endScene();
           std::wstring s = L"Current Framerate: " + std::to_wstring(l_pDrv->getFPS()) + L" FPS";
@@ -533,14 +605,7 @@ namespace dustbin {
             if (l_pTimer->getRealTime() > l_iStart + 4000) {
               if (l_iFrame / 4 > 100) {
                 a_pSettings->m_iShadows = i;
-                l_sData += L"Shadow Mode \"" ;
-                l_sData += (i == 0 ? L"Off" :
-                  i == 1 ? L"Static Low" :
-                  i == 2 ? L"Static High" :
-                  i == 3 ? L"Low" :
-                  i == 4 ? L"Medium" :
-                  L"High");
-                l_sData += L"\": " + std::to_wstring(l_iFrame / 4) + L" FPS.\n";
+                std::get<2>(l_aData[i]) = l_iFrame / 4;
               }
               else return;
               break;
