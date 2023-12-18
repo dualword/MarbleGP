@@ -11,9 +11,8 @@ namespace dustbin {
     /**
     * The constructor
     * @param a_pDevice the Irrlicht Device
-    * @param a_eQuality the initial shadow quality i.e. size of the shadow map texture
     */
-    CDustbinShaders::CDustbinShaders(irr::IrrlichtDevice* a_pDevice, enShadowQuality a_eQuality) :
+    CDustbinShaders::CDustbinShaders(irr::IrrlichtDevice* a_pDevice) :
       m_pDevice     (a_pDevice),
       m_pDrv        (a_pDevice->getVideoDriver()),
       m_pSmgr       (a_pDevice->getSceneManager()),
@@ -24,28 +23,17 @@ namespace dustbin {
       m_pRttShadow2 (),
       m_pRttShadow3 (),
       m_pCallback   (nullptr),
-      m_eMode       (enShadowMode::SolidTrans),
+      m_eMode       (enShadowMode::Off),
       m_eRender     (enShadowRender::All),
-      m_eQuality    (enShadowQuality::High)
+      m_eQuality    (enShadowQuality::LoMid)
     {
-      // Create the callback and initialize the shaders
-      m_pCallback = new CDustbinShaderCallback(m_pDevice->getVideoDriver(), shadowQualityToSize(a_eQuality));
-      m_pCallback->initializeShaders();
-      m_pCallback->setShadowMode(m_eMode);
 
       // Initialize all shadow map textures with nullptr (will be created once used)
-      for (int i = 0; i < (int)enShadowQuality::Count; i++)
+      for (int i = 0; i < (int)enShadowQuality::Count; i++) {
         m_pRttShadow1[i] = nullptr;
-
-      // Create the shadow map for the initial setting
-      irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
-      std::string l_sName1 = "__shadow1TextureRtt_" + std::to_string((int)m_eQuality);
-      std::string l_sName2 = "__shadow2TextureRtt_" + std::to_string((int)m_eQuality);
-      std::string l_sName3 = "__shadow3TextureRtt_" + std::to_string((int)m_eQuality);
-
-      m_pRttShadow1[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName1.c_str(), irr::video::ECF_A8R8G8B8);
-      m_pRttShadow2[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName2.c_str(), irr::video::ECF_A8R8G8B8);
-      m_pRttShadow3[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName3.c_str(), irr::video::ECF_A8R8G8B8);
+        m_pRttShadow2[i] = nullptr;
+        m_pRttShadow3[i] = nullptr;
+      }
 
       printf("Ready.\n");
     }
@@ -349,65 +337,47 @@ namespace dustbin {
     }
 
     /**
-    * Change the shadow rendering mode
-    * @param a_eMode the new shadow rendering mode
-    */
-    void CDustbinShaders::setShadowMode(enShadowMode a_eMode) {
-      m_eMode = a_eMode;
-      m_pCallback->setShadowMode(m_eMode);
-    }
-
-    /**
     * Change the rendering options
-    * @param a_eRender the rendering options
-    */
-    void CDustbinShaders::setRenderOptions(enShadowRender a_eRender) {
-      m_eRender = a_eRender;
-    }
-
-    /**
-    * Get the render option
-    * @return the render option
-    */
-    enShadowRender CDustbinShaders::getRenderOption() {
-      return m_eRender;
-    }
-
-    /**
-    * Get the current shadow mode
-    * @return the current shadow mode
-    */
-    enShadowMode CDustbinShaders::getShadowMode() {
-      return m_eMode;
-    }
-
-    /**
-    * Set the shadow quality i.e. resolution of the shadow map texture
+    * @param a_eRender what to render
+    * @param a_eShadowMode the new shadow mode
     * @param a_eQuality the new shadow quality
     */
-    void CDustbinShaders::setShadowQuality(enShadowQuality a_eQuality) {
-      if (m_eQuality != a_eQuality) {
+    void CDustbinShaders::setRenderOptions(enShadowRender a_eRender, enShadowMode a_eShadowMode, enShadowQuality a_eQuality) {
+      if (a_eShadowMode != enShadowMode::Off && m_pCallback == nullptr) {
+        // Create the callback and initialize the shaders
+        m_pCallback = new CDustbinShaderCallback(m_pDevice->getVideoDriver(), shadowQualityToSize(a_eQuality));
+        m_pCallback->initializeShaders();
+        m_pCallback->setShadowMode(a_eShadowMode);
+      }
+
+      if ((m_eMode == enShadowMode::Off && a_eShadowMode != enShadowMode::Off) || (m_eQuality != a_eQuality)) {
         if (m_pRttShadow1[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow1[(int)m_eQuality]); m_pRttShadow1[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow2[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow2[(int)m_eQuality]); m_pRttShadow2[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow3[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow3[(int)m_eQuality]); m_pRttShadow3[(int)m_eQuality] = nullptr; }
+      }
 
-        m_eQuality = a_eQuality;
+      m_eRender  = a_eRender;
+      m_eMode    = a_eShadowMode;
+      m_eQuality = a_eQuality;
 
-        if (m_pRttShadow1[(int)m_eQuality] == nullptr) {
+      if (m_pCallback != nullptr) {
+        m_pCallback->setShadowMode(m_eMode);
+
+        if (m_pRttShadow1[(int)m_eQuality] == nullptr && m_eMode != enShadowMode::Off) {
           irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
           std::string l_sName = "__shadow1TextureRtt_" + std::to_string((int)m_eQuality);
 
           m_pRttShadow1[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
         }
 
-        if (m_pRttShadow2[(int)m_eQuality] == nullptr) {
+        if (m_pRttShadow2[(int)m_eQuality] == nullptr && m_eMode >= enShadowMode::SolidTrans) {
           irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
           std::string l_sName = "__shadow2TextureRtt_" + std::to_string((int)m_eQuality);
 
           m_pRttShadow2[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
         }
 
-        if (m_pRttShadow3[(int)m_eQuality] == nullptr) {
+        if (m_pRttShadow3[(int)m_eQuality] == nullptr && m_eMode >= enShadowMode::TransColor) {
           irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
           std::string l_sName = "__shadow3TextureRtt_" + std::to_string((int)m_eQuality);
 
@@ -433,6 +403,31 @@ namespace dustbin {
         m_pCallback->setShadowRttSize(shadowQualityToSize(m_eQuality));
       }
     }
+
+    /**
+    * Get the render option
+    * @return the render option
+    */
+    enShadowRender CDustbinShaders::getRenderOption() {
+      return m_eRender;
+    }
+
+    /**
+    * Get the current shadow mode
+    * @return the current shadow mode
+    */
+    enShadowMode CDustbinShaders::getShadowMode() {
+      return m_eMode;
+    }
+
+    /**
+    * Get the current shadow quality
+    * @return the current shadow quality
+    */
+    enShadowQuality CDustbinShaders::getShadowQuality() {
+      return m_eQuality;
+    }
+
 
     /**
     * Set the material for the rendering pass of a node

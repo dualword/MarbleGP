@@ -137,9 +137,8 @@ namespace dustbin {
         /**
         * The constructor
         * @param a_pDevice the Irrlicht Device
-        * @param a_eQuality the initial shadow quality i.e. size of the shadow map texture
         */
-        CDustbinShaders(irr::IrrlichtDevice *a_pDevice, enShadowQuality a_eQuality);
+        CDustbinShaders(irr::IrrlichtDevice *a_pDevice);
 
         /**
         * The destructor
@@ -228,16 +227,12 @@ namespace dustbin {
         void deleteNode(irr::scene::ISceneNode *a_pNode);
 
         /**
-        * Change the shadow rendering mode
-        * @param a_eMode the new shadow rendering mode
-        */
-        void setShadowMode(enShadowMode a_eMode);
-
-        /**
         * Change the rendering options
-        * @param a_eRender the rendering options
+        * @param a_eRender what to render
+        * @param a_eShadowMode the new shadow mode
+        * @param a_eQuality the new shadow quality
         */
-        void setRenderOptions(enShadowRender a_eRender);
+        void setRenderOptions(enShadowRender a_eRender, enShadowMode a_eShadowMode, enShadowQuality a_eQuality);
 
         /**
         * Get the render option
@@ -252,10 +247,10 @@ namespace dustbin {
         enShadowMode getShadowMode();
 
         /**
-        * Set the shadow quality i.e. resolution of the shadow map texture
-        * @param a_eQuality the new shadow quality
+        * Get the current shadow quality
+        * @return the current shadow quality
         */
-        void setShadowQuality(enShadowQuality a_eQuality);
+        enShadowQuality getShadowQuality();
 
         /**
         * Convert a material from the enMaterialType enum to an Irrlicht material type enum value

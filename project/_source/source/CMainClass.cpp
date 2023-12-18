@@ -320,7 +320,7 @@ namespace dustbin {
     }
 #endif
 
-    m_pShader = new shaders::CDustbinShaders(m_pDevice, shaders::enShadowQuality::High);
+    m_pShader = new shaders::CDustbinShaders(m_pDevice);
     helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
 
     m_pActiveState->activate();

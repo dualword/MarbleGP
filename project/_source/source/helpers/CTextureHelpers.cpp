@@ -530,42 +530,32 @@ namespace dustbin {
         switch (a_iShadows) {
           // Off
           case 0:
-            a_pShader->setShadowMode(shaders::enShadowMode::Off);
+            a_pShader->setRenderOptions(shaders::enShadowRender::Off, shaders::enShadowMode::Off, shaders::enShadowQuality::Poor);
             break;
 
           // Static Solid
           case 1:
-            a_pShader->setShadowMode   (shaders::enShadowMode::Solid);
-            a_pShader->setShadowQuality(shaders::enShadowQuality::LoMid);
-            a_pShader->setRenderOptions(shaders::enShadowRender::Static);
+            a_pShader->setRenderOptions(shaders::enShadowRender::Static, shaders::enShadowMode::Solid, shaders::enShadowQuality::LoMid);
             break;
 
           // Static Transparent
           case 2:
-            a_pShader->setShadowMode   (shaders::enShadowMode::TransColor);
-            a_pShader->setShadowQuality(shaders::enShadowQuality::HiMid);
-            a_pShader->setRenderOptions(shaders::enShadowRender::Static);
+            a_pShader->setRenderOptions(shaders::enShadowRender::Static, shaders::enShadowMode::TransColor, shaders::enShadowQuality::HiMid);
             break;
 
           // Low
           case 3:
-            a_pShader->setShadowMode   (shaders::enShadowMode::Solid);
-            a_pShader->setShadowQuality(shaders::enShadowQuality::LoMid);
-            a_pShader->setRenderOptions(shaders::enShadowRender::All);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::Solid, shaders::enShadowQuality::LoMid);
             break;
 
           // Medium
           case 4:
-            a_pShader->setShadowMode   (shaders::enShadowMode::TransColor);
-            a_pShader->setShadowQuality(shaders::enShadowQuality::HiMid);
-            a_pShader->setRenderOptions(shaders::enShadowRender::All);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::HiMid);
             break;
 
           // High
           default:
-            a_pShader->setShadowMode   (shaders::enShadowMode::TransColor);
-            a_pShader->setShadowQuality(shaders::enShadowQuality::High);
-            a_pShader->setRenderOptions(shaders::enShadowRender::All);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::High);
             break;
         }
       }
