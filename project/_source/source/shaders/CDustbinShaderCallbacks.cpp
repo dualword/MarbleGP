@@ -22,16 +22,17 @@ namespace dustbin {
       for (int i = 0; i < (int)enMaterialType::Count; i++)
         m_aMaterial[i] = -1;
 
-      m_aTextures[(int)enMaterialType::Marble    ] = 0;
-      m_aTextures[(int)enMaterialType::SolidOne  ] = 0;
-      m_aTextures[(int)enMaterialType::SolidTwo  ] = 1;
-      m_aTextures[(int)enMaterialType::SolidThree] = 2;
-      m_aTextures[(int)enMaterialType::Wall1     ] = 0;
-      m_aTextures[(int)enMaterialType::Wall2     ] = 1;
-      m_aTextures[(int)enMaterialType::Wall3     ] = 2;
-      m_aTextures[(int)enMaterialType::ShadowMap ] = 7;
-      m_aTextures[(int)enMaterialType::ShadowMap2] = 6;
-      m_aTextures[(int)enMaterialType::ShadowMap3] = 5;
+      m_aTextures[(int)enMaterialType::Marble     ] = 0;
+      m_aTextures[(int)enMaterialType::SolidOne   ] = 0;
+      m_aTextures[(int)enMaterialType::SolidTwo   ] = 1;
+      m_aTextures[(int)enMaterialType::SolidThree ] = 2;
+      m_aTextures[(int)enMaterialType::Wall1      ] = 0;
+      m_aTextures[(int)enMaterialType::Wall2      ] = 1;
+      m_aTextures[(int)enMaterialType::Wall3      ] = 2;
+      m_aTextures[(int)enMaterialType::Transparent] = 0;
+      m_aTextures[(int)enMaterialType::ShadowMap  ] = 7;
+      m_aTextures[(int)enMaterialType::ShadowMap2 ] = 6;
+      m_aTextures[(int)enMaterialType::ShadowMap3 ] = 5;
 
       for (int i = 0; i < (int)enShaderConst::Count; i++)
         for (int j = 0; j < (int)enPass::Count; j++)
@@ -274,12 +275,12 @@ namespace dustbin {
       );
 
       // The shader for the transparent marble material
-      m_aMaterial[(int)enMaterialType::TransMarble] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+      m_aMaterial[(int)enMaterialType::Transparent] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
         "data/shaders/dustbin_shader_solid.vert",
         "data/shaders/dustbin_shader_solid.frag", 
         this, 
         irr::video::EMT_TRANSPARENT_VERTEX_ALPHA, 
-        (irr::s32)enMaterialType::Marble    // This is used to identify the material as marble material
+        (irr::s32)enMaterialType::Transparent  // This is used to identify the material as marble material
       );
     }
   }

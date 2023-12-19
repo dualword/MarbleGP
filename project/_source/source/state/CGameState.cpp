@@ -839,7 +839,6 @@ namespace dustbin {
                 bool l_bBehind = l_cPlane.classifyPointRelation(m_aMarbles[i]->m_pPositional->getAbsolutePosition()) == irr::core::ISREL3D_BACK;
                 if (l_bBehind || l_bRespawn) {
                   irr::scene::IMeshBuffer* l_pBuffer = m_aMarbles[i]->m_pRotational->getMesh()->getMeshBuffer(0);
-                  m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::TransMarble));
 
                   irr::video::S3DVertex* l_pVertices = (irr::video::S3DVertex*)l_pBuffer->getVertices();
 
@@ -856,7 +855,7 @@ namespace dustbin {
                     l_iAlpha = (irr::u32)(255.0f * l_fFactor);
 
                     // .. and if the marble is behind the camera we make sure
-                    // the factor does not exceed "96"
+                    // the marble is transparent
                     if (l_iAlpha > 192 && l_bBehind)
                       l_iAlpha = 192;
                   }
@@ -864,7 +863,7 @@ namespace dustbin {
                   for (irr::u32 j = 0; j < l_pBuffer->getVertexCount(); j++)
                     l_pVertices[j].Color.setAlpha(l_iAlpha);
 
-                  m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::TransMarble));
+                  m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Transparent));
                 }
                 else {
                   m_pShader->adjustNodeMaterial(m_aMarbles[i]->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));

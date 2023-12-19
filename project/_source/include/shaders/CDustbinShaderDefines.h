@@ -16,7 +16,7 @@ namespace dustbin {
       Wall1,        // Wall with a single texture
       Wall2,        // Wall textures which use the texture coordinates for all texture layers
       Wall3,        // Wall textures which use the texture coordinates for all texture layers
-      TransMarble,  // Transparent Marble
+      Transparent,  // Transparent Marble
       ShadowMap,    // The shadow map, must not be used on nodes
       ShadowMap2,   // The transparent shadow map, must not be used on nodes
       ShadowMap3,   // The transparent color map, must not be used on nodes

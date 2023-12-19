@@ -446,6 +446,17 @@ namespace dustbin {
           }
         }
       }
+
+      for (std::vector<SShadowNode>::iterator l_itNode = m_vMoving.begin(); l_itNode != m_vMoving.end(); l_itNode++) {
+        if ((*l_itNode).m_pNode == a_pNode) {
+          for (std::vector<SShadowNodeMaterial>::iterator l_itMaterial = (*l_itNode).m_vMaterials.begin(); l_itMaterial != (*l_itNode).m_vMaterials.end(); l_itMaterial++) {
+            if ((*l_itMaterial).m_iMaterial == a_iMaterial) {
+              (*l_itMaterial).m_eRenderM = a_eMaterial;
+              return;
+            }
+          }
+        }
+      }
     }
 
     /**
