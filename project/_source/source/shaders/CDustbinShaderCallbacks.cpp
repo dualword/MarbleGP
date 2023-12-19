@@ -33,6 +33,7 @@ namespace dustbin {
       m_aTextures[(int)enMaterialType::ShadowMap  ] = 7;
       m_aTextures[(int)enMaterialType::ShadowMap2 ] = 6;
       m_aTextures[(int)enMaterialType::ShadowMap3 ] = 5;
+      m_aTextures[(int)enMaterialType::ShadowMap4 ] = 4;
 
       for (int i = 0; i < (int)enShaderConst::Count; i++)
         for (int j = 0; j < (int)enPass::Count; j++)
@@ -78,6 +79,7 @@ namespace dustbin {
         m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow             ] = a_pServices->getPixelShaderConstantID ("tShadow"       );
         m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow2            ] = a_pServices->getPixelShaderConstantID ("tShadow2"      );
         m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow3            ] = a_pServices->getPixelShaderConstantID ("tShadow3"      );
+        m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow4            ] = a_pServices->getPixelShaderConstantID ("tShadow4"      );
         m_aShaderConsts[l_iPass][(int)enShaderConst::Light              ] = a_pServices->getPixelShaderConstantID ("vLight"        );
         m_aShaderConsts[l_iPass][(int)enShaderConst::NoTextures         ] = a_pServices->getPixelShaderConstantID ("iNoTextures"   );
       }
@@ -118,6 +120,7 @@ namespace dustbin {
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow  ], &m_aTextures[(int)enMaterialType::ShadowMap ], 1);
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow2 ], &m_aTextures[(int)enMaterialType::ShadowMap2], 1);
         a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow3 ], &m_aTextures[(int)enMaterialType::ShadowMap3], 1);
+        a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::Shadow4 ], &m_aTextures[(int)enMaterialType::ShadowMap4], 1);
         
         irr::f32 l_aValue[3];
         m_cLight.getAs3Values(l_aValue);

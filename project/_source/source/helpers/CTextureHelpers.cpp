@@ -417,8 +417,9 @@ namespace dustbin {
     * @param a_pShader the shader instance
     * @param a_pNode the node with the material
     * @param a_iMaterial the material ID
+    * @param a_eType the type of node this material belongs to
     */
-    void addMaterialToShader(shaders::CDustbinShaders *a_pShader, irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, bool a_bStatic) {
+    void addMaterialToShader(shaders::CDustbinShaders *a_pShader, irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, shaders::enObjectType a_eType) {
       irr::video::E_MATERIAL_TYPE l_eMaterial = a_pNode->getMaterial(a_iMaterial).MaterialType;
 
       if (l_eMaterial == irr::video::EMT_SOLID || a_pShader->isShaderMaterial(l_eMaterial)) {
@@ -471,27 +472,27 @@ namespace dustbin {
           a_iMaterial, 
           l_bSolidM ? irr::video::EMT_SOLID : a_pShader->getMaterial(l_eType), 
           true,
-          a_bStatic
+          l_bMarble ? shaders::enObjectType::Marble : a_eType
         );
       }
       else if (l_eMaterial == irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL) {
-        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL, true, a_bStatic);
+        a_pShader->addNodeMaterial(a_pNode, a_iMaterial, irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL, true, a_eType);
       }
     }
 
     void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode) {
       if (a_pShader != nullptr) {
         if (a_pNode->getType() == irr::scene::ESNT_MESH) {
-          bool l_bStatic = true;
+          shaders::enObjectType l_eType = shaders::enObjectType::Static;
 
           if (a_pNode->getParent()->getType() != irr::scene::ESNT_SCENE_MANAGER && a_pNode->getParent()->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId)
-            l_bStatic = false;
+            l_eType = shaders::enObjectType::Moving;
           else {
             for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
               if ((*l_itChild)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_PhysicsNodeId) {
                 for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itGrarnChild = (*l_itChild)->getChildren().begin(); l_itGrarnChild != (*l_itChild)->getChildren().end(); l_itGrarnChild++) {
                   if ((*l_itGrarnChild)->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_JointNodeId) {
-                    l_bStatic = false;
+                    l_eType = shaders::enObjectType::Moving;
                     break;
                   }
                 }
@@ -510,7 +511,7 @@ namespace dustbin {
           if (l_bVisible) {
             irr::scene::IMeshSceneNode *l_pNode = reinterpret_cast<irr::scene::IMeshSceneNode *>(a_pNode);
             for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++)
-              addMaterialToShader(a_pShader, l_pNode, i, l_bStatic);
+              addMaterialToShader(a_pShader, l_pNode, i, l_eType);
           }
         }
 

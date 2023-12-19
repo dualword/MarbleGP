@@ -3,6 +3,7 @@
 #include <shaders/CDustbinShaderDefines.h>
 #include <scenenodes/CDustbinLight.h>
 #include <shaders/CDustbinShaders.h>
+#include <CGlobal.h>
 #include <string>
 
 namespace dustbin {
@@ -22,6 +23,7 @@ namespace dustbin {
       m_pRttShadow1 (),
       m_pRttShadow2 (),
       m_pRttShadow3 (),
+      m_pRttShadow4 (),
       m_pCallback   (nullptr),
       m_eMode       (enShadowMode::Off),
       m_eRender     (enShadowRender::All),
@@ -33,6 +35,7 @@ namespace dustbin {
         m_pRttShadow1[i] = nullptr;
         m_pRttShadow2[i] = nullptr;
         m_pRttShadow3[i] = nullptr;
+        m_pRttShadow4[i] = nullptr;
       }
 
       printf("Ready.\n");
@@ -134,6 +137,12 @@ namespace dustbin {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow1;
         }
       }
+
+      for (auto l_cNode : m_vMarble) {
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow1;
+        }
+      }
     }
 
     /**
@@ -151,6 +160,12 @@ namespace dustbin {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow2;
         }
       }
+
+      for (auto l_cNode : m_vMarble) {
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow2;
+        }
+      }
     }
 
     /**
@@ -164,6 +179,12 @@ namespace dustbin {
       }
 
       for (auto l_cNode : m_vMoving) {
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow3;
+        }
+      }
+
+      for (auto l_cNode : m_vMarble) {
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eShadow3;
         }
@@ -187,6 +208,13 @@ namespace dustbin {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eRenderM;
         }
       }
+
+      for (auto l_cNode : m_vMarble) {
+        l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eRenderM;
+        }
+      }
     }
 
     /**
@@ -201,6 +229,13 @@ namespace dustbin {
       }
 
       for (auto l_cNode : m_vMoving) {
+        l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
+        for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
+          l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eOriginal;
+        }
+      }
+
+      for (auto l_cNode : m_vMarble) {
         l_cNode.m_pNode->setVisible(l_cNode.m_bVisible);
         for (auto const &l_cMaterial : l_cNode.m_vMaterials) {
           l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).MaterialType = l_cMaterial.m_eOriginal;
@@ -317,6 +352,16 @@ namespace dustbin {
           }
         }
       }
+
+      if (m_eMode > enShadowMode::Off && a_eToRender == enShadowMap::Marbles) {
+        m_pDrv->setRenderTarget(m_pRttShadow4[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+        setShadow1Material();
+
+        for (auto l_cNode : m_vMarble) {
+          l_cNode.m_pNode->render();
+        }
+      }
+
       if (m_eMode > enShadowMode::Solid && a_eToRender == enShadowMap::Transparent) {
         m_pDrv->setRenderTarget(m_pRttShadow2[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
         setShadow2Material();
@@ -354,6 +399,7 @@ namespace dustbin {
         if (m_pRttShadow1[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow1[(int)m_eQuality]); m_pRttShadow1[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow2[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow2[(int)m_eQuality]); m_pRttShadow2[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow3[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow3[(int)m_eQuality]); m_pRttShadow3[(int)m_eQuality] = nullptr; }
+        if (m_pRttShadow4[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow4[(int)m_eQuality]); m_pRttShadow4[(int)m_eQuality] = nullptr; }
       }
 
       m_eRender  = a_eRender;
@@ -368,6 +414,13 @@ namespace dustbin {
           std::string l_sName = "__shadow1TextureRtt_" + std::to_string((int)m_eQuality);
 
           m_pRttShadow1[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
+        }
+
+        if (m_pRttShadow4[(int)m_eQuality] == nullptr && m_eMode != enShadowMode::Off) {
+          irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
+          std::string l_sName = "__shadow4TextureRtt_" + std::to_string((int)m_eQuality);
+
+          m_pRttShadow4[(int)m_eQuality] = m_pDrv->addRenderTargetTexture(l_cSize, l_sName.c_str(), irr::video::ECF_A8R8G8B8);
         }
 
         if (m_pRttShadow2[(int)m_eQuality] == nullptr && m_eMode >= enShadowMode::SolidTrans) {
@@ -389,6 +442,7 @@ namespace dustbin {
             l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
             l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
             l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(4, m_pRttShadow4[(int)m_eQuality]);
           }
         }
 
@@ -397,6 +451,16 @@ namespace dustbin {
             l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
             l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
             l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(4, m_pRttShadow4[(int)m_eQuality]);
+          }
+        }
+
+        for (auto l_cNode : m_vMarble) {
+          for (auto &l_cMaterial : l_cNode.m_vMaterials) {
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+            l_cNode.m_pNode->getMaterial(l_cMaterial.m_iMaterial).setTexture(4, m_pRttShadow4[(int)m_eQuality]);
           }
         }
 
@@ -457,6 +521,17 @@ namespace dustbin {
           }
         }
       }
+
+      for (std::vector<SShadowNode>::iterator l_itNode = m_vMarble.begin(); l_itNode != m_vMarble.end(); l_itNode++) {
+        if ((*l_itNode).m_pNode == a_pNode) {
+          for (std::vector<SShadowNodeMaterial>::iterator l_itMaterial = (*l_itNode).m_vMaterials.begin(); l_itMaterial != (*l_itNode).m_vMaterials.end(); l_itMaterial++) {
+            if ((*l_itMaterial).m_iMaterial == a_iMaterial) {
+              (*l_itMaterial).m_eRenderM = a_eMaterial;
+              return;
+            }
+          }
+        }
+      }
     }
 
     /**
@@ -465,12 +540,12 @@ namespace dustbin {
     * @param a_iMaterial the index of the material
     * @param a_eNewMaterial the material type to be registered (could also be taken from the scene node)
     * @param a_bCastShadow does this material cast a shadow?
-    * @param a_bStatic is this a static (true) or moving (false) object?
+    * @param a_eType the type of node
     */
-    void CDustbinShaders::addNodeMaterial(irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow, bool a_bStatic) {
+    void CDustbinShaders::addNodeMaterial(irr::scene::IMeshSceneNode* a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow, enObjectType a_eType) {
       std::vector<SShadowNode>::iterator l_itNode;
 
-      if (a_bStatic) {
+      if (a_eType == enObjectType::Static) {
         l_itNode = m_vStatic.begin();
 
         // Check whether or not the node of the material is already in the list
@@ -488,7 +563,7 @@ namespace dustbin {
           l_itNode--;
         }
       }
-      else {
+      else if (a_eType == enObjectType::Moving) {
         l_itNode = m_vMoving.begin();
 
         while (l_itNode != m_vMoving.end()) {
@@ -501,6 +576,22 @@ namespace dustbin {
         if (l_itNode == m_vMoving.end()) {
           m_vMoving.push_back(SShadowNode(a_pNode, a_pNode->isVisible()));
           l_itNode = m_vMoving.end();
+          l_itNode--;
+        }
+      }
+      else if (a_eType == enObjectType::Marble) {
+        l_itNode = m_vMarble.begin();
+
+        while (l_itNode != m_vMarble.end()) {
+          if ((*l_itNode).m_pNode == a_pNode)
+            break;
+
+          l_itNode++;
+        }
+
+        if (l_itNode == m_vMarble.end()) {
+          m_vMarble.push_back(SShadowNode(a_pNode, a_pNode->isVisible()));
+          l_itNode = m_vMarble.end();
           l_itNode--;
         }
       }
@@ -525,6 +616,7 @@ namespace dustbin {
         a_pNode->getMaterial(a_iMaterial).setTexture(7, m_pRttShadow1[(int)m_eQuality]);
         a_pNode->getMaterial(a_iMaterial).setTexture(6, m_pRttShadow2[(int)m_eQuality]);
         a_pNode->getMaterial(a_iMaterial).setTexture(5, m_pRttShadow3[(int)m_eQuality]);
+        a_pNode->getMaterial(a_iMaterial).setTexture(4, m_pRttShadow4[(int)m_eQuality]);
 
         // Add the material to the shadow material vector
         (*l_itNode).m_vMaterials.push_back(SShadowNodeMaterial(
@@ -574,6 +666,7 @@ namespace dustbin {
     void CDustbinShaders::clear() {
       m_vStatic.clear();
       m_vMoving.clear();
+      m_vMarble.clear();
       m_pLightCamera = nullptr;
       m_pDataNode    = nullptr;
     }

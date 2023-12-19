@@ -20,6 +20,7 @@ namespace dustbin {
       ShadowMap,    // The shadow map, must not be used on nodes
       ShadowMap2,   // The transparent shadow map, must not be used on nodes
       ShadowMap3,   // The transparent color map, must not be used on nodes
+      ShadowMap4,   // The marble shadow map, must not be used on nodes
       ShadowMapNo, 
       
       Count
@@ -69,10 +70,20 @@ namespace dustbin {
     */
     enum class enShadowMap {
       Solid,        // The shadow map for the solid shadows
+      Marbles,      // The shadow map for the marbles
       Transparent,  // The shadow map for the (semi)transparent shadows
       TranspColor,  // The map with the colors for the (semi)transparent shadows
 
       Count
+    };
+
+    /**
+    * An enumeration for the type of object
+    */
+    enum enObjectType {
+      Static,   // A static object
+      Moving,   // A moving object
+      Marble    // A Marble
     };
 
     /**

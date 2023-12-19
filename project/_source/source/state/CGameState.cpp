@@ -986,6 +986,7 @@ namespace dustbin {
       if (m_pShader->getRenderOption() > shaders::enShadowRender::Static) {
         m_pShader->startShadowMaps();
         m_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+        m_pShader->renderShadowMap(shaders::enShadowMap::Marbles);
         m_pShader->endShadowMaps();
       }
 

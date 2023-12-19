@@ -42,6 +42,7 @@ namespace dustbin {
           Shadow,                 // The shadow texture
           Shadow2,                // The transparent shadow texture
           Shadow3,                // The transparent color texture
+          Shadow4,                // The marble shadow map
           Light,                  // The light direction
           NoTextures,             // The number of textures used
           

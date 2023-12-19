@@ -101,6 +101,7 @@ namespace dustbin {
         irr::video::ITexture *m_pRttShadow1[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes */
         irr::video::ITexture *m_pRttShadow2[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (transparent) */
         irr::video::ITexture *m_pRttShadow3[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (transparent color) */
+        irr::video::ITexture *m_pRttShadow4[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (marble shadow) */
 
         CDustbinShaderCallback *m_pCallback;    /**< The shader callback */
 
@@ -111,6 +112,7 @@ namespace dustbin {
 
         std::vector<SShadowNode> m_vStatic;   /**< A list of nodes for rendering the shadow map */
         std::vector<SShadowNode> m_vMoving;   /**< A list of moving nodes for rendering the shadow map */
+        std::vector<SShadowNode> m_vMarble;   /**< A list of marbles for rendering the shadow map */
 
         void setShadow1Material();    /**< Set the materials of all nodes in m_vNodes to the solid shadow material */
         void setShadow2Material();    /**< Set the materials of all nodes in m_vNodes to the transparent shadow material */
@@ -208,9 +210,9 @@ namespace dustbin {
         * @param a_iMaterial the index of the material
         * @param a_eNewMaterial the material type to be registered (could also be taken from the scene node)
         * @param a_bCastShadow does this material cast a shadow?
-        * @param a_bStatic is this a static (true) or moving (false) object?
+        * @param a_eType the type of node
         */
-        void addNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow, bool a_bStatic);
+        void addNodeMaterial(irr::scene::IMeshSceneNode *a_pNode, irr::u32 a_iMaterial, irr::video::E_MATERIAL_TYPE a_eNewMaterial, bool a_bCastShadow, enObjectType a_eType);
 
         /**
         * Set the material for the rendering pass of a node
