@@ -47,9 +47,10 @@
       "comment": "A physics singleton for LUA AI functions to modify the physics",
       "globalidentifier": "worldsingleton_cinstance",
       "members": [
-        { "name": "world"   , "type": "gameclasses::CWorld *"        , "comment": "The physics world"  , "default": "nullptr" },
-        { "name": "marbles" , "type": "gameclasses::CObjectMarble *" , "comment": "An array of marbles", "default": "nullptr", "arraysize": "16" },
-        { "name": "dynamics", "type": "gameclasses::CDynamicThread *", "comment": "The dynamics thread", "default": "nullptr" }
+        { "name": "world"      , "type": "gameclasses::CWorld *"                  , "comment": "The physics world"    , "default": "nullptr" },
+        { "name": "marbles"    , "type": "gameclasses::CObjectMarble *"           , "comment": "An array of marbles"  , "default": "nullptr", "arraysize": "16" },
+        { "name": "dynamics"   , "type": "gameclasses::CDynamicThread *"          , "comment": "The dynamics thread"  , "default": "nullptr" },
+        { "name": "motorParams", "type": "std::map<int, std::tuple<float, float>>", "comment": "Parameters of a motor" }
       ],
       "methods": {
         "lua_from": {

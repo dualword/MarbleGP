@@ -39,8 +39,8 @@ namespace dustbin {
             dJointSetHingeParam((*l_itObj)->m_cJoint, dParamVel , a_speed);
           }
 
-          if (m_dynamics != nullptr && (m_mMotorParams.find(a_id) == m_mMotorParams.end() || std::get<0>(m_mMotorParams[a_id]) != a_speed || std::get<1>(m_mMotorParams[a_id]) != a_force)) {
-            m_mMotorParams[a_id] = std::make_tuple(a_speed, a_force);
+          if (m_dynamics != nullptr && (m_motorParams.find(a_id) == m_motorParams.end() || std::get<0>(m_motorParams[a_id]) != a_speed || std::get<1>(m_motorParams[a_id]) != a_force)) {
+            m_motorParams[a_id] = std::make_tuple(a_speed, a_force);
             m_dynamics->jointStartMotor((*l_itObj)->m_iId, a_speed, a_force, (*l_itObj)->m_eJoint);
           }
 
