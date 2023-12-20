@@ -39,17 +39,6 @@ namespace dustbin {
     };
 
     /**
-    * The shadow rendering options
-    */
-    enum class enShadowRender {
-      Off,      // No shadows
-      Static,   // Only static shadows
-      All,      // Static and moving shadows
-
-      Count
-    };
-
-    /**
     * An enum to define the quality, i.e. shadow map
     * resolution, of the shadows
     */

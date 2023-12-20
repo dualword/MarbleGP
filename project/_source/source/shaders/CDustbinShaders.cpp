@@ -29,7 +29,6 @@ namespace dustbin {
       m_pRttShadow4 (),
       m_pCallback   (nullptr),
       m_eMode       (enShadowMode::Off),
-      m_eRender     (enShadowRender::All),
       m_eQuality    (enShadowQuality::LoMid)
     {
 
@@ -355,7 +354,7 @@ namespace dustbin {
       if (a_iRender > 0) {
         setShadow1Material();
 
-        if ((a_iRender & c_iRenderTextureOne) == c_iRenderTextureOne)
+        if ((a_iRender & c_iRenderTextureOne) != (irr::u32)0)
           m_pDrv->setRenderTarget(m_pRttShadow1[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
 
         if ((a_iRender & (irr::s32)enShadowMap::Solid) == (irr::s32)enShadowMap::Solid) {
@@ -365,16 +364,13 @@ namespace dustbin {
         }
 
         if ((a_iRender & (irr::s32)enShadowMap::Moving) == (irr::s32)enShadowMap::Moving) {
-          if (m_eRender > enShadowRender::Static) {
-            for (auto l_cNode : m_vMoving) {
-              l_cNode.m_pNode->render();
-            }
+          for (auto l_cNode : m_vMoving) {
+            l_cNode.m_pNode->render();
           }
         }
 
         if ((a_iRender & (irr::s32)enShadowMap::Marbles) == (irr::s32)enShadowMap::Marbles) {
           m_pDrv->setRenderTarget(m_pRttShadow4[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
-          setShadow1Material();
 
           for (auto l_cNode : m_vMarble) {
             l_cNode.m_pNode->render();
@@ -407,7 +403,7 @@ namespace dustbin {
     * @param a_eShadowMode the new shadow mode
     * @param a_eQuality the new shadow quality
     */
-    void CDustbinShaders::setRenderOptions(enShadowRender a_eRender, enShadowMode a_eShadowMode, enShadowQuality a_eQuality) {
+    void CDustbinShaders::setRenderOptions(enShadowMode a_eShadowMode, enShadowQuality a_eQuality) {
       if (a_eShadowMode != enShadowMode::Off && m_pCallback == nullptr) {
         // Create the callback and initialize the shaders
         m_pCallback = new CDustbinShaderCallback(m_pDevice->getVideoDriver(), shadowQualityToSize(a_eQuality));
@@ -422,7 +418,6 @@ namespace dustbin {
         if (m_pRttShadow4[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow4[(int)m_eQuality]); m_pRttShadow4[(int)m_eQuality] = nullptr; }
       }
 
-      m_eRender  = a_eRender;
       m_eMode    = a_eShadowMode;
       m_eQuality = a_eQuality;
 
@@ -486,14 +481,6 @@ namespace dustbin {
 
         m_pCallback->setShadowRttSize(shadowQualityToSize(m_eQuality));
       }
-    }
-
-    /**
-    * Get the render option
-    * @return the render option
-    */
-    enShadowRender CDustbinShaders::getRenderOption() {
-      return m_eRender;
     }
 
     /**

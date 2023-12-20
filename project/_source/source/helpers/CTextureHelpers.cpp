@@ -534,35 +534,35 @@ namespace dustbin {
         switch (a_iShadows) {
           // Off
           case 0:
-            a_pShader->setRenderOptions(shaders::enShadowRender::Off, shaders::enShadowMode::Off, shaders::enShadowQuality::Poor);
+            a_pShader->setRenderOptions(shaders::enShadowMode::Off, shaders::enShadowQuality::Poor);
             break;
 
           // Static Solid
           case 1:
-            a_pShader->setRenderOptions(shaders::enShadowRender::Static, shaders::enShadowMode::Solid, shaders::enShadowQuality::LoMid);
+            a_pShader->setRenderOptions(shaders::enShadowMode::Solid, shaders::enShadowQuality::LoMid);
             break;
 
           // Static Transparent
           case 2:
-            a_pShader->setRenderOptions(shaders::enShadowRender::Static, shaders::enShadowMode::TransColor, shaders::enShadowQuality::LoMid);
+            a_pShader->setRenderOptions(shaders::enShadowMode::TransColor, shaders::enShadowQuality::LoMid);
             l_iFlags = (irr::u32)shaders::enShadowMap::Marbles;
             break;
 
           // Low
           case 3:
-            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::LoMid);
+            a_pShader->setRenderOptions(shaders::enShadowMode::TransColor, shaders::enShadowQuality::LoMid);
             l_iFlags = (irr::u32)shaders::enShadowMap::Solid | (irr::u32)shaders::enShadowMap::Marbles | (irr::u32)shaders::enShadowMap::Moving;
             break;
 
           // Medium
           case 4:
-            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::HiMid);
+            a_pShader->setRenderOptions(shaders::enShadowMode::TransColor, shaders::enShadowQuality::HiMid);
             l_iFlags = (irr::u32)shaders::enShadowMap::Solid | (irr::u32)shaders::enShadowMap::Marbles | (irr::u32)shaders::enShadowMap::Moving;
             break;
 
           // High
           default:
-            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::High);
+            a_pShader->setRenderOptions(shaders::enShadowMode::TransColor, shaders::enShadowQuality::High);
             l_iFlags = (irr::u32)shaders::enShadowMap::Solid | (irr::u32)shaders::enShadowMap::Marbles | (irr::u32)shaders::enShadowMap::Moving;
             break;
         }

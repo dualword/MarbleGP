@@ -340,9 +340,6 @@ namespace dustbin {
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
-      m_iRenderFlags = m_pGlobal->getRenderFlags();
-      printf("Render Flags: %i\n", m_iRenderFlags);
-
       helpers::addToDebugLog("Load track...");
       // Load the track, and don't forget to run the skybox fix beforehands
       std::string l_sTrack = "data/levels/" + m_cGameData.m_sTrack + "/track.xml";
@@ -358,11 +355,23 @@ namespace dustbin {
         m_pShader = m_pGlobal->getShader();
         m_pShader->addLightCamera();
 
+        m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+        printf("Render Flags: %i\n", m_iRenderFlags);
+
         helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
 
-        m_pShader->startShadowMaps();
-        m_pShader->renderShadowMap((irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid);
-        m_pShader->endShadowMaps();
+        m_pShader->clearShadowMaps();
+
+        if (m_cSettings.m_iShadows > 0) {
+          irr::u32 l_iFlags = (m_cSettings.m_iShadows == 1) ? 
+            (irr::u32)shaders::enShadowMap::Solid 
+            : 
+            (irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid;
+
+          m_pShader->startShadowMaps();
+          m_pShader->renderShadowMap(l_iFlags);
+          m_pShader->endShadowMaps();
+        }
       }
       else {
         handleError("Error while starting game state.", "The specified race track file was not found.");
@@ -658,6 +667,7 @@ namespace dustbin {
         m_pPanelRndr = nullptr;
       }
 
+      m_pShader = nullptr;
       helpers::addToDebugLog("CGameState::deactivate() }");
     }
 
@@ -733,9 +743,14 @@ namespace dustbin {
 
           m_pShader->clearShadowMaps();
 
-          if (m_iRenderFlags != 0) {
+          if (m_cSettings.m_iShadows > 0) {
+            irr::u32 l_iFlags = (m_cSettings.m_iShadows == 1) ? 
+              (irr::u32)shaders::enShadowMap::Solid 
+            : 
+              (irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid;
+
             m_pShader->startShadowMaps();
-            m_pShader->renderShadowMap((irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid);
+            m_pShader->renderShadowMap(l_iFlags);
             m_pShader->endShadowMaps();
           }
         }

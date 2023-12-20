@@ -106,7 +106,6 @@ namespace dustbin {
         CDustbinShaderCallback *m_pCallback;    /**< The shader callback */
 
         enShadowMode   m_eMode;   /**< The shadow rendering mode */
-        enShadowRender m_eRender; /**< The rendering mode */
 
         enShadowQuality m_eQuality;   /**< The currently used shadow quality, i.e. size of the shadow map */
 
@@ -235,17 +234,10 @@ namespace dustbin {
 
         /**
         * Change the rendering options
-        * @param a_eRender what to render
         * @param a_eShadowMode the new shadow mode
         * @param a_eQuality the new shadow quality
         */
-        void setRenderOptions(enShadowRender a_eRender, enShadowMode a_eShadowMode, enShadowQuality a_eQuality);
-
-        /**
-        * Get the render option
-        * @return the render option
-        */
-        enShadowRender getRenderOption();
+        void setRenderOptions(enShadowMode a_eShadowMode, enShadowQuality a_eQuality);
 
         /**
         * Get the current shadow mode

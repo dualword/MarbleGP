@@ -8,6 +8,7 @@ uniform sampler2D tTexture3;    // The third layer texture (e.g. road markings)
 uniform sampler2D tShadow;      // The shadow map texture
 uniform sampler2D tShadow2;     // The transparent shadow map texture
 uniform sampler2D tShadow3;     // The color map for the transparent shadows
+uniform sampler2D tShadow4;     // The marble shadow map
 
 uniform vec3 vLight;      // The light direction
 
@@ -33,6 +34,13 @@ vec4 shadowMapTest(vec2 vPosition, float fDistance) {
   float fDepthShadow = (fMaxDepth * rgbToFloat(vDepth.rgb));
   
   if (fDistance > fDepthShadow) return vec4(0.0, 0.0, 0.0, 1.0);
+  
+  if (iMaterial != 3) {
+    vec4 vMarble = texture2D(tShadow4, vec2(vPosition));
+    float fDepthMarble = (fMaxDepth * rgbToFloat(vMarble.rgb));
+    
+    if (fDistance > fDepthMarble - 0.005) return vec4(0.0, 0.0, 0.0, 1.0);
+  }
   
   // Do we render the transparent shadows as well?
   if (iShadowMode > 1) {
@@ -152,6 +160,9 @@ void main(void) {
       vTextureOne = mix(vTextureOne, vShadowColor, min(fFactor, vShadowColor.a));
     }
   }
+  
+  if (iMaterial == 7)
+    vTextureOne.a = 0.5;
   
   // Set the calculated fragment color
   gl_FragColor = fFactor * vTextureOne;
