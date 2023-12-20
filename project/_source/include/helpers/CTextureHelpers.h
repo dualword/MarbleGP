@@ -80,8 +80,9 @@ namespace dustbin {
     * Convert the shadow setting to the values for the shader
     * @param a_iShadows the shadow setting
     * @param a_pShader the shader instance to be adjusted
+    * @return the rendering flags for the per-frame shadow map update (transparent is never active here)
     */
-    void convertForShader(int a_iShadows, shaders::CDustbinShaders *a_pShader);
+    irr::u32 convertForShader(int a_iShadows, shaders::CDustbinShaders *a_pShader);
 
 #ifdef _OPENGL_ES
     /**

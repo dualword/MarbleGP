@@ -142,6 +142,8 @@ namespace dustbin {
 
         irr::f32 m_fSfxVolume;  /**< The volume of the in-game sound effects */
 
+        irr::u32 m_iRenderFlags;  /**< The flags for rendering the shadow maps during gameplay */
+
         bool m_bEnded;  /**< A message notifying that the race has ended was received (dynamics thread terminated) */
 
         shaders::CDustbinShaders *m_pShader;    /**< The Dustbin Shader */

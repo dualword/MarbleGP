@@ -52,6 +52,7 @@ namespace dustbin {
       m_iFinished      (-1),
       m_iFadeOut       (-1),
       m_fSfxVolume     (1.0f),
+      m_iRenderFlags   (0),
       m_bEnded         (false),
       m_pShader        (nullptr),
       m_pSoundIntf     (nullptr),
@@ -339,6 +340,9 @@ namespace dustbin {
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
+      m_iRenderFlags = m_pGlobal->getRenderFlags();
+      printf("Render Flags: %i\n", m_iRenderFlags);
+
       helpers::addToDebugLog("Load track...");
       // Load the track, and don't forget to run the skybox fix beforehands
       std::string l_sTrack = "data/levels/" + m_cGameData.m_sTrack + "/track.xml";
@@ -357,9 +361,7 @@ namespace dustbin {
         helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
 
         m_pShader->startShadowMaps();
-        m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
-        m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
-        m_pShader->renderShadowMap(shaders::enShadowMap::Solid      );
+        m_pShader->renderShadowMap((irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid);
         m_pShader->endShadowMaps();
       }
       else {
@@ -727,13 +729,15 @@ namespace dustbin {
 
           printf("Shadow Mode: %i\n", m_cSettings.m_iShadows);
 
-          helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+          m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
 
-          m_pShader->startShadowMaps();
-          m_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
-          m_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
-          m_pShader->renderShadowMap(shaders::enShadowMap::Solid      );
-          m_pShader->endShadowMaps();
+          m_pShader->clearShadowMaps();
+
+          if (m_iRenderFlags != 0) {
+            m_pShader->startShadowMaps();
+            m_pShader->renderShadowMap((irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid);
+            m_pShader->endShadowMaps();
+          }
         }
         else {
           // Not available during gameplay
@@ -983,10 +987,9 @@ namespace dustbin {
       if (m_pPanelRndr != nullptr)
         m_pPanelRndr->updateTextureIfNecessary();
 
-      if (m_pShader->getRenderOption() > shaders::enShadowRender::Static) {
+      if (m_iRenderFlags != 0) {
         m_pShader->startShadowMaps();
-        m_pShader->renderShadowMap(shaders::enShadowMap::Solid);
-        m_pShader->renderShadowMap(shaders::enShadowMap::Marbles);
+        m_pShader->renderShadowMap(m_iRenderFlags);
         m_pShader->endShadowMaps();
       }
 

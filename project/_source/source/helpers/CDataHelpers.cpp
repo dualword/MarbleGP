@@ -526,25 +526,25 @@ namespace dustbin {
 
       irr::core::dimension2du l_cFps = irr::core::dimension2du(l_cBox.getWidth() / 2, l_cHead.Height);
 
+      irr::u32 l_iFlags = 0;
       for (int i = 0; i < 7; i++) {
         if (i < 6) 
-          helpers::convertForShader(i, l_pShader);
+          l_iFlags = helpers::convertForShader(i, l_pShader);
 
         irr::u32 l_iStart = l_pTimer->getRealTime() + 1000;
         irr::u32 l_iFrame = 0;
 
         bool l_bCount = false;
 
+        l_pShader->clearShadowMaps();
         l_pShader->startShadowMaps();
-        l_pShader->renderShadowMap(shaders::enShadowMap::TranspColor);
-        l_pShader->renderShadowMap(shaders::enShadowMap::Transparent);
-        l_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+        l_pShader->renderShadowMap((irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::Solid);
         l_pShader->endShadowMaps();
 
         while (a_pDevice->run()) {
-          if (i > 2) {
+          if (l_iFlags != 0) {
             l_pShader->startShadowMaps();
-            l_pShader->renderShadowMap(shaders::enShadowMap::Solid);
+            l_pShader->renderShadowMap(l_iFlags);
             l_pShader->endShadowMaps();
           }
 

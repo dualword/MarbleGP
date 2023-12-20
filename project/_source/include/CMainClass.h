@@ -41,6 +41,8 @@ namespace dustbin {
 
       int m_iRasterSize;    /**< The raster size for UI layout */
 
+      irr::u32 m_iRenderFlags;    /**< Flags for shadow rendering */
+
       std::vector<int> m_vFontSizes;  /**< The supported font sizes */
 
       std::map<int, irr::gui::IGUIFont*> m_mFonts;  /**< A map for the fonts */
@@ -352,6 +354,12 @@ namespace dustbin {
       * Get the shader instance
       */
       virtual shaders::CDustbinShaders *getShader() const override;
+
+      /**
+      * Get the render flags for the shadow rendering
+      * @return the render flags for the shadow rendering
+      */
+      virtual irr::u32 getRenderFlags() override;
 
 #ifdef _ANDROID
       /**

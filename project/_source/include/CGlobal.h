@@ -314,6 +314,12 @@ namespace dustbin {
       */
       virtual shaders::CDustbinShaders *getShader() const = 0;
 
+      /**
+      * Get the render flags for the shadow rendering
+      * @return the render flags for the shadow rendering
+      */
+      virtual irr::u32 getRenderFlags() = 0;
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app

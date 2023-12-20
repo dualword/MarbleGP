@@ -9,6 +9,9 @@
 namespace dustbin {
   namespace shaders {
     const irr::c8 c_sLightCameraDefaultName[] = "__DustbinShaderLightCamera";
+
+    const irr::u32 c_iRenderTextureOne = (irr::u32)enShadowMap::Solid | (irr::u32)enShadowMap::Moving;
+
     /**
     * The constructor
     * @param a_pDevice the Irrlicht Device
@@ -334,49 +337,66 @@ namespace dustbin {
     }
 
     /**
-    * Render the shadow map
-    * @param a_eToRender which shadow map shall be rendered
+    * Clear the shadow maps
     */
-    void CDustbinShaders::renderShadowMap(enShadowMap a_eToRender) {
-      if (m_eMode > enShadowMode::Off && a_eToRender == enShadowMap::Solid) {
-        m_pDrv->setRenderTarget(m_pRttShadow1[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+    void CDustbinShaders::clearShadowMaps() {
+      m_pDrv->setRenderTarget(m_pRttShadow1[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+      m_pDrv->setRenderTarget(m_pRttShadow2[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+      m_pDrv->setRenderTarget(m_pRttShadow3[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+      m_pDrv->setRenderTarget(m_pRttShadow4[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+      m_pDrv->setRenderTarget(nullptr);
+    }
+
+    /**
+    * Render the shadow map
+    * @param a_iRender a bitmap with enShadowMap values
+    */
+    void CDustbinShaders::renderShadowMap(irr::u32 a_iRender) {
+      if (a_iRender > 0) {
         setShadow1Material();
 
-        for (auto l_cNode : m_vStatic) {
-          l_cNode.m_pNode->render();
-        }
-        
-        if (m_eRender > enShadowRender::Static) {
-          for (auto l_cNode : m_vMoving) {
+        if ((a_iRender & c_iRenderTextureOne) == c_iRenderTextureOne)
+          m_pDrv->setRenderTarget(m_pRttShadow1[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+
+        if ((a_iRender & (irr::s32)enShadowMap::Solid) == (irr::s32)enShadowMap::Solid) {
+          for (auto l_cNode : m_vStatic) {
             l_cNode.m_pNode->render();
           }
         }
-      }
 
-      if (m_eMode > enShadowMode::Off && a_eToRender == enShadowMap::Marbles) {
-        m_pDrv->setRenderTarget(m_pRttShadow4[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
-        setShadow1Material();
-
-        for (auto l_cNode : m_vMarble) {
-          l_cNode.m_pNode->render();
+        if ((a_iRender & (irr::s32)enShadowMap::Moving) == (irr::s32)enShadowMap::Moving) {
+          if (m_eRender > enShadowRender::Static) {
+            for (auto l_cNode : m_vMoving) {
+              l_cNode.m_pNode->render();
+            }
+          }
         }
-      }
 
-      if (m_eMode > enShadowMode::Solid && a_eToRender == enShadowMap::Transparent) {
-        m_pDrv->setRenderTarget(m_pRttShadow2[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
-        setShadow2Material();
+        if ((a_iRender & (irr::s32)enShadowMap::Marbles) == (irr::s32)enShadowMap::Marbles) {
+          m_pDrv->setRenderTarget(m_pRttShadow4[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
+          setShadow1Material();
 
-        for (auto l_cNode : m_vStatic) {
-          l_cNode.m_pNode->render();
+          for (auto l_cNode : m_vMarble) {
+            l_cNode.m_pNode->render();
+          }
         }
-      }
 
-      if (m_eMode > enShadowMode::SolidTrans && a_eToRender == enShadowMap::TranspColor) {
-        m_pDrv->setRenderTarget(m_pRttShadow3[(int)m_eQuality], true, true, irr::video::SColor(0, 0xFF, 0xFF, 0xFF));
-        setShadow3Material();
+        if ((a_iRender & (irr::s32)enShadowMap::Transparent) == (irr::s32)enShadowMap::Transparent) {
+          m_pDrv->setRenderTarget(m_pRttShadow2[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
+          setShadow2Material();
 
-        for (auto l_cNode : m_vStatic) {
-          l_cNode.m_pNode->render();
+          for (auto l_cNode : m_vStatic) {
+            l_cNode.m_pNode->render();
+          }
+        }
+
+        if ((a_iRender & (irr::s32)enShadowMap::TranspColor) == (irr::s32)enShadowMap::TranspColor) {
+          m_pDrv->setRenderTarget(m_pRttShadow3[(int)m_eQuality], true, true, irr::video::SColor(0, 0xFF, 0xFF, 0xFF));
+          setShadow3Material();
+
+          for (auto l_cNode : m_vStatic) {
+            l_cNode.m_pNode->render();
+          }
         }
       }
     }

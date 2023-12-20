@@ -200,9 +200,14 @@ namespace dustbin {
 
         /**
         * Render the shadow map
-        * @param a_eToRender which shadow map shall be rendered
+        * @param a_iRender a bitmap with enShadowMap values
         */
-        void renderShadowMap(enShadowMap a_eToRender);
+        void renderShadowMap(irr::u32 a_iRender);
+
+        /**
+        * Clear the shadow maps
+        */
+        void clearShadowMaps();
 
         /**
         * Register a material of a node

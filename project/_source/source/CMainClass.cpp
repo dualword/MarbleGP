@@ -44,6 +44,7 @@ namespace dustbin {
     m_bFocused        (false),
     m_bFirstStart     (a_sSettings == ""),
     m_iRasterSize     (-1),
+    m_iRenderFlags    (0),
     m_pCtrlMenu       (nullptr),
     m_pCtrlGame       (nullptr),
     m_pActiveState    (nullptr),
@@ -321,7 +322,7 @@ namespace dustbin {
 #endif
 
     m_pShader = new shaders::CDustbinShaders(m_pDevice);
-    helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+    m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
 
     m_pActiveState->activate();
   }
@@ -667,7 +668,7 @@ namespace dustbin {
     }
     else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
       if (a_cEvent.UserEvent.UserData1 == c_iEventSettingsChanged) {
-        helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+        m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
       }
     }
     else if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
@@ -1007,6 +1008,14 @@ namespace dustbin {
   */
   shaders::CDustbinShaders *CMainClass::getShader() const {
     return m_pShader;
+  }
+
+  /**
+  * Get the render flags for the shadow rendering
+  * @return the render flags for the shadow rendering
+  */
+  irr::u32 CMainClass::getRenderFlags() {
+    return m_iRenderFlags;
   }
 
   /**

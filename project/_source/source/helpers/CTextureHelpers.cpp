@@ -525,8 +525,11 @@ namespace dustbin {
     * Convert the shadow setting to the values for the shader
     * @param a_iShadows the shadow setting
     * @param a_pShader the shader instance to be adjusted
+    * @return the rendering flags for the per-frame shadow map update (transparent is never active here)
     */
-    void convertForShader(int a_iShadows, shaders::CDustbinShaders* a_pShader) {
+    irr::u32 convertForShader(int a_iShadows, shaders::CDustbinShaders* a_pShader) {
+      irr::u32 l_iFlags = 0;
+
       if (a_pShader != nullptr) {
         switch (a_iShadows) {
           // Off
@@ -541,25 +544,31 @@ namespace dustbin {
 
           // Static Transparent
           case 2:
-            a_pShader->setRenderOptions(shaders::enShadowRender::Static, shaders::enShadowMode::TransColor, shaders::enShadowQuality::HiMid);
+            a_pShader->setRenderOptions(shaders::enShadowRender::Static, shaders::enShadowMode::TransColor, shaders::enShadowQuality::LoMid);
+            l_iFlags = (irr::u32)shaders::enShadowMap::Marbles;
             break;
 
           // Low
           case 3:
-            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::Solid, shaders::enShadowQuality::LoMid);
+            a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::LoMid);
+            l_iFlags = (irr::u32)shaders::enShadowMap::Solid | (irr::u32)shaders::enShadowMap::Marbles | (irr::u32)shaders::enShadowMap::Moving;
             break;
 
           // Medium
           case 4:
             a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::HiMid);
+            l_iFlags = (irr::u32)shaders::enShadowMap::Solid | (irr::u32)shaders::enShadowMap::Marbles | (irr::u32)shaders::enShadowMap::Moving;
             break;
 
           // High
           default:
             a_pShader->setRenderOptions(shaders::enShadowRender::All, shaders::enShadowMode::TransColor, shaders::enShadowQuality::High);
+            l_iFlags = (irr::u32)shaders::enShadowMap::Solid | (irr::u32)shaders::enShadowMap::Marbles | (irr::u32)shaders::enShadowMap::Moving;
             break;
         }
       }
+
+      return l_iFlags;
     }
 
 #ifdef _OPENGL_ES

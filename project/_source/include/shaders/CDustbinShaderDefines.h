@@ -69,10 +69,11 @@ namespace dustbin {
     * shadow map shall be rendered
     */
     enum class enShadowMap {
-      Solid,        // The shadow map for the solid shadows
-      Marbles,      // The shadow map for the marbles
-      Transparent,  // The shadow map for the (semi)transparent shadows
-      TranspColor,  // The map with the colors for the (semi)transparent shadows
+      Solid       =  1,   // The shadow map for the solid shadows
+      Marbles     =  2,   // The shadow map for the marbles
+      Moving      =  4,   // The shadow map for moving objects
+      Transparent =  8,   // The shadow map for the (semi)transparent shadows
+      TranspColor = 16,   // The map with the colors for the (semi)transparent shadows
 
       Count
     };
