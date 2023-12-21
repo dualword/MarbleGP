@@ -29,10 +29,6 @@ ArchitecturesInstallIn64BitMode=x64
 [Files]
 Source: "..\..\MarbleGP\MarbleGP_Windows.exe"; DestDir: "{app}"
 Source: "..\..\MarbleGP\marblegp.dat"; DestDir: "{app}"
-Source: "..\..\MarbleGP\shaders\BloomP.glsl"; DestDir: "{app}\shaders"
-Source: "..\..\MarbleGP\shaders\BlurHP.glsl"; DestDir: "{app}\shaders"
-Source: "..\..\MarbleGP\shaders\BlurVP.glsl"; DestDir: "{app}\shaders"
-Source: "..\..\MarbleGP\shaders\BrightPass.glsl"; DestDir: "{app}\shaders"
 
 [Icons]
 Name: "{group}\DustbinGames\MarbleGP"; Filename: "{app}\MarbleGP_Windows.exe"
