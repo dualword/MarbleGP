@@ -401,7 +401,7 @@ namespace dustbin {
           for (int i = 0; i < 3; i++) {
             if (m_aHiLight[i].m_iMarbleId == a_ObjectId) {
               if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end() && m_aHiLight[i].m_pArrow != nullptr) {
-                m_aHiLight[i].m_pArrow->setPosition(a_Position + 6.0f * m_cUpVector);
+                m_aHiLight[i].m_pArrow->setPosition(a_Position + 5.5f * m_cUpVector);
 
                 std::string l_sTexture = "data/textures/markers/" + std::to_string(m_aHiLight[i].m_iPosition) + ".png";
 
@@ -630,7 +630,7 @@ namespace dustbin {
       }
 
       for (int i = 0; i < 3; i++) {
-        m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(m_pSmgr->getRootSceneNode(), m_pSmgr, -1, irr::core::vector3df(0.0f), irr::core::dimension2df(7.0f, 7.0f));
+        m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(m_pSmgr->getRootSceneNode(), m_pSmgr, -1, irr::core::vector3df(0.0f), irr::core::dimension2df(5.0f, 5.0f));
         m_aHiLight[i].m_pArrow->setMaterialFlag(irr::video::EMF_LIGHTING, false);
         m_aHiLight[i].m_pArrow->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
         m_aHiLight[i].m_pArrow->setMaterialTexture(0, m_pDrv->getTexture("data/images/arrow_ahead.png"));
