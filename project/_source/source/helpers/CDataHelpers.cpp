@@ -603,11 +603,12 @@ namespace dustbin {
           else {
             l_iFrame++;
             if (l_pTimer->getRealTime() > l_iStart + 4000) {
-              if (l_iFrame / 4 > 100) {
+              if (l_iFrame / 4 > 100)
                 a_pSettings->m_iShadows = i;
-                std::get<2>(l_aData[i]) = l_iFrame / 4;
-              }
-              else return;
+              else 
+                i = 6;
+
+              std::get<2>(l_aData[i]) = l_iFrame / 4;
               break;
             }
           }
