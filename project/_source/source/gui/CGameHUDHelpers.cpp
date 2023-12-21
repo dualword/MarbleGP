@@ -4,7 +4,7 @@
 
 namespace dustbin {
   namespace gui {
-    SHighLight::SHighLight() : m_iMarbleId(-1), m_iPosition(0), m_bVisible(false), m_bFinished(false), m_bViewport(false), m_pArrow(nullptr), m_pPosition(nullptr) {
+    SHighLight::SHighLight() : m_iMarbleId(-1), m_iPosition(0), m_bVisible(false), m_bFinished(false), m_bViewport(false), m_pArrow(nullptr) {
     }
 
     SLapTime::SLapTime() : m_iStart(0), m_iEnd(0), m_iLapNo(0), m_iLapTime(-1) {

@@ -54,7 +54,6 @@ namespace dustbin {
       bool m_bViewport;     /**< Visible in the current viewport? */
 
       scenenodes::CMyBillboard     *m_pArrow;    /**< The arrow billboard node */
-      scenenodes::CMyBillboardText *m_pPosition; /**< The position text node */
 
       SHighLight();
     };

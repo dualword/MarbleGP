@@ -400,26 +400,15 @@ namespace dustbin {
         if (m_bHightlight) {
           for (int i = 0; i < 3; i++) {
             if (m_aHiLight[i].m_iMarbleId == a_ObjectId) {
-              if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end() && m_aHiLight[i].m_pArrow != nullptr && m_aHiLight[i].m_pPosition != nullptr) {
-                m_aHiLight[i].m_pArrow->setPosition(a_Position + 3.0f * m_cUpVector);
-                
-                std::wstring s = std::to_wstring(m_aHiLight[i].m_iPosition);
-                
-                if (m_aHiLight[i].m_iPosition == 1)
-                  s += L"st";
-                else if (m_aHiLight[i].m_iPosition == 2)
-                  s += L"nd";
-                else if (m_aHiLight[i].m_iPosition == 3)
-                  s += L"rd";
-                else
-                  s += L"th";
+              if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end() && m_aHiLight[i].m_pArrow != nullptr) {
+                m_aHiLight[i].m_pArrow->setPosition(a_Position + 6.0f * m_cUpVector);
 
-                m_aHiLight[i].m_pPosition->setText(s.c_str());
-                m_aHiLight[i].m_pPosition->setPosition(a_Position + 5.0f * m_cUpVector);
+                std::string l_sTexture = "data/textures/markers/" + std::to_string(m_aHiLight[i].m_iPosition) + ".png";
+
+                m_aHiLight[i].m_pArrow->getMaterial(0).setTexture(0, m_pDrv->getTexture(l_sTexture.c_str()));
               }
               else {
-                m_aHiLight[i].m_pArrow   ->setVisible(false);
-                m_aHiLight[i].m_pPosition->setVisible(false);
+                m_aHiLight[i].m_pArrow->setVisible(false);
               }
             }
           }
@@ -641,26 +630,12 @@ namespace dustbin {
       }
 
       for (int i = 0; i < 3; i++) {
-        m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(m_pSmgr->getRootSceneNode(), m_pSmgr, -1, irr::core::vector3df(0.0f), irr::core::dimension2df(2.5f, 2.5f));
+        m_aHiLight[i].m_pArrow = new scenenodes::CMyBillboard(m_pSmgr->getRootSceneNode(), m_pSmgr, -1, irr::core::vector3df(0.0f), irr::core::dimension2df(7.0f, 7.0f));
         m_aHiLight[i].m_pArrow->setMaterialFlag(irr::video::EMF_LIGHTING, false);
         m_aHiLight[i].m_pArrow->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
         m_aHiLight[i].m_pArrow->setMaterialTexture(0, m_pDrv->getTexture("data/images/arrow_ahead.png"));
         m_aHiLight[i].m_pArrow->setVisible(false);
         m_aHiLight[i].m_pArrow->drop();
-
-        m_aHiLight[i].m_pPosition = new scenenodes::CMyBillboardText(
-          m_pSmgr->getRootSceneNode(),
-          m_pSmgr,
-          -1,
-          l_pGlobal->getFont(enFont::Big, l_pGlobal->getVideoDriver()->getScreenSize()), 
-          L"16th",
-          irr::core::vector3df(0.0f),
-          irr::core::dimension2df(3.0f, 3.0f),
-          irr::video::SColor(0xFF, 0, 0, 0),
-          irr::video::SColor(0xFF, 0, 0, 0)
-        );
-
-        m_aHiLight[i].m_pPosition->drop();
       }
 
       for (int i = 0; i < 16; i++)
@@ -1044,18 +1019,7 @@ namespace dustbin {
               if ((*it2)->m_iPosition == l_aHighLight[i]) {
                 m_aHiLight[i].m_iMarbleId = (*it2)->m_iId;
                 m_aHiLight[i].m_iPosition = l_aHighLight[i];
-                m_aHiLight[i].m_pArrow   ->setVisible(false);
-                m_aHiLight[i].m_pPosition->setVisible(false);
-                
-                std::wstring s = std::to_wstring(l_aHighLight[i]);
-
-                switch (l_aHighLight[i]) {
-                  case 1 : s += L"st"; break;
-                  case 2 : s += L"nd"; break;
-                  case 3 : s += L"rd"; break;
-                  default: s += L"th"; break;
-                }
-
+                m_aHiLight[i].m_pArrow->setVisible(false);
                 break;
               }
             }
@@ -1077,15 +1041,13 @@ namespace dustbin {
         int l_iId = m_aHiLight[i].m_iMarbleId - 10000;
         if (l_iId >= 0 && l_iId < 16) {
           if (m_aFinished[l_iId]) {
-            if (m_aHiLight[i].m_pArrow    != nullptr) m_aHiLight[i].m_pArrow   ->setVisible(false);
-            if (m_aHiLight[i].m_pPosition != nullptr) m_aHiLight[i].m_pPosition->setVisible(false);
+            if (m_aHiLight[i].m_pArrow != nullptr) m_aHiLight[i].m_pArrow->setVisible(false);
 
             m_aHiLight[i].m_bFinished = true;
           }
         }
         else {
-          m_aHiLight[i].m_pArrow   ->setVisible(false);
-          m_aHiLight[i].m_pPosition->setVisible(false);
+          m_aHiLight[i].m_pArrow->setVisible(false);
         }
       }
     }
@@ -1122,8 +1084,7 @@ namespace dustbin {
         if (m_mMarblePositions.find(m_aHiLight[i].m_iMarbleId) != m_mMarblePositions.end())
           b = l_cPlane.classifyPointRelation(m_mMarblePositions[m_aHiLight[i].m_iMarbleId]) == irr::core::ISREL3D_FRONT;
 
-        m_aHiLight[i].m_pArrow   ->setVisible(!m_aHiLight[i].m_bFinished && b && m_aHiLight[i].m_iMarbleId >= 10000 && m_aHiLight[i].m_iMarbleId < 10016);
-        m_aHiLight[i].m_pPosition->setVisible(!m_aHiLight[i].m_bFinished && b && m_aHiLight[i].m_iMarbleId >= 10000 && m_aHiLight[i].m_iMarbleId < 10016);
+        m_aHiLight[i].m_pArrow->setVisible(!m_aHiLight[i].m_bFinished && b && m_aHiLight[i].m_iMarbleId >= 10000 && m_aHiLight[i].m_iMarbleId < 10016);
 
         m_aHiLight[i].m_bViewport = true;
       }
@@ -1135,8 +1096,7 @@ namespace dustbin {
     */
     void CGameHUD::afterDrawScene() {
       for (int i = 0; i < 3; i++) {
-        m_aHiLight[i].m_pArrow   ->setVisible(false);
-        m_aHiLight[i].m_pPosition->setVisible(false);
+        m_aHiLight[i].m_pArrow->setVisible(false);
 
         m_aHiLight[i].m_bViewport = false;
       }
