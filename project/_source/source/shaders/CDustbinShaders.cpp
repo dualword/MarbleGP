@@ -404,7 +404,7 @@ namespace dustbin {
     * @param a_eQuality the new shadow quality
     */
     void CDustbinShaders::setRenderOptions(enShadowMode a_eShadowMode, enShadowQuality a_eQuality) {
-      if (a_eShadowMode != enShadowMode::Off && m_pCallback == nullptr) {
+      if (m_pCallback == nullptr) {
         // Create the callback and initialize the shaders
         m_pCallback = new CDustbinShaderCallback(m_pDevice->getVideoDriver(), shadowQualityToSize(a_eQuality));
         m_pCallback->initializeShaders();
