@@ -10,6 +10,7 @@
 #include <data/CDataStructs.h>
 #include <CGlobal.h>
 #include <string>
+#include <vector>
 
 namespace dustbin {
   namespace gameclasses {
@@ -51,6 +52,8 @@ namespace dustbin {
       gameclasses::SMarbleNodes *m_pMarble;       /**< The marble of the player */
       controller::IController   *m_pController;   /**< The controller of this player */
 
+      std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
+
       /**
       * The default constructor
       */
@@ -81,6 +84,86 @@ namespace dustbin {
 
       void setName(const std::string &a_sName);
       bool isBot();
-   } SPlayer;
+
+      /**
+      * Is this player in front of another player?
+      * @param a_pOther the other player
+      * @return true if this player is in front
+      */
+      bool isInFront(SPlayer *a_pOther);
+
+      /**
+      * Lap start callback
+      */
+      void onLapStart();
+
+      /**
+      * Checkpoint callback
+      * @param a_iStep the step when the checkpoint was passed
+      */
+      void onCheckpoint(int a_iStep);
+
+      /**
+      * A callback for a changed state
+      * @param a_iState the new state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished)
+      * @param a_iStep step when the change happened
+      */
+      void onStateChanged(int a_iState, int a_iStep);
+
+      /**
+      * Get the deficit to another player
+      * @param a_pOther the other player
+      * @param a_iSteps [out] the time deficit
+      * @param a_iLaps [out] the lap deficit
+      */
+      void getDeficitTo(SPlayer *a_pOther, int &a_iSteps, int &a_iLaps);
+    } SPlayer;
+
+    /**
+    * @class SRace
+    * @author Christian Keimel
+    * A data struct for a race
+    */
+    typedef struct SRace {
+      std::string m_sTrack;   /**< The track of the race (folder name) */
+
+      int m_iLaps;      /**< The number of laps of the race */
+
+      std::vector<SPlayer *> m_vPlayers;    /**< The players of the race */
+      std::vector<SPlayer *> m_vRanking;    /**< The ranking of the race */
+
+      SRace(const std::string &a_sTrack, int a_iLaps);
+
+      /**
+      * Update the ranking of the race
+      * @see SRace::m_vRanking
+      * @see SRace::onCheckpoint
+      * @see SRace::onLapStart
+      */
+      void updateRanking();
+
+      /**
+      * Callback for the checkpoint message
+      * @param a_iMarble ID of the marble
+      * @param a_iCheckpoint ID of the checkpoint
+      * @param a_iStep the step when the checkpoint was passed
+      */
+      void onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep);
+
+      /**
+      * Callback for a lap start message
+      * @param a_iMarble the marble
+      */
+      void onLapStart(int a_iMarble);
+
+      /**
+      * Callback for a state (normal, stunned, respawn, finished)
+      * @param a_iMarble ID of the marble
+      * @param a_iNewState the new state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished)
+      * @param a_iStep the step of the lap change
+      */
+      void onStateChange(int a_iMarble, int a_iNewState, int a_iStep);
+
+    } SRace;
   }
 }

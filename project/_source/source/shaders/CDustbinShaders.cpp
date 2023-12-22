@@ -615,8 +615,6 @@ namespace dustbin {
       }
 
       std::string s = a_pNode->getName();
-      if (s == "TheRotor")
-        printf("*\n");
 
       if (l_itMaterial == (*l_itNode).m_vMaterials.end()) {
         // Add the shadow map textures to the material

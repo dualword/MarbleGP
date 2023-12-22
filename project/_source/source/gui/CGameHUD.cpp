@@ -38,16 +38,6 @@ namespace dustbin {
               m_pFade->setFadeFlag(CHudFade::enFade::RespawnOut, true);
           }
         }
-
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-          if ((*it)->m_iId == a_MarbleId) {
-            if (a_State == 1)
-              (*it)->m_iState = 2;
-            else if (a_State == 2)
-              (*it)->m_iState = 0;
-            break;
-          }
-        }
       }
     }
 

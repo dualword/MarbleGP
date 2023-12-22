@@ -154,8 +154,7 @@ namespace dustbin {
 
         scenenodes::CRostrumNode *m_pRostrum;
 
-        std::vector<gameclasses::SPlayer*> m_vPlayers;    /**< The players of the game */
-        std::vector<gameclasses::SPlayer*> m_vPosition;   /**< The players' positions in the race */
+        gameclasses::SRace *m_pRaceData;
 
         irr::video::ITexture* m_pCheckpointTextures[3];  /**< The checkpoint textures (0 == white, 1 == Flash 1, 2 == Flash 2) */
 

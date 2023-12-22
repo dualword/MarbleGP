@@ -58,6 +58,7 @@ namespace dustbin {
       m_pSoundIntf     (nullptr),
       m_pDynamics      (nullptr),
       m_pRostrum       (nullptr),
+      m_pRaceData      (nullptr),
       m_pCamAnimator   (nullptr),
       m_pCamera        (nullptr),
       m_pAiThread      (nullptr),
@@ -330,10 +331,7 @@ namespace dustbin {
       m_cGameData = data::SGameData(m_pGlobal->getGlobal("gamedata"));
       m_cSettings = m_pGlobal->getSettingData();
 
-      printf("Grid: ");
-      for (auto x: m_cGameData.m_vStartingGrid)
-        printf("%i ", x);
-      printf("\n");
+      m_pRaceData = new gameclasses::SRace(m_cGameData.m_sTrack, m_cGameData.m_iLaps);
 
       helpers::addToDebugLog("Initialize marbles...");
 
@@ -617,13 +615,8 @@ namespace dustbin {
         m_pServer = nullptr;
       }
 
-      helpers::addToDebugLog("Clear player objects");
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++)
-        delete* it;
-
       helpers::addToDebugLog("Clear vectors");
-      m_vPlayers  .clear();
-      m_vPosition .clear();
+      delete m_pRaceData;
       m_mViewports.clear();
 
 #ifdef _TOUCH_CONTROL
@@ -717,7 +710,7 @@ namespace dustbin {
     bool CGameState::OnEvent(const irr::SEvent& a_cEvent) {
       bool l_bRet = false;
 
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
         if ((*it)->m_pController != nullptr)
           (*it)->m_pController->update(a_cEvent);
       }
@@ -929,7 +922,7 @@ namespace dustbin {
     enState CGameState::run() {
       messages::IMessage* l_pMsg = nullptr;
 
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
         if ((*it)->m_pController != nullptr) {
           bool l_bLeft      = false;
           bool l_bRight     = false;
@@ -1104,7 +1097,7 @@ namespace dustbin {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->onstep(a_StepNo);
 
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
         if ((*it)->m_pController != nullptr)
           (*it)->m_pController->onStep(a_StepNo);
       }
@@ -1176,7 +1169,7 @@ namespace dustbin {
       if (a_ObjectId >= 10000 && a_ObjectId < 10016) {
         irr::s32 l_iIndex = a_ObjectId - 10000;
 
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
           if ((*it)->m_pController != nullptr)
             (*it)->m_pController->onMarbleMoved(a_ObjectId, a_Position, a_LinearVelocity, a_Position + a_CameraPosition + 3.0f * a_CameraUp, a_CameraUp, a_Contact);
         }
@@ -1229,7 +1222,7 @@ namespace dustbin {
       if (m_pLuaScript != nullptr)
         m_pLuaScript->ontrigger(a_ObjectId, a_TriggerId);
 
-      for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
         if ((*it)->m_pController != nullptr)
           (*it)->m_pController->onTrigger(a_TriggerId, a_ObjectId);
 
@@ -1290,11 +1283,11 @@ namespace dustbin {
           if ((*it).m_eType == data::enPlayerType::Local)
             assignViewport(m_fGridAngle, l_pPlayer);
 
-          m_vPlayers .push_back(l_pPlayer);
-          m_vPosition.push_back(l_pPlayer);
+          m_pRaceData->m_vPlayers.push_back(l_pPlayer);
+          m_pRaceData->m_vRanking.push_back(l_pPlayer);
 
           if (m_pPanelRndr != nullptr)
-            m_pPanelRndr->updateRanking(m_vPosition);
+            m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
 
           threads::CInputQueue  *m_pTheInputQueue  = nullptr;
           threads::COutputQueue *m_pTheOutputQueue = nullptr;
@@ -1362,9 +1355,9 @@ namespace dustbin {
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
         // it->second.m_pPlayer->m_pPlayer->m_pController
         if (m_cGameData.m_bIsTutorial)
-          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition, m_pOutputQueue);
+          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_pRaceData->m_vRanking, m_pOutputQueue);
         else
-          it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_vPosition);
+          it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_pRaceData->m_vRanking);
 
         controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();
         if (l_pCtrl != nullptr) {
@@ -1424,7 +1417,7 @@ namespace dustbin {
         m_pLuaScript->initialize();
       }
 
-      for (auto l_cPlayer: m_vPlayers) {
+      for (auto l_cPlayer: m_pRaceData->m_vPlayers) {
         if (l_cPlayer->m_pController != nullptr && l_cPlayer->m_pMarble != nullptr && l_cPlayer->m_pMarble->m_pViewport != nullptr && l_cPlayer->m_pMarble->m_pViewport->m_pHUD != nullptr && l_cPlayer->m_pMarble->m_pViewport->m_pHUD->moveToFront()) {
           l_cPlayer->m_pController->moveGuiToFront();
         }
@@ -1437,6 +1430,8 @@ namespace dustbin {
      * @param a_State New respawn state (1 == Respawn Start, 2 == Respawn Done). Between State 1 and 2 a CameraRespawn is sent
      */
     void CGameState::onPlayerrespawn(irr::s32 a_MarbleId, irr::u8 a_State) {
+      m_pRaceData->onStateChange(a_MarbleId, a_State == 1 ? 2 : 0, m_iStep);
+
       if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
         irr::s32 l_iIndex = a_MarbleId - 10000;
 
@@ -1456,7 +1451,7 @@ namespace dustbin {
           p->m_iStateChange  = -1;
           p->m_iRespawnStart = -1;
 
-          for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+          for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
             if ((*it)->m_pController != nullptr)
               (*it)->m_pController->onMarbleRespawn(a_MarbleId);
           }
@@ -1474,6 +1469,8 @@ namespace dustbin {
      * @param a_Target The new target of the camera, i.e. the future position of the marble
      */
     void CGameState::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target) {
+      m_pRaceData->onStateChange(a_MarbleId, 3, m_iStep);
+
       if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
         irr::s32 l_iIndex = a_MarbleId - 10000;
 
@@ -1503,6 +1500,8 @@ namespace dustbin {
      * @param a_State New stunned state (1 == Player stunned, 2 == Player recovered)
      */
     void CGameState::onPlayerstunned(irr::s32 a_MarbleId, irr::u8 a_State) {
+      m_pRaceData->onStateChange(a_MarbleId, a_State == 1 ? 1 : 0, m_iStep);
+
       if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
         irr::s32 l_iIndex = a_MarbleId - 10000;
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
@@ -1531,6 +1530,8 @@ namespace dustbin {
      * @param a_Laps The number of laps the player has done
      */
     void CGameState::onPlayerfinished(irr::s32 a_MarbleId, irr::s32 a_RaceTime, irr::s32 a_Laps) {
+      m_pRaceData->onStateChange(a_MarbleId, 4, m_iStep);
+
       if (a_MarbleId >= 10000 && a_MarbleId < 10016) {
         irr::s32 l_iIndex = a_MarbleId - 10000;
         gameclasses::SMarbleNodes* p = m_aMarbles[l_iIndex];
@@ -1577,6 +1578,8 @@ namespace dustbin {
     void CGameState::onCheckpoint(irr::s32 a_MarbleId, irr::s32 a_Checkpoint, irr::s32 a_iStepNo) {
       int l_iId = a_MarbleId - 10000;
 
+      m_pRaceData->onCheckpoint(a_MarbleId, a_Checkpoint, a_iStepNo);
+
       if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr) {
         if (m_aMarbles[l_iId] != nullptr) {
           m_aMarbles[l_iId]->m_pPlayer->m_iLapCp++;
@@ -1605,7 +1608,7 @@ namespace dustbin {
         if (m_pLuaScript != nullptr)
           m_pLuaScript->oncheckpoint(a_MarbleId, a_Checkpoint);
 
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
           if ((*it)->m_pController != nullptr)
             (*it)->m_pController->onCheckpoint(a_MarbleId, a_Checkpoint);
         }
@@ -1618,6 +1621,8 @@ namespace dustbin {
      * @param a_LapNo Number of the started lap
      */
     void CGameState::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
+      m_pRaceData->onLapStart(a_MarbleId);
+
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
         m_aMarbles[l_iIndex]->m_pPlayer->m_iLapCp = 0;
@@ -1687,7 +1692,7 @@ namespace dustbin {
         if (m_pRace->m_sTrack != "") {
           data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
 
-          for (auto l_cThePlayer : m_vPlayers) {
+          for (auto l_cThePlayer : m_pRaceData->m_vPlayers) {
             if (l_cThePlayer->m_iId == l_cPlayer.m_iId) {
               printf("onRaceResult: \"%s\"\n", l_cThePlayer->m_sName.c_str());
               break;
@@ -1721,7 +1726,7 @@ namespace dustbin {
     */
     void CGameState::onPlayerremoved(irr::s32 a_playerid) {
       for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
           if ((*it)->m_iPlayer == a_playerid) {
             printf("Marble %i is withdrawn from race.\n", (*it)->m_pMarble->m_pPositional->getID());
             
@@ -1759,26 +1764,10 @@ namespace dustbin {
     * Update the race positions
     */
     void CGameState::updateRacePositions() {
-      std::sort(m_vPosition.begin(), m_vPosition.end(), [](gameclasses::SPlayer* p1, gameclasses::SPlayer* p2) {
-        if (p1->m_iLapNo != p2->m_iLapNo)
-          return p1->m_iLapNo > p2->m_iLapNo;
-        else if (p1->m_iLapCp != p2->m_iLapCp)
-          return p1->m_iLapCp > p2->m_iLapCp;
-        else
-          if ((p1->m_iLastCp == 0) != (p2->m_iLastCp == 0))
-            return p1->m_iLapCp > p2->m_iLapCp;
-          else
-            return p1->m_iLastCp < p2->m_iLastCp;
-        });
-
-      int l_iPos = 1;
-
-      for (std::vector<gameclasses::SPlayer *>::iterator l_itPlr = m_vPosition.begin(); l_itPlr != m_vPosition.end(); l_itPlr++) {
-        (*l_itPlr)->m_iPosition = l_iPos++;
-      }
+      // m_pRaceData->updateRanking();
 
       if (m_pPanelRndr != nullptr)
-        m_pPanelRndr->updateRanking(m_vPosition);
+        m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
     }
 
     /**
@@ -1791,11 +1780,6 @@ namespace dustbin {
     void CGameState::onRaceposition(irr::s32 a_MarbleId, irr::s32 a_Position, irr::s32 a_Laps, irr::s32 a_DeficitAhead, irr::s32 a_DeficitLeader) {
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        m_aMarbles[l_iIndex]->m_pPlayer->m_iPosition      = a_Position;
-        m_aMarbles[l_iIndex]->m_pPlayer->m_iLastPosUpdate = m_iStep;
-        m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffAhead     = a_DeficitAhead;
-        m_aMarbles[l_iIndex]->m_pPlayer->m_iDiffLeader    = a_DeficitLeader;
-
         updateRacePositions();
 
         for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
@@ -1807,7 +1791,7 @@ namespace dustbin {
         if (m_pLuaScript != nullptr)
           m_pLuaScript->onraceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
 
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+        for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
           if ((*it)->m_pController != nullptr)
             (*it)->m_pController->onRaceposition(a_MarbleId, a_Position, a_Laps, a_DeficitAhead, a_DeficitLeader);
         }
@@ -1840,7 +1824,7 @@ namespace dustbin {
     */
     irr::video::ITexture *CGameState::getRaceInfoTexture() {
       if (m_pPanelRndr == nullptr) {
-        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_vPlayers, m_cGameData.m_iLaps);
+        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_cGameData.m_iLaps);
       }
 
       return m_pPanelRndr->getRaceInfoRTT();
@@ -1852,7 +1836,7 @@ namespace dustbin {
     */
     irr::video::ITexture *CGameState::getLapCountTexture() {
       if (m_pPanelRndr == nullptr) {
-        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_vPlayers, m_cGameData.m_iLaps);
+        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_cGameData.m_iLaps);
       }
 
       return m_pPanelRndr->getLapCountRTT();
