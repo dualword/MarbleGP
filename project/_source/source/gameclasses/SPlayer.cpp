@@ -145,6 +145,26 @@ namespace dustbin {
     void SPlayer::onLapStart() {
       m_vLapCheckpoints.push_back(std::vector<int>());
     }
+    /**
+    * Some debugging: dump the lap checkpoints vector to stdout
+    */
+    void SPlayer::dumpLapCheckpoints() {
+      printf("\nCheckpoints \"%s\"\n\n", m_sName.c_str());
+      int i = 0;
+      for (auto l_vLap : m_vLapCheckpoints) {
+        printf("Lap %i: ", i++);
+
+        for (auto l_iCp : l_vLap) {
+          printf("%-5i", l_iCp);
+          if (l_iCp != l_vLap.back())
+            printf(", ");
+        }
+
+        printf("\n");
+      }
+
+      printf("\n");
+    }
 
     /**
     * Checkpoint callback
@@ -157,45 +177,44 @@ namespace dustbin {
     }
 
     void SPlayer::getDeficitTo(SPlayer* a_pOther, int& a_iSteps, int& a_iLaps) {
+      printf("\n**** GetDeficit (%s -- %s) ****\n\n", m_sName.c_str(), a_pOther->m_sName.c_str());
+
+      dumpLapCheckpoints();
+      a_pOther->dumpLapCheckpoints();
+
       a_iSteps = 0;
       a_iLaps  = 0;
 
-      if (m_vLapCheckpoints.size() != 0 && a_pOther->m_vLapCheckpoints.size() != 0) {
-        // Same number of laps
-        if (m_vLapCheckpoints.size() == a_pOther->m_vLapCheckpoints.size()) {
-          size_t l_iIndex = m_vLapCheckpoints.back().size() < a_pOther->m_vLapCheckpoints.back().size() ? m_vLapCheckpoints.back().size() - 1 : a_pOther->m_vLapCheckpoints.back().size() - 1;
-          a_iSteps = m_vLapCheckpoints.back()[l_iIndex] - a_pOther->m_vLapCheckpoints.back()[l_iIndex];
+      int l_iLapIdx = (int)m_vLapCheckpoints.size();
+
+      printf("Lap Index: %i\n", l_iLapIdx);
+
+      if (l_iLapIdx > 0) {
+        int l_iCkpIdx = (int)m_vLapCheckpoints.back().size();
+
+        printf("Checkpoint Index: %i\n", l_iCkpIdx);
+        if (a_pOther->m_vLapCheckpoints.size() >= l_iLapIdx && a_pOther->m_vLapCheckpoints[l_iLapIdx - 1].size() >= l_iCkpIdx) {
+          a_iSteps = m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] - a_pOther->m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1];
+
+          printf("Steps: %i\n", a_iSteps);
         }
-        else {
-          size_t l_iLapIdx = m_vLapCheckpoints.size() < a_pOther->m_vLapCheckpoints.size() ? m_vLapCheckpoints.size() - 1 : a_pOther->m_vLapCheckpoints.size() - 1;
-          size_t l_iChkIdx = m_vLapCheckpoints[l_iLapIdx].size() < a_pOther->m_vLapCheckpoints[l_iLapIdx].size() ? m_vLapCheckpoints[l_iLapIdx].size() - 1 : a_pOther->m_vLapCheckpoints[l_iLapIdx].size() - 1;
 
-          a_iSteps = m_vLapCheckpoints[l_iLapIdx][l_iChkIdx] - a_pOther->m_vLapCheckpoints[l_iLapIdx][l_iChkIdx];
+        a_iLaps = (int)a_pOther->m_vLapCheckpoints.size() - l_iLapIdx;
 
-          a_iLaps = (int)(a_pOther->m_vLapCheckpoints.size() - m_vLapCheckpoints.size());
+        if (a_iLaps > 0) {
+          int l_iCpkIdx2 = (int)a_pOther->m_vLapCheckpoints.back().size();
 
-          // printf("==> %i, %i\n", (int)(m_vLapCheckpoints[l_iLapIdx].size() - a_pOther->m_vLapCheckpoints[l_iLapIdx].size()), a_iSteps);
-
-          if (m_vLapCheckpoints[l_iLapIdx].size() >= a_pOther->m_vLapCheckpoints[l_iLapIdx].size())
-            a_iLaps--;
-          else if (a_iSteps < 0)
-            a_iLaps--;
-          else {
-            if (m_vLapCheckpoints[l_iLapIdx][l_iChkIdx] < a_pOther->m_vLapCheckpoints[l_iLapIdx][l_iChkIdx])
+          if (a_pOther->m_vLapCheckpoints.size() > l_iLapIdx) {
+            if (m_vLapCheckpoints[l_iLapIdx - 1].size() > a_pOther->m_vLapCheckpoints[l_iLapIdx].size())
               a_iLaps--;
-            else {
-              if (a_pOther->m_vLapCheckpoints.size() >= l_iLapIdx + 1 && a_pOther->m_vLapCheckpoints[l_iLapIdx + 1].size() > 0) {
-                if (
-                  a_pOther->m_vLapCheckpoints.back().size() == 0 || (
-                  m_vLapCheckpoints[l_iLapIdx].size() >= a_pOther->m_vLapCheckpoints.back().size() &&
-                  m_vLapCheckpoints[l_iLapIdx][a_pOther->m_vLapCheckpoints.back().size() - 1] < a_pOther->m_vLapCheckpoints.back()[a_pOther->m_vLapCheckpoints.back().size() - 1]
-                ))
-                  a_iLaps--;
-              }
-            }
+            else if (m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] < a_pOther->m_vLapCheckpoints[l_iLapIdx][l_iCkpIdx - 1])
+              a_iLaps--;
           }
         }
       }
+
+
+      printf("\n\n**** End get deficit ****\n");
       if (a_iSteps < 0)
         a_iSteps = 0;
     }
@@ -210,6 +229,7 @@ namespace dustbin {
 
       if (m_iState == 2 || m_iState == 3) {
         if (m_vLapCheckpoints.size() > 0 && m_vLapCheckpoints.back().size() > 0) {
+          printf("*** Respawn\n");
           m_vLapCheckpoints.back().back() = a_iStep;
         }
       }

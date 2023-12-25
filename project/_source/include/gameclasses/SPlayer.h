@@ -55,6 +55,11 @@ namespace dustbin {
       std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
 
       /**
+      * Some debugging: dump the lap checkpoints vector to stdout
+      */
+      void dumpLapCheckpoints();
+
+      /**
       * The default constructor
       */
       SPlayer();

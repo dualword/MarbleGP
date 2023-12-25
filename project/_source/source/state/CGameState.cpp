@@ -1835,11 +1835,11 @@ namespace dustbin {
     * @return the texture for the race counter
     */
     irr::video::ITexture *CGameState::getLapCountTexture() {
-      if (m_pPanelRndr == nullptr) {
+      if (m_pPanelRndr == nullptr && m_pRaceData != nullptr) {
         m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_cGameData.m_iLaps);
       }
 
-      return m_pPanelRndr->getLapCountRTT();
+      return m_pPanelRndr != nullptr ? m_pPanelRndr->getLapCountRTT() : nullptr;
     }
   }
 }
