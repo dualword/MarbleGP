@@ -169,6 +169,10 @@ namespace dustbin {
       */
       void onStateChange(int a_iMarble, int a_iNewState, int a_iStep);
 
+      /**
+      * Finish the race, i.e. finish the current lap for all players
+      */
+      void finishRace();
     } SRace;
   }
 }

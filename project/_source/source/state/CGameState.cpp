@@ -615,8 +615,9 @@ namespace dustbin {
         m_pServer = nullptr;
       }
 
-      helpers::addToDebugLog("Clear vectors");
+      m_pRaceData->finishRace();
       delete m_pRaceData;
+      helpers::addToDebugLog("Clear vectors");
       m_mViewports.clear();
 
 #ifdef _TOUCH_CONTROL

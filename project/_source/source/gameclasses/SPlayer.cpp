@@ -5,6 +5,8 @@
 
 namespace dustbin {
   namespace gameclasses {
+    // #define _DEBUG_DUMP_RANKING
+
     /**
     * The default constructor
     */
@@ -152,7 +154,7 @@ namespace dustbin {
       printf("\nCheckpoints \"%s\"\n\n", m_sName.c_str());
       int i = 0;
       for (auto l_vLap : m_vLapCheckpoints) {
-        printf("Lap %i: ", i++);
+        printf("Lap %i (%i): ", i++, (int)l_vLap.size());
 
         for (auto l_iCp : l_vLap) {
           printf("%-5i", l_iCp);
@@ -177,44 +179,81 @@ namespace dustbin {
     }
 
     void SPlayer::getDeficitTo(SPlayer* a_pOther, int& a_iSteps, int& a_iLaps) {
+#ifdef _DEBUG_DUMP_RANKING
       printf("\n**** GetDeficit (%s -- %s) ****\n\n", m_sName.c_str(), a_pOther->m_sName.c_str());
 
       dumpLapCheckpoints();
       a_pOther->dumpLapCheckpoints();
+#endif
 
       a_iSteps = 0;
       a_iLaps  = 0;
 
       int l_iLapIdx = (int)m_vLapCheckpoints.size();
-
+    
+#ifdef _DEBUG_DUMP_RANKING
       printf("Lap Index: %i\n", l_iLapIdx);
+#endif
 
       if (l_iLapIdx > 0) {
         int l_iCkpIdx = (int)m_vLapCheckpoints.back().size();
 
+#ifdef _DEBUG_DUMP_RANKING
         printf("Checkpoint Index: %i\n", l_iCkpIdx);
-        if (a_pOther->m_vLapCheckpoints.size() >= l_iLapIdx && a_pOther->m_vLapCheckpoints[l_iLapIdx - 1].size() >= l_iCkpIdx) {
+#endif
+
+        if (l_iCkpIdx > 0 && a_pOther->m_vLapCheckpoints.size() >= l_iLapIdx && a_pOther->m_vLapCheckpoints[l_iLapIdx - 1].size() >= l_iCkpIdx) {
           a_iSteps = m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] - a_pOther->m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1];
 
+#ifdef _DEBUG_DUMP_RANKING
           printf("Steps: %i\n", a_iSteps);
+#endif
         }
 
         a_iLaps = (int)a_pOther->m_vLapCheckpoints.size() - l_iLapIdx;
+
+#ifdef _DEBUG_DUMP_RANKING
+        printf("Laps : %i\n", a_iLaps);
+#endif
 
         if (a_iLaps > 0) {
           int l_iCpkIdx2 = (int)a_pOther->m_vLapCheckpoints.back().size();
 
           if (a_pOther->m_vLapCheckpoints.size() > l_iLapIdx) {
-            if (m_vLapCheckpoints[l_iLapIdx - 1].size() > a_pOther->m_vLapCheckpoints[l_iLapIdx].size())
+            if (m_vLapCheckpoints[l_iLapIdx - 1].size() > a_pOther->m_vLapCheckpoints.back().size()) {
+#ifdef _DEBUG_DUMP_RANKING
+              printf("\t\t1\n");
+#endif
               a_iLaps--;
-            else if (m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] < a_pOther->m_vLapCheckpoints[l_iLapIdx][l_iCkpIdx - 1])
+            }
+            else if (
+              m_vLapCheckpoints[l_iLapIdx - 1].size() == a_pOther->m_vLapCheckpoints.back().size() && 
+              m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] < a_pOther->m_vLapCheckpoints.back()[l_iCkpIdx - 1]
+            ) 
+            {
+#ifdef _DEBUG_DUMP_RANKING
+              printf("\t\t2\n");
+#endif
               a_iLaps--;
+            }
+
+#ifdef _DEBUG_DUMP_RANKING
+            printf("Laps : %i\n\n", a_iLaps);
+            printf("First size: %i\n", (int)m_vLapCheckpoints.size());
+            printf("Other size: %i\n", (int)a_pOther->m_vLapCheckpoints.size());
+            printf("LapIndex  : %i\n", l_iLapIdx);
+            printf("Last Check: %i -- %i\n", (int)m_vLapCheckpoints[l_iLapIdx - 1].size(), (int)a_pOther->m_vLapCheckpoints.back().size());
+
+            if (l_iCkpIdx > 0 && m_vLapCheckpoints[l_iLapIdx - 1].size() >= l_iCkpIdx && a_pOther->m_vLapCheckpoints.back().size() >= l_iCkpIdx)
+              printf("Last Time : %i -- %i\n", m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1], a_pOther->m_vLapCheckpoints.back()[l_iCkpIdx - 1]);
+#endif
           }
         }
       }
 
-
+#ifdef _DEBUG_DUMP_RANKING
       printf("\n\n**** End get deficit ****\n");
+#endif
       if (a_iSteps < 0)
         a_iSteps = 0;
     }
@@ -319,7 +358,7 @@ namespace dustbin {
     */
     void SRace::onLapStart(int a_iMarble) {
       for (auto l_pPlayer : m_vPlayers) {
-        if (l_pPlayer->m_iId == a_iMarble && l_pPlayer->m_vLapCheckpoints.size() < m_iLaps) {
+        if (l_pPlayer->m_iId == a_iMarble) {
           l_pPlayer->onLapStart();
         }
       }
@@ -336,6 +375,46 @@ namespace dustbin {
         if (l_pPlayer->m_iId == a_iMarble) {
           l_pPlayer->onStateChanged(a_iNewState, a_iStep);
           updateRanking();
+        }
+      }
+    }
+
+    /**
+    * Finish the race, i.e. finish the current lap for all players
+    */
+    void SRace::finishRace() {
+      printf("SRace::finishRace\n");
+      updateRanking();
+
+      SPlayer *l_pLeader = *m_vRanking.begin();
+      l_pLeader->dumpLapCheckpoints();
+
+      if (l_pLeader->m_vLapCheckpoints.size() > 0) {
+        for (std::vector<SPlayer*>::iterator l_itPlr = m_vRanking.begin() + 1; l_itPlr != m_vRanking.end(); l_itPlr++) {
+          if ((*l_itPlr)->m_iState != 4) {
+            int l_iSteps = 0;
+            int l_iLaps  = 0;
+
+            (*l_itPlr)->getDeficitTo(l_pLeader, l_iSteps, l_iLaps);
+
+            std::vector<std::vector<int>>::iterator l_itLeader = l_pLeader->m_vLapCheckpoints.end();
+
+            do {
+              l_itLeader--;
+            }
+            while ((*l_itLeader).size() <= 1 && l_itLeader != l_pLeader->m_vLapCheckpoints.begin());
+
+            while ((*l_itPlr)->m_vLapCheckpoints.back().size() < (*l_itLeader).size()) {
+              int l_iLeader = (*l_itLeader)[(*l_itPlr)->m_vLapCheckpoints.back().size()];
+              int l_iPlayer = (*l_itPlr)->m_vLapCheckpoints.back().back();
+
+              (*l_itPlr)->m_vLapCheckpoints.back().push_back(l_iLeader + l_iSteps);
+            }
+
+            (*l_itPlr)->m_vLapCheckpoints.push_back(std::vector<int>());
+            (*l_itPlr)->m_vLapCheckpoints.back().push_back(l_pLeader->m_vLapCheckpoints.back().back() + l_iSteps);
+          }
+          (*l_itPlr)->dumpLapCheckpoints();
         }
       }
     }
