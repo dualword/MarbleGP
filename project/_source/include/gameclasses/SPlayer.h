@@ -68,6 +68,12 @@ namespace dustbin {
       SPlayer();
 
       /**
+      * Copy constructor
+      * @param a_cPlayer the player to copy
+      */
+      SPlayer(const SPlayer &a_cPlayer);
+
+      /**
       * The constructor using serialized data
       * @param a_sData serialized data
       */
@@ -158,6 +164,8 @@ namespace dustbin {
       std::vector<SPlayer *> m_vPlayers;    /**< The players of the race */
       std::vector<SPlayer *> m_vRanking;    /**< The ranking of the race */
 
+      bool m_bOwnsPlayers;      /**< Has this race instance created the players (and therefore must delete them)? */
+
       SRace(const std::string &a_sTrack, int a_iLaps);
 
       /**
@@ -165,6 +173,12 @@ namespace dustbin {
       * @para a_sData serialized data
       */
       SRace(const std::string &a_sData);
+
+      /**
+      * Copy constructor
+      * @param a_cRace the race to copy
+      */
+      SRace(const SRace &a_cRace);
 
       /**
       * The destructor

@@ -61,6 +61,37 @@ namespace dustbin {
     }
 
     /**
+    * Copy constructor
+    * @param a_cPlayer the player to copy
+    */
+    SPlayer::SPlayer(const SPlayer& a_cPlayer) :
+      m_iPlayer        (a_cPlayer.m_iPlayer),
+      m_iId            (a_cPlayer.m_iId),
+      m_iPosition      (a_cPlayer.m_iPosition),
+      m_iLastPosUpdate (a_cPlayer.m_iLastPosUpdate),
+      m_iDiffLeader    (a_cPlayer.m_iDiffLeader),
+      m_iDiffAhead     (a_cPlayer.m_iDiffAhead),
+      m_sName          (a_cPlayer.m_sName),
+      m_sTexture       (a_cPlayer.m_sTexture),
+      m_sController    (a_cPlayer.m_sController),
+      m_sShortName     (a_cPlayer.m_sShortName),
+      m_sNumber        (a_cPlayer.m_sNumber),
+      m_wsShortName    (a_cPlayer.m_wsShortName),
+      m_bWithdrawn     (a_cPlayer.m_bWithdrawn),
+      m_bShowRanking   (a_cPlayer.m_bShowRanking),
+      m_iState         (a_cPlayer.m_iState),
+      m_iLapNo         (a_cPlayer.m_iLapNo),
+      m_iLapCp         (a_cPlayer.m_iLapCp),
+      m_iLastCp        (a_cPlayer.m_iLastCp),
+      m_eType          (a_cPlayer.m_eType),
+      m_eAiHelp        (a_cPlayer.m_eAiHelp),
+      m_pMarble        (a_cPlayer.m_pMarble),
+      m_pController    (a_cPlayer.m_pController)
+    {
+
+    }
+
+    /**
     * The constructor using serialized data
     * @param a_sData serialized data
     */
@@ -208,7 +239,7 @@ namespace dustbin {
 
       s += "\"playerid\": " + std::to_string(m_iPlayer) + ", ";
       s += "\"marbleid\": " + std::to_string(m_iId    ) + ", ";
-      s += "\"laps:\" [";
+      s += "\"laps\": [";
       
       for (std::vector<std::vector<int>>::iterator l_itLaps = m_vLapCheckpoints.begin(); l_itLaps != m_vLapCheckpoints.end(); l_itLaps++) {
         if (l_itLaps != m_vLapCheckpoints.begin())
@@ -488,7 +519,7 @@ namespace dustbin {
       }
     }
 
-    SRace::SRace(const std::string& a_sTrack, int a_iLaps) : m_sTrack(a_sTrack), m_iLaps(a_iLaps) {
+    SRace::SRace(const std::string& a_sTrack, int a_iLaps) : m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_bOwnsPlayers(false) {
     }
 
     /**
@@ -504,13 +535,36 @@ namespace dustbin {
       irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(l_sFilePath);
       l_pFile->write(l_sJson.c_str(), l_sJson.size());
       l_pFile->drop();
+
+      if (m_bOwnsPlayers) {
+        for (auto l_pPlayer : m_vPlayers) {
+          delete l_pPlayer;
+        }
+
+        m_vPlayers.clear();
+        m_vRanking.clear();
+      }
+    }
+
+    /**
+    * Copy constructor
+    * @param a_cRace the race to copy
+    */
+    SRace::SRace(const SRace& a_cRace) : m_sTrack(a_cRace.m_sTrack), m_iLaps(a_cRace.m_iLaps), m_bOwnsPlayers(true) {
+      for (auto l_pPlayer : a_cRace.m_vPlayers) {
+        SPlayer *p = new SPlayer(*l_pPlayer);
+        m_vPlayers.push_back(p);
+        m_vRanking.push_back(p);
+      }
+
+      updateRanking();
     }
 
     /**
     * Constructor with serialized data
     * @para a_sData serialized data
     */
-    SRace::SRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {
+    SRace::SRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0), m_bOwnsPlayers(true) {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
       if (l_cSerializer.getS32() == c_iRaceStart) {
@@ -536,6 +590,7 @@ namespace dustbin {
               break;
             }
             case c_iRaceEnd:
+              updateRanking();
               break;
           }
         }
