@@ -54,6 +54,9 @@ namespace dustbin {
 
       std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
 
+      std::vector<int> m_vRespawn;    /**< Timestamps of the respawns of this player in the race */
+      std::vector<int> m_vStunned;    /**< Timestamps of the stuns of this player in the race */
+
       /**
       * Some debugging: dump the lap checkpoints vector to stdout
       */
@@ -63,6 +66,12 @@ namespace dustbin {
       * The default constructor
       */
       SPlayer();
+
+      /**
+      * The constructor using serialized data
+      * @param a_sData serialized data
+      */
+      SPlayer(const std::string &a_sData);
 
       /**
       * The destructor
@@ -122,6 +131,18 @@ namespace dustbin {
       * @param a_iLaps [out] the lap deficit
       */
       void getDeficitTo(SPlayer *a_pOther, int &a_iSteps, int &a_iLaps);
+
+      /**
+      * Serialize the race data of this player to a string
+      * @return the serialized string
+      */
+      std::string serializeRaceData();
+
+      /**
+      * Store the race data of this player to a JSON string
+      * @return the JSON string
+      */
+      std::string raceDataToJSON();
     } SPlayer;
 
     /**
@@ -138,6 +159,17 @@ namespace dustbin {
       std::vector<SPlayer *> m_vRanking;    /**< The ranking of the race */
 
       SRace(const std::string &a_sTrack, int a_iLaps);
+
+      /**
+      * Constructor with serialized data
+      * @para a_sData serialized data
+      */
+      SRace(const std::string &a_sData);
+
+      /**
+      * The destructor
+      */
+      ~SRace();
 
       /**
       * Update the ranking of the race
@@ -173,6 +205,19 @@ namespace dustbin {
       * Finish the race, i.e. finish the current lap for all players
       */
       void finishRace();
+
+      /**
+      * Serialize the race
+      * @return serialized data of the race
+      */
+      std::string serialize();
+
+      /**
+      * Serialize the race to a JSON string
+      * @return a JSON string
+      */
+      std::string toJSON();
+
     } SRace;
   }
 }
