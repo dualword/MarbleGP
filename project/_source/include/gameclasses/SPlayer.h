@@ -23,7 +23,6 @@ namespace dustbin {
       int          m_iPlayer;           /**< The player id */
       int          m_iId;               /**< The Marble id */
       int          m_iPosition;         /**< Position in the race */
-      int          m_iLastPosUpdate;    /**< Step of the last positional update */
       int          m_iDiffLeader;       /**< Deficit to the leader */
       int          m_iDiffAhead;        /**< Deficit to the marble ahead */
       std::string  m_sName;             /**< The name of the player */
@@ -33,13 +32,10 @@ namespace dustbin {
       std::string  m_sShortName;        /**< The short name of the player */
       std::wstring m_sNumber;           /**< The player's starting number */
       std::wstring m_wsShortName;       /**< The player's short name as wide string */
-      std::wstring m_wsName;            /**< The player's name as wide string without the AI identifier */
       bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
       bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
       int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
       int          m_iLapNo;            /**< The player's current lap */
-      int          m_iLapCp;            /**< The checkpoint number of the player's current lap */
-      int          m_iLastCp;           /**< Time when the player passed the last checkpoint */
 
       irr::video::SColor m_cText;   /**< The text color (for the starting number in the ranking display) */
       irr::video::SColor m_cBack;   /**< The background color (for the starting number in the ranking display) */

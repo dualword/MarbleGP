@@ -1582,10 +1582,6 @@ namespace dustbin {
       m_pRaceData->onCheckpoint(a_MarbleId, a_Checkpoint, a_iStepNo);
 
       if (l_iId >= 0 && l_iId < 16 && m_aMarbles[l_iId] != nullptr) {
-        if (m_aMarbles[l_iId] != nullptr) {
-          m_aMarbles[l_iId]->m_pPlayer->m_iLapCp++;
-          m_aMarbles[l_iId]->m_pPlayer->m_iLastCp = m_iStep;
-        }
         m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::Checkpoint);
 
         gfx::SViewPort* l_pViewport = m_aMarbles[l_iId]->m_pViewport;
@@ -1626,7 +1622,6 @@ namespace dustbin {
 
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        m_aMarbles[l_iIndex]->m_pPlayer->m_iLapCp = 0;
         m_aMarbles[l_iIndex]->m_pPlayer->m_iLapNo++;
 
         if (m_pPanelRndr != nullptr)
