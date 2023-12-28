@@ -203,6 +203,7 @@ namespace dustbin {
       m_pMarble        (a_cPlayer.m_pMarble),
       m_pController    (a_cPlayer.m_pController)
     {
+      m_cRaceData = SRaceData(a_cPlayer.m_cRaceData);
     }
 
     /**
@@ -288,6 +289,7 @@ namespace dustbin {
       m_pMarble       (a_pMarble),
       m_pController   (nullptr)
     {
+      m_cRaceData.m_iPlayer = m_iPlayer;
 
       if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
         m_cRaceData.m_iMarble = m_pMarble->m_pPositional->getID();

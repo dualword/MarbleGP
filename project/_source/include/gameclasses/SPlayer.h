@@ -118,11 +118,6 @@ namespace dustbin {
       SPlayer(const std::string &a_sData);
 
       /**
-      * The destructor
-      */
-      ~SPlayer();
-
-      /**
       * The main constructor
       * @param a_iPlayer the player id
       * @param a_sName the name of the player
@@ -139,6 +134,11 @@ namespace dustbin {
         data::SPlayerData::enAiHelp a_eAiHelp, 
         gameclasses::SMarbleNodes* a_pMarble, 
         data::enPlayerType a_eType);
+
+      /**
+      * The destructor
+      */
+      ~SPlayer();
 
       void setName(const std::string &a_sName);
       bool isBot();
