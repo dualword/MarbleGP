@@ -54,9 +54,9 @@ namespace dustbin {
           break;
         }
 
-        if (m_aDiffAhead[l_iIndex] != (*l_itOther)->m_iDiffAhead) {
+        if (m_aDiffAhead[l_iIndex] != (*l_itOther)->m_cRaceData.m_iDiffAhead) {
           l_bUpdate = true;
-          m_aDiffAhead[l_iIndex] = (*l_itOther)->m_iDiffAhead;
+          m_aDiffAhead[l_iIndex] = (*l_itOther)->m_cRaceData.m_iDiffAhead;
         }
 
         if (m_aState[l_iIndex] != (*l_itOther)->m_iState) {
@@ -215,8 +215,8 @@ namespace dustbin {
           std::wstring l_sName = L" " + l_pPlayer->m_wsShortName;
           std::wstring l_sDiff = L"-";
 
-          if (l_pPlayer->m_iDiffAhead > 0) {
-            double l_fTime = (double)l_pPlayer->m_iDiffAhead / 120.0;
+          if (l_pPlayer->m_cRaceData.m_iDiffAhead > 0) {
+            double l_fTime = (double)l_pPlayer->m_cRaceData.m_iDiffAhead / 120.0;
             wchar_t s[50];
 #ifdef _WINDOWS
             swprintf(s, L"%.2f Sec.", l_fTime);
@@ -226,8 +226,8 @@ namespace dustbin {
 
             l_sDiff = s;
           }
-          else if (l_pPlayer->m_iDiffAhead < 0) {
-            l_sDiff = L"+" + std::to_wstring(-l_pPlayer->m_iDiffAhead) + L" Lap" + (l_pPlayer->m_iDiffAhead == - 1 ? L"" : L"s");
+          else if (l_pPlayer->m_cRaceData.m_iDiffAhead < 0) {
+            l_sDiff = L"+" + std::to_wstring(-l_pPlayer->m_cRaceData.m_iDiffAhead) + L" Lap" + (l_pPlayer->m_cRaceData.m_iDiffAhead == - 1 ? L"" : L"s");
           }
 
           m_pFontTwo->draw(l_pPlayer->m_sNumber.c_str(), std::get<0>(m_aRecPos[l_iIndex]), l_pPlayer->m_cText               , true , true);

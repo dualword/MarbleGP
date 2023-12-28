@@ -15,16 +15,61 @@
 namespace dustbin {
   namespace gameclasses {
     /**
+    * @class SRaceData
+    * @author Christian Keimel
+    * This struct stores single race data of a player
+    * @see SPlayer::m_cRaceData
+    */
+    typedef struct SRaceData {
+      int m_iPlayer;      /**< The player ID */
+      int m_iMarble;      /**< The marble ID */
+      int m_iPosition;    /**< The position in the race */
+      int m_iDiffLeader;  /**< The deficit to the leader */
+      int m_iDiffAhead;   /**< The deficit to the marble ahead */
+
+      std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
+
+      std::vector<int> m_vRespawn;    /**< Timestamps of the respawns of this player in the race */
+      std::vector<int> m_vStunned;    /**< Timestamps of the stuns of this player in the race */
+
+      /**
+      * The default contructor
+      */
+      SRaceData();
+
+      /**
+      * The de-serialize constructor
+      * @param a_sData serialized data
+      */
+      SRaceData(const std::string &a_sData);
+
+      /**
+      * The copy constructor
+      * @param a_cRace the race to copy
+      */
+      SRaceData(const SRaceData &a_cRace);
+
+      /**
+      * Serialize the data struct
+      * @return the serialized data
+      */
+      std::string serialize();
+
+      /**
+      * Store the data in a JSON string
+      * @return a JSON string
+      */
+      std::string toJSON();
+    }
+    SRaceData;
+
+    /**
     * @class SPlayer
     * @author Christian Keimel
     * This is the struct for the players
     */
     typedef struct SPlayer {
       int          m_iPlayer;           /**< The player id */
-      int          m_iId;               /**< The Marble id */
-      int          m_iPosition;         /**< Position in the race */
-      int          m_iDiffLeader;       /**< Deficit to the leader */
-      int          m_iDiffAhead;        /**< Deficit to the marble ahead */
       std::string  m_sName;             /**< The name of the player */
       std::wstring m_sWName;            /**< The player's name as wide string */
       std::string  m_sTexture;          /**< The texture of the player's marble */
@@ -48,10 +93,7 @@ namespace dustbin {
       gameclasses::SMarbleNodes *m_pMarble;       /**< The marble of the player */
       controller::IController   *m_pController;   /**< The controller of this player */
 
-      std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
-
-      std::vector<int> m_vRespawn;    /**< Timestamps of the respawns of this player in the race */
-      std::vector<int> m_vStunned;    /**< Timestamps of the stuns of this player in the race */
+      SRaceData m_cRaceData;    /**< Data of a race */
 
       /**
       * Some debugging: dump the lap checkpoints vector to stdout
@@ -138,13 +180,13 @@ namespace dustbin {
       * Serialize the race data of this player to a string
       * @return the serialized string
       */
-      std::string serializeRaceData();
+      std::string serialize();
 
       /**
       * Store the race data of this player to a JSON string
       * @return the JSON string
       */
-      std::string raceDataToJSON();
+      std::string toJSON();
     } SPlayer;
 
     /**

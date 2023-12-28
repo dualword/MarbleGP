@@ -10,15 +10,15 @@ namespace dustbin {
     // #define _DEBUG_DUMP_RANKING
 
     // Some defines for serilization
-    const irr::s32 c_iPlayerStart       = -100;   /**< Start of the player data structure */
-    const irr::s32 c_iPlayerId          = -101;   /**< ID of the player */
-    const irr::s32 c_iPlayerMarble      = -102;   /**< The marble ID assigned to the player for this race */
-    const irr::s32 c_iPlayerTimesStart  = -103;   /**< Start of the checkpoint times of the player */
-    const irr::s32 c_iPlayerLapStart    = -104;   /**< Start of a new lap in the race time vector */
-    const irr::s32 c_iPlayerTimesEnd    = -105;   /**< End of the checkpoint times of the player */
-    const irr::s32 c_iPlayerRespawnStart = -106;   /**< Start of the list of a player's respawn */
-    const irr::s32 c_iPlayerStunStart   = -107;   /**< Start of the list of a player's stuns */
-    const irr::s32 c_iPlayerEnd         = -108;   /**< End of the player data structure */
+    const irr::s32 c_iRaceDataStart        = -100;   /**< Start of the player data structure */
+    const irr::s32 c_iRaceDataPlayer       = -101;   /**< ID of the player */
+    const irr::s32 c_iRaceDataMarble       = -102;   /**< The marble ID assigned to the player for this race */
+    const irr::s32 c_iRaceDataTimesStart   = -103;   /**< Start of the checkpoint times of the player */
+    const irr::s32 c_iRaceDataLapStart     = -104;   /**< Start of a new lap in the race time vector */
+    const irr::s32 c_iRaceDataTimesEnd     = -105;   /**< End of the checkpoint times of the player */
+    const irr::s32 c_iRaceDataRespawnStart = -106;   /**< Start of the list of a player's respawn */
+    const irr::s32 c_iRaceDataStunStart    = -107;   /**< Start of the list of a player's stuns */
+    const irr::s32 c_iRaceDataEnd          = -108;   /**< End of the player data structure */
 
     const irr::s32 c_iRaceStart         = -200;   /**< Start of the race data structure */
     const irr::s32 c_iRaceTrack         = -201;   /**< The race track */
@@ -27,16 +27,141 @@ namespace dustbin {
     const irr::s32 c_iRacePlayerEnd     = -204;   /**< End marker for the player list */
     const irr::s32 c_iRaceEnd           = -205;   /**< End of the race data structure */
 
+    /**
+    * The default contructor
+    */
+    SRaceData::SRaceData() : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0) {
+
+    }
+
+    /**
+    * The de-serialize constructor
+    * @param a_sData serialized data
+    */
+    SRaceData::SRaceData(const std::string& a_sData) : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0) {
+
+    }
+
+    /**
+    * The copy constructor
+    * @param a_cRace the race to copy
+    */
+    SRaceData::SRaceData(const SRaceData& a_cRace) : 
+      m_iPlayer    (a_cRace.m_iPlayer), 
+      m_iMarble    (a_cRace.m_iMarble), 
+      m_iPosition  (a_cRace.m_iPosition), 
+      m_iDiffLeader(a_cRace.m_iDiffLeader), 
+      m_iDiffAhead (a_cRace.m_iDiffAhead) 
+    {
+      for (auto l_vLap : a_cRace.m_vLapCheckpoints) {
+        m_vLapCheckpoints.push_back(std::vector<int>());
+
+        for (auto l_iCp : l_vLap) {
+          m_vLapCheckpoints.back().push_back(l_iCp);
+        }
+      }
+    }
+
+    /**
+    * Serialize the data struct
+    * @return the serialized data
+    */
+    std::string SRaceData::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      l_cSerializer.addS32(c_iRaceDataStart);
+      l_cSerializer.addS32(c_iRaceDataPlayer);
+      l_cSerializer.addS32((irr::s32)m_iPlayer);
+      l_cSerializer.addS32(c_iRaceDataMarble);
+      l_cSerializer.addS32((irr::s32)m_iMarble);
+
+      l_cSerializer.addS32(c_iRaceDataTimesStart);
+      l_cSerializer.addS32((irr::s32)m_vLapCheckpoints.size());
+      
+      for (auto l_vLap : m_vLapCheckpoints) {
+        l_cSerializer.addS32(c_iRaceDataLapStart);
+        l_cSerializer.addS32((irr::s32)l_vLap.size());
+
+        for (auto l_iCp : l_vLap) {
+          l_cSerializer.addS32((irr::s32)l_iCp);
+        }
+      }
+
+      l_cSerializer.addS32(c_iRaceDataTimesEnd);
+
+      l_cSerializer.addS32(c_iRaceDataRespawnStart);
+      l_cSerializer.addS32((irr::s32)m_vRespawn.size());
+
+      for (auto l_iRespawn: m_vRespawn)
+        l_cSerializer.addS32((irr::s32)l_iRespawn);
+
+      l_cSerializer.addS32(c_iRaceDataStunStart);
+      l_cSerializer.addS32((irr::s32)m_vStunned.size());
+
+      for (auto l_iStunned: m_vStunned)
+        l_cSerializer.addS32((irr::s32)l_iStunned);
+
+      l_cSerializer.addS32(c_iRaceDataEnd);
+
+      return l_cSerializer.getMessageAsString();
+    }
+
+    /**
+    * Store the data in a JSON string
+    * @return a JSON string
+    */
+    std::string SRaceData::toJSON() {
+      std::string s = "{";
+
+      s += "\"playerid\": " + std::to_string(m_iPlayer) + ", ";
+      s += "\"marbleid\": " + std::to_string(m_iMarble) + ", ";
+      s += "\"laps\": [";
+
+      for (std::vector<std::vector<int>>::iterator l_itLap = m_vLapCheckpoints.begin(); l_itLap != m_vLapCheckpoints.end(); l_itLap++) {
+        if (l_itLap != m_vLapCheckpoints.begin())
+          s += ", ";
+
+        s += "[ ";
+        for (std::vector<int>::iterator l_itCp = (*l_itLap).begin(); l_itCp != (*l_itLap).end(); l_itCp++) {
+          if (l_itCp != (*l_itLap).begin())
+            s += ", ";
+
+          s += std::to_string(*l_itCp);
+        }
+
+        s += " ]";
+      }
+
+      s += "],";
+      s += "\"respawn\": [";
+
+      for (std::vector<int>::iterator l_itRespawn = m_vRespawn.begin(); l_itRespawn != m_vRespawn.end(); l_itRespawn++) {
+        if (l_itRespawn != m_vRespawn.begin())
+          s += ", ";
+
+        s += std::to_string(*l_itRespawn);
+      }
+
+      s += "],";
+      s += "\"stunned\": [";
+
+      for (std::vector<int>::iterator l_itStun = m_vStunned.begin(); l_itStun != m_vStunned.end(); l_itStun++) {
+        if (l_itStun != m_vStunned.begin())
+          s += ", ";
+
+        s += std::to_string(*l_itStun);
+      }
+
+      s += "]";
+      return s + "}";
+    }
+
 
     /**
     * The default constructor
     */
     SPlayer::SPlayer() :
       m_iPlayer        (0),
-      m_iId            (-1),
-      m_iPosition      (99),
-      m_iDiffLeader    (0),
-      m_iDiffAhead     (0),
       m_sName          (""),
       m_sTexture       (""),
       m_sController    (""),
@@ -63,10 +188,6 @@ namespace dustbin {
     */
     SPlayer::SPlayer(const SPlayer& a_cPlayer) :
       m_iPlayer        (a_cPlayer.m_iPlayer),
-      m_iId            (a_cPlayer.m_iId),
-      m_iPosition      (a_cPlayer.m_iPosition),
-      m_iDiffLeader    (a_cPlayer.m_iDiffLeader),
-      m_iDiffAhead     (a_cPlayer.m_iDiffAhead),
       m_sName          (a_cPlayer.m_sName),
       m_sTexture       (a_cPlayer.m_sTexture),
       m_sController    (a_cPlayer.m_sController),
@@ -82,7 +203,6 @@ namespace dustbin {
       m_pMarble        (a_cPlayer.m_pMarble),
       m_pController    (a_cPlayer.m_pController)
     {
-
     }
 
     /**
@@ -91,10 +211,6 @@ namespace dustbin {
     */
     SPlayer::SPlayer(const std::string &a_sData) :
       m_iPlayer        (0),
-      m_iId            (-1),
-      m_iPosition      (99),
-      m_iDiffLeader    (0),
-      m_iDiffAhead     (0),
       m_sName          (""),
       m_sTexture       (""),
       m_sController    (""),
@@ -115,108 +231,14 @@ namespace dustbin {
       m_cFrme = irr::video::SColor(0x80,    0,    0,    0);
 
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
-
-      if (l_cSerializer.getS32() == c_iPlayerStart) {
-        while (l_cSerializer.hasMoreMessages()) {
-          irr::s32 l_iKey = l_cSerializer.getS32();
-
-          switch (l_iKey) {
-            case c_iPlayerId    : m_iPlayer = l_cSerializer.getS32(); break;
-            case c_iPlayerMarble: m_iId     = l_cSerializer.getS32(); break;
-
-            case c_iPlayerTimesStart: {
-              irr::s32 l_iLapCount = l_cSerializer.getS32();
-
-              printf("%i laps found for player.\n", l_iLapCount);
-
-              for (irr::s32 i = 0; i < l_iLapCount; i++) {
-                m_vLapCheckpoints.push_back(std::vector<int>());
-
-                if (l_cSerializer.getS32() == c_iPlayerLapStart) {
-                  irr::s32 l_iCpCount = l_cSerializer.getS32();
-
-                  printf("  %i checkpoints found in lap %i\n", l_iCpCount, i);
-                  for (irr::s32 j = 0; j < l_iCpCount; j++) {
-                    m_vLapCheckpoints.back().push_back((int)l_cSerializer.getS32());
-                  }
-                }
-                else {
-                  printf("Invalid key .. \"Player Lap Start\" expected.\n");
-                  break;
-                }
-              }
-
-              if (l_cSerializer.getS32() != c_iPlayerTimesEnd) {
-                printf("Invalid key .. \"Player Times End\" expected.\n");
-              }
-
-              break;
-            }
-
-            case c_iPlayerRespawnStart: {
-              irr::s32 l_iCount = l_cSerializer.getS32();
-              printf("%i Respawns found.\n", l_iCount);
-              for (irr::s32 i = 0; i < l_iCount; i++)
-                m_vRespawn.push_back((int)l_cSerializer.getS32());
-              break;
-            }
-
-            case c_iPlayerStunStart: {
-              irr::s32 l_iCount = l_cSerializer.getS32();
-              printf("%i Respawns found.\n", l_iCount);
-              for (irr::s32 i = 0; i < l_iCount; i++)
-                m_vStunned.push_back((int)l_cSerializer.getS32());
-              break;
-            }
-
-            case c_iPlayerEnd:
-              printf("End marker found, exiting.\n");
-              return;
-          }
-        }
-      }
-      else printf("Invalid header in \"SPlayer\" serialized data.\n");
     }
 
     /**
     * Serialize the race data of this player to a string
     * @return the serialized string
     */
-    std::string SPlayer::serializeRaceData() {
+    std::string SPlayer::serialize() {
       messages::CSerializer64 l_cSerializer;
-
-      l_cSerializer.addS32(c_iPlayerStart);
-      l_cSerializer.addS32(c_iPlayerId);
-      l_cSerializer.addS32(m_iPlayer);
-      l_cSerializer.addS32(c_iPlayerMarble);
-      l_cSerializer.addS32(m_iId);
-
-      l_cSerializer.addS32(c_iPlayerTimesStart);
-      l_cSerializer.addS32((irr::s32)m_vLapCheckpoints.size());
-
-      for (auto l_vLap : m_vLapCheckpoints) {
-        l_cSerializer.addS32(c_iPlayerLapStart);
-        l_cSerializer.addS32((irr::s32)l_vLap.size());
-
-        for (auto l_iTime : l_vLap) {
-          l_cSerializer.addS32((irr::s32)l_iTime);
-        }
-      }
-
-      l_cSerializer.addS32(c_iPlayerTimesEnd);
-      l_cSerializer.addS32(c_iPlayerRespawnStart);
-      l_cSerializer.addS32((irr::s32)m_vRespawn.size());
-
-      for (auto l_iRespawn: m_vRespawn)
-        l_cSerializer.addS32((irr::s32)l_iRespawn);
-
-      l_cSerializer.addS32(c_iPlayerStunStart);
-      l_cSerializer.addS32((irr::s32)m_vStunned.size());
-
-      for (auto l_iStunned: m_vStunned)
-        l_cSerializer.addS32((irr::s32)l_iStunned);
-
-      l_cSerializer.addS32(c_iPlayerEnd);
 
       return l_cSerializer.getMessageAsString();
     }
@@ -225,50 +247,8 @@ namespace dustbin {
     * Store the race data of this player to a JSON string
     * @return the JSON string
     */
-    std::string SPlayer::raceDataToJSON() {
+    std::string SPlayer::toJSON() {
       std::string s = "{ ";
-
-      s += "\"playerid\": " + std::to_string(m_iPlayer) + ", ";
-      s += "\"marbleid\": " + std::to_string(m_iId    ) + ", ";
-      s += "\"laps\": [";
-      
-      for (std::vector<std::vector<int>>::iterator l_itLaps = m_vLapCheckpoints.begin(); l_itLaps != m_vLapCheckpoints.end(); l_itLaps++) {
-        if (l_itLaps != m_vLapCheckpoints.begin())
-          s += ", ";
-
-        s += " [";
-
-        for (std::vector<int>::iterator l_itCp = (*l_itLaps).begin(); l_itCp != (*l_itLaps).end(); l_itCp++) {
-          if (l_itCp != (*l_itLaps).begin())
-            s += ", ";
-
-          s += std::to_string(*l_itCp);
-        }
-
-        s += "] ";
-      }
-
-      s += "], ";
-      s += "\"respawn\": [";
-
-      for (std::vector<int>::iterator l_itRsp = m_vRespawn.begin(); l_itRsp != m_vRespawn.end(); l_itRsp++) {
-        if (l_itRsp != m_vRespawn.begin())
-          s += ",";
-
-        s += std::to_string(*l_itRsp);
-      }
-
-      s += "], ";
-      s += "\"stunned\": [";
-
-      for (std::vector<int>::iterator l_itStun = m_vStunned.begin(); l_itStun != m_vStunned.end(); l_itStun++) {
-        if (l_itStun != m_vStunned.begin())
-          s += ", ";
-
-        s += std::to_string(*l_itStun);
-      }
-
-      s += "]";
       return s + " }";
     }
 
@@ -293,10 +273,6 @@ namespace dustbin {
     */
     SPlayer::SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
       m_iPlayer       (a_iPlayer),
-      m_iId            (-1),
-      m_iPosition     (99),
-      m_iDiffLeader   (0),
-      m_iDiffAhead    (0),
       m_sName         (a_sName),
       m_sWName        (helpers::s2ws(a_sName)),
       m_sTexture      (a_sTexture),
@@ -314,9 +290,9 @@ namespace dustbin {
     {
 
       if (m_pMarble != nullptr && m_pMarble->m_pPositional != nullptr)
-        m_iId = m_pMarble->m_pPositional->getID();
+        m_cRaceData.m_iMarble = m_pMarble->m_pPositional->getID();
       else
-        m_iId = -1;
+        m_cRaceData.m_iMarble = -1;
 
       if (m_pMarble != nullptr) {
         m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));
@@ -355,26 +331,26 @@ namespace dustbin {
     */
     bool SPlayer::isInFront(SPlayer* a_pOther) {
       // At race start: the starting grid number (aka marble id) defines the positions
-      if (m_vLapCheckpoints.size() == 0 && a_pOther->m_vLapCheckpoints.size() == 0)
-        return m_iId < a_pOther->m_iId;
+      if (m_cRaceData.m_vLapCheckpoints.size() == 0 && a_pOther->m_cRaceData.m_vLapCheckpoints.size() == 0)
+        return m_cRaceData.m_iMarble < a_pOther->m_cRaceData.m_iMarble;
       
       // If the number of laps differs: more laps == in front
-      if (m_vLapCheckpoints.size() != a_pOther->m_vLapCheckpoints.size())
-        return m_vLapCheckpoints.size() > a_pOther->m_vLapCheckpoints.size();
+      if (m_cRaceData.m_vLapCheckpoints.size() != a_pOther->m_cRaceData.m_vLapCheckpoints.size())
+        return m_cRaceData.m_vLapCheckpoints.size() > a_pOther->m_cRaceData.m_vLapCheckpoints.size();
 
       // Same number of laps: more checkpoints == in front
-      if (m_vLapCheckpoints.back().size() != a_pOther->m_vLapCheckpoints.back().size())
-        return m_vLapCheckpoints.back().size() > a_pOther->m_vLapCheckpoints.back().size();
+      if (m_cRaceData.m_vLapCheckpoints.back().size() != a_pOther->m_cRaceData.m_vLapCheckpoints.back().size())
+        return m_cRaceData.m_vLapCheckpoints.back().size() > a_pOther->m_cRaceData.m_vLapCheckpoints.back().size();
 
       // Last option: the checkpoint was passed earlier
-      return m_vLapCheckpoints.back().back() < a_pOther->m_vLapCheckpoints.back().back();
+      return m_cRaceData.m_vLapCheckpoints.back().back() < a_pOther->m_cRaceData.m_vLapCheckpoints.back().back();
     }
 
     /**
     * Lap start callback
     */
     void SPlayer::onLapStart() {
-      m_vLapCheckpoints.push_back(std::vector<int>());
+      m_cRaceData.m_vLapCheckpoints.push_back(std::vector<int>());
     }
     /**
     * Some debugging: dump the lap checkpoints vector to stdout
@@ -382,7 +358,7 @@ namespace dustbin {
     void SPlayer::dumpLapCheckpoints() {
       printf("\nCheckpoints \"%s\"\n\n", m_sName.c_str());
       int i = 0;
-      for (auto l_vLap : m_vLapCheckpoints) {
+      for (auto l_vLap : m_cRaceData.m_vLapCheckpoints) {
         printf("Lap %i (%i): ", i++, (int)l_vLap.size());
 
         for (auto l_iCp : l_vLap) {
@@ -402,8 +378,8 @@ namespace dustbin {
     * @param a_iStep the step when the checkpoint was passed
     */
     void SPlayer::onCheckpoint(int a_iStep) {
-      if (m_vLapCheckpoints.size() > 0) {
-        m_vLapCheckpoints.back().push_back(a_iStep);
+      if (m_cRaceData.m_vLapCheckpoints.size() > 0) {
+        m_cRaceData.m_vLapCheckpoints.back().push_back(a_iStep);
       }
     }
 
@@ -418,46 +394,46 @@ namespace dustbin {
       a_iSteps = 0;
       a_iLaps  = 0;
 
-      int l_iLapIdx = (int)m_vLapCheckpoints.size();
+      int l_iLapIdx = (int)m_cRaceData.m_vLapCheckpoints.size();
     
 #ifdef _DEBUG_DUMP_RANKING
       printf("Lap Index: %i\n", l_iLapIdx);
 #endif
 
       if (l_iLapIdx > 0) {
-        int l_iCkpIdx = (int)m_vLapCheckpoints.back().size();
+        int l_iCkpIdx = (int)m_cRaceData.m_vLapCheckpoints.back().size();
 
 #ifdef _DEBUG_DUMP_RANKING
         printf("Checkpoint Index: %i\n", l_iCkpIdx);
 #endif
 
-        if (l_iCkpIdx > 0 && a_pOther->m_vLapCheckpoints.size() >= l_iLapIdx && a_pOther->m_vLapCheckpoints[l_iLapIdx - 1].size() >= l_iCkpIdx) {
-          a_iSteps = m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] - a_pOther->m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1];
+        if (l_iCkpIdx > 0 && a_pOther->m_cRaceData.m_vLapCheckpoints.size() >= l_iLapIdx && a_pOther->m_cRaceData.m_vLapCheckpoints[l_iLapIdx - 1].size() >= l_iCkpIdx) {
+          a_iSteps = m_cRaceData.m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] - a_pOther->m_cRaceData.m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1];
 
 #ifdef _DEBUG_DUMP_RANKING
           printf("Steps: %i\n", a_iSteps);
 #endif
         }
 
-        a_iLaps = (int)a_pOther->m_vLapCheckpoints.size() - l_iLapIdx;
+        a_iLaps = (int)a_pOther->m_cRaceData.m_vLapCheckpoints.size() - l_iLapIdx;
 
 #ifdef _DEBUG_DUMP_RANKING
         printf("Laps : %i\n", a_iLaps);
 #endif
 
         if (a_iLaps > 0) {
-          int l_iCpkIdx2 = (int)a_pOther->m_vLapCheckpoints.back().size();
+          int l_iCpkIdx2 = (int)a_pOther->m_cRaceData.m_vLapCheckpoints.back().size();
 
-          if (a_pOther->m_vLapCheckpoints.size() > l_iLapIdx) {
-            if (m_vLapCheckpoints[l_iLapIdx - 1].size() > a_pOther->m_vLapCheckpoints.back().size()) {
+          if (a_pOther->m_cRaceData.m_vLapCheckpoints.size() > l_iLapIdx) {
+            if (m_cRaceData.m_vLapCheckpoints[l_iLapIdx - 1].size() > a_pOther->m_cRaceData.m_vLapCheckpoints.back().size()) {
 #ifdef _DEBUG_DUMP_RANKING
               printf("\t\t1\n");
 #endif
               a_iLaps--;
             }
             else if (
-              m_vLapCheckpoints[l_iLapIdx - 1].size() == a_pOther->m_vLapCheckpoints.back().size() && 
-              m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] < a_pOther->m_vLapCheckpoints.back()[l_iCkpIdx - 1]
+              m_cRaceData.m_vLapCheckpoints[l_iLapIdx - 1].size() == a_pOther->m_cRaceData.m_vLapCheckpoints.back().size() && 
+              m_cRaceData.m_vLapCheckpoints[l_iLapIdx - 1][l_iCkpIdx - 1] < a_pOther->m_cRaceData.m_vLapCheckpoints.back()[l_iCkpIdx - 1]
             ) 
             {
 #ifdef _DEBUG_DUMP_RANKING
@@ -496,13 +472,13 @@ namespace dustbin {
       m_iState = a_iState;
 
       if (m_iState == 3) {
-        if (m_vLapCheckpoints.size() > 0 && m_vLapCheckpoints.back().size() > 0) {
-          m_vLapCheckpoints.back().back() = a_iStep;
-          m_vRespawn.push_back(a_iStep);
+        if (m_cRaceData.m_vLapCheckpoints.size() > 0 && m_cRaceData.m_vLapCheckpoints.back().size() > 0) {
+          m_cRaceData.m_vLapCheckpoints.back().back() = a_iStep;
+          m_cRaceData.m_vRespawn.push_back(a_iStep);
         }
       }
       else if (a_iState == 1) {
-        m_vStunned.push_back(a_iStep);
+        m_cRaceData.m_vStunned.push_back(a_iStep);
       }
     }
 
@@ -600,7 +576,7 @@ namespace dustbin {
         if (l_itPlr != m_vPlayers.begin())
           s += ", ";
 
-        s += (*l_itPlr)->raceDataToJSON();
+        s += (*l_itPlr)->m_cRaceData.toJSON();
       }
 
 
@@ -625,7 +601,7 @@ namespace dustbin {
       l_cSerializer.addS32((irr::s32)m_vPlayers.size());
 
       for (auto l_pPlayer : m_vPlayers) {
-        l_cSerializer.addString(l_pPlayer->serializeRaceData());
+        l_cSerializer.addString(l_pPlayer->serialize());
       }
 
       l_cSerializer.addS32(c_iRacePlayerEnd);
@@ -651,12 +627,12 @@ namespace dustbin {
 
 
       for (std::vector<SPlayer*>::iterator l_itPlr = m_vRanking.begin(); l_itPlr != m_vRanking.end(); l_itPlr++) {
-        (*l_itPlr)->m_iPosition = l_iPos++;
+        (*l_itPlr)->m_cRaceData.m_iPosition = l_iPos++;
 
         if (l_itPlr == m_vRanking.begin()) {
           l_pLead = *l_itPlr;
-          l_pLead->m_iDiffAhead  = 0;
-          l_pLead->m_iDiffLeader = 0;
+          l_pLead->m_cRaceData.m_iDiffAhead  = 0;
+          l_pLead->m_cRaceData.m_iDiffLeader = 0;
         }
         else {
           int l_iLaps = 0;
@@ -664,15 +640,15 @@ namespace dustbin {
 
           (*l_itPlr)->getDeficitTo(l_pLead, l_iStep, l_iLaps);
           if (l_iLaps == 0)
-            (*l_itPlr)->m_iDiffLeader = l_iStep;
+            (*l_itPlr)->m_cRaceData.m_iDiffLeader = l_iStep;
           else
-            (*l_itPlr)->m_iDiffLeader = -l_iLaps;
+            (*l_itPlr)->m_cRaceData.m_iDiffLeader = -l_iLaps;
 
           (*l_itPlr)->getDeficitTo(*(l_itPlr - 1), l_iStep, l_iLaps);
           if (l_iLaps == 0)
-            (*l_itPlr)->m_iDiffAhead = l_iStep;
+            (*l_itPlr)->m_cRaceData.m_iDiffAhead = l_iStep;
           else
-            (*l_itPlr)->m_iDiffAhead = -l_iLaps;
+            (*l_itPlr)->m_cRaceData.m_iDiffAhead = -l_iLaps;
         }
       }
 
@@ -702,7 +678,7 @@ namespace dustbin {
     */
     void SRace::onCheckpoint(int a_iMarble, int a_iCheckpoint, int a_iStep) {
       for (auto l_pPlayer : m_vPlayers) {
-        if (l_pPlayer->m_iId == a_iMarble) {
+        if (l_pPlayer->m_cRaceData.m_iMarble == a_iMarble) {
           l_pPlayer->onCheckpoint(a_iStep);
           updateRanking();
         }
@@ -715,7 +691,7 @@ namespace dustbin {
     */
     void SRace::onLapStart(int a_iMarble) {
       for (auto l_pPlayer : m_vPlayers) {
-        if (l_pPlayer->m_iId == a_iMarble) {
+        if (l_pPlayer->m_cRaceData.m_iMarble == a_iMarble) {
           l_pPlayer->onLapStart();
         }
       }
@@ -729,7 +705,7 @@ namespace dustbin {
     */
     void SRace::onStateChange(int a_iMarble, int a_iNewState, int a_iStep) {
       for (auto l_pPlayer : m_vPlayers) {
-        if (l_pPlayer->m_iId == a_iMarble) {
+        if (l_pPlayer->m_cRaceData.m_iMarble == a_iMarble) {
           l_pPlayer->onStateChanged(a_iNewState, a_iStep);
           updateRanking();
         }
@@ -746,7 +722,7 @@ namespace dustbin {
       SPlayer *l_pLeader = *m_vRanking.begin();
       l_pLeader->dumpLapCheckpoints();
 
-      if (l_pLeader->m_vLapCheckpoints.size() > 0) {
+      if (l_pLeader->m_cRaceData.m_vLapCheckpoints.size() > 0) {
         for (std::vector<SPlayer*>::iterator l_itPlr = m_vRanking.begin() + 1; l_itPlr != m_vRanking.end(); l_itPlr++) {
           if ((*l_itPlr)->m_iState != 4) {
             int l_iSteps = 0;
@@ -754,22 +730,22 @@ namespace dustbin {
 
             (*l_itPlr)->getDeficitTo(l_pLeader, l_iSteps, l_iLaps);
 
-            std::vector<std::vector<int>>::iterator l_itLeader = l_pLeader->m_vLapCheckpoints.end();
+            std::vector<std::vector<int>>::iterator l_itLeader = l_pLeader->m_cRaceData.m_vLapCheckpoints.end();
 
             do {
               l_itLeader--;
             }
-            while ((*l_itLeader).size() <= 1 && l_itLeader != l_pLeader->m_vLapCheckpoints.begin());
+            while ((*l_itLeader).size() <= 1 && l_itLeader != l_pLeader->m_cRaceData.m_vLapCheckpoints.begin());
 
-            while ((*l_itPlr)->m_vLapCheckpoints.back().size() < (*l_itLeader).size()) {
-              int l_iLeader = (*l_itLeader)[(*l_itPlr)->m_vLapCheckpoints.back().size()];
-              int l_iPlayer = (*l_itPlr)->m_vLapCheckpoints.back().back();
+            while ((*l_itPlr)->m_cRaceData.m_vLapCheckpoints.back().size() < (*l_itLeader).size()) {
+              int l_iLeader = (*l_itLeader)[(*l_itPlr)->m_cRaceData.m_vLapCheckpoints.back().size()];
+              int l_iPlayer = (*l_itPlr)->m_cRaceData.m_vLapCheckpoints.back().back();
 
-              (*l_itPlr)->m_vLapCheckpoints.back().push_back(l_iLeader + l_iSteps);
+              (*l_itPlr)->m_cRaceData.m_vLapCheckpoints.back().push_back(l_iLeader + l_iSteps);
             }
 
-            (*l_itPlr)->m_vLapCheckpoints.push_back(std::vector<int>());
-            (*l_itPlr)->m_vLapCheckpoints.back().push_back(l_pLeader->m_vLapCheckpoints.back().back() + l_iSteps);
+            (*l_itPlr)->m_cRaceData.m_vLapCheckpoints.push_back(std::vector<int>());
+            (*l_itPlr)->m_cRaceData.m_vLapCheckpoints.back().push_back(l_pLeader->m_cRaceData.m_vLapCheckpoints.back().back() + l_iSteps);
           }
           (*l_itPlr)->dumpLapCheckpoints();
         }

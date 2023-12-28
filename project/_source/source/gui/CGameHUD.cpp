@@ -50,7 +50,7 @@ namespace dustbin {
     void CGameHUD::onCamerarespawn(irr::s32 a_MarbleId, const irr::core::vector3df& a_Position, const irr::core::vector3df& a_Target) {
       if (m_iGoStep != 0) {
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-          if ((*it)->m_iId == a_MarbleId) {
+          if ((*it)->m_cRaceData.m_iMarble == a_MarbleId) {
             (*it)->m_iState = 3;
             break;
           }
@@ -78,7 +78,7 @@ namespace dustbin {
         m_aFinished[l_iId] = true;
 
         for (auto l_pPlayer: *m_vRanking) {
-          if (l_pPlayer->m_iId == a_MarbleId)
+          if (l_pPlayer->m_cRaceData.m_iMarble == a_MarbleId)
             l_pPlayer->m_iState = 4;
         }
       }
@@ -131,7 +131,7 @@ namespace dustbin {
         }
       
         for (std::vector<gameclasses::SPlayer*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-          if ((*it)->m_iId == a_MarbleId) {
+          if ((*it)->m_cRaceData.m_iMarble == a_MarbleId) {
             if (a_State == 1)
               (*it)->m_iState = 1;
             else
@@ -192,8 +192,8 @@ namespace dustbin {
         printf("Rostrum: %i (%i)\n", l_iIndex, a_MarbleId);
         m_aRostrum[l_iIndex] = true;
         for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-          if ((*it)->m_iId == a_MarbleId) {
-            l_iIndex = (*it)->m_iPosition - 1;
+          if ((*it)->m_cRaceData.m_iMarble == a_MarbleId) {
+            l_iIndex = (*it)->m_cRaceData.m_iPosition - 1;
             if (m_aRanking[l_iIndex] != nullptr)
               m_aRanking[l_iIndex]->setVisible(true);
 
@@ -834,7 +834,7 @@ namespace dustbin {
       m_mTextElements[enTextElements::LapHead].setPosition(irr::core::position2di(a_cTotal.LowerRightCorner.X + l_cPosSize.Width / 9, a_cTotal.UpperLeftCorner.Y));
       m_mTextElements[enTextElements::Lap    ].setPosition(m_mTextElements[enTextElements::LapHead].m_cThisRect.UpperLeftCorner + irr::core::position2di(0, l_cPosSize.Height));
 
-      if (m_pPlayer->m_iPosition > 0 && m_pPlayer->m_iPosition != 99) {
+      if (m_pPlayer->m_cRaceData.m_iPosition > 0 && m_pPlayer->m_cRaceData.m_iPosition != 99) {
         irr::s32 l_iOffset = 3 * m_cDefSize.Height / 2;
 
         irr::core::position2di l_cRank = a_cPos;
@@ -849,14 +849,14 @@ namespace dustbin {
 
         int l_iPos[] = {
           1,
-          m_pPlayer->m_iPosition == 1 ? 2 : m_pPlayer->m_iPosition == 2 ? 2 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_iPosition - 1,
-          m_pPlayer->m_iPosition == 1 ? 3 : m_pPlayer->m_iPosition == 2 ? 3 : m_pPlayer->m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_iPosition,
-          m_pPlayer->m_iPosition == 1 ? 4 : m_pPlayer->m_iPosition == 2 ? 4 : m_pPlayer->m_iPosition == m_vRanking->size() ? m_pPlayer->m_iPosition      : m_pPlayer->m_iPosition + 1
+          m_pPlayer->m_cRaceData.m_iPosition == 1 ? 2 : m_pPlayer->m_cRaceData.m_iPosition == 2 ? 2 : m_pPlayer->m_cRaceData.m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 2 : m_pPlayer->m_cRaceData.m_iPosition - 1,
+          m_pPlayer->m_cRaceData.m_iPosition == 1 ? 3 : m_pPlayer->m_cRaceData.m_iPosition == 2 ? 3 : m_pPlayer->m_cRaceData.m_iPosition == m_vRanking->size() ? (int)m_vRanking->size() - 1 : m_pPlayer->m_cRaceData.m_iPosition,
+          m_pPlayer->m_cRaceData.m_iPosition == 1 ? 4 : m_pPlayer->m_cRaceData.m_iPosition == 2 ? 4 : m_pPlayer->m_cRaceData.m_iPosition == m_vRanking->size() ? m_pPlayer->m_cRaceData.m_iPosition      : m_pPlayer->m_cRaceData.m_iPosition + 1
         };
 
         for (int i = 0; i < 4 && i < m_vRanking->size(); i++) {
-          if (l_iPos[i] == m_pPlayer->m_iPosition) {
-            std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_iPosition) + L": " + m_pPlayer->m_sWName;
+          if (l_iPos[i] == m_pPlayer->m_cRaceData.m_iPosition) {
+            std::wstring l_sText = L" " + std::to_wstring(m_pPlayer->m_cRaceData.m_iPosition) + L": " + m_pPlayer->m_sWName;
             m_pDrv->draw2DRectangle(
               irr::video::SColor(192, 232, 232, 232), 
               l_cRects[i], &m_cRect
@@ -871,7 +871,7 @@ namespace dustbin {
           }
           else {
             for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-              if ((*it)->m_iPosition == l_iPos[i]) {
+              if ((*it)->m_cRaceData.m_iPosition == l_iPos[i]) {
                 m_pDrv->draw2DRectangle(
                   (*it)->m_iState == 1 ? irr::video::SColor(192,  96,  96, 255) :
                   (*it)->m_iState == 2 ? irr::video::SColor(192, 255,  96,  96) :
@@ -884,32 +884,32 @@ namespace dustbin {
 
                 helpers::splitStringNameBot((*it)->m_sName, l_sName, l_sBot);
 
-                std::wstring l_sText = L" " + std::to_wstring((*it)->m_iPosition) + L": " + helpers::s2ws(l_sName);
+                std::wstring l_sText = L" " + std::to_wstring((*it)->m_cRaceData.m_iPosition) + L": " + helpers::s2ws(l_sName);
                 m_pDefFont->draw(l_sText.c_str(), l_cRects[i], irr::video::SColor(0xFF, 0, 0, 0), false, true, &m_cRect);
 
                 std::wstring l_sDeficit;
 
                 if (l_iPos[i] == 1) {
-                  l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_iDiffLeader);
+                  l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_cRaceData.m_iDiffLeader);
                 }
-                else if (l_iPos[i] < m_pPlayer->m_iPosition) {
-                  if (l_iPos[i] == m_pPlayer->m_iPosition - 1)
-                    l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_iDiffAhead);
+                else if (l_iPos[i] < m_pPlayer->m_cRaceData.m_iPosition) {
+                  if (l_iPos[i] == m_pPlayer->m_cRaceData.m_iPosition - 1)
+                    l_sDeficit = L"-" + getDeficitString(m_pPlayer->m_cRaceData.m_iDiffAhead);
                   else {
-                    int l_iTotal = m_pPlayer->m_iDiffAhead;
+                    int l_iTotal = m_pPlayer->m_cRaceData.m_iDiffAhead;
                     for (std::vector<gameclasses::SPlayer*>::const_iterator it2 = m_vRanking->begin(); it2 != m_vRanking->end(); it2++) {
-                      if ((*it2)->m_iPosition == m_pPlayer->m_iPosition - 1)
-                        l_iTotal += (*it2)->m_iDiffAhead;
+                      if ((*it2)->m_cRaceData.m_iPosition == m_pPlayer->m_cRaceData.m_iPosition - 1)
+                        l_iTotal += (*it2)->m_cRaceData.m_iDiffAhead;
                     }
                     l_sDeficit = L"-" + getDeficitString(l_iTotal);
                   }
                 }
                 else {
-                  if (m_pPlayer->m_iPosition == 1) {
-                    l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffLeader);
+                  if (m_pPlayer->m_cRaceData.m_iPosition == 1) {
+                    l_sDeficit = L"+" + getDeficitString((*it)->m_cRaceData.m_iDiffLeader);
                   }
                   else {
-                    l_sDeficit = L"+" + getDeficitString((*it)->m_iDiffAhead);
+                    l_sDeficit = L"+" + getDeficitString((*it)->m_cRaceData.m_iDiffAhead);
                   }
                 }
 
@@ -983,9 +983,9 @@ namespace dustbin {
 
     void CGameHUD::updateRanking() {
       for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
-        if ((*it)->m_iId == m_iMarble && (*it)->m_iPosition > 0) {
+        if ((*it)->m_cRaceData.m_iMarble == m_iMarble && (*it)->m_cRaceData.m_iPosition > 0) {
           if (m_mTextElements.find(enTextElements::Pos) != m_mTextElements.end()) {
-            m_mTextElements[enTextElements::Pos].m_sText = std::to_wstring((*it)->m_iPosition);
+            m_mTextElements[enTextElements::Pos].m_sText = std::to_wstring((*it)->m_cRaceData.m_iPosition);
           }
 
           for (int i = 0; i < 3; i++)
@@ -995,7 +995,7 @@ namespace dustbin {
             }
             else m_aHiLight[i].m_bVisible = false;
 
-          int l_iPos = (*it)->m_iPosition;
+          int l_iPos = (*it)->m_cRaceData.m_iPosition;
           
           // These positions need to be highlighted
           int l_aHighLight[3] = {
@@ -1006,8 +1006,8 @@ namespace dustbin {
           
           for (int i = 0; i < 3; i++) {
             for (std::vector<gameclasses::SPlayer*>::const_iterator it2 = m_vRanking->begin(); it2 != m_vRanking->end(); it2++) {
-              if ((*it2)->m_iPosition == l_aHighLight[i]) {
-                m_aHiLight[i].m_iMarbleId = (*it2)->m_iId;
+              if ((*it2)->m_cRaceData.m_iPosition == l_aHighLight[i]) {
+                m_aHiLight[i].m_iMarbleId = (*it2)->m_cRaceData.m_iMarble;
                 m_aHiLight[i].m_iPosition = l_aHighLight[i];
                 m_aHiLight[i].m_pArrow->setVisible(false);
                 break;
@@ -1022,7 +1022,7 @@ namespace dustbin {
       int l_iIndex = 0;
       for (std::vector<gameclasses::SPlayer*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         if (m_aRanking[l_iIndex] != nullptr) {
-          m_aRanking[l_iIndex]->setData((*it)->m_sWName, (*it)->m_iDiffLeader, (*it)->m_bWithdrawn, (*it)->m_cBack, (*it)->m_cText, (*it)->m_cFrme, (*it)->m_pMarble->m_pPlayer->m_sNumber);
+          m_aRanking[l_iIndex]->setData((*it)->m_sWName, (*it)->m_cRaceData.m_iDiffLeader, (*it)->m_bWithdrawn, (*it)->m_cBack, (*it)->m_cText, (*it)->m_cFrme, (*it)->m_pMarble->m_pPlayer->m_sNumber);
         }
         l_iIndex++;
       }
