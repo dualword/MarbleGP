@@ -250,6 +250,12 @@ namespace dustbin {
     */
     std::string SPlayer::toJSON() {
       std::string s = "{ ";
+
+      s += "\"playerid\": "   + std::to_string(m_iPlayer) + ",";
+      s += "\"name\": "       + m_sName + ",";
+      s += "\"texture\": "    + m_sTexture + ",";
+      s += "\"controller\": " + m_sController + ",";
+
       return s + " }";
     }
 
@@ -752,6 +758,197 @@ namespace dustbin {
           (*l_itPlr)->dumpLapCheckpoints();
         }
       }
+    }
+
+
+
+    /**
+    * The default constructor
+    */
+    SStandings::SStandings() : m_iPlayer(0), m_iRespawn(0), m_iStunned(0), m_iNoFinish(0) {
+
+    }
+
+    /**
+    * The copy constructor
+    * @param a_cOther the data to be copied
+    */
+    SStandings::SStandings(const SStandings& a_cOther) : 
+      m_iPlayer  (a_cOther.m_iPlayer  ),
+      m_iRespawn (a_cOther.m_iRespawn ),
+      m_iStunned (a_cOther.m_iStunned ),
+      m_iNoFinish(a_cOther.m_iNoFinish)
+    {
+      for (auto l_iResult: a_cOther.m_vResults)
+        m_vResults.push_back(l_iResult);
+    }
+
+    /**
+    * Compare the standing data to get the standings at a race 
+    * @param a_cOther the standings to compare 
+    * @param a_iRace the race up to which the standings are to be calculated (-1 == all races)
+    * @param a_iPlayers the number of players (important for the score table calculation)
+    */
+    bool SStandings::isBetterThan(const SStandings& a_cOther, int a_iRace, int a_iPlayers) {
+      // The scores for each finishing position, depending on the number of players
+      int l_iScoreTable[16][16] = {
+        /*  1 player  */ {  0 },
+        /*  2 players */ {  2,  0 },
+        /*  3 players */ {  3,  1,  0 },
+        /*  4 players */ {  4,  2,  1,  0 },
+        /*  5 players */ {  5,  3,  2,  1,  0 },
+        /*  6 players */ {  7,  4,  3,  2,  1,  0 },
+        /*  7 players */ {  9,  6,  4,  3,  2,  1, 0 },
+        /*  8 players */ { 10,  7,  5,  4,  3,  2, 1, 0 },
+        /*  9 players */ { 10,  7,  6,  5,  4,  3, 2, 1, 0 },
+        /* 10 players */ { 10,  8,  7,  6,  5,  4, 3, 2, 1, 0 },
+        /* 11 players */ { 11,  9,  8,  7,  6,  5, 4, 3, 2, 1, 0 },
+        /* 12 players */ { 13, 11, 10,  8,  7,  6, 5, 4, 3, 2, 1, 0 },
+        /* 13 players */ { 15, 12, 10,  9,  8,  7, 6, 5, 4, 3, 2, 1, 0 },
+        /* 14 players */ { 16, 13, 11, 10,  9,  8, 7, 6, 5, 4, 3, 2, 1, 0 },
+        /* 15 players */ { 20, 16, 13, 11, 10,  9, 8, 7, 6, 5, 4, 3, 2, 1, 0 },
+        /* 16 players */ { 25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }
+      };
+
+      int l_iThisScore = 0;     // My score
+      int l_iOthrScore = 0;     // Opponent's score
+
+      int l_iThisBest = 66;     // My best race result
+      int l_iOthrBest = 66;     // Opponent's best race result
+
+      for (auto l_iResult : m_vResults) { l_iThisScore += l_iScoreTable[a_iPlayers - 1][l_iResult - 1]; if (l_iResult < l_iThisBest) l_iThisBest = l_iResult; }
+      for (auto l_iResult : m_vResults) { l_iOthrScore += l_iScoreTable[a_iPlayers - 1][l_iResult - 1]; if (l_iResult < l_iOthrBest) l_iOthrBest = l_iResult; }
+
+      if (l_iThisScore != l_iOthrScore) {
+        // First criteria: the score
+        return l_iThisScore > l_iOthrScore;
+      }
+      else if (m_iRespawn != a_cOther.m_iRespawn) {
+        // Second criteria: less respawns
+        return m_iRespawn < a_cOther.m_iRespawn;
+      }
+      else if (m_iStunned != a_cOther.m_iStunned) {
+        // Third criteria: less stuns
+        return m_iStunned < a_cOther.m_iStunned;
+      }
+      else if (m_iNoFinish != a_cOther.m_iNoFinish) {
+        // Fourth criteria: less not finishes races
+        return m_iNoFinish < a_cOther.m_iNoFinish;
+      }
+      else if (l_iThisBest != l_iOthrBest) {
+        // Fifth criteria: Best Race Result
+        return l_iThisBest < l_iOthrBest;
+      }
+      else {
+        int l_iThisNum = 0;       // Index of my best race result
+        int l_iOthrNum = 0;       // Index of opponent's best race result
+
+        for (auto l_iResult : m_vResults) {
+          if (l_iResult == l_iThisBest)
+            break;
+          else
+            l_iThisNum++;
+        }
+
+        for (auto l_iResult : a_cOther.m_vResults) {
+          if (l_iResult == l_iOthrBest)
+            break;
+          else
+            l_iOthrNum++;
+        }
+
+        // Sixth criteria: best result scored earlier
+        if (l_iThisNum != l_iOthrNum) {
+          return l_iThisNum < l_iOthrNum;
+        }
+      }
+
+      // Last criteria (should never happen except before the first race): Player ID
+      return m_iPlayer < a_cOther.m_iPlayer;
+    }
+
+
+    /**
+    * The standard contructor
+    */
+    STournament::STournament() : 
+      m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
+      m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
+      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses)
+    {
+    }
+
+    /**
+    * The copy constructor
+    * @param a_cOther the data to be copied
+    */
+    STournament::STournament(const STournament &a_cOther) :
+      m_eAutoFinish(a_cOther.m_eAutoFinish),
+      m_eGridPos   (a_cOther.m_eGridPos   ),
+      m_eRaceClass (a_cOther.m_eRaceClass )
+    {
+      for (auto l_cPlayer : a_cOther.m_vPlayers) {
+        m_vPlayers.push_back(SPlayer(l_cPlayer));
+      }
+
+      for (auto l_cRace : a_cOther.m_vRaces) {
+        m_vRaces.push_back(SRace(l_cRace));
+      }
+
+      calculateStandings();
+    }
+
+    /**
+    * The de-serialization constructor
+    * @param a_sData the data to de-serialize
+    */
+    STournament::STournament(const std::string &a_sData) :
+      m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
+      m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
+      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses)
+    {
+    }
+
+    /**
+    * Calculated the standings
+    */
+    void STournament::calculateStandings() {
+    }
+
+    /**
+    * Serialize the tournament
+    * @return the serialized data
+    */
+    std::string STournament::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      return l_cSerializer.getMessageAsString();
+    }
+
+    /**
+    * Convert the data to a JSON string
+    * @return a JSON String
+    */
+    std::string STournament::toJSON() {
+      std::string s = "{";
+
+      s += "\"autofinish\": " + std::to_string((int)m_eAutoFinish) + ",";
+      s += "\"gridpos\": "    + std::to_string((int)m_eGridPos   ) + ",";
+      s += "\"raceclass\":"   + std::to_string((int)m_eRaceClass ) + ",";
+
+      s += "\"players\": [";
+
+      for (auto l_cPlayer : m_vPlayers)
+        s += l_cPlayer.toJSON();
+
+      s += "], ";
+
+      s += "\"races\": [";
+
+      for (auto l_cRace : m_vRaces)
+        s += l_cRace.toJSON();
+
+      return s + "] }";
     }
   }
 }

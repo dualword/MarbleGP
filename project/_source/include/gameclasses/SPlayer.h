@@ -271,5 +271,89 @@ namespace dustbin {
       std::string toJSON();
 
     } SRace;
+
+    /**
+    * @class SStandingData
+    * @author Christian Keimel
+    * The data relevant for the tournament standings
+    */
+    typedef struct SStandings {
+      int m_iPlayer;    /**< The player ID */
+      int m_iRespawn;   /**< The number of respawns */
+      int m_iStunned;   /**< The counter for the player's stuns */
+      int m_iNoFinish;  /**< The counter for the races the player didn't finish */
+      
+      std::vector<int> m_vResults;   /**< This vector holds a vector with the finishing position of each race */
+
+      /**
+      * The default constructor
+      */
+      SStandings();
+
+      /**
+      * The copy constructor
+      * @param a_cOther the data to be copied
+      */
+      SStandings(const SStandings &a_cOther);
+
+      /**
+      * Compare the standing data to get the standings at a race 
+      * @param a_cOther the standings to compare 
+      * @param a_iRace the race up to which the standings are to be calculated (-1 == all races)
+      * @param a_iPlayers the number of players (important for the score table calculation)
+      */
+      bool isBetterThan(const SStandings &a_cOther, int a_iRace, int a_iPlayers);
+    }
+    SStandings;
+
+    /**
+    * @class STournament
+    * @author Christian Keimel
+    * This data struct holds all data for a multi-race game, i.e. a tournament
+    */
+    typedef struct STournament {
+      data::SGameSettings::enAutoFinish m_eAutoFinish;    /**< The race finish option */
+      data::SGameSettings::enGridPos    m_eGridPos;       /**< The starting grid order option */
+      data::SGameSettings::enRaceClass  m_eRaceClass;     /**< The race class option */
+
+      std::vector<SPlayer   > m_vPlayers;     /**< The players of the tournament */
+      std::vector<SRace     > m_vRaces;       /**< The races of the tournament */
+      std::vector<SStandings> m_vStandings;   /**< The standings data */
+
+      /**
+      * The standard contructor
+      */
+      STournament();
+
+      /**
+      * The copy constructor
+      * @param a_cOther the data to be copied
+      */
+      STournament(const STournament &a_cOther);
+
+      /**
+      * The de-serialization constructor
+      * @param a_sData the data to de-serialize
+      */
+      STournament(const std::string &a_sData);
+
+      /**
+      * Calculated the standings
+      */
+      void calculateStandings();
+
+      /**
+      * Serialize the tournament
+      * @return the serialized data
+      */
+      std::string serialize();
+
+      /**
+      * Convert the data to a JSON string
+      * @return a JSON String
+      */
+      std::string toJSON();
+    }
+    STournament;
   }
 }
