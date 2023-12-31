@@ -54,7 +54,8 @@ namespace dustbin {
     m_pNextRaceScreen (nullptr),
     m_pLogo           (nullptr),
     m_sDeviceName     (""),
-    m_pKeyBoard       (nullptr)
+    m_pKeyBoard       (nullptr),
+    m_pTournament     (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -136,6 +137,7 @@ namespace dustbin {
       // 
       m_pSoundInterface->startSoundtrack(enSoundTrack::enStNone);
       m_pSoundInterface->stopEverything();
+      delete m_pSoundInterface;
       m_pSoundInterface = nullptr;
     }
 
@@ -174,6 +176,9 @@ namespace dustbin {
 
     if (m_pShader != nullptr)
       delete m_pShader;
+
+    if (m_pTournament != nullptr)
+      delete m_pTournament;
 
     m_mStates.clear();
   }
@@ -1016,6 +1021,46 @@ namespace dustbin {
   */
   irr::u32 CMainClass::getRenderFlags() {
     return m_iRenderFlags;
+  }
+
+  /**
+  * Start a new tournament
+  * @return the new tournament
+  */
+  gameclasses::STournament *CMainClass::startTournament() {
+    if (m_pTournament != nullptr)
+      delete m_pTournament;
+
+    m_pTournament = new gameclasses::STournament();
+    return m_pTournament;
+  }
+
+  /**
+  * Get the current tournament
+  * @return the current tournament
+  */
+  gameclasses::STournament *CMainClass::getTournament() {
+    if (m_pTournament == nullptr)
+      return startTournament();
+    else
+      return m_pTournament;
+  }
+
+  /**
+  * End the current tournament
+  */
+  void CMainClass::endTournament() {
+    if (m_pTournament != nullptr) {
+      std::string l_sJSON = m_pTournament->toJSON();
+      std::string l_sName = helpers::ws2s(platform::portableGetDataPath()) + "tournament.json";
+
+      irr::io::IWriteFile *l_pFile = m_pFs->createAndWriteFile(l_sName.c_str());
+      l_pFile->write(l_sJSON.c_str(), l_sJSON.size());
+      l_pFile->drop();
+
+      delete m_pTournament;
+      m_pTournament = nullptr;
+    }
   }
 
   /**

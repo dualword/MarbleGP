@@ -77,6 +77,8 @@ namespace dustbin {
 
       irr::core::array<irr::SJoystickInfo> m_aJoysticks;    /**< The Joysticks */
 
+      gameclasses::STournament *m_pTournament;    /**< The current tournament */
+
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
 #endif
@@ -360,6 +362,23 @@ namespace dustbin {
       * @return the render flags for the shadow rendering
       */
       virtual irr::u32 getRenderFlags() override;
+
+      /**
+      * Start a new tournament
+      * @return the new tournament
+      */
+      virtual gameclasses::STournament *startTournament() override;
+
+      /**
+      * Get the current tournament
+      * @return the current tournament
+      */
+      virtual gameclasses::STournament *getTournament() override;
+
+      /**
+      * End the current tournament
+      */
+      virtual void endTournament() override;
 
 #ifdef _ANDROID
       /**

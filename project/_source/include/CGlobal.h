@@ -41,6 +41,10 @@ namespace dustbin {
     class CDustbinShaders;    /**< Forward declaration of the dustbin shader class */
   }
 
+  namespace gameclasses {
+    typedef struct STournament STournament;   /**< Forward declaration of the STournament struct */
+  };
+
   // Enum for the font size. The actual size
   // depends on the screen resolution
   enum class enFont {
@@ -319,6 +323,23 @@ namespace dustbin {
       * @return the render flags for the shadow rendering
       */
       virtual irr::u32 getRenderFlags() = 0;
+
+      /**
+      * Start a new tournament
+      * @return the new tournament
+      */
+      virtual gameclasses::STournament *startTournament() = 0;
+
+      /**
+      * Get the current tournament
+      * @return the current tournament
+      */
+      virtual gameclasses::STournament *getTournament() = 0;
+
+      /**
+      * End the current tournament
+      */
+      virtual void endTournament() = 0;
 
 #ifdef _ANDROID
       /**
