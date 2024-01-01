@@ -35,5 +35,6 @@ enum class en2dSounds {
   ButtonPress = 1,
   Countdown   = 2,
   CountdownGo = 3,
-  Count       = 4
+  Lap         = 4,
+  Count       = 5
 };

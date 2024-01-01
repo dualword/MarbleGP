@@ -18,81 +18,6 @@ namespace dustbin {
   namespace sound {
     irrklang::ISoundEngine *g_pEngine = nullptr;    /**< The irrKlang sound engine */
 
-    /**
-    * @class CDatFileReader
-    * @author Christian Keimel
-    * For Irrklang we need to wrap the Irrlicht file reader
-    */
-    class CDatFileReader : public irrklang::IFileReader {
-      private:
-        irr::io::IFileSystem *m_pFs;
-        irr::io::IReadFile   *m_pFile;
-        std::string           m_sName;
-
-      public:
-        CDatFileReader(const std::string& a_sName, irr::io::IFileSystem* a_pFs) : m_pFs(a_pFs), m_pFile(nullptr), m_sName(a_sName) {
-          m_pFile = m_pFs->createAndOpenFile(m_sName.c_str());
-        }
-
-        virtual ~CDatFileReader() {
-          m_pFile->drop();
-          m_pFile = nullptr;
-        }
-
-        virtual irrklang::ik_s32 read(void *a_pBuffer, irrklang::ik_u32 a_iSizeToRead) override {
-          if (m_pFile != nullptr && g_pEngine != nullptr)
-            return (irrklang::ik_s32)m_pFile->read(a_pBuffer, a_iSizeToRead);
-          else
-            return 0;
-        }
-
-        virtual bool seek(irrklang::ik_s32 a_iFinalPos, bool a_bRelativeMovement = false) override {
-          if (m_pFile != nullptr && g_pEngine != nullptr)
-            return m_pFile->seek(a_iFinalPos, a_bRelativeMovement);
-          else
-            return false;
-        }
-
-        virtual irrklang::ik_s32 getSize() override {
-          if (m_pFile != nullptr && g_pEngine != nullptr)
-            return (irrklang::ik_s32)m_pFile->getSize();
-          else
-            return 0;
-        }
-
-        virtual irrklang::ik_s32 getPos() override {
-          if (m_pFile != nullptr && g_pEngine != nullptr)
-            return (irrklang::ik_s32)m_pFile->getPos();
-          else
-            return 0;
-        }
-
-        virtual const irrklang::ik_c8 *getFileName() override {
-          return (irrklang::ik_c8 *)m_sName.c_str();
-        }
-    };
-
-    /**
-    * @class CDatFileReaderFactor
-    * @author Christian Keimel
-    * The file factory for Irrklang so that we can read files from the archive(s)
-    */
-    class CDatFileReaderFactory : public irrklang::IFileFactory {
-      private:
-        irr::io::IFileSystem *m_pFs;
-
-      public:
-        CDatFileReaderFactory(irr::io::IFileSystem* a_pFs) : m_pFs(a_pFs) {
-        }
-
-        virtual ~CDatFileReaderFactory() {
-        }
-
-        virtual irrklang::IFileReader* createFileReader(const irrklang::ik_c8 *a_sFilename) override {
-          return new CDatFileReader(a_sFilename, m_pFs);
-        }
-    };
-
     class CSoundInterface : public IAudioBuffer::IDeletionListener, public ISoundInterface {
       private:
         struct SMarbleSound {
@@ -109,6 +34,16 @@ namespace dustbin {
           irrklang::ISound *m_aOneShots[(int)enOneShots    ::Count];
 
           SMarbleSound() : m_iMarble(0), m_bActive(false), m_bViewport(false), m_fVolume(0.0f), m_fPan(0.0f) {
+            for (int i = 0; i < (int)enMarbleSounds::Count; i++) {
+              m_aSounds  [i] = nullptr;
+            }
+
+            for (int i = 0; i < (int)enOneShots::Count; i++) {
+              m_aOneShots[i] = nullptr;
+            }
+          }
+
+          ~SMarbleSound() {
           }
         };
 
@@ -131,7 +66,7 @@ namespace dustbin {
         /**
         * Volume of the sounds. Key = path to file, Value = volume
         */
-        std::map<std::wstring, irr::f32> m_mSoundParameters;
+        std::map<std::string, irr::f32> m_mSoundParameters;
 
         /**
         * The soundtracks. Bool parameter in tuple is whether or not it is played looped
@@ -139,12 +74,8 @@ namespace dustbin {
         std::map<enSoundTrack, std::tuple<irrklang::ISoundSource *, bool>> m_mSoundTracks;
 
       public:
-        CSoundInterface(irr::io::IFileSystem *a_pFs) : m_bMenu(true) {
+        CSoundInterface(irr::io::IFileSystem *a_pFs)/* : m_bMenu(true)*/ {
           g_pEngine = irrklang::createIrrKlangDevice();
-
-          CDatFileReaderFactory *l_pFactory = new CDatFileReaderFactory(a_pFs);
-          g_pEngine->addFileFactory(l_pFactory);
-          l_pFactory->drop();
 
           m_vVelListener = irr::core::vector3df(0.0f, 0.0f, 0.0f);
           m_eSoundTrack  = enSoundTrack::enStNone;
@@ -157,7 +88,7 @@ namespace dustbin {
           m_fSoundFXVolumeGame = (irr::f32)(CGlobal::getInstance()->getSettingData().m_fSfxGame   );
           m_fSoundFXVolumeMenu = (irr::f32)(CGlobal::getInstance()->getSettingData().m_fSfxMenu   );
           m_fViewportVolume    = 0.6f;
-
+          
           if (a_pFs->existFile("data/marblesounds.xml")) {
             irr::io::IXMLReader *l_pReader = a_pFs->createXMLReader("data/marblesounds.xml");
 
@@ -183,17 +114,12 @@ namespace dustbin {
                   }
 
                   if (l_sName != L"") {
-                    m_mSoundParameters[l_sName] = l_fVolume;
+                    m_mSoundParameters[helpers::ws2s(l_sName)] = l_fVolume;
                   }
                 }
               }
               l_pReader->drop();
             }
-          }
-
-          for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < (int)enMarbleSounds::Count; j++) m_aMarbles[i].m_aSounds  [j] = nullptr;
-            for (int j = 0; j < (int)enOneShots    ::Count; j++) m_aMarbles[i].m_aOneShots[j] = nullptr;
           }
           
           for (int i = 0; i < (int)enOneShots::Count; i++)
@@ -203,61 +129,63 @@ namespace dustbin {
             m_a2dSounds[i] = nullptr;
 
           if (g_pEngine != nullptr) {
-            std::wstring l_a2dSounds[] = {
-              L"data/sounds/button_hover.ogg",
-              L"data/sounds/button_press.ogg",
-              L"data/sounds/countdown.ogg",
-              L"data/sounds/countdown_go.ogg",
-              L"data/sounds/lap.ogg",
-              L""
+            std::string l_a2dSounds[] = {
+              "data/sounds/button_hover.ogg",
+              "data/sounds/button_press.ogg",
+              "data/sounds/countdown.ogg",
+              "data/sounds/countdown_go.ogg",
+              "data/sounds/lap.ogg",
+              ""
             };
 
-            for (int i = 0; l_a2dSounds[i] != L""; i++) {
-              m_a2dSounds[i] = g_pEngine->addSoundSourceFromFile(helpers::ws2s(l_a2dSounds[i]).c_str());
+            for (int i = 0; l_a2dSounds[i] != ""; i++) {
+              m_a2dSounds[i] = g_pEngine->addSoundSourceFromFile(l_a2dSounds[i].c_str());
             }
           }
-
+          
           if (g_pEngine != nullptr) {
-            std::wstring l_aMarbleSounds[] = {
-              L"data/sounds/rolling.ogg",
-              L"data/sounds/wind.ogg",
-              L"data/sounds/skid.ogg",
-              L"data/sounds/stunned.ogg",
-              L""
+            std::string l_aMarbleSounds[] = {
+              "data/sounds/rolling.ogg",
+              "data/sounds/wind.ogg",
+              "data/sounds/skid.ogg",
+              "data/sounds/stunned.ogg",
+              ""
             };
 
             for (int i = 0; i < 16; i++) {
-              for (int j = 0; l_aMarbleSounds[j] != L""; j++) {
-                m_aMarbles[i].m_aSounds[j] = g_pEngine->play3D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
+              for (int j = 0; l_aMarbleSounds[j] != ""; j++) {
+                m_aMarbles[i].m_aSounds[j] = g_pEngine->play3D(l_aMarbleSounds[j].c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
                 m_aMarbles[i].m_aSounds[j]->setMinDistance( 25.0f);
                 m_aMarbles[i].m_aSounds[j]->setMaxDistance(250.0f);
                 m_aMarbles[i].m_aSounds[j]->setVolume     (  0.0f);
                 m_aMarbles[i].m_aSounds[j]->setIsPaused   (false );
 
-                if (m_mSoundParameters.find(l_aMarbleSounds[j]) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[j] = m_mSoundParameters[l_aMarbleSounds[j]]; else m_aMarbles[i].m_aParam[j] = 1.0f;
+                if (m_mSoundParameters.find(l_aMarbleSounds[j]) != m_mSoundParameters.end()) 
+                  m_aMarbles[i].m_aParam[j] = m_mSoundParameters[l_aMarbleSounds[j]]; 
+                else 
+                  m_aMarbles[i].m_aParam[j] = 1.0f;
               }
             }
 
-            std::wstring l_aOneShots[] = {
-              L"data/sounds/respawn_start.ogg",
-              L"data/sounds/respawn.ogg",
-              L"data/sounds/hit.ogg",
-              L"data/sounds/checkpoint.ogg",
-              L"data/sounds/lap.ogg",
-              L"data/sounds/gameover.ogg",
-              L""
+            std::string l_aOneShots[] = {
+              "data/sounds/respawn_start.ogg",
+              "data/sounds/respawn.ogg",
+              "data/sounds/hit.ogg",
+              "data/sounds/checkpoint.ogg",
+              "data/sounds/lap.ogg",
+              "data/sounds/gameover.ogg",
+              ""
             };
 
-            for (int i = 0; l_aOneShots[i] != L""; i++) {
-              std::string l_sSound = helpers::ws2s(l_aOneShots[i]);
-              m_aOneShots[i] = g_pEngine->addSoundSourceFromFile(l_sSound.c_str());
+            for (int i = 0; l_aOneShots[i] != ""; i++) {
+              m_aOneShots[i] = g_pEngine->addSoundSourceFromFile(l_aOneShots[i].c_str());
 
               if (m_aOneShots[i] != nullptr) {
                 m_aOneShots[i]->setDefaultMinDistance( 25.0f);
                 m_aOneShots[i]->setDefaultMaxDistance(250.0f);
                 m_aOneShots[i]->setDefaultVolume     (m_mSoundParameters.find(l_aOneShots[i]) != m_mSoundParameters.end() ? m_mSoundParameters[l_aOneShots[i]] : 1.0f);
               }
-              else printf("Error loading sound \"%s\"\n", l_sSound.c_str());
+              else printf("Error loading sound \"%s\"\n", l_aOneShots[i].c_str());
             }
           }
 
@@ -272,11 +200,35 @@ namespace dustbin {
         }
 
         virtual ~CSoundInterface() {
-          irrklang::ISoundEngine *l_pEngine = g_pEngine;
-          g_pEngine = nullptr;
+          m_mSoundParameters.clear();
+          m_mSoundTracks    .clear();
+          
+          if (g_pEngine != nullptr) {
+            irrklang::ISoundEngine *l_pEngine = g_pEngine;
 
-          l_pEngine->stopAllSounds();
-          l_pEngine->drop();
+            g_pEngine = nullptr;
+
+            for (int i = 0; i < 16; i++) {
+              for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+                if (m_aMarbles[i].m_aSounds[j] != nullptr) m_aMarbles[i].m_aSounds[j]->drop();
+              }
+
+              for (int j = 0; j < (int)enOneShots::Count; j++) {
+                if (m_aMarbles[i].m_aOneShots[j] != nullptr) m_aMarbles[i].m_aOneShots[j]->drop();
+              }
+            }
+
+            for (int i = 0; i < (int)en2dSounds::Count; i++)
+              if (m_a2dSounds[i] != nullptr)
+                m_a2dSounds[i]->drop();
+
+            for (int i = 0; i < (int)enOneShots::Count; i++)
+              if (m_aOneShots[i] != nullptr)
+                m_aOneShots[i]->drop();
+
+            l_pEngine->stopAllSounds();
+            l_pEngine->drop();
+          }
           printf("Sound Interface deleted.\n");
         }
 
@@ -320,7 +272,7 @@ namespace dustbin {
 
         virtual irr::f32 getSoundtrackVolume() override {
           return m_fSoundtrackVolume;
-        }
+      }
 
         virtual irr::f32 getMasterVolume() override {
           return m_fMasterVolume;
@@ -340,6 +292,7 @@ namespace dustbin {
             if (m_pSoundTrack != nullptr) {
               m_pSoundTrack->stop();
               m_pSoundTrack->drop();
+              m_pSoundTrack = nullptr;
             }
 
             m_eSoundTrack = a_eSoundTrack;
@@ -362,7 +315,7 @@ namespace dustbin {
 
         virtual void setSoundtrackFade(irr::f32 a_fValue) override {
           if (m_pSoundTrack != nullptr) {
-            m_pSoundTrack->setVolume((a_fValue > 0.0f ? a_fValue : 0.0f) * m_fMasterVolume * m_fSoundtrackVolume);
+           m_pSoundTrack->setVolume((a_fValue > 0.0f ? a_fValue : 0.0f) * m_fMasterVolume * m_fSoundtrackVolume);
           }
         }
 
@@ -371,30 +324,33 @@ namespace dustbin {
         * Start a game, i.e. the sounds are initialized
         */
         virtual void startGame() override {
-          std::wstring l_aMarbleSounds[] = {
-            L"data/sounds/rolling.ogg",
-            L"data/sounds/wind.ogg",
-            L"data/sounds/skid.ogg",
-            L"data/sounds/stunned.ogg",
-            L""
+          std::string l_aMarbleSounds[] = {
+            "data/sounds/rolling.ogg",
+            "data/sounds/wind.ogg",
+            "data/sounds/skid.ogg",
+            "data/sounds/stunned.ogg",
+            ""
           };
 
           for (int i = 0; i < 16; i++) {
-            for (int j = 0; l_aMarbleSounds[j] != L""; j++) {
+            for (int j = 0; l_aMarbleSounds[j] != ""; j++) {
               if (m_aMarbles[i].m_bViewport) {
-                m_aMarbles[i].m_aSounds[j] = g_pEngine->play2D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), true, true);
+                m_aMarbles[i].m_aSounds[j] = g_pEngine->play2D(l_aMarbleSounds[j].c_str(), true, true);
                 m_aMarbles[i].m_aSounds[j]->setVolume(0.0f);
                 m_aMarbles[i].m_aSounds[j]->setIsPaused(false);
               }
               else {
-                m_aMarbles[i].m_aSounds[j] = g_pEngine->play3D(helpers::ws2s(l_aMarbleSounds[j]).c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
+                m_aMarbles[i].m_aSounds[j] = g_pEngine->play3D(l_aMarbleSounds[j].c_str(), irrklang::vec3df(0.0f, 0.0f, 0.0f), true, true);
                 m_aMarbles[i].m_aSounds[j]->setMinDistance( 25.0f);
                 m_aMarbles[i].m_aSounds[j]->setMaxDistance(250.0f);
                 m_aMarbles[i].m_aSounds[j]->setVolume     (  0.0f);
                 m_aMarbles[i].m_aSounds[j]->setIsPaused   (false );
               }
 
-              if (m_mSoundParameters.find(l_aMarbleSounds[j]) != m_mSoundParameters.end()) m_aMarbles[i].m_aParam[j] = m_mSoundParameters[l_aMarbleSounds[j]]; else m_aMarbles[i].m_aParam[j] = 1.0f;
+              if (m_mSoundParameters.find(l_aMarbleSounds[j]) != m_mSoundParameters.end()) 
+                m_aMarbles[i].m_aParam[j] = m_mSoundParameters[l_aMarbleSounds[j]]; 
+              else 
+                m_aMarbles[i].m_aParam[j] = 1.0f;
             }
           }
         }
@@ -403,16 +359,8 @@ namespace dustbin {
         * Stop a game, i.e. the sounds are muted
         */
         virtual void stopGame() override {
-          std::wstring l_aMarbleSounds[] = {
-            L"data/sounds/rolling.ogg",
-            L"data/sounds/wind.ogg",
-            L"data/sounds/skid.ogg",
-            L"data/sounds/stunned.ogg",
-            L""
-          };
-
           for (int i = 0; i < 16; i++) {
-            for (int j = 0; l_aMarbleSounds[j] != L""; j++) {
+            for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
               m_aMarbles[i].m_aSounds[j]->stop();
               m_aMarbles[i].m_aSounds[j]->drop();
               m_aMarbles[i].m_aSounds[j] = nullptr;
@@ -480,14 +428,14 @@ namespace dustbin {
               if (a_fHit > 0.0f && m_aOneShots[(int)enOneShots::Hit] != nullptr) {
                 if (m_aMarbles[l_iIndex].m_bViewport) {
                   irrklang::ISound *p = g_pEngine->play2D(m_aOneShots[(int)enOneShots::Hit], false, true, false);
-                  p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters[L"data/sounds/hit.ogg"]);
+                  p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters["data/sounds/hit.ogg"]);
                   p->setIsPaused(false);
                   p->drop();
                 }
                 else {
                   irrklang::ISound *p = g_pEngine->play3D(m_aOneShots[(int)enOneShots::Hit], irrklang::vec3df(a_cPosition.X, a_cPosition.Y, a_cPosition.Z), false, true, false);
                   if (p != nullptr) {
-                    p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters[L"data/sounds/hit.ogg"]);
+                    p->setVolume(m_fViewportVolume * m_fMasterVolume * m_mSoundParameters["data/sounds/hit.ogg"]);
                     p->setIsPaused(false);
                     p->drop();
                   }
