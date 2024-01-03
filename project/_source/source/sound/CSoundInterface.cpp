@@ -229,6 +229,17 @@ namespace dustbin {
             l_pEngine->stopAllSounds();
             l_pEngine->drop();
           }
+          for (int i = 0; i < 16; i++) {
+            if (m_aMarbles[i].m_bViewport) {
+              for (int j = 0; j < (int)enMarbleSounds::Count; j++) {
+                if (m_aMarbles[i].m_aSounds[j] != nullptr) {
+                  m_aMarbles[i].m_aSounds[j]->drop();
+                  m_aMarbles[i].m_aSounds[j] = nullptr;
+                }
+              }
+            }
+          }
+
           printf("Sound Interface deleted.\n");
         }
 
@@ -472,6 +483,11 @@ namespace dustbin {
               if (m_aMarbles[l_iIndex].m_aOneShots[(int)a_eSound] != nullptr) {
                 m_aMarbles[l_iIndex].m_aOneShots[(int)a_eSound]->setVolume(m_aMarbles[l_iIndex].m_bViewport ? m_fViewportVolume * m_fSoundFXVolumeGame * m_fMasterVolume : m_fMasterVolume * m_fSoundFXVolumeGame);
                 m_aMarbles[l_iIndex].m_aOneShots[(int)a_eSound]->setIsPaused(false);
+
+                if (m_aMarbles[l_iIndex].m_aOneShots[(int)a_eSound]->isFinished()) {
+                  m_aMarbles[l_iIndex].m_aOneShots[(int)a_eSound]->drop();
+                  m_aMarbles[l_iIndex].m_aOneShots[(int)a_eSound] = nullptr;
+                }
               }
             }
           }
