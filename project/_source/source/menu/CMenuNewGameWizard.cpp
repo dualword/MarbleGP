@@ -165,27 +165,27 @@ namespace dustbin {
         */
         void startGame() {
           switch (m_eGameType) {
-          case enGameType::FreeRacing:
-            m_pManager->pushToMenuStack("menu_selecttrack");
-            m_pManager->pushToMenuStack("menu_fillgrid");
-            break;
+            case enGameType::FreeRacing:
+              m_pManager->pushToMenuStack("menu_selecttrack");
+              m_pManager->pushToMenuStack("menu_fillgrid");
+              break;
 
-          case enGameType::Cup:
-            m_pManager->pushToMenuStack("menu_selectcup");
-            m_pManager->pushToMenuStack("menu_fillgrid");
-            break;
+            case enGameType::Cup:
+              m_pManager->pushToMenuStack("menu_selectcup");
+              m_pManager->pushToMenuStack("menu_fillgrid");
+              break;
 
-          case enGameType::NetworkFree:
-            m_pManager->pushToMenuStack("menu_selecttrack");
-            m_pManager->pushToMenuStack("menu_fillgrid");
-            m_pManager->pushToMenuStack("menu_startserver");
-            break;
+            case enGameType::NetworkFree:
+              m_pManager->pushToMenuStack("menu_selecttrack");
+              m_pManager->pushToMenuStack("menu_fillgrid");
+              m_pManager->pushToMenuStack("menu_startserver");
+              break;
 
-          case enGameType::NetworkCup:
-            m_pManager->pushToMenuStack("menu_selectcup");
-            m_pManager->pushToMenuStack("menu_fillgrid");
-            m_pManager->pushToMenuStack("menu_startserver");
-            break;
+            case enGameType::NetworkCup:
+              m_pManager->pushToMenuStack("menu_selectcup");
+              m_pManager->pushToMenuStack("menu_fillgrid");
+              m_pManager->pushToMenuStack("menu_startserver");
+              break;
           }
 
           saveChampionship(false);

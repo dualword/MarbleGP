@@ -4,6 +4,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <network/CGameServer.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
@@ -227,6 +228,25 @@ namespace dustbin {
           std::sort(l_cData.begin(), l_cData.end(), [](data::SPlayerData p1, data::SPlayerData p2) {
             return p1.m_iGridPos < p2.m_iGridPos;
           });
+
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->startTournament();
+
+          for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
+            l_pTournament->m_vPlayers.push_back(
+              gameclasses::SPlayer(
+                l_cPlayer.m_iPlayerId,
+                l_cPlayer.m_sName,
+                l_cPlayer.m_sTexture,
+                l_cPlayer.m_sControls,
+                l_cPlayer.m_sShortName,
+                l_cPlayer.m_eAiHelp,
+                nullptr,
+                l_cPlayer.m_eType
+              )
+            );
+          }
+
+          l_pTournament->saveToJSON();
 
           for (int i = 1; i <= 16; i++) {
             gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType("player" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));

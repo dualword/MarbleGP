@@ -252,9 +252,9 @@ namespace dustbin {
       std::string s = "{ ";
 
       s += "\"playerid\": "   + std::to_string(m_iPlayer) + ",";
-      s += "\"name\": "       + m_sName + ",";
-      s += "\"texture\": "    + m_sTexture + ",";
-      s += "\"controller\": " + m_sController + ",";
+      s += "\"name\": \""       + m_sName + "\",";
+      s += "\"texture\": \""    + m_sTexture + "\",";
+      s += "\"controller\": \"" + m_sController + "\"";
 
       return s + " }";
     }
@@ -956,8 +956,12 @@ namespace dustbin {
 
       s += "\"players\": [";
 
-      for (auto l_cPlayer : m_vPlayers)
-        s += l_cPlayer.toJSON();
+      for (std::vector<SPlayer>::iterator l_itPlr = m_vPlayers.begin(); l_itPlr != m_vPlayers.end(); l_itPlr++) {
+        if (l_itPlr != m_vPlayers.begin())
+          s += ",";
+
+        s += (*l_itPlr).toJSON();
+      }
 
       s += "], ";
 
