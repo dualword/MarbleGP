@@ -594,6 +594,15 @@ namespace dustbin {
         s += std::to_string((*l_itPlr)->m_iPlayer);
       }
 
+      s += "], \"standings\": [";
+
+      for (std::vector<SStandings>::iterator l_itStand = m_vStandings.begin(); l_itStand != m_vStandings.end(); l_itStand++) {
+        if (l_itStand != m_vStandings.begin())
+          s += ",";
+
+        s += (*l_itStand).toJSON();
+      }
+
       return s + "] }";
     }
 
@@ -1006,13 +1015,23 @@ namespace dustbin {
         }
       }
 
+      SRace *l_pRace = nullptr;
+
       if (m_iThisRace == -1 && m_vRaces.size() > 0) {
+        l_pRace = m_vRaces.back();
+      }
+
+      if (l_pRace != nullptr) {
         for (auto &l_cStanding : m_vStandings) {
           l_cStanding.addRaceResult(m_vRaces.back(), (int)m_vRaces.size());
         }
-      }
 
-      calculateStandings();
+        calculateStandings();
+
+        for (auto l_cStanding : m_vStandings) {
+          l_pRace->m_vStandings.push_back(SStandings(l_cStanding));
+        }
+      }
     }
 
     /**

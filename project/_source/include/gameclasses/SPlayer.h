@@ -14,6 +14,7 @@
 
 namespace dustbin {
   namespace gameclasses {
+    typedef struct SStandings SStandings;   /**< Forward declaration of SStandings */
     /**
     * @class SRaceData
     * @author Christian Keimel
@@ -207,6 +208,8 @@ namespace dustbin {
 
       std::vector<SPlayer *> m_vPlayers;    /**< The players of the race */
       std::vector<SPlayer *> m_vRanking;    /**< The ranking of the race */
+
+      std::vector<SStandings> m_vStandings;   /**< The tournament standings after this race */
 
       STournament *m_pTournament;   /**< The tournament this race is assigned to */
 
