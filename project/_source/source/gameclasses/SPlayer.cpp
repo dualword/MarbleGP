@@ -727,7 +727,6 @@ namespace dustbin {
     */
     STournament::STournament() : 
       m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
-      m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
       m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses),
       m_iThisRace  (-1),
       m_bReverse   (false)
@@ -740,7 +739,6 @@ namespace dustbin {
     */
     STournament::STournament(const STournament &a_cOther) :
       m_eAutoFinish(a_cOther.m_eAutoFinish),
-      m_eGridPos   (a_cOther.m_eGridPos   ),
       m_eRaceClass (a_cOther.m_eRaceClass ),
       m_iThisRace  (a_cOther.m_iThisRace  ),
       m_bReverse   (a_cOther.m_bReverse   )
@@ -894,7 +892,6 @@ namespace dustbin {
       std::string s = "{";
 
       s += "\"autofinish\": " + std::to_string((int)m_eAutoFinish   ) + ",";
-      s += "\"gridpos\": "    + std::to_string((int)m_eGridPos      ) + ",";
       s += "\"raceclass\":"   + std::to_string((int)m_eRaceClass    ) + ",";
       s += "\"reversegrid\":" + std::string(m_bReverse ? "true" : "false") + ",";
 

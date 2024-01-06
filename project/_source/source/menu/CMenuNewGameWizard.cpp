@@ -654,7 +654,6 @@ namespace dustbin {
                       m_cSettings.m_bFillGridAI      = true;
                       m_cSettings.m_iGridSize        = 1;
                       m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble3;
-                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::Fixed;
                       m_cSettings.m_bRandomFirstRace = false;
                       m_cSettings.m_bReverseGrid     = false;
                       break;
@@ -663,7 +662,6 @@ namespace dustbin {
                       m_cSettings.m_bFillGridAI      = true;
                       m_cSettings.m_iGridSize        = 2;
                       m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble2;
-                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
                       m_cSettings.m_bRandomFirstRace = false;
                       m_cSettings.m_bReverseGrid     = false;
                       break;
@@ -672,7 +670,6 @@ namespace dustbin {
                       m_cSettings.m_bFillGridAI      = true;
                       m_cSettings.m_iGridSize        = 4;
                       m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::AllClasses;
-                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
                       m_cSettings.m_bRandomFirstRace = true;
                       m_cSettings.m_bReverseGrid     = true;
                       break;
@@ -681,7 +678,6 @@ namespace dustbin {
                       m_cSettings.m_bFillGridAI      = true;
                       m_cSettings.m_iGridSize        = 4;
                       m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::Marble2_GP;
-                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
                       m_cSettings.m_bRandomFirstRace = true;
                       m_cSettings.m_bReverseGrid     = true;
                       break;
@@ -690,7 +686,6 @@ namespace dustbin {
                       m_cSettings.m_bFillGridAI      = true;
                       m_cSettings.m_iGridSize        = 4;
                       m_cSettings.m_eRaceClass       = data::SGameSettings::enRaceClass::MarbleGP;
-                      m_cSettings.m_eGridPos         = data::SGameSettings::enGridPos  ::LastRace;
                       m_cSettings.m_bRandomFirstRace = true;
                       m_cSettings.m_bReverseGrid     = true;
                       break;

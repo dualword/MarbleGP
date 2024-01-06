@@ -357,55 +357,15 @@ namespace dustbin {
 
       l_cPlayers.deserialize(l_pGlobal->getGlobal("raceplayers"));
 
-      // The grid positions of the first race (or fixed order) have already been set in "CMenuFillGrid"
-      if (l_cChampionship.m_vRaces.size() > 0 && l_cSettings.m_eGridPos != data::SGameSettings::enGridPos::Fixed) {
-        // Now we need to specify the starting grid of the next race
-        switch (l_cSettings.m_eGridPos) {
-          case data::SGameSettings::enGridPos::LastRace:
-            for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
-              if (l_cChampionship.m_vRaces.back().m_mAssignment.find(l_cChampionship.m_vRaces.back().m_aResult[i].m_iId) != l_cChampionship.m_vRaces.back().m_mAssignment.end()) {
-                l_cData.m_vStartingGrid.push_back(l_cChampionship.m_vRaces.back().m_mAssignment[l_cChampionship.m_vRaces.back().m_aResult[i].m_iId]);
-              }
-            }
-
-            break;
-
-          case data::SGameSettings::enGridPos::Standings: {
-            std::vector<data::SChampionshipPlayer> l_vStanding = l_cChampionship.getStandings();
-
-            for (std::vector<data::SChampionshipPlayer>::iterator l_itPlayer = l_vStanding.begin(); l_itPlayer != l_vStanding.end(); l_itPlayer++) {
-              l_cData.m_vStartingGrid.push_back((*l_itPlayer).m_iPlayerId);
-            }
-
-            break;
-          }
-
-          case data::SGameSettings::enGridPos::Random: {
-            for (std::vector<data::SChampionshipPlayer>::iterator l_itPlayer = l_cChampionship.m_vPlayers.begin(); l_itPlayer != l_cChampionship.m_vPlayers.end(); l_itPlayer++) {
-              l_cData.m_vStartingGrid.push_back((*l_itPlayer).m_iPlayerId);
-            }
-            std::random_device l_cRd { };
-            std::default_random_engine l_cRe { l_cRd() };
-
-            std::shuffle(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end(), l_cRe);
-            break;
-          }
-
-          default:
-            break;
-        }
-
-        if ((l_cSettings.m_eGridPos == data::SGameSettings::enGridPos::LastRace || l_cSettings.m_eGridPos == data::SGameSettings::enGridPos::Standings) && l_cSettings.m_bReverseGrid) {
-          std::reverse(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end());
+      // Now we need to specify the starting grid of the next race
+      for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
+        if (l_cChampionship.m_vRaces.back().m_mAssignment.find(l_cChampionship.m_vRaces.back().m_aResult[i].m_iId) != l_cChampionship.m_vRaces.back().m_mAssignment.end()) {
+          l_cData.m_vStartingGrid.push_back(l_cChampionship.m_vRaces.back().m_mAssignment[l_cChampionship.m_vRaces.back().m_aResult[i].m_iId]);
         }
       }
-      else {
-        std::sort(l_cPlayers.m_vPlayers.begin(), l_cPlayers.m_vPlayers.end(), [](data::SPlayerData& a_Pl1, data::SPlayerData& a_Pl2) {
-          return a_Pl1.m_iGridPos < a_Pl2.m_iGridPos;
-        });
 
-        for (auto l_cPlr: l_cPlayers.m_vPlayers)
-          l_cData.m_vStartingGrid.push_back(l_cPlr.m_iPlayerId);
+      if (l_cSettings.m_bReverseGrid) {
+        std::reverse(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end());
       }
 
       printf("%s\n", l_cData.toString().c_str());

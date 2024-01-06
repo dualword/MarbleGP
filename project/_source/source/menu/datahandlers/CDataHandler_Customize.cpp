@@ -28,10 +28,6 @@ namespace dustbin {
       if (l_pCheckbox != nullptr)
         l_pCheckbox->setChecked(m_cSettings.m_bRandomFirstRace);
 
-      l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("CustomGridPos", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pGui->getRootGUIElement()));
-      if (l_pSelector != nullptr)
-        l_pSelector->setSelected((int)m_cSettings.m_eGridPos);
-
       l_pSelector = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("CustomGridSize", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, l_pGui->getRootGUIElement()));
       if (l_pSelector != nullptr)
         l_pSelector->setSelected(m_cSettings.m_iGridSize);
@@ -73,10 +69,7 @@ namespace dustbin {
           else printf("Checkbox: %s\n", l_sCaller.c_str());
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED) {
-          if (l_sCaller == "CustomGridPos") {
-            m_cSettings.m_eGridPos = (data::SGameSettings::enGridPos)reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller)->getSelected();
-          }
-          else if (l_sCaller == "CustomGridSize") {
+          if (l_sCaller == "CustomGridSize") {
             m_cSettings.m_iGridSize = reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller)->getSelected();
           }
           else if (l_sCaller == "CustomAiClass") {

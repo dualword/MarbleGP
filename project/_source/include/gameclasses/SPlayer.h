@@ -307,7 +307,6 @@ namespace dustbin {
     */
     typedef struct STournament {
       data::SGameSettings::enAutoFinish m_eAutoFinish;    /**< The race finish option */
-      data::SGameSettings::enGridPos    m_eGridPos;       /**< The starting grid order option */
       data::SGameSettings::enRaceClass  m_eRaceClass;     /**< The race class option */
 
       std::vector<SPlayer    *> m_vPlayers;     /**< The players of the tournament */

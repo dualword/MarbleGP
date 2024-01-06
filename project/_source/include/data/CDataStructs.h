@@ -154,13 +154,6 @@ namespace dustbin {
         AllClasses = 5      /**< A mixture of all classes is added if the field is filled */
       };
 
-      enum class enGridPos {
-        Fixed     = 0,        /**< All races start with the same order */
-        LastRace  = 1,        /**< The result of the last race determines the starting grid order of the next race */
-        Standings = 2,        /**< The current championship standings define the grid order */
-        Random    = 3         /**< For all races the grid is randomized */
-      };
-
       enum class enAutoFinish {
         AllPlayers   = 0,       /**< The race is ended once all players have reached the finish line */
         SecondToLast = 1,       /**< Race ends once all players except for the last one have finished */
@@ -169,7 +162,6 @@ namespace dustbin {
       };
 
       enRaceClass  m_eRaceClass;   /**< The race class (0 == Marble3, 1 == Marble3 + 2, 2 == Marble2, 3 == Marble2 + GP, 4 == MarbleGP, 5 == All Classes) */
-      enGridPos    m_eGridPos;     /**< The grid positions of the next race (0 == Fixed, 1 == Last Race, 2 == Championship Standings, 3 == Random) */
       enAutoFinish m_eAutoFinish;  /**< The auto finish mode (0 == All Players finished, 1 == Second to Last player finished, 2 == First Player Finished, 3 == All Players and AI finished) */
 
       int m_iGridSize;    /**< The grid size, filled with AI players */
@@ -364,12 +356,11 @@ namespace dustbin {
 
       int m_iClass;     /**< Class of the championship (0 == Marbles3, 1 == Marbles2, 2 == MarbleGP) */
       int m_iGridSize;  /**< Grid size (0..16) */
-      int m_iGridOrder; /**< The grid order (0 == Last Race, 1 == Standings, 2 == Random) */
 
       bool m_bReverseGrid;  /**< Reverse the grid? */
 
       SChampionship();
-      SChampionship(int a_iClass, int a_iGridSize, int a_iGridOrder, bool a_bReverseGrid);
+      SChampionship(int a_iClass, int a_iGridSize, bool a_bReverseGrid);
       SChampionship(const std::string &a_sData);
       SChampionship(const SChampionship &a_sOther);
 

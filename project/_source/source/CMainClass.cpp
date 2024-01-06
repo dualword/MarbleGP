@@ -1038,7 +1038,6 @@ namespace dustbin {
 
     m_pTournament->m_bReverse    = l_cSettings.m_bReverseGrid;
     m_pTournament->m_eAutoFinish = l_cSettings.m_eAutoFinish;
-    m_pTournament->m_eGridPos    = l_cSettings.m_eGridPos;
     m_pTournament->m_eRaceClass  = l_cSettings.m_eRaceClass;
 
     return m_pTournament;

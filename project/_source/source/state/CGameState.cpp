@@ -407,7 +407,6 @@ namespace dustbin {
       m_fGridAngle = m_pGridNode->getAngle();
       m_pGridNode->setShader(m_pShader);
 
-      data::SGameSettings::enGridPos    l_eGridOrder   = data::SGameSettings::enGridPos::Fixed;
       data::SGameSettings::enAutoFinish l_eAutoFinish  = data::SGameSettings::enAutoFinish::AllPlayers;
       bool l_bGridReverse = false;
 
@@ -415,7 +414,6 @@ namespace dustbin {
       if (l_sSettings != "") {
         data::SGameSettings l_cSettings;
         l_cSettings.deserialize(l_sSettings);
-        l_eGridOrder   = l_cSettings.m_eGridPos;
         l_bGridReverse = l_cSettings.m_bReverseGrid;
         l_eAutoFinish  = l_cSettings.m_eAutoFinish;
       }
