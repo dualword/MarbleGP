@@ -9,36 +9,10 @@ namespace dustbin {
   namespace gameclasses {
     // #define _DEBUG_DUMP_RANKING
 
-    // Some defines for serilization
-    const irr::s32 c_iRaceDataStart        = -100;   /**< Start of the player data structure */
-    const irr::s32 c_iRaceDataPlayer       = -101;   /**< ID of the player */
-    const irr::s32 c_iRaceDataMarble       = -102;   /**< The marble ID assigned to the player for this race */
-    const irr::s32 c_iRaceDataTimesStart   = -103;   /**< Start of the checkpoint times of the player */
-    const irr::s32 c_iRaceDataLapStart     = -104;   /**< Start of a new lap in the race time vector */
-    const irr::s32 c_iRaceDataTimesEnd     = -105;   /**< End of the checkpoint times of the player */
-    const irr::s32 c_iRaceDataRespawnStart = -106;   /**< Start of the list of a player's respawn */
-    const irr::s32 c_iRaceDataStunStart    = -107;   /**< Start of the list of a player's stuns */
-    const irr::s32 c_iRaceDataEnd          = -108;   /**< End of the player data structure */
-
-    const irr::s32 c_iRaceStart         = -200;   /**< Start of the race data structure */
-    const irr::s32 c_iRaceTrack         = -201;   /**< The race track */
-    const irr::s32 c_iRaceLaps          = -202;   /**< The number of laps */
-    const irr::s32 c_iRacePlayerStart   = -203;   /**< Start marker for the player list */
-    const irr::s32 c_iRacePlayerEnd     = -204;   /**< End marker for the player list */
-    const irr::s32 c_iRaceEnd           = -205;   /**< End of the race data structure */
-
     /**
     * The default contructor
     */
-    SRaceData::SRaceData() : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0) {
-
-    }
-
-    /**
-    * The de-serialize constructor
-    * @param a_sData serialized data
-    */
-    SRaceData::SRaceData(const std::string& a_sData) : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0) {
+    SRaceData::SRaceData() : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0), m_pPlayer(nullptr) {
 
     }
 
@@ -60,50 +34,6 @@ namespace dustbin {
           m_vLapCheckpoints.back().push_back(l_iCp);
         }
       }
-    }
-
-    /**
-    * Serialize the data struct
-    * @return the serialized data
-    */
-    std::string SRaceData::serialize() {
-      messages::CSerializer64 l_cSerializer;
-
-      l_cSerializer.addS32(c_iRaceDataStart);
-      l_cSerializer.addS32(c_iRaceDataPlayer);
-      l_cSerializer.addS32((irr::s32)m_iPlayer);
-      l_cSerializer.addS32(c_iRaceDataMarble);
-      l_cSerializer.addS32((irr::s32)m_iMarble);
-
-      l_cSerializer.addS32(c_iRaceDataTimesStart);
-      l_cSerializer.addS32((irr::s32)m_vLapCheckpoints.size());
-      
-      for (auto l_vLap : m_vLapCheckpoints) {
-        l_cSerializer.addS32(c_iRaceDataLapStart);
-        l_cSerializer.addS32((irr::s32)l_vLap.size());
-
-        for (auto l_iCp : l_vLap) {
-          l_cSerializer.addS32((irr::s32)l_iCp);
-        }
-      }
-
-      l_cSerializer.addS32(c_iRaceDataTimesEnd);
-
-      l_cSerializer.addS32(c_iRaceDataRespawnStart);
-      l_cSerializer.addS32((irr::s32)m_vRespawn.size());
-
-      for (auto l_iRespawn: m_vRespawn)
-        l_cSerializer.addS32((irr::s32)l_iRespawn);
-
-      l_cSerializer.addS32(c_iRaceDataStunStart);
-      l_cSerializer.addS32((irr::s32)m_vStunned.size());
-
-      for (auto l_iStunned: m_vStunned)
-        l_cSerializer.addS32((irr::s32)l_iStunned);
-
-      l_cSerializer.addS32(c_iRaceDataEnd);
-
-      return l_cSerializer.getMessageAsString();
     }
 
     /**
@@ -204,44 +134,6 @@ namespace dustbin {
       m_pController    (a_cPlayer.m_pController)
     {
       m_cRaceData = SRaceData(a_cPlayer.m_cRaceData);
-    }
-
-    /**
-    * The constructor using serialized data
-    * @param a_sData serialized data
-    */
-    SPlayer::SPlayer(const std::string &a_sData) :
-      m_iPlayer        (0),
-      m_sName          (""),
-      m_sTexture       (""),
-      m_sController    (""),
-      m_sShortName     (""),
-      m_sNumber        (L""),
-      m_wsShortName    (L""),
-      m_bWithdrawn     (false),
-      m_bShowRanking   (true),
-      m_iState         (0),
-      m_iLapNo         (0),
-      m_eType          (data::enPlayerType::Local),
-      m_eAiHelp        (data::SPlayerData::enAiHelp::Off),
-      m_pMarble        (nullptr),
-      m_pController    (nullptr)
-    {
-      m_cText = irr::video::SColor(0xFF,    0,    0,    0);
-      m_cBack = irr::video::SColor(0x80, 0xFF, 0xFF, 0xFF);
-      m_cFrme = irr::video::SColor(0x80,    0,    0,    0);
-
-      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
-    }
-
-    /**
-    * Serialize the race data of this player to a string
-    * @return the serialized string
-    */
-    std::string SPlayer::serialize() {
-      messages::CSerializer64 l_cSerializer;
-
-      return l_cSerializer.getMessageAsString();
     }
 
     /**
@@ -529,44 +421,6 @@ namespace dustbin {
     }
 
     /**
-    * Constructor with serialized data
-    * @para a_sData serialized data
-    */
-    SRace::SRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {
-      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
-
-      if (l_cSerializer.getS32() == c_iRaceStart) {
-        while (l_cSerializer.hasMoreMessages()) {
-          irr::s32 l_iToken = l_cSerializer.getS32();
-
-          switch (l_iToken) {
-            case c_iRaceStart: m_sTrack = l_cSerializer.getString(); break;
-            case c_iRaceLaps : m_iLaps  = l_cSerializer.getS32   (); break;
-
-            case c_iRacePlayerStart: {
-              irr::s32 l_iCount = l_cSerializer.getS32();
-
-              for (int i = 0; i < l_iCount; i++) {
-                SPlayer *l_pPlayer = new SPlayer(l_cSerializer.getString());
-                m_vPlayers.push_back(l_pPlayer);
-                m_vRanking.push_back(l_pPlayer);
-              }
-
-              if (l_cSerializer.getS32() != c_iRacePlayerEnd)
-                printf("SRace: unexpected token (Race Player End expected.");
-
-              break;
-            }
-            case c_iRaceEnd:
-              updateRanking();
-              break;
-          }
-        }
-      }
-      else printf("SRace: Unexpected token (Race Start expected)\n");
-    }
-
-    /**
     * Serialize the race to a JSON string
     * @return a JSON string
     */
@@ -604,31 +458,6 @@ namespace dustbin {
       }
 
       return s + "] }";
-    }
-
-    /**
-    * Serialize the race
-    * @return serialized data of the race
-    */
-    std::string SRace::serialize() {
-      messages::CSerializer64 l_cSerializer;
-
-      l_cSerializer.addS32(c_iRaceStart);
-      l_cSerializer.addS32(c_iRaceTrack);
-      l_cSerializer.addString(m_sTrack);
-      l_cSerializer.addS32(c_iRaceLaps);
-      l_cSerializer.addS32(m_iLaps);
-      l_cSerializer.addS32(c_iRacePlayerStart);
-      l_cSerializer.addS32((irr::s32)m_vPlayers.size());
-
-      for (auto l_pPlayer : m_vPlayers) {
-        l_cSerializer.addString(l_pPlayer->serialize());
-      }
-
-      l_cSerializer.addS32(c_iRacePlayerEnd);
-      l_cSerializer.addS32(c_iRaceEnd);
-
-      return l_cSerializer.getMessageAsString();
     }
 
     /**
@@ -926,18 +755,6 @@ namespace dustbin {
     }
 
     /**
-    * The de-serialization constructor
-    * @param a_sData the data to de-serialize
-    */
-    STournament::STournament(const std::string &a_sData) :
-      m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
-      m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
-      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses),
-      m_iThisRace  (-1)
-    {
-    }
-
-    /**
     * The destructor
     */
     STournament::~STournament() {
@@ -962,17 +779,6 @@ namespace dustbin {
         return s1.isBetterThan(s2);
       });
     }
-
-    /**
-    * Serialize the tournament
-    * @return the serialized data
-    */
-    std::string STournament::serialize() {
-      messages::CSerializer64 l_cSerializer;
-
-      return l_cSerializer.getMessageAsString();
-    }
-
 
     /**
     * Start the race

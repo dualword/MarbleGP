@@ -15,6 +15,7 @@
 namespace dustbin {
   namespace gameclasses {
     typedef struct SStandings SStandings;   /**< Forward declaration of SStandings */
+    typedef struct SPlayer    SPlayer;      /**< Forward declaration of SPlayer */
     /**
     * @class SRaceData
     * @author Christian Keimel
@@ -30,6 +31,8 @@ namespace dustbin {
 
       std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
 
+      SPlayer *m_pPlayer;   /**< The player this race data is assigned to */
+
       std::vector<int> m_vRespawn;    /**< Timestamps of the respawns of this player in the race */
       std::vector<int> m_vStunned;    /**< Timestamps of the stuns of this player in the race */
 
@@ -39,22 +42,10 @@ namespace dustbin {
       SRaceData();
 
       /**
-      * The de-serialize constructor
-      * @param a_sData serialized data
-      */
-      SRaceData(const std::string &a_sData);
-
-      /**
       * The copy constructor
       * @param a_cRace the race to copy
       */
       SRaceData(const SRaceData &a_cRace);
-
-      /**
-      * Serialize the data struct
-      * @return the serialized data
-      */
-      std::string serialize();
 
       /**
       * Store the data in a JSON string
@@ -111,12 +102,6 @@ namespace dustbin {
       * @param a_cPlayer the player to copy
       */
       SPlayer(const SPlayer &a_cPlayer);
-
-      /**
-      * The constructor using serialized data
-      * @param a_sData serialized data
-      */
-      SPlayer(const std::string &a_sData);
 
       /**
       * The main constructor
@@ -184,12 +169,6 @@ namespace dustbin {
       void setMarbleNode(SMarbleNodes *a_pMarble);
 
       /**
-      * Serialize the race data of this player to a string
-      * @return the serialized string
-      */
-      std::string serialize();
-
-      /**
       * Store the race data of this player to a JSON string
       * @return the JSON string
       */
@@ -214,12 +193,6 @@ namespace dustbin {
       STournament *m_pTournament;   /**< The tournament this race is assigned to */
 
       SRace(const std::string &a_sTrack, int a_iLaps, STournament *a_pTournament);
-
-      /**
-      * Constructor with serialized data
-      * @para a_sData serialized data
-      */
-      SRace(const std::string &a_sData);
 
       /**
       * Copy constructor
@@ -266,12 +239,6 @@ namespace dustbin {
       * Finish the race, i.e. finish the current lap for all players
       */
       void finishRace();
-
-      /**
-      * Serialize the race
-      * @return serialized data of the race
-      */
-      std::string serialize();
 
       /**
       * Serialize the race to a JSON string
@@ -361,12 +328,6 @@ namespace dustbin {
       STournament(const STournament &a_cOther);
 
       /**
-      * The de-serialization constructor
-      * @param a_sData the data to de-serialize
-      */
-      STournament(const std::string &a_sData);
-
-      /**
       * The destructor
       */
       ~STournament();
@@ -375,12 +336,6 @@ namespace dustbin {
       * Calculated the standings
       */
       void calculateStandings();
-
-      /**
-      * Serialize the tournament
-      * @return the serialized data
-      */
-      std::string serialize();
 
       /**
       * Start the race
