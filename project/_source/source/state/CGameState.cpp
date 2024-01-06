@@ -331,7 +331,7 @@ namespace dustbin {
       m_cGameData = data::SGameData(m_pGlobal->getGlobal("gamedata"));
       m_cSettings = m_pGlobal->getSettingData();
 
-      m_pRaceData = new gameclasses::SRace(m_cGameData.m_sTrack, m_cGameData.m_iLaps);
+      m_pRaceData = m_pGlobal->getTournament()->getRace();
 
       helpers::addToDebugLog("Initialize marbles...");
 
@@ -616,7 +616,10 @@ namespace dustbin {
       }
 
       m_pRaceData->finishRace();
-      delete m_pRaceData;
+
+      m_pGlobal->getTournament()->saveToJSON();
+
+      // delete m_pRaceData;
       helpers::addToDebugLog("Clear vectors");
       m_mViewports.clear();
 
@@ -1264,16 +1267,15 @@ namespace dustbin {
             }
           }
 
-          gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
-            (*it).m_iPlayerId,
-            (*it).m_sName,
-                  l_sTexture,
-            (*it).m_sControls,
-            (*it).m_sShortName,
-            (*it).m_eAiHelp,
-            l_pMarble,
-            (*it).m_eType
-          );
+          gameclasses::SPlayer* l_pPlayer = nullptr;
+
+          for (auto l_pPlr : m_pGlobal->getTournament()->m_vPlayers) {
+            if (l_pPlr->m_iPlayer == a_iPlayerId) {
+              l_pPlayer = l_pPlr;
+              l_pPlayer->setMarbleNode(l_pMarble);
+              break;
+            }
+          }
 
           l_pMarble->m_pPlayer = l_pPlayer; 
 
@@ -1283,9 +1285,6 @@ namespace dustbin {
 
           if ((*it).m_eType == data::enPlayerType::Local)
             assignViewport(m_fGridAngle, l_pPlayer);
-
-          m_pRaceData->m_vPlayers.push_back(l_pPlayer);
-          m_pRaceData->m_vRanking.push_back(l_pPlayer);
 
           if (m_pPanelRndr != nullptr)
             m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);

@@ -177,6 +177,12 @@ namespace dustbin {
       void getDeficitTo(SPlayer *a_pOther, int &a_iSteps, int &a_iLaps);
 
       /**
+      * Set the player's marble node
+      * @param a_pMarble to marble node
+      */
+      void setMarbleNode(SMarbleNodes *a_pMarble);
+
+      /**
       * Serialize the race data of this player to a string
       * @return the serialized string
       */
@@ -202,9 +208,9 @@ namespace dustbin {
       std::vector<SPlayer *> m_vPlayers;    /**< The players of the race */
       std::vector<SPlayer *> m_vRanking;    /**< The ranking of the race */
 
-      bool m_bOwnsPlayers;      /**< Has this race instance created the players (and therefore must delete them)? */
+      STournament *m_pTournament;   /**< The tournament this race is assigned to */
 
-      SRace(const std::string &a_sTrack, int a_iLaps);
+      SRace(const std::string &a_sTrack, int a_iLaps, STournament *a_pTournament);
 
       /**
       * Constructor with serialized data
@@ -216,7 +222,7 @@ namespace dustbin {
       * Copy constructor
       * @param a_cRace the race to copy
       */
-      SRace(const SRace &a_cRace);
+      SRace(const SRace &a_cRace, STournament *a_pTournament);
 
       /**
       * The destructor
@@ -316,9 +322,11 @@ namespace dustbin {
       data::SGameSettings::enGridPos    m_eGridPos;       /**< The starting grid order option */
       data::SGameSettings::enRaceClass  m_eRaceClass;     /**< The race class option */
 
-      std::vector<SPlayer   > m_vPlayers;     /**< The players of the tournament */
-      std::vector<SRace     > m_vRaces;       /**< The races of the tournament */
-      std::vector<SStandings> m_vStandings;   /**< The standings data */
+      std::vector<SPlayer    *> m_vPlayers;     /**< The players of the tournament */
+      std::vector<SRace      *> m_vRaces;       /**< The races of the tournament */
+      std::vector<SStandings  > m_vStandings;   /**< The standings data */
+
+      int m_iThisRace;    /**< The index of the race (-1 == last race in the vector) */
 
       /**
       * The standard contructor
@@ -338,6 +346,11 @@ namespace dustbin {
       STournament(const std::string &a_sData);
 
       /**
+      * The destructor
+      */
+      ~STournament();
+
+      /**
       * Calculated the standings
       */
       void calculateStandings();
@@ -347,6 +360,17 @@ namespace dustbin {
       * @return the serialized data
       */
       std::string serialize();
+
+      /**
+      * Start the race
+      */
+      void startRace();
+
+      /**
+      * Get the current race
+      * @return the current race
+      */
+      SRace *getRace();
 
       /**
       * Save the tournament standings to a JSON file

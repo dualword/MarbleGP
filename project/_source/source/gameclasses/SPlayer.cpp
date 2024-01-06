@@ -472,6 +472,20 @@ namespace dustbin {
     }
 
     /**
+    * Set the player's marble node
+    * @param a_pMarble to marble node
+    */
+    void SPlayer::setMarbleNode(SMarbleNodes* a_pMarble) {
+      m_pMarble = a_pMarble;
+
+      if (m_pMarble != nullptr) {
+        m_cRaceData.m_iMarble = a_pMarble->m_pPositional->getID();
+        m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));
+      }
+      else printf("Empty texture string.\n");
+    }
+
+    /**
     * A callback for a changed state
     * @param a_iState the new state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished)
     * @param a_iStep step when the change happened
@@ -490,42 +504,25 @@ namespace dustbin {
       }
     }
 
-    SRace::SRace(const std::string& a_sTrack, int a_iLaps) : m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_bOwnsPlayers(false) {
+    SRace::SRace(const std::string &a_sTrack, int a_iLaps, STournament *a_pTournament) : m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_pTournament(a_pTournament) {
     }
 
     /**
     * The destructor
     */
     SRace::~SRace() {
-      std::wstring l_sFileName = platform::portableGetDataPath() + L"/race.json";
-
-      std::string l_sJson = toJSON();
-
-      irr::io::path l_sFilePath = irr::core::stringc(l_sFileName.c_str());
-
-      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(l_sFilePath);
-      l_pFile->write(l_sJson.c_str(), l_sJson.size());
-      l_pFile->drop();
-
-      if (m_bOwnsPlayers) {
-        for (auto l_pPlayer : m_vPlayers) {
-          delete l_pPlayer;
-        }
-
-        m_vPlayers.clear();
-        m_vRanking.clear();
-      }
+      m_vPlayers.clear();
+      m_vRanking.clear();
     }
 
     /**
     * Copy constructor
     * @param a_cRace the race to copy
     */
-    SRace::SRace(const SRace& a_cRace) : m_sTrack(a_cRace.m_sTrack), m_iLaps(a_cRace.m_iLaps), m_bOwnsPlayers(true) {
-      for (auto l_pPlayer : a_cRace.m_vPlayers) {
-        SPlayer *p = new SPlayer(*l_pPlayer);
-        m_vPlayers.push_back(p);
-        m_vRanking.push_back(p);
+    SRace::SRace(const SRace& a_cRace, STournament *a_pTournament) : m_sTrack(a_cRace.m_sTrack), m_iLaps(a_cRace.m_iLaps), m_pTournament(a_pTournament) {
+      for (auto l_pPlayer : a_pTournament->m_vPlayers) {
+        m_vPlayers.push_back(l_pPlayer);
+        m_vRanking.push_back(l_pPlayer);
       }
 
       updateRanking();
@@ -535,7 +532,7 @@ namespace dustbin {
     * Constructor with serialized data
     * @para a_sData serialized data
     */
-    SRace::SRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0), m_bOwnsPlayers(true) {
+    SRace::SRace(const std::string& a_sData) : m_sTrack(""), m_iLaps(0) {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
 
       if (l_cSerializer.getS32() == c_iRaceStart) {
@@ -874,7 +871,8 @@ namespace dustbin {
     STournament::STournament() : 
       m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
       m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
-      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses)
+      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses),
+      m_iThisRace  (-1)
     {
     }
 
@@ -885,14 +883,15 @@ namespace dustbin {
     STournament::STournament(const STournament &a_cOther) :
       m_eAutoFinish(a_cOther.m_eAutoFinish),
       m_eGridPos   (a_cOther.m_eGridPos   ),
-      m_eRaceClass (a_cOther.m_eRaceClass )
+      m_eRaceClass (a_cOther.m_eRaceClass ),
+      m_iThisRace  (a_cOther.m_iThisRace  )
     {
-      for (auto l_cPlayer : a_cOther.m_vPlayers) {
-        m_vPlayers.push_back(SPlayer(l_cPlayer));
+      for (auto l_pPlayer : a_cOther.m_vPlayers) {
+        m_vPlayers.push_back(new SPlayer(*l_pPlayer));
       }
 
-      for (auto l_cRace : a_cOther.m_vRaces) {
-        m_vRaces.push_back(SRace(l_cRace));
+      for (auto l_pRace : a_cOther.m_vRaces) {
+        m_vRaces.push_back(new SRace(*l_pRace, this));
       }
 
       calculateStandings();
@@ -905,8 +904,26 @@ namespace dustbin {
     STournament::STournament(const std::string &a_sData) :
       m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
       m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
-      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses)
+      m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses),
+      m_iThisRace  (-1)
     {
+    }
+
+    /**
+    * The destructor
+    */
+    STournament::~STournament() {
+      while (m_vPlayers.size() > 0) {
+        SPlayer *p = *m_vPlayers.begin();
+        m_vPlayers.erase(m_vPlayers.begin());
+        delete p;
+      }
+
+      while (m_vRaces.size() > 0) {
+        SRace *p = *m_vRaces.begin();
+        m_vRaces.erase(m_vRaces.begin());
+        delete p;
+      }
     }
 
     /**
@@ -924,6 +941,39 @@ namespace dustbin {
 
       return l_cSerializer.getMessageAsString();
     }
+
+
+    /**
+    * Start the race
+    */
+    void STournament::startRace() {
+      SRace *l_pThisRace = nullptr;
+
+      if (m_iThisRace == -1) {
+        if (m_vRaces.size() > 0) {
+          l_pThisRace = m_vRaces.back();
+        }
+      }
+
+      if (l_pThisRace != nullptr) {
+        for (auto l_pPlayer : m_vPlayers) {
+          l_pThisRace->m_vPlayers.push_back(l_pPlayer);
+          l_pThisRace->m_vRanking.push_back(l_pPlayer);
+        }
+      }
+    }
+
+    /**
+    * Get the current race
+    * @return the current race
+    */
+    SRace* STournament::getRace() {
+      if (m_iThisRace == -1 && m_vRaces.size() > 0)
+        return m_vRaces.back();
+
+      return nullptr;
+    }
+
     /**
     * Save the tournament standings to a JSON file
     */
@@ -956,19 +1006,23 @@ namespace dustbin {
 
       s += "\"players\": [";
 
-      for (std::vector<SPlayer>::iterator l_itPlr = m_vPlayers.begin(); l_itPlr != m_vPlayers.end(); l_itPlr++) {
+      for (std::vector<SPlayer *>::iterator l_itPlr = m_vPlayers.begin(); l_itPlr != m_vPlayers.end(); l_itPlr++) {
         if (l_itPlr != m_vPlayers.begin())
           s += ",";
 
-        s += (*l_itPlr).toJSON();
+        s += (*l_itPlr)->toJSON();
       }
 
       s += "], ";
 
       s += "\"races\": [";
 
-      for (auto l_cRace : m_vRaces)
-        s += l_cRace.toJSON();
+      for (std::vector<SRace *>::iterator l_itRace = m_vRaces.begin(); l_itRace != m_vRaces.end(); l_itRace++) {
+        if (l_itRace != m_vRaces.begin())
+          s += ",";
+
+        s += (*l_itRace)->toJSON();
+      }
 
       return s + "] }";
     }

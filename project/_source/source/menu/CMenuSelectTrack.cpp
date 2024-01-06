@@ -3,6 +3,7 @@
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CGuiTrackSelect.h>
@@ -297,6 +298,13 @@ namespace dustbin {
 
                   m_pState->getGlobal()->setSetting("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
+
+                  gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+                  l_pTournament->m_vRaces.push_back(new gameclasses::SRace(m_pTrackList->getSelectedData(), l_iLaps, l_pTournament));
+                  l_pTournament->startRace();
+
+                  l_pTournament->saveToJSON();
 
                   helpers::prepareNextRace(m_pTrackList->getSelectedData(), "Free Racing / Race #" + std::to_string(m_cChampionship.m_vRaces.size() + 1), l_iLaps);
 

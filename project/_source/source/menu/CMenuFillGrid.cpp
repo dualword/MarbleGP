@@ -233,7 +233,7 @@ namespace dustbin {
 
           for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
             l_pTournament->m_vPlayers.push_back(
-              gameclasses::SPlayer(
+              new gameclasses::SPlayer(
                 l_cPlayer.m_iPlayerId,
                 l_cPlayer.m_sName,
                 l_cPlayer.m_sTexture,
