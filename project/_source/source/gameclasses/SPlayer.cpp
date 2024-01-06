@@ -761,6 +761,8 @@ namespace dustbin {
           }
           (*l_itPlr)->dumpLapCheckpoints();
         }
+
+
       }
     }
 
@@ -774,6 +776,13 @@ namespace dustbin {
     }
 
     /**
+    * Constructor with the player ID
+    * @param a_iPlayer the player ID
+    */
+    SStandings::SStandings(int a_iPlayer) : m_iPlayer(a_iPlayer), m_iRespawn(0), m_iStunned(0), m_iNoFinish(0), m_iScore(0), m_iBestPos(-1), m_iBestRace(-1) {
+    }
+
+    /**
     * The copy constructor
     * @param a_cOther the data to be copied
     */
@@ -781,94 +790,97 @@ namespace dustbin {
       m_iPlayer  (a_cOther.m_iPlayer  ),
       m_iRespawn (a_cOther.m_iRespawn ),
       m_iStunned (a_cOther.m_iStunned ),
-      m_iNoFinish(a_cOther.m_iNoFinish)
+      m_iNoFinish(a_cOther.m_iNoFinish),
+      m_iScore   (a_cOther.m_iScore   ),
+      m_iBestPos (a_cOther.m_iBestPos ),
+      m_iBestRace(a_cOther.m_iBestRace)
     {
-      for (auto l_iResult: a_cOther.m_vResults)
-        m_vResults.push_back(l_iResult);
+    }
+
+    /**
+    * Add a race result to the standings
+    * @param a_pRace the race to add
+    * @param a_iRace the race number
+    */
+    void SStandings::addRaceResult(SRace* a_pRace, int a_iRace) {
+      for (auto l_pPlayer : a_pRace->m_vRanking) {
+        if (l_pPlayer->m_iPlayer == m_iPlayer) {
+          int l_iScoreTable[16][16] = {
+            /*  1 player  */ {  0 },
+            /*  2 players */ {  2,  0 },
+            /*  3 players */ {  3,  1,  0 },
+            /*  4 players */ {  4,  2,  1,  0 },
+            /*  5 players */ {  5,  3,  2,  1,  0 },
+            /*  6 players */ {  7,  4,  3,  2,  1,  0 },
+            /*  7 players */ {  9,  6,  4,  3,  2,  1, 0 },
+            /*  8 players */ { 10,  7,  5,  4,  3,  2, 1, 0 },
+            /*  9 players */ { 10,  7,  6,  5,  4,  3, 2, 1, 0 },
+            /* 10 players */ { 10,  8,  7,  6,  5,  4, 3, 2, 1, 0 },
+            /* 11 players */ { 11,  9,  8,  7,  6,  5, 4, 3, 2, 1, 0 },
+            /* 12 players */ { 13, 11, 10,  8,  7,  6, 5, 4, 3, 2, 1, 0 },
+            /* 13 players */ { 15, 12, 10,  9,  8,  7, 6, 5, 4, 3, 2, 1, 0 },
+            /* 14 players */ { 16, 13, 11, 10,  9,  8, 7, 6, 5, 4, 3, 2, 1, 0 },
+            /* 15 players */ { 20, 16, 13, 11, 10,  9, 8, 7, 6, 5, 4, 3, 2, 1, 0 },
+            /* 16 players */ { 25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }
+          };
+
+          m_iScore   += l_iScoreTable[(int)a_pRace->m_vPlayers.size() - 1][l_pPlayer->m_cRaceData.m_iPosition - 1];
+          m_iRespawn += (int)l_pPlayer->m_cRaceData.m_vRespawn.size();
+          m_iStunned += (int)l_pPlayer->m_cRaceData.m_vStunned.size();
+
+          if (l_pPlayer->m_bWithdrawn)
+            m_iNoFinish++;
+
+          if (m_iBestPos == -1 || l_pPlayer->m_cRaceData.m_iPosition < m_iBestPos) {
+            m_iBestPos  = l_pPlayer->m_cRaceData.m_iPosition;
+            m_iBestRace = a_iRace;
+          }
+
+          break;
+        }
+      }
     }
 
     /**
     * Compare the standing data to get the standings at a race 
     * @param a_cOther the standings to compare 
-    * @param a_iRace the race up to which the standings are to be calculated (-1 == all races)
-    * @param a_iPlayers the number of players (important for the score table calculation)
     */
-    bool SStandings::isBetterThan(const SStandings& a_cOther, int a_iRace, int a_iPlayers) {
-      // The scores for each finishing position, depending on the number of players
-      int l_iScoreTable[16][16] = {
-        /*  1 player  */ {  0 },
-        /*  2 players */ {  2,  0 },
-        /*  3 players */ {  3,  1,  0 },
-        /*  4 players */ {  4,  2,  1,  0 },
-        /*  5 players */ {  5,  3,  2,  1,  0 },
-        /*  6 players */ {  7,  4,  3,  2,  1,  0 },
-        /*  7 players */ {  9,  6,  4,  3,  2,  1, 0 },
-        /*  8 players */ { 10,  7,  5,  4,  3,  2, 1, 0 },
-        /*  9 players */ { 10,  7,  6,  5,  4,  3, 2, 1, 0 },
-        /* 10 players */ { 10,  8,  7,  6,  5,  4, 3, 2, 1, 0 },
-        /* 11 players */ { 11,  9,  8,  7,  6,  5, 4, 3, 2, 1, 0 },
-        /* 12 players */ { 13, 11, 10,  8,  7,  6, 5, 4, 3, 2, 1, 0 },
-        /* 13 players */ { 15, 12, 10,  9,  8,  7, 6, 5, 4, 3, 2, 1, 0 },
-        /* 14 players */ { 16, 13, 11, 10,  9,  8, 7, 6, 5, 4, 3, 2, 1, 0 },
-        /* 15 players */ { 20, 16, 13, 11, 10,  9, 8, 7, 6, 5, 4, 3, 2, 1, 0 },
-        /* 16 players */ { 25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }
-      };
+    bool SStandings::isBetterThan(const SStandings& a_cOther) const {
+      // The sorting criteria are:
+      // 1. higher score
+      // 2. less withdrawals
+      // 3. less respawns
+      // 4. less stuns
+      // 5. better single race result
+      // 6. best race result scored earlier
+      // 7. (should never happen except before the first race): Player ID
 
-      int l_iThisScore = 0;     // My score
-      int l_iOthrScore = 0;     // Opponent's score
+      if (m_iScore    != a_cOther.m_iScore   ) return m_iScore    > a_cOther.m_iScore;
+      if (m_iNoFinish != a_cOther.m_iNoFinish) return m_iNoFinish < a_cOther.m_iNoFinish;
+      if (m_iRespawn  != a_cOther.m_iRespawn ) return m_iRespawn  < a_cOther.m_iRespawn;
+      if (m_iStunned  != a_cOther.m_iStunned ) return m_iStunned  < a_cOther.m_iStunned;
+      if (m_iBestPos  != a_cOther.m_iBestPos ) return m_iBestPos  < a_cOther.m_iBestPos;
+      if (m_iBestRace != a_cOther.m_iBestRace) return m_iBestRace < a_cOther.m_iBestRace;
 
-      int l_iThisBest = 66;     // My best race result
-      int l_iOthrBest = 66;     // Opponent's best race result
-
-      for (auto l_iResult : m_vResults) { l_iThisScore += l_iScoreTable[a_iPlayers - 1][l_iResult - 1]; if (l_iResult < l_iThisBest) l_iThisBest = l_iResult; }
-      for (auto l_iResult : m_vResults) { l_iOthrScore += l_iScoreTable[a_iPlayers - 1][l_iResult - 1]; if (l_iResult < l_iOthrBest) l_iOthrBest = l_iResult; }
-
-      if (l_iThisScore != l_iOthrScore) {
-        // First criteria: the score
-        return l_iThisScore > l_iOthrScore;
-      }
-      else if (m_iRespawn != a_cOther.m_iRespawn) {
-        // Second criteria: less respawns
-        return m_iRespawn < a_cOther.m_iRespawn;
-      }
-      else if (m_iStunned != a_cOther.m_iStunned) {
-        // Third criteria: less stuns
-        return m_iStunned < a_cOther.m_iStunned;
-      }
-      else if (m_iNoFinish != a_cOther.m_iNoFinish) {
-        // Fourth criteria: less not finishes races
-        return m_iNoFinish < a_cOther.m_iNoFinish;
-      }
-      else if (l_iThisBest != l_iOthrBest) {
-        // Fifth criteria: Best Race Result
-        return l_iThisBest < l_iOthrBest;
-      }
-      else {
-        int l_iThisNum = 0;       // Index of my best race result
-        int l_iOthrNum = 0;       // Index of opponent's best race result
-
-        for (auto l_iResult : m_vResults) {
-          if (l_iResult == l_iThisBest)
-            break;
-          else
-            l_iThisNum++;
-        }
-
-        for (auto l_iResult : a_cOther.m_vResults) {
-          if (l_iResult == l_iOthrBest)
-            break;
-          else
-            l_iOthrNum++;
-        }
-
-        // Sixth criteria: best result scored earlier
-        if (l_iThisNum != l_iOthrNum) {
-          return l_iThisNum < l_iOthrNum;
-        }
-      }
-
-      // Last criteria (should never happen except before the first race): Player ID
       return m_iPlayer < a_cOther.m_iPlayer;
+    }
+
+    /**
+    * Encode as JSON string
+    * @return JSON String
+    */
+    std::string SStandings::toJSON() {
+      std::string s = "{";
+
+      s += "\"playerid\":"  + std::to_string(m_iPlayer  ) + ",";
+      s += "\"score\":"     + std::to_string(m_iScore   ) + ",";
+      s += "\"respawn\":"   + std::to_string(m_iRespawn ) + ",";
+      s += "\"stunned\":"   + std::to_string(m_iStunned ) + ",";
+      s += "\"widhdrawn\":" + std::to_string(m_iNoFinish) + ",";
+      s += "\"bestpos\":"   + std::to_string(m_iBestPos ) + ",";
+      s += "\"bestrace\":"  + std::to_string(m_iBestRace);
+
+      return s + "}";
     }
 
 
@@ -937,6 +949,9 @@ namespace dustbin {
     * Calculated the standings
     */
     void STournament::calculateStandings() {
+      std::sort(m_vStandings.begin(), m_vStandings.end(), [](const SStandings& s1, const SStandings& s2) {
+        return s1.isBetterThan(s2);
+      });
     }
 
     /**
@@ -979,6 +994,25 @@ namespace dustbin {
         return m_vRaces.back();
 
       return nullptr;
+    }
+
+    /**
+    * Finish the current race
+    */
+    void STournament::finishCurrentRace() {
+      if (m_vStandings.size() == 0) {
+        for (auto l_pPlayer : m_vPlayers) {
+          m_vStandings.push_back(SStandings(l_pPlayer->m_iPlayer));
+        }
+      }
+
+      if (m_iThisRace == -1 && m_vRaces.size() > 0) {
+        for (auto &l_cStanding : m_vStandings) {
+          l_cStanding.addRaceResult(m_vRaces.back(), (int)m_vRaces.size());
+        }
+      }
+
+      calculateStandings();
     }
 
     /**
@@ -1029,6 +1063,15 @@ namespace dustbin {
           s += ",";
 
         s += (*l_itRace)->toJSON();
+      }
+
+      s += "], \"standings\": [";
+
+      for (std::vector<SStandings>::iterator l_itStand = m_vStandings.begin(); l_itStand != m_vStandings.end(); l_itStand++) {
+        if (l_itStand != m_vStandings.begin())
+          s += ",";
+
+        s += (*l_itStand).toJSON();
       }
 
       return s + "] }";

@@ -615,7 +615,7 @@ namespace dustbin {
         m_pServer = nullptr;
       }
 
-      m_pRaceData->finishRace();
+      m_pGlobal->getTournament()->finishCurrentRace();
 
       m_pGlobal->getTournament()->saveToJSON();
 

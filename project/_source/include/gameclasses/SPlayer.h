@@ -279,7 +279,7 @@ namespace dustbin {
     } SRace;
 
     /**
-    * @class SStandingData
+    * @class SStandings
     * @author Christian Keimel
     * The data relevant for the tournament standings
     */
@@ -288,13 +288,20 @@ namespace dustbin {
       int m_iRespawn;   /**< The number of respawns */
       int m_iStunned;   /**< The counter for the player's stuns */
       int m_iNoFinish;  /**< The counter for the races the player didn't finish */
+      int m_iScore;     /**< The score of the player */
+      int m_iBestPos;   /**< The best position of the player */
+      int m_iBestRace;  /**< The race the player has scored his best position */
       
-      std::vector<int> m_vResults;   /**< This vector holds a vector with the finishing position of each race */
-
       /**
       * The default constructor
       */
       SStandings();
+
+      /**
+      * Constructor with the player ID
+      * @param a_iPlayer the player ID
+      */
+      SStandings(int a_iPlayer);
 
       /**
       * The copy constructor
@@ -303,12 +310,23 @@ namespace dustbin {
       SStandings(const SStandings &a_cOther);
 
       /**
+      * Add a race result to the standings
+      * @param a_pRace the race to add
+      * @param a_iRace the race number
+      */
+      void addRaceResult(SRace *a_pRace, int a_iRace);
+
+      /**
       * Compare the standing data to get the standings at a race 
       * @param a_cOther the standings to compare 
-      * @param a_iRace the race up to which the standings are to be calculated (-1 == all races)
-      * @param a_iPlayers the number of players (important for the score table calculation)
       */
-      bool isBetterThan(const SStandings &a_cOther, int a_iRace, int a_iPlayers);
+      bool isBetterThan(const SStandings &a_cOther) const;
+
+      /**
+      * Encode as JSON string
+      * @return JSON String
+      */
+      std::string toJSON();
     }
     SStandings;
 
@@ -371,6 +389,11 @@ namespace dustbin {
       * @return the current race
       */
       SRace *getRace();
+
+      /**
+      * Finish the current race
+      */
+      void finishCurrentRace();
 
       /**
       * Save the tournament standings to a JSON file
