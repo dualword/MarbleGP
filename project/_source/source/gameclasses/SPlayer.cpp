@@ -729,7 +729,8 @@ namespace dustbin {
       m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
       m_eGridPos   (data::SGameSettings::enGridPos   ::LastRace),
       m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses),
-      m_iThisRace  (-1)
+      m_iThisRace  (-1),
+      m_bReverse   (false)
     {
     }
 
@@ -741,7 +742,8 @@ namespace dustbin {
       m_eAutoFinish(a_cOther.m_eAutoFinish),
       m_eGridPos   (a_cOther.m_eGridPos   ),
       m_eRaceClass (a_cOther.m_eRaceClass ),
-      m_iThisRace  (a_cOther.m_iThisRace  )
+      m_iThisRace  (a_cOther.m_iThisRace  ),
+      m_bReverse   (a_cOther.m_bReverse   )
     {
       for (auto l_pPlayer : a_cOther.m_vPlayers) {
         m_vPlayers.push_back(new SPlayer(*l_pPlayer));
@@ -785,18 +787,41 @@ namespace dustbin {
     */
     void STournament::startRace() {
       SRace *l_pThisRace = nullptr;
+      SRace *l_pLastRace = nullptr;
 
       if (m_iThisRace == -1) {
         if (m_vRaces.size() > 0) {
           l_pThisRace = m_vRaces.back();
         }
+
+        if (m_vRaces.size() > 1) {
+          l_pLastRace = *(m_vRaces.end() - 2);
+        }
       }
 
       if (l_pThisRace != nullptr) {
+        int l_iPosition = 1;
+
         for (auto l_pPlayer : m_vPlayers) {
+          if (l_pPlayer->m_cRaceData.m_iPosition == 0)
+            l_pPlayer->m_cRaceData.m_iPosition = l_iPosition;
+
           l_pThisRace->m_vPlayers.push_back(l_pPlayer);
           l_pThisRace->m_vRanking.push_back(l_pPlayer);
+
+          l_iPosition++;
         }
+
+        std::sort(l_pThisRace->m_vRanking.begin(), l_pThisRace->m_vRanking.end(), [&](SPlayer* p1, SPlayer* p2) {
+          if (l_pLastRace != nullptr) {
+            for (auto l_pPlayer : l_pLastRace->m_vRanking) { 
+              if (l_pPlayer == p1) return !m_bReverse;
+              if (l_pPlayer == p2) return  m_bReverse;
+            }
+          }
+
+          return std::wcstol(p1->m_sNumber.c_str(), nullptr, 10) < std::wcstol(p2->m_sNumber.c_str(), nullptr, 10);
+        });
       }
     }
 
@@ -828,6 +853,8 @@ namespace dustbin {
       }
 
       if (l_pRace != nullptr) {
+        l_pRace->finishRace();
+
         for (auto &l_cStanding : m_vStandings) {
           l_cStanding.addRaceResult(m_vRaces.back(), (int)m_vRaces.size());
         }
@@ -866,9 +893,10 @@ namespace dustbin {
     std::string STournament::toJSON() {
       std::string s = "{";
 
-      s += "\"autofinish\": " + std::to_string((int)m_eAutoFinish) + ",";
-      s += "\"gridpos\": "    + std::to_string((int)m_eGridPos   ) + ",";
-      s += "\"raceclass\":"   + std::to_string((int)m_eRaceClass ) + ",";
+      s += "\"autofinish\": " + std::to_string((int)m_eAutoFinish   ) + ",";
+      s += "\"gridpos\": "    + std::to_string((int)m_eGridPos      ) + ",";
+      s += "\"raceclass\":"   + std::to_string((int)m_eRaceClass    ) + ",";
+      s += "\"reversegrid\":" + std::string(m_bReverse ? "true" : "false") + ",";
 
       s += "\"players\": [";
 

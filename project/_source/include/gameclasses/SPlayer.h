@@ -314,7 +314,8 @@ namespace dustbin {
       std::vector<SRace      *> m_vRaces;       /**< The races of the tournament */
       std::vector<SStandings  > m_vStandings;   /**< The standings data */
 
-      int m_iThisRace;    /**< The index of the race (-1 == last race in the vector) */
+      int  m_iThisRace;     /**< The index of the race (-1 == last race in the vector) */
+      bool m_bReverse;      /**< Reverse grid order? */
 
       /**
       * The standard contructor
