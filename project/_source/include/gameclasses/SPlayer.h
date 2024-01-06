@@ -349,6 +349,11 @@ namespace dustbin {
       std::string serialize();
 
       /**
+      * Save the tournament standings to a JSON file
+      */
+      void saveToJSON();
+
+      /**
       * Convert the data to a JSON string
       * @return a JSON String
       */
