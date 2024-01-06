@@ -585,9 +585,16 @@ namespace dustbin {
       }
 
 
-      s += " ]";
+      s += " ], \"result\": [";
 
-      return s + "}";
+      for (std::vector<SPlayer*>::iterator l_itPlr = m_vRanking.begin(); l_itPlr != m_vRanking.end(); l_itPlr++) {
+        if (l_itPlr != m_vRanking.begin())
+          s += ",";
+        
+        s += std::to_string((*l_itPlr)->m_iPlayer);
+      }
+
+      return s + "] }";
     }
 
     /**
