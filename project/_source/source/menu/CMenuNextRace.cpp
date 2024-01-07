@@ -4,6 +4,7 @@
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
+#include <gameclasses/SPlayer.h>
 #include <platform/CPlatform.h>
 #include <helpers/CAutoMenu.h>
 #include <menu/IMenuHandler.h>
@@ -55,6 +56,9 @@ namespace dustbin {
           m_pSmgr->clear();
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
+
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+          l_pTournament->m_iThisRace++;
 
           data::SMarbleGpCup l_cCup = data::SMarbleGpCup(m_pState->getGlobal()->getGlobal("current_cup"));
 
@@ -154,6 +158,9 @@ namespace dustbin {
                 m_pState->getGlobal()->setSetting("laps" , std::to_string(m_iLaps));
 
                 helpers::prepareNextRace(m_sTrack, m_sInfo, m_iLaps);
+
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+                l_pTournament->startRace();
 
                 platform::saveSettings();
                 if (m_pServer != nullptr) {

@@ -728,6 +728,13 @@ namespace dustbin {
           l_pLastRace = *(m_vRaces.end() - 2);
         }
       }
+      else if (m_iThisRace < m_vRaces.size()) {
+        l_pThisRace = m_vRaces[m_iThisRace];
+
+        if (m_iThisRace > 0) {
+          l_pLastRace = m_vRaces[m_iThisRace - 1];
+        }
+      }
 
       if (l_pThisRace != nullptr) {
         int l_iPosition = 1;
@@ -765,6 +772,8 @@ namespace dustbin {
     SRace* STournament::getRace() {
       if (m_iThisRace == -1 && m_vRaces.size() > 0)
         return m_vRaces.back();
+      else if (m_iThisRace < m_vRaces.size())
+        return m_vRaces[m_iThisRace];
 
       return nullptr;
     }
@@ -780,21 +789,27 @@ namespace dustbin {
       }
 
       SRace *l_pRace = nullptr;
+      int l_iRaceIdx = 0;
 
       if (m_iThisRace == -1 && m_vRaces.size() > 0) {
         l_pRace = m_vRaces.back();
+        l_iRaceIdx = (int)m_vRaces.size();
+      }
+      else if (m_iThisRace < m_vRaces.size()) {
+        l_pRace = m_vRaces[m_iThisRace];
+        l_iRaceIdx = m_iThisRace + 1;
       }
 
       if (l_pRace != nullptr) {
         l_pRace->finishRace();
 
         for (auto &l_cStanding : m_vStandings) {
-          l_cStanding.addRaceResult(m_vRaces.back(), (int)m_vRaces.size());
+          l_cStanding.addRaceResult(l_pRace, l_iRaceIdx);
         }
 
         calculateStandings();
 
-        for (auto l_cStanding : m_vStandings) {
+        for (auto &l_cStanding : m_vStandings) {
           l_pRace->m_vStandings.push_back(SStandings(l_cStanding));
         }
       }

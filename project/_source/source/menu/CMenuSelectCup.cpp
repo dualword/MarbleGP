@@ -3,6 +3,7 @@
 #include <helpers/CDataHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <helpers/CMenuLoader.h>
+#include <gameclasses/SPlayer.h>
 #include <menu/IMenuHandler.h>
 #include <state/CMenuState.h>
 #include <gui/CSelector.h>
@@ -187,6 +188,18 @@ namespace dustbin {
                   }
 
                   std::string l_sSerialized = m_vCups[m_iSelectedCup].serialize();
+
+                  gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+                  for (auto l_tRace : m_vCups[m_iSelectedCup].m_vRaces) {
+                    l_pTournament->m_vRaces.push_back(
+                      new gameclasses::SRace(
+                        std::get<0>(l_tRace), 
+                        m_iMode == 1 ? 1 : (m_iMode == 2 && m_pLaps != nullptr) ? m_pLaps->getSelected() : std::get<1>(l_tRace),
+                        l_pTournament
+                      )
+                    );
+                  }
 
                   printf("\n\n%s\n\n", l_sSerialized.c_str());
                   m_pState->getGlobal()->setGlobal("current_cup", l_sSerialized);
