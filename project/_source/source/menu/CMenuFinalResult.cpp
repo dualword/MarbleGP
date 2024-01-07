@@ -2,6 +2,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
+#include <gameclasses/SPlayer.h>
 #include <menu/IMenuHandler.h>
 #include <state/IState.h>
 #include <irrlicht.h>
@@ -58,24 +59,33 @@ namespace dustbin {
           irr::scene::ISceneNode *l_pRank2 = m_pSmgr->getSceneNodeFromName("second_marble");
           irr::scene::ISceneNode *l_pRank3 = m_pSmgr->getSceneNodeFromName("third_marble" );
 
-          data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-
-          std::string l_sPlayers = m_pState->getGlobal()->getGlobal("raceplayers");
-          data::SRacePlayers l_cPlayers;
-          l_cPlayers.deserialize(l_sPlayers);
-
-          std::vector<data::SChampionshipPlayer> l_vStandings = l_cChampionship.getStandings();
-
           irr::gui::IGUIFont *l_pFontBig   = CGlobal::getInstance()->getFontBySize(104);
           irr::gui::IGUIFont *l_pFontSmall = CGlobal::getInstance()->getFontBySize(72);
 
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+          gameclasses::SPlayer *l_pPodium[3] = { nullptr, nullptr, nullptr };
+          int l_iIdx = 0;
+
+          for (auto l_cStanding : l_pTournament->m_vStandings) {
+            for (auto l_pPlr : l_pTournament->m_vPlayers) {
+              if (l_cStanding.m_iPlayer == l_pPlr->m_iPlayer) {
+                l_pPodium[l_iIdx] = l_pPlr;
+                break;
+              }
+            }
+            l_iIdx++;
+
+            if (l_iIdx >= 3)
+              break;
+          }
+
           if (l_pFontBig != nullptr && l_pFontSmall != nullptr) {
-            if (l_vStandings.size() > 0 && l_pTrophy != nullptr) {
-              data::SChampionshipPlayer l_cPlayer = l_vStandings[0];
+            if (l_pPodium[0] != nullptr && l_pTrophy != nullptr) {
               std::string l_sName = "";
               std::string l_sBot  = "";
 
-              helpers::splitStringNameBot(l_cPlayer.m_sName, l_sName, l_sBot);
+              helpers::splitStringNameBot(l_pPodium[0]->m_sName, l_sName, l_sBot);
 
               helpers::fitString(helpers::s2ws(l_sName), l_pFontBig, irr::core::dimension2du(1024, 128));
 
@@ -88,21 +98,15 @@ namespace dustbin {
                 l_pTrophy->getMaterial(1).setTexture(0, p);
 
               if (l_pMarble1 != nullptr) {
-                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
-                    l_pMarble1->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
-                    break;
-                  }
-                }
+                l_pMarble1->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(l_pPodium[0]->m_sTexture));
               }
             }
 
-            if (l_vStandings.size() > 1 && l_pSilver != nullptr) {
-              data::SChampionshipPlayer l_cPlayer = l_vStandings[1];
+            if (l_pPodium[1] && l_pSilver != nullptr) {
               std::string l_sName = "";
               std::string l_sBot  = "";
 
-              helpers::splitStringNameBot(l_cPlayer.m_sName, l_sName, l_sBot);
+              helpers::splitStringNameBot(l_pPodium[1]->m_sName, l_sName, l_sBot);
 
               helpers::fitString(helpers::s2ws(l_sName), l_pFontSmall, irr::core::dimension2du(1024, 128));
 
@@ -115,12 +119,7 @@ namespace dustbin {
                 l_pSilver->getMaterial(0).setTexture(0, p);
 
               if (l_pMarble2 != nullptr) {
-                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
-                    l_pMarble2->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
-                    break;
-                  }
-                }
+                l_pMarble2->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(l_pPodium[1]->m_sTexture));
               }
             }
             else {
@@ -128,12 +127,11 @@ namespace dustbin {
               if (l_pRank2      != nullptr) l_pRank2     ->setVisible(false);
             }
 
-            if (l_vStandings.size() > 2 && l_pBronze != nullptr) {
-              data::SChampionshipPlayer l_cPlayer = l_vStandings[2];
+            if (l_pPodium[2] != nullptr && l_pBronze != nullptr) {
               std::string l_sName = "";
               std::string l_sBot  = "";
 
-              helpers::splitStringNameBot(l_cPlayer.m_sName, l_sName, l_sBot);
+              helpers::splitStringNameBot(l_pPodium[2]->m_sName, l_sName, l_sBot);
 
               helpers::fitString(helpers::s2ws(l_sName), l_pFontSmall, irr::core::dimension2du(1024, 128));
 
@@ -146,12 +144,7 @@ namespace dustbin {
                 l_pBronze->getMaterial(0).setTexture(0, p);
 
               if (l_pMarble3 != nullptr) {
-                for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
-                    l_pMarble3->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture((*it).m_sTexture));
-                    break;
-                  }
-                }
+                l_pMarble3->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(l_pPodium[2]->m_sTexture));
               }
             }
             else {
