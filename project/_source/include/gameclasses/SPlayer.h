@@ -243,6 +243,8 @@ namespace dustbin {
       int m_iScore;     /**< The score of the player */
       int m_iBestPos;   /**< The best position of the player */
       int m_iBestRace;  /**< The race the player has scored his best position */
+
+      int m_aResult[16];    /**< List of the player's race results */
       
       /**
       * The default constructor

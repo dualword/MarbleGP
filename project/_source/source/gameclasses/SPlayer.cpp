@@ -548,7 +548,8 @@ namespace dustbin {
     * The default constructor
     */
     SStandings::SStandings() : m_iPlayer(0), m_iRespawn(0), m_iStunned(0), m_iNoFinish(0) {
-
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = 0;
     }
 
     /**
@@ -556,6 +557,8 @@ namespace dustbin {
     * @param a_iPlayer the player ID
     */
     SStandings::SStandings(int a_iPlayer) : m_iPlayer(a_iPlayer), m_iRespawn(0), m_iStunned(0), m_iNoFinish(0), m_iScore(0), m_iBestPos(-1), m_iBestRace(-1) {
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = 0;
     }
 
     /**
@@ -571,6 +574,8 @@ namespace dustbin {
       m_iBestPos (a_cOther.m_iBestPos ),
       m_iBestRace(a_cOther.m_iBestRace)
     {
+      for (int i = 0; i < 16; i++)
+        m_aResult[i] = a_cOther.m_aResult[i];
     }
 
     /**
@@ -611,6 +616,8 @@ namespace dustbin {
             m_iBestPos  = l_pRaceData->m_iPosition;
             m_iBestRace = a_iRace;
           }
+
+          m_aResult[l_pRaceData->m_iPosition - 1]++;
 
           break;
         }
@@ -654,9 +661,17 @@ namespace dustbin {
       s += "\"stunned\":"   + std::to_string(m_iStunned ) + ",";
       s += "\"widhdrawn\":" + std::to_string(m_iNoFinish) + ",";
       s += "\"bestpos\":"   + std::to_string(m_iBestPos ) + ",";
-      s += "\"bestrace\":"  + std::to_string(m_iBestRace);
+      s += "\"bestrace\":"  + std::to_string(m_iBestRace) + ",";
+      s += "\"results\": [";
 
-      return s + "}";
+      for (int i = 0; i < 16; i++) {
+        if (i != 0)
+          s += ",";
+        
+        s += std::to_string(m_aResult[i]);
+      }
+
+      return s + "] }";
     }
 
 

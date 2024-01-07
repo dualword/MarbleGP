@@ -2,11 +2,11 @@
 
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
-#include <data/CDataStructs.h>
 #include <helpers/CAutoMenu.h>
 #include <gui/CMenuButton.h>
 #include <state/IState.h>
@@ -43,13 +43,12 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-
-          printf("\n\n%s\n\n", m_pState->getGlobal()->getGlobal("championship").c_str());
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+          gameclasses::SRace       *l_pLastRace   = l_pTournament->getRace();
 
           irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("tab_result", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
 
-          if (l_pTab != nullptr) {
+          if (l_pTab != nullptr && l_pTournament != nullptr) {
             irr::core::position2di l_cRowPos = l_pTab->getAbsoluteClippingRect().UpperLeftCorner;
             irr::core::position2di l_cColPos = l_cRowPos;
 
@@ -126,17 +125,25 @@ namespace dustbin {
               else l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
             }
 
-            std::vector<data::SChampionshipPlayer> l_vStandings = l_cChampionship.getStandings();
-
             l_cRowPos.Y += l_iHeight;
 
             int l_iPos = 1;
 
-            data::SRacePlayers l_cPlayers;
-            std::string l_sPlayers = CGlobal::getInstance()->getGlobal("raceplayers");
-            l_cPlayers.deserialize(l_sPlayers);
+            for (auto &l_cStanding: l_pLastRace->m_vStandings) {
+              gameclasses::SPlayer *l_pPlayer = nullptr;
 
-            for (std::vector<data::SChampionshipPlayer>::iterator it = l_vStandings.begin(); it != l_vStandings.end(); it++) {
+              for (auto p : l_pTournament->m_vPlayers) {
+                if (p->m_iPlayer == l_cStanding.m_iPlayer) {
+                  l_pPlayer = p;
+                  break;
+                }
+              }
+
+              if (l_pPlayer == nullptr) {
+                printf("Player %i not found.\n", l_cStanding.m_iPlayer);
+                return;
+              }
+
               l_cRowPos.Y += l_iHeight;
               l_cColPos = l_cRowPos;
 
@@ -149,7 +156,7 @@ namespace dustbin {
               std::wstring l_sAiClass = L"";
               int l_iAi = -1;
 
-              if (helpers::splitStringNameBot(helpers::s2ws((*it).m_sName), l_sName, l_sAiClass)) {
+              if (helpers::splitStringNameBot(helpers::s2ws(l_pPlayer->m_sName), l_sName, l_sAiClass)) {
                 if (l_sAiClass == L"marble3")
                   l_iAi = 2;
                 else if (l_sAiClass == L"marble2")
@@ -164,10 +171,10 @@ namespace dustbin {
                 std::wstring l_sText = 
                   std::get<2>(l_tColumn) == enColumn::Pos     ? L" " + std::to_wstring(l_iPos) :
                   std::get<2>(l_tColumn) == enColumn::Name    ? l_sName :
-                  std::get<2>(l_tColumn) == enColumn::Points  ? std::to_wstring((*it).m_iPoints      ) + L" " :
-                  std::get<2>(l_tColumn) == enColumn::Respawn ? std::to_wstring((*it).m_iRespawn     ) + L" " :
-                  std::get<2>(l_tColumn) == enColumn::Stunned ? std::to_wstring((*it).m_iStunned     ) + L" " :
-                  std::get<2>(l_tColumn) == enColumn::Dnf     ? std::to_wstring((*it).m_iDidNotFinish) + L" " : L"";
+                  std::get<2>(l_tColumn) == enColumn::Points  ? std::to_wstring(l_cStanding.m_iScore   ) + L" " :
+                  std::get<2>(l_tColumn) == enColumn::Respawn ? std::to_wstring(l_cStanding.m_iRespawn ) + L" " :
+                  std::get<2>(l_tColumn) == enColumn::Stunned ? std::to_wstring(l_cStanding.m_iStunned ) + L" " :
+                  std::get<2>(l_tColumn) == enColumn::Dnf     ? std::to_wstring(l_cStanding.m_iNoFinish) + L" " : L"";
                 ;
 
                 if (std::get<2>(l_tColumn) != enColumn::Positions && std::get<2>(l_tColumn) != enColumn::AiClass && std::get<2>(l_tColumn) != enColumn::Name) {
@@ -211,30 +218,24 @@ namespace dustbin {
                   p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
                   p->setOverrideFont(l_pRegular);
 
-                  for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
-                    if ((*it).m_iPlayerId == l_cPlayer.m_iPlayerId) {
-                      std::string l_sType = "";
+                  std::string l_sType = "";
 
-                      std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_cPlayer.m_sTexture);
+                  std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_pPlayer->m_sTexture);
 
-                      std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
-                      std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
-                      std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
+                  std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
+                  std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
+                  std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
 
-                      if (l_sNumber != "") p->setText(helpers::s2ws(l_sNumber).c_str());
-                      if (l_sBack   != "") {
-                        irr::video::SColor l_cColor;
-                        helpers::fillColorFromString(l_cColor, l_sBack);
-                        p->setBackgroundColor(l_cColor);
-                      }
-                      if (l_sColor != "") {
-                        irr::video::SColor l_cColor;
-                        helpers::fillColorFromString(l_cColor, l_sColor);
-                        p->setOverrideColor(l_cColor);
-                      }
-
-                      break;
-                    }
+                  if (l_sNumber != "") p->setText(helpers::s2ws(l_sNumber).c_str());
+                  if (l_sBack   != "") {
+                    irr::video::SColor l_cColor;
+                    helpers::fillColorFromString(l_cColor, l_sBack);
+                    p->setBackgroundColor(l_cColor);
+                  }
+                  if (l_sColor != "") {
+                    irr::video::SColor l_cColor;
+                    helpers::fillColorFromString(l_cColor, l_sColor);
+                    p->setOverrideColor(l_cColor);
                   }
 
                   l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
@@ -250,7 +251,7 @@ namespace dustbin {
                 }
                 else {
                   for (int i = 0; i < 16; i++) {
-                    irr::gui::IGUIStaticText *p = m_pGui->addStaticText((*it).m_aResult[i] == 0 ? L"" : (std::to_wstring((*it).m_aResult[i]) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(l_iPosWidth, l_iHeight)), true, true);
+                    irr::gui::IGUIStaticText *p = m_pGui->addStaticText(l_cStanding.m_aResult[i] == 0 ? L"" : (std::to_wstring(l_cStanding.m_aResult[i]) + L" ").c_str(), irr::core::recti(l_cColPos, irr::core::dimension2du(l_iPosWidth, l_iHeight)), true, true);
                     p->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
                     p->setBackgroundColor(irr::video::SColor(128, 192, 192, 96));
                     p->setDrawBackground(false);
