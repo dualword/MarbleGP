@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
@@ -43,8 +44,8 @@ namespace dustbin {
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
 
-          data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-          data::SChampionshipRace *l_pRace = l_cChampionship.getLastRace();
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+          gameclasses::SRace       *l_pRace       = l_pTournament->getRace();
 
           data::SRacePlayers l_cPlayers;
           std::string l_sPlayers = CGlobal::getInstance()->getGlobal("raceplayers");
@@ -94,7 +95,7 @@ namespace dustbin {
           irr::gui::IGUIStaticText *l_pPlayers = reinterpret_cast<irr::gui::IGUIStaticText*>(helpers::findElementByNameAndType("label_players", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pPlayers != nullptr) {
-            l_pPlayers->setText(std::to_wstring(l_pRace->m_iPlayers).c_str());
+            l_pPlayers->setText(std::to_wstring((int)l_pRace->m_vPlayers.size()).c_str());
           }
 
           irr::gui::IGUIImage *l_pThumbnail = reinterpret_cast<irr::gui::IGUIImage *>(helpers::findElementByNameAndType("thumbnail", irr::gui::EGUIET_IMAGE, m_pGui->getRootGUIElement()));
@@ -148,7 +149,9 @@ namespace dustbin {
               l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
             }
 
-            for (int i = 0; i < l_pRace->m_iPlayers && i < 16; i++) {
+            int l_iPos = 0;
+
+            for (auto l_pResult: l_pRace->m_vRanking) {
               l_cRowPos.Y += l_iHeight;
               l_cColPos = l_cRowPos;
 
@@ -157,54 +160,72 @@ namespace dustbin {
               std::wstring l_sName   = L"-";
               int          l_iAi     = -1;
 
-              if (l_pRace->m_mAssignment.find(l_pRace->m_aResult[i].m_iId) != l_pRace->m_mAssignment.end()) {
-                int l_iPlayer = l_pRace->m_mAssignment[l_pRace->m_aResult[i].m_iId];
-                for (std::vector<data::SChampionshipPlayer>::iterator it = l_cChampionship.m_vPlayers.begin(); it != l_cChampionship.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == l_iPlayer) {
-                    l_sName = helpers::s2ws((*it).m_sName);
-                    std::wstring l_sAiClass= L"";
+              gameclasses::SPlayer *l_pPlayer = nullptr;
 
-                    if (helpers::splitStringNameBot(helpers::s2ws((*it).m_sName), l_sName, l_sAiClass)) {
-                      if (l_sAiClass == L"marble3")
-                        l_iAi = 2;
-                      else if (l_sAiClass == L"marble2")
-                        l_iAi = 1;
-                      else if (l_sAiClass == L"marblegp")
-                        l_iAi = 0;
-                    }
+              for (auto p : l_pTournament->m_vPlayers) {
+                if (p->m_iPlayer == l_pResult->m_iPlayer) {
+                  l_pPlayer = p;
+                  l_sName = helpers::s2ws(l_pPlayer->m_sName);
+                  std::wstring l_sAiClass= L"";
+
+                  if (helpers::splitStringNameBot(helpers::s2ws(l_pPlayer->m_sName), l_sName, l_sAiClass)) {
+                    if (l_sAiClass == L"marble3")
+                      l_iAi = 2;
+                    else if (l_sAiClass == L"marble2")
+                      l_iAi = 1;
+                    else if (l_sAiClass == L"marblegp")
+                      l_iAi = 0;
                   }
+                  break;
                 }
               }
-              else
+
+              if (l_pPlayer == nullptr) {
                 printf("Oops\n");
+                return;
+              }
+
+              gameclasses::SRaceData *l_pData = nullptr;
+
+              for (auto p : l_pRace->m_vRanking) {
+                if (p->m_iPlayer == l_pPlayer->m_iPlayer) {
+                  l_pData = p;
+                  break;
+                }
+              }
+
+              if (l_pData == nullptr) {
+                printf("No race data found for player \"%s\".\n", l_pPlayer->m_sName.c_str());
+                return;
+              }
 
               std::wstring l_sDeficit = L"";
 
-              if (i == 0) {
-                l_sDeficit = helpers::convertToTime(l_pRace->m_aResult[i].getRaceTime());
+              if (l_iPos == 0) {
+                l_sDeficit = helpers::convertToTime(l_pData->m_vLapCheckpoints.back().back());
               }
               else {
-                if (l_pRace->m_aResult[i].m_bWithdrawn)
+                if (l_pData->m_bWithdrawn)
                   l_sDeficit = L"D.N.F.";
-                else if (l_pRace->m_aResult[i].m_iDeficitL < 0) {
-                  if (l_pRace->m_aResult[i].m_iDeficitL == -1)
+                else if (l_pData->m_iDiffLeader < 0) {
+                  if (l_pData->m_iDiffLeader == -1)
                     l_sDeficit = L"+1 Lap";
                   else {
-                    l_sDeficit = L"+" + std::to_wstring(std::abs(l_pRace->m_aResult[i].m_iDeficitL)) + L" Laps";
+                    l_sDeficit = L"+" + std::to_wstring(std::abs(l_pData->m_iDiffLeader)) + L" Laps";
                   }
                 }
                 else {
-                  l_sDeficit = L"+" + helpers::convertToTime(l_pRace->m_aResult[i].m_iDeficitL);
+                  l_sDeficit = L"+" + helpers::convertToTime(l_pData->m_iDiffLeader);
                 }
               }
 
               for (auto l_tColumn : l_vColums) {
                 std::wstring l_sText =
-                  std::get<2>(l_tColumn) == enColumn::Pos      ? std::to_wstring(i + 1) :
+                  std::get<2>(l_tColumn) == enColumn::Pos      ? std::to_wstring(l_iPos + 1) :
                   std::get<2>(l_tColumn) == enColumn::Name     ? l_sName    :
                   std::get<2>(l_tColumn) == enColumn::Racetime ? l_sDeficit :
-                  std::get<2>(l_tColumn) == enColumn::Respawn  ? std::to_wstring(l_pRace->m_aResult[i].m_iRespawn) + L" " :
-                  std::get<2>(l_tColumn) == enColumn::Stunned  ? std::to_wstring(l_pRace->m_aResult[i].m_iStunned) + L" " : L"";
+                  std::get<2>(l_tColumn) == enColumn::Respawn  ? std::to_wstring((int)l_pData->m_vRespawn.size()) + L" " :
+                  std::get<2>(l_tColumn) == enColumn::Stunned  ? std::to_wstring((int)l_pData->m_vStunned.size()) + L" " : L"";
 
                 if (std::get<2>(l_tColumn) == enColumn::Name) {
                   irr::core::recti l_cRect = irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100 - 3 * l_iHeight / 2, l_iHeight));
@@ -221,33 +242,24 @@ namespace dustbin {
                   p->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
                   p->setOverrideFont(l_pFont);
 
-                  if (l_pRace->m_mAssignment.find(l_pRace->m_aResult[i].m_iId) != l_pRace->m_mAssignment.end()) {
-                    int l_iPlayer = l_pRace->m_mAssignment[l_pRace->m_aResult[i].m_iId];
-                    for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
-                      if (l_iPlayer == l_cPlayer.m_iPlayerId) {
-                        std::string l_sType = "";
+                  std::string l_sType = "";
 
-                        std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_cPlayer.m_sTexture);
+                  std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_pPlayer->m_sTexture);
 
-                        std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
-                        std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
-                        std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
+                  std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
+                  std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
+                  std::string l_sColor  = helpers::findTextureParameter(l_mParams, "numbercolor");
 
-                        if (l_sNumber != "") p->setText(helpers::s2ws(l_sNumber).c_str());
-                        if (l_sBack   != "") {
-                          irr::video::SColor l_cColor;
-                          helpers::fillColorFromString(l_cColor, l_sBack);
-                          p->setBackgroundColor(l_cColor);
-                        }
-                        if (l_sColor != "") {
-                          irr::video::SColor l_cColor;
-                          helpers::fillColorFromString(l_cColor, l_sColor);
-                          p->setOverrideColor(l_cColor);
-                        }
-
-                        break;
-                      }
-                    }
+                  if (l_sNumber != "") p->setText(helpers::s2ws(l_sNumber).c_str());
+                  if (l_sBack   != "") {
+                    irr::video::SColor l_cColor;
+                    helpers::fillColorFromString(l_cColor, l_sBack);
+                    p->setBackgroundColor(l_cColor);
+                  }
+                  if (l_sColor != "") {
+                    irr::video::SColor l_cColor;
+                    helpers::fillColorFromString(l_cColor, l_sColor);
+                    p->setOverrideColor(l_cColor);
                   }
                   l_cColPos.X += std::get<0>(l_tColumn) * l_iWidth / 100;
                 }
@@ -271,6 +283,8 @@ namespace dustbin {
                   }
                 }
               }
+
+              l_iPos++;
             }
           }
 
