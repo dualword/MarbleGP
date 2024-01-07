@@ -358,11 +358,12 @@ namespace dustbin {
       l_cPlayers.deserialize(l_pGlobal->getGlobal("raceplayers"));
 
       // Now we need to specify the starting grid of the next race
-      for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
-        if (l_cChampionship.m_vRaces.back().m_mAssignment.find(l_cChampionship.m_vRaces.back().m_aResult[i].m_iId) != l_cChampionship.m_vRaces.back().m_mAssignment.end()) {
-          l_cData.m_vStartingGrid.push_back(l_cChampionship.m_vRaces.back().m_mAssignment[l_cChampionship.m_vRaces.back().m_aResult[i].m_iId]);
+      if (l_cChampionship.m_vRaces.size() > 0)
+        for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
+          if (l_cChampionship.m_vRaces.back().m_mAssignment.find(l_cChampionship.m_vRaces.back().m_aResult[i].m_iId) != l_cChampionship.m_vRaces.back().m_mAssignment.end()) {
+            l_cData.m_vStartingGrid.push_back(l_cChampionship.m_vRaces.back().m_mAssignment[l_cChampionship.m_vRaces.back().m_aResult[i].m_iId]);
+          }
         }
-      }
 
       if (l_cSettings.m_bReverseGrid) {
         std::reverse(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end());

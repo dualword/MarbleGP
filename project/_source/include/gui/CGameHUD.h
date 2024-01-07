@@ -4,6 +4,7 @@
 #include <_generated/messages/IGameHUD.h>
 #include <scenenodes/CMyTextSceneNode.h>
 #include <gui/CGameHUDHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <irrlicht.h>
 #include <string>
 #include <vector>
@@ -11,10 +12,6 @@
 #include <map>
 
 namespace dustbin {
-  namespace gameclasses {
-    struct SPlayer;
-  }
-
   namespace controller {
     class IControllerAI;
   }
@@ -89,7 +86,7 @@ namespace dustbin {
 
         std::map<enTextElements, STextElement> m_mTextElements;   /**< The text elements of the HUD */
 
-        std::vector<gameclasses::SPlayer *> *m_vRanking;
+        std::vector<gameclasses::SRaceData *> *m_vRanking;
 
         irr::core::dimension2du getDimension(const std::wstring &s, irr::gui::IGUIFont *a_pFont);
 
@@ -243,7 +240,7 @@ namespace dustbin {
         void renderRanking();
 
       public:
-        CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking);
+        CGameHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SRaceData *> *a_vRanking);
         virtual ~CGameHUD();
 
         virtual void draw() override;

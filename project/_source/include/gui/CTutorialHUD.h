@@ -54,7 +54,7 @@ namespace dustbin {
         virtual void onPlayerfinished(irr::s32 a_MarbleId, irr::s32 a_RaceTime, irr::s32 a_Laps) override;
 
       public:
-        CTutorialHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SPlayer *> *a_vRanking, threads::COutputQueue *a_pQueue);
+        CTutorialHUD(gameclasses::SPlayer *a_pPlayer, const irr::core::recti &a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment *a_pGui, std::vector<gameclasses::SRaceData *> *a_vRanking, threads::COutputQueue *a_pQueue);
         virtual ~CTutorialHUD();
 
 

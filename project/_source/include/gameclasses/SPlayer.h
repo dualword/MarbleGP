@@ -85,7 +85,7 @@ namespace dustbin {
       gameclasses::SMarbleNodes *m_pMarble;       /**< The marble of the player */
       controller::IController   *m_pController;   /**< The controller of this player */
 
-      SRaceData m_cRaceData;    /**< Data of a race */
+      SRaceData *m_pRaceData;     /**< Data of a race */
 
       /**
       * Some debugging: dump the lap checkpoints vector to stdout
@@ -185,8 +185,8 @@ namespace dustbin {
 
       int m_iLaps;      /**< The number of laps of the race */
 
-      std::vector<SPlayer *> m_vPlayers;    /**< The players of the race */
-      std::vector<SPlayer *> m_vRanking;    /**< The ranking of the race */
+      std::vector<SPlayer   *> m_vPlayers;    /**< The players of the race */
+      std::vector<SRaceData *> m_vRanking;    /**< The ranking of the race */
 
       std::vector<SStandings> m_vStandings;   /**< The tournament standings after this race */
 

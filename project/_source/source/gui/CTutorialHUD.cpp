@@ -10,7 +10,7 @@
 
 namespace dustbin {
   namespace gui {
-    CTutorialHUD::CTutorialHUD(gameclasses::SPlayer* a_pPlayer, const irr::core::recti& a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment* a_pGui, std::vector<gameclasses::SPlayer*>* a_vRanking, threads::COutputQueue *a_pQueue) :
+    CTutorialHUD::CTutorialHUD(gameclasses::SPlayer* a_pPlayer, const irr::core::recti& a_cRect, int a_iLapCnt, irr::gui::IGUIEnvironment* a_pGui, std::vector<gameclasses::SRaceData *>* a_vRanking, threads::COutputQueue *a_pQueue) :
       CGameHUD(a_pPlayer, a_cRect, a_iLapCnt, a_pGui, a_vRanking), m_iCurrent(0), m_pRoot(nullptr), m_pHint(nullptr), m_pQueue(a_pQueue)
     {
       int l_iCount = 0;

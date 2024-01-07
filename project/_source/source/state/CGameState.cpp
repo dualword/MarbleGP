@@ -1686,7 +1686,7 @@ namespace dustbin {
           data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
 
           for (auto l_cThePlayer : m_pRaceData->m_vPlayers) {
-            if (l_cThePlayer->m_cRaceData.m_iMarble == l_cPlayer.m_iId) {
+            if (l_cThePlayer->m_pRaceData->m_iMarble == l_cPlayer.m_iId) {
               printf("onRaceResult: \"%s\"\n", l_cThePlayer->m_sName.c_str());
               break;
             }
@@ -1757,8 +1757,6 @@ namespace dustbin {
     * Update the race positions
     */
     void CGameState::updateRacePositions() {
-      // m_pRaceData->updateRanking();
-
       if (m_pPanelRndr != nullptr)
         m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
     }

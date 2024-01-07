@@ -7,6 +7,7 @@
 namespace dustbin {
   namespace gameclasses {
     struct SPlayer;   /**< Forward declaration of SPlayer */
+    struct SRaceData; /**< Forward declaration of SRaceData */
   }
 
   namespace gui {
@@ -69,7 +70,7 @@ namespace dustbin {
         * Update ranking
         * @param a_vPlayers the current ranking (sorted vector)
         */
-        void updateRanking(const std::vector<gameclasses::SPlayer *> &a_vPlayers);
+        void updateRanking(const std::vector<gameclasses::SRaceData *> &a_vPlayers);
 
         /**
         * Updates the texture if necessary
