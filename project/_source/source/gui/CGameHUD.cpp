@@ -51,7 +51,7 @@ namespace dustbin {
       if (m_iGoStep != 0) {
         for (std::vector<gameclasses::SRaceData*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
           if ((*it)->m_iMarble == a_MarbleId) {
-            (*it)->m_pPlayer->m_iState = 3;
+            (*it)->m_pPlayer->m_pRaceData->m_iState = 3;
             break;
           }
         }
@@ -79,7 +79,7 @@ namespace dustbin {
 
         for (auto l_pPlayer: *m_vRanking) {
           if (l_pPlayer->m_iMarble == a_MarbleId)
-            l_pPlayer->m_pPlayer->m_iState = 4;
+            l_pPlayer->m_pPlayer->m_pRaceData->m_iState = 4;
         }
       }
 
@@ -133,9 +133,9 @@ namespace dustbin {
         for (std::vector<gameclasses::SRaceData*>::iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
           if ((*it)->m_iMarble == a_MarbleId) {
             if (a_State == 1)
-              (*it)->m_pPlayer->m_iState = 1;
+              (*it)->m_pPlayer->m_pRaceData->m_iState = 1;
             else
-              (*it)->m_pPlayer->m_iState = 0;
+              (*it)->m_pPlayer->m_pRaceData->m_iState = 0;
             break;
           }
         }
@@ -607,7 +607,7 @@ namespace dustbin {
         m_aRanking[i]->setData(
           (*m_vRanking)[i]->m_pPlayer->m_sWName, 
           0, 
-          (*m_vRanking)[i]->m_pPlayer->m_bWithdrawn,
+          (*m_vRanking)[i]->m_pPlayer->m_pRaceData->m_bWithdrawn,
           (*m_vRanking)[i]->m_pPlayer->m_cBack, 
           (*m_vRanking)[i]->m_pPlayer->m_cText, 
           (*m_vRanking)[i]->m_pPlayer->m_cFrme,
@@ -647,7 +647,7 @@ namespace dustbin {
       m_cCheckered = m_pCheckered->getOriginalSize();
 
       for (std::vector<gameclasses::SRaceData*>::iterator l_itRank = a_vRanking->begin(); l_itRank != a_vRanking->end(); l_itRank++) {
-        (*l_itRank)->m_pPlayer->m_iState = 0;
+        (*l_itRank)->m_pPlayer->m_pRaceData->m_iState = 0;
       }
 
       m_pSpeedBar = new CHudSpeedBar(m_pDrv, l_pRegular, a_cRect);
@@ -787,11 +787,11 @@ namespace dustbin {
       for (std::vector<gameclasses::SRaceData*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         irr::video::SColor l_cColor = irr::video::SColor(128, 224, 244, 244);
 
-        if ((*it)->m_pPlayer->m_iState == 1)
+        if ((*it)->m_pPlayer->m_pRaceData->m_iState == 1)
           l_cColor = irr::video::SColor(128, 0, 0, 255);
-        else if ((*it)->m_pPlayer->m_iState == 2)
+        else if ((*it)->m_pPlayer->m_pRaceData->m_iState == 2)
           l_cColor = irr::video::SColor(128, 255, 0, 0);
-        else if ((*it)->m_pPlayer->m_iState == 3)
+        else if ((*it)->m_pPlayer->m_pRaceData->m_iState == 3)
           l_cColor = irr::video::SColor(128, 255, 255, 0);
 
         irr::core::recti l_cNameRect = irr::core::recti(l_cPos, m_cPosNameDim);
@@ -808,7 +808,7 @@ namespace dustbin {
         draw2dRectangleOutlineWithClipping(l_cNumber, (*it)->m_pPlayer->m_cFrme, m_cRect);
         m_pTimeFont->draw((*it)->m_pPlayer->m_sNumber.c_str(), l_cNumber, (*it)->m_pPlayer->m_cText, true, true, &m_cRect);
 
-        if ((*it)->m_pPlayer->m_iState == 4 && m_pCheckered != nullptr) {
+        if ((*it)->m_pPlayer->m_pRaceData->m_iState == 4 && m_pCheckered != nullptr) {
           m_pDrv->draw2DImage(m_pCheckered, irr::core::recti(irr::core::position2di(l_cNumber.LowerRightCorner.X, l_cNumber.UpperLeftCorner.Y), m_cStartNr), irr::core::recti(irr::core::position2di(0, 0), m_cCheckered), &m_cRect, nullptr, false);
         }
 
@@ -873,9 +873,9 @@ namespace dustbin {
             for (std::vector<gameclasses::SRaceData*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
               if ((*it)->m_iPosition == l_iPos[i]) {
                 m_pDrv->draw2DRectangle(
-                  (*it)->m_pPlayer->m_iState == 1 ? irr::video::SColor(192,  96,  96, 255) :
-                  (*it)->m_pPlayer->m_iState == 2 ? irr::video::SColor(192, 255,  96,  96) :
-                  (*it)->m_pPlayer->m_iState == 3 ? irr::video::SColor(192, 255, 255,  96) : irr::video::SColor(192, 232, 232, 232), 
+                  (*it)->m_pPlayer->m_pRaceData->m_iState == 1 ? irr::video::SColor(192,  96,  96, 255) :
+                  (*it)->m_pPlayer->m_pRaceData->m_iState == 2 ? irr::video::SColor(192, 255,  96,  96) :
+                  (*it)->m_pPlayer->m_pRaceData->m_iState == 3 ? irr::video::SColor(192, 255, 255,  96) : irr::video::SColor(192, 232, 232, 232), 
                   l_cRects[i], &m_cRect
                 );
 
@@ -1022,7 +1022,15 @@ namespace dustbin {
       int l_iIndex = 0;
       for (std::vector<gameclasses::SRaceData*>::const_iterator it = m_vRanking->begin(); it != m_vRanking->end(); it++) {
         if (m_aRanking[l_iIndex] != nullptr) {
-          m_aRanking[l_iIndex]->setData((*it)->m_pPlayer->m_sWName, (*it)->m_iDiffLeader, (*it)->m_pPlayer->m_bWithdrawn, (*it)->m_pPlayer->m_cBack, (*it)->m_pPlayer->m_cText, (*it)->m_pPlayer->m_cFrme, (*it)->m_pPlayer->m_pMarble->m_pPlayer->m_sNumber);
+          m_aRanking[l_iIndex]->setData(
+            (*it)->m_pPlayer->m_sWName, 
+            (*it)->m_iDiffLeader, 
+            (*it)->m_pPlayer->m_pRaceData->m_bWithdrawn, 
+            (*it)->m_pPlayer->m_cBack, 
+            (*it)->m_pPlayer->m_cText, 
+            (*it)->m_pPlayer->m_cFrme, 
+            (*it)->m_pPlayer->m_pMarble->m_pPlayer->m_sNumber
+          );
         }
         l_iIndex++;
       }

@@ -59,9 +59,9 @@ namespace dustbin {
           m_aDiffAhead[l_iIndex] = (*l_itOther)->m_pRaceData->m_iDiffAhead;
         }
 
-        if (m_aState[l_iIndex] != (*l_itOther)->m_iState) {
+        if (m_aState[l_iIndex] != (*l_itOther)->m_pRaceData->m_iState) {
           l_bUpdate = true;
-          m_aState[l_iIndex] = (*l_itOther)->m_iState;
+          m_aState[l_iIndex] = (*l_itOther)->m_pRaceData->m_iState;
         }
 
         l_iIndex++;
@@ -200,13 +200,13 @@ namespace dustbin {
           m_pDrv->draw2DRectangleOutline(std::get<3>(m_aRecPos[l_iIndex]), irr::video::SColor(0xFF, 0, 0, 0));
           m_pDrv->draw2DRectangle(l_pPlayer->m_cBack, std::get<0>(m_aRecPos[l_iIndex]));
 
-          if (l_pPlayer->m_iState == 1) {
+          if (l_pPlayer->m_pRaceData->m_iState == 1) {
             m_pDrv->draw2DRectangle(irr::video::SColor(128, 0, 0, 255), std::get<3>(m_aRecPos[l_iIndex]));
           }
-          else if (l_pPlayer->m_iState == 2) {
+          else if (l_pPlayer->m_pRaceData->m_iState == 2) {
             m_pDrv->draw2DRectangle(irr::video::SColor(128, 255, 0, 0), std::get<3>(m_aRecPos[l_iIndex]));
           }
-          else if (l_pPlayer->m_iState == 3) {
+          else if (l_pPlayer->m_pRaceData->m_iState == 3) {
             m_pDrv->draw2DRectangle(irr::video::SColor(128, 255, 255, 0), std::get<3>(m_aRecPos[l_iIndex]));
           }
 

@@ -12,28 +12,8 @@ namespace dustbin {
     /**
     * The default contructor
     */
-    SRaceData::SRaceData() : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0), m_pPlayer(nullptr) {
+    SRaceData::SRaceData() : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0), m_iState(0), m_iLapNo(0), m_pPlayer(nullptr), m_bWithdrawn(false) {
 
-    }
-
-    /**
-    * The copy constructor
-    * @param a_cRace the race to copy
-    */
-    SRaceData::SRaceData(const SRaceData& a_cRace) : 
-      m_iPlayer    (a_cRace.m_iPlayer), 
-      m_iMarble    (a_cRace.m_iMarble), 
-      m_iPosition  (a_cRace.m_iPosition), 
-      m_iDiffLeader(a_cRace.m_iDiffLeader), 
-      m_iDiffAhead (a_cRace.m_iDiffAhead) 
-    {
-      for (auto l_vLap : a_cRace.m_vLapCheckpoints) {
-        m_vLapCheckpoints.push_back(std::vector<int>());
-
-        for (auto l_iCp : l_vLap) {
-          m_vLapCheckpoints.back().push_back(l_iCp);
-        }
-      }
     }
 
     /**
@@ -43,8 +23,10 @@ namespace dustbin {
     std::string SRaceData::toJSON() {
       std::string s = "{";
 
-      s += "\"playerid\": " + std::to_string(m_iPlayer) + ", ";
-      s += "\"marbleid\": " + std::to_string(m_iMarble) + ", ";
+      s += "\"playerid\": "  + std::to_string(m_iPlayer) + ", ";
+      s += "\"marbleid\": "  + std::to_string(m_iMarble) + ", ";
+      s += "\"state\": "     + std::to_string(m_iState ) + ",";
+      s += "\"withdrawn\": " + std::string(m_bWithdrawn ? "true" : "false") + ",";
       s += "\"laps\": [";
 
       for (std::vector<std::vector<int>>::iterator l_itLap = m_vLapCheckpoints.begin(); l_itLap != m_vLapCheckpoints.end(); l_itLap++) {
@@ -98,10 +80,7 @@ namespace dustbin {
       m_sShortName     (""),
       m_sNumber        (L""),
       m_wsShortName    (L""),
-      m_bWithdrawn     (false),
       m_bShowRanking   (true),
-      m_iState         (0),
-      m_iLapNo         (0),
       m_eType          (data::enPlayerType::Local),
       m_eAiHelp        (data::SPlayerData::enAiHelp::Off),
       m_pMarble        (nullptr),
@@ -113,38 +92,15 @@ namespace dustbin {
     }
 
     /**
-    * Copy constructor
-    * @param a_cPlayer the player to copy
-    */
-    SPlayer::SPlayer(const SPlayer& a_cPlayer) :
-      m_iPlayer        (a_cPlayer.m_iPlayer),
-      m_sName          (a_cPlayer.m_sName),
-      m_sTexture       (a_cPlayer.m_sTexture),
-      m_sController    (a_cPlayer.m_sController),
-      m_sShortName     (a_cPlayer.m_sShortName),
-      m_sNumber        (a_cPlayer.m_sNumber),
-      m_wsShortName    (a_cPlayer.m_wsShortName),
-      m_bWithdrawn     (a_cPlayer.m_bWithdrawn),
-      m_bShowRanking   (a_cPlayer.m_bShowRanking),
-      m_iState         (a_cPlayer.m_iState),
-      m_iLapNo         (a_cPlayer.m_iLapNo),
-      m_eType          (a_cPlayer.m_eType),
-      m_eAiHelp        (a_cPlayer.m_eAiHelp),
-      m_pMarble        (a_cPlayer.m_pMarble),
-      m_pController    (a_cPlayer.m_pController)
-    {
-      m_pRaceData = new SRaceData(*a_cPlayer.m_pRaceData);
-    }
-
-    /**
     * Store the race data of this player to a JSON string
     * @return the JSON string
     */
     std::string SPlayer::toJSON() {
       std::string s = "{ ";
 
-      s += "\"playerid\": "   + std::to_string(m_iPlayer) + ",";
+      s += "\"playerid\": "     + std::to_string(m_iPlayer) + ",";
       s += "\"name\": \""       + m_sName + "\",";
+      s += "\"shortname\": \""  + m_sShortName + "\",";
       s += "\"texture\": \""    + m_sTexture + "\",";
       s += "\"controller\": \"" + m_sController + "\"";
 
@@ -178,10 +134,7 @@ namespace dustbin {
       m_sController   (a_sController),
       m_sShortName    (a_sShortName),
       m_wsShortName   (helpers::s2ws(a_sShortName)),
-      m_bWithdrawn    (false),
       m_bShowRanking  (true),
-      m_iState        (0),
-      m_iLapNo        (0),
       m_eType         (a_eType),
       m_eAiHelp       (a_eAiHelp),
       m_pMarble       (a_pMarble),
@@ -376,9 +329,9 @@ namespace dustbin {
     * @param a_iStep step when the change happened
     */
     void SPlayer::onStateChanged(int a_iState, int a_iStep) {
-      m_iState = a_iState;
+      m_pRaceData->m_iState = a_iState;
 
-      if (m_iState == 3) {
+      if (m_pRaceData->m_iState == 3) {
         if (m_pRaceData->m_vLapCheckpoints.size() > 0 && m_pRaceData->m_vLapCheckpoints.back().size() > 0) {
           m_pRaceData->m_vLapCheckpoints.back().back() = a_iStep;
           m_pRaceData->m_vRespawn.push_back(a_iStep);
@@ -403,23 +356,6 @@ namespace dustbin {
         m_vRanking.erase(m_vRanking.begin());
         delete p;
       }
-    }
-
-    /**
-    * Copy constructor
-    * @param a_cRace the race to copy
-    */
-    SRace::SRace(const SRace& a_cRace, STournament *a_pTournament) : m_sTrack(a_cRace.m_sTrack), m_iLaps(a_cRace.m_iLaps), m_pTournament(a_pTournament) {
-      for (auto l_pPlayer : a_pTournament->m_vPlayers) {
-        m_vPlayers.push_back(l_pPlayer);
-
-        m_vRanking.back()->m_iPlayer = l_pPlayer->m_iPlayer;
-
-        l_pPlayer->m_pRaceData = new SRaceData();
-        m_vRanking.push_back(l_pPlayer->m_pRaceData);
-      }
-
-      updateRanking();
     }
 
     /**
@@ -576,7 +512,7 @@ namespace dustbin {
 
       if (l_pLeader->m_vLapCheckpoints.size() > 0) {
         for (std::vector<SRaceData *>::iterator l_itPlr = m_vRanking.begin() + 1; l_itPlr != m_vRanking.end(); l_itPlr++) {
-          if ((*l_itPlr)->m_pPlayer->m_iState != 4) {
+          if ((*l_itPlr)->m_pPlayer->m_pRaceData->m_iState != 4) {
             int l_iSteps = 0;
             int l_iLaps  = 0;
 
@@ -668,7 +604,7 @@ namespace dustbin {
           m_iRespawn += (int)l_pRaceData->m_vRespawn.size();
           m_iStunned += (int)l_pRaceData->m_vStunned.size();
 
-          if (l_pRaceData->m_pPlayer->m_bWithdrawn)
+          if (l_pRaceData->m_pPlayer->m_pRaceData->m_bWithdrawn)
             m_iNoFinish++;
 
           if (m_iBestPos == -1 || l_pRaceData->m_iPosition < m_iBestPos) {
@@ -733,27 +669,6 @@ namespace dustbin {
       m_iThisRace  (-1),
       m_bReverse   (false)
     {
-    }
-
-    /**
-    * The copy constructor
-    * @param a_cOther the data to be copied
-    */
-    STournament::STournament(const STournament &a_cOther) :
-      m_eAutoFinish(a_cOther.m_eAutoFinish),
-      m_eRaceClass (a_cOther.m_eRaceClass ),
-      m_iThisRace  (a_cOther.m_iThisRace  ),
-      m_bReverse   (a_cOther.m_bReverse   )
-    {
-      for (auto l_pPlayer : a_cOther.m_vPlayers) {
-        m_vPlayers.push_back(new SPlayer(*l_pPlayer));
-      }
-
-      for (auto l_pRace : a_cOther.m_vRaces) {
-        m_vRaces.push_back(new SRace(*l_pRace, this));
-      }
-
-      calculateStandings();
     }
 
     /**

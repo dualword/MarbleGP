@@ -1619,10 +1619,10 @@ namespace dustbin {
 
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        m_aMarbles[l_iIndex]->m_pPlayer->m_iLapNo++;
+        m_aMarbles[l_iIndex]->m_pPlayer->m_pRaceData ->m_iLapNo++;
 
         if (m_pPanelRndr != nullptr)
-          m_pPanelRndr->updateCurrentLap(m_aMarbles[l_iIndex]->m_pPlayer->m_iLapNo);
+          m_pPanelRndr->updateCurrentLap(m_aMarbles[l_iIndex]->m_pPlayer->m_pRaceData->m_iLapNo);
         
       }
       m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::Lap);
@@ -1796,7 +1796,7 @@ namespace dustbin {
     void CGameState::onPlayerwithdrawn(irr::s32 a_MarbleId) {
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {
-        m_aMarbles[l_iIndex]->m_pPlayer->m_bWithdrawn = true;
+        m_aMarbles[l_iIndex]->m_pPlayer->m_pRaceData->m_bWithdrawn = true;
       }
 
       updateRacePositions();

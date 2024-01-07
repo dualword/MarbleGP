@@ -23,11 +23,14 @@ namespace dustbin {
     * @see SPlayer::m_cRaceData
     */
     typedef struct SRaceData {
-      int m_iPlayer;      /**< The player ID */
-      int m_iMarble;      /**< The marble ID */
-      int m_iPosition;    /**< The position in the race */
-      int m_iDiffLeader;  /**< The deficit to the leader */
-      int m_iDiffAhead;   /**< The deficit to the marble ahead */
+      int  m_iPlayer;       /**< The player ID */
+      int  m_iMarble;       /**< The marble ID */
+      int  m_iPosition;     /**< The position in the race */
+      int  m_iDiffLeader;   /**< The deficit to the leader */
+      int  m_iDiffAhead;    /**< The deficit to the marble ahead */
+      int  m_iState;        /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
+      int  m_iLapNo;        /**< The player's current lap */
+      bool m_bWithdrawn;    /**< Has the player withdrawn from the race? */
 
       std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
 
@@ -40,12 +43,6 @@ namespace dustbin {
       * The default contructor
       */
       SRaceData();
-
-      /**
-      * The copy constructor
-      * @param a_cRace the race to copy
-      */
-      SRaceData(const SRaceData &a_cRace);
 
       /**
       * Store the data in a JSON string
@@ -69,10 +66,7 @@ namespace dustbin {
       std::string  m_sShortName;        /**< The short name of the player */
       std::wstring m_sNumber;           /**< The player's starting number */
       std::wstring m_wsShortName;       /**< The player's short name as wide string */
-      bool         m_bWithdrawn;        /**< Has the player withdrawn from the race? */
       bool         m_bShowRanking;      /**< Flag for some controllers to hide ranking and laptimes */
-      int          m_iState;            /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
-      int          m_iLapNo;            /**< The player's current lap */
 
       irr::video::SColor m_cText;   /**< The text color (for the starting number in the ranking display) */
       irr::video::SColor m_cBack;   /**< The background color (for the starting number in the ranking display) */
@@ -96,12 +90,6 @@ namespace dustbin {
       * The default constructor
       */
       SPlayer();
-
-      /**
-      * Copy constructor
-      * @param a_cPlayer the player to copy
-      */
-      SPlayer(const SPlayer &a_cPlayer);
 
       /**
       * The main constructor
@@ -193,12 +181,6 @@ namespace dustbin {
       STournament *m_pTournament;   /**< The tournament this race is assigned to */
 
       SRace(const std::string &a_sTrack, int a_iLaps, STournament *a_pTournament);
-
-      /**
-      * Copy constructor
-      * @param a_cRace the race to copy
-      */
-      SRace(const SRace &a_cRace, STournament *a_pTournament);
 
       /**
       * The destructor
@@ -320,12 +302,6 @@ namespace dustbin {
       * The standard contructor
       */
       STournament();
-
-      /**
-      * The copy constructor
-      * @param a_cOther the data to be copied
-      */
-      STournament(const STournament &a_cOther);
 
       /**
       * The destructor
