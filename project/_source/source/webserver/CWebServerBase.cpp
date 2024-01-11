@@ -836,8 +836,6 @@ namespace dustbin {
     bool CWebServerRequestBase::saveAiProfileData(const std::string& a_sData, std::string &a_sResponse) {
       bool l_bRet = true;
 
-      printf("\n\n%s\n\n", a_sData.c_str());
-
       std::vector<std::tuple<std::string, std::string, std::string, int, int, float>> l_vAiPlayers;
       helpers::loadAiProfiles(l_vAiPlayers);
 

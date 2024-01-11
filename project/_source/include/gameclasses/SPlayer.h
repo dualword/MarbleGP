@@ -30,6 +30,7 @@ namespace dustbin {
       int  m_iDiffAhead;    /**< The deficit to the marble ahead */
       int  m_iState;        /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
       int  m_iLapNo;        /**< The player's current lap */
+      int  m_iGridPos;      /**< The player's position in the starting grid of the race */
       bool m_bWithdrawn;    /**< Has the player withdrawn from the race? */
 
       std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */

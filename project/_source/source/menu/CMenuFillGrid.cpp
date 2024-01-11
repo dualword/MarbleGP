@@ -191,7 +191,7 @@ namespace dustbin {
               l_cData.m_sShortName  = std::get<1>(*l_itAi);
               l_cData.m_wsShortName = helpers::s2ws(l_cData.m_sShortName);
               l_cData.m_fDeviation  = std::get<5>(*l_itAi) / 100.0f;
-              l_cData.m_sControls   = "class=" + (*l_vAiClass.begin());
+              l_cData.m_sControls   = "class=" + (*l_vAiClass.begin()) + "&deviation=" + std::to_string(std::get<5>(*l_itAi) / 100.0f);
               l_cData.m_sTexture    = std::get<2>(*l_itAi) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
 
               if (l_cData.m_sTexture.find("pattern=") == std::string::npos) {

@@ -228,7 +228,7 @@ namespace dustbin {
         bool setupGame(
           scenenodes::CWorldNode *a_pWorld,
           scenenodes::CStartingGridSceneNode *a_pGrid,
-          const std::vector<data::SPlayerData> &a_vPlayers, 
+          const std::vector<gameclasses::SPlayer *> &a_vPlayers, 
           int a_iLaps,
           const std::string &a_sLuaScript,
           data::SGameSettings::enAutoFinish a_eAutoFinish);
@@ -303,7 +303,7 @@ namespace dustbin {
         * @param a_pPlayer the player
         * @param a_pMarbleNode scene node of the marble
         */
-        void assignPlayerToMarble(data::SPlayerData *a_pPlayer, irr::scene::ISceneNode *a_pMarbleNode);
+        void assignPlayerToMarble(gameclasses::SPlayer *a_pPlayer, irr::scene::ISceneNode *a_pMarbleNode);
 
         /**
         * Retrieve the world of the race

@@ -12,8 +12,18 @@ namespace dustbin {
     /**
     * The default contructor
     */
-    SRaceData::SRaceData() : m_iPlayer(0), m_iMarble(0), m_iPosition(0), m_iDiffLeader(0), m_iDiffAhead(0), m_iState(0), m_iLapNo(0), m_pPlayer(nullptr), m_bWithdrawn(false) {
-
+    SRaceData::SRaceData() : 
+      m_iPlayer    (0), 
+      m_iMarble    (0), 
+      m_iPosition  (0), 
+      m_iDiffLeader(0), 
+      m_iDiffAhead (0), 
+      m_iState     (0), 
+      m_iLapNo     (0), 
+      m_iGridPos   (0),
+      m_bWithdrawn (false),
+      m_pPlayer    (nullptr)
+    {
     }
 
     /**
@@ -23,9 +33,10 @@ namespace dustbin {
     std::string SRaceData::toJSON() {
       std::string s = "{";
 
-      s += "\"playerid\": "  + std::to_string(m_iPlayer) + ", ";
-      s += "\"marbleid\": "  + std::to_string(m_iMarble) + ", ";
-      s += "\"state\": "     + std::to_string(m_iState ) + ",";
+      s += "\"playerid\": "  + std::to_string(m_iPlayer)  + ",";
+      s += "\"marbleid\": "  + std::to_string(m_iMarble)  + ",";
+      s += "\"state\": "     + std::to_string(m_iState )  + ",";
+      s += "\"gridpos\": "   + std::to_string(m_iGridPos) + ",";
       s += "\"withdrawn\": " + std::string(m_bWithdrawn ? "true" : "false") + ",";
       s += "\"laps\": [";
 

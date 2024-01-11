@@ -921,7 +921,7 @@ namespace dustbin {
     bool CDynamicThread::setupGame(
       scenenodes::CWorldNode* a_pWorld, 
       scenenodes::CStartingGridSceneNode *a_pGrid,
-      const std::vector<data::SPlayerData> &a_vPlayers, 
+      const std::vector<gameclasses::SPlayer *> &a_vPlayers, 
       int a_iLaps, 
       const std::string &a_sLuaScript,
       data::SGameSettings::enAutoFinish a_eAutoFinish
@@ -935,15 +935,15 @@ namespace dustbin {
       helpers::addToDebugLog("    Create phyics objects");
       createPhysicsObjects(a_pWorld);
 
-      std::vector<const data::SPlayerData *> l_vPlayers;
+      std::vector<gameclasses::SPlayer *> l_vPlayers;
 
       helpers::addToDebugLog("    Create player objects");
-      for (std::vector<data::SPlayerData>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++)
-        l_vPlayers.push_back(&(*it));
+      for (std::vector<gameclasses::SPlayer *>::const_iterator it = a_vPlayers.begin(); it != a_vPlayers.end(); it++)
+        l_vPlayers.push_back(*it);
 
       helpers::addToDebugLog("    Sort players");
-      std::sort(l_vPlayers.begin(), l_vPlayers.end(), [](const data::SPlayerData *p1, const data::SPlayerData *p2) {
-        return p1->m_iGridPos < p2->m_iGridPos;
+      std::sort(l_vPlayers.begin(), l_vPlayers.end(), [](const gameclasses::SPlayer *p1, const gameclasses::SPlayer *p2) {
+        return p1->m_pRaceData->m_iGridPos < p2->m_pRaceData->m_iGridPos;
       });
 
       helpers::addToDebugLog("    clear marble object array");
@@ -953,7 +953,7 @@ namespace dustbin {
       if (m_pWorld != nullptr) {
         int l_iIndex = 0;
 
-        for (std::vector<const data::SPlayerData *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
+        for (std::vector<gameclasses::SPlayer *>::const_iterator it = l_vPlayers.begin(); it != l_vPlayers.end(); it++) {
          
 
           l_iIndex++;
@@ -1017,7 +1017,7 @@ namespace dustbin {
     * @param a_pPlayer the player
     * @param a_pMarbleNode scene node of the marble
     */
-    void CDynamicThread::assignPlayerToMarble(data::SPlayerData* a_pPlayer, irr::scene::ISceneNode* a_pMarbleNode) {
+    void CDynamicThread::assignPlayerToMarble(gameclasses::SPlayer *a_pPlayer, irr::scene::ISceneNode* a_pMarbleNode) {
       if (a_pPlayer->m_eType != data::enPlayerType::Ai)
         m_iHuman++;
 
@@ -1025,7 +1025,7 @@ namespace dustbin {
       irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 0.0f, 10.0f);
       l_vOffset.rotateXZBy(m_fGridAngle);
 
-      CObjectMarble* l_pMarble = new CObjectMarble(a_pMarbleNode, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(a_pPlayer->m_iGridPos));
+      CObjectMarble* l_pMarble = new CObjectMarble(a_pMarbleNode, l_vOffset, m_pWorld, std::string("Marble #") + std::to_string(a_pPlayer->m_pRaceData->m_iGridPos));
 
       l_pMarble->m_vDirection  = l_vOffset;
       l_pMarble->m_vUpVector   = irr::core::vector3df(0.0f, 1.0f, 0.0f);
@@ -1041,14 +1041,20 @@ namespace dustbin {
 
       float l_fPowerFactor = 1.0f;
 
-      if (a_pPlayer->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || a_pPlayer->m_sControls == "class=marble3") {
-        l_fPowerFactor = 0.7f;
-      }
-      else if (a_pPlayer->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || a_pPlayer->m_sControls == "class=marble2") {
-        l_fPowerFactor = 0.85f;
-      }
+      std::vector<std::string> l_vParam = helpers::splitString(a_pPlayer->m_sController, '&');
 
-      l_fPowerFactor += a_pPlayer->m_fDeviation;
+      for (auto l_sParam : l_vParam) {
+        if (a_pPlayer->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || l_sParam == "class=marble3") {
+          l_fPowerFactor = 0.7f;
+        }
+        else if (a_pPlayer->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || l_sParam == "class=marble2") {
+          l_fPowerFactor = 0.85f;
+        }
+        else if (l_sParam.substr(0, 10) == "deviation=") {
+          std::string s = l_sParam.substr(10);
+          l_fPowerFactor += (float)std::atof(s.c_str());
+        }
+      }
 
       l_pMarble->m_fSteerPower  = l_fPowerFactor * l_pMarble->m_fSteerPower;
       l_pMarble->m_fThrustPower = l_fPowerFactor * l_pMarble->m_fThrustPower;

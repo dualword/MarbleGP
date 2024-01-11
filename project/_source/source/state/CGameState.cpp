@@ -453,7 +453,7 @@ namespace dustbin {
         std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_pRaceData->m_sTrack + "/physics.lua");
 
         helpers::addToDebugLog("  Setup game");
-        if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_pRaceData->m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
+        if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, l_pTournament->m_vPlayers, m_pRaceData->m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
           handleError("LUA Error.", m_pDynamics->getLuaError());
           return;
         }
@@ -462,12 +462,8 @@ namespace dustbin {
 
         for (auto l_pPlr: m_pRaceData->m_vRanking) {
           irr::scene::ISceneNode *l_pMarble = assignMarbleToPlayer(l_pPlr->m_iPlayer, 10000 + l_iIndex);
-
-          for (auto l_cPlr: m_cPlayers.m_vPlayers) {
-            if (l_cPlr.m_iPlayerId == l_pPlr->m_iPlayer) {
-              m_pDynamics->assignPlayerToMarble(&l_cPlr, l_pMarble);
-            }
-          }
+          l_pPlr->m_iGridPos = l_iIndex + 1;
+          m_pDynamics->assignPlayerToMarble(l_pPlr->m_pPlayer, l_pMarble);
 
           l_iIndex++;
         }
