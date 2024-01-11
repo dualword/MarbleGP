@@ -179,8 +179,6 @@ namespace dustbin {
 
         controller::CAiControlThread *m_pAiThread;
 
-        data::SChampionshipRace *m_pRace;
-
         network::CGameClient *m_pClient;    /**< The game client (if a network game is running) */
         network::CGameServer *m_pServer;    /**< The game server (if a network game is running) */
 
@@ -188,9 +186,7 @@ namespace dustbin {
 
         int m_iNumOfViewports;    /**< The number of necessary viewports, aka local players */
 
-        data::SRacePlayers m_cPlayers;  /**< The player of the race */
-
-        data::SGameData m_cGameData;  /**< The data of the current game */
+		data::SRacePlayers m_cPlayers;  /**< The player of the race */
         data::SSettings m_cSettings;  /**< The global settings */
 
         scenenodes::CStartingGridSceneNode *m_pGridNode;  /**< The starting grid scene node that holds all the available marbles */

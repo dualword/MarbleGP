@@ -62,7 +62,6 @@ namespace dustbin {
       m_pCamAnimator   (nullptr),
       m_pCamera        (nullptr),
       m_pAiThread      (nullptr),
-      m_pRace          (nullptr),
       m_pClient        (nullptr),
       m_pServer        (nullptr),
       m_iNumOfViewports(0),
@@ -328,19 +327,17 @@ namespace dustbin {
 
       helpers::addToDebugLog("Load settings...");
 
-      m_cGameData = data::SGameData(m_pGlobal->getGlobal("gamedata"));
       m_cSettings = m_pGlobal->getSettingData();
 
-      m_pRaceData = m_pGlobal->getTournament()->getRace();
-
-      helpers::addToDebugLog("Initialize marbles...");
+      gameclasses::STournament *l_pTournament = m_pGlobal->getTournament();
+      m_pRaceData = l_pTournament->getRace();
 
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
 
       helpers::addToDebugLog("Load track...");
       // Load the track, and don't forget to run the skybox fix beforehands
-      std::string l_sTrack = "data/levels/" + m_cGameData.m_sTrack + "/track.xml";
+      std::string l_sTrack = "data/levels/" + m_pRaceData->m_sTrack + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
         m_pSmgr->clear();
@@ -407,20 +404,8 @@ namespace dustbin {
       m_fGridAngle = m_pGridNode->getAngle();
       m_pGridNode->setShader(m_pShader);
 
-      data::SGameSettings::enAutoFinish l_eAutoFinish  = data::SGameSettings::enAutoFinish::AllPlayers;
-      bool l_bGridReverse = false;
-
-      std::string l_sSettings = m_pGlobal->getSetting("gamesetup");
-      if (l_sSettings != "") {
-        data::SGameSettings l_cSettings;
-        l_cSettings.deserialize(l_sSettings);
-        l_bGridReverse = l_cSettings.m_bReverseGrid;
-        l_eAutoFinish  = l_cSettings.m_eAutoFinish;
-      }
-
-      helpers::addToDebugLog("Load Championship...");
-      data::SChampionship      l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
-      data::SChampionshipRace *l_pLastRace     = l_cChampionship.getLastRace();
+      data::SGameSettings::enAutoFinish l_eAutoFinish = l_pTournament->m_eAutoFinish;
+      bool l_bGridReverse = l_pTournament->m_bReverse;
 
       std::string l_sPlayers = m_pGlobal->getGlobal("raceplayers");
       m_cPlayers.deserialize(l_sPlayers);
@@ -431,24 +416,6 @@ namespace dustbin {
         if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1)
           m_iNumOfViewports++;
       }
-
-      helpers::addToDebugLog("Create championship race struct...");
-      m_pRace = new data::SChampionshipRace(m_cGameData.m_sTrack, (int)m_cPlayers.m_vPlayers.size(), m_cGameData.m_iLaps);
-
-      int l_iPos = 0;
-
-      for (std::vector<int>::iterator l_itGrid = m_cGameData.m_vStartingGrid.begin(); l_itGrid != m_cGameData.m_vStartingGrid.end(); l_itGrid++) {
-        data::SPlayerData *p = m_cPlayers.getPlayer(*l_itGrid);
-        if (p != nullptr) {
-          p->m_iGridPos = l_iPos++;
-        }
-      }
-
-      helpers::addToDebugLog("Apply grid order...");
-      // First we sort the player vector by the grid position as the first step will be marble assignment ..
-      std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &a_cPlayer1, const data::SPlayerData &a_cPlayer2) {
-        return a_cPlayer1.m_iGridPos < a_cPlayer2.m_iGridPos;
-      });
 
       helpers::addToDebugLog("Fill object maps...");
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));
@@ -483,25 +450,25 @@ namespace dustbin {
         }
 
         helpers::addToDebugLog("  Load physics script");
-        std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/physics.lua");
+        std::string l_sPhysicsScript = helpers::loadTextFile("data/levels/" + m_pRaceData->m_sTrack + "/physics.lua");
 
         helpers::addToDebugLog("  Setup game");
-        if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_cGameData.m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
+        if (!m_pDynamics->setupGame(reinterpret_cast<scenenodes::CWorldNode*>(l_pNode), m_pGridNode, m_cPlayers.m_vPlayers, m_pRaceData->m_iLaps, l_sPhysicsScript, l_eAutoFinish)) {
           handleError("LUA Error.", m_pDynamics->getLuaError());
           return;
         }
 
-
         int l_iIndex = 0;
-        for (std::vector<data::SPlayerData>::iterator l_itPlr = m_cPlayers.m_vPlayers.begin(); l_itPlr != m_cPlayers.m_vPlayers.end(); l_itPlr++) {
 
-          irr::scene::ISceneNode *l_pMarble = assignMarbleToPlayer((*l_itPlr).m_iPlayerId, 10000 + l_iIndex);
-          if (l_pMarble != nullptr) {
-            if ((*l_itPlr).m_eType == data::enPlayerType::Local)
-              printf("%i is my marble!\n", l_pMarble->getID());
+        for (auto l_pPlr: m_pRaceData->m_vRanking) {
+          irr::scene::ISceneNode *l_pMarble = assignMarbleToPlayer(l_pPlr->m_iPlayer, 10000 + l_iIndex);
 
-            m_pDynamics->assignPlayerToMarble(&(*l_itPlr), l_pMarble);
+          for (auto l_cPlr: m_cPlayers.m_vPlayers) {
+            if (l_cPlr.m_iPlayerId == l_pPlr->m_iPlayer) {
+              m_pDynamics->assignPlayerToMarble(&l_cPlr, l_pMarble);
+            }
           }
+
           l_iIndex++;
         }
       }
@@ -617,7 +584,6 @@ namespace dustbin {
 
       m_pGlobal->getTournament()->saveToJSON();
 
-      // delete m_pRaceData;
       helpers::addToDebugLog("Clear vectors");
       m_mViewports.clear();
 
@@ -647,12 +613,6 @@ namespace dustbin {
       m_mCheckpoints.clear();
       m_vCameras    .clear();
       m_vSpeed      .clear();
-
-      if (m_pRace != nullptr) {
-        helpers::addToDebugLog("Delete race object");
-        delete m_pRace;
-        m_pRace = nullptr;
-      }
 
       helpers::addToDebugLog("Stop game sounds");
       m_pSoundIntf->stopGame();
@@ -1308,7 +1268,7 @@ namespace dustbin {
                 l_pPlayer->m_sController, 
                 l_pPlayer->m_eAiHelp, 
                 reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
-                "data/levels/" + m_cGameData.m_sTrack,
+                "data/levels/" + m_pRaceData->m_sTrack,
                 l_pPlayer->m_pMarble->m_pViewport->m_cRect,
                 l_pPlayer->m_bShowRanking
               );
@@ -1324,7 +1284,7 @@ namespace dustbin {
                 m_pAiThread = new controller::CAiControlThread(m_pTheOutputQueue, m_pTheInputQueue);
               }
 
-              m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, "data/levels/" + m_cGameData.m_sTrack);
+              m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, "data/levels/" + m_pRaceData->m_sTrack);
 
               if (m_pClient != nullptr)
                 m_pClient->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
@@ -1336,7 +1296,6 @@ namespace dustbin {
             delete l_pFactory;
           }
 
-          m_pRace->m_mAssignment[l_pMarble->m_pPositional->getID()] = l_pPlayer->m_iPlayer;
           l_pRet = l_pMarble->m_pPositional;
         }
       }
@@ -1352,10 +1311,10 @@ namespace dustbin {
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
         // it->second.m_pPlayer->m_pPlayer->m_pController
-        if (m_cGameData.m_bIsTutorial)
-          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_pRaceData->m_vRanking, m_pOutputQueue);
-        else
-          it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_pRaceData->m_vRanking);
+        // if (m_cGameData.m_bIsTutorial)
+        //   it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_pRaceData->m_vRanking, m_pOutputQueue);
+        // else
+          it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_pRaceData->m_iLaps, m_pGui, &m_pRaceData->m_vRanking);
 
         controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();
         if (l_pCtrl != nullptr) {
@@ -1407,7 +1366,7 @@ namespace dustbin {
       if (m_pAiThread != nullptr)
         m_pAiThread->startThread();
 
-      std::string l_sSceneScript = helpers::loadTextFile("data/levels/" + m_cGameData.m_sTrack + "/scene.lua");
+      std::string l_sSceneScript = helpers::loadTextFile("data/levels/" + m_pRaceData->m_sTrack + "/scene.lua");
 
       if (l_sSceneScript != "") {
         m_pLuaScript = new lua::CLuaScript_scene(l_sSceneScript);
@@ -1681,34 +1640,34 @@ namespace dustbin {
     * @param a_data Encoded SRacePlayer structure
     */
     void CGameState::onRaceresult(const std::string& a_data) {
-      if (m_pRace != nullptr) {
-        if (m_pRace->m_sTrack != "") {
-          data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
-
-          for (auto l_cThePlayer : m_pRaceData->m_vPlayers) {
-            if (l_cThePlayer->m_pRaceData->m_iMarble == l_cPlayer.m_iId) {
-              printf("onRaceResult: \"%s\"\n", l_cThePlayer->m_sName.c_str());
-              break;
-            }
-          }
-
-          if (l_cPlayer.m_iPos > 0 && l_cPlayer.m_iPos <= m_pRace->m_iPlayers) {
-            m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
-          }
-        }
-      }
+      // if (m_pRaceData != nullptr) {
+      //   if (m_pRaceData->m_sTrack != "") {
+      //     data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
+      // 
+      //     for (auto l_cThePlayer : m_pRaceData->m_vPlayers) {
+      //       if (l_cThePlayer->m_pRaceData->m_iMarble == l_cPlayer.m_iId) {
+      //         printf("onRaceResult: \"%s\"\n", l_cThePlayer->m_sName.c_str());
+      //         break;
+      //       }
+      //     }
+      // 
+      //     if (l_cPlayer.m_iPos > 0 && l_cPlayer.m_iPos <= m_pRace->m_iPlayers) {
+      //       m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
+      //     }
+      //   }
+      // }
     }
 
     /**
     * This function receives messages of type "EndRaceState"
     */
     void CGameState::onEndracestate() {
-      if (m_pRace != nullptr) {
-        data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
-        l_cChampionship.addRace(*m_pRace);
-
-        m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
-      }
+      // if (m_pRace != nullptr) {
+      //   data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
+      //   l_cChampionship.addRace(*m_pRace);
+      // 
+      //   m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
+      // }
 
       m_bEnded = true;
     }
@@ -1815,7 +1774,7 @@ namespace dustbin {
     */
     irr::video::ITexture *CGameState::getRaceInfoTexture() {
       if (m_pPanelRndr == nullptr) {
-        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_cGameData.m_iLaps);
+        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_pRaceData->m_iLaps);
       }
 
       return m_pPanelRndr->getRaceInfoRTT();
@@ -1827,7 +1786,7 @@ namespace dustbin {
     */
     irr::video::ITexture *CGameState::getLapCountTexture() {
       if (m_pPanelRndr == nullptr && m_pRaceData != nullptr) {
-        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_cGameData.m_iLaps);
+        m_pPanelRndr = new gui::CInGamePanelRenderer(m_pDevice, m_pRaceData->m_vPlayers, m_pRaceData->m_iLaps);
       }
 
       return m_pPanelRndr != nullptr ? m_pPanelRndr->getLapCountRTT() : nullptr;

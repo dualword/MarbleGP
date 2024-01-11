@@ -74,6 +74,7 @@ namespace dustbin {
     */
     SPlayer::SPlayer() :
       m_iPlayer        (0),
+      m_iViewport      (-1),
       m_sName          (""),
       m_sTexture       (""),
       m_sController    (""),

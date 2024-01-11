@@ -59,6 +59,7 @@ namespace dustbin {
     */
     typedef struct SPlayer {
       int          m_iPlayer;           /**< The player id */
+      int          m_iViewport;         /**< The player's viewport (-1 == has not viewport) */
       std::string  m_sName;             /**< The name of the player */
       std::wstring m_sWName;            /**< The player's name as wide string */
       std::string  m_sTexture;          /**< The texture of the player's marble */
