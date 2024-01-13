@@ -1198,104 +1198,90 @@ namespace dustbin {
     * @param a_iMarbleId The ID of the marble for the player
     */
     irr::scene::ISceneNode *CGameState::assignMarbleToPlayer(irr::s32 a_iPlayerId, irr::s32 a_iMarbleId) {
-      irr::scene::ISceneNode *l_pRet = nullptr;
+      threads::CInputQueue  *l_pTheInputQueue  = nullptr;
+      threads::COutputQueue *l_pTheOutputQueue = nullptr;
 
-      printf("Assign Marble %i to player %i\n", a_iMarbleId, a_iPlayerId);
-      for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-        if ((*it).m_iPlayerId == a_iPlayerId) {
-          gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_iMarbleId);
-          m_pShader->adjustNodeMaterial(l_pMarble->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
+      if (m_pDynamics != nullptr) {
+        l_pTheInputQueue  = m_pDynamics->getInputQueue ();
+        l_pTheOutputQueue = m_pDynamics->getOutputQueue();
+      }
+      else if (m_pClient != nullptr) {
+        l_pTheInputQueue  = m_pClient->getInputQueue ();
+        l_pTheOutputQueue = m_pClient->getOutputQueue();
+      }
 
-          std::string l_sTexture = (*it).m_sTexture;
+      gameclasses::SMarbleNodes *l_pMarble = m_pGridNode->getMarble(a_iMarbleId);
+      irr::scene::ISceneNode    *l_pRet    = nullptr;
 
-          if (l_sTexture == "") {
-            l_sTexture = "default://number=" + std::to_string(a_iPlayerId);
-          }
+      if (l_pTheInputQueue != nullptr && l_pTheOutputQueue != nullptr && l_pMarble != nullptr) {
+        l_pRet    = l_pMarble->m_pPositional;
 
-          if (l_sTexture.substr(0, std::string("default://").size()) == "default://") {
-            if ((*it).m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || (*it).m_sControls == "class=marble3") {
-              l_sTexture += "&class=2";
+        controller::CControllerFactory *l_pFactory = new controller::CControllerFactory(l_pTheInputQueue);
+
+        printf("Assign Marble %i to player %i\n", a_iMarbleId, a_iPlayerId);
+        gameclasses::STournament *l_pTrnmnt = m_pGlobal->getTournament();
+
+        for (auto l_pPlr : l_pTrnmnt->m_vPlayers) {
+          if (l_pPlr->m_iPlayer == a_iPlayerId) {
+            m_pShader->adjustNodeMaterial(l_pMarble->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
+
+            if (l_pPlr->m_sTexture == "")
+              l_pPlr->m_sTexture = "default://number=" + std::to_string(a_iPlayerId);
+
+            if (l_pPlr->m_sTexture.substr(0, std::string("default://").size()) == "default://") {
+              if (l_pPlr->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || l_pPlr->m_sController == "class=marble3") {
+                l_pPlr->m_sTexture += "&class=2";
+              }
+              else if (l_pPlr->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || l_pPlr->m_sController == "class=marble2") {
+                l_pPlr->m_sTexture += "&class=1";
+              }
             }
-            else if ((*it).m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || (*it).m_sControls == "class=marble2") {
-              l_sTexture += "&class=1";
-            }
-          }
 
-          gameclasses::SPlayer* l_pPlayer = nullptr;
+            l_pPlr->setMarbleNode(l_pMarble);
+            l_pMarble->m_pPlayer = l_pPlr; 
+            m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
 
-          for (auto l_pPlr : m_pGlobal->getTournament()->m_vPlayers) {
-            if (l_pPlr->m_iPlayer == a_iPlayerId) {
-              l_pPlayer = l_pPlr;
-              l_pPlayer->setMarbleNode(l_pMarble);
-              break;
-            }
-          }
+            if (l_pPlr->m_eType == data::enPlayerType::Local) {
+              assignViewport(m_fGridAngle, l_pPlr);
 
-          l_pMarble->m_pPlayer = l_pPlayer; 
-
-          // printf("Marble %i assigned to player \"%s\".\n", l_pMarble != nullptr ? l_pMarble->m_pPositional->getID() : -2, l_pPlayer->m_sName.c_str());
-
-          m_aMarbles[l_pMarble->m_pPositional->getID() - 10000] = l_pMarble;
-
-          if ((*it).m_eType == data::enPlayerType::Local)
-            assignViewport(m_fGridAngle, l_pPlayer);
-
-          if (m_pPanelRndr != nullptr)
-            m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
-
-          threads::CInputQueue  *m_pTheInputQueue  = nullptr;
-          threads::COutputQueue *m_pTheOutputQueue = nullptr;
-
-          if (m_pDynamics != nullptr) {
-            m_pTheInputQueue  = m_pDynamics->getInputQueue ();
-            m_pTheOutputQueue = m_pDynamics->getOutputQueue();
-          }
-          else if (m_pClient != nullptr) {
-            m_pTheInputQueue  = m_pClient->getInputQueue ();
-            m_pTheOutputQueue = m_pClient->getOutputQueue();
-          }
-
-          if (m_pTheInputQueue != nullptr) {
-            controller::CControllerFactory* l_pFactory = new controller::CControllerFactory(m_pTheInputQueue);
-
-            if ((*it).m_eType == data::enPlayerType::Local) {
-              l_pPlayer->m_pController = l_pFactory->createController(
-                l_pPlayer->m_pMarble->m_pPositional->getID(), 
-                l_pPlayer->m_sController, 
-                l_pPlayer->m_eAiHelp, 
+              l_pPlr->m_pController = l_pFactory->createController(
+                l_pPlr->m_pMarble->m_pPositional->getID(), 
+                l_pPlr->m_sController, 
+                l_pPlr->m_eAiHelp, 
                 reinterpret_cast<scenenodes::CAiNode*>(m_pAiNode),
                 "data/levels/" + m_pRaceData->m_sTrack,
-                l_pPlayer->m_pMarble->m_pViewport->m_cRect,
-                l_pPlayer->m_bShowRanking
+                l_pPlr->m_pMarble->m_pViewport->m_cRect,
+                l_pPlr->m_bShowRanking
               );
 
               if (m_pClient != nullptr)
-                m_pClient->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
+                m_pClient->setMyMarble(l_pPlr->m_pMarble->m_pPositional->getID());
 
               if (m_pServer != nullptr)
-                m_pServer->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
+                m_pServer->setMyMarble(l_pPlr->m_pMarble->m_pPositional->getID());
             }
-            else if ((*it).m_eType == data::enPlayerType::Ai) {
+            else if (l_pPlr->m_eType == data::enPlayerType::Ai) {
               if (m_pAiThread == nullptr) {
-                m_pAiThread = new controller::CAiControlThread(m_pTheOutputQueue, m_pTheInputQueue);
+                m_pAiThread = new controller::CAiControlThread(l_pTheOutputQueue, l_pTheInputQueue);
               }
 
-              m_pAiThread->addAiMarble(l_pPlayer->m_pMarble->m_pPositional->getID(), l_pPlayer->m_sController, "data/levels/" + m_pRaceData->m_sTrack);
+              m_pAiThread->addAiMarble(l_pPlr->m_pMarble->m_pPositional->getID(), l_pPlr->m_sController, "data/levels/" + m_pRaceData->m_sTrack);
 
               if (m_pClient != nullptr)
-                m_pClient->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
-
+                m_pClient->setMyMarble(l_pPlr->m_pMarble->m_pPositional->getID());
+                  
               if (m_pServer != nullptr)
-                m_pServer->setMyMarble(l_pPlayer->m_pMarble->m_pPositional->getID());
+                m_pServer->setMyMarble(l_pPlr->m_pMarble->m_pPositional->getID());
             }
-
-            delete l_pFactory;
+            break;
           }
-
-          l_pRet = l_pMarble->m_pPositional;
         }
-      }
 
+        if (m_pPanelRndr != nullptr)
+          m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
+
+        delete l_pFactory;
+      }
       return l_pRet;
     }
 
@@ -1636,35 +1622,12 @@ namespace dustbin {
     * @param a_data Encoded SRacePlayer structure
     */
     void CGameState::onRaceresult(const std::string& a_data) {
-      // if (m_pRaceData != nullptr) {
-      //   if (m_pRaceData->m_sTrack != "") {
-      //     data::SRacePlayer l_cPlayer = data::SRacePlayer(a_data);
-      // 
-      //     for (auto l_cThePlayer : m_pRaceData->m_vPlayers) {
-      //       if (l_cThePlayer->m_pRaceData->m_iMarble == l_cPlayer.m_iId) {
-      //         printf("onRaceResult: \"%s\"\n", l_cThePlayer->m_sName.c_str());
-      //         break;
-      //       }
-      //     }
-      // 
-      //     if (l_cPlayer.m_iPos > 0 && l_cPlayer.m_iPos <= m_pRace->m_iPlayers) {
-      //       m_pRace->m_aResult[l_cPlayer.m_iPos - 1] = l_cPlayer;
-      //     }
-      //   }
-      // }
     }
 
     /**
     * This function receives messages of type "EndRaceState"
     */
     void CGameState::onEndracestate() {
-      // if (m_pRace != nullptr) {
-      //   data::SChampionship l_cChampionship = data::SChampionship(m_pGlobal->getGlobal("championship"));
-      //   l_cChampionship.addRace(*m_pRace);
-      // 
-      //   m_pGlobal->setGlobal("championship", l_cChampionship.serialize());
-      // }
-
       m_bEnded = true;
     }
 
@@ -1673,18 +1636,16 @@ namespace dustbin {
     * @param a_playerid ID of the removed player
     */
     void CGameState::onPlayerremoved(irr::s32 a_playerid) {
-      for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-        for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
-          if ((*it)->m_iPlayer == a_playerid) {
-            printf("Marble %i is withdrawn from race.\n", (*it)->m_pMarble->m_pPositional->getID());
+      for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
+        if ((*it)->m_iPlayer == a_playerid) {
+          printf("Marble %i is withdrawn from race.\n", (*it)->m_pMarble->m_pPositional->getID());
             
-            messages::CPlayerWithdraw l_cMsg = messages::CPlayerWithdraw((*it)->m_pMarble->m_pPositional->getID());
+          messages::CPlayerWithdraw l_cMsg = messages::CPlayerWithdraw((*it)->m_pMarble->m_pPositional->getID());
 
-            // Message needs to be posted twice, request and confirm withdraw
-            m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
-            m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
-            return;
-          }
+          // Message needs to be posted twice, request and confirm withdraw
+          m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
+          m_pDynamics->getInputQueue()->postMessage(&l_cMsg);
+          return;
         }
       }
     }

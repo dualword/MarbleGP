@@ -47,8 +47,6 @@ namespace dustbin {
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
-        data::SChampionship m_cChampionship;    /**< The current championship */
-
         std::map<std::string, std::string> m_mTracks;   /**< Map with the track names (key == track identifier) */
 
         /**
@@ -198,54 +196,6 @@ namespace dustbin {
             printf("%i laps selected.\n", m_iLaps);
           }
 
-          m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-          std::vector<data::SChampionshipPlayer> l_vStanding = m_cChampionship.getStandings();
-
-          printf("\n********************************");
-          printf(  "**** Championship Standings ****\n");
-          printf("\n********************************\n");
-
-          printf("   |      Name       | Pts |");
-
-          for (int i = 0; i < m_cChampionship.m_vPlayers.size(); i++)
-            printf("%2i |", i + 1);
-
-          printf(" Rs | St | Bf | Fl | DNF |\n");
-
-          printf("---+-----------------+-----+");
-
-          for (int i = 0; i < m_cChampionship.m_vPlayers.size(); i++)
-            printf("---+");
-
-          printf("----+----+----+----+-----+\n");
-
-          int l_iPos = 1;
-          for (std::vector<data::SChampionshipPlayer>::iterator it = l_vStanding.begin(); it != l_vStanding.end(); it++) {
-            std::string s = (*it).m_sName;
-
-            if (s.length() > 15)
-              s = s.substr(s.length() - 15);
-
-            while (s.length() < 15)
-              s += " ";
-
-            printf("%2i | %s | %3i |", l_iPos, s.c_str(), (*it).m_iPoints);
-
-            for (int i = 0; i < m_cChampionship.m_vPlayers.size(); i++)
-              if ((*it).m_aResult[i] != 0)
-                printf("%2i |", (*it).m_aResult[i]);
-              else
-                printf("   |");
-
-            printf(" %2i | %2i | %2i | %2i | %3i |\n", (*it).m_iRespawn, (*it).m_iStunned, (*it).m_iBestFinish, (*it).m_iFastestLaps, (*it).m_iDidNotFinish);
-
-            l_iPos++;
-          }
-
-          printf("\n********************************\n");
-
-          printf("Path: \"%s\"\n", helpers::ws2s(platform::portableGetDataPath()).c_str());
-
           m_mTracks = helpers::getTrackNameMap();
         }
 
@@ -261,9 +211,9 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sCaller == "cancel") {
-                data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
 
-                std::string l_sNext = (l_cChampionship.m_vRaces.size() > 0 && l_cChampionship.m_vPlayers.size() > 1) ? "menu_finalresult" : "menu_main";
+                std::string l_sNext = (l_pTournament->m_vRaces.size() > 0 && l_pTournament->m_vPlayers.size() > 1) ? "menu_finalresult" : "menu_main";
 
                 if (m_pServer != nullptr) {
                   m_pServer->changeState(l_sNext);
@@ -287,26 +237,24 @@ namespace dustbin {
 
                   printf("Laps: %i\n", l_iLaps);
 
-                  data::SChampionship l_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-
                   m_pManager->pushToMenuStack("menu_selecttrack");
-
-                  if (l_cChampionship.m_vPlayers.size() > 1) {
-                    m_pManager->pushToMenuStack("menu_standings"  );
-                    m_pManager->pushToMenuStack("menu_raceresult" );
-                  }
 
                   m_pState->getGlobal()->setSetting("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
 
                   gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
 
+                  if (l_pTournament->m_vPlayers.size() > 1) {
+                    m_pManager->pushToMenuStack("menu_standings"  );
+                    m_pManager->pushToMenuStack("menu_raceresult" );
+                  }
+
                   l_pTournament->m_vRaces.push_back(new gameclasses::SRace(m_pTrackList->getSelectedData(), l_iLaps, l_pTournament));
                   l_pTournament->startRace();
 
                   l_pTournament->saveToJSON();
 
-                  helpers::prepareNextRace(m_pTrackList->getSelectedData(), "Free Racing / Race #" + std::to_string(m_cChampionship.m_vRaces.size() + 1), l_iLaps);
+                  helpers::prepareNextRace(m_pTrackList->getSelectedData(), "Free Racing / Race #" + std::to_string(l_pTournament->m_vRaces.size() + 1), l_iLaps);
 
                   platform::saveSettings();
                   if (m_pServer != nullptr) {
@@ -361,7 +309,8 @@ namespace dustbin {
                     l_sTrack = m_mTracks[l_sTrack];
                   }
 
-                  std::string l_sInfo = "Free Racing / Race " + std::to_string(m_cChampionship.m_vRaces.size() + 1) + " (" + std::to_string(m_iLaps) + " Lap" + (m_iLaps == 1 ? "" : "s") + ")";
+                  gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+                  std::string l_sInfo = "Free Racing / Race " + std::to_string(l_pTournament->m_vRaces.size() + 1) + " (" + std::to_string(m_iLaps) + " Lap" + (m_iLaps == 1 ? "" : "s") + ")";
 
                   messages::CUpdateRaceInfo l_cMsg(m_sTrack, l_sInfo);
                   m_pServer->getInputQueue()->postMessage(&l_cMsg);
