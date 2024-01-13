@@ -320,14 +320,14 @@ namespace dustbin {
     m_mStates[state::enState::Game] = new state::CGameState(m_pDevice, this);
     m_pActiveState = m_mStates[state::enState::Menu];
 
+    m_pShader = new shaders::CDustbinShaders(m_pDevice);
+    m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
+
 #ifdef _WINDOWS
     if (m_bFirstStart) {
       helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
     }
 #endif
-
-    m_pShader = new shaders::CDustbinShaders(m_pDevice);
-    m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
 
     m_pActiveState->activate();
   }
