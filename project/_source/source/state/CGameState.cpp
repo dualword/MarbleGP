@@ -1287,9 +1287,9 @@ namespace dustbin {
 
       for (std::map<int, gfx::SViewPort>::iterator it = m_mViewports.begin(); it != m_mViewports.end(); it++) {
         // it->second.m_pPlayer->m_pPlayer->m_pController
-        // if (m_cGameData.m_bIsTutorial)
-        //   it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_cGameData.m_iLaps, m_pGui, &m_pRaceData->m_vRanking, m_pOutputQueue);
-        // else
+        if (m_pRaceData->m_sTrack == "tutorial")
+          it->second.m_pHUD = new gui::CTutorialHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_pRaceData->m_iLaps, m_pGui, &m_pRaceData->m_vRanking, m_pOutputQueue);
+        else
           it->second.m_pHUD = new gui::CGameHUD(it->second.m_pPlayer->m_pPlayer, it->second.m_cRect, m_pRaceData->m_iLaps, m_pGui, &m_pRaceData->m_vRanking);
 
         controller::IControllerAI *l_pCtrl = it->second.m_pPlayer->m_pPlayer->m_pController->getAiController();

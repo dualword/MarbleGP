@@ -559,23 +559,37 @@ namespace dustbin {
                       l_cPlayer.m_iGridPos  = 1;
                       l_cPlayer.m_iPlayerId = 1;
 
-                      data::SGameData l_cData;
+                      gameclasses::STournament *l_pTournament = m_pState->getGlobal()->startTournament();
+                      gameclasses::SRace* l_pRace = new gameclasses::SRace(
+                        "tutorial",
+                        "This track will show you all you need to know to play MarbleGP",
+                        1,
+                        l_pTournament
+                      );
+                      l_pTournament->m_vRaces.push_back(l_pRace);
 
-                      l_cData.m_iLaps       = 1;
-                      l_cData.m_sTrack      = "tutorial";
-                      l_cData.m_bIsTutorial = true;
+                      gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+                        l_cPlayer.m_iPlayerId,
+                        1,
+                        l_cPlayer.m_sName,
+                        l_cPlayer.m_sTexture,
+                        l_cPlayer.m_sControls,
+                        l_cPlayer.m_sShortName,
+                        l_cPlayer.m_eAiHelp,
+                        nullptr,
+                        l_cPlayer.m_eType
+                      );
 
-                      CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
+                      l_pPlayer->m_sName = "1";
 
-                      data::SRacePlayers l_cPlayers;
-                      l_cPlayers.m_vPlayers.push_back(l_cPlayer);
+                      l_pTournament->m_vPlayers.push_back(l_pPlayer);
+                      l_pTournament->startRace();
 
-                      CGlobal::getInstance()->setSetting("selectedplayers", messages::urlEncode(l_cPlayer.m_sName));
-                      platform:: saveSettings();
+                      m_pState->getGlobal()->initNextRaceScreen();
+
+                      platform::saveSettings();
 
                       m_pManager->pushToMenuStack("menu_newgamewizard");
-                      CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
-
                       m_pState->setState(state::enState::Game);
                     }
                     else setWizardStep(enWizardStep::Profiles);

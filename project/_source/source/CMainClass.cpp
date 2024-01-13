@@ -809,6 +809,9 @@ namespace dustbin {
   * @return the track name, "Unknown Track" if no track data was found
   */
   std::string CMainClass::getTrackName(const std::string& a_sTrack) {
+    if (a_sTrack == "tutorial")
+      return "Tutorial Track";
+
     std::string l_sFile = "data/levels/" + a_sTrack + "/track.xml";
     std::string l_sName = "Unkown Track";
 
