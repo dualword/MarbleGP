@@ -138,8 +138,19 @@ namespace dustbin {
     * @param a_sController the controller configuration string of the player
     * @param a_pMarble the marble of the player
     */
-    SPlayer::SPlayer(int a_iPlayer, const std::string& a_sName, const std::string& a_sTexture, const std::string &a_sController, const std::string &a_sShortName, data::SPlayerData::enAiHelp a_eAiHelp, gameclasses::SMarbleNodes* a_pMarble, data::enPlayerType a_eType) :
+    SPlayer::SPlayer(
+      int a_iPlayer, 
+      int a_iViewport,
+      const std::string &a_sName, 
+      const std::string &a_sTexture, 
+      const std::string &a_sController, 
+      const std::string &a_sShortName, 
+      data::SPlayerData::enAiHelp a_eAiHelp, 
+      gameclasses::SMarbleNodes *a_pMarble, 
+      data::enPlayerType a_eType
+    ) :
       m_iPlayer       (a_iPlayer),
+      m_iViewport     (a_iViewport),
       m_sName         (a_sName),
       m_sWName        (helpers::s2ws(a_sName)),
       m_sTexture      (a_sTexture),

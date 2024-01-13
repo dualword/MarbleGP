@@ -235,6 +235,7 @@ namespace dustbin {
             l_pTournament->m_vPlayers.push_back(
               new gameclasses::SPlayer(
                 l_cPlayer.m_iPlayerId,
+                l_cPlayer.m_iViewPort,
                 l_cPlayer.m_sName,
                 l_cPlayer.m_sTexture,
                 l_cPlayer.m_sControls,

@@ -211,44 +211,40 @@ namespace dustbin {
       irr::core::vector3df l_vOffset = irr::core::vector3df(0.0f, 5.0f, 7.5f);
       l_vOffset.rotateXZBy(a_fAngle);
 
-      size_t l_iPlayers = m_cPlayers.m_vPlayers.size();
+      gameclasses::STournament *l_pTournament = m_pGlobal->getTournament();
 
-      for (size_t i = 0; i < l_iPlayers; i++) {
-        data::SPlayerData *l_pPlayer = &(m_cPlayers.m_vPlayers[i]);
+      if (a_pPlayer->m_iViewport != -1) {
+        if (a_pPlayer != nullptr && a_pPlayer->m_pMarble->m_pPositional) {
+          SGameViewports::SViewportDef l_cViewportDef = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[a_pPlayer->m_iViewport - 1];
 
-        if (l_pPlayer->m_iViewPort != -1 && l_pPlayer->m_iPlayerId == a_pPlayer->m_iPlayer) {
-          if (a_pPlayer != nullptr && a_pPlayer->m_pMarble->m_pPositional) {
-            SGameViewports::SViewportDef l_cViewportDef = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[l_pPlayer->m_iViewPort - 1];
+          printf("Viewport %i / %i assigned to player \"%s\" (%i).\n", a_pPlayer->m_iViewport, m_iNumOfViewports, a_pPlayer->m_sName.c_str(), a_pPlayer->m_pMarble->m_pPositional->getID());
 
-            printf("Viewport %i / %i assigned to player \"%s\" (%i).\n", l_pPlayer->m_iViewPort, m_iNumOfViewports, l_pPlayer->m_sName.c_str(), a_pPlayer->m_pMarble->m_pPositional->getID());
-
-            irr::core::recti l_cRect = irr::core::recti(
-               l_cViewportDef.m_iColumn      * l_cViewportSize.Width,
-               l_cViewportDef.m_iRow         * l_cViewportSize.Height,
-              (l_cViewportDef.m_iColumn + 1) * l_cViewportSize.Width,
-              (l_cViewportDef.m_iRow    + 1) * l_cViewportSize.Height
-            );
+          irr::core::recti l_cRect = irr::core::recti(
+              l_cViewportDef.m_iColumn      * l_cViewportSize.Width,
+              l_cViewportDef.m_iRow         * l_cViewportSize.Height,
+            (l_cViewportDef.m_iColumn + 1) * l_cViewportSize.Width,
+            (l_cViewportDef.m_iRow    + 1) * l_cViewportSize.Height
+          );
 
 
-            irr::scene::ICameraSceneNode* l_pCam = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), a_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset, a_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition());
-            l_pCam->setAspectRatio((((irr::f32)l_cRect.LowerRightCorner.X) - ((irr::f32)l_cRect.UpperLeftCorner.X)) / (((irr::f32)l_cRect.LowerRightCorner.Y) - ((irr::f32)l_cRect.UpperLeftCorner.Y)));
-            l_pCam->updateAbsolutePosition();
+          irr::scene::ICameraSceneNode* l_pCam = m_pSmgr->addCameraSceneNode(m_pSmgr->getRootSceneNode(), a_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() + l_vOffset, a_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition());
+          l_pCam->setAspectRatio((((irr::f32)l_cRect.LowerRightCorner.X) - ((irr::f32)l_cRect.UpperLeftCorner.X)) / (((irr::f32)l_cRect.LowerRightCorner.Y) - ((irr::f32)l_cRect.UpperLeftCorner.Y)));
+          l_pCam->updateAbsolutePosition();
 
-            gfx::SViewPort l_cViewport = gfx::SViewPort(l_cRect, l_pPlayer->m_iPlayerId, a_pPlayer->m_pMarble->m_pPositional, l_pCam);
+          gfx::SViewPort l_cViewport = gfx::SViewPort(l_cRect, a_pPlayer->m_iPlayer, a_pPlayer->m_pMarble->m_pPositional, l_pCam);
 
-            for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
-              if (it->second->m_bFirstInLap && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
-                l_cViewport.m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode *>(it->second->getParent()));
-              }
+          for (std::map<irr::s32, scenenodes::CCheckpointNode*>::iterator it = m_mCheckpoints.begin(); it != m_mCheckpoints.end(); it++) {
+            if (it->second->m_bFirstInLap && it->second->getParent()->getType() == irr::scene::ESNT_MESH) {
+              l_cViewport.m_vNextCheckpoints.push_back(reinterpret_cast<irr::scene::IMeshSceneNode *>(it->second->getParent()));
             }
-
-            l_cViewport.m_pPlayer = a_pPlayer->m_pMarble;
-            m_mViewports[l_pPlayer->m_iPlayerId] = l_cViewport;
-            a_pPlayer->m_pMarble->m_pViewport = &m_mViewports[l_pPlayer->m_iPlayerId];
           }
 
-          m_pSoundIntf->setViewportMarble(a_pPlayer->m_pMarble->m_pPositional->getID());
+          l_cViewport.m_pPlayer = a_pPlayer->m_pMarble;
+          m_mViewports[a_pPlayer->m_iPlayer] = l_cViewport;
+          a_pPlayer->m_pMarble->m_pViewport = &m_mViewports[a_pPlayer->m_iPlayer];
         }
+
+        m_pSoundIntf->setViewportMarble(a_pPlayer->m_pMarble->m_pPositional->getID());
       }
     }
 
@@ -407,15 +403,13 @@ namespace dustbin {
       data::SGameSettings::enAutoFinish l_eAutoFinish = l_pTournament->m_eAutoFinish;
       bool l_bGridReverse = l_pTournament->m_bReverse;
 
-      std::string l_sPlayers = m_pGlobal->getGlobal("raceplayers");
-      m_cPlayers.deserialize(l_sPlayers);
-
-      helpers::addToDebugLog("Determine viewports...");
       // Find out how many viewports we need to create
-      for (size_t i = 0; i < m_cPlayers.m_vPlayers.size(); i++) {
-        if (m_cPlayers.m_vPlayers[i].m_iViewPort != -1)
+      for (auto l_pPlr: l_pTournament->m_vPlayers) {
+        if (l_pPlr->m_iViewport != -1)
           m_iNumOfViewports++;
       }
+
+      helpers::addToDebugLog(std::to_string(m_iNumOfViewports) + " Viewport necessary.");
 
       helpers::addToDebugLog("Fill object maps...");
       fillMovingMap(findSceneNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_WorldNodeId, m_pSmgr->getRootSceneNode()));

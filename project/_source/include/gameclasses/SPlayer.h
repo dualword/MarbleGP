@@ -96,6 +96,7 @@ namespace dustbin {
       /**
       * The main constructor
       * @param a_iPlayer the player id
+      * @param a_iViewport the viewport of the player (-1 == no viewport)
       * @param a_sName the name of the player
       * @param a_sTexture the texture string of the player's marble
       * @param a_sController the controller configuration string of the player
@@ -103,6 +104,7 @@ namespace dustbin {
       */
       SPlayer(
         int a_iPlayer, 
+        int a_iViewport,
         const std::string& a_sName, 
         const std::string& a_sTexture, 
         const std::string &a_sController, 

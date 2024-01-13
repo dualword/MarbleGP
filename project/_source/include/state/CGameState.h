@@ -186,7 +186,6 @@ namespace dustbin {
 
         int m_iNumOfViewports;    /**< The number of necessary viewports, aka local players */
 
-		    data::SRacePlayers m_cPlayers;  /**< The player of the race */
         data::SSettings m_cSettings;    /**< The global settings */
 
         scenenodes::CStartingGridSceneNode *m_pGridNode;  /**< The starting grid scene node that holds all the available marbles */

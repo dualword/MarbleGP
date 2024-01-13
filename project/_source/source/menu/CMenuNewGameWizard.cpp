@@ -10,6 +10,7 @@
 #include <messages/CSerializer64.h>
 #include <gui/CDustbinCheckbox.h>
 #include <helpers/CDataHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <gui/CMenuBackground.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
@@ -124,11 +125,14 @@ namespace dustbin {
 
           int l_iNum = 1;
 
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
           // Now we iterate all selected players ..
           for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++) {
             // .. search for the matching profile ..
             for (std::vector<data::SPlayerData>::iterator it2 = m_vProfiles.begin(); it2 != m_vProfiles.end(); it2++) {
               if (*it == (*it2).m_sName) {
+
                 // .. and create a copy of the player element (will be modified for each game)
                 data::SPlayerData l_cPlayer;
                 l_cPlayer.copyFrom(*it2);
