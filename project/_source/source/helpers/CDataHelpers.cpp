@@ -338,43 +338,6 @@ namespace dustbin {
       return l_vCups;
     }
 
-
-    /**
-    * Prepare and update the global data for the next race
-    * @param a_sTrack the next track identifier
-    * @param a_sInfo additional race information
-    * @param a_iLaps the number of laps
-    */
-    void prepareNextRace(const std::string& a_sTrack, const std::string &a_sInfo, int a_iLaps) {
-      data::SGameData l_cData(a_sTrack, a_sInfo, a_iLaps);
-
-      CGlobal *l_pGlobal = CGlobal::getInstance();
-
-      data::SGameSettings l_cSettings;
-      l_cSettings.deserialize(l_pGlobal->getSetting("gamesetup"));
-      data::SChampionship l_cChampionship = data::SChampionship(l_pGlobal->getGlobal("championship"));
-      data::SRacePlayers l_cPlayers;
-
-      l_cPlayers.deserialize(l_pGlobal->getGlobal("raceplayers"));
-
-      // Now we need to specify the starting grid of the next race
-      if (l_cChampionship.m_vRaces.size() > 0)
-        for (int i = 0; i < l_cChampionship.m_vPlayers.size() && i < 16; i++) {
-          if (l_cChampionship.m_vRaces.back().m_mAssignment.find(l_cChampionship.m_vRaces.back().m_aResult[i].m_iId) != l_cChampionship.m_vRaces.back().m_mAssignment.end()) {
-            l_cData.m_vStartingGrid.push_back(l_cChampionship.m_vRaces.back().m_mAssignment[l_cChampionship.m_vRaces.back().m_aResult[i].m_iId]);
-          }
-        }
-
-      if (l_cSettings.m_bReverseGrid) {
-        std::reverse(l_cData.m_vStartingGrid.begin(), l_cData.m_vStartingGrid.end());
-      }
-
-      printf("%s\n", l_cData.toString().c_str());
-
-      l_pGlobal->setGlobal("gamedata", l_cData.serialize());
-      l_pGlobal->initNextRaceScreen();
-    }
-
     /**
     * Read the lines of a text file
     * @param a_sPath the path of the file to read

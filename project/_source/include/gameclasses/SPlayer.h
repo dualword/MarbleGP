@@ -174,6 +174,7 @@ namespace dustbin {
     */
     typedef struct SRace {
       std::string m_sTrack;   /**< The track of the race (folder name) */
+      std::string m_sInfo ;   /**< The information shown in the loading track screen */
 
       int m_iLaps;      /**< The number of laps of the race */
 
@@ -184,7 +185,7 @@ namespace dustbin {
 
       STournament *m_pTournament;   /**< The tournament this race is assigned to */
 
-      SRace(const std::string &a_sTrack, int a_iLaps, STournament *a_pTournament);
+      SRace(const std::string &a_sTrack, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament);
 
       /**
       * The destructor

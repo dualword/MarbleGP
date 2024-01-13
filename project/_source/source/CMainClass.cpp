@@ -865,9 +865,10 @@ namespace dustbin {
 
     m_pDrv->setRenderTarget(m_pNextRaceScreen, true, true, irr::video::SColor(128, 192, 192, 192));
 
-    data::SGameData l_cData = data::SGameData(getGlobal("gamedata"));
+    gameclasses::STournament *l_pTournament = CGlobal::getInstance()->getTournament();
+    gameclasses::SRace       *l_pRace       = l_pTournament->getRace();
 
-    std::string l_sThumbnail = "data/levels/" + l_cData.m_sTrack + "/thumbnail.png";
+    std::string l_sThumbnail = "data/levels/" + l_pRace->m_sTrack + "/thumbnail.png";
 
     irr::core::position2di l_cPos = irr::core::position2di(0, 0);
 
@@ -883,17 +884,17 @@ namespace dustbin {
     l_cPos.Y += l_cDim.Height / 2;
     irr::core::recti l_cRect = irr::core::recti(l_cPos, l_cDim);
 
-    l_pFont->draw(helpers::s2ws(getTrackName(l_cData.m_sTrack)).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
+    l_pFont->draw(helpers::s2ws(getTrackName(l_pRace->m_sTrack)).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
 
     l_cRect.UpperLeftCorner .Y += 2 * l_cDim.Height;
     l_cRect.LowerRightCorner.Y += 2 * l_cDim.Height;
 
-    l_pFont->draw((std::to_wstring(l_cData.m_iLaps) + L" Lap" + (l_cData.m_iLaps == 1 ? L"" : L"s")).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
+    l_pFont->draw((std::to_wstring(l_pRace->m_iLaps) + L" Lap" + (l_pRace->m_iLaps == 1 ? L"" : L"s")).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
 
     l_cRect.UpperLeftCorner .Y += 2 * l_cDim.Height;
     l_cRect.LowerRightCorner.Y += 2 * l_cDim.Height;
 
-    l_pRegular->draw(helpers::s2ws(l_cData.m_sInfo).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
+    l_pRegular->draw(helpers::s2ws(l_pRace->m_sInfo).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, false);
 
     m_pDrv->setRenderTarget(0, false, false);
 

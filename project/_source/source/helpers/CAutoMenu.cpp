@@ -1,3 +1,4 @@
+#include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
 #include <helpers/CAutoMenu.h>
 #include <menu/IMenuHandler.h>
@@ -10,15 +11,13 @@ namespace dustbin {
     CAutoMenu::CAutoMenu(irr::IrrlichtDevice* a_pDevice, menu::IMenuHandler* a_pRecveiver) : m_pTimer(a_pDevice->getTimer()), m_iTime(0), m_bBotsOnly(true), m_pReciever(a_pRecveiver) {
       m_iTime = m_pTimer->getRealTime();
 
-      data::SRacePlayers l_cPlayers;
-      std::string l_sPlayers = CGlobal::getInstance()->getGlobal("raceplayers");
-      l_cPlayers.deserialize(l_sPlayers);
+      gameclasses::STournament *l_pTournament = CGlobal::getInstance()->getTournament();
 
-      for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
-        if (l_cPlayer.m_eType == data::enPlayerType::Local &&
-          l_cPlayer.m_eAiHelp != data::SPlayerData::enAiHelp::BotMgp &&
-          l_cPlayer.m_eAiHelp != data::SPlayerData::enAiHelp::BotMb2 &&
-          l_cPlayer.m_eAiHelp != data::SPlayerData::enAiHelp::BotMb3)
+      for (auto l_pPlayer : l_pTournament->m_vPlayers) {
+        if (l_pPlayer->m_eType == data::enPlayerType::Local &&
+          l_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::BotMgp &&
+          l_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::BotMb2 &&
+          l_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::BotMb3)
         {
           m_bBotsOnly = false;
           break;

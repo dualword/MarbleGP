@@ -249,12 +249,17 @@ namespace dustbin {
                     m_pManager->pushToMenuStack("menu_raceresult" );
                   }
 
-                  l_pTournament->m_vRaces.push_back(new gameclasses::SRace(m_pTrackList->getSelectedData(), l_iLaps, l_pTournament));
+                  l_pTournament->m_vRaces.push_back(new gameclasses::SRace(
+                    m_pTrackList->getSelectedData(),
+                    "Free Racing Race #" + std::to_string(l_pTournament->m_vRaces.size() + 1),
+                    l_iLaps, 
+                    l_pTournament)
+                  );
                   l_pTournament->startRace();
 
                   l_pTournament->saveToJSON();
 
-                  helpers::prepareNextRace(m_pTrackList->getSelectedData(), "Free Racing / Race #" + std::to_string(l_pTournament->m_vRaces.size() + 1), l_iLaps);
+                  m_pState->getGlobal()->initNextRaceScreen();
 
                   platform::saveSettings();
                   if (m_pServer != nullptr) {

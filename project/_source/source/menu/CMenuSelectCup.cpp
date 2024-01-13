@@ -191,15 +191,18 @@ namespace dustbin {
 
                   gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
 
+                  int l_iNum = 1;
                   for (auto l_tRace : m_vCups[m_iSelectedCup].m_vRaces) {
                     int l_iLaps = m_iMode == 1 ? 1 : (m_iMode == 2 && m_pLaps != nullptr) ? m_pLaps->getSelected() + 1 : std::get<1>(l_tRace);
                     l_pTournament->m_vRaces.push_back(
                       new gameclasses::SRace(
-                        std::get<0>(l_tRace), 
+                        std::get<0>(l_tRace),
+                        "\"" + m_vCups[m_iSelectedCup].m_sName + "\" Race #" + std::to_string(l_iNum) + " of " + std::to_string(m_vCups[m_iSelectedCup].m_vRaces.size()),
                         l_iLaps,
                         l_pTournament
                       )
                     );
+                    l_iNum++;
                   }
 
                   printf("\n\n%s\n\n", l_sSerialized.c_str());

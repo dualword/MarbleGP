@@ -365,7 +365,12 @@ namespace dustbin {
       }
     }
 
-    SRace::SRace(const std::string &a_sTrack, int a_iLaps, STournament *a_pTournament) : m_sTrack(a_sTrack), m_iLaps(a_iLaps), m_pTournament(a_pTournament) {
+    SRace::SRace(const std::string &a_sTrack, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament) : 
+      m_sTrack     (a_sTrack     ),
+      m_sInfo      (a_sInfo      ), 
+      m_iLaps      (a_iLaps      ), 
+      m_pTournament(a_pTournament) 
+    {
     }
 
     /**

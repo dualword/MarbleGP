@@ -157,8 +157,6 @@ namespace dustbin {
                 m_pState->getGlobal()->setSetting("track", m_sTrack);
                 m_pState->getGlobal()->setSetting("laps" , std::to_string(m_iLaps));
 
-                helpers::prepareNextRace(m_sTrack, m_sInfo, m_iLaps);
-
                 gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
                 l_pTournament->startRace();
 
