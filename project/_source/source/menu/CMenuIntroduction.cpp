@@ -2,6 +2,7 @@
 #include <messages/CMessageHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
 #include <platform/CPlatform.h>
 #include <menu/IMenuHandler.h>
@@ -61,12 +62,34 @@ namespace dustbin {
               if (l_sSender == "ok") {
                 l_bRet = true;
 
+                std::string l_sName  = "";
+                std::string l_sShort = "";
+
+                helpers::createRandomProfile(l_sName, l_sShort);
+
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->startTournament();
+
+                gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+                  1,
+                  1,
+                  l_sName,
+                  helpers::createRandomTexture(),
+                  helpers::getDefaultGameCtrl_Keyboard(),
+                  l_sShort,
+                  data::SPlayerData::enAiHelp::High,
+                  nullptr,
+                  data::enPlayerType::Local
+                );
+
+                l_pTournament->m_vPlayers.push_back(l_pPlayer);
+                
                 data::SPlayerData l_cPlayer;
-                helpers::createRandomProfile(l_cPlayer.m_sName, l_cPlayer.m_sShortName);
-                l_cPlayer.m_sTexture  = helpers::createRandomTexture();
-                l_cPlayer.m_eAiHelp   = data::SPlayerData::enAiHelp::High;
-                l_cPlayer.m_sControls = helpers::getDefaultGameCtrl_Keyboard();
-                l_cPlayer.m_eType     = data::enPlayerType::Local;
+                l_cPlayer.m_sName      = l_pPlayer->m_sName;
+                l_cPlayer.m_sShortName = l_pPlayer->m_sShortName;
+                l_cPlayer.m_sTexture   = l_pPlayer->m_sTexture;
+                l_cPlayer.m_eAiHelp    = l_pPlayer->m_eAiHelp;
+                l_cPlayer.m_sControls  = l_pPlayer->m_sController;
+                l_cPlayer.m_eType      = l_pPlayer->m_eType;
                 
                 std::vector<data::SPlayerData> l_vProfiles = {
                   l_cPlayer
@@ -74,15 +97,14 @@ namespace dustbin {
 
                 helpers::saveProfiles(l_vProfiles);
 
-                data::SGameData l_cData;
-
-                l_cData.m_iLaps       = 1;
-                l_cData.m_sTrack      = "tutorial";
-                l_cData.m_bIsTutorial = true;
-
-                CGlobal::getInstance()->setGlobal("gamedata", l_cData.serialize());
-
-                data::SGameSettings l_cSettings;
+                gameclasses::SRace* l_pRace = new gameclasses::SRace(
+                  "tutorial",
+                  "This track will show you all you need to know to play MarbleGP",
+                  1,
+                  l_pTournament
+                );
+                l_pTournament->m_vRaces.push_back(l_pRace);
+                l_pTournament->startRace();
 
                 l_cPlayer.m_iViewPort = 1;
                 l_cPlayer.m_iGridPos  = 1;
@@ -92,11 +114,10 @@ namespace dustbin {
                 l_cPlayers.m_vPlayers.push_back(l_cPlayer);
 
                 CGlobal::getInstance()->setSetting("selectedplayers", messages::urlEncode(l_cPlayer.m_sName));
-                platform:: saveSettings();
+                platform::saveSettings();
 
                 m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_newgamewizard");
-                CGlobal::getInstance()->setGlobal("raceplayers", l_cPlayers.serialize());
 
                 m_pState->setState(state::enState::Game);
               }
