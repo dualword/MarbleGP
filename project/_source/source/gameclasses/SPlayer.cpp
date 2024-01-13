@@ -837,11 +837,13 @@ namespace dustbin {
 
       irr::io::path l_sFilePath = irr::core::stringc(l_sFileName.c_str());
 
-      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(l_sFilePath);
+      if (CGlobal::getInstance() != nullptr) {
+        irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(l_sFilePath);
 
-      if (l_pFile != nullptr) {
-        l_pFile->write(l_sJson.c_str(), l_sJson.size());
-        l_pFile->drop();
+        if (l_pFile != nullptr) {
+          l_pFile->write(l_sJson.c_str(), l_sJson.size());
+          l_pFile->drop();
+        }
       }
     }
 
