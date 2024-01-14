@@ -316,8 +316,8 @@ namespace dustbin {
         }
         else if (l_sType == "generate" || l_sType == "default") {
           irr::core::recti l_aDestRect[2] = {
-            irr::core::recti(0,   0, 512, 256),
-            irr::core::recti(0, 256, 512, 512)
+            irr::core::recti(0,   0, 256, 128),
+            irr::core::recti(0, 128, 256, 256)
           };
 
           irr::video::ITexture* l_pTexture = a_pDrv->findTexture(a_sUri.c_str());
@@ -386,21 +386,21 @@ namespace dustbin {
 
             l_pNumber = createFadingBorder(l_sNumber, l_cColorNumber, l_cColorNumberBorder, l_cColorNumberBack, a_pDrv);
 
-            l_pTexture = a_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), a_sUri.c_str());
+            l_pTexture = a_pDrv->addRenderTargetTexture(irr::core::dimension2du(256, 256), a_sUri.c_str());
             a_pDrv->setRenderTarget(l_pTexture, true, true, l_cColorNumberBack);
-            a_pDrv->draw2DRectangle(l_cColorPatternBack, irr::core::recti(0, 255, 512, 512));
+            a_pDrv->draw2DRectangle(l_cColorPatternBack, irr::core::recti(0, 127, 256, 256));
 
             if (l_pNumber != nullptr) {
               a_pDrv->draw2DImage(l_pNumber, irr::core::vector2di(0, 0), true);
-              a_pDrv->draw2DImage(l_pNumber, irr::core::vector2di(256, 0), true);
+              a_pDrv->draw2DImage(l_pNumber, irr::core::vector2di(128, 0), true);
 
               a_pDrv->removeTexture(l_pNumber);
             }
 
             irr::video::ITexture* l_pTop = adjustTextureForMarble(l_sFileTop, l_cColorRing, a_pDrv);
-            a_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 511, 255), nullptr, nullptr, true);
+            a_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 255, 127), nullptr, nullptr, true);
             irr::video::ITexture*l_pPattern = adjustTextureForMarble(l_sFilePattern, l_cColorPattern, a_pDrv);
-            a_pDrv->draw2DImage(l_pPattern, l_aDestRect[1], irr::core::recti(0, 0, 512, 256), nullptr, nullptr, true);
+            a_pDrv->draw2DImage(l_pPattern, l_aDestRect[1], irr::core::recti(0, 0, 256, 128), nullptr, nullptr, true);
 
             a_pDrv->setRenderTarget(0, false, false);
           }

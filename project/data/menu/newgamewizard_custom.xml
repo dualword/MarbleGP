@@ -27,36 +27,19 @@
       
       <element type="staticText" rect="relative: 10, 10, 30, 12">
         <attributes>
-          <attribute key="Caption" value="Grid Positions:" />
-          <attribute key="HTextAlign" value="lowerRight" />
-          <attribute key="VTextAlign" value="center" />
-        </attributes>
-      </element>
-      
-      <element type="Selector" rect="relative: 31, 10, 46, 12">
-        <attributes>
-          <attribute key="Name" value="CustomGridPos" />
-        </attributes>
-        <custom>
-          <attribute key="options" value="Fixed;Last race;Standings;Random" />
-        </custom>
-      </element>
-      
-      <element type="staticText" rect="relative: 10, 14, 30, 16">
-        <attributes>
           <attribute key="Caption" value="Reverse Starting Grid:" />
           <attribute key="HTextAlign" value="lowerRight" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 31, 14, 33, 16">
+      <element type="DustbinCheckbox" rect="relative: 31, 10, 33, 12">
         <attributes>
           <attribute key="Name" value="CustomReverseGrid" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 10, 18, 30, 20">
+      <element type="staticText" rect="relative: 10, 14, 30, 16">
         <attributes>
           <attribute key="Caption" value="Fill Grid with AI Marbles:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -64,13 +47,13 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 31, 18, 33, 20">
+      <element type="DustbinCheckbox" rect="relative: 31, 14, 33, 16">
         <attributes>
           <attribute key="Name" value="CustomFillGrid" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 10, 22, 30, 24">
+      <element type="staticText" rect="relative: 10, 18, 30, 20">
         <attributes>
           <attribute key="Caption" value="Grid Size:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -78,7 +61,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 31, 22, 46, 24">
+      <element type="Selector" rect="relative: 31, 18, 46, 20">
         <attributes>
           <attribute key="Name" value="CustomGridSize" />
         </attributes>
@@ -87,7 +70,7 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="relative: 10, 26, 30, 28">
+      <element type="staticText" rect="relative: 10, 22, 30, 24">
         <attributes>
           <attribute key="Caption" value="AI Class:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -95,7 +78,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 31, 26, 46, 28">
+      <element type="Selector" rect="relative: 31, 22, 46, 24">
         <attributes>
           <attribute key="Name" value="CustomAiClass" />
         </attributes>
@@ -104,7 +87,7 @@
         </custom>
       </element>
       
-      <element type="staticText" rect="relative: 10, 30, 30, 32">
+      <element type="staticText" rect="relative: 10, 26, 30, 28">
         <attributes>
           <attribute key="Caption" value="Randomize First Race:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -112,13 +95,13 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 31, 30, 33, 32">
+      <element type="DustbinCheckbox" rect="relative: 31, 26, 33, 28">
         <attributes>
           <attribute key="Name" value="CustomRandomizeFirst" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 10, 34, 30, 36">
+      <element type="staticText" rect="relative: 10, 30, 30, 32">
         <attributes>
           <attribute key="Caption" value="Race Auto Finish:" />
           <attribute key="HTextAlign" value="lowerRight" />
@@ -126,7 +109,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 31, 34, 56, 36">
+      <element type="Selector" rect="relative: 31, 30, 56, 32">
         <attributes>
           <attribute key="Name" value="CustomAutoFinish" />
         </attributes>
