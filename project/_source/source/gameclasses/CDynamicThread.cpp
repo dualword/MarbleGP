@@ -1052,7 +1052,7 @@ namespace dustbin {
         }
         else if (l_sParam.substr(0, 10) == "deviation=") {
           std::string s = l_sParam.substr(10);
-          l_fPowerFactor += (float)std::atof(s.c_str());
+          l_fPowerFactor += (float)std::atof(s.c_str()) / 100.0f;
         }
       }
 

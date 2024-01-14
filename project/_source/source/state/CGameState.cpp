@@ -894,7 +894,7 @@ namespace dustbin {
             l_bAutomatic
           );
 
-          if ((*it)->m_pMarble->m_pViewport->m_pHUD != nullptr) {
+          if ((*it)->m_pMarble != nullptr && (*it)->m_pMarble->m_pViewport != nullptr && (*it)->m_pMarble->m_pViewport->m_pHUD != nullptr) {
             (*it)->m_pMarble->m_pViewport->m_pHUD->updateAiHelp(
               l_bLeft, 
               l_bRight, 
@@ -1218,18 +1218,6 @@ namespace dustbin {
         for (auto l_pPlr : l_pTrnmnt->m_vPlayers) {
           if (l_pPlr->m_iPlayer == a_iPlayerId) {
             m_pShader->adjustNodeMaterial(l_pMarble->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
-
-            if (l_pPlr->m_sTexture == "")
-              l_pPlr->m_sTexture = "default://number=" + std::to_string(a_iPlayerId);
-
-            if (l_pPlr->m_sTexture.substr(0, std::string("default://").size()) == "default://") {
-              if (l_pPlr->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || l_pPlr->m_sController == "class=marble3") {
-                l_pPlr->m_sTexture += "&class=2";
-              }
-              else if (l_pPlr->m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || l_pPlr->m_sController == "class=marble2") {
-                l_pPlr->m_sTexture += "&class=1";
-              }
-            }
 
             l_pPlr->setMarbleNode(l_pMarble);
             l_pMarble->m_pPlayer = l_pPlr; 

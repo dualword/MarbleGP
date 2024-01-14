@@ -339,6 +339,27 @@ namespace dustbin {
     void SPlayer::setMarbleNode(SMarbleNodes* a_pMarble) {
       m_pMarble = a_pMarble;
 
+      if (m_sTexture == "")
+        m_sTexture = "default://number=" + helpers::ws2s(m_sNumber);
+
+      if (m_sTexture.substr(0, std::string("default://").size()) == "default://") {
+        if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3 || m_sController == "class=marble3") {
+          m_sTexture += "&class=2";
+        }
+        else if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || m_sController == "class=marble2") {
+          m_sTexture += "&class=1";
+        }
+      }
+
+      if (m_sTexture.find("pattern=") == std::string::npos) {
+        if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3  || m_sController == "class=marble3")
+          m_sTexture += "&pattern=texture_rookie.png";
+        else if (m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2  || m_sController == "class=marble2")
+          m_sTexture += "&pattern=texture_marbles3.png";
+        else
+          m_sTexture += "&pattern=texture_marbles2.png";
+      }
+
       if (m_pMarble != nullptr) {
         m_pRaceData->m_iMarble = a_pMarble->m_pPositional->getID();
         m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));

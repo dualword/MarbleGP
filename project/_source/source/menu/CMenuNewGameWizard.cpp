@@ -132,22 +132,20 @@ namespace dustbin {
             // .. search for the matching profile ..
             for (std::vector<data::SPlayerData>::iterator it2 = m_vProfiles.begin(); it2 != m_vProfiles.end(); it2++) {
               if (*it == (*it2).m_sName) {
-
                 // .. and create a copy of the player element (will be modified for each game)
-                data::SPlayerData l_cPlayer;
-                l_cPlayer.copyFrom(*it2);
+                gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+                  (*it2).m_iPlayerId,
+                  l_iNum++,
+                  (*it2).m_sName,
+                  (*it2).m_sTexture,
+                  (*it2).m_sControls,
+                  (*it2).m_sShortName,
+                  (*it2).m_eAiHelp,
+                  nullptr,
+                  (*it2).m_eType
+                );
 
-                // The grid position for the player is the first element of the grid vector
-                l_cPlayer.m_iGridPos = *l_vGrid.begin();
-                // Remove the first element that was just assigned
-                l_vGrid.erase(l_vGrid.begin());
-
-                l_cPlayer.m_iViewPort = l_iNum;
-                l_cPlayer.m_iPlayerId = l_iNum++;
-                l_cPlayers.m_vPlayers.push_back(l_cPlayer);
-
-                controller::CControllerGame p = controller::CControllerGame();
-                p.deserialize(l_cPlayer.m_sControls);
+                l_pTournament->m_vPlayers.push_back(l_pPlayer);
 
                 break;
               }
@@ -158,7 +156,6 @@ namespace dustbin {
 
           l_cSlots.m_vSlots = l_vGrid;
           m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots  .serialize());
-          m_pState->getGlobal()->setGlobal("raceplayers"    , l_cPlayers.serialize());
 
           m_pState->getGlobal()->setSetting("gamesetup", m_cSettings.serialize());
           platform::saveSettings();

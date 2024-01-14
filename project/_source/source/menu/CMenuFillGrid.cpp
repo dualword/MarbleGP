@@ -62,8 +62,8 @@ namespace dustbin {
 
           helpers::loadAiProfiles(l_vAiPlayers);
 
-          data::SRacePlayers l_cPlayers = data::SRacePlayers();
-          l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
+          // data::SRacePlayers l_cPlayers = data::SRacePlayers();
+          // l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
 
           int l_iGridSize = 1;
 
@@ -83,7 +83,9 @@ namespace dustbin {
           // We fill a vector with the grid positions
           std::vector<int> l_vGrid;
 
-          for (int i = 0; i < (l_cPlayers.m_vPlayers.size() > l_iGridSize ? l_cPlayers.m_vPlayers.size() : l_iGridSize); i++)
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+          for (int i = 0; i < (l_pTournament->m_vPlayers.size() > l_iGridSize ? l_pTournament->m_vPlayers.size() : l_iGridSize); i++)
             l_vGrid.push_back(i);
 
           // if necessary shuffle the vector
@@ -94,19 +96,21 @@ namespace dustbin {
             std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
           }
 
-          int l_iCount = (int)l_cPlayers.m_vPlayers.size();
+          int l_iCount = (int)l_pTournament->m_vPlayers.size();
 
-          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
-            (*it).m_iGridPos = *l_vGrid.begin();
+          for (std::vector<gameclasses::SPlayer *>::iterator it = l_pTournament->m_vPlayers.begin(); it != l_pTournament->m_vPlayers.end(); it++) {
+            int l_iGridPos = *l_vGrid.begin();
+
+            (*it)->m_sNumber = std::to_wstring(l_iGridPos + 1);
 
             // The starting position of the first race defines the number of each marble
-            if ((*it).m_sTexture == "")
-              (*it).m_sTexture = "default://number=" + std::to_string((*it).m_iGridPos + 1);
+            if ((*it)->m_sTexture == "")
+              (*it)->m_sTexture = "default://number=" + std::to_string(l_iGridPos + 1);
             else
-              (*it).m_sTexture = (*it).m_sTexture + "&number=" + std::to_string((*it).m_iGridPos + 1);
-
+              (*it)->m_sTexture = (*it)->m_sTexture + "&number=" + std::to_string(l_iGridPos + 1);
+            
             if (m_pServer != nullptr) {
-              messages::CSetTexture l_cNumber = messages::CSetTexture((*it).m_iPlayerId, (*it).m_sTexture);
+              messages::CSetTexture l_cNumber = messages::CSetTexture((*it)->m_iPlayer, (*it)->m_sTexture);
               m_pServer->getInputQueue()->postMessage(&l_cNumber);
             }
 
@@ -120,7 +124,7 @@ namespace dustbin {
 
             std::vector<std::string> l_vAiClass;
 
-            int l_iAiPlayers = l_iGridSize - (int)l_cPlayers.m_vPlayers.size();
+            int l_iAiPlayers = l_iGridSize - (int)l_pTournament->m_vPlayers.size();
             printf("Add %i AI Players.\n", l_iAiPlayers);
 
             for (int i = 0; i < l_iAiPlayers; i++)
@@ -158,7 +162,7 @@ namespace dustbin {
 
             std::shuffle(l_vAiClass.begin(), l_vAiClass.end(), l_cRe);
 
-            while (l_cPlayers.m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
+            while (l_pTournament->m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
               std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.end();
 
               int l_iAiClass = *l_vAiClass.begin() == "marblegp" ? 0 : *l_vAiClass.begin() == "marble2" ? 1 : 2;
@@ -182,35 +186,26 @@ namespace dustbin {
 
               l_iCount++;
 
-              data::SPlayerData l_cData;
-              l_cData.m_eType       = data::enPlayerType::Ai;
-              l_cData.m_iGridPos    = *l_vGrid.begin();
-              l_cData.m_iPlayerId   = l_iCount;
-              l_cData.m_sName       = std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin();
-              l_cData.m_eAiHelp     = data::SPlayerData::enAiHelp::Off;
-              l_cData.m_sShortName  = std::get<1>(*l_itAi);
-              l_cData.m_wsShortName = helpers::s2ws(l_cData.m_sShortName);
-              l_cData.m_fDeviation  = std::get<5>(*l_itAi) / 100.0f;
-              l_cData.m_sControls   = "class=" + (*l_vAiClass.begin()) + "&deviation=" + std::to_string(std::get<5>(*l_itAi) / 100.0f);
-              l_cData.m_sTexture    = std::get<2>(*l_itAi) + "&number=" + std::to_string(l_cData.m_iGridPos + 1);
+              gameclasses::SPlayer* l_pAi = new gameclasses::SPlayer(
+                l_iCount,
+                -1,
+                std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin(),
+                std::get<2>(*l_itAi) + "&number=" + std::to_string(*l_vGrid.begin() + 1),
+                "class=" + *l_vAiClass.begin() + "&deviation=" + std::to_string(std::get<5>(*l_itAi)),
+                std::get<1>(*l_itAi),
+                data::SPlayerData::enAiHelp::Off,
+                nullptr,
+                data::enPlayerType::Ai
+              );
 
-              if (l_cData.m_sTexture.find("pattern=") == std::string::npos) {
-                if (*l_vAiClass.begin() == "marble3")
-                  l_cData.m_sTexture += "&pattern=texture_rookie.png";
-                else if (*l_vAiClass.begin() == "marble2")
-                  l_cData.m_sTexture += "&pattern=texture_marbles3.png";
-                else
-                  l_cData.m_sTexture += "&pattern=texture_marbles2.png";
-              }
+              l_pTournament->m_vPlayers.push_back(l_pAi);
 
               l_vAiClass.erase(l_vAiClass.begin());
 
               l_vGrid.erase(l_vGrid.begin());
 
-              l_cPlayers.m_vPlayers.push_back(l_cData);
-
               if (m_pServer != nullptr) {
-                messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer(l_cData.m_sName, l_cData.m_sTexture, l_cData.m_iPlayerId, l_cData.m_sShortName);
+                messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer(l_pAi->m_sName, l_pAi->m_sTexture, l_pAi->m_iPlayer, l_pAi->m_sShortName);
                 m_pServer->getInputQueue()->postMessage(&l_cPlayer);
               }
 
@@ -220,34 +215,13 @@ namespace dustbin {
             printf(".\n");
           }
 
-          std::vector<data::SPlayerData> l_cData;
-
-          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++)
-            l_cData.push_back(*it);
-
-          std::sort(l_cData.begin(), l_cData.end(), [](data::SPlayerData p1, data::SPlayerData p2) {
-            return p1.m_iGridPos < p2.m_iGridPos;
+          std::sort(l_pTournament->m_vPlayers.begin(), l_pTournament->m_vPlayers.end(), [](gameclasses::SPlayer *p1, gameclasses::SPlayer *p2) {
+            return std::wcstol(p1->m_sNumber.c_str(), nullptr, 10) < std::wcstol(p2->m_sNumber.c_str(), nullptr, 10);
           });
 
-          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->startTournament();
-
-          for (auto l_cPlayer : l_cPlayers.m_vPlayers) {
-            l_pTournament->m_vPlayers.push_back(
-              new gameclasses::SPlayer(
-                l_cPlayer.m_iPlayerId,
-                l_cPlayer.m_iViewPort,
-                l_cPlayer.m_sName,
-                l_cPlayer.m_sTexture,
-                l_cPlayer.m_sControls,
-                l_cPlayer.m_sShortName,
-                l_cPlayer.m_eAiHelp,
-                nullptr,
-                l_cPlayer.m_eType
-              )
-            );
-          }
-
           l_pTournament->saveToJSON();
+
+          std::vector<gameclasses::SPlayer *>::iterator l_itPlr = l_pTournament->m_vPlayers.begin();
 
           for (int i = 1; i <= 16; i++) {
             gui::CMenuBackground *p = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByNameAndType("player" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
@@ -257,20 +231,20 @@ namespace dustbin {
               irr::gui::IGUIStaticText *l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_label", irr::gui::EGUIET_STATIC_TEXT, p));
               if (l_pText != nullptr) {
                 l_pText->setText(std::to_wstring(i).c_str());
-                if (l_cData.size() < i)
+                if (l_itPlr == l_pTournament->m_vPlayers.end())
                   l_pText->setVisible(false);
               }
 
               l_pText = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("player_name", irr::gui::EGUIET_STATIC_TEXT, p));
               if (l_pText != nullptr) {
-                if (l_cData.size() < i)
+                if (l_itPlr == l_pTournament->m_vPlayers.end())
                   l_pText->setVisible(false);
                 else {
                   std::string l_sName  = "";
                   std::string l_sDummy = "";
 
                   
-                  if (helpers::splitStringNameBot(l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName, l_sName, l_sDummy)) {
+                  if (helpers::splitStringNameBot((*l_itPlr)->m_sName, l_sName, l_sDummy)) {
                     l_sBot = L"bot_" + helpers::s2ws(l_sDummy);
                   }
 
@@ -317,9 +291,8 @@ namespace dustbin {
                 l_cRect.LowerRightCorner -= irr::core::vector2di(l_iBorder);
                 l_pNumber->setRelativePosition(l_cRect);
 #endif
-                if (i <= l_cData.size()) {
-                  std::string l_sTexture = l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sTexture;
-                  printf("Texture: (%s) %s\n", l_cData[static_cast<std::vector<dustbin::data::SPlayerData, std::allocator<dustbin::data::SPlayerData>>::size_type>(i) - 1].m_sName.c_str(), l_sTexture.c_str());
+                if (i <= l_pTournament->m_vPlayers.size()) {
+                  std::string l_sTexture = (*l_itPlr)->m_sTexture;
 
                   if (l_sTexture != "") {
                     std::string l_sType = "";
@@ -347,17 +320,10 @@ namespace dustbin {
                 else l_pNumber->setVisible(false);
               }
             }
+
+            if (l_itPlr != l_pTournament->m_vPlayers.end())
+              l_itPlr++;
           }
-
-          m_pState->getGlobal()->setGlobal("raceplayers", l_cPlayers.serialize());
-
-          data::SChampionship l_cChampionship = data::SChampionship((int)l_cSettings.m_eRaceClass, (int)l_cPlayers.m_vPlayers.size(),  l_cSettings.m_bReverseGrid);
-
-          for (std::vector<data::SPlayerData>::iterator it = l_cPlayers.m_vPlayers.begin(); it != l_cPlayers.m_vPlayers.end(); it++) {
-            l_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer((*it).m_iPlayerId, (*it).m_sName));
-          }
-
-          m_pState->getGlobal()->setGlobal("championship", l_cChampionship.serialize());
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
