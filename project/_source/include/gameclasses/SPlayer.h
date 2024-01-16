@@ -46,10 +46,22 @@ namespace dustbin {
       SRaceData();
 
       /**
+      * De-serialization constructor
+      * @param a_sData the data to de-serialize
+      * @param a_pTournament the tournament
+      */
+      SRaceData(const std::string &a_sData, STournament *a_pTournament);
+
+      /**
       * Store the data in a JSON string
       * @return a JSON string
       */
       std::string toJSON();
+
+      /**
+      * Serialize this race data
+      */
+      std::string serialize();
     }
     SRaceData;
 
@@ -92,6 +104,12 @@ namespace dustbin {
       * The default constructor
       */
       SPlayer();
+
+      /**
+      * Copy constructor
+      * @param a_cOther the player to copy
+      */
+      SPlayer(const SPlayer &a_cOther);
 
       /**
       * The main constructor
@@ -188,6 +206,13 @@ namespace dustbin {
       SRace(const std::string &a_sTrack, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament);
 
       /**
+      * De-serialization constructor
+      * @param a_sData the data to de-serialize
+      * @param a_pTournament the tournament
+      */
+      SRace(const std::string &a_sData, STournament *a_pTournament);
+
+      /**
       * The destructor
       */
       ~SRace();
@@ -232,6 +257,11 @@ namespace dustbin {
       * @return a JSON string
       */
       std::string toJSON();
+
+      /**
+      * Serialize this race
+      */
+      std::string serialize();
 
     } SRace;
 

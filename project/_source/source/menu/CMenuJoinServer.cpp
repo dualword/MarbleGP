@@ -8,6 +8,7 @@
 #include <network/CGameClient.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CMenuBackground.h>
+#include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
@@ -29,11 +30,10 @@ namespace dustbin {
         threads::CInputQueue *m_pInputQueue;  /**< The input queue to receive messages from the server */
         network::CGameClient *m_pClient;      /**< The game client */
 
-        data::SRacePlayers  m_cPlayers;       /**< The players */
-        data::SChampionship m_cChampionship;  /**< The championship */
-
         irr::gui::IGUIStaticText *m_pConnecting;    /**< The "connecting" label */
         gui::CMenuBackground     *m_pMainFrame;     /**< The main frame */
+
+        gameclasses::STournament *m_pTournament;  /**< The tournament */
 
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
@@ -42,12 +42,14 @@ namespace dustbin {
             std::get<1>(*it)->setVisible(false);
           }
 
-          std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &l_cPlayer1, const data::SPlayerData &l_cPlayer2) {
-            if (l_cPlayer1.m_sTexture.find("number=") != std::string::npos && l_cPlayer2.m_sTexture.find("number=") != std::string::npos) {
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+          std::sort(l_pTournament->m_vPlayers.begin(), l_pTournament->m_vPlayers.end(), [](gameclasses::SPlayer *l_pPlayer1, gameclasses::SPlayer *l_pPlayer2) {
+            if (l_pPlayer1->m_sTexture.find("number=") != std::string::npos && l_pPlayer2->m_sTexture.find("number=") != std::string::npos) {
               std::string l_sType = "";
 
-              std::map<std::string, std::string> l_mParams1 = helpers::parseParameters(l_sType, l_cPlayer1.m_sTexture);
-              std::map<std::string, std::string> l_mParams2 = helpers::parseParameters(l_sType, l_cPlayer2.m_sTexture);
+              std::map<std::string, std::string> l_mParams1 = helpers::parseParameters(l_sType, l_pPlayer1->m_sTexture);
+              std::map<std::string, std::string> l_mParams2 = helpers::parseParameters(l_sType, l_pPlayer2->m_sTexture);
 
               int l_iNum1 = std::atoi(l_mParams1["number"].c_str());
               int l_iNum2 = std::atoi(l_mParams2["number"].c_str());
@@ -55,20 +57,21 @@ namespace dustbin {
               return l_iNum1 < l_iNum2;
             }
 
-            return l_cPlayer1.m_iPlayerId < l_cPlayer2.m_iPlayerId;
+            return l_pPlayer1->m_iPlayer < l_pPlayer2->m_iPlayer;
           });
 
           int i = 0;
-          for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+          for (auto l_pPlayer : l_pTournament->m_vPlayers) {
             if (i < m_vPlayers.size()) {
               std::get<1>(m_vPlayers[i])->setVisible(true);
-              std::get<2>(m_vPlayers[i])->setText(helpers::s2ws((*it).m_sName).c_str());
+              std::get<2>(m_vPlayers[i])->setText(helpers::s2ws(l_pPlayer->m_sName).c_str());
 
-              if ((*it).m_sTexture.find("number=") != std::string::npos) {
-                printf("Texture: %s\n", (*it).m_sTexture.c_str());
+              printf("Player \"%s\" (%i): \n", l_pPlayer->m_sName.c_str(), l_pPlayer->m_iPlayer);
+
+              if (l_pPlayer->m_sTexture.find("number=") != std::string::npos) {
                 std::string l_sType = "";
 
-                std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, (*it).m_sTexture);
+                std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, l_pPlayer->m_sTexture);
 
                 std::string l_sNumber = helpers::findTextureParameter(l_mParams, "number");
                 std::string l_sBack   = helpers::findTextureParameter(l_mParams, "numberback");
@@ -87,9 +90,6 @@ namespace dustbin {
                   std::get<3>(m_vPlayers[i])->setVisible(true);
                 }
               }
-
-              if ((*it).m_sName.find("|") != std::string::npos)
-                printf("AI Class: %s\n", (*it).m_sName.substr((*it).m_sName.find("|")).c_str());
             }
 
             i++;
@@ -106,17 +106,17 @@ namespace dustbin {
         }
 
       public:
-        CMenuJoinServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_pConnecting(nullptr), m_pMainFrame(nullptr) {
+        CMenuJoinServer(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), 
+          m_pConnecting(nullptr), 
+          m_pMainFrame (nullptr),
+          m_pTournament(m_pState->getGlobal()->getTournament())
+        {
           m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_joinserver.xml", m_pGui->getRootGUIElement(), m_pGui);
           m_pSmgr->clear();
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
-
-          m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
-
-          m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
 
           m_pConnecting = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_connecting", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
@@ -201,18 +201,19 @@ namespace dustbin {
               if (l_pMsg->getMessageId() == messages::enMessageIDs::RegisterPlayer) {
                 messages::CRegisterPlayer *p = reinterpret_cast<messages::CRegisterPlayer *>(l_pMsg);
 
-                data::SPlayerData l_cPlayer = data::SPlayerData();
+                gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+                  p->getident(),
+                  -1,
+                  p->getname(),
+                  p->gettexture(),
+                  "Network",
+                  p->getshortname(),
+                  data::SPlayerData::enAiHelp::Off,
+                  nullptr,
+                  data::enPlayerType::Network
+                );
 
-                l_cPlayer.m_sName      = p->getname     ();
-                l_cPlayer.m_sTexture   = p->gettexture  ();
-                l_cPlayer.m_iPlayerId  = p->getident    ();
-                l_cPlayer.m_sShortName = p->getshortname();
-                l_cPlayer.m_eType      = data::enPlayerType::Network;
-                l_cPlayer.m_sControls  = "Network";
-
-                m_cPlayers.m_vPlayers.push_back(l_cPlayer);
-
-                m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(p->getident(), p->getname()));
+                m_pTournament->m_vPlayers.push_back(l_pPlayer);
 
                 updatePlayerList();
               }
@@ -220,53 +221,39 @@ namespace dustbin {
                 std::string l_sName = "";
 
                 messages::CUpdatePlayerId *p = reinterpret_cast<messages::CUpdatePlayerId *>(l_pMsg);
-                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == p->getoriginal_id()) {
-                    printf("Update ID of race player %s to %i\n", (*it).m_sName.c_str(), p->getnetgame_id());
-                    (*it).m_iPlayerId = p->getnetgame_id();
-                    l_sName = (*it).m_sName;
-                  }
-                }
-
-                bool l_bFound = false;
-
-                for (std::vector<data::SChampionshipPlayer>::iterator it = m_cChampionship.m_vPlayers.begin(); it != m_cChampionship.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == p->getoriginal_id()) {
-                    printf("Update ID of championship player %s to %i\n", (*it).m_sName.c_str(), p->getnetgame_id());
-                    (*it).m_iPlayerId = p->getnetgame_id();
-                    l_bFound = true;
+                for (std::vector<gameclasses::SPlayer *>::iterator it = m_pTournament->m_vPlayers.begin(); it != m_pTournament->m_vPlayers.end(); it++) {
+                  if ((*it)->m_iPlayer == p->getoriginal_id()) {
+                    printf("Update ID of race player %s to %i\n", (*it)->m_sName.c_str(), p->getnetgame_id());
+                    (*it)->m_iPlayer = p->getnetgame_id();
+                    l_sName = (*it)->m_sName;
                     break;
                   }
-                }
-
-                if (!l_bFound) {
-                  printf("Championship player not found, adding \"%s\"...\n", l_sName.c_str());
-                  m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(p->getnetgame_id(), l_sName));
                 }
               }
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::RacePlayer) {
                 messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(l_pMsg);
                 bool l_bAdd = true;
-                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == p->getplayerid()) {
+                for (auto l_pPlayer: m_pTournament->m_vPlayers) {
+                  if (l_pPlayer->m_iPlayer == p->getplayerid()) {
                     l_bAdd = false;
                     break;
                   }
                 }
 
                 if (l_bAdd) {
-                  data::SPlayerData l_cNewPlayer;
-                  l_cNewPlayer.m_eAiHelp    = data::SPlayerData::enAiHelp::Off;
-                  l_cNewPlayer.m_eType      = data::enPlayerType::Network;
-                  l_cNewPlayer.m_iPlayerId  = p->getplayerid ();
-                  l_cNewPlayer.m_sName      = p->getname     ();
-                  l_cNewPlayer.m_sTexture   = p->gettexture  ();
-                  l_cNewPlayer.m_sShortName = p->getshortname();
-                  l_cNewPlayer.m_sControls  = "Network";
+                  gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+                    p->getplayerid(),
+                    -1,
+                    p->getname(),
+                    p->gettexture(),
+                    "Network",
+                    p->getshortname(),
+                    data::SPlayerData::enAiHelp::Off,
+                    nullptr,
+                    data::enPlayerType::Network
+                  );
 
-                  m_cPlayers.m_vPlayers.push_back(l_cNewPlayer);
-
-                  m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(p->getplayerid(), p->getname()));
+                  m_pTournament->m_vPlayers.push_back(l_pPlayer);
 
                   updatePlayerList();
                 }
@@ -274,19 +261,10 @@ namespace dustbin {
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::PlayerRemoved) {
                 messages::CPlayerRemoved *p = reinterpret_cast<messages::CPlayerRemoved *>(l_pMsg);
 
-                int l_iPlayerId = m_cPlayers.m_vPlayers[p->getplayerid()].m_iPlayerId;
-
-                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == l_iPlayerId) {
-                    m_cPlayers.m_vPlayers.erase(it);
+                for (std::vector<gameclasses::SPlayer *>::iterator it = m_pTournament->m_vPlayers.begin(); it != m_pTournament->m_vPlayers.end(); it++) {
+                  if ((*it)->m_iPlayer == p->getplayerid()) {
+                    m_pTournament->m_vPlayers.erase(it);
                     updatePlayerList();
-                    break;
-                  }
-                }
-
-                for (std::vector<data::SChampionshipPlayer>::iterator it = m_cChampionship.m_vPlayers.begin(); it != m_cChampionship.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == p->getplayerid()) {
-                    m_cChampionship.m_vPlayers.erase(it);
                     break;
                   }
                 }
@@ -304,27 +282,22 @@ namespace dustbin {
                 std::string l_sNewState = p->getnewstate();
                 printf("Change state to \"%s\"\n", l_sNewState.c_str());
 
-                std::sort(m_cPlayers.m_vPlayers.begin(), m_cPlayers.m_vPlayers.end(), [](const data::SPlayerData &l_cPlayer1, const data::SPlayerData &l_cPlayer2) {
-                  return l_cPlayer1.m_iPlayerId < l_cPlayer2.m_iPlayerId;
+                std::sort(m_pTournament->m_vPlayers.begin(), m_pTournament->m_vPlayers.end(), [](gameclasses::SPlayer *l_cPlayer1, gameclasses::SPlayer *l_cPlayer2) {
+                  return l_cPlayer1->m_iPlayer < l_cPlayer2->m_iPlayer;
                 });
-
-                m_pState->getGlobal()->setGlobal("raceplayers" , m_cPlayers     .serialize());
-                m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
 
                 createMenu(l_sNewState.c_str(), m_pDevice, m_pManager, m_pState);
               }
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::SetTexture) {
                 messages::CSetTexture *p = reinterpret_cast<messages::CSetTexture *>(l_pMsg);
 
-                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == p->getplayerid() && (*it).m_sTexture.find("number=") == std::string::npos) {
-                    (*it).m_sTexture = p->gettexture();
+                for (auto l_pPlayer: m_pTournament->m_vPlayers) {
+                  if (l_pPlayer->m_iPlayer == p->getplayerid() && l_pPlayer->m_sTexture.find("number=") == std::string::npos) {
+                    l_pPlayer->m_sTexture = p->gettexture();
                     updatePlayerList();
                     break;
                   }
                 }
-
-                return true;
               }
 
               delete l_pMsg;

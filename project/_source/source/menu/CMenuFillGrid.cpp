@@ -62,9 +62,6 @@ namespace dustbin {
 
           helpers::loadAiProfiles(l_vAiPlayers);
 
-          // data::SRacePlayers l_cPlayers = data::SRacePlayers();
-          // l_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
-
           int l_iGridSize = 1;
 
           if (l_cSettings.m_bFillGridAI) {
@@ -162,6 +159,12 @@ namespace dustbin {
 
             std::shuffle(l_vAiClass.begin(), l_vAiClass.end(), l_cRe);
 
+            int l_iPlayerId = 0;
+
+            for (auto l_pPlayer: l_pTournament->m_vPlayers)
+              if (l_pPlayer->m_iPlayer >= l_iPlayerId)
+                l_iPlayerId = l_pPlayer->m_iPlayer + 1;
+
             while (l_pTournament->m_vPlayers.size() < l_iGridSize && !l_vGrid.empty()) {
               std::vector<std::tuple<std::string, std::string, std::string, int, int, float>>::iterator l_itAi = l_vAiPlayers.end();
 
@@ -187,7 +190,7 @@ namespace dustbin {
               l_iCount++;
 
               gameclasses::SPlayer* l_pAi = new gameclasses::SPlayer(
-                l_iCount,
+                l_iPlayerId,
                 -1,
                 std::get<0>(*l_itAi) + "|" + *l_vAiClass.begin(),
                 std::get<2>(*l_itAi) + "&number=" + std::to_string(*l_vGrid.begin() + 1),
@@ -197,6 +200,8 @@ namespace dustbin {
                 nullptr,
                 data::enPlayerType::Ai
               );
+
+              l_iPlayerId++;
 
               l_pTournament->m_vPlayers.push_back(l_pAi);
 

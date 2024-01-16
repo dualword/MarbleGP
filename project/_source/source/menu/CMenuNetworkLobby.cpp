@@ -2,6 +2,7 @@
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameClient.h>
 #include <menu/IMenuHandler.h>
@@ -91,6 +92,14 @@ namespace dustbin {
                   else
                     l_pThumbnail->setImage(m_pDrv->getTexture("data/images/no_image.png"));
                 }
+              }
+              else if (l_pMsg->getMessageId() == messages::enMessageIDs::SetGlobalData) {
+                messages::CSetGlobalData *p = reinterpret_cast<messages::CSetGlobalData *>(l_pMsg);
+
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+                l_pTournament->m_vRaces.push_back(new gameclasses::SRace(p->getvalue(), l_pTournament));
+
+                m_pClient->stateChanged("gamedata");
               }
             }
           }

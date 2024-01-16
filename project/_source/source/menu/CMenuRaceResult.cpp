@@ -47,10 +47,6 @@ namespace dustbin {
           gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
           gameclasses::SRace       *l_pRace       = l_pTournament->getRace();
 
-          data::SRacePlayers l_cPlayers;
-          std::string l_sPlayers = CGlobal::getInstance()->getGlobal("raceplayers");
-          l_cPlayers.deserialize(l_sPlayers);
-
           irr::gui::IGUIStaticText *l_pTrack = reinterpret_cast<irr::gui::IGUIStaticText*>(helpers::findElementByNameAndType("label_trackname", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           if (l_pTrack != nullptr) {

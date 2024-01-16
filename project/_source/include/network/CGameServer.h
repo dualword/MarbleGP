@@ -2,6 +2,7 @@
 #pragma once
 
 #include <threads/CMessageQueue.h>
+#include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
 #include <network/CNetBase.h>
 #include <threads/IThread.h>
@@ -41,7 +42,7 @@ namespace dustbin {
 
         std::map<ENetPeer *, std::string> m_mCurrentStates;    /**< The current states the clients are in */
 
-        data::SRacePlayers m_cPlayers;    /**< The players */
+        std::vector<gameclasses::SPlayer> m_vPlayers;   /**< The players */
 
         CDiscoveryServer *m_pDiscovery;   /**< The discovery server thread */
 
@@ -67,7 +68,7 @@ namespace dustbin {
         virtual bool beforeSendMessage(messages::IMessage *a_pMsg) override;
 
       public:
-        CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal *a_pGlobal);
+        CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal *a_pGlobal, const std::vector<gameclasses::SPlayer> a_vPlayers);
         ~CGameServer();
 
         void setConnectionAllowed(bool a_bAllowed);
@@ -82,8 +83,9 @@ namespace dustbin {
         /**
         * Transfer a global entry to all clients
         * @param a_sKey the key to transfer
+        * @param a_sValue the data to transfer
         */
-        void sendGlobalData(const std::string &a_sKey);
+        void sendGlobalData(const std::string &a_sKey, const std::string &a_sValue);
 
         /**
         * Notify all clients about a state change

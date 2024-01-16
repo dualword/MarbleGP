@@ -3,6 +3,7 @@
 #include <_generated/messages/CMessages.h>
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
+#include <gameclasses/SPlayer.h>
 #include <network/CGameServer.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CMenuBackground.h>
@@ -28,9 +29,6 @@ namespace dustbin {
         threads::CInputQueue *m_pInputQueue;  /**< The input queue to receive messages from the server */
         network::CGameServer *m_pServer;      /**< The game server */
 
-        data::SRacePlayers  m_cPlayers;       /**< The players */
-        data::SChampionship m_cChampionship;  /**< The championship */
-
         std::vector<std::tuple<gui::CMenuBackground *, irr::gui::IGUITab *, irr::gui::IGUIStaticText *>> m_vPlayers; /**< The root elements and the name text elements for the players */
 
         void updatePlayerList() {
@@ -38,11 +36,13 @@ namespace dustbin {
             std::get<1>(*it)->setVisible(false);
           }
 
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
           int i = 0;
-          for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
+          for (auto l_pPlayer: l_pTournament->m_vPlayers) {
             if (i < m_vPlayers.size()) {
               std::get<1>(m_vPlayers[i])->setVisible(true);
-              std::get<2>(m_vPlayers[i])->setText(helpers::s2ws((*it).m_sName).c_str());
+              std::get<2>(m_vPlayers[i])->setText(helpers::s2ws(l_pPlayer->m_sName).c_str());
             }
 
             i++;
@@ -106,10 +106,6 @@ namespace dustbin {
           if (m_pServer != nullptr)
             m_pServer->getOutputQueue()->addListener(m_pInputQueue);
 
-          m_cPlayers.deserialize(m_pState->getGlobal()->getGlobal("raceplayers"));
-
-          m_cChampionship = data::SChampionship(m_pState->getGlobal()->getGlobal("championship"));
-
           hideAiAndNumber(m_pGui->getRootGUIElement());
           updatePlayerList();
         }
@@ -136,17 +132,7 @@ namespace dustbin {
                 createMenu("menu_main", m_pDevice, m_pManager, m_pState);
               }
               else if (l_sSender == "ok") {
-                std::string l_sPlayers = m_cPlayers.serialize();
-                m_pState->getGlobal()->setGlobal("raceplayers", l_sPlayers);
-
-                m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
-
-                printf("\n*********\n");
-                printf("%s\n", m_cPlayers.toString().c_str());
-                printf("\n*********\n");
-
                 m_pServer->setConnectionAllowed(false);
-
                 createMenu(m_pManager->popMenuStack(), m_pDevice, m_pManager, m_pState);
               }
             }
@@ -167,34 +153,34 @@ namespace dustbin {
               if (l_pMsg->getMessageId() == messages::enMessageIDs::RegisterPlayer) {
                 messages::CRegisterPlayer *p = reinterpret_cast<messages::CRegisterPlayer *>(l_pMsg);
 
-                data::SPlayerData l_cPlayer = data::SPlayerData();
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
 
-                l_cPlayer.m_sName      = p->getname     ();
-                l_cPlayer.m_sTexture   = p->gettexture  ();
-                l_cPlayer.m_iPlayerId  = p->getident    ();
-                l_cPlayer.m_sShortName = p->getshortname();
-                l_cPlayer.m_sControls  = "Network";
-                l_cPlayer.m_eType      = data::enPlayerType::Network;
+                gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
+                  p->getident(),
+                  -1,
+                  p->getname(),
+                  p->gettexture(),
+                  "Network",
+                  p->getshortname(),
+                  data::SPlayerData::enAiHelp::Off,
+                  nullptr,
+                  data::enPlayerType::Network
+                );
 
-                m_cPlayers.m_vPlayers.push_back(l_cPlayer);
+                l_pTournament->m_vPlayers.push_back(l_pPlayer);
 
-                printf("Player %s added to player list (id = %i)\n", l_cPlayer.m_sName.c_str(), p->getident());
-
-                m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(
-                  l_cPlayer.m_iPlayerId,
-                  l_cPlayer.m_sName
-                ));
-
-                m_cChampionship.m_iGridSize = (int)m_cChampionship.m_vPlayers.size();
+                printf("Player %s added to player list (id = %i)\n", l_pPlayer->m_sName.c_str(), p->getident());
 
                 updatePlayerList();
               }
               else if (l_pMsg->getMessageId() == messages::enMessageIDs::PlayerRemoved) {
                 messages::CPlayerRemoved *p = reinterpret_cast<messages::CPlayerRemoved *>(l_pMsg);
 
-                for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-                  if ((*it).m_iPlayerId == p->getplayerid()) {
-                    m_cPlayers.m_vPlayers.erase(it);
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+                for (std::vector<gameclasses::SPlayer *>::iterator l_itPlr = l_pTournament->m_vPlayers.begin(); l_itPlr != l_pTournament->m_vPlayers.end(); l_itPlr++) {
+                  if ((*l_itPlr)->m_iPlayer == p->getplayerid()) {
+                    l_pTournament->m_vPlayers.erase(l_itPlr);
                     updatePlayerList();
                     break;
                   }

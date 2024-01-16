@@ -263,7 +263,7 @@ namespace dustbin {
 
                   platform::saveSettings();
                   if (m_pServer != nullptr) {
-                    m_pServer->sendGlobalData("gamedata");
+                    m_pServer->sendGlobalData("gamedata", l_pTournament->getRace()->serialize());
                     m_iClientState = 1;
                   }
                   else {

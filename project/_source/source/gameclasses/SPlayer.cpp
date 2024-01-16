@@ -7,6 +7,19 @@
 
 namespace dustbin {
   namespace gameclasses {
+    const irr::s32 c_iRaceStart     = -100;   /**< ID for the start of the race data structure */
+    const irr::s32 c_iRaceTrack     = -101;   /**< ID for the race track */
+    const irr::s32 c_iRaceLaps      = -102;   /**< ID for the race laps */
+    const irr::s32 c_iRaceInfo      = -103;   /**< ID for the race info */
+    const irr::s32 c_iRaceRankStart = -104;   /**< ID for the start of the ranking */
+    const irr::s32 c_iRaceRankEnd   = -105;   /**< ID for the end of the ranking */
+    const irr::s32 c_iRaceEnd       = -106;   /**< ID for the end of the race data structure */
+
+    const irr::s32 c_iRankStart     = -200;   /**< ID for serialization start of the ranking */
+    const irr::s32 c_iRankPlayerId  = -201;   /**< ID for serialization start of the ranking */
+    const irr::s32 c_iRankGridPos   = -202;   /**< ID for serialization start of the ranking */
+    const irr::s32 c_iRankEnd       = -203;   /**< ID for serialization end of the ranking */
+
     // #define _DEBUG_DUMP_RANKING
 
     /**
@@ -24,6 +37,66 @@ namespace dustbin {
       m_bWithdrawn (false),
       m_pPlayer    (nullptr)
     {
+    }
+
+    /**
+    * De-serialization constructor
+    * @param a_sData the data to de-serialize
+    * @param a_pTournament the tournament
+    */
+    SRaceData::SRaceData(const std::string& a_sData, STournament *a_pTournament) : 
+      m_iPlayer    (-1), 
+      m_iMarble    (0), 
+      m_iPosition  (0), 
+      m_iDiffLeader(0), 
+      m_iDiffAhead (0), 
+      m_iState     (0), 
+      m_iLapNo     (0), 
+      m_iGridPos   (0),
+      m_bWithdrawn (false),
+      m_pPlayer    (nullptr)
+    {
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      if (l_cSerializer.getS32() == c_iRankStart) {
+        while (l_cSerializer.hasMoreMessages()) {
+          irr::s32 l_iToken = l_cSerializer.getS32();
+
+          switch (l_iToken) {
+            case c_iRankPlayerId: m_iPlayer  = l_cSerializer.getS32(); break;
+            case c_iRankGridPos : m_iGridPos = l_cSerializer.getS32(); break;
+            case c_iRankEnd     : break;
+          }
+        }
+
+        if (m_iPlayer != -1) {
+          for (auto l_pPlayer : a_pTournament->m_vPlayers) {
+            if (l_pPlayer->m_iPlayer == m_iPlayer) {
+              m_pPlayer = l_pPlayer;
+              l_pPlayer->m_pRaceData = this;
+              break;
+            }
+          }
+        }
+        else printf("No player ID received.\n");
+      }
+      else printf("Invalid start token for Race Data!\n");
+    }
+
+    /**
+    * Serialize this race
+    */
+    std::string SRaceData::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      l_cSerializer.addS32(c_iRankStart);
+      l_cSerializer.addS32(c_iRankPlayerId);
+      l_cSerializer.addS32(m_iPlayer);
+      l_cSerializer.addS32(c_iRankGridPos);
+      l_cSerializer.addS32(m_iGridPos);
+      l_cSerializer.addS32(c_iRankEnd);
+
+      return l_cSerializer.getMessageAsString();
     }
 
     /**
@@ -96,11 +169,37 @@ namespace dustbin {
       m_eType          (data::enPlayerType::Local),
       m_eAiHelp        (data::SPlayerData::enAiHelp::Off),
       m_pMarble        (nullptr),
-      m_pController    (nullptr)
+      m_pController    (nullptr),
+      m_pRaceData      (nullptr)
     {
       m_cText = irr::video::SColor(0xFF,    0,    0,    0);
       m_cBack = irr::video::SColor(0x80, 0xFF, 0xFF, 0xFF);
       m_cFrme = irr::video::SColor(0x80,    0,    0,    0);
+    }
+
+    /**
+    * Copy constructor
+    * @param a_cOther the player to copy
+    */
+    SPlayer::SPlayer(const SPlayer &a_cOther) :
+      m_iPlayer     (a_cOther.m_iPlayer),
+      m_iViewport   (a_cOther.m_iViewport),
+      m_sName       (a_cOther.m_sName),
+      m_sTexture    (a_cOther.m_sTexture),
+      m_sController (a_cOther.m_sController),
+      m_sShortName  (a_cOther.m_sShortName),
+      m_sNumber     (a_cOther.m_sNumber),
+      m_wsShortName (a_cOther.m_wsShortName),
+      m_bShowRanking(a_cOther.m_bShowRanking),
+      m_eType       (a_cOther.m_eType),
+      m_eAiHelp     (a_cOther.m_eAiHelp),
+      m_pMarble     (a_cOther.m_pMarble),
+      m_pController (a_cOther.m_pController),
+      m_cText       (a_cOther.m_cText),
+      m_cBack       (a_cOther.m_cBack),
+      m_cFrme       (a_cOther.m_cFrme),
+      m_pRaceData   (a_cOther.m_pRaceData)
+    {
     }
 
     /**
@@ -161,7 +260,8 @@ namespace dustbin {
       m_eType         (a_eType),
       m_eAiHelp       (a_eAiHelp),
       m_pMarble       (a_pMarble),
-      m_pController   (nullptr)
+      m_pController   (nullptr),
+      m_pRaceData     (nullptr)
     {
       if (m_pMarble != nullptr) {
         m_pMarble->m_pRotational->getMaterial(0).setTexture(0, CGlobal::getInstance()->createTexture(m_sTexture));
@@ -395,6 +495,55 @@ namespace dustbin {
     }
 
     /**
+    * De-serialization constructor
+    * @param a_sData the data to de-serialize
+    */
+    SRace::SRace(const std::string &a_sData, STournament *a_pTournament) :
+      m_sTrack     (""),
+      m_sInfo      (""),
+      m_iLaps      (0),
+      m_pTournament(a_pTournament)
+    {
+      for (auto l_pPlayer : m_pTournament->m_vPlayers) {
+        m_vPlayers.push_back(l_pPlayer);
+      }
+
+      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sData.c_str());
+
+      irr::s32 l_iRaceStart = l_cSerializer.getS32();
+
+      if (l_iRaceStart == c_iRaceStart) {
+        while (l_cSerializer.hasMoreMessages()) {
+          irr::s32 l_iToken = l_cSerializer.getS32();
+
+          switch (l_iToken) {
+            case c_iRaceTrack: m_sTrack = l_cSerializer.getString(); break;
+            case c_iRaceLaps : m_iLaps  = l_cSerializer.getS32   (); break;
+            case c_iRaceInfo : m_sInfo  = l_cSerializer.getString(); break;
+
+            case c_iRaceRankStart: {
+              irr::s32 l_iCount = l_cSerializer.getS32();
+              
+              for (irr::s32 i = 0; i < l_iCount; i++) {
+                m_vRanking.push_back(new SRaceData(l_cSerializer.getString(), m_pTournament));
+              }
+
+              if (l_cSerializer.getS32() != c_iRaceRankEnd)
+                printf("Invlid token for the race rank end.\n");
+
+              for (auto l_pPlayer: m_vPlayers)
+                if (l_pPlayer->m_pRaceData == nullptr)
+                  printf("Oops\n");
+
+              break;
+            }
+          }
+        }
+      }
+      else printf("Invalid race start token!\n");
+    }
+
+    /**
     * The destructor
     */
     SRace::~SRace() {
@@ -405,6 +554,32 @@ namespace dustbin {
         m_vRanking.erase(m_vRanking.begin());
         delete p;
       }
+    }
+
+    /**
+    * Serialize this race
+    */
+    std::string SRace::serialize() {
+      messages::CSerializer64 l_cSerializer;
+
+      l_cSerializer.addS32(c_iRaceStart);
+      l_cSerializer.addS32(c_iRaceTrack);
+      l_cSerializer.addString(m_sTrack);
+      l_cSerializer.addS32(c_iRaceLaps);
+      l_cSerializer.addS32(m_iLaps);
+      l_cSerializer.addS32(c_iRaceInfo);
+      l_cSerializer.addString(m_sInfo);
+
+      l_cSerializer.addS32(c_iRaceRankStart);
+      l_cSerializer.addS32((irr::s32)m_vRanking.size());
+
+      for (auto l_pRank: m_vRanking)
+        l_cSerializer.addString(l_pRank->serialize());
+
+      l_cSerializer.addS32(c_iRaceRankEnd);
+      l_cSerializer.addS32(c_iRaceEnd);
+
+      return l_cSerializer.getMessageAsString();
     }
 
     /**

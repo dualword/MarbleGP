@@ -325,11 +325,11 @@ namespace dustbin {
 
       m_cSettings = m_pGlobal->getSettingData();
 
-      gameclasses::STournament *l_pTournament = m_pGlobal->getTournament();
-      m_pRaceData = l_pTournament->getRace();
-
       for (int i = 0; i < 16; i++)
         m_aMarbles[i] = nullptr;
+
+      gameclasses::STournament *l_pTournament = m_pGlobal->getTournament();
+      m_pRaceData = l_pTournament->getRace();
 
       helpers::addToDebugLog("Load track...");
       // Load the track, and don't forget to run the skybox fix beforehands

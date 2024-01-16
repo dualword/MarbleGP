@@ -12,6 +12,7 @@
 #include <sound/ISoundInterface.h>
 #include <helpers/CDataHelpers.h>
 #include <gui/CVirtualKeyboard.h>
+#include <gameclasses/SPlayer.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
 #include <helpers/CMenuLoader.h>
@@ -729,7 +730,15 @@ namespace dustbin {
       delete m_pServer;
     }
 
-    m_pServer = new network::CGameServer(a_vAvailableSlots, this);
+    gameclasses::STournament *l_pTournament = getTournament();
+
+    std::vector<gameclasses::SPlayer> l_vPlayers;
+
+    for (auto l_pPlayer : l_pTournament->m_vPlayers) {
+      l_vPlayers.push_back(gameclasses::SPlayer(*l_pPlayer));
+    }
+
+    m_pServer = new network::CGameServer(a_vAvailableSlots, this, l_vPlayers);
     m_pServer->startThread();
   }
 
@@ -766,7 +775,15 @@ namespace dustbin {
       delete m_pClient;
     }
 
-    m_pClient = new network::CGameClient(a_iHostIP, a_iPort, this);
+    gameclasses::STournament *l_pTournament = getTournament();
+
+    std::vector<gameclasses::SPlayer> l_vPlayers;
+
+    for (auto l_pPlayer : l_pTournament->m_vPlayers) {
+      l_vPlayers.push_back(gameclasses::SPlayer(*l_pPlayer));
+    }
+
+    m_pClient = new network::CGameClient(a_iHostIP, a_iPort, this, l_vPlayers);
     m_pClient->getOutputQueue()->addListener(a_pQueue);
     m_pClient->startThread();
   }
@@ -1032,6 +1049,7 @@ namespace dustbin {
   * @return the new tournament
   */
   gameclasses::STournament *CMainClass::startTournament() {
+    printf("\n***** Starting Tournament *****\n\n");
     if (m_pTournament != nullptr)
       delete m_pTournament;
 

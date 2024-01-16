@@ -2,6 +2,7 @@
 #pragma once
 
 #include <threads/CMessageQueue.h>
+#include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
 #include <network/CNetBase.h>
 #include <threads/IThread.h>
@@ -25,7 +26,7 @@ namespace dustbin {
 
         std::vector<ENetPeer *> m_vPeers;
 
-        data::SRacePlayers m_cPlayers;    /**< The players that this client wants to connect to the server */
+        std::vector<gameclasses::SPlayer> m_vPlayers;   /**< The players of this client */
 
         /**
         * Handle an event in a subclass
@@ -50,7 +51,7 @@ namespace dustbin {
         virtual bool beforeSendMessage(messages::IMessage *a_pMsg) override;
 
     public:
-        CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal *a_pGlobal);
+        CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal *a_pGlobal, const std::vector<gameclasses::SPlayer> a_vPlayers);
         ~CGameClient();
 
         /**

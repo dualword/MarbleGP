@@ -12,11 +12,12 @@
 
 namespace dustbin {
   namespace network {
-    CGameServer::CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal* a_pGlobal) :
+    CGameServer::CGameServer(const std::vector<int> &a_vAvailableIDs, CGlobal* a_pGlobal, const std::vector<gameclasses::SPlayer> a_vPlayers) :
       CNetBase            (a_pGlobal),
       m_bConnectionAllowed(true),
       m_sHostName         (""),
-      m_pDiscovery        (nullptr)
+      m_pDiscovery        (nullptr),
+      m_vPlayers          (a_vPlayers)
     {
       m_vAvailableSlots = a_vAvailableIDs;
 
@@ -38,8 +39,6 @@ namespace dustbin {
           setConnectionAllowed(true);
         }
       }
-
-      m_cPlayers.deserialize(m_pGlobal->getGlobal("raceplayers"));
     }
 
     CGameServer::~CGameServer() {
@@ -98,9 +97,10 @@ namespace dustbin {
     /**
     * Transfer a global entry to all clients
     * @param a_sKey the key to transfer
+    * @param a_sValue the data to transfer
     */
-    void CGameServer::sendGlobalData(const std::string& a_sKey) {
-      messages::CSetGlobalData l_cMsg = messages::CSetGlobalData(a_sKey, m_pGlobal->getGlobal(a_sKey));
+    void CGameServer::sendGlobalData(const std::string& a_sKey, const std::string &a_sValue) {
+      messages::CSetGlobalData l_cMsg = messages::CSetGlobalData(a_sKey, a_sValue);
       broadcastMessage(&l_cMsg, true);
     }
 
@@ -231,19 +231,22 @@ namespace dustbin {
                   printf("Slot %i assigned to player \"%s\"\n", std::get<0>(*it), p->getname().c_str());
 
                   int l_iNextPlayerId = 0;
-                  for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-                    if (l_iNextPlayerId <= (*it).m_iPlayerId)
-                      l_iNextPlayerId = (*it).m_iPlayerId + 1;
+                  for (std::vector<gameclasses::SPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+                    if (l_iNextPlayerId <= (*it).m_iPlayer)
+                      l_iNextPlayerId = (*it).m_iPlayer + 1;
                   }
 
-                  data::SPlayerData l_cPlayer;
-
-                  l_cPlayer.m_sName      = p->getname   ();
-                  l_cPlayer.m_sTexture   = p->gettexture();
-                  l_cPlayer.m_iPlayerId  = l_iNextPlayerId;
-                  l_cPlayer.m_sShortName = p->getshortname();
-
-                  m_cPlayers.m_vPlayers.push_back(l_cPlayer);
+                  m_vPlayers.push_back(gameclasses::SPlayer(
+                    l_iNextPlayerId,
+                    -1,
+                    p->getname(),
+                    p->gettexture(),
+                    "Network",
+                    p->getshortname(),
+                    data::SPlayerData::enAiHelp::Off,
+                    nullptr,
+                    data::enPlayerType::Network
+                  ));
 
                   if (m_mPlayerMap.find(a_pPeer) == m_mPlayerMap.end()) {
                     m_mPlayerMap[a_pPeer] = std::vector<int>();
@@ -269,8 +272,8 @@ namespace dustbin {
           }
 
           case messages::enMessageIDs::PlayerListEnd: {
-            for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-              messages::CRacePlayer l_cPlayer = messages::CRacePlayer((*it).m_iPlayerId, (*it).m_sName, (*it).m_sTexture, (*it).m_sShortName);
+            for (std::vector<gameclasses::SPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+              messages::CRacePlayer l_cPlayer = messages::CRacePlayer((*it).m_iPlayer, (*it).m_sName, (*it).m_sTexture, (*it).m_sShortName);
               broadcastMessage(&l_cPlayer, true);
             }
 

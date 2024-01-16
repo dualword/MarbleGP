@@ -3,6 +3,7 @@
 #include <_generated/messages/CMessageFactory.h>
 #include <_generated/messages/CMessages.h>
 #include <messages/CSerializer64.h>
+#include <gameclasses/SPlayer.h>
 #include <network/CGameClient.h>
 #include <state/CMenuState.h>
 #include <state/IState.h>
@@ -12,9 +13,10 @@
 
 namespace dustbin {
   namespace network {
-    CGameClient::CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal* a_pGlobal) :
+    CGameClient::CGameClient(irr::u32 a_iHostIP, int a_iPort, CGlobal* a_pGlobal, const std::vector<gameclasses::SPlayer> a_vPlayers) :
       CNetBase    (a_pGlobal),
-      m_bConnected(true)
+      m_bConnected(true),
+      m_vPlayers  (a_vPlayers)
     {
       if (m_pGlobal->getGlobal("enet_initialized") == "true") {
         m_pHost = enet_host_create(nullptr, 1, 2, 0, 0);
@@ -102,9 +104,7 @@ namespace dustbin {
             messages::CServerIdentifier *p = reinterpret_cast<messages::CServerIdentifier *>(a_pMessage);
             printf("Server identifier: %s (%i free slots)\n", p->getidentify().c_str(), p->getfreeslots());
             if (p->getidentify() == "MarbleGP Server") {
-              m_cPlayers.deserialize(m_pGlobal->getGlobal("raceplayers"));
-
-              messages::CClientRequest p = messages::CClientRequest((irr::s32)m_cPlayers.m_vPlayers.size());
+              messages::CClientRequest p = messages::CClientRequest((irr::s32)m_vPlayers.size());
               sendMessage(a_pPeer, &p);
             }
             else {
@@ -120,12 +120,12 @@ namespace dustbin {
             printf("Server has assigned %i slots to me.\n", p->getslotsassigned());
 
             irr::s32 l_iSlots = p->getslotsassigned();
-            std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin();
+            std::vector<gameclasses::SPlayer>::iterator it = m_vPlayers.begin();
 
-            while (l_iSlots > 0 && it != m_cPlayers.m_vPlayers.end()) {
+            while (l_iSlots > 0 && it != m_vPlayers.end()) {
               printf("Register player \"%s\"...\n", (*it).m_sName.c_str());
 
-              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture, (*it).m_iPlayerId, (*it).m_sShortName);
+              messages::CRegisterPlayer l_cPlayer = messages::CRegisterPlayer((*it).m_sName, (*it).m_sTexture, (*it).m_iPlayer, (*it).m_sShortName);
               sendMessage(a_pPeer, &l_cPlayer);
               it++;
               l_iSlots--;
@@ -140,10 +140,10 @@ namespace dustbin {
           case messages::enMessageIDs::UpdatePlayerId: {
             messages::CUpdatePlayerId *p = reinterpret_cast<messages::CUpdatePlayerId *>(a_pMessage);
 
-            for (std::vector<data::SPlayerData>::iterator it = m_cPlayers.m_vPlayers.begin(); it != m_cPlayers.m_vPlayers.end(); it++) {
-              if ((*it).m_iPlayerId == p->getoriginal_id()) {
+            for (std::vector<gameclasses::SPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
+              if ((*it).m_iPlayer == p->getoriginal_id()) {
                 printf("\tID of player %s changed from %i to %i\n", (*it).m_sName.c_str(), p->getoriginal_id(), p->getnetgame_id());
-                (*it).m_iPlayerId = p->getnetgame_id();
+                (*it).m_iPlayer = p->getnetgame_id();
               }
             }
 
@@ -154,15 +154,6 @@ namespace dustbin {
           case messages::enMessageIDs::RacePlayer: {
             messages::CRacePlayer *p = reinterpret_cast<messages::CRacePlayer *>(a_pMessage);
             m_pOutputQueue->postMessage(a_pMessage);
-
-            return true;
-          }
-
-          case messages::enMessageIDs::SetGlobalData: {
-            messages::CSetGlobalData *p = reinterpret_cast<messages::CSetGlobalData *>(a_pMessage);
-            m_pGlobal->setGlobal(p->getkey(), p->getvalue());
-            printf("Global data set: \"%s\" = \"%s\"\n", p->getkey().c_str(), p->getvalue().c_str());
-            stateChanged(p->getkey());
 
             return true;
           }
