@@ -110,9 +110,6 @@ namespace dustbin {
                 l_cPlayer.m_iGridPos  = 1;
                 l_cPlayer.m_iPlayerId = 1;
 
-                data::SRacePlayers l_cPlayers;
-                l_cPlayers.m_vPlayers.push_back(l_cPlayer);
-
                 CGlobal::getInstance()->setSetting("selectedplayers", messages::urlEncode(l_cPlayer.m_sName));
                 platform::saveSettings();
 

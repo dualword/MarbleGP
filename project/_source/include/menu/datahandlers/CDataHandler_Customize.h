@@ -7,7 +7,6 @@
 
 namespace dustbin {
   namespace data {
-    struct SRacePlayers;
     struct SChampionship;
   }
 

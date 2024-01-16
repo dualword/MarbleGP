@@ -14,8 +14,6 @@ namespace dustbin {
   namespace menu {
     CDataHandler_SelectPlayers::CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, data::SChampionship *a_pChampionship, std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected) :
       IMenuDataHandler(),
-      m_pPlayers        (a_pPlayers),
-      m_pChampionship   (a_pChampionship),
       m_vProfiles       (a_vProfiles),
       m_sSelected       (a_sSelected)
     {

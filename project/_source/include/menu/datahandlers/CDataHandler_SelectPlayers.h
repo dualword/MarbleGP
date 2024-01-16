@@ -20,9 +20,6 @@ namespace dustbin {
     */
     class CDataHandler_SelectPlayers : public IMenuDataHandler {
       private:
-        data::SRacePlayers  *m_pPlayers;      /**< The list of players for the race */
-        data::SChampionship *m_pChampionship; /**< The championship */
-
         std::string m_sSelected;    /**< List of the selected players */
 
         std::vector<data::SPlayerData> m_vProfiles;   /**< The list of profiles */
