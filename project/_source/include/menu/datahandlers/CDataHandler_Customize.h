@@ -6,10 +6,6 @@
 #include <vector>
 
 namespace dustbin {
-  namespace data {
-    struct SChampionship;
-  }
-
   namespace menu {
     /**
     * @class CDataHandler_Customize

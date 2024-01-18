@@ -6,16 +6,17 @@
 
 namespace dustbin {
   namespace menu {
-    CDataHandler_Controls::CDataHandler_Controls(std::vector<data::SPlayerData> *a_vProfiles, data::SChampionship *a_pChampionship) :
+    CDataHandler_Controls::CDataHandler_Controls(std::vector<data::SPlayerData> *a_vProfiles, const std::vector<std::string> &a_vSelected) :
       IMenuDataHandler(),
       m_vProfiles     (a_vProfiles),
-      m_pChampionship (a_pChampionship),
+      m_vSelected     (a_vSelected),
       m_iJoystick     (255),
       m_iBtnState     (0)
     {
-      for (auto l_cPlayer : a_pChampionship->m_vPlayers) {
+      gameclasses::STournament *l_pTournament = CGlobal::getInstance()->getTournament();
+      for (auto l_sPlayer : m_vSelected) {
         for (auto &l_cProfile : *a_vProfiles) {
-          if (l_cProfile.m_iPlayerId == l_cPlayer.m_iPlayerId) {
+          if (l_cProfile.m_sName == l_sPlayer) {
             controller::CControllerGame l_cCtrl;
             l_cCtrl.deserialize(l_cProfile.m_sControls);
 

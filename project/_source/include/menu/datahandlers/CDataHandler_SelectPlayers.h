@@ -6,11 +6,6 @@
 #include <vector>
 
 namespace dustbin {
-  namespace data {
-    struct SRacePlayers;
-    struct SChampionship;
-  }
-
   namespace menu {
     /**
     * @class CDataHandler_SelectPlayers
@@ -25,7 +20,7 @@ namespace dustbin {
         std::vector<data::SPlayerData> m_vProfiles;   /**< The list of profiles */
 
       public:
-        CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, data::SChampionship *a_pChampionship, std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected);
+        CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected);
         virtual ~CDataHandler_SelectPlayers();
 
         /**

@@ -1,15 +1,12 @@
 #pragma once
 
 #include <menu/datahandlers/IMenuDataHandler.h>
+#include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
 #include <string>
 #include <vector>
 
 namespace dustbin {
-  namespace data {
-    struct SChampionship;
-  }
-
   namespace menu {
     /**
     * @class CDataHandler_Controls
@@ -19,9 +16,9 @@ namespace dustbin {
     class CDataHandler_Controls : public IMenuDataHandler {
       private:
         std::vector<data::SPlayerData> *m_vProfiles;        /**< A vector with all player data */
-        data::SChampionship            *m_pChampionship;    /**< The championship */
 
         std::vector<std::string> m_vUnassigned;   /**< List of the players with unassigned gamepads */
+        std::vector<std::string> m_vSelected;     /**< List of the selected players' names */
 
         std::vector<irr::u8> m_vAssigned;   /**< List of the already assiged gamepads */
 
@@ -37,7 +34,7 @@ namespace dustbin {
         void updateLabel(bool a_bOther);
 
       public:
-        CDataHandler_Controls(std::vector<data::SPlayerData> *a_vProfiles, data::SChampionship *a_pChampionship);
+        CDataHandler_Controls(std::vector<data::SPlayerData> *a_vProfiles, const std::vector<std::string> &a_vSelected);
         virtual ~CDataHandler_Controls();
 
         /**

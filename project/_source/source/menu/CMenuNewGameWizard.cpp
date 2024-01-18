@@ -70,7 +70,6 @@ namespace dustbin {
         enGameType        m_eGameType;  /**< The selected game type */
 
         data::SRacePlayers  m_cRacePlayers;     /**< The available race players */
-        data::SChampionship m_cChampionship;    /**< The championship that might be started */
         data::SGameSettings m_cSettings;        /**< The game settings */
 
         std::vector<irr::gui::IGUIElement *> m_vSteps;      /**< The root GUI element for each available step */
@@ -87,8 +86,6 @@ namespace dustbin {
         * @param a_bNetClient true if the setup is for a game as network client
         */
         void saveChampionship(bool a_bNetClient) {
-          m_pState->getGlobal()->setGlobal("championship", m_cChampionship.serialize());
-          
           helpers::saveProfiles(m_vProfiles);
 
           int l_iGridSize = 1;
@@ -111,7 +108,7 @@ namespace dustbin {
           // We fill a vector with the grid positions and ..
           std::vector<int> l_vGrid;
 
-          for (int i = 0; i < (m_cChampionship.m_vPlayers.size() > l_iGridSize ? m_cChampionship.m_vPlayers.size() : l_iGridSize); i++)
+          for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++)
             l_vGrid.push_back(i);
 
           // .. if necessary shuffle the vector
@@ -236,19 +233,6 @@ namespace dustbin {
 
             case enWizardStep::Profiles: {
               m_vSelectedPlayers = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
-              m_cChampionship.m_vPlayers.clear();
-
-              int l_iPlayerId = 1;
-              for (auto l_sName : m_vSelectedPlayers) {
-                for (auto &l_cPlayer: m_vProfiles) {
-                  if (l_cPlayer.m_sName == l_sName) {
-                    printf("Player \"%s\" selected.\n", l_sName.c_str());
-                    l_cPlayer.m_iPlayerId = l_iPlayerId++;
-                    m_cChampionship.m_vPlayers.push_back(data::SChampionshipPlayer(l_cPlayer.m_iPlayerId, l_cPlayer.m_sName));
-                    break;
-                  }
-                }
-              }
               break;
             }
 
@@ -353,7 +337,7 @@ namespace dustbin {
                 l_sNewSelected += *l_itSeleted;
               }
 
-              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, &m_cChampionship, m_vProfiles, l_sNewSelected);
+              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, m_vProfiles, l_sNewSelected);
               printf("==> %i\n", (int)m_vSelectedPlayers.size());
               gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
               if (l_pOk != nullptr)
@@ -363,7 +347,7 @@ namespace dustbin {
             }
 
             case enWizardStep::Controllers: {
-              CDataHandler_Controls *l_pHandler = new CDataHandler_Controls(&m_vProfiles, &m_cChampionship);
+              CDataHandler_Controls *l_pHandler = new CDataHandler_Controls(&m_vProfiles, m_vSelectedPlayers);
               m_pDataHandler = l_pHandler;
 
               if (l_pHandler->allControllersAssigned()) {

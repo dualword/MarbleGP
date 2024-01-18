@@ -1132,9 +1132,6 @@ namespace dustbin {
                 if (l_sReplace == "tracknames") {
                   l_sReplace = g_sTrackNames;
                 }
-                else if (l_sReplace == "championship") {
-                  l_sReplace = g_sChampionshipData;
-                }
                 else if (l_sReplace == "profiles") {
                   l_sReplace = g_sProfileData;
                 }
