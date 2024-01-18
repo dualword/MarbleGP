@@ -177,27 +177,6 @@ namespace dustbin {
     } SGameSettings;
 
     /**
-    * @class SRacePlayers
-    * @author Christian Keimel
-    * This data struct holds the players of a race / championship 
-    */
-    typedef struct SRacePlayers {
-      std::vector<SPlayerData> m_vPlayers;  /**< The players of the race / championship */
-
-      std::string serialize();
-      bool deserialize(const std::string &a_sSerialized);
-
-      std::string toString();
-
-      /**
-      * Get a player by ID
-      * @param a_iId player ID
-      * @return pointer to the player data structure with the ID, nullptr if the ID was not found
-      */
-      SPlayerData *getPlayer(int a_iId);
-    } SRacePlayers;
-
-    /**
     * @class SRacePlayer
     * @author Christian Keimel
     * This data structure holds all data to keep up with

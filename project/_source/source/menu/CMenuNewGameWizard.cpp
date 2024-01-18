@@ -69,7 +69,6 @@ namespace dustbin {
         enWizardStep      m_eStep;      /**< The active wizard step */
         enGameType        m_eGameType;  /**< The selected game type */
 
-        data::SRacePlayers  m_cRacePlayers;     /**< The available race players */
         data::SGameSettings m_cSettings;        /**< The game settings */
 
         std::vector<irr::gui::IGUIElement *> m_vSteps;      /**< The root GUI element for each available step */
@@ -118,7 +117,6 @@ namespace dustbin {
 
             std::shuffle(l_vGrid.begin(), l_vGrid.end(), l_cRe);
           }
-          data::SRacePlayers l_cPlayers;
 
           int l_iNum = 1;
 
@@ -337,7 +335,7 @@ namespace dustbin {
                 l_sNewSelected += *l_itSeleted;
               }
 
-              m_pDataHandler = new CDataHandler_SelectPlayers(&m_cRacePlayers, m_vProfiles, l_sNewSelected);
+              m_pDataHandler = new CDataHandler_SelectPlayers(m_vProfiles, l_sNewSelected);
               printf("==> %i\n", (int)m_vSelectedPlayers.size());
               gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
               if (l_pOk != nullptr)

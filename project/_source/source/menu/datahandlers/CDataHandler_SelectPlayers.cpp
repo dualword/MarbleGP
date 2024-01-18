@@ -12,7 +12,7 @@
 
 namespace dustbin {
   namespace menu {
-    CDataHandler_SelectPlayers::CDataHandler_SelectPlayers(data::SRacePlayers *a_pPlayers, std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected) :
+    CDataHandler_SelectPlayers::CDataHandler_SelectPlayers(std::vector<data::SPlayerData> &a_vProfiles, const std::string &a_sSelected) :
       IMenuDataHandler(),
       m_vProfiles       (a_vProfiles),
       m_sSelected       (a_sSelected)
