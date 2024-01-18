@@ -40,51 +40,6 @@ namespace dustbin {
     const irr::s32 c_iFirstRaceRandom = 47;   /**< Marker for the randomize first race flag */
     const irr::s32 c_iFillGrid        = 48;   /**< Marker for the fill grid with AI flag */
 
-    // Race Player
-    const irr::s32 c_iRacePlayersHead   = 50;   /**< Marker for the beginning of the race player list */
-    const irr::s32 c_iRacePlayersStart  = 51;   /**< Marker for a new dataset of a player */
-    const irr::s32 c_iRacePlayersEnd    = 52;   /**< Marker for the end of a dataset */
-    const irr::s32 c_iRacePlayersFooter = 53;   /**< Marker for the end of the list of players */
-
-    // Championship Player
-    const irr::s32 c_iChampionshipPlayerHead         = -60;       /**< Marker for the beginning of a championship player */
-    const irr::s32 c_iChampionshipPlayerId           = -61;       /**< Marker for the name of a championship player */
-    const irr::s32 c_iChampionshipPlayerName         = -62;       /**< Marker for the name of a championship player */
-    const irr::s32 c_iChampionshipPlayerResults      = -63;       /**< Marker for the race results of a championship player */
-    const irr::s32 c_iChampionshipPlayerPoints       = -64;       /**< Marker for the points of a championship player */
-    const irr::s32 c_iChampionshipPlayerRespawns     = -65;       /**< Marker for the number of respawns of a championship player */
-    const irr::s32 c_iChampionshipPlayerStunned      = -66;       /**< Marker for the number of stuns of a championship player */
-    const irr::s32 c_iChampionshipPlayerFastest      = -67;       /**< Marker for the number of fastest race laps of a championship player */
-    const irr::s32 c_iChampionshipPlayerDNF          = -68;       /**< Marker for the number of races the player didn't finish */
-    const irr::s32 c_iChampionshipPlayerBestFinish   = -69;       /**< Marker for the first race the player scored his best finish */
-    const irr::s32 c_iChampionshipPlayerFooter       = -70;       /**< Marker for the end of the dataset */
-
-    // Championship Race
-    const irr::s32 c_iChampionshipRaceHead        = -80;      /**< Marker for the beginning of a championship race */
-    const irr::s32 c_iChampionshipRacePlayers     = -81;      /**< Marker for number of players of the race */
-    const irr::s32 c_iChampionshipRaceLaps        = -82;      /**< Marker for number of laps of the race */
-    const irr::s32 c_iChampionshipRaceTrack       = -83;      /**< Marker for number of laps of the race */
-    const irr::s32 c_iChampionshipRaceResult      = -84;      /**< Marker for the beginning of result of the race */
-    const irr::s32 c_iChampionshipRacePlayer      = -85;      /**< Marker for a player of the result */
-    const irr::s32 c_iChampionshipRaceResultEnd   = -86;      /**< Marker for the end of result of the race */
-    const irr::s32 c_iChampionshipRaceAssignBegin = -87;      /**< Marker for the beginning of the marble assignment */
-    const irr::s32 c_iChampionshipRaceAssignEnd   = -88;      /**< Marker for the end of the marble assignment */
-    const irr::s32 c_iChampionshipRaceFooter      = -89;      /**< Marker for the end of a championship race */
-
-    // Championship
-    const irr::s32 c_iChampionshipHeader       = -100;    /**< Marker for the start of a championship data structure */
-    const irr::s32 c_iChampionshipClass        = -101;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipGridSize     = -102;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipReverseGrid  = -103;    /**< Marker for the the championship class */
-    const irr::s32 c_iChampionshipPlayersStart = -104;    /**< Marker for the the start of the championship players */
-    const irr::s32 c_iChampionshipPlayersCount = -105;    /**< Marker for the the number of championship players */
-    const irr::s32 c_iChampionshipPlayersData  = -106;    /**< Marker for the the start of a championship player */
-    const irr::s32 c_iChampionshipPlayersEnd   = -107;    /**< Marker for the the end of the players of the championship */
-    const irr::s32 c_iChampionshipRacesStart   = -108;    /**< Marker for the the start of the championship races */
-    const irr::s32 c_iChampionshipRacesCount   = -109;    /**< Marker for the the number of championship races */
-    const irr::s32 c_iChampionshipRacesData    = -110;    /**< Marker for the start of a championship race structure */
-    const irr::s32 c_iChampionshipRacesFooter  = -111;    /**< Marker for the end of the championship data structure */
-
     // Race Player (limited data is encoded)
     const irr::s32 c_iRacePlayerHeader       = -120;   /**< Marker for the start of a race player data structure */
     const irr::s32 c_iRacePlayerId           = -121;   /**< Marker for the race player's id (aka marble id) */
@@ -99,14 +54,6 @@ namespace dustbin {
     const irr::s32 c_iRacePlayerCpTimesEnd   = -130;   /**< Marker for the end of the checkpoint times of a lap */
     const irr::s32 c_iRacePlayerLapTimeEnd   = -140;   /**< Marker for the end of the lap times */
     const irr::s32 c_iRacePlayerFooter       = -141;   /**< Marker for the end of the race player data structure */
-
-    // Game data
-    const irr::s32 c_iGameHead  = -150;   /**< Header for the game data */
-    const irr::s32 c_iGameTrack = -151;   /**< The track of the upcoming race */
-    const irr::s32 c_iGameInfo  = -152;   /**< Additional information about the race */
-    const irr::s32 c_iGameLaps  = -153;   /**< The laps of the race */
-    const irr::s32 c_iTutorial  = -154;   /**< Is this race a tutorial race? */
-    const irr::s32 c_iGrid      = -155;   /**< A starting grid position */
 
     // Marble AI Class
     const irr::s32 c_iMarbleData  = -170;   /**< Header for the Marble AI data */
