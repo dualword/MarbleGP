@@ -4,6 +4,7 @@
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <_generated/lua/CLuaScript_physics.h>
 #include <_generated/messages/CMessages.h>
+#include <gameclasses/COffTrackDetector.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CRostrumNode.h>
@@ -622,6 +623,12 @@ namespace dustbin {
               p->m_iStunnedStart = -1;
             }
 
+            if (m_pOfftrack != nullptr && p->m_eState == CObjectMarble::enMarbleState::Rolling && !m_pOfftrack->isOnTrack(p->m_vPosition)) {
+              p->m_eState = CObjectMarble::enMarbleState::Respawn1;
+              p->m_iRespawnStart = m_pWorld->m_iWorldStep;
+              sendPlayerrespawn(p->m_iId, 1, m_pOutputQueue);
+            }
+
             sendMarblemoved(p->m_iId,
               p->m_vPosition, 
               quaternionToEuler(l_aRot), 
@@ -898,7 +905,7 @@ namespace dustbin {
       printf("Dynamics thread ends.\n");
     }
 
-    CDynamicThread::CDynamicThread(bool a_bNetworkClient) :
+    CDynamicThread::CDynamicThread(bool a_bNetworkClient, COfftrackDetector *a_pOfftrack) :
       m_eGameState    (enGameState::Countdown),
       m_eAutoFinish   (data::SGameSettings::enAutoFinish::AllPlayers),
       m_pWorld        (nullptr),
@@ -911,7 +918,8 @@ namespace dustbin {
       m_pLuaScript    (nullptr),
       m_sLuaError     (""),
       m_bNetworkClient(a_bNetworkClient),
-      m_iCountDown    (4)
+      m_iCountDown    (4),
+      m_pOfftrack     (a_pOfftrack)
     {
 #ifdef _DEBUG
       g_iCfm = 0;

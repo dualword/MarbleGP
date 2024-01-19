@@ -738,6 +738,9 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CDustbinLight.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\COfftrackDetector.cpp">
+      <Filter>Quelldateien\gameclasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1210,6 +1213,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CDustbinLight.h">
       <Filter>Headerdateien\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\COffTrackDetector.h">
+      <Filter>Headerdateien\gameclasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

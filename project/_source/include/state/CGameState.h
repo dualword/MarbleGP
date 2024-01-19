@@ -21,6 +21,7 @@ namespace dustbin {
 
   namespace gameclasses {
     class CDynamicThread;
+    class COfftrackDetector;
   }
 
   namespace shaders {
@@ -150,7 +151,8 @@ namespace dustbin {
 
         sound::ISoundInterface *m_pSoundIntf;
 
-        gameclasses::CDynamicThread *m_pDynamics;
+        gameclasses::CDynamicThread    *m_pDynamics;    /**< The thread calculating physics */
+        gameclasses::COfftrackDetector *m_pOffTrack;    /**< The off-track detector */
 
         scenenodes::CRostrumNode *m_pRostrum;
 

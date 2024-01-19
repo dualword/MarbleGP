@@ -32,8 +32,9 @@ namespace dustbin {
     * the .cpp file
     */
     class CWorld;
-    class CObjectMarble;
     class IGameLogic;
+    class CObjectMarble;
+    class COfftrackDetector;
 
     /**
     * @class CDynamicThread
@@ -73,6 +74,8 @@ namespace dustbin {
         int m_iCountDown;
 
         bool m_bNetworkClient;
+
+        COfftrackDetector *m_pOfftrack;
 
         void createPhysicsObjects(irr::scene::ISceneNode* a_pNode);
 
@@ -221,7 +224,7 @@ namespace dustbin {
         virtual void execute() override;
 
       public:
-        CDynamicThread(bool a_bNetworkClient);
+        CDynamicThread(bool a_bNetworkClient, COfftrackDetector *a_pOfftrack);
 
         virtual ~CDynamicThread();
 

@@ -1,35 +1,46 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CStartingGridSceneNode.h>
-#include <_generated/lua/CLuaScript_scene.h>
-#include <controller/ICustomEventReceiver.h>
-#include <_generated/messages/CMessages.h>
-#include <controller/CControllerFactory.h>
-#include <controller/CAiControlThread.h>
-#include <gameclasses/CDynamicThread.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CDustbinCamera.h>
-#include <gui/CInGamePanelRenderer.h>
-#include <controller/CControllerAI.h>
-#include <helpers/CTextureHelpers.h>
-#include <shaders/CDustbinShaders.h>
 #include <scenenodes/CRostrumNode.h>
-#include <helpers/CStringHelpers.h>
 #include <scenenodes/CSkyBoxFix.h>
 #include <scenenodes/CWorldNode.h>
-#include <sound/ISoundInterface.h>
 #include <scenenodes/CSpeedNode.h>
+#include <scenenodes/CAiNode.h>
+
+#include <_generated/lua/CLuaScript_scene.h>
+#include <_generated/messages/CMessages.h>
+
+#include <controller/ICustomEventReceiver.h>
+#include <controller/CControllerFactory.h>
+#include <controller/CAiControlThread.h>
+#include <controller/CControllerAI.h>
+
+#include <gameclasses/COffTrackDetector.h>
+#include <gameclasses/CDynamicThread.h>
+
 #include <network/CGameClient.h>
 #include <network/CGameServer.h>
-#include <scenenodes/CAiNode.h>
+
+#include <sound/ISoundInterface.h>
 #include <sound/CSoundEnums.h>
-#include <data/CDataStructs.h>
-#include <state/CGameState.h>
-#include <state/CMenuState.h>
+
+#include <gui/CInGamePanelRenderer.h>
 #include <gui/CTutorialHUD.h>
 #include <gui/CGameHUD.h>
+
+#include <state/CGameState.h>
+#include <state/CMenuState.h>
+
+#include <helpers/CTextureHelpers.h>
+#include <helpers/CStringHelpers.h>
+
+#include <shaders/CDustbinShaders.h>
+#include <data/CDataStructs.h>
 #include <CGlobal.h>
-#include <algorithm>
 #include <Defines.h>
+
+#include <algorithm>
 #include <random>
 #include <string>
 #include <map>
@@ -57,6 +68,7 @@ namespace dustbin {
       m_pShader        (nullptr),
       m_pSoundIntf     (nullptr),
       m_pDynamics      (nullptr),
+      m_pOffTrack      (nullptr),
       m_pRostrum       (nullptr),
       m_pRaceData      (nullptr),
       m_pCamAnimator   (nullptr),
@@ -363,6 +375,8 @@ namespace dustbin {
           m_pShader->renderShadowMap(l_iFlags);
           m_pShader->endShadowMaps();
         }
+
+        m_pOffTrack = new gameclasses::COfftrackDetector(m_pSmgr);
       }
       else {
         handleError("Error while starting game state.", "The specified race track file was not found.");
@@ -427,7 +441,7 @@ namespace dustbin {
         helpers::addToDebugLog("  World node found");
 
         helpers::addToDebugLog("  Create dynamics thread");
-        m_pDynamics = new gameclasses::CDynamicThread(m_pClient != nullptr);
+        m_pDynamics = new gameclasses::CDynamicThread(m_pClient != nullptr, m_pOffTrack);
 
         helpers::addToDebugLog("  Add queues and listeners");
         m_pDynamics->getOutputQueue()->addListener(m_pInputQueue);
@@ -565,6 +579,11 @@ namespace dustbin {
         helpers::addToDebugLog("Delete dynamics thread");
         delete m_pDynamics;
         m_pDynamics = nullptr;
+
+        if (m_pOffTrack != nullptr) {
+          delete m_pOffTrack;
+          m_pOffTrack = nullptr;
+        }
 
         m_pClient = nullptr;
         m_pServer = nullptr;
