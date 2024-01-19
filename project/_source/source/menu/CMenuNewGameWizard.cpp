@@ -120,7 +120,7 @@ namespace dustbin {
 
           int l_iNum = 1;
 
-          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->startTournament();
 
           // Now we iterate all selected players ..
           for (std::vector<std::string>::iterator it = m_vSelectedPlayers.begin(); it != m_vSelectedPlayers.end(); it++) {
