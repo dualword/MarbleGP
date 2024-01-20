@@ -1,5 +1,6 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #include <helpers/CTextureHelpers.h>
+#include <shaders/CDustbinShaders.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <gameclasses/SPlayer.h>
@@ -24,12 +25,15 @@ namespace dustbin {
 
         irr::core::recti m_cViewport;   /**< The viewport */
 
+        shaders::CDustbinShaders *m_pShader;
+
       public:
         CMenuFinalResult(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler(a_pDevice, a_pManager, a_pState), 
           m_sNewState(""), 
           m_pServer  (a_pState->getGlobal()->getGameServer()),
-          m_pClient  (a_pState->getGlobal()->getGameClient())
+          m_pClient  (a_pState->getGlobal()->getGameClient()),
+          m_pShader  (nullptr)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -67,7 +71,7 @@ namespace dustbin {
           gameclasses::SPlayer *l_pPodium[3] = { nullptr, nullptr, nullptr };
           int l_iIdx = 0;
 
-          for (auto l_cStanding : l_pTournament->m_vStandings) {
+          for (auto &l_cStanding : l_pTournament->m_vStandings) {
             for (auto l_pPlr : l_pTournament->m_vPlayers) {
               if (l_cStanding.m_iPlayer == l_pPlr->m_iPlayer) {
                 l_pPodium[l_iIdx] = l_pPlr;
@@ -171,12 +175,35 @@ namespace dustbin {
 
           m_cViewport = irr::core::recti(irr::core::position2di(0, 0), l_cScreen);
 
+          m_pShader = m_pState->getGlobal()->getShader();
+          m_pShader->addLightCamera();
+
+          helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
+
+          m_pShader->clearShadowMaps();
+
+          if (l_cSettings.m_iShadows > 0) {
+            irr::u32 l_iFlags = (l_cSettings.m_iShadows == 1) ? 
+              (irr::u32)shaders::enShadowMap::Solid 
+              : 
+              (irr::u32)shaders::enShadowMap::Transparent | (irr::u32)shaders::enShadowMap::TranspColor | (irr::u32)shaders::enShadowMap::Solid;
+
+            m_pShader->startShadowMaps();
+            m_pShader->renderShadowMap(l_iFlags);
+            m_pShader->endShadowMaps();
+          }
+
           printf("Ready.\n");
         }
 
         virtual bool run() override {
           m_pDrv->beginScene();
-          m_pSmgr->drawAll();
+
+          if (m_pShader != nullptr)
+            m_pShader->renderScene();
+          else
+            m_pSmgr->drawAll();
+
           m_pGui->drawAll();
           m_pDrv->endScene();
 
