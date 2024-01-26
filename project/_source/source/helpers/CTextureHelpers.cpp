@@ -200,7 +200,7 @@ namespace dustbin {
       irr::video::ITexture* l_pTexture = a_pDrv->addRenderTargetTexture(irr::core::dimension2du(256, 256), "FadingBorder_dummy", irr::video::ECF_A8R8G8B8);
       a_pDrv->setRenderTarget(l_pTexture, true, true, irr::video::SColor(0, a_cBorderColor.getRed(), a_cBorderColor.getGreen(), a_cBorderColor.getBlue()));
 
-      std::string s = "data/textures/numbers/" + a_sNumber + ".png\0";
+      std::string s = "data/textures/numbers/" + a_sNumber + ".png";
 
       irr::video::ITexture *l_pNumber = a_pDrv->getTexture(s.c_str());
 

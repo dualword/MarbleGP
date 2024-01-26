@@ -97,7 +97,7 @@ namespace dustbin {
       a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::LightMatrix], l_cLight.pointer(), 16);
 
       a_pServices->setVertexShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::World   ], l_cWorld.pointer(), 16);
-      a_pServices->setVertexShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::MaxDepth], &m_fCameraFar     , 1);
+      a_pServices->setPixelShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::MaxDepth], &m_fCameraFar     , 1);
       a_pServices->setVertexShaderConstant(m_aShaderConsts[l_iPass][(int)enShaderConst::RttSize ], &m_iRttSize         , 1);
       a_pServices->setPixelShaderConstant (m_aShaderConsts[l_iPass][(int)enShaderConst::Material], &a_iUserData        , 1);
 
@@ -190,18 +190,18 @@ namespace dustbin {
       // The shader for the depth map
       m_aMaterial[(int)enMaterialType::ShadowMap] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
         "data/shaders/dustbin_shader_depthmap.vert",
-        "data/shaders/dustbin_shader_depthmap.frag", 
-        this, 
-        irr::video::EMT_SOLID, 
+        "data/shaders/dustbin_shader_depthmap.frag",
+        this,
+        irr::video::EMT_SOLID,
         (irr::s32)enMaterialType::ShadowMap   // This identifies that we are rendering a the shadow map
       );
 
       // The shader for materials which do not cast a shadow
       m_aMaterial[(int)enMaterialType::ShadowMapNo] = m_pDrv->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
         "data/shaders/dustbin_shader_depthmap.vert",
-        "data/shaders/dustbin_shader_depthmap_no.frag", 
-        this, 
-        irr::video::EMT_SOLID, 
+        "data/shaders/dustbin_shader_depthmap_no.frag",
+        this,
+        irr::video::EMT_SOLID,
         (irr::s32)enMaterialType::ShadowMap   // This identifies that we are rendering nothing to the shadow map
       );
 

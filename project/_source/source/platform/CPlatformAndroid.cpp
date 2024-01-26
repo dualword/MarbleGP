@@ -29,7 +29,8 @@ namespace dustbin {
     }
 
     const std::wstring portableGetDataPath() {
-      return helpers::s2ws(CGlobal::getInstance()->getAndroidApp()->activity->internalDataPath) + L"/";
+      std::wstring l_sPath = helpers::s2ws(CGlobal::getInstance()->getAndroidApp()->activity->internalDataPath) + L"/";
+      return l_sPath;
     }
 
     const std::wstring portableGetTexturePath() {

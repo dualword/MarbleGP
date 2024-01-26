@@ -3,7 +3,6 @@
 #include <shaders/CDustbinShaderDefines.h>
 #include <scenenodes/CDustbinLight.h>
 #include <shaders/CDustbinShaders.h>
-#include <CGlobal.h>
 #include <string>
 
 namespace dustbin {
@@ -107,8 +106,8 @@ namespace dustbin {
 
       irr::core::matrix4 l_cMatrix;
       l_cMatrix.buildProjectionMatrixOrthoLH(
-        m_pDataNode->getFieldOfView(), 
-        m_pDataNode->getFieldOfView(), 
+      m_pDataNode->getFieldOfView(),
+        m_pDataNode->getFieldOfView(),
         m_pDataNode->getNearValue(),
         m_pDataNode->getFarValue()
       );
@@ -295,6 +294,14 @@ namespace dustbin {
     }
 
     /**
+    * Get the texture the marble shadows are currently rendered to
+    * @return the texture the shadow map is currently rendered to
+    */
+    irr::video::ITexture* CDustbinShaders::getShadowTexture4() {
+      return m_pRttShadow4[(int)m_eQuality];
+    }
+
+    /**
     * Start the rendering of on or more of the shadow maps
     */
     void CDustbinShaders::startShadowMaps() {
@@ -339,11 +346,13 @@ namespace dustbin {
     * Clear the shadow maps
     */
     void CDustbinShaders::clearShadowMaps() {
+#ifdef _WINDOWS
       m_pDrv->setRenderTarget(m_pRttShadow1[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
       m_pDrv->setRenderTarget(m_pRttShadow2[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
       m_pDrv->setRenderTarget(m_pRttShadow3[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
       m_pDrv->setRenderTarget(m_pRttShadow4[(int)m_eQuality], true, true, irr::video::SColor(0xFF, 0xff, 0xff, 0xff));
       m_pDrv->setRenderTarget(nullptr);
+#endif
     }
 
     /**
@@ -351,6 +360,7 @@ namespace dustbin {
     * @param a_iRender a bitmap with enShadowMap values
     */
     void CDustbinShaders::renderShadowMap(irr::u32 a_iRender) {
+#ifdef _WINDOWS
       if (a_iRender > 0) {
         setShadow1Material();
 
@@ -359,6 +369,7 @@ namespace dustbin {
 
         if ((a_iRender & (irr::s32)enShadowMap::Solid) == (irr::s32)enShadowMap::Solid) {
           for (auto l_cNode : m_vStatic) {
+            l_cNode.m_pNode->updateAbsolutePosition();
             l_cNode.m_pNode->render();
           }
         }
@@ -395,6 +406,7 @@ namespace dustbin {
           }
         }
       }
+#endif
     }
 
     /**
@@ -411,19 +423,21 @@ namespace dustbin {
         m_pCallback->setShadowMode(a_eShadowMode);
       }
 
+#ifdef _WINDOWS
       if ((m_eMode == enShadowMode::Off && a_eShadowMode != enShadowMode::Off) || (m_eQuality != a_eQuality)) {
         if (m_pRttShadow1[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow1[(int)m_eQuality]); m_pRttShadow1[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow2[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow2[(int)m_eQuality]); m_pRttShadow2[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow3[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow3[(int)m_eQuality]); m_pRttShadow3[(int)m_eQuality] = nullptr; }
         if (m_pRttShadow4[(int)m_eQuality] != nullptr) { m_pDrv->removeTexture(m_pRttShadow4[(int)m_eQuality]); m_pRttShadow4[(int)m_eQuality] = nullptr; }
       }
+#endif
 
       m_eMode    = a_eShadowMode;
       m_eQuality = a_eQuality;
 
       if (m_pCallback != nullptr) {
         m_pCallback->setShadowMode(m_eMode);
-
+#ifdef _WINDOWS
         if (m_pRttShadow1[(int)m_eQuality] == nullptr && m_eMode != enShadowMode::Off) {
           irr::core::dimension2du l_cSize = irr::core::dimension2du(shadowQualityToSize(m_eQuality), shadowQualityToSize(m_eQuality));
           std::string l_sName = "__shadow1TextureRtt_" + std::to_string((int)m_eQuality);
@@ -480,6 +494,7 @@ namespace dustbin {
         }
 
         m_pCallback->setShadowRttSize(shadowQualityToSize(m_eQuality));
+#endif
       }
     }
 
@@ -828,15 +843,27 @@ namespace dustbin {
     * @see enShadowQuality
     */
     irr::s32 shadowQualityToSize(enShadowQuality a_eQuality) {
+#ifdef _WINDOWS
       switch (a_eQuality) {
         case enShadowQuality::Top  : return 16384;
         case enShadowQuality::High : return  8192;
         case enShadowQuality::HiMid: return  4096;
-        case enShadowQuality::LoMid: return  2049;
+        case enShadowQuality::LoMid: return  2048;
         case enShadowQuality::Low  : return  1024;
 
         default: return 512;
       }
+#else
+      switch (a_eQuality) {
+        case enShadowQuality::Top  : return 4096;
+        case enShadowQuality::High : return 2048;
+        case enShadowQuality::HiMid: return 1024;
+        case enShadowQuality::LoMid: return 512;
+        case enShadowQuality::Low  : return 512;
+
+        default: return 512;
+      }
+#endif
     }
   }
 }

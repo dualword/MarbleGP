@@ -6,6 +6,7 @@
 #include <paddleboat/paddleboat.h>
 #include <sys/system_properties.h>
 #include <sound/ISoundInterface.h>
+#include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
 #include <android/log.h>

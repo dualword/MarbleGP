@@ -98,6 +98,7 @@ namespace dustbin {
 
         scenenodes::CDustbinLight *m_pDataNode;   /**< The scene node which stores the light data */
 
+        
         irr::video::ITexture *m_pRttShadow1[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes */
         irr::video::ITexture *m_pRttShadow2[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (transparent) */
         irr::video::ITexture *m_pRttShadow3[(int)enMaterialType::Count];    /**< An array of textures for the various shadow map sizes (transparent color) */
@@ -179,6 +180,12 @@ namespace dustbin {
         * @return the texture the shadow map is currently rendered to
         */
         irr::video::ITexture *getShadowTexture3();
+
+        /**
+        * Get the texture the marble shadows are currently rendered to
+        * @return the texture the shadow map is currently rendered to
+        */
+        irr::video::ITexture *getShadowTexture4();
 
         /**
         * Start the rendering of on or more of the shadow maps

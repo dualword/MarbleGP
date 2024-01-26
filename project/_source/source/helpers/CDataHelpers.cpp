@@ -362,8 +362,7 @@ namespace dustbin {
       return helpers::splitString(l_sDummy, '\n');
     }
 
-#ifdef _WINDOWS
-    /**
+   /**
     * Function for auto-detection of suitable game graphics settings
     * @param a_pDevice the Irrlicht device
     * @param a_pSettings the settings to be adjusted
@@ -527,7 +526,11 @@ namespace dustbin {
           else {
             l_iFrame++;
             if (l_pTimer->getRealTime() > l_iStart + 4000) {
+#ifdef _WINDOWS
               if (l_iFrame / 4 > 100)
+#else
+              if (l_iFrame / 4 > 30)
+#endif
                 a_pSettings->m_iShadows = i;
               else 
                 i = 6;
@@ -542,7 +545,6 @@ namespace dustbin {
       l_pShader->clear();
       printf("Shadow settings: %i\n", a_pSettings->m_iShadows);
     }
-#endif
 
     std::vector<std::tuple<std::string, std::string>> g_vDefaultNames;     /**< Vector with the default names (0 == first name, 1 == surname) */
 

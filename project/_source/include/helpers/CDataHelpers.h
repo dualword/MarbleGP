@@ -78,14 +78,12 @@ namespace dustbin {
     */
     std::vector<std::string> readLinesOfFile(const std::string& a_sPath);
 
-#ifdef _WINDOWS
     /**
     * Function for auto-detection of suitable game graphics settings
     * @param a_pDevice the Irrlicht device
     * @param a_pSettings the settings to be adjusted
     */
     void gfxAutoDetection(irr::IrrlichtDevice *a_pDevice, data::SSettings *a_pSettings);
-#endif
 
     /**
     * Generate a random profile

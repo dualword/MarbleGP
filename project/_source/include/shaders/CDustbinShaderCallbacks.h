@@ -54,7 +54,7 @@ namespace dustbin {
         irr::s32 m_aMaterial[(int)enMaterialType::Count];   /**< The material identifiers for all supported materials */
         irr::s32 m_aTextures[(int)enMaterialType::Count];   /**< The texture indices for all supported materials */
 
-        irr::u32 m_iRttSize;    /**< Size of the shadow map (always square) */
+        irr::s32 m_iRttSize;    /**< Size of the shadow map (always square) */
         
         enShadowMode m_eMode;   /**< The shadow rendering mode */
 
