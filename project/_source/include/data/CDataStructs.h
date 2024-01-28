@@ -367,7 +367,7 @@ namespace dustbin {
     SMarbleAiData;
 
 #ifdef _ANDROID
-    const std::string c_sDefaultControls = "";
+    const std::string c_sDefaultControls = "DustbinTouchControl";
 #else
     const std::string c_sDefaultControls = "";
 #endif

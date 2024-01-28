@@ -577,9 +577,7 @@ namespace dustbin {
           findElement("EditProfile_ControlUiGyro" , irr::gui::EGUIET_IMAGE)
         };
 
-        int l_iCtrl = l_pCtrl->getSelected();
-
-        switch (l_iCtrl) {
+        switch (a_iCtrl) {
           // Keyboard
           case 0: {
             if (l_pItems[0] != nullptr) l_pItems[0]->setVisible(true);
