@@ -197,7 +197,7 @@ namespace dustbin {
     */
     irr::video::ITexture* createFadingBorder(const std::string a_sNumber, const irr::video::SColor& a_cNumberColor, const irr::video::SColor& a_cBorderColor, const irr::video::SColor &a_cBackgroundColor, irr::video::IVideoDriver *a_pDrv) {
 
-      irr::video::ITexture* l_pTexture = a_pDrv->addRenderTargetTexture(irr::core::dimension2du(256, 256), "FadingBorder_dummy", irr::video::ECF_A8R8G8B8);
+      irr::video::ITexture* l_pTexture = a_pDrv->addRenderTargetTexture(irr::core::dimension2du(128, 128), "FadingBorder_dummy", irr::video::ECF_A8R8G8B8);
       a_pDrv->setRenderTarget(l_pTexture, true, true, irr::video::SColor(0, a_cBorderColor.getRed(), a_cBorderColor.getGreen(), a_cBorderColor.getBlue()));
 
       std::string s = "data/textures/numbers/" + a_sNumber + ".png";
@@ -208,8 +208,8 @@ namespace dustbin {
         irr::video::IImage *l_pNumberImg = a_pDrv->createImage(l_pNumber, irr::core::position2di(0, 0), irr::core::dimension2du(256, 256));
 
         if (l_pNumberImg != nullptr) {
-          for (int y = 0; y < 256; y++) {
-            for (int x = 0; x < 256; x++) {
+          for (int y = 0; y < 128; y++) {
+            for (int x = 0; x < 128; x++) {
               irr::video::SColor c = l_pNumberImg->getPixel(x, y);
               if (c.getAlpha() != 0) {
                 if (c.getRed() < 128 || c.getGreen() < 128 || c.getBlue() < 128) {
@@ -225,7 +225,6 @@ namespace dustbin {
                   c.setGreen(a_cNumberColor.getGreen());
                   c.setBlue (a_cNumberColor.getBlue ());
                 }
-
                 l_pNumberImg->setPixel(x, y, c);
               }
             }
