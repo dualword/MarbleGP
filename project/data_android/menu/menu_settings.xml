@@ -113,14 +113,6 @@
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
-      
-      <element type="MenuButton" rect="center: 1, 8, 18, 11" tooltip="Start auto-detection for GFX settings">
-        <attributes>
-          <attribute key="Id" value="24321" />
-          <attribute key="Name" value="BtnGfxDetect" />
-          <attribute key="Caption" value="Auto-Detect GFX Settings" />
-        </attributes>
-      </element>
     </children>
   </element>
   
