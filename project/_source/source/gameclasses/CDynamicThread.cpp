@@ -498,10 +498,9 @@ namespace dustbin {
                 if (m_pGameLogic != nullptr)
                   m_pGameLogic->onMarbleStunned(p->m_iId);
               }
-
-              p->m_vVelocity = l_vLinVel;
             }
 
+            p->m_vVelocity = l_vLinVel;
             p->m_vPosition = vectorOdeToIrr(l_aPos);
 
             irr::f32 l_fLinVel = l_vLinVel.getLength();
