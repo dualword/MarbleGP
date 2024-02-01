@@ -10,6 +10,10 @@
 namespace dustbin {
   class CGlobal;  /**< Forward declration of the global singleton class */
 
+  namespace sound {
+    class ISoundInterface;  /**< Forward declaration of the sound interface */
+  }
+
   namespace state {
     /**
      * Enumeration for the states. If new states are added this enumeration must be extended
@@ -112,6 +116,12 @@ namespace dustbin {
         * @param a_sMenu the loaded menu
         */
         virtual void menuChanged(const std::string &a_sMenu) { }
+
+        /**
+        * When quitting the game from a game we need to tell the game state that
+        * the sound interface was destroyed
+        */
+        virtual void soundInterfaceDestroyed() { }
 
         void willBeDeleted() {
           m_bWillBeDeleted = true;

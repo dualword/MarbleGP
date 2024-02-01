@@ -623,8 +623,10 @@ namespace dustbin {
       m_vCameras    .clear();
       m_vSpeed      .clear();
 
-      helpers::addToDebugLog("Stop game sounds");
-      m_pSoundIntf->stopGame();
+      if (m_pSoundIntf != nullptr) {
+        helpers::addToDebugLog("Stop game sounds");
+        m_pSoundIntf->stopGame();
+      }
 
       if (m_pPanelRndr != nullptr) {
         delete m_pPanelRndr;
@@ -673,6 +675,14 @@ namespace dustbin {
      */
     enState CGameState::getId() {
       return enState::Game;
+    }
+
+    /**
+    * When quitting the game from a game we need to tell the game state that
+    * the sound interface was destroyed
+    */
+    void CGameState::soundInterfaceDestroyed() { 
+      m_pSoundIntf = nullptr;
     }
 
     /**

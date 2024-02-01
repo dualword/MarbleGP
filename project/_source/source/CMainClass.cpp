@@ -138,6 +138,7 @@ namespace dustbin {
       // 
       m_pSoundInterface->startSoundtrack(enSoundTrack::enStNone);
       m_pSoundInterface->stopEverything();
+      m_pActiveState->soundInterfaceDestroyed();
       delete m_pSoundInterface;
       m_pSoundInterface = nullptr;
     }
