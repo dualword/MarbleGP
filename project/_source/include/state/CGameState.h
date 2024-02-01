@@ -449,6 +449,12 @@ namespace dustbin {
         virtual enState getId() override;
 
         /**
+        * When quitting the game from a game we need to tell the game state that
+        * the sound interface was destroyed
+        */
+        virtual void soundInterfaceDestroyed() override;
+
+        /**
          * Event handling method. The main class passes all Irrlicht events to this method
          */
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
