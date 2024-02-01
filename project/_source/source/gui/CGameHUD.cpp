@@ -669,6 +669,7 @@ namespace dustbin {
 #else
         l_pSmall
 #endif
+        , *m_vRanking
       );
       m_pFade     = new CHudFade    (m_pDrv, m_iMarble, a_cRect);
 

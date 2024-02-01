@@ -96,8 +96,6 @@ namespace dustbin {
 
       std::vector<SLapTime> m_vLapTimes;
 
-      std::vector<int> m_vPlayerBestSplit;    /**< The best split times of the player */
-
       SPlayerRacetime();
     } SPlayerRacetime;
   }
