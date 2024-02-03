@@ -20,30 +20,31 @@ namespace dustbin {
       irr::gui::IGUIFont *a_pFont, 
       const std::vector<gameclasses::SRaceData *> &a_vPlayers
     ) : 
-      m_pDrv          (a_pDrv),
-      m_pFont         (a_pFont),
-      m_iBestLapTime  (-1),
-      m_iPersonalBest (-1),
-      m_iLastLapTime  (-1),
-      m_iLapTimeOffset(-1),
-      m_iFinishStep   (-1),
-      m_iMarbleID     (a_iMarbleId),
-      m_iLastCpTime   (-1),
-      m_iLapStart     (-1),
-      m_iCpNo         (-1),
-      m_sBestLap      (L""),
-      m_pBestLap      (nullptr)
+      m_pDrv     (a_pDrv),
+      m_pFont    (a_pFont),
+      m_iOffset  (-1),
+      m_iLastCp  (-1),
+      m_iStartLap(-1),
+      m_iLastLap (-1),
+      m_iBestLap (-1),
+      m_iFinished(-1),
+      m_bFirstLap(true),
+      m_sBest    (L"-"),
+      m_iMarble  (a_iMarbleId),
+      m_pPlayer  (nullptr),
+      m_pBest    (nullptr)
     {
-      // Race:
-      // Lap:
-      // Last:
-      // Fastest:
-      m_cSizeCol1 = m_pFont->getDimension(L" Fastest: ");
-      m_cSizeCol1.Width  = 5 * m_cSizeCol1.Width  / 4;
+      for (int i = 0; i < 16; i++)
+        m_aLapStart[i] = -1;
+
+      // Checkpoint:
+      // Racetime:
+      // Last Lap:
+      // Best Lap:
+      m_cSizeCol1 = m_pFont->getDimension(L" Checkpoint: ");
       m_cSizeCol1.Height = 5 * m_cSizeCol1.Height / 4;
 
-      m_cSizeCol2 = m_pFont->getDimension(L" 66:66.66 ");
-      m_cSizeCol2.Width  = 5 * m_cSizeCol2.Width  / 4;
+      m_cSizeCol2 = m_pFont->getDimension(L"666:66.666 ");
       m_cSizeCol2.Height = 5 * m_cSizeCol2.Height / 4;
 
       m_cSizeTotal.Width  = m_cSizeCol1.Width + m_cSizeCol2.Width;
@@ -52,19 +53,17 @@ namespace dustbin {
       m_cPos  = a_cPos;
       m_cPos.X -= m_cSizeTotal.Width;
 
-      m_iLapTimeOffset = 5 * m_cSizeTotal.Height / 4;
+      m_iOffset = 5 * m_cSizeTotal.Height / 4;
+
+      for (int i = 0; i < 16; i++)
+        m_aPlayers[i] = nullptr;
 
       for (auto l_pPlayer : a_vPlayers) {
-        std::wstring l_sName = l_pPlayer->m_pPlayer->m_sWName;
+        m_aPlayers[l_pPlayer->m_iMarble - 10000] = l_pPlayer;
 
-        if (l_sName.find_last_not_of(L'|') != std::wstring::npos) {
-          l_sName = l_sName.substr(0, l_sName.find_last_of(L'|'));
-        }
-
-        m_mPlayers[l_pPlayer->m_iMarble] = l_sName;
+        if (l_pPlayer->m_iMarble == a_iMarbleId)
+          m_pPlayer = l_pPlayer;
       }
-
-      printf("Ready.\n");
     }
 
     CHudLapTimes::~CHudLapTimes() {
@@ -75,12 +74,14 @@ namespace dustbin {
     * @param a_iSteps the number of steps to convert
     * @return string representation of the time
     */
-    std::wstring CHudLapTimes::convertToTime(irr::s32 a_iSteps) {
+    std::wstring CHudLapTimes::convertToTime(irr::s32 a_iSteps, bool a_bSign) {
       irr::s32 l_iTime = (irr::s32)(a_iSteps / 1.2f);
 
-      irr::s32 l_iHundrts = l_iTime % 100; l_iTime /= 100;
-      irr::s32 l_iSeconds = l_iTime %  60; l_iTime /=  60;
-      irr::s32 l_iMinutes = l_iTime;
+      bool l_bNegative = l_iTime < 0;
+
+      irr::s32 l_iHundrts = std::abs(l_iTime % 100); l_iTime /= 100;
+      irr::s32 l_iSeconds = std::abs(l_iTime %  60); l_iTime /=  60;
+      irr::s32 l_iMinutes = std::abs(l_iTime);
 
       std::wstring l_sHundrts = std::to_wstring(l_iHundrts); while (l_sHundrts.size() < 2) l_sHundrts = L"0" + l_sHundrts;
       std::wstring l_sSeconds = std::to_wstring(l_iSeconds); if (l_iMinutes > 0) while (l_sSeconds.size() < 2) l_sSeconds = L"0" + l_sSeconds;
@@ -91,7 +92,14 @@ namespace dustbin {
       if (l_iMinutes > 0)
         l_sRet = l_sMinutes + L":";
 
-      return l_sRet + l_sSeconds + L"." + l_sHundrts;
+      l_sRet = l_sRet + l_sSeconds + L"." + l_sHundrts;
+
+      if (l_bNegative)
+        l_sRet = L"-" + l_sRet;
+      else if (a_bSign)
+        l_sRet = L"+" + l_sRet;
+
+      return l_sRet;
     }
 
     /**
@@ -101,43 +109,29 @@ namespace dustbin {
     * @param a_iLapNo the current lap
     */
     void CHudLapTimes::onLapStart(int a_iStep, int a_iMarble, int a_iLapNo) {
-      if (m_mLapTimes.find(a_iMarble) == m_mLapTimes.end())
-        m_mLapTimes[a_iMarble] = SPlayerRacetime();
+      int l_iIndex = a_iMarble - 10000;
 
-      if (m_mLapTimes[a_iMarble].m_vLapTimes.size() > 0) {
-        int l_iLastLapTime = a_iStep - m_mLapTimes[a_iMarble].m_vLapTimes.back().m_iStart;
-        m_mLapTimes[a_iMarble].m_vLapTimes.back().m_iEnd     = a_iStep;
-        m_mLapTimes[a_iMarble].m_vLapTimes.back().m_iLapTime = l_iLastLapTime;
-
-        if (m_iBestLapTime == -1 || l_iLastLapTime < m_iBestLapTime) {
-          m_iBestLapTime = l_iLastLapTime;
-
-          m_pBestLap = &(m_mLapTimes[a_iMarble].m_vLapTimes.back());
-
-          if (m_mPlayers.find(a_iMarble) != m_mPlayers.end())
-            m_sBestLap = m_mPlayers[a_iMarble];
-          else
-            m_sBestLap = L"-";
+      if (l_iIndex >= 0 && l_iIndex < 16) {
+        if (a_iMarble == m_iMarble) {
+          if (m_aLapStart[l_iIndex] != -1) {
+            m_iLastLap  = a_iStep - m_aLapStart[l_iIndex];
+          }
+          m_iStartLap = a_iStep;
         }
 
-        if (a_iMarble == m_iMarbleID && (m_iPersonalBest == -1 || l_iLastLapTime < m_iPersonalBest))
-          m_iPersonalBest = l_iLastLapTime;
+        if ((m_bFirstLap && a_iLapNo > 1) || a_iStep - m_aLapStart[l_iIndex] < m_iBestLap) {
+          m_vBest = m_aSplits[l_iIndex];
+          m_iBestLap = a_iStep - m_aLapStart[l_iIndex];
+          m_pBest = m_aPlayers[l_iIndex]->m_pPlayer;
+          m_sBest = m_pBest->m_sWName;
 
-        if (l_iLastLapTime < m_mLapTimes[a_iMarble].m_iFastest || m_mLapTimes[a_iMarble].m_iFastest == -1) {
-          m_mLapTimes[a_iMarble].m_iFastest = l_iLastLapTime;
+          if (m_sBest.find_last_of(L'|') != std::wstring::npos)
+            m_sBest = m_sBest.substr(0, m_sBest.find_last_of(L'|'));
         }
 
-        if (a_iMarble == m_iMarbleID)
-          m_iLastLapTime = l_iLastLapTime;
-      }
-
-      m_mLapTimes[a_iMarble].m_vLapTimes.push_back(SLapTime());
-      m_mLapTimes[a_iMarble].m_vLapTimes.back().m_iStart = a_iStep;
-      m_mLapTimes[a_iMarble].m_vLapTimes.back().m_iLapNo = a_iLapNo;
-
-      if (a_iMarble == m_iMarbleID) {
-        m_iLapStart = a_iStep;
-        m_iCpNo     = 0;
+        m_aLapStart[l_iIndex] = a_iStep;
+        m_aSplits  [l_iIndex].clear();
+        m_bFirstLap = a_iLapNo <= 1;
       }
     }
 
@@ -147,15 +141,8 @@ namespace dustbin {
     * @param a_iMarble ID of the marble
     */
     void CHudLapTimes::onPlayerFinished(int a_iRaceTime, int a_iMarble) {
-      // The player has finished so we remove the currently running lap. I have chosen to do it this way because this
-      // callback is called *after* the lap has started, and using the number of laps doesn't work either because the
-      // player may already lapped.
-      if (m_mLapTimes.find(a_iMarble) != m_mLapTimes.end() && m_mLapTimes[a_iMarble].m_vLapTimes.size() > 0) {
-        m_mLapTimes[a_iMarble].m_vLapTimes.erase(m_mLapTimes[a_iMarble].m_vLapTimes.end() - 1);
-      }
-
-      if (m_iMarbleID == a_iMarble)
-        m_iFinishStep = a_iRaceTime;
+      if (a_iMarble == m_iMarble)
+        m_iFinished = a_iRaceTime;
     }
 
     /**
@@ -164,23 +151,20 @@ namespace dustbin {
     * @param a_iMarble ID of the marble
     */
     void CHudLapTimes::onCheckpoint(int a_iStep, int a_iMarble) {
-      if (m_mLapTimes.find(a_iMarble) != m_mLapTimes.end() && m_mLapTimes[a_iMarble].m_vLapTimes.size() > 0) {
-        int l_iSplitTime = a_iStep - m_mLapTimes[a_iMarble].m_vLapTimes.back().m_iStart;
+      if (a_iMarble == m_iMarble)
+        m_iLastCp = a_iStep;
 
-        if (l_iSplitTime != 0) {
-          m_mLapTimes[a_iMarble].m_vLapTimes.back().m_vSplitTimes.push_back(l_iSplitTime);
-          m_mLapTimes[a_iMarble].m_iLastSplit = a_iStep;
+      int l_iIndex = a_iMarble - 10000;
+      if (m_aLapStart[l_iIndex] != -1 && m_aLapStart[l_iIndex] != a_iStep) {
+        m_aSplits[l_iIndex].push_back(a_iStep - m_aLapStart[l_iIndex]);
+        if (a_iMarble == m_iMarble) {
         }
 
-        int l_iIndex = (int)m_mLapTimes[a_iMarble].m_vLapTimes.back().m_vSplitTimes.size();
-        if (m_mSplits.find(l_iIndex) == m_mSplits.end() || m_mSplits[l_iIndex] > l_iSplitTime) {
-          m_mSplits[l_iIndex] = l_iSplitTime;
+        if (m_bFirstLap) {
+          if (m_aSplits[l_iIndex].size() > m_vBest.size()) {
+            m_vBest.push_back(m_aSplits[l_iIndex].back());
+          }
         }
-      }
-
-      if (a_iMarble == m_iMarbleID) {
-        m_iLastCpTime = a_iStep;
-        m_iCpNo++;
       }
     }
 
@@ -196,92 +180,141 @@ namespace dustbin {
       l_cLapTimePos.Y += m_iLapTimeOffset;
 #endif
 
-      std::vector<std::tuple<irr::core::position2di, std::wstring, std::wstring, irr::video::SColor, irr::video::SColor, bool>> l_vRows;
+      std::vector<std::tuple<irr::core::position2di, std::wstring, std::wstring, irr::video::SColor, irr::video::SColor>> l_vRows;
 
       l_vRows.push_back(std::make_tuple(
         l_cLapTimePos, 
-        L" Race: ", 
-        convertToTime(m_iFinishStep > 0 ? m_iFinishStep : a_iStep), 
-        irr::video::SColor( 128, 255, 255, 192), 
-        irr::video::SColor(0xFF,   0,   0,   0),
-        false
+        L" Racetime: ", 
+        convertToTime(m_iFinished == -1 ? a_iStep : m_iFinished, false), 
+        irr::video::SColor(128, 255, 255, 192), 
+        irr::video::SColor(255,   0,   0,   0)
       ));
 
-      if (m_mLapTimes.find(m_iMarbleID) != m_mLapTimes.end()) {
-        std::wstring s = L"-";
+      int l_iIndex = m_iMarble - 10000;
 
-        irr::video::SColor l_cColor = irr::video::SColor(0xFF, 0, 0, 0);
+      if (m_pPlayer != nullptr && l_iIndex >= 0 && l_iIndex < 16) {
+        int l_iTime    = m_aSplits[l_iIndex].size() > 0 ? m_aSplits[l_iIndex].back() : 0;
+        int l_iLapTime = a_iStep - m_iStartLap;
 
-        if (m_iLapStart > 0) {
-          if (m_iLastCpTime > 0 && a_iStep - m_iLastCpTime < 180 && m_iCpNo > 1) {
-            irr::s32 l_iTime = m_iLastCpTime - m_iLapStart;
+        if (m_iStartLap != -1) {
+          l_cLapTimePos.Y += m_iOffset;
 
-            if (m_mSplits.find(m_iCpNo) == m_mSplits.end() || m_mSplits[m_iCpNo] >= l_iTime)
-              l_cColor = irr::video::SColor(0xFF, 255, 64, 0);
+          if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 120) {
+            int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
+            
+            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : l_iDiff < 0 ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 32, 32, 32);
 
-            s = convertToTime(l_iTime);
+            l_vRows.push_back(std::make_tuple(
+              l_cLapTimePos,
+              L" Checkpoint: ",
+              convertToTime(l_iTime, false),
+              irr::video::SColor(128, 192, 192, 255),
+              l_cText
+            ));
+          }
+          else if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 240) {
+            int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
+
+            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : l_iDiff < 0 ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 32, 32, 32);
+
+            l_vRows.push_back(std::make_tuple(
+              l_cLapTimePos,
+              L" Deficit: ",
+              convertToTime(l_iDiff, true),
+              irr::video::SColor(128, 192, 192, 255),
+              l_cText
+            ));
           }
           else {
-            s = convertToTime(a_iStep - m_iLapStart);
+            l_vRows.push_back(std::make_tuple(
+              l_cLapTimePos,
+              L" This Lap: ",
+              m_iFinished == -1 ?  convertToTime(l_iLapTime, false) : L"Finished",
+              irr::video::SColor(128, 192, 192, 255),
+              irr::video::SColor(255,   0,   0,   0)
+            ));
           }
+
+          l_cLapTimePos.Y += m_iOffset;
+
+          l_vRows.push_back(std::make_tuple(
+            l_cLapTimePos,
+            L" Last Lap: ",
+            m_iLastLap == -1 ? L"-" : convertToTime(m_iLastLap, false),
+            irr::video::SColor(128, 192, 192, 255),
+            (m_iLastLap == m_iBestLap) ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 0, 0, 0)
+          ));
         }
-        else s = L"-";
-
-        l_cLapTimePos.Y += m_iLapTimeOffset;
-        l_vRows.push_back(std::make_tuple(
-          l_cLapTimePos, L" Lap: ", s, irr::video::SColor(128, 192, 192, 255), l_cColor, false
-        ));
-
-        if (m_iLastLapTime > 0) s = convertToTime(m_iLastLapTime); else s = L"-";
-
-        l_cLapTimePos.Y += m_iLapTimeOffset;
-        l_vRows.push_back(std::make_tuple(
-          l_cLapTimePos, L" Last: ", s, irr::video::SColor(128, 192, 192, 255), irr::video::SColor(0xFF, 0, 0, 0), false
-        ));
-
-        l_cColor = irr::video::SColor(0xFF, 0, 0, 0);
-
-        if (m_iBestLapTime > 0) {
-          s = convertToTime(m_iBestLapTime); 
-          if (m_iBestLapTime == m_iPersonalBest)
-            l_cColor = irr::video::SColor(0xFF, 255, 255, 0);
-        }
-        else s = L"-";
-
-        l_cLapTimePos.Y += m_iLapTimeOffset;
-        l_vRows.push_back(std::make_tuple(
-          l_cLapTimePos, L" Fastest: ", s, irr::video::SColor(128, 192, 192, 255), l_cColor, false
-        ));
-
-        l_cLapTimePos.Y += m_iLapTimeOffset;
-        l_vRows.push_back(std::make_tuple(
-          l_cLapTimePos, L"", m_sBestLap, irr::video::SColor(128, 192, 192, 255), irr::video::SColor(0xFF, 0, 0, 0), true
-        ));
       }
 
       for (auto l_tRow : l_vRows) {
         m_pDrv->draw2DRectangle(std::get<3>(l_tRow), irr::core::recti(std::get<0>(l_tRow), m_cSizeTotal));
 
-        if (!std::get<5>(l_tRow)) {
-          irr::core::dimension2du l_cSize = m_pFont->getDimension(std::get<1>(l_tRow).c_str());
-          irr::core::recti l_cRect = irr::core::recti(
-            std::get<0>(l_tRow) + irr::core::vector2di(m_cSizeCol1.Width - l_cSize.Width, 0), irr::core::dimension2du(l_cSize.Width, m_cSizeTotal.Height)
-          );
-          m_pFont->draw(std::get<1>(l_tRow).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), false, true);
+        irr::core::dimension2du l_cSize = m_pFont->getDimension(std::get<1>(l_tRow).c_str());
+        irr::core::recti l_cRect = irr::core::recti(
+          std::get<0>(l_tRow) + irr::core::vector2di(m_cSizeCol1.Width - l_cSize.Width, 0), irr::core::dimension2du(l_cSize.Width, m_cSizeTotal.Height)
+        );
+        m_pFont->draw(std::get<1>(l_tRow).c_str(), l_cRect, std::get<4>(l_tRow), false, true);
 
-          l_cSize = m_pFont->getDimension(std::get<2>(l_tRow).c_str());
-          l_cSize.Width += m_cSizeTotal.Height / 4;
+        l_cSize = m_pFont->getDimension(std::get<2>(l_tRow).c_str());
+        l_cSize.Width += m_cSizeTotal.Height / 4;
 
-          l_cRect = irr::core::recti(
-            std::get<0>(l_tRow) + irr::core::vector2di(m_cSizeTotal.Width - l_cSize.Width, 0), irr::core::dimension2du(l_cSize.Width, m_cSizeTotal.Height)
-          );
+        l_cRect = irr::core::recti(
+          std::get<0>(l_tRow) + irr::core::vector2di(m_cSizeTotal.Width - l_cSize.Width, 0), irr::core::dimension2du(l_cSize.Width, m_cSizeTotal.Height)
+        );
 
-          m_pFont->draw(std::get<2>(l_tRow).c_str(), l_cRect, std::get<4>(l_tRow), false, true);
-        }
-        else {
-          irr::core::recti l_cRect = irr::core::recti(std::get<0>(l_tRow), m_cSizeTotal);
-          m_pFont->draw(std::get<2>(l_tRow).c_str(), l_cRect, irr::video::SColor(0xFF, 0, 0, 0), true, true);
-        }
+        m_pFont->draw(std::get<2>(l_tRow).c_str(), l_cRect, std::get<4>(l_tRow), false, true);
+      }
+
+      if (m_iBestLap != -1 && m_pBest != nullptr) {
+        l_cLapTimePos.Y += m_iOffset;
+
+        irr::video::SColor l_cText = m_pBest->m_cText;
+        irr::video::SColor l_cBack = m_pBest->m_cBack; l_cBack.setAlpha(192);
+        irr::video::SColor l_cFrme = m_pBest->m_cFrme;
+
+        m_pDrv->draw2DRectangle(l_cBack, irr::core::recti(l_cLapTimePos, m_cSizeTotal));
+        m_pDrv->draw2DRectangleOutline(irr::core::recti(l_cLapTimePos, m_cSizeTotal), l_cFrme);
+
+        irr::core::dimension2du l_cSize = m_pFont->getDimension(L" Best Lap: ");
+
+        m_pFont->draw(
+          L" Best Lap: ", 
+          irr::core::recti(l_cLapTimePos + irr::core::vector2di(m_cSizeCol1.Width - l_cSize.Width, 0), m_cSizeCol1), 
+          l_cText, 
+          false, 
+          true
+        );
+
+        std::wstring s = convertToTime(m_iBestLap, false);
+        l_cSize = m_pFont->getDimension(s.c_str());
+        l_cSize.Width += m_cSizeTotal.Height / 4;
+
+        m_pFont->draw(
+          s.c_str(), 
+          irr::core::recti(l_cLapTimePos + irr::core::vector2di(m_cSizeTotal.Width - l_cSize.Width, 0), m_cSizeCol2),
+          l_cText,
+          false,
+          true
+        );
+        
+
+        l_cLapTimePos.Y += m_iOffset;
+
+        irr::core::recti l_cRectNumber = irr::core::recti(l_cLapTimePos, irr::core::dimension2du(m_cSizeTotal.Height, m_cSizeTotal.Height));
+        irr::core::recti l_cRectName   = irr::core::recti(
+          l_cLapTimePos + irr::core::vector2di(m_cSizeTotal.Height, 0),
+          irr::core::dimension2du(m_cSizeTotal.Width - m_cSizeTotal.Height, m_cSizeTotal.Height)
+        );
+
+        m_pDrv->draw2DRectangle(l_cBack, l_cRectNumber);
+        m_pDrv->draw2DRectangle(l_cBack, l_cRectName);
+        
+        m_pDrv->draw2DRectangleOutline(l_cRectNumber, l_cFrme);
+        m_pDrv->draw2DRectangleOutline(l_cRectName  , l_cFrme);
+
+        m_pFont->draw(m_pBest->m_sNumber.c_str(), l_cRectNumber, l_cText, true, true);
+        m_pFont->draw(m_sBest           .c_str(), l_cRectName  , l_cText, true, true);
       }
     }
   }

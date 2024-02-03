@@ -22,29 +22,36 @@ namespace dustbin {
         irr::core::dimension2du    m_cSizeTotal;  /**< Total size of the labels */
         irr::gui::IGUIFont        *m_pFont;       /**< The font to use for rendering */
 
-        std::map<int, SPlayerRacetime> m_mLapTimes;       /**< The lap times of the marbles (key == marble id, value == lap time structure vector) */
-        int                            m_iBestLapTime;    /**< The best lap time */
-        int                            m_iPersonalBest;   /**< The player's best lap time */
-        int                            m_iLastLapTime;    /**< Lap time of the player's last lap */
-        int                            m_iLapTimeOffset;  /**< Vertical offset between the lap time labels */
-        int                            m_iFinishStep;     /**< The simulation step when the player has finished */
-        int                            m_iMarbleID;       /**< ID of the player's marble */
-        int                            m_iLastCpTime;     /**< The player's last checkpoint time*/
-        int                            m_iLapStart;       /**< Start of the player's lap */
-        int                            m_iCpNo;           /**< Number of the last checkpoint the player has passede */
-        std::map<int, std::wstring>    m_mPlayers;        /**< Assignment of the marble IDs to the player names */
-        std::map<int, int>             m_mSplits;         /**< Best split times */
+        int m_iOffset;      /**< Vertical offset between the items */
+        int m_iLastCp;      /**< The player's last checkpoint time */
+        int m_iMarble;      /**< The player's marble ID */
+        int m_iStartLap;    /**< The player's last lap start */
+        int m_iLastLap;     /**< The player's last lap time */
+        int m_iBestLap;     /**< The best lap time */
+        int m_iFinished;    /**< Finish time of the HUD player */
 
-        std::wstring m_sBestLap;    /**< Name of the player with the best lap time */
+        int m_aLapStart[16];  /**< Lap start for every player */
 
-        SLapTime *m_pBestLap;   /**< Data of the best lap */
+        bool m_bFirstLap;   /**< Is this the first lap? */
+
+        std::wstring m_sBest;   /**< Name of the player with the best race lap */
+         
+        std::vector<int> m_aSplits[16];   /**< Current lap split times for all players */
+        std::vector<int> m_vBest;         /**< Split times of the best lap */
+
+        gameclasses::SRaceData *m_aPlayers[16];   /**< Array of the players */
+
+        gameclasses::SRaceData *m_pPlayer;    /**< The HUD player's race data */
+
+        gameclasses::SPlayer *m_pBest;    /**< The player with the best lap */
 
         /**
         * Convert a number of steps to a time string
-        * @param a_iSteps the number of steps to convert
+        * @param a_iSteps the number of steps to conver
+        * @param a_bSign always add a sign, even for positive numbers
         * @return string representation of the time
         */
-        std::wstring convertToTime(irr::s32 a_iSteps);
+        std::wstring convertToTime(irr::s32 a_iSteps, bool a_bSign);
 
       public:
         /**
