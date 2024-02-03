@@ -72,31 +72,5 @@ namespace dustbin {
       TimeAhead,  /**< The time difference to the marble in from */
       TimeBehind  /**< The time difference to the marble behind */
     };
-
-    /**
-    * Struct for the laptimes
-    */
-    typedef struct SLapTime {
-      int m_iStart;   /**< Start time of the lap */
-      int m_iEnd;     /**< End time of the lap */
-      int m_iLapNo;   /**< The lap */
-      int m_iLapTime; /**< The lap time */
-
-      std::vector<int> m_vSplitTimes;   /**< The split times of the lap */
-
-      SLapTime();
-    } SLapTime;
-
-    /**
-    * Struct for a player's race time
-    */
-    typedef struct SPlayerRacetime {
-      int m_iFastest;     /**< The player's fastest lap */
-      int m_iLastSplit;   /**< Time of the last split */
-
-      std::vector<SLapTime> m_vLapTimes;
-
-      SPlayerRacetime();
-    } SPlayerRacetime;
   }
 }
