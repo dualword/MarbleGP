@@ -242,7 +242,7 @@ namespace dustbin {
             L" Last Lap: ",
             m_iLastLap == -1 ? L"-" : convertToTime(m_iLastLap, false),
             irr::video::SColor(128, 192, 192, 255),
-            (m_iLastLap == m_iBestLap) ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 0, 0, 0)
+            (m_iLastLap == m_iBestLap && m_iLastLap != -1) ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 0, 0, 0)
           ));
         }
       }
