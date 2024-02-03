@@ -432,6 +432,7 @@ namespace dustbin {
       m_bFadeStart    (false),
       m_bPaused       (false),
       m_bCountdown    (true),
+      m_bDiffLeader   (true),
       m_cRect         (a_cRect),
       m_pGui          (a_pGui),
       m_pPlayer       (a_pPlayer),
@@ -1025,7 +1026,7 @@ namespace dustbin {
         if (m_aRanking[l_iIndex] != nullptr) {
           m_aRanking[l_iIndex]->setData(
             (*it)->m_pPlayer->m_sWName, 
-            (*it)->m_iDiffLeader, 
+            m_bDiffLeader ? (*it)->m_iDiffLeader : (*it)->m_iDiffAhead,
             (*it)->m_pPlayer->m_pRaceData->m_bWithdrawn, 
             (*it)->m_pPlayer->m_cBack, 
             (*it)->m_pPlayer->m_cText, 
@@ -1173,6 +1174,25 @@ namespace dustbin {
     */
     bool CGameHUD::moveToFront() {
       return false;
+    }
+
+    /**
+    * Set the deficit shown while the game is paused
+    * @param a_bDiffLeader show the deficit to the leader (true) or the marble ahead (false)
+    */
+    void CGameHUD::setPauseDiffLeader(bool a_bDiffLeader) {
+      if (m_bPaused) {
+        m_bDiffLeader = a_bDiffLeader;
+        updateRanking();
+      }
+    }
+
+    /**
+    * Get the deficit shown while the game is paused
+    * @return the deficit flat
+    */
+    bool CGameHUD::getPauseDiffLeader() {
+      return m_bDiffLeader;
     }
   }
 }

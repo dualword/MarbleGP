@@ -55,6 +55,7 @@ namespace dustbin {
         bool                       m_aFinished[16]; /**< Finished players */
         bool                       m_bPaused;       /**< Is the game paused? */
         bool                       m_bCountdown;    /**< Is the countdown banner still visible? */
+        bool                       m_bDiffLeader;   /**< Show the deficit to the leader when paused */
         irr::core::recti           m_cRect;         /**< The total rect of the viewport */
         irr::gui::IGUIEnvironment *m_pGui;
         gameclasses::SPlayer      *m_pPlayer;       /**< This is the data of the player this HUD belongs to */
@@ -308,6 +309,18 @@ namespace dustbin {
         * @return true if this HUD should be in front of the rest
         */
         virtual bool moveToFront();
+
+        /**
+        * Set the deficit shown while the game is paused
+        * @param a_bDiffLeader show the deficit to the leader (true) or the marble ahead (false)
+        */
+        void setPauseDiffLeader(bool a_bDiffLeader);
+
+        /**
+        * Get the deficit shown while the game is paused
+        * @return the deficit flat
+        */
+        bool getPauseDiffLeader();
     };
   }
 }

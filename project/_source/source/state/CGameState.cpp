@@ -703,6 +703,13 @@ namespace dustbin {
             l_bRet = true;
           }
         }
+        else if (a_cEvent.KeyInput.Key == irr::KEY_F1) {
+          for (auto l_cViewport : m_mViewports) {
+            if (l_cViewport.second.m_pHUD != nullptr)
+              l_cViewport.second.m_pHUD->setPauseDiffLeader(!l_cViewport.second.m_pHUD->getPauseDiffLeader());
+          }
+          l_bRet = true;
+        }
         else if (a_cEvent.KeyInput.Key == irr::KEY_PLUS || a_cEvent.KeyInput.Key == irr::KEY_MINUS) {
           if (m_cSettings.m_iShadows < 5 && a_cEvent.KeyInput.Key == irr::KEY_PLUS) {
             m_cSettings.m_iShadows++;
