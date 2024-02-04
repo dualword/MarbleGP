@@ -28,6 +28,7 @@ namespace dustbin {
         int m_iStartLap;    /**< The player's last lap start */
         int m_iLastLap;     /**< The player's last lap time */
         int m_iBestLap;     /**< The best lap time */
+        int m_iBestOld;     /**< The previous best lap used for calculating the deficit of the laptimes */
         int m_iFinished;    /**< Finish time of the HUD player */
 
         int m_aLapStart[16];  /**< Lap start for every player */

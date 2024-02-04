@@ -27,6 +27,7 @@ namespace dustbin {
       m_iStartLap(-1),
       m_iLastLap (-1),
       m_iBestLap (-1),
+      m_iBestOld (-1),
       m_iFinished(-1),
       m_bFirstLap(true),
       m_sBest    (L"-"),
@@ -115,12 +116,17 @@ namespace dustbin {
         if (a_iMarble == m_iMarble) {
           if (m_aLapStart[l_iIndex] != -1) {
             m_iLastLap  = a_iStep - m_aLapStart[l_iIndex];
+
+            if (m_iBestLap != -1) {
+              wprintf(L"%s / %s ==> %s\n", convertToTime(m_iLastLap, false).c_str(), convertToTime(m_iBestLap, false).c_str(), convertToTime(m_iLastLap - m_iBestLap, true).c_str());
+            }
           }
           m_iStartLap = a_iStep;
         }
 
         if ((m_bFirstLap && a_iLapNo > 1) || a_iStep - m_aLapStart[l_iIndex] < m_iBestLap) {
           m_vBest = m_aSplits[l_iIndex];
+          m_iBestOld = m_iBestLap;
           m_iBestLap = a_iStep - m_aLapStart[l_iIndex];
           m_pBest = m_aPlayers[l_iIndex]->m_pPlayer;
           m_sBest = m_pBest->m_sWName;
@@ -237,13 +243,28 @@ namespace dustbin {
 
           l_cLapTimePos.Y += m_iOffset;
 
-          l_vRows.push_back(std::make_tuple(
-            l_cLapTimePos,
-            L" Last Lap: ",
-            m_iLastLap == -1 ? L"-" : convertToTime(m_iLastLap, false),
-            irr::video::SColor(128, 192, 192, 255),
-            (m_iLastLap == m_iBestLap && m_iLastLap != -1) ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 0, 0, 0)
-          ));
+          if (a_iStep - m_iStartLap < 240 && (m_iLastLap > m_iBestLap || m_iBestOld != -1)) {
+            int l_iDiff = m_iLastLap > m_iBestLap ? m_iLastLap - m_iBestLap : m_iLastLap - m_iBestOld;
+
+            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : l_iDiff < 0 ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 32, 32, 32);
+
+            l_vRows.push_back(std::make_tuple(
+              l_cLapTimePos,
+              L" Deficit: ",
+              convertToTime(l_iDiff, true),
+              irr::video::SColor(128, 192, 192, 255),
+              l_cText
+            ));
+          }
+          else {
+            l_vRows.push_back(std::make_tuple(
+              l_cLapTimePos,
+              L" Last Lap: ",
+              m_iLastLap == -1 ? L"-" : convertToTime(m_iLastLap, false),
+              irr::video::SColor(128, 192, 192, 255),
+              (m_iLastLap == m_iBestLap && m_iLastLap != -1) ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 0, 0, 0)
+            ));
+          }
         }
       }
 
