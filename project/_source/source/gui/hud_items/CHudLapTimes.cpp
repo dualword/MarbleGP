@@ -117,9 +117,9 @@ namespace dustbin {
           if (m_aLapStart[l_iIndex] != -1) {
             m_iLastLap  = a_iStep - m_aLapStart[l_iIndex];
 
-            if (m_iBestLap != -1) {
-              wprintf(L"%s / %s ==> %s\n", convertToTime(m_iLastLap, false).c_str(), convertToTime(m_iBestLap, false).c_str(), convertToTime(m_iLastLap - m_iBestLap, true).c_str());
-            }
+            // if (m_iBestLap != -1) {
+            //   wprintf(L"%s / %s ==> %s\n", convertToTime(m_iLastLap, false).c_str(), convertToTime(m_iBestLap, false).c_str(), convertToTime(m_iLastLap - m_iBestLap, true).c_str());
+            // }
           }
           m_iStartLap = a_iStep;
         }
@@ -183,7 +183,7 @@ namespace dustbin {
       irr::core::position2di l_cLapTimePos = m_cPos;
 
 #ifdef _ANDROID
-      l_cLapTimePos.Y += m_iLapTimeOffset;
+      l_cLapTimePos.Y += m_iOffset;
 #endif
 
       std::vector<std::tuple<irr::core::position2di, std::wstring, std::wstring, irr::video::SColor, irr::video::SColor>> l_vRows;
