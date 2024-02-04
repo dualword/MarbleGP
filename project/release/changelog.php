@@ -1,5 +1,11 @@
 <ul>
   <li>
+    <b>2024-02-04 [1.2 Build 248]</b>
+    <ul>
+      <li>Complete re-design of the in-game 3d graphics</li>
+    </ul>
+  </li>
+  <li>
     <b>2023-10-22 [1.2 Build 247]</b>
     <ul>
       <li>&quot;New Game&quot; wizard finished</li>
