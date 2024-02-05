@@ -1574,7 +1574,7 @@ namespace dustbin {
      * @param a_LapNo Number of the started lap
      */
     void CGameState::onLapstart(irr::s32 a_MarbleId, irr::s32 a_LapNo) {
-      m_pRaceData->onLapStart(a_MarbleId);
+      m_pRaceData->onLapStart(a_MarbleId, m_iStep);
 
       int l_iIndex = a_MarbleId - 10000;
       if (l_iIndex >= 0 && l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr) {

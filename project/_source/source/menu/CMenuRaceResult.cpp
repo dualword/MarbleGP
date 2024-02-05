@@ -122,18 +122,22 @@ namespace dustbin {
               Pos,
               Name,
               Racetime,
+              BestLap,
+              BestLapNo,
               Respawn,
               Stunned,
               AiClass
             };
 
             std::vector<std::tuple<irr::s32, std::wstring, enColumn, irr::gui::EGUI_ALIGNMENT>> l_vColums = {
-              {  5, L"Pos"     , enColumn::Pos     , irr::gui::EGUIA_CENTER     },
-              { 45, L"Name"    , enColumn::Name    , irr::gui::EGUIA_UPPERLEFT  },
-              { 14, L"Racetime", enColumn::Racetime, irr::gui::EGUIA_LOWERRIGHT },
-              { 14, L"Respawn" , enColumn::Respawn , irr::gui::EGUIA_LOWERRIGHT },
-              { 14, L"Stunned" , enColumn::Stunned , irr::gui::EGUIA_LOWERRIGHT },
-              {  3, L"Ai"      , enColumn::AiClass , irr::gui::EGUIA_CENTER     }
+              {  5, L"Pos"             , enColumn::Pos      , irr::gui::EGUIA_CENTER     },
+              { 31, L"Name"            , enColumn::Name     , irr::gui::EGUIA_UPPERLEFT  },
+              { 15, L"Racetime"        , enColumn::Racetime , irr::gui::EGUIA_LOWERRIGHT },
+              { 15, L"Fastest Lap Time", enColumn::BestLap  , irr::gui::EGUIA_LOWERRIGHT },
+              { 10, L"Fastest Lap"     , enColumn::BestLapNo, irr::gui::EGUIA_LOWERRIGHT },
+              { 10, L"Respawn"         , enColumn::Respawn  , irr::gui::EGUIA_LOWERRIGHT },
+              { 10, L"Stunned"         , enColumn::Stunned  , irr::gui::EGUIA_LOWERRIGHT },
+              {  3, L"Ai"              , enColumn::AiClass  , irr::gui::EGUIA_CENTER     }
             };
 
             for (auto l_tColumn : l_vColums) {
@@ -217,11 +221,13 @@ namespace dustbin {
 
               for (auto l_tColumn : l_vColums) {
                 std::wstring l_sText =
-                  std::get<2>(l_tColumn) == enColumn::Pos      ? std::to_wstring(l_iPos + 1) :
-                  std::get<2>(l_tColumn) == enColumn::Name     ? l_sName    :
-                  std::get<2>(l_tColumn) == enColumn::Racetime ? l_sDeficit :
-                  std::get<2>(l_tColumn) == enColumn::Respawn  ? std::to_wstring((int)l_pData->m_vRespawn.size()) + L" " :
-                  std::get<2>(l_tColumn) == enColumn::Stunned  ? std::to_wstring((int)l_pData->m_vStunned.size()) + L" " : L"";
+                  std::get<2>(l_tColumn) == enColumn::Pos       ? std::to_wstring(l_iPos + 1) :
+                  std::get<2>(l_tColumn) == enColumn::Name      ? l_sName    :
+                  std::get<2>(l_tColumn) == enColumn::Racetime  ? l_sDeficit :
+                  std::get<2>(l_tColumn) == enColumn::BestLap   ? helpers::convertToTime(l_pData->m_iFastestLap) :
+                  std::get<2>(l_tColumn) == enColumn::BestLapNo ? std::to_wstring(l_pData->m_iFastestLapNo) + L" of " + std::to_wstring(l_pData->m_vLapCheckpoints.size() - 1) :
+                  std::get<2>(l_tColumn) == enColumn::Respawn   ? std::to_wstring((int)l_pData->m_vRespawn.size()) + L" " :
+                  std::get<2>(l_tColumn) == enColumn::Stunned   ? std::to_wstring((int)l_pData->m_vStunned.size()) + L" " : L"";
 
                 if (std::get<2>(l_tColumn) == enColumn::Name) {
                   irr::core::recti l_cRect = irr::core::recti(l_cColPos, irr::core::dimension2du(std::get<0>(l_tColumn) * l_iWidth / 100 - 3 * l_iHeight / 2, l_iHeight));

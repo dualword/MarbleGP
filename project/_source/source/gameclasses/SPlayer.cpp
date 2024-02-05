@@ -26,16 +26,18 @@ namespace dustbin {
     * The default contructor
     */
     SRaceData::SRaceData() : 
-      m_iPlayer    (0), 
-      m_iMarble    (0), 
-      m_iPosition  (0), 
-      m_iDiffLeader(0), 
-      m_iDiffAhead (0), 
-      m_iState     (0), 
-      m_iLapNo     (0), 
-      m_iGridPos   (0),
-      m_bWithdrawn (false),
-      m_pPlayer    (nullptr)
+      m_iPlayer      (0), 
+      m_iMarble      (0), 
+      m_iPosition    (0), 
+      m_iDiffLeader  (0), 
+      m_iDiffAhead   (0), 
+      m_iState       (0), 
+      m_iLapNo       (0), 
+      m_iGridPos     (0),
+      m_iFastestLap  (-1),
+      m_iFastestLapNo(-1),
+      m_bWithdrawn   (false),
+      m_pPlayer      (nullptr)
     {
     }
 
@@ -106,11 +108,13 @@ namespace dustbin {
     std::string SRaceData::toJSON() {
       std::string s = "{";
 
-      s += "\"playerid\": "  + std::to_string(m_iPlayer)  + ",";
-      s += "\"marbleid\": "  + std::to_string(m_iMarble)  + ",";
-      s += "\"state\": "     + std::to_string(m_iState )  + ",";
-      s += "\"gridpos\": "   + std::to_string(m_iGridPos) + ",";
-      s += "\"withdrawn\": " + std::string(m_bWithdrawn ? "true" : "false") + ",";
+      s += "\"playerid\": "     + std::to_string(m_iPlayer)       + ",";
+      s += "\"marbleid\": "     + std::to_string(m_iMarble)       + ",";
+      s += "\"state\": "        + std::to_string(m_iState )       + ",";
+      s += "\"gridpos\": "      + std::to_string(m_iGridPos)      + ",";
+      s += "\"fastestlap\": "   + std::to_string(m_iFastestLap  ) + ",";
+      s += "\"fastestlapno\": " + std::to_string(m_iFastestLapNo) + ",";
+      s += "\"withdrawn\": "    + std::string(m_bWithdrawn ? "true" : "false") + ",";
       s += "\"laps\": [";
 
       for (std::vector<std::vector<int>>::iterator l_itLap = m_vLapCheckpoints.begin(); l_itLap != m_vLapCheckpoints.end(); l_itLap++) {
@@ -317,8 +321,17 @@ namespace dustbin {
 
     /**
     * Lap start callback
+    * @param a_iStep the current step
     */
-    void SPlayer::onLapStart() {
+    void SPlayer::onLapStart(int a_iStep) {
+      if (m_pRaceData->m_vLapCheckpoints.size() > 0 && m_pRaceData->m_vLapCheckpoints.back().size() > 0) {
+        int l_iLapTime = a_iStep - m_pRaceData->m_vLapCheckpoints.back().front();
+        if (m_pRaceData->m_iFastestLap == -1 || l_iLapTime < m_pRaceData->m_iFastestLap) {
+          m_pRaceData->m_iFastestLap   = l_iLapTime;
+          m_pRaceData->m_iFastestLapNo = (int)m_pRaceData->m_vLapCheckpoints.size();
+        }
+      }
+
       m_pRaceData->m_vLapCheckpoints.push_back(std::vector<int>());
     }
     /**
@@ -700,11 +713,13 @@ namespace dustbin {
     /**
     * Callback for a lap start message
     * @param a_iMarble the marble
+    * @param a_iStep the current step
     */
-    void SRace::onLapStart(int a_iMarble) {
+    void SRace::onLapStart(int a_iMarble, int a_iStep) {
       for (auto l_pPlayer : m_vPlayers) {
         if (l_pPlayer->m_pRaceData->m_iMarble == a_iMarble) {
-          l_pPlayer->onLapStart();
+          l_pPlayer->onLapStart(a_iStep);
+          break;
         }
       }
     }
@@ -758,6 +773,16 @@ namespace dustbin {
 
             (*l_itPlr)->m_vLapCheckpoints.push_back(std::vector<int>());
             (*l_itPlr)->m_vLapCheckpoints.back().push_back(l_pLeader->m_vLapCheckpoints.back().back() + l_iSteps);
+
+            if ((*l_itPlr)->m_vLapCheckpoints.size() >= 2) {
+              int l_iIndex   = (int)(*l_itPlr)->m_vLapCheckpoints.size() - 2;
+              int l_iLapTime = (*l_itPlr)->m_vLapCheckpoints.back().front() - (*l_itPlr)->m_vLapCheckpoints[l_iIndex].front();
+
+              if ((*l_itPlr)->m_iFastestLap == -1 || l_iLapTime < (*l_itPlr)->m_iFastestLap) {
+                (*l_itPlr)->m_iFastestLap   = l_iLapTime;
+                (*l_itPlr)->m_iFastestLapNo = (int)(*l_itPlr)->m_vLapCheckpoints.size() - 1;
+              }
+            }
           }
           (*l_itPlr)->m_pPlayer->dumpLapCheckpoints();
         }

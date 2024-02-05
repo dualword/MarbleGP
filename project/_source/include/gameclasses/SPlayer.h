@@ -31,6 +31,8 @@ namespace dustbin {
       int  m_iState;        /**< The player's state (0 == normal, 1 == stunned, 2 == Respawn 1, 3 == Respawn 2, 4 == Finished) */
       int  m_iLapNo;        /**< The player's current lap */
       int  m_iGridPos;      /**< The player's position in the starting grid of the race */
+      int  m_iFastestLap;   /**< Time of the fastest lap */
+      int  m_iFastestLapNo; /**< Number of the fastest lap */
       bool m_bWithdrawn;    /**< Has the player withdrawn from the race? */
 
       std::vector<std::vector<int>> m_vLapCheckpoints;    /**< Time of the passed checkpoints per lap */
@@ -148,8 +150,9 @@ namespace dustbin {
 
       /**
       * Lap start callback
+      * @param a_iStep the current step
       */
-      void onLapStart();
+      void onLapStart(int a_iStep);
 
       /**
       * Checkpoint callback
@@ -236,8 +239,9 @@ namespace dustbin {
       /**
       * Callback for a lap start message
       * @param a_iMarble the marble
+      * @param a_iStep the current step
       */
-      void onLapStart(int a_iMarble);
+      void onLapStart(int a_iMarble, int a_iStep);
 
       /**
       * Callback for a state (normal, stunned, respawn, finished)
