@@ -395,8 +395,11 @@ namespace dustbin {
 
           if (p != nullptr) {
             if (p->m_eState == CObjectMarble::enMarbleState::Rolling) {
-              irr::f32 l_fCtrlX = ((irr::f32)p->m_iCtrlX) / 127.0f,
-                       l_fCtrlY = ((irr::f32)p->m_iCtrlY) / 127.0f;
+              irr::f32 l_fCtrlX = ((irr::f32)p->m_iCtrlX) / 127.0f;
+              irr::f32 l_fCtrlY = ((irr::f32)p->m_iCtrlY) / 127.0f;
+
+              if (p->m_bBrake)
+                l_fCtrlY = std::max(-1.0f, l_fCtrlY - 1.0f);
 
               // Marble Class Param: Steer Factor and Thrust Factor
               irr::core::vector2df l_vSteer = irr::core::vector2df(1.0f * l_fCtrlX, 0.5f * l_fCtrlY);
