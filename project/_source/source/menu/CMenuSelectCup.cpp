@@ -197,6 +197,7 @@ namespace dustbin {
                     l_pTournament->m_vRaces.push_back(
                       new gameclasses::SRace(
                         std::get<0>(l_tRace),
+                        m_pState->getGlobal()->getTrackName(std::get<0>(l_tRace)),
                         "\"" + m_vCups[m_iSelectedCup].m_sName + "\" Race #" + std::to_string(l_iNum) + " of " + std::to_string(m_vCups[m_iSelectedCup].m_vRaces.size()),
                         l_iLaps,
                         l_pTournament

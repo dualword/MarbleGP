@@ -99,6 +99,7 @@ namespace dustbin {
 
                 gameclasses::SRace* l_pRace = new gameclasses::SRace(
                   "tutorial",
+                  "Tutorial Track",
                   "This track will show you all you need to know to play MarbleGP",
                   1,
                   l_pTournament

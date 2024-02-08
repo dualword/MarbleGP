@@ -251,6 +251,7 @@ namespace dustbin {
 
                   l_pTournament->m_vRaces.push_back(new gameclasses::SRace(
                     m_pTrackList->getSelectedData(),
+                    m_pState->getGlobal()->getTrackName(m_pTrackList->getSelectedData()),
                     "Free Racing Race #" + std::to_string(l_pTournament->m_vRaces.size() + 1),
                     l_iLaps, 
                     l_pTournament)
