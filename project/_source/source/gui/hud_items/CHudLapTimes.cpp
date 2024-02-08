@@ -205,28 +205,33 @@ namespace dustbin {
         if (m_iStartLap != -1) {
           l_cLapTimePos.Y += m_iOffset;
 
-          if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 120) {
+          if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 120 && (!m_bFirstLap || (m_vBest.size() >= m_aSplits[l_iIndex].size() && m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] != 0))) {
             int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
-            
-            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : l_iDiff < 0 ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 32, 32, 32);
+
+            irr::video::SColor l_cText = 
+              m_bFirstLap ?
+                l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128)
+              :
+                l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128)
+            ;
 
             l_vRows.push_back(std::make_tuple(
               l_cLapTimePos,
-              L" Checkpoint: ",
-              convertToTime(l_iTime, false),
+              L" Deficit: ",
+              convertToTime(l_iDiff, true),
               irr::video::SColor(128, 192, 192, 255),
               l_cText
             ));
           }
           else if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 240) {
             int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
-
-            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : l_iDiff < 0 ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 32, 32, 32);
+            
+            irr::video::SColor l_cText = l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
 
             l_vRows.push_back(std::make_tuple(
               l_cLapTimePos,
-              L" Deficit: ",
-              convertToTime(l_iDiff, true),
+              L" Checkpoint: ",
+              convertToTime(l_iTime, false),
               irr::video::SColor(128, 192, 192, 255),
               l_cText
             ));
@@ -246,7 +251,7 @@ namespace dustbin {
           if (a_iStep - m_iStartLap < 240 && (m_iLastLap > m_iBestLap || m_iBestOld != -1)) {
             int l_iDiff = m_iLastLap > m_iBestLap ? m_iLastLap - m_iBestLap : m_iLastLap - m_iBestOld;
 
-            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : l_iDiff < 0 ? irr::video::SColor(255, 128, 255, 128) : irr::video::SColor(255, 32, 32, 32);
+            irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
 
             l_vRows.push_back(std::make_tuple(
               l_cLapTimePos,
