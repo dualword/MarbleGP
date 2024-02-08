@@ -9,11 +9,12 @@ namespace dustbin {
   namespace gameclasses {
     const irr::s32 c_iRaceStart     = -100;   /**< ID for the start of the race data structure */
     const irr::s32 c_iRaceTrack     = -101;   /**< ID for the race track */
-    const irr::s32 c_iRaceLaps      = -102;   /**< ID for the race laps */
-    const irr::s32 c_iRaceInfo      = -103;   /**< ID for the race info */
-    const irr::s32 c_iRaceRankStart = -104;   /**< ID for the start of the ranking */
-    const irr::s32 c_iRaceRankEnd   = -105;   /**< ID for the end of the ranking */
-    const irr::s32 c_iRaceEnd       = -106;   /**< ID for the end of the race data structure */
+    const irr::s32 c_iRaceTrackName = -102;   /**< ID for the track name */
+    const irr::s32 c_iRaceLaps      = -103;   /**< ID for the race laps */
+    const irr::s32 c_iRaceInfo      = -104;   /**< ID for the race info */
+    const irr::s32 c_iRaceRankStart = -105;   /**< ID for the start of the ranking */
+    const irr::s32 c_iRaceRankEnd   = -106;   /**< ID for the end of the ranking */
+    const irr::s32 c_iRaceEnd       = -107;   /**< ID for the end of the race data structure */
 
     const irr::s32 c_iRankStart     = -200;   /**< ID for serialization start of the ranking */
     const irr::s32 c_iRankPlayerId  = -201;   /**< ID for serialization start of the ranking */
@@ -499,8 +500,9 @@ namespace dustbin {
       }
     }
 
-    SRace::SRace(const std::string &a_sTrack, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament) : 
+    SRace::SRace(const std::string &a_sTrack, const std::string &a_sTrackName, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament) : 
       m_sTrack     (a_sTrack     ),
+      m_sName      (a_sTrackName ),
       m_sInfo      (a_sInfo      ), 
       m_iLaps      (a_iLaps      ), 
       m_pTournament(a_pTournament) 
@@ -513,6 +515,7 @@ namespace dustbin {
     */
     SRace::SRace(const std::string &a_sData, STournament *a_pTournament) :
       m_sTrack     (""),
+      m_sName      (""),
       m_sInfo      (""),
       m_iLaps      (0),
       m_pTournament(a_pTournament)
@@ -530,9 +533,10 @@ namespace dustbin {
           irr::s32 l_iToken = l_cSerializer.getS32();
 
           switch (l_iToken) {
-            case c_iRaceTrack: m_sTrack = l_cSerializer.getString(); break;
-            case c_iRaceLaps : m_iLaps  = l_cSerializer.getS32   (); break;
-            case c_iRaceInfo : m_sInfo  = l_cSerializer.getString(); break;
+            case c_iRaceTrack    : m_sTrack = l_cSerializer.getString(); break;
+            case c_iRaceTrackName: m_sName  = l_cSerializer.getString(); break;
+            case c_iRaceLaps     : m_iLaps  = l_cSerializer.getS32   (); break;
+            case c_iRaceInfo     : m_sInfo  = l_cSerializer.getString(); break;
 
             case c_iRaceRankStart: {
               irr::s32 l_iCount = l_cSerializer.getS32();
@@ -578,6 +582,8 @@ namespace dustbin {
       l_cSerializer.addS32(c_iRaceStart);
       l_cSerializer.addS32(c_iRaceTrack);
       l_cSerializer.addString(m_sTrack);
+      l_cSerializer.addS32(c_iRaceTrackName);
+      l_cSerializer.addString(m_sName);
       l_cSerializer.addS32(c_iRaceLaps);
       l_cSerializer.addS32(m_iLaps);
       l_cSerializer.addS32(c_iRaceInfo);
@@ -603,24 +609,15 @@ namespace dustbin {
       std::string s = "{";
 
       s += "\"track\": \"" + m_sTrack + "\", ";
+      s += "\"trackname\": \"" + m_sName + "\", ";
       s += "\"laps\": " + std::to_string(m_iLaps) + ", ";
-      s += "\"players\": [ ";
+      s += "\"raceresult\": [ ";
 
-      for (std::vector<SPlayer*>::iterator l_itPlr = m_vPlayers.begin(); l_itPlr != m_vPlayers.end(); l_itPlr++) {
-        if (l_itPlr != m_vPlayers.begin())
+      for (std::vector<SRaceData*>::iterator l_itPlr = m_vRanking.begin(); l_itPlr != m_vRanking.end(); l_itPlr++) {
+        if (l_itPlr != m_vRanking.begin())
           s += ", ";
 
-        s += (*l_itPlr)->m_pRaceData->toJSON();
-      }
-
-
-      s += " ], \"result\": [";
-
-      for (std::vector<SRaceData *>::iterator l_itPlr = m_vRanking.begin(); l_itPlr != m_vRanking.end(); l_itPlr++) {
-        if (l_itPlr != m_vRanking.begin())
-          s += ",";
-        
-        s += std::to_string((*l_itPlr)->m_iPlayer);
+        s += (*l_itPlr)->toJSON();
       }
 
       s += "], \"standings\": [";
@@ -908,7 +905,7 @@ namespace dustbin {
       s += "\"score\":"     + std::to_string(m_iScore   ) + ",";
       s += "\"respawn\":"   + std::to_string(m_iRespawn ) + ",";
       s += "\"stunned\":"   + std::to_string(m_iStunned ) + ",";
-      s += "\"widhdrawn\":" + std::to_string(m_iNoFinish) + ",";
+      s += "\"withdrawn\":" + std::to_string(m_iNoFinish) + ",";
       s += "\"bestpos\":"   + std::to_string(m_iBestPos ) + ",";
       s += "\"bestrace\":"  + std::to_string(m_iBestRace) + ",";
       s += "\"results\": [";
