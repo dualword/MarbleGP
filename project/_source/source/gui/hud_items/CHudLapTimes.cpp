@@ -208,12 +208,7 @@ namespace dustbin {
           if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 120 && (!m_bFirstLap || (m_vBest.size() >= m_aSplits[l_iIndex].size() && m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] != 0))) {
             int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
 
-            irr::video::SColor l_cText = 
-              m_bFirstLap ?
-                l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128)
-              :
-                l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128)
-            ;
+            irr::video::SColor l_cText = l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
 
             l_vRows.push_back(std::make_tuple(
               l_cLapTimePos,
@@ -226,7 +221,11 @@ namespace dustbin {
           else if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 240) {
             int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
             
-            irr::video::SColor l_cText = l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
+            irr::video::SColor l_cText = 
+              m_bFirstLap ? 
+                l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128)
+              :
+                l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
 
             l_vRows.push_back(std::make_tuple(
               l_cLapTimePos,
