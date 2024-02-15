@@ -1,35 +1,41 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dustbin::Game MarbleGP - Championship Result</title>
+    <title>DustbinGames - MarbleGP - Tournament Result</title>
     <link href="jquery-ui.min.css" rel="stylesheet">
     <link href="jquery-ui.structure.min.css" rel="stylesheet">
     <link href="jquery-ui.theme.min.css" rel="stylesheet">
     <link href="jquery.treemenu.min.css" rel="stylesheet">
     <style>
-      
-      #mainframe, #headline {
-        width: 80%;
-        border-radius: 1em;
-        border: 2px solid black;
-        background-color: rgba(224, 224, 244, 128);
-        padding: 1em;
+    
+      .overall_table, .overall_cell, .overall_cellright, .overall_cellcenter {
+        border: 1px solid black;
       }
       
-      #headline {
-        height: 5vh;
-        margin-bottom: 1em;
-        text-align: center;
-        vertical-align: middle;
-        font-size: 1.5em;
-        font-weight: bold;
-        overflow: hidden;
+      .overall_cell, .overall_cellright, .overall_cellcenter {
+        margin: 0.5em;
+        padding: 0.5em;
       }
       
-      .container {
-        display: flex;
-        justify-content: center;
-        position: relative;
+      .overall_cellright  { text-align: right ; }
+      .overall_cellcenter { text-align: center; }
+      
+      .track_thumbnail {
+        width: 15%;
+        height: auto;
+      }
+      
+      .race_table {
+        width: 25%;
+      }
+      
+      .datachart {
+        width: 85%;
+        aspect-ration: 4/3;
+      }
+      
+      .datachart_label {
+        padding-right: 0.5em;
       }
       
       body {
@@ -41,450 +47,522 @@
         font-family: Arial;
       }
       
-      table {
-        width: 100%;
+      .level1, .raceresult, .race_details {
+        background-color: rgba(255, 255, 255, 0.25);
       }
       
-      td, th {
-        border-bottom: 1px solid black;
-        margin: 0px;
-        padding: 0px;
-        border-left: 0px;
-        border-right: 0px;
+      .datachart {
+        background-color: rgba(255, 255, 255, 0.5);
       }
       
-      .logoimg {
-        height: 5em;
-        width: auto;
-        padding: 0px;
-        margin: 0px;
+      h3 {
+        background-color: rgba(128, 192, 255, 0.5);
       }
-      
-      table, tr {
-        padding: 0px;
-        margin: 0px;
-        border: 0px;
-      }
-      
-      .button {
-        border: 2px solid black;
-        border-radius: 0.5em;
-        width: 20em;
-        height: 1.5em;
-        background-color: #b8c8ff;
-        margin-bottom: 1em;
-        text-align: center;
-        padding-top: auto;
-        padding-bottom: auto;
-        font-size: 2em;
-        line-height: 1.5em;
-        cursor: pointer;
-        color: #000000;
-        text-decoration: none;
-      }
-      
-      .button:hover { background-color: #3367b8; }
-      .button:active { background-color: #ecf163; }
-      
-      a {
-        text-decoration: none;
-      }
-      
-      .td_rght {
-        text-align: right;
-      }
-      
-      .td_cntr {
-        text-align: center;
-      }
-      
-      .main_row:hover {
-        background-color: #CCCCFF;
-        cursor: pointer;
-      }
-      
-      .detail_row:hover {
-        background-color: #FFDDDD;
-        cursor: pointer;
-      }
-      
-      .raceresult_row:hover {
-        background-color: #EEEEEE;
-      }
-      
-      .thumbnail {
-        height: 17em;
-        width: auto;
-      }
-      
+    
     </style>
     <script src="jquery.js" type="text/javascript"></script>
     <script src="jquery-ui.min.js" type="text/javascript"></script>
+  </head>
+  <body>
     <script>
-      
-      g_TrackNames = {!tracknames};
-      
-      g_Championship = {!championship};
-      
-      g_OpenResult = "";
-      
-      function toggleResultDetail(a_Id) {
-        if (g_OpenResult != "" && $(g_OpenResult).is(":visible") == true) {
-          $(g_OpenResult).toggle("slow");
-        }
-        
-        $("#" + a_Id).toggle("slow", function() { });
-        
-        g_OpenResult = "#" + a_Id;
+      function splitName(a_Name) {
+        return a_Name.split("|")[0];
       }
       
-      function toggleRace(a_Id) {
-        $("#accordion").accordion({ active: a_Id, autoHeight: false });
-        $('html, body').animate({ scrollTop: ($("#race_" + a_Id).offset().top)}, "slow");
-      }
-      
-      function makeAiCell(a_Ai) {
-        var l_Html = "<td style=\"text-align: center; ";
+      function splitSettings(a_Data) {
+        var l_Data = a_Data.split("&");
+        var l_Result = { };
         
-        switch (a_Ai) {
-          case "marblegp": l_Html += " background-color: #FF0000"; break;
-          case "marble2" : l_Html += " background-color: #FF8000"; break;
-          case "marble3" : l_Html += " background-color: #FFFF00"; break;
-          default: break;
-        }
-        
-        l_Html += "\">";
-        if (a_Ai == "") l_Html += "&nbsp;"; else l_Html += a_Ai;
-        l_Html += "</td>";
-        
-        l_Html += "</tr>";
-        return l_Html;
-      }
-      
-      $(document).ready(function() {
-        var l_MainFrame = $("#mainframe");
-        
-        var l_Html = "<a href=\"/championship.xml\" target=\"_blank\" id=\"JSON_download\">Download plain result JSON</a><br />";
-        l_Html += "<h3>Setup</h3>";
-        l_Html += "<div><ul>";
-        l_Html += "<li><b>Race Class:</b> ";
-        
-        switch (g_Championship.class) {
-          case 0: l_Html += "Marble3"; break;
-          case 1: l_Html += "Marble3 + Marble2"; break;
-          case 2: l_Html += "Marble2"; break;
-          case 3: l_Html += "Marble2 + MarbleGP"; break;
-          case 4: l_Html += "MarbleGP"; break;
-          case 5: l_Html += "All Classes"; break;
-          default: l_Html += g_Championship.class;
-        }
-        
-        l_Html += "</li>";
-        l_Html += "<li><b>Grid Size:</b> " + g_Championship.gridsize + "</li>";
-        l_Html += "<li><b>Grid Order:</b> ";
-        
-        switch (g_Championship.gridorder) {
-          case 0: l_Html += "Fixed (All races have the same starting order)"; break;
-          case 1: l_Html += "Last Race "; if (g_Championship.reversegrid) l_Html += "Reverse Grid (Winner of the last race starts from the end)"; else l_Html += "Winner of the last race starts from pole position)"; break;
-          case 2: l_Html += "Standings "; if (g_Championship.reversegrid) l_Html += "Reverse Grid (Leader of the chanpionship starts from the end)"; else l_Html += "Leader of the championship starts from pole position)"; break;
-          case 3: l_Html += "Random"; break;
-        }
-        
-        l_Html += "</li>";
-        
-        var l_Players = g_Championship.players;
-
-        l_Html += "</ul></div>";
-        l_Html += "<h3>Final Result</h3>";
-        l_Html += "<div>";
-        l_Html += "<table>";
-        l_Html += "<tr>";
-        l_Html += "<th rowspan=\"2\">Pos</th>";
-        l_Html += "<th rowspan=\"2\">Name</th>";
-        l_Html += "<th rowspan=\"2\">Points</th>";
-        l_Html += "<th rowspan=\"2\">Respawn</th>";
-        l_Html += "<th rowspan=\"2\">Stunned</th>";
-        l_Html += "<th rowspan=\"2\">Fastest&nbsp;Laps</th>";
-        l_Html += "<th rowspan=\"2\">D.N.F.</th>";
-        l_Html += "<th rowspan=\"2\">Best&nbsp;Race</th>";
-        l_Html += "<th colspan=\"16\">Race Results</th>";
-        l_Html += "<th rowspan=\"2\">AI&nbsp;Class</th>";
-        l_Html += "</tr>";
-        l_Html += "<tr>";
-        
-        for (i = 1; i <= 16; i++) {
-          l_Html += "<th>" + i + "</th>";
-        }
-        
-        l_Html += "</tr>";
-        
-        g_Championship.players.sort(function(a_Player1, a_Player2) {
-          if (a_Player1["points"] != a_Player2["points"]) {
-            return a_Player2["points"] - a_Player1["points"];
-          }
-          else if (a_Player1["respawn"] != a_Player2["respawn"]) {
-            return a_Player1["respawn"] - a_Player2["respawn"];
-          }
-          else if (a_Player1["stunned"] != a_Player2["stunned"]) {
-            return a_Player1["stunned"] - a_Player2["stunned"];
-          }
-          else if (a_Player1["fastest_laps"] != a_Player2["fastest_laps"]) {
-            return a_Player1["fastest_laps"] - a_Player2["fastest_laps"];
-          }
-          else if (a_Player1["did_not_finish"] != a_Player2["did_not_finish"]) {
-            return a_Player2["did_not_finish"] - a_Player1["did_not_finish"];
-          }
-          else if (a_Player1["first_best_finish"] != a_Player2["first_best_finish"]) {
-            return a_Player2["first_best_finish"] - a_Player1["first_best_finish"];
-          }
-        });
-        
-        var l_Pos = 1;
-        
-        for (i = 0; i < g_Championship.players.length; i++) {
-          var l_Player = g_Championship.players[i];
-          var l_Name   = l_Player.name;
-          var l_Ai     = "";
+        for (var i = 0; i < l_Data.length; i++) {
+          var l_Other = l_Data[i].split("=");
           
-          if (l_Name.indexOf("|") != -1) {
-            l_Ai   = l_Name.substr(   l_Name.indexOf("|") + 1);
-            l_Name = l_Name.substr(0, l_Name.indexOf("|")    );
+          if (l_Other.length == 2) {
+            l_Result[l_Other[0]] = l_Other[1];
+          }
+        }
+        
+        return l_Result;
+      }
+      
+      function splitTextureString(a_Texture) {
+        var l_Dummy = a_Texture.split("://");
+        var l_Result = { };
+        
+        if (l_Dummy.length > 1) {
+          l_Result = splitSettings(l_Dummy[1]);
+        }
+        
+        return l_Result;
+      }
+      
+      g_Charts = { };
+      
+      function converRaceTime(a_Steps) {
+        var l_Time = new Date(1000 * (a_Steps / 120.0));
+        var l_Mins = l_Time.getMinutes();
+        var l_Secs = l_Time.getSeconds().toString();
+        var l_Mill = l_Time.getMilliseconds().toString();
+        
+        if (l_Secs.length < 2 && l_Mins > 0)
+          l_Secs = "0" + l_Secs;
+        
+        while (l_Mill.length < 3)
+          l_Mill = "0" + l_Mill;
+        
+        l_Mill = l_Mill.substr(0, 2);
+        
+        var l_Ret = "";
+        
+        if (l_Mins > 0)
+          l_Ret = l_Mins.toString() + ":";
+        
+        return l_Ret + l_Secs + "." + l_Mill;
+      }
+      
+      g_Data = {!championship};
+      
+      function updateDataChart(a_Index, a_Type) {
+        var l_Race = g_Data["races"][a_Index];
+        var l_Type = "line";
+        
+        var l_ChartData = {
+          "labels": [ ],
+          "datasets": [
+          ]
+        };
+        
+        var l_DefaultColors = [
+          "000000", "FF0000", "00FF00", "0000FF",
+          "FFFF00", "FF00FF", "00FFFF", "808080",
+          "800000", "008000", "000080", "303030",
+          "300000", "003000", "000030", "A0A000"
+        ];
+        var l_Options = { };
+        
+        if (a_Type == 0) {
+          var l_Checkpoints = [ ];
+          for (var i = 0; i < l_Race.raceresult.length; i++) {
+            var l_Player = l_Race.raceresult[i];
+            var l_Count  = 0;
             
-            l_Player.name = l_Name;
-            l_Player.ai   = l_Ai;
-          }
-          else l_Player.ai = "";
-
-          
-          l_Html += "<tr onclick=\"toggleResultDetail('result_detail_" + i + "');\" class=\"main_row\">";
-          l_Html += "<td style=\"text-align: center\">" + l_Pos + "</td>";
-          l_Html += "<td>" + l_Name + "</td>";
-          l_Html += "<td style=\"text-align: right\">"+ l_Player.points            + "</td>";
-          l_Html += "<td style=\"text-align: center\">" + l_Player.respawn           + "</td>";
-          l_Html += "<td style=\"text-align: center\">" + l_Player.stunned           + "</td>";
-          l_Html += "<td style=\"text-align: center\">" + l_Player.fastest_laps      + "</td>";
-          l_Html += "<td style=\"text-align: center\">" + l_Player.did_not_finish    + "</td>";
-          l_Html += "<td style=\"text-align: center\">" + l_Player.first_best_finish + "</td>";
-          
-          for (j = 0; j < 16; j++) {
-            if (l_Player.race_results[j] != undefined)
-              l_Html += "<td style=\"text-align: center\">" + l_Player.race_results[j] + "</td>";
-            else
-              l_Html += "<td>&nbsp;</td>";
-          }
-          
-          l_Html += "" + makeAiCell(l_Ai);
-          l_Html += "</tr>";
-          l_Html += "<tr class=\"result_detail\" id=\"result_detail_" + i + "\">";
-          l_Html += "<td>&nbsp;</td>";
-          l_Html += "<td colspan=\"24\">";
-          l_Html += "<table style=\"background-color: #AAAAFF\">";
-          l_Html += "<tr><th>&nbsp;</th><th>Track</th><th>Position</th><th>Racetime</th><th>Deficit</th><th>Fastest&nbsp;Lap</th><th>Stunned</th><th>Respawn</th>\n";
-          
-          for (var j = 0; j < g_Championship.races.length; j++) {
-            var l_Race = g_Championship.races[j];
-            var l_Marble = -1;
+            if (l_Checkpoints[l_Count] === undefined) {
+              l_Checkpoints[l_Count] = [ ];
+              l_ChartData.labels.push("Start");
+            }
             
-            for (var l_Key in l_Race.marble_assignment) {
-              if (l_Race.marble_assignment[l_Key] == l_Player.playerid) {
-                l_Marble = l_Key;
+            l_Checkpoints[l_Count].push( { "playerid": l_Player.playerid, "time": l_Player.gridpos } );
+            l_Count++;
+            
+            for (var j = 0; j < l_Player.laps.length; j++) {
+              for (var k = 0; k < l_Player.laps[j].length; k++) {
+                if (l_Checkpoints[l_Count] === undefined) {
+                  l_Checkpoints[l_Count] = [ ];
+                  if (j == l_Player.laps.length - 1 && k == l_Player.laps[j].length - 1)
+                    l_ChartData.labels.push("Finish");
+                  else
+                    l_ChartData.labels.push("");
+                }
+                
+                l_Checkpoints[l_Count].push( { "playerid": l_Player.playerid, "time": l_Player.laps[j][k] } );
+                
+                l_Count++;
+              }
+            }
+          }
+          
+          var l_Result = [ ];
+          
+          for (var i = 0; i < g_Data.players.length; i++) {
+            var l_Texture = splitTextureString(g_Data.players[i]["texture"]);
+            var l_Color   = l_DefaultColors[i];
+            
+            l_Result.push({ "playerid": g_Data.players[i].playerid, "name": splitName(g_Data.players[i].name), "color": l_Color, "position": [ ] });
+          }
+          
+          for (var i = 0; i < l_Checkpoints.length; i++) {
+            l_Checkpoints[i].sort(function(a, b) {
+              return a.time > b.time;
+            });
+            
+            for (var j = 0; j < l_Checkpoints[i].length; j++) {
+              for (var k = 0; k < l_Result.length; k++) {
+                if (l_Checkpoints[i][j].playerid == l_Result[k].playerid) {
+                  l_Result[k].position.push(j + 1);
+                }
+              }
+            }
+          }
+          
+          for (var i = 0; i < l_Result.length; i++) {
+            l_ChartData.datasets.push(
+              {
+                "label": l_Result[i].name,
+                "data": l_Result[i].position,
+                "fill": false,
+                "borderColor": "#" + l_Result[i].color,
+                "tension": 0.0,
+                "hidden": l_Result[i].position[l_Result[i].position.length - 1] > 3
+              }
+            );
+          }
+          
+          l_Options = { scales: { y: { position: 'right', reverse: true } } };
+        }
+        else if (a_Type == 1) {
+          for (var i = 0; i < l_Race.raceresult.length; i++) {
+            var l_LapTimes = [ ];
+            
+            for (var j = 1; j < l_Race.raceresult[i].laps.length; j++) {
+              var l_LapTime = (l_Race.raceresult[i].laps[j][0] - l_Race.raceresult[i].laps[j - 1][0]) / 120.0;
+              l_LapTimes.push(l_LapTime);
+              
+              if (l_ChartData.labels[j - 1] === undefined) {
+                l_ChartData.labels[j - 1] = "Lap " + j;
+              }
+            }
+            
+            for (var j = 0; j < g_Data.players.length; j++) {
+              if (g_Data.players[j].playerid == l_Race.raceresult[i].playerid) {
+                console.log("******");
+                console.log(l_Race.raceresult[i]);
+                l_ChartData.datasets.push(
+                  {
+                    "label": splitName(g_Data.players[j].name),
+                    "data": l_LapTimes,
+                    "fill": false,
+                    "borderColor": "#" + l_DefaultColors[j],
+                    "hidden": i >= 3,
+                    "tension": 0.0
+                  }
+                );
+              }
+            }
+          }
+        }
+        else if (a_Type == 2) {
+          l_ChartData.datasets.push(
+            {
+              "label": "Stunned",
+              "data": [ ],
+              "fill": false,
+              "borderColor": "#0000FF",
+              "tension": 0.0
+            }
+          );
+          
+          l_ChartData.datasets.push(
+            {
+              "label": "Respawn",
+              "data": [ ],
+              "fill": false,
+              "borderColor": "#FF8000",
+              "tension": 0.0
+            }
+          );
+          
+          for (var i = 0; i < l_Race.raceresult.length; i++) {
+            for (var j = 0; j < g_Data.players.length; j++) {
+              if (l_Race.raceresult[i].playerid == g_Data.players[j].playerid) {
+                l_ChartData.labels.push(splitName(g_Data.players[j].name));
                 break;
               }
             }
             
-            var l_Result = null;
+            l_ChartData.datasets[0].data.push(l_Race.raceresult[i].stunned.length);
+            l_ChartData.datasets[1].data.push(l_Race.raceresult[i].respawn.length);
+          }
+          
+          l_ChartData.datasets[0].backgroundColor = "#A0A000";
+          l_ChartData.datasets[1].backgroundColor = "#00A0A0";
+          
+          l_Options = { ticks: { stepSize: 1 } };
+          
+          l_Type = "bar";
+        }
+        else if (a_Type == 3) {
+          l_ChartData.datasets.push(
+            {
+              "label": "Fastest Lap",
+              "data": [ ],
+              "fill": false,
+              "backgroundColor": "#FF8000",
+              "tension": 0.0
+            }
+          );
+          
+          var l_LapTimes = l_Race.raceresult;
+          
+          l_LapTimes.sort(function(a, b) {
+            return a.fastestlap > b.fastestlap;
+          });
+          
+          for (var i = 0; i < l_LapTimes.length; i++) {
+            for (var j = 0; j < g_Data.players.length; j++) {
+              if (l_LapTimes[i].playerid == g_Data.players[j].playerid) {
+                l_ChartData.labels.push(splitName(g_Data.players[j].name));
+                l_ChartData.datasets[0].data.push(l_LapTimes[i].fastestlap / 120.0);
+                break;
+              }
+            }
+          }
+          
+          l_Type = "bar";
+        }
+        
+        if (g_Charts[a_Index] !== undefined) {
+          g_Charts[a_Index].destroy();
+        }
+        
+        var l_Ctx = document.getElementById("datachart_" + a_Index.toString());
+        g_Charts[a_Index] = new Chart(l_Ctx, { "type": l_Type, "data": l_ChartData, options: l_Options });
+      }
+      
+      $(document).ready(function() {
+        var l_Settings = "<ul><li><b>Race&nbsp;Class:</b> ";
+        
+        switch (g_Data["raceclass"]) {
+          case 0: l_Settings += "Marble3"; break;
+          case 1: l_Settings += "Marble3 + Marble2"; break;
+          case 2: l_Settings += "Marble2"; break;
+          case 3: l_Settings += "Marble2 + MarbleGP"; break;
+          case 4: l_Settings += "MarbleGP"; break;
+          case 5: l_Settings += "All Classes"; break;
+          default: l_Settings += "Unknown (" + g_Data["raceclass"].toString() + ")";
+        }
+        
+        l_Settings += "</li><li><b>Number of Races:</b> " + g_Data["races"].length.toString() + "</li>";
+        l_Settings += "<li><b>Grid Order: </b>";
+        
+        if (g_Data["reversegrid"]) l_Settings += "Reverse Grid</li>"; else l_Settings += "<li>Standard Grid</li>";
+        
+        l_Settings += "<li><b>Auto-Finish:</b> ";
+        
+        switch (g_Data["autofinish"]) {
+          case 0: l_Settings += "All Players finished"; break;
+          case 1: l_Settings += "Second to Last finished"; break;
+          case 2: l_Settings += "First Player finished"; break;
+          case 3: l_Settings += "All Players and AI finished"; break;
+          default: l_Settings += "Unknown (" + g_Data["autofinish"].toString() + ")";
+        }
+        
+        l_Settings += "</li></ul>";
+        
+        $("#settings").html(l_Settings);
+        
+        g_Players = g_Data["players"];
+        
+        var l_Result = "<table class=\"overall_table\"><tr>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\" colspan=\"2\">&nbsp;</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">Name</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">Points</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">Best&nbsp;Result</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">Respawn</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">Stunned</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">Withdrawn</th>";
+        l_Result += "<th class=\"overall_cell\" colspan=\"" + g_Data["players"].length.toString() + "\">Positions</th>";
+        l_Result += "<th class=\"overall_cell\" rowspan=\"2\">AI Class</th>";
+        l_Result += "</tr><tr>";
+        
+        for (var l_Index = 0; l_Index < g_Data["players"].length; l_Index++)
+          l_Result += "<th class=\"overall_cell\">" + (l_Index + 1).toString() + "</th>";
+        
+        l_Result += "</tr>";
+        
+        for (var l_Index = 0; l_Index < g_Data["standings"].length; l_Index++) {
+          var l_Data = g_Data["standings"][l_Index];
+          
+          l_Result += "<tr>";
+          l_Result += "<td class=\"overall_cell\">" + (l_Index + 1).toString() + "</td>";
+          
+          var l_Player  = null;
+          var l_AiClass = "&nbsp;";
+          
+          for (var l_Idx = 0; l_Idx < g_Players.length; l_Idx++) {
+            if (g_Players[l_Idx]["playerid"] == l_Data["playerid"]) {
+              l_Player =  g_Players[l_Idx];
+              break;
+            }
+          }
+          
+          if (l_Player != null) {
+            var l_Texture = splitTextureString(l_Player["texture"]);
             
-            if (l_Marble >= 10000 && l_Marble <= 10016) {
-              for (var k = 0; k < l_Race.result.length; k++) {
-                if (l_Race.result[k].id == l_Marble) {
-                  l_Result = l_Race.result[k];
+            l_Result += "<td class=\"overall_cellcenter\" style=\"background-color: #" + l_Texture["numberback"] + "; color: #" + l_Texture["numbercolor"] + "; border: 0.2em solid #" + l_Texture["ringcolor"] + ";\">" + l_Texture["number"] + "</td>";
+            
+            var l_Name = splitName(l_Player["name"]);
+            
+            l_Result += "<td class=\"overall_cell\">" + l_Name + "</td>";
+            
+            var l_Ai = splitSettings(l_Player["controller"]);
+            
+            if (l_Ai["class"] !== undefined) {
+              l_AiClass = l_Ai["class"];
+            }
+          }
+          else {
+            l_Result += "<td class=\"overall_cell\">-</td><td class=\"overall_cell\">-</td>";
+          }
+          
+          l_Result += "<td class=\"overall_cellright\">" + l_Data["score"] + "</td>";
+          l_Result += "<td class=\"overall_cellright\">" + l_Data["bestpos"] + "&nbsp;in&nbsp;race&nbsp;" + l_Data["bestrace"] + "</td>";
+          l_Result += "<td class=\"overall_cellright\">" + l_Data["respawn"] + "</td>";
+          l_Result += "<td class=\"overall_cellright\">" + l_Data["stunned"] + "</td>";
+          l_Result += "<td class=\"overall_cellright\">" + l_Data["withdrawn"] + "</td>";
+          
+          for (var l_Idx = 0; l_Idx < l_Data["results"].length; l_Idx++) {
+            l_Result += "<td class=\"overall_cellright\">" + l_Data["results"][l_Idx].toString() + "</td>";
+          }
+          
+          l_Result += "<td class=\"overall_cell\"";
+          
+          if (l_AiClass == "marble3")
+            l_Result += " style=\"background-color: #FFFF00\"";
+          else if (l_AiClass == "marble2")
+            l_Result += " style=\"background-color: #FF8000\"";
+          else if (l_AiClass == "marblegp")
+            l_Result += " style=\"background-color: #FF0000\"";
+          
+          l_Result += ">" + l_AiClass + "</td>";
+          
+          l_Result += "</tr>";
+        }
+        
+        l_Result += "</table>";
+        
+        $("#result").html(l_Result);
+        
+        var l_Races = "";
+        
+        for (var l_Index = 0; l_Index < g_Data["races"].length; l_Index++) {
+          var l_Race = g_Data["races"][l_Index];
+          
+          l_Races += "<h3>Race " + (l_Index + 1).toString() + " of " + g_Data["races"].length.toString() + ": " + l_Race["trackname"] + " (" + l_Race["laps"].toString() + " Lap";
+          if (l_Race["laps"] > 1) l_Races += "s";
+          l_Races += ")</h3>";
+          l_Races += "<div class=\"raceresult\"><h3>Race Result</h3><div class=\"race_details\">";
+          l_Races += "<img src=\"thumbnails/" + l_Race["track"] + "\" class=\"track_thumbnail\" />";
+          
+          var l_RaceResult = l_Race["raceresult"];
+          
+          l_Races += "<table class=\"overall_table\"><tr>";
+          l_Races += "<th class=\"overall_cell\">&nbsp;</th>";
+          l_Races += "<th class=\"overall_cell\" colspan=\"2\">Name</th>";
+          l_Races += "<th class=\"overall_cell\">Grid&nbsp;Position</th>";
+          l_Races += "<th class=\"overall_cell\">Racetime</th>";
+          l_Races += "<th class=\"overall_cell\">Fastest&nbsp;Lap</th>";
+          l_Races += "<th class=\"overall_cell\">Stunned</th>";
+          l_Races += "<th class=\"overall_cell\">Respawn</th>";
+          l_Races += "</tr>";
+          
+          var l_Leader = null;
+          var l_LeadTm = 0;
+          
+          for (var i = 0; i < l_RaceResult.length; i++) {
+            var l_RacePlayer = l_RaceResult[i];
+            
+            if (l_RacePlayer != null) {
+              l_Races += "<tr>";
+              l_Races += "<td class=\"overall_cellcenter\">" + (i + 1).toString() + "</td>";
+              
+              var l_Player = null;
+              
+              for (var j = 0; j < g_Players.length; j++) {
+                if (g_Players[j]["playerid"] == l_RacePlayer["playerid"]) {
+                  l_Player = g_Players[j];
                   break;
                 }
               }
-            }
-            
-            l_Html += "<tr class=\"detail_row\" onclick=\"toggleRace(" + j + ");\">";
-            l_Html += "<td>Race " + (j + 1) + " of " + g_Championship.races.length + "</td>";
-            l_Html += "<td>" + g_TrackNames[l_Race.track] + "</td>";
-            
-            if (l_Result != null) {
-              l_Html += "<td class=\"td_rght\">" + l_Result.pos + "</td>";
               
-              if (l_Result.racetime > 0)
-                l_Html += "<td class=\"td_rght\">" + (l_Result.racetime / 120.0).toFixed(2) + " sec.</td>";
-              else
-                l_Html += "<td class=\"td_rght\">&nbsp;</td>";
+              var l_Laps   = 0;
+              
+              if (l_Player != null) {
+                var l_Texture = splitTextureString(l_Player["texture"]);
                 
-              if (l_Result.pos > 1) {
-                if (l_Result.deficit > 0) {
-                  l_Html += "<td class=\"td_rght\">+" + (l_Result.deficit / 120.0).toFixed(2) + " sec.</td>";
+                l_Races += "<td class=\"overall_cellcenter\" style=\"background-color: #" + l_Texture["numberback"] + "; color: #" + l_Texture["numbercolor"] + "; border: 0.2em solid #" + l_Texture["ringcolor"] + ";\">" + l_Texture["number"] + "</td>";
+                l_Races += "<td class=\"overall_cell\">" + splitName(l_Player["name"]) + "</td>";
+                l_Races += "<td class=\"overall_cellcenter\">" + l_RacePlayer["gridpos"].toString() + "</td>";
+                
+                var l_Time = l_RacePlayer["laps"][l_RacePlayer["laps"].length - 1][0];
+                
+                if (l_Leader == null) {
+                  l_Leader = l_RacePlayer["laps"];
+                  l_LeadTm = l_Time;
                 }
-                else if (l_Result.deficit == -1) {
-                  l_Html += "<td class=\"td_rght\">+1 lap</td>";
+                else {
+                  if (l_RacePlayer["laps"].length < l_Leader.length) {
+                    l_Laps = l_Leader.length - l_RacePlayer["laps"].length;
+                  }
+                  else {
+                    l_Laps = 0;
+                    l_Time = l_Time - l_LeadTm;
+                  }
                 }
-                else if (l_Result.deficit < 0) {
-                  l_Html += "<td class=\"td_rght\">+" + Math.abs(l_Result.deficit) + " laps</td>";
+                
+                if (l_Leader == l_RacePlayer["laps"]) {
+                  l_Races += "<td class=\"overall_cellright\">" + converRaceTime(l_Time) + "</td>";
                 }
-                else l_Html += "<td>&nbsp;</td>";
+                else if (l_Laps == 0)
+                  l_Races += "<td class=\"overall_cellright\">+" + converRaceTime(l_Time) + "</td>";
+                else {
+                  l_Races += "<td class=\"overall_cellright\">+" + l_Laps.toString() + "&nbsp;Lap";
+                  
+                  if (l_Laps > 1)
+                    l_Races += "s";
+                  
+                  l_Races += "</td>";
+                }
+                
+                l_Races += "<td class=\"overall_cellright\">" + converRaceTime(l_RacePlayer["fastestlap"]) + " on Lap " + l_RacePlayer["fastestlapno"].toString() + " of " + (l_RacePlayer["laps"].length - 1).toString() + "</td>";
+                l_Races += "<td class=\"overall_cellright\">" + l_RacePlayer["stunned"].length.toString() + "</td>";
+                l_Races += "<td class=\"overall_cellright\">" + l_RacePlayer["respawn"].length.toString() + "</td>";
               }
-              else l_Html += "<td>&nbsp;</td>";
+              else {
+                l_Races += "<td class=\"overall_cell\" colspan=\"8\">-</td>";
+              }
               
-              if (l_Result.fastest > 0)
-                l_Html += "<td class=\"td_rght\">" + (l_Result.fastest / 120.0).toFixed(2) + " sec.</td>";
-              else
-                l_Html += "<td>&nbsp;</td>";
-                
-              l_Html += "<td class=\"td_rght\">" + l_Result.stunned + "</td>";
-              l_Html += "<td class=\"td_rght\">" + l_Result.respawn + "</td>";
+              l_Races += "</tr>";
             }
-            else {
-              l_Html += "<td colspan=\"6\">&nbsp;</td>";
-            }
-            l_Html += "</tr>";
           }
           
-          l_Html += "</table>";
-          l_Html += "</td>";
-          l_Html += "</tr>";
-          
-          l_Pos++;
+          l_Races += "</table></div>";
+          l_Races += "<h3>Data Chart</h3><div class=\"datachart\">";
+          l_Races += "<label for=\"datachart_type_" + l_Index.toString() + "\" class=\"datachart_label\">Data Display:</label>";
+          l_Races += "<select name=\"datachart_type_" + l_Index.toString() + "\" id=\"datachart_type_" + l_Index.toString() + "\" class=\"datachart_type\">";
+          l_Races += "<option value=\"0\">Race Positions</option>";
+          l_Races += "<option value=\"1\">Laptimes</option>";
+          l_Races += "<option value=\"2\">Respawn / Stunned</option>";
+          l_Races += "<option value=\"3\">Fastest Laps</option>";
+          l_Races += "</select>";
+          l_Races += "<canvas id=\"datachart_" + l_Index.toString() + "\"></canvas>";
+          l_Races += "</div></div>"
         }
         
-        l_Html += "</table>";
-        l_Html += "</div>";
-        l_Html += "</div>";
-        l_Html += "<h3>Races</h3>";
-        l_Html += "<div id=\"accordion\">";
+        $("#races").html(l_Races);
         
-        for (i = 0; i < g_Championship.races.length; i++) {
-          var l_ThisRace = g_Championship.races[i];
-          
-          l_Html += "<h3 id=\"race_" + i + "\">Race " + (i + 1) + ": <b>" + g_TrackNames[l_ThisRace.track] + "</b> (" + l_ThisRace.laps;
-          if (l_ThisRace.laps == 1) l_Html += " Lap, " ; else l_Html += " Laps, ";
-          l_Html += l_ThisRace.playercount + " Marbles)</h3>";
-          
-          l_Html += "<div>";
-          
-          l_Html += "<table>";
-          l_Html += "<tr>";
-          l_Html += "<td rowspan=\"" + (l_ThisRace.result.length + 1) + "\" style=\"border: 0px\">";
-          l_Html += "<img src=\"/thumbnails/" + l_ThisRace.track + "\" alt=\"Thumbnail " + g_TrackNames[l_ThisRace.track] + "\" class=\"thumbnail\" /><br />";
-          l_Html += "</td>";
-          l_Html += "<th>Position</th>";
-          l_Html += "<th>Name</th>";
-          l_Html += "<th>Racetime</th>";
-          l_Html += "<th>Respawn</th>";
-          l_Html += "<th>Stunned</th>";
-          l_Html += "<th>Best&nbsp;Lap&nbsp;Time</th>";
-          l_Html += "<th>Lag&nbsp;(Leader)</th>";
-          l_Html += "<th>Lag&nbsp;(Player Ahead)</th>";
-          l_Html += "<th>AI&nbsp;Class</th>";
-          l_Html += "</tr>";
-          
-          var l_Assignment = l_ThisRace.marble_assignment;
-          var l_CpCount    = l_ThisRace.result[0].laps[l_ThisRace.result[0].laps.length - 1].length;
-          
-          for (j = 0; j < l_ThisRace.result.length; j++) {
-            var l_ThisResult = l_ThisRace.result[j];
-            
-            var l_Name = l_ThisResult.id;
-            var l_Ai   = "";
-            
-            if (l_Assignment[l_Name] != undefined) {
-              l_Name = l_Assignment[l_Name];
-              
-              for (k = 0; k <  g_Championship.players.length; k++) {
-                if (g_Championship.players[k].playerid == l_Name) {
-                  l_Name = g_Championship.players[k].name;
-                  l_Ai   = g_Championship.players[k].ai;
-                  break;
-                }
-              }
-            }
-            else console.log("Assignment undefined (" + l_Name + ")!");
-            
-            l_Html += "<tr class=\"raceresult_row\">";
-            l_Html += "<td class=\"td_cntr\">" + (j + 1) + "</td>";
-            l_Html += "<td>" + l_Name + "</td>";
-            l_Html += "<td class=\"td_rght\">";
-            var l_RaceTime = l_ThisResult.racetime;
-            
-            var l_NotFinished = l_RaceTime == 0;
-            
-            if (l_NotFinished) {
-              l_Html += "Did&nbsp;not&nbsp;Finish";
-            }
-            else {
-              l_Html += (l_ThisResult.racetime / 120).toFixed(2) + "&nbsp;sec.";
-            }
-            
-            l_Html += "</td>";
-            l_Html += "<td class=\"td_cntr\">" + l_ThisResult.respawn + "</td>";
-            l_Html += "<td class=\"td_cntr\">" + l_ThisResult.stunned + "</td>";
-            
-            if (l_ThisResult.fastest > 0)
-              l_Html += "<td class=\"td_rght\">" + (l_ThisResult.fastest / 120.0).toFixed(2) + "&nbsp;sec.</td>";
-            else
-              l_Html += "<td class=\"td_rght\">No&nbsp;Laptime&nbsp;Set</td>";
-            
-            if (l_ThisResult.deficit == 0 || l_NotFinished)
-              l_Html += "<td>&nbsp;</td>";
-            else if (l_ThisResult.deficit > 0)
-              l_Html += "<td class=\"td_rght\">" + (Math.abs(l_ThisResult.deficit / 120.0)).toFixed(2) + "&nbsp;sec.</td>";
-            else {
-              if (l_ThisResult.deficit == -1)
-                l_Html += "<td class=\"td_rght\">+1&nbsp Lap</td>";
-              else
-                l_Html += "<td class=\"td_rght\">+" + (-l_ThisResult.deficit) + "&nbsp;Laps</td>";
-            }
-            
-            l_Html += "<td class=\"td_rght\">";
-            
-            if (j == 0)
-              l_Html += "&nbsp;";
-            else {
-              var l_Lap = l_ThisResult.laps.length - 1;
-              var l_Cp  = l_ThisResult.laps[l_Lap].length - 1;
-              
-              if (l_ThisRace.result[j - 1].laps[l_Lap].length <= l_Cp)
-                l_Cp = l_ThisRace.result[j - 1].laps[l_Lap].length - 1
-              
-              l_Html += (Math.abs((l_ThisResult.laps[l_Lap][l_Cp] - l_ThisRace.result[j - 1].laps[l_Lap][l_Cp]) / 120.0)).toFixed(2) + "&nbsp;sec.";
-            }
-            
-            l_Html += "</td>";
-            l_Html += " " + makeAiCell(l_Ai);
-            l_Html += "</tr>";
-          }
-          
-          l_Html += "</table>";
-          l_Html += "</div>";
+        $(".datachart_type").change(function(event) {
+          var l_Id = event.target.id;
+          l_Id = l_Id.substr(l_Id.lastIndexOf("_") + 1);
+          updateDataChart(l_Id, event.target.value);
+        });
+        
+        for (var i = 0; i < g_Data["races"].length; i++) {
+          updateDataChart(i, 0);
         }
         
-        l_MainFrame.html(l_Html);
-        
-        $("#accordion").accordion({ autoHeight: false });
-        
-        var l_Data = new Blob([ JSON.stringify(g_Championship) ], { type: "text/json" });
-        var l_Url  = window.URL.createObjectURL(l_Data);
-        
-        document.getElementById("JSON_download").href = l_Url;
-        
-        $(".result_detail").hide();
+        $("#mainframe").accordion({ heightStyle: "content", active: 1 });
+        $("#races").accordion({ heightStyle: "content" });
+        $(".raceresult").accordion({ heightStyle: "content" });
       });
-    
+      
     </script>
-  </head>
-  <body>
-    <div class="container">
-      <div id="headline">
-        Dustbin::Games MarbleGP - Result of last Championship [<a href="/index.html">Main Menu</a>]
-      </div>
+    <div id="mainframe">
+      <h3>Tournament Settings</h3>
+      <div id="settings" class="level1"></div>
+      <h3>Tournament Result</h3>
+      <div id="result" class="level1"></div>
+      <h3>Races</h3>
+      <div id="races" class="level1"></div>
     </div>
-    <div class="container">
-      <div id="mainframe">
-      </div>
-    </div>
-    <div class="container" style="padding-top: 1em"><img src="marblegp_logo.png" class="logoimg" /></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </body>
 </html>

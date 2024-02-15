@@ -322,7 +322,7 @@ namespace dustbin {
     * @param a_pFs the file system to use
     */
     void CWebServerBase::loadChampionship(irr::io::IFileSystem* a_pFs) {
-      std::string l_sJsonPath = helpers::ws2s(platform::portableGetDataPath()) + "championship_result.json";
+      std::string l_sJsonPath = helpers::ws2s(platform::portableGetDataPath()) + "tournament.json";
 
       irr::io::IReadFile *l_pFile = a_pFs->createAndOpenFile(l_sJsonPath.c_str());
 
@@ -1172,6 +1172,9 @@ namespace dustbin {
                 }
                 else if (l_sReplace == "aiprofiles") {
                   l_sReplace = g_sAiProfileData;
+                }
+                else if (l_sReplace == "championship") {
+                  l_sReplace = g_sChampionshipData;
                 }
                 else {
                   l_sReplace = "<!-- Unkonw replacement " + l_sReplace + " -->";
