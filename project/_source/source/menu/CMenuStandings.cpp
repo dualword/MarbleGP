@@ -274,6 +274,9 @@ namespace dustbin {
               p->setVisible(false);
           }
 
+          if (l_pTournament != nullptr)
+            l_pTournament->saveToJSON();
+
           m_pAuto = new helpers::CAutoMenu(m_pDevice, this);
         }
 

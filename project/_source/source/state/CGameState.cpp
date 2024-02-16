@@ -591,8 +591,6 @@ namespace dustbin {
 
       m_pGlobal->getTournament()->finishCurrentRace();
 
-      m_pGlobal->getTournament()->saveToJSON();
-
       helpers::addToDebugLog("Clear vectors");
       m_mViewports.clear();
 

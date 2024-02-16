@@ -224,8 +224,6 @@ namespace dustbin {
             return std::wcstol(p1->m_sNumber.c_str(), nullptr, 10) < std::wcstol(p2->m_sNumber.c_str(), nullptr, 10);
           });
 
-          l_pTournament->saveToJSON();
-
           std::vector<gameclasses::SPlayer *>::iterator l_itPlr = l_pTournament->m_vPlayers.begin();
 
           for (int i = 1; i <= 16; i++) {

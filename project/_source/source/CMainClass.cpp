@@ -1078,23 +1078,6 @@ namespace dustbin {
   }
 
   /**
-  * End the current tournament
-  */
-  void CMainClass::endTournament() {
-    if (m_pTournament != nullptr) {
-      std::string l_sJSON = m_pTournament->toJSON();
-      std::string l_sName = helpers::ws2s(platform::portableGetDataPath()) + "tournament.json";
-
-      irr::io::IWriteFile *l_pFile = m_pFs->createAndWriteFile(l_sName.c_str());
-      l_pFile->write(l_sJSON.c_str(), l_sJSON.size());
-      l_pFile->drop();
-
-      delete m_pTournament;
-      m_pTournament = nullptr;
-    }
-  }
-
-  /**
   * This method is called to run the game. If a graphics change
   * is requested ("true" returned) it's necessary to create a new
   * Irrlicht device and pass it to the class instance

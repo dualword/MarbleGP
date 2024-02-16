@@ -258,8 +258,6 @@ namespace dustbin {
                   );
                   l_pTournament->startRace();
 
-                  l_pTournament->saveToJSON();
-
                   m_pState->getGlobal()->initNextRaceScreen();
 
                   platform::saveSettings();

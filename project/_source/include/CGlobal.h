@@ -336,11 +336,6 @@ namespace dustbin {
       */
       virtual gameclasses::STournament *getTournament() = 0;
 
-      /**
-      * End the current tournament
-      */
-      virtual void endTournament() = 0;
-
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app
