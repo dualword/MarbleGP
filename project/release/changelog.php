@@ -1,5 +1,11 @@
 <ul>
   <li>
+    <b>2024-02-16 [1.3 Build 249]</b>
+    <ul>
+      <li>Some minor fixes with the in-game graphics and UI</li>
+    </ul>
+  </li>
+  <li>
     <b>2024-02-04 [1.2 Build 248]</b>
     <ul>
       <li>Complete re-design of the in-game 3d graphics</li>
