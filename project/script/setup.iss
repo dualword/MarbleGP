@@ -8,7 +8,7 @@
 
 [Setup]
 AppName=MarbleGP
-AppVersion=1.1 Build 235
+AppVersion=1.3 Build 252
 WizardStyle=modern
 DefaultDirName={autopf}\DustbinGames\MarbleGP
 DefaultGroupName=DustbinGames\MarbleGP
@@ -29,6 +29,7 @@ ArchitecturesInstallIn64BitMode=x64
 [Files]
 Source: "..\..\MarbleGP\MarbleGP_Windows.exe"; DestDir: "{app}"
 Source: "..\..\MarbleGP\marblegp.dat"; DestDir: "{app}"
+Source: "..\..\MarbleGP\data\sounds\*.*"; DestDir: "{app}\data\sounds"
 
 [Icons]
 Name: "{group}\DustbinGames\MarbleGP"; Filename: "{app}\MarbleGP_Windows.exe"
