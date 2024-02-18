@@ -59,6 +59,23 @@ g_NewFile = open("../release/version.php", "w")
 g_NewFile.write("Version " + g_NewVersion)
 g_NewFile.close()
 
+g_File = open("setup.iss");
+g_Lines = g_File.readlines()
+g_File.close()
+
+g_Output = [ ]
+
+print("Updating setup.iss ...")
+for l_Line in g_Lines:
+  if l_Line.find("AppVersion=") != -1:
+    g_Output.append("AppVersion=" + g_NewVersion + "\n")
+  else:
+    g_Output.append(l_Line)
+    
+g_NewFile = open("setup.iss", "w")
+g_NewFile.writelines(g_Output)
+g_NewFile.close()
+
 print("Updating \"changelog.php\" ...")
 
 g_File = open("../release/changelog.php", "r")
