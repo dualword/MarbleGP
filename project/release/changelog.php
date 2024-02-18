@@ -1,5 +1,11 @@
 <ul>
   <li>
+    <b>2024-02-18 [1.3 Build 250]</b>
+    <ul>
+      <li>Applies some final touched for the 1.3 release</li>
+    </ul>
+  </li>
+  <li>
     <b>2024-02-16 [1.3 Build 249]</b>
     <ul>
       <li>Some minor fixes with the in-game graphics and UI</li>
