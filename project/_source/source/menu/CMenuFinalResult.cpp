@@ -213,6 +213,9 @@ namespace dustbin {
         virtual ~CMenuFinalResult() {
           if (CGlobal::getInstance() != nullptr)
             CGlobal::getInstance()->stopGameServer();
+
+          if (m_pShader != nullptr)
+            m_pShader->clear();
         }
 
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override {

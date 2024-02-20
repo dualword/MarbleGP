@@ -449,6 +449,7 @@ namespace dustbin {
       m_bFinished     (false),
       m_bRostrum      (false),
       m_bRanking      (true),
+      m_bDraw         (true),
       m_iFadeStart    (-1),
       m_iFinished     (-1),
       m_pPosFont      (nullptr),
@@ -710,69 +711,70 @@ namespace dustbin {
     }
 
     void CGameHUD::draw() {
+      if (m_bDraw) {
+        if (m_pColMgr != nullptr) {
+          // For Android we move these elements
+          // a little less down so that it fits
+          // the screen with it's larger fonts
+          irr::f32 l_fFactor =
+  #ifdef _ANDROID
+          1.5f;
+  #else
+          3.0f;
+  #endif
+          ;
 
-      if (m_pColMgr != nullptr) {
-        // For Android we move these elements
-        // a little less down so that it fits
-        // the screen with it's larger fonts
-        irr::f32 l_fFactor =
-#ifdef _ANDROID
-        1.5f;
-#else
-        3.0f;
-#endif
-        ;
+          if (m_pFade != nullptr) {
+            m_pFade->render(CHudFade::enCall::Start);
 
-        if (m_pFade != nullptr) {
-          m_pFade->render(CHudFade::enCall::Start);
-
-          if (m_pBanner != nullptr && m_bFinished && !m_bRostrum && m_pFade->getFadeFlag(CHudFade::enFade::Rostrum)) {
-            m_pBanner->setState(CHudBanner::enBanners::Laurel);
+            if (m_pBanner != nullptr && m_bFinished && !m_bRostrum && m_pFade->getFadeFlag(CHudFade::enFade::Rostrum)) {
+              m_pBanner->setState(CHudBanner::enBanners::Laurel);
+            }
           }
+
+          irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
+
+          if (m_pAiHelp != nullptr && m_bShowSpeed)
+            m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
+
+          l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
+          l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
+
+          irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
+
+          l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
+
+          if (!m_bRanking) {
+            if (m_pSpeedBar != nullptr && m_bShowSpeed)
+              l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
+
+            if (m_pSteering != nullptr && m_bShowCtrl && m_bShowSpeed)
+              l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bManRsp, m_cRect);
+
+            if (m_bShowSpeed)
+              renderNearbyRanking(l_cSpeed, l_cTotal);
+          }
+
+          if (m_bRanking)
+            for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++)
+              m_aRanking[i]->draw();
+
+          if (m_pFade != nullptr)
+            m_pFade->render(CHudFade::enCall::BeforeBanners);
+
+          if (m_pBanner != nullptr)
+            m_pBanner->render(m_cRect);
+
+          if (m_bShowLapTimes && m_pLapTimes != nullptr)
+            m_pLapTimes->render(m_iStep, m_cRect);
+
+          if (m_bShowRanking)
+            renderRanking();
         }
-
-        irr::core::vector2di l_cSpeed = m_pColMgr->getScreenCoordinatesFrom3DPosition(m_pPlayer->m_pMarble->m_pPositional->getAbsolutePosition() - l_fFactor * m_cUpVector, m_pPlayer->m_pMarble->m_pViewport->m_pCamera);
-
-        if (m_pAiHelp != nullptr && m_bShowSpeed)
-          m_pAiHelp->render(irr::core::position2di(m_cRect.getCenter().X, l_cSpeed.Y - m_cLabelSize.Height), m_pPlayer->m_pMarble->m_pViewport->m_cRect);
-
-        l_cSpeed.X = m_cRect.UpperLeftCorner.X + m_cRect.getWidth () * l_cSpeed.X / m_cScreen.Width;
-        l_cSpeed.Y = m_cRect.UpperLeftCorner.Y + m_cRect.getHeight() * l_cSpeed.Y / m_cScreen.Height;
-
-        irr::core::recti l_cTotal = irr::core::recti(l_cSpeed - irr::core::vector2di(m_cLabelSize.Width, m_cLabelSize.Height) / 2, m_cLabelSize);
-
-        l_cSpeed.Y = l_cTotal.UpperLeftCorner.Y;
-
-        if (!m_bRanking) {
-          if (m_pSpeedBar != nullptr && m_bShowSpeed)
-            l_cSpeed.Y += m_pSpeedBar->render(m_fVel, l_cSpeed, m_cRect);
-
-          if (m_pSteering != nullptr && m_bShowCtrl && m_bShowSpeed)
-            l_cSpeed.Y += m_pSteering->render(l_cSpeed, m_fSteer, m_fThrottle, m_bBrake, m_bManRsp, m_cRect);
-
-          if (m_bShowSpeed)
-            renderNearbyRanking(l_cSpeed, l_cTotal);
-        }
-
-        if (m_bRanking)
-          for (int i = 0; i < 16 && m_aRanking[i] != nullptr; i++)
-            m_aRanking[i]->draw();
 
         if (m_pFade != nullptr)
-          m_pFade->render(CHudFade::enCall::BeforeBanners);
-
-        if (m_pBanner != nullptr)
-          m_pBanner->render(m_cRect);
-
-        if (m_bShowLapTimes && m_pLapTimes != nullptr)
-          m_pLapTimes->render(m_iStep, m_cRect);
-
-        if (m_bShowRanking)
-          renderRanking();
+          m_pFade->render(CHudFade::enCall::End);
       }
-
-      if (m_pFade != nullptr)
-        m_pFade->render(CHudFade::enCall::End);
     }
 
     /**

@@ -75,6 +75,7 @@ namespace dustbin {
         bool                       m_bFinished;     /**< Has the marble this HUD belongs to finished the race ? */
         bool                       m_bRostrum;      /**< Is the rostrum shown and the fade-in finished? */
         bool                       m_bRanking;      /**< Show the ranking list */
+        bool                       m_bDraw;         /**< Draw the HUD? */
         int                        m_iFadeStart;    /**< The step when countdown 1 was received (and fading the grid starts) */
         int                        m_iFinished;     /**< Finished position of the player */
         irr::gui::IGUIFont        *m_pPosFont;      /**< Font for showing the finish position */
