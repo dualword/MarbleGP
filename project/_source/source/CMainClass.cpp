@@ -1078,6 +1078,15 @@ namespace dustbin {
   }
 
   /**
+  * This method is called when a progress update needs to be reported
+  * @param a_iProgress the progress ranging from 0 to 100
+  * @param a_sMessage the message
+  */
+  void CMainClass::onProgress(irr::u32 a_iProgress, const wchar_t* a_sMessage) {
+    printf("Progress: %i\n", a_iProgress);
+  }
+
+  /**
   * This method is called to run the game. If a graphics change
   * is requested ("true" returned) it's necessary to create a new
   * Irrlicht device and pass it to the class instance

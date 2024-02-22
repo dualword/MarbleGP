@@ -1,11 +1,12 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 
 #include <gameclasses/COffTrackDetector.h>
+#include <gui/IProgressCallback.h>
 
 namespace dustbin {
   namespace gameclasses {
-    COfftrackDetector::COfftrackDetector(irr::scene::ISceneManager* a_pSmgr) : m_fMinY(-1000.0f), m_pSmgr(a_pSmgr) {
-      calculateRespawnAreas();
+    COfftrackDetector::COfftrackDetector(irr::scene::ISceneManager* a_pSmgr, gui::IProgressCallback *a_pProgress) : m_fMinY(-1000.0f), m_pSmgr(a_pSmgr) {
+      calculateRespawnAreas(a_pProgress);
     }
 
     COfftrackDetector::~COfftrackDetector() {
@@ -70,7 +71,7 @@ namespace dustbin {
     /**
     * Calculate the respawn areas for the track
     */
-    void COfftrackDetector::calculateRespawnAreas() {
+    void COfftrackDetector::calculateRespawnAreas(gui::IProgressCallback *a_pProgress) {
       irr::scene::IMetaTriangleSelector *l_pSelector = m_pSmgr->createMetaTriangleSelector();
       irr::core::aabbox3df l_cBox;
       int l_iCount = 0;
@@ -94,6 +95,17 @@ namespace dustbin {
       m_cMin  = irr::core::vector2df(l_cBox.MinEdge.X, l_cBox.MinEdge.Z);
       m_cMax  = irr::core::vector2df(l_cBox.MaxEdge.X, l_cBox.MaxEdge.Z);
 
+      if (a_pProgress != nullptr) {
+        int l_iCount = (int)(l_cBox.getExtent().X / 10.0f * l_cBox.getExtent().Z / 10.0f);
+
+        a_pProgress->progressSetCurrentRange(
+          a_pProgress->progressGetMessage(),
+          a_pProgress->progressRangeMin(),
+          a_pProgress->progressRangeMax(),
+          l_iCount
+        );
+      }
+
       m_fMinY = l_cBox.MinEdge.Y;
 
       while (l_cMin.Z < l_cBox.MaxEdge.Z) {
@@ -102,6 +114,9 @@ namespace dustbin {
         int l_iX = 0;
 
         while (l_cMin.X < l_cBox.MaxEdge.X) {
+          if (a_pProgress != nullptr)
+            a_pProgress->progressInc();
+
           irr::core::aabbox3df l_cOther = irr::core::aabbox3df(l_cMin, l_cMax);
 
           irr::s32 l_iOut = 0;

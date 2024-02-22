@@ -5,6 +5,10 @@
 #include <vector>
 
 namespace dustbin {
+  namespace gui {
+    class IProgressCallback;
+  }
+
   namespace gameclasses {
     /**
     * @class COfftrackDetector
@@ -36,10 +40,10 @@ namespace dustbin {
         /**
         * Calculate the respawn areas for the track
         */
-        void calculateRespawnAreas();
+        void calculateRespawnAreas(gui::IProgressCallback *a_pProgress);
 
     public:
-        COfftrackDetector(irr::scene::ISceneManager *a_pSmgr);
+        COfftrackDetector(irr::scene::ISceneManager *a_pSmgr, gui::IProgressCallback *a_pProgress);
         ~COfftrackDetector();
 
         /**

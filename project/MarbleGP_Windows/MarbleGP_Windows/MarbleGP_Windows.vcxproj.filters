@@ -741,6 +741,12 @@
     <ClCompile Include="..\..\_source\source\gameclasses\COfftrackDetector.cpp">
       <Filter>Quelldateien\gameclasses</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CSceneLoader.cpp">
+      <Filter>Quelldateien\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\IProgressCallback.cpp">
+      <Filter>Quelldateien\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1216,6 +1222,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gameclasses\COffTrackDetector.h">
       <Filter>Headerdateien\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CSceneLoader.h">
+      <Filter>Headerdateien\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\IProgressCallback.h">
+      <Filter>Headerdateien\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

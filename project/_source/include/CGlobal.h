@@ -1,6 +1,7 @@
 // (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <gui/IProgressCallback.h>
 #include <data/CDataStructs.h>
 #include <state/IState.h>
 #include <irrlicht.h>
@@ -75,7 +76,7 @@ namespace dustbin {
   * This is the global base class that provides
   * access to some important data through it's singleton
   */
-  class CGlobal : public irr::IEventReceiver {
+  class CGlobal : public irr::IEventReceiver, public gui::IProgressCallback {
     protected:
       static CGlobal *m_pInstance;
 

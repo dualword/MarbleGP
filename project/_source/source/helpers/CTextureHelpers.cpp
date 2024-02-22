@@ -479,9 +479,21 @@ namespace dustbin {
       }
     }
 
-    void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode) {
+    /** 
+    * Add a node to the dustbin shader
+    * @param a_pShader the shader to add the node to
+    * @param a_pNode the node to add
+    * @param a_pProgress the progress callback
+    * @param a_iNodeCnt number for mesh scene nodes in the scene
+    * @return the nodes added to the shader
+    */
+    void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode, gui::IProgressCallback *a_pProgress, int a_iNodeCnt) {
       if (a_pShader != nullptr) {
         if (a_pNode->getType() == irr::scene::ESNT_MESH) {
+          if (a_pProgress != nullptr) {
+            a_pProgress->progressInc();
+          }
+
           shaders::enObjectType l_eType = shaders::enObjectType::Static;
 
           if (a_pNode->getParent()->getType() != irr::scene::ESNT_SCENE_MANAGER && a_pNode->getParent()->getParent()->getType() == (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_StartingGridScenenodeId)
@@ -515,7 +527,7 @@ namespace dustbin {
         }
 
         for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
-          addNodeToShader(a_pShader, *l_itChild);
+          addNodeToShader(a_pShader, *l_itChild, a_pProgress, a_iNodeCnt);
         }
       }
     }
@@ -568,6 +580,18 @@ namespace dustbin {
       }
 
       return l_iFlags;
+    }
+
+    /**
+    * Get the number of mesh scene nodes in the scene
+    * @param a_pNode the node
+    */
+    int countMeshSceneNodes(irr::scene::ISceneNode* a_pNode) {
+      int l_iCount = a_pNode->getType() == irr::scene::ESNT_MESH ? 1 : 0;
+      for (irr::core::list<irr::scene::ISceneNode*>::ConstIterator l_itChild = a_pNode->getChildren().begin(); l_itChild != a_pNode->getChildren().end(); l_itChild++) {
+        l_iCount += countMeshSceneNodes(*l_itChild);
+      }
+      return l_iCount;
     }
 
 #ifdef _OPENGL_ES

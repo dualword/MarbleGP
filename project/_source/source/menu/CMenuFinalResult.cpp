@@ -178,7 +178,12 @@ namespace dustbin {
           m_pShader = m_pState->getGlobal()->getShader();
           m_pShader->addLightCamera();
 
-          helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
+          helpers::addNodeToShader(
+            m_pShader, 
+            m_pSmgr->getRootSceneNode(), 
+            nullptr, 
+            helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode())
+          );
 
           m_pShader->clearShadowMaps();
 

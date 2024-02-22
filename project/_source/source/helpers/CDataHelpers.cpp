@@ -402,7 +402,12 @@ namespace dustbin {
       shaders::CDustbinShaders *l_pShader = CGlobal::getInstance()->getShader();
       l_pShader->addLightCamera();
 
-      helpers::addNodeToShader(l_pShader, l_pSmgr->getRootSceneNode());
+      helpers::addNodeToShader(
+        l_pShader, 
+        l_pSmgr->getRootSceneNode(), 
+        nullptr, 
+        helpers::countMeshSceneNodes(l_pSmgr->getRootSceneNode())
+      );
 
       std::wstring l_sHeadline = L"Framerate Detection";
 

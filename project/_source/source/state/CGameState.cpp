@@ -34,6 +34,7 @@
 
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CSceneLoader.h>
 
 #include <shaders/CDustbinShaders.h>
 #include <data/CDataStructs.h>
@@ -348,9 +349,11 @@ namespace dustbin {
       std::string l_sTrack = "data/levels/" + m_pRaceData->m_sTrack + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
+        m_pGlobal->progressSetCurrentRange(L"Loading Track", 0, 30, 0);
         m_pSmgr->clear();
         scenenodes::CSkyBoxFix* l_pFix = new scenenodes::CSkyBoxFix(m_pDrv, m_pSmgr, m_pFs, l_sTrack.c_str());
-        m_pSmgr->loadScene(l_sTrack.c_str());
+        // m_pSmgr->loadScene(l_sTrack.c_str());
+        helpers::loadScene(l_sTrack.c_str(), m_pSmgr, m_pFs, m_pDevice->getLogger(), m_pGlobal);
         l_pFix->hideOriginalSkybox(m_pSmgr->getRootSceneNode());
         delete l_pFix;
         addStaticCameras(m_pSmgr->getRootSceneNode());
@@ -361,7 +364,15 @@ namespace dustbin {
         m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
         printf("Render Flags: %i\n", m_iRenderFlags);
 
-        helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode());
+        m_pGlobal->progressSetCurrentRange(L"Preparing Shader", 30, 40, helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
+
+        printf("%i mesh scene nodes.\n", helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
+        helpers::addNodeToShader(
+          m_pShader, 
+          m_pSmgr->getRootSceneNode(), 
+          m_pGlobal, 
+          helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode())
+        );
 
         m_pShader->clearShadowMaps();
 
@@ -376,7 +387,8 @@ namespace dustbin {
           m_pShader->endShadowMaps();
         }
 
-        m_pOffTrack = new gameclasses::COfftrackDetector(m_pSmgr);
+        m_pGlobal->progressSetCurrentRange(L"Calculate track boundaries", 40, 90, 0);
+        m_pOffTrack = new gameclasses::COfftrackDetector(m_pSmgr, m_pGlobal);
       }
       else {
         handleError("Error while starting game state.", "The specified race track file was not found.");
@@ -468,7 +480,10 @@ namespace dustbin {
 
         int l_iIndex = 0;
 
+        m_pGlobal->progressSetCurrentRange(L"Assign Marbles", 90, 100, (irr::u32)m_pRaceData->m_vRanking.size());
+
         for (auto l_pPlr: m_pRaceData->m_vRanking) {
+          m_pGlobal->progressInc();
           irr::scene::ISceneNode *l_pMarble = assignMarbleToPlayer(l_pPlr->m_iPlayer, 10000 + l_iIndex);
           l_pPlr->m_iGridPos = l_iIndex + 1;
           m_pDynamics->assignPlayerToMarble(l_pPlr->m_pPlayer, l_pMarble);

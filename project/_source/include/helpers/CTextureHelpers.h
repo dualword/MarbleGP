@@ -13,6 +13,10 @@ namespace dustbin {
     class CDustbinShaders;
   }
 
+  namespace gui {
+    class IProgressCallback;
+  }
+
   namespace helpers {
     /**
     * Get an image from a string. The following prefixes are possible:
@@ -73,8 +77,10 @@ namespace dustbin {
     * Add a node to the dustbin shader
     * @param a_pShader the shader to add the node to
     * @param a_pNode the node to add
+    * @param a_pProgress the progress callback
+    * @param a_iNodeCnt number for mesh scene nodes in the scene
     */
-    void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode);
+    void addNodeToShader(shaders::CDustbinShaders *a_pShader, irr::scene::ISceneNode* a_pNode, gui::IProgressCallback *a_pProgress, int a_iNodeCnt);
 
     /**
     * Convert the shadow setting to the values for the shader
@@ -83,6 +89,12 @@ namespace dustbin {
     * @return the rendering flags for the per-frame shadow map update (transparent is never active here)
     */
     irr::u32 convertForShader(int a_iShadows, shaders::CDustbinShaders *a_pShader);
+
+    /**
+    * Get the number of mesh scene nodes in the scene
+    * @param a_pNode the node
+    */
+    int countMeshSceneNodes(irr::scene::ISceneNode* a_pNode);
 
 #ifdef _OPENGL_ES
     /**
