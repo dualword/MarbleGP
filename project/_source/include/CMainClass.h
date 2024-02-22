@@ -66,6 +66,9 @@ namespace dustbin {
       irr::video::ITexture    *m_pNextRaceScreen;     /**< The render target texture used for the "next race" screen */
       irr::video::ITexture    *m_pLogo;               /**< The "Dustbin::Game MarbleGP" Logo */
       irr::core::dimension2du  m_cLogo;               /**< The size of the rendered logo in the "next race" screen */
+      irr::core::recti         m_cProgOuter;          /**< The outer rectangle of the progress bar */
+      irr::core::recti         m_cProgInner;          /**< The inner rectangle of the progress bar */
+      irr::core::recti         m_cProgText;           /**< The text rectangle of the progress bar */
 
       std::string m_sDeviceName;    /**< The device name, used for the Android port */
 

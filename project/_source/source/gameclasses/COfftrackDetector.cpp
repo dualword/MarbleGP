@@ -107,6 +107,7 @@ namespace dustbin {
       }
 
       m_fMinY = l_cBox.MinEdge.Y;
+      m_fMinY = l_cBox.MinEdge.Y;
 
       while (l_cMin.Z < l_cBox.MaxEdge.Z) {
         m_vSectors.push_back(std::vector<bool>());

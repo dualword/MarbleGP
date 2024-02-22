@@ -923,6 +923,34 @@ namespace dustbin {
       m_pLogo = m_pDrv->getTexture((helpers::getIconFolder(m_pDrv->getScreenSize().Height) + "logo.png").c_str());
       m_cLogo = irr::core::dimension2du(m_pDrv->getScreenSize().Height / 5, m_pDrv->getScreenSize().Height / 5);
     }
+
+    l_pFont = getFont(
+      enFont::Regular,
+      m_pDrv->getScreenSize()
+    );
+
+    irr::u32 l_iHeight = l_pFont->getDimension(L"1234").Height;
+    l_iHeight = 5 * l_iHeight / 4;
+
+    irr::s32 l_iOffset = m_cProgInner.getHeight() / 10;
+    if (l_iOffset < 1)
+      l_iOffset = 1;
+
+    irr::core::dimension2du l_cSize = irr::core::dimension2du(m_pNextRaceScreen->getOriginalSize().Width - 2 * l_iOffset, l_iHeight);
+
+    m_cProgInner = irr::core::recti(
+      irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_pNextRaceScreen->getOriginalSize().Width / 2, m_pDrv->getScreenSize().Height / 3 + m_pNextRaceScreen->getOriginalSize().Height / 2 + l_cSize.Height),
+      l_cSize
+    );
+
+    m_cProgOuter = m_cProgInner;
+    m_cProgOuter.UpperLeftCorner  -= irr::core::vector2di(l_iOffset);
+    m_cProgOuter.LowerRightCorner += irr::core::vector2di(l_iOffset);
+
+    m_cProgText = irr::core::recti(
+      irr::core::vector2di(m_cProgOuter.UpperLeftCorner.X, m_cProgOuter.LowerRightCorner.Y),
+      l_cSize
+    );
   }
 
   /**
@@ -1083,7 +1111,27 @@ namespace dustbin {
   * @param a_sMessage the message
   */
   void CMainClass::onProgress(irr::u32 a_iProgress, const wchar_t* a_sMessage) {
-    printf("Progress: %i\n", a_iProgress);
+    m_pDrv->setRenderTarget(nullptr, false, false);
+    m_pDrv->beginScene(true, true);
+    drawNextRaceScreen(1.0f);
+
+    m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cProgOuter);
+
+    irr::core::recti l_cProg = m_cProgInner;
+    l_cProg.LowerRightCorner.X = l_cProg.UpperLeftCorner.X + l_cProg.getWidth() * a_iProgress / 100;
+
+    m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0x4a, 0x6d, 0xaf), l_cProg);
+
+    irr::gui::IGUIFont* l_pFont = getFont(
+      enFont::Regular,
+      m_pDrv->getScreenSize()
+    );
+
+    std::wstring l_sPercent = std::to_wstring(a_iProgress) + L"%";
+    l_pFont->draw(l_sPercent.c_str(), m_cProgInner, irr::video::SColor(0xFF, 0, 0, 0), true, true);
+
+    l_pFont->draw(a_sMessage, m_cProgText, irr::video::SColor(0xFF, 0x80, 0x80, 0xff), true, true);
+    m_pDrv->endScene();
   }
 
   /**

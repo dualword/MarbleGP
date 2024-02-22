@@ -349,7 +349,7 @@ namespace dustbin {
       std::string l_sTrack = "data/levels/" + m_pRaceData->m_sTrack + "/track.xml";
 
       if (m_pFs->existFile(l_sTrack.c_str())) {
-        m_pGlobal->progressSetCurrentRange(L"Loading Track", 0, 30, 0);
+        m_pGlobal->progressSetCurrentRange(L"Preparing Race", 0, 30, 0);
         m_pSmgr->clear();
         scenenodes::CSkyBoxFix* l_pFix = new scenenodes::CSkyBoxFix(m_pDrv, m_pSmgr, m_pFs, l_sTrack.c_str());
         // m_pSmgr->loadScene(l_sTrack.c_str());
@@ -364,7 +364,7 @@ namespace dustbin {
         m_iRenderFlags = helpers::convertForShader(m_cSettings.m_iShadows, m_pShader);
         printf("Render Flags: %i\n", m_iRenderFlags);
 
-        m_pGlobal->progressSetCurrentRange(L"Preparing Shader", 30, 40, helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
+        m_pGlobal->progressSetCurrentRange(L"Preparing Race", 30, 40, helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
 
         printf("%i mesh scene nodes.\n", helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
         helpers::addNodeToShader(
@@ -387,7 +387,7 @@ namespace dustbin {
           m_pShader->endShadowMaps();
         }
 
-        m_pGlobal->progressSetCurrentRange(L"Calculate track boundaries", 40, 90, 0);
+        m_pGlobal->progressSetCurrentRange(L"Preparing Race", 40, 90, 0);
         m_pOffTrack = new gameclasses::COfftrackDetector(m_pSmgr, m_pGlobal);
       }
       else {
@@ -480,7 +480,7 @@ namespace dustbin {
 
         int l_iIndex = 0;
 
-        m_pGlobal->progressSetCurrentRange(L"Assign Marbles", 90, 100, (irr::u32)m_pRaceData->m_vRanking.size());
+        m_pGlobal->progressSetCurrentRange(L"Preparing Race", 90, 100, (irr::u32)m_pRaceData->m_vRanking.size());
 
         for (auto l_pPlr: m_pRaceData->m_vRanking) {
           m_pGlobal->progressInc();
@@ -1392,6 +1392,8 @@ namespace dustbin {
           l_cPlayer->m_pController->moveGuiToFront();
         }
       }
+
+      m_pGlobal->progressSetCurrentRange(L"", 0, 0, 0);
     }
 
     /**
