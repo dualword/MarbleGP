@@ -1028,7 +1028,14 @@ namespace dustbin {
     }
 
     if (m_pLogo != nullptr) {
-      irr::core::vector2di l_cPos = irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_cLogo.Width / 2, (2 * m_pDrv->getScreenSize().Height / 3) - m_cLogo.Height / 2);
+      irr::core::vector2di l_cPos = irr::core::vector2di(
+        m_pDrv->getScreenSize().Width / 2 - m_cLogo.Width / 2,
+#ifdef _ANDROID
+        m_pDrv->getScreenSize().Height - m_cLogo.Height
+#else
+        (2 * m_pDrv->getScreenSize().Height / 3) - m_cLogo.Height / 2
+#endif
+      );
       irr::video::SColor l_aColor[] = {
         irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
         irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
