@@ -346,9 +346,9 @@ namespace dustbin {
         g_mPatterns[l_cPattern] = getBase64Image("data/patterns/" + l_cPattern);
       }
 
-      g_mPatterns["__frame"               ] = getBase64Image("data/textures/texture_top.png");
-      g_mPatterns["__number"              ] = getBase64Image("data/textures/one.png");
-      g_mPatterns["__numberglow"          ] = getBase64Image("data/textures/one_glow.png");
+      g_mPatterns["__frame"     ] = getBase64Image("data/textures/texture_top.png");
+      g_mPatterns["__number"    ] = getBase64Image("data/textures/one.png");
+      g_mPatterns["__numberglow"] = getBase64Image("data/textures/one_glow.png");
     }
 
     /**
