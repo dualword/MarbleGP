@@ -55,7 +55,7 @@ namespace dustbin {
     * @return the current value
     */
     irr::u32 IProgressCallback::progressGetCurrent() {
-      return m_iCount == 0 ? 100 : m_iCurrentMin + (m_iRange * m_iCurrent / m_iCount);
+      return m_iCount == 0 ? 0 : m_iCurrentMin + (m_iRange * m_iCurrent / m_iCount);
     }
 
     /**

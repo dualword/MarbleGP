@@ -459,6 +459,12 @@ namespace dustbin {
             case c_iFillGrid       : m_bFillGridAI      =               l_cSerializer.getS32() != 0; break;
           }
         }
+
+        if (m_eAutoFinish > enAutoFinish::AllAndAi)
+          m_eAutoFinish = enAutoFinish::AllAndAi;
+
+        if (m_eAutoFinish < enAutoFinish::AllPlayers)
+          m_eAutoFinish = enAutoFinish::AllPlayers;
       }
       else if (a_sSerialized != "") {
         printf("Invalid game settings data.\n");

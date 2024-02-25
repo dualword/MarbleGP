@@ -646,6 +646,7 @@ namespace dustbin {
         m_pPanelRndr = nullptr;
       }
 
+      m_pGlobal->progressSetCurrentRange(L"", 0, 100, 0);
       m_pShader = nullptr;
       helpers::addToDebugLog("CGameState::deactivate() }");
     }
@@ -1392,8 +1393,6 @@ namespace dustbin {
           l_cPlayer->m_pController->moveGuiToFront();
         }
       }
-
-      m_pGlobal->progressSetCurrentRange(L"", 0, 0, 0);
     }
 
     /**
