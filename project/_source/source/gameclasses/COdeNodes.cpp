@@ -1,4 +1,4 @@
-// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+// (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <gameclasses/ITriggerHandler.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CPhysicsNode.h>

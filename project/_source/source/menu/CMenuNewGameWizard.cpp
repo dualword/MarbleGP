@@ -1,4 +1,4 @@
-// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+// (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <menu/datahandlers/CDataHandler_SelectPlayers.h>
 #include <menu/datahandlers/CDataHandler_EditProfile.h>
 #include <menu/datahandlers/CDataHandler_Customize.h>

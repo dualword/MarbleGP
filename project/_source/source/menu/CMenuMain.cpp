@@ -1,4 +1,4 @@
-// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+// (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>

@@ -1,4 +1,4 @@
-// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+// (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <messages/CSerializer64.h>
 #include <gui/CButtonRenderer.h>
 #include <gameclasses/SPlayer.h>

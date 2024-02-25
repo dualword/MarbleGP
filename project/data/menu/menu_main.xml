@@ -266,7 +266,7 @@ Attribute Track: ""
     <attributes>
       <attribute key="Name" value="dustbin" />
       <attribute key="Id" value="23008" />
-      <attribute key="Caption" value="(w) 2019-2023 by Christian Keimel / Dustbin::Games" />
+      <attribute key="Caption" value="(w) 2019-2024 by Christian Keimel / Dustbin::Games" />
       <attribute key="HTextAlign" value="lowerRight" />
       <attribute key="VTextAlign" value="center" />
     </attributes>

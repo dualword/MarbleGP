@@ -1,4 +1,4 @@
-// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+// (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <helpers/CStringHelpers.h>
 #include <gui/CReactiveLabel.h>
 #include <state/IState.h>

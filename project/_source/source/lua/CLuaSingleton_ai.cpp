@@ -1,4 +1,4 @@
-// (w) 2020 - 2022 by Dustbin::Games / Christian Keimel
+// (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 
 #include <_generated/lua/CLuaSingleton_ai.h>
 #include <_generated/lua/CLuaScript_ai.h>
