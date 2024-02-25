@@ -90,7 +90,7 @@ for l_Line in g_Lines:
   if l_Line[:4] == "<ul>":
     l_Now =  date.today()
     print(l_Now)
-    g_Output.append("  <li>\n")
+    g_Output.append("  <li class=\"parent\">\n")
     g_Output.append("    <b>" + str(date.today()) + " [" + g_NewVersion + "]</b>\n")
     g_Output.append("    <ul>\n")
     g_Output.append("      <li>Put some release information here</li>\n")

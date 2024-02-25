@@ -1,117 +1,117 @@
 <ul>
-  <li>
+  <li class="parent">
     <b>2024-02-18 [1.3 Build 250]</b>
     <ul>
-      <li>Applies some final touched for the 1.3 release</li>
+      <li>Applied some final touches for the 1.3 release</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2024-02-16 [1.3 Build 249]</b>
-    <ul>
+    <ul class="child">
       <li>Some minor fixes with the in-game graphics and UI</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2024-02-04 [1.2 Build 248]</b>
-    <ul>
+    <ul class="child">
       <li>Complete re-design of the in-game 3d graphics</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-10-22 [1.2 Build 247]</b>
-    <ul>
+    <ul class="child">
       <li>&quot;New Game&quot; wizard finished</li>
       <li>Refactoring of network game finished</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-09-22 [1.1 Build 246]</b>
-    <ul>
+    <ul class="child">
       <li>First version of the &quot;New Game&quot; wizard for easier game setup</li>
       <li>First step refactoring the network game mode</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-09-05 [1.1 Build 243]</b>
-    <ul>
+    <ul class="child">
       <li>Added two new texture patterns</li>
       <li>Track &quot;Jump: Stepstones&quot; has been re-done</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-09-05 [1.1 Build 242]</b>
-    <ul>
+    <ul class="child">
       <li>Some fine-tuning and polishing</li>
       <li>Added a remove management functionality which allows some management using a web browser</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-08-11 [1.1 Build 241]</b>
-    <ul>
+    <ul class="child">
       <li>Dynamic signs before each jump showing whether or not the player rolls at the correct speed were enhanced</li>
       <li>Added new track &quot;Jump: Eight&quot;</li>
       <li>Fixed in-game sounds of the Windows version</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-08-05 [1.1 Build 240]</b>
-    <ul>
+    <ul class="child">
       <li>New traffic signs indicating the correct speed before a jump</li>
       <li>Two new tracks: &quot;Loop: Single&quot; and &quot;Loop: Double&quot;</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-07-17 [1.1 Build 239]</b>
-    <ul>
+    <ul class="child">
       <li>With the update the marble rolling get smoother</li>
       <li>Added two new tracks: &quot;Steep: Oval&quot; and &quot;Steep: Eight&quot;</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-07-17 [1.1 Build 238]</b>
-    <ul>
+    <ul class="child">
       <li>Fixed a bug with the auto-throttle feature being (in)active by random</li>
       <li>Little re-design of the in-game standings screen</li>
       <li>Track &quot;Flat: Oval&quot; redone</li>
       <li>Added some missing respawn triggers on the tracks &quot;Moving: The Gates&quot; and &quot;Moving: Four Obstacles&quot;</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-07-02 [1.1 Build 236]</b>
-    <ul>
+    <ul class="child">
       <li>Added icons with the starting numbers and color codes of all marbles to all lists during a championship for easier identification of the marbles</li>
       <li>Fixed an issue with the AI help which completely stops the marble before a jump if no speed limit is set</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-06-19 [1.1 Build 232]</b>
-    <ul>
+    <ul class="child">
       <li>More than 400 random names are now available</li>
       <li>Reduced the number of items shown during a race by the AI help (Steer Left, Steer Right, Go Faster / Slower)</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-06-10 [1.1 Build 231]</b>
-    <ul>
+    <ul class="child">
       <li>a virtual keyboard was added to the Android version of MarbleGP, available in the &quot;Edit Profiles&quot; dialog</li>
       <li>random names have been added when creating a new profile</li>
       <li>a random texture generator was added to the edit or add profile dialog</li>
       <li>16 names for AI controlled marbles have been added</li>
-      <li>a bug was fixed which prevented creating a new profile if all slots were filled, the last profile was deleted and a new one was added</li>dings dialog, as well as during a game pause</li>
+      <li>a bug was fixed which prevented creating a new profile if all slots were filled, the last profile was deleted and a new one was added</li>
       <li>more options were added to the selection of the classes of the AI marbles (Marble3, Marble3 + 2, Marble2, Marble2 + GP, MarbleGP, All Classes</li>
       <li>icons were added to identify the bots in the game. These icons are visible in the &quot;Fill Grid&quot; dialog, in the result menu and in the stan
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-06-02 [1.1 Build 229]</b>
-    <ul>
+    <ul class="child">
       <li>the tutorial was enhanced with more details on how to control the marble</li>
       <li>an &quot;auto throttle&quot; option was added to the controller which means that the marble always accelerates unless the player hits the brake</li>
     </ul>
   </li>
-  <li>
+  <li class="parent">
     <b>2023-05-28 [1.1 Build 226]</b>
-    <ul>
+    <ul class="child">
       <li>an enhanced touch and gyroscope controller was implemented. This new controller does always accelerate the marble unless the player brakes</li>
       <li>the championship result scene was updated so that it's visually easier to distinguish between the first three places</li>
     </ul>
