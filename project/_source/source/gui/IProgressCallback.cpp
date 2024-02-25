@@ -51,16 +51,34 @@ namespace dustbin {
     }
 
     /**
-    * Update the current value
+    * Get the current value
+    * @return the current value
     */
-    void IProgressCallback::progressInc() {
-      if (m_iCurrent < m_iCount) {
-        m_iCurrent++;
+    irr::u32 IProgressCallback::progressGetCurrent() {
+      return m_iCount == 0 ? 100 : m_iCurrentMin + (m_iRange * m_iCurrent / m_iCount);
+    }
+
+    /**
+    * Update the current value
+    * @param a_iInc the value to increase the current value by
+    */
+    void IProgressCallback::progressInc(irr::u32 a_iInc) {
+      if (m_iCurrent + a_iInc <= m_iCount) {
+        m_iCurrent += a_iInc;
         irr::u32 l_iProgress = m_iCurrentMin + (m_iRange * m_iCurrent / m_iCount);
 
         if ((irr::s32)l_iProgress != m_iValue) {
-          onProgress(l_iProgress, m_sMessage.c_str());
           m_iValue = l_iProgress;
+          onProgress();
+        }
+      }
+      else {
+        m_iCurrent = m_iCount;
+        irr::u32 l_iProgress = m_iCurrentMin + (m_iRange * m_iCurrent / m_iCount);
+
+        if ((irr::s32)l_iProgress != m_iValue) {
+          m_iValue = l_iProgress;
+          onProgress();
         }
       }
     }

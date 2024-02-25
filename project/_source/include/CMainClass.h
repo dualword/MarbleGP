@@ -380,10 +380,8 @@ namespace dustbin {
 
       /**
       * This method is called when a progress update needs to be reported
-      * @param a_iProgress the progress ranging from 0 to 100
-      * @param a_sMessage the message
       */
-      virtual void onProgress(irr::u32 a_iProgress, const wchar_t *a_sMessage) override;
+      virtual void onProgress() override;
 
 #ifdef _ANDROID
       /**

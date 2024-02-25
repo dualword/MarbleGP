@@ -1019,11 +1019,12 @@ namespace dustbin {
   * @param a_fAlpha the transparency of the next race screen [0..1]
   */
   void CMainClass::drawNextRaceScreen(irr::f32 a_fAlpha) {
-    m_pDrv->draw2DRectangle(irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 0, 0, 0), irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()));
+    irr::u32 l_iAlpha = (irr::u32)(255.0f * a_fAlpha);
+    m_pDrv->draw2DRectangle(irr::video::SColor(l_iAlpha, 0, 0, 0), irr::core::recti(irr::core::position2di(0, 0), m_pDrv->getScreenSize()));
 
     if (m_pNextRaceScreen != nullptr) {
       irr::core::vector2di l_cPos = irr::core::vector2di(m_pDrv->getScreenSize().Width / 2 - m_pNextRaceScreen->getOriginalSize().Width / 2, m_pDrv->getScreenSize().Height / 3 - m_pNextRaceScreen->getOriginalSize().Height / 2);
-      irr::video::SColor l_cColor = irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255);
+      irr::video::SColor l_cColor = irr::video::SColor(l_iAlpha, 255, 255, 255);
       m_pDrv->draw2DImage(m_pNextRaceScreen, l_cPos, irr::core::recti(irr::core::position2di(0, 0), m_pNextRaceScreen->getOriginalSize()), (const irr::core::recti *)nullptr, l_cColor, true);
     }
 
@@ -1037,13 +1038,30 @@ namespace dustbin {
 #endif
       );
       irr::video::SColor l_aColor[] = {
-        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
-        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
-        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255),
-        irr::video::SColor((irr::u32)(255.0f * a_fAlpha), 255, 255, 255)
+        irr::video::SColor(l_iAlpha, 255, 255, 255),
+        irr::video::SColor(l_iAlpha, 255, 255, 255),
+        irr::video::SColor(l_iAlpha, 255, 255, 255),
+        irr::video::SColor(l_iAlpha, 255, 255, 255)
       };
 
       m_pDrv->draw2DImage(m_pLogo, irr::core::recti(l_cPos, m_cLogo), irr::core::recti(irr::core::vector2di(0, 0), m_pLogo->getOriginalSize()), nullptr, l_aColor, true);
+
+      m_pDrv->draw2DRectangle(irr::video::SColor(l_iAlpha, 0xFF, 0xFF, 0xFF), m_cProgOuter);
+
+      irr::core::recti l_cProg = m_cProgInner;
+      l_cProg.LowerRightCorner.X = l_cProg.UpperLeftCorner.X + l_cProg.getWidth() * progressGetCurrent() / 100;
+
+      m_pDrv->draw2DRectangle(irr::video::SColor(l_iAlpha, 0x4a, 0x6d, 0xaf), l_cProg);
+
+      irr::gui::IGUIFont* l_pFont = getFont(
+        enFont::Regular,
+        m_pDrv->getScreenSize()
+      );
+
+      std::wstring l_sPercent = std::to_wstring(progressGetCurrent()) + L"%";
+      l_pFont->draw(l_sPercent.c_str(), m_cProgInner, irr::video::SColor(l_iAlpha, 0, 0, 0), true, true);
+
+      l_pFont->draw(progressGetMessage(), m_cProgText, irr::video::SColor(l_iAlpha, 0x80, 0x80, 0xff), true, true);
     }
   }
 
@@ -1117,27 +1135,10 @@ namespace dustbin {
   * @param a_iProgress the progress ranging from 0 to 100
   * @param a_sMessage the message
   */
-  void CMainClass::onProgress(irr::u32 a_iProgress, const wchar_t* a_sMessage) {
+  void CMainClass::onProgress() {
     m_pDrv->setRenderTarget(nullptr, false, false);
     m_pDrv->beginScene(true, true);
     drawNextRaceScreen(1.0f);
-
-    m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF), m_cProgOuter);
-
-    irr::core::recti l_cProg = m_cProgInner;
-    l_cProg.LowerRightCorner.X = l_cProg.UpperLeftCorner.X + l_cProg.getWidth() * a_iProgress / 100;
-
-    m_pDrv->draw2DRectangle(irr::video::SColor(0xFF, 0x4a, 0x6d, 0xaf), l_cProg);
-
-    irr::gui::IGUIFont* l_pFont = getFont(
-      enFont::Regular,
-      m_pDrv->getScreenSize()
-    );
-
-    std::wstring l_sPercent = std::to_wstring(a_iProgress) + L"%";
-    l_pFont->draw(l_sPercent.c_str(), m_cProgInner, irr::video::SColor(0xFF, 0, 0, 0), true, true);
-
-    l_pFont->draw(a_sMessage, m_cProgText, irr::video::SColor(0xFF, 0x80, 0x80, 0xff), true, true);
     m_pDrv->endScene();
   }
 

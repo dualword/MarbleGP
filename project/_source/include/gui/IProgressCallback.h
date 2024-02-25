@@ -55,15 +55,20 @@ namespace dustbin {
 
         /**
         * Update the current value
+        * @param a_iInc the value to increase the current value by
         */
-        void progressInc();
+        void progressInc(irr::u32 a_iInc = 1);
+
+        /**
+        * Get the current value
+        * @return the current value
+        */
+        irr::u32 progressGetCurrent();
 
         /**
         * This method is called when a progress update needs to be reported
-        * @param a_iProgress the progress ranging from 0 to 100
-        * @param a_sMessage the message
         */
-        virtual void onProgress(irr::u32 a_iProgress, const wchar_t *a_sMessage) = 0;
+        virtual void onProgress() = 0;
     };
   }
 }
