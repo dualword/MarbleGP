@@ -48,11 +48,11 @@ namespace dustbin {
 
         /**
         * Convert a number of steps to a time string
-        * @param a_iSteps the number of steps to conver
+        * @param a_iTime The time to convert in 1/100th seconds
         * @param a_bSign always add a sign, even for positive numbers
         * @return string representation of the time
         */
-        std::wstring convertToTime(irr::s32 a_iSteps, bool a_bSign);
+        std::wstring convertToTime(irr::s32 a_iTime, bool a_bSign);
 
       public:
         /**

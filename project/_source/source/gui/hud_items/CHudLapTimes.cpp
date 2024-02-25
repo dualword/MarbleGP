@@ -72,17 +72,15 @@ namespace dustbin {
 
     /**
     * Convert a number of steps to a time string
-    * @param a_iSteps the number of steps to convert
+    * @param a_iTime The time to convert in 1/100th seconds
     * @return string representation of the time
     */
-    std::wstring CHudLapTimes::convertToTime(irr::s32 a_iSteps, bool a_bSign) {
-      irr::s32 l_iTime = (irr::s32)(a_iSteps / 1.2f);
+    std::wstring CHudLapTimes::convertToTime(irr::s32 a_iTime, bool a_bSign) {
+      bool l_bNegative = a_iTime < 0;
 
-      bool l_bNegative = l_iTime < 0;
-
-      irr::s32 l_iHundrts = std::abs(l_iTime % 100); l_iTime /= 100;
-      irr::s32 l_iSeconds = std::abs(l_iTime %  60); l_iTime /=  60;
-      irr::s32 l_iMinutes = std::abs(l_iTime);
+      irr::s32 l_iHundrts = std::abs(a_iTime % 100); a_iTime /= 100;
+      irr::s32 l_iSeconds = std::abs(a_iTime %  60); a_iTime /=  60;
+      irr::s32 l_iMinutes = std::abs(a_iTime);
 
       std::wstring l_sHundrts = std::to_wstring(l_iHundrts); while (l_sHundrts.size() < 2) l_sHundrts = L"0" + l_sHundrts;
       std::wstring l_sSeconds = std::to_wstring(l_iSeconds); if (l_iMinutes > 0) while (l_sSeconds.size() < 2) l_sSeconds = L"0" + l_sSeconds;
@@ -111,23 +109,20 @@ namespace dustbin {
     */
     void CHudLapTimes::onLapStart(int a_iStep, int a_iMarble, int a_iLapNo) {
       int l_iIndex = a_iMarble - 10000;
+      int l_iTime  = 5 * a_iStep / 6;
 
       if (l_iIndex >= 0 && l_iIndex < 16) {
         if (a_iMarble == m_iMarble) {
           if (m_aLapStart[l_iIndex] != -1) {
-            m_iLastLap  = a_iStep - m_aLapStart[l_iIndex];
-
-            // if (m_iBestLap != -1) {
-            //   wprintf(L"%s / %s ==> %s\n", convertToTime(m_iLastLap, false).c_str(), convertToTime(m_iBestLap, false).c_str(), convertToTime(m_iLastLap - m_iBestLap, true).c_str());
-            // }
+            m_iLastLap  = l_iTime - m_aLapStart[l_iIndex];
           }
-          m_iStartLap = a_iStep;
+          m_iStartLap = l_iTime;
         }
 
-        if ((m_bFirstLap && a_iLapNo > 1) || a_iStep - m_aLapStart[l_iIndex] < m_iBestLap) {
+        if ((m_bFirstLap && a_iLapNo > 1) || l_iTime - m_aLapStart[l_iIndex] < m_iBestLap) {
           m_vBest = m_aSplits[l_iIndex];
           m_iBestOld = m_iBestLap;
-          m_iBestLap = a_iStep - m_aLapStart[l_iIndex];
+          m_iBestLap = l_iTime - m_aLapStart[l_iIndex];
           m_pBest = m_aPlayers[l_iIndex]->m_pPlayer;
           m_sBest = m_pBest->m_sWName;
 
@@ -135,7 +130,7 @@ namespace dustbin {
             m_sBest = m_sBest.substr(0, m_sBest.find_last_of(L'|'));
         }
 
-        m_aLapStart[l_iIndex] = a_iStep;
+        m_aLapStart[l_iIndex] = l_iTime;
         m_aSplits  [l_iIndex].clear();
         m_bFirstLap = a_iLapNo <= 1;
       }
@@ -157,14 +152,14 @@ namespace dustbin {
     * @param a_iMarble ID of the marble
     */
     void CHudLapTimes::onCheckpoint(int a_iStep, int a_iMarble) {
+      int l_iTime = 5 * a_iStep / 6;
+
       if (a_iMarble == m_iMarble)
-        m_iLastCp = a_iStep;
+        m_iLastCp = l_iTime;
 
       int l_iIndex = a_iMarble - 10000;
-      if (m_aLapStart[l_iIndex] != -1 && m_aLapStart[l_iIndex] != a_iStep) {
-        m_aSplits[l_iIndex].push_back(a_iStep - m_aLapStart[l_iIndex]);
-        if (a_iMarble == m_iMarble) {
-        }
+      if (m_aLapStart[l_iIndex] != -1) {
+        m_aSplits[l_iIndex].push_back(l_iTime - m_aLapStart[l_iIndex]);
 
         if (m_bFirstLap) {
           if (m_aSplits[l_iIndex].size() > m_vBest.size()) {
@@ -181,6 +176,7 @@ namespace dustbin {
     */
     void CHudLapTimes::render(int a_iStep, const irr::core::recti &a_cClip) {
       irr::core::position2di l_cLapTimePos = m_cPos;
+      int l_iHuns = 5 * a_iStep / 6;
 
 #ifdef _ANDROID
       l_cLapTimePos.Y += m_iOffset;
@@ -191,7 +187,7 @@ namespace dustbin {
       l_vRows.push_back(std::make_tuple(
         l_cLapTimePos, 
         L" Racetime: ", 
-        convertToTime(m_iFinished == -1 ? a_iStep : m_iFinished, false), 
+        convertToTime(m_iFinished == -1 ? l_iHuns : m_iFinished, false), 
         irr::video::SColor(128, 255, 255, 192), 
         irr::video::SColor(255,   0,   0,   0)
       ));
@@ -200,12 +196,12 @@ namespace dustbin {
 
       if (m_pPlayer != nullptr && l_iIndex >= 0 && l_iIndex < 16) {
         int l_iTime    = m_aSplits[l_iIndex].size() > 0 ? m_aSplits[l_iIndex].back() : 0;
-        int l_iLapTime = a_iStep - m_iStartLap;
+        int l_iLapTime = l_iHuns - m_iStartLap;
 
         if (m_iStartLap != -1) {
           l_cLapTimePos.Y += m_iOffset;
 
-          if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 120 && (!m_bFirstLap || (m_vBest.size() >= m_aSplits[l_iIndex].size() && m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] != 0))) {
+          if (l_iTime > 1 && m_iLastCp >= 0 && l_iHuns - m_iLastCp < 100 && (!m_bFirstLap || (m_vBest.size() >= m_aSplits[l_iIndex].size() && m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] != 0))) {
             int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
 
             irr::video::SColor l_cText = l_iDiff >= 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
@@ -218,7 +214,7 @@ namespace dustbin {
               l_cText
             ));
           }
-          else if (l_iTime > 1 && m_iLastCp >= 0 && a_iStep - m_iLastCp < 240) {
+          else if (l_iTime > 1 && m_iLastCp >= 0 && l_iHuns - m_iLastCp < 200) {
             int l_iDiff = m_vBest.size() >= m_aSplits[l_iIndex].size() ? m_aSplits[l_iIndex].back() - m_vBest[m_aSplits[l_iIndex].size() - 1] : 0;
             
             irr::video::SColor l_cText = 
@@ -247,7 +243,7 @@ namespace dustbin {
 
           l_cLapTimePos.Y += m_iOffset;
 
-          if (a_iStep - m_iStartLap < 240 && (m_iLastLap > m_iBestLap || m_iBestOld != -1)) {
+          if (l_iHuns - m_iStartLap < 200 && (m_iLastLap > m_iBestLap || m_iBestOld != -1)) {
             int l_iDiff = m_iLastLap > m_iBestLap ? m_iLastLap - m_iBestLap : m_iLastLap - m_iBestOld;
 
             irr::video::SColor l_cText = l_iDiff > 0 ? irr::video::SColor(255, 255, 255, 128) : irr::video::SColor(255, 128, 255, 128);
