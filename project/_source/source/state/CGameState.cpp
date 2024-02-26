@@ -714,6 +714,7 @@ namespace dustbin {
         if (!a_cEvent.KeyInput.PressedDown) {
           if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
             sendCancelrace(m_pOutputQueue);
+            m_pRaceData->m_bCanceled = true;
             l_bRet = true;
           }
         }

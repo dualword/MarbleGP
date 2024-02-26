@@ -505,6 +505,7 @@ namespace dustbin {
       m_sName      (a_sTrackName ),
       m_sInfo      (a_sInfo      ), 
       m_iLaps      (a_iLaps      ), 
+      m_bCanceled  (false        ),
       m_pTournament(a_pTournament) 
     {
     }
@@ -737,9 +738,29 @@ namespace dustbin {
     }
 
     /**
+    * Was this race cancelled?
+    * @return true if this race was cancelled
+    */
+    bool SRace::wasRaceCancelled() {
+      for (std::vector<SRaceData *>::iterator l_itPlr = m_vRanking.begin() + 1; l_itPlr != m_vRanking.end(); l_itPlr++) {
+        if ((*l_itPlr)->m_vLapCheckpoints.size() == 0) {
+          m_bCanceled = true;
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    /**
     * Finish the race, i.e. finish the current lap for all players
     */
     void SRace::finishRace() {
+      if (m_bCanceled) {
+        printf("Race was cancelled.\n");
+        return;
+      }
+
       printf("SRace::finishRace\n");
       updateRanking();
 
@@ -830,6 +851,9 @@ namespace dustbin {
     * @param a_iRace the race number
     */
     void SStandings::addRaceResult(SRace* a_pRace, int a_iRace) {
+      if (a_pRace->m_bCanceled) {
+        printf("Race cancelled, result not added.\n");
+      }
       for (auto l_pRaceData : a_pRace->m_vRanking) {
         if (l_pRaceData->m_pPlayer->m_iPlayer == m_iPlayer) {
           int l_iScoreTable[16][16] = {

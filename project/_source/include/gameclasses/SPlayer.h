@@ -200,6 +200,8 @@ namespace dustbin {
 
       int m_iLaps;      /**< The number of laps of the race */
 
+      bool m_bCanceled;    /**< Was this race cancelled? */
+
       std::vector<SPlayer   *> m_vPlayers;    /**< The players of the race */
       std::vector<SRaceData *> m_vRanking;    /**< The ranking of the race */
 
@@ -256,6 +258,12 @@ namespace dustbin {
       * Finish the race, i.e. finish the current lap for all players
       */
       void finishRace();
+
+      /**
+      * Was this race cancelled?
+      * @return true if this race was cancelled
+      */
+      bool wasRaceCancelled();
 
       /**
       * Serialize the race to a JSON string
