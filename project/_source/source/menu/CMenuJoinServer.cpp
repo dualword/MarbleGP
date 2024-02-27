@@ -293,6 +293,15 @@ namespace dustbin {
 
                 for (auto l_pPlayer: m_pTournament->m_vPlayers) {
                   if (l_pPlayer->m_iPlayer == p->getplayerid() && l_pPlayer->m_sTexture.find("number=") == std::string::npos) {
+                    std::string l_sType = "";
+                    std::map<std::string, std::string> l_mParams;
+
+                    l_mParams = helpers::parseParameters(l_sType, p->gettexture());
+
+                    if (l_mParams.find("number") != l_mParams.end()) {
+                      l_pPlayer->m_sNumber = helpers::s2ws(l_mParams["number"]);
+                    }
+
                     l_pPlayer->m_sTexture = p->gettexture();
                     updatePlayerList();
                     break;
