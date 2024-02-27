@@ -10,7 +10,7 @@
 
 namespace dustbin {
   namespace network {
-    const int c_iSendInterval = 30;
+    const int c_iSendInterval = 12;
 
     CNetBase::CNetBase(CGlobal* a_pGlobal) :
       m_pGlobal   (a_pGlobal),
