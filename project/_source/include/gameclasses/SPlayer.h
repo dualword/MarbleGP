@@ -260,12 +260,6 @@ namespace dustbin {
       void finishRace();
 
       /**
-      * Was this race cancelled?
-      * @return true if this race was cancelled
-      */
-      bool wasRaceCancelled();
-
-      /**
       * Serialize the race to a JSON string
       * @return a JSON string
       */
