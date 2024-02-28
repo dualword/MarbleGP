@@ -62,6 +62,8 @@ namespace dustbin {
         irr::s32 m_iPlayers;      /**< Number of app players (incl. AI) */
         irr::s32 m_iHuman;        /**< Number of all human (non-AI) players */
 
+        bool m_bServerStep;   /**< A step message from the server was received, i.e. we (as a client) start counting */
+
         std::chrono::high_resolution_clock::time_point m_cNextStep;
 
         IGameLogic *m_pGameLogic;

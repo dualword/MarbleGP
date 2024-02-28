@@ -740,7 +740,8 @@ namespace dustbin {
 
         sendStepmsg(m_pWorld->m_iWorldStep, m_pOutputQueue);
 
-        m_pWorld->m_iWorldStep++;
+        if (!m_bNetworkClient || m_bServerStep)
+          m_pWorld->m_iWorldStep++;
 
         if (m_pGameLogic != nullptr)
           m_pGameLogic->onStep(m_pWorld->m_iWorldStep);
@@ -828,6 +829,7 @@ namespace dustbin {
     * @param a_StepNo The step received from the server
     */
     void CDynamicThread::onStepupdate(irr::s32 a_StepNo) {
+      m_bServerStep = true;
       if (m_pWorld != nullptr && m_bNetworkClient) {
         m_pWorld->m_iWorldStep = a_StepNo;
       }
@@ -915,6 +917,7 @@ namespace dustbin {
       m_fGridAngle    (0.0f),
       m_iPlayers      (0),
       m_iHuman        (0),
+      m_bServerStep   (false),
       m_pGameLogic    (nullptr),
       m_pRostrumNode  (nullptr),
       m_pLuaScript    (nullptr),
