@@ -172,7 +172,7 @@ namespace dustbin {
     */
     void CGameClient::stateChanged(const std::string& a_sState) {
       messages::CStateChanged l_cMsg = messages::CStateChanged(a_sState);
-      broadcastMessage(&l_cMsg, true);
+      broadcastMessage(&l_cMsg);
     }
 
 

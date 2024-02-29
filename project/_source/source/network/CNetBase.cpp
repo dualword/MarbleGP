@@ -61,15 +61,9 @@ namespace dustbin {
                 break;
               }
 
-              case messages::enMessageIDs::ObjectMoved:
-                /*if (m_bSendMoved && l_bSend) {
-                  broadcastMessage(l_pMsg, true);
-                }*/
-                break;
-
               case messages::enMessageIDs::JointSetPosition:
                 if (m_bSendMoved)
-                  broadcastMessage(l_pMsg, true);
+                  broadcastMessage(l_pMsg);
                 break;
 
               case messages::enMessageIDs::Checkpoint: 
@@ -85,7 +79,7 @@ namespace dustbin {
                 int l_iIndex = getMarbleId(l_pMsg) - 10000;
 
                 if (l_iIndex >= 0 && l_iIndex < 16 && std::get<0>(m_aMyMarbles[l_iIndex]) != -1) {
-                  broadcastMessage(l_pMsg, true);
+                  broadcastMessage(l_pMsg);
                 }
                 break;
               }
@@ -97,8 +91,7 @@ namespace dustbin {
                 if (l_iIndex >= 0 && l_iIndex < 16) {
                   int l_iLast = std::get<0>(m_aMyMarbles[l_iIndex]);
                   if (marbleMessageNecessary(l_iIndex, l_pMove)) {
-                    // printf("My Marble: send update (%i, %.2f | %i)\n", l_iIndex, float(std::get<0>(m_aMyMarbles[l_iIndex]) - l_iLast) / 120.0f, std::get<0>(m_aMyMarbles[l_iIndex]) - l_iLast);
-                    broadcastMessage(l_pMsg, true);
+                    broadcastMessage(l_pMsg);
                   }
                 }
                 break;
@@ -106,7 +99,7 @@ namespace dustbin {
 
               default:
                 if (l_bSend)
-                  broadcastMessage(l_pMsg, true);
+                  broadcastMessage(l_pMsg);
                 break;
             }
 
@@ -186,15 +179,14 @@ namespace dustbin {
     /**
     * Broadcast a message
     * @param a_pMessage the message to broadcast
-    * @param a_bReliable should the message be sent reliable?
     */
-    void CNetBase::broadcastMessage(messages::IMessage* a_pMessage, bool a_bReliable) {
+    void CNetBase::broadcastMessage(messages::IMessage* a_pMessage) {
       messages::CSerializer64 l_cSerializer;
       a_pMessage->serialize(&l_cSerializer);
       std::string l_sMsg = l_cSerializer.getMessageAsString();
 
-      ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, a_bReliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
-      enet_host_broadcast(m_pHost, a_bReliable ? 0 : 1, p);
+      ENetPacket *p = enet_packet_create(l_sMsg.c_str(), l_sMsg.size() + 1, ENET_PACKET_FLAG_RELIABLE);
+      enet_host_broadcast(m_pHost, 0, p);
 
       enet_host_flush(m_pHost);
     }

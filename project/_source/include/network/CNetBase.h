@@ -76,9 +76,8 @@ namespace dustbin {
         /**
         * Broadcast a message
         * @param a_pMessage the message to broadcast
-        * @param a_bReliable should the message be sent reliable?
         */
-        void broadcastMessage(messages::IMessage *a_pMessage, bool a_bReliable);
+        void broadcastMessage(messages::IMessage *a_pMessage);
 
         /**
         * Send a message to one specific peer

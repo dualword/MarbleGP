@@ -101,7 +101,7 @@ namespace dustbin {
     */
     void CGameServer::sendGlobalData(const std::string& a_sKey, const std::string &a_sValue) {
       messages::CSetGlobalData l_cMsg = messages::CSetGlobalData(a_sKey, a_sValue);
-      broadcastMessage(&l_cMsg, true);
+      broadcastMessage(&l_cMsg);
     }
 
     /**
@@ -110,7 +110,7 @@ namespace dustbin {
     */
     void CGameServer::changeState(const std::string& a_sNewState) {
       messages::CChangeState l_cMsg = messages::CChangeState(a_sNewState);
-      broadcastMessage(&l_cMsg, true);
+      broadcastMessage(&l_cMsg);
     }
 
 
@@ -150,7 +150,7 @@ namespace dustbin {
             for (std::vector<int>::iterator it = m_mPlayerMap[a_cEvent->peer].begin(); it != m_mPlayerMap[a_cEvent->peer].end(); it++) {
               printf("Remove player #%i\n", *it);
               messages::CPlayerRemoved l_cRemove = messages::CPlayerRemoved(*it);
-              broadcastMessage(&l_cRemove, true);
+              broadcastMessage(&l_cRemove);
               m_pOutputQueue->postMessage(&l_cRemove);
 
               if (!m_bConnectionAllowed)
@@ -274,7 +274,7 @@ namespace dustbin {
           case messages::enMessageIDs::PlayerListEnd: {
             for (std::vector<gameclasses::SPlayer>::iterator it = m_vPlayers.begin(); it != m_vPlayers.end(); it++) {
               messages::CRacePlayer l_cPlayer = messages::CRacePlayer((*it).m_iPlayer, (*it).m_sName, (*it).m_sTexture, (*it).m_sShortName);
-              broadcastMessage(&l_cPlayer, true);
+              broadcastMessage(&l_cPlayer);
             }
 
             return true;
@@ -293,7 +293,7 @@ namespace dustbin {
           case messages::enMessageIDs::MarbleMoved: {
             messages::CMarbleMoved *p = reinterpret_cast<messages::CMarbleMoved *>(a_pMessage);
             if (std::get<0>(m_aMyMarbles[p->m_ObjectId - 10000]) == -1)
-              broadcastMessage(a_pMessage, true);
+              broadcastMessage(a_pMessage);
             break;
           }
 
@@ -304,7 +304,7 @@ namespace dustbin {
             int l_iMarble = getMarbleId(a_pMessage) - 10000;
 
             if (l_iMarble >= 0 && l_iMarble < 16 && std::get<0>(m_aMyMarbles[l_iMarble]) == -1)
-              broadcastMessage(a_pMessage, true);
+              broadcastMessage(a_pMessage);
 
             break;
           }
@@ -333,7 +333,7 @@ namespace dustbin {
             for (std::vector<int>::iterator it = m_vDisconnected.begin(); it != m_vDisconnected.end(); it++) {
               messages::CPlayerRemoved l_cRemove = messages::CPlayerRemoved(*it);
               printf("Game Server: Remove player %i\n", *it);
-              broadcastMessage(&l_cRemove, true);
+              broadcastMessage(&l_cRemove);
               m_pOutputQueue->postMessage(&l_cRemove);
             }
           }
@@ -344,7 +344,7 @@ namespace dustbin {
           if (m_bSendMoved) {
             messages::CStepMsg *p = reinterpret_cast<messages::CStepMsg *>(a_pMsg);
             messages::CStepUpdate l_cUpdate = messages::CStepUpdate(p->getStepNo());
-            broadcastMessage(&l_cUpdate, true);
+            broadcastMessage(&l_cUpdate);
           }
           break;
         }
