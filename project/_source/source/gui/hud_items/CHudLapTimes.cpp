@@ -54,6 +54,11 @@ namespace dustbin {
       m_cPos  = a_cPos;
       m_cPos.X -= m_cSizeTotal.Width;
 
+#ifdef _ANDROID
+      m_cPos.X -= m_cSizeTotal.Width / 12;
+      m_cPos.Y += m_cSizeTotal.Width / 12;
+#endif
+
       m_iOffset = 5 * m_cSizeTotal.Height / 4;
 
       for (int i = 0; i < 16; i++)

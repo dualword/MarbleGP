@@ -1342,7 +1342,7 @@ namespace dustbin {
             bool l_bHighligh     = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bHighlight   ;
             bool l_bShowCtrl     = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowControls;
             bool l_bShowRanking  = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowRanking  && it->second.m_pPlayer->m_pPlayer->m_bShowRanking;
-            bool l_bShowLapTimes = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowLapTimes && it->second.m_pPlayer->m_pPlayer->m_bShowRanking;
+            bool l_bShowLapTimes = m_cSettings.m_aGameGFX[m_mViewports.size()].m_bShowLapTimes;
 
             it->second.m_pHUD->setSettings(l_bHighligh, l_bShowCtrl, l_bShowRanking, l_bShowLapTimes);
           }

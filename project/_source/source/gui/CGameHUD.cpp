@@ -665,14 +665,7 @@ namespace dustbin {
 #endif
         a_cRect
       );
-      m_pLapTimes = new CHudLapTimes(m_pDrv, m_iMarble, irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y),
-#ifdef _ANDROID
-        l_pTiny
-#else
-        l_pSmall
-#endif
-        , *m_vRanking
-      );
+      m_pLapTimes = new CHudLapTimes(m_pDrv, m_iMarble, irr::core::vector2di(a_cRect.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y), l_pSmall, *m_vRanking);
       m_pFade     = new CHudFade    (m_pDrv, m_iMarble, a_cRect);
 
       if (m_pPlayer->m_eAiHelp != data::SPlayerData::enAiHelp::Off && !m_pPlayer->isBot()) {
