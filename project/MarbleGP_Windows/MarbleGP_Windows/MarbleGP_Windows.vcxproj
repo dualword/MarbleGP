@@ -111,6 +111,8 @@
     <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp" />
     <ClCompile Include="..\..\_source\source\controller\touch\ITouchController.cpp" />
     <ClCompile Include="..\..\_source\source\data\CDataStructs.cpp" />
+    <ClCompile Include="..\..\_source\source\font\font_manager.cpp" />
+    <ClCompile Include="..\..\_source\source\font\gui_freetype_font.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CAiGameData.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CDynamicThread.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicDefault.cpp" />
@@ -291,6 +293,8 @@
     <ClInclude Include="..\..\_source\include\controller\touch\ITouchController.h" />
     <ClInclude Include="..\..\_source\include\data\CDataStructs.h" />
     <ClInclude Include="..\..\_source\include\Defines.h" />
+    <ClInclude Include="..\..\_source\include\font\font_manager.h" />
+    <ClInclude Include="..\..\_source\include\font\gui_freetype_font.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h" />

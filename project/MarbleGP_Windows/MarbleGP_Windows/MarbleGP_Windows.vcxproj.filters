@@ -175,6 +175,12 @@
     <Filter Include="Quelldateien\shaders">
       <UniqueIdentifier>{639fdc81-5dd3-4479-9000-45bad632f7a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\font">
+      <UniqueIdentifier>{02710867-aa3d-4285-9ae5-21012593c5a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\font">
+      <UniqueIdentifier>{52223aa4-d08e-485c-9640-41a43d854227}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -747,6 +753,12 @@
     <ClCompile Include="..\..\_source\source\gui\IProgressCallback.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\font\font_manager.cpp">
+      <Filter>Quelldateien\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\font\gui_freetype_font.cpp">
+      <Filter>Quelldateien\font</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1228,6 +1240,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gui\IProgressCallback.h">
       <Filter>Headerdateien\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\font\font_manager.h">
+      <Filter>Headerdateien\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\font\gui_freetype_font.h">
+      <Filter>Headerdateien\font</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

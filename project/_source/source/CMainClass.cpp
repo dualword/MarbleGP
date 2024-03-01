@@ -19,6 +19,7 @@
 #include <gui/CGuiItemFactory.h>
 #include <platform/CPlatform.h>
 #include <menu/IMenuHandler.h>
+#include <font/font_manager.h>
 #include <state/CMenuState.h>
 #include <state/CGameState.h>
 #include <state/IState.h>
@@ -56,7 +57,8 @@ namespace dustbin {
     m_pLogo           (nullptr),
     m_sDeviceName     (""),
     m_pKeyBoard       (nullptr),
-    m_pTournament     (nullptr)
+    m_pTournament     (nullptr),
+    m_pFontMgr        (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -182,6 +184,9 @@ namespace dustbin {
     if (m_pTournament != nullptr)
       delete m_pTournament;
 
+    if (m_pFontMgr != nullptr)
+      delete m_pFontMgr;
+
     m_mStates.clear();
   }
 
@@ -264,6 +269,7 @@ namespace dustbin {
     // is stored as minimal sized font
     m_mFonts[0] = m_pGui->getSkin()->getFont();
 
+    printf("%s\n", platform::portableGetDataPath().c_str());
     // Set the "regular" font size for the resolution to be the default font size
     m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
@@ -445,21 +451,14 @@ namespace dustbin {
   * @return the font
   */
   irr::gui::IGUIFont* CMainClass::getFontBySize(irr::u32 a_iSize) {
-    int l_iFontFile = 0;
+    if (m_mFonts.find(a_iSize) == m_mFonts.end()) {
+      if (m_pFontMgr == nullptr)
+        m_pFontMgr = new FontManager();
 
-    for (std::vector<int>::iterator it = m_vFontSizes.begin(); it != m_vFontSizes.end(); it++) {
-      if (*it >= (int)a_iSize)
-        break;
-
-      l_iFontFile = *it;
+      m_mFonts[a_iSize] = m_pFontMgr->GetTtFont(m_pDrv, m_pFs, "data/fonts/arialmt.ttf", a_iSize);
     }
 
-    if (m_mFonts.find(l_iFontFile) == m_mFonts.end()) {
-      std::string l_sFile = "data/fonts/font_" + std::to_string(l_iFontFile) + ".xml";
-      m_mFonts[l_iFontFile] = m_pGui->getFont(l_sFile.c_str());
-    }
-
-    return m_mFonts[l_iFontFile];
+    return m_mFonts[a_iSize];
   }
 
   /**
@@ -470,7 +469,11 @@ namespace dustbin {
   */
   irr::gui::IGUIFont* CMainClass::getFont(enFont a_eFont, const irr::core::dimension2du a_cViewport) {
     // Tiny: 0.5 * RasterSize, Small: 0.75 * RasterSize, Regular: RasterSize, Big: 1.5 * RasterSize, Huge: 2 * RasterSize
+#ifdef _WINDOWS
+    int l_iSize = 6 * getRasterSize(&a_cViewport) / 5;
+#else
     int l_iSize = getRasterSize(&a_cViewport);
+#endif
 
     switch (a_eFont) {
       case enFont::Tiny   : l_iSize =     l_iSize / 2; break;
@@ -480,21 +483,14 @@ namespace dustbin {
       case enFont::Huge   : l_iSize = 2 * l_iSize    ; break;
     }
 
-    int l_iFontFile = 0;
+    if (m_mFonts.find(l_iSize) == m_mFonts.end()) {
+      if (m_pFontMgr == nullptr)
+        m_pFontMgr = new FontManager();
 
-    for (std::vector<int>::iterator it = m_vFontSizes.begin(); it != m_vFontSizes.end(); it++) {
-      if (*it >= l_iSize)
-        break;
-
-      l_iFontFile = *it;
+      m_mFonts[l_iSize] = m_pFontMgr->GetTtFont(m_pDrv, m_pFs, "data/fonts/arialmt.ttf", l_iSize);
     }
 
-    if (m_mFonts.find(l_iFontFile) == m_mFonts.end()) {
-      std::string l_sFile = "data/fonts/font_" + std::to_string(l_iFontFile) + ".xml";
-      m_mFonts[l_iFontFile] = m_pGui->getFont(l_sFile.c_str());
-    }
-
-    return m_mFonts[l_iFontFile];
+    return m_mFonts[l_iSize];
   }
 
   /**
@@ -503,8 +499,8 @@ namespace dustbin {
   */
   int CMainClass::getRasterSize(const irr::core::dimension2du *l_pViewport) {
     if (m_iRasterSize == -1 || l_pViewport != nullptr) {
-      int l_iColumns = 80,
-          l_iRows    = 55;
+      int l_iColumns = 80;
+      int l_iRows    = 55;
 
       if (m_pFs->existFile("data/grid_layout.xml")) {
         irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8("data/grid_layout.xml");
@@ -512,8 +508,8 @@ namespace dustbin {
           while (l_pXml->read()) {
             std::string l_sNode = l_pXml->getNodeName();
             if (l_sNode == "grid" && l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-              std::string l_sColumns = l_pXml->getAttributeValueSafe("columns"),
-                          l_sRows    = l_pXml->getAttributeValueSafe("rows"   );
+              std::string l_sColumns = l_pXml->getAttributeValueSafe("columns");
+              std::string l_sRows    = l_pXml->getAttributeValueSafe("rows"   );
 
               if (l_sColumns != "")
                 l_iColumns = std::atoi(l_sColumns.c_str());
@@ -528,8 +524,8 @@ namespace dustbin {
 
       irr::core::dimension2du l_cDim = l_pViewport == nullptr ? m_pDrv->getScreenSize() : *l_pViewport;
 
-      int l_iWidth  = l_cDim.Width  / l_iColumns,
-          l_iHeight = l_cDim.Height / l_iRows;
+      int l_iWidth  = l_cDim.Width  / l_iColumns;
+      int l_iHeight = l_cDim.Height / l_iRows;
 
       if (l_pViewport != nullptr)
         return l_iWidth < l_iHeight ? l_iWidth : l_iHeight;

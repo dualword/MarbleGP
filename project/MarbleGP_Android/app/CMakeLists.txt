@@ -46,17 +46,26 @@ add_library(enet STATIC IMPORTED)
 add_library(lua STATIC IMPORTED)
 add_library(ode STATIC IMPORTED)
 add_library(Irrlicht STATIC IMPORTED)
+add_library(freetype STATIC IMPORTED)
+add_library(BrotliDecoderDecompress STATIC IMPORTED)
+add_library(brotlicommon STATIC IMPORTED)
 
 if (${ANDROID_ABI} STREQUAL "arm64-v8a")
     set_target_properties(enet PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libenet.a)
     set_target_properties(lua PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/liblua.a)
     set_target_properties(ode PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libode.a)
     set_target_properties(Irrlicht PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libIrrlicht.a)
+    set_target_properties(freetype PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libfreetype.a)
+    set_target_properties(BrotliDecoderDecompress PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libbrotlidec-static.a)
+    set_target_properties(brotlicommon PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm64-android/lib/libbrotlicommon-static.a)
 elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
     set_target_properties(enet PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libenet.a)
     set_target_properties(lua PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/liblua.a)
     set_target_properties(ode PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libode.a)
     set_target_properties(Irrlicht PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libIrrlicht.a)
+    set_target_properties(freetype PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libfreetype.a)
+    set_target_properties(BrotliDecoderDecompress PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libbrotlidec-static.a)
+    set_target_properties(brotlicommon PROPERTIES IMPORTED_LOCATION $ENV{VCPKG_ROOT}/installed/arm-android/lib/libbrotlicommon-static.a)
 endif()
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
@@ -90,6 +99,7 @@ target_include_directories(marblegp PUBLIC
         ../../_source/include
         $ENV{IRRLICHT_ES_FOLDER}/include
         $ENV{IRRLICHT_ES_FOLDER}/source/Irrlicht
+        $ENV{VCPKG_INCLUDE_ARM64}/include
         )
 
 if (${ANDROID_ABI} STREQUAL "arm64-v8a")
@@ -122,4 +132,7 @@ target_link_libraries( # Specifies the target library.
         lua
         mediandk
         games-controller::paddleboat_static
+        BrotliDecoderDecompress
+        brotlicommon
+        freetype
         )

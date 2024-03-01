@@ -11,6 +11,8 @@
 #include <tuple>
 #include <map>
 
+class FontManager;
+
 namespace dustbin {
   namespace gui {
     class CVirtualKeyboard;
@@ -81,6 +83,8 @@ namespace dustbin {
       irr::core::array<irr::SJoystickInfo> m_aJoysticks;    /**< The Joysticks */
 
       gameclasses::STournament *m_pTournament;    /**< The current tournament */
+
+      FontManager *m_pFontMgr;    /**< The manager for the true type fonts */
 
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
