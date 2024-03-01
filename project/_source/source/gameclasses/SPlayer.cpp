@@ -56,6 +56,8 @@ namespace dustbin {
       m_iState     (0), 
       m_iLapNo     (0), 
       m_iGridPos   (0),
+      m_iFastestLap  (-1),
+      m_iFastestLapNo(-1),
       m_bWithdrawn (false),
       m_pPlayer    (nullptr)
     {
