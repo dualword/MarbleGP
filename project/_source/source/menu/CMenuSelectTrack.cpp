@@ -322,26 +322,31 @@ namespace dustbin {
                 }
               }
             }
-            else if (m_iClientState == 1) {
-              if (m_pServer->allClientsAreInState("gamedata")) {
-                m_iClientState = 2;
+            else {
+              CGlobal *l_pGlobal = CGlobal::getInstance();
 
-                m_pServer->changeState("state_game");
-                printf("Ready to go, start game.\n");
+              m_pDrv->setRenderTarget(nullptr, false, false);
+
+              l_pGlobal->progressSetCurrentRange(L"Waiting for clients...", 0, 100, 100);
+              l_pGlobal->onProgress();
+
+              if (m_iClientState == 1) {
+                if (m_pServer->allClientsAreInState("gamedata")) {
+                  m_iClientState = 2;
+
+                  m_pServer->changeState("state_game");
+                  printf("Ready to go, start game.\n");
+                }
               }
-
-              m_pState->getGlobal()->drawNextRaceScreen(1.0f);
-            }
-            else if (m_iClientState == 2) {
-              m_pState->getGlobal()->drawNextRaceScreen(1.0f);
-
-              if (m_pServer->allClientsAreInState("state_game")) {
-                m_pState->setState(state::enState::Game);
+              else if (m_iClientState == 2) {
+                if (m_pServer->allClientsAreInState("state_game")) {
+                  m_pState->setState(state::enState::Game);
+                }
               }
             }
           }
 
-          return false;
+          return m_iClientState != 0;
         }
     };
 

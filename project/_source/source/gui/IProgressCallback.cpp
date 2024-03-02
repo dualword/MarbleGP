@@ -51,6 +51,14 @@ namespace dustbin {
     }
 
     /**
+    * Set the current message
+    * @param a_sMsg the current message
+    */
+    void IProgressCallback::setCurrentMessage(const wchar_t* a_sMsg) {
+      m_sMessage = a_sMsg;
+    }
+
+    /**
     * Get the current value
     * @return the current value
     */

@@ -163,6 +163,7 @@ namespace dustbin {
                 platform::saveSettings();
                 if (m_pServer != nullptr) {
                   m_pServer->sendGlobalData("gamedata", l_pTournament->getRace()->serialize());
+                  m_pState->getGlobal()->initNextRaceScreen();
                   m_iClientState = 1;
                 }
                 else {
@@ -190,15 +191,23 @@ namespace dustbin {
             m_pAuto->process();
 
           if (m_pServer != nullptr) {
-            if (!m_bInfoSent) {
-              if (m_pServer->allClientsAreInState("menu_netlobby")) {
-                printf("Send race information to clients.\n");
-                messages::CUpdateRaceInfo l_cMsg = messages::CUpdateRaceInfo(m_sTrack, m_sInfo);
-                m_pServer->getInputQueue()->postMessage(&l_cMsg);
-                m_bInfoSent = true;
+            if (m_iClientState == 0) {
+              if (!m_bInfoSent) {
+                if (m_pServer->allClientsAreInState("menu_netlobby")) {
+                  printf("Send race information to clients.\n");
+                  messages::CUpdateRaceInfo l_cMsg = messages::CUpdateRaceInfo(m_sTrack, m_sInfo);
+                  m_pServer->getInputQueue()->postMessage(&l_cMsg);
+                  m_bInfoSent = true;
+                }
               }
             }
             else {
+              printf("Waiting...\n");
+              CGlobal *l_pGlobal = CGlobal::getInstance();
+
+              l_pGlobal->progressSetCurrentRange(L"Waiting for clients...", 0, 100, 100);
+              l_pGlobal->onProgress();
+
               if (m_iClientState == 1) {
                 if (m_pServer->allClientsAreInState("gamedata")) {
                   m_iClientState = 2;
@@ -206,12 +215,8 @@ namespace dustbin {
                   m_pServer->changeState("state_game");
                   printf("Ready to go, start game.\n");
                 }
-
-                m_pState->getGlobal()->drawNextRaceScreen(1.0f);
               }
               else if (m_iClientState == 2) {
-                m_pState->getGlobal()->drawNextRaceScreen(1.0f);
-
                 if (m_pServer->allClientsAreInState("state_game")) {
                   m_pState->setState(state::enState::Game);
                 }
@@ -219,7 +224,7 @@ namespace dustbin {
             }
           }
 
-          return false;
+          return m_iClientState != 0;
         }
     };
 

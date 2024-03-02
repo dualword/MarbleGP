@@ -490,6 +490,9 @@ namespace dustbin {
 
           l_iIndex++;
         }
+
+        if (m_pClient != nullptr)
+          m_pGlobal->setCurrentMessage(L"Waiting for Server...");
       }
       else {
         handleError("Error while starting game state.", "No world node found..");

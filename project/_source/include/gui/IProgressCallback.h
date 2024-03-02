@@ -54,6 +54,12 @@ namespace dustbin {
         const wchar_t *progressGetMessage();
 
         /**
+        * Set the current message
+        * @param a_sMsg the current message
+        */
+        void setCurrentMessage(const wchar_t *a_sMsg);
+
+        /**
         * Update the current value
         * @param a_iInc the value to increase the current value by
         */
