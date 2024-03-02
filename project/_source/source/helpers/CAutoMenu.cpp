@@ -8,7 +8,13 @@
 
 namespace dustbin {
   namespace helpers {
-    CAutoMenu::CAutoMenu(irr::IrrlichtDevice* a_pDevice, menu::IMenuHandler* a_pRecveiver) : m_pTimer(a_pDevice->getTimer()), m_iTime(0), m_bBotsOnly(true), m_pReciever(a_pRecveiver) {
+    CAutoMenu::CAutoMenu(irr::IrrlichtDevice* a_pDevice, menu::IMenuHandler* a_pRecveiver) : 
+      m_pTimer   (a_pDevice->getTimer()), 
+      m_iTime    (0), 
+      m_bBotsOnly(true), 
+      m_bClient  (CGlobal::getInstance()->getGameClient() != nullptr),
+      m_pReciever(a_pRecveiver) 
+    {
       m_iTime = m_pTimer->getRealTime();
 
       gameclasses::STournament *l_pTournament = CGlobal::getInstance()->getTournament();
@@ -35,7 +41,7 @@ namespace dustbin {
     */
     void CAutoMenu::process() {
       irr::u32 l_iTime = m_pTimer->getRealTime();
-      if (m_bBotsOnly && l_iTime - m_iTime > 5000 && m_pReciever != nullptr) {
+      if (m_bBotsOnly && !m_bClient && l_iTime - m_iTime > 5000 && m_pReciever != nullptr) {
         irr::gui::IGUIButton *l_pBtn = reinterpret_cast<irr::gui::IGUIButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, CGlobal::getInstance()->getGuiEnvironment()->getRootGUIElement()));
 
         if (l_pBtn != nullptr) {

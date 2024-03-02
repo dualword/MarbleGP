@@ -20,6 +20,7 @@ namespace dustbin {
         irr::ITimer *m_pTimer;    /**< The Irrlicht Timer */
         irr::u32     m_iTime;     /**< The start time */
         bool         m_bBotsOnly; /**< Only bots in the race */
+        bool         m_bClient;   /**< If we have a network client we don't send events */
 
         menu::IMenuHandler *m_pReciever;   /**< the event receiver to send the event to */
 
