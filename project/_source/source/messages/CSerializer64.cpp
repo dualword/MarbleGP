@@ -7,6 +7,7 @@ This file is licensed under the terms of the ZLib license - https://www.zlib.net
 
 namespace dustbin {
   namespace messages {
+    const int c_iPrecision = 5;
 
     const irr::c8* CSerializer64::EncodeInt64(irr::s64 a_iIn) {
       int l_iIdx = 0,
@@ -162,13 +163,13 @@ namespace dustbin {
     * @param a_iPrecision decimal precision of the value
     */
     void CSerializer64::addF32(irr::f32 a_fInput) {
-      int l_iPrecision = 5;
+      int l_iPrecision = c_iPrecision;
       while (l_iPrecision > 0) { a_fInput *= 10; l_iPrecision--; }
       addS64((irr::s64)a_fInput);
     }
 
     void CSerializer64::addF64(irr::f64 a_fInput) {
-      int l_iPrecision = 5;
+      int l_iPrecision = c_iPrecision;
       while (l_iPrecision > 0) { a_fInput *= 10; l_iPrecision--; }
       addS64((irr::s64)a_fInput);
     }
@@ -299,14 +300,14 @@ namespace dustbin {
     * @return an 32 bit float value
     */
     irr::f32 CSerializer64::getF32() {
-      int l_iPrecision = 5;
+      int l_iPrecision = c_iPrecision;
       irr::f64 l_fDummy = (irr::f64)getS64();
       while (l_iPrecision > 0) { l_fDummy /= 10; l_iPrecision--; }
       return (irr::f32)l_fDummy;
     }
 
     irr::f64 CSerializer64::getF64() {
-      int l_iPrecision = 5;
+      int l_iPrecision = c_iPrecision;
       irr::f64 l_fDummy = (irr::f64)getS64();
       while (l_iPrecision > 0) { l_fDummy /= 10; l_iPrecision--; }
       return l_fDummy;
