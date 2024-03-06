@@ -11,6 +11,7 @@ namespace dustbin {
       m_eState   (enBanners::CountdownReady), 
       m_fFade    (1.0f),
       m_pWithdraw(nullptr),
+      m_pTab     (nullptr),
       m_pHugeFont(a_pHuge),
       m_iFinished(-1)
     {
@@ -62,6 +63,11 @@ namespace dustbin {
 
           m_cLaurelSrc = irr::core::recti(irr::core::vector2di(0, 0), m_pLaurel[0]->getOriginalSize());
         }
+
+        m_pTab = a_pGui->addTab(m_cRect);
+        m_pTab->setDrawBackground(true);
+        m_pTab->setBackgroundColor(irr::video::SColor(128, 192, 192, 192));
+        m_pTab->setVisible(false);
 
         m_pWithdraw = a_pGui->addStaticText(L"Withdraw from Race? Click again!", m_cRect);
         m_pWithdraw->setOverrideFont(a_pFont);
@@ -128,6 +134,7 @@ namespace dustbin {
     */
     void CHudBanner::showConfirmWithdraw(bool a_bShow) {
       m_pWithdraw->setVisible(a_bShow);
+      m_pTab     ->setVisible(a_bShow);
     }
 
     /**

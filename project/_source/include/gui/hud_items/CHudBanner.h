@@ -40,6 +40,7 @@ namespace dustbin {
         irr::core::recti          m_cLaurelRgt;                       /**< Recti for the right laurel wreath */
         irr::core::recti          m_cLaurelSrc;                       /**< Source rect for rendering the laurel wreaths */
         irr::gui::IGUIStaticText *m_pWithdraw;                        /**< The "Confirm Withdraw" static text */
+        irr::gui::IGUITab        *m_pTab;                             /**< The background for the "Condirm Withdraw" text */
         irr::gui::IGUIFont       *m_pHugeFont;                        /**< The huge font */
         int                       m_iFinished;                        /**< Index of the visible laurels */
 
