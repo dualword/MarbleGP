@@ -49,6 +49,11 @@ namespace dustbin {
     */
     void CMenuState::activate() {
       if (m_pGlobal->getGlobal("FirstStart") == "true") {
+        m_pGlobal->setGlobal("FirstStart", "maybe");
+        clearMenuStack();
+        pushToMenuStack("menu_detectgfx");
+      }
+      else if (m_pGlobal->getGlobal("FirstStart") == "maybe") {
         m_pGlobal->setGlobal("FirstStart", "false");
         clearMenuStack();
         pushToMenuStack("menu_intro");
@@ -283,7 +288,7 @@ namespace dustbin {
                       "    <script>\n" +
                       "      \n" +
                       "      $(document).ready(function() {\n" + 
-                      "        $(document).tooltip({ position: { my: \"center\", at: \"right center\" } });\n" +
+                      "        $(document).tooltip({ position: { my: \"right\", at: \"left bottom\" } });\n" +
                       "      });\n"
                       "      \n" + 
                       "    </script>\n" +
@@ -499,17 +504,23 @@ namespace dustbin {
     * @param a_sData the manual data (0 == Name of the element, 1 == tooltip text, 2 == the rect of the element in percent)
     * @param a_sElements Names that are already stored in the data vector
     */
-    void CMenuState::createManualData(irr::gui::IGUIElement *l_pElement, std::vector<std::tuple<std::string, std::string, irr::core::rect<irr::f32>>> &a_sData, std::vector<std::string> &a_sElements) {
-      if (!l_pElement->isVisible())
+    void CMenuState::createManualData(irr::gui::IGUIElement *a_pElement, std::vector<std::tuple<std::string, std::string, irr::core::rect<irr::f32>>> &a_sData, std::vector<std::string> &a_sElements) {
+      if (!a_pElement->isVisible())
         return;
 
-      std::string l_sName = l_pElement->getName();
+      irr::gui::IGUIElement *l_pElement = m_pGui->getRootGUIElement()->getElementFromPoint(a_pElement->getAbsoluteClippingRect().getCenter());
 
-      if (l_sName == "" && l_pElement->getID() > 0)
-        l_sName = std::to_string(l_pElement->getID());
+      std::string l_sName = a_pElement->getName();
 
-      if (l_sName != "") {
-        std::string l_sHint = helpers::ws2s(l_pElement->getToolTipText().c_str());
+      if (l_sName == "" && a_pElement->getID() > 0)
+        l_sName = std::to_string(a_pElement->getID());
+
+      if (std::string(a_pElement->getName()) == "EditProfileOk") {
+        printf("==> %s\n", l_pElement->getName());
+      }
+
+      if (l_pElement == a_pElement && l_sName != "") {
+        std::string l_sHint = helpers::ws2s(a_pElement->getToolTipText().c_str());
 
         if (l_sHint != "") {
           int l_iIndex = 0;
@@ -522,7 +533,7 @@ namespace dustbin {
           }
 
           irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
-          irr::core::recti        l_cRect = l_pElement->getAbsolutePosition();
+          irr::core::recti        l_cRect = a_pElement->getAbsolutePosition();
 
           irr::core::position2di l_cPos = l_cRect.UpperLeftCorner;
 
@@ -542,7 +553,7 @@ namespace dustbin {
         }
       }
 
-      for (irr::core::list<irr::gui::IGUIElement *>::ConstIterator l_itChild = l_pElement->getChildren().begin(); l_itChild != l_pElement->getChildren().end(); l_itChild++)
+      for (irr::core::list<irr::gui::IGUIElement *>::ConstIterator l_itChild = a_pElement->getChildren().begin(); l_itChild != a_pElement->getChildren().end(); l_itChild++)
         createManualData(*l_itChild, a_sData, a_sElements);
     }
 #endif

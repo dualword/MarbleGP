@@ -505,13 +505,17 @@ namespace dustbin {
 
       gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(findElement("EditProfileOk", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
 
-      if (l_pOk != nullptr)
+      if (l_pOk != nullptr) {
+        l_pOk->setToolTipText((m_itStep + 1) == m_vSteps.end() ? L"Save the profile modifications" : L"Go to the next step in the profile wizard");
         l_pOk->setImage(std::string((m_itStep + 1) == m_vSteps.end()  ? "data/images/btn_ok.png" : "data/images/arrow_right.png"));
+      }
 
       gui::CMenuButton *l_pCancel = reinterpret_cast<gui::CMenuButton *>(findElement("EditProfileCancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
 
-      if (l_pCancel != nullptr)
+      if (l_pCancel != nullptr) {
+        l_pCancel->setToolTipText(m_itStep == m_vSteps.begin() ? L"Discard the changes" : L"Go one step back in the profile wizard");
         l_pCancel->setImage(std::string(m_itStep == m_vSteps.begin() ? "data/images/btn_cancel.png" : "data/images/arrow_left.png"));
+      }
 
       return l_pRoot != nullptr;
     }

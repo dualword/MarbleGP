@@ -57,7 +57,7 @@ namespace dustbin {
         * @param a_sData the manual data (0 == Name of the element, 1 == tooltip text, 2 == the rect of the element in percent)
         * @param a_sElements Names that are already stored in the data vector
         */
-        void createManualData(irr::gui::IGUIElement *l_pElement, std::vector<std::tuple<std::string, std::string, irr::core::rect<irr::f32>>> &a_sData, std::vector<std::string> &a_sElements);
+        void createManualData(irr::gui::IGUIElement *a_pElement, std::vector<std::tuple<std::string, std::string, irr::core::rect<irr::f32>>> &a_sData, std::vector<std::string> &a_sElements);
 #endif
 
       protected:

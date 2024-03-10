@@ -161,16 +161,6 @@ namespace dustbin {
 
           data::SSettings l_cSettings = l_pGlobal->getSettingData();
 
-          irr::u32 l_iAmbient = 196;
-
-          switch (l_cSettings.m_iAmbient) {
-            case 0: l_iAmbient = 32; break;
-            case 1: l_iAmbient = 64; break;
-            case 2: l_iAmbient = 96; break;
-            case 3: l_iAmbient = 128; break;
-            case 4: l_iAmbient = 160; break;
-          }
-
           irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
           m_cViewport = irr::core::recti(irr::core::position2di(0, 0), l_cScreen);

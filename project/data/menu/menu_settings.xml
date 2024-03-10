@@ -17,7 +17,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: -35, -19, -18, -16" font="big">
+  <element type="MenuButton" rect="center: -35, -19, -18, -16" font="big" tooltip="Change Graphics Settings">
     <attributes>
       <attribute key="Name" value="gfx" />
       <attribute key="Id" value="23001" />
@@ -26,7 +26,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: -17, -19, 0, -16" font="big">
+  <element type="MenuButton" rect="center: -17, -19, 0, -16" font="big"  tooltip="Change Sound Settings">
     <attributes>
       <attribute key="Name" value="sfx" />
       <attribute key="Id" value="23002" />
@@ -35,7 +35,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: 1, -19, 18, -16" font="big">
+  <element type="MenuButton" rect="center: 1, -19, 18, -16" font="big" tooltip="Change other settings">
     <attributes>
       <attribute key="Name" value="misc" />
       <attribute key="Id" value="23003" />
@@ -44,7 +44,7 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: 19, -19, 35, -16" font="big">
+  <element type="MenuButton" rect="center: 19, -19, 35, -16" font="big" tooltip="Show the application log">
     <attributes>
       <attribute key="Name" value="log" />
       <attribute key="Id" value="24000" />
@@ -90,7 +90,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="center: -23, -5, -1, -3">
+      <element type="Selector" rect="center: -23, -5, -1, -3" tooltip="Select your preferred resolution">
         <attributes>
           <attribute key="Id" value="23010" />
           <attribute key="Name" value="Resolution" />
@@ -106,7 +106,7 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: -23, -1, -21, 1">
+      <element type="DustbinCheckbox" rect="center: -23, -1, -21, 1" tooltip="Choose whether or not you want to play in fullscreen">
         <attributes>
           <attribute key="Id" value="23011" />
           <attribute key="Name" value="Fullscreen" />
@@ -122,7 +122,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="center: -23, 3, -1, 5">
+      <element type="Selector" rect="center: -23, 3, -1, 5" tooltip="Select the shadow details (higher details require more GPU / CPU power)">
         <attributes>
           <attribute key="Id" value="23012" />
           <attribute key="Name" value="Shadows" />
@@ -130,26 +130,6 @@
         </attributes>
         <custom>
           <attribute key="options" value="Off;Static;Static + Marbles;Low;Medium;High" />
-        </custom>
-      </element>
-      
-      <element type="staticText" rect="center: -34, 7, -24, 9" tooltip="Choose the amount of ambient light">
-        <attributes>
-          <attribute key="Name" value="label_ambient" />
-          <attribute key="Caption" value="Ambient Light:" />
-          <attribute key="HTextAlign" value="lowerRight" />
-          <attribute key="VTextAlign" value="center" />
-        </attributes>
-      </element>
-      
-      <element type="Selector" rect="center: -23, 7, -1, 9">
-        <attributes>
-          <attribute key="Id" value="23013" />
-          <attribute key="Name" value="Ambient" />
-          <attribute key="Selected" value="0" />
-        </attributes>
-        <custom>
-          <attribute key="options" value="1 - Dark;2;3 - Regular;4;5 - Bright" />
         </custom>
       </element>
       
@@ -190,7 +170,7 @@
         </attributes>
       </element>      
       
-      <element type="Selector" rect="center: 17, -5, 25, -3">
+      <element type="Selector" rect="center: 17, -5, 25, -3" tooltip="Select the number of splitscreen player to adjust the settings">
         <attributes>
           <attribute key="Name" value="selector_splitscreen" />
           <attribute key="Id" value="23042" />
@@ -201,7 +181,7 @@
         </custom>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 5, -1, 7, 1">
+      <element type="DustbinCheckbox" rect="center: 5, -1, 7, 1" tooltip="Highlight the leader, the marble ahead and the one behind a player">
         <attributes>
           <attribute key="Caption" value="Hightlight Leader" />
           <attribute key="Id" value="23014" />
@@ -209,7 +189,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 8, -1, 34, 1">
+      <element type="staticText" rect="center: 8, -1, 34, 1" tooltip="Highlight the leader, the marble ahead and the one behind a player">
         <attributes>
           <attribute key="Name" value="label_highlight" />
           <attribute key="Caption" value="Highlight Leader and Marble ahead" />
@@ -217,14 +197,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 5, 3, 7, 5">
+      <element type="DustbinCheckbox" rect="center: 5, 3, 7, 5" tooltip="Show the controls applied by the player">
         <attributes>
           <attribute key="Id" value="23015" />
           <attribute key="Name" value="show_controls" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 8, 3, 34, 5">
+      <element type="staticText" rect="center: 8, 3, 34, 5" tooltip="Show the controls applied by the player">
         <attributes>
           <attribute key="Name" value="label_showctrl" />
           <attribute key="Caption" value="Show Marble Controls" />
@@ -232,14 +212,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 5, 7, 7, 9">
+      <element type="DustbinCheckbox" rect="center: 5, 7, 7, 9" tooltip="Show the ranking of a race. Not available on Android when playing with touch or gyroscope control">
         <attributes>
           <attribute key="Id" value="23016" />
           <attribute key="Name" value="show_ranking" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 8, 7, 34, 9">
+      <element type="staticText" rect="center: 8, 7, 34, 9" tooltip="Show the ranking of a race. Not available on Android when playing with touch or gyroscope control">
         <attributes>
           <attribute key="Name" value="label_showranking" />
           <attribute key="Caption" value="Show Ranking" />
@@ -247,14 +227,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 5, 11, 7, 13">
+      <element type="DustbinCheckbox" rect="center: 5, 11, 7, 13" tooltip="Show information about the race and lap times while playing (upper right corner)">
         <attributes>
           <attribute key="Id" value="23017" />
           <attribute key="Name" value="show_laptimes" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 8, 11, 34, 13">
+      <element type="staticText" rect="center: 8, 11, 34, 13" tooltip="Show information about the race and lap times while playing (upper right corner)">
         <attributes>
           <attribute key="Name" value="label_laptimes" />
           <attribute key="Caption" value="Show Laptimes" />
@@ -262,7 +242,7 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 5, 15, 7, 17">
+      <element type="DustbinCheckbox" rect="center: 5, 15, 7, 17" tooltip="Races without players can be used to watch the AI play.">
         <attributes>
           <attribute key="Id" value="23093" />
           <attribute key="Name" value="game_wizard" />
@@ -311,7 +291,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, -4, 21, -2">
+      <element type="scrollBar" rect="center: -8, -4, 21, -2" tooltip="The overall sound volume">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23018" />
@@ -340,7 +320,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, 0, 21, 2">
+      <element type="scrollBar" rect="center: -8, 0, 21, 2" tooltip="The volume of the soundtrack">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23020" />
@@ -369,7 +349,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, 4, 21, 6">
+      <element type="scrollBar" rect="center: -8, 4, 21, 6" tooltip="The volume of the menu sound effects, e.g. when moving the mouse over a button">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23022" />
@@ -398,7 +378,7 @@
         </attributes>
       </element>
       
-      <element type="scrollBar" rect="center: -8, 8, 21, 10">
+      <element type="scrollBar" rect="center: -8, 8, 21, 10" tooltip="The volume of the sound effects during gameplay">
         <attributes>
           <attribute key="Horizontal" value="true" />
           <attribute key="Id" value="23024" />
@@ -440,7 +420,7 @@
     </attributes>
     
     <children>
-      <element type="LogDisplay" rect="center: -34, -10, 34, 21">
+      <element type="LogDisplay" rect="center: -34, -10, 34, 21" tooltip="Log of the application">
         <attributes>
           <attribute key="Name" value="log_display" />
         </attributes>
@@ -476,7 +456,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="center: -24, -5, -3, -3">
+      <element type="Selector" rect="center: -24, -5, -3, -3" tooltip="Select a menu controller, i.e. control the manu by gamepad or keyboard">
         <attributes>
           <attribute key="Name" value="misc_menuctrl" />
           <attribute key="Id" value="23026" />
@@ -495,14 +475,14 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="center: 4, -5, 6, -3">
+      <element type="DustbinCheckbox" rect="center: 4, -5, 6, -3" tooltip="Activate the virtual keyboard">
         <attributes>
           <attribute key="Name" value="misc_keyboard" />
           <attribute key="Id" value="23046" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="center: 9, -5, 37, -3" font="small">
+      <element type="staticText" rect="center: 9, -5, 37, -3" font="small" tooltip="Activate the virtual keyboard">
         <attributes>
           <attribute key="Name" value="label_misc_use" />
           <attribute key="Caption" value="Activate virtual Keyboard." />
@@ -519,7 +499,7 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="center: -11, 16, -8, 19" tooltip="Edit Controls">
+      <element type="MenuButton" rect="center: -11, 16, -8, 19" tooltip="Edit Menu Controls">
         <attributes>
           <attribute key="Name" value="editMenuCtrl" />
           <attribute key="ImagePath" value="data/images/btn_edit_profile.png" />
@@ -535,7 +515,7 @@
     </children>
   </element>
   
-  <element type="MenuButton" rect="lowermiddle: -35, -4, -12, 0" font="big">
+  <element type="MenuButton" rect="lowermiddle: -35, -4, -12, 0" font="big" tooltip="Use this button to start a web-server for remote configuration.">
     <attributes>
       <attribute key="Name" value="remote" />
       <attribute key="Id" value="23456" />

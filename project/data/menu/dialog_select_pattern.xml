@@ -27,7 +27,7 @@
             </attributes>
           </element>
           
-          <element type="DustbinImageList" rect="center: -38, -19, 38, 18" font="small">
+          <element type="DustbinImageList" rect="center: -38, -19, 38, 18" font="small" tooltip="The available patterns. Click on an image to select it, use the mouse (touch on Android) to scroll.">
             <attributes>
               <attribute key="Name" value="PatternList" />
               <attribute key="Rows" value="3" />

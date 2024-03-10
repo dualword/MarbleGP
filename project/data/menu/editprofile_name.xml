@@ -32,7 +32,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 26, 18, 56, 20">
+      <element type="editBox" rect="relative: 26, 18, 56, 20" tooltip="Define the player's name">
         <attributes>
           <attribute key="Name" value="EditProfile_EditName" />
           <attribute key="MaxChars" value="20" />
@@ -47,7 +47,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 26, 22, 40, 24">
+      <element type="editBox" rect="relative: 26, 22, 40, 24" tooltip="Define the player's abbreviation (only used in the in-game ranking)">
         <attributes>
           <attribute key="Name" value="EditProfile_EditShort" />
           <attribute key="MaxChars" value="5" />

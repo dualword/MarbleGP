@@ -1,0 +1,1 @@
+FreeType is used for text output

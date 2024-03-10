@@ -84,7 +84,6 @@ namespace dustbin {
       m_iResolutionW (1920), 
       m_iResolutionH (1080), 
       m_iShadows     (2), 
-      m_iAmbient     (2),
       m_iWizardDfc   (1),
       m_iWizardGmt   (0),
       m_fSfxMaster   (1.0f),
@@ -112,7 +111,6 @@ namespace dustbin {
       if (a_mData.find("resolution_w") != a_mData.end()) m_iResolutionW  = std::atoi(a_mData.at("resolution_w").c_str());
       if (a_mData.find("resolution_h") != a_mData.end()) m_iResolutionH  = std::atoi(a_mData.at("resolution_h").c_str());
       if (a_mData.find("shadows"     ) != a_mData.end()) m_iShadows      = std::atoi(a_mData.at("shadows"     ).c_str());
-      if (a_mData.find("ambient"     ) != a_mData.end()) m_iAmbient      = std::atoi(a_mData.at("ambient"     ).c_str());
       if (a_mData.find("wizardfdc"   ) != a_mData.end()) m_iWizardDfc    = std::atoi(a_mData.at("wizardfdc"   ).c_str());
       if (a_mData.find("wizardgmt"   ) != a_mData.end()) m_iWizardGmt    = std::atoi(a_mData.at("wizardgmt"   ).c_str());
 
@@ -146,7 +144,6 @@ namespace dustbin {
       a_mData["resolution_w"] = std::to_string(m_iResolutionW);
       a_mData["resolution_h"] = std::to_string(m_iResolutionH);
       a_mData["shadows"     ] = std::to_string(m_iShadows    );
-      a_mData["ambient"     ] = std::to_string(m_iAmbient    );
       a_mData["wizardfdc"   ] = std::to_string(m_iWizardDfc  );
       a_mData["wizardgmt"   ] = std::to_string(m_iWizardGmt  );
 
@@ -182,7 +179,6 @@ namespace dustbin {
       m_iResolutionW  = a_cOther.m_iResolutionW;
       m_iResolutionH  = a_cOther.m_iResolutionH;
       m_iShadows      = a_cOther.m_iShadows;
-      m_iAmbient      = a_cOther.m_iAmbient;
       m_bFullscreen   = a_cOther.m_bFullscreen;
       m_fSfxMaster    = a_cOther.m_fSfxMaster;
       m_fSoundTrack   = a_cOther.m_fSoundTrack;

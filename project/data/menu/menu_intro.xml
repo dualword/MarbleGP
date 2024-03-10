@@ -19,7 +19,7 @@
       <element type="staticText" rect="relative: 11, 5, 69, 39">
         <attributes>
           <attribute key="VTextAlign" value="center" />
-          <attribute key="Caption" value="Welcome to the world of Marbles. To introduce you to the game a new profile has been generated with random name and texture, keyboard control and High AI help. This means that the speed of the marble is automatically controlled and you only need to take care of steering. 
+          <attribute key="Caption" value="Welcome to the world of Marbles. To introduce you to the game a new profile will be generated with random name and texture, keyboard control and High AI help. This means that the speed of the marble is automatically controlled and you only need to take care of steering. 
           
 The OK button on the bottom will lead you to a tutorial level (which can be re-played from the profile editing menu) which gives you a basic introduction on how to control the game. Afterwards you can start racing, game level 'easy' against 3 Marble3 AI marbles is recommended for the start. 
 
@@ -29,5 +29,6 @@ The character can be modified later on using the 'Edit Profile' button in the 'N
     </children>
   </element>  
   
+  <include file="data/menu/button_cancel.xml" />
   <include file="data/menu/button_ok.xml" />
 </dialog>

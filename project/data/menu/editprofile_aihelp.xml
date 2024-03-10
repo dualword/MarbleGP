@@ -32,7 +32,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 26, 18, 56, 20">
+      <element type="Selector" rect="relative: 26, 18, 56, 20" tooltip="Select how much help you want from MarbleGP's AI">
         <attributes>
           <attribute key="Name" value="EditProfile_AiHelp" />
         </attributes>
@@ -92,7 +92,7 @@
       <element type="staticText" rect="relative: 26, 22, 56, 28">
         <attributes>
           <attribute key="Name" value="EditProfile_AiHelpInfo6" /
-          <attribute key="Caption" value="AI Bot MarbleGP: your marble is completely controlled by the AI on the level of a Marble2 Bot." />
+          <attribute key="Caption" value="AI Bot Marble2: your marble is completely controlled by the AI on the level of a Marble2 Bot." />
           <attribute key="Visible" value="false" />
         </attributes>
       </element>
@@ -100,7 +100,7 @@
       <element type="staticText" rect="relative: 26, 22, 56, 28">
         <attributes>
           <attribute key="Name" value="EditProfile_AiHelpInfo7" /
-          <attribute key="Caption" value="AI Bot MarbleGP: your marble is completely controlled by the AI on the level of a Marble3 Bot." />
+          <attribute key="Caption" value="AI Bot Marble3: your marble is completely controlled by the AI on the level of a Marble3 Bot." />
           <attribute key="Visible" value="false" />
         </attributes>
       </element>

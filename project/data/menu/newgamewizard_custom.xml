@@ -33,7 +33,7 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 31, 10, 33, 12">
+      <element type="DustbinCheckbox" rect="relative: 31, 10, 33, 12" tooltip="Reverse the starting grid, i.e. the winner of the previous race starts from the rear of the grid">
         <attributes>
           <attribute key="Name" value="CustomReverseGrid" />
         </attributes>
@@ -47,7 +47,7 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 31, 14, 33, 16">
+      <element type="DustbinCheckbox" rect="relative: 31, 14, 33, 16" tooltip="Add AI marbles to the game">
         <attributes>
           <attribute key="Name" value="CustomFillGrid" />
         </attributes>
@@ -61,7 +61,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 31, 18, 46, 20">
+      <element type="Selector" rect="relative: 31, 18, 46, 20" tooltip="Select how many marbles you want to race with (filled with AI marbles)">
         <attributes>
           <attribute key="Name" value="CustomGridSize" />
         </attributes>
@@ -78,7 +78,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 31, 22, 46, 24">
+      <element type="Selector" rect="relative: 31, 22, 46, 24" tooltip="Select the class of the AI marbles you want to race against">
         <attributes>
           <attribute key="Name" value="CustomAiClass" />
         </attributes>
@@ -95,7 +95,7 @@
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 31, 26, 33, 28">
+      <element type="DustbinCheckbox" rect="relative: 31, 26, 33, 28" tooltip="Do you want to randomize the first race? If not the human players start from the front">
         <attributes>
           <attribute key="Name" value="CustomRandomizeFirst" />
         </attributes>
@@ -109,7 +109,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 31, 30, 56, 32">
+      <element type="Selector" rect="relative: 31, 30, 56, 32" tooltip="Define when you want the race to be finished">
         <attributes>
           <attribute key="Name" value="CustomAutoFinish" />
         </attributes>

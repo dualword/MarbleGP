@@ -24,7 +24,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 33, 9, 52, 11" font="default">
+      <element type="Selector" rect="relative: 33, 9, 52, 11" font="default" tooltip="Change the control type you want to use">
         <attributes>
           <attribute key="Name" value="EditProfile_ControlType" />
         </attributes>

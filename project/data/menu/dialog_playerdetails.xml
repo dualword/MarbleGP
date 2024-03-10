@@ -27,7 +27,7 @@
             </attributes>
           </element>
       
-          <element type="staticText" rect="center: -13, -8, 33, -6">
+          <element type="staticText" rect="center: -13, -8, 33, -6"  tooltip="The profile name">
             <attributes>
               <attribute key="Name" value="PlayerDetail_Name" />
               <attribute key="VTextAlign" value="center" />
@@ -42,7 +42,7 @@
             </attributes>
           </element>
       
-          <element type="staticText" rect="center: -13, -4, 33, -2">
+          <element type="staticText" rect="center: -13, -4, 33, -2" tooltip="The abbreviation of the profile name">
             <attributes>
               <attribute key="Name" value="PlayerDetail_Short" />
               <attribute key="VTextAlign" value="center" />
@@ -57,7 +57,7 @@
             </attributes>
           </element>
       
-          <element type="staticText" rect="center: -13, 0, 33, 2">
+          <element type="staticText" rect="center: -13, 0, 33, 2" tooltip="The selected controller">
             <attributes>
               <attribute key="Name" value="PlayerDetail_Ctrl" />
               <attribute key="VTextAlign" value="center" />
@@ -72,14 +72,14 @@
             </attributes>
           </element>
       
-          <element type="staticText" rect="center: -13, 4, 33, 6">
+          <element type="staticText" rect="center: -13, 4, 33, 6" tooltip="The AI help level of the dialog">
             <attributes>
               <attribute key="Name" value="PlayerDetail_AiHelp" />
               <attribute key="VTextAlign" value="center" />
             </attributes>
           </element>
           
-          <element type="image" rect="relative: 33, 1, 49, 17">
+          <element type="image" rect="relative: 33, 1, 49, 17" tooltip="Preview of the profile texture">
             <attributes>
               <attribute key="Name" value="PlayerDetail_TextureRtt" />
               <attribute key="ScaleImage" value="true" />
@@ -89,7 +89,7 @@
             </custom>
           </element>
           
-          <element type="MenuButton" rect="center: 21, 6, 24, 9">
+          <element type="MenuButton" rect="center: 21, 6, 24, 9" tooltip="Close the dialog">
             <attributes>
               <attribute key="Name" value="BtnClosePlayerDetails" />
               <attribute key="Id" value="12345" />

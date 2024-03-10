@@ -28,14 +28,14 @@
             </attributes>
           </element>
           
-          <element type="MenuButton" rect="center: 0, 11, 9, 14">
+          <element type="MenuButton" rect="center: 0, 11, 9, 14" tooltip="Confirm">
             <attributes>
               <attribute key="Name" value="BtnConfirmYes" />
               <attribute key="Caption" value="Yes" />
             </attributes>
           </element>
           
-          <element type="MenuButton" rect="center: 10, 11, 19, 14">
+          <element type="MenuButton" rect="center: 10, 11, 19, 14" tooltip="Discard">
             <attributes>
               <attribute key="Name" value="BtnConfirmNo" />
               <attribute key="Caption" value="No" />

@@ -172,6 +172,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp" />
+    <ClCompile Include="..\..\_source\source\menu\CMenuDetectGfx.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuFillGrid.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuFinalResult.cpp" />
     <ClCompile Include="..\..\_source\source\menu\CMenuIntroduction.cpp" />

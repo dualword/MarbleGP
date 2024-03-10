@@ -25,14 +25,14 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 20, 11, 60, 16" font="big">
+      <element type="MenuButton" rect="relative: 20, 11, 60, 16" font="big" tooltip="Play any tracks you want">
         <attributes>
           <attribute key="Name" value="GameType0" />
           <attribute key="Caption" value="Free Racing" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 20, 18, 60, 23" font="big">
+      <element type="MenuButton" rect="relative: 20, 18, 60, 23" font="big" tooltip="Play the tracks of a defined cup">
         <attributes>
           <attribute key="Name" value="GameType1" />
           <attribute key="Caption" value="MarbleGP Cup" />
@@ -47,21 +47,21 @@
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 5, 36, 27, 40">
+      <element type="MenuButton" rect="relative: 5, 36, 27, 40" tooltip="Start a local network free racing game">
         <attributes>
           <attribute key="Name" value="GameType2" />
           <attribute key="Caption" value="Network | Free Racing" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 29, 36, 51, 40">
+      <element type="MenuButton" rect="relative: 29, 36, 51, 40" tooltip="Start a local network MarbleGP cup">
         <attributes>
           <attribute key="Name" value="GameType3" />
           <attribute key="Caption" value="Network | MarbleGP Cup" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 53, 36, 76, 40">
+      <element type="MenuButton" rect="relative: 53, 36, 76, 40" tooltip="Connect to a running server">
         <attributes>
           <attribute key="Name" value="GameType4" />
           <attribute key="Caption" value="Network | Join Network Game" />

@@ -219,7 +219,6 @@ namespace dustbin {
           updateSplitscreenUI();
 
           updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
-          updateSelectorUI(m_cSettings.m_iAmbient, reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23013, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
           updateSelectorUI(m_cSettings.m_sMenuCtrl,reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23026, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
 
           updateSoundUI(23018, 30000, m_cSettings.m_fSfxMaster );
@@ -353,10 +352,8 @@ namespace dustbin {
               }
               else if (l_sSender == "BtnGfxDetect") {
                 printf("Auto-detect GFX Settings...\n");
-                helpers::gfxAutoDetection(m_pDevice, &m_cSettings);
-                m_pSmgr->loadScene("data/scenes/skybox.xml");
-                m_pSmgr->addCameraSceneNode();
-                updateSelectorUI(m_cSettings.m_iShadows, reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23012, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement())));
+                m_pManager->pushToMenuStack("menu_settings");
+                createMenu("menu_detectgfx", m_pDevice, m_pManager, m_pState);
               }
               else printf("Button clicked (%s, %i, CMenuSettings).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
             }
@@ -390,8 +387,6 @@ namespace dustbin {
 
                 if (a_cEvent.GUIEvent.Caller->getID() == 23012)
                   a_pSetting = &m_cSettings.m_iShadows;
-                else if (a_cEvent.GUIEvent.Caller->getID() == 23013)
-                  a_pSetting = &m_cSettings.m_iAmbient;
 
                 if (a_pSetting != nullptr)
                   updateSelectorSettings(*a_pSetting, reinterpret_cast<gui::CSelector *>(a_cEvent.GUIEvent.Caller));

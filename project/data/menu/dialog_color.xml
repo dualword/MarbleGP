@@ -37,7 +37,7 @@
                 </attributes>
               </element>
               
-              <element type="scrollBar" rect="relative: 7, 0, 34, 2">
+              <element type="scrollBar" rect="relative: 7, 0, 34, 2" tooltip="The red component of the color">
                 <attributes>
                   <attribute key="Horizontal" value="true" />
                   <attribute key="Name" value="scrollbar_red" />
@@ -66,7 +66,7 @@
                 </attributes>
               </element>
               
-              <element type="scrollBar" rect="relative: 7, 0, 34, 2">
+              <element type="scrollBar" rect="relative: 7, 0, 34, 2" tooltip="The green component of the color">
                 <attributes>
                   <attribute key="Horizontal" value="true" />
                   <attribute key="Name" value="scrollbar_green" />
@@ -95,7 +95,7 @@
                 </attributes>
               </element>
               
-              <element type="scrollBar" rect="relative: 7, 0, 34, 2">
+              <element type="scrollBar" rect="relative: 7, 0, 34, 2" tooltip="The blue component of the color">
                 <attributes>
                   <attribute key="Horizontal" value="true" />
                   <attribute key="Name" value="scrollbar_blue" />
@@ -114,7 +114,7 @@
             </children>
           </element>
           
-          <element type="tab" rect="relative: 1, 14, 41, 18">
+          <element type="tab" rect="relative: 1, 14, 41, 18" tooltip="Preview of the selected color">
             <attributes>
               <attribute key="Name" value="color_display" />
               <attribute key="DrawBackground" value="true" />
@@ -122,9 +122,9 @@
             </attributes>
           </element>
           
-          <element type="tab" rect="relative: 1, 19, 41, 24">
+          <element type="tab" rect="relative: 1, 19, 41, 24" tooltip="Some predefined colors you can use">
             <children>
-              <element type="ReactiveLabel" rect="relative: 0, 0, 5, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 0, 0, 5, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -137,7 +137,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 5, 0, 10, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 5, 0, 10, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -150,7 +150,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 10, 0, 15, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 10, 0, 15, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -163,7 +163,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 15, 0, 20, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 15, 0, 20, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -177,7 +177,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 20, 0, 25, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 20, 0, 25, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -190,7 +190,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 25, 0, 30, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 25, 0, 30, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -203,7 +203,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 30, 0, 35, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 30, 0, 35, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -216,7 +216,7 @@
                 </attributes>
               </element>
               
-              <element type="ReactiveLabel" rect="relative: 35, 0, 40, 5" font="tiny">
+              <element type="ReactiveLabel" rect="relative: 35, 0, 40, 5" font="tiny" tooltip="Some predefined colors you can use">
                 <attributes>
                   <attribute key="Name" value="pick_color" />
                   <attribute key="CenterH" value="true" />
@@ -233,7 +233,7 @@
           </element>
           
       
-          <element type="MenuButton" rect="center: 1, 11, 5, 15" tooltip="Save Color">
+          <element type="MenuButton" rect="center: 1, 11, 5, 15" tooltip="Save Color" tooltip="Save the color changes">
             <attributes>
               <attribute key="Name" value="btn_color_ok" />
               <attribute key="Id" value="12345" />

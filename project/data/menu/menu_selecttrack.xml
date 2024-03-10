@@ -16,7 +16,7 @@
         </children>
       </element>
       
-      <element type="DustbinTrackSelect" rect="relative: 1, 10, 79, 47" font="small">
+      <element type="DustbinTrackSelect" rect="relative: 1, 10, 79, 47" font="small" tooltip="Select a track. Use your mouse (touch on Android) to scroll the tracks">
         <attributes>
           <attribute key="Name" value="TrackList" />
           <attribute key="Rows" value="1" />
@@ -33,7 +33,7 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 42, 6, 58, 8">
+      <element type="Selector" rect="relative: 42, 6, 58, 8" tooltip="Select how many laps you want to race">
         <attributes>
           <attribute key="Name" value="nolaps" />
           <attribute key="Selected" value="1" />

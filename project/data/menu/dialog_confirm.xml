@@ -28,7 +28,7 @@
             </attributes>
           </element>
           
-          <element type="MenuButton" rect="center: 8, 11, 19, 14">
+          <element type="MenuButton" rect="center: 8, 11, 19, 14" tooltip="Close this dialog after you have read the message">
             <attributes>
               <attribute key="Name" value="btn_ohisee" />
               <attribute key="Id" value="12345" />

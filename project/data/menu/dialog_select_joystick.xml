@@ -35,7 +35,7 @@
             </attributes>
           </element>
               
-          <element type="MenuButton" rect="center: 0, 7, 4, 11" tooltip="Cancel Gamepad Assignment">
+          <element type="MenuButton" rect="center: 0, 7, 4, 11" tooltip="Cancel Gamepad Assignment" tooltip="Cancel this dialog and go back to the previous step">
             <attributes>
               <attribute key="Name" value="CancelAssignJoystick" />
               <attribute key="Id" value="30001" />

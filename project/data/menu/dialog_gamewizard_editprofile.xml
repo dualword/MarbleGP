@@ -42,14 +42,14 @@
           <include file="data/menu/editprofile_controls.xml" />
           <include file="data/menu/editprofile_overview.xml" />
           
-          <element type="MenuButton" rect="center: 1, 18, 5, 22">
+          <element type="MenuButton" rect="center: 1, 18, 5, 22" tooltip="Update the profile">
             <attributes>
               <attribute key="Name" value="EditProfileOk" />
               <attribute key="ImagePath" value="data/images/btn_ok.png" />
             </attributes>
           </element>
           
-          <element type="MenuButton" rect="center: -4, 18, 0, 22">
+          <element type="MenuButton" rect="center: -4, 18, 0, 22" tooltip="Go one step back">
             <attributes>
               <attribute key="Name" value="EditProfileCancel" />
               <attribute key="ImagePath" value="data/images/btn_cancel.png" />

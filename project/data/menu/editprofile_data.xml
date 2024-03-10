@@ -24,7 +24,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 21, 10, 35, 12">
+      <element type="editBox" rect="relative: 21, 10, 35, 12" tooltip="The profile's name">
         <attributes>
           <attribute key="Name" value="ProfileData_Name" />
           <attribute key="MaxChars" value="20" />
@@ -40,7 +40,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 21, 13, 35, 15">
+      <element type="editBox" rect="relative: 21, 13, 35, 15" tooltip="The profile's abbreviation">
         <attributes>
           <attribute key="Name" value="ProfileData_Short" />
           <attribute key="MaxChars" value="20" />
@@ -56,7 +56,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 21, 16, 35, 18">
+      <element type="editBox" rect="relative: 21, 16, 35, 18" tooltip="The AI help level of the profile">
         <attributes>
           <attribute key="Name" value="ProfileData_AiHelp" />
           <attribute key="MaxChars" value="20" />
@@ -72,7 +72,7 @@
         </attributes>
       </element>
       
-      <element type="editBox" rect="relative: 21, 19, 35, 21">
+      <element type="editBox" rect="relative: 21, 19, 35, 21" tooltip="The controller type of the profile">
         <attributes>
           <attribute key="Name" value="ProfileData_Ctrl" />
           <attribute key="MaxChars" value="20" />
@@ -88,7 +88,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 21, 22, 35, 36">
+      <element type="image" rect="relative: 21, 22, 35, 36" tooltip="Preview of the profile's texture">
         <attributes>
           <attribute key="Name" value="ProfileData_Texture" />
           <attribute key="ScaleImage" value="true" />
@@ -98,14 +98,14 @@
         </custom>
       </element>
       
-      <element type="MenuButton" rect="relative: 51, 10, 69, 14">
+      <element type="MenuButton" rect="relative: 51, 10, 69, 14" tooltip="Delete the profile">
         <attributes>
           <attribute key="Name" value="ProfileData_Delete" />
           <attribute key="Caption" value="Delete Profile" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 51, 32, 69, 36">
+      <element type="MenuButton" rect="relative: 51, 32, 69, 36" tooltip="Play the tutorial track with this profile">
         <attributes>
           <attribute key="Name" value="ProfileData_Tutorial" />
           <attribute key="Caption" value="Play Tutorial" />

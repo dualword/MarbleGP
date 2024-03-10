@@ -16,7 +16,7 @@
         </children>
       </element>
        
-      <element type="staticText" rect="relative: 1, 7, 79, 9" font="big">
+      <element type="staticText" rect="relative: 1, 7, 79, 9" font="big" tooltip="Name of the track for the next race">
         <attributes>
           <attribute key="Name" value="label_race" />
           <attribute key="HTextAlign" value="center" />
@@ -24,7 +24,7 @@
         </attributes>
       </element>
        
-      <element type="staticText" rect="relative: 1, 10, 79, 12">
+      <element type="staticText" rect="relative: 1, 10, 79, 12" tooltip="Some information about the next race">
         <attributes>
           <attribute key="Name" value="label_details" />
           <attribute key="HTextAlign" value="center" />
@@ -32,7 +32,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 25, 13, 55, 43">
+      <element type="image" rect="relative: 25, 13, 55, 43" tooltip="Image of the track set for the next race">
         <attributes>
           <attribute key="UseAlphaChannel" value="true" />
           <attribute key="ScaleImage" value="true" />

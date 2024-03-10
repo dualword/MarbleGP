@@ -450,9 +450,6 @@
     <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp">
       <Filter>Quelldateien\scenenodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp">
-      <Filter>Quelldateien\menu</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp">
       <Filter>Quelldateien\gui</Filter>
     </ClCompile>
@@ -758,6 +755,12 @@
     </ClCompile>
     <ClCompile Include="..\..\_source\source\font\gui_freetype_font.cpp">
       <Filter>Quelldateien\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp">
+      <Filter>Quelldateien\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuDetectGfx.cpp">
+      <Filter>Quelldateien\menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

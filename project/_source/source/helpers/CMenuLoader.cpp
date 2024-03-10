@@ -233,10 +233,10 @@ namespace dustbin {
 
             if (s != "") {
               switch (l_iIndex) {
-              case 0: l_cRect.UpperLeftCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
-              case 1: l_cRect.UpperLeftCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
-              case 2: l_cRect.LowerRightCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
-              case 3: l_cRect.LowerRightCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
+                case 0: l_cRect.UpperLeftCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
+                case 1: l_cRect.UpperLeftCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
+                case 2: l_cRect.LowerRightCorner.X = std::atoi(s.c_str()); l_iIndex++; break;
+                case 3: l_cRect.LowerRightCorner.Y = std::atoi(s.c_str()); l_iIndex++; break;
               }
             }
           }
@@ -412,27 +412,6 @@ namespace dustbin {
     }
 
     void parseDialog(irr::io::IXMLReaderUTF8* a_pXml, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui) {
-      /*for (int i = 0; i < a_pGui->getRegisteredGUIElementFactoryCount(); i++) {
-        irr::gui::IGUIElementFactory *l_pFactory = a_pGui->getGUIElementFactory(i);
-        const irr::c8 *l_pName = l_pFactory->getCreateableGUIElementTypeName(irr::gui::EGUIET_TABLE);
-        if (l_pName != nullptr) {
-          printf("\nAttributes of \"%s\"\n\n", l_pName);
-
-          irr::gui::IGUIElement *p = l_pFactory->addGUIElement(irr::gui::EGUIET_TABLE, a_pParent);
-          irr::io::IAttributes *l_pAttr = a_pGui->getFileSystem()->createEmptyAttributes();
-
-          p->serializeAttributes(l_pAttr);
-
-          for (int j = 0; j < l_pAttr->getAttributeCount(); j++) {
-            printf("Attribute %s: %s\n", l_pAttr->getAttributeName(j), l_pAttr->getAttributeAsString(j).c_str());
-          }
-
-          l_pAttr->drop();
-
-          break;
-        }
-      }*/
-
       while (a_pXml->read()) {
         std::string l_sName = a_pXml->getNodeName();
 

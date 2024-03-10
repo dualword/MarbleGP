@@ -280,16 +280,6 @@ namespace dustbin {
         // ToDo: Error message
       }
 
-      irr::u32 l_iAmbient = 196;
-
-      switch (m_cSettings.m_iAmbient) {
-        case 0: l_iAmbient = 32; break;
-        case 1: l_iAmbient = 64; break;
-        case 2: l_iAmbient = 96; break;
-        case 3: l_iAmbient = 128; break;
-        case 4: l_iAmbient = 160; break;
-      }
-
       irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
       int l_iCols = (int)fmax(1, m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns);

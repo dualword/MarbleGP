@@ -49,7 +49,6 @@ namespace dustbin {
       int m_iResolutionW;   /**< Selected window width */
       int m_iResolutionH;   /**< Selected window height */
       int m_iShadows;       /**< Shadow details */
-      int m_iAmbient;       /**< Ambient light */
       int m_iWizardDfc;     /**< Game Wizard: Difficulty */
       int m_iWizardGmt;     /**< Game Wizard: Game Type */
 

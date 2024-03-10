@@ -16,59 +16,59 @@
         </children>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 5, 15, 7">
+      <element type="MenuButton" rect="relative: 1, 5, 15, 7" tooltip="License of this game">
         <attributes>
           <attribute key="Caption" value="MarbleGP" />
           <attribute key="Name" value="license_marblegp" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 8, 15, 10">
+      <element type="MenuButton" rect="relative: 1, 8, 15, 10" tooltip="The Irrlicht license">
         <attributes>
           <attribute key="Caption" value="Irrlicht" />
           <attribute key="Name" value="license_irrlicht" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 11, 15, 13">
+      <element type="MenuButton" rect="relative: 1, 11, 15, 13" tooltip="License of the Open Dynamics Engine">
         <attributes>
           <attribute key="Caption" value="O.D.E." />
           <attribute key="Name" value="license_ode" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 14, 15, 16">
+      <element type="MenuButton" rect="relative: 1, 14, 15, 16" tooltip="License of ENet">
         <attributes>
           <attribute key="Caption" value="ENet" />
           <attribute key="Name" value="license_enet" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 17, 15, 19">
+      <element type="MenuButton" rect="relative: 1, 17, 15, 19" tooltip="License of LibJPEG">
         <attributes>
           <attribute key="Caption" value="LibJPEG" />
           <attribute key="Name" value="license_libjpeg" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 20, 15, 22">
+      <element type="MenuButton" rect="relative: 1, 20, 15, 22" tooltip="License of LibPNG">
         <attributes>
           <attribute key="Caption" value="LibPNG" />
           <attribute key="Name" value="license_libpng" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 23, 15, 25">
+      <element type="MenuButton" rect="relative: 1, 23, 15, 25" tooltip="License of ZLib">
         <attributes>
           <attribute key="Caption" value="ZLib" />
           <attribute key="Name" value="license_zlib" />
         </attributes>
       </element>
       
-      <element type="MenuButton" rect="relative: 1, 26, 15, 28">
+      <element type="MenuButton" rect="relative: 1, 26, 15, 28" tooltip="License of FreeType">
         <attributes>
-          <attribute key="Caption" value="XEffects" />
-          <attribute key="Name" value="license_xeffects" />
+          <attribute key="Caption" value="FreeType" />
+          <attribute key="Name" value="license_freetype" />
         </attributes>
       </element>
       

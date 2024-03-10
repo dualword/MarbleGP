@@ -119,6 +119,9 @@ namespace dustbin {
 
                 m_pState->setState(state::enState::Game);
               }
+              else if (l_sSender == "cancel") {
+                createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+              }
             }
           }
 

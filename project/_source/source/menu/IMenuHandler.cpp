@@ -146,6 +146,9 @@ namespace dustbin {
       else if (a_sName == "menu_intro") {
         l_pRet = a_pManager->changeMenu(createMenuIntroduction(a_pDevice, a_pManager, a_pState));
       }
+      else if (a_sName == "menu_detectgfx") {
+        l_pRet = a_pManager->changeMenu(createMenuDetectGfx(a_pDevice, a_pManager, a_pState));
+      }
 
       if (l_pRet == nullptr)
         printf("No menu handler for menu \"%s\" found.\n", a_sName.c_str());

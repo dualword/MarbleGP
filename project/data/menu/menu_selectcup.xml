@@ -20,13 +20,13 @@
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 25, 5, 55, 7">
+      <element type="Selector" rect="relative: 25, 5, 55, 7" tooltip="Select the cup you want to play">
         <attributes>
           <attribute key="Name" value="CupSelector" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 0, 10, 80, 12" font="big">
+      <element type="staticText" rect="relative: 0, 10, 80, 12" font="big" tooltip="Name of the selected cup">
         <attributes>
           <attribute key="Caption" value="Insert Name of the Cup here" />
           <attribute key="HTextAlign" value="center" />
@@ -34,7 +34,7 @@
           <attribute key="Name" value="label_name" />
         </attributes>
       </element>      
-      <element type="staticText" rect="relative: 0, 13, 80, 15">
+      <element type="staticText" rect="relative: 0, 13, 80, 15" tooltip="Description of the selected cup">
         <attributes>
           <attribute key="Caption" value="Insert Description of the Cup here" />
           <attribute key="HTextAlign" value="center" />
@@ -43,7 +43,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 59, 16, 79, 23">
+      <element type="staticText" rect="relative: 59, 16, 79, 23" tooltip="The races of the cup visualized using the tracks' thumbnails">
         <attributes>
           <attribute key="Caption" value="Race 46 / 66" />
           <attribute key="HTextAlign" value="center" />
@@ -52,7 +52,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 59, 23, 79, 43">
+      <element type="image" rect="relative: 59, 23, 79, 43" tooltip="The races of the cup visualized using the tracks' thumbnails">
         <attributes>
           <attribute key="UseAlphaChannel" value="true" />
           <attribute key="ScaleImage" value="true" />
@@ -63,21 +63,21 @@
         </custom>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 4, 23, 6, 25">
+      <element type="DustbinCheckbox" rect="relative: 4, 23, 6, 25" tooltip="The default cup mode: as many laps are played as defined in the cup definition">
         <attributes>
           <attribute key="Name" value="cm_0" />
           <attribute key="Selected" value="0" />
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 4, 28, 6, 30">
+      <element type="DustbinCheckbox" rect="relative: 4, 28, 6, 30" tooltip="The black lap cup mode: one lap is raced per race">
         <attributes>
           <attribute key="Name" value="cm_1" />
           <attribute key="Selected" value="0" />
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 4, 33, 6, 35">
+      <element type="DustbinCheckbox" rect="relative: 4, 33, 6, 35" tooltip="The blue lap cup mode: a fixed number of laps is raced per race">
         <attributes>
           <attribute key="Name" value="cm_2" />
           <attribute key="Selected" value="0" />
@@ -85,28 +85,28 @@
       </element>
       
       
-      <element type="staticText" rect="relative: 7, 22, 35, 26">
+      <element type="staticText" rect="relative: 7, 22, 35, 26" tooltip="The default cup mode: as many laps are played as defined in the cup definition">
         <attributes>
           <attribute key="Caption" value="Default Mode (Number of Laps as defined)" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 7, 27, 35, 31">
+      <element type="staticText" rect="relative: 7, 27, 35, 31" tooltip="The black lap cup mode: one lap is raced per race">
         <attributes>
           <attribute key="Caption" value="Black Lap Mode (One Lap per Race)" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 7, 32, 35, 36">
+      <element type="staticText" rect="relative: 7, 32, 35, 36" tooltip="The blue lap cup mode: a fixed number of laps is raced per race">
         <attributes>
           <attribute key="Caption" value="Blue Lap Mode (Fixed Number of Laps per Race)" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="Selector" rect="relative: 4, 37, 12, 39">
+      <element type="Selector" rect="relative: 4, 37, 12, 39" tooltip="Select the number of tracks raced in the blue cup mode">
         <attributes>
           <attribute key="Name" value="nolaps" />
           <attribute key="Selected" value="1" />
