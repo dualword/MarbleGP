@@ -1,0 +1,2 @@
+python update_ai_laptimes.py
+pause
