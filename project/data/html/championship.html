@@ -409,7 +409,7 @@
           l_Result += "<td class=\"overall_cellright\">" + l_Data["stunned"] + "</td>";
           l_Result += "<td class=\"overall_cellright\">" + l_Data["withdrawn"] + "</td>";
           
-          for (var l_Idx = 0; l_Idx < l_Data["results"].length; l_Idx++) {
+          for (var l_Idx = 0; l_Idx < l_Data["results"].length && l_Idx < g_Data["players"].length.toString(); l_Idx++) {
             l_Result += "<td class=\"overall_cellright\">" + l_Data["results"][l_Idx].toString() + "</td>";
           }
           
@@ -563,6 +563,6 @@
       <h3>Races</h3>
       <div id="races" class="level1"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="chart.js"></script>
   </body>
 </html>
