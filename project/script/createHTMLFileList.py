@@ -7,6 +7,7 @@ f.write("<files>\n")
 l_Content = os.listdir("../../data/html")
 
 for l_Entry in l_Content:
+  print(l_Entry)
   f.write("  <file name=\"" + l_Entry + "\" />\n")
 
 f.write("</files>\n")
