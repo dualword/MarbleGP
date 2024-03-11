@@ -1,4 +1,4 @@
 steep_oval
-marblegp;0;1414;2863
-marble2;0;1546;3122
-marble3;0;1676;3429
+marblegp;1287;1414;2863
+marble2;1282;1546;3122
+marble3;1328;1676;3429

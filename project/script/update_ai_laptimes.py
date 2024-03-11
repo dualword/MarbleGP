@@ -13,7 +13,6 @@ for l_Race in g_Data["races"]:
   for l_Result in l_Race["raceresult"]:
     l_Name = ""
     
-    
     for l_Player in g_Players:
       if l_Result["playerid"] == l_Player["playerid"]:
         l_Name = l_Player["name"]
@@ -43,7 +42,6 @@ for l_Race in g_Data["races"]:
         l_Idx += 1
         
 
-
   for l_Key in g_Results:
     l_Start = g_Results[l_Key][0]
     l_Cp = 0
@@ -51,8 +49,22 @@ for l_Race in g_Data["races"]:
       g_Results[l_Key][l_Cp] -= l_Start
       l_Cp += 1
   
-  print(g_Results)
+  for l_Result in l_Race["raceresult"]:
+    l_Name = ""
+    
+    for l_Player in g_Players:
+      if l_Result["playerid"] == l_Player["playerid"]:
+        l_Name = l_Player["name"]
+        
+    if "|" in l_Name:
+      l_Name = l_Name[l_Name.index("|") + 1:]
+      
+      if l_Result["laps"][0][0] < g_Results[l_Name][0] or g_Results[l_Name][0] == 0:
+        g_Results[l_Name][0] = l_Result["laps"][0][0]
+
   
+  print(g_Results)
+
   l_File = open("../../data/levels/" + l_Race["track"] + "/laptimes_ai.txt", "w")
   l_File.write(l_Race["track"])
   
