@@ -219,13 +219,16 @@ namespace dustbin {
                 }
               }
 
+              std::wstring l_sFastest = l_pData->m_iFastestLap != -1 ? helpers::convertToTime(l_pData->m_iFastestLap) : L"-";
+              std::wstring l_sFastLap = l_pData->m_iFastestLap != -1 ? std::to_wstring(l_pData->m_iFastestLapNo) + L" of " + std::to_wstring(l_pData->m_vLapCheckpoints.size() - 1) : L"-";
+
               for (auto l_tColumn : l_vColums) {
                 std::wstring l_sText =
                   std::get<2>(l_tColumn) == enColumn::Pos       ? std::to_wstring(l_iPos + 1) :
                   std::get<2>(l_tColumn) == enColumn::Name      ? l_sName    :
                   std::get<2>(l_tColumn) == enColumn::Racetime  ? l_sDeficit :
-                  std::get<2>(l_tColumn) == enColumn::BestLap   ? helpers::convertToTime(l_pData->m_iFastestLap) :
-                  std::get<2>(l_tColumn) == enColumn::BestLapNo ? std::to_wstring(l_pData->m_iFastestLapNo) + L" of " + std::to_wstring(l_pData->m_vLapCheckpoints.size() - 1) :
+                  std::get<2>(l_tColumn) == enColumn::BestLap   ? l_sFastest :
+                  std::get<2>(l_tColumn) == enColumn::BestLapNo ? l_sFastLap :
                   std::get<2>(l_tColumn) == enColumn::Respawn   ? std::to_wstring((int)l_pData->m_vRespawn.size()) + L" " :
                   std::get<2>(l_tColumn) == enColumn::Stunned   ? std::to_wstring((int)l_pData->m_vStunned.size()) + L" " : L"";
 
