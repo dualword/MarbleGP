@@ -1002,13 +1002,14 @@ namespace dustbin {
     std::string SStandings::toJSON() {
       std::string s = "{";
 
-      s += "\"playerid\":"  + std::to_string(m_iPlayer  ) + ",";
-      s += "\"score\":"     + std::to_string(m_iScore   ) + ",";
-      s += "\"respawn\":"   + std::to_string(m_iRespawn ) + ",";
-      s += "\"stunned\":"   + std::to_string(m_iStunned ) + ",";
-      s += "\"withdrawn\":" + std::to_string(m_iNoFinish) + ",";
-      s += "\"bestpos\":"   + std::to_string(m_iBestPos ) + ",";
-      s += "\"bestrace\":"  + std::to_string(m_iBestRace) + ",";
+      s += "\"playerid\":"    + std::to_string(m_iPlayer  ) + ",";
+      s += "\"score\":"       + std::to_string(m_iScore   ) + ",";
+      s += "\"respawn\":"     + std::to_string(m_iRespawn ) + ",";
+      s += "\"stunned\":"     + std::to_string(m_iStunned ) + ",";
+      s += "\"withdrawn\":"   + std::to_string(m_iNoFinish) + ",";
+      s += "\"bestpos\":"     + std::to_string(m_iBestPos ) + ",";
+      s += "\"bestrace\":"    + std::to_string(m_iBestRace) + ",";
+      s += "\"notfinished\":" + std::to_string(m_iNoFinish) + ",";
       s += "\"results\": [";
 
       for (int i = 0; i < 16; i++) {
