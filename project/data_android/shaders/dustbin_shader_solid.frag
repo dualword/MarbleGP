@@ -1,6 +1,6 @@
 /// (w) 2023 by Dustbin::Games - This file is licensed under the terms of the ZLib License (like Irrlicht)
 #version 100
-precision mediump float;
+precision highp float;
 // This is the fragment shader for the solid material in the scene
 
 uniform sampler2D tTexture1;    // The background texture
