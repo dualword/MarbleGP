@@ -113,6 +113,21 @@
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
+      
+      <element type="DustbinCheckbox" rect="center: 1, 5, 3, 7" tooltip="Show the lap times while racing. Not available on Android when using Touch or Gyroscope controls">
+        <attributes>
+          <attribute key="Id" value="23093" />
+          <attribute key="Name" value="game_wizard" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 4, 5, 23, 7" tooltip="Races without players can be used to watch AI races or just get an overview of a track">
+        <attributes>
+          <attribute key="Name" value="label_racewithoutplayers" />
+          <attribute key="Caption" value="Allow races without players" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
     </children>
   </element>
   
