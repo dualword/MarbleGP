@@ -37,6 +37,7 @@ namespace dustbin {
 
         bool m_bWithdrawn;    /**< did the player withdraw from the race (true) or finish normally (false)? */
         bool m_bVisible;      /**< Visibility flag */
+        bool m_bShowDeficit;  /**< Show the deficit to the leader? */
 
         irr::video::ITexture            *m_pBotClass;    /**< Texture of the bot class */
 
@@ -50,7 +51,7 @@ namespace dustbin {
         std::string m_sIconPath;    /**< Path of the icons to use */
 
       public:
-        CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui, const irr::core::recti &a_cViewport);
+        CRankingElement(int a_iPosition, const irr::core::recti &a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont *a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment *a_pGui, const irr::core::recti &a_cViewport, bool a_bShowDeficit = true);
         virtual ~CRankingElement();
 
         /**

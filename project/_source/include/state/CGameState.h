@@ -52,6 +52,7 @@ namespace dustbin {
 
   namespace gui {
     class CInGamePanelRenderer;
+    class CRankingElement;
 #ifdef _TOUCH_CONTROL
     class IGuiMarbleControl;
 #endif
@@ -199,6 +200,8 @@ namespace dustbin {
         lua::CLuaScript_scene *m_pLuaScript;
 
         gui::CInGamePanelRenderer *m_pPanelRndr;    /**< The in-game panel renderer */
+
+        std::vector<gui::CRankingElement *> m_vRanking;
 
 
 #ifdef _TOUCH_CONTROL

@@ -7,21 +7,22 @@
 
 namespace dustbin {
   namespace gui {
-    CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui, const irr::core::recti &a_cViewport) :
-      m_iDeficit   (0),
-      m_sName      (L""),
-      m_sPosition  (std::to_wstring(a_iPosition) + L": "),
-      m_cBackground(a_cBackground),
-      m_cOriginal  (a_cBackground),
-      m_cViewport  (a_cViewport),
-      m_cTextColor (irr::video::SColor(0xFF, 0, 0, 0)),
-      m_cBotColor  (irr::video::SColor(255, 255, 255, 255)),
-      m_pFont      (a_pFont),
-      m_bWithdrawn (false),
-      m_bVisible   (true),
-      m_pBotClass  (nullptr),
-      m_sNumber    (L""),
-      m_sIconPath  (helpers::getIconFolder(m_cViewport.getHeight()))
+    CRankingElement::CRankingElement(int a_iPosition, const irr::core::recti& a_cRect, const irr::video::SColor &a_cBackground, irr::gui::IGUIFont* a_pFont, irr::gui::IGUIElement *a_pParent, irr::gui::IGUIEnvironment* a_pGui, const irr::core::recti &a_cViewport, bool a_bShowDeficit) :
+      m_iDeficit    (0),
+      m_sName       (L""),
+      m_sPosition   (std::to_wstring(a_iPosition) + L": "),
+      m_cBackground (a_cBackground),
+      m_cOriginal   (a_cBackground),
+      m_cViewport   (a_cViewport),
+      m_cTextColor  (irr::video::SColor(0xFF, 0, 0, 0)),
+      m_cBotColor   (irr::video::SColor(255, 255, 255, 255)),
+      m_pFont       (a_pFont),
+      m_bWithdrawn  (false),
+      m_bVisible    (true),
+      m_bShowDeficit(a_bShowDeficit),
+      m_pBotClass   (nullptr),
+      m_sNumber     (L""),
+      m_sIconPath   (helpers::getIconFolder(m_cViewport.getHeight()))
     {
       irr::core::dimension2du l_cDimPos = m_pFont->getDimension(L"66: ");
       l_cDimPos.Width  = 3 * l_cDimPos.Width / 2;
@@ -44,7 +45,14 @@ namespace dustbin {
 
       m_iDeficit = 0;
 
-      m_cName = irr::core::recti(m_cPosition.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y, m_cDeficit.UpperLeftCorner.X, a_cRect.LowerRightCorner.Y);
+      m_cName = irr::core::recti(m_cPosition.LowerRightCorner.X, a_cRect.UpperLeftCorner.Y, 
+        m_bShowDeficit ? 
+          m_cDeficit.UpperLeftCorner.X
+        :
+          a_cRect.LowerRightCorner.X
+        , 
+        a_cRect.LowerRightCorner.Y
+      );
 
       m_iRaster = a_cRect.getHeight() /  4;
       m_iBorder = a_cRect.getHeight() / 16;
@@ -100,12 +108,14 @@ namespace dustbin {
 
         m_pFont->draw(m_sPosition.c_str(), m_cPosition, m_cTextColor, true, true, &m_cRect);
 
-        if (m_iDeficit != 0) {
-          if (m_bWithdrawn) {
-            m_pFont->draw(L"DNF", m_cDeficit, m_cTextColor, true, true, &m_cRect);
-          }
-          else {
-            m_pFont->draw((L"+" + helpers::convertToTime(m_iDeficit)).c_str(), m_cDeficit, m_cTextColor, true, true, &m_cRect);
+        if (m_bShowDeficit) {
+          if (m_iDeficit != 0) {
+            if (m_bWithdrawn) {
+              m_pFont->draw(L"DNF", m_cDeficit, m_cTextColor, true, true, &m_cRect);
+            }
+            else {
+              m_pFont->draw((L"+" + helpers::convertToTime(m_iDeficit)).c_str(), m_cDeficit, m_cTextColor, true, true, &m_cRect);
+            }
           }
         }
 

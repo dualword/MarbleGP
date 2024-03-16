@@ -67,5 +67,14 @@ namespace dustbin {
         m_pPlayer = nullptr;
       }
     };
+
+    /**
+    * @class SViewportNoPlayer
+    * @author Christian Keimel
+    * This viewport is used to draw non-player information, i.e. Ranking or Logo
+    */
+    struct SViewportNoPlayer {
+      irr::core::recti m_cRect;
+    };
   }
 }

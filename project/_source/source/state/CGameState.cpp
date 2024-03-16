@@ -26,6 +26,7 @@
 #include <sound/CSoundEnums.h>
 
 #include <gui/CInGamePanelRenderer.h>
+#include <gui/CRankingElement.h>
 #include <gui/CTutorialHUD.h>
 #include <gui/CGameHUD.h>
 
@@ -481,6 +482,92 @@ namespace dustbin {
           l_iIndex++;
         }
 
+        if (m_iNumOfViewports > 0) {
+          printf("%i, %i\n", m_iNumOfViewports, (int)m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports.size());
+
+          for (int i = m_iNumOfViewports; i < (int)m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports.size(); i++) {
+            irr::core::dimension2di l_cViewportSize = m_cScreen.getSize();
+
+            l_cViewportSize.Width  /= m_cViewports.m_mDistribution[m_iNumOfViewports].m_iColumns;
+            l_cViewportSize.Height /= m_cViewports.m_mDistribution[m_iNumOfViewports].m_iRows;
+
+            irr::core::position2di l_cViewportPos;
+
+            l_cViewportPos.X = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[i].m_iColumn * l_cViewportSize.Width ;
+            l_cViewportPos.Y = m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[i].m_iRow    * l_cViewportSize.Height;
+
+            irr::core::recti l_cRect = irr::core::recti(l_cViewportPos, l_cViewportSize);
+
+            printf("Add %s viewport: %i, %i / %i, %i\n",
+              m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[i].m_eType == SGameViewports::enType::Logo ? "Logo" : "Ranking",
+              l_cRect.UpperLeftCorner.X,
+              l_cRect.UpperLeftCorner.Y,
+              l_cRect.LowerRightCorner.X,
+              l_cRect.LowerRightCorner.Y
+            );
+
+            switch (m_cViewports.m_mDistribution[m_iNumOfViewports].m_vViewports[i].m_eType) {
+              case SGameViewports::enType::Logo: {
+                int l_iSize = l_cRect.getHeight() - l_cRect.getHeight() / 10;
+                irr::gui::IGUIImage* p = m_pGui->addImage(
+                  irr::core::recti(l_cRect.getCenter() - irr::core::vector2di(l_iSize / 2, l_iSize / 2), irr::core::dimension2di(l_iSize, l_iSize))
+                );
+                p->setImage(m_pDrv->getTexture("data/images/logo.png"));
+                break;
+              }
+
+              case SGameViewports::enType::Racedata: {
+                irr::gui::IGUIFont *l_pFont = m_pGlobal->getFont(dustbin::enFont::Big, irr::core::dimension2du(l_cRect.getSize()));
+
+                irr::core::dimension2du l_cRankSize = irr::core::dimension2du(l_cRect.getWidth() / 3, l_cRect.getHeight() / 16);
+                irr::core::position2di  l_cRankPos  = irr::core::position2di(l_cRect.getWidth() / 2, l_cRect.UpperLeftCorner.Y + l_cRankSize.Height);
+
+                int l_iOffsetY = 0;
+
+                int l_iPlayers = (int)m_pRaceData->m_vPlayers.size();
+
+                for (int i = 0; i < l_iPlayers; i++) {
+                  irr::core::position2di l_cThisPos = irr::core::position2di(
+                    i < l_iPlayers / 2 ? l_cRankPos.X - l_cRankSize.Width - 2 * m_pGlobal->getRasterSize() + l_cRect.UpperLeftCorner.X : l_cRankPos.X + 2 * m_pGlobal->getRasterSize() + l_cRect.UpperLeftCorner.X, 
+                    l_cRankPos.Y + l_iOffsetY
+                  );
+
+                  m_vRanking.push_back(new gui::CRankingElement(
+                    i + 1, 
+                    irr::core::recti(l_cThisPos, l_cRankSize),
+                    i == 0 ? irr::video::SColor(224, 255, 215, 0) : i == 1 ? irr::video::SColor(224, 192, 192, 192) : i == 2 ? irr::video::SColor(224, 191, 137, 112) : irr::video::SColor(224, 128, 128, 232),
+                    l_pFont,
+                    nullptr,
+                    m_pGui,
+                    l_cRect,
+                    false
+                  ));
+
+                  gameclasses::SPlayer *l_pPlayer = m_pRaceData->m_vRanking[i]->m_pPlayer;
+
+                  m_vRanking.back()->setData(
+                    l_pPlayer->m_sWName,
+                    0, 
+                    l_pPlayer->m_pRaceData->m_bWithdrawn,
+                    l_pPlayer->m_cBack, 
+                    l_pPlayer->m_cText, 
+                    l_pPlayer->m_cFrme,
+                    l_pPlayer->m_sNumber);
+
+                  m_vRanking.back()->setVisible(true);
+
+                  if (i == (l_iPlayers / 2) - 1)
+                    l_iOffsetY = 0;
+                  else
+                    l_iOffsetY += 3 * l_cRankSize.Height / 2;
+                }
+                break;
+              }
+            }
+          }
+        }
+
+
         if (m_pClient != nullptr)
           m_pGlobal->setCurrentMessage(L"Waiting for Server...");
       }
@@ -639,6 +726,7 @@ namespace dustbin {
         m_pPanelRndr = nullptr;
       }
 
+      m_vRanking.clear();
       m_pGlobal->progressSetCurrentRange(L"", 0, 100, 0);
       m_pShader = nullptr;
       helpers::addToDebugLog("CGameState::deactivate() }");
@@ -1010,6 +1098,11 @@ namespace dustbin {
       }
 
       m_pDrv->setViewPort(m_cScreen);
+
+      for (auto l_pRank : m_vRanking) {
+        l_pRank->draw();
+      }
+
       m_pGui->drawAll();
 
       // Fade-out of the HUD after the race must be drawn after the rest of the GUI so that the gray rectangle
@@ -1303,8 +1396,7 @@ namespace dustbin {
           }
         }
 
-        if (m_pPanelRndr != nullptr)
-          m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
+        updateRacePositions();
 
         delete l_pFactory;
       }
@@ -1424,6 +1516,8 @@ namespace dustbin {
 
         if (m_pLuaScript != nullptr)
           m_pLuaScript->onplayerrespawn(a_MarbleId, a_State == 1 ? 1 : 3);
+
+        updateRacePositions();
       }
     }
 
@@ -1573,6 +1667,8 @@ namespace dustbin {
           if ((*it)->m_pController != nullptr)
             (*it)->m_pController->onCheckpoint(a_MarbleId, a_Checkpoint);
         }
+
+        updateRacePositions();
       }
     }
 
@@ -1591,6 +1687,7 @@ namespace dustbin {
         if (m_pPanelRndr != nullptr)
           m_pPanelRndr->updateCurrentLap(m_aMarbles[l_iIndex]->m_pPlayer->m_pRaceData->m_iLapNo);
         
+        updateRacePositions();
       }
       m_pSoundIntf->playMarbleOneShotSound(a_MarbleId, enOneShots::Lap);
     }
@@ -1701,6 +1798,19 @@ namespace dustbin {
     void CGameState::updateRacePositions() {
       if (m_pPanelRndr != nullptr)
         m_pPanelRndr->updateRanking(m_pRaceData->m_vRanking);
+
+      for (int i = 0; i < (int)m_pRaceData->m_vRanking.size() && i < (int)m_vRanking.size(); i++) {
+        gameclasses::SPlayer *l_pPlayer = m_pRaceData->m_vRanking[i]->m_pPlayer;
+        m_vRanking[i]->setData(
+          l_pPlayer->m_sWName,
+          0,
+          false,
+          l_pPlayer->m_cBack,
+          l_pPlayer->m_cText,
+          l_pPlayer->m_cFrme,
+          l_pPlayer->m_sNumber
+        );
+      }
     }
 
     /**
