@@ -9,7 +9,7 @@ namespace dustbin {
       m_cText.Width  = 5 * m_cText.Width  / 4;
       m_cText.Height = 5 * m_cText.Height / 4;
 
-      m_cSize.Width  = a_cViewport.getWidth() / 4;
+      m_cSize.Width  = 2 * a_cViewport.getHeight() / 5;
       m_cSize.Height = m_cText.Height;
 
       m_cBar.Width  = m_cSize.Width - m_cText.Width;

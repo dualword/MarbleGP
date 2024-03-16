@@ -25,7 +25,7 @@ namespace dustbin {
 
       m_cRender = irr::core::dimension2du(l_iHeight, l_iHeight);
 
-      m_cSize.Width  = a_cViewport.getWidth () / 4;
+      m_cSize.Width  = 2 * a_cViewport.getHeight() / 5;
       m_cSize.Height = l_pFont != nullptr ? 4 * l_pFont->getDimension(L"Test").Height / 3 : a_cViewport.getHeight() / 56;
 
       std::string l_sFolder = helpers::getIconFolder(a_cViewport.getHeight());

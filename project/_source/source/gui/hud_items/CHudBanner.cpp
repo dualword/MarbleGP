@@ -40,16 +40,16 @@ namespace dustbin {
         m_cSource = irr::core::recti(irr::core::vector2di(0, 0), m_pBanners[0]->getOriginalSize());
 
         irr::core::dimension2du l_cCntSize = irr::core::dimension2du(
-          2 * a_cViewport.getWidth () / 3,
+          106 * a_cViewport.getHeight() / 100,
           2 * a_cViewport.getHeight() / 3
         );
 
         l_cCntSize.Height = 250 * l_cCntSize.Width / 2560;
 
-        irr::core::position2di  l_cPos    = a_cViewport.UpperLeftCorner;
+        irr::core::position2di  l_cPos = a_cViewport.UpperLeftCorner;
 
         irr::core::position2di l_cCntPos = irr::core::position2di(
-          l_cPos.X + a_cViewport.getWidth () / 2 - l_cCntSize.Width / 2,
+          l_cPos.X + a_cViewport.getWidth () / 2 - l_cCntSize.Width  / 2,
           l_cPos.Y + a_cViewport.getHeight() / 6 - l_cCntSize.Height / 2
         );
 

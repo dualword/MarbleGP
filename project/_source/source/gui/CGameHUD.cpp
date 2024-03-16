@@ -496,7 +496,7 @@ namespace dustbin {
       m_pDefFont = l_pSmall;
       m_cDefSize = getDimension(L"+666.6", m_pDefFont);
 
-      m_cLabelSize.Width  = a_cRect.getWidth() / 4;
+      m_cLabelSize.Width  = 2 * a_cRect.getHeight() / 5;
       m_cLabelSize.Height = l_pRegular->getDimension(L"666").Height;
 
       irr::core::dimension2du l_cSizeTop = getDimension(L"Lap"    , l_pSmall  );
