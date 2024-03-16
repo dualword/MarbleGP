@@ -1,5 +1,12 @@
 <ul>
   <li class="parent">
+    <b>2024-03-15 [1.3 Build 252]</b>
+    <ul>
+      <li>Some fixes in the menus</li>
+      <li>Some fixes in the in-game UI</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2024-02-18 [1.3 Build 250]</b>
     <ul>
       <li>Applied some final touches for the 1.3 release</li>
