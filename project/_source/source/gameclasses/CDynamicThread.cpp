@@ -493,7 +493,7 @@ namespace dustbin {
               irr::core::vector3df l_vDiff = l_vLinVel - p->m_vVelocity;
               irr::f32 l_fDot = l_vLinVel.dotProduct(p->m_vVelocity);
 
-              if (l_vDiff.getLength() > 30.0f && l_fDot < 0.0f) {
+              if (l_vDiff.getLength() > 75.0f && l_fDot < 0.0f) {
                 p->m_eState = CObjectMarble::enMarbleState::Stunned;
                 p->m_iStunnedStart = m_pWorld->m_iWorldStep;
                 sendPlayerstunned(p->m_iId, 1, m_pOutputQueue);
