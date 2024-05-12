@@ -3,7 +3,7 @@
     <b>2024-05-12 [1.3 Build 253]</b>
     <ul>
       <li>Update some in-game buttons</li>
-      <li>Fixed a rare crash when cancelling a race</li>
+      <li>Fixed a rare crash when canceling a race</li>
     </ul>
   </li>
   <li class="parent">
