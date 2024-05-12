@@ -723,112 +723,116 @@ namespace dustbin {
     }
 
     void SRace::fillCheckpointVector() {
-      std::string l_sFile = "data/levels/" + m_sTrack + "/laptimes_ai.txt";
-      printf("Read \"%s\"...\n", l_sFile.c_str());
-      irr::io::IReadFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile(l_sFile.c_str());
+      CGlobal *l_pGlobal = CGlobal::getInstance();
 
-      if (l_pFile != nullptr) {
-        char *l_pBuffer = new char[l_pFile->getSize() + 1];
-        memset(l_pBuffer, 0, l_pFile->getSize() + 1);
-        l_pFile->read(l_pBuffer, l_pFile->getSize());
+      if (l_pGlobal != nullptr) {
+        std::string l_sFile = "data/levels/" + m_sTrack + "/laptimes_ai.txt";
+        printf("Read \"%s\"...\n", l_sFile.c_str());
+        irr::io::IReadFile *l_pFile = l_pGlobal->getFileSystem()->createAndOpenFile(l_sFile.c_str());
 
-        l_pFile->drop();
+        if (l_pFile != nullptr) {
+          char *l_pBuffer = new char[l_pFile->getSize() + 1];
+          memset(l_pBuffer, 0, l_pFile->getSize() + 1);
+          l_pFile->read(l_pBuffer, l_pFile->getSize());
 
-        std::vector<std::string> l_vLines = helpers::splitString(l_pBuffer, '\n');
+          l_pFile->drop();
 
-        if ((*l_vLines.begin()).substr(0, m_sTrack.size()) == m_sTrack) {
-          printf("Correct track marker found.");
+          std::vector<std::string> l_vLines = helpers::splitString(l_pBuffer, '\n');
 
-          std::map<std::string, std::vector<int>> l_mData;
+          if ((*l_vLines.begin()).substr(0, m_sTrack.size()) == m_sTrack) {
+            printf("Correct track marker found.");
 
-          for (auto l_itLine = l_vLines.begin(); l_itLine != l_vLines.end(); l_itLine++) {
-            std::vector<std::string> l_vThis = helpers::splitString(*l_itLine, ';');
-            if (l_vThis.size() > 0) {
+            std::map<std::string, std::vector<int>> l_mData;
+
+            for (auto l_itLine = l_vLines.begin(); l_itLine != l_vLines.end(); l_itLine++) {
+              std::vector<std::string> l_vThis = helpers::splitString(*l_itLine, ';');
+              if (l_vThis.size() > 0) {
+                std::string l_sKey = "";
+
+                for (auto l_itTime = l_vThis.begin(); l_itTime != l_vThis.end(); l_itTime++) {
+                  if (l_itTime == l_vThis.begin()) {
+                    l_sKey = *l_itTime;
+                    l_mData[l_sKey] = std::vector<int>();
+                  }
+                  else {
+                    l_mData[l_sKey].push_back(std::atoi((*l_itTime).c_str()));
+                  }
+                }
+              }
+            }
+
+            // Make sure all players have a first lap started
+            for (auto l_pPlayer : m_vRanking) {
+              std::string l_sKey = "marble3";
+
+              if (l_pPlayer->m_pPlayer->m_sName.find_last_of('|') != std::string::npos) {
+                l_sKey = l_pPlayer->m_pPlayer->m_sName.substr(l_pPlayer->m_pPlayer->m_sName.find_last_of('|') + 1);
+              }
+
+              if (l_pPlayer->m_vLapCheckpoints.size() == 0) {
+                l_pPlayer->m_vLapCheckpoints.push_back(std::vector<int>());
+                l_pPlayer->m_vLapCheckpoints.back().push_back(l_mData[l_sKey].front());
+              }
+            }
+
+            // All AI players get their checkpoint times filled for all laps
+            for (auto l_pPlayer : m_vRanking) {
               std::string l_sKey = "";
 
-              for (auto l_itTime = l_vThis.begin(); l_itTime != l_vThis.end(); l_itTime++) {
-                if (l_itTime == l_vThis.begin()) {
-                  l_sKey = *l_itTime;
-                  l_mData[l_sKey] = std::vector<int>();
-                }
-                else {
-                  l_mData[l_sKey].push_back(std::atoi((*l_itTime).c_str()));
+              if (l_pPlayer->m_pPlayer->m_sName.find_last_of('|') != std::string::npos) {
+                l_sKey = l_pPlayer->m_pPlayer->m_sName.substr(l_pPlayer->m_pPlayer->m_sName.find_last_of('|') + 1);
+              }
+
+              if (l_sKey != "") {
+                while (l_pPlayer->m_vLapCheckpoints.size() < m_iLaps + 1) {
+                  int l_iLapStart = l_pPlayer->m_vLapCheckpoints.back().front();
+                  int l_iIndex    = (int)l_pPlayer->m_vLapCheckpoints.back().size();
+
+                  while (l_iIndex < l_mData[l_sKey].size() - 1) {
+                    l_pPlayer->m_vLapCheckpoints.back().push_back(l_iLapStart + (l_mData[l_sKey][l_iIndex] + ((std::rand() % 120) - 60)));
+                    l_iIndex++;
+                  }
+
+                  l_pPlayer->m_vLapCheckpoints.push_back(std::vector<int>());
+                  l_pPlayer->m_vLapCheckpoints.back().push_back(l_iLapStart + l_mData[l_sKey].back() + ((std::rand() % 120) - 60));
                 }
               }
             }
-          }
 
-          // Make sure all players have a first lap started
-          for (auto l_pPlayer : m_vRanking) {
-            std::string l_sKey = "marble3";
+            // Now we remove all checkpoint entries which are greater than the winner's finish time
+            updateRanking();
+            SRaceData *l_pLeader = *m_vRanking.begin();
+            int l_iRaceTime = l_pLeader->m_vLapCheckpoints.back().back();
 
-            if (l_pPlayer->m_pPlayer->m_sName.find_last_of('|') != std::string::npos) {
-              l_sKey = l_pPlayer->m_pPlayer->m_sName.substr(l_pPlayer->m_pPlayer->m_sName.find_last_of('|') + 1);
-            }
-
-            if (l_pPlayer->m_vLapCheckpoints.size() == 0) {
-              l_pPlayer->m_vLapCheckpoints.push_back(std::vector<int>());
-              l_pPlayer->m_vLapCheckpoints.back().push_back(l_mData[l_sKey].front());
-            }
-          }
-
-          // All AI players get their checkpoint times filled for all laps
-          for (auto l_pPlayer : m_vRanking) {
-            std::string l_sKey = "";
-
-            if (l_pPlayer->m_pPlayer->m_sName.find_last_of('|') != std::string::npos) {
-              l_sKey = l_pPlayer->m_pPlayer->m_sName.substr(l_pPlayer->m_pPlayer->m_sName.find_last_of('|') + 1);
-            }
-
-            if (l_sKey != "") {
-              while (l_pPlayer->m_vLapCheckpoints.size() < m_iLaps + 1) {
-                int l_iLapStart = l_pPlayer->m_vLapCheckpoints.back().front();
-                int l_iIndex    = (int)l_pPlayer->m_vLapCheckpoints.back().size();
-
-                while (l_iIndex < l_mData[l_sKey].size() - 1) {
-                  l_pPlayer->m_vLapCheckpoints.back().push_back(l_iLapStart + (l_mData[l_sKey][l_iIndex] + ((std::rand() % 120) - 60)));
-                  l_iIndex++;
+            for (auto l_pPlayer : m_vRanking) {
+              if (l_pPlayer != l_pLeader) {
+                for (auto l_itTime = l_pPlayer->m_vLapCheckpoints.begin(); l_itTime != l_pPlayer->m_vLapCheckpoints.end(); l_itTime++) {
+                  if ((*l_itTime).front() > l_iRaceTime) {
+                    std::vector<std::vector<int>>::iterator l_itRemove = l_itTime + 1;
+                    if (l_itRemove == l_pPlayer->m_vLapCheckpoints.end())
+                      break;
+                    else
+                      l_pPlayer->m_vLapCheckpoints.erase(l_itRemove);
+                  }
                 }
-
-                l_pPlayer->m_vLapCheckpoints.push_back(std::vector<int>());
-                l_pPlayer->m_vLapCheckpoints.back().push_back(l_iLapStart + l_mData[l_sKey].back() + ((std::rand() % 120) - 60));
               }
-            }
-          }
 
-          // Now we remove all checkpoint entries which are greater than the winner's finish time
-          updateRanking();
-          SRaceData *l_pLeader = *m_vRanking.begin();
-          int l_iRaceTime = l_pLeader->m_vLapCheckpoints.back().back();
-
-          for (auto l_pPlayer : m_vRanking) {
-            if (l_pPlayer != l_pLeader) {
+              int l_iLapNo = 1;
               for (auto l_itTime = l_pPlayer->m_vLapCheckpoints.begin(); l_itTime != l_pPlayer->m_vLapCheckpoints.end(); l_itTime++) {
-                if ((*l_itTime).front() > l_iRaceTime) {
-                  std::vector<std::vector<int>>::iterator l_itRemove = l_itTime + 1;
-                  if (l_itRemove == l_pPlayer->m_vLapCheckpoints.end())
-                    break;
-                  else
-                    l_pPlayer->m_vLapCheckpoints.erase(l_itRemove);
+                std::vector<std::vector<int>>::iterator l_itNext = l_itTime + 1;
+                if (l_itNext != l_pPlayer->m_vLapCheckpoints.end()) {
+                  int l_iLapTime = (*l_itNext).front() - (*l_itTime).front();
+                  if (l_pPlayer->m_iFastestLap == -1 || l_iLapTime < l_pPlayer->m_iFastestLap) {
+                    l_pPlayer->m_iFastestLap   = l_iLapTime;
+                    l_pPlayer->m_iFastestLapNo = l_iLapNo;
+                  }
                 }
+                l_iLapNo++;
               }
-            }
-
-            int l_iLapNo = 1;
-            for (auto l_itTime = l_pPlayer->m_vLapCheckpoints.begin(); l_itTime != l_pPlayer->m_vLapCheckpoints.end(); l_itTime++) {
-              std::vector<std::vector<int>>::iterator l_itNext = l_itTime + 1;
-              if (l_itNext != l_pPlayer->m_vLapCheckpoints.end()) {
-                int l_iLapTime = (*l_itNext).front() - (*l_itTime).front();
-                if (l_pPlayer->m_iFastestLap == -1 || l_iLapTime < l_pPlayer->m_iFastestLap) {
-                  l_pPlayer->m_iFastestLap   = l_iLapTime;
-                  l_pPlayer->m_iFastestLapNo = l_iLapNo;
-                }
-              }
-              l_iLapNo++;
             }
           }
+          else printf("Invalid track defined (%s / %s).\n", (*l_vLines.begin()).c_str(), m_sTrack.c_str());
         }
-        else printf("Invalid track defined (%s / %s).\n", (*l_vLines.begin()).c_str(), m_sTrack.c_str());
       }
     }
 
