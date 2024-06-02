@@ -108,6 +108,15 @@ namespace dustbin {
             l_cContact[i].surface.slip1 = (dReal)0.5;
             l_cContact[i].surface.slip2 = (dReal)0.5;
           }
+
+          CObjectMarble *l_pMrb1 = reinterpret_cast<CObjectMarble *>(l_pOdeNode1);
+          CObjectMarble *l_pMrb2 = reinterpret_cast<CObjectMarble *>(l_pOdeNode2);
+
+          bool l_bCollide1 = l_pMrb1->m_eState == CObjectMarble::enMarbleState::Rolling || l_pMrb1->m_eState == CObjectMarble::enMarbleState::Stunned || l_pMrb1->m_eState == CObjectMarble::enMarbleState::Countdown;
+          bool l_bCollide2 = l_pMrb2->m_eState == CObjectMarble::enMarbleState::Rolling || l_pMrb2->m_eState == CObjectMarble::enMarbleState::Stunned || l_pMrb2->m_eState == CObjectMarble::enMarbleState::Countdown;
+
+          if (l_bCollide1 != l_bCollide2)
+            return;
         }
         else {
           CObjectMarble *l_pMarble = l_pOdeNode1->getType() == enObjectType::Marble ? reinterpret_cast<CObjectMarble *>(l_pOdeNode1) : l_pOdeNode2->getType() == enObjectType::Marble? reinterpret_cast<CObjectMarble *>(l_pOdeNode2) : nullptr;
@@ -465,6 +474,9 @@ namespace dustbin {
             }
             else if (p->m_eState == CObjectMarble::enMarbleState::Finished) {
               dBodySetAngularDamping(p->m_cBody, (dReal)0.1);
+            }
+            else if (p->m_eState == CObjectMarble::enMarbleState::Stunned) {
+              dBodySetAngularDamping(p->m_cBody, (dReal)0.15);
             }
           }
         }
