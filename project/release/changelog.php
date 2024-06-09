@@ -1,5 +1,12 @@
 <ul>
   <li class="parent">
+    <b>2024-06-07 [1.3 Build 254]</b>
+    <ul>
+      <li>Finished and respawning marbles do no longer collide with racing marbles</li>
+      <li>Stunned marbles do now automatically activate the brake</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2024-05-12 [1.3 Build 253]</b>
     <ul>
       <li>Update some in-game buttons</li>
