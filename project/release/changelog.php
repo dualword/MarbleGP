@@ -1,5 +1,12 @@
 <ul>
   <li class="parent">
+    <b>2024-06-14 [1.3 Build 255]</b>
+    <ul>
+      <li>Tracks &quot;Steep: Oval&quot; and &quot;Steep: Eight&quot; redone</li>
+      <li>Some in-game UI updates for the Android version</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2024-06-07 [1.3 Build 254]</b>
     <ul>
       <li>Finished and respawning marbles do no longer collide with racing marbles</li>
