@@ -158,6 +158,10 @@ namespace dustbin {
             return true;
           }
 
+          case messages::enMessageIDs::ObjectMoved:
+            // "Object moved" messages are simply skipped
+            return true;
+
           default:
             break;
         }
