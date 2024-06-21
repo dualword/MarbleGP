@@ -10,6 +10,7 @@ g_HammerOld  = 0
 
 g_KickInterval = 360
 g_KickState    = 1
+g_KickLastMod  = 0
 
 g_KickData = {
   [1] = { histop = 83, lostop =   0, velocity = -150 },
@@ -21,6 +22,7 @@ g_KickData = {
 g_GateInterval = 240
 g_GateVelocity = 75
 g_GateState    = 0
+g_GateLastMod  = 0
 
 g_BlockInterval = 240
 g_BlockVecocity = 150
@@ -79,7 +81,7 @@ function onstep(a_stepno)
   end
   
   -- Handle Obstacle Two: The Kicker
-  if a_stepno % g_KickInterval == 0 then
+  if a_stepno > g_KickInterval + g_KickLastMod then
     physics:sethistop(23526, g_KickData[g_KickState]["histop"])
     physics:setlostop(23526, g_KickData[g_KickState]["lostop"])
     
@@ -87,7 +89,8 @@ function onstep(a_stepno)
     
     physics:sendluamessage(3, g_KickState, "")
     
-    g_KickState = g_KickState + 1
+    g_KickState   = g_KickState + 1
+    g_KickLastMod = a_stepno
     
     if g_KickData[g_KickState] == nil then
       g_KickState = 1
@@ -96,34 +99,38 @@ function onstep(a_stepno)
   
   -- Handle Obstacle three: the Gate
   if g_GateState == 0 then
-    if a_stepno % g_GateInterval == 0 then
+    if a_stepno > g_GateInterval + g_GateLastMod then
       physics:sethistop(23420, 71.0)
       physics:startmotor(23420, g_GateVelocity, 500)
-      g_GateState = 1
+      g_GateState   = 1
+      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 0, "")
     end
   elseif g_GateState == 1 then
-    if a_stepno % g_GateInterval == 0 then
+    if a_stepno > g_GateInterval + g_GateLastMod then
       physics:setlostop(23420, 35.5)
       physics:startmotor(23420, -g_GateVelocity, 500)
-      g_GateState = 2
+      g_GateState   = 2
+      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 1, "")
     end
   elseif g_GateState == 2 then
-    if a_stepno % g_GateInterval == 0 then
+    if a_stepno > g_GateInterval + g_GateLastMod then
       physics:setlostop(23420, 0.0)
       physics:startmotor(23420, -g_GateVelocity, 500)
-      g_GateState = 3
+      g_GateState   = 3
+      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 2, "")
     end
   elseif g_GateState == 3 then
-    if a_stepno % g_GateInterval == 0 then
+    if a_stepno > g_GateInterval + g_GateLastMod then
       physics:sethistop(23420, 35.0)
       physics:startmotor(23420, g_GateVelocity, 500)
-      g_GateState = 0
+      g_GateState   = 0
+      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 3, "")
     end
