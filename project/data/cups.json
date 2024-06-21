@@ -36,6 +36,14 @@
     ]
   },
   {
+    "name": "Steep Cup",
+    "description": "Race all tracks which include steep turns",
+    "races": [
+      { "track": "steep_oval", "laps": 12 },
+      { "track": "steep_eight", "laps": 15 }
+    ]
+  },
+  {
     "name": "Too Complex Cup",
     "description": "If you are smart and can handle complex tracks you're the right person for this cup.",
     "races": [
@@ -93,6 +101,8 @@
       { "track" : "jump_eight", "laps": 8 },
       { "track" : "loop_single", "laps": 4 },
       { "track" : "loop_double", "laps": 6 },
+      { "track": "steep_oval", "laps": 6 },
+      { "track": "steep_eight", "laps": 7 },
       { "track" : "small", "laps": 4 },
       { "track" : "eight_hi_lo", "laps": 5 },
       { "track" : "hopping", "laps": 6 },
