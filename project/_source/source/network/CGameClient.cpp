@@ -159,7 +159,8 @@ namespace dustbin {
           }
 
           case messages::enMessageIDs::ObjectMoved:
-            // "Object moved" messages are simply skipped
+          case messages::enMessageIDs::LuaMessage:
+            // "Object moved" and "LUA" messages are simply skipped
             return true;
 
           default:

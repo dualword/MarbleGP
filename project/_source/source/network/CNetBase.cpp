@@ -197,8 +197,8 @@ namespace dustbin {
     * @param a_pMessage the message to send
     */
     void CNetBase::sendMessage(ENetPeer* a_pPeer, messages::IMessage* a_pMessage) {
-      if (a_pMessage->getMessageId() != messages::enMessageIDs::ObjectMoved) {
-        // We skip "Object Moved" messages
+      if (a_pMessage->getMessageId() != messages::enMessageIDs::ObjectMoved && a_pMessage->getMessageId() != messages::enMessageIDs::LuaMessage) {
+        // We skip "Object Moved" and "LUA" messages
         messages::CSerializer64 l_cSerializer;
         a_pMessage->serialize(&l_cSerializer);
         std::string l_sMsg = l_cSerializer.getMessageAsString();
