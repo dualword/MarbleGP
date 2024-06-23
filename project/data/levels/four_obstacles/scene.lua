@@ -1,17 +1,19 @@
 
+system:executeluascript("levels/four_obstacles/track_functions.lua")
+
 g_BlockRotation = {
-  [ 1] = 270,
-  [ 2] = 30,
-  [ 3] = 150,
-  [ 4] = 270,
-  [ 5] = 30,
-  [ 6] = 150,
-  [ 7] = 270,
-  [ 8] = 30,
-  [ 9] = 150,
-  [10] = 270,
-  [11] = 30,
-  [12] = 150
+  [ 0] = 270,
+  [ 1] = 30,
+  [ 2] = 150,
+  [ 3] = 270,
+  [ 4] = 30,
+  [ 5] = 150,
+  [ 6] = 270,
+  [ 7] = 30,
+  [ 8] = 150,
+  [ 9] = 270,
+  [10] = 30,
+  [11] = 150
 }
 
 g_GateAngle = 0.0
@@ -52,26 +54,34 @@ function onstep(a_stepno)
   
   scene:setposition(23623, l_WarnPosition)
   
-  g_GateAngle = g_GateAngle + g_GateDir
+  local l_State = getGateState(a_stepno)
+  local l_Steps = getGateTime (a_stepno)
   
-  if g_GateAngle <= -180.0 then
-    g_GateDir = -g_GateDir
-    g_GateAngle = -180.0
-  elseif g_GateAngle >= 0.0 then
-    g_GateDir = -g_GateDir 
-    g_GateAngle = 0.0
-  end
+  if l_State == 0 then
+    g_GateAngle = 180.0 + l_Steps * 90.0 / g_GateTime
+  elseif l_State == 1 then
+    g_GateAngle = 180.0 + (90 + (l_Steps * 90.0 / g_GateTime))
+  elseif l_State == 2 then
+    g_GateAngle = 180.0 + (180 - (l_Steps * 90.0 / g_GateTime))
+  elseif l_State == 3 then
+    g_GateAngle = 180.0 + (90 - (l_Steps * 90.0 / g_GateTime))
+  end  
   
   scene:setrotation(23648, { x = 0.0, y = 0.0, z = g_GateAngle })
   
   g_BlockAngle = g_BlockAngle + g_BlockDir
   
-  if g_BlockAngle <= -180.0 then
-    g_BlockDir = -g_BlockDir 
-    g_BlockAngle = -180.0
-  elseif g_BlockAngle >= 0.0 then
-    g_BlockDir = -g_BlockDir 
-    g_BlockAngle = 0.0
+  l_State = getKickerState(a_stepno)
+  l_Steps = getKickerTime (a_stepno)
+  
+  if l_State == 0 then
+    g_BlockAngle = 180.0 + l_Steps * 90.0 / g_KickerTime
+  elseif l_State == 1 then
+    g_BlockAngle = 180.0 + (90 + (l_Steps * 90.0 / g_KickerTime))
+  elseif l_State == 2 then
+    g_BlockAngle = 180.0 + (180 - (l_Steps * 90.0 / g_KickerTime))
+  elseif l_State == 3 then
+    g_BlockAngle = 180.0 + (90 - (l_Steps * 90.0 / g_KickerTime))
   end
   
   scene:setrotation(23672, { x = 0.0, y = 0.0, z = g_BlockAngle })

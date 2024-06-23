@@ -8,9 +8,7 @@ g_Hammer     = 0
 g_HammerTime = 0
 g_HammerOld  = 0
 
-g_KickInterval = 360
-g_KickState    = 1
-g_KickLastMod  = 0
+g_KickState = 1
 
 g_KickData = {
   [1] = { histop = 83, lostop =   0, velocity = -150 },
@@ -22,31 +20,33 @@ g_KickData = {
 g_GateInterval = 240
 g_GateVelocity = 75
 g_GateState    = 0
-g_GateLastMod  = 0
 
 g_BlockInterval = 240
 g_BlockVecocity = 150
-g_BlockState    = 1
+g_BlockState    = -1
 g_BlockStep     = 0
 
 g_BlockData = {
-  [ 1] = { x =  1.0, y = 0.0, z =  0.0 },
-  [ 2] = { x =  0.0, y = 0.0, z = -1.0 },
+  [ 0] = { x =  1.0, y = 0.0, z =  0.0 },
+  [ 1] = { x =  0.0, y = 0.0, z = -1.0 },
+  [ 2] = { x = -1.0, y = 0.0, z =  0.0 },
   [ 3] = { x = -1.0, y = 0.0, z =  0.0 },
-  [ 4] = { x = -1.0, y = 0.0, z =  0.0 },
-  [ 5] = { x =  0.0, y = 0.0, z = -1.0 },
+  [ 4] = { x =  0.0, y = 0.0, z = -1.0 },
+  [ 5] = { x =  1.0, y = 0.0, z =  0.0 },
   [ 6] = { x =  1.0, y = 0.0, z =  0.0 },
-  [ 7] = { x =  1.0, y = 0.0, z =  0.0 },
-  [ 8] = { x =  0.0, y = 0.0, z =  1.0 },
+  [ 7] = { x =  0.0, y = 0.0, z =  1.0 },
+  [ 8] = { x = -1.0, y = 0.0, z =  0.0 },
   [ 9] = { x = -1.0, y = 0.0, z =  0.0 },
-  [10] = { x = -1.0, y = 0.0, z =  0.0 },
-  [11] = { x =  0.0, y = 0.0, z =  1.0 },
-  [12] = { x =  1.0, y = 0.0, z =  0.0 }
+  [10] = { x =  0.0, y = 0.0, z =  1.0 },
+  [11] = { x =  1.0, y = 0.0, z =  0.0 }
 }
 
 function onstep(a_stepno)
+  local l_State = -1
+  
   -- Handle Obstacle One: Hammer
   local l_RotationHammer = physics:getrotation(23331)
+  
   
   if g_Hammer == 0 then
     if l_RotationHammer["x"] <= -90 then
@@ -80,71 +80,58 @@ function onstep(a_stepno)
     end
   end
   
+  l_State = getKickerState(a_stepno) + 1
+  
   -- Handle Obstacle Two: The Kicker
-  if a_stepno > g_KickInterval + g_KickLastMod then
+  if l_State ~= g_KickState then
+    g_KickState = l_State
+    
     physics:sethistop(23526, g_KickData[g_KickState]["histop"])
     physics:setlostop(23526, g_KickData[g_KickState]["lostop"])
     
     physics:startmotor(23526, g_KickData[g_KickState]["velocity"], 500)
     
     physics:sendluamessage(3, g_KickState, "")
-    
-    g_KickState   = g_KickState + 1
-    g_KickLastMod = a_stepno
-    
-    if g_KickData[g_KickState] == nil then
-      g_KickState = 1
-    end
   end
   
+  l_State = getGateState(a_stepno)
+  
   -- Handle Obstacle three: the Gate
-  if g_GateState == 0 then
-    if a_stepno > g_GateInterval + g_GateLastMod then
+  if l_State ~= g_GateState then
+    g_GateState = l_State
+    
+    if g_GateState == 0 then
       physics:sethistop(23420, 71.0)
       physics:startmotor(23420, g_GateVelocity, 500)
-      g_GateState   = 1
-      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 0, "")
-    end
-  elseif g_GateState == 1 then
-    if a_stepno > g_GateInterval + g_GateLastMod then
+    elseif g_GateState == 1 then
       physics:setlostop(23420, 35.5)
       physics:startmotor(23420, -g_GateVelocity, 500)
-      g_GateState   = 2
-      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 1, "")
-    end
-  elseif g_GateState == 2 then
-    if a_stepno > g_GateInterval + g_GateLastMod then
+    elseif g_GateState == 2 then
       physics:setlostop(23420, 0.0)
       physics:startmotor(23420, -g_GateVelocity, 500)
-      g_GateState   = 3
-      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 2, "")
-    end
-  elseif g_GateState == 3 then
-    if a_stepno > g_GateInterval + g_GateLastMod then
+    elseif g_GateState == 3 then
       physics:sethistop(23420, 35.0)
       physics:startmotor(23420, g_GateVelocity, 500)
-      g_GateState   = 0
-      g_GateLastMod = a_stepno
       
       physics:sendluamessage(2, 3, "")
     end
   end
   
-  -- Handle obstacle four: the Blocker
-  if a_stepno - g_BlockStep > g_BlockInterval then
-    physics:sendluamessage(1, g_BlockState, "")
-    physics:setjointaxis(23473, g_BlockData[g_BlockState])
-    g_BlockStep  = a_stepno
-    g_BlockState = g_BlockState + 1
+  if a_stepno > 240 then
+    l_State = getBlockState(a_stepno - 240)
     
-    if g_BlockData[g_BlockState] == nil then
-      g_BlockState = 1
+    -- Handle obstacle four: the Blocker
+    if g_BlockState ~= l_State then
+      g_BlockState = l_State
+      
+      physics:sendluamessage(1, g_BlockState, "")
+      physics:setjointaxis(23473, g_BlockData[g_BlockState])
     end
   end
 end
