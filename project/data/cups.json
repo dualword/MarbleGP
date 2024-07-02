@@ -3,9 +3,9 @@
     "name": "Rookie Cup",
     "description": "This is a cup for you to start if you are new to the game",
     "races": [
-      { "track": "noob_oval", "laps": 8 },
-      { "track": "noob_eight_crossing", "laps": 5 },
-      { "track": "noob_complex", "laps": 2 }
+      { "track": "noob_oval", "laps": 10 },
+      { "track": "noob_eight_crossing", "laps": 12 },
+      { "track": "noob_complex", "laps": 3 }
     ]
   },
   {
@@ -13,26 +13,26 @@
     "description": "Like Flat Track racing? Here's your cup.",
     "races": [
       { "track": "oval", "laps": 8 },
-      { "track": "eight_crossing", "laps": 5 },
-      { "track": "flat_counter_crossings", "laps": 2 }
+      { "track": "eight_crossing", "laps": 12 },
+      { "track": "flat_counter_crossings", "laps": 5 }
     ]
   },
   {
     "name": "Jumpin' Cup Flash",
     "description": "Only tracks with jumps are included in this cup",
     "races": [
-      { "track": "stepstones", "laps": 4 },
-      { "track": "hi_jump", "laps": 5 },
-      { "track": "long_jump", "laps": 3 },
-      { "track": "jump_eight", "laps": 8 }
+      { "track": "stepstones", "laps": 6 },
+      { "track": "hi_jump", "laps": 10 },
+      { "track": "long_jump", "laps": 5 },
+      { "track": "jump_eight", "laps": 16 }
     ]
   },
   {
     "name": "Loops only Cup",
     "description": "Do you like the tracks with loops? Get going, here they are.",
     "races": [
-      { "track": "loop_single", "laps": 6 },
-      { "track": "loop_double", "laps": 4 }
+      { "track": "loop_single", "laps": 12 },
+      { "track": "loop_double", "laps": 9 }
     ]
   },
   {
@@ -47,45 +47,45 @@
     "name": "Too Complex Cup",
     "description": "If you are smart and can handle complex tracks you're the right person for this cup.",
     "races": [
-      { "track": "small", "laps": 4 },
-      { "track": "eight_hi_lo", "laps": 5 },
-      { "track": "hopping", "laps": 6 },
-      { "track": "tower_ascend", "laps": 3 }
+      { "track": "small", "laps": 7 },
+      { "track": "eight_hi_lo", "laps": 9 },
+      { "track": "hopping", "laps": 8 },
+      { "track": "tower_ascend", "laps": 5 }
     ]
   },
   {
     "name": "Cup on the Move",
     "description": "Only tracks with moving objects are allowed for this cup",
     "races": [
-      { "track": "rotor", "laps": 5 },
-      { "track": "the_gates", "laps": 8 },
-      { "track": "four_obstacles", "laps": 9 }
+      { "track": "rotor", "laps": 10 },
+      { "track": "the_gates", "laps": 12 },
+      { "track": "four_obstacles", "laps": 8 }
     ]
   },
   {
     "name": "All in Cup",
     "description": "This is the cup for everyone who likes Poker: all in for this cup",
     "races": [
-      { "track" : "noob_oval", "laps": 8 },
-      { "track" : "noob_eight_crossing", "laps": 5 },
-      { "track" : "noob_complex", "laps": 2 },
+      { "track" : "noob_oval", "laps": 12 },
+      { "track" : "noob_eight_crossing", "laps": 8 },
+      { "track" : "noob_complex", "laps": 5 },
       { "track" : "oval", "laps": 8 },
-      { "track" : "eight_crossing", "laps": 5 },
-      { "track" : "flat_counter_crossings", "laps": 2 },
-      { "track" : "stepstones", "laps": 4 },
-      { "track" : "hi_jump", "laps": 5 },
-      { "track" : "long_jump", "laps": 4 },
-      { "track" : "jump_eight", "laps": 8 },
-      { "track" : "loop_double", "laps": 6 },
-      { "track" : "loop_single", "laps": 4 },
-      { "track" : "steep_oval", "laps": 12 },
-      { "track" : "steep_eight", "laps": 9 },
-      { "track" : "small", "laps": 4 },
+      { "track" : "eight_crossing", "laps": 6 },
+      { "track" : "flat_counter_crossings", "laps": 8 },
+      { "track" : "steep_oval", "laps": 20 },
+      { "track" : "steep_eight", "laps": 18 },
+      { "track" : "stepstones", "laps": 8 },
+      { "track" : "hi_jump", "laps": 10 },
+      { "track" : "long_jump", "laps": 9 },
+      { "track" : "jump_eight", "laps": 16 },
+      { "track" : "loop_double", "laps": 8 },
+      { "track" : "loop_single", "laps": 12 },
+      { "track" : "small", "laps": 6 },
       { "track" : "eight_hi_lo", "laps": 5 },
-      { "track" : "hopping", "laps": 6 },
-      { "track" : "tower_ascend", "laps": 3 },
-      { "track" : "rotor", "laps": 5 },
-      { "track" : "the_gates", "laps": 8 },
+      { "track" : "hopping", "laps": 8 },
+      { "track" : "tower_ascend", "laps": 4 },
+      { "track" : "rotor", "laps": 12 },
+      { "track" : "the_gates", "laps": 10 },
       { "track" : "four_obstacles", "laps": 9 }
     ]
   },
@@ -93,22 +93,22 @@
     "name": "Dustbin::Games Cup",
     "description": "A cup comprised of the favorite tracks selected by Dustbin::Games",
     "races": [
-      { "track" : "eight_crossing", "laps": 5 },
-      { "track" : "flat_counter_crossings", "laps": 2 },
-      { "track" : "stepstones", "laps": 4 },
-      { "track" : "hi_jump", "laps": 5 },
-      { "track" : "long_jump", "laps": 4 },
-      { "track" : "jump_eight", "laps": 8 },
-      { "track" : "loop_single", "laps": 4 },
-      { "track" : "loop_double", "laps": 6 },
-      { "track": "steep_oval", "laps": 6 },
-      { "track": "steep_eight", "laps": 7 },
-      { "track" : "small", "laps": 4 },
-      { "track" : "eight_hi_lo", "laps": 5 },
-      { "track" : "hopping", "laps": 6 },
-      { "track" : "rotor", "laps": 5 },
-      { "track" : "the_gates", "laps": 8 },
-      { "track" : "four_obstacles", "laps": 9 }
+      { "track" : "eight_crossing", "laps": 8 },
+      { "track" : "flat_counter_crossings", "laps": 5 },
+      { "track" : "stepstones", "laps": 8 },
+      { "track" : "hi_jump", "laps": 10 },
+      { "track" : "long_jump", "laps": 6 },
+      { "track" : "jump_eight", "laps": 15 },
+      { "track" : "loop_single", "laps": 8 },
+      { "track" : "loop_double", "laps": 10 },
+      { "track": "steep_oval", "laps": 20 },
+      { "track": "steep_eight", "laps": 18 },
+      { "track" : "small", "laps": 8 },
+      { "track" : "eight_hi_lo", "laps": 6 },
+      { "track" : "hopping", "laps": 9 },
+      { "track" : "rotor", "laps": 10 },
+      { "track" : "the_gates", "laps": 12 },
+      { "track" : "four_obstacles", "laps": 10 }
     ]
   }
 ]
