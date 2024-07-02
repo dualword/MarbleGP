@@ -33,7 +33,7 @@ namespace dustbin {
         irr::ITimer *m_pTimer;
         irr::u32 m_iTime;
 
-        gui::CDustbinCheckbox *m_aMode[3];
+        gui::CDustbinCheckbox *m_aMode[5];
         int m_iMode;
 
         void updateCupData() {
@@ -76,6 +76,8 @@ namespace dustbin {
 
               l_bSingleLap = m_pLaps->getSelected() == 0;
               break;
+            case 3: s += std::to_wstring(std::max( 2, std::get<1>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent]) / 2)); break;
+            case 4: s += std::to_wstring(std::min(30, std::get<1>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent]) * 2)); break;
           }
 
           if (l_bSingleLap)
@@ -132,7 +134,7 @@ namespace dustbin {
             m_pLaps->setEnabled(m_iMode == 2);
           }
 
-          for (int i = 0; i < 3; i++) {
+          for (int i = 0; i < 5; i++) {
             m_aMode[i] = reinterpret_cast<gui::CDustbinCheckbox *>(helpers::findElementByNameAndType("cm_" + std::to_string(i), (irr::gui::EGUI_ELEMENT_TYPE)gui::g_DustbinCheckboxId, m_pGui->getRootGUIElement()));
             if (m_aMode[i] != nullptr)
               m_aMode[i]->setChecked(i == m_iMode);
@@ -181,9 +183,31 @@ namespace dustbin {
               }
               else if (l_sSender == "ok") {
                 if (m_iSelectedCup >= 0 && m_iSelectedCup < m_vCups.size()) {
-                  if (m_iMode == 1 || m_iMode == 2) {
-                    for (auto& l_cRace : m_vCups[m_iSelectedCup].m_vRaces) {
-                      std::get<1>(l_cRace) = m_iMode == 1 ? 1 : m_pLaps != nullptr ? m_pLaps->getSelected() + 1 : 2;
+                  for (auto& l_cRace : m_vCups[m_iSelectedCup].m_vRaces) {
+                    switch (m_iMode) {
+                      case 0:
+                        // Default, nothing to do
+                        break;
+
+                      case 1:
+                        // Black lap mode, 1 lap per race
+                        std::get<1>(l_cRace) = 1;
+                        break;
+
+                      case 2:
+                        // Blue lap mode
+                        std::get<1>(l_cRace) = m_pLaps != nullptr ? m_pLaps->getSelected() + 1 : 2;
+                        break;
+
+                      case 3:
+                        // Short cup
+                        std::get<1>(l_cRace) = std::max(2, std::get<1>(l_cRace) / 2);
+                        break;
+
+                      case 4:
+                        // Long cup
+                        std::get<1>(l_cRace) = std::min(30, std::get<1>(l_cRace) * 2);
+                        break;
                     }
                   }
 
@@ -193,13 +217,12 @@ namespace dustbin {
 
                   int l_iNum = 1;
                   for (auto l_tRace : m_vCups[m_iSelectedCup].m_vRaces) {
-                    int l_iLaps = m_iMode == 1 ? 1 : (m_iMode == 2 && m_pLaps != nullptr) ? m_pLaps->getSelected() + 1 : std::get<1>(l_tRace);
                     l_pTournament->m_vRaces.push_back(
                       new gameclasses::SRace(
                         std::get<0>(l_tRace),
                         m_pState->getGlobal()->getTrackName(std::get<0>(l_tRace)),
                         "\"" + m_vCups[m_iSelectedCup].m_sName + "\" Race #" + std::to_string(l_iNum) + " of " + std::to_string(m_vCups[m_iSelectedCup].m_vRaces.size()),
-                        l_iLaps,
+                        std::get<1>(l_tRace),
                         l_pTournament
                       )
                     );
@@ -224,7 +247,7 @@ namespace dustbin {
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
               if (l_sSender.substr(0, 3) == "cm_") {
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 5; i++) {
                   if (m_aMode[i] != nullptr) {
                     bool l_bChecked = l_sSender == m_aMode[i]->getName();
                     m_aMode[i]->setChecked(l_bChecked);

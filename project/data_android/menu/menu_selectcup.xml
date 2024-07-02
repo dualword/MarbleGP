@@ -26,7 +26,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 0, 10, 50, 12">
+      <element type="staticText" rect="relative: 0, 8, 50, 10">
         <attributes>
           <attribute key="Caption" value="Insert Name of the Cup here" />
           <attribute key="HTextAlign" value="center" />
@@ -35,7 +35,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 0, 12, 80, 14" font="small">
+      <element type="staticText" rect="relative: 0, 10, 80, 13" font="small">
         <attributes>
           <attribute key="Caption" value="Insert Description of the Cup here" />
           <attribute key="HTextAlign" value="center" />
@@ -44,7 +44,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 25, 17, 50, 19" font="small">
+      <element type="staticText" rect="relative: 25, 14, 50, 16" font="small">
         <attributes>
           <attribute key="Caption" value="Race 46 / 66" />
           <attribute key="HTextAlign" value="center" />
@@ -53,7 +53,7 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 33, 20, 43, 30">
+      <element type="image" rect="relative: 31, 16, 45, 30">
         <attributes>
           <attribute key="UseAlphaChannel" value="true" />
           <attribute key="ScaleImage" value="true" />
@@ -71,9 +71,23 @@
         </attributes>
       </element>
       
+      <element type="DustbinCheckbox" rect="relative: 16, 16, 18, 18">
+        <attributes>
+          <attribute key="Name" value="cm_3" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+      </element>
+      
       <element type="DustbinCheckbox" rect="relative: 2, 20, 4, 22">
         <attributes>
           <attribute key="Name" value="cm_1" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 16, 20, 18, 22">
+        <attributes>
+          <attribute key="Name" value="cm_4" />
           <attribute key="Selected" value="0" />
         </attributes>
       </element>
@@ -86,23 +100,37 @@
       </element>
       
       
-      <element type="staticText" rect="relative: 5, 16, 30, 18" font="small">
+      <element type="staticText" rect="relative: 5, 16, 16, 18" font="small" tooltip="Race the default number of laps">
         <attributes>
-          <attribute key="Caption" value="Default Mode (Number of Laps as defined)" />
+          <attribute key="Caption" value="Default Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 5, 20, 30, 22" font="small">
+      <element type="staticText" rect="relative: 19, 16, 33, 18" font="small" tooltip="Race the half the number of laps">
         <attributes>
-          <attribute key="Caption" value="Black Lap Mode (One Lap per Race)" />
+          <attribute key="Caption" value="Short Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 5, 24, 30, 26" font="small">
+      <element type="staticText" rect="relative: 5, 20, 16, 22" font="small" tooltip="One lap per race">
         <attributes>
-          <attribute key="Caption" value="Blue Lap Mode (Fixed Number of Laps per Race)" />
+          <attribute key="Caption" value="Black Lap Cup" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 19, 20, 33, 22" font="small" tooltip="Race twice as many laps per race">
+        <attributes>
+          <attribute key="Caption" value="Long Cup" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 5, 24, 30, 26" font="small" tooltip="Fixed number of laps per race">
+        <attributes>
+          <attribute key="Caption" value="Blue Lap Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
