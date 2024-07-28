@@ -49,14 +49,12 @@ namespace dustbin {
     */
     void CMenuState::activate() {
       if (m_pGlobal->getGlobal("FirstStart") == "true") {
-        m_pGlobal->setGlobal("FirstStart", "maybe");
-        clearMenuStack();
-        pushToMenuStack("menu_detectgfx");
-      }
-      else if (m_pGlobal->getGlobal("FirstStart") == "maybe") {
         m_pGlobal->setGlobal("FirstStart", "false");
         clearMenuStack();
         pushToMenuStack("menu_intro");
+#ifndef _ANDROID
+        pushToMenuStack("menu_detectgfx");
+#endif
       }
 
       m_eState = enState::None;
