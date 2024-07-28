@@ -202,7 +202,7 @@ namespace dustbin {
               std::wstring l_sDeficit = L"";
 
               if (l_iPos == 0) {
-                l_sDeficit = l_pData->m_vLapCheckpoints.size() > 0 && l_pData->m_vLapCheckpoints.back().size() > 0 ? helpers::convertToTime(l_pData->m_vLapCheckpoints.back().back()) : 0;
+                l_sDeficit = l_pData->m_vLapCheckpoints.size() > 0 && l_pData->m_vLapCheckpoints.back().size() > 0 ? helpers::convertToTime(l_pData->m_vLapCheckpoints.back().back()) : L"-";
               }
               else {
                 if (l_pData->m_bWithdrawn)

@@ -19,6 +19,7 @@ namespace dustbin {
   #define c_iProfileStart 43
   #define c_iProfileEnd 44
   #define c_iAllProfileEnd 45
+  #define c_iExtProfile 46
 
   #define c_sProfileHead "PlayerProfiles"
 

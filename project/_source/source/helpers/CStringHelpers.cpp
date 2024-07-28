@@ -366,5 +366,23 @@ namespace dustbin {
         return true;
       }
     }
+
+
+    /**
+    * Convert a timestamp to a date string
+    * @param a_iTime the timestamp
+    * @return the string representation of the date as YYYY-MM-DD
+    */
+    std::string convertTimestamp(irr::u64 a_iTime) {
+      time_t l_iTime = (time_t)a_iTime;
+      tm *l_pTime;
+      l_pTime = localtime(&l_iTime);
+
+      char l_sTime[1024];
+      strftime(l_sTime, 1024, "%F", l_pTime);
+
+      std::string l_sRet = l_sTime;
+      return l_sRet;
+    }
   }
 }

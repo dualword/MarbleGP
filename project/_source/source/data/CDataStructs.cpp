@@ -10,6 +10,8 @@
 #include <Defines.h>
 #include <CGlobal.h>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 #include <ostream>
 #include <random>
 #include <vector>
@@ -393,6 +395,8 @@ namespace dustbin {
       messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sSerialized.c_str());
       std::vector<SPlayerData> l_vRet;
 
+      std::wstring l_sPath = platform::portableGetDataPath();
+
       if (l_cSerializer.getS32() == c_iProfileHead) {
         if (l_cSerializer.getString() == c_sProfileHead) {
           while (l_cSerializer.hasMoreMessages()) {
@@ -405,6 +409,25 @@ namespace dustbin {
                 printf("Invalid profile end token.\n");
               else
                 l_vRet.push_back(l_cPlayer);
+            }
+            else if (l_iToken == c_iExtProfile) {
+              std::string l_sName = l_cSerializer.getString();
+
+              if (l_cSerializer.getS32() == c_iProfileEnd) {
+                std::string l_sFile = helpers::ws2s(l_sPath) + messages::urlEncode(l_sName) + ".profile";
+                std::ifstream l_cFile(l_sFile);
+
+                if (l_cFile.is_open()) {
+                  std::string l_sData((std::istreambuf_iterator<char>(l_cFile)), std::istreambuf_iterator<char>());
+
+                  SPlayerData l_cData = SPlayerData();
+                  l_cData.deserialize(l_sData);
+
+                  l_vRet.push_back(l_cData);
+
+                  l_cFile.close();
+                }
+              }
             }
             else printf("Invalid profile start token.\n");
           }

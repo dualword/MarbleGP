@@ -94,5 +94,12 @@ namespace dustbin {
     * @return true if a bot class was found, false otherwise
     */
     bool splitStringNameBot(const std::wstring &a_sInput, std::wstring &a_sName, std::wstring &a_sBot);
+
+    /**
+    * Convert a timestamp to a date string
+    * @param a_iTime the timestamp
+    * @return the string representation of the date as YYYY-MM-DD
+    */
+    std::string convertTimestamp(irr::u64 a_iTime);
   }
 }
