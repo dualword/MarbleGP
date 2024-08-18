@@ -300,6 +300,8 @@ namespace dustbin {
           }
 
           m_pAuto = new helpers::CAutoMenu(m_pDevice, this);
+
+          l_pTournament->saveToJSON();
         }
 
         virtual ~CMenuRaceResult() {
