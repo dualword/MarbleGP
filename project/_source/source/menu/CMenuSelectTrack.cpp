@@ -141,7 +141,7 @@ namespace dustbin {
             }
 
             m_pTrackList->setImageList(l_vTracks);
-            m_pTrackList->setSelected(m_pState->getGlobal()->getSetting("track"), true);
+            m_pTrackList->setSelected(m_pState->getGlobal()->getSetting("singlerace_track"), true);
             m_sTrack = m_pTrackList->getSelectedData();
             printf("Track %s\n", m_sTrack.c_str());
 
@@ -190,7 +190,7 @@ namespace dustbin {
 
           gui::CSelector *l_pLaps = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           if (l_pLaps != nullptr) {
-            std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
+            std::string l_sLaps = m_pState->getGlobal()->getSetting("singlerace_laps");
             l_pLaps->setSelected(std::atoi(l_sLaps.c_str()) - 1);
             m_iLaps = l_pLaps->getSelected() + 1;
             printf("%i laps selected.\n", m_iLaps);
@@ -241,6 +241,9 @@ namespace dustbin {
 
                   m_pState->getGlobal()->setSetting("track", m_pTrackList->getSelectedData());
                   m_pState->getGlobal()->setSetting("laps" , std::to_string(l_iLaps));
+
+                  m_pState->getGlobal()->setSetting("singlerace_track", m_pTrackList->getSelectedData());
+                  m_pState->getGlobal()->setSetting("singlerace_laps" , std::to_string(l_iLaps));
 
                   gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
 
