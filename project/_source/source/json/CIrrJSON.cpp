@@ -6,7 +6,7 @@
 namespace dustbin {
   namespace json {
     const std::string c_sIgnore = " \r\n\t";
-    const std::string c_sNumber = "0123456789.";
+    const std::string c_sNumber = "0123456789.-";
 
     const std::map<char, CIrrJSON::enToken> c_mSingleCharTokens = {
       { '{', CIrrJSON::enToken::ObjectStart },
