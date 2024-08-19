@@ -1,4 +1,5 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
+#include <messages/CMessageHelpers.h>
 #include <messages/CSerializer64.h>
 #include <gui/CButtonRenderer.h>
 #include <gameclasses/SPlayer.h>
@@ -92,7 +93,7 @@ namespace dustbin {
     /**
     * Serialize this race
     */
-    std::string SRaceData::serialize() {
+    std::string SRaceData::serialize() const {
       messages::CSerializer64 l_cSerializer;
 
       l_cSerializer.addS32(c_iRankStart);
@@ -499,6 +500,7 @@ namespace dustbin {
 
       m_pRaceData->m_vLapCheckpoints.push_back(std::vector<int>());
     }
+
     /**
     * Some debugging: dump the lap checkpoints vector to stdout
     */
@@ -847,6 +849,9 @@ namespace dustbin {
                 else if (l_sKey == "trackname") {
                   m_sName = a_pJson->asString();
                 }
+                else if (l_sKey == "info") {
+                  m_sInfo = messages::urlDecode(a_pJson->asString());
+                }
               }
               break;
 
@@ -887,6 +892,7 @@ namespace dustbin {
       s += "\"track\": \"" + m_sTrack + "\", ";
       s += "\"trackname\": \"" + m_sName + "\", ";
       s += "\"laps\": " + std::to_string(m_iLaps) + ", ";
+      s += "\"info\": \"" + messages::urlEncode(m_sInfo) + "\", ";
       s += "\"raceresult\": [ ";
 
       for (std::vector<SRaceData*>::iterator l_itPlr = m_vRanking.begin(); l_itPlr != m_vRanking.end(); l_itPlr++) {
@@ -1620,8 +1626,6 @@ namespace dustbin {
         irr::io::IReadFile *l_pFile = l_pFs->createAndOpenFile(l_sFileName.c_str());
 
         if (l_pFile != nullptr) {
-          bool l_bKey = true;
-
           json::CIrrJSON l_cJson = json::CIrrJSON(l_pFile);
 
           std::string l_sKey = "";
@@ -1629,47 +1633,43 @@ namespace dustbin {
           while (l_cJson.read()) {
             switch (l_cJson.getType()) {
               case json::CIrrJSON::enToken::ValueString:
-                if (l_bKey) {
+                if (l_sKey == "") {
                   l_sKey = l_cJson.asString();
-                  l_bKey = false;
                 }
                 break;
 
               case json::CIrrJSON::enToken::ValueBool:
                 if (l_sKey == "reversegrid") {
                   m_bReverse = l_cJson.asBool();
-                  l_bKey = true;
                 }
                 break;
 
               case json::CIrrJSON::enToken::ValueInt:
                 if (l_sKey == "autofinish") {
                   m_eAutoFinish = (data::SGameSettings::enAutoFinish)l_cJson.asInt();
-                  l_bKey = true;
                 }
                 else if (l_sKey == "raceclass")  {
                   m_eRaceClass = (data::SGameSettings::enRaceClass)l_cJson.asInt();
-                  l_bKey = true;
                 }
                 else if (l_sKey == "thisrace") {
                   m_iThisRace = l_cJson.asInt();
-                  l_bKey = "";
                 }
                 break;
 
               case json::CIrrJSON::enToken::ArrayStart:
                 if (l_sKey == "players") {
                   loadPlayersFromJSON(&l_cJson);
-                  l_bKey = true;
                 }
                 else if (l_sKey == "races") {
                   loadRacesFromJSON(&l_cJson);
-                  l_bKey = true;
                 }
                 else if (l_sKey == "standings") {
                   loadStandingsFromJSON(&l_cJson);
-                  l_bKey = true;
                 }
+                break;
+
+              case json::CIrrJSON::enToken::Separator:
+                l_sKey = "";
                 break;
 
               default:

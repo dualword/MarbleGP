@@ -69,7 +69,7 @@ namespace dustbin {
       /**
       * Serialize this race data
       */
-      std::string serialize();
+      std::string serialize() const;
     }
     SRaceData;
 
