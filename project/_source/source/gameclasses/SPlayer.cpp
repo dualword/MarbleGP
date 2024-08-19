@@ -3,6 +3,7 @@
 #include <gui/CButtonRenderer.h>
 #include <gameclasses/SPlayer.h>
 #include <platform/CPlatform.h>
+#include <json/CIrrJSON.h>
 #include <algorithm>
 
 namespace dustbin {
@@ -102,6 +103,100 @@ namespace dustbin {
       l_cSerializer.addS32(c_iRankEnd);
 
       return l_cSerializer.getMessageAsString();
+    }
+
+    /**
+    * Load the race result from a give JSON
+    * @param a_pJson the JSON
+    */
+    void SRaceData::loadFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        std::string l_sKey     = "";
+        int         l_iLap     = 0; 
+        bool        l_bRespawn = false;
+        bool        l_bStunned = false;
+
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ValueString:
+              if (l_sKey == "")
+                l_sKey = a_pJson->asString();
+
+              break;
+
+            case json::CIrrJSON::enToken::ValueInt:
+              if (l_sKey == "laps") {
+                m_vLapCheckpoints.back().push_back(a_pJson->asInt());
+              }
+              else if (l_sKey == "respawn") {
+                m_vRespawn.push_back(a_pJson->asInt());
+              }
+              else if (l_sKey == "stunned") {
+                m_vStunned.push_back(a_pJson->asInt());
+              }
+              else if (l_sKey == "playerid") {
+                m_iPlayer = a_pJson->asInt();
+              }
+              else if (l_sKey == "marbleid") {
+                m_iMarble = a_pJson->asInt();
+              }
+              else if (l_sKey == "state") {
+                m_iState = a_pJson->asInt();
+              }
+              else if (l_sKey == "gridpos") {
+                m_iGridPos = a_pJson->asInt();
+              }
+              else if (l_sKey == "fastestlap") {
+                m_iFastestLap = a_pJson->asInt();
+              }
+              else if (l_sKey == "fastestlapno") {
+                m_iFastestLapNo = a_pJson->asInt();
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ValueBool:
+              if (l_sKey == "withdrawn") {
+                m_bWithdrawn = a_pJson->asBool();
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ArrayStart:
+              if (l_sKey == "laps") {
+                if (l_iLap == 1)
+                  m_vLapCheckpoints.push_back(std::vector<int>());
+
+                l_iLap++;
+              }
+              else if (l_sKey == "stunned") {
+                l_bStunned = true;
+              }
+              else if (l_sKey == "respawn") {
+                l_bRespawn = true;
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ArrayEnd:
+              if (l_sKey == "laps")
+                l_iLap--;
+              else if (l_sKey == "stunned")
+                l_bStunned = false;
+              else if (l_sKey == "respawn")
+                l_bRespawn = false;
+              break;
+
+            case json::CIrrJSON::enToken::Separator:
+              if (l_iLap == 0 && !l_bStunned && !l_bRespawn)
+                l_sKey = "";
+              break;
+
+            case json::CIrrJSON::enToken::ObjectEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
     }
 
     /**
@@ -210,6 +305,70 @@ namespace dustbin {
     }
 
     /**
+    * Load the player from a JSON
+    * @param a_pJson the JSON
+    */
+    void SPlayer::loadFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        std::string l_sKey = "";
+
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ValueString:
+              if (l_sKey == "") {
+                l_sKey = a_pJson->asString();
+              }
+              else {
+                if (l_sKey == "name") {
+                  m_sName  = a_pJson->asString();
+                  m_sWName = helpers::s2ws(m_sName);
+                }
+                else if (l_sKey == "shortname") {
+                  m_sShortName  = a_pJson->asString();
+                  m_wsShortName = helpers::s2ws(m_sShortName);
+                }
+                else if (l_sKey == "texture") {
+                  m_sTexture = a_pJson->asString();
+                }
+                else if (l_sKey == "controller") {
+                  m_sController = a_pJson->asString();
+                }
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ValueInt:
+              if (l_sKey == "playerid") {
+                m_iPlayer = a_pJson->asInt();
+              }
+              else if (l_sKey == "viewport") {
+                m_iViewport = a_pJson->asInt();
+              }
+              else if (l_sKey == "number") {
+                m_sNumber = std::to_wstring(a_pJson->asInt());
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ValueBool:
+              if (l_sKey == "showranking") {
+                m_bShowRanking = a_pJson->asBool();
+              }
+              break;
+
+            case json::CIrrJSON::enToken::Separator:
+              l_sKey = "";
+              break;
+
+            case json::CIrrJSON::enToken::ObjectEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
     * Store the race data of this player to a JSON string
     * @return the JSON string
     */
@@ -217,10 +376,13 @@ namespace dustbin {
       std::string s = "{ ";
 
       s += "\"playerid\": "     + std::to_string(m_iPlayer) + ",";
+      s += "\"viewport\": "     + std::to_string(m_iViewport) + ",";
+      s += "\"showranking\": "  ; s += (m_bShowRanking ? "true, " : "false, ");
       s += "\"name\": \""       + m_sName + "\",";
       s += "\"shortname\": \""  + m_sShortName + "\",";
       s += "\"texture\": \""    + m_sTexture + "\",";
-      s += "\"controller\": \"" + m_sController + "\"";
+      s += "\"controller\": \"" + m_sController + "\",";
+      s += "\"number\": "       + helpers::ws2s(m_sNumber);
 
       return s + " }";
     }
@@ -296,7 +458,7 @@ namespace dustbin {
       m_sWName = helpers::s2ws(a_sName);
     }
 
-    bool SPlayer::isBot() {
+    bool SPlayer::isBot() const {
       return m_eAiHelp == data::SPlayerData::enAiHelp::BotMgp || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb2 || m_eAiHelp == data::SPlayerData::enAiHelp::BotMb3;
     }
 
@@ -502,6 +664,16 @@ namespace dustbin {
       }
     }
 
+    SRace::SRace(STournament *a_pTournament) :
+      m_sTrack     (""),
+      m_sName      (""),
+      m_sInfo      (""),
+      m_iLaps      (0), 
+      m_bCanceled  (false),
+      m_pTournament(a_pTournament) 
+    {
+    }
+
     SRace::SRace(const std::string &a_sTrack, const std::string &a_sTrackName, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament) : 
       m_sTrack     (a_sTrack     ),
       m_sName      (a_sTrackName ),
@@ -602,6 +774,107 @@ namespace dustbin {
       l_cSerializer.addS32(c_iRaceEnd);
 
       return l_cSerializer.getMessageAsString();
+    }
+
+    /**
+    * Load the standings after the race from a given JSON
+    * @param a_pJson the JSON
+    */
+    void SRace::loadStandingsFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ObjectStart: {
+              m_vStandings.push_back(SStandings());
+              m_vStandings.back().loadFromJSON(a_pJson);
+              break;
+            }
+
+            case json::CIrrJSON::enToken::ArrayEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
+    * Load the race result from a given JSON
+    * @param a_pJson the JSON
+    */
+    void SRace::loadResultFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        std::string l_sKey = "";
+
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ObjectStart: {
+              SRaceData *l_pResult = new SRaceData();
+              l_pResult->loadFromJSON(a_pJson);
+              m_vRanking.push_back(l_pResult);
+              break;
+            }
+
+            case json::CIrrJSON::enToken::ArrayEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
+    * Load the race from a given JSON object
+    * @param a_pJson the JSON object
+    */
+    void SRace::loadFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        std::string l_sKey = "";
+
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ValueString:
+              if (l_sKey == "")
+                l_sKey = a_pJson->asString();
+              else {
+                if (l_sKey == "track") {
+                  m_sTrack = a_pJson->asString();
+                }
+                else if (l_sKey == "trackname") {
+                  m_sName = a_pJson->asString();
+                }
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ValueInt:
+              if (l_sKey == "laps") {
+                m_iLaps = a_pJson->asInt();
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ArrayStart:
+              if (l_sKey == "raceresult")
+                loadResultFromJSON(a_pJson);
+              else if (l_sKey == "standings")
+                loadStandingsFromJSON(a_pJson);
+              break;
+
+            case json::CIrrJSON::enToken::Separator:
+              l_sKey = "";
+              break;
+
+            case json::CIrrJSON::enToken::ObjectEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
     }
 
     /**
@@ -1000,6 +1273,80 @@ namespace dustbin {
     }
 
     /**
+    * Load the standings from a JSON
+    * @param a_pJson the JSON
+    */
+    void SStandings::loadFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        std::string l_sKey     = "";
+        bool        l_bResults = false;
+        int         l_iResult  = 0;
+
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ValueString:
+              if (l_sKey == "")
+                l_sKey = a_pJson->asString();
+
+              break;
+
+            case json::CIrrJSON::enToken::ValueInt:
+              if (l_sKey == "results") {
+                m_aResult[l_iResult] = a_pJson->asInt();
+                l_iResult++;
+              }
+              else if (l_sKey == "playerid") {
+                m_iPlayer = a_pJson->asInt();
+              }
+              else if (l_sKey == "score") {
+                m_iScore = a_pJson->asInt();
+              }
+              else if (l_sKey == "respawn") {
+                m_iRespawn = a_pJson->asInt();
+              }
+              else if (l_sKey == "stunned") {
+                m_iStunned = a_pJson->asInt();
+              }
+              else if (l_sKey == "bestpos") {
+                m_iBestPos = a_pJson->asInt();
+              }
+              else if (l_sKey == "bestrace") {
+                m_iBestRace = a_pJson->asInt();
+              }
+              else if (l_sKey == "notfinished") {
+                m_iNoFinish = a_pJson->asInt();
+              }
+                
+              break;
+
+            case json::CIrrJSON::enToken::ArrayStart:
+              if (l_sKey == "results") {
+                l_bResults = true;
+                l_iResult  = 0;
+              }
+              break;
+
+            case json::CIrrJSON::enToken::ArrayEnd:
+              if (l_sKey == "results")
+                l_bResults = false;
+              break;
+
+            case json::CIrrJSON::enToken::ObjectEnd:
+              return;
+
+            case json::CIrrJSON::enToken::Separator:
+              if (!l_bResults)
+                l_sKey = "";
+              break;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
     * Encode as JSON string
     * @return JSON String
     */
@@ -1170,8 +1517,8 @@ namespace dustbin {
     /**
     * Save the tournament standings to a JSON file
     */
-    void STournament::saveToJSON() {
-      std::wstring l_sFileName = platform::portableGetDataPath() + L"/tournament.json";
+    void STournament::saveToJSON(const std::string &a_sFileName) {
+      std::wstring l_sFileName = a_sFileName == "" ? platform::portableGetDataPath() + L"/tournament.json" : helpers::s2ws(a_sFileName);
 
       std::string l_sJson = toJSON();
 
@@ -1187,6 +1534,152 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Fill the races vector from a given JSON file
+    * @param a_pJson the JSON file
+    */
+    void STournament::loadRacesFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ObjectStart: {
+              SRace *l_pRace = new SRace(this);
+              l_pRace->loadFromJSON(a_pJson);
+              m_vRaces.push_back(l_pRace);
+              break;
+            }
+
+            case json::CIrrJSON::enToken::ArrayEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
+    * Fill the races vector from a given JSON file
+    * @param a_pJson the JSON file
+    */
+    void STournament::loadStandingsFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ObjectStart:
+              m_vStandings.push_back(SStandings());
+              m_vStandings.back().loadFromJSON(a_pJson);
+              break;
+
+            case json::CIrrJSON::enToken::ArrayEnd:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
+    * Fill the players vector from a given JSON file
+    * @param a_pJson the JSON file
+    */
+    void STournament::loadPlayersFromJSON(json::CIrrJSON* a_pJson) {
+      if (a_pJson != nullptr) {
+        while (a_pJson->read()) {
+          switch (a_pJson->getType()) {
+            case json::CIrrJSON::enToken::ObjectStart: {
+              SPlayer *l_pPlayer = new SPlayer();
+              l_pPlayer->loadFromJSON(a_pJson);
+              m_vPlayers.push_back(l_pPlayer);
+              break;
+            }
+
+            case json::CIrrJSON::enToken::ArrayEnd: {
+              return;
+            }
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /**
+    * Load the tournament from a JSON file
+    */
+    void STournament::loadFromJSON() {
+      std::string l_sFileName = helpers::ws2s(platform::portableGetDataPath()) + "/tournament.json";
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+
+      if (l_pFs->existFile(l_sFileName.c_str())) {
+        irr::io::IReadFile *l_pFile = l_pFs->createAndOpenFile(l_sFileName.c_str());
+
+        if (l_pFile != nullptr) {
+          bool l_bKey = true;
+
+          json::CIrrJSON l_cJson = json::CIrrJSON(l_pFile);
+
+          std::string l_sKey = "";
+
+          while (l_cJson.read()) {
+            switch (l_cJson.getType()) {
+              case json::CIrrJSON::enToken::ValueString:
+                if (l_bKey) {
+                  l_sKey = l_cJson.asString();
+                  l_bKey = false;
+                }
+                break;
+
+              case json::CIrrJSON::enToken::ValueBool:
+                if (l_sKey == "reversegrid") {
+                  m_bReverse = l_cJson.asBool();
+                  l_bKey = true;
+                }
+                break;
+
+              case json::CIrrJSON::enToken::ValueInt:
+                if (l_sKey == "autofinish") {
+                  m_eAutoFinish = (data::SGameSettings::enAutoFinish)l_cJson.asInt();
+                  l_bKey = true;
+                }
+                else if (l_sKey == "raceclass")  {
+                  m_eRaceClass = (data::SGameSettings::enRaceClass)l_cJson.asInt();
+                  l_bKey = true;
+                }
+                else if (l_sKey == "thisrace") {
+                  m_iThisRace = l_cJson.asInt();
+                  l_bKey = "";
+                }
+                break;
+
+              case json::CIrrJSON::enToken::ArrayStart:
+                if (l_sKey == "players") {
+                  loadPlayersFromJSON(&l_cJson);
+                  l_bKey = true;
+                }
+                else if (l_sKey == "races") {
+                  loadRacesFromJSON(&l_cJson);
+                  l_bKey = true;
+                }
+                else if (l_sKey == "standings") {
+                  loadStandingsFromJSON(&l_cJson);
+                  l_bKey = true;
+                }
+                break;
+
+              default:
+                break;
+            }
+          }
+
+          printf("Ready.\n");
+        }
+      }
+    }
 
     /**
     * Convert the data to a JSON string
@@ -1198,6 +1691,7 @@ namespace dustbin {
       s += "\"autofinish\": " + std::to_string((int)m_eAutoFinish   ) + ",";
       s += "\"raceclass\":"   + std::to_string((int)m_eRaceClass    ) + ",";
       s += "\"reversegrid\":" + std::string(m_bReverse ? "true" : "false") + ",";
+      s += "\"thisrace\": "   + std::to_string(m_iThisRace) + ",";
 
       s += "\"players\": [";
 

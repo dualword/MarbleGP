@@ -55,6 +55,12 @@ namespace dustbin {
       SRaceData(const std::string &a_sData, STournament *a_pTournament);
 
       /**
+      * Load the race result from a give JSON
+      * @param a_pJson the JSON
+      */
+      void loadFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
       * Store the data in a JSON string
       * @return a JSON string
       */
@@ -125,8 +131,8 @@ namespace dustbin {
       SPlayer(
         int a_iPlayer, 
         int a_iViewport,
-        const std::string& a_sName, 
-        const std::string& a_sTexture, 
+        const std::string &a_sName, 
+        const std::string &a_sTexture, 
         const std::string &a_sController, 
         const std::string &a_sShortName, 
         data::SPlayerData::enAiHelp a_eAiHelp, 
@@ -139,7 +145,7 @@ namespace dustbin {
       ~SPlayer();
 
       void setName(const std::string &a_sName);
-      bool isBot();
+      bool isBot() const;
 
       /**
       * Is this player in front of another player?
@@ -182,6 +188,12 @@ namespace dustbin {
       void setMarbleNode(SMarbleNodes *a_pMarble);
 
       /**
+      * Load the player from a JSON
+      * @param a_pJson the JSON
+      */
+      void loadFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
       * Store the race data of this player to a JSON string
       * @return the JSON string
       */
@@ -208,6 +220,8 @@ namespace dustbin {
       std::vector<SStandings> m_vStandings;   /**< The tournament standings after this race */
 
       STournament *m_pTournament;   /**< The tournament this race is assigned to */
+
+      SRace(STournament *a_pTournament);
 
       SRace(const std::string &a_sTrack, const std::string &a_sTrackName, const std::string &a_sInfo, int a_iLaps, STournament *a_pTournament);
 
@@ -260,6 +274,24 @@ namespace dustbin {
       * Finish the race, i.e. finish the current lap for all players
       */
       void finishRace();
+
+      /**
+      * Load the standings after the race from a given JSON
+      * @param a_pJson the JSON
+      */
+      void loadStandingsFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
+      * Load the race result from a given JSON
+      * @param a_pJson the JSON
+      */
+      void loadResultFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
+      * Load the race from a given JSON object
+      * @param a_pJson the JSON object
+      */
+      void loadFromJSON(json::CIrrJSON *a_pJson);
 
       /**
       * Serialize the race to a JSON string
@@ -321,6 +353,12 @@ namespace dustbin {
       bool isBetterThan(const SStandings &a_cOther) const;
 
       /**
+      * Load the standings from a JSON
+      * @param a_pJson the JSON
+      */
+      void loadFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
       * Encode as JSON string
       * @return JSON String
       */
@@ -377,8 +415,32 @@ namespace dustbin {
 
       /**
       * Save the tournament standings to a JSON file
+      * @param a_sFileName File name to save to (optional)
       */
-      void saveToJSON();
+      void saveToJSON(const std::string &a_sFileName = "");
+
+      /**
+      * Fill the players vector from a given JSON file
+      * @param a_pJson the JSON file
+      */
+      void loadPlayersFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
+      * Fill the races vector from a given JSON file
+      * @param a_pJson the JSON file
+      */
+      void loadRacesFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
+      * Fill the races vector from a given JSON file
+      * @param a_pJson the JSON file
+      */
+      void loadStandingsFromJSON(json::CIrrJSON *a_pJson);
+
+      /**
+      * Load the tournament from a JSON file
+      */
+      void loadFromJSON();
 
       /**
       * Convert the data to a JSON string
