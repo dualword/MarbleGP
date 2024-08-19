@@ -439,8 +439,9 @@ namespace dustbin {
 
       /**
       * Load the tournament from a JSON file
+      * @param a_sFileName File name to save to (optional)
       */
-      void loadFromJSON();
+      void loadFromJSON(const std::string &a_sFileName = "");
 
       /**
       * Convert the data to a JSON string

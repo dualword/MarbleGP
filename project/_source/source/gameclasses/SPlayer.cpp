@@ -1516,6 +1516,7 @@ namespace dustbin {
 
     /**
     * Save the tournament standings to a JSON file
+    * @param a_sFileName File name to save to (optional)
     */
     void STournament::saveToJSON(const std::string &a_sFileName) {
       std::wstring l_sFileName = a_sFileName == "" ? platform::portableGetDataPath() + L"/tournament.json" : helpers::s2ws(a_sFileName);
@@ -1611,8 +1612,8 @@ namespace dustbin {
     /**
     * Load the tournament from a JSON file
     */
-    void STournament::loadFromJSON() {
-      std::string l_sFileName = helpers::ws2s(platform::portableGetDataPath()) + "/tournament.json";
+    void STournament::loadFromJSON(const std::string &a_sFileName) {
+      std::string l_sFileName = a_sFileName == "" ? helpers::ws2s(platform::portableGetDataPath()) + "/tournament.json" : a_sFileName;
       irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
 
       if (l_pFs->existFile(l_sFileName.c_str())) {
