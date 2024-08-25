@@ -1,6 +1,7 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <menu/datahandlers/CDataHandler_SelectPlayers.h>
 #include <menu/datahandlers/CDataHandler_EditProfile.h>
+#include <menu/datahandlers/CDataHandler_ResumeCup.h>
 #include <menu/datahandlers/CDataHandler_Customize.h>
 #include <menu/datahandlers/CDataHandler_Controls.h>
 #include <controller/CControllerGame.h>
@@ -51,7 +52,8 @@ namespace dustbin {
           GameType,
           GameLevel,
           Custom,
-          EditProfile
+          EditProfile,
+          ResumeCup
         };
 
         /**
@@ -79,6 +81,8 @@ namespace dustbin {
         irr::video::ITexture *m_pTextureRtt;    /**< The render target texture for the texture preview */
 
         irr::scene::ISceneManager *m_pPreviewSmgr;  /**< The scene manager for the texture preview */
+
+        bool m_bResumeTournament;   /**< Does the player want to resume a loaded tournament? */
 
         /**
         * Save the championship to the global data
@@ -242,6 +246,15 @@ namespace dustbin {
               break;
             }
 
+            case enWizardStep::ResumeCup: {
+              irr::gui::IGUITab *l_pRoot = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("gamewizard_resume", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+              if (l_pRoot != nullptr) {
+                l_pRoot->setVisible(false);
+              }
+
+              break;
+            }
+
             case enWizardStep::Custom: {
               break;
             }
@@ -268,11 +281,11 @@ namespace dustbin {
 
           gui::CMenuButton *l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElement("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
           if (l_pBtn != nullptr)
-            l_pBtn->setImage(m_eStep == enWizardStep::GameType ? "data/images/btn_ok.png" : "data/images/arrow_right.png");
+            l_pBtn->setImage(m_eStep == enWizardStep::GameType || m_eStep == enWizardStep::ResumeCup ? "data/images/btn_ok.png" : "data/images/arrow_right.png");
 
           l_pBtn = reinterpret_cast<gui::CMenuButton *>(findElement("cancel", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId));
           if (l_pBtn != nullptr)
-            l_pBtn->setImage(m_eStep == enWizardStep::Profiles ? "data/images/btn_cancel.png" : "data/images/arrow_left.png");
+            l_pBtn->setImage(m_eStep == enWizardStep::Profiles || m_eStep == enWizardStep::ResumeCup ? "data/images/btn_cancel.png" : "data/images/arrow_left.png");
 
           switch (m_eStep) {
             case enWizardStep::Profiles: {
@@ -336,7 +349,6 @@ namespace dustbin {
               }
 
               m_pDataHandler = new CDataHandler_SelectPlayers(m_vProfiles, l_sNewSelected);
-              printf("==> %i\n", (int)m_vSelectedPlayers.size());
               gui::CMenuButton *l_pOk = reinterpret_cast<gui::CMenuButton *>(helpers::findElementByNameAndType("ok", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
               if (l_pOk != nullptr)
                 l_pOk->setVisible(m_vSelectedPlayers.size() > 0 || CGlobal::getInstance()->getSettingData().m_bNoPlayerRace);
@@ -350,7 +362,10 @@ namespace dustbin {
 
               if (l_pHandler->allControllersAssigned()) {
                 printf("No Joystick Assignment necessary.");
-                setWizardStep(enWizardStep::GameType);
+                if (m_bResumeTournament) {
+                  resumeCup();
+                }
+                else setWizardStep(enWizardStep::GameType);
                 return;
               }
               
@@ -359,6 +374,14 @@ namespace dustbin {
                 l_pRoot->setVisible(true);
               }
 
+              break;
+            }
+
+            case enWizardStep::ResumeCup: {
+              if (m_vSteps.size() >= 5)
+                m_vSteps[4]->setVisible(true);
+
+              m_pDataHandler = new CDataHandler_ResumeCup();
               break;
             }
 
@@ -411,13 +434,44 @@ namespace dustbin {
           }
         }
 
+        void fillResumeCupDialog(const std::string& a_sCup, int a_iRaceNo, int a_iRaceCount, std::vector<std::string>& a_vPlayers) {
+          std::wstring l_sText = L"Unfinished Cup \"" + helpers::s2ws(a_sCup) + L"\" (Race " + std::to_wstring(a_iRaceNo + 1) + L" of " + std::to_wstring(a_iRaceCount) + L")\n\nPlayers\n\n";
+
+          for (auto l_sPlayer: a_vPlayers)
+            l_sText += L"- " + helpers::s2ws(l_sPlayer) + L"\n";
+
+          irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_cupdetails", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+          if (l_pLabel != nullptr) {
+            l_pLabel->setText(l_sText.c_str());
+          }
+        }
+
+        /**
+        * Set the data necessary to resume a cup
+        */
+        void resumeCup() {
+          gameclasses::STournament *l_pCup = m_pState->getGlobal()->getTournament();
+
+          for (auto p1 : m_vProfiles) {
+            for (auto p2 : l_pCup->m_vPlayers) {
+              if (p1.m_sName == p2->m_sName) {
+                p2->m_sController = p1.m_sControls;
+              }
+            }
+          }
+
+          createMenu("menu_nextrace", m_pDevice, m_pManager, m_pState);
+        }
+
       public:
         CMenuNewGameWizard(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler  (a_pDevice, a_pManager, a_pState),
-          m_eGameType   (enGameType   ::Unknown),
-          m_eStep       (enWizardStep ::Unknown),
-          m_pTextureRtt (nullptr),
-          m_pPreviewSmgr(nullptr)
+          IMenuHandler       (a_pDevice, a_pManager, a_pState),
+          m_eGameType        (enGameType   ::Unknown),
+          m_eStep            (enWizardStep ::Unknown),
+          m_pTextureRtt      (nullptr),
+          m_pPreviewSmgr     (nullptr),
+          m_bResumeTournament(false)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -425,6 +479,58 @@ namespace dustbin {
           m_pSmgr->clear();
           m_pSmgr->loadScene("data/scenes/skybox.xml");
           m_pSmgr->addCameraSceneNode();
+
+          gameclasses::STournament *l_pTournament = m_pState->getGlobal()->startTournament();
+          l_pTournament->loadFromJSON();
+
+          std::string l_sCup;
+          int         l_iRace;
+          int         l_iCoumt;
+
+          std::vector<std::string> l_vPlayers;
+
+          bool l_bUnfinsihedCup = false;
+
+          if (l_pTournament->canBeResumed(l_sCup, l_iRace, l_iCoumt, l_vPlayers)) {
+            printf("Cup \"%s\" can be resumed (Race %i of %i)\n", l_sCup.c_str(), l_iRace, l_iCoumt);
+
+            for (auto l_sPlayer: l_vPlayers)
+              printf("Player: %s\n", l_sPlayer.c_str());
+
+            fillResumeCupDialog(l_sCup, l_iRace, l_iCoumt, l_vPlayers);
+
+            std::string l_aCtrl[] = {
+              "DustbinController"    ,
+              "DustbinTouchControl"  ,
+              "DustbinGyroscope"     ,
+              ""                      
+            };
+
+            for (auto &l_pPlayer : l_pTournament->m_vPlayers) {
+              for (int i = 0; l_aCtrl[i] != ""; i++) {
+                if (l_pPlayer->m_sController.substr(0, l_aCtrl[i].size()) == l_aCtrl[i]) {
+                  m_vSelectedPlayers.push_back(l_pPlayer->m_sName);
+                }
+              }
+            }
+
+            l_bUnfinsihedCup = true;
+          }
+
+          std::string l_aCtrl[] = {
+            "DustbinController"    ,
+            "DustbinTouchControl"  ,
+            "DustbinGyroscope"     ,
+            ""                      
+          };
+          
+          for (auto &l_pPlayer : l_pTournament->m_vPlayers) {
+            for (int i = 0; l_aCtrl[i] != ""; i++) {
+              if (l_pPlayer->m_sController.substr(0, l_aCtrl[i].size()) == l_aCtrl[i]) {
+                m_vSelectedPlayers.push_back(l_pPlayer->m_sName);
+              }
+            }
+          }
 
           int l_iIndex = 1;
 
@@ -447,7 +553,7 @@ namespace dustbin {
 
           printf("%i profiles found.\n", (int)m_vProfiles.size());
 
-          setWizardStep(enWizardStep::Profiles);
+          setWizardStep(l_bUnfinsihedCup ? enWizardStep::ResumeCup : enWizardStep::Profiles);
 
           m_pTextureRtt = m_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "texture_rtt");
         }
@@ -483,6 +589,47 @@ namespace dustbin {
                       break;
                     }
 
+                    case enWizardStep::ResumeCup: {
+                      std::vector<dustbin::data::SMarbleGpCup> l_vCups = helpers::loadCupDefinitions();
+                      gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+                      data::SMarbleGpCup l_cOldCup;
+
+                      l_cOldCup.m_sName        = l_pTournament->m_sCup;
+                      l_cOldCup.m_bUserDefined = true;
+                      l_cOldCup.m_iRaceCount   = (int)l_pTournament->m_vRaces.size();
+
+                      std::vector<gameclasses::SRace *>::iterator l_itRace = l_pTournament->m_vRaces.begin();
+
+                      int l_iDone = l_pTournament->m_iThisRace;
+
+                      while (l_iDone >= 0) {
+                        l_itRace++;
+                        l_iDone--;
+                      }
+
+                      while (l_itRace != l_pTournament->m_vRaces.end()) {
+                        l_cOldCup.m_vRaces.push_back(std::make_tuple((*l_itRace)->m_sTrack, (*l_itRace)->m_iLaps));
+                        l_itRace++;
+                      }
+
+                      m_vSelectedPlayers.clear();
+
+                      for (auto l_pPlayer : l_pTournament->m_vPlayers) {
+                        if (l_pPlayer->m_eType == data::enPlayerType::Local) {
+                          m_vSelectedPlayers.push_back(l_pPlayer->m_sName);
+                        }
+                      }
+
+                      std::string l_sSerialized = l_cOldCup.serialize();
+                      m_pState->getGlobal()->setGlobal("current_cup", l_sSerialized);
+                      m_bResumeTournament = true;
+
+
+                      setWizardStep(enWizardStep::Controllers);
+                      break;
+                    }
+
                     default:
                       break;
                   }
@@ -505,6 +652,11 @@ namespace dustbin {
 
                     case enWizardStep::Custom:
                       setWizardStep(enWizardStep::GameLevel);
+                      break;
+
+                    case enWizardStep::ResumeCup:
+                      m_pState->getGlobal()->startTournament();
+                      setWizardStep(enWizardStep::Profiles);
                       break;
                   }
                   
@@ -775,10 +927,10 @@ namespace dustbin {
                   if (p != nullptr)
                     p->setVisible(false);
 
-                  if (m_pPreviewSmgr != nullptr) {
-                    m_pPreviewSmgr->drop();
-                    m_pPreviewSmgr = nullptr;
-                  }
+                  // if (m_pPreviewSmgr != nullptr) {
+                  //   m_pPreviewSmgr->drop();
+                  //   m_pPreviewSmgr = nullptr;
+                  // }
                 }
                 else printf("Button \"%s\" clicked.\n", l_sSender.c_str());
               }
@@ -802,16 +954,20 @@ namespace dustbin {
             if (m_pDataHandler != nullptr) {
               CDataHandler_Controls *l_pHandler = reinterpret_cast<CDataHandler_Controls *>(m_pDataHandler);
 
-              if (l_pHandler->allControllersAssigned())
-                setWizardStep(enWizardStep::GameType);
+              if (l_pHandler->allControllersAssigned()) {
+                if (m_bResumeTournament) {
+                  resumeCup();
+                }
+                else setWizardStep(enWizardStep::GameType);
+              }
             }
           }
 
-          if (m_pPreviewSmgr != nullptr && m_pTextureRtt != nullptr) {
-            m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
-            m_pPreviewSmgr->drawAll();
-            m_pDrv->setRenderTarget(nullptr, false, false);
-          }
+          // if (m_pPreviewSmgr != nullptr && m_pTextureRtt != nullptr) {
+          //   m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
+          //   m_pPreviewSmgr->drawAll();
+          //   m_pDrv->setRenderTarget(nullptr, false, false);
+          // }
           return false;
         }
       };

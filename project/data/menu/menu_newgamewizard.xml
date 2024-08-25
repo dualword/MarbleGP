@@ -5,6 +5,7 @@
   <include file="data/menu/newgamewizard_gametype.xml" />
   <include file="data/menu/newgamewizard_level.xml" />
   <include file="data/menu/newgamewizard_custom.xml" />
+  <include file="data/menu/newgamewizard_resume.xml" />
   <include file="data/menu/button_ok.xml" />
   <include file="data/menu/button_cancel.xml" />
   <include file="data/menu/dialog_confirm.xml" />

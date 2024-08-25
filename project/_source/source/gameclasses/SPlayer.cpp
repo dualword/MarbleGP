@@ -330,6 +330,12 @@ namespace dustbin {
                 }
                 else if (l_sKey == "texture") {
                   m_sTexture = a_pJson->asString();
+
+                  std::string l_sType;
+                  std::map<std::string, std::string> l_mParams = helpers::parseParameters(l_sType, m_sTexture);
+                  if (helpers::findTextureParameter(l_mParams, "numbercolor") != "") helpers::fillColorFromString(m_cText, helpers::findTextureParameter(l_mParams, "numbercolor"));
+                  if (helpers::findTextureParameter(l_mParams, "numberback" ) != "") helpers::fillColorFromString(m_cBack, helpers::findTextureParameter(l_mParams, "numberback" ));
+                  if (helpers::findTextureParameter(l_mParams, "ringcolor"  ) != "") helpers::fillColorFromString(m_cFrme, helpers::findTextureParameter(l_mParams, "ringcolor"  ));
                 }
                 else if (l_sKey == "controller") {
                   m_sController = a_pJson->asString();
@@ -346,6 +352,9 @@ namespace dustbin {
               }
               else if (l_sKey == "number") {
                 m_sNumber = std::to_wstring(a_pJson->asInt());
+              }
+              else if (l_sKey == "type") {
+                m_eType = (data::enPlayerType)a_pJson->asInt();
               }
               break;
 
@@ -383,7 +392,8 @@ namespace dustbin {
       s += "\"shortname\": \""  + m_sShortName + "\",";
       s += "\"texture\": \""    + m_sTexture + "\",";
       s += "\"controller\": \"" + m_sController + "\",";
-      s += "\"number\": "       + helpers::ws2s(m_sNumber);
+      s += "\"number\": "       + helpers::ws2s(m_sNumber) + ",";
+      s += "\"type\": "         + std::to_string((int)m_eType);
 
       return s + " }";
     }
@@ -1291,9 +1301,9 @@ namespace dustbin {
         while (a_pJson->read()) {
           switch (a_pJson->getType()) {
             case json::CIrrJSON::enToken::ValueString:
-              if (l_sKey == "")
+              if (l_sKey == "") {
                 l_sKey = a_pJson->asString();
-
+              }
               break;
 
             case json::CIrrJSON::enToken::ValueInt:
@@ -1387,7 +1397,8 @@ namespace dustbin {
       m_eAutoFinish(data::SGameSettings::enAutoFinish::AllAndAi),
       m_eRaceClass (data::SGameSettings::enRaceClass ::AllClasses),
       m_iThisRace  (-1),
-      m_bReverse   (false)
+      m_bReverse   (false),
+      m_sCup       ("")
     {
     }
 
@@ -1481,6 +1492,33 @@ namespace dustbin {
         return m_vRaces[m_iThisRace];
 
       return nullptr;
+    }
+
+    /**
+    * Can this tournament be resumed?
+    * @param a_sCup [out] name of the cup
+    * @param a_iRaceNo [out] number of the next race
+    * @param a_iRaceCount [out} number of races in the cup
+    * @param a_vPlayers [out] local players of the cup
+    * @return true if the tournament can be resumed, false otherwise
+    */
+    bool STournament::canBeResumed(std::string& a_sCup, int& a_iRaceNo, int& a_iRaceCount, std::vector<std::string>& a_vPlayers) {
+      if (m_iThisRace < 0 || m_iThisRace >= m_vRaces.size())
+        return false;
+
+      for (auto l_pPlayer : m_vPlayers) {
+        if (l_pPlayer->m_eType != data::enPlayerType::Local && l_pPlayer->m_eType != data::enPlayerType::Ai)
+          return false;
+
+        if (l_pPlayer->m_eType == data::enPlayerType::Local)
+          a_vPlayers.push_back(l_pPlayer->m_sName);
+      }
+
+      a_iRaceNo    = m_iThisRace + 1;       // Next race is this race + 1
+      a_iRaceCount = (int)m_vRaces.size();
+      a_sCup       = m_sCup;
+
+      return true;
     }
 
     /**
@@ -1624,26 +1662,30 @@ namespace dustbin {
 
       if (l_pFs->existFile(l_sFileName.c_str())) {
         irr::io::IReadFile *l_pFile = l_pFs->createAndOpenFile(l_sFileName.c_str());
-
+        
         if (l_pFile != nullptr) {
           json::CIrrJSON l_cJson = json::CIrrJSON(l_pFile);
-
+          l_pFile->drop();
+        
           std::string l_sKey = "";
-
+        
           while (l_cJson.read()) {
             switch (l_cJson.getType()) {
               case json::CIrrJSON::enToken::ValueString:
                 if (l_sKey == "") {
                   l_sKey = l_cJson.asString();
                 }
+                else if (l_sKey == "cup") {
+                  m_sCup = l_cJson.asString();
+                }
                 break;
-
+        
               case json::CIrrJSON::enToken::ValueBool:
                 if (l_sKey == "reversegrid") {
                   m_bReverse = l_cJson.asBool();
                 }
                 break;
-
+        
               case json::CIrrJSON::enToken::ValueInt:
                 if (l_sKey == "autofinish") {
                   m_eAutoFinish = (data::SGameSettings::enAutoFinish)l_cJson.asInt();
@@ -1655,7 +1697,7 @@ namespace dustbin {
                   m_iThisRace = l_cJson.asInt();
                 }
                 break;
-
+        
               case json::CIrrJSON::enToken::ArrayStart:
                 if (l_sKey == "players") {
                   loadPlayersFromJSON(&l_cJson);
@@ -1667,17 +1709,15 @@ namespace dustbin {
                   loadStandingsFromJSON(&l_cJson);
                 }
                 break;
-
+        
               case json::CIrrJSON::enToken::Separator:
                 l_sKey = "";
                 break;
-
+        
               default:
                 break;
             }
           }
-
-          printf("Ready.\n");
         }
       }
     }
@@ -1693,6 +1733,7 @@ namespace dustbin {
       s += "\"raceclass\":"   + std::to_string((int)m_eRaceClass    ) + ",";
       s += "\"reversegrid\":" + std::string(m_bReverse ? "true" : "false") + ",";
       s += "\"thisrace\": "   + std::to_string(m_iThisRace) + ",";
+      s += "\"cup\": \""      + m_sCup + "\",";
 
       s += "\"players\": [";
 

@@ -71,7 +71,7 @@
       { "track" : "noob_complex", "laps": 5 },
       { "track" : "oval", "laps": 8 },
       { "track" : "eight_crossing", "laps": 6 },
-      { "track" : "flat_counter_crossings", "laps": 8 },
+      { "track" : "flat_counter_crossings", "laps": 6 },
       { "track" : "steep_oval", "laps": 20 },
       { "track" : "steep_eight", "laps": 18 },
       { "track" : "stepstones", "laps": 8 },

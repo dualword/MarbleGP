@@ -70,6 +70,7 @@ namespace dustbin {
       * Serialize this race data
       */
       std::string serialize() const;
+
     }
     SRaceData;
 
@@ -382,6 +383,8 @@ namespace dustbin {
       int  m_iThisRace;     /**< The index of the race (-1 == last race in the vector) */
       bool m_bReverse;      /**< Reverse grid order? */
 
+      std::string m_sCup;     /**< Name of the cup */
+
       /**
       * The standard contructor
       */
@@ -412,6 +415,16 @@ namespace dustbin {
       * Finish the current race
       */
       void finishCurrentRace();
+
+      /**
+      * Can this tournament be resumed?
+      * @param a_sCup [out] name of the cup
+      * @param a_iRaceNo [out] number of the next race
+      * @param a_iRaceCount [out} number of races in the cup
+      * @param a_vPlayers [out] local players of the cup
+      * @return true if the tournament can be resumed, false otherwise
+      */
+      bool canBeResumed(std::string &a_sCup, int &a_iRaceNo, int &a_iRaceCount, std::vector<std::string> &a_vPlayers);
 
       /**
       * Save the tournament standings to a JSON file

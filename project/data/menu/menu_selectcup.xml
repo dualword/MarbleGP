@@ -33,7 +33,8 @@
           <attribute key="VTextAlign" value="center" />
           <attribute key="Name" value="label_name" />
         </attributes>
-      </element>      
+      </element>
+      
       <element type="staticText" rect="relative: 0, 13, 80, 15" tooltip="Description of the selected cup">
         <attributes>
           <attribute key="Caption" value="Insert Description of the Cup here" />

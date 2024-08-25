@@ -214,6 +214,7 @@ namespace dustbin {
                   std::string l_sSerialized = m_vCups[m_iSelectedCup].serialize();
 
                   gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+                  l_pTournament->m_sCup = m_vCups[m_iSelectedCup].m_sName;
 
                   int l_iNum = 1;
                   for (auto l_tRace : m_vCups[m_iSelectedCup].m_vRaces) {
@@ -229,7 +230,6 @@ namespace dustbin {
                     l_iNum++;
                   }
 
-                  printf("\n\n%s\n\n", l_sSerialized.c_str());
                   m_pState->getGlobal()->setGlobal("current_cup", l_sSerialized);
                   createMenu("menu_nextrace", m_pDevice, m_pManager, m_pState);
                 }

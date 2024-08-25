@@ -108,7 +108,7 @@ namespace dustbin {
             m_pReader++;
           }
 
-          l_bRet = c_sIgnore.find(*m_pReader) != std::string::npos || *m_pReader == ',';
+          l_bRet = c_sIgnore.find(*m_pReader) != std::string::npos || *m_pReader == ',' || *m_pReader == ']' || *m_pReader == '}';
         }
         else {
           // Only option left is a boolean
