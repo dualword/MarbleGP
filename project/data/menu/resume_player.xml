@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="staticText" rect="relative: 0, 0, 3, 2">
+    <attributes>
+      <attribute key="Caption" value="0" />
+      <attribute key="HTextAlign" value="center" />
+      <attribute key="VTextAlign" value="center" />
+      <attribute key="Name" value="number" />
+    </attributes>
+  </element>
+  
+  <element type="staticText" rect="relative: 4, 0, 23, 2">
+    <attributes>
+      <attribute key="Name" value="name" />
+      <attribute key="Caption" value="0" />
+      <attribute key="VTextAlign" value="center" />
+    </attributes>
+  </element>
+</dialog>

@@ -1503,7 +1503,7 @@ namespace dustbin {
     * @return true if the tournament can be resumed, false otherwise
     */
     bool STournament::canBeResumed(std::string& a_sCup, int& a_iRaceNo, int& a_iRaceCount, std::vector<std::string>& a_vPlayers) {
-      if (m_iThisRace < 0 || m_iThisRace >= m_vRaces.size())
+      if (m_iThisRace < 0 || m_iThisRace >= m_vRaces.size() - 1)
         return false;
 
       for (auto l_pPlayer : m_vPlayers) {

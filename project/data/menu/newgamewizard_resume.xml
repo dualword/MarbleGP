@@ -21,14 +21,72 @@
         </attributes>
       </element>
       
-      <element type="image" rect="relative: 1, 12, 19, 30">
+      <element type="staticText" rect="relative: 1, 20, 23, 23" font="big">
         <attributes>
-          <attribute key="UseAlphaChannel" value="true" />
-          <attribute key="ScaleImage" value="true" />
+          <attribute key="Caption" value="Players" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
         </attributes>
-        <custom>
-          <attribute key="src" value="file://data/images/logo.png" />
-        </custom>
+      </element>
+      
+      <element type="tab" rect="relative: 1, 23, 23, 43">
+        <attributes>
+          <attribute key="Name" value="tab_players" />
+          <attribute key="DrawBackground" value="true" />
+          <attribute key="BackColor" value="BackColor: 255, 0, 0, 255" />
+        </attributes>
+        
+        <children>
+          <element type="tab" rect="relative: 0,  0, 22,  2"><attributes><attribute key="Name" value="player_1" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  2, 22,  4"><attributes><attribute key="Name" value="player_2" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  4, 22,  6"><attributes><attribute key="Name" value="player_3" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  6, 22,  8"><attributes><attribute key="Name" value="player_4" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  8, 22, 10"><attributes><attribute key="Name" value="player_5" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 10, 22, 12"><attributes><attribute key="Name" value="player_6" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 12, 22, 14"><attributes><attribute key="Name" value="player_7" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 14, 22, 16"><attributes><attribute key="Name" value="player_8" /></attributes><children><include file="data/menu/resume_player.xml" /></children></element>
+        </children>
+      </element>
+      
+      <element type="staticText" rect="relative: 24, 20, 49, 23" font="big">
+        <attributes>
+          <attribute key="Caption" value="Standings" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="tab" rect="relative: 24, 23, 49, 43">
+        <attributes>
+          <attribute key="Name" value="tab_standings" />
+          <attribute key="DrawBackground" value="true" />
+          <attribute key="BackColor" value="BackColor: 255, 0, 0, 255" />
+        </attributes>
+        
+        <children>
+          <element type="tab" rect="relative: 0,  0, 24,  2"><attributes><attribute key="Name" value="standings_1" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  2, 24,  4"><attributes><attribute key="Name" value="standings_2" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  4, 24,  6"><attributes><attribute key="Name" value="standings_3" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  6, 24,  8"><attributes><attribute key="Name" value="standings_4" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0,  8, 24, 10"><attributes><attribute key="Name" value="standings_5" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 10, 24, 12"><attributes><attribute key="Name" value="standings_6" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 12, 24, 14"><attributes><attribute key="Name" value="standings_7" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 14, 24, 16"><attributes><attribute key="Name" value="standings_8" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 16, 24, 18">
+            <attributes>
+              <attribute key="Name" value="standings_9"  />
+            </attributes>
+            <children>
+              <element type="staticText" rect="relative: 0, 0, 24, 2">
+                <attributes>
+                  <attribute key="Caption" value="..." />
+                  <attribute key="HTextAlign" value="center" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+            </children>
+          </element>
+        </children>
       </element>
       
       <element type="staticText" rect="relative: 59, 16, 79, 23" tooltip="The races of the cup visualized using the tracks' thumbnails">

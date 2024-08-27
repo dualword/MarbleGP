@@ -2,6 +2,8 @@
 #include <menu/datahandlers/CDataHandler_ResumeCup.h>
 #include <controller/CControllerFactory.h>
 #include <controller/CControllerBase.h>
+#include <helpers/CStringHelpers.h>
+#include <helpers/CMenuLoader.h>
 #include <gameclasses/SPlayer.h>
 #include <CGlobal.h>
 
@@ -10,6 +12,8 @@ namespace dustbin {
     CDataHandler_ResumeCup::CDataHandler_ResumeCup() : IMenuDataHandler(), m_pTournament(nullptr), m_iNextChange(0) {
       m_pTournament = CGlobal::getInstance()->getTournament();
       
+      irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("tab_standings", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+
       if (m_pTournament != nullptr) {
         m_itRace = m_pTournament->m_vRaces.begin();
         updateTrackImage();
@@ -24,7 +28,92 @@ namespace dustbin {
             l_pPlayer->m_sController = l_cCtrl.serialize();
           }
         }
+
+        if (l_pTab != nullptr) {
+          int l_iPos = 1;
+
+          auto l_itStandings = m_pTournament->m_vStandings.begin();
+
+          irr::gui::IGUITab *l_pTabStanding = nullptr;
+
+          do {
+            std::string l_sName = "standings_" + std::to_string(l_iPos);
+
+            l_pTabStanding = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType(l_sName, irr::gui::EGUIET_TAB, l_pTab));
+
+            if (l_pTabStanding != nullptr) {
+              if (l_itStandings != m_pTournament->m_vStandings.end()) {
+                irr::gui::IGUIStaticText *l_pPos   = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("position"   , irr::gui::EGUIET_STATIC_TEXT, l_pTabStanding));
+                irr::gui::IGUIStaticText *l_pName  = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("playername" , irr::gui::EGUIET_STATIC_TEXT, l_pTabStanding));
+                irr::gui::IGUIStaticText *l_pScore = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("playerscore", irr::gui::EGUIET_STATIC_TEXT, l_pTabStanding));
+
+                if (l_pPos != nullptr)
+                  l_pPos->setText(std::to_wstring(l_iPos).c_str());
+
+                if (l_pName != nullptr) {
+                  l_pName->setText(L"-");
+
+                  for (auto l_pPlayer : m_pTournament->m_vPlayers) {
+                    if (l_pPlayer->m_iPlayer == (*l_itStandings).m_iPlayer) {
+                      std::string l_sName;
+                      std::string l_sBot;
+
+                      helpers::splitStringNameBot(l_pPlayer->m_sName, l_sName, l_sBot);
+
+                      l_pName->setText(helpers::s2ws(l_sName).c_str());
+                    }
+                  }
+                }
+
+                if (l_pScore != nullptr)
+                  l_pScore->setText(std::to_wstring((*l_itStandings).m_iScore).c_str());
+
+                l_itStandings++;
+              }
+              else l_pTabStanding->setVisible(false);
+            }
+            else break;
+
+            l_iPos++;
+          }
+          while (l_pTabStanding != nullptr);
+
+          auto l_itPlayer = m_pTournament->m_vPlayers.begin();
+
+          irr::gui::IGUITab *l_pTabPlayer = nullptr;
+          int l_iPlr = 1;
+
+          do {
+            std::string l_sName = "player_" + std::to_string(l_iPlr);
+
+            l_pTabPlayer = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType(l_sName, irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+
+            if (l_pTabPlayer != nullptr) {
+              while (l_itPlayer != m_pTournament->m_vPlayers.end() && (*l_itPlayer)->m_eType != data::enPlayerType::Local)
+                l_itPlayer++;
+
+              if (l_itPlayer != m_pTournament->m_vPlayers.end()) {
+                irr::gui::IGUIStaticText *l_pNmbr = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("number", irr::gui::EGUIET_STATIC_TEXT, l_pTabPlayer));
+                irr::gui::IGUIStaticText *l_pName = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("name"  , irr::gui::EGUIET_STATIC_TEXT, l_pTabPlayer));
+
+                if (l_pNmbr != nullptr)
+                  l_pNmbr->setText(std::to_wstring(l_iPlr).c_str());
+
+                if (l_pName != nullptr)
+                  l_pName->setText((*l_itPlayer)->m_sWName.c_str());
+
+                l_itPlayer++;
+              }
+              else l_pTabPlayer->setVisible(false);
+            }
+            else break;
+
+            l_iPlr++;
+          }
+          while (l_pTabPlayer != nullptr);
+        }
       }
+      else if (l_pTab != nullptr) l_pTab->setVisible(false);
     }
 
     CDataHandler_ResumeCup::~CDataHandler_ResumeCup() {
