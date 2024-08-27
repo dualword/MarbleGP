@@ -435,10 +435,7 @@ namespace dustbin {
         }
 
         void fillResumeCupDialog(const std::string& a_sCup, int a_iRaceNo, int a_iRaceCount, std::vector<std::string>& a_vPlayers) {
-          std::wstring l_sText = L"Unfinished Cup \"" + helpers::s2ws(a_sCup) + L"\" (Race " + std::to_wstring(a_iRaceNo + 1) + L" of " + std::to_wstring(a_iRaceCount) + L")\n\nPlayers\n\n";
-
-          for (auto l_sPlayer: a_vPlayers)
-            l_sText += L"- " + helpers::s2ws(l_sPlayer) + L"\n";
+          std::wstring l_sText = L"Unfinished Cup \"" + helpers::s2ws(a_sCup) + L"\" (Race " + std::to_wstring(a_iRaceNo + 1) + L" of " + std::to_wstring(a_iRaceCount) + L")\n";
 
           irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_cupdetails", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
