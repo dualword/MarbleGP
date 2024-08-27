@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuBackground" rect="center: -25, -17, 25, 18">
+    <attributes>
+      <attribute key="Name" value="gamewizard_step5" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="relative: 0, 1, 50, 4" font="big">
+        <attributes>
+          <attribute key="Caption" value="Unfinished Cup found. Do you want to continue?" />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 0, 5, 50, 7">
+        <attributes>
+          <attribute key="Name" value="label_cupdetails" />
+          <attribute key="HTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="relative: 1, 10, 25, 13" font="big">
+        <attributes>
+          <attribute key="Caption" value="Standings" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="tab" rect="relative: 1, 16, 25, 32">
+        <attributes>
+          <attribute key="Name" value="tab_standings" />
+          <attribute key="DrawBackground" value="true" />
+          <attribute key="BackColor" value="BackColor: 255, 0, 0, 255" />
+        </attributes>
+        
+        <children>
+          <element type="tab" rect="relative: 0, 0, 24,  2"><attributes><attribute key="Name" value="standings_1" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 2, 24,  4"><attributes><attribute key="Name" value="standings_2" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 4, 24,  6"><attributes><attribute key="Name" value="standings_3" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 6, 24,  8"><attributes><attribute key="Name" value="standings_4" /></attributes><children><include file="data/menu/resume_standings.xml" /></children></element>
+          <element type="tab" rect="relative: 0, 8, 24, 10">
+            <attributes>
+              <attribute key="Name" value="standings_9"  />
+            </attributes>
+            <children>
+              <element type="staticText" rect="relative: 0, 0, 24, 2">
+                <attributes>
+                  <attribute key="Caption" value="..." />
+                  <attribute key="HTextAlign" value="center" />
+                  <attribute key="VTextAlign" value="center" />
+                </attributes>
+              </element>
+            </children>
+          </element>
+        </children>
+      </element>
+      
+      <element type="staticText" rect="relative: 26, 10, 50, 14" tooltip="The races of the cup visualized using the tracks' thumbnails">
+        <attributes>
+          <attribute key="Caption" value="Race 46 / 66" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="label_raceno" />
+        </attributes>
+      </element>
+      
+      <element type="image" rect="relative: 29, 16, 46, 31" tooltip="The races of the cup visualized using the tracks' thumbnails">
+        <attributes>
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Name" value="Thumbnail" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/levels/rotor/thumbnail.png" />
+        </custom>
+      </element>
+      
+      <element type="image" rect="relative: 29, 16, 46, 31">
+        <attributes>
+          <attribute key="UseAlphaChannel" value="true" />
+          <attribute key="ScaleImage" value="true" />
+          <attribute key="Name" value="racefinished" />
+        </attributes>
+        <custom>
+          <attribute key="src" value="file://data/images/racefinished.png" />
+        </custom>
+      </element>
+      
+      <element type="staticText" rect="relative: 59, 25, 79, 27" tooltip="The races of the cup visualized using the tracks' thumbnails">
+        <attributes>
+          <attribute key="Caption" value="Race 46 / 66" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Background" value="true" />
+          <attribute key="Name" value="label_winner" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+</dialog>
