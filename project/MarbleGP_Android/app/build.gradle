@@ -10,7 +10,7 @@ android {
         applicationId "com.dustbingames.marblegp"
         minSdk 29
         targetSdk 34
-        versionCode 59
+        versionCode 61
         versionName "1.3 Build 257"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
