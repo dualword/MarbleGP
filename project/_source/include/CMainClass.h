@@ -86,6 +86,17 @@ namespace dustbin {
 
       FontManager *m_pFontMgr;    /**< The manager for the true type fonts */
 
+#ifdef _DEBUG 
+
+      bool m_bBtnDown;
+      int m_iScreenshot;
+      irr::u8 m_iStick;
+      std::vector<irr::video::IImage *> m_vScreenshots;
+
+      void createScreenshot();
+      void saveScreenshots();
+#endif
+
 #ifdef _ANDROID
       android_app *m_pAndroidApp;  /**< The Android App */
 #endif

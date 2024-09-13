@@ -62,6 +62,11 @@ namespace dustbin {
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
+#ifdef _DEBUG
+    , m_iScreenshot(0)
+    , m_bBtnDown(false)
+    , m_iStick(255)
+#endif
   {
     m_pInstance = this;
     std::srand((unsigned int)std::time(nullptr));
@@ -132,6 +137,8 @@ namespace dustbin {
   }
 
   CMainClass::~CMainClass() {
+    saveScreenshots();
+
     m_pInstance = nullptr;
 
     if (m_pSoundInterface != nullptr) {
@@ -657,6 +664,25 @@ namespace dustbin {
     return m_cSettings;
   }
 
+#ifdef _DEBUG
+  void CMainClass::createScreenshot() {
+    irr::video::IImage *l_pScreenshot = m_pDrv->createScreenShot();
+    if (l_pScreenshot != nullptr) {
+      m_vScreenshots.push_back(l_pScreenshot);
+    }
+  }
+
+  void CMainClass::saveScreenshots() {
+    for (std::vector<irr::video::IImage*>::iterator it = m_vScreenshots.begin(); it != m_vScreenshots.end(); it++) {
+      std::wstring l_sPath = platform::portableGetDataPath() + L"/screenshot_" + std::to_wstring(++m_iScreenshot) + L".png";
+      m_pDrv->writeImageToFile(*it, helpers::ws2s(l_sPath).c_str());
+      (*it)->drop();
+    }
+
+    m_vScreenshots.clear();
+  }
+#endif
+
   /**
   * Handle an Irrlicht event
   * @param a_cEvent the event to handle
@@ -691,13 +717,20 @@ namespace dustbin {
 #ifdef _DEBUG
     else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
       if (a_cEvent.KeyInput.Key == irr::KEY_F3 && !a_cEvent.KeyInput.PressedDown) {
-        irr::video::IImage *l_pScreenshot = m_pDrv->createScreenShot();
-        if (l_pScreenshot != nullptr) {
-          std::wstring l_sPath = platform::portableGetDataPath() + L"/screenshot.png";
-          m_pDrv->writeImageToFile(l_pScreenshot, helpers::ws2s(l_sPath).c_str());
-          l_pScreenshot->drop();
-          l_bRet = true;
-        }
+        createScreenshot();
+        l_bRet = true;
+      }
+    }
+    else if (a_cEvent.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+      if (a_cEvent.JoystickEvent.IsButtonPressed(2)) {
+        m_bBtnDown = true;
+        m_iStick = a_cEvent.JoystickEvent.Joystick;
+      }
+      else if (m_bBtnDown && a_cEvent.JoystickEvent.Joystick == m_iStick) {
+        printf("Screenshot! (%s)\n", m_bBtnDown ? "true" : "false");
+        m_bBtnDown = false;
+        m_iStick   = 255;
+        createScreenshot();
       }
     }
 #endif
