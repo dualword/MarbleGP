@@ -60,7 +60,8 @@
     [ "JointSetAxis"          , "49" ],
     [ "JointStartMotor"       , "50" ],
     [ "JointSetPosition"      , "51" ],
-    [ "UpdateRaceInfo"        , "52" ]
+    [ "UpdateRaceInfo"        , "52" ],
+    [ "FocusChanged"          , "53" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -425,6 +426,12 @@
         { "name": "track", "type": "std::string", "comment": "The new selected track" },
         { "name": "info" , "type": "std::string", "comment": "Race information like laps, race x of y..." }
       ]
+    },
+    "FocusChanged": {
+      "comment": "Tell the game state that the focus has changed",
+      "fields": [
+        { "name": "focused", "type": "bool", "comment": "true if the game gained focus, false otherwise" }
+      ]
     }
   },
   "interfaces": [
@@ -476,7 +483,8 @@
         "JointSetHiStop",
         "JointSetLoStop",
         "JointStartMotor",
-        "JointSetPosition"
+        "JointSetPosition",
+        "FocusChanged"
       ]
     },
     {
@@ -485,7 +493,8 @@
         "MarbleControl",
         "CancelRace",
         "TogglePause",
-        "PlayerWithdraw"
+        "PlayerWithdraw",
+        "FocusChanged"
       ],
       "receive": [
         "StepMsg",

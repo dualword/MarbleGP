@@ -397,7 +397,7 @@ namespace dustbin {
       } 
       while (true);
 
-      if (!m_bPaused) {
+      if (!m_bPaused && m_bFocused) {
         // Apply the marble controls
         for (int i = 0; i < 16; i++) {
           CObjectMarble* p = m_aMarbles[i];
@@ -926,6 +926,7 @@ namespace dustbin {
       m_eAutoFinish   (data::SGameSettings::enAutoFinish::AllPlayers),
       m_pWorld        (nullptr),
       m_bPaused       (false),
+      m_bFocused      (true),
       m_fGridAngle    (0.0f),
       m_iPlayers      (0),
       m_iHuman        (0),
@@ -1197,6 +1198,19 @@ namespace dustbin {
             sendPausechanged(m_bPaused, m_pOutputQueue);
           }
         }
+      }
+    }
+
+    /**
+    * This function receives messages of type "FocusChanged"
+    * @param a_focused 0 indicates that the focus was lost, other values show that it was gained again
+    */
+    void CDynamicThread::onFocuschanged(bool a_focused) {
+      if (!a_focused) {
+        m_bFocused = false;
+      }
+      else if (!m_bNetworkClient) {
+        m_bFocused = true;
       }
     }
 

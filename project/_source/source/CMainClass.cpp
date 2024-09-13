@@ -1196,10 +1196,24 @@ namespace dustbin {
 
     if (m_pDevice->isWindowFocused() != m_bFocused) {
       m_bFocused = m_pDevice->isWindowFocused();
-      if (m_bFocused)
+      if (m_bFocused) {
         m_pSoundInterface->unmuteAudio();
-      else
+
+        irr::SEvent l_cEvent;
+        l_cEvent.EventType = irr::EET_USER_EVENT;
+        l_cEvent.UserEvent.UserData1 = c_iMessageFocusGained;
+        l_cEvent.UserEvent.UserData2 = c_iMessageFocusGained;
+        m_pDevice->postEventFromUser(l_cEvent);
+      }
+      else {
         m_pSoundInterface->muteAudio();
+
+        irr::SEvent l_cEvent;
+        l_cEvent.EventType = irr::EET_USER_EVENT;
+        l_cEvent.UserEvent.UserData1 = c_iMessageFocusLost;
+        l_cEvent.UserEvent.UserData2 = c_iMessageFocusLost;
+        m_pDevice->postEventFromUser(l_cEvent);
+      }
     }
 
     return l_eState;

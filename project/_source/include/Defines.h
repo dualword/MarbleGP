@@ -13,6 +13,8 @@ namespace dustbin {
   #define c_iEventCancelClicked 10
   #define c_iHighlightControlOn 11
   #define c_iHighlightControlOff 12
+  #define c_iMessageFocusLost 13
+  #define c_iMessageFocusGained 14
 
   // Some constants for profile serialization
   #define c_iProfileHead 42

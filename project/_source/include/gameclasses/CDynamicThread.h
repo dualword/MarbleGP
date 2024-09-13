@@ -57,6 +57,7 @@ namespace dustbin {
         CObjectMarble *m_aMarbles[16];
 
         bool m_bPaused;
+        bool m_bFocused;
 
         irr::f32 m_fGridAngle;
         irr::s32 m_iPlayers;      /**< Number of app players (incl. AI) */
@@ -105,6 +106,12 @@ namespace dustbin {
          * @param a_MarbleID ID of the marble requesting the pause change
          */
         virtual void onTogglepause(irr::s32 a_MarbleID) override;
+
+        /**
+        * This function receives messages of type "FocusChanged"
+        * @param a_focused true if the game gained focus, false otherwise
+        */
+        virtual void onFocuschanged(bool a_focused) override;
 
         /**
         * This function receives messages of type "PlayerWithdraw"

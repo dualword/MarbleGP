@@ -886,6 +886,14 @@ namespace dustbin {
       }
 #endif
 
+      if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iMessageFocusLost) {
+          sendFocuschanged(false, m_pOutputQueue);
+        }
+        else if (a_cEvent.UserEvent.UserData1 == c_iMessageFocusGained) {
+          sendFocuschanged(true, m_pOutputQueue);
+        }
+      }
       return l_bRet;
     }
 
