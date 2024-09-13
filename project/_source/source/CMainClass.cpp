@@ -137,7 +137,9 @@ namespace dustbin {
   }
 
   CMainClass::~CMainClass() {
+#ifdef _DEBUG
     saveScreenshots();
+#endif
 
     m_pInstance = nullptr;
 
