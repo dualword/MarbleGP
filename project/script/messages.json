@@ -552,7 +552,8 @@
         "Checkpoint",
         "RacePosition",
         "PlayerFinished",
-        "LuaMessage"
+        "LuaMessage",
+        "Countdown"
       ]
     },
     {

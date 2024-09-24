@@ -207,7 +207,11 @@ namespace dustbin {
       m_iMyPosition    (0),
       m_iClassIndex    (0),
       m_iRespawn       (0),
+      m_iCurrent       (0),
+      m_iLastChange    (0),
       m_iSplitIndex    (0),
+      m_iStep          (0),
+      m_bStarted       (false),
       m_fVCalc         (0.0f), 
       m_fScale         (1.0f),
       m_fJumpFact      (1.0f),
@@ -472,6 +476,8 @@ namespace dustbin {
     */
     void CControllerAi_V2::onMarbleRespawn(int a_iMarbleId) {
       if (a_iMarbleId == m_iMarbleId) {
+        m_iCurrent = 0;
+
         if (m_pCurrent != nullptr) {
           m_pCurrent->m_bSelected = false;
 
@@ -851,6 +857,9 @@ namespace dustbin {
     */
     void CControllerAi_V2::onPlayerFinished(irr::s32 a_iMarbleId) {
       m_vFinished.push_back(a_iMarbleId);
+
+      if (a_iMarbleId == m_iIndex)
+        m_bStarted = false;
     }
 
     /**
@@ -896,6 +905,18 @@ namespace dustbin {
       if (m_pCurrent != nullptr) {
         // Update the current path section if necessary
         m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent, false);
+
+        if (m_bStarted) {
+          if (m_iCurrent != m_pCurrent->m_iIndex) {
+            int l_iIndex = m_pCurrent->m_iIndex;
+            if (m_iCurrent < l_iIndex || m_iCurrent > l_iIndex + 5) {
+              m_iCurrent = l_iIndex;
+              m_iLastChange = m_iStep;
+            }
+          }
+
+          a_bRespawn = (m_iStep - m_iLastChange) > 1200;
+        }
 
         if (m_pCurrent != nullptr) {
           irr::f32 l_fVel = m_cVelocity2d.getLength();
@@ -1202,6 +1223,14 @@ namespace dustbin {
     }
 
     /**
+    * Set the race to started
+    */
+    void CControllerAi_V2::raceStarted() {
+      m_iLastChange = m_iStep;
+      m_bStarted    = true;
+    }
+
+    /**
     * Get the best, i.e. not colliding with a border line, line in the path starting
     * from the startpoint of the "a_cLine" parameter
     * @param a_cLine [out] the best line, start is used as input
@@ -1350,6 +1379,8 @@ namespace dustbin {
       const irr::core::vector2df &a_cCloseMb,
       const irr::core::vector2df &a_cCloseSp
     ) {
+      m_iStep++;
+
       if (m_pDebugPathRTT != nullptr)
         m_p2dPath->debugDraw(m_pDrv, m_cOffset, 2.0f);
 

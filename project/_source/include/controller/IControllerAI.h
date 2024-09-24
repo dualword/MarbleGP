@@ -127,6 +127,11 @@ namespace dustbin {
         virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) = 0;
 
         /**
+        * Set the race to started
+        */
+        virtual void raceStarted() = 0;
+
+        /**
         * Get a tutorial string
         * @return a tutorial string
         */

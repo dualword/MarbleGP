@@ -99,6 +99,12 @@ namespace dustbin {
         */
         virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) override;
 
+        /**
+        * This function receives messages of type "Countdown"
+        * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+        */
+        virtual void onCountdown(irr::u8 a_Tick) override;
+
       public:
         CAiControlThread(threads::COutputQueue *a_pDynamicsOut, threads::CInputQueue *a_pDynamicsIn);
         virtual ~CAiControlThread();

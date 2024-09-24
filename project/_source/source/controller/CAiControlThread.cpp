@@ -132,6 +132,16 @@ namespace dustbin {
     }
 
     /**
+    * This function receives messages of type "Countdown"
+    * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+    */
+    void CAiControlThread::onCountdown(irr::u8 a_Tick) {
+      if (a_Tick == 0)
+        for (int i = 0; i < 16 && m_aControllers[i] != nullptr; i++)
+          m_aControllers[i]->raceStarted();
+    }
+
+    /**
     * The implementing object must implement this method. It is called when the thread starts working
     */
     void CAiControlThread::execute() {

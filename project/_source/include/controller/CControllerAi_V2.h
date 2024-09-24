@@ -305,7 +305,12 @@ namespace dustbin {
         int m_iMyPosition;        /**< My position in the race */
         int m_iClassIndex;        /**< Index for accessing the class-specific path data */
         int m_iRespawn;           /**< Respawn counter */
+        int m_iCurrent;           /**< Index of the current AI path section */
+        int m_iLastChange;        /**< The last change step of m_iCurrent */
+        int m_iStep;              /**< The current simulation step */
         int m_iSplitIndex;        /**< The current index of m_mSplitSelections */
+
+        bool m_bStarted;          /**< Is the race started? */
 
         irr::f32 m_fVCalc;    /**< The calculated speed */
         irr::f32 m_fScale;    /**< The scaling factor for the debug image */
@@ -613,6 +618,11 @@ namespace dustbin {
         * @param a_Data String for any further information
         */
         virtual void onLuamessage(irr::s32 a_NumberOne, irr::s32 a_NumberTwo, const std::string &a_Data) override;
+
+        /**
+        * Set the race to started
+        */
+        virtual void raceStarted() override;
 
         /**
         * Get a tutorial string
