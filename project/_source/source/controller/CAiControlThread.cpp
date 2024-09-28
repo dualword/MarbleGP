@@ -16,6 +16,8 @@ namespace dustbin {
     */
     void CAiControlThread::onStepmsg(irr::u32 a_StepNo) {
       for (int i = 0; m_aControllers[i] != nullptr; i++) {
+        m_aControllers[i]->onStep(a_StepNo);
+
         irr::s32 l_iMarbleId = -1;
         irr::s8  l_iCtrlX    = 0;
         irr::s8  l_iCtrlY    = 0;

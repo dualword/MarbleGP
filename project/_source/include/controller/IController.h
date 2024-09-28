@@ -80,12 +80,6 @@ namespace dustbin {
         virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cRotation, const irr::core::vector3df &a_cVelLin, float a_fVelAng) = 0;
 
         /**
-        * Callback called for every simulation step
-        * @param a_iStep the current simulation step
-        */
-        virtual void onStep(int a_iStep) = 0;
-
-        /**
         * This function receives messages of type "Trigger"
         * @param a_TriggerId ID of the trigger
         * @param a_ObjectId ID of the marble that caused the trigger
@@ -115,6 +109,18 @@ namespace dustbin {
          * @return the text shown in the tutorial
          */
         virtual std::wstring getTutorialText(bool a_bFirst) = 0;
+
+        /**
+        * This function receives messages of type "StepMsg"
+        * @param a_StepNo The current step number
+        */
+        virtual void onStepmsg(irr::u32 a_StepNo) = 0;
+
+        /**
+        * This function receives messages of type "Countdown"
+        * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+        */
+        virtual void onCountdown(irr::u8 a_Tick) = 0;
     };
   }
 }

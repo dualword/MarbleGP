@@ -109,12 +109,6 @@ namespace dustbin {
         virtual IControllerAI *getAiController() override;
 
         /**
-        * Callback called for every simulation step
-        * @param a_iStep the current simulation step
-        */
-        virtual void onStep(int a_iStep) override;
-
-        /**
         * The player has finished, hide the UI elements if necessary
         */
         virtual void playerFinished() override;
@@ -138,6 +132,18 @@ namespace dustbin {
         * @return the text shown in the tutorial
         */
         virtual std::wstring getTutorialText(bool a_bFirst) override;
+
+        /**
+        * This function receives messages of type "StepMsg"
+        * @param a_StepNo The current step number
+        */
+        virtual void onStepmsg(irr::u32 a_StepNo) override;
+
+        /**
+        * This function receives messages of type "Countdown"
+        * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+        */
+        virtual void onCountdown(irr::u8 a_Tick) override;
     };
   }
 }

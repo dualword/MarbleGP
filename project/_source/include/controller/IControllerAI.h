@@ -72,8 +72,15 @@ namespace dustbin {
         * @param a_cRotation new rotation of the object
         * @param a_cVelLin linear velocity of the object
         * @param a_fVelAng angular velocity of the object
+        * @param a_bContact does the object have ground contact?
         */
         virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cRotation, const irr::core::vector3df &a_cVelLin, float a_fVelAng) = 0;
+
+        /**
+        * Callback called for every simulation step
+        * @param a_iStep the current simulation step
+        */
+        virtual void onStep(int a_iStep) = 0;
 
         /**
         * A marble has finished

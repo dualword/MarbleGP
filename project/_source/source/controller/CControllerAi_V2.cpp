@@ -852,6 +852,15 @@ namespace dustbin {
     }
 
     /**
+    * Callback called for every simulation step
+    * @param a_iStep the current simulation step
+    */
+    void CControllerAi_V2::onStep(int a_iStep) {
+      if (m_aMarbles[m_iIndex].m_bContact)
+        m_iStep = a_iStep;
+    }
+
+    /**
     * A marble has finished
     * @param a_iMarbleId ID of the finished marble
     */
@@ -907,15 +916,18 @@ namespace dustbin {
         m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent, false);
 
         if (m_bStarted) {
-          if (m_iCurrent != m_pCurrent->m_iIndex) {
+          if (m_iCurrent != m_pCurrent->m_iIndex || !m_aMarbles[m_iIndex].m_bContact) {
             int l_iIndex = m_pCurrent->m_iIndex;
-            if (m_iCurrent < l_iIndex || m_iCurrent > l_iIndex + 5) {
+            if (m_iCurrent < l_iIndex || m_iCurrent > l_iIndex + 5 || !m_aMarbles[m_iIndex].m_bContact) {
               m_iCurrent = l_iIndex;
               m_iLastChange = m_iStep;
             }
           }
 
           a_bRespawn = (m_iStep - m_iLastChange) > 1200;
+
+          if (a_bRespawn)
+            helpers::addToDebugLog(std::to_string(m_iIndex) + ": Stuck, Respawning");
         }
 
         if (m_pCurrent != nullptr) {
@@ -1379,8 +1391,6 @@ namespace dustbin {
       const irr::core::vector2df &a_cCloseMb,
       const irr::core::vector2df &a_cCloseSp
     ) {
-      m_iStep++;
-
       if (m_pDebugPathRTT != nullptr)
         m_p2dPath->debugDraw(m_pDrv, m_cOffset, 2.0f);
 

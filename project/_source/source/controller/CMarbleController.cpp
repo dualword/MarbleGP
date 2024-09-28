@@ -323,16 +323,6 @@ namespace dustbin {
       return m_pAiControls;
     }
 
-
-    /**
-    * Callback called for every simulation step
-    * @param a_iStep the current simulation step
-    */
-    void CMarbleController::onStep(int a_iStep) {
-      if (m_pLuaScript != nullptr)
-        m_pLuaScript->onstep(a_iStep);
-    }
-
     /**
     * This function receives messages of type "Trigger"
     * @param a_TriggerId ID of the trigger
@@ -372,6 +362,27 @@ namespace dustbin {
         s += L"\n\n" + m_pAiControls->getTutorialText(m_eAiHelp);
 
       return s;
+    }
+
+    /**
+    * This function receives messages of type "StepMsg"
+    * @param a_StepNo The current step number
+    */
+    void CMarbleController::onStepmsg(irr::u32 a_StepNo) {
+      if (m_pAiControls != nullptr)
+        m_pAiControls->onStep(a_StepNo);
+
+      if (m_pLuaScript != nullptr)
+        m_pLuaScript->onstep(a_StepNo);
+    }
+
+    /**
+    * This function receives messages of type "Countdown"
+    * @param a_Tick The countdown tick (4 == Ready, 3, 2, 1, 0 == Go)
+    */
+    void CMarbleController::onCountdown(irr::u8 a_Tick) {
+      if (m_pAiControls != nullptr && a_Tick == 0)
+        m_pAiControls->raceStarted();
     }
  }
 }

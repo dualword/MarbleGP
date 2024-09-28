@@ -1196,7 +1196,7 @@ namespace dustbin {
 
       for (std::vector<gameclasses::SPlayer*>::iterator it = m_pRaceData->m_vPlayers.begin(); it != m_pRaceData->m_vPlayers.end(); it++) {
         if ((*it)->m_pController != nullptr)
-          (*it)->m_pController->onStep(a_StepNo);
+          (*it)->m_pController->onStepmsg(a_StepNo);
       }
     }
 
@@ -1213,6 +1213,11 @@ namespace dustbin {
         m_pGlobal->getSoundInterface()->play2d(en2dSounds::Countdown, CGlobal::getInstance()->getSettingData().m_fSfxGame, 0.0f);
       }
       else if (a_Tick != 4) m_pGlobal->getSoundInterface()->play2d(en2dSounds::CountdownGo, CGlobal::getInstance()->getSettingData().m_fSfxGame, 0.0f);
+
+      for (int l_iIndex = 0; l_iIndex < 16 && m_aMarbles[l_iIndex] != nullptr; l_iIndex++) {
+        if (m_aMarbles[l_iIndex]->m_pPlayer != nullptr && m_aMarbles[l_iIndex]->m_pPlayer->m_pController != nullptr)
+          m_aMarbles[l_iIndex]->m_pPlayer->m_pController->onCountdown(a_Tick);
+      }
 
       if (m_pPanelRndr != nullptr)
         m_pPanelRndr->setCountdownTick(a_Tick);

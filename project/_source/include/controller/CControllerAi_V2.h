@@ -561,6 +561,12 @@ namespace dustbin {
         virtual void onObjectMoved(int a_iObjectId, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cRotation, const irr::core::vector3df &a_fVelLin, float a_fVelAng) override;
 
         /**
+        * Callback called for every simulation step
+        * @param a_iStep the current simulation step
+        */
+        virtual void onStep(int a_iStep) override;
+
+        /**
         * A marble has finished
         * @param a_iMarbleId ID of the finished marble
         */
