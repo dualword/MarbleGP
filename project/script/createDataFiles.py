@@ -41,6 +41,9 @@ shutil.rmtree("temp_gl/data/sounds")
 createIfNotExisting("../../MarbleGP/data/sounds")
 copyContent("../../project/data/sounds", "../../MarbleGP/data/sounds")
 
+createIfNotExisting("../../MarbleGP_Steam/data/sounds")
+copyContent("../../project/data/sounds", "../../MarbleGP_Steam/data/sounds")
+
 os.chdir("temp_gl")
 os.system("7z.exe a -r -tzip marblegp.dat data")
 os.chdir("../temp_es")
@@ -58,6 +61,8 @@ print("Copy marblegp.dat for Android ...")
 shutil.copyfile("temp_android/marblegp.dat", g_AndroidPath)
 print("Copy marblegp.dat for Windows ...")
 shutil.copyfile("temp_gl/marblegp.dat", "../../MarbleGP/marblegp.dat")
+print("Copy marblegp.dat for Steam ...")
+shutil.copyfile("temp_gl/marblegp.dat", "../../MarbleGP_Steam/marblegp.dat")
 print("Ready.")
 
 shutil.rmtree("temp_es/data")

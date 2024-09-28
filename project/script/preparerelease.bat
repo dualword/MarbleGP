@@ -11,7 +11,12 @@ copy ..\MarbleGP_Windows\x64\Release\MarbleGP_Windows.exe ..\..\MarbleGP
 echo *** Signing MarbleGP_Windows.exe
 SignTool.exe sign /f "%PFX_FILE%" /p "%password%" /t http://timestamp.digicert.com /fd SHA256 ..\..\MarbleGP\MarbleGP_Windows.exe
 7z.exe a -r -tzip ..\release\MarbleGP.zip ..\..\MarbleGP\*.*
-copy ..\MarbleGP_Android\app\release\app-release.apk ..\release\marblegp.apk
+del ..\..\MarbleGP_Steam\MarbleGP_Steam.exe
+copy ..\MarbleGP_Steam\x64\Release\MarbleGP_Steam.exe ..\..\MarbleGP_Steam
+echo *** Signing MarbleGP_Windows.exe
+SignTool.exe sign /f "%PFX_FILE%" /p "%password%" /t http://timestamp.digicert.com /fd SHA256 ..\..\MarbleGP_Steam\MarbleGP_Steam.exe
+7z.exe a -r -tzip ..\release\MarbleGP_Steam.zip ..\..\MarbleGP_Steam\*.*
+copy ..\MarbleGP_Android\app\release\app-release.aab ..\release\marblegp.aab^
 setup.iss
 release_backup.bat
 set password=
