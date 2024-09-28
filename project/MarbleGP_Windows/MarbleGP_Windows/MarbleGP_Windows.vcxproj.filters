@@ -52,9 +52,6 @@
     <Filter Include="Headerdateien\menu">
       <UniqueIdentifier>{4307bdf3-0016-4255-822c-9dcd2257d66d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\data">
-      <UniqueIdentifier>{98d2b5ce-8436-46d0-b056-b094e1536ce5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\data">
       <UniqueIdentifier>{55448382-1ed6-4f4d-90e0-4a6023cc50f4}</UniqueIdentifier>
     </Filter>
@@ -180,6 +177,9 @@
     </Filter>
     <Filter Include="Quelldateien\font">
       <UniqueIdentifier>{52223aa4-d08e-485c-9640-41a43d854227}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\data">
+      <UniqueIdentifier>{98d2b5ce-8436-46d0-b056-b094e1536ce5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

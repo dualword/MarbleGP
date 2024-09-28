@@ -1,0 +1,1267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\_source\source\CGlobal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\CMainClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\main_windows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_binding.cpp">
+      <Filter>Source Files\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_enums.cpp">
+      <Filter>Source Files\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\lua\lua_tables.cpp">
+      <Filter>Source Files\_generated\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_binding.cpp">
+      <Filter>Source Files\_generated\luamesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_enums.cpp">
+      <Filter>Source Files\_generated\luamesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\luamesh\luamesh_tables.cpp">
+      <Filter>Source Files\_generated\luamesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\CMessageFactory.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\CMessages.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IAiController.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IDynamicThread.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IGameHUD.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IGameState.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogReceiver.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\_generated\messages\IWebLogSender.cpp">
+      <Filter>Source Files\_generated\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CAnimatorFactory.cpp">
+      <Filter>Source Files\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CMarbleGPTextureAnimator.cpp">
+      <Filter>Source Files\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\IAnimatorTextureProvider.cpp">
+      <Filter>Source Files\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchGyro.cpp">
+      <Filter>Source Files\controller\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\CControllerTouchSteerOnly.cpp">
+      <Filter>Source Files\controller\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\touch\ITouchController.cpp">
+      <Filter>Source Files\controller\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CAiControlThread.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerAI.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerAi_V2.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerAiHelp_V2.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerBase.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerFactory.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame_Gyro.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerGame_Touch.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CControllerMenu.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\controller\CMarbleController.cpp">
+      <Filter>Source Files\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\data\CDataStructs.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\callbacks.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\compress.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\host.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\list.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\packet.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\peer.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\protocol.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\enet-master\win32.c">
+      <Filter>Source Files\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\font\font_manager.cpp">
+      <Filter>Source Files\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\font\gui_freetype_font.cpp">
+      <Filter>Source Files\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CAiGameData.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CDynamicThread.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicDefault.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\CGameLogicFactory.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\COfftrackDetector.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp">
+      <Filter>Source Files\gameclasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudAiHelp.cpp">
+      <Filter>Source Files\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudBanner.cpp">
+      <Filter>Source Files\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudFade.cpp">
+      <Filter>Source Files\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudLapTimes.cpp">
+      <Filter>Source Files\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSpeedBar.cpp">
+      <Filter>Source Files\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\hud_items\CHudSteering.cpp">
+      <Filter>Source Files\gui\hud_items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CButtonRenderer.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CClipImage.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi_Game.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CControllerUi_menu.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CDustbinCheckbox.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGameHUD.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGameHUDHelpers.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiImageList.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiItemFactory.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiLogDisplay.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiTextField.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CGuiTrackSelect.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CInGamePanelRenderer.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CMenuBackground.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CMenuButton.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CRankingElement.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CReactiveLabel.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CSelector.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CTutorialHUD.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\CVirtualKeyboard.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\IProgressCallback.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CAutoMenu.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CDataHelpers.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CMenuLoader.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CSceneLoader.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\json\CIrrJSON.cpp">
+      <Filter>Source Files\json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lapi.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lauxlib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lbaselib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lcode.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lcorolib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lctype.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldblib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldebug.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldo.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ldump.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lfunc.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lgc.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\linit.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\liolib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\llex.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lmathlib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lmem.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\loadlib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lobject.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lopcodes.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\loslib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lparser.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstate.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstring.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lstrlib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltable.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltablib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\ltm.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lundump.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lutf8lib.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lvm.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\lua-5.4.4\src\lzio.c">
+      <Filter>Source Files\liblua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_meshbuilder.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_physics.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaScript_scene.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_ai.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_luamesh.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_physics.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingleton_scene.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLUASingleton_system.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\CLuaSingletonSystem.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\ILuaClass.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\lua\luawrap.cpp">
+      <Filter>Source Files\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Controls.cpp">
+      <Filter>Source Files\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_Customize.cpp">
+      <Filter>Source Files\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_EditProfile.cpp">
+      <Filter>Source Files\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_ResumeCup.cpp">
+      <Filter>Source Files\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\CDataHandler_SelectPlayers.cpp">
+      <Filter>Source Files\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\datahandlers\IMenuDataHandler.cpp">
+      <Filter>Source Files\menu\datahandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuCredits.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuDetectGfx.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuFillGrid.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuIntroduction.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuFinalResult.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuJoinServer.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuMain.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuMessage.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuNetworkLobby.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuNewGameWizard.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuNextRace.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuRaceResult.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuRemote.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSearchServer.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSelectCup.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSelectTrack.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuSettings.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuStandings.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\CMenuStartServer.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\menu\IMenuHandler.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp">
+      <Filter>Source Files\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp">
+      <Filter>Source Files\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CDiscoveryClient.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CDiscoveryServer.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CGameClient.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CGameServer.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\network\CNetBase.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp">
+      <Filter>Source Files\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiPathNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiPathSceneNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinLight.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CLuaMeshLoader.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CRespawnNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CPhysicsNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaderCallbacks.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\sound\CSoundData.cpp">
+      <Filter>Source Files\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\sound\CSoundInterface.cpp">
+      <Filter>Source Files\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\state\CGameState.cpp">
+      <Filter>Source Files\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\state\CMenuState.cpp">
+      <Filter>Source Files\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\threads\CMessageQueue.cpp">
+      <Filter>Source Files\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\webserver\CWebServerBase.cpp">
+      <Filter>Source Files\webserver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CSkyBoxFix.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CSpeedNode.cpp">
+      <Filter>Source Files\scenenodes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\_source\include\CGlobal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\CMainClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_ai.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_physics.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_scene.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaSingleton_system.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\lua_enums.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\lua_tables.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_physics.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_scene.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\lua\CLuaScript_ai.h">
+      <Filter>Header Files\_generated\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\CLuaScript_meshbuilder.h">
+      <Filter>Header Files\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\CLuaSingleton_luamesh.h">
+      <Filter>Header Files\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\luamesh_enums.h">
+      <Filter>Header Files\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\luamesh\luamesh_tables.h">
+      <Filter>Header Files\_generated\luamesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessageEnums.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessageFactory.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\CMessages.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IAiController.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IDynamicThread.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IGameHUD.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogReceiver.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IWebLogSender.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CAnimatorFactory.h">
+      <Filter>Header Files\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CMarbleGPTextureAnimator.h">
+      <Filter>Header Files\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\IAnimatorTextureProvider.h">
+      <Filter>Header Files\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchGyro.h">
+      <Filter>Header Files\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\CControllerTouchSteerOnly.h">
+      <Filter>Header Files\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\touch\ITouchController.h">
+      <Filter>Header Files\controller\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CAiControlThread.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerAI.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerAi_V2.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerAiHelp_V2.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerBase.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerFactory.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerGame.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerGame_Touch.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CControllerMenu.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\IController.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\IControllerAI.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\IControllerGame.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\ICustomEventReceiver.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\IJoystickEventHandler.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\data\CDataStructs.h">
+      <Filter>Header Files\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\callbacks.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\enet.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\protocol.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\time.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\types.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\utility.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\win32.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\enet-master\include\enet\list.h">
+      <Filter>Header Files\enet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\font\font_manager.h">
+      <Filter>Header Files\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\font\gui_freetype_font.h">
+      <Filter>Header Files\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CAiGameData.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CDynamicThread.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\CGameLogicDefault.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\COdeNodes.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\COffTrackDetector.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\IGameLogic.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\ITriggerHandler.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h">
+      <Filter>Header Files\gameclasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gfx\SViewPort.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudAiHelp.h">
+      <Filter>Header Files\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudBanner.h">
+      <Filter>Header Files\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudFade.h">
+      <Filter>Header Files\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSpeedBar.h">
+      <Filter>Header Files\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudLapTimes.h">
+      <Filter>Header Files\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\hud_items\CHudSteering.h">
+      <Filter>Header Files\gui\hud_items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CButtonRenderer.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CClipImage.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi_Game.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CControllerUi_Menu.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CDustbinCheckbox.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGameHUD.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGameHUDHelpers.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiImageList.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiItemFactory.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiLogDisplay.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiTextField.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CGuiTrackSelect.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CInGamePanelRenderer.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CMenuBackground.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CMenuButton.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CRankingElement.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CReactiveLabel.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CSelector.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CTutorialHUD.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CVirtualKeyboard.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\IGuiControllerUiCallback.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\IGuiMoveOptionElement.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\IProgressCallback.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CAutoMenu.h">
+      <Filter>Header Files\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CDataHelpers.h">
+      <Filter>Header Files\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CMenuLoader.h">
+      <Filter>Header Files\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CSceneLoader.h">
+      <Filter>Header Files\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h">
+      <Filter>Header Files\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h">
+      <Filter>Header Files\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\json\CIrrJSON.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\lua\ILuaClass.h">
+      <Filter>Header Files\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\lua\luawrap.hpp">
+      <Filter>Header Files\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_Controls.h">
+      <Filter>Header Files\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_Customize.h">
+      <Filter>Header Files\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_EditProfile.h">
+      <Filter>Header Files\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_ResumeCup.h">
+      <Filter>Header Files\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\CDataHandler_SelectPlayers.h">
+      <Filter>Header Files\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\datahandlers\IMenuDataHandler.h">
+      <Filter>Header Files\menu\datahandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\CMenuFactory.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\IMenuManager.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\menu\IMenuHandler.h">
+      <Filter>Header Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\CMessageHelpers.h">
+      <Filter>Header Files\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\CSerializer64.h">
+      <Filter>Header Files\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\ISerializer.h">
+      <Filter>Header Files\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\IMessage.h">
+      <Filter>Header Files\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CDiscoveryClient.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CDiscoverySever.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CGameClient.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CGameServer.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CNetBase.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\network\CNetworkDefines.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
+      <Filter>Header Files\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiPathNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiPathSceneNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinLight.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CLuaMeshLoader.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CPhysicsNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CRespawnNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CSkyBoxFix.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CSpeedNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderCallbacks.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderDefines.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaders.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\CSoundData.h">
+      <Filter>Header Files\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\CSoundEnums.h">
+      <Filter>Header Files\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\sound\ISoundInterface.h">
+      <Filter>Header Files\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\state\CGameState.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\state\CMenuState.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\state\IState.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\threads\CMessageQueue.h">
+      <Filter>Header Files\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\threads\IQueue.h">
+      <Filter>Header Files\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\threads\IThread.h">
+      <Filter>Header Files\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\webserver\IWebServer.h">
+      <Filter>Header Files\webserver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\webserver\CWebServerBase.h">
+      <Filter>Header Files\webserver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\CDustbinScrollPane.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\_generated\messages\IGameState.h">
+      <Filter>Header Files\_generated\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\controller\CMarbleController.h">
+      <Filter>Header Files\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
+      <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{53c83d6e-7aef-493f-8fa1-e12f8232e39c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{cbe48354-ed05-46ab-a0ef-754b40c84bab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{3b8a5154-5b78-4b99-8f14-fb4f4ea687ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\_generated">
+      <UniqueIdentifier>{e64e2c85-d7a1-42c5-b2e9-c749e7fe3340}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\_generated\lua">
+      <UniqueIdentifier>{2b6510e6-3d2b-4614-b845-3d3a398f28b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\_generated\luamesh">
+      <UniqueIdentifier>{b3434c4d-c414-47fb-b573-4de6679cca6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\_generated\messages">
+      <UniqueIdentifier>{7b379bca-15a0-4447-a1e1-0e5e63716b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\animators">
+      <UniqueIdentifier>{1a874068-45f9-48da-a509-c63f659ad3d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\controller">
+      <UniqueIdentifier>{365be346-fde6-4406-a116-212d32f58cd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\controller\touch">
+      <UniqueIdentifier>{d0363967-c736-422b-9725-7d409dccba3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\data">
+      <UniqueIdentifier>{7e6c461d-42c7-4a1f-ac90-819f5dfe44b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\enet">
+      <UniqueIdentifier>{421056cf-151e-4206-b19e-8d2196741118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\font">
+      <UniqueIdentifier>{ae39ab80-60f7-4ff3-864c-9837b6e4989c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gameclasses">
+      <UniqueIdentifier>{4d21ea2b-4528-4dbc-af2f-71934dbf71a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx">
+      <UniqueIdentifier>{fdbc14ca-a926-4773-a47b-e92f3673b0fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui">
+      <UniqueIdentifier>{6e7ac039-7c4a-428d-a627-17d45c09b8c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\hud_items">
+      <UniqueIdentifier>{6940f2a5-41e2-4e9e-8d1f-4c9c456ad8cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\helpers">
+      <UniqueIdentifier>{e8e78128-1a7a-464e-8de5-5894b30a82de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\json">
+      <UniqueIdentifier>{9a78c952-58d3-4e15-85cb-bbb20e05db5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\lua">
+      <UniqueIdentifier>{4260bccb-e9cb-4610-a156-6b3fdf7dd7be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\menu">
+      <UniqueIdentifier>{f5d621c4-6142-453a-ba1a-6fdc5affe32f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\menu\datahandlers">
+      <UniqueIdentifier>{f8c0cbd0-eb9e-4196-b146-577d0db341a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\messages">
+      <UniqueIdentifier>{aa17ed05-39c1-4d93-b0cb-b2477b8bd4a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\network">
+      <UniqueIdentifier>{f5de2961-5cf8-4c6e-8c9a-995beb71c1e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\platform">
+      <UniqueIdentifier>{5a3cff9c-2c5c-44e1-a7ca-6eba4d407f91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scenenodes">
+      <UniqueIdentifier>{1c55d67a-23ee-4ec1-adcf-d1c83679874c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\shaders">
+      <UniqueIdentifier>{a8f3d7db-df9f-44ef-99c7-775426aa6da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sound">
+      <UniqueIdentifier>{f62f37ca-3b57-468d-b7ed-4c57ffa45f09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\state">
+      <UniqueIdentifier>{7dccf356-a89e-46c2-b370-154b019c715e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\threads">
+      <UniqueIdentifier>{ce37d538-845e-491b-9e98-23dbdcd0fa29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\webserver">
+      <UniqueIdentifier>{84a10dff-423d-4b1b-b71e-cb57da725782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\_generated">
+      <UniqueIdentifier>{c20fcaa1-175f-4ae2-ac32-6085dc69f41f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\_generated\lua">
+      <UniqueIdentifier>{af64d688-63d8-4579-9f18-03a46237ded7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\_generated\luamesh">
+      <UniqueIdentifier>{7f50c7ec-f1f9-475b-9c12-d936b6e39609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\_generated\messages">
+      <UniqueIdentifier>{3319cd2f-0982-4647-b873-923bcea60d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\animators">
+      <UniqueIdentifier>{67f0c372-6b31-40a2-9ce9-d7b95160b99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\controller">
+      <UniqueIdentifier>{b8a88f6c-4c2a-44a2-be96-5c790c9ebe3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\controller\touch">
+      <UniqueIdentifier>{b915ac8a-8fe5-448b-b84f-28d82eef9bee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\data">
+      <UniqueIdentifier>{7663958e-7bc9-4302-853b-f626f5ea6fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\enet">
+      <UniqueIdentifier>{1b2f3feb-f044-4954-ba9c-d2e364441e11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\font">
+      <UniqueIdentifier>{afa06f90-5158-4e6a-b08d-83ab969ffaa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gameclasses">
+      <UniqueIdentifier>{2b088334-40cf-4548-b0a7-05c21ca14f0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui">
+      <UniqueIdentifier>{d88d24e8-162d-4f65-901d-379582a240f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\hud_items">
+      <UniqueIdentifier>{3f7f6edf-d0bd-4768-aa95-7163c1c9e2e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\helpers">
+      <UniqueIdentifier>{c3018d26-8022-424e-a6a2-4449ca38279b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\json">
+      <UniqueIdentifier>{aa308988-275f-49f0-aa1e-d0afcbcd39be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\liblua">
+      <UniqueIdentifier>{d2bcef95-936e-40f9-94f0-5cfd69a8a39b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lua">
+      <UniqueIdentifier>{b7ac2bef-56d2-4d4e-9b63-f48689b5391f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\menu">
+      <UniqueIdentifier>{4c6cb62d-745a-42ec-8735-cc790db72f00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\menu\datahandlers">
+      <UniqueIdentifier>{2a275e6b-e81d-477b-b564-7252bc971f62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\messages">
+      <UniqueIdentifier>{a66d11f4-a9e8-46b7-b93f-98970987cdfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network">
+      <UniqueIdentifier>{114a929a-e386-4818-aea2-36222ed8afed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\platform">
+      <UniqueIdentifier>{417f9334-c358-4c61-8476-210c8c410e8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scenenodes">
+      <UniqueIdentifier>{68f54486-2bc7-415f-b423-8b6c9f033f27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{c22efbee-a5d5-4730-ad1b-004c6bff8b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sound">
+      <UniqueIdentifier>{d4b4638d-74e7-416c-9a23-af0a9a5de9c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\state">
+      <UniqueIdentifier>{2341ae43-6fb5-4c6b-aee2-0874a2b12b82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\threads">
+      <UniqueIdentifier>{8ff19d57-7a1c-4c8c-a406-2c6096318c8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\webserver">
+      <UniqueIdentifier>{c87efdba-292c-4837-92cd-a4f7e9726c57}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\MarbleGP_Logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MarbleGP_Steam.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -611,7 +611,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=2;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;_STEAM;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=2;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -635,7 +635,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;NDEBUG;_CONSOLE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;_STEAM;NDEBUG;_CONSOLE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
