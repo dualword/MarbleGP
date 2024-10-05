@@ -50,7 +50,8 @@
       { "track": "small", "laps": 7 },
       { "track": "eight_hi_lo", "laps": 9 },
       { "track": "hopping", "laps": 8 },
-      { "track": "tower_ascend", "laps": 5 }
+      { "track": "tower_ascend", "laps": 5 },
+      { "track": "dustbingames", "laps": 3 }
     ]
   },
   {
@@ -84,6 +85,7 @@
       { "track" : "eight_hi_lo", "laps": 5 },
       { "track" : "hopping", "laps": 8 },
       { "track" : "tower_ascend", "laps": 4 },
+      { "track": "dustbingames", "laps": 3 },
       { "track" : "rotor", "laps": 12 },
       { "track" : "the_gates", "laps": 10 },
       { "track" : "four_obstacles", "laps": 9 }
@@ -93,22 +95,23 @@
     "name": "Dustbin::Games Cup",
     "description": "A cup comprised of the favorite tracks selected by Dustbin::Games",
     "races": [
-      { "track" : "eight_crossing", "laps": 8 },
-      { "track" : "flat_counter_crossings", "laps": 5 },
-      { "track" : "stepstones", "laps": 8 },
-      { "track" : "hi_jump", "laps": 10 },
-      { "track" : "long_jump", "laps": 6 },
-      { "track" : "jump_eight", "laps": 15 },
-      { "track" : "loop_single", "laps": 8 },
-      { "track" : "loop_double", "laps": 10 },
+      { "track": "eight_crossing", "laps": 8 },
+      { "track": "flat_counter_crossings", "laps": 5 },
+      { "track": "stepstones", "laps": 8 },
+      { "track": "hi_jump", "laps": 10 },
+      { "track": "long_jump", "laps": 6 },
+      { "track": "jump_eight", "laps": 15 },
+      { "track": "loop_single", "laps": 8 },
+      { "track": "loop_double", "laps": 10 },
       { "track": "steep_oval", "laps": 20 },
       { "track": "steep_eight", "laps": 18 },
-      { "track" : "small", "laps": 8 },
-      { "track" : "eight_hi_lo", "laps": 6 },
-      { "track" : "hopping", "laps": 9 },
-      { "track" : "rotor", "laps": 10 },
-      { "track" : "the_gates", "laps": 12 },
-      { "track" : "four_obstacles", "laps": 10 }
+      { "track": "small", "laps": 8 },
+      { "track": "eight_hi_lo", "laps": 6 },
+      { "track": "dustbingames", "laps": 3 },
+      { "track": "hopping", "laps": 9 },
+      { "track": "rotor", "laps": 10 },
+      { "track": "the_gates", "laps": 12 },
+      { "track": "four_obstacles", "laps": 10 }
     ]
   }
 ]
