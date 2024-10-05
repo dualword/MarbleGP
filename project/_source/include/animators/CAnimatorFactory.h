@@ -17,8 +17,10 @@ namespace dustbin {
         std::map<int        , std::string> m_mTypeName;
         std::map<std::string, int        > m_mNameType;
 
+        irr::IrrlichtDevice *m_pDevice;
+
       public:
-        CAnimatorFactory();
+        CAnimatorFactory(irr::IrrlichtDevice *a_pDevice);
         virtual ~CAnimatorFactory();
 
         virtual irr::scene::ISceneNodeAnimator *createSceneNodeAnimator(irr::scene::ESCENE_NODE_ANIMATOR_TYPE a_eType, irr::scene::ISceneNode *a_pTarget) override;

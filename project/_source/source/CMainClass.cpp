@@ -290,7 +290,7 @@ namespace dustbin {
     m_pSmgr->registerSceneNodeFactory(l_pNodeFactory);
     l_pNodeFactory->drop();
 
-    animators::CAnimatorFactory *l_pAnimatorFactory = new animators::CAnimatorFactory();
+    animators::CAnimatorFactory *l_pAnimatorFactory = new animators::CAnimatorFactory(m_pDevice);
     m_pSmgr->registerSceneNodeAnimatorFactory(l_pAnimatorFactory);
     l_pAnimatorFactory->drop();
 
