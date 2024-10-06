@@ -93,6 +93,7 @@
     <ClCompile Include="..\..\libs\lua-5.4.4\src\lzio.c" />
     <ClCompile Include="..\..\_source\source\animators\CAnimatorFactory.cpp" />
     <ClCompile Include="..\..\_source\source\animators\CMarbleGPTextureAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\animators\CMyTextureAnimator.cpp" />
     <ClCompile Include="..\..\_source\source\animators\IAnimatorTextureProvider.cpp" />
     <ClCompile Include="..\..\_source\source\CGlobal.cpp" />
     <ClCompile Include="..\..\_source\source\CMainClass.cpp" />
