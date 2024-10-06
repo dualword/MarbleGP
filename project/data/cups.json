@@ -13,6 +13,7 @@
     "description": "Like Flat Track racing? Here's your cup.",
     "races": [
       { "track": "oval", "laps": 8 },
+      { "track": "flat_counter_traffic", "laps": 15 },
       { "track": "eight_crossing", "laps": 12 },
       { "track": "flat_counter_crossings", "laps": 5 }
     ]
@@ -72,6 +73,7 @@
       { "track" : "noob_complex", "laps": 5 },
       { "track" : "oval", "laps": 8 },
       { "track" : "eight_crossing", "laps": 6 },
+      { "track": "flat_counter_traffic", "laps": 5 },
       { "track" : "flat_counter_crossings", "laps": 6 },
       { "track" : "steep_oval", "laps": 20 },
       { "track" : "steep_eight", "laps": 18 },
@@ -96,6 +98,7 @@
     "description": "A cup comprised of the favorite tracks selected by Dustbin::Games",
     "races": [
       { "track": "eight_crossing", "laps": 8 },
+      { "track": "flat_counter_traffic", "laps": 5 },
       { "track": "flat_counter_crossings", "laps": 5 },
       { "track": "stepstones", "laps": 8 },
       { "track": "hi_jump", "laps": 10 },
