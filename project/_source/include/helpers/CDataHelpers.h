@@ -7,6 +7,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace gameclasses {
+    struct SPlayer;
+  }
+
   namespace helpers {
     void saveProfiles(std::vector<data::SPlayerData> &a_cProfiles);
 
@@ -97,5 +101,12 @@ namespace dustbin {
     * @return a random texture string
     */
     std::string createRandomTexture();
+
+    /**
+    * Get the AI bot class of a player 
+    * @param a_pPlayer the player to check
+    * @result Bot information (-1 == no AI bot, 0 == MarbleGP, 1 == Marble2, 2 == Marble3)
+    */
+    int getAiClass(gameclasses::SPlayer *a_pPlayer);
   }
 }

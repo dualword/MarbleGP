@@ -6,6 +6,7 @@
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
+#include <gameclasses/SPlayer.h>
 #include <platform/CPlatform.h>
 #include <json/CIrrJSON.h>
 #include <irrlicht.h>
@@ -685,6 +686,27 @@ namespace dustbin {
       }
 
       return l_sRet + "&pattern=" + l_sPattern;
+    }
+
+
+    /**
+    * Get the AI bot class of a player 
+    * @param a_pPlayer the player to check
+    * @result Bot information (-1 == no AI bot, 0 == MarbleGP, 1 == Marble2, 2 == Marble3)
+    */
+    int getAiClass(gameclasses::SPlayer* a_pPlayer) {
+      int l_iRet = -1;
+
+      if (a_pPlayer != nullptr) {
+        if (a_pPlayer->m_sName.find("|marblegp") != std::string::npos)
+          l_iRet = 0;
+        else if (a_pPlayer->m_sName.find("|marble2") != std::string::npos)
+          l_iRet = 1;
+        else if (a_pPlayer->m_sName.find("|marble3") != std::string::npos)
+          l_iRet = 2;
+      }
+
+      return l_iRet;
     }
   }
 }

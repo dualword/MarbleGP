@@ -14,8 +14,74 @@
 #include <irrlicht.h>
 #include <CGlobal.h>
 
+#ifdef _DEBUG
+#include <helpers/CDataHelpers.h>
+#include <platform/CPlatform.h>
+#include <fstream>
+#include <vector>
+#include <map>
+#endif
+
 namespace dustbin {
   namespace menu {
+
+#ifdef _DEBUG
+
+    std::vector<int> getBestLapTimes(const std::vector<std::vector<int>> &a_vLapCheckpoints) {
+      std::vector<int> l_vReturn;
+
+      for (std::vector<std::vector<int>>::const_iterator l_itLap = a_vLapCheckpoints.begin(); l_itLap != a_vLapCheckpoints.end(); l_itLap++) {
+        int l_iIndex = 0;
+        int l_iStart = 0;   // Start of the lap
+
+        for (std::vector<int>::const_iterator l_itCp = (*l_itLap).begin(); l_itCp != (*l_itLap).end(); l_itCp++) {
+          if (l_itCp == (*l_itLap).begin()) {
+            l_iStart = *l_itCp;
+
+            // The first checkpoint is the lap time of the last lap
+            if (l_itLap == a_vLapCheckpoints.begin()) {
+              // except for the first lap .. here it's the time from the start to the first checkpoint
+            }
+            else if (l_itLap == a_vLapCheckpoints.begin() + 1) {
+              // The second lap, the first time we have a laptime
+              l_vReturn.push_back(l_iStart - *(*a_vLapCheckpoints.begin()).begin());
+            }
+            else {
+              int l_iLapTime = *l_itCp - *(*(l_itLap - 1)).begin();
+
+              if (l_iLapTime < l_vReturn.back()) {
+                *(l_vReturn.end() - 1) = l_iLapTime;
+              }
+            }
+          }
+          else {
+            // The checkpoint times
+            if (l_itLap == a_vLapCheckpoints.begin()) {
+              // The first lap, we just add the times
+              l_vReturn.push_back((*l_itCp) - l_iStart);
+            }
+            else {
+              int l_iTime = (*l_itCp) - l_iStart;
+
+              if (l_iStart < l_vReturn[l_iIndex])
+                l_vReturn[l_iIndex] = l_iStart;
+
+              l_iIndex++;
+            }
+          }
+        }
+      }
+
+      for (auto l_iTime: l_vReturn)
+        printf("%i;", l_iTime);
+
+      printf("\n");
+
+      return l_vReturn;
+    }
+
+#endif
+
     /**
     * @class CMenuRaceResult
     * @author Christian Keimel
@@ -48,6 +114,67 @@ namespace dustbin {
           gameclasses::SRace       *l_pRace       = l_pTournament->getRace();
 
           irr::gui::IGUIStaticText *l_pTrack = reinterpret_cast<irr::gui::IGUIStaticText*>(helpers::findElementByNameAndType("label_trackname", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+#ifdef _DEBUG
+          {
+            std::string l_sLapTimeAI = l_pRace->m_sTrack;
+
+            std::vector<int> l_vLapTimes[3];
+
+            for (auto& l_pRank : l_pRace->m_vRanking) {
+              gameclasses::SPlayer *l_pPlayer = nullptr;
+
+              for (auto& l_pRacePlayer : l_pTournament->m_vPlayers) {
+                if (l_pRacePlayer->m_iPlayer == l_pRank->m_iPlayer) {
+                  l_pPlayer = l_pRacePlayer;
+                }
+              }
+
+              if (l_pPlayer != nullptr) {
+                int l_iClass    = helpers::getAiClass(l_pPlayer);
+                int l_iLapStart = 0;
+
+                if (l_iClass >= 0 && l_iClass <= 2) {
+                  std::vector<int> l_vTimes = getBestLapTimes(l_pRank->m_vLapCheckpoints);
+
+                  if (l_vLapTimes[l_iClass].size() == 0)
+                    l_vLapTimes[l_iClass] = l_vTimes;
+                  else {
+                    std::vector<int>::iterator l_itThis = l_vTimes.begin();
+                    std::vector<int>::iterator l_itBest = l_vLapTimes[l_iClass].begin();
+
+                    while (l_itThis != l_vTimes.end() && l_itBest != l_vLapTimes[l_iClass].end()) {
+                      if (*l_itThis < *l_itBest)
+                        *l_itBest = *l_itThis;
+
+                      l_itThis++;
+                      l_itBest++;
+                    }
+                  }
+                }
+              }
+            }
+
+            if (l_vLapTimes[0].size() > 0 && l_vLapTimes[1].size() > 0 && l_vLapTimes[2].size() > 0) {
+              for (int i = 0; i < 3; i++) {
+                l_sLapTimeAI += "\n" + std::string(i == 0 ? "marblegp" : i == 1 ? "marble2" : "marble3");
+
+                for (auto l_iTime: l_vLapTimes[i])
+                  l_sLapTimeAI += ";" + std::to_string(l_iTime);
+              }
+
+              printf("\n****\n%s\n****\n", l_sLapTimeAI.c_str());
+
+              std::wstring l_sFile = platform::portableGetDataPath() + L"laptimes_ai_" + helpers::s2ws(l_pRace->m_sTrack) + L".txt";
+              std::ofstream l_cFile = std::ofstream(l_sFile.c_str(), std::ios::out);
+
+              if (l_cFile.is_open()) {
+                l_cFile << l_sLapTimeAI;
+                l_cFile.close();
+              }
+            }
+          }
+#endif
 
           if (l_pTrack != nullptr) {
             irr::io::IFileSystem *l_pFs = m_pGui->getFileSystem();
