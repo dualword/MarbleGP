@@ -317,6 +317,8 @@ namespace dustbin {
         irr::f32 m_fJumpFact; /**< Jump factor for calculating the speed between min and max */
         irr::f32 m_fCtrlY;    /**< The current acceleration control */
 
+        irr::f64 m_fSectionDist;  /**< The distance to the end of the current section (used for respawn) */
+
         SAiPathSection *m_pCurrent;   /**< The currently closest section of the marble */
         gui::CGameHUD  *m_pHUD;       /**< The game HUD which uses this controller to give hints to the player */
 

@@ -30,6 +30,7 @@ namespace dustbin {
           Loop,         /**< We are in a loop, so let's try to keep the speed as high as possible */
           Respawn,      /**< The marble wants to respawn */
           Respawn2,     /**< The second part of the respawn */
+          Stunned,      /**< The marble is currently stunned */
           Steep         /**< We are currently in a steep turn */
         };
 

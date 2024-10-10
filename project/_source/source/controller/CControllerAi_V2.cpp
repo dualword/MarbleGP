@@ -216,6 +216,7 @@ namespace dustbin {
       m_fScale         (1.0f),
       m_fJumpFact      (1.0f),
       m_fCtrlY         (0.0f),
+      m_fSectionDist   (-1.0),
       m_pCurrent       (nullptr), 
       m_pHUD           (nullptr), 
       m_fOldAngle      (0.0),
@@ -915,22 +916,29 @@ namespace dustbin {
         // Update the current path section if necessary
         m_pCurrent = selectCurrentSection(m_aMarbles[m_iIndex].m_cPosition, m_pCurrent, false);
 
-        if (m_bStarted) {
-          if (m_iCurrent != m_pCurrent->m_iIndex || !m_aMarbles[m_iIndex].m_bContact) {
-            int l_iIndex = m_pCurrent->m_iIndex;
-            if (m_iCurrent < l_iIndex || m_iCurrent > l_iIndex + 5 || !m_aMarbles[m_iIndex].m_bContact) {
-              m_iCurrent = l_iIndex;
-              m_iLastChange = m_iStep;
+        if (m_pCurrent != nullptr) {
+          if (m_bStarted) {
+            if (m_iCurrent != m_pCurrent->m_iIndex) {
+              int l_iIndex = m_pCurrent->m_iIndex;
+              if (m_iCurrent < l_iIndex || m_iCurrent > l_iIndex + 5 || !m_aMarbles[m_iIndex].m_bContact) {
+                m_iCurrent     = l_iIndex;
+                m_iLastChange  = m_iStep;
+                m_fSectionDist = -1.0;
+              }
             }
+            else {
+              irr::f64 l_fDist = (m_pCurrent->m_cLine3d.end - m_aMarbles[m_iIndex].m_cPosition).getLengthSQ();
+              if (m_fSectionDist == -1.0 || l_fDist < m_fSectionDist) {
+                m_fSectionDist = l_fDist;
+                m_iLastChange  = m_iStep;
+              }
+            }
+
+            // printf("%.2f / %i\n", m_fSectionDist, m_iStep - m_iLastChange);
+
+            a_bRespawn = (m_iStep - m_iLastChange) > 600;
           }
 
-          a_bRespawn = (m_iStep - m_iLastChange) > 1200;
-
-          if (a_bRespawn)
-            helpers::addToDebugLog(std::to_string(m_iIndex) + ": Stuck, Respawning");
-        }
-
-        if (m_pCurrent != nullptr) {
           irr::f32 l_fVel = m_cVelocity2d.getLength();
           m_fVCalc = -1.0f;
 
@@ -1434,6 +1442,8 @@ namespace dustbin {
             l_iLines = getControlLines_Offtrack(l_cLine, l_cOther, *l_itEnd);
             if (l_cLine.getLength() < 0.75f * m_p2dPath->m_fWidth)
               switchMarbleMode(enMarbleMode::Cruise);
+
+            this->m_fSectionDist = -1.0;
             break;
 
           case enMarbleMode::Cruise:
@@ -1515,6 +1525,7 @@ namespace dustbin {
             // If we are in respawn mode we
             // just set the "respawn" flag to true
             // a_bRespawn = true;
+            this->m_fSectionDist = -1.0;
             break;
 
           case enMarbleMode::Steep: {
