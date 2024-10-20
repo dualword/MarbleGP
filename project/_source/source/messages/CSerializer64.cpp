@@ -70,6 +70,7 @@ namespace dustbin {
 
     CSerializer64::CSerializer64() {
       m_iBase = (irr::u32)strlen(_64_DIGITS_STRING);
+      m_itData = m_vData.end();
     }
 
     CSerializer64::~CSerializer64() { }
@@ -78,19 +79,20 @@ namespace dustbin {
     * Constructor
     * @param a_sData the string received from a socket or read from a file
     */
-    CSerializer64::CSerializer64(const irr::core::stringc a_sData) {
-      irr::u32 l_iPos = 0, l_iLast = 0, l_iSize;
-      m_iPos = 0;
+    CSerializer64::CSerializer64(const std::string &a_sData) {
+      irr::u32 l_iPos = 0, l_iLast = 0;
+
+      printf("==> %s\n", a_sData.c_str());
 
       for (l_iPos = 0; l_iPos < a_sData.size(); l_iPos++) {
         if (a_sData.c_str()[l_iPos] == ';') {
-          l_iSize = a_sData.size();
-          m_aData.push_back(a_sData.subString(l_iLast, l_iPos - l_iLast));
+          m_vData.push_back(a_sData.substr(l_iLast, l_iPos - l_iLast));
           l_iLast = l_iPos + 1;
         }
       }
-      m_aData.push_back(a_sData.subString(l_iLast, l_iPos - l_iLast));
+      m_vData.push_back(a_sData.substr(l_iLast, l_iPos - l_iLast));
       m_iBase = (irr::u32)strlen(_64_DIGITS_STRING);
+      m_itData = m_vData.size() > 0 ? m_vData.begin() : m_vData.end();
     }
 
     /**
@@ -215,11 +217,11 @@ namespace dustbin {
     */
     void CSerializer64::reset() {
       m_sMessage = "";
-      m_iPos = 0;
+      m_itData = m_vData.end();
     }
 
     irr::u16 CSerializer64::getMessageType() {
-      m_iPos = 0;
+      m_itData = m_vData.begin();
       return getU16();
     }
 
@@ -228,8 +230,8 @@ namespace dustbin {
     * @return an unsigned 8 Bit value
     */
     irr::u8 CSerializer64::getU8() {
-      irr::u8 l_iRet = m_iPos < m_aData.size() ? (irr::u8)Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::u8 l_iRet = m_itData != m_vData.end() ? (irr::u8)Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
@@ -238,8 +240,8 @@ namespace dustbin {
     * @return an unsigned 8 Bit value
     */
     irr::s8 CSerializer64::getS8() {
-      irr::u8 l_iRet = m_iPos < m_aData.size() ? (irr::s8)Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::u8 l_iRet = m_itData != m_vData.end() ? (irr::s8)Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
@@ -248,8 +250,8 @@ namespace dustbin {
     * @return an unsigned 16 Bit value
     */
     irr::u16 CSerializer64::getU16() {
-      irr::u16 l_iRet = m_iPos < m_aData.size() ? (irr::u16)Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::u16 l_iRet = m_itData != m_vData.end() ? (irr::u16)Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
@@ -258,8 +260,8 @@ namespace dustbin {
     * @return an unsigned 16 Bit value
     */
     irr::s16 CSerializer64::getS16() {
-      irr::s16 l_iRet = m_iPos < m_aData.size() ? (irr::s16)Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::s16 l_iRet = m_itData != m_vData.end() ? (irr::s16)Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
@@ -268,8 +270,8 @@ namespace dustbin {
     * @return an unsigned 32 Bit value
     */
     irr::u32 CSerializer64::getU32() {
-      irr::u32 l_iRet = m_iPos < m_aData.size() ? (irr::u32)Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::u32 l_iRet = m_itData != m_vData.end() ? (irr::u32)Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
@@ -278,20 +280,20 @@ namespace dustbin {
     * @return an signed 32 Bit value
     */
     irr::s32 CSerializer64::getS32() {
-      irr::s32 l_iRet = m_iPos < m_aData.size() ? (irr::s32)Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::s32 l_iRet = m_itData != m_vData.end() ? (irr::s32)Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
     irr::s64 CSerializer64::getS64() {
-      irr::s64 l_iRet = m_iPos < m_aData.size() ? Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::s64 l_iRet = m_itData != m_vData.end() ? Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
     irr::u64 CSerializer64::getU64() {
-      irr::u64 l_iRet = m_iPos < m_aData.size() ? Decode64Int(m_aData[m_iPos].c_str()) : 0;
-      m_iPos++;
+      irr::u64 l_iRet = m_itData != m_vData.end() ? Decode64Int((*m_itData).c_str()) : 0;
+      if (m_itData != m_vData.end()) m_itData++;
       return l_iRet;
     }
 
@@ -318,9 +320,8 @@ namespace dustbin {
     * @return a string
     */
     std::string CSerializer64::getString() {
-      m_sRet = "";
-      const irr::c8* l_sRet = m_iPos < m_aData.size() ? m_aData[m_iPos].c_str() : m_sRet.c_str();
-      m_iPos++;
+      const irr::c8* l_sRet = m_itData != m_vData.end() ? (*m_itData).c_str() : "";
+      if (m_itData != m_vData.end()) m_itData++;
       return urlDecode(l_sRet);
     }
 
@@ -339,7 +340,7 @@ namespace dustbin {
     }
 
     bool CSerializer64::hasMoreMessages() {
-      return m_iPos < m_aData.size();
+      return m_itData != m_vData.end();
     }
   }  // namespace dustbin
 }    // namespace messages

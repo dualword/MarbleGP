@@ -129,7 +129,7 @@ namespace dustbin {
                 break;
 
               case ENET_EVENT_TYPE_RECEIVE: {
-                messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_cEvent.packet->data); //  l_sData.c_str());
+                messages::CSerializer64 l_cSerializer = messages::CSerializer64((char *)l_cEvent.packet->data); //  l_sData.c_str());
                 messages::IMessage *l_pMsg = l_cFactory.createMessage(&l_cSerializer);
 
                 if (l_pMsg != nullptr) {

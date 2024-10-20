@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <iomanip>
+#include <vector>
 #include <string>
 
 #include <messages/ISerializer.h>
@@ -23,12 +24,11 @@ namespace dustbin {
     class CSerializer64 : public ISerializer {
       protected:
         irr::core::stringc m_sMessage;                      /**< the message buffer */
-        irr::core::array<irr::core::stringc> m_aData;       /**< the data fields */
-        irr::u32 m_iPos;                                    /**< the current read position */
+        std::vector<std::string> m_vData;                   /**< the data fields */
+        std::vector<std::string>::iterator m_itData;        /**< the current data field*/
         irr::c8  m_sBuffer[0xFF];                           /**< buffer for number conversion */
         irr::u32 m_iBase;                                   /**< base for the number to string conversion */
         irr::core::vector3df m_vVector;
-        irr::core::stringc m_sRet;
 
         const irr::c8* EncodeInt64(irr::s64 a_iIn);
 
@@ -42,7 +42,7 @@ namespace dustbin {
         void prepare();
 
       public:
-        CSerializer64(const irr::core::stringc a_sData);
+        CSerializer64(const std::string &a_sData);
         CSerializer64();
 
         virtual ~CSerializer64();
