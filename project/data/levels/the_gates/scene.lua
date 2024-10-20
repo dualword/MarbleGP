@@ -22,5 +22,11 @@ function onstep(a_Step)
       scene:setrotation(g_Warnings[i]["sign"      ], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
       scene:setrotation(g_Warnings[i]["sign_small"], { x = 0.0, y = g_Warnings[i]["currenty"], z = 0.0 })
     end
+    
+    local l_Count = g_Warnings[i]["checkpoint"]["count"] + g_Warnings[i]["trigger"]["count"]
+    
+    if l_Count > 5 then l_Count = 5 end
+    
+    scene:setrotation(g_Warnings[i]["counter"], { x = -l_Count * 60.0, y = 0.0, z = 0.0 })
   end
 end

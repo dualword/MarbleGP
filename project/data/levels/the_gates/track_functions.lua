@@ -15,6 +15,7 @@ g_Warnings = {
     sign_small = 25000,
     currenty = 180,
     targety = 180,
+    counter = 32059,
     last_checkpoint = -1
   },
   [2] = {
@@ -33,6 +34,7 @@ g_Warnings = {
     sign_small = 25001,
     currenty = 90,
     targety = 90,
+    counter = 32013,
     last_checkpoint = -1
   }
 }
