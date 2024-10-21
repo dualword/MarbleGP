@@ -278,7 +278,6 @@ namespace dustbin {
     // is stored as minimal sized font
     m_mFonts[0] = m_pGui->getSkin()->getFont();
 
-    printf("%s\n", platform::portableGetDataPath().c_str());
     // Set the "regular" font size for the resolution to be the default font size
     m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
