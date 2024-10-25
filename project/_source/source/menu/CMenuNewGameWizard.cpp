@@ -9,6 +9,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <messages/CSerializer64.h>
+#include <helpers/CMedalHelpers.h>
 #include <gui/CDustbinCheckbox.h>
 #include <helpers/CDataHelpers.h>
 #include <gameclasses/SPlayer.h>

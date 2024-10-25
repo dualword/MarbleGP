@@ -1616,6 +1616,10 @@ namespace dustbin {
 
           if (p->m_pPlayer->m_pController != nullptr)
             p->m_pPlayer->m_pController->playerFinished();
+
+          if (p->m_pPlayer->m_eType == data::enPlayerType::Local) {
+            
+          }
         }
         if (m_pLuaScript != nullptr)
           m_pLuaScript->onplayerfinished(a_MarbleId, a_RaceTime, a_Laps);

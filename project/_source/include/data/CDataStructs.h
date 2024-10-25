@@ -112,7 +112,7 @@ namespace dustbin {
 
       std::wstring m_wsShortName; /**< Abbreviation of the player's name as long string */
 
-      std::map<std::string, irr::u64> m_mAchievements;   /**< The achievements collected by this player (key == identifier, value == timestamp) */
+      std::vector<std::tuple<std::string, std::string>> m_vAchievements;   /**< The achievements collected by this player (0 == identifier, 1 == timestamp) */
 
       SPlayerData();
 

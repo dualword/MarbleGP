@@ -32,6 +32,7 @@ namespace dustbin {
     const irr::s32 c_iPlayerDataEnd      = 31;  /**< Marker for the player data to end */
     const irr::s32 c_iPlayerShortName    = 32;  /**< Marker for the player's short name (for in-game ranking display) */
     const irr::s32 c_iPlayerDeviation    = 33;  /**< Marker for the player's power deviation (AI Marbles only) */
+    const irr::s32 c_iPlayerAchievements = 34;  /**< Marker for the player's achievements */
 
     // Game Settings
     const irr::s32 c_iGameSettings    = 42;   /**< Marker for the game settings */
@@ -268,6 +269,14 @@ namespace dustbin {
         l_cSerializer.addS32(c_iPlayerDeviation);
         l_cSerializer.addF32(m_fDeviation);
 
+        l_cSerializer.addS32(c_iPlayerAchievements);
+        l_cSerializer.addS32((irr::s32)m_vAchievements.size());
+
+        for (auto l_tMedal : m_vAchievements) {
+          l_cSerializer.addString(std::get<0>(l_tMedal));
+          l_cSerializer.addString(std::get<1>(l_tMedal));
+        }
+
         l_cSerializer.addS32(c_iPlayerDataEnd);
 
         return l_cSerializer.getMessageAsString();
@@ -304,6 +313,18 @@ namespace dustbin {
             case c_iPlayerViewPort    : m_iViewPort     =               l_cSerializer.getS32   ()     ; break;
             case c_iPlayerShortName   : m_sShortName    =               l_cSerializer.getString()     ; m_wsShortName = helpers::s2ws(m_sShortName); break;
             case c_iPlayerDeviation   : m_fDeviation    =               l_cSerializer.getF32   ()     ; break;
+            case c_iPlayerAchievements: {
+              int l_iCount = l_cSerializer.getS32();
+              for (int i = 0; i < l_iCount; i++) {
+                std::string l_sMedal = l_cSerializer.getString();
+                std::string l_sDate  = l_cSerializer.getString();
+
+                m_vAchievements.push_back(std::make_tuple(l_sMedal, l_sDate));
+
+                printf("Player \"%s\" got medal \"%s\" on \"%s\"\n", m_sName.c_str(), l_sMedal.c_str(), l_sDate.c_str());
+              }
+              break;
+            }
             case c_iPlayerDataEnd     : return true;
             default:
               printf("Unknown token %i\n", l_iToken);

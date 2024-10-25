@@ -82,8 +82,6 @@ namespace dustbin {
     CSerializer64::CSerializer64(const std::string &a_sData) {
       irr::u32 l_iPos = 0, l_iLast = 0;
 
-      printf("==> %s\n", a_sData.c_str());
-
       for (l_iPos = 0; l_iPos < a_sData.size(); l_iPos++) {
         if (a_sData.c_str()[l_iPos] == ';') {
           m_vData.push_back(a_sData.substr(l_iLast, l_iPos - l_iLast));

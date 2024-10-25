@@ -1720,6 +1720,23 @@ namespace dustbin {
           }
         }
       }
+
+      for (auto &l_pRace : m_vRaces) {
+        l_pRace->m_pTournament = this;
+
+        if (l_pRace->m_vRanking.size() > 0) {
+          for (auto l_pPlayer : m_vPlayers) {
+            l_pRace->m_vPlayers.push_back(l_pPlayer);
+
+            for (auto &l_pPos : l_pRace->m_vRanking) {
+              if (l_pPos->m_iPlayer == l_pPlayer->m_iPlayer) {
+                l_pPos->m_pPlayer = l_pPlayer;
+                break;
+              }
+            }
+          }
+        }
+      }
     }
 
     /**

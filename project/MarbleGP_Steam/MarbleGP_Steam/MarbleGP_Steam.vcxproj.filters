@@ -586,6 +586,9 @@
     <ClCompile Include="..\..\_source\source\animators\CMyTextureAnimator.cpp">
       <Filter>Source Files\animators</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CMedalHelpers.cpp">
+      <Filter>Source Files\helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CGlobal.h">
@@ -1076,6 +1079,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
       <Filter>Header Files\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CMedalHelpers.h">
+      <Filter>Header Files\helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

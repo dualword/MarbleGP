@@ -1,10 +1,13 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CMedalHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
+#include <platform/CPlatform.h>
 #include <data/CDataStructs.h>
 #include <menu/IMenuHandler.h>
 #include <data/CDataStructs.h>
@@ -15,8 +18,6 @@
 #include <CGlobal.h>
 
 #ifdef _DEBUG
-#include <helpers/CDataHelpers.h>
-#include <platform/CPlatform.h>
 #include <fstream>
 #include <vector>
 #include <map>
@@ -429,6 +430,41 @@ namespace dustbin {
           m_pAuto = new helpers::CAutoMenu(m_pDevice, this);
 
           l_pTournament->saveToJSON();
+
+          bool l_bSaveProfiles = false;
+          std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
+
+          time_t  l_cDate;
+          tm     *l_pDate;
+          char    l_sDummy[1024];
+
+          time(&l_cDate);
+          l_pDate = localtime(&l_cDate);
+
+          strftime(l_sDummy, 1024, "%Y/%m/%d %H:%M", l_pDate);
+
+          for (auto l_pPlayer : l_pTournament->m_vPlayers) {
+            if (l_pPlayer->m_eType == data::enPlayerType::Local) {
+              for (auto& l_cProfile : l_vProfiles) {
+                if (l_cProfile.m_sName == l_pPlayer->m_sName && l_cProfile.m_sShortName == l_pPlayer->m_sShortName) {
+                  std::vector<std::string> l_vNew = helpers::checkForNewAchievements(&l_cProfile, l_pTournament);
+
+                  for (auto s : l_vNew) {
+                    printf("New Achievement: \"%s\"\n", s.c_str());
+                    l_cProfile.m_vAchievements.push_back(std::make_tuple(s, l_sDummy));
+                  }
+
+                  if (l_vNew.size() > 0)
+                    l_bSaveProfiles = true;
+                }
+              }
+            }
+          }
+
+          if (l_bSaveProfiles) {
+            helpers::saveProfiles(l_vProfiles);
+            platform::saveSettings();
+          }
         }
 
         virtual ~CMenuRaceResult() {
