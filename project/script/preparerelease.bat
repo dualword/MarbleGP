@@ -16,9 +16,17 @@ copy ..\MarbleGP_Steam\x64\Release\MarbleGP_Steam.exe ..\..\MarbleGP_Steam
 echo *** Signing MarbleGP_Steam.exe
 SignTool.exe sign /f "%PFX_FILE%" /p "%password%" /t http://timestamp.digicert.com /fd SHA256 ..\..\MarbleGP_Steam\MarbleGP_Steam.exe
 7z.exe a -r -tzip ..\release\MarbleGP_Steam.zip ..\..\MarbleGP_Steam\*.*
-copy ..\MarbleGP_Android\app\release\app-release.aab ..\release\marblegp.aab^
+if exist ..\MarbleGP_Android\app\release\app-release.aab (
+  copy ..\MarbleGP_Android\app\release\app-release.aab ..\release\marblegp.aab
+) else (
+  echo aab not found.
+)
+echo Compiling Setup
 setup.iss
+echo Backing up release files
 release_backup.bat
-set password=
+echo Remove password from environment
 getVersionInfo.bat
+set password=
+echo Get version
 pause
