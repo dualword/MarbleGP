@@ -214,6 +214,22 @@ namespace dustbin {
       m_sControls = c_sDefaultControls;
     }
 
+    SPlayerData::SPlayerData(const SPlayerData& a_cOther) :
+      m_eType        (enPlayerType::Local),
+      m_eAiHelp      (enAiHelp::Medium),
+      m_iPlayerId    (-1),
+      m_iGridPos     (0 ),
+      m_iViewPort    (-1),
+      m_fDeviation   (0.0f),
+      m_sName        (""),
+      m_sTexture     (""),
+      m_sControls    (""),
+      m_sShortName   (""),
+      m_wsShortName  (L"") 
+    {
+      copyFrom(a_cOther);
+    }
+
     void SPlayerData::reset() {
       m_iPlayerId = -1;
       m_sName     = "";

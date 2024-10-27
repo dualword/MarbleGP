@@ -1,6 +1,8 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <messages/CMessageHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CMedalHelpers.h>
+#include <gamecloud/CGameCloud.h>
 #include <helpers/CDataHelpers.h>
 #include <gameclasses/SPlayer.h>
 #include <helpers/CMenuLoader.h>
@@ -116,6 +118,8 @@ namespace dustbin {
 
                 m_pManager->pushToMenuStack("menu_selecttrack");
                 m_pManager->pushToMenuStack("menu_newgamewizard");
+
+                helpers::checkForNewAchievements(&l_cPlayer, l_pTournament);
 
                 m_pState->setState(state::enState::Game);
               }

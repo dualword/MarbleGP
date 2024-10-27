@@ -2,6 +2,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <shaders/CDustbinShaders.h>
 #include <helpers/CStringHelpers.h>
+#include <gamecloud/CGameCloud.h>
 #include <helpers/CMenuLoader.h>
 #include <menu/IMenuHandler.h>
 #include <gui/CGuiTextField.h>
@@ -234,6 +235,7 @@ namespace dustbin {
                     i = 6;
 
                   std::get<2>(l_aData[i]) = l_iFrame / 4;
+                  gamecloud::pollService();
                   break;
                 }
               }

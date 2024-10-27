@@ -719,6 +719,8 @@ namespace dustbin {
 
                       platform::saveSettings();
 
+                      helpers::checkForNewAchievements(&l_cPlayer, l_pTournament);
+
                       m_pManager->pushToMenuStack("menu_newgamewizard");
                       m_pState->setState(state::enState::Game);
                     }

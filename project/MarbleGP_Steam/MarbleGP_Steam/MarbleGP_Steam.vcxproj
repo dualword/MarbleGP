@@ -121,6 +121,7 @@
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\COfftrackDetector.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp" />
+    <ClCompile Include="..\..\_source\source\gamecloud\CGameCloud_Steam.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi_Game.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi_menu.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
@@ -308,6 +309,7 @@
     <ClInclude Include="..\..\_source\include\gameclasses\ITriggerHandler.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h" />
+    <ClInclude Include="..\..\_source\include\gamecloud\CGameCloud.h" />
     <ClInclude Include="..\..\_source\include\gfx\SViewPort.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi_Game.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi_Menu.h" />
@@ -520,8 +522,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\mystuff\projects\libs\enet-master\include;..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mtd;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\mystuff\projects\libs\SteamWorks\sdk\public\steam;D:\mystuff\projects\libs\enet-master\include;..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin\win64;D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin;..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mtd;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -529,8 +531,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\mystuff\projects\libs\SteamWorks\sdk\public\steam;..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin\win64;D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin;..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
@@ -625,7 +627,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;steam_api64.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.3</Version>
     </Link>
     <Manifest>
@@ -650,7 +652,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;steam_api64.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.1</Version>
     </Link>
     <Manifest>

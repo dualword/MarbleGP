@@ -37,5 +37,10 @@ namespace dustbin {
     * @return vector with the data (0 == id, 1 == name, 2 == description, 3 == image)
     */
     std::tuple<std::string, std::string, std::string, std::string> getAchievementById(const std::string &a_sId);
+
+    /**
+    * Dump information about all medals
+    */
+    void dumpMedals();
   }
 }

@@ -181,6 +181,12 @@
     <Filter Include="Headerdateien\data">
       <UniqueIdentifier>{98d2b5ce-8436-46d0-b056-b094e1536ce5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\gamecloud">
+      <UniqueIdentifier>{12ee6cd6-20ae-4950-9d0c-0a676943ad3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\gamecloud">
+      <UniqueIdentifier>{b6f8bd85-154f-4eda-b361-e32a544993dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\_source\source\CMainClass.cpp">
@@ -768,6 +774,12 @@
     <ClCompile Include="..\..\_source\source\animators\CMyTextureAnimator.cpp">
       <Filter>Quelldateien\animators</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CMedalHelpers.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gamecloud\CGameCloud_None.cpp">
+      <Filter>Quelldateien\gamecloud</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1261,6 +1273,12 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\animators\CMyTextureAnimator.h">
       <Filter>Headerdateien\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CMedalHelpers.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gamecloud\gamecloud.h">
+      <Filter>Headerdateien\gamecloud</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

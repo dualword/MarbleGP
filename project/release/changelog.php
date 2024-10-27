@@ -1,5 +1,11 @@
 <ul>
   <li class="parent">
+    <b>2024-10-27 [1.3 Build 259]</b>
+    <ul>
+      <li>Put some release information here</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2024-09-05 [1.3 Build 257]</b>
     <ul>
       <li>It is now possible to continue a MarbleGP Cup which has been canceled</li>

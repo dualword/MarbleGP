@@ -115,6 +115,7 @@ namespace dustbin {
       std::vector<std::tuple<std::string, std::string>> m_vAchievements;   /**< The achievements collected by this player (0 == identifier, 1 == timestamp) */
 
       SPlayerData();
+      SPlayerData(const SPlayerData &a_cOther);
 
       void copyFrom(const SPlayerData &a_cOther);
       

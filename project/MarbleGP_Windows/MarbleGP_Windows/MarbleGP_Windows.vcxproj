@@ -121,6 +121,7 @@
     <ClCompile Include="..\..\_source\source\gameclasses\COdeNodes.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\COfftrackDetector.cpp" />
     <ClCompile Include="..\..\_source\source\gameclasses\SPlayer.cpp" />
+    <ClCompile Include="..\..\_source\source\gamecloud\CGameCloud_None.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi_Game.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CControllerUi_menu.cpp" />
     <ClCompile Include="..\..\_source\source\gui\CDustbinScrollPane.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="..\..\_source\include\gameclasses\ITriggerHandler.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SMarbleNodes.h" />
     <ClInclude Include="..\..\_source\include\gameclasses\SPlayer.h" />
+    <ClInclude Include="..\..\_source\include\gamecloud\gamecloud.h" />
     <ClInclude Include="..\..\_source\include\gfx\SViewPort.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi_Game.h" />
     <ClInclude Include="..\..\_source\include\gui\CControllerUi_Menu.h" />

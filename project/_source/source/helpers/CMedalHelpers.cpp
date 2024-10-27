@@ -1,6 +1,7 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <helpers/CMedalHelpers.h>
 #include <helpers/CDataHelpers.h>
+#include <gamecloud/CGameCloud.h>
 #include <gameclasses/SPlayer.h>
 #include <data/CDataStructs.h>
 #include <map>
@@ -107,15 +108,18 @@ namespace dustbin {
       const std::string s_sSplitscreenWinCup  = "SPLITSCREENCUPWIN";
       const std::string c_sSplitscreenWinRace = "SPLITSCREENRACEWIN";
       const std::string c_sSplitscreenRace    = "SPLITSCREENRACE";
+
+      const std::string c_sTutorial = "TUTORIAL";
     }
 
-    std::map<std::string, std::tuple<std::string, std::string, std::string>> g_mAllAchievements = {
+    std::map<std::string, std::tuple<std::string, std::string, std::string, int>> g_mAllAchievements = {
       {
         achievements::c_sGOAT,
         std::make_tuple(
-          "Greates of all Times"   , 
-          "Awarded to players winning all races in the \"Dustbin::Games Cup\" racing in \"Black Lap\" (one lap per race) mode against MarbleGP marbles only.", 
-          "bestofall.png"
+          "Best of all Marbles", 
+          "Win the \"Dustbin::Games\" Cup against 15 MarbleGP AI marbles in the \"Black Lap\" mode (1 lap per race)", 
+          "bestofall.png", 
+          0
         )
       },
 
@@ -124,24 +128,27 @@ namespace dustbin {
         achievements::c_sGpBlackDominate, 
         std::make_tuple(
           "MarbleGP Black Lap Cup Dominator",
-          "Awarded to players winning all races in a cup racing against MarbleGP marbles in the \"Black Lap\" (one lap per race) mode",
-          "black_marblegp_cupallwin.png"
+          "Win all races in a cup racing against MarbleGP marbles in the \"Black Lap\" (1 lap per race) mode",
+          "black_marblegp_cupallwin.png", 
+          1
         )
       },
       {
         achievements::c_sGpBlackWinCup,
         std::make_tuple(
           "MarbleGP Black Lap Cup Winner", 
-          "Awarded to players winning a cup against MarbleGP marbles in the \"Black Lap\" (one lap per race) mode",
-          "black_marblegp_cupwinner.png"
+          "Win a cup against MarbleGP marbles in the \"Black Lap\" (1 lap per race) mode",
+          "black_marblegp_cupwinner.png",
+          2
         )
       },
       {
         achievements::c_sGpBlackWinRace, 
         std::make_tuple(
           "MarbleGP Black Lap Race Winner", 
-          "Awarded to players winning a race against MarbleGP marbles in the \"Black Lap\" (one lap per race) mode", 
-          "black_marblegp_winner.png"
+          "Win a race against MarbleGP marbles in the \"Black Lap\" (1 lap per race) mode", 
+          "black_marblegp_winner.png",
+          3
         )
       },
 
@@ -150,32 +157,36 @@ namespace dustbin {
         achievements::c_sGpDominate,
         std::make_tuple(
           "MarbleGP Cup Dominator",
-          "Awarded to players winning all races in a cup against MarbleGP marbles.",
-          "marblegp_cupallwin.png"
+          "Win all races in a cup against MarbleGP marbles",
+          "marblegp_cupallwin.png",
+          4
         )
       },
       {
         achievements::c_sGpWinCup, 
         std::make_tuple(
-        "MarbleGP Cup Winner", 
-        "Awarded to players winning a cup against MarbleGP Marbles", 
-        "marblegp_cupwinner.png"
+          "MarbleGP Cup Winner", 
+          "Win a cup against MarbleGP Marbles", 
+          "marblegp_cupwinner.png",
+          5
         )
       },
       {
         achievements::c_sGpWinRace, 
         std::make_tuple(
-        "MarbleGP Race Winner", 
-        "Awarded to players winning a race against MarbleGP Marbles",
-        "marblegp_winner.png"
+          "MarbleGP Race Winner", 
+          "Win a race against MarbleGP Marbles",
+          "marblegp_winner.png",
+          6
         )
       },
       {
         achievements::c_sGpRace, 
         std::make_tuple(
           "MarbleGP Racer", 
-          "Awarded to players racing against MarbleGP Marbles", 
-          "marblegp_racer.png"
+          "Race against MarbleGP Marbles", 
+          "marblegp_racer.png",
+          7
         )
       },
 
@@ -184,24 +195,27 @@ namespace dustbin {
         achievements::c_sM2BlackDominate, 
         std::make_tuple(
           "Marble2 Black Lap Cup Dominator", 
-          "Awarded to players winning all races in a cup racing against Marble2 marbles in the \"Black Lap\" (one lap per race) mode",
-          "black_marble2_cupallwin.png"
+          "Win all races in a cup racing against Marble2 marbles in the \"Black Lap\" (1 lap per race) mode",
+          "black_marble2_cupallwin.png",
+          8
         )
       },
       {
         achievements::c_sM2BlackWinCup, 
         std::make_tuple(
           "Marble2 Black Lap Cup Winner", 
-          "Awarded to players winning a cup against Marble2 marbles in the \"Black Lap\" (one lap per race) mode",
-          "black_marble2_cupwinner.png"
+          "Win a cup against Marble2 marbles in the \"Black Lap\" (1 lap per race) mode",
+          "black_marble2_cupwinner.png",
+          9
         )
       },
       {
         achievements::c_sM2BlackWinRace, 
         std::make_tuple(
           "Marble2 Black Lap Race Winner", 
-          "Awarded to players winning a race against Marble2 marbles in the \"Black Lap\" (one lap per race) mode", 
-          "black_marble2_winner.png"
+          "Win a race against Marble2 marbles in the \"Black Lap\" (1 lap per race) mode", 
+          "black_marble2_winner.png",
+          10
         )
       },
 
@@ -210,32 +224,36 @@ namespace dustbin {
         achievements::c_sM2Dominate, 
         std::make_tuple(
           "Marble2 Cup Dominator", 
-          "Awarded to players winning all races in a cup against Marble2 marbles.", 
-          "marble2_cupallwin.png"
+          "Win all races in a cup against Marble2 marbles", 
+          "marble2_cupallwin.png",
+          11
         )
       },
       {
         achievements::c_sM2WinCup, 
         std::make_tuple(
           "Marble2 Cup Winner", 
-          "Awarded to players winning a cup against Marble2 Marbles", 
-          "marble2_cupwinner.png"
+          "Win a cup against Marble2 Marbles", 
+          "marble2_cupwinner.png",
+          12
         )
       },
       {
         achievements::c_sM2WinRace, 
         std::make_tuple(
           "Marble2 Race Winner", 
-          "Awarded to players winning a race against Marble2 Marbles",
-          "marble2_winner.png"
+          "Win a race against Marble2 Marbles",
+          "marble2_winner.png",
+          13
         )
       },
       {
         achievements::c_sM2Race, 
         std::make_tuple(
           "Marble2 Racer", 
-          "Awarded to players racing against Marble2 Marbles", 
-          "marble2_racer.png"
+          "Race against Marble2 Marbles", 
+          "marble2_racer.png",
+          14
         )
       },
 
@@ -244,24 +262,27 @@ namespace dustbin {
         achievements::c_sM3BlackDominate, 
         std::make_tuple(
           "Marble3 Black Lap Cup Dominator", 
-          "Awarded to players winning all races in a cup racing against Marble3 marbles in the \"Black Lap\" (one lap per race) mode",
-          "black_marble3_cupallwin.png"
+          "Win all races in a cup racing against Marble3 marbles in the \"Black Lap\" (1 lap per race) mode",
+          "black_marble3_cupallwin.png",
+          15
         )
       },
       {
         achievements::c_sM3BlackWinCup, 
         std::make_tuple(
           "Marble3 Black Lap Cup Winner", 
-          "Awarded to players winning a cup against Marble3 marbles in the \"Black Lap\" (one lap per race) mode",
-          "black_marble3_cupwinner.png"
+          "Win a cup against Marble3 marbles in the \"Black Lap\" (1 lap per race) mode",
+          "black_marble3_cupwinner.png",
+          16
         )
       },
       {
         achievements::c_sM3BlackWinRace, 
         std::make_tuple(
           "Marble3 Black Lap Race Winner", 
-          "Awarded to players winning a race against Marble3 marbles in the \"Black Lap\" (one lap per race) mode", 
-          "black_marble3_winner.png"
+          "Win a race against Marble3 marbles in the \"Black Lap\" (1 lap per race) mode", 
+          "black_marble3_winner.png",
+          17
         )
       },
 
@@ -270,32 +291,36 @@ namespace dustbin {
         achievements::c_sM3Dominate,
         std::make_tuple(
           "Marble3 Cup Dominator",
-          "Awarded to players winning all races in a cup against Marble3 marbles.",
-          "marble3_cupallwin.png"
+          "Win all races in a cup against Marble3 marbles",
+          "marble3_cupallwin.png",
+          18
         )
       },
       {
         achievements::c_sM3WinCup, 
         std::make_tuple(
           "Marble3 Cup Winner", 
-          "Awarded to players winning a cup against Marble3 Marbles", 
-          "marble3_cupwinner.png"
+          "Win a cup against Marble3 Marbles", 
+          "marble3_cupwinner.png",
+          19
         )
       },
       {
         achievements::c_sM3WinRace, 
         std::make_tuple(
           "Marble3 Race Winner", 
-          "Awarded to players winning against Marble3 Marbles",
-          "marble3_winner.png"
+          "Win a race against Marble3 Marbles",
+          "marble3_winner.png",
+          20
         )
       },
       {
         achievements::c_sM3Race, 
         std::make_tuple(
         "Marble3 Racer", 
-        "Awarded to players racing against Marble3 Marbles", 
-        "marble3_racer.png"
+        "Race against Marble3 Marbles", 
+        "marble3_racer.png",
+          21
         )
       },
 
@@ -304,50 +329,65 @@ namespace dustbin {
         achievements::s_sNetWinCup, 
         std::make_tuple(
           "Network Cup Winner", 
-          "Awarded to players winning a MarbleGP Cup in a net game", 
-          "network_cupwinner.png"
+          "Win a MarbleGP Cup in a net game", 
+          "network_cupwinner.png",
+          22
         )
       },
       {
         achievements::c_sNetWinRace, 
         std::make_tuple(
           "Network Race Winner", 
-          "Awarded to players winning a MarbleGP Race in a net game", 
-          "network_winner.png"
+          "Win a MarbleGP Race in a net game", 
+          "network_winner.png",
+          23
         )
       },
       {
         achievements::c_sNetRace, 
         std::make_tuple(
           "Network Racer", 
-          "Awarded to players racing against other players in a net game", 
-          "network_racer.png"
+          "Race against other players in a net game", 
+          "network_racer.png",
+          24
         )
       },
 
       // Splitscreen Achievements
       {
-        achievements::s_sSplitscreenWinCup, 
+        achievements:: s_sSplitscreenWinCup, 
         std::make_tuple(
-          "Network Cup Winner", 
-          "Awarded to players winning a MarbleGP Cup in a splitscreen game", 
-          "splitscreen_cupwinner.png"
+          "Splitscreen Cup Winner", 
+          "Win a MarbleGP Cup in a splitscreen game", 
+          "splitscreen_cupwinner.png",
+          25
         )
       },
       {
         achievements::c_sSplitscreenWinRace, 
         std::make_tuple(
-          "Network Race Winner", 
-          "Awarded to players winning a MarbleGP Race in a splitscreen game", 
-          "splitscreen_winner.png"
+          "Splitscreen Race Winner", 
+          "Win a MarbleGP Race in a splitscreen game", 
+          "splitscreen_winner.png",
+          26
         )
       },
       {
         achievements::c_sSplitscreenRace, 
         std::make_tuple(
           "Splitscreen Racer", 
-          "Awarded to players racing against other players in a splitscreen game", 
-          "splitscreen_racer.png"
+          "Race against other players in a splitscreen game", 
+          "splitscreen_racer.png",
+          27
+        )
+      },
+      {
+        achievements::c_sTutorial,
+        std::make_tuple(
+          "Tutorial Played",
+          "Play the tutorial",
+          "tutorial.png",
+          28
         )
       }
     };
@@ -359,7 +399,6 @@ namespace dustbin {
     * @return a vector with the achievement identifiers
     */
     std::vector<std::string> checkForNewAchievements(data::SPlayerData* a_pPlayer, gameclasses::STournament* a_pTournament) {
-
       bool l_bFinished = true;
       
       for (auto l_pRace : a_pTournament->m_vRaces) {
@@ -374,11 +413,15 @@ namespace dustbin {
       bool l_bMarble3AI   = false;
       bool l_bMarble2AI   = false;
       bool l_bMarbleGPAI  = false;
+      bool l_bTutorial    = false;
 
       int l_iLocalPlayers = 0;
       int l_iPlayerCount  = (int)a_pTournament->m_vPlayers.size();
 
       std::vector<std::string> l_vAwarded;
+
+      if (a_pTournament->m_vRaces.size() > 0 && a_pTournament->m_vRaces.back()->m_sTrack == "tutorial")
+        l_vAwarded.push_back(achievements::c_sTutorial);
 
       for (auto l_pPlayer : a_pTournament->m_vPlayers) {
         if (l_pPlayer->m_eType == data::enPlayerType::Local) {
@@ -513,13 +556,12 @@ namespace dustbin {
         auto l_itAward = std::find(l_vAwarded.begin(), l_vAwarded.end(), std::get<0>(l_tOld));
 
         if (l_itAward != l_vAwarded.end()) {
-          printf("Medal %s is not new, removing!\n", (*l_itAward).c_str());
           l_vAwarded.erase(l_itAward);
         }
       }
 
       for (auto l_sNew : l_vAwarded) {
-        printf("%s\n", l_sNew.c_str());
+        gamecloud::awardAchievement(l_sNew.c_str());
       }
 
       return l_vAwarded;
@@ -560,6 +602,22 @@ namespace dustbin {
       }
 
       return std::make_tuple("", "", "", "");
+    }
+
+
+    /**
+    * Dump information about all medals
+    */
+    void dumpMedals() {
+      printf("\n\n**** All Medals\n\n");
+      for (auto l_tAchievement : g_mAllAchievements) {
+        printf("%s\n%s\n%s\n\n", 
+          l_tAchievement.first.c_str(), 
+          std::get<0>(l_tAchievement.second).c_str(), 
+          std::get<1>(l_tAchievement.second).c_str()
+        );
+      }
+      printf("\n****\n\n");
     }
   }
 }

@@ -44,6 +44,7 @@ namespace dustbin {
       int m_iRasterSize;    /**< The raster size for UI layout */
 
       irr::u32 m_iRenderFlags;    /**< Flags for shadow rendering */
+      irr::s64 m_iTotalSteps;     /**< The total number of steps, i.e. "run" calls */
 
       std::vector<int> m_vFontSizes;  /**< The supported font sizes */
 

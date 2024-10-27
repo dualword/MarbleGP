@@ -589,6 +589,9 @@
     <ClCompile Include="..\..\_source\source\helpers\CMedalHelpers.cpp">
       <Filter>Source Files\helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\gamecloud\CGameCloud_Steam.cpp">
+      <Filter>Source Files\gamecloud</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CGlobal.h">
@@ -1083,6 +1086,9 @@
     <ClInclude Include="..\..\_source\include\helpers\CMedalHelpers.h">
       <Filter>Header Files\helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\_source\include\gamecloud\CGameCloud.h">
+      <Filter>Header Files\gamecloud</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -1261,6 +1267,12 @@
     </Filter>
     <Filter Include="Source Files\webserver">
       <UniqueIdentifier>{c87efdba-292c-4837-92cd-a4f7e9726c57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gamecloud">
+      <UniqueIdentifier>{f96ec8d7-8f23-4c15-b48a-b807dad78ddc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gamecloud">
+      <UniqueIdentifier>{f6a9def2-13aa-4be4-aae1-4bc15342c199}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

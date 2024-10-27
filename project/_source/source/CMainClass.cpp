@@ -12,6 +12,7 @@
 #include <sound/ISoundInterface.h>
 #include <helpers/CDataHelpers.h>
 #include <gui/CVirtualKeyboard.h>
+#include <gamecloud/CGameCloud.h>
 #include <gameclasses/SPlayer.h>
 #include <network/CGameServer.h>
 #include <network/CGameClient.h>
@@ -47,6 +48,7 @@ namespace dustbin {
     m_bFirstStart     (a_sSettings == ""),
     m_iRasterSize     (-1),
     m_iRenderFlags    (0),
+    m_iTotalSteps     (0),
     m_pCtrlMenu       (nullptr),
     m_pCtrlGame       (nullptr),
     m_pActiveState    (nullptr),
@@ -133,6 +135,8 @@ namespace dustbin {
 
     m_cSettings.loadSettings(m_mSettings);
 
+    printf("Gamecloud initialization: %s\n", gamecloud::initialize() ? "success" : "failed");
+
     setGlobal("FirstStart", m_bFirstStart ? "true" : "false");
   }
 
@@ -196,6 +200,7 @@ namespace dustbin {
     if (m_pFontMgr != nullptr)
       delete m_pFontMgr;
 
+    gamecloud::shutdown();
     m_mStates.clear();
   }
 
@@ -1181,6 +1186,13 @@ namespace dustbin {
   */
   state::enState CMainClass::run() {
     state::enState l_eState = state::enState::None;
+
+    m_iTotalSteps++;
+
+    if (m_iTotalSteps % 600 == 0) {
+      gamecloud::pollService();
+      printf("Poll\n");
+    }
 
     if (m_pActiveState != nullptr) {
       l_eState = m_pActiveState->run();
