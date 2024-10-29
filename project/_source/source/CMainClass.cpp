@@ -1299,6 +1299,16 @@ namespace dustbin {
 
           l_cFile.close();
 
+          for (auto l_cProfile : m_vProfiles) {
+            printf("**** Achievements of \"%s\"\n", l_cProfile.m_sName.c_str());
+
+            for (auto l_cAch : l_cProfile.m_vAchievements) {
+              printf("%s (%s)\n", std::get<0>(l_cAch).c_str(), std::get<1>(l_cAch).c_str());
+            }
+
+            printf("****\n\n");
+          }
+
           l_cFile = std::ifstream(helpers::ws2s(l_sCtrl));
 
           if (l_cFile.is_open()) {
@@ -1427,7 +1437,6 @@ namespace dustbin {
 
     if (m_iTotalSteps % 600 == 0) {
       gamecloud::pollService();
-      printf("Poll\n");
     }
 
     if (m_pActiveState != nullptr) {

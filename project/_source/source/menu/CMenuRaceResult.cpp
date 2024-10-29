@@ -432,7 +432,7 @@ namespace dustbin {
           l_pTournament->saveToJSON();
 
           bool l_bSaveProfiles = false;
-          std::vector<data::SPlayerData> l_vProfiles = m_pState->getGlobal()->getProfiles();
+          std::vector<data::SPlayerData> &l_vProfiles = m_pState->getGlobal()->getProfiles();
 
           time_t  l_cDate;
           tm     *l_pDate;
@@ -463,7 +463,6 @@ namespace dustbin {
 
           if (l_bSaveProfiles) {
             m_pState->getGlobal()->saveProfiles();
-            platform::saveSettings();
           }
         }
 

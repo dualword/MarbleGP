@@ -75,7 +75,7 @@ namespace dustbin {
         data::SGameSettings m_cSettings;        /**< The game settings */
 
         std::vector<irr::gui::IGUIElement *> m_vSteps;      /**< The root GUI element for each available step */
-        std::vector<data::SPlayerData      > m_vProfiles;   /**< A vector with all player data */
+        std::vector<data::SPlayerData      > &m_vProfiles;  /**< A vector with all player data */
 
         std::vector<std::string> m_vSelectedPlayers;
 
@@ -467,6 +467,7 @@ namespace dustbin {
           IMenuHandler       (a_pDevice, a_pManager, a_pState),
           m_eGameType        (enGameType   ::Unknown),
           m_eStep            (enWizardStep ::Unknown),
+          m_vProfiles        (CGlobal::getInstance()->getProfiles()),
           m_pTextureRtt      (nullptr),
           m_pPreviewSmgr     (nullptr),
           m_bResumeTournament(false)
@@ -544,8 +545,6 @@ namespace dustbin {
           while (true);
 
           printf("%i profile wizard steps found\n", (int)m_vSteps.size());
-
-          m_vProfiles = m_pState->getGlobal()->getProfiles();
 
           m_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
 

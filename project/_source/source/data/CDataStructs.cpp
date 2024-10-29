@@ -249,6 +249,13 @@ namespace dustbin {
       m_iGridPos      = a_cOther.m_iGridPos;
       m_iViewPort     = a_cOther.m_iViewPort;
       m_fDeviation    = a_cOther.m_fDeviation;
+
+      for (auto l_tAch : a_cOther.m_vAchievements) {
+        m_vAchievements.push_back(std::make_tuple(
+          std::get<0>(l_tAch),
+          std::get<1>(l_tAch)
+        ));
+      }
     }
 
     std::string SPlayerData::serialize() const {

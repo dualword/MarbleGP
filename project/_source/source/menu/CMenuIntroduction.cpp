@@ -93,9 +93,9 @@ namespace dustbin {
                 l_cPlayer.m_sControls  = l_pPlayer->m_sController;
                 l_cPlayer.m_eType      = l_pPlayer->m_eType;
                 
-                std::vector<data::SPlayerData> l_vProfiles = {
-                  l_cPlayer
-                };
+                std::vector<data::SPlayerData> &l_vProfiles = CGlobal::getInstance()->getProfiles();
+                l_vProfiles.push_back(l_cPlayer);
+                CGlobal::getInstance()->saveProfiles();
 
                 CGlobal::getInstance()->saveProfiles();
 
