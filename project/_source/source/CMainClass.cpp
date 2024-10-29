@@ -6,8 +6,10 @@
 #include <animators/CAnimatorFactory.h>
 #include <controller/CControllerBase.h>
 #include <scenenodes/CLuaMeshLoader.h>
+#include <messages/CMessageHelpers.h>
 #include <helpers/CTextureHelpers.h>
 #include <shaders/CDustbinShaders.h>
+#include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
 #include <helpers/CDataHelpers.h>
@@ -25,11 +27,104 @@
 #include <state/CGameState.h>
 #include <state/IState.h>
 #include <CMainClass.h>
+#include <filesystem>
 #include <Defines.h>
+#include <istream>
+#include <fstream>
 #include <cstdlib>
 #include <ctime>
 
 namespace dustbin {
+  const irr::s32 c_iPlayerDataStart = -23;
+  const irr::s32 c_iPlayerProfile   = -24;
+  const irr::s32 c_iPlayerDataEnd   = -25;
+
+  const irr::s32 c_iCtrlStart = -30;
+  const irr::s32 c_iCtrlName  = -31;
+  const irr::s32 c_iCtrlCtrl  = -32;
+  const irr::s32 c_iCtrlEnd   = -33;
+
+  std::vector<data::SPlayerData> createPlayerVector(const std::string a_sSerialized) {
+    messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sSerialized.c_str());
+    std::vector<data::SPlayerData> l_vRet;
+
+    std::wstring l_sPath = platform::portableGetDataPath();
+
+    if (l_cSerializer.getS32() == c_iProfileHead) {
+      if (l_cSerializer.getString() == c_sProfileHead) {
+        while (l_cSerializer.hasMoreMessages()) {
+          irr::s32 l_iToken = l_cSerializer.getS32();
+
+          if (l_iToken == c_iProfileStart) {
+            data::SPlayerData l_cPlayer;
+            l_cPlayer.deserialize(l_cSerializer.getString());
+            if (l_cSerializer.getS32() != c_iProfileEnd)
+              printf("Invalid profile end token.\n");
+            else
+              l_vRet.push_back(l_cPlayer);
+          }
+          else if (l_iToken == c_iExtProfile) {
+            std::string l_sName = l_cSerializer.getString();
+
+            if (l_cSerializer.getS32() == c_iProfileEnd) {
+              std::string l_sFile = helpers::ws2s(l_sPath) + messages::urlEncode(l_sName) + ".profile";
+              std::ifstream l_cFile(l_sFile);
+
+              if (l_cFile.is_open()) {
+                std::string l_sData((std::istreambuf_iterator<char>(l_cFile)), std::istreambuf_iterator<char>());
+
+                data::SPlayerData l_cData = data::SPlayerData();
+                l_cData.deserialize(l_sData);
+
+                l_vRet.push_back(l_cData);
+
+                l_cFile.close();
+              }
+            }
+          }
+          else printf("Invalid profile start token.\n");
+        }
+      }
+      else printf("Invalid player profiles marker.\n");
+    }
+    else printf("Invalid player profiles header id.\n");
+
+    return l_vRet;
+  }
+
+  void saveProfiles(std::vector<data::SPlayerData>& a_cProfiles) {
+    messages::CSerializer64 l_cSerializer;
+
+    l_cSerializer.addS32(c_iProfileHead);
+    l_cSerializer.addString(c_sProfileHead);
+
+    l_cSerializer.addS32(c_iAllProfileEnd);
+
+    int l_iNum = 1;
+
+    std::wstring l_sPath = platform::portableGetDataPath();
+
+    for (auto& l_cProfile : a_cProfiles) {
+      printf("Save profile \"%s\"...\n", l_cProfile.m_sName.c_str());
+      l_cSerializer.addS32(c_iExtProfile);
+      l_cProfile.m_iPlayerId = l_iNum;
+      l_cSerializer.addString(l_cProfile.m_sName);
+      l_cSerializer.addS32(c_iProfileEnd);
+
+      std::string l_sFile = helpers::ws2s(l_sPath) + messages::urlEncode(l_cProfile.m_sName) + ".profile";
+      irr::io::IWriteFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndWriteFile(l_sFile.c_str());
+
+      std::string l_sProfile = l_cProfile.serialize();
+
+      l_pFile->write(l_sProfile.c_str(), l_sProfile.size());
+      l_pFile->drop();
+
+      l_iNum++;
+    }
+
+    CGlobal::getInstance()->setSetting("profiles", l_cSerializer.getMessageAsString());
+  }
+
   /**
   * The constructor
   * @param a_sSettings The settings XML as a string
@@ -199,6 +294,8 @@ namespace dustbin {
 
     if (m_pFontMgr != nullptr)
       delete m_pFontMgr;
+
+    m_vProfiles.clear();
 
     gamecloud::shutdown();
     m_mStates.clear();
@@ -1163,6 +1260,145 @@ namespace dustbin {
       return startTournament();
     else
       return m_pTournament;
+  }
+
+  /**
+  * Get the player profile vector
+  * @return the player profile vecto
+  */
+  std::vector<data::SPlayerData> &CMainClass::getProfiles() {
+    if (m_vProfiles.size() == 0) {
+      std::wstring l_sPath = platform::portableGetDataPath();
+      std::wstring l_sData = l_sPath + L"profile_data.txt";
+      std::wstring l_sCtrl = l_sPath + L"profile_ctrl.txt";
+
+      if (std::filesystem::exists(l_sData) && std::filesystem::exists(l_sCtrl)) {
+        std::string l_sFile = helpers::ws2s(l_sData);
+        std::ifstream l_cFile(l_sFile);
+
+        if (l_cFile.is_open()) {
+          std::string l_sData((std::istreambuf_iterator<char>(l_cFile)), std::istreambuf_iterator<char>());
+
+          messages::CSerializer64 l_cSerializer = messages::CSerializer64(l_sData);
+
+          if (l_cSerializer.getS32() == c_iPlayerDataStart) {
+            while (l_cSerializer.hasMoreMessages()) {
+              irr::s32 l_iToken = l_cSerializer.getS32();
+
+              if (l_iToken == c_iPlayerProfile) {
+                data::SPlayerData l_cProfile;
+                l_cProfile.deserialize(messages::urlDecode(l_cSerializer.getString()));
+                m_vProfiles.push_back(l_cProfile);
+              }
+              else if (l_iToken == c_iPlayerDataEnd) {
+                printf("End of profiles found.\n");
+                break;
+              }
+            }
+          }
+
+          l_cFile.close();
+
+          l_cFile = std::ifstream(helpers::ws2s(l_sCtrl));
+
+          if (l_cFile.is_open()) {
+            l_sData = std::string((std::istreambuf_iterator<char>(l_cFile)), std::istreambuf_iterator<char>());
+
+            messages::CSerializer64 l_cControls = messages::CSerializer64(l_sData);
+
+            if (l_cControls.getS32() == c_iCtrlStart) {
+              data::SPlayerData *l_pPlayer = nullptr;
+
+              while (l_cControls.hasMoreMessages()) {
+                irr::s32 l_iToken = l_cControls.getS32();
+
+                if (l_iToken == c_iCtrlName) {
+                  std::string l_sName = messages::urlDecode(l_cControls.getString());
+
+                  for (auto &l_cPlayer: m_vProfiles) {
+                    if (l_cPlayer.m_sName == l_sName) {
+                      l_pPlayer = &l_cPlayer;
+                      break;
+                    }
+                  }
+                }
+                else if (l_iToken == c_iCtrlCtrl) {
+                  if (l_pPlayer != nullptr) {
+                    l_pPlayer->m_sControls = messages::urlDecode(l_cControls.getString());
+                    l_pPlayer = nullptr;
+                  }
+                  else {
+                    printf("No profile found for controls.\n");
+                  }
+                }
+                else if (l_iToken == c_iCtrlEnd) {
+                  printf("End of controls found.\n");
+                  break;
+                }
+              }
+            }
+
+            l_cFile.close();
+          }
+        }
+      }
+      else {
+        // Fallback to old storage system of the profiles
+        m_vProfiles = createPlayerVector(getSetting("profiles"));
+
+        saveProfiles();
+      }
+    }
+
+    return m_vProfiles;
+  }
+
+  /**
+  * Save the player profiles
+  */
+  void CMainClass::saveProfiles() {
+    std::wstring l_sPath = platform::portableGetDataPath();
+    std::wstring l_sData = l_sPath + L"profile_data.txt";
+    std::wstring l_sCtrl = l_sPath + L"profile_ctrl.txt";
+
+    std::ofstream l_cData = std::ofstream(l_sData, std::ios::out);
+    std::ofstream l_cCtrl = std::ofstream(l_sCtrl, std::ios::out);
+
+    if (!l_cData.is_open()) {
+      printf("Cannot open profile file for writing.\n");
+      return;
+    }
+
+    if (!l_cCtrl.is_open()) {
+      l_cData.close();
+      printf("Cannot open controller file for writing.\n");
+      return;
+    }
+
+    messages::CSerializer64 l_cProfiles;
+    messages::CSerializer64 l_cControls;
+
+    l_cProfiles.addS32(c_iPlayerDataStart);
+    l_cControls.addS32(c_iCtrlStart);
+
+    for (auto& l_cProfile : m_vProfiles) {
+      l_cProfiles.addS32(c_iPlayerProfile);
+      l_cProfiles.addString(messages::urlEncode(l_cProfile.serialize()));
+
+      l_cControls.addS32(c_iCtrlName);
+      l_cControls.addString(messages::urlEncode(l_cProfile.m_sName));
+      l_cControls.addS32(c_iCtrlCtrl);
+      l_cControls.addString(messages::urlEncode(l_cProfile.m_sControls));
+    }
+
+    l_cProfiles.addS32(c_iPlayerDataEnd);
+    l_cProfiles.addS32(c_iCtrlEnd);
+
+    l_cData << l_cProfiles.getMessageAsString();
+    l_cCtrl << l_cControls.getMessageAsString();
+
+    l_cData.close();
+    l_cCtrl.close();
   }
 
   /**

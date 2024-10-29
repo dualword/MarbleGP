@@ -245,7 +245,7 @@ namespace dustbin {
     * @param a_pFs the file system to use
     */
     void CWebServerBase::loadProfileData() {
-      std::vector<data::SPlayerData> l_vPlayers = data::SPlayerData::createPlayerVector(CGlobal::getInstance()->getSetting("profiles"));
+      std::vector<data::SPlayerData> l_vPlayers = CGlobal::getInstance()->getProfiles();
 
       g_sProfileData = "[";
 
@@ -1007,7 +1007,7 @@ namespace dustbin {
       }
 
 
-      helpers::saveProfiles(l_vPlayers);
+      CGlobal::getInstance()->saveProfiles();
 
       return l_bRet;
     }

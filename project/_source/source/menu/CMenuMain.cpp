@@ -34,7 +34,7 @@ namespace dustbin {
           m_pState->getGlobal()->stopGameServer();
           m_pState->getGlobal()->stopGameClient();
 
-          std::vector<data::SPlayerData> l_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
+          std::vector<data::SPlayerData> l_vProfiles = m_pState->getGlobal()->getProfiles();
 
           platform::consumeBackEvent(false);
         }

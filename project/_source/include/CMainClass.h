@@ -14,6 +14,10 @@
 class FontManager;
 
 namespace dustbin {
+  namespace data {
+    typedef struct SPlayerData SPlayerData;   /**< Forward declaration of the player data struct */
+  }
+
   namespace gui {
     class CVirtualKeyboard;
   }
@@ -86,6 +90,8 @@ namespace dustbin {
       gameclasses::STournament *m_pTournament;    /**< The current tournament */
 
       FontManager *m_pFontMgr;    /**< The manager for the true type fonts */
+
+      std::vector<data::SPlayerData> m_vProfiles;   /**< The player profiles */
 
 #ifdef _DEBUG 
 
@@ -393,6 +399,17 @@ namespace dustbin {
       * @return the current tournament
       */
       virtual gameclasses::STournament *getTournament() override;
+
+      /**
+      * Get the player profile vector
+      * @return the player profile vecto
+      */
+      virtual std::vector<data::SPlayerData> &getProfiles() override;
+
+      /**
+      * Save the player profiles
+      */
+      virtual void saveProfiles() override;
 
       /**
       * This method is called when a progress update needs to be reported

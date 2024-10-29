@@ -90,7 +90,7 @@ namespace dustbin {
         * @param a_bNetClient true if the setup is for a game as network client
         */
         void saveChampionship(bool a_bNetClient) {
-          helpers::saveProfiles(m_vProfiles);
+          CGlobal::getInstance()->saveProfiles();
 
           int l_iGridSize = 1;
 
@@ -545,7 +545,7 @@ namespace dustbin {
 
           printf("%i profile wizard steps found\n", (int)m_vSteps.size());
 
-          m_vProfiles = data::SPlayerData::createPlayerVector(m_pState->getGlobal()->getSetting("profiles"));
+          m_vProfiles = m_pState->getGlobal()->getProfiles();
 
           m_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
 
@@ -671,7 +671,7 @@ namespace dustbin {
                       m_vProfiles[l_pHandler->getProfileIndex()] = data::SPlayerData(l_pHandler->getEditedProfile());
                     }
 
-                    helpers::saveProfiles(m_vProfiles);
+                    CGlobal::getInstance()->saveProfiles();
                     platform::saveSettings();
 
                     if (l_sSender == "ProfileData_Tutorial") {
@@ -868,7 +868,7 @@ namespace dustbin {
                         printf("Delete Profile \"%s\"\n", (*l_itProfile).m_sName.c_str());
                         m_vProfiles.erase(l_itProfile);
                         setWizardStep(enWizardStep::Profiles);
-                        helpers::saveProfiles(m_vProfiles);
+                        CGlobal::getInstance()->saveProfiles();
                         platform::saveSettings();
                       }
                       else printf("Profile with index %i not found.\n", p->getProfileIndex());

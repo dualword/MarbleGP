@@ -13,6 +13,7 @@
 #endif
 
 namespace dustbin {
+
   namespace controller {
     class CControllerBase;  /**< Forward declaration of the joystick event handler */
   }
@@ -336,6 +337,17 @@ namespace dustbin {
       * @return the current tournament
       */
       virtual gameclasses::STournament *getTournament() = 0;
+
+      /**
+      * Get the player profile vector
+      * @return the player profile vecto
+      */
+      virtual std::vector<data::SPlayerData> &getProfiles() = 0;
+
+      /**
+      * Save the player profiles
+      */
+      virtual void saveProfiles() = 0;
 
 #ifdef _ANDROID
       /**

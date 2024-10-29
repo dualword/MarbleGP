@@ -97,7 +97,7 @@ namespace dustbin {
                   l_cPlayer
                 };
 
-                helpers::saveProfiles(l_vProfiles);
+                CGlobal::getInstance()->saveProfiles();
 
                 gameclasses::SRace* l_pRace = new gameclasses::SRace(
                   "tutorial",

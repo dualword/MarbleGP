@@ -138,7 +138,7 @@ namespace dustbin {
       */
       std::string to_json();
 
-      static std::vector<SPlayerData> createPlayerVector(const std::string a_sSerialized);
+      // static std::vector<SPlayerData> createPlayerVector(const std::string a_sSerialized);
     } SPlayerData;
 
     /**

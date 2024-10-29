@@ -252,52 +252,46 @@ namespace dustbin {
     }
 
     std::string SPlayerData::serialize() const {
-      if (m_iPlayerId > 0 && (m_iPlayerId <= 8 || (m_eType != enPlayerType::Local && m_iPlayerId <= 16))) {
-        messages::CSerializer64 l_cSerializer;
+      messages::CSerializer64 l_cSerializer;
 
-        l_cSerializer.addS32(c_iPlayerDataHead);
-        l_cSerializer.addString(c_sPlayerDataHead);
+      l_cSerializer.addS32(c_iPlayerDataHead);
+      l_cSerializer.addString(c_sPlayerDataHead);
 
-        l_cSerializer.addS32(c_iPlayerType);
-        l_cSerializer.addS32((irr::s32)m_eType);
+      l_cSerializer.addS32(c_iPlayerType);
+      l_cSerializer.addS32((irr::s32)m_eType);
 
-        l_cSerializer.addS32(c_iPlayerName);
-        l_cSerializer.addString(m_sName);
+      l_cSerializer.addS32(c_iPlayerName);
+      l_cSerializer.addString(m_sName);
 
-        l_cSerializer.addS32(c_iPlayerControls);
-        l_cSerializer.addString(m_sControls);
+      l_cSerializer.addS32(c_iPlayerTexture);
+      l_cSerializer.addString(m_sTexture);
 
-        l_cSerializer.addS32(c_iPlayerTexture);
-        l_cSerializer.addString(m_sTexture);
+      l_cSerializer.addS32(c_iPlayerAiHelp);
+      l_cSerializer.addS32((irr::s32)m_eAiHelp);
 
-        l_cSerializer.addS32(c_iPlayerAiHelp);
-        l_cSerializer.addS32((irr::s32)m_eAiHelp);
+      l_cSerializer.addS32(c_iPlayerGridPos);
+      l_cSerializer.addS32(m_iGridPos);
 
-        l_cSerializer.addS32(c_iPlayerGridPos);
-        l_cSerializer.addS32(m_iGridPos);
+      l_cSerializer.addS32(c_iPlayerViewPort);
+      l_cSerializer.addS32(m_iViewPort);
 
-        l_cSerializer.addS32(c_iPlayerViewPort);
-        l_cSerializer.addS32(m_iViewPort);
+      l_cSerializer.addS32(c_iPlayerShortName);
+      l_cSerializer.addString(m_sShortName);
 
-        l_cSerializer.addS32(c_iPlayerShortName);
-        l_cSerializer.addString(m_sShortName);
+      l_cSerializer.addS32(c_iPlayerDeviation);
+      l_cSerializer.addF32(m_fDeviation);
 
-        l_cSerializer.addS32(c_iPlayerDeviation);
-        l_cSerializer.addF32(m_fDeviation);
+      l_cSerializer.addS32(c_iPlayerAchievements);
+      l_cSerializer.addS32((irr::s32)m_vAchievements.size());
 
-        l_cSerializer.addS32(c_iPlayerAchievements);
-        l_cSerializer.addS32((irr::s32)m_vAchievements.size());
-
-        for (auto l_tMedal : m_vAchievements) {
-          l_cSerializer.addString(std::get<0>(l_tMedal));
-          l_cSerializer.addString(std::get<1>(l_tMedal));
-        }
-
-        l_cSerializer.addS32(c_iPlayerDataEnd);
-
-        return l_cSerializer.getMessageAsString();
+      for (auto l_tMedal : m_vAchievements) {
+        l_cSerializer.addString(std::get<0>(l_tMedal));
+        l_cSerializer.addString(std::get<1>(l_tMedal));
       }
-      else return "";
+
+      l_cSerializer.addS32(c_iPlayerDataEnd);
+
+      return l_cSerializer.getMessageAsString();
     }
 
     bool SPlayerData::deserialize(const std::string &a_sSerialized) {
@@ -426,54 +420,6 @@ namespace dustbin {
       }
 
       return l_sReturn + ",\"ctrl_data\": \"" + messages::urlEncode(m_sControls) + "\" }";
-    }
-
-    std::vector<SPlayerData> SPlayerData::createPlayerVector(const std::string a_sSerialized) {
-      messages::CSerializer64 l_cSerializer = messages::CSerializer64(a_sSerialized.c_str());
-      std::vector<SPlayerData> l_vRet;
-
-      std::wstring l_sPath = platform::portableGetDataPath();
-
-      if (l_cSerializer.getS32() == c_iProfileHead) {
-        if (l_cSerializer.getString() == c_sProfileHead) {
-          while (l_cSerializer.hasMoreMessages()) {
-            irr::s32 l_iToken = l_cSerializer.getS32();
-
-            if (l_iToken == c_iProfileStart) {
-              SPlayerData l_cPlayer;
-              l_cPlayer.deserialize(l_cSerializer.getString());
-              if (l_cSerializer.getS32() != c_iProfileEnd)
-                printf("Invalid profile end token.\n");
-              else
-                l_vRet.push_back(l_cPlayer);
-            }
-            else if (l_iToken == c_iExtProfile) {
-              std::string l_sName = l_cSerializer.getString();
-
-              if (l_cSerializer.getS32() == c_iProfileEnd) {
-                std::string l_sFile = helpers::ws2s(l_sPath) + messages::urlEncode(l_sName) + ".profile";
-                std::ifstream l_cFile(l_sFile);
-
-                if (l_cFile.is_open()) {
-                  std::string l_sData((std::istreambuf_iterator<char>(l_cFile)), std::istreambuf_iterator<char>());
-
-                  SPlayerData l_cData = SPlayerData();
-                  l_cData.deserialize(l_sData);
-
-                  l_vRet.push_back(l_cData);
-
-                  l_cFile.close();
-                }
-              }
-            }
-            else printf("Invalid profile start token.\n");
-          }
-        }
-        else printf("Invalid player profiles marker.\n");
-      }
-      else printf("Invalid player profiles header id.\n");
-
-      return l_vRet;
     }
 
     SGameSettings::SGameSettings() :
