@@ -54,7 +54,8 @@ namespace dustbin {
           GameLevel,
           Custom,
           EditProfile,
-          ResumeCup
+          ResumeCup,
+          CtrlSetup
         };
 
         /**
@@ -77,7 +78,8 @@ namespace dustbin {
         std::vector<irr::gui::IGUIElement *> m_vSteps;      /**< The root GUI element for each available step */
         std::vector<data::SPlayerData      > &m_vProfiles;  /**< A vector with all player data */
 
-        std::vector<std::string> m_vSelectedPlayers;
+        std::vector<std::string> m_vSelectedPlayers;    /**< The names of the players selected for the game */
+        std::vector<std::string> m_vNoControls;         /**< The names of the players selected for the game without controller setting */
 
         irr::video::ITexture *m_pTextureRtt;    /**< The render target texture for the texture preview */
 
@@ -134,8 +136,8 @@ namespace dustbin {
               if (*it == (*it2).m_sName) {
                 // .. and create a copy of the player element (will be modified for each game)
                 gameclasses::SPlayer* l_pPlayer = new gameclasses::SPlayer(
-                  (*it2).m_iPlayerId,
-                  l_iNum++,
+                  l_iNum,
+                  l_iNum,
                   (*it2).m_sName,
                   (*it2).m_sTexture,
                   (*it2).m_sControls,
@@ -145,6 +147,7 @@ namespace dustbin {
                   (*it2).m_eType
                 );
 
+                l_iNum++;
                 l_pTournament->m_vPlayers.push_back(l_pPlayer);
 
                 break;
@@ -236,6 +239,22 @@ namespace dustbin {
 
             case enWizardStep::Profiles: {
               m_vSelectedPlayers = reinterpret_cast<CDataHandler_SelectPlayers *>(m_pDataHandler)->getSelectedPlayers();
+              m_vNoControls.clear();
+
+              for (auto l_cPlayer : m_vProfiles) {
+                if (std::find(m_vSelectedPlayers.begin(), m_vSelectedPlayers.end(), l_cPlayer.m_sName) != m_vSelectedPlayers.end()) {
+                  printf("Selected profile.");
+                  if (l_cPlayer.m_sControls == "") {
+                    m_vNoControls.push_back(l_cPlayer.m_sName);
+                  }
+                }
+              }
+
+              if (m_vNoControls.size() > 0) {
+                printf("Players need controller definition.\n");
+                a_eStep = enWizardStep::CtrlSetup;
+              }
+
               break;
             }
 
@@ -243,6 +262,20 @@ namespace dustbin {
               irr::gui::IGUITab *l_pRoot = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
               if (l_pRoot != nullptr) {
                 l_pRoot->setVisible(false);
+              }
+              break;
+            }
+
+            case enWizardStep::CtrlSetup: {
+              irr::gui::IGUIElement    *l_pTab  =                                              findElement("EditProfile_Control"  , irr::gui::EGUIET_TAB);
+              irr::gui::IGUIElement    *l_pRoot =                                              findElement("GameWizardEditProfile", irr::gui::EGUIET_TAB);
+              irr::gui::IGUIStaticText *l_pTxt  = reinterpret_cast<irr::gui::IGUIStaticText *>(findElement("EditProfile_Headline" , irr::gui::EGUIET_STATIC_TEXT));
+
+              if (l_pTab != nullptr && l_pTxt != nullptr && l_pRoot != nullptr) {
+                l_pTxt ->setText(L"Select and configure your Marble Controller");
+                l_pTab ->setVisible(false);
+                l_pRoot->setVisible(false);
+                m_pState->getGlobal()->saveProfiles();
               }
               break;
             }
@@ -373,6 +406,28 @@ namespace dustbin {
               irr::gui::IGUITab *l_pRoot = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("selectctrl_dialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
               if (l_pRoot != nullptr) {
                 l_pRoot->setVisible(true);
+              }
+
+              break;
+            }
+
+            case enWizardStep::CtrlSetup: {
+              irr::gui::IGUIElement    *l_pTab  =                                              findElement("EditProfile_Control"  , irr::gui::EGUIET_TAB);
+              irr::gui::IGUIElement    *l_pRoot =                                              findElement("GameWizardEditProfile", irr::gui::EGUIET_TAB);
+              irr::gui::IGUIStaticText *l_pTxt  = reinterpret_cast<irr::gui::IGUIStaticText *>(findElement("EditProfile_Headline" , irr::gui::EGUIET_STATIC_TEXT));
+
+              if (l_pTab != nullptr && l_pTxt != nullptr && l_pRoot != nullptr) {
+                std::string l_sHeadline = "Player \"" + m_vNoControls.front() + "\": Configure controls";
+                l_pTxt ->setText(helpers::s2ws(l_sHeadline).c_str());
+                l_pTab ->setVisible(true);
+                l_pRoot->setVisible(true);
+
+                for (auto l_cProfile : m_vProfiles) {
+                  if (l_cProfile.m_sName == m_vNoControls.front()) {
+                    m_pDataHandler = new CDataHandler_EditProfile(l_cProfile);
+                  }
+                }
+                
               }
 
               break;
@@ -724,6 +779,24 @@ namespace dustbin {
                       m_pState->setState(state::enState::Game);
                     }
                     else setWizardStep(enWizardStep::Profiles);
+                  }
+                  else if (m_eStep == enWizardStep::CtrlSetup) {
+                    if (m_vNoControls.size() > 0) {
+                      CDataHandler_EditProfile *l_pHandler = reinterpret_cast<CDataHandler_EditProfile *>(m_pDataHandler);
+
+                      for (auto& l_cProfile : m_vProfiles) {
+                        if (l_cProfile.m_sName == m_vNoControls.front()) {
+                          l_cProfile.m_sControls = l_pHandler->getEditedProfile().m_sControls;
+                        }
+                      }
+
+                      m_vNoControls.erase(m_vNoControls.begin());
+                      if (m_vNoControls.size() == 0)
+                        setWizardStep(enWizardStep::Controllers);
+                      else
+                        setWizardStep(enWizardStep::CtrlSetup);
+                    }
+                    else setWizardStep(enWizardStep::Controllers);
                   }
                 }
                 else if (l_sSender == "EditProfileCancel") {

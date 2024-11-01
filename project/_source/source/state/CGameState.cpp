@@ -1362,12 +1362,16 @@ namespace dustbin {
 
         controller::CControllerFactory *l_pFactory = new controller::CControllerFactory(l_pTheInputQueue);
 
-        printf("Assign Marble %i to player %i\n", a_iMarbleId, a_iPlayerId);
         gameclasses::STournament *l_pTrnmnt = m_pGlobal->getTournament();
 
         for (auto l_pPlr : l_pTrnmnt->m_vPlayers) {
           if (l_pPlr->m_iPlayer == a_iPlayerId) {
             m_pShader->adjustNodeMaterial(l_pMarble->m_pRotational, 0, m_pShader->getMaterial(shaders::enMaterialType::Marble));
+
+            if (l_pPlr->m_eType == data::enPlayerType::Local)
+              printf("* ");
+
+            printf("Assign Marble (%s): %s (%i)\n", l_pPlr->m_sName.c_str(), l_pMarble != nullptr ? "OK" : "nullptr", a_iMarbleId);
 
             l_pPlr->setMarbleNode(l_pMarble);
             l_pMarble->m_pPlayer = l_pPlr; 

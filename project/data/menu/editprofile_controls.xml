@@ -10,6 +10,7 @@
     <children>
       <element type="staticText" rect="relative: 0, 5, 76, 7" font="big">
         <attributes>
+          <attribute key="Name" value="EditProfile_Headline" />
           <attribute key="Caption" value="Select and configure your Marble Controller" />
           <attribute key="HTextAlign" value="center" />
           <attribute key="VTextAlign" value="center" />

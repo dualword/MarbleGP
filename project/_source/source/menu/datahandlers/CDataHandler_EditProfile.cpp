@@ -26,6 +26,9 @@ namespace dustbin {
       m_pTextureRtt   (a_pTextureRtt),
       m_sEditColor    ("")
     {
+      if (m_cEditProfile.m_sControls == "")
+        m_cEditProfile.m_sControls = helpers::getDefaultGameCtrl_Keyboard();
+
       std::vector<std::string> l_vColors = helpers::readLinesOfFile("data/colors.txt");
 
       for (std::vector<std::string>::iterator l_itColor = l_vColors.begin(); l_itColor != l_vColors.end(); l_itColor++) {
@@ -92,8 +95,43 @@ namespace dustbin {
 
       updateMarbleTexture(m_cEditProfile.m_sTexture);
 
+      m_eMode = enEditMode::Profile;
       updatePatterns();
       printf("Ready.\n");
+    }
+
+    CDataHandler_EditProfile::CDataHandler_EditProfile(const data::SPlayerData& a_cEditProfile) :
+      IMenuDataHandler(),
+      m_cEditProfile  (a_cEditProfile),
+      m_iProfileIndex (-1),
+      m_bConfigCtrl   (false),
+      m_bConfirmDelete(false),
+      m_bDeleteProfile(false),
+      m_pPreviewSmgr  (nullptr),
+      m_pMarbleNode   (nullptr),
+      m_pTextureRtt   (nullptr),
+      m_sEditColor    ("")
+    {
+      m_eMode = enEditMode::Controls;
+      setElementVisibility("EditProfileNew" , false);
+      setElementVisibility("EditProfileEdit", true);
+
+      m_pCtrl = reinterpret_cast<gui::CControllerUi_Game *>(findElement("EditProfile_ControlUi", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_ControllerUiGameId));
+
+      m_vSteps.push_back(enEditProfileStep::Ctrls);
+      m_itStep = m_vSteps.begin();
+      updateCtrlUi(
+#ifdef _WINDOWS
+        0
+#else
+        2
+#endif
+      );
+
+      if (m_cEditProfile.m_sControls == "")
+        m_cEditProfile.m_sControls = helpers::getDefaultGameCtrl_Keyboard();
+
+      setEditProfileStep(enDirection::NoChange);
     }
 
     CDataHandler_EditProfile::~CDataHandler_EditProfile() {
@@ -795,7 +833,7 @@ namespace dustbin {
     /**
     * Shall the profile be deleted?
     */
-    bool CDataHandler_EditProfile::deleteProfile() {
+    bool CDataHandler_EditProfile::deleteProfile() const {
       return m_bDeleteProfile;
     }
   }

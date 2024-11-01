@@ -31,6 +31,12 @@ namespace dustbin {
     * The data handler for editing a profile
     */
     class CDataHandler_EditProfile : public IMenuDataHandler {
+      public:
+        enum class enEditMode {
+          Profile,
+          Controls
+        };
+
       private:
         /**
         * The direction for step changes
@@ -51,6 +57,7 @@ namespace dustbin {
         irr::scene::ISceneNode    *m_pMarbleNode;         /**< The marble node for the texture preview */
         irr::video::ITexture      *m_pTextureRtt;         /**< Render target texture for the marble with it's custom texture */
         std::string                m_sEditColor;          /**< The currently edited color parameter */
+        enEditMode                 m_eMode;               /**< The current edit mode */
 
         std::vector<std::tuple<std::string, std::string, std::string, std::string>> m_vDefaultColors;     /**< The default colors for the random textures */
 
@@ -115,6 +122,7 @@ namespace dustbin {
 
       public:
         CDataHandler_EditProfile(int a_iProfileIndex, const data::SPlayerData &a_cEditProfile, irr::video::ITexture *a_pTextureRtt);
+        CDataHandler_EditProfile(const data::SPlayerData &a_cEditProfile);
         virtual ~CDataHandler_EditProfile();
 
         /**
@@ -152,7 +160,7 @@ namespace dustbin {
         /**
         * Shall the profile be deleted?
         */
-        bool deleteProfile();
+        bool deleteProfile() const;
     };
   }
 }
