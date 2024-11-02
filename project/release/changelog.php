@@ -1,8 +1,9 @@
 <ul>
   <li class="parent">
-    <b>2024-10-27 [1.3 Build 259]</b>
+    <b>2024-11-01 [1.3 Build 260]</b>
     <ul>
-      <li>Put some release information here</li>
+      <li>Fixed a crash in splitscreen game mode</li>
+      <li>Two more tracks: &quot;Flat: Counter Traffic&quot; and &quot:Complex: Dustbin-Games Curcuit&quot;</li>
     </ul>
   </li>
   <li class="parent">
