@@ -16,6 +16,8 @@ file(GLOB_RECURSE src
         ../../_source/source/*.cpp
         # ../../../../../_source/source/*.cpp
         )
+file(APPEND ../../_source/source/helpers/CMedalHelpers.cpp)
+file(APPEND ../../_source/source/gamecloud/CGameCloud_None.cpp)
 
 list(REMOVE_ITEM src ../../_source/source/main_windows.cpp)
 list(REMOVE_ITEM src ../../_source/source/platform/CPlatformLinux.cpp)
