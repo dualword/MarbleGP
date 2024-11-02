@@ -487,7 +487,7 @@ namespace dustbin {
             else {
               l_vAwarded.push_back(achievements::c_sM3WinCup);
               if (l_bDominate)
-                l_vAwarded.push_back(achievements::c_sM3WinCup);
+                l_vAwarded.push_back(achievements::c_sM3Dominate);
             }
           }
         }
@@ -511,7 +511,7 @@ namespace dustbin {
             else {
               l_vAwarded.push_back(achievements::c_sM2WinCup);
               if (l_bDominate)
-                l_vAwarded.push_back(achievements::c_sM2WinCup);
+                l_vAwarded.push_back(achievements::c_sM2Dominate);
             }
           }
         }
@@ -535,7 +535,7 @@ namespace dustbin {
             else {
               l_vAwarded.push_back(achievements::c_sGpWinCup);
               if (l_bDominate)
-                l_vAwarded.push_back(achievements::c_sGpWinCup);
+                l_vAwarded.push_back(achievements::c_sGpDominate);
             }
           }
         }
