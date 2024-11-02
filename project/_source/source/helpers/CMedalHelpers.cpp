@@ -105,7 +105,7 @@ namespace dustbin {
       const std::string c_sNetWinRace = "NETRACEWIN";
       const std::string c_sNetRace    = "NETRACE";
 
-      const std::string s_sSplitscreenWinCup  = "SPLITSCREENCUPWIN";
+      const std::string c_sSplitscreenWinCup  = "SPLITSCREENCUPWIN";
       const std::string c_sSplitscreenWinRace = "SPLITSCREENRACEWIN";
       const std::string c_sSplitscreenRace    = "SPLITSCREENRACE";
 
@@ -355,7 +355,7 @@ namespace dustbin {
 
       // Splitscreen Achievements
       {
-        achievements:: s_sSplitscreenWinCup, 
+        achievements:: c_sSplitscreenWinCup, 
         std::make_tuple(
           "Splitscreen Cup Winner", 
           "Win a MarbleGP Cup in a splitscreen game", 
@@ -459,6 +459,12 @@ namespace dustbin {
 
         if (didWinLastRace(a_pPlayer, a_pTournament))
           l_vAwarded.push_back(achievements::c_sSplitscreenWinRace);
+
+        bool l_bDominate = false;
+        bool l_bBlackLap = false;
+
+        if (didWinCup(a_pTournament, a_pPlayer, l_bDominate, l_bBlackLap))
+          l_vAwarded.push_back(achievements::c_sSplitscreenWinCup);
       }
       else if (l_bNetworkGame) {
         // Check for network medals
@@ -466,6 +472,12 @@ namespace dustbin {
 
         if (didWinLastRace(a_pPlayer, a_pTournament))
           l_vAwarded.push_back(achievements::c_sNetWinRace);
+
+        bool l_bDominate = false;
+        bool l_bBlackLap = false;
+
+        if (didWinCup(a_pTournament, a_pPlayer, l_bDominate, l_bBlackLap))
+          l_vAwarded.push_back(achievements::s_sNetWinCup);
       }
       else {
         if (l_bMarble3AI) {
