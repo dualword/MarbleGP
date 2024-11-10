@@ -1,5 +1,7 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
+#include <helpers/CStringHelpers.h>
 #include <sound/ISoundInterface.h>
+#include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <gui/CMenuButton.h>
 #include <CGlobal.h>
@@ -60,7 +62,14 @@ namespace dustbin {
         if (m_pImage != nullptr)
           m_pImage->drop();
 
-        m_pImage = m_pDrv->getTexture(m_sImage.c_str());
+        std::string l_sFile = helpers::splitString(m_sImage, '/').back();
+
+        m_pImage = helpers::getIcon(l_sFile);
+
+        if (m_pImage == nullptr) {
+          printf("No icon found for \"%s\"\n", l_sFile.c_str());
+          m_pImage = m_pDrv->getTexture(m_sImage.c_str());
+        }
       }
     }
 

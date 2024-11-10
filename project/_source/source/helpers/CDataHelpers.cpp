@@ -276,6 +276,22 @@ namespace dustbin {
       else return "data/images/";
     }
 
+    /**
+    * Get an image from the icon folders (i.e. resolution specific)
+    * @param a_sIcon the requested image
+    * @param a_iHeight the height of the viewport (-1 == the whole screen)
+    * @return the texture with the image
+    */
+    irr::video::ITexture* getIcon(const std::string a_sIcon, irr::s32 a_iHeight) {
+      return CGlobal::getInstance()->getVideoDriver()->getTexture(
+        (getIconFolder(
+          a_iHeight == -1 ? 
+            CGlobal::getInstance()->getVideoDriver()->getScreenSize().Height
+          :
+            a_iHeight) + a_sIcon
+        ).c_str()
+      );
+    }
 
     /**
     * Load all cup definitions

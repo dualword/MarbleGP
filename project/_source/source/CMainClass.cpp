@@ -1052,7 +1052,7 @@ namespace dustbin {
     m_pDrv->setRenderTarget(0, false, false);
 
     if (m_pLogo == nullptr) {
-      m_pLogo = m_pDrv->getTexture((helpers::getIconFolder(m_pDrv->getScreenSize().Height) + "logo.png").c_str());
+      m_pLogo = helpers::getIcon("logo.png");
       m_cLogo = irr::core::dimension2du(m_pDrv->getScreenSize().Height / 5, m_pDrv->getScreenSize().Height / 5);
     }
 

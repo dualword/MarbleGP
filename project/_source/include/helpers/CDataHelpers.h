@@ -106,5 +106,13 @@ namespace dustbin {
     * @result Bot information (-1 == no AI bot, 0 == MarbleGP, 1 == Marble2, 2 == Marble3)
     */
     int getAiClass(gameclasses::SPlayer *a_pPlayer);
+
+    /**
+    * Get an image from the icon folders (i.e. resolution specific)
+    * @param a_sIcon the requested image
+    * @param a_iHeight the height of the viewport (-1 == the whole screen)
+    * @return the texture with the image
+    */
+    irr::video::ITexture *getIcon(const std::string a_sIcon, irr::s32 a_iHeight = -1);
   }
 }

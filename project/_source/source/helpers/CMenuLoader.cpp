@@ -12,6 +12,7 @@
 #include <gui/CSelector.h>
 
 #include <helpers/CStringHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <menu/IMenuHandler.h>
 #include <CGlobal.h>
@@ -93,7 +94,14 @@ namespace dustbin {
 
         if (a_pElement->getType() == irr::gui::EGUIET_IMAGE) {
           if (a_mCustom.find("src") != a_mCustom.end()) {
-            irr::video::ITexture *l_pTexture = CGlobal::getInstance()->createTexture(a_mCustom.at("src"));
+            std::string l_sPath = a_mCustom.at("src");
+            std::string l_sFile = helpers::splitString(l_sPath, '/').back();
+
+            irr::video::ITexture *l_pTexture = helpers::getIcon(l_sFile);
+              
+            if (l_pTexture == nullptr)
+              l_pTexture = CGlobal::getInstance()->createTexture(l_sPath);
+
             reinterpret_cast<irr::gui::IGUIImage*>(a_pElement)->setImage(l_pTexture);
           }
         }

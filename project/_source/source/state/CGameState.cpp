@@ -36,6 +36,7 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CSceneLoader.h>
+#include <helpers/CDataHelpers.h>
 
 #include <shaders/CDustbinShaders.h>
 #include <data/CDataStructs.h>
@@ -512,7 +513,7 @@ namespace dustbin {
                 irr::gui::IGUIImage* p = m_pGui->addImage(
                   irr::core::recti(l_cRect.getCenter() - irr::core::vector2di(l_iSize / 2, l_iSize / 2), irr::core::dimension2di(l_iSize, l_iSize))
                 );
-                p->setImage(m_pDrv->getTexture("data/images/logo.png"));
+                p->setImage(m_pDrv->getTexture((helpers::getIconFolder(m_pDrv->getScreenSize().Height) + "logo.png").c_str()));
                 break;
               }
 
