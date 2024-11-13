@@ -63,8 +63,13 @@ namespace dustbin {
           int i = 0;
           for (auto l_pPlayer : l_pTournament->m_vPlayers) {
             if (i < m_vPlayers.size()) {
+              std::string l_sName = "";
+              std::string l_sBot  = "";
+
+              helpers::splitStringNameBot(l_pPlayer->m_sName, l_sName, l_sBot);
+
               std::get<1>(m_vPlayers[i])->setVisible(true);
-              std::get<2>(m_vPlayers[i])->setText(helpers::s2ws(l_pPlayer->m_sName).c_str());
+              std::get<2>(m_vPlayers[i])->setText(helpers::s2ws(l_sName).c_str());
 
               printf("Player \"%s\" (%i): \n", l_pPlayer->m_sName.c_str(), l_pPlayer->m_iPlayer);
 
