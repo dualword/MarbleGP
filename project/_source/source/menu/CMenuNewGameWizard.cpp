@@ -119,7 +119,11 @@ namespace dustbin {
           for (int i = 0; i < 16; i++)
             l_vFreeSlots.push_back(i);
 
-          for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++) {
+          bool l_bNetGame = m_eGameType == enGameType::NetworkFree || m_eGameType == enGameType::NetworkCup || m_eGameType == enGameType::NetworkClient;
+
+          int l_iGridUsed = l_bNetGame ? (int)m_vSelectedPlayers.size() : (m_vSelectedPlayers.size() > l_iGridSize ? (int)m_vSelectedPlayers.size() : l_iGridSize);
+
+          for (int i = 0; i < l_iGridUsed; i++) {
             l_vGrid.push_back(i);
 
             auto l_itFree = std::find(l_vFreeSlots.begin(), l_vFreeSlots.end(), i);
