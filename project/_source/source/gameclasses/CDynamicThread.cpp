@@ -1645,7 +1645,6 @@ namespace dustbin {
           if (l_pMoving->m_iId == a_NodeId && l_pMoving->m_cJoint != nullptr) {
             switch (l_pMoving->m_eJoint) {
               case gameclasses::CObject::enJointType::Hinge: {
-                printf("Set Hinge Position: %.2f\n", a_Position);
                 dVector3 l_cOdeAxis;
                 dJointGetHingeAxis(l_pMoving->m_cJoint, l_cOdeAxis);
                 irr::core::vector3df l_cAxis = irr::core::vector3df((irr::f32)l_cOdeAxis[0], (irr::f32)l_cOdeAxis[1], (irr::f32)l_cOdeAxis[2]);

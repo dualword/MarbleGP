@@ -602,6 +602,18 @@ namespace dustbin {
           std::vector<std::string> l_vDefault = helpers::splitString(*l_itColor, ',');
           while (l_vDefault.size() < 4)
             l_vDefault.push_back("");
+
+          for (auto& s : l_vDefault) {
+            if (s.size() < 2)
+              s = "";
+            else if (s.size() < 6) {
+              while (s.size() < 6) s += "0";
+            }
+            else if (s.size() > 6) {
+              s = s.substr(0, 6);
+            }
+          }
+
           g_vDefaultColors.push_back(std::make_tuple(l_vDefault[0], l_vDefault[1], l_vDefault[2], l_vDefault[3]));
         }
       }

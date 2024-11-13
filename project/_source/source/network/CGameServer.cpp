@@ -42,6 +42,7 @@ namespace dustbin {
     }
 
     CGameServer::~CGameServer() {
+      printf("Game server destructor\n");
       for (std::vector<ENetPeer *>::iterator it = m_vPeers.begin(); it != m_vPeers.end(); it++)
         enet_peer_disconnect_now(*it, 0);
 
@@ -59,6 +60,7 @@ namespace dustbin {
 
       if (m_pGlobal->getGlobal("enet_initialized") != "") {
         enet_deinitialize();
+        m_pGlobal->setGlobal("enet_initialized", "");
       }
     }
 
@@ -203,8 +205,9 @@ namespace dustbin {
           case messages::enMessageIDs::ClientRequest: {
             messages::CClientRequest *p = reinterpret_cast<messages::CClientRequest *>(a_pMessage);
 
+            printf("Client has requested %i of %i slots.\n", p->getplayerslots(), (int)m_vAvailableSlots.size());
+
             if (p->getplayerslots() <= m_vAvailableSlots.size()) {
-              printf("Client has requested %i of %i slots.\n", p->getplayerslots(), (int)m_vAvailableSlots.size());
               m_mAssignedSlots[a_pPeer] = std::vector<std::tuple<int, bool>>();
 
               while (m_mAssignedSlots[a_pPeer].size() < p->getplayerslots()) {
@@ -224,6 +227,7 @@ namespace dustbin {
 
           case messages::enMessageIDs::RegisterPlayer: {
             messages::CRegisterPlayer *p = reinterpret_cast<messages::CRegisterPlayer *>(a_pMessage);
+            printf("Register player %s\n", p->getname().c_str());
             if (m_mAssignedSlots.find(a_pPeer) != m_mAssignedSlots.end()) {
               for (std::vector<std::tuple<int, bool>>::iterator it = m_mAssignedSlots[a_pPeer].begin(); it != m_mAssignedSlots[a_pPeer].end(); it++) {
                 if (std::get<1>(*it) == false) {

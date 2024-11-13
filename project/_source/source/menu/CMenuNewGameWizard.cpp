@@ -114,8 +114,19 @@ namespace dustbin {
           // We fill a vector with the grid positions and ..
           std::vector<int> l_vGrid;
 
-          for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++)
+          std::vector<int> l_vFreeSlots;
+
+          for (int i = 0; i < 16; i++)
+            l_vFreeSlots.push_back(i);
+
+          for (int i = 0; i < (m_vSelectedPlayers.size() > l_iGridSize ? m_vSelectedPlayers.size() : l_iGridSize); i++) {
             l_vGrid.push_back(i);
+
+            auto l_itFree = std::find(l_vFreeSlots.begin(), l_vFreeSlots.end(), i);
+            if (l_itFree != l_vFreeSlots.end()) {
+              l_vFreeSlots.erase(l_itFree);
+            }
+          }
 
           // .. if necessary shuffle the vector
           if (m_cSettings.m_bRandomFirstRace) {
@@ -157,8 +168,8 @@ namespace dustbin {
 
           data::SFreeGameSlots l_cSlots = data::SFreeGameSlots();
 
-          l_cSlots.m_vSlots = l_vGrid;
-          m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots  .serialize());
+          l_cSlots.m_vSlots = l_vFreeSlots;
+          m_pState->getGlobal()->setGlobal("free_game_slots", l_cSlots.serialize());
 
           m_pState->getGlobal()->setSetting("gamesetup", m_cSettings.serialize());
           platform::saveSettings();
