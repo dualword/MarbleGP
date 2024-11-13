@@ -566,8 +566,8 @@ namespace dustbin {
         for (auto l_sName : l_vNames) {
           std::vector<std::string> l_vSplit = helpers::splitString(l_sName, ',');
 
-          std::string l_sFirstName = l_vSplit.size() > 0 ? l_vSplit[0] : "";
-          std::string l_sSurName   = l_vSplit.size() > 0 ? l_vSplit[1] : "";
+          std::string l_sFirstName = helpers::trimString(l_vSplit.size() > 0 ? l_vSplit[0] : "");
+          std::string l_sSurName   = helpers::trimString(l_vSplit.size() > 0 ? l_vSplit[1] : "");
 
           g_vDefaultNames.push_back(std::make_tuple(l_sFirstName, l_sSurName));
         }
