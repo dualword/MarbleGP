@@ -1014,10 +1014,10 @@ namespace dustbin {
                   if (p != nullptr)
                     p->setVisible(false);
 
-                  // if (m_pPreviewSmgr != nullptr) {
-                  //   m_pPreviewSmgr->drop();
-                  //   m_pPreviewSmgr = nullptr;
-                  // }
+                  if (m_pPreviewSmgr != nullptr) {
+                    m_pPreviewSmgr->drop();
+                    m_pPreviewSmgr = nullptr;
+                  }
                 }
                 else printf("Button \"%s\" clicked.\n", l_sSender.c_str());
               }
@@ -1050,11 +1050,11 @@ namespace dustbin {
             }
           }
 
-          // if (m_pPreviewSmgr != nullptr && m_pTextureRtt != nullptr) {
-          //   m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
-          //   m_pPreviewSmgr->drawAll();
-          //   m_pDrv->setRenderTarget(nullptr, false, false);
-          // }
+          if (m_pPreviewSmgr != nullptr && m_pTextureRtt != nullptr) {
+            m_pDrv->setRenderTarget(m_pTextureRtt, true, true);
+            m_pPreviewSmgr->drawAll();
+            m_pDrv->setRenderTarget(nullptr, false, false);
+          }
           return false;
         }
       };
