@@ -627,7 +627,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;steam_api64.lib;vld.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;steam_api64.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.3</Version>
     </Link>
     <Manifest>
