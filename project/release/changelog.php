@@ -1,5 +1,11 @@
 <ul>
   <li class="parent">
+    <b>2024-11-15 [1.3 Build 261]</b>
+    <ul>
+      <li>Fixed network game option</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2024-11-01 [1.3 Build 260]</b>
     <ul>
       <li>Fixed a crash in splitscreen game mode</li>
