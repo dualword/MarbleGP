@@ -40,20 +40,7 @@ namespace dustbin {
             return a_iIndex % 3;
         }
 
-      public:
-        CMenuFillGrid(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler(a_pDevice, a_pManager, a_pState), 
-          m_pServer   (CGlobal::getInstance()->getGameServer()),
-          m_bWaiting  (false)
-        {
-
-          m_pState->getGlobal()->clearGui();
-
-          helpers::loadMenuFromXML("data/menu/menu_fillgrid.xml", m_pGui->getRootGUIElement(), m_pGui);
-          m_pSmgr->clear();
-          m_pSmgr->loadScene("data/scenes/skybox.xml");
-          m_pSmgr->addCameraSceneNode();
-
+        void fillStartingGrid() {
           data::SGameSettings l_cSettings = data::SGameSettings();
           l_cSettings.deserialize(m_pState->getGlobal()->getSetting("gamesetup"));
 
@@ -329,6 +316,23 @@ namespace dustbin {
           }
         }
 
+      public:
+        CMenuFillGrid(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
+          IMenuHandler(a_pDevice, a_pManager, a_pState), 
+          m_pServer   (CGlobal::getInstance()->getGameServer()),
+          m_bWaiting  (false)
+        {
+
+          m_pState->getGlobal()->clearGui();
+
+          helpers::loadMenuFromXML("data/menu/menu_fillgrid.xml", m_pGui->getRootGUIElement(), m_pGui);
+          m_pSmgr->clear();
+          m_pSmgr->loadScene("data/scenes/skybox.xml");
+          m_pSmgr->addCameraSceneNode();
+
+          fillStartingGrid();
+        }
+
         virtual bool OnEvent(const irr::SEvent& a_cEvent) {
           bool l_bRet = false;
 
@@ -345,6 +349,23 @@ namespace dustbin {
               else if (l_sCaller == "cancel") {
                 m_pManager->clearMenuStack();
                 createMenu("menu_main", m_pDevice, m_pManager, m_pState);
+              }
+              else if (l_sCaller == "refresh") {
+                gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();
+
+                std::vector<gameclasses::SPlayer *>::iterator l_itPlr = l_pTournament->m_vPlayers.end();
+
+                while (l_itPlr != l_pTournament->m_vPlayers.begin()) {
+                  l_itPlr--;
+                  if ((*l_itPlr)->m_eType == data::enPlayerType::Ai) {
+                    l_pTournament->m_vPlayers.erase(l_itPlr);
+                    l_itPlr = l_pTournament->m_vPlayers.end();
+                  }
+                }
+
+                fillStartingGrid();
+
+                printf("Refresh grid.\n");
               }
             }
           }

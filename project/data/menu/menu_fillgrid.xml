@@ -216,4 +216,5 @@
   
   <include file="data/menu/button_ok.xml" />
   <include file="data/menu/button_cancel.xml" />
+  <include file="data/menu/button_refresh.xml" />
 </dialog>

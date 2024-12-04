@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- (w) 2021 by Dustbin::Games / Christian Keimel / This file is licensed under the terms of the zlib license: https://opensource.org/licenses/Zlib -->
+<dialog>
+  <element type="MenuButton" rect="lowermiddle: 21, -3, 24, 0" tooltip="Regenerate Grid">
+    <attributes>
+      <attribute key="Name" value="refresh" />
+      <attribute key="Id" value="20002" />
+      <attribute key="ImagePath" value="data/images/btn_regenerate.png" />
+    </attributes>
+    <custom>
+      <attribute key="Default" value="true" />
+    </custom>
+  </element>
+</dialog>
