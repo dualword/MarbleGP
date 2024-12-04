@@ -56,12 +56,14 @@ namespace dustbin {
     */
     void clearDebugLog();
 
+#ifndef _TRACKED
     /**
     * Load a textfile
     * @param a_sFile path to the file
     * @return the content of the file as string
     */
     std::string loadTextFile(const std::string& a_sFile);
+#endif
 
     /**
     * Convert an Irrlicht key code to it's string representation

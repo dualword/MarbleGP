@@ -11,9 +11,12 @@ namespace dustbin {
   namespace platform {
     void portableItoa(int a_iValue, char *a_sBuffer, int a_iLen);
     void portableDateStr(long a_iTime, char *a_sBuffer, int a_iLen);
+
+#ifndef _TRACKED
     void preventScreenSaver();
     void saveSettings();
     void consumeBackEvent(bool a_bConsume);
+#endif
 
     const std::wstring portableGetDataPath   ();
     const std::wstring portableGetTexturePath();

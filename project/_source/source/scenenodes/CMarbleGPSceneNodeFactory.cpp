@@ -12,7 +12,9 @@
 #include <scenenodes/CJointNode.h>
 #include <scenenodes/CDustbinId.h>
 #include <scenenodes/CSpeedNode.h>
+#ifndef _TRACKED
 #include <scenenodes/CAiNode.h>
+#endif
 #include <string>
 
 namespace dustbin {
@@ -51,9 +53,11 @@ namespace dustbin {
           p = new CJointNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
 
+#ifndef _TRACKED
         case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
           p = new CAiNode(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
           break;
+#endif
 
         case (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId:
           p = new CDustbinCamera(a_pParent != nullptr ? a_pParent : m_pSmgr->getRootSceneNode(), m_pSmgr, -1);
@@ -101,12 +105,14 @@ namespace dustbin {
         case  3: return g_CheckpointName;
         case  4: return g_RespawndName;
         case  5: return g_JointNodeName;
-        case  6: return g_AiNodeName;
-        case  7: return g_DustbinCameraNodeName;
-        case  8: return g_RostrumNodeName;
-        case  9: return g_AiPathNodeName;
-        case 10: return g_SpeedNodeName;
-        case 11: return g_DustbinLightName;
+        case  6: return g_DustbinCameraNodeName;
+        case  7: return g_RostrumNodeName;
+        case  8: return g_AiPathNodeName;
+        case  9: return g_SpeedNodeName;
+        case 10: return g_DustbinLightName;
+#ifndef _TRACKED
+        case 11: return g_AiNodeName;
+#endif
       }
 
       return nullptr;
@@ -120,12 +126,14 @@ namespace dustbin {
         case  3: return (irr::scene::ESCENE_NODE_TYPE)g_CheckpointNodeId;
         case  4: return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
         case  5: return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
-        case  6: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
-        case  7: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
-        case  8: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
-        case  9: return (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId;
-        case 10: return (irr::scene::ESCENE_NODE_TYPE)g_SpeedNodeId;
-        case 11: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinLightId;
+        case  6: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
+        case  7: return (irr::scene::ESCENE_NODE_TYPE)g_RostrumNodeId;
+        case  8: return (irr::scene::ESCENE_NODE_TYPE)g_AiPathNodeId;
+        case  9: return (irr::scene::ESCENE_NODE_TYPE)g_SpeedNodeId;
+        case 10: return (irr::scene::ESCENE_NODE_TYPE)g_DustbinLightId;
+#ifndef _TRACKED
+        case 11: return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
+#endif
       }
 
       return irr::scene::ESNT_UNKNOWN;
@@ -151,8 +159,10 @@ namespace dustbin {
         case (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId:
           return g_JointNodeName;
 
+#ifndef _TRACKED
         case (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId:
           return g_AiNodeName;
+#endif
 
         case (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId:
           return g_DustbinCameraNodeName;
@@ -189,8 +199,10 @@ namespace dustbin {
         return (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId;
       else if (l_sName == g_JointNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_JointNodeId;
+#ifndef _TRACKED
       else if (l_sName == g_AiNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_AiNodeId;
+#endif
       else if (l_sName == g_DustbinCameraNodeName)
         return (irr::scene::ESCENE_NODE_TYPE)g_DustbinCameraId;
       else if (l_sName == g_RostrumNodeName)

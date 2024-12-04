@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{5686DF71-1FF0-48DA-913D-6743CB3008ED}") = "TrackEd", "TrackEd\TrackEd.vcxproj", "{3A2B49B9-3817-4B12-AC9B-B55D6EA6F4DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A2B49B9-3817-4B12-AC9B-B55D6EA6F4DE}.Debug|x64.ActiveCfg = Debug|x64
+		{3A2B49B9-3817-4B12-AC9B-B55D6EA6F4DE}.Debug|x64.Build.0 = Debug|x64
+		{3A2B49B9-3817-4B12-AC9B-B55D6EA6F4DE}.Release|x64.ActiveCfg = Release|x64
+		{3A2B49B9-3817-4B12-AC9B-B55D6EA6F4DE}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2E23B385-E8A0-4CD5-9411-E71B66E4CBE8}
+	EndGlobalSection
+EndGlobal

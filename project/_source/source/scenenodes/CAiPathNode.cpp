@@ -6,8 +6,14 @@
 #include <messages/CSerializer64.h>
 #include <scenenodes/CDustbinId.h>
 #include <scenenodes/CWorldNode.h>
-#include <CGlobal.h>
 #include <algorithm>
+
+#ifndef _TRACKED
+#include <CGlobal.h>
+#else
+#include <IGlobal.h>
+#endif
+
 
 namespace dustbin {
   namespace scenenodes {
@@ -262,7 +268,12 @@ namespace dustbin {
     void CAiPathNode::SAiPathSection::addToNextSections(SAiPathSection* a_pNext) {
       for (std::vector<SAiPathSection *>::iterator it = m_vNextSegments.begin(); it != m_vNextSegments.end(); it++)
         if ((*it) == a_pNext) {
-          CGlobal::getInstance()->getIrrlichtDevice()->getLogger()->log(L"Section is already in the list of next segments, aborting.", irr::ELL_INFORMATION);
+#ifndef _TRACKED
+          CGlobal::getInstance()->getIrrlichtDevice()
+#else
+          dustbin::tracked::IGlobal::getInstance()->getDevice()
+#endif
+            ->getLogger()->log(L"Section is already in the list of next segments, aborting.", irr::ELL_INFORMATION);
           return;
         }
 
@@ -276,7 +287,12 @@ namespace dustbin {
     void CAiPathNode::SAiPathSection::addToPrevSections(SAiPathSection* a_pPrev) {
       for (std::vector<SAiPathSection *>::iterator it = m_vPrevSegments.begin(); it != m_vPrevSegments.end(); it++)
         if ((*it) == a_pPrev) {
-          CGlobal::getInstance()->getIrrlichtDevice()->getLogger()->log(L"Section is already in the list of previous segments, aborting.", irr::ELL_INFORMATION);
+#ifndef _TRACKED
+          CGlobal::getInstance()->getIrrlichtDevice()
+#else
+          dustbin::tracked::IGlobal::getInstance()->getDevice()
+#endif
+            ->getLogger()->log(L"Section is already in the list of previous segments, aborting.", irr::ELL_INFORMATION);
           return;
         }
 

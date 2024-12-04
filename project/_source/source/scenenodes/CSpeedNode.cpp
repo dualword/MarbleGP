@@ -158,10 +158,15 @@ namespace dustbin {
     * Fill the texture maps
     */
     void CSpeedNode::fillTextureMaps() {
+      
+#ifndef _TRACKED
       CGlobal *l_pGlobal = CGlobal::getInstance();
       irr::gui::IGUIFont *l_pFont = l_pGlobal->getFont(enFont::Huge, irr::core::dimension2du(1920, 1080));
+#else
+      irr::gui::IGUIFont *l_pFont = SceneManager->getGUIEnvironment()->getSkin()->getFont();
+#endif
 
-      irr::video::IVideoDriver *l_pDrv = l_pGlobal->getVideoDriver();
+      irr::video::IVideoDriver *l_pDrv = SceneManager->getVideoDriver();
         
       irr::core::dimension2du l_cDim = l_pFont->getDimension(L"666");
 

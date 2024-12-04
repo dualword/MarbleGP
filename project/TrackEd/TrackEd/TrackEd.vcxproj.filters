@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{1e627e8f-d357-42e2-9ef6-090d10d29bbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\platform">
+      <UniqueIdentifier>{e1d0ea9d-5645-48dc-9026-7a2fc3f060ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{a010f8a0-4e89-4575-b38a-724847e77841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\platform">
+      <UniqueIdentifier>{8e3420a9-8cf9-4992-8828-341b8d501fce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\helpers">
+      <UniqueIdentifier>{8011fda9-40e7-47db-8348-56bded9d51a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\helpers">
+      <UniqueIdentifier>{00e431ab-6942-4b47-901c-448b0d27dbb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\font">
+      <UniqueIdentifier>{3a1f6a01-ce35-410b-a14d-168789285852}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\font">
+      <UniqueIdentifier>{5ccea367-791a-487e-9626-d9e3d2a515df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\scenenodes">
+      <UniqueIdentifier>{1406fc83-462c-481d-ab93-a947140448bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\messages">
+      <UniqueIdentifier>{fd30d99c-67ea-4bd9-9225-30c34fffbf78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\messages">
+      <UniqueIdentifier>{4e2dd78b-40ab-40ea-9503-a360e10debc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\shaders">
+      <UniqueIdentifier>{f2d1d346-b070-4d5d-b601-80c17eb2406b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\shaders">
+      <UniqueIdentifier>{10a291f4-f68a-4781-bab2-a5ba8e2bcab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\scenenodes">
+      <UniqueIdentifier>{ed303502-f504-47ea-a20c-b8446140ddf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\animators">
+      <UniqueIdentifier>{65f2b631-d821-49ea-a718-c4a168ec6369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\animators">
+      <UniqueIdentifier>{79490124-ecec-4cb1-b7d1-e9062a81b4b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\commands">
+      <UniqueIdentifier>{b691fb92-5e60-4ccf-b713-981b5ee0c571}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\gui">
+      <UniqueIdentifier>{4aa406a0-c71d-48e2-ba6e-9ed4582a0ec5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\gui">
+      <UniqueIdentifier>{51a9504f-5aa0-4ca6-b331-bd998d016fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\commands">
+      <UniqueIdentifier>{e3f508a9-6baf-490e-af6e-1515c3a5c5d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\editor">
+      <UniqueIdentifier>{3a807484-5169-403a-a8cd-86e59e0c0fa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\editor">
+      <UniqueIdentifier>{ebd4e6eb-45e5-4613-bcc1-d14ac9b23d4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\bezier">
+      <UniqueIdentifier>{cd68042c-47d4-4396-81da-ef7e89ec39ca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\_source\TrackEd_main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp">
+      <Filter>Source\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\IGlobal.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\CTrackEd_MainClass.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp">
+      <Filter>Source\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\font\font_manager.cpp">
+      <Filter>Source\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\font\gui_freetype_font.cpp">
+      <Filter>Source\font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiPathNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinLight.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CPhysicsNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CRespawnNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CSkyBoxFix.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CSpeedNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp">
+      <Filter>Source\scenenodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp">
+      <Filter>Source\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp">
+      <Filter>Source\messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaderCallbacks.cpp">
+      <Filter>Source\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp">
+      <Filter>Source\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CAnimatorFactory.cpp">
+      <Filter>Source\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CMarbleGPTextureAnimator.cpp">
+      <Filter>Source\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\CMyTextureAnimator.cpp">
+      <Filter>Source\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\animators\IAnimatorTextureProvider.cpp">
+      <Filter>Source\animators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp">
+      <Filter>Source\helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\_source\source\gui\IProgressCallback.cpp">
+      <Filter>Source\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdCameraCtrl.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdDefaultRenderer.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdDustbinRenderer.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\commands\CCommandHandler.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdEditTrack.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\editor\ITrackPart.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_include\editor\CTrackParts.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\animators\CPlaneAnimator.cpp">
+      <Filter>Source\animators</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
+      <Filter>Include\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\CTrackEd_MainClass.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\IGlobal.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h">
+      <Filter>Include\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\font\font_manager.h">
+      <Filter>Include\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\font\gui_freetype_font.h">
+      <Filter>Include\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiPathNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinLight.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CPhysicsNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CRespawnNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CSkyBoxFix.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CSpeedNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h">
+      <Filter>Include\scenenodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\messages\CSerializer64.h">
+      <Filter>Include\messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderCallbacks.h">
+      <Filter>Include\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderDefines.h">
+      <Filter>Include\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaders.h">
+      <Filter>Include\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CAnimatorFactory.h">
+      <Filter>Include\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CMarbleGPTextureAnimator.h">
+      <Filter>Include\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\CMyTextureAnimator.h">
+      <Filter>Include\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\animators\IAnimatorTextureProvider.h">
+      <Filter>Include\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdDustbinRenderer.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\CDefines.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h">
+      <Filter>Include\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\gui\IProgressCallback.h">
+      <Filter>Include\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdCameraCtrl.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdDefaultRenderer.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCommandHandler.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\ICommand.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdEditTrack.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\ITrackPart.h">
+      <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CTrackParts.h">
+      <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\animators\CPlaneAnimator.h">
+      <Filter>Include\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\bezier\bezier.h">
+      <Filter>Include\bezier</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

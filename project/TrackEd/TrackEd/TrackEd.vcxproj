@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Android-arm64-v8a">
+      <Configuration>Debug</Configuration>
+      <Platform>Android-arm64-v8a</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Android-arm64-v8a">
+      <Configuration>Release</Configuration>
+      <Platform>Android-arm64-v8a</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\_source\source\animators\CAnimatorFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\animators\CMarbleGPTextureAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\animators\CMyTextureAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\animators\IAnimatorTextureProvider.cpp" />
+    <ClCompile Include="..\..\_source\source\font\font_manager.cpp" />
+    <ClCompile Include="..\..\_source\source\font\gui_freetype_font.cpp" />
+    <ClCompile Include="..\..\_source\source\gui\IProgressCallback.cpp" />
+    <ClCompile Include="..\..\_source\source\helpers\CStringHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\helpers\CTextureHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\messages\CMessageHelpers.cpp" />
+    <ClCompile Include="..\..\_source\source\messages\CSerializer64.cpp" />
+    <ClCompile Include="..\..\_source\source\platform\CPlatformWindows.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CAiPathNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CCheckpointNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinCamera.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinId.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CDustbinLight.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CJointNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodeFactory.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMarbleGPSceneNodes.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyBillboard.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyCameraAnimator.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CMyTextSceneNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CPhysicsNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CRespawnNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CRostrumNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CSkyBoxFix.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CSpeedNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CStartingGridSceneNode.cpp" />
+    <ClCompile Include="..\..\_source\source\scenenodes\CWorldNode.cpp" />
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaderCallbacks.cpp" />
+    <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp" />
+    <ClCompile Include="..\_include\editor\CTrackParts.cpp" />
+    <ClCompile Include="..\_source\animators\CPlaneAnimator.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdCameraCtrl.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdDefaultRenderer.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdDustbinRenderer.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdEditTrack.cpp" />
+    <ClCompile Include="..\_source\commands\CCommandHandler.cpp" />
+    <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
+    <ClCompile Include="..\_source\editor\ITrackPart.cpp" />
+    <ClCompile Include="..\_source\IGlobal.cpp" />
+    <ClCompile Include="..\_source\TrackEd_main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\_source\include\animators\CAnimatorFactory.h" />
+    <ClInclude Include="..\..\_source\include\animators\CMarbleGPTextureAnimator.h" />
+    <ClInclude Include="..\..\_source\include\animators\CMyTextureAnimator.h" />
+    <ClInclude Include="..\..\_source\include\animators\IAnimatorTextureProvider.h" />
+    <ClInclude Include="..\..\_source\include\font\font_manager.h" />
+    <ClInclude Include="..\..\_source\include\font\gui_freetype_font.h" />
+    <ClInclude Include="..\..\_source\include\gui\IProgressCallback.h" />
+    <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
+    <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />
+    <ClInclude Include="..\..\_source\include\messages\CSerializer64.h" />
+    <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CAiPathNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CCheckpointNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinCamera.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinId.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CDustbinLight.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CJointNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodeFactory.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMarbleGPSceneNodes.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyBillboard.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyCameraAnimator.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CMyTextSceneNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CPhysicsNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CRespawnNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CRostrumNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CSkyBoxFix.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CSpeedNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CStartingGridSceneNode.h" />
+    <ClInclude Include="..\..\_source\include\scenenodes\CWorldNode.h" />
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderCallbacks.h" />
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaderDefines.h" />
+    <ClInclude Include="..\..\_source\include\shaders\CDustbinShaders.h" />
+    <ClInclude Include="..\_include\animators\CPlaneAnimator.h" />
+    <ClInclude Include="..\_include\bezier\bezier.h" />
+    <ClInclude Include="..\_include\CDefines.h" />
+    <ClInclude Include="..\_include\commands\CCmdCameraCtrl.h" />
+    <ClInclude Include="..\_include\commands\CCmdDefaultRenderer.h" />
+    <ClInclude Include="..\_include\commands\CCmdDustbinRenderer.h" />
+    <ClInclude Include="..\_include\commands\CCmdEditTrack.h" />
+    <ClInclude Include="..\_include\commands\CCommandHandler.h" />
+    <ClInclude Include="..\_include\commands\ICommand.h" />
+    <ClInclude Include="..\_include\editor\CTrackParts.h" />
+    <ClInclude Include="..\_include\editor\ITrackPart.h" />
+    <ClInclude Include="..\_include\IGlobal.h" />
+    <ClInclude Include="..\_include\CTrackEd_MainClass.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{3A2B49B9-3817-4B12-AC9B-B55D6EA6F4DE}</ProjectGuid>
+    <RootNamespace>MarbleGP</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">
+    <PlatformToolset>Clang</PlatformToolset>
+    <CppLanguageStandard>cpp14</CppLanguageStandard>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">
+    <PlatformToolset>Clang</PlatformToolset>
+    <CppLanguageStandard>cpp14</CppLanguageStandard>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+    <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\myStuff\projects\MarbleGP\project\_source\include\xeffects;D:\myStuff\projects\MarbleGP\project\libs\irrlicht\include;..\libs\Irrlicht-1.9\include;..\libs\LuaBridge3\Source;..\_source\include\lua;..\_source\include;$(IncludePath)</IncludePath>
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+    <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\IrrEditorBase\include;..\_include;D:\mystuff\projects\libs\enet-master\include;..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mtd;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+    <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>..\IrrEditorBase\include;..\_include;..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+    <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">
+    <IncludePath>..\..\..\..\libs\agdk-libraries-2022.0.0\include\game-activity\native_app_glue;..\..\..\..\libs\agdk-libraries-2022.0.0\include;..\..\..\..\libs\ode-0.14-linux\include;..\..\..\..\libs\libenet-android-master\jni;..\..\..\..\libs\irrlicht-es.1.9\include;..\..\_source\include;$(IncludePath)</IncludePath>
+    <AndroidEnablePackaging>true</AndroidEnablePackaging>
+    <AndroidGradleBuildDir>$(MSBuildProjectDirectory)\AndroidPackaging\</AndroidGradleBuildDir>
+    <AndroidApplicationModule>app</AndroidApplicationModule>
+    <AndroidApplicationVariant>$(Configuration)</AndroidApplicationVariant>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">
+    <IncludePath>..\..\..\..\libs\agdk-libraries-2022.0.0\include\game-activity\native_app_glue;..\..\..\..\libs\agdk-libraries-2022.0.0\include;..\..\..\..\libs\ode-0.14-linux\include;..\..\..\..\libs\libenet-android-master\jni;..\..\..\..\libs\irrlicht-es.1.9\include;..\..\_source\include;$(IncludePath)</IncludePath>
+    <AndroidEnablePackaging>true</AndroidEnablePackaging>
+    <AndroidGradleBuildDir>$(MSBuildProjectDirectory)\AndroidPackaging\</AndroidGradleBuildDir>
+    <AndroidApplicationModule>app</AndroidApplicationModule>
+    <AndroidApplicationVariant>$(Configuration)</AndroidApplicationVariant>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgInstalledDir>.\vcpkg</VcpkgInstalledDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgInstalledDir>.\vcpkg</VcpkgInstalledDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;_TRACKED;_DEBUG;_CONSOLE;_ITERATOR_DEBUG_LEVEL=2;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>1.3</Version>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_IRR_STATIC_LIB_;_WINDOWS;_TRACKED;NDEBUG;_CONSOLE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>26451;4101;26812;26495;6011;4477;6031;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>1.1</Version>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Android-arm64-v8a'">
+    <ClCompile>
+      <PreprocessorDefinitions>_ANDROID;NO_XEFFECT;TOUCH_CONTROL;dDOUBLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk;enet;android;log</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Android-arm64-v8a'">
+    <ClCompile>
+      <PreprocessorDefinitions>_ANDROID;NO_XEFFECT;TOUCH_CONTROL;dDOUBLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;Irrlicht;m;GLESv2;ode;oboe_static;OpenSLES;mediandk;enet;android;log</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

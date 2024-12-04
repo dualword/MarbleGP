@@ -48,6 +48,8 @@ namespace dustbin {
 
         if (!PathFileExists(l_sPath)) CreateDirectory(l_sPath, NULL);
 
+#ifndef _TRACKED
+
 #ifdef _DEBUG
         PathAppend(l_sPath, L"\\MarbleGP_debug\\");
 #else
@@ -65,6 +67,8 @@ namespace dustbin {
         PathAppend(l_sTexturePath, L"\\textures\\");
 
         if (!PathFileExists(l_sTexturePath)) CreateDirectory(l_sTexturePath, NULL);
+
+#endif
 
         /*_tcscpy_s(l_sReplay, MAX_PATH, l_sPath);
         PathAppend(l_sReplay, L"\\Replay\\");
@@ -107,6 +111,8 @@ namespace dustbin {
       return l_sPath;
     }
 
+#ifndef _TRACKED
+
     void preventScreenSaver() {
       SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
     }
@@ -139,7 +145,11 @@ namespace dustbin {
     void consumeBackEvent(bool a_bConsume) {
       // Android specific, nothing to do here
     }
+
+#endif
+
   }
 }
+
 
 #endif

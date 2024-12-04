@@ -4,10 +4,15 @@
 #include <shaders/CDustbinShaders.h>
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
+#include <gui/IProgressCallback.h>
 #include <scenenodes/CSpeedNode.h>
 #include <scenenodes/CJointNode.h>
 #include <platform/CPlatform.h>
+#ifndef _TRACKED
 #include <CGlobal.h>
+#else
+#include <IGlobal.h>
+#endif
 #include <map>
 
 namespace dustbin {
@@ -55,8 +60,12 @@ namespace dustbin {
           }
           else {
             std::string s = std::string("Invalid texture string \"") + a_sInput + "\" (" + l_sPart + ")";
+#ifndef _TRACKED
             CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", s);
             CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
+#else
+            printf("Error: %s\n", s.c_str());
+#endif
             // throw std::exception();
           }
         }
@@ -150,7 +159,13 @@ namespace dustbin {
     std::vector<std::string> getTexturePatterns() {
       std::vector<std::string> l_vReturn;
 
-      irr::io::IXMLReaderUTF8 *l_pXml = CGlobal::getInstance()->getFileSystem()->createXMLReaderUTF8("data/patterns/patterns.xml");
+      irr::io::IXMLReaderUTF8 *l_pXml = 
+#ifndef _TRACKED
+        CGlobal::getInstance()->getFileSystem()
+#else
+        tracked::IGlobal::getInstance()->getFileSystem()
+#endif
+        ->createXMLReaderUTF8("data/patterns/patterns.xml");
 
       if (l_pXml) {
         while (l_pXml->read()) {
@@ -162,10 +177,15 @@ namespace dustbin {
 
               if (l_sPattern != "") {
                 std::string l_sPath = "data/patterns/" + l_sPattern;
-
+#ifndef _TRACKED
                 if (CGlobal::getInstance()->getFileSystem()->existFile(l_sPath.c_str())) {
                   l_vReturn.push_back(l_sPattern);
                 }
+#else
+                if (tracked::IGlobal::getInstance()->getFileSystem()->existFile(l_sPath.c_str())) {
+                  l_vReturn.push_back(l_sPattern);
+                }
+#endif
               }
             }
           }
@@ -302,15 +322,19 @@ namespace dustbin {
               l_pRet = a_pDrv->getTexture(l_sFile.c_str());
             }
             else {
+#ifndef _TRACKED
               CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture \"") + l_sFile + "\".");
               CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
               // throw std::exception();
+#endif
             }
           }
           else {
+#ifndef _TRACKED
             CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", "No file defined for imported texture.");
             CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
             // throw std::exception();
+#endif
           }
         }
         else if (l_sType == "generate" || l_sType == "default") {
@@ -369,6 +393,7 @@ namespace dustbin {
             std::string l_sFilePattern = std::string("data/patterns/") + l_sPattern;
             std::string l_sFileTop     = std::string("data/textures/texture_top.png");
 
+#ifndef _TRACKED
             if (!a_pFs->existFile(l_sFilePattern.c_str())) {
               CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture pattern \"") + l_sPattern + "\".");
               CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
@@ -380,6 +405,7 @@ namespace dustbin {
               CGlobal::getInstance()->setGlobal("ERROR_HEAD", "Error while running LUA function \"uivaluechanged\"");
               // throw std::exception();
             }
+#endif
 
             irr::video::ITexture* l_pNumber = nullptr;
 

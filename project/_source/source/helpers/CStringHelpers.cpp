@@ -136,6 +136,7 @@ namespace dustbin {
       l_cFile.close();
     }
 
+#ifndef _TRACKED
     /**
     * Load a textfile
     * @param a_sFile path to the file
@@ -157,6 +158,7 @@ namespace dustbin {
 
       return l_sRet;
     }
+#endif
 
     std::wstring keyCodeToString(irr::EKEY_CODE e) {
       if (e == irr::KEY_LBUTTON   ) return L"KEY_LBUTTON";

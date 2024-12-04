@@ -309,6 +309,10 @@ namespace dustbin {
         m_pActive = m_pSmgr->getActiveCamera();
         m_pSmgr->setActiveCamera(m_pLightCamera);
       }
+
+      for (auto l_cNode: m_vStatic) l_cNode.m_bVisible = l_cNode.m_pNode->isVisible();
+      for (auto l_cNode: m_vMoving) l_cNode.m_bVisible = l_cNode.m_pNode->isVisible();
+      for (auto l_cNode: m_vMarble) l_cNode.m_bVisible = l_cNode.m_pNode->isVisible();
     }
 
     /**

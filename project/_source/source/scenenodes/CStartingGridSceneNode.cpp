@@ -12,8 +12,8 @@ namespace dustbin {
       m_iNextMarble   (0),
       m_iMarblesPerRow(2),
       m_fWidth        (10.0f),
-      m_fRowLength    (50.0f),
-      m_fOffset       (0.2f),
+      m_fRowLength    (15.0f),
+      m_fOffset       (1.0f),
       m_fAngle        (0.0f),
       m_pShader       (nullptr)
     {
