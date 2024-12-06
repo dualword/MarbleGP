@@ -29,16 +29,44 @@ namespace dustbin {
       private:
         bool m_bSelected;  /**< Is this track part selected in the editor? */
 
+        ITrackPart *m_pPrevious;  /**< The previous track part (always nullptr for the start part) */
+        ITrackPart *m_pNext;      /**< The next track part */
+
+        irr::core::vector3df m_cNormal;   /**< The normal at the start point */
+
       protected:
-        std::vector<ITrackPart *> m_vNextParts;
+        irr::scene::ISceneCollisionManager *m_pColMgr;
+
+        const irr::core::vector3df &getStartNormal();
+
+        /**
+        * Get the index of a vertex in a given mesh buffer
+        * @param a_cVertex the vertex to find
+        * @param a_pBuffer the mesh buffer to search in
+        * @return the index of the vertex, -1 if the vertex was not found
+        */
+        irr::s32 getIndexOfVertex(const irr::core::vector3df &a_cVertex, irr::scene::SMeshBuffer *a_pBuffer);
+
+        /**
+        * Add a quad to a mesh buffer
+        * @param a_aVertices the four vertices of the quad
+        * @param a_aTexturePos the four texture positions of the vertices
+        * @param a_pBuffer the buffer to be filled
+        */
+        void addQuadToMeshBuffer(
+          irr::core::vector3df a_aVertices[4],
+          irr::core::position2df a_aTexturePos[4],
+          irr::scene::SMeshBuffer *a_pBuffer
+        );
 
       public:
         /**
         * The constructor
-        * @param a_sType the type identifier
-        * @param a_cPosition the starting position of the part
+        * @param a_pPrevious the previous track part (nullptr for the starting part)
+        * @param a_cNormal the normal at the starting point
+        * @param a_pColMgr the Irrlicht scene collision manager
         */
-        ITrackPart();
+        ITrackPart(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
 
         /**
         * The destructor
@@ -50,6 +78,12 @@ namespace dustbin {
         * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
         */
         virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers) = 0;
+
+        /**
+        * Set the trak part's reference points
+        * @param a_cPoints a vectro with the reference points
+        */
+        virtual void setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) = 0;
 
         /**
         * Serialize the track part
@@ -75,6 +109,21 @@ namespace dustbin {
         virtual const irr::core::vector3df getEndDirection() = 0;
 
         /**
+        * Get the next line defining the road to go (one side of the road to the other)
+        * @param a_iIndex the index of the lines
+        * @param a_cPos1 [out] the first position of the line
+        * @param a_cPos2 [out] the second position of the line
+        * @return true if a section line was found, false otherwise
+        */
+        virtual bool getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) = 0;
+
+        /**
+        * Get the part's reference points
+        * @return a vector with the part's reference points
+        */
+        virtual const std::vector<irr::core::vector3df> getReferencePoints() = 0;
+
+        /**
         * Set the selection flag of this road part
         * @param a_bSelected the new value
         */
@@ -94,25 +143,28 @@ namespace dustbin {
         virtual bool OnEvent(const irr::SEvent &a_cEvent);
 
         /**
-        * Get the next line defining the road to go (one side of the road to the other)
-        * @param a_iIndex the index of the lines
-        * @param a_cPos1 [out] the first position of the line
-        * @param a_cPos2 [out] the second position of the line
-        * @return true if a section line was found, false otherwise
-        */
-        virtual bool getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) = 0;
-
-        /**
         * Set the next track part
         * @param a_pNext the next track part
         */
-        virtual void setNext(ITrackPart *a_pNext) = 0;
+        virtual void setNext(ITrackPart *a_pNext);
 
         /**
         * Get the next track part
         * @return the next track part
         */
-        virtual ITrackPart *getNext() = 0;
+        virtual ITrackPart *getNext();
+
+        /**
+        * Get the previous part
+        * @return the previous part
+        */
+        virtual ITrackPart *getPrevious();
+
+        /**
+        * Get the normal at the end point
+        * @return the normal at the end point
+        */
+        virtual const irr::core::vector3df &getNormal() = 0;
 
         /**
         * Draw a preview if necessary

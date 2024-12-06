@@ -57,10 +57,10 @@ namespace dustbin {
         m_pSmgr->drawAll();
       }
 
-      m_pGui->drawAll();
 
       tracked::IGlobal::getInstance()->beforeEndScene();
 
+      m_pGui->drawAll();
       m_pDrv->endScene();
     }
 
