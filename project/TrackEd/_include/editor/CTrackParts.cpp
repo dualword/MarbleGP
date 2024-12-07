@@ -239,6 +239,44 @@ namespace dustbin {
     }
 
     /**
+    * Can a reference point be moved freely in the 2d plane
+    * @param a_iIndex index of the reference point
+    * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
+    * @param a_cPlanePoint [out] The point of the plane the reference point is moved in. Only used if "true" is returned.
+    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in. Only used if "true" is returned.
+    * @return true if the reference point can move freely, false otherwise
+    */
+    bool CTrackPart_Bezier::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {
+      if (getPrevious() == nullptr) {
+        a_cLine.start = irr::core::vector3df(0.0f);
+        a_cLine.end   = a_cLine.start;
+
+        return false;
+      }
+      else if (a_iIndex == 1) {
+        a_cLine.start = m_vPoints[0];
+        a_cLine.end   = a_cLine.start + 1000.0f * (m_vPoints[1] - m_vPoints[0]).normalize();
+
+        a_cPlanePoint  = m_vPoints[0];
+        a_cPlaneNormal = getNormal();
+
+        return false;
+      }
+      else if (a_iIndex == 2 || a_iIndex == 3) {
+        a_cPlanePoint  = m_vPoints[a_iIndex];
+        a_cPlaneNormal = getNormal();
+
+        return true;
+      }
+      else {
+        a_cLine.start = irr::core::vector3df(0.0f);
+        a_cLine.end   = a_cLine.start;
+
+        return false;
+      }
+    }
+
+    /**
     * Get the end position of this track part
     * @return the end position of this track part
     */
@@ -563,6 +601,33 @@ namespace dustbin {
     */
     const irr::core::vector3df &CTrackPart_Checkpoint::getNormal() {
       return getStartNormal();
+    }
+
+    /**
+    * Can a reference point be moved freely in the 2d plane
+    * @param a_iIndex index of the reference point
+    * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
+    * @param a_cPlanePoint [out] The point of the plane the reference point is moved in. Only used if "true" is returned.
+    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in. Only used if "true" is returned.
+    * @return true if the reference point can move freely, false otherwise
+    */
+    bool CTrackPart_Checkpoint::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {
+      if (a_iIndex == 1) {
+        irr::core::vector3df l_cCenter = (m_cStart + m_cEnd) / 2.0f;
+        irr::core::vector3df l_cSide   = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
+
+        a_cLine.start = l_cCenter + l_cSide / 2.0f;
+        a_cLine.end   = l_cCenter - l_cSide / 2.0f;
+        
+        a_cPlanePoint  = l_cCenter;
+        a_cPlaneNormal = getNormal();
+      }
+      else {
+        a_cLine.start = irr::core::vector3df();
+        a_cLine.end   = a_cLine.start;
+      }
+
+      return false;
     }
 
     /**

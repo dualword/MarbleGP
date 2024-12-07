@@ -22,7 +22,9 @@ namespace dustbin {
       private:
         enum class enEditMode {
           Default,
-          AddReferencePoint
+          AddReferencePoint,
+          MovePointOnLine,
+          MovePointInPlane
         };
 
         enEditMode m_eEditMode;   /**< The current edit mode */
@@ -37,6 +39,8 @@ namespace dustbin {
         irr::scene::IMeshSceneNode *m_pTrack;       /**< The track's scene node */
         irr::scene::SMesh          *m_pMesh;        /**< The track's mesh structure */
         irr::core::plane3df         m_cPlane;       /**< The plane to pick the next point from */
+        irr::core::line3df          m_cMoveLine;    /**< The line to move points along */
+        irr::core::plane3df         m_cMovePlane;   /**< The plane to move points in */
 
         irr::gui::IGUIContextMenu *m_pMenu;
 

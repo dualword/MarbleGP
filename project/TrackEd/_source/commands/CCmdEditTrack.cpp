@@ -220,78 +220,96 @@ namespace dustbin {
 
       if (!l_bRet) {
         if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+          irr::core::vector2di   l_cMouse = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
           irr::gui::IGUIElement *l_pHover = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
 
-          irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
-          irr::core::vector2di l_cMouse = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
+          if (m_eEditMode == enEditMode::Default || m_eEditMode == enEditMode::AddReferencePoint) {
+            irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
 
-          irr::core::vector3df v;
-          irr::core::triangle3df t;
+            irr::core::vector3df v;
+            irr::core::triangle3df t;
 
-          irr::scene::ISceneNode *l_pObject = m_pColMgr->getSceneNodeAndCollisionPointFromRay(l_cRay, v, t, 0);
+            irr::scene::ISceneNode *l_pObject = m_pColMgr->getSceneNodeAndCollisionPointFromRay(l_cRay, v, t, 0);
 
-          irr::core::vector3df l_cRayCollision;
+            irr::core::vector3df l_cRayCollision;
 
-          m_cPlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+            m_cPlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
 
-          if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
-            m_pHover = nullptr;
+            if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+              m_pHover = nullptr;
 
-            for (auto &l_tPoints: m_mReferencePoints) {
-              if (m_pSelected != l_tPoints.first)
-                l_tPoints.first->getMaterial(0).setTexture(0, m_pDrv->getTexture(std::get<1>(l_tPoints.second) == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
-            }
+              for (auto &l_tPoints : m_mReferencePoints) {
+                if (m_pSelected != l_tPoints.first)
+                  l_tPoints.first->getMaterial(0).setTexture(0, m_pDrv->getTexture(std::get<1>(l_tPoints.second) == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
+              }
 
-            if (l_pHover == m_pGui->getRootGUIElement()) {
-              if (m_mReferencePoints.find(l_pObject) != m_mReferencePoints.end()) {
-                m_pHover = l_pObject;
-                if (m_pSelected != l_pObject)
-                  l_pObject->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/wall_outer_back.png"));
+              if (l_pHover == m_pGui->getRootGUIElement()) {
+                if (m_mReferencePoints.find(l_pObject) != m_mReferencePoints.end()) {
+                  m_pHover = l_pObject;
+                  if (m_pSelected != l_pObject)
+                    l_pObject->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/wall_outer_back.png"));
+                }
+              }
+
+              m_bFinishTrack = false;
+
+              irr::core::vector3df l_cDir = m_vParts.back()->getEndDirection();
+              irr::core::vector3df l_cEnd = m_vParts.back()->getEndPosition () * 50.0f;
+
+              if (m_eEditMode == enEditMode::AddReferencePoint) {
+                m_pPickPoint->setPosition(l_cRayCollision);
               }
             }
-
-
-            m_bFinishTrack = false;
-
-            irr::core::vector3df l_cDir = m_vParts.back()->getEndDirection();
-            irr::core::vector3df l_cEnd = m_vParts.back()->getEndPosition () * 50.0f;
-
-            if (m_eEditMode == enEditMode::AddReferencePoint) {
-              m_pPickPoint->setPosition(l_cRayCollision);
-            }
-
-            // if (m_vNewPoints.size() > 0) {
-            //   if (l_pObject == m_pStart) {
-            //     l_cRayCollision = m_pStart->getAbsolutePosition();
-            //     m_bFinishTrack = true;
-            //   }
-            //   else {
-            //     irr::core::vector2df l_cDir2d = irr::core::vector2df(l_cDir.X, l_cDir.Z);
-            //     irr::core::vector2df l_cEnd2d = irr::core::vector2df(l_cEnd.X, l_cEnd.Z);
-            //     irr::core::vector2df l_cPnt2d = irr::core::vector2df(l_cRayCollision.X, l_cRayCollision.Z);
-            // 
-            //     irr::core::line2df l_cLine = irr::core::line2df(l_cEnd2d, l_cEnd2d + 1000.0f * l_cDir2d.normalize());
-            // 
-            //     irr::core::vector2df l_cClose = l_cLine.getClosestPoint(l_cPnt2d);
-            // 
-            //     if ((l_cClose - l_cPnt2d).getLength() < 10.0f) {
-            //       l_cRayCollision.X = l_cClose.X;
-            //       l_cRayCollision.Z = l_cClose.Y;
-            //     }
-            //     else if (std::abs(l_cPnt2d.X) < 2.0f) {
-            //       l_cRayCollision.X = 0.0f;
-            //     }
-            //   }
-            // 
-            //   m_pPick->setPosition(l_cRayCollision);
-            // }
-            // else {
-            //   irr::core::line3df l_cLine = irr::core::line3df(l_cEnd, l_cEnd + 1000.0f * l_cDir);
-            //   m_pPick->setPosition(l_cLine.getClosestPoint(l_cRayCollision));
-            // }
           }
-          else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+          else if (m_eEditMode == enEditMode::MovePointOnLine) {
+            irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+            irr::core::vector3df l_cRayCollision;
+            m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
+            m_pSelected->setPosition(m_cMoveLine.getClosestPoint(l_cRayCollision) + 2.5f * std::get<0>(m_mReferencePoints[m_pSelected])->getNormal());
+
+            l_bRet = true;
+          }
+          else if (m_eEditMode == enEditMode::MovePointInPlane) {
+            irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+            irr::core::vector3df l_cRayCollision;
+            m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
+            m_pSelected->setPosition(l_cRayCollision + 2.5f * std::get<0>(m_mReferencePoints[m_pSelected])->getNormal());
+
+            l_bRet = true;
+          }
+          
+          if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
             m_cDownPoint[0] = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
+
+            if (m_eEditMode == enEditMode::Default) {
+              if (l_pHover != nullptr && m_mReferencePoints.find(m_pHover) != m_mReferencePoints.end()) {
+                irr::core::vector3df l_cPlanePoint;
+                irr::core::vector3df l_cPlaneNormal;
+
+                bool l_bCanMove = std::get<0>(m_mReferencePoints[m_pHover])->canPointMoveFreely(std::get<1>(m_mReferencePoints[m_pHover]), m_cMoveLine, l_cPlanePoint, l_cPlaneNormal);
+
+                if (l_bCanMove) {
+                  m_eEditMode  = enEditMode::MovePointInPlane;
+                  m_pSelected  = m_pHover;
+                  m_cMovePlane = irr::core::plane3df(50.0f * l_cPlanePoint, l_cPlaneNormal);
+
+                  l_bRet = true;
+                }
+                else {
+                  if (m_cMoveLine.getLength() > 0.0f) {
+                    m_eEditMode = enEditMode::MovePointOnLine;
+                    m_pSelected = m_pHover;
+
+                    m_cMoveLine.start = 50.0f * m_cMoveLine.start;
+                    m_cMoveLine.end   = 50.0f * m_cMoveLine.end;
+
+                    l_bRet = true;
+                  }
+                }
+              }
+            }
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
             if (m_eEditMode == enEditMode::Default) {
@@ -316,6 +334,10 @@ namespace dustbin {
               if (m_mReferencePoints.find(m_pSelected) != m_mReferencePoints.end()) {
                 tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pSelected]);
 
+                irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+                irr::core::vector3df l_cRayCollision;
+                m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
                 std::vector<irr::core::vector3df> l_vRefPoints = l_pPart->getReferencePoints();
                 l_vRefPoints.push_back(l_cRayCollision / 50.0f);
                 l_pPart->setReferencePoints(l_vRefPoints);
@@ -328,16 +350,14 @@ namespace dustbin {
               }
               else printf("Reference point not found!\n");
             }
-
-            //   m_pPick->updateAbsolutePosition();
-            //   irr::scene::ISceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1, m_pPick->getAbsolutePosition(), irr::core::vector3df(), irr::core::vector3df(0.5f));
-            //   l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/red.png"));
-            //   m_vNewPoints.push_back(l_pNode);
-            // 
-            //   if (m_vNewPoints.size() >= 3) {
-            //     addNewTrackPart(m_bFinishTrack);
-            //   }
-            // }
+            else if (m_eEditMode == enEditMode::MovePointInPlane) {
+              m_eEditMode = enEditMode::Default;
+              l_bRet = true;
+            }
+            else if (m_eEditMode == enEditMode::MovePointOnLine) {
+              m_eEditMode = enEditMode::Default;
+              l_bRet = true;
+            }
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN) {
             m_cDownPoint[1] = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
@@ -459,6 +479,8 @@ namespace dustbin {
                     tracked::CTrackPart_Bezier *l_pPart = dynamic_cast<tracked::CTrackPart_Bezier *>(std::get<0>(m_mReferencePoints[m_pSelected]));
                     if (l_pPart != nullptr && l_pPart->getReferencePoints().size() < 4) {
                       m_eEditMode = enEditMode::AddReferencePoint;
+
+                      m_cMovePlane = irr::core::plane3df(l_pPart->getReferencePoints().front(), l_pPart->getNormal());
 
                       for (auto &l_tPoint: m_mReferencePoints) {
                         l_tPoint.first->setVisible(m_pSelected == l_tPoint.first);
