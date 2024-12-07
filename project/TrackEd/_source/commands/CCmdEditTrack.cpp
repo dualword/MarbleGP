@@ -24,12 +24,14 @@ namespace dustbin {
 
     CCmdEditTrack::CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui) :
       ICommand      ("CmdEditTrack"),
+      m_eEditMode   (enEditMode::Default),
       m_pSmgr       (a_pSmgr),
       m_pGui        (a_pGui),
       m_pDrv        (a_pDrv),
       m_pWorld      (nullptr),
       m_pHover      (nullptr),
       m_pSelected   (nullptr),
+      m_pPickPoint  (nullptr),
       m_pTrack      (nullptr),
       m_pMesh       (nullptr),
       m_pMenu       (nullptr),
@@ -61,14 +63,25 @@ namespace dustbin {
 
       for (auto &l_cPoint: a_pPart->getReferencePoints()) {
         if (l_cPoint != a_pPart->getReferencePoints().front() || a_pPart->getPrevious() == nullptr) {
-          irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1, 50.0f * (l_cPoint + 0.05f * a_pPart->getNormal()));
-          l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture(l_iIndex == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
+          bool l_bAdd = true;
 
-          irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(l_pNode->getMesh(), l_pNode);
-          l_pNode->setTriangleSelector(l_pSelector);
-          l_pSelector->drop();
+          for (auto &l_tPoint : m_mReferencePoints) {
+            if (std::get<0>(l_tPoint.second) == a_pPart && std::get<1>(l_tPoint.second) == l_iIndex) {
+              printf("Reference point already in.\n");
+              l_bAdd = false;
+            }
+          }
 
-          m_mReferencePoints[l_pNode] = std::make_tuple(a_pPart, l_iIndex);
+          if (l_bAdd) {
+            irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1, 50.0f * (l_cPoint + 0.05f * a_pPart->getNormal()));
+            l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture(l_iIndex == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
+
+            irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(l_pNode->getMesh(), l_pNode);
+            l_pNode->setTriangleSelector(l_pSelector);
+            l_pSelector->drop();
+
+            m_mReferencePoints[l_pNode] = std::make_tuple(a_pPart, l_iIndex);
+          }
         }
         l_iIndex++;
       }
@@ -243,6 +256,10 @@ namespace dustbin {
             irr::core::vector3df l_cDir = m_vParts.back()->getEndDirection();
             irr::core::vector3df l_cEnd = m_vParts.back()->getEndPosition () * 50.0f;
 
+            if (m_eEditMode == enEditMode::AddReferencePoint) {
+              m_pPickPoint->setPosition(l_cRayCollision);
+            }
+
             // if (m_vNewPoints.size() > 0) {
             //   if (l_pObject == m_pStart) {
             //     l_cRayCollision = m_pStart->getAbsolutePosition();
@@ -277,21 +294,39 @@ namespace dustbin {
             m_cDownPoint[0] = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-            if (m_cDownPoint[0].getDistanceFrom(l_cMouse) < 2) {
-              if (m_pHover != nullptr) {
-                m_pSelected = m_pHover;
-                m_pSelected->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/green.png"));
-              }
+            if (m_eEditMode == enEditMode::Default) {
+              if (m_cDownPoint[0].getDistanceFrom(l_cMouse) < 2) {
+                if (m_pHover != nullptr) {
+                  m_pSelected = m_pHover;
+                  m_pSelected->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/green.png"));
+                }
 
-              if (m_pMenu != nullptr) {
-                irr::gui::IGUIElement *l_pElement = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
+                if (m_pMenu != nullptr) {
+                  irr::gui::IGUIElement *l_pElement = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
 
-                if (l_pElement != m_pMenu) {
-                  m_pMenu->setVisible(false);
-                  m_pGui->addToDeletionQueue(m_pMenu);
-                  m_pMenu = nullptr;
+                  if (l_pElement != m_pMenu) {
+                    m_pMenu->setVisible(false);
+                    m_pGui->addToDeletionQueue(m_pMenu);
+                    m_pMenu = nullptr;
+                  }
                 }
               }
+            }
+            else if (m_eEditMode == enEditMode::AddReferencePoint) {
+              if (m_mReferencePoints.find(m_pSelected) != m_mReferencePoints.end()) {
+                tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pSelected]);
+
+                std::vector<irr::core::vector3df> l_vRefPoints = l_pPart->getReferencePoints();
+                l_vRefPoints.push_back(l_cRayCollision / 50.0f);
+                l_pPart->setReferencePoints(l_vRefPoints);
+                addReferencePoints(l_pPart);
+                m_pPickPoint->setVisible(false);
+
+                createTrack();
+
+                m_eEditMode = enEditMode::Default;
+              }
+              else printf("Reference point not found!\n");
             }
 
             //   m_pPick->updateAbsolutePosition();
@@ -320,47 +355,62 @@ namespace dustbin {
               }
               else {
                 if (m_pHover != nullptr) {
-                  std::vector<std::tuple<std::wstring, bool>> l_vItems;
+                  if (m_eEditMode == enEditMode::Default) {
+                    std::vector<std::tuple<std::wstring, bool>> l_vItems;
 
-                  l_vItems.push_back(std::make_tuple(c_sAddSegment   , true));
-                  l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
-                  // l_vItems.push_back(std::make_tuple(c_sAddIncline   , true));
-                  // l_vItems.push_back(std::make_tuple(c_sAddDecline   , true));
-                  // l_vItems.push_back(std::make_tuple(c_sAddJump      , true));
-                  // l_vItems.push_back(std::make_tuple(c_sAddGap       , true));
-                  // l_vItems.push_back(std::make_tuple(c_sFinishTrack  , true));
+                    l_vItems.push_back(std::make_tuple(c_sAddSegment, true));
+                    l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
 
-                  irr::core::dimension2du l_cSize = irr::core::dimension2du(0, 0);
 
-                  irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
+                    // l_vItems.push_back(std::make_tuple(c_sAddIncline   , true));
+                    // l_vItems.push_back(std::make_tuple(c_sAddDecline   , true));
+                    // l_vItems.push_back(std::make_tuple(c_sAddJump      , true));
+                    // l_vItems.push_back(std::make_tuple(c_sAddGap       , true));
+                    // l_vItems.push_back(std::make_tuple(c_sFinishTrack  , true));
 
-                  for (auto l_sItem : l_vItems) {
-                    irr::core::dimension2du l_cDim = m_pGui->getSkin()->getFont()->getDimension(std::get<0>(l_sItem).c_str());
+                    tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
+                    tracked::CTrackPart_Bezier *l_pPartBezier = dynamic_cast<tracked::CTrackPart_Bezier *>(l_pPart);
 
-                    l_cSize.Height += l_cDim.Height;
-                    if (l_cDim.Width < l_cSize.Width)
-                      l_cDim.Width = l_cSize.Width;
 
-                    l_cSize.Width  = 6 * l_cSize.Width / 5;
-                    l_cSize.Height = 6 * l_cSize.Height / 5;
+                    if (l_pPartBezier != nullptr) {
+                      if (l_pPartBezier->getReferencePoints().size() < 4 && l_pPartBezier->getPrevious() != nullptr) {
+                        l_vItems.push_back(std::make_tuple(L"----", false));
+                        l_vItems.push_back(std::make_tuple(c_sAddReference, true));
+                      }
+                    }
 
-                    m_pMenu = m_pGui->addContextMenu(
-                      irr::core::recti(
-                        (irr::u32)a_cEvent.MouseInput.X < l_cScreen.Width - l_cSize.Width ? a_cEvent.MouseInput.X : l_cScreen.Width - l_cSize.Width,
-                        (irr::u32)a_cEvent.MouseInput.Y < l_cScreen.Height - l_cSize.Height ? a_cEvent.MouseInput.Y : l_cScreen.Height - l_cSize.Height,
-                        l_cSize.Width,
-                        l_cSize.Height
-                      )
-                    );
+                    irr::core::dimension2du l_cSize = irr::core::dimension2du(0, 0);
+
+                    irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
                     for (auto l_sItem : l_vItems) {
-                      m_pMenu->addItem(std::get<0>(l_sItem).c_str());
+                      irr::core::dimension2du l_cDim = m_pGui->getSkin()->getFont()->getDimension(std::get<0>(l_sItem).c_str());
+
+                      l_cSize.Height += l_cDim.Height;
+                      if (l_cDim.Width < l_cSize.Width)
+                        l_cDim.Width = l_cSize.Width;
+
+                      l_cSize.Width  = 6 * l_cSize.Width / 5;
+                      l_cSize.Height = 6 * l_cSize.Height / 5;
+
+                      m_pMenu = m_pGui->addContextMenu(
+                        irr::core::recti(
+                          (irr::u32)a_cEvent.MouseInput.X < l_cScreen.Width - l_cSize.Width ? a_cEvent.MouseInput.X : l_cScreen.Width - l_cSize.Width,
+                          (irr::u32)a_cEvent.MouseInput.Y < l_cScreen.Height - l_cSize.Height ? a_cEvent.MouseInput.Y : l_cScreen.Height - l_cSize.Height,
+                          l_cSize.Width,
+                          l_cSize.Height
+                        )
+                      );
+
+                      m_pSelected = m_pHover;
+
+                      for (auto l_sItem : l_vItems) {
+                        m_pMenu->addItem(std::get<0>(l_sItem).c_str());
+                      }
                     }
                   }
                 }
               }
-
-              // addNewTrackPart(m_bFinishTrack);
             }
           }
         }
@@ -369,7 +419,24 @@ namespace dustbin {
             if (a_cEvent.GUIEvent.Caller == m_pMenu) {
               std::wstring l_sItem = m_pMenu->getItemText(m_pMenu->getSelectedItem());
 
-              if (l_sItem == c_sAddCheckpoint) {
+              if (l_sItem == c_sAddSegment) {
+                tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(m_vParts.back(), m_vParts.back()->getNormal(), m_pColMgr);
+
+                irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
+                
+                std::vector<irr::core::vector3df> l_vRefPoints = {
+                  m_vParts.back()->getReferencePoints().back(),
+                  m_vParts.back()->getReferencePoints().back() + 2.5f * l_cDirection.normalize()
+                };
+
+                l_pNew->setReferencePoints(l_vRefPoints);
+                m_vParts.push_back(l_pNew);
+
+                addReferencePoints(l_pNew);
+
+                createTrack();
+              }
+              else if (l_sItem == c_sAddCheckpoint) {
                 tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(m_vParts.back(), m_vParts.back()->getNormal(), m_pColMgr);
                 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
@@ -385,6 +452,22 @@ namespace dustbin {
                 addReferencePoints(l_pNew);
 
                 createTrack();
+              }
+              else if (l_sItem == c_sAddReference) {
+                if (m_pSelected != nullptr) {
+                  if (m_mReferencePoints.find(m_pSelected) != m_mReferencePoints.end()) {
+                    tracked::CTrackPart_Bezier *l_pPart = dynamic_cast<tracked::CTrackPart_Bezier *>(std::get<0>(m_mReferencePoints[m_pSelected]));
+                    if (l_pPart != nullptr && l_pPart->getReferencePoints().size() < 4) {
+                      m_eEditMode = enEditMode::AddReferencePoint;
+
+                      for (auto &l_tPoint: m_mReferencePoints) {
+                        l_tPoint.first->setVisible(m_pSelected == l_tPoint.first);
+                      }
+
+                      m_pPickPoint->setVisible(true);
+                    }
+                  }
+                }
               }
               else printf("Item Selected: %i (%ls)\n", m_pMenu->getSelectedItem(), l_sItem.c_str());
 
@@ -419,17 +502,9 @@ namespace dustbin {
           
             l_pNode->addAnimator(new animators::CPlaneAnimator(l_pNode));
 
-            // m_pPick = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"));
-            // m_pPick->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
-
-            // createTrack();
-
-            // m_pStart = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1);
-            // m_pStart->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/wall_outer_back.png"));
-
-            // irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(m_pStart->getMesh(), m_pStart);
-            // m_pStart->setTriangleSelector(l_pSelector);
-            // l_pSelector->drop();
+            m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"));
+            m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
+            m_pPickPoint->setVisible(false);
 
             irr::SEvent l_cEvent;
             l_cEvent.EventType = irr::EET_USER_EVENT;

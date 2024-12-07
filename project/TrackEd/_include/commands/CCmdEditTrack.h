@@ -21,9 +21,11 @@ namespace dustbin {
     class CCmdEditTrack: public ICommand {
       private:
         enum class enEditMode {
-          MoveCamera,
-          AddSection
+          Default,
+          AddReferencePoint
         };
+
+        enEditMode m_eEditMode;   /**< The current edit mode */
 
         irr::scene::ISceneManager  *m_pSmgr;        /**< The Irrlicht scene manager */
         irr::gui::IGUIEnvironment  *m_pGui;         /**< The Irrlicht GUI environment */
@@ -31,6 +33,7 @@ namespace dustbin {
         irr::scene::ISceneNode     *m_pWorld;       /**< The world scene node */
         irr::scene::ISceneNode     *m_pHover;       /**< The hovered editor scene node */
         irr::scene::ISceneNode     *m_pSelected;    /**< The hovered editor scene node */
+        irr::scene::ISceneNode     *m_pPickPoint;   /**< The scene node to add a point to a track part */
         irr::scene::IMeshSceneNode *m_pTrack;       /**< The track's scene node */
         irr::scene::SMesh          *m_pMesh;        /**< The track's mesh structure */
         irr::core::plane3df         m_cPlane;       /**< The plane to pick the next point from */

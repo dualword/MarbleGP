@@ -22,7 +22,19 @@ namespace dustbin {
     */
     void CTrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
       std::vector<irr::core::vector3df> l_vCurve;
-      calculateCurve(l_vCurve);
+      double l_fLength = calculateCurve(l_vCurve);
+
+      printf("Length: %.2f\n", l_fLength);
+      l_fLength = std::ceil(l_fLength);
+
+      size_t l_iSteps = l_vCurve.size();
+
+      if (getPrevious() == nullptr)
+        l_iSteps--;
+
+      double l_fTextureStep = l_fLength / (double)(l_iSteps);
+
+      printf("Texture Step: %.2f, %.2f / %lli\n", l_fTextureStep, l_fLength, l_vCurve.size());
 
       irr::f32 l_fWidth = 0.25f;
 
@@ -34,8 +46,8 @@ namespace dustbin {
       irr::core::position2df l_aTextureTop[] = {
         irr::core::position2df(1.0f, 0.0f),
         irr::core::position2df(0.0f, 0.0f),
-        irr::core::position2df(0.0f, 1.0f),
-        irr::core::position2df(1.0f, 1.0f)
+        irr::core::position2df(0.0f, (irr::f32)l_fTextureStep),
+        irr::core::position2df(1.0f, (irr::f32)l_fTextureStep)
       };
 
       for (auto l_cPos: l_vCurve) {
@@ -49,10 +61,18 @@ namespace dustbin {
             (l_cPos + l_fWidth * l_cSideNew) + 0.05f * getNormal()
           };
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad]);
+          if (l_cPos == l_vCurve.back()) {
+            l_aTextureTop[2].Y = std::ceil(l_aTextureTop[2].Y);
+            l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
+
+            printf("\tLast Texture: %.2f, %.2f\n", l_aTextureTop[2].Y, l_aTextureTop[3].Y);
+          }
+          else printf("\tThis Texture: %.2f, %.2f\n", l_aTextureTop[2].Y, l_aTextureTop[3].Y);
+
+          addQuadToMeshBuffer(l_aVertices, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cPos == l_vCurve.front());
 
           for (int i = 0; i < 4; i++)
-            l_aTextureTop[i].Y += 1.0f;
+            l_aTextureTop[i].Y += (irr::f32)l_fTextureStep;
 
           l_aVertices[0] = l_cOld - l_fWidth * l_cSideOld;
           l_aVertices[1] = l_cOld + l_fWidth * l_cSideOld;
@@ -66,7 +86,7 @@ namespace dustbin {
             irr::core::position2df(l_aVertices[3].X, l_aVertices[3].Z)
           };
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom]);
+          addQuadToMeshBuffer(l_aVertices, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom], false);
 
           l_aVertices[0] = l_cOld + l_fWidth * l_cSideOld;
           l_aVertices[1] = l_cOld + l_fWidth * l_cSideOld + 0.05f * getNormal();
@@ -80,14 +100,14 @@ namespace dustbin {
             irr::core::position2df(1.0f, 1.0f)
           };
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow]);
+          addQuadToMeshBuffer(l_aVertices, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
           l_aVertices[3] = l_cOld - l_fWidth * l_cSideOld;
           l_aVertices[2] = l_cOld - l_fWidth * l_cSideOld + 0.05f * getNormal();
           l_aVertices[1] = l_cPos - l_fWidth * l_cSideNew + 0.05f * getNormal();
           l_aVertices[0] = l_cPos - l_fWidth * l_cSideNew;
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow]);
+          addQuadToMeshBuffer(l_aVertices, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
           l_cSideOld = l_cSideNew;
           a_bBlack = !a_bBlack;
@@ -199,6 +219,8 @@ namespace dustbin {
     * @param a_cPoints a vectro with the reference points
     */
     void CTrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
+      m_vPoints.clear();
+
       m_eType = a_cPoints.size() == 2 ? enType::Bezier1 : a_cPoints.size() == 3 ? enType::Bezier2 : enType::Bezier3;
 
       switch (m_eType) {
@@ -374,7 +396,7 @@ namespace dustbin {
         m_bRespawnLeft ? irr::core::position2df(0.0f, 1.0f) : irr::core::position2df(1.0f, 1.0f)
       };
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin], true);
 
       l_aVertices[0] = l_aRespawn[0] + 0.05f * getNormal();
       l_aVertices[1] = l_aRespawn[1] + 0.05f * getNormal();
@@ -386,7 +408,7 @@ namespace dustbin {
       l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
       l_aTexture[3].X = 1.0f; l_aTexture[3].Y = 0.0f;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxRoad]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxRoad], true);
 
       l_aVertices[1] = l_aRespawn[0];
       l_aVertices[0] = l_aRespawn[1];
@@ -398,7 +420,7 @@ namespace dustbin {
       l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
       l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
 
       l_aVertices[0] = m_cStart - 0.25f * l_cSide;
       l_aVertices[1] = m_cStart + 0.25f * l_cSide;
@@ -410,7 +432,7 @@ namespace dustbin {
       l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
       l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
 
       l_aVertices[0] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide                       : m_cStart - 0.25f * l_cSide;
       l_aVertices[1] = m_bRespawnLeft ? m_cStart + 0.25f * l_cSide                       : m_cEnd   - 0.25f * l_cSide;
@@ -422,7 +444,7 @@ namespace dustbin {
       l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
       l_aVertices[0] = m_bRespawnLeft ? l_aRespawn[1]                       : l_aRespawn[3];
       l_aVertices[1] = m_bRespawnLeft ? l_aRespawn[2]                       : l_aRespawn[0];
@@ -434,7 +456,7 @@ namespace dustbin {
       l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxYellow : c_iBufferIdxBlack]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxYellow : c_iBufferIdxBlack], false);
 
       l_aVertices[0] = l_aRespawn[0];
       l_aVertices[1] = l_aRespawn[1];
@@ -446,7 +468,7 @@ namespace dustbin {
       l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
       l_aVertices[1] = l_aRespawn[3];
       l_aVertices[0] = l_aRespawn[2];
@@ -458,7 +480,7 @@ namespace dustbin {
       l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow]);
+      addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
       tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
 

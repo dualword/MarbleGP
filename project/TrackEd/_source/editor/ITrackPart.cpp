@@ -97,11 +97,13 @@ namespace dustbin {
     * @param a_aVertices the four vertices of the quad
     * @param a_aTexturePos the four texture positions of the vertices
     * @param a_pBuffer the buffer to be filled
+    * @param a_bForceAdd add the first vertices regardless of whether or not the position is already in bool 
     */
     void ITrackPart::addQuadToMeshBuffer(
       irr::core::vector3df a_aVertices[4],
       irr::core::position2df a_aTexturePos[4],
-      irr::scene::SMeshBuffer *a_pBuffer) 
+      irr::scene::SMeshBuffer *a_pBuffer,
+      bool a_bForceAdd)
     {
       irr::core::triangle3df l_aTriangles[] = {
         irr::core::triangle3df(a_aVertices[0], a_aVertices[1], a_aVertices[2]),
@@ -113,6 +115,11 @@ namespace dustbin {
 
       for (irr::u32 i = 0; i < 4; i++) {
         l_aIndices[i] = getIndexOfVertex(a_aVertices[i], a_pBuffer);
+      }
+
+      if (a_bForceAdd) {
+        l_aIndices[0] = -1;
+        l_aIndices[1] = -1;
       }
 
       if (l_aIndices[0] == -1 || l_aIndices[1] == -1) { l_aIndices[0] = -1; l_aIndices[1] = -1; }
