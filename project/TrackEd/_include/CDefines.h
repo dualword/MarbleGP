@@ -9,6 +9,7 @@ namespace dustbin {
   const irr::s32 c_iStartupFinished    = 23;
   const irr::s32 c_iSceneWillBeCleared = 28;
   const irr::s32 c_iSceneLoaded        = 34;
+  const irr::s32 c_iUpdateShader       = 42;
 
   const std::wstring c_sAddSegment    = L"Add Road Segment";
   const std::wstring c_sAddCheckpoint = L"Add Checkpoint";

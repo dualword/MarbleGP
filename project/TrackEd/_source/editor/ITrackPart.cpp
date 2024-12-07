@@ -113,7 +113,12 @@ namespace dustbin {
 
       for (irr::u32 i = 0; i < 4; i++) {
         l_aIndices[i] = getIndexOfVertex(a_aVertices[i], a_pBuffer);
+      }
 
+      if (l_aIndices[0] == -1 || l_aIndices[1] == -1) { l_aIndices[0] = -1; l_aIndices[1] = -1; }
+      if (l_aIndices[2] == -1 || l_aIndices[3] == -1) { l_aIndices[2] = -1; l_aIndices[3] = -1; }
+
+      for (irr::u32 i = 0; i < 4; i++) {
         if (l_aIndices[i] == -1) {
           l_aIndices[i] = a_pBuffer->getVertexCount();
           a_pBuffer->Vertices.push_back(irr::video::S3DVertex(

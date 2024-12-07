@@ -57,17 +57,19 @@ namespace dustbin {
     * @param a_pPart the track part
     */
     void CCmdEditTrack::addReferencePoints(tracked::ITrackPart *a_pPart) {
-      int l_iIndex = a_pPart->getPrevious() == nullptr ? 0 : 1;
+      int l_iIndex = 0;
 
       for (auto &l_cPoint: a_pPart->getReferencePoints()) {
-        irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1, 50.0f * (l_cPoint + 0.05f * a_pPart->getNormal()));
-        l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture(l_iIndex == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
+        if (l_cPoint != a_pPart->getReferencePoints().front() || a_pPart->getPrevious() == nullptr) {
+          irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1, 50.0f * (l_cPoint + 0.05f * a_pPart->getNormal()));
+          l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture(l_iIndex == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
 
-        irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(l_pNode->getMesh(), l_pNode);
-        l_pNode->setTriangleSelector(l_pSelector);
-        l_pSelector->drop();
+          irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(l_pNode->getMesh(), l_pNode);
+          l_pNode->setTriangleSelector(l_pSelector);
+          l_pSelector->drop();
 
-        m_mReferencePoints[l_pNode] = std::make_tuple(a_pPart, l_iIndex);
+          m_mReferencePoints[l_pNode] = std::make_tuple(a_pPart, l_iIndex);
+        }
         l_iIndex++;
       }
 
@@ -117,8 +119,12 @@ namespace dustbin {
 
       m_pMesh->MeshBuffers.clear();
 
+      bool l_bBlack = true;
+
       for (auto l_pPart: m_vParts) {
-        l_pPart->createTrackPart(m_vBuffers);
+        printf("Black: %s", l_bBlack ? "true" : "false");
+        l_pPart->createTrackPart(m_vBuffers, l_bBlack);
+        printf(", %s\n", l_bBlack ? "true" : "false");
       }
 
       int l_iCount = 0;
@@ -145,6 +151,12 @@ namespace dustbin {
         m_pTrack->setMesh(m_pMesh);
         m_pTrack->getMesh()->setDirty();
       }
+
+      irr::SEvent l_cEvent;
+      l_cEvent.EventType = irr::EET_USER_EVENT;
+      l_cEvent.UserEvent.UserData1 = c_iUpdateShader;
+      l_cEvent.UserEvent.UserData2 = c_iUpdateShader;
+      tracked::IGlobal::getInstance()->getDevice()->postEventFromUser(l_cEvent);
     }
 
     /**
@@ -310,8 +322,6 @@ namespace dustbin {
                 if (m_pHover != nullptr) {
                   std::vector<std::tuple<std::wstring, bool>> l_vItems;
 
-                  if (std::get<1>(m_mReferencePoints[m_pHover]) == std::get<0>(m_mReferencePoints[m_pHover])->getReferencePoints().size())
-
                   l_vItems.push_back(std::make_tuple(c_sAddSegment   , true));
                   l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
                   // l_vItems.push_back(std::make_tuple(c_sAddIncline   , true));
@@ -371,6 +381,8 @@ namespace dustbin {
 
                 l_pNew->setReferencePoints(l_vRefPoints);
                 m_vParts.push_back(l_pNew);
+
+                addReferencePoints(l_pNew);
 
                 createTrack();
               }

@@ -83,6 +83,14 @@ namespace dustbin {
             m_pShader->addLightCamera();
           }
         }
+        else if (a_cEvent.UserEvent.UserData1 == c_iUpdateShader) {
+          if (m_pShader != nullptr && m_pSmgr != nullptr) {
+            m_pShader->clear();
+            helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode(), nullptr, helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
+            m_pShader->setRenderOptions(shaders::enShadowMode::Off, shaders::enShadowQuality::High);
+            m_pShader->addLightCamera();
+          }
+        }
       }
 
       return l_bRet;

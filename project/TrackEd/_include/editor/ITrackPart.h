@@ -76,8 +76,9 @@ namespace dustbin {
         /**
         * Create the track part
         * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
+        * @param a_bBlack [in] [out] the next color of the side quad
         */
-        virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers) = 0;
+        virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) = 0;
 
         /**
         * Set the trak part's reference points

@@ -46,7 +46,7 @@ namespace dustbin {
         * Create the track part
         * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
         */
-        virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers) override;
+        virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) override;
 
         /**
         * Set the trak part's reference points
@@ -128,6 +128,10 @@ namespace dustbin {
         irr::core::vector3df m_cStart;
         irr::core::vector3df m_cEnd;
 
+        irr::scene::ISceneNode *m_pCheckpoint;
+
+        bool m_bRespawnLeft;    /**< Is the respawn on the left side? */
+
       public:
         CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
         virtual ~CTrackPart_Checkpoint();
@@ -136,7 +140,7 @@ namespace dustbin {
         * Create the track part
         * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
         */
-        virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers) override;
+        virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) override;
 
         /**
         * Set the trak part's reference points
@@ -187,6 +191,13 @@ namespace dustbin {
         * @return the normal at the end point
         */
         virtual const irr::core::vector3df &getNormal() override;
+
+        /**
+        * Handle an event if this part is selected
+        * @param a_cEvent the event to handle
+        * @return true if the event was handled
+        */
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
     };
   }
 }
