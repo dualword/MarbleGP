@@ -35,11 +35,6 @@ namespace dustbin {
 
       irr::f32 l_fWidth = 0.25f;
 
-      irr::core::vector3df l_cOld     = m_vPoints[0];
-      irr::core::vector3df l_cSideOld = -(m_vPoints[1] - m_vPoints[0]).crossProduct(getStartNormal()).normalize();
-
-      irr::video::SColor l_cColor = getPrevious() == nullptr ? irr::video::SColor(0xFF, 0xFF, 0x80, 0x80) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
-      
       irr::core::position2df l_aTextureTop[] = {
         irr::core::position2df(1.0f, 0.0f),
         irr::core::position2df(0.0f, 0.0f),
@@ -47,67 +42,98 @@ namespace dustbin {
         irr::core::position2df(1.0f, (irr::f32)l_fTextureStep)
       };
 
-      for (auto l_cPos: l_vCurve) {
-        if (getPrevious() != nullptr || l_cPos != l_vCurve.front()) {
-          irr::core::vector3df l_cSideNew = (l_cOld - l_cPos).crossProduct(irr::core::vector3df(0.0f, 1.0f, 0.0f)).normalize();
+      std::vector<irr::core::line3df> l_vBottom;
 
-          irr::core::vector3df l_aVertices[] = {
-            (l_cOld + l_fWidth * l_cSideOld) + 0.05f * getNormal(),
-            (l_cOld - l_fWidth * l_cSideOld) + 0.05f * getNormal(),
-            (l_cPos - l_fWidth * l_cSideNew) + 0.05f * getNormal(),
-            (l_cPos + l_fWidth * l_cSideNew) + 0.05f * getNormal()
+      irr::core::vector3df l_cOld;
+
+      for (auto l_cPos : l_vCurve) {
+        if (l_cPos != l_vCurve.front() || getPrevious() == nullptr) {
+          irr::core::vector3df l_cDirection;
+
+          if (l_cPos != l_vCurve.front()) {
+            l_cDirection = (l_cPos - l_cOld).normalize();
+          }
+          else {
+            l_cDirection = (m_vPoints[1] - m_vPoints[0]).normalize();
+          }
+
+          irr::core::vector3df l_cSide = (l_cDirection.crossProduct(getNormal())).normalize();
+
+          l_vBottom.push_back(irr::core::line3df(l_cPos + 0.25f * l_cSide, l_cPos - 0.25f * l_cSide));
+        }
+        else {
+          // First segment: take last segment of previous track part
+          l_vBottom.push_back(getPrevious()->getEnd());
+        }
+
+        l_cOld = l_cPos;
+      }
+
+      if (l_vBottom.size() > 0) {
+        setStart(l_vBottom.front());
+        setEnd  (l_vBottom.back ());
+      }
+
+      irr::core::line3df l_cOldLine;
+
+      for (auto &l_cLine: l_vBottom) {
+        if (l_cLine != l_vBottom.front()) {
+          irr::core::vector3df l_aVerts[] = {
+            l_cOldLine.end   + 0.05f * getNormal(),
+            l_cOldLine.start + 0.05f * getNormal(),
+            l_cLine   .start + 0.05f * getNormal(),
+            l_cLine   .end   + 0.05f * getNormal()
           };
 
-          if (l_cPos == l_vCurve.back()) {
+          if (l_cLine == l_vBottom.back()) {
             l_aTextureTop[2].Y = std::ceil(l_aTextureTop[2].Y);
             l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
           }
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cPos == l_vCurve.front());
+          addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cLine == l_vBottom.front());
 
           for (int i = 0; i < 4; i++)
             l_aTextureTop[i].Y += (irr::f32)l_fTextureStep;
 
-          l_aVertices[0] = l_cOld - l_fWidth * l_cSideOld;
-          l_aVertices[1] = l_cOld + l_fWidth * l_cSideOld;
-          l_aVertices[2] = l_cPos + l_fWidth * l_cSideOld;
-          l_aVertices[3] = l_cPos - l_fWidth * l_cSideOld;
+          l_aVerts[0] = l_cOldLine.start;
+          l_aVerts[1] = l_cOldLine.end;
+          l_aVerts[2] = l_cLine   .end;
+          l_aVerts[3] = l_cLine   .start;
 
           irr::core::position2df l_aTextureBottom[] = {
-            irr::core::position2df(l_aVertices[0].X, l_aVertices[0].Z),
-            irr::core::position2df(l_aVertices[1].X, l_aVertices[1].Z),
-            irr::core::position2df(l_aVertices[2].X, l_aVertices[2].Z),
-            irr::core::position2df(l_aVertices[3].X, l_aVertices[3].Z)
+            irr::core::position2df(l_aVerts[0].X, l_aVerts[0].Z),
+            irr::core::position2df(l_aVerts[1].X, l_aVerts[1].Z),
+            irr::core::position2df(l_aVerts[2].X, l_aVerts[2].Z),
+            irr::core::position2df(l_aVerts[3].X, l_aVerts[3].Z)
           };
+          
+          addQuadToMeshBuffer(l_aVerts, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom], false);
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom], false);
-
-          l_aVertices[0] = l_cOld + l_fWidth * l_cSideOld;
-          l_aVertices[1] = l_cOld + l_fWidth * l_cSideOld + 0.05f * getNormal();
-          l_aVertices[2] = l_cPos + l_fWidth * l_cSideNew + 0.05f * getNormal();
-          l_aVertices[3] = l_cPos + l_fWidth * l_cSideNew;
+          l_aVerts[0] = l_cOldLine.end + 0.05f * getNormal();
+          l_aVerts[1] = l_cLine   .end + 0.05f * getNormal();
+          l_aVerts[2] = l_cLine   .end;
+          l_aVerts[3] = l_cOldLine.end;
 
           irr::core::position2df l_aTextureSide[] = {
             irr::core::position2df(0.0f, 0.0f),
             irr::core::position2df(1.0f, 0.0f),
-            irr::core::position2df(0.0f, 1.0f),
-            irr::core::position2df(1.0f, 1.0f)
+            irr::core::position2df(1.0f, 1.0f),
+            irr::core::position2df(0.0f, 1.0f)
           };
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+          addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
-          l_aVertices[3] = l_cOld - l_fWidth * l_cSideOld;
-          l_aVertices[2] = l_cOld - l_fWidth * l_cSideOld + 0.05f * getNormal();
-          l_aVertices[1] = l_cPos - l_fWidth * l_cSideNew + 0.05f * getNormal();
-          l_aVertices[0] = l_cPos - l_fWidth * l_cSideNew;
+          l_aVerts[1] = l_cOldLine.start + 0.05f * getNormal();
+          l_aVerts[0] = l_cLine   .start + 0.05f * getNormal();
+          l_aVerts[3] = l_cLine   .start;
+          l_aVerts[2] = l_cOldLine.start;
 
-          addQuadToMeshBuffer(l_aVertices, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+          addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
 
-          l_cSideOld = l_cSideNew;
           a_bBlack = !a_bBlack;
         }
-      
-        l_cOld = l_cPos;
+
+        l_cOldLine = l_cLine;
       }
     }
 
@@ -237,7 +263,7 @@ namespace dustbin {
     * @param a_iIndex index of the reference point
     * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
     * @param a_cPlanePoint [out] The point of the plane the reference point is moved in. Only used if "true" is returned.
-    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in. Only used if "true" is returned.
+    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in.
     * @return true if the reference point can move freely, false otherwise
     */
     bool CTrackPart_Bezier::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {
@@ -430,6 +456,8 @@ namespace dustbin {
 
       addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin], true);
 
+      setStart(irr::core::line3df(l_aVertices[0], l_aVertices[1]));
+
       l_aVertices[0] = l_aRespawn[0] + 0.05f * getNormal();
       l_aVertices[1] = l_aRespawn[1] + 0.05f * getNormal();
       l_aVertices[2] = l_aRespawn[2] + 0.05f * getNormal();
@@ -463,6 +491,8 @@ namespace dustbin {
       l_aTexture[1].X = l_aVertices[1].X; l_aTexture[1].Y = l_aVertices[1].Z;
       l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
       l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
+
+      setEnd(irr::core::line3df(l_aVertices[3], l_aVertices[2]));
 
       addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
 
@@ -559,10 +589,6 @@ namespace dustbin {
         irr::core::plane3df l_cPlane = irr::core::plane3df(l_cCenter, l_cSide);
 
         m_bRespawnLeft = l_cPlane.classifyPointRelation(a_cPoints[1]) == irr::core::ISREL3D_BACK;
-
-        // m_bRespawnLeft = l_cPlane.isFrontFacing(a_cPoints[1]);
-
-        printf("Respawn side: %s\n", m_bRespawnLeft ? "Left" : "Right");
       }
     }
 
@@ -619,7 +645,7 @@ namespace dustbin {
     * @param a_iIndex index of the reference point
     * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
     * @param a_cPlanePoint [out] The point of the plane the reference point is moved in. Only used if "true" is returned.
-    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in. Only used if "true" is returned.
+    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in.
     * @return true if the reference point can move freely, false otherwise
     */
     bool CTrackPart_Checkpoint::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {

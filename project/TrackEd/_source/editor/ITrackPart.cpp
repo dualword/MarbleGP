@@ -148,5 +148,38 @@ namespace dustbin {
       a_pBuffer->Indices.push_back(l_aIndices[2]);
       a_pBuffer->Indices.push_back(l_aIndices[3]);
     }
+
+
+    /**
+    * Set the start of the part
+    * @param a_cStart the start of the part
+    */
+    void ITrackPart::setStart(const irr::core::line3df &a_cStart) {
+      m_cStart = a_cStart;
+    }
+
+    /**
+    * Set the end of the part
+    * @param a_cEnd the end of the part
+    */
+    void ITrackPart::setEnd(const irr::core::line3df &a_cEnd) {
+      m_cEnd = a_cEnd;
+    }
+
+    /**
+    * Get the start of the part
+    * @return the start of the part
+    */
+    const irr::core::line3df &ITrackPart::getStart() {
+      return m_cStart;
+    }
+
+    /**
+    * Get the end of the part
+    * @return the end of the part
+    */
+    const irr::core::line3df &ITrackPart::getEnd() {
+      return m_cEnd;
+    }
   }
 }
