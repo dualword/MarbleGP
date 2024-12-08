@@ -474,6 +474,7 @@ namespace dustbin {
     */
     void CTrackPart_Checkpoint::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
       printf("CTrackPart_Checkpoint::createTrackPart (%i)\n", getId());
+
       irr::core::vector3df l_cSide = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
 
       irr::core::vector3df l_aRespawn[] = {
@@ -484,10 +485,10 @@ namespace dustbin {
       };
 
       irr::core::vector3df l_aVertices[] = {
-        m_cStart + 0.25f * l_cSide + 0.05f * getNormal(),
-        m_cStart - 0.25f * l_cSide + 0.05f * getNormal(),
-        m_cEnd   - 0.25f * l_cSide + 0.05f * getNormal(),
-        m_cEnd   + 0.25f * l_cSide + 0.05f * getNormal()
+        getPrevious()->getEnd().end   + 0.05f * getNormal(),  // +0.25
+        getPrevious()->getEnd().start + 0.05f * getNormal(),  // -0.25
+        m_cEnd   - 0.25f * l_cSide    + 0.05f * getNormal(),
+        m_cEnd   + 0.25f * l_cSide    + 0.05f * getNormal()
       };
 
       irr::core::position2df l_aTexture[] = {
@@ -528,8 +529,8 @@ namespace dustbin {
       if (a_vBuffers.size() > c_iBufferIdxBottom)
         addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
 
-      l_aVertices[0] = m_cStart - 0.25f * l_cSide;
-      l_aVertices[1] = m_cStart + 0.25f * l_cSide;
+      l_aVertices[0] = getPrevious()->getEnd().start;
+      l_aVertices[1] = getPrevious()->getEnd().end;
       l_aVertices[2] = m_cEnd   + 0.25f * l_cSide;
       l_aVertices[3] = m_cEnd   - 0.25f * l_cSide;
 
@@ -543,10 +544,10 @@ namespace dustbin {
       if (a_vBuffers.size() > c_iBufferIdxBottom)
         addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
 
-      l_aVertices[0] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide                       : m_cStart - 0.25f * l_cSide;
-      l_aVertices[1] = m_bRespawnLeft ? m_cStart + 0.25f * l_cSide                       : m_cEnd   - 0.25f * l_cSide;
-      l_aVertices[2] = m_bRespawnLeft ? m_cStart + 0.25f * l_cSide + 0.05f * getNormal() : m_cEnd   - 0.25f * l_cSide + 0.05f * getNormal();
-      l_aVertices[3] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide + 0.05f * getNormal() : m_cStart - 0.25f * l_cSide + 0.05f * getNormal();
+      l_aVertices[0] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide                        : m_cStart - 0.25f * l_cSide;
+      l_aVertices[1] = m_bRespawnLeft ? getPrevious()->getEnd().end                       : m_cEnd   - 0.25f * l_cSide;
+      l_aVertices[2] = m_bRespawnLeft ? getPrevious()->getEnd().end + 0.05f * getNormal() : m_cEnd   - 0.25f * l_cSide + 0.05f * getNormal();
+      l_aVertices[3] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide  + 0.05f * getNormal() : m_cStart - 0.25f * l_cSide + 0.05f * getNormal();
 
       l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
       l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
