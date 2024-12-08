@@ -24,7 +24,6 @@ namespace dustbin {
       std::vector<irr::core::vector3df> l_vCurve;
       double l_fLength = calculateCurve(l_vCurve);
 
-      printf("Length: %.2f\n", l_fLength);
       l_fLength = std::ceil(l_fLength);
 
       size_t l_iSteps = l_vCurve.size();
@@ -33,8 +32,6 @@ namespace dustbin {
         l_iSteps--;
 
       double l_fTextureStep = l_fLength / (double)(l_iSteps);
-
-      printf("Texture Step: %.2f, %.2f / %lli\n", l_fTextureStep, l_fLength, l_vCurve.size());
 
       irr::f32 l_fWidth = 0.25f;
 
@@ -64,10 +61,7 @@ namespace dustbin {
           if (l_cPos == l_vCurve.back()) {
             l_aTextureTop[2].Y = std::ceil(l_aTextureTop[2].Y);
             l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
-
-            printf("\tLast Texture: %.2f, %.2f\n", l_aTextureTop[2].Y, l_aTextureTop[3].Y);
           }
-          else printf("\tThis Texture: %.2f, %.2f\n", l_aTextureTop[2].Y, l_aTextureTop[3].Y);
 
           addQuadToMeshBuffer(l_aVertices, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cPos == l_vCurve.front());
 
@@ -216,7 +210,7 @@ namespace dustbin {
 
     /**
     * Set the trak part's reference points
-    * @param a_cPoints a vectro with the reference points
+    * @param a_cPoints a vector with the reference points
     */
     void CTrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
       m_vPoints.clear();
@@ -548,11 +542,28 @@ namespace dustbin {
 
     /**
     * Set the trak part's reference points
-    * @param a_cPoints a vectro with the reference points
+    * @param a_cPoints a vector with the reference points
     */
     void CTrackPart_Checkpoint::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
-      m_cStart = a_cPoints[0];
-      m_cEnd   = a_cPoints[1];
+      if (a_cPoints.size() == 2) {
+        m_cStart = a_cPoints[0];
+        m_cEnd   = a_cPoints[1];
+      }
+      else if (a_cPoints.size() == 3) {
+        m_cStart = a_cPoints[0];
+        m_cEnd   = a_cPoints[2];
+
+        irr::core::vector3df l_cSide   = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
+        irr::core::vector3df l_cCenter = (m_cStart + m_cEnd) / 2.0f;
+
+        irr::core::plane3df l_cPlane = irr::core::plane3df(l_cCenter, l_cSide);
+
+        m_bRespawnLeft = l_cPlane.classifyPointRelation(a_cPoints[1]) == irr::core::ISREL3D_BACK;
+
+        // m_bRespawnLeft = l_cPlane.isFrontFacing(a_cPoints[1]);
+
+        printf("Respawn side: %s\n", m_bRespawnLeft ? "Left" : "Right");
+      }
     }
 
     /**

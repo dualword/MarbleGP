@@ -35,20 +35,23 @@ namespace dustbin {
       m_pTrack      (nullptr),
       m_pMesh       (nullptr),
       m_pMenu       (nullptr),
+      m_pEditMode   (nullptr),
       m_pColMgr     (nullptr),
       m_bFinishTrack(false),
       m_bFinished   (false)
     {
-      m_pColMgr  = m_pSmgr->getSceneCollisionManager();
+      m_pColMgr = m_pSmgr->getSceneCollisionManager();
 
-      tracked::CTrackPart_Bezier *l_pStart = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f), m_pColMgr);
-      l_pStart->setReferencePoints({ irr::core::vector3df(0.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f, 0.0f, 3.5f) });
+      irr::core::dimension2du l_cSize = m_pGui->getSkin()->getFont()->getDimension(L"Edit Mode: This Text is longer than needed.");
+      irr::core::vector2di    l_cPos  = irr::core::vector2di();
 
-      m_vParts.push_back(l_pStart);
+      m_pEditMode = m_pGui->addStaticText(L"Edit Mode: Default", irr::core::recti(l_cPos, l_cSize));
+      
+      l_cPos.Y += 6 * l_cSize.Height / 5;
 
-      addReferencePoints(l_pStart);
-
-      createTrack();
+      m_pWarning = m_pGui->addStaticText(L"Warning Label", irr::core::recti(l_cPos, l_cSize));
+      m_pWarning->setOverrideColor(irr::video::SColor(0xFF, 0xFF, 0x80, 0x80));
+      m_pWarning->setVisible(false);
     }
         
     CCmdEditTrack::~CCmdEditTrack() {
@@ -135,9 +138,7 @@ namespace dustbin {
       bool l_bBlack = true;
 
       for (auto l_pPart: m_vParts) {
-        printf("Black: %s", l_bBlack ? "true" : "false");
         l_pPart->createTrackPart(m_vBuffers, l_bBlack);
-        printf(", %s\n", l_bBlack ? "true" : "false");
       }
 
       int l_iCount = 0;
@@ -209,6 +210,23 @@ namespace dustbin {
       //     l_bColor = !l_bColor;
       //   }
       // }
+    }
+
+    /**
+    * Set the edit mode and update the info text
+    * @param a_eEditMode the new edit mode
+    */
+    void CCmdEditTrack::setEditMode(enEditMode a_eMode) {
+      m_eEditMode = a_eMode;
+
+      if (m_pEditMode != nullptr) {
+        switch (m_eEditMode) {
+          case enEditMode::Default          : m_pEditMode->setText(L"Edit Mode: Default"             ); break;
+          case enEditMode::AddReferencePoint: m_pEditMode->setText(L"Edit Mode: Add Reference Point" ); break;
+          case enEditMode::MovePointOnLine  : m_pEditMode->setText(L"Edit Mode: Move Reference Point"); break;
+          case enEditMode::MovePointInPlane : m_pEditMode->setText(L"Edit Mode: Move Reference Point"); break;
+        }
+      }
     }
 
     /**
@@ -291,23 +309,26 @@ namespace dustbin {
                 bool l_bCanMove = std::get<0>(m_mReferencePoints[m_pHover])->canPointMoveFreely(std::get<1>(m_mReferencePoints[m_pHover]), m_cMoveLine, l_cPlanePoint, l_cPlaneNormal);
 
                 if (l_bCanMove) {
-                  m_eEditMode  = enEditMode::MovePointInPlane;
+                  setEditMode(enEditMode::MovePointInPlane);
                   m_pSelected  = m_pHover;
-                  m_cMovePlane = irr::core::plane3df(50.0f * l_cPlanePoint, l_cPlaneNormal);
 
-                  l_bRet = true;
+                  m_cMovePlane = irr::core::plane3df(50.0f * l_cPlanePoint, l_cPlaneNormal);
                 }
                 else {
                   if (m_cMoveLine.getLength() > 0.0f) {
-                    m_eEditMode = enEditMode::MovePointOnLine;
+                    setEditMode(enEditMode::MovePointOnLine);
                     m_pSelected = m_pHover;
 
                     m_cMoveLine.start = 50.0f * m_cMoveLine.start;
                     m_cMoveLine.end   = 50.0f * m_cMoveLine.end;
-
-                    l_bRet = true;
+                  }
+                  else {
+                    m_pWarning->setText(L"This point cannot be moved!");
+                    m_pWarning->setVisible(true);
                   }
                 }
+
+                l_bRet = true;
               }
             }
           }
@@ -346,18 +367,44 @@ namespace dustbin {
 
                 createTrack();
 
-                m_eEditMode = enEditMode::Default;
+                setEditMode(enEditMode::Default);
               }
               else printf("Reference point not found!\n");
             }
             else if (m_eEditMode == enEditMode::MovePointInPlane) {
-              m_eEditMode = enEditMode::Default;
+              irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+              irr::core::vector3df l_cRayCollision;
+              m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
+              std::vector<irr::core::vector3df> l_vRefPoints = std::get<0>(m_mReferencePoints[m_pSelected])->getReferencePoints();
+              l_vRefPoints[std::get<1>(m_mReferencePoints[m_pSelected])] = l_cRayCollision / 50.0f;
+
+              std::get<0>(m_mReferencePoints[m_pSelected])->setReferencePoints(l_vRefPoints);
+
+              createTrack();
+              setEditMode(enEditMode::Default);
+              m_pSelected = nullptr;
+
               l_bRet = true;
             }
             else if (m_eEditMode == enEditMode::MovePointOnLine) {
-              m_eEditMode = enEditMode::Default;
+              irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+              irr::core::vector3df l_cRayCollision;
+              m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
+              std::vector<irr::core::vector3df> l_vRefPoints = std::get<0>(m_mReferencePoints[m_pSelected])->getReferencePoints();
+              l_vRefPoints[std::get<1>(m_mReferencePoints[m_pSelected])] = m_cMoveLine.getClosestPoint(l_cRayCollision) / 50.0f;
+
+              std::get<0>(m_mReferencePoints[m_pSelected])->setReferencePoints(l_vRefPoints);
+
+              createTrack();
+              setEditMode(enEditMode::Default);
+              m_pSelected = nullptr;
               l_bRet = true;
             }
+
+            if (m_pWarning != nullptr)
+              m_pWarning->setVisible(false);
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN) {
             m_cDownPoint[1] = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
@@ -478,7 +525,7 @@ namespace dustbin {
                   if (m_mReferencePoints.find(m_pSelected) != m_mReferencePoints.end()) {
                     tracked::CTrackPart_Bezier *l_pPart = dynamic_cast<tracked::CTrackPart_Bezier *>(std::get<0>(m_mReferencePoints[m_pSelected]));
                     if (l_pPart != nullptr && l_pPart->getReferencePoints().size() < 4) {
-                      m_eEditMode = enEditMode::AddReferencePoint;
+                      setEditMode(enEditMode::AddReferencePoint);
 
                       m_cMovePlane = irr::core::plane3df(l_pPart->getReferencePoints().front(), l_pPart->getNormal());
 
@@ -527,6 +574,13 @@ namespace dustbin {
             m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"));
             m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
             m_pPickPoint->setVisible(false);
+
+            tracked::CTrackPart_Bezier *l_pStart = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f), m_pColMgr);
+            l_pStart->setReferencePoints({ irr::core::vector3df(0.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f, 0.0f, 3.5f) });
+
+            m_vParts.push_back(l_pStart);
+            addReferencePoints(l_pStart);
+            createTrack();
 
             irr::SEvent l_cEvent;
             l_cEvent.EventType = irr::EET_USER_EVENT;

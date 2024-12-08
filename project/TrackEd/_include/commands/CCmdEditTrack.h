@@ -42,7 +42,9 @@ namespace dustbin {
         irr::core::line3df          m_cMoveLine;    /**< The line to move points along */
         irr::core::plane3df         m_cMovePlane;   /**< The plane to move points in */
 
-        irr::gui::IGUIContextMenu *m_pMenu;
+        irr::gui::IGUIContextMenu *m_pMenu;       /**< The context menu */
+        irr::gui::IGUIStaticText  *m_pEditMode;   /**< The "Edit Mode" or information label in the upper left */
+        irr::gui::IGUIStaticText  *m_pWarning;    /**< An edit field showing some warning */
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< Our scene collision manager */
 
@@ -71,6 +73,12 @@ namespace dustbin {
         * @param a_pPart the track part
         */
         void addReferencePoints(tracked::ITrackPart *a_pPart);
+
+        /**
+        * Set the edit mode and update the info text
+        * @param a_eEditMode the new edit mode
+        */
+        void setEditMode(enEditMode a_eMode);
 
       public:
         CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui);

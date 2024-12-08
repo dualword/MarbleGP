@@ -50,7 +50,7 @@ namespace dustbin {
 
         /**
         * Set the trak part's reference points
-        * @param a_cPoints a vectro with the reference points
+        * @param a_cPoints a vector with the reference points
         */
         virtual void setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) override;
 
@@ -154,7 +154,7 @@ namespace dustbin {
 
         /**
         * Set the trak part's reference points
-        * @param a_cPoints a vectro with the reference points
+        * @param a_cPoints a vector with the reference points
         */
         virtual void setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) override;
 
