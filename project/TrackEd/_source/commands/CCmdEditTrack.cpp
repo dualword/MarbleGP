@@ -442,8 +442,12 @@ namespace dustbin {
                   if (m_eEditMode == enEditMode::Default) {
                     std::vector<std::tuple<std::wstring, bool>> l_vItems;
 
-                    l_vItems.push_back(std::make_tuple(c_sAddSegment, true));
-                    l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
+                    tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
+
+                    if (l_pPart->partAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
+                      l_vItems.push_back(std::make_tuple(c_sAddSegment, true));
+                      l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
+                    }
 
 
                     // l_vItems.push_back(std::make_tuple(c_sAddIncline   , true));
@@ -452,15 +456,9 @@ namespace dustbin {
                     // l_vItems.push_back(std::make_tuple(c_sAddGap       , true));
                     // l_vItems.push_back(std::make_tuple(c_sFinishTrack  , true));
 
-                    tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
-                    tracked::CTrackPart_Bezier *l_pPartBezier = dynamic_cast<tracked::CTrackPart_Bezier *>(l_pPart);
-
-
-                    if (l_pPartBezier != nullptr) {
-                      if (l_pPartBezier->getReferencePoints().size() < 4 && l_pPartBezier->getPrevious() != nullptr) {
-                        l_vItems.push_back(std::make_tuple(L"----", false));
-                        l_vItems.push_back(std::make_tuple(c_sAddReference, true));
-                      }
+                    if (l_pPart->refPointAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
+                      l_vItems.push_back(std::make_tuple(L"----", false));
+                      l_vItems.push_back(std::make_tuple(c_sAddReference, true));
                     }
 
                     irr::core::dimension2du l_cSize = irr::core::dimension2du(0, 0);

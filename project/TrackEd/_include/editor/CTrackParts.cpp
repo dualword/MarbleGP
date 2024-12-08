@@ -160,6 +160,24 @@ namespace dustbin {
     }
 
     /**
+    * Does this reference point allow addition of new track parts?
+    * @param a_iIndex index of the reference point
+    * @return true if so, false otherwise
+    */
+    bool CTrackPart_Bezier::partAdditionAllowed(int a_iIndex) {
+      return a_iIndex == m_vPoints.size() - 1 && getNext() == nullptr;
+    }
+
+    /**
+    * Does this reference point allow addition of another reference point?
+    * @param a_iIndex index of the reference point
+    * @return true if so, false otherwise
+    */
+    bool CTrackPart_Bezier::refPointAdditionAllowed(int a_iIndex) {
+      return a_iIndex == m_vPoints.size() - 1 && m_vPoints.size() < 4 && getPrevious() != nullptr;
+    }
+
+    /**
     * Serialize the track part
     * @param a_cAttr the attributes to serialize the data to
     */
@@ -667,6 +685,24 @@ namespace dustbin {
 
         setReferencePoints(l_vRefPoints);
       }
+    }
+
+    /**
+    * Does this reference point allow addition of new track parts?
+    * @param a_iIndex index of the reference point
+    * @return true if so, false otherwise
+    */
+    bool CTrackPart_Checkpoint::partAdditionAllowed(int a_iIndex) {
+      return a_iIndex = 2 && getNext() == nullptr;
+    }
+
+    /**
+    * Does this reference point allow addition of another reference point?
+    * @param a_iIndex index of the reference point
+    * @return true if so, false otherwise
+    */
+    bool CTrackPart_Checkpoint::refPointAdditionAllowed(int a_iIndex) {
+      return false;
     }
 
     /**

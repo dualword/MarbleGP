@@ -202,6 +202,20 @@ namespace dustbin {
         virtual void updateReferencePoints() = 0;
 
         /**
+        * Does this reference point allow addition of new track parts?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool partAdditionAllowed(int a_iIndex) = 0;
+
+        /**
+        * Does this reference point allow addition of another reference point?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool refPointAdditionAllowed(int a_iIndex) = 0;
+
+        /**
         * Draw a preview if necessary
         * @param a_pDrv the Irrlicht video driver
         */
@@ -219,6 +233,7 @@ namespace dustbin {
         * @return the end of the part
         */
         const irr::core::line3df &getEnd();
+
 
         /**
         * Get the ID of the track part

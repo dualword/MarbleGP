@@ -88,6 +88,20 @@ namespace dustbin {
         virtual void updateReferencePoints() override;
 
         /**
+        * Does this reference point allow addition of new track parts?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool partAdditionAllowed(int a_iIndex) override;
+
+        /**
+        * Does this reference point allow addition of another reference point?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool refPointAdditionAllowed(int a_iIndex) override;
+
+        /**
         * Draw a preview if necessary
         * @param a_pDrv the Irrlicht video driver
         */
@@ -179,6 +193,20 @@ namespace dustbin {
         * This method is called when the reference points of the previous track part have changed
         */
         virtual void updateReferencePoints() override;
+
+        /**
+        * Does this reference point allow addition of new track parts?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool partAdditionAllowed(int a_iIndex) override;
+
+        /**
+        * Does this reference point allow addition of another reference point?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool refPointAdditionAllowed(int a_iIndex) override;
 
         /**
         * Get the end position of this track part
