@@ -21,28 +21,11 @@ namespace dustbin {
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
     void CTrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
-      printf("CTrackPart_Bezier::createTrackPart (%i)\n", getId());
       std::vector<irr::core::vector3df> l_vCurve;
       double l_fLength = calculateCurve(l_vCurve);
-
       l_fLength = std::ceil(l_fLength);
 
-      size_t l_iSteps = l_vCurve.size();
-
-      if (getPrevious() == nullptr)
-        l_iSteps--;
-
-      double l_fTextureStep = l_fLength / (double)(l_iSteps);
-
       irr::f32 l_fWidth = 0.25f;
-
-      irr::core::position2df l_aTextureTop[] = {
-        irr::core::position2df(1.0f, 0.0f),
-        irr::core::position2df(0.0f, 0.0f),
-        irr::core::position2df(0.0f, (irr::f32)l_fTextureStep),
-        irr::core::position2df(1.0f, (irr::f32)l_fTextureStep)
-      };
-
       std::vector<irr::core::line3df> l_vBottom;
 
       irr::core::vector3df l_cOld;
@@ -75,6 +58,17 @@ namespace dustbin {
         setEnd  (l_vBottom.back ());
       }
 
+      size_t l_iSteps = l_vBottom.size() - 1;
+
+      double l_fTextureStep = l_fLength / (double)(l_iSteps);
+
+      irr::core::position2df l_aTextureTop[] = {
+        irr::core::position2df(1.0f, 0.0f),
+        irr::core::position2df(0.0f, 0.0f),
+        irr::core::position2df(0.0f, (irr::f32)l_fTextureStep),
+        irr::core::position2df(1.0f, (irr::f32)l_fTextureStep)
+      };
+
       irr::core::line3df l_cOldLine;
 
       for (auto &l_cLine: l_vBottom) {
@@ -91,8 +85,10 @@ namespace dustbin {
             l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
           }
 
+          printf("%i: TextureY: %.4f --> %.4f\n", getId(), l_aTextureTop[0].Y, l_aTextureTop[2].Y);
+
           if (a_vBuffers.size() > c_iBufferIdxRoad)
-            addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cLine == l_vBottom.front());
+            addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cOldLine == l_vBottom.front());
 
           for (int i = 0; i < 4; i++)
             l_aTextureTop[i].Y += (irr::f32)l_fTextureStep;
@@ -146,7 +142,6 @@ namespace dustbin {
     * This method is called when the reference points of the previous track part have changed
     */
     void CTrackPart_Bezier::updateReferencePoints() {
-      printf("CTrackPart_Bezier::updateReferencePoints (%i)\n", getId());
       if (m_vPoints.size() >= 2) {
         ITrackPart *l_pPrevious = getPrevious();
 
@@ -156,14 +151,8 @@ namespace dustbin {
           irr::core::vector3df l_cDir = l_pPrevious->getEndDirection();
           irr::f32 l_fLength = (l_vRefPoints[1] - l_vRefPoints[0]).getLength();
           
-          printf("Point 0: %.2f, %.2f, %.2f -- ", l_vRefPoints[0].X, l_vRefPoints[0].Y, l_vRefPoints[0].Z);
-
           l_vRefPoints[0] = l_pPrevious->getEnd().getMiddle();
           l_vRefPoints[1] = l_vRefPoints[0] + (l_fLength * l_cDir.normalize());
-
-          printf("Point 0: %.2f, %.2f, %.2f -- ", l_vRefPoints[0].X, l_vRefPoints[0].Y, l_vRefPoints[0].Z);
-          printf("Previous dir: %.2f, %.2f, %.2f -- ", l_cDir.X, l_cDir.Y, l_cDir.Z);
-          printf("My dir: %.2f, %.2f, %.2f\n", (l_vRefPoints[1] - l_vRefPoints[0]).normalize().X, (l_vRefPoints[1] - l_vRefPoints[0]).normalize().Y, (l_vRefPoints[1] - l_vRefPoints[0]).normalize().Z);
 
           setReferencePoints(l_vRefPoints);
         }
@@ -272,7 +261,6 @@ namespace dustbin {
     * @param a_cPoints a vector with the reference points
     */
     void CTrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
-      printf("CTrackPart_Bezier::setReferencePoints (%i)\n", getId());
       m_vPoints.clear();
 
       m_eType = a_cPoints.size() == 2 ? enType::Bezier1 : a_cPoints.size() == 3 ? enType::Bezier2 : enType::Bezier3;
@@ -473,8 +461,6 @@ namespace dustbin {
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
     void CTrackPart_Checkpoint::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
-      printf("CTrackPart_Checkpoint::createTrackPart (%i)\n", getId());
-
       irr::core::vector3df l_cSide = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
 
       irr::core::vector3df l_aRespawn[] = {
@@ -627,7 +613,6 @@ namespace dustbin {
     * @param a_cPoints a vector with the reference points
     */
     void CTrackPart_Checkpoint::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
-      printf("CTrackPart_Checkpoint::setReferencePoints (%i)\n", getId());
       if (a_cPoints.size() == 2) {
         m_cStart = a_cPoints[0];
         m_cEnd   = a_cPoints[1];
@@ -656,7 +641,6 @@ namespace dustbin {
     * This method is called when the reference points of the previous track part have changed
     */
     void CTrackPart_Checkpoint::updateReferencePoints() {
-      printf("CTrackPart_Checkpoint::updateReferencePoints (%i)\n", getId());
       ITrackPart *l_pPrevious = getPrevious();
 
       if (l_pPrevious != nullptr) {
