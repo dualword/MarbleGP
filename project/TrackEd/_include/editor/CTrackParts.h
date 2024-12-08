@@ -83,6 +83,11 @@ namespace dustbin {
         virtual void deserialize(const irr::io::IAttributes &a_cAttr) override;
 
         /**
+        * This method is called when the reference points of the previous track part have changed
+        */
+        virtual void updateReferencePoints() override;
+
+        /**
         * Draw a preview if necessary
         * @param a_pDrv the Irrlicht video driver
         */
@@ -169,6 +174,11 @@ namespace dustbin {
         * @param a_cAttr the attributes to read the data from
         */
         virtual void deserialize(const irr::io::IAttributes &a_cAttr) override;
+
+        /**
+        * This method is called when the reference points of the previous track part have changed
+        */
+        virtual void updateReferencePoints() override;
 
         /**
         * Get the end position of this track part

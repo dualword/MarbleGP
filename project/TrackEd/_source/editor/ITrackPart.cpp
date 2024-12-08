@@ -4,6 +4,8 @@
 
 namespace dustbin {
   namespace tracked {
+    int g_iInternalId = 0;
+
     /**
     * The constructor
     * @param a_pPrevious the previous track part (nullptr for the starting part)
@@ -11,11 +13,14 @@ namespace dustbin {
     * @param a_pColMgr the Irrlicht scene collision manager
     */
     ITrackPart::ITrackPart(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
-      m_bSelected(false),
-      m_pPrevious(a_pPrevious),
-      m_pNext    (nullptr),
-      m_cNormal  (a_cNormal)
+      m_bSelected  (false),
+      m_iInternalId(++g_iInternalId),
+      m_pPrevious  (a_pPrevious),
+      m_pNext      (nullptr),
+      m_cNormal    (a_cNormal)
     {
+      if (m_pPrevious != nullptr)
+        m_pPrevious->setNext(this);
     }
 
     /**
@@ -180,6 +185,14 @@ namespace dustbin {
     */
     const irr::core::line3df &ITrackPart::getEnd() {
       return m_cEnd;
+    }
+
+    /**
+    * Get the ID of the track part
+    * @return the ID of the track part
+    */
+    int ITrackPart::getId() {
+      return m_iInternalId;
     }
   }
 }

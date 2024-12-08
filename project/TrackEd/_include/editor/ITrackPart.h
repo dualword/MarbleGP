@@ -29,6 +29,8 @@ namespace dustbin {
       private:
         bool m_bSelected;  /**< Is this track part selected in the editor? */
 
+        int m_iInternalId;    /**< The Internal ID */
+
         ITrackPart *m_pPrevious;  /**< The previous track part (always nullptr for the start part) */
         ITrackPart *m_pNext;      /**< The next track part */
 
@@ -195,6 +197,11 @@ namespace dustbin {
         virtual const irr::core::vector3df &getNormal() = 0;
 
         /**
+        * This method is called when the reference points of the previous track part have changed
+        */
+        virtual void updateReferencePoints() = 0;
+
+        /**
         * Draw a preview if necessary
         * @param a_pDrv the Irrlicht video driver
         */
@@ -212,6 +219,12 @@ namespace dustbin {
         * @return the end of the part
         */
         const irr::core::line3df &getEnd();
+
+        /**
+        * Get the ID of the track part
+        * @return the ID of the track part
+        */
+        int getId();
     };
   }
 }

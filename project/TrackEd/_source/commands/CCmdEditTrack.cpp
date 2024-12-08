@@ -50,11 +50,26 @@ namespace dustbin {
       l_cPos.Y += 6 * l_cSize.Height / 5;
 
       m_pWarning = m_pGui->addStaticText(L"Warning Label", irr::core::recti(l_cPos, l_cSize));
-      m_pWarning->setOverrideColor(irr::video::SColor(0xFF, 0xFF, 0x80, 0x80));
+      m_pWarning->setOverrideColor(irr::video::SColor(0xFF, 0x80, 0x20, 0x20));
       m_pWarning->setVisible(false);
     }
         
     CCmdEditTrack::~CCmdEditTrack() {
+    }
+
+    /**
+    * Update the reference points after the track was modified
+    */
+    void CCmdEditTrack::updateReferencePoints() {
+      for (auto &l_tPoint: m_mReferencePoints) {
+        irr::scene::ISceneNode *l_pRefPoint  = l_tPoint.first;
+        tracked::ITrackPart    *l_pTrackPart = std::get<0>(l_tPoint.second);
+        int                     l_iPointIdx  = std::get<1>(l_tPoint.second);
+
+        std::vector<irr::core::vector3df> l_vRefPoints = l_pTrackPart->getReferencePoints();
+        if (l_vRefPoints.size() > l_iPointIdx)
+          l_pRefPoint->setPosition(50.0f * (l_vRefPoints[l_iPointIdx] + 0.05f * l_pTrackPart->getNormal()));
+      }
     }
 
     /**
@@ -383,6 +398,7 @@ namespace dustbin {
 
               createTrack();
               setEditMode(enEditMode::Default);
+              updateReferencePoints();
               m_pSelected = nullptr;
 
               l_bRet = true;
@@ -399,6 +415,7 @@ namespace dustbin {
 
               createTrack();
               setEditMode(enEditMode::Default);
+              updateReferencePoints();
               m_pSelected = nullptr;
               l_bRet = true;
             }

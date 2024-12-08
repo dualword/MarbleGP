@@ -75,6 +75,11 @@ namespace dustbin {
         void addReferencePoints(tracked::ITrackPart *a_pPart);
 
         /**
+        * Update the reference points after the track was modified
+        */
+        void updateReferencePoints();
+
+        /**
         * Set the edit mode and update the info text
         * @param a_eEditMode the new edit mode
         */
