@@ -62,8 +62,6 @@ namespace dustbin {
 
         std::map<irr::scene::ISceneNode *, std::tuple<tracked::ITrackPart *, int>> m_mReferencePoints;    /**< A map mapping the reference points to the track part (0) and it's point index (1) */
 
-        std::vector<irr::scene::ISceneNode *> m_vNewPoints;
-
         /**
         * (Re) create the track
         */

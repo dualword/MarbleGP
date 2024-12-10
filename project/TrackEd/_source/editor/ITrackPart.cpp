@@ -14,6 +14,7 @@ namespace dustbin {
     */
     ITrackPart::ITrackPart(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
       m_bSelected  (false),
+      m_bStart     (a_pPrevious == nullptr),
       m_iInternalId(++g_iInternalId),
       m_pPrevious  (a_pPrevious),
       m_pNext      (nullptr),
@@ -21,6 +22,8 @@ namespace dustbin {
     {
       if (m_pPrevious != nullptr)
         m_pPrevious->setNext(this);
+
+      printf("Start segment: %s\n", m_bStart ? "true" : "false");
     }
 
     /**
@@ -193,6 +196,14 @@ namespace dustbin {
     */
     int ITrackPart::getId() {
       return m_iInternalId;
+    }
+
+    /**
+    * Is this the start segment?
+    * @return true if so, false otherwise
+    */
+    bool ITrackPart::isStartSegment() {
+      return m_bStart;
     }
   }
 }

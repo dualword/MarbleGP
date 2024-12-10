@@ -332,6 +332,14 @@ namespace dustbin {
         a_cPlanePoint  = m_vPoints[a_iIndex];
         a_cPlaneNormal = getNormal();
 
+        printf("Index: %i, next: %s, next->previous: %s\n", a_iIndex, getNext() == nullptr ? "nullptr" : "ok", getNext() == nullptr ? "" : getNext()->getPrevious() == nullptr ? "nullptr" : "ok");
+        if (a_iIndex == 2 && getNext() != nullptr && getNext()->isStartSegment()) {
+          a_cLine.start = irr::core::vector3df();
+          a_cLine.end   = irr::core::vector3df(0.0f, 0.0f, -1000.0f);
+
+          return false;
+        }
+
         return true;
       }
       else {

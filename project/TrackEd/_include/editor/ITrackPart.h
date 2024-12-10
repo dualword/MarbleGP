@@ -28,6 +28,7 @@ namespace dustbin {
     class ITrackPart {
       private:
         bool m_bSelected;  /**< Is this track part selected in the editor? */
+        bool m_bStart;     /**<* Is this the start segment? */
 
         int m_iInternalId;    /**< The Internal ID */
 
@@ -240,6 +241,12 @@ namespace dustbin {
         * @return the ID of the track part
         */
         int getId();
+
+        /**
+        * Is this the start segment?
+        * @return true if so, false otherwise
+        */
+        bool isStartSegment();
     };
   }
 }

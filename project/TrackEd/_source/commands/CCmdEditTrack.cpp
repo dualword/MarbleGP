@@ -471,12 +471,15 @@ namespace dustbin {
                       l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
                     }
 
+                    if (l_pPart->getPrevious() == nullptr) {
+                      l_vItems.push_back(std::make_tuple(c_sFinishTrack, true));
+                    }
+
 
                     // l_vItems.push_back(std::make_tuple(c_sAddIncline   , true));
                     // l_vItems.push_back(std::make_tuple(c_sAddDecline   , true));
                     // l_vItems.push_back(std::make_tuple(c_sAddJump      , true));
                     // l_vItems.push_back(std::make_tuple(c_sAddGap       , true));
-                    // l_vItems.push_back(std::make_tuple(c_sFinishTrack  , true));
 
                     if (l_pPart->refPointAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
                       l_vItems.push_back(std::make_tuple(L"----", false));
@@ -573,6 +576,44 @@ namespace dustbin {
                       m_pPickPoint->setVisible(true);
                     }
                   }
+                }
+              }
+              else if (l_sItem == c_sFinishTrack) {
+                tracked::ITrackPart *l_pLast  = nullptr;
+                tracked::ITrackPart *l_pFirst = nullptr;
+
+                for (auto l_pPart : m_vParts) {
+                  if (l_pPart->getNext() == nullptr) {
+                    l_pLast = l_pPart;
+                  }
+
+                  if (l_pPart->getPrevious() == nullptr) {
+                    l_pFirst = l_pPart;
+                  }
+                }
+
+                if (l_pLast != nullptr && l_pFirst != nullptr && l_pLast != l_pFirst) {
+                  irr::core::vector3df l_cEndDir = l_pLast->getEndDirection();
+                  irr::core::vector3df l_cEndPos = l_pLast->getEnd().getMiddle();
+                  irr::core::vector3df l_cStrDir = -l_pFirst->getEndDirection();
+                  irr::core::vector3df l_cStrPos = irr::core::vector3df(0.0f);
+
+                  tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(l_pLast, l_pLast->getNormal(), m_pColMgr);
+
+                  std::vector<irr::core::vector3df> l_cRef = {
+                    l_cEndPos,
+                    l_cEndPos + (l_cEndPos - l_cStrPos).getLength() * l_cEndDir,
+                    l_cStrPos + (l_cStrPos - l_cEndPos).getLength() * l_cStrDir,
+                    l_cStrPos
+                  };
+
+                  l_pNew->setReferencePoints(l_cRef);
+                  l_pNew->setNext(l_pFirst);
+
+                  m_vParts.push_back(l_pNew);
+
+                  addReferencePoints(l_pNew);
+                  createTrack();
                 }
               }
               else printf("Item Selected: %i (%ls)\n", m_pMenu->getSelectedItem(), l_sItem.c_str());
