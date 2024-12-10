@@ -41,6 +41,7 @@ namespace dustbin {
         irr::core::plane3df         m_cPlane;       /**< The plane to pick the next point from */
         irr::core::line3df          m_cMoveLine;    /**< The line to move points along */
         irr::core::plane3df         m_cMovePlane;   /**< The plane to move points in */
+        irr::core::vector3df        m_cMovePoint;   /**< The point which was clicked for moving */
 
         irr::gui::IGUIContextMenu *m_pMenu;       /**< The context menu */
         irr::gui::IGUIStaticText  *m_pEditMode;   /**< The "Edit Mode" or information label in the upper left */

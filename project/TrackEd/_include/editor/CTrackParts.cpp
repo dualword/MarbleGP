@@ -85,8 +85,6 @@ namespace dustbin {
             l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
           }
 
-          printf("%i: TextureY: %.4f --> %.4f\n", getId(), l_aTextureTop[0].Y, l_aTextureTop[2].Y);
-
           if (a_vBuffers.size() > c_iBufferIdxRoad)
             addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cOldLine == l_vBottom.front());
 

@@ -68,7 +68,7 @@ namespace dustbin {
 
         std::vector<irr::core::vector3df> l_vRefPoints = l_pTrackPart->getReferencePoints();
         if (l_vRefPoints.size() > l_iPointIdx)
-          l_pRefPoint->setPosition(50.0f * (l_vRefPoints[l_iPointIdx] + 0.05f * l_pTrackPart->getNormal()));
+          l_pRefPoint->setPosition(50.0f * (l_vRefPoints[l_iPointIdx]));
       }
     }
 
@@ -91,7 +91,7 @@ namespace dustbin {
           }
 
           if (l_bAdd) {
-            irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"), m_pSmgr->getRootSceneNode(), -1, 50.0f * (l_cPoint + 0.05f * a_pPart->getNormal()));
+            irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/box.3ds"), m_pSmgr->getRootSceneNode(), -1, 50.0f * l_cPoint, irr::core::vector3df(), irr::core::vector3df(1.0f, 5.0f, 1.0f));
             l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture(l_iIndex == 0 ? "data/textures/blue.png" : "data/textures/yellow.png"));
 
             irr::scene::ITriangleSelector *l_pSelector = m_pSmgr->createTriangleSelector(l_pNode->getMesh(), l_pNode);
@@ -299,7 +299,7 @@ namespace dustbin {
             irr::core::vector3df l_cRayCollision;
             m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
 
-            m_pSelected->setPosition(m_cMoveLine.getClosestPoint(l_cRayCollision) + 2.5f * std::get<0>(m_mReferencePoints[m_pSelected])->getNormal());
+            m_pSelected->setPosition(m_cMoveLine.getClosestPoint(l_cRayCollision));
 
             l_bRet = true;
           }
@@ -328,6 +328,10 @@ namespace dustbin {
                   m_pSelected  = m_pHover;
 
                   m_cMovePlane = irr::core::plane3df(50.0f * l_cPlanePoint, l_cPlaneNormal);
+
+                  irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+                  irr::core::vector3df l_cRayCollision;
+                  m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, m_cMovePoint);
                 }
                 else {
                   if (m_cMoveLine.getLength() > 0.0f) {
@@ -336,6 +340,15 @@ namespace dustbin {
 
                     m_cMoveLine.start = 50.0f * m_cMoveLine.start;
                     m_cMoveLine.end   = 50.0f * m_cMoveLine.end;
+
+                    m_cMovePlane = irr::core::plane3df(50.0f * l_cPlanePoint, l_cPlaneNormal);
+
+                    irr::core::vector3df l_cRayCollision;
+
+                    irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
+                    m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
+                    m_cMovePoint = m_cMoveLine.getClosestPoint(l_cRayCollision);
                   }
                   else {
                     m_pWarning->setText(L"This point cannot be moved!");
@@ -391,8 +404,10 @@ namespace dustbin {
               irr::core::vector3df l_cRayCollision;
               m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
 
+              irr::core::vector3df l_cMove = l_cRayCollision - m_cMovePoint;
+
               std::vector<irr::core::vector3df> l_vRefPoints = std::get<0>(m_mReferencePoints[m_pSelected])->getReferencePoints();
-              l_vRefPoints[std::get<1>(m_mReferencePoints[m_pSelected])] = l_cRayCollision / 50.0f;
+              l_vRefPoints[std::get<1>(m_mReferencePoints[m_pSelected])] += l_cMove / 50.0f;
 
               std::get<0>(m_mReferencePoints[m_pSelected])->setReferencePoints(l_vRefPoints);
 
@@ -409,7 +424,14 @@ namespace dustbin {
               m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
 
               std::vector<irr::core::vector3df> l_vRefPoints = std::get<0>(m_mReferencePoints[m_pSelected])->getReferencePoints();
-              l_vRefPoints[std::get<1>(m_mReferencePoints[m_pSelected])] = m_cMoveLine.getClosestPoint(l_cRayCollision) / 50.0f;
+
+              irr::core::vector3df l_cClosest = m_cMoveLine.getClosestPoint(l_cRayCollision);
+
+              irr::core::vector3df l_cMove = l_cClosest - m_cMovePoint;
+
+              l_vRefPoints[std::get<1>(m_mReferencePoints[m_pSelected])] += l_cMove / 50.0f;
+
+              m_cMovePoint = l_cClosest;
 
               std::get<0>(m_mReferencePoints[m_pSelected])->setReferencePoints(l_vRefPoints);
 
@@ -586,7 +608,8 @@ namespace dustbin {
           
             l_pNode->addAnimator(new animators::CPlaneAnimator(l_pNode));
 
-            m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/sphere.obj"));
+            m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/box.3ds"));
+            m_pPickPoint->setScale(irr::core::vector3df(1.0f, 5.0f, 1.0f));
             m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
             m_pPickPoint->setVisible(false);
 
