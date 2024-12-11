@@ -20,4 +20,7 @@ namespace dustbin {
   const std::wstring c_sFinishTrack   = L"Finish Track";
   const std::wstring c_sAddReference  = L"Add Reference Point";
   const std::wstring c_sFinishSegment = L"Finish Segment";
+
+  const std::string c_sTypeBezier     = "Bezier";
+  const std::string c_sTypeCheckpoint = "Checkpoint";
 }

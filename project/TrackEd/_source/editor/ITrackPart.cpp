@@ -8,20 +8,25 @@ namespace dustbin {
 
     /**
     * The constructor
+    * @param a_sType the type ID of this track part
     * @param a_pPrevious the previous track part (nullptr for the starting part)
     * @param a_cNormal the normal at the starting point
     * @param a_pColMgr the Irrlicht scene collision manager
     */
-    ITrackPart::ITrackPart(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
-      m_bSelected  (false),
+    ITrackPart::ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
+      m_sType      (a_sType),
       m_bStart     (a_pPrevious == nullptr),
       m_iInternalId(++g_iInternalId),
+      m_iPrevious  (-1),
+      m_iNext      (-1),
       m_pPrevious  (a_pPrevious),
       m_pNext      (nullptr),
       m_cNormal    (a_cNormal)
     {
-      if (m_pPrevious != nullptr)
+      if (m_pPrevious != nullptr) {
+        m_iPrevious = m_pPrevious->getId();
         m_pPrevious->setNext(this);
+      }
 
       printf("Start segment: %s\n", m_bStart ? "true" : "false");
     }
@@ -34,22 +39,6 @@ namespace dustbin {
 
     const irr::core::vector3df &ITrackPart::getStartNormal() {
       return m_cNormal;
-    }
-
-    /**
-    * Set the selection flag of this road part
-    * @param a_bSelected the new value
-    */
-    void ITrackPart::setSelected(bool a_bSelected) {
-      m_bSelected = a_bSelected;
-    }
-
-    /**
-    * Is this track part selected?
-    * @return true if the track part is selected, false otherwise
-    */
-    bool ITrackPart::isSelected() {
-      return m_bSelected;
     }
 
     /**
@@ -66,7 +55,25 @@ namespace dustbin {
     * @param a_pNext the next track part
     */
     void ITrackPart::setNext(ITrackPart *a_pNext) {
+      if (a_pNext != nullptr)
+        m_iNext = a_pNext->getId();
+      else
+        m_iNext = -1;
+
       m_pNext = a_pNext;
+    }
+
+    /**
+    * Set the previous track part
+    * @param a_pPreviouse the previous track part
+    */
+    void ITrackPart::setPrevious(ITrackPart* a_pPrevious) {
+      if (a_pPrevious != nullptr)
+        m_iPrevious = a_pPrevious->getId();
+      else
+        m_iPrevious = -1;
+
+      m_pPrevious = a_pPrevious;
     }
 
     /**
@@ -205,5 +212,55 @@ namespace dustbin {
     bool ITrackPart::isStartSegment() {
       return m_bStart;
     }
+
+
+    /**
+    * Get the type ID of this track part
+    * @return the type ID of this track part
+    */
+    const std::string& ITrackPart::getType() {
+      return m_sType;
+    }
+
+    /**
+    * Get the id of the previous track part, needed for deserialization
+    * @return the ID of the previous part
+    */
+    int ITrackPart::getPreviousID() {
+      return m_iPrevious;
+    }
+
+    /**
+    * Get the id of the next track part, needed for deserialization
+    * @return the ID of the next part
+    */
+    int ITrackPart::getNextID() {
+      return m_iNext;
+    }
+
+    /**
+    * Serialize the track part
+    * @param a_cAttr the attributes to serialize the data to
+    */
+    void ITrackPart::serialize(irr::io::IAttributes& a_cAttr) {
+      a_cAttr.addString  ("type"    , m_sType.c_str());
+      a_cAttr.addInt     ("id"      , m_iInternalId);
+      a_cAttr.addInt     ("previous", m_iPrevious);
+      a_cAttr.addInt     ("next"    , m_iNext);
+      a_cAttr.addVector3d("normal"  , m_cNormal);
+    }
+
+    /**
+    * De-serialize the track part
+    * @param a_cAttr the attributes to read the data from
+    */
+    void ITrackPart::deserialize(const irr::io::IAttributes& a_cAttr) {
+      m_sType       = a_cAttr.getAttributeAsString  ("type").c_str();
+      m_iInternalId = a_cAttr.getAttributeAsInt     ("id");
+      m_iPrevious   = a_cAttr.getAttributeAsInt     ("previous");
+      m_iNext       = a_cAttr.getAttributeAsInt     ("next");
+      m_cNormal     = a_cAttr.getAttributeAsVector3d("normal");
+    }
+
   }
 }

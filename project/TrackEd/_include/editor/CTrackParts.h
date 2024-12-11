@@ -108,12 +108,6 @@ namespace dustbin {
         virtual void drawPreview(irr::video::IVideoDriver *a_pDrv);
 
         /**
-        * Set the selection flag of this road part
-        * @param a_bSelected the new value
-        */
-        virtual void setSelected(bool a_bSelected) override;
-
-        /**
         * Get the direction of the end of this track part
         */
         virtual const irr::core::vector3df getEndDirection() override;

@@ -9,7 +9,7 @@ namespace dustbin {
 
 
     CTrackPart_Bezier::CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
-      ITrackPart (a_pPrevious, a_cNormal, a_pColMgr)
+      ITrackPart (c_sTypeBezier, a_pPrevious, a_cNormal, a_pColMgr)
     {
     }
 
@@ -441,14 +441,6 @@ namespace dustbin {
     }
 
     /**
-    * Set the selection flag of this road part
-    * @param a_bSelected the new value
-    */
-    void CTrackPart_Bezier::setSelected(bool a_bSelected) {
-      ITrackPart::setSelected(a_bSelected);
-    }
-
-    /**
     * Get the normal at the end point
     * @return the normal at the end point
     */
@@ -471,7 +463,7 @@ namespace dustbin {
 
 
     CTrackPart_Checkpoint::CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) : 
-      ITrackPart    (a_pPrevious, a_cNormal, a_pColMgr),
+      ITrackPart    (c_sTypeCheckpoint, a_pPrevious, a_cNormal, a_pColMgr),
       m_pCheckpoint (nullptr),
       m_bRespawnLeft(true)
     {

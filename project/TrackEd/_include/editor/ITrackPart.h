@@ -27,10 +27,13 @@ namespace dustbin {
     */
     class ITrackPart {
       private:
-        bool m_bSelected;  /**< Is this track part selected in the editor? */
+        std::string m_sType;    /**< The type ID of the track part */
+
         bool m_bStart;     /**<* Is this the start segment? */
 
         int m_iInternalId;    /**< The Internal ID */
+        int m_iPrevious;      /**< ID of the previous part */
+        int m_iNext;          /**< ID of the next part */
 
         ITrackPart *m_pPrevious;  /**< The previous track part (always nullptr for the start part) */
         ITrackPart *m_pNext;      /**< The next track part */
@@ -82,11 +85,12 @@ namespace dustbin {
       public:
         /**
         * The constructor
+        * @param a_sType the type ID of this track part
         * @param a_pPrevious the previous track part (nullptr for the starting part)
         * @param a_cNormal the normal at the starting point
         * @param a_pColMgr the Irrlicht scene collision manager
         */
-        ITrackPart(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
+        ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
 
         /**
         * The destructor
@@ -110,13 +114,13 @@ namespace dustbin {
         * Serialize the track part
         * @param a_cAttr the attributes to serialize the data to
         */
-        virtual void serialize(irr::io::IAttributes &a_cAttr) = 0;
+        virtual void serialize(irr::io::IAttributes &a_cAttr);
 
         /**
         * De-serialize the track part
         * @param a_cAttr the attributes to read the data from
         */
-        virtual void deserialize(const irr::io::IAttributes &a_cAttr) = 0;
+        virtual void deserialize(const irr::io::IAttributes &a_cAttr);
 
         /**
         * Get the end position of this track part
@@ -155,18 +159,6 @@ namespace dustbin {
         virtual const std::vector<irr::core::vector3df> getReferencePoints() = 0;
 
         /**
-        * Set the selection flag of this road part
-        * @param a_bSelected the new value
-        */
-        virtual void setSelected(bool a_bSelected);
-
-        /**
-        * Is this track part selected?
-        * @return true if the track part is selected, false otherwise
-        */
-        bool isSelected();
-
-        /**
         * Handle an event if this part is selected
         * @param a_cEvent the event to handle
         * @return true if the event was handled
@@ -177,7 +169,13 @@ namespace dustbin {
         * Set the next track part
         * @param a_pNext the next track part
         */
-        virtual void setNext(ITrackPart *a_pNext);
+        virtual void setNext(ITrackPart *a_pPrevious);
+
+        /**
+        * Set the previous track part
+        * @param a_pPreviouse the previous track part
+        */
+        virtual void setPrevious(ITrackPart *a_pNext);
 
         /**
         * Get the next track part
@@ -247,6 +245,24 @@ namespace dustbin {
         * @return true if so, false otherwise
         */
         bool isStartSegment();
+
+        /**
+        * Get the id of the previous track part, needed for deserialization
+        * @return the ID of the previous part
+        */
+        int getPreviousID();
+
+        /**
+        * Get the id of the next track part, needed for deserialization
+        * @return the ID of the next part
+        */
+        int getNextID();
+
+        /**
+        * Get the type ID of this track part
+        * @return the type ID of this track part
+        */
+        const std::string &getType();
     };
   }
 }
