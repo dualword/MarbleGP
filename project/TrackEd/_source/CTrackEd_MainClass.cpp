@@ -12,6 +12,7 @@
 #include <commands/CCmdDefaultRenderer.h>
 #include <commands/CCmdCameraCtrl.h>
 #include <commands/CCmdEditTrack.h>
+#include <commands/CCmdSaveTrack.h>
 
 #include <filesystem>
 

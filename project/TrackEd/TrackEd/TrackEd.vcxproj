@@ -65,6 +65,8 @@
     <ClCompile Include="..\_source\commands\CCmdDefaultRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdDustbinRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdEditTrack.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdMainMenu.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdSaveTrack.cpp" />
     <ClCompile Include="..\_source\commands\CCommandHandler.cpp" />
     <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart.cpp" />
@@ -111,6 +113,8 @@
     <ClInclude Include="..\_include\commands\CCmdDefaultRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdDustbinRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdEditTrack.h" />
+    <ClInclude Include="..\_include\commands\CCmdMainMenu.h" />
+    <ClInclude Include="..\_include\commands\CCmdSaveTrack.h" />
     <ClInclude Include="..\_include\commands\CCommandHandler.h" />
     <ClInclude Include="..\_include\commands\ICommand.h" />
     <ClInclude Include="..\_include\editor\CTrackParts.h" />

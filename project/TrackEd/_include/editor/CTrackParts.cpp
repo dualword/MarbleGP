@@ -179,7 +179,15 @@ namespace dustbin {
     * Serialize the track part
     * @param a_cAttr the attributes to serialize the data to
     */
-    void CTrackPart_Bezier::serialize(irr::io::IAttributes &a_cAttr) {
+    void CTrackPart_Bezier::serialize(irr::io::IAttributes &a_cAttr) const {
+      ITrackPart::serialize(a_cAttr);
+
+      a_cAttr.addInt("number_of_points", (irr::s32)m_vPoints.size());
+
+      for (int i = 0; i < (int)m_vPoints.size(); i++) {
+        std::string l_sName = "point_" + std::to_string(i);
+        a_cAttr.addVector3d(l_sName.c_str(), m_vPoints[i]);
+      }
     }
 
     /**
@@ -187,6 +195,16 @@ namespace dustbin {
     * @param a_cAttr the attributes to read the data from
     */
     void CTrackPart_Bezier::deserialize(const irr::io::IAttributes &a_cAttr) {
+      ITrackPart::deserialize(a_cAttr);
+
+      irr::s32 l_iCount = a_cAttr.getAttributeAsInt("number_of_points");
+
+      for (irr::s32 i = 0; i < l_iCount; i++) {
+        std::string l_sName = "point_" + std::to_string(i);
+        m_vPoints.push_back(a_cAttr.getAttributeAsVector3d(l_sName.c_str()));
+      }
+
+      m_eType = m_vPoints.size() == 2 ? enType::Bezier1 : m_vPoints.size() == 3 ? enType::Bezier2 : enType::Bezier3;
     }
 
     std::vector<double> CTrackPart_Bezier::fillIndexVector(int a_iSteps) {
@@ -707,7 +725,12 @@ namespace dustbin {
     * Serialize the track part
     * @param a_cAttr the attributes to serialize the data to
     */
-    void CTrackPart_Checkpoint::serialize(irr::io::IAttributes &a_cAttr) {
+    void CTrackPart_Checkpoint::serialize(irr::io::IAttributes &a_cAttr)const {
+      ITrackPart::serialize(a_cAttr);
+
+      a_cAttr.addVector3d("start"        , m_cStart);
+      a_cAttr.addVector3d("end"          , m_cEnd);
+      a_cAttr.addBool    ("respawn_left" , m_bRespawnLeft);
     }
 
     /**
@@ -715,6 +738,11 @@ namespace dustbin {
     * @param a_cAttr the attributes to read the data from
     */
     void CTrackPart_Checkpoint::deserialize(const irr::io::IAttributes &a_cAttr) {
+      ITrackPart::deserialize(a_cAttr);
+
+      m_cStart       = a_cAttr.getAttributeAsVector3d("start");
+      m_cEnd         = a_cAttr.getAttributeAsVector3d("end");
+      m_bRespawnLeft = a_cAttr.getAttributeAsBool    ("respawn_left");
     }
 
     /**

@@ -242,7 +242,7 @@ namespace dustbin {
     * Serialize the track part
     * @param a_cAttr the attributes to serialize the data to
     */
-    void ITrackPart::serialize(irr::io::IAttributes& a_cAttr) {
+    void ITrackPart::serialize(irr::io::IAttributes& a_cAttr) const {
       a_cAttr.addString  ("type"    , m_sType.c_str());
       a_cAttr.addInt     ("id"      , m_iInternalId);
       a_cAttr.addInt     ("previous", m_iPrevious);

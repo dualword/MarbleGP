@@ -21,9 +21,7 @@ namespace dustbin {
           Bezier3
         };
 
-        std::vector<irr::scene::ISceneNode *> m_vEdits;
-        std::vector<irr::scene::ISceneNode *> m_vLinks;
-        std::vector<irr::core::vector3df    > m_vPoints;
+        std::vector<irr::core::vector3df> m_vPoints;
 
         enType m_eType;   /**< The type of this track part */
 
@@ -74,7 +72,7 @@ namespace dustbin {
         * Serialize the track part
         * @param a_cAttr the attributes to serialize the data to
         */
-        virtual void serialize(irr::io::IAttributes &a_cAttr) override;
+        virtual void serialize(irr::io::IAttributes &a_cAttr) const override;
 
         /**
         * De-serialize the track part
@@ -175,7 +173,7 @@ namespace dustbin {
         * Serialize the track part
         * @param a_cAttr the attributes to serialize the data to
         */
-        virtual void serialize(irr::io::IAttributes &a_cAttr) override;
+        virtual void serialize(irr::io::IAttributes &a_cAttr) const override;
 
         /**
         * De-serialize the track part

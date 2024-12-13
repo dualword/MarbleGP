@@ -114,7 +114,7 @@ namespace dustbin {
         * Serialize the track part
         * @param a_cAttr the attributes to serialize the data to
         */
-        virtual void serialize(irr::io::IAttributes &a_cAttr);
+        virtual void serialize(irr::io::IAttributes &a_cAttr) const;
 
         /**
         * De-serialize the track part
