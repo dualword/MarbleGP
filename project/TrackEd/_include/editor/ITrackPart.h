@@ -62,12 +62,14 @@ namespace dustbin {
         * @param a_aTexturePos the four texture positions of the vertices
         * @param a_pBuffer the buffer to be filled
         * @param a_bForceAdd add the first vertices regardless of whether or not the position is already in 
+        * @param a_bForceAdd2nd add the second vertices to the mesh buffer regardless of whether or not the position is already in 
         */
         void addQuadToMeshBuffer(
           irr::core::vector3df a_aVertices[4],
           irr::core::position2df a_aTexturePos[4],
           irr::scene::SMeshBuffer *a_pBuffer,
-          bool a_bForceAdd
+          bool a_bForceAdd,
+          bool a_bForceAdd2nd
         );
 
         /**

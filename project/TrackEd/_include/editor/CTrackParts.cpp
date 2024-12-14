@@ -43,7 +43,10 @@ namespace dustbin {
 
           irr::core::vector3df l_cSide = (l_cDirection.crossProduct(getNormal())).normalize();
 
-          l_vBottom.push_back(irr::core::line3df(l_cPos + 0.25f * l_cSide, l_cPos - 0.25f * l_cSide));
+          if (l_cPos != l_vCurve.back() || getNext() == nullptr || getNext()->getPrevious() != nullptr)
+            l_vBottom.push_back(irr::core::line3df(l_cPos + 0.25f * l_cSide, l_cPos - 0.25f * l_cSide));
+          else
+            l_vBottom.push_back(getNext()->getStart());
         }
         else {
           // First segment: take last segment of previous track part
@@ -85,8 +88,9 @@ namespace dustbin {
             l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
           }
 
-          if (a_vBuffers.size() > c_iBufferIdxRoad)
-            addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cOldLine == l_vBottom.front());
+          if (a_vBuffers.size() > c_iBufferIdxRoad) {
+            addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cOldLine == l_vBottom.front(), getNext() != nullptr && getNext()->getPrevious() == nullptr);
+          }
 
           for (int i = 0; i < 4; i++)
             l_aTextureTop[i].Y += (irr::f32)l_fTextureStep;
@@ -104,7 +108,7 @@ namespace dustbin {
           };
           
           if (a_vBuffers.size() > c_iBufferIdxBottom)
-            addQuadToMeshBuffer(l_aVerts, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom], false);
+            addQuadToMeshBuffer(l_aVerts, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom], false, false);
 
           l_aVerts[0] = l_cOldLine.end + 0.05f * getNormal();
           l_aVerts[1] = l_cLine   .end + 0.05f * getNormal();
@@ -119,7 +123,7 @@ namespace dustbin {
           };
 
           if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-            addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+            addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
 
           l_aVerts[1] = l_cOldLine.start + 0.05f * getNormal();
           l_aVerts[0] = l_cLine   .start + 0.05f * getNormal();
@@ -127,7 +131,7 @@ namespace dustbin {
           l_aVerts[2] = l_cOldLine.start;
 
           if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-            addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+            addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
 
           a_bBlack = !a_bBlack;
         }
@@ -519,7 +523,7 @@ namespace dustbin {
       };
 
       if (a_vBuffers.size() > c_iBufferIdxJoin)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin], true);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin], true, false);
 
       setStart(irr::core::line3df(l_aVertices[0], l_aVertices[1]));
 
@@ -534,7 +538,7 @@ namespace dustbin {
       l_aTexture[3].X = 1.0f; l_aTexture[3].Y = 0.0f;
 
       if (a_vBuffers.size() > c_iBufferIdxRoad)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxRoad], true);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxRoad], true, false);
 
       l_aVertices[1] = l_aRespawn[0];
       l_aVertices[0] = l_aRespawn[1];
@@ -547,7 +551,7 @@ namespace dustbin {
       l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
 
       if (a_vBuffers.size() > c_iBufferIdxBottom)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false);
 
       l_aVertices[0] = getPrevious()->getEnd().start;
       l_aVertices[1] = getPrevious()->getEnd().end;
@@ -562,7 +566,7 @@ namespace dustbin {
       setEnd(irr::core::line3df(l_aVertices[3], l_aVertices[2]));
 
       if (a_vBuffers.size() > c_iBufferIdxBottom)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false);
 
       l_aVertices[0] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide                        : m_cStart - 0.25f * l_cSide;
       l_aVertices[1] = m_bRespawnLeft ? getPrevious()->getEnd().end                       : m_cEnd   - 0.25f * l_cSide;
@@ -575,7 +579,7 @@ namespace dustbin {
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
       if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
 
       l_aVertices[0] = m_bRespawnLeft ? l_aRespawn[1]                       : l_aRespawn[3];
       l_aVertices[1] = m_bRespawnLeft ? l_aRespawn[2]                       : l_aRespawn[0];
@@ -588,7 +592,7 @@ namespace dustbin {
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
       if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxYellow : c_iBufferIdxBlack], false);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxYellow : c_iBufferIdxBlack], false, false);
 
       l_aVertices[0] = l_aRespawn[0];
       l_aVertices[1] = l_aRespawn[1];
@@ -601,7 +605,7 @@ namespace dustbin {
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
       if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
 
       l_aVertices[1] = l_aRespawn[3];
       l_aVertices[0] = l_aRespawn[2];
@@ -614,7 +618,7 @@ namespace dustbin {
       l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
       if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false);
+        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
 
       tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
 
