@@ -19,6 +19,7 @@ namespace dustbin {
     class CCommandHandler : public irr::IEventReceiver {
       protected:
         std::vector<ICommand *> m_vCommands;  /**< The active commands */
+        std::vector<ICommand *> m_vNewCmds;   /**< The new commands */
 
       public:
         CCommandHandler();

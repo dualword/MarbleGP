@@ -13,6 +13,8 @@ namespace dustbin {
   namespace commands {
     typedef struct STrackEdit STrackEdit;   /**< Forward declaration of the track editor structure */
 
+    class CCmdMainMenu;   /**< Forward declaration of the main menu */
+
     /**
     * @class CCmdEditTrack
     * @author Christian Keimel
@@ -44,8 +46,6 @@ namespace dustbin {
         irr::core::vector3df        m_cMovePoint;   /**< The point which was clicked for moving */
 
         irr::gui::IGUIContextMenu *m_pMenu;       /**< The context menu */
-        irr::gui::IGUIStaticText  *m_pEditMode;   /**< The "Edit Mode" or information label in the upper left */
-        irr::gui::IGUIStaticText  *m_pWarning;    /**< An edit field showing some warning */
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< Our scene collision manager */
 
@@ -55,6 +55,8 @@ namespace dustbin {
 
         irr::scene::ISceneNode *m_pClick;   /**< The clicked selector */
 
+        CCmdMainMenu *m_pMainMenu;    /**< The main menu */
+
         bool m_bFinishTrack;    /**< A flag to indicate whether or not the start of the track is hovered */
         bool m_bFinished;       /**< Is the track finished? */
 
@@ -63,20 +65,10 @@ namespace dustbin {
         std::map<irr::scene::ISceneNode *, std::tuple<tracked::ITrackPart *, int>> m_mReferencePoints;    /**< A map mapping the reference points to the track part (0) and it's point index (1) */
 
         /**
-        * (Re) create the track
-        */
-        void createTrack();
-
-        /**
         * Add the editable reference points of a track part
         * @param a_pPart the track part
         */
         void addReferencePoints(tracked::ITrackPart *a_pPart);
-
-        /**
-        * Update the reference points after the track was modified
-        */
-        void updateReferencePoints();
 
         /**
         * Set the edit mode and update the info text
@@ -85,7 +77,7 @@ namespace dustbin {
         void setEditMode(enEditMode a_eMode);
 
       public:
-        CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui);
+        CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui, CCmdMainMenu *a_pMainMenu);
         virtual ~CCmdEditTrack();
 
         /**
@@ -106,6 +98,38 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void draw(irr::video::IVideoDriver *a_pDrv) override;
+
+        /**
+        * Update the reference points after the track was modified
+        */
+        void updateReferencePoints();
+
+        /**
+        * Clear the reference points before loading a track
+        */
+        void clearReferencePoints();
+
+        /**
+        * Get the track defining vector
+        * @return the track defining vector
+        */
+        std::vector<tracked::ITrackPart *> *getTrack();
+
+        /**
+        * (Re) create the track
+        */
+        void createTrack();
+
+        /**
+        * Clear the track
+        */
+        void clearTrack();
+
+        /**
+        * Add a track part
+        * @param a_pPart the new track part
+        */
+        void addTrackPart(tracked::ITrackPart *a_pPart);
     };
   }
 }

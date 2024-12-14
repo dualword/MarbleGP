@@ -13,6 +13,7 @@
 #include <commands/CCmdCameraCtrl.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdSaveTrack.h>
+#include <commands/CCmdMainMenu.h>
 
 #include <filesystem>
 
@@ -82,10 +83,18 @@ namespace dustbin {
       m_pSmgr->registerSceneNodeAnimatorFactory(l_pFactory2);
       l_pFactory2->drop();
 
+      commands::CCmdMainMenu  *l_pMain = new commands::CCmdMainMenu(this, m_pGui);
+      commands::CCmdEditTrack *l_pEdit = new commands::CCmdEditTrack      (m_pSmgr, m_pDrv, m_pGui, l_pMain);
+
+      l_pMain->setEditTrackCommand(l_pEdit);
+
       addCommand(new commands::CCmdDefaultRenderer(m_pDevice      ));
       addCommand(new commands::CCmdDustbinRenderer(m_pDevice      ));
       addCommand(new commands::CCmdCameraCtrl     (m_pSmgr, m_pGui));
-      addCommand(new commands::CCmdEditTrack      (m_pSmgr, m_pDrv, m_pGui));
+      addCommand(l_pMain);
+      addCommand(l_pEdit);
+
+      CCommandHandler::run();
 
       irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;

@@ -24,16 +24,7 @@ namespace dustbin {
         * @param a_pCommand the command to be registered.
         */
         void CCommandHandler::addCommand(dustbin::commands::ICommand *a_pCommand) {
-          for (size_t i = 0; i < m_vCommands.size(); i++) {
-            if (m_vCommands[i]->getId() == a_pCommand->getId()) {
-              ICommand* l_pOld = m_vCommands[i];
-              m_vCommands[i] = a_pCommand;
-              delete l_pOld;
-              return;
-            }
-          }
-
-          m_vCommands.push_back(a_pCommand);
+          m_vNewCmds.push_back(a_pCommand);
         }
 
         /**
@@ -43,8 +34,9 @@ namespace dustbin {
         */
         ICommand *CCommandHandler::findCommand(const std::string& a_sCmdId) {
           for (auto l_pCmd: m_vCommands) {
-            if (l_pCmd->getId() == a_sCmdId)
+            if (l_pCmd->getId() == a_sCmdId) {
               return l_pCmd;
+            }
           }
 
           return nullptr;
@@ -57,6 +49,24 @@ namespace dustbin {
         * @see ICommand::run
         */
         void CCommandHandler::run() {
+          for (auto l_pCmd: m_vNewCmds) {
+            bool l_bAdded = false;
+
+            for (size_t i = 0; i < m_vCommands.size(); i++) {
+              if (m_vCommands[i]->getId() == l_pCmd->getId()) {
+                ICommand* l_pOld = m_vCommands[i];
+                m_vCommands[i] = l_pCmd;
+                delete l_pOld;
+                l_bAdded = true;
+              }
+            }
+
+            if (!l_bAdded)
+              m_vCommands.push_back(l_pCmd);
+          }
+
+          m_vNewCmds.clear();
+
           if (m_vCommands.size() > 0) {
             std::vector<ICommand*> l_vFinished;
 
@@ -102,8 +112,9 @@ namespace dustbin {
 
             do {
               l_itCmd--;
-              if ((*l_itCmd)->OnEvent(a_cEvent))
+              if ((*l_itCmd)->OnEvent(a_cEvent)) {
                 return true;
+              }
             } 
             while (l_itCmd != m_vCommands.begin());
           }

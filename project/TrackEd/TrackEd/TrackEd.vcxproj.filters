@@ -207,6 +207,9 @@
     <ClCompile Include="..\_source\commands\CCmdMainMenu.cpp">
       <Filter>Source\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdLoadTrack.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -348,6 +351,9 @@
       <Filter>Include\commands</Filter>
     </ClInclude>
     <ClInclude Include="..\_include\commands\CCmdMainMenu.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdLoadTrack.h">
       <Filter>Include\commands</Filter>
     </ClInclude>
   </ItemGroup>

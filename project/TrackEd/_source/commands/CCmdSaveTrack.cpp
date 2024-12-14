@@ -22,9 +22,11 @@ namespace dustbin {
       if (l_pWriter != nullptr) {
         l_pWriter->writeXMLHeader();
         l_pWriter->writeElement(L"DustbinGamesTrack", false);
+        l_pWriter->writeLineBreak();
 
         for (auto l_pPart : a_vTrack) {
           l_pWriter->writeElement(L"TrackPart", false, L"type", helpers::s2ws(l_pPart->getType()).c_str());
+          l_pWriter->writeLineBreak();
 
           irr::io::IAttributes *l_pAttr = l_pGlobal->getFileSystem()->createEmptyAttributes();
           l_pPart->serialize(*l_pAttr);
@@ -32,9 +34,11 @@ namespace dustbin {
           l_pAttr->drop();
 
           l_pWriter->writeClosingTag(L"TrackPart");
+          l_pWriter->writeLineBreak();
         }
 
         l_pWriter->writeClosingTag(L"DustbinGamesTrack");
+        l_pWriter->writeLineBreak();
 
         l_pWriter->drop();
       }

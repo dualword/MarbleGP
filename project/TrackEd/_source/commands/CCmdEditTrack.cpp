@@ -2,6 +2,7 @@
 #include <animators/CPlaneAnimator.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
+#include <commands/CCmdMainMenu.h>
 #include <editor/CTrackParts.h>
 #include <editor/ITrackPart.h>
 #include <CDefines.h>
@@ -22,7 +23,7 @@ namespace dustbin {
     const irr::u32 c_iIdxWall    = 9;
     const irr::u32 c_iIdxCount   = 10;
 
-    CCmdEditTrack::CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui) :
+    CCmdEditTrack::CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui, CCmdMainMenu *a_pMainMenu) :
       ICommand      ("CmdEditTrack"),
       m_eEditMode   (enEditMode::Default),
       m_pSmgr       (a_pSmgr),
@@ -35,23 +36,13 @@ namespace dustbin {
       m_pTrack      (nullptr),
       m_pMesh       (nullptr),
       m_pMenu       (nullptr),
-      m_pEditMode   (nullptr),
       m_pColMgr     (nullptr),
+      m_pClick      (nullptr),
+      m_pMainMenu   (a_pMainMenu),
       m_bFinishTrack(false),
       m_bFinished   (false)
     {
       m_pColMgr = m_pSmgr->getSceneCollisionManager();
-
-      irr::core::dimension2du l_cSize = m_pGui->getSkin()->getFont()->getDimension(L"Edit Mode: This Text is longer than needed.");
-      irr::core::vector2di    l_cPos  = irr::core::vector2di();
-
-      m_pEditMode = m_pGui->addStaticText(L"Edit Mode: Default", irr::core::recti(l_cPos, l_cSize));
-      
-      l_cPos.Y += 6 * l_cSize.Height / 5;
-
-      m_pWarning = m_pGui->addStaticText(L"Warning Label", irr::core::recti(l_cPos, l_cSize));
-      m_pWarning->setOverrideColor(irr::video::SColor(0xFF, 0x80, 0x20, 0x20));
-      m_pWarning->setVisible(false);
     }
         
     CCmdEditTrack::~CCmdEditTrack() {
@@ -70,6 +61,18 @@ namespace dustbin {
         if (l_vRefPoints.size() > l_iPointIdx)
           l_pRefPoint->setPosition(50.0f * (l_vRefPoints[l_iPointIdx]));
       }
+    }
+
+    /**
+    * Clear the reference points before loading a track
+    */
+    void CCmdEditTrack::clearReferencePoints() {
+      for (auto &l_tPoint: m_mReferencePoints) {
+        l_tPoint.first->setVisible(false);
+        m_pSmgr->addToDeletionQueue(l_tPoint.first);
+      }
+
+      m_mReferencePoints.clear();
     }
 
     /**
@@ -234,14 +237,22 @@ namespace dustbin {
     void CCmdEditTrack::setEditMode(enEditMode a_eMode) {
       m_eEditMode = a_eMode;
 
-      if (m_pEditMode != nullptr) {
+      if (m_pMainMenu != nullptr) {
         switch (m_eEditMode) {
-          case enEditMode::Default          : m_pEditMode->setText(L"Edit Mode: Default"             ); break;
-          case enEditMode::AddReferencePoint: m_pEditMode->setText(L"Edit Mode: Add Reference Point" ); break;
-          case enEditMode::MovePointOnLine  : m_pEditMode->setText(L"Edit Mode: Move Reference Point"); break;
-          case enEditMode::MovePointInPlane : m_pEditMode->setText(L"Edit Mode: Move Reference Point"); break;
+          case enEditMode::Default          : m_pMainMenu->setEditMode(L"Edit Mode: Default"             ); break;
+          case enEditMode::AddReferencePoint: m_pMainMenu->setEditMode(L"Edit Mode: Add Reference Point" ); break;
+          case enEditMode::MovePointOnLine  : m_pMainMenu->setEditMode(L"Edit Mode: Move Reference Point"); break;
+          case enEditMode::MovePointInPlane : m_pMainMenu->setEditMode(L"Edit Mode: Move Reference Point"); break;
         }
       }
+    }
+
+    /**
+    * Get the track defining vector
+    * @return the track defining vector
+    */
+    std::vector<tracked::ITrackPart *> *CCmdEditTrack::getTrack() {
+      return &m_vParts;
     }
 
     /**
@@ -286,11 +297,13 @@ namespace dustbin {
 
               m_bFinishTrack = false;
 
-              irr::core::vector3df l_cDir = m_vParts.back()->getEndDirection();
-              irr::core::vector3df l_cEnd = m_vParts.back()->getEndPosition () * 50.0f;
+              if (m_vParts.size() > 0) {
+                irr::core::vector3df l_cDir = m_vParts.back()->getEndDirection();
+                irr::core::vector3df l_cEnd = m_vParts.back()->getEndPosition () * 50.0f;
 
-              if (m_eEditMode == enEditMode::AddReferencePoint) {
-                m_pPickPoint->setPosition(l_cRayCollision);
+                if (m_eEditMode == enEditMode::AddReferencePoint) {
+                  m_pPickPoint->setPosition(l_cRayCollision);
+                }
               }
             }
           }
@@ -351,8 +364,9 @@ namespace dustbin {
                     m_cMovePoint = m_cMoveLine.getClosestPoint(l_cRayCollision);
                   }
                   else {
-                    m_pWarning->setText(L"This point cannot be moved!");
-                    m_pWarning->setVisible(true);
+                    if (m_pMainMenu != nullptr) {
+                      m_pMainMenu->setWarningText(L"This point cannot be moved!");
+                    }
                   }
                 }
 
@@ -442,8 +456,8 @@ namespace dustbin {
               l_bRet = true;
             }
 
-            if (m_pWarning != nullptr)
-              m_pWarning->setVisible(false);
+            if (m_pMainMenu != nullptr)
+              m_pMainMenu->hideWarning();
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN) {
             m_cDownPoint[1] = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
@@ -671,6 +685,35 @@ namespace dustbin {
       }
 
       return l_bRet;
+    }
+
+    /**
+    * Clear the track
+    */
+    void CCmdEditTrack::clearTrack() {
+      clearReferencePoints();
+
+      while (m_vParts.size() > 0) {
+        tracked::ITrackPart *p = m_vParts.front();
+        m_vParts.erase(m_vParts.begin());
+        delete p;
+      }
+    }
+
+    /**
+    * Add a track part
+    * @param a_pPart the new track part
+    */
+    void CCmdEditTrack::addTrackPart(tracked::ITrackPart *a_pPart) {
+      for (auto l_pPart: m_vParts) {
+        if (l_pPart->getPreviousID() == a_pPart->getId()) l_pPart->setPrevious(a_pPart);
+        if (l_pPart->getNextID    () == a_pPart->getId()) l_pPart->setNext    (a_pPart);
+        if (a_pPart->getPreviousID() == l_pPart->getId()) a_pPart->setPrevious(l_pPart);
+        if (a_pPart->getNextID    () == l_pPart->getId()) a_pPart->setNext    (l_pPart);
+      }
+
+      m_vParts.push_back(a_pPart);
+      addReferencePoints(a_pPart);
     }
   }
 }

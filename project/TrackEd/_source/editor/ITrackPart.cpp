@@ -27,8 +27,6 @@ namespace dustbin {
         m_iPrevious = m_pPrevious->getId();
         m_pPrevious->setNext(this);
       }
-
-      printf("Start segment: %s\n", m_bStart ? "true" : "false");
     }
 
     /**
@@ -61,6 +59,8 @@ namespace dustbin {
         m_iNext = -1;
 
       m_pNext = a_pNext;
+
+      printf("Track Part %i Next: %i\n", m_iInternalId, m_iNext);
     }
 
     /**
@@ -74,6 +74,9 @@ namespace dustbin {
         m_iPrevious = -1;
 
       m_pPrevious = a_pPrevious;
+      m_bStart = m_pPrevious == nullptr;
+
+      printf("Track Part %i Previous: %i\n", m_iInternalId, m_iPrevious);
     }
 
     /**
