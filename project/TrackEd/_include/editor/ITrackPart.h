@@ -44,8 +44,6 @@ namespace dustbin {
         irr::core::line3df m_cEnd;      /**< The end of the part */
 
       protected:
-        irr::scene::ISceneCollisionManager *m_pColMgr;
-
         const irr::core::vector3df &getStartNormal();
 
         /**
@@ -90,9 +88,8 @@ namespace dustbin {
         * @param a_sType the type ID of this track part
         * @param a_pPrevious the previous track part (nullptr for the starting part)
         * @param a_cNormal the normal at the starting point
-        * @param a_pColMgr the Irrlicht scene collision manager
         */
-        ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
+        ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
 
         /**
         * The destructor

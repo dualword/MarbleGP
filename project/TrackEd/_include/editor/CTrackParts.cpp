@@ -8,8 +8,8 @@ namespace dustbin {
   namespace tracked {
 
 
-    CTrackPart_Bezier::CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
-      ITrackPart (c_sTypeBezier, a_pPrevious, a_cNormal, a_pColMgr)
+    CTrackPart_Bezier::CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
+      ITrackPart (c_sTypeBezier, a_pPrevious, a_cNormal)
     {
     }
 
@@ -484,8 +484,8 @@ namespace dustbin {
 
 
 
-    CTrackPart_Checkpoint::CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) : 
-      ITrackPart    (c_sTypeCheckpoint, a_pPrevious, a_cNormal, a_pColMgr),
+    CTrackPart_Checkpoint::CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) : 
+      ITrackPart    (c_sTypeCheckpoint, a_pPrevious, a_cNormal),
       m_pCheckpoint (nullptr),
       m_pRespawn    (nullptr),
       m_bRespawnLeft(true)

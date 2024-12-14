@@ -541,7 +541,7 @@ namespace dustbin {
               std::wstring l_sItem = m_pMenu->getItemText(m_pMenu->getSelectedItem());
 
               if (l_sItem == c_sAddSegment) {
-                tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(m_vParts.back(), m_vParts.back()->getNormal(), m_pColMgr);
+                tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(m_vParts.back(), m_vParts.back()->getNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
                 
@@ -558,7 +558,7 @@ namespace dustbin {
                 createTrack();
               }
               else if (l_sItem == c_sAddCheckpoint) {
-                tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(m_vParts.back(), m_vParts.back()->getNormal(), m_pColMgr);
+                tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(m_vParts.back(), m_vParts.back()->getNormal());
                 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
                 
@@ -612,7 +612,7 @@ namespace dustbin {
                   irr::core::vector3df l_cStrDir = -l_pFirst->getEndDirection();
                   irr::core::vector3df l_cStrPos = irr::core::vector3df(0.0f);
 
-                  tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(l_pLast, l_pLast->getNormal(), m_pColMgr);
+                  tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(l_pLast, l_pLast->getNormal());
 
                   std::vector<irr::core::vector3df> l_cRef = {
                     l_cEndPos,
@@ -668,7 +668,7 @@ namespace dustbin {
             m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
             m_pPickPoint->setVisible(false);
 
-            tracked::CTrackPart_Bezier *l_pStart = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f), m_pColMgr);
+            tracked::CTrackPart_Bezier *l_pStart = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f));
             l_pStart->setReferencePoints({ irr::core::vector3df(0.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f, 0.0f, 3.5f) });
 
             m_vParts.push_back(l_pStart);

@@ -13,7 +13,7 @@ namespace dustbin {
     * @param a_cNormal the normal at the starting point
     * @param a_pColMgr the Irrlicht scene collision manager
     */
-    ITrackPart::ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) :
+    ITrackPart::ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
       m_sType      (a_sType),
       m_bStart     (a_pPrevious == nullptr),
       m_iInternalId(++g_iInternalId),

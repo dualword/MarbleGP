@@ -37,7 +37,7 @@ namespace dustbin {
         double calculateCurve(std::vector<irr::core::vector3df> &a_cOut);
 
       public:
-        CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
+        CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~CTrackPart_Bezier();
 
         /**
@@ -155,7 +155,7 @@ namespace dustbin {
         bool m_bRespawnLeft;    /**< Is the respawn on the left side? */
 
       public:
-        CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr);
+        CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~CTrackPart_Checkpoint();
 
         /**

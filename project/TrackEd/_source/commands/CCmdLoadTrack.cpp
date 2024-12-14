@@ -28,7 +28,7 @@ namespace dustbin {
             std::wstring l_sType = l_pReader->getAttributeValueSafe(L"type");
 
             if (l_sType == L"Bezier") {
-              tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df(), nullptr);
+              tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df());
               irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
               l_pAttr->read(l_pReader);
               l_pNew->deserialize(*l_pAttr);
@@ -37,7 +37,7 @@ namespace dustbin {
               a_pEditTrack->addTrackPart(l_pNew);
             }
             else if (l_sType == L"Checkpoint") {
-              tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(nullptr, irr::core::vector3df(), nullptr);
+              tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(nullptr, irr::core::vector3df());
               irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
               l_pAttr->read(l_pReader);
               l_pNew->deserialize(*l_pAttr);
