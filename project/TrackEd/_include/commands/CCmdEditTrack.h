@@ -113,7 +113,7 @@ namespace dustbin {
         * Get the track defining vector
         * @return the track defining vector
         */
-        std::vector<tracked::ITrackPart *> *getTrack();
+        const std::vector<tracked::ITrackPart *> &getTrack();
 
         /**
         * (Re) create the track
