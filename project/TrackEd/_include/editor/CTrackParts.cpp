@@ -487,11 +487,23 @@ namespace dustbin {
     CTrackPart_Checkpoint::CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, irr::scene::ISceneCollisionManager *a_pColMgr) : 
       ITrackPart    (c_sTypeCheckpoint, a_pPrevious, a_cNormal, a_pColMgr),
       m_pCheckpoint (nullptr),
+      m_pRespawn    (nullptr),
       m_bRespawnLeft(true)
     {
     }
 
     CTrackPart_Checkpoint::~CTrackPart_Checkpoint() {
+      if (m_pCheckpoint != nullptr) {
+        m_pCheckpoint->setVisible(false);
+        m_pCheckpoint->getSceneManager()->addToDeletionQueue(m_pCheckpoint);
+        m_pCheckpoint = nullptr;
+      }
+
+      if (m_pRespawn != nullptr) {
+        m_pRespawn->setVisible(false);
+        m_pRespawn->getSceneManager()->addToDeletionQueue(m_pRespawn);
+        m_pRespawn = nullptr;
+      }
     }
 
     /**
@@ -641,6 +653,28 @@ namespace dustbin {
       else {
         m_pCheckpoint->setPosition(50.0f * m_cStart + 2.5f * getNormal());
         m_pCheckpoint->setRotation((m_cEnd - m_cStart).getHorizontalAngle());
+      }
+
+      l_cSide = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
+      irr::core::vector3df l_cRspPos = 50.0f * m_cStart + 2.5f * getNormal() + (m_bRespawnLeft ? -22.5f * l_cSide + 7.5f * getEndDirection() : 22.5f * l_cSide + 7.5f * getEndDirection());
+      irr::core::vector3df l_cRspAng = (m_cStart - m_cEnd).getHorizontalAngle() + irr::core::vector3df(0.0f, m_bRespawnLeft ? 45.0f : -45.0f, 0.0f);
+
+      if (m_pRespawn == nullptr) {
+        m_pRespawn = l_pGlobal->getSceneManager()->addMeshSceneNode(
+          l_pGlobal->getSceneManager()->getMesh("data/objects/respawn_editor.3ds"),
+          l_pGlobal->getSceneManager()->getRootSceneNode(),
+          -1,
+          l_cRspPos,
+          l_cRspAng,
+          irr::core::vector3df(5.0f)
+        );
+
+        m_pRespawn->getMaterial(0).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/white.png"));
+        m_pRespawn->getMaterial(0).Lighting = false;
+      }
+      else {
+        m_pRespawn->setPosition(l_cRspPos);
+        m_pRespawn->setRotation(l_cRspAng);
       }
 
       a_bBlack = !a_bBlack;

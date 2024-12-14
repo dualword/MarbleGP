@@ -149,7 +149,8 @@ namespace dustbin {
         irr::core::vector3df m_cStart;
         irr::core::vector3df m_cEnd;
 
-        irr::scene::ISceneNode *m_pCheckpoint;
+        irr::scene::ISceneNode *m_pCheckpoint;    /**< The checkpoint mesh */
+        irr::scene::ISceneNode *m_pRespawn;       /**< A mesh indicating the respawn position and direction */
 
         bool m_bRespawnLeft;    /**< Is the respawn on the left side? */
 
