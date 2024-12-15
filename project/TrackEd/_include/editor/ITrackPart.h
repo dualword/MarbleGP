@@ -7,16 +7,19 @@
 
 namespace dustbin {
   namespace tracked {
-    const irr::u32 c_iBufferIdxRoad   = 0;    /**< Index of the road mesh buffer */
-    const irr::u32 c_iBufferIdxArrow  = 1;    /**< Index of the arrow road texture */
-    const irr::u32 c_iBufferIdxJoin   = 2;    /**< Index of the join road texture */
-    const irr::u32 c_iBufferIdxCross  = 3;    /**< Index of the red cross road texture */
-    const irr::u32 c_iBufferIdxPlane  = 4;    /**< Index of the plane road texture */
-    const irr::u32 c_iBufferIdxBottom = 5;    /**< Index of the bottom mesh buffer */
-    const irr::u32 c_iBufferIdxYellow = 6;    /**< Index of the yellow side mesh buffer */
-    const irr::u32 c_iBufferIdxBlack  = 7;    /**< Index of the black side mesh buffer */
+    const irr::u32 c_iBufferIdxRoad      =  0;      /**< Index of the road mesh buffer */
+    const irr::u32 c_iBufferIdxArrow     =  1;      /**< Index of the arrow road texture */
+    const irr::u32 c_iBufferIdxJoin      =  2;      /**< Index of the join road texture */
+    const irr::u32 c_iBufferIdxCross     =  3;      /**< Index of the red cross road texture */
+    const irr::u32 c_iBufferIdxPlane     =  4;      /**< Index of the plane road texture */
+    const irr::u32 c_iBufferIdxBottom    =  5;      /**< Index of the bottom mesh buffer */
+    const irr::u32 c_iBufferIdxYellow    =  6;      /**< Index of the yellow side mesh buffer */
+    const irr::u32 c_iBufferIdxBlack     =  7;      /**< Index of the black side mesh buffer */
+    const irr::u32 c_iBufferIdxGround    =  8;      /**< Index of the base ground plane buffer */
+    const irr::u32 c_iBufferIdxWallOuter =  9;      /**< Index of the outer walls of the base buffer */
+    const irr::u32 c_iBufferIdxWallInner = 10;      /**< Index of the inner walls of the base buffer */
     
-    const irr::u32 c_iBufferCount = 8;  /**< Total number of buffers for the road */
+    const irr::u32 c_iBufferCount = 11;  /**< Total number of buffers for the road */
 
     class ITrackPart;
 

@@ -39,6 +39,7 @@ namespace dustbin {
         irr::scene::ISceneNode     *m_pSelected;    /**< The hovered editor scene node */
         irr::scene::ISceneNode     *m_pPickPoint;   /**< The scene node to add a point to a track part */
         irr::scene::IMeshSceneNode *m_pTrack;       /**< The track's scene node */
+        irr::scene::IMeshSceneNode *m_pZeroPlane;   /**< The plane indicating zero Y */
         irr::scene::SMesh          *m_pMesh;        /**< The track's mesh structure */
         irr::core::plane3df         m_cPlane;       /**< The plane to pick the next point from */
         irr::core::line3df          m_cMoveLine;    /**< The line to move points along */
@@ -60,9 +61,17 @@ namespace dustbin {
         bool m_bFinishTrack;    /**< A flag to indicate whether or not the start of the track is hovered */
         bool m_bFinished;       /**< Is the track finished? */
 
+        irr::f32 m_fBaseOffset;   /**< Offset of the base to the road */
+        irr::f32 m_fBaseHeight;   /**< Height of the side walls of the base */
+
         std::vector<tracked::ITrackPart *> m_vParts;    /**< List of all track parts */
 
         std::map<irr::scene::ISceneNode *, std::tuple<tracked::ITrackPart *, int>> m_mReferencePoints;    /**< A map mapping the reference points to the track part (0) and it's point index (1) */
+
+        /**
+        * Build the basement of the track (only done if m_fBaseOffset and m_fBaseHeight are greater than zero)
+        */
+        void createBasement();
 
         /**
         * Add the editable reference points of a track part
@@ -98,6 +107,13 @@ namespace dustbin {
         * @param a_pDrv the video driver
         */
         virtual void draw(irr::video::IVideoDriver *a_pDrv) override;
+
+        /**
+        * Set the parameters for the track base
+        * @param a_fOffset the offset of the walls
+        * @param a_fHeight the height of the walls
+        */
+        void setBaseParameters(irr::f32 a_fOffset, irr::f32 a_fHeight);
 
         /**
         * Update the reference points after the track was modified

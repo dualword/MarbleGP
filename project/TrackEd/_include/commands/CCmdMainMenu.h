@@ -25,6 +25,7 @@ namespace dustbin {
           Load     = 1,
           Save     = 2,
           SaveAs   = 3,
+          Base     = 4,
           Count
         };
 

@@ -7,6 +7,7 @@
 #include <editor/ITrackPart.h>
 #include <CDefines.h>
 #include <IGlobal.h>
+#include <cmath>
 
 namespace dustbin {
 
@@ -34,13 +35,16 @@ namespace dustbin {
       m_pSelected   (nullptr),
       m_pPickPoint  (nullptr),
       m_pTrack      (nullptr),
+      m_pZeroPlane  (nullptr),
       m_pMesh       (nullptr),
       m_pMenu       (nullptr),
       m_pColMgr     (nullptr),
       m_pClick      (nullptr),
       m_pMainMenu   (a_pMainMenu),
       m_bFinishTrack(false),
-      m_bFinished   (false)
+      m_bFinished   (false),
+      m_fBaseOffset (-1.0f),
+      m_fBaseHeight (-1.0f)
     {
       m_pColMgr = m_pSmgr->getSceneCollisionManager();
     }
@@ -120,6 +124,197 @@ namespace dustbin {
     }
 
     /**
+    * Build the basement of the track (only done if m_fBaseOffset and m_fBaseHeight are greater than zero)
+    */
+    void CCmdEditTrack::createBasement() {
+      if (m_fBaseHeight > 0.0f && m_fBaseOffset > 0.0f) {
+        irr::video::SColor l_cCol = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
+
+        m_vBuffers[tracked::c_iBufferIdxRoad]->recalculateBoundingBox();
+
+        irr::core::aabbox3df l_cBox = m_vBuffers[tracked::c_iBufferIdxRoad]->BoundingBox;
+
+        irr::core::vector3df l_cUpperLeft  = l_cBox.MinEdge;
+        irr::core::vector3df l_cLowerRight = l_cBox.MaxEdge;
+
+        l_cUpperLeft .Y = 0.0f;
+        l_cLowerRight.Y = 0.0f;
+
+        l_cUpperLeft  -= irr::core::vector3df(m_fBaseOffset, 0.0f, m_fBaseOffset);
+        l_cLowerRight += irr::core::vector3df(m_fBaseOffset, 0.0f, m_fBaseOffset);
+
+        irr::u32 l_iIdx[] = { tracked::c_iBufferIdxGround, tracked::c_iBufferIdxBottom, 0xFFFF };
+
+        std::vector<irr::core::vector3df> l_vPos;
+
+        // Make the two ground planes
+        for (int i = 0; l_iIdx[i] < 0xFFFF; i++) {
+          irr::core::vector2df t = irr::core::vector2df(i == 0 || i == 3 ? 0.0f : 1.0f, i == 0 || i == 1 ? 0.0f : 1.0f);
+          irr::core::vector3df l_cNorm = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+
+          irr::u32 l_iIndex = l_iIdx[i];
+          irr::scene::SMeshBuffer *l_pBuffer = m_vBuffers[l_iIndex];
+
+          l_vPos.push_back(                     l_cUpperLeft                                     ); l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_vPos.back(), l_cNorm, l_cCol, t));
+          l_vPos.push_back(irr::core::vector3df(l_cLowerRight.X, l_cUpperLeft.Y, l_cUpperLeft .Z)); l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_vPos.back(), l_cNorm, l_cCol, t));
+          l_vPos.push_back(                     l_cLowerRight                                    ); l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_vPos.back(), l_cNorm, l_cCol, t));
+          l_vPos.push_back(irr::core::vector3df(l_cUpperLeft .X, l_cUpperLeft.Y, l_cLowerRight.Z)); l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_vPos.back(), l_cNorm, l_cCol, t));
+
+          l_pBuffer->Indices.push_back(i == 0 ? 1 : l_pBuffer->Vertices.size() - 4);
+          l_pBuffer->Indices.push_back(i == 0 ? 0 : l_pBuffer->Vertices.size() - 3);
+          l_pBuffer->Indices.push_back(i == 0 ? 2 : l_pBuffer->Vertices.size() - 2);
+
+          l_pBuffer->Indices.push_back(i == 0 ? 2 : l_pBuffer->Vertices.size() - 4);
+          l_pBuffer->Indices.push_back(i == 0 ? 0 : l_pBuffer->Vertices.size() - 2);
+          l_pBuffer->Indices.push_back(i == 0 ? 3 : l_pBuffer->Vertices.size() - 1);
+
+          l_cUpperLeft  -= irr::core::vector3df(0.1f,  0.5f, 0.1f);
+          l_cLowerRight += irr::core::vector3df(0.1f, -0.5f, 0.1f);
+        }
+
+        // Make the side walls
+        if (l_vPos.size() == 8) {
+          std::vector<std::tuple<irr::u32, irr::u32, irr::core::vector3df>> l_vBuffers = {
+            std::make_tuple(0, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(1, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(1, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)), 
+            std::make_tuple(0, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)),
+            
+            std::make_tuple(1, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(2, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(2, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)), 
+            std::make_tuple(1, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)),
+            
+            std::make_tuple(2, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(3, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(3, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)), 
+            std::make_tuple(2, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)),
+            
+            std::make_tuple(3, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(0, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(0, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)), 
+            std::make_tuple(3, tracked::c_iBufferIdxWallInner, irr::core::vector3df(0.0f, m_fBaseHeight, 0.0f)),
+
+            std::make_tuple(5, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(4, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(4, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            std::make_tuple(5, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)), 
+            
+            std::make_tuple(6, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(5, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(5, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            std::make_tuple(6, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)), 
+            
+            std::make_tuple(7, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(6, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(6, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            std::make_tuple(7, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)), 
+            
+            std::make_tuple(4, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(7, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, 0.0f, 0.0f)), 
+            std::make_tuple(7, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            std::make_tuple(4, tracked::c_iBufferIdxWallOuter, irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)) 
+          };
+
+          size_t l_iIdx = 0;
+
+          while (l_iIdx < l_vBuffers.size()) {
+            irr::scene::SMeshBuffer *l_pBuffer = m_vBuffers[std::get<1>(l_vBuffers[l_iIdx])];
+
+            irr::core::triangle3df l_cTriangle1 = irr::core::triangle3df(
+              l_vPos[std::get<0>(l_vBuffers[l_iIdx    ])] + std::get<2>(l_vBuffers[l_iIdx]),
+              l_vPos[std::get<0>(l_vBuffers[l_iIdx + 2])] + std::get<2>(l_vBuffers[l_iIdx + 1]),
+              l_vPos[std::get<0>(l_vBuffers[l_iIdx + 1])] + std::get<2>(l_vBuffers[l_iIdx + 2])
+            );
+
+            irr::core::triangle3df l_cTriangle2 = irr::core::triangle3df(
+              l_vPos[std::get<0>(l_vBuffers[l_iIdx    ])] + std::get<2>(l_vBuffers[l_iIdx]),
+              l_vPos[std::get<0>(l_vBuffers[l_iIdx + 2])] + std::get<2>(l_vBuffers[l_iIdx + 2]),
+              l_vPos[std::get<0>(l_vBuffers[l_iIdx + 3])] + std::get<2>(l_vBuffers[l_iIdx + 3])
+            );
+
+            irr::s32 l_iCountY = (irr::s32)(std::ceil((l_cTriangle1.pointB - l_cTriangle1.pointC).getLength()) / 0.5f);
+            irr::s32 l_iCountX = (irr::s32)(std::ceil((l_cTriangle1.pointA - l_cTriangle1.pointB).getLength()) / 0.5f);
+
+            irr::core::vector3df l_cNormal = l_cTriangle1.getNormal();
+
+            irr::core::vector2df l_aTex[] = {
+              irr::core::vector2df(0.0f               , 0.0f               ),
+              irr::core::vector2df(0.0f               , (irr::f32)l_iCountY),
+              irr::core::vector2df((irr::f32)l_iCountX, (irr::f32)l_iCountY),
+              irr::core::vector2df((irr::f32)l_iCountX, 0.0f               )
+            };
+
+            l_pBuffer->Indices.push_back(l_pBuffer->Vertices.size());
+            l_pBuffer->Indices.push_back(l_pBuffer->Vertices.size() + 1);
+            l_pBuffer->Indices.push_back(l_pBuffer->Vertices.size() + 2);
+            
+            l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_cTriangle1.pointA, l_cNormal, l_cCol, l_aTex[0]));
+            l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_cTriangle1.pointB, l_cNormal, l_cCol, l_aTex[3]));
+            l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_cTriangle1.pointC, l_cNormal, l_cCol, l_aTex[2]));
+
+            l_pBuffer->Indices.push_back(l_pBuffer->Vertices.size());
+            l_pBuffer->Indices.push_back(l_pBuffer->Vertices.size() + 1);
+            l_pBuffer->Indices.push_back(l_pBuffer->Vertices.size() + 2);
+            
+            l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_cTriangle2.pointA, l_cNormal, l_cCol, l_aTex[0]));
+            l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_cTriangle2.pointB, l_cNormal, l_cCol, l_aTex[2]));
+            l_pBuffer->Vertices.push_back(irr::video::S3DVertex(l_cTriangle2.pointC, l_cNormal, l_cCol, l_aTex[1]));
+
+            l_iIdx += 4;
+          }
+
+          // Make the top closure
+          std::vector<irr::core::vector3df> l_vTop = {
+            irr::core::vector3df(l_vPos[0] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[1] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[5] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            irr::core::vector3df(l_vPos[4] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+
+            irr::core::vector3df(l_vPos[1] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[2] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[6] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            irr::core::vector3df(l_vPos[5] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+
+            irr::core::vector3df(l_vPos[2] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[3] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[7] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            irr::core::vector3df(l_vPos[6] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+
+            irr::core::vector3df(l_vPos[3] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[0] + irr::core::vector3df(0.0f, m_fBaseHeight       , 0.0f)),
+            irr::core::vector3df(l_vPos[4] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f)),
+            irr::core::vector3df(l_vPos[7] + irr::core::vector3df(0.0f, m_fBaseHeight + 0.5f, 0.0f))
+
+          };
+
+          l_iIdx = 0;
+
+          while (l_iIdx < l_vTop.size()) {
+            irr::core::vector3df l_cNormal = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+
+            m_vBuffers[tracked::c_iBufferIdxBottom]->Indices.push_back(m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.size());
+            m_vBuffers[tracked::c_iBufferIdxBottom]->Indices.push_back(m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.size() + 1);
+            m_vBuffers[tracked::c_iBufferIdxBottom]->Indices.push_back(m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.size() + 2);
+
+            m_vBuffers[tracked::c_iBufferIdxBottom]->Indices.push_back(m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.size());
+            m_vBuffers[tracked::c_iBufferIdxBottom]->Indices.push_back(m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.size() + 2);
+            m_vBuffers[tracked::c_iBufferIdxBottom]->Indices.push_back(m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.size() + 3);
+
+            for (int i = 0; i < 4; i++) {
+              irr::core::vector2df l_cTexture = irr::core::vector2df(l_vTop[l_iIdx + i].X, l_vTop[l_iIdx + i].Z);
+              m_vBuffers[tracked::c_iBufferIdxBottom]->Vertices.push_back(irr::video::S3DVertex(l_vTop[l_iIdx + i], l_cNormal, l_cCol, l_cTexture));
+            }
+            l_iIdx += 4;
+          }
+        }
+
+        if (m_pZeroPlane != nullptr)
+          m_pZeroPlane->setVisible(false);
+      }
+    }
+
+    /**
     * (Re) create the track
     */
     void CCmdEditTrack::createTrack() {
@@ -143,13 +338,18 @@ namespace dustbin {
       m_vBuffers[tracked::c_iBufferIdxBottom]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/warning.png"));
 
       m_vBuffers[tracked::c_iBufferIdxYellow]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/yellow.png"));
-      m_vBuffers[tracked::c_iBufferIdxBlack]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/black.png"));
+      m_vBuffers[tracked::c_iBufferIdxBlack ]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/black.png"));
+
+      m_vBuffers[tracked::c_iBufferIdxGround]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/ground_back.png"));
+      m_vBuffers[tracked::c_iBufferIdxGround]->Material.setTexture(1, m_pSmgr->getVideoDriver()->getTexture("data/textures/hexagon_ground.png"));
+
+      m_vBuffers[tracked::c_iBufferIdxWallInner]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/wall_outer.png"));
+
+      m_vBuffers[tracked::c_iBufferIdxWallOuter]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/wall.png"));
 
       if (m_pMesh == nullptr) {
         m_pMesh = new irr::scene::SMesh();
       }
-
-      tracked::ITrackPart *l_pLast = nullptr;
 
       m_pMesh->MeshBuffers.clear();
 
@@ -159,15 +359,13 @@ namespace dustbin {
         l_pPart->createTrackPart(m_vBuffers, l_bBlack);
       }
 
+      createBasement();
+
       int l_iCount = 0;
       for (auto l_pBuffer : m_vBuffers) {
         if (l_pBuffer->Vertices.size() > 0 && l_pBuffer->Indices.size() > 0) {
           l_pBuffer->recalculateBoundingBox();
           m_pMesh->addMeshBuffer(l_pBuffer);
-
-          irr::video::ITexture *t = l_pBuffer->getMaterial().getTexture(2);
-
-          printf("Add mesh buffer %i: %i, %i (%s)\n", l_iCount, l_pBuffer->Vertices.size(), l_pBuffer->Indices.size(), t != nullptr ? t->getName().getPath().c_str() : "-");
         }
         l_iCount++;
       }
@@ -648,7 +846,7 @@ namespace dustbin {
 
             irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
 
-            irr::scene::IMeshSceneNode *l_pNode = m_pSmgr->addMeshSceneNode(
+            m_pZeroPlane = m_pSmgr->addMeshSceneNode(
               l_pPlane, 
               m_pSmgr->getRootSceneNode(), 
               -1, 
@@ -657,11 +855,11 @@ namespace dustbin {
               irr::core::vector3df(150.0f, 5.0f, 150.0f)
             );
           
-            l_pNode->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
-            l_pNode->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-            l_pNode->getMaterial(0).Lighting = false;
+            m_pZeroPlane->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
+            m_pZeroPlane->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+            m_pZeroPlane->getMaterial(0).Lighting = false;
           
-            l_pNode->addAnimator(new animators::CPlaneAnimator(l_pNode));
+            m_pZeroPlane->addAnimator(new animators::CPlaneAnimator(m_pZeroPlane));
 
             m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/box.3ds"));
             m_pPickPoint->setScale(irr::core::vector3df(1.0f, 5.0f, 1.0f));
@@ -698,6 +896,18 @@ namespace dustbin {
         m_vParts.erase(m_vParts.begin());
         delete p;
       }
+    }
+
+    /**
+    * Set the parameters for the track base
+    * @param a_fOffset the offset of the walls
+    * @param a_fHeight the height of the walls
+    */
+    void CCmdEditTrack::setBaseParameters(irr::f32 a_fOffset, irr::f32 a_fHeight) {
+      m_fBaseOffset = a_fOffset;
+      m_fBaseHeight = a_fHeight;
+
+      createTrack();
     }
 
     /**

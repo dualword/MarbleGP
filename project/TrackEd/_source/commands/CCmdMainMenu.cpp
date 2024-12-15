@@ -75,6 +75,7 @@ namespace dustbin {
         case enMenuItem::Load    : return L"Load Track";
         case enMenuItem::Save    : return L"Save Track";
         case enMenuItem::SaveAs  : return L"Save Track as";
+        case enMenuItem::Base    : return L"Create Base";
 
         default:
           return L"--";
@@ -166,12 +167,16 @@ namespace dustbin {
                   break;
                 }
                 case enMenuItem::Save: {
-                  commands::CCmdSaveTrack *l_pCmd = new commands::CCmdSaveTrack("testtrack.dbt", *(m_pEditTrack->getTrack()));
+                  commands::CCmdSaveTrack *l_pCmd = new commands::CCmdSaveTrack("testtrack.dbt", m_pEditTrack->getTrack());
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }
 
                 case enMenuItem::SaveAs  : printf("Save Track as\n"); break;
+
+                case enMenuItem::Base:
+                  m_pEditTrack->setBaseParameters(2.5f, 2.5f);
+                  break;
 
                 default:
                   printf("--\n");
