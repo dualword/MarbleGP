@@ -2,6 +2,7 @@
 // This file is licensed under the terms of the ZLib license
 // https://www.zlib.net/zlib_license.html
 #include <commands/CCommandHandler.h>
+#include <commands/CCmdExportMesh.h>
 #include <commands/CCmdSaveTrack.h>
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
@@ -63,7 +64,7 @@ namespace dustbin {
     /**
     * If this method returns "true" the command is finished and
     * will be removed from the vector of active commands
-    * return true if the command is finished and can be removed
+    * @return true if the command is finished and can be removed
     */
     bool CCmdMainMenu::isFinished() {
       return false;
@@ -71,11 +72,12 @@ namespace dustbin {
 
     const std::wstring CCmdMainMenu::getButtonText(enMenuItem a_eButton) {
       switch (a_eButton) {
-        case enMenuItem::NewTrack: return L"New Track";
-        case enMenuItem::Load    : return L"Load Track";
-        case enMenuItem::Save    : return L"Save Track";
-        case enMenuItem::SaveAs  : return L"Save Track as";
-        case enMenuItem::Base    : return L"Create Base";
+        case enMenuItem::NewTrack  : return L"New Track";
+        case enMenuItem::Load      : return L"Load Track";
+        case enMenuItem::Save      : return L"Save Track";
+        case enMenuItem::SaveAs    : return L"Save Track as";
+        case enMenuItem::Base      : return L"Create Base";
+        case enMenuItem::ExportMesh: return L"Export as Mesh";
 
         default:
           return L"--";
@@ -177,6 +179,12 @@ namespace dustbin {
                 case enMenuItem::Base:
                   m_pEditTrack->setBaseParameters(2.5f, 2.5f);
                   break;
+
+                case enMenuItem::ExportMesh: {
+                  commands::CCmdExportMesh *l_pCmd = new commands::CCmdExportMesh("testtrack.stl", m_pEditTrack);
+                  m_pHandler->addCommand(l_pCmd);
+                  break;
+                }
 
                 default:
                   printf("--\n");

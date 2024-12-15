@@ -65,6 +65,7 @@
     <ClCompile Include="..\_source\commands\CCmdDefaultRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdDustbinRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdEditTrack.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdExportMesh.cpp" />
     <ClCompile Include="..\_source\commands\CCmdLoadTrack.cpp" />
     <ClCompile Include="..\_source\commands\CCmdMainMenu.cpp" />
     <ClCompile Include="..\_source\commands\CCmdSaveTrack.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="..\_include\commands\CCmdDefaultRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdDustbinRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdEditTrack.h" />
+    <ClInclude Include="..\_include\commands\CCmdExportMesh.h" />
     <ClInclude Include="..\_include\commands\CCmdLoadTrack.h" />
     <ClInclude Include="..\_include\commands\CCmdMainMenu.h" />
     <ClInclude Include="..\_include\commands\CCmdSaveTrack.h" />

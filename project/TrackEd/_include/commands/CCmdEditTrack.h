@@ -92,7 +92,7 @@ namespace dustbin {
         /**
         * If this method returns "true" the command is finished and
         * will be removed from the vector of active commands
-        * return true if the command is finished and can be removed
+        * @return true if the command is finished and can be removed
         */
         virtual bool isFinished() override;
 
@@ -146,6 +146,12 @@ namespace dustbin {
         * @param a_pPart the new track part
         */
         void addTrackPart(tracked::ITrackPart *a_pPart);
+
+        /**
+        * Get the track mesh
+        * @return the track mesh
+        */
+        irr::scene::IMeshSceneNode *getTrackMesh();
     };
   }
 }

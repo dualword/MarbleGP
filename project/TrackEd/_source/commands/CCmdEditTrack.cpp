@@ -117,7 +117,7 @@ namespace dustbin {
     /**
     * If this method returns "true" the command is finished and
     * will be removed from the vector of active commands
-    * return true if the command is finished and can be removed
+    * @return true if the command is finished and can be removed
     */
     bool CCmdEditTrack::isFinished() {
       return false;
@@ -924,6 +924,14 @@ namespace dustbin {
 
       m_vParts.push_back(a_pPart);
       addReferencePoints(a_pPart);
+    }
+
+    /**
+    * Get the track mesh
+    * @return the track mesh
+    */
+    irr::scene::IMeshSceneNode *CCmdEditTrack::getTrackMesh() {
+      return m_pTrack;
     }
   }
 }

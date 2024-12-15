@@ -21,11 +21,12 @@ namespace dustbin {
     class CCmdMainMenu : public ICommand {
       private:
         enum class enMenuItem {
-          NewTrack = 0,
-          Load     = 1,
-          Save     = 2,
-          SaveAs   = 3,
-          Base     = 4,
+          NewTrack   = 0,
+          Load       = 1,
+          Save       = 2,
+          SaveAs     = 3,
+          Base       = 4,
+          ExportMesh = 5,
           Count
         };
 
@@ -71,7 +72,7 @@ namespace dustbin {
         /**
         * If this method returns "true" the command is finished and
         * will be removed from the vector of active commands
-        * return true if the command is finished and can be removed
+        * @return true if the command is finished and can be removed
         */
         virtual bool isFinished() override;
 

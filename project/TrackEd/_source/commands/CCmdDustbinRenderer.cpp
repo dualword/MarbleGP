@@ -28,7 +28,7 @@ namespace dustbin {
     /**
     * If this method returns "true" the command is finished and
     * will be removed from the vector of active commands
-    * return true if the command is finished and can be removed
+    * @return true if the command is finished and can be removed
     */
     bool CCmdDustbinRenderer::isFinished() {
       return false;
