@@ -39,6 +39,7 @@ namespace dustbin {
 
         case (irr::scene::ESCENE_NODE_TYPE)g_RespawnNodeId:
           p = new CRespawnNode(a_pParent, m_pSmgr, -1);
+          p->grab();
           break;
 
         case (irr::scene::ESCENE_NODE_TYPE)g_WorldNodeId:

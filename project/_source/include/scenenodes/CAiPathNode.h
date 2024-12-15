@@ -100,6 +100,8 @@ namespace dustbin {
 
         void addPathSection(CAiPathNode::SAiPathSection *a_pNew);
 
+        CAiPathNode::SAiPathSection *getFirstSection();
+
         /**
         * Get the "AI help" flag
         * @return the "AI help" flag

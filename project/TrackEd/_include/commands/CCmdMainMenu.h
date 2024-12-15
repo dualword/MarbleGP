@@ -21,12 +21,13 @@ namespace dustbin {
     class CCmdMainMenu : public ICommand {
       private:
         enum class enMenuItem {
-          NewTrack   = 0,
-          Load       = 1,
-          Save       = 2,
-          SaveAs     = 3,
-          Base       = 4,
-          ExportMesh = 5,
+          NewTrack       = 0,
+          Load           = 1,
+          Save           = 2,
+          SaveAs         = 3,
+          Base           = 4,
+          ExportMesh     = 5,
+          ExportMarbleGP = 6,
           Count
         };
 

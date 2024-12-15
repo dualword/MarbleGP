@@ -46,6 +46,8 @@ namespace dustbin {
         gameclasses::SMarbleNodes *getMarble(int a_iMarbleID);
         void removeUnusedMarbles();
 
+        void setAngle(float a_fAngle);
+
         /**
         * Get a marble scene node without removing it from the list
         * @param a_iMarbleID the ID of the marble

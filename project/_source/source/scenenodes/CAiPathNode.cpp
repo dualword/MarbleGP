@@ -142,6 +142,13 @@ namespace dustbin {
       return m_bAiHelp;
     }
 
+    CAiPathNode::SAiPathSection *CAiPathNode::getFirstSection() {
+      if (m_vSections.size() > 0) {
+        return m_vSections.front();
+      }
+      else return nullptr;
+    }
+
     void CAiPathNode::addPathSection(CAiPathNode::SAiPathSection* a_pNew) {
       m_vSections.push_back(a_pNew);
       m_cBox.addInternalPoint(a_pNew->m_cPosition);

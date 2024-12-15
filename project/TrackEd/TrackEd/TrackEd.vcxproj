@@ -61,6 +61,7 @@
     <ClCompile Include="..\..\_source\source\shaders\CDustbinShaders.cpp" />
     <ClCompile Include="..\_include\editor\CTrackParts.cpp" />
     <ClCompile Include="..\_source\animators\CPlaneAnimator.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdAddMarbleGP.cpp" />
     <ClCompile Include="..\_source\commands\CCmdCameraCtrl.cpp" />
     <ClCompile Include="..\_source\commands\CCmdDefaultRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdDustbinRenderer.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="..\_include\animators\CPlaneAnimator.h" />
     <ClInclude Include="..\_include\bezier\bezier.h" />
     <ClInclude Include="..\_include\CDefines.h" />
+    <ClInclude Include="..\_include\commands\CCmdAddMarbleGP.h" />
     <ClInclude Include="..\_include\commands\CCmdCameraCtrl.h" />
     <ClInclude Include="..\_include\commands\CCmdDefaultRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdDustbinRenderer.h" />

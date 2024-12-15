@@ -94,6 +94,11 @@ namespace dustbin {
       return nullptr;
     }
 
+    void CStartingGridSceneNode::setAngle(float a_fAngle) {
+      m_fAngle = a_fAngle;
+      updateGridPositions();
+    }
+
     void CStartingGridSceneNode::removeUnusedMarbles() {
       for (int i = 0; i < 16; i++) {
         if (m_pMarbles[i] != nullptr) {
@@ -121,6 +126,8 @@ namespace dustbin {
       l_pRet->m_fRowLength = m_fRowLength;
       l_pRet->m_fOffset = m_fOffset;
       l_pRet->m_fAngle = m_fAngle;
+
+      l_pRet->setPosition(getPosition());
 
       return l_pRet;
     }

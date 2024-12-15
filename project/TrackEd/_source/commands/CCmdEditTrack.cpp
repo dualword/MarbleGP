@@ -1,4 +1,5 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
+#include <scenenodes/CStartingGridSceneNode.h>
 #include <animators/CPlaneAnimator.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
@@ -361,10 +362,15 @@ namespace dustbin {
 
       createBasement();
 
+      m_mBufferMap.clear();
+
       int l_iCount = 0;
-      for (auto l_pBuffer : m_vBuffers) {
+      for (int i = 0; i < tracked::c_iBufferCount; i++) {
+        irr::scene::SMeshBuffer *l_pBuffer = m_vBuffers[i];
+
         if (l_pBuffer->Vertices.size() > 0 && l_pBuffer->Indices.size() > 0) {
           l_pBuffer->recalculateBoundingBox();
+          m_mBufferMap[i] = m_pMesh->getMeshBufferCount();
           m_pMesh->addMeshBuffer(l_pBuffer);
         }
         l_iCount++;
@@ -840,9 +846,9 @@ namespace dustbin {
             m_pSmgr->loadScene("data/scenes/skybox.xml");
 
             m_pWorld = m_pSmgr->addSceneNode("WorldNode", m_pSmgr->getRootSceneNode());
-            irr::scene::ISceneNode *l_pGrid = m_pSmgr->addSceneNode("StartingGridScenenode", m_pWorld);
+            dustbin::scenenodes::CStartingGridSceneNode *l_pGrid = reinterpret_cast<dustbin::scenenodes::CStartingGridSceneNode *>(m_pSmgr->addSceneNode("StartingGridScenenode", m_pWorld));
             l_pGrid->setPosition(irr::core::vector3df(0.0f, 2.5f, 150.0f));
-            l_pGrid->setRotation(irr::core::vector3df(0.0f, 180.0f, 0.0f));
+            l_pGrid->setAngle(180.0f);
 
             irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
 
@@ -924,6 +930,15 @@ namespace dustbin {
 
       m_vParts.push_back(a_pPart);
       addReferencePoints(a_pPart);
+    }
+    
+    /**
+    * Get the index of a mesh buffer (mesh buffer indices found in "tracked::c_iBufferIdx..."
+    * @param a_iBuffer the buffer index
+    * @return the index of the buffer in the track mesh, 0xFFFF if the buffer was not added
+    */
+    irr::u32 CCmdEditTrack::getBufferIndex(irr::u32 a_iBuffer) {
+      return m_mBufferMap.find(a_iBuffer) != m_mBufferMap.end() ? m_mBufferMap[a_iBuffer] : 0xFFFF;
     }
 
     /**

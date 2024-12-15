@@ -68,6 +68,8 @@ namespace dustbin {
 
         std::map<irr::scene::ISceneNode *, std::tuple<tracked::ITrackPart *, int>> m_mReferencePoints;    /**< A map mapping the reference points to the track part (0) and it's point index (1) */
 
+        std::map<irr::u32, irr::u32> m_mBufferMap;  /**< A map mapping the defined buffer IDs to the actual IDs of the track mesh */
+
         /**
         * Build the basement of the track (only done if m_fBaseOffset and m_fBaseHeight are greater than zero)
         */
@@ -152,6 +154,13 @@ namespace dustbin {
         * @return the track mesh
         */
         irr::scene::IMeshSceneNode *getTrackMesh();
+
+        /**
+        * Get the index of a mesh buffer (mesh buffer indices found in "tracked::c_iBufferIdx..."
+        * @param a_iBuffer the buffer index
+        * @return the index of the buffer in the track mesh, 0xFFFF if the buffer was not added
+        */
+        irr::u32 getBufferIndex(irr::u32 a_iBuffer);
     };
   }
 }

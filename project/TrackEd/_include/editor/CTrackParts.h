@@ -132,6 +132,13 @@ namespace dustbin {
         virtual const irr::core::vector3df &getNormal() override;
 
         /**
+        * Add this track part to the AI path node
+        * @param a_pAi the AI path node
+        * @param a_pLast the last AI path section
+        */
+        virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) override;
+
+        /**
         * Handle an event if this part is selected
         * @param a_cEvent the event to handle
         * @return true if the event was handled
@@ -157,6 +164,18 @@ namespace dustbin {
       public:
         CTrackPart_Checkpoint(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~CTrackPart_Checkpoint();
+
+        /**
+        * Get the checkpoint scene node
+        * @return the checkpoint scene node
+        */
+        irr::scene::ISceneNode *getCheckpointNode();
+
+        /**
+        * Get the respawn scene node
+        * @return the respawn scene node
+        */
+        irr::scene::ISceneNode *getRespawnNode();
 
         /**
         * Create the track part
@@ -242,6 +261,13 @@ namespace dustbin {
         * @return the normal at the end point
         */
         virtual const irr::core::vector3df &getNormal() override;
+
+        /**
+        * Add this track part to the AI path node
+        * @param a_pAi the AI path node
+        * @param a_pLast the last AI path section
+        */
+        virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) override;
 
         /**
         * Handle an event if this part is selected

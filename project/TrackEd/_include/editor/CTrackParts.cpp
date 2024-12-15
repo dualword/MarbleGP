@@ -1,4 +1,5 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
+#include <scenenodes/CDustbinId.h>
 #include <editor/CTrackParts.h>
 #include <bezier/bezier.h>
 #include <CDefines.h>
@@ -471,6 +472,58 @@ namespace dustbin {
     }
 
     /**
+    * Add this track part to the AI path node
+    * @param a_pAi the AI path node
+    * @param a_pLast the last AI path section
+    */
+    void CTrackPart_Bezier::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
+      if (m_vTrack.size() == 0) {
+        std::vector<irr::core::vector3df> l_vCurve;
+        calculateCurve(l_vCurve);
+      }
+
+      int l_iIndex = 0;
+
+      int l_iMax = (int)m_vTrack.size() - 4;
+
+      while (l_iIndex < l_iMax) {
+        irr::core::vector3df l_cDirection = (l_iIndex > 0 ? m_vTrack[l_iIndex - 1] - m_vTrack[l_iIndex] : m_vPoints[0] - m_vPoints[1]).normalize();
+        irr::core::vector3df l_cNormal    = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+        irr::core::vector3df l_cSide      = l_cDirection.crossProduct(l_cNormal).normalize();
+
+        scenenodes::CAiPathNode::SAiPathSection *l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
+
+        l_pThis->m_cPosition   = 50.0f * m_vTrack[l_iIndex] + 2.51f * l_cNormal;
+        l_pThis->m_cSideVector = l_cSide;
+        l_pThis->m_fWidth      = 50.0f * 0.24f;
+        l_pThis->m_cNormal     = getNormal();
+
+        if (a_pLast != nullptr) {
+          a_pLast->m_vNextSegments.push_back(l_pThis);
+          l_pThis->m_vPrevSegments.push_back(a_pLast);
+        }
+
+        a_pAi->addPathSection(l_pThis);
+
+        a_pLast = l_pThis;
+
+        l_iIndex += 2;
+      }
+
+      if (getNext() != nullptr && getNext()->getPrevious() != nullptr) {
+        getNext()->addToAiNode(a_pAi, a_pLast);
+      }
+      else if (getNext() != nullptr) {
+        scenenodes::CAiPathNode::SAiPathSection *l_pFirst = a_pAi->getFirstSection();
+
+        if (l_pFirst != nullptr) {
+          a_pLast->m_vNextSegments.push_back(l_pFirst);
+          l_pFirst->m_vPrevSegments.push_back(a_pLast);
+        }
+      }
+    }
+
+    /**
     * Handle an event if this part is selected
     * @param a_cEvent the event to handle
     * @return true if the event was handled
@@ -478,9 +531,9 @@ namespace dustbin {
     bool CTrackPart_Bezier::OnEvent(const irr::SEvent &a_cEvent) {
       bool l_bRet = false;
 
-
       return l_bRet;
     }
+
 
 
 
@@ -504,6 +557,22 @@ namespace dustbin {
         m_pRespawn->getSceneManager()->addToDeletionQueue(m_pRespawn);
         m_pRespawn = nullptr;
       }
+    }
+
+    /**
+    * Get the checkpoint scene node
+    * @return the checkpoint scene node
+    */
+    irr::scene::ISceneNode *CTrackPart_Checkpoint::getCheckpointNode() {
+      return m_pCheckpoint;
+    }
+
+    /**
+    * Get the respawn scene node
+    * @return the respawn scene node
+    */
+    irr::scene::ISceneNode *CTrackPart_Checkpoint::getRespawnNode() {
+      return m_pRespawn;
     }
 
     /**
@@ -638,7 +707,7 @@ namespace dustbin {
         m_pCheckpoint = l_pGlobal->getSceneManager()->addMeshSceneNode(
           l_pGlobal->getSceneManager()->getMesh("data/objects/checkpoint.dae"),
           l_pGlobal->getSceneManager()->getRootSceneNode(),
-          -1,
+          scenenodes::getNextSceneNodeId(),
           50.0f * m_cStart + 2.5f * getNormal(),
           (m_cEnd - m_cStart).getHorizontalAngle(),
           irr::core::vector3df(50.0f * 0.5f)
@@ -663,7 +732,7 @@ namespace dustbin {
         m_pRespawn = l_pGlobal->getSceneManager()->addMeshSceneNode(
           l_pGlobal->getSceneManager()->getMesh("data/objects/respawn_editor.3ds"),
           l_pGlobal->getSceneManager()->getRootSceneNode(),
-          -1,
+          scenenodes::getNextSceneNodeId(),
           l_cRspPos,
           l_cRspAng,
           irr::core::vector3df(5.0f)
@@ -866,6 +935,43 @@ namespace dustbin {
       return l_vRet;
     }
 
+    /**
+    * Add this track part to the AI path node
+    * @param a_pAi the AI path node
+    * @param a_pLast the last AI path section
+    */
+    void CTrackPart_Checkpoint::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
+      scenenodes::CAiPathNode::SAiPathSection *l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
+
+      irr::core::vector3df l_cCenter = (m_cStart + m_cEnd) / 2.0f;
+      irr::core::vector3df l_cSide   = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
+
+      l_pThis->m_cPosition   = 50.0f * (l_cCenter + 0.055f * getNormal());
+      l_pThis->m_cSideVector = l_cSide;
+      l_pThis->m_fWidth      = 50.0f * 0.25f;
+      l_pThis->m_cNormal     = getNormal();
+      l_pThis->m_eType       = scenenodes::CAiPathNode::enSegmentType::Respawn;
+      l_pThis->m_iRespawn    = m_pRespawn->getID();
+
+      if (a_pLast != nullptr) {
+        a_pLast->m_vNextSegments.push_back(l_pThis);
+        l_pThis->m_vPrevSegments.push_back(a_pLast);
+      }
+
+      a_pAi->addPathSection(l_pThis);
+
+      if (getNext() != nullptr && getNext()->getPrevious() != nullptr) {
+        getNext()->addToAiNode(a_pAi, l_pThis);
+      }
+      else if (getNext() != nullptr) {
+        scenenodes::CAiPathNode::SAiPathSection *l_pFirst = a_pAi->getFirstSection();
+
+        if (l_pFirst != nullptr) {
+          l_pThis->m_vNextSegments.push_back(l_pFirst);
+          l_pFirst->m_vPrevSegments.push_back(l_pThis);
+        }
+      }
+    }
 
     /**
     * Handle an event if this part is selected

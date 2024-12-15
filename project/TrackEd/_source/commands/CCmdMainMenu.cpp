@@ -2,6 +2,7 @@
 // This file is licensed under the terms of the ZLib license
 // https://www.zlib.net/zlib_license.html
 #include <commands/CCommandHandler.h>
+#include <commands/CCmdAddMarbleGP.h>
 #include <commands/CCmdExportMesh.h>
 #include <commands/CCmdSaveTrack.h>
 #include <commands/CCmdLoadTrack.h>
@@ -72,12 +73,13 @@ namespace dustbin {
 
     const std::wstring CCmdMainMenu::getButtonText(enMenuItem a_eButton) {
       switch (a_eButton) {
-        case enMenuItem::NewTrack  : return L"New Track";
-        case enMenuItem::Load      : return L"Load Track";
-        case enMenuItem::Save      : return L"Save Track";
-        case enMenuItem::SaveAs    : return L"Save Track as";
-        case enMenuItem::Base      : return L"Create Base";
-        case enMenuItem::ExportMesh: return L"Export as Mesh";
+        case enMenuItem::NewTrack      : return L"New Track";
+        case enMenuItem::Load          : return L"Load Track";
+        case enMenuItem::Save          : return L"Save Track";
+        case enMenuItem::SaveAs        : return L"Save Track as";
+        case enMenuItem::Base          : return L"Create Base";
+        case enMenuItem::ExportMesh    : return L"Export as Mesh";
+        case enMenuItem::ExportMarbleGP: return L"Add track to MarbleGP";
 
         default:
           return L"--";
@@ -179,6 +181,12 @@ namespace dustbin {
                 case enMenuItem::Base:
                   m_pEditTrack->setBaseParameters(2.5f, 2.5f);
                   break;
+
+                case enMenuItem::ExportMarbleGP: {
+                  commands::CCmdAddMarbleGP *l_pCmd = new commands::CCmdAddMarbleGP(m_pEditTrack);
+                  m_pHandler->addCommand(l_pCmd);
+                  break;
+                }
 
                 case enMenuItem::ExportMesh: {
                   commands::CCmdExportMesh *l_pCmd = new commands::CCmdExportMesh("testtrack.obj", m_pEditTrack);
