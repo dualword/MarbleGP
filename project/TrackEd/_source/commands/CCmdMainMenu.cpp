@@ -181,7 +181,7 @@ namespace dustbin {
                   break;
 
                 case enMenuItem::ExportMesh: {
-                  commands::CCmdExportMesh *l_pCmd = new commands::CCmdExportMesh("testtrack.stl", m_pEditTrack);
+                  commands::CCmdExportMesh *l_pCmd = new commands::CCmdExportMesh("testtrack.obj", m_pEditTrack);
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }
