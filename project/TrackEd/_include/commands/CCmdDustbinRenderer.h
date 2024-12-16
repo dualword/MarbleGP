@@ -22,6 +22,10 @@ namespace dustbin {
         irr::scene::ISceneManager *m_pSmgr;       /**< The Irrlicht scene manager */
         irr::gui::IGUIEnvironment *m_pGui;        /**< The Irrlicht GUI environment */
 
+        irr::scene::ISceneNode *findNodeByType(irr::scene::ISceneNode *a_pParent, irr::scene::ESCENE_NODE_TYPE a_eType);
+
+        irr::scene::ISceneNode *findNodeByName(irr::scene::ISceneNode *a_pParent, const std::string &a_sName);
+
       public:
         CCmdDustbinRenderer(irr::IrrlichtDevice *a_pDevice);
         virtual ~CCmdDustbinRenderer();

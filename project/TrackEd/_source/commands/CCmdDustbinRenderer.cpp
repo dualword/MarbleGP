@@ -1,6 +1,7 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
 #include <shaders/CDustbinShaderDefines.h>
 #include <commands/CCmdDustbinRenderer.h>
+#include <scenenodes/CDustbinLight.h>
 #include <shaders/CDustbinShaders.h>
 #include <helpers/CTextureHelpers.h>
 #include <CDefines.h>
@@ -17,12 +18,38 @@ namespace dustbin {
       m_pGui   (a_pDevice->getGUIEnvironment())
     {
       m_pShader = new shaders::CDustbinShaders(m_pDevice);
-      m_pShader->setRenderOptions(shaders::enShadowMode::Off, shaders::enShadowQuality::High);
+      m_pShader->setRenderOptions(shaders::enShadowMode::SolidTrans, shaders::enShadowQuality::High);
     }
 
     CCmdDustbinRenderer::~CCmdDustbinRenderer() {
       delete m_pShader;
       m_pShader = nullptr;
+    }
+
+    irr::scene::ISceneNode *CCmdDustbinRenderer::findNodeByType(irr::scene::ISceneNode *a_pParent, irr::scene::ESCENE_NODE_TYPE a_eType) {
+      if (a_pParent->getType() == a_eType)
+        return a_pParent;
+
+      for (auto l_pChild: a_pParent->getChildren()) {
+        irr::scene::ISceneNode *l_pRet = findNodeByType(l_pChild, a_eType);
+        if (l_pRet != nullptr)
+          return l_pRet;
+      }
+
+      return nullptr;
+    }
+
+    irr::scene::ISceneNode *CCmdDustbinRenderer::findNodeByName(irr::scene::ISceneNode *a_pParent, const std::string &a_sName) {
+      if (a_sName == a_pParent->getName())
+        return a_pParent;
+
+      for (auto l_pChild: a_pParent->getChildren()) {
+        irr::scene::ISceneNode *l_pRet = findNodeByName(l_pChild, a_sName);
+        if (l_pRet != nullptr)
+          return l_pRet;
+      }
+
+      return nullptr;
     }
 
     /**
@@ -78,16 +105,32 @@ namespace dustbin {
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iSceneLoaded) {
           if (m_pShader != nullptr && m_pSmgr != nullptr) {
+            m_pShader->clear();
             helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode(), nullptr, helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
-            m_pShader->setRenderOptions(shaders::enShadowMode::Off, shaders::enShadowQuality::High);
+            m_pShader->setRenderOptions(shaders::enShadowMode::TransColor, shaders::enShadowQuality::High);
             m_pShader->addLightCamera();
           }
         }
         else if (a_cEvent.UserEvent.UserData1 == c_iUpdateShader) {
           if (m_pShader != nullptr && m_pSmgr != nullptr) {
+            scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(findNodeByType(m_pSmgr->getRootSceneNode(), (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_DustbinLightId));
+
+            if (l_pLight != nullptr) {
+              irr::scene::IMeshSceneNode *l_pTrack = reinterpret_cast<irr::scene::IMeshSceneNode *>(findNodeByName(m_pSmgr->getRootSceneNode(), "GeneratedTrack"));
+
+              if (l_pTrack != nullptr) {
+                irr::core::aabbox3df l_cBox = l_pTrack->getMesh()->getBoundingBox();
+                irr::core::vector3df l_cTgt = l_cBox.getCenter();
+
+                l_cTgt.Y = 0.0f;
+
+                l_pLight->setLightTarget(l_cTgt);
+              }
+            }
+
             m_pShader->clear();
             helpers::addNodeToShader(m_pShader, m_pSmgr->getRootSceneNode(), nullptr, helpers::countMeshSceneNodes(m_pSmgr->getRootSceneNode()));
-            m_pShader->setRenderOptions(shaders::enShadowMode::Off, shaders::enShadowQuality::High);
+            m_pShader->setRenderOptions(shaders::enShadowMode::TransColor, shaders::enShadowQuality::High);
             m_pShader->addLightCamera();
           }
         }

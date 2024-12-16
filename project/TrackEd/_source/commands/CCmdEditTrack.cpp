@@ -1,5 +1,6 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <scenenodes/CDustbinLight.h>
 #include <animators/CPlaneAnimator.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
@@ -878,6 +879,15 @@ namespace dustbin {
             m_vParts.push_back(l_pStart);
             addReferencePoints(l_pStart);
             createTrack();
+
+            scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(m_pSmgr->addSceneNode(scenenodes::g_DustbinLightName));
+            if (l_pLight != nullptr) {
+              l_pLight->setPosition(irr::core::vector3df(-100.55f, 75.72f, 143.74f));
+              l_pLight->setLightTarget(irr::core::vector3df(0.0f));
+              l_pLight->setNearValue(5.0f);
+              l_pLight->setFarValue(1000.0f);
+              l_pLight->setFieldOfView(2000.0f);
+            }
 
             irr::SEvent l_cEvent;
             l_cEvent.EventType = irr::EET_USER_EVENT;

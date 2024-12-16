@@ -4,6 +4,7 @@
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CCheckpointNode.h>
+#include <scenenodes/CDustbinLight.h>
 #include <scenenodes/CRespawnNode.h>
 #include <scenenodes/CPhysicsNode.h>
 #include <scenenodes/CAiPathNode.h>
@@ -208,6 +209,14 @@ namespace dustbin {
             l_pTrack->addToAiNode(l_pAi, nullptr);
           }
         }
+
+        {
+          scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(findNode(l_pOldSmgr->getRootSceneNode(), (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_DustbinLightId));
+          if (l_pLight != nullptr) {
+            l_pLight->clone(l_pSmgr->getRootSceneNode(), l_pSmgr);
+          }
+        }
+
 
         l_pSmgr->saveScene(l_pXmlWriter, l_pFs->getWorkingDirectory());
         l_pSmgr->drop();
