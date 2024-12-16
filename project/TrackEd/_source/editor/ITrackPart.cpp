@@ -21,7 +21,8 @@ namespace dustbin {
       m_iNext      (-1),
       m_pPrevious  (a_pPrevious),
       m_pNext      (nullptr),
-      m_cNormal    (a_cNormal)
+      m_cNormal    (a_cNormal),
+      m_fWidth     (0.75f)
     {
       if (m_pPrevious != nullptr) {
         m_iPrevious = m_pPrevious->getId();
@@ -230,6 +231,14 @@ namespace dustbin {
     */
     const std::string& ITrackPart::getType() {
       return m_sType;
+    }
+
+    /**
+    * Get the width of this track part
+    * @return the width of this track part
+    */
+    irr::f32 ITrackPart::getWidth() {
+      return m_fWidth;
     }
 
     /**

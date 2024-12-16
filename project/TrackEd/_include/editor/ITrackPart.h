@@ -50,6 +50,8 @@ namespace dustbin {
         irr::core::line3df m_cEnd;      /**< The end of the part */
 
       protected:
+        irr::f32 m_fWidth;    /**< The width of this part */
+
         const irr::core::vector3df &getStartNormal();
 
         /**
@@ -257,6 +259,13 @@ namespace dustbin {
         * @return true if so, false otherwise
         */
         bool isStartSegment();
+
+        /**
+        * Get the width of this track part
+        * @return the width of this track part
+        */
+        irr::f32 getWidth();
+        
 
         /**
         * Get the id of the previous track part, needed for deserialization

@@ -768,7 +768,7 @@ namespace dustbin {
                 
                 std::vector<irr::core::vector3df> l_vRefPoints = {
                   m_vParts.back()->getReferencePoints().back(),
-                  m_vParts.back()->getReferencePoints().back() + 0.5f * l_cDirection.normalize()
+                  m_vParts.back()->getReferencePoints().back() + l_pNew->getWidth() * l_cDirection.normalize()
                 };
 
                 l_pNew->setReferencePoints(l_vRefPoints);

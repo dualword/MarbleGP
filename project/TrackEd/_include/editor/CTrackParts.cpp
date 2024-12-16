@@ -26,7 +26,7 @@ namespace dustbin {
       double l_fLength = calculateCurve(l_vCurve);
       l_fLength = std::ceil(l_fLength);
 
-      irr::f32 l_fWidth = 0.25f;
+      irr::f32 l_fWidth = m_fWidth / 2.0f;
       std::vector<irr::core::line3df> l_vBottom;
 
       irr::core::vector3df l_cOld;
@@ -45,7 +45,7 @@ namespace dustbin {
           irr::core::vector3df l_cSide = (l_cDirection.crossProduct(getNormal())).normalize();
 
           if (l_cPos != l_vCurve.back() || getNext() == nullptr || getNext()->getPrevious() != nullptr)
-            l_vBottom.push_back(irr::core::line3df(l_cPos + 0.25f * l_cSide, l_cPos - 0.25f * l_cSide));
+            l_vBottom.push_back(irr::core::line3df(l_cPos + m_fWidth / 2.0f * l_cSide, l_cPos - m_fWidth / 2.0f * l_cSide));
           else
             l_vBottom.push_back(getNext()->getStart());
         }
@@ -244,7 +244,7 @@ namespace dustbin {
           bezier::Bezier<1> l_cBezier(l_vPoints);
 
           l_fRet = l_cBezier.length();
-          int l_iSteps = (int)(l_fRet / 0.5);
+          int l_iSteps = (int)(l_fRet / m_fWidth);
 
           if (l_iSteps % 2 != 0) l_iSteps++;
 
@@ -399,8 +399,8 @@ namespace dustbin {
         irr::core::vector3df l_cNormal    = irr::core::vector3df(0.0f, 1.0f, 0.0f);
         irr::core::vector3df l_cSide      = l_cDirection.crossProduct(l_cNormal).normalize();
 
-        a_cPos1 = m_vTrack[a_iIndex] + 0.25f * l_cSide;
-        a_cPos2 = m_vTrack[a_iIndex] - 0.25f * l_cSide;
+        a_cPos1 = m_vTrack[a_iIndex] + m_fWidth / 2.0f * l_cSide;
+        a_cPos2 = m_vTrack[a_iIndex] - m_fWidth / 2.0f * l_cSide;
 
         return true;
       }
@@ -425,17 +425,17 @@ namespace dustbin {
           irr::core::vector3df l_cSideNew = (l_cOld - l_cPos).crossProduct(irr::core::vector3df(0.0f, 1.0f, 0.0f)).normalize();
 
           irr::core::triangle3df l_cTriangle = irr::core::triangle3df(
-            50.0f * (l_cPos - 0.25f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cPos + 0.25f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cOld + 0.25f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f)
+            50.0f * (l_cPos - m_fWidth / 2.0f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
+            50.0f * (l_cPos + m_fWidth / 2.0f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
+            50.0f * (l_cOld + m_fWidth / 2.0f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f)
           );
 
           a_pDrv->draw3DTriangle(l_cTriangle, l_cColor);
 
           l_cTriangle = irr::core::triangle3df(
-            50.0f * (l_cOld + 0.25f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cOld - 0.25f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cPos - 0.25f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f)
+            50.0f * (l_cOld + m_fWidth / 2.0f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
+            50.0f * (l_cOld - m_fWidth / 2.0f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
+            50.0f * (l_cPos - m_fWidth / 2.0f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f)
           );
 
           a_pDrv->draw3DTriangle(l_cTriangle, l_cColor);
@@ -495,7 +495,7 @@ namespace dustbin {
 
         l_pThis->m_cPosition   = 50.0f * m_vTrack[l_iIndex] + 2.51f * l_cNormal;
         l_pThis->m_cSideVector = l_cSide;
-        l_pThis->m_fWidth      = 50.0f * 0.24f;
+        l_pThis->m_fWidth      = 0.98f * 25.0f * m_fWidth;
         l_pThis->m_cNormal     = getNormal();
 
         if (a_pLast != nullptr) {
@@ -582,18 +582,21 @@ namespace dustbin {
     void CTrackPart_Checkpoint::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
       irr::core::vector3df l_cSide = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
 
+      irr::f32 f1 = m_fWidth / 2.0f;
+      irr::f32 f2 = 3.0f * m_fWidth / 2.0f;
+
       irr::core::vector3df l_aRespawn[] = {
-        m_bRespawnLeft ? m_cStart - 0.25f * l_cSide : m_cStart + 0.75f * l_cSide,
-        m_bRespawnLeft ? m_cStart - 0.75f * l_cSide : m_cStart + 0.25f * l_cSide,
-        m_bRespawnLeft ? m_cEnd   - 0.75f * l_cSide : m_cEnd   + 0.25f * l_cSide,
-        m_bRespawnLeft ? m_cEnd   - 0.25f * l_cSide : m_cEnd   + 0.75f * l_cSide
+        m_bRespawnLeft ? m_cStart - f1 * l_cSide : m_cStart + f2 * l_cSide,
+        m_bRespawnLeft ? m_cStart - f2 * l_cSide : m_cStart + f1 * l_cSide,
+        m_bRespawnLeft ? m_cEnd   - f2 * l_cSide : m_cEnd   + f2 * l_cSide,
+        m_bRespawnLeft ? m_cEnd   - f1 * l_cSide : m_cEnd   + f2 * l_cSide
       };
 
       irr::core::vector3df l_aVertices[] = {
         getPrevious()->getEnd().end   + 0.05f * getNormal(),  // +0.25
         getPrevious()->getEnd().start + 0.05f * getNormal(),  // -0.25
-        m_cEnd   - 0.25f * l_cSide    + 0.05f * getNormal(),
-        m_cEnd   + 0.25f * l_cSide    + 0.05f * getNormal()
+        m_cEnd   - f1 * l_cSide    + 0.05f * getNormal(),
+        m_cEnd   + f1 * l_cSide    + 0.05f * getNormal()
       };
 
       irr::core::position2df l_aTexture[] = {
@@ -636,8 +639,8 @@ namespace dustbin {
 
       l_aVertices[0] = getPrevious()->getEnd().start;
       l_aVertices[1] = getPrevious()->getEnd().end;
-      l_aVertices[2] = m_cEnd   + 0.25f * l_cSide;
-      l_aVertices[3] = m_cEnd   - 0.25f * l_cSide;
+      l_aVertices[2] = m_cEnd   + f1 * l_cSide;
+      l_aVertices[3] = m_cEnd   - f1 * l_cSide;
 
       l_aTexture[0].X = l_aVertices[0].X; l_aTexture[0].Y = l_aVertices[0].Z;
       l_aTexture[1].X = l_aVertices[1].X; l_aTexture[1].Y = l_aVertices[1].Z;
@@ -649,10 +652,10 @@ namespace dustbin {
       if (a_vBuffers.size() > c_iBufferIdxBottom)
         addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false);
 
-      l_aVertices[0] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide                        : m_cStart - 0.25f * l_cSide;
-      l_aVertices[1] = m_bRespawnLeft ? getPrevious()->getEnd().end                       : m_cEnd   - 0.25f * l_cSide;
-      l_aVertices[2] = m_bRespawnLeft ? getPrevious()->getEnd().end + 0.05f * getNormal() : m_cEnd   - 0.25f * l_cSide + 0.05f * getNormal();
-      l_aVertices[3] = m_bRespawnLeft ? m_cEnd   + 0.25f * l_cSide  + 0.05f * getNormal() : m_cStart - 0.25f * l_cSide + 0.05f * getNormal();
+      l_aVertices[0] = m_bRespawnLeft ? m_cEnd   + f1 * l_cSide                        : m_cStart - f1 * l_cSide;
+      l_aVertices[1] = m_bRespawnLeft ? getPrevious()->getEnd().end                       : m_cEnd   - f1 * l_cSide;
+      l_aVertices[2] = m_bRespawnLeft ? getPrevious()->getEnd().end + 0.05f * getNormal() : m_cEnd   - f1 * l_cSide + 0.05f * getNormal();
+      l_aVertices[3] = m_bRespawnLeft ? m_cEnd   + f1 * l_cSide  + 0.05f * getNormal() : m_cStart - f1 * l_cSide + 0.05f * getNormal();
 
       l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
       l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
@@ -710,7 +713,7 @@ namespace dustbin {
           scenenodes::getNextSceneNodeId(),
           50.0f * m_cStart + 2.5f * getNormal(),
           (m_cEnd - m_cStart).getHorizontalAngle(),
-          irr::core::vector3df(50.0f * 0.5f)
+          irr::core::vector3df(50.0f * m_fWidth)
         );
 
         m_pCheckpoint->getMaterial(0).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/checkpoint_white.png"));
@@ -924,9 +927,9 @@ namespace dustbin {
       irr::core::vector3df l_cRspn = (m_cStart + m_cEnd) / 2.0f;
 
       if (m_bRespawnLeft)
-        l_cRspn -= 0.5f * l_cSide;
+        l_cRspn -= m_fWidth * l_cSide;
       else
-        l_cRspn += 0.5f * l_cSide;
+        l_cRspn += m_fWidth * l_cSide;
 
       l_vRet.push_back(m_cStart);
       l_vRet.push_back(l_cRspn),
@@ -948,7 +951,7 @@ namespace dustbin {
 
       l_pThis->m_cPosition   = 50.0f * (l_cCenter + 0.055f * getNormal());
       l_pThis->m_cSideVector = l_cSide;
-      l_pThis->m_fWidth      = 50.0f * 0.25f;
+      l_pThis->m_fWidth      = 50.0f * m_fWidth / 2.0f;
       l_pThis->m_cNormal     = getNormal();
       l_pThis->m_eType       = scenenodes::CAiPathNode::enSegmentType::Respawn;
       l_pThis->m_iRespawn    = m_pRespawn->getID();
