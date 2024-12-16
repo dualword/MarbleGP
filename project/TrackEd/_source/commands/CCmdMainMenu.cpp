@@ -3,11 +3,13 @@
 // https://www.zlib.net/zlib_license.html
 #include <commands/CCommandHandler.h>
 #include <commands/CCmdAddMarbleGP.h>
+#include <commands/CCmdSaveTrackAs.h>
 #include <commands/CCmdExportMesh.h>
 #include <commands/CCmdSaveTrack.h>
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdMainMenu.h>
+#include <IGlobal.h>
 
 namespace dustbin {
   namespace commands {
@@ -166,17 +168,27 @@ namespace dustbin {
               switch (l_tBtn.first) {
                 case enMenuItem::NewTrack: printf("New Track\n"); break;
                 case enMenuItem::Load: {
-                  commands::CCmdLoadTrack *l_pCmd = new commands::CCmdLoadTrack("testtrack.dbt", m_pEditTrack);
+                  commands::CCmdLoadTrack *l_pCmd = new commands::CCmdLoadTrack(m_pEditTrack);
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }
                 case enMenuItem::Save: {
-                  commands::CCmdSaveTrack *l_pCmd = new commands::CCmdSaveTrack("testtrack.dbt", m_pEditTrack->getTrack());
-                  m_pHandler->addCommand(l_pCmd);
+                  if (tracked::IGlobal::getInstance()->getGlobal("openfile") == "") {
+                    commands::CCmdSaveTrackAs *l_pCmd = new commands::CCmdSaveTrackAs(m_pEditTrack->getTrack(), m_pHandler);
+                    m_pHandler->addCommand(l_pCmd);
+                  }
+                  else {
+                    commands::CCmdSaveTrack *l_pCmd = new commands::CCmdSaveTrack(m_pEditTrack->getTrack());
+                    m_pHandler->addCommand(l_pCmd);
+                  }
                   break;
                 }
 
-                case enMenuItem::SaveAs  : printf("Save Track as\n"); break;
+                case enMenuItem::SaveAs: {
+                  commands::CCmdSaveTrackAs *l_pCmd = new commands::CCmdSaveTrackAs(m_pEditTrack->getTrack(), m_pHandler);
+                  m_pHandler->addCommand(l_pCmd);
+                  break;
+                }
 
                 case enMenuItem::Base:
                   m_pEditTrack->setBaseParameters(2.5f, 2.5f);

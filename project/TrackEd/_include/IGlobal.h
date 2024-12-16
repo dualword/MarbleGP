@@ -53,6 +53,20 @@ namespace dustbin {
         virtual void setSetting(const std::string& a_sKey, const std::string& a_sValue) = 0;
 
         /**
+        * Get a global variable not stored when the program quits
+        * @param a_sKey the name of the variable
+        * @return the value of the variable, en empty string if the name was not found
+        */
+        virtual std::string getGlobal(const std::string &a_sKey) = 0;
+
+        /**
+        * Set a global variable not stored when the program quits
+        * @param a_sKey the name of the variable
+        * @param a_sValue the value of the variable
+        */
+        virtual void setGlobal(const std::string &a_sKey, const std::string &a_sValue) = 0;
+
+        /**
         * A callback called before "endscene" is called. In this
         * place the commands can draw something (if necessary)
         */

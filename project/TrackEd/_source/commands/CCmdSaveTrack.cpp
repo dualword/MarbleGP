@@ -9,38 +9,41 @@ namespace dustbin {
   namespace commands {
     /**
     * The constructor. All work is done here
-    * @param a_sFileName the file name to save the track to
     * @param a_vTrack the vector with the track parts to be saved
     */
-    CCmdSaveTrack::CCmdSaveTrack(const std::string& a_sFileName, const std::vector<tracked::ITrackPart *>& a_vTrack) :
+    CCmdSaveTrack::CCmdSaveTrack(const std::vector<tracked::ITrackPart *>& a_vTrack) :
       ICommand("CmdSaveTrack")
     {
       tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
 
-      irr::io::IXMLWriter *l_pWriter = l_pGlobal->getFileSystem()->createXMLWriter(a_sFileName.c_str());
+      std::string l_sFileName = tracked::IGlobal::getInstance()->getGlobal("openfile");
 
-      if (l_pWriter != nullptr) {
-        l_pWriter->writeXMLHeader();
-        l_pWriter->writeElement(L"DustbinGamesTrack", false);
-        l_pWriter->writeLineBreak();
+      if (l_sFileName != "") {
+        irr::io::IXMLWriter *l_pWriter = l_pGlobal->getFileSystem()->createXMLWriter(l_sFileName.c_str());
 
-        for (auto l_pPart : a_vTrack) {
-          l_pWriter->writeElement(L"TrackPart", false, L"type", helpers::s2ws(l_pPart->getType()).c_str());
+        if (l_pWriter != nullptr) {
+          l_pWriter->writeXMLHeader();
+          l_pWriter->writeElement(L"DustbinGamesTrack", false);
           l_pWriter->writeLineBreak();
 
-          irr::io::IAttributes *l_pAttr = l_pGlobal->getFileSystem()->createEmptyAttributes();
-          l_pPart->serialize(*l_pAttr);
-          l_pAttr->write(l_pWriter, false);
-          l_pAttr->drop();
+          for (auto l_pPart : a_vTrack) {
+            l_pWriter->writeElement(L"TrackPart", false, L"type", helpers::s2ws(l_pPart->getType()).c_str());
+            l_pWriter->writeLineBreak();
 
-          l_pWriter->writeClosingTag(L"TrackPart");
+            irr::io::IAttributes *l_pAttr = l_pGlobal->getFileSystem()->createEmptyAttributes();
+            l_pPart->serialize(*l_pAttr);
+            l_pAttr->write(l_pWriter, false);
+            l_pAttr->drop();
+
+            l_pWriter->writeClosingTag(L"TrackPart");
+            l_pWriter->writeLineBreak();
+          }
+
+          l_pWriter->writeClosingTag(L"DustbinGamesTrack");
           l_pWriter->writeLineBreak();
+
+          l_pWriter->drop();
         }
-
-        l_pWriter->writeClosingTag(L"DustbinGamesTrack");
-        l_pWriter->writeLineBreak();
-
-        l_pWriter->drop();
       }
     }
 

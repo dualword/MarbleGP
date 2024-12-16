@@ -22,10 +22,9 @@ namespace dustbin {
       public:
         /**
         * The constructor. All work is done here
-        * @param a_sFileName the file name to save the track to
         * @param a_vTrack the vector with the track parts to be saved
         */
-        CCmdSaveTrack(const std::string &a_sFileName, const std::vector<tracked::ITrackPart *> &a_vTrack);
+        CCmdSaveTrack(const std::vector<tracked::ITrackPart *> &a_vTrack);
         virtual ~CCmdSaveTrack();
 
         /**

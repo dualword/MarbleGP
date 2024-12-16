@@ -70,6 +70,7 @@
     <ClCompile Include="..\_source\commands\CCmdLoadTrack.cpp" />
     <ClCompile Include="..\_source\commands\CCmdMainMenu.cpp" />
     <ClCompile Include="..\_source\commands\CCmdSaveTrack.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdSaveTrackAs.cpp" />
     <ClCompile Include="..\_source\commands\CCommandHandler.cpp" />
     <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\_include\commands\CCmdLoadTrack.h" />
     <ClInclude Include="..\_include\commands\CCmdMainMenu.h" />
     <ClInclude Include="..\_include\commands\CCmdSaveTrack.h" />
+    <ClInclude Include="..\_include\commands\CCmdSaveTrackAs.h" />
     <ClInclude Include="..\_include\commands\CCommandHandler.h" />
     <ClInclude Include="..\_include\commands\ICommand.h" />
     <ClInclude Include="..\_include\editor\CTrackParts.h" />

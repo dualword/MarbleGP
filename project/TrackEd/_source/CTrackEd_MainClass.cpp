@@ -161,6 +161,27 @@ namespace dustbin {
     }
 
     /**
+    * Get a global variable not stored when the program quits
+    * @param a_sKey the name of the variable
+    * @return the value of the variable, en empty string if the name was not found
+    */
+    std::string CTrackEd_MainClass::getGlobal(const std::string &a_sKey) {
+      if (m_mGlobals.find(a_sKey) != m_mGlobals.end())
+        return m_mGlobals[a_sKey];
+      else
+        return "";
+    }
+
+    /**
+    * Set a global variable not stored when the program quits
+    * @param a_sKey the name of the variable
+    * @param a_sValue the value of the variable
+    */
+    void CTrackEd_MainClass::setGlobal(const std::string &a_sKey, const std::string &a_sValue) {
+      m_mGlobals[a_sKey] = a_sValue;
+    }
+
+    /**
     * A callback called before "endscene" is called. In this
     * place the commands can draw something (if necessary)
     */

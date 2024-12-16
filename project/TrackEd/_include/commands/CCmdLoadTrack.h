@@ -24,10 +24,9 @@ namespace dustbin {
       public:
         /**
         * The constructor. All work is done here
-        * @param a_sFileName the file name to save the track to
         * @param a_pEditTrack the edit track command
         */
-        CCmdLoadTrack(const std::string &a_sFileName, CCmdEditTrack *a_pEditTrack);
+        CCmdLoadTrack(CCmdEditTrack *a_pEditTrack);
         virtual ~CCmdLoadTrack();
 
         /**

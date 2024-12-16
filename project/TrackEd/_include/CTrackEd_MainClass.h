@@ -22,6 +22,7 @@ namespace dustbin {
     class CTrackEd_MainClass : public IGlobal, public commands::CCommandHandler {
       private:
         std::map<std::string, std::string> m_mSettings;   /**< The settings map */
+        std::map<std::string, std::string> m_mGlobals;    /**< The map with the global values, not stored when the program ends */
 
         irr::IrrlichtDevice       *m_pDevice;     /**< The Irrlicht device */
         irr::scene::ISceneManager *m_pSmgr;       /**< The Irrlicht scene manager */
@@ -84,6 +85,20 @@ namespace dustbin {
         * @param a_sValue the value of the setting
         */
         virtual void setSetting(const std::string& a_sKey, const std::string& a_sValue) override;
+
+        /**
+        * Get a global variable not stored when the program quits
+        * @param a_sKey the name of the variable
+        * @return the value of the variable, en empty string if the name was not found
+        */
+        virtual std::string getGlobal(const std::string &a_sKey) override;
+
+        /**
+        * Set a global variable not stored when the program quits
+        * @param a_sKey the name of the variable
+        * @param a_sValue the value of the variable
+        */
+        virtual void setGlobal(const std::string &a_sKey, const std::string &a_sValue) override;
 
         /**
         * A callback called before "endscene" is called. In this
