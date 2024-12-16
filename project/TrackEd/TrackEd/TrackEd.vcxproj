@@ -74,6 +74,7 @@
     <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart.cpp" />
     <ClCompile Include="..\_source\IGlobal.cpp" />
+    <ClCompile Include="..\_source\platform\CTrackEdPlatformWindows.cpp" />
     <ClCompile Include="..\_source\TrackEd_main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +128,7 @@
     <ClInclude Include="..\_include\editor\ITrackPart.h" />
     <ClInclude Include="..\_include\IGlobal.h" />
     <ClInclude Include="..\_include\CTrackEd_MainClass.h" />
+    <ClInclude Include="..\_include\platform\CTrackEdPlatform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -315,7 +317,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;gdi32.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.3</Version>
     </Link>
     <Manifest>
@@ -340,7 +342,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;Shell32.lib;Gdi32.lib;Advapi32.lib;ws2_32.lib;irrKlang.lib;Shlwapi.lib;Irrlicht.lib;ole32.lib;gdi32.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.1</Version>
     </Link>
     <Manifest>

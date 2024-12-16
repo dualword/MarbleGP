@@ -216,6 +216,9 @@
     <ClCompile Include="..\_source\commands\CCmdAddMarbleGP.cpp">
       <Filter>Source\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\platform\CTrackEdPlatformWindows.cpp">
+      <Filter>Source\platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -367,6 +370,9 @@
     </ClInclude>
     <ClInclude Include="..\_include\commands\CCmdAddMarbleGP.h">
       <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\platform\CTrackEdPlatform.h">
+      <Filter>Include\platform</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
