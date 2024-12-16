@@ -79,7 +79,16 @@ namespace dustbin {
     }
 
     irr::scene::ISceneNode *CRostrumNode::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager) {
-      return new CRostrumNode(a_pNewParent != nullptr ? a_pNewParent : Parent, a_pNewManager != nullptr ? a_pNewManager : SceneManager, -1);
+      irr::scene::ISceneNode *l_pRet = new CRostrumNode(a_pNewParent != nullptr ? a_pNewParent : Parent, a_pNewManager != nullptr ? a_pNewManager : SceneManager, -1);
+
+      irr::io::IAttributes *l_pAttr = SceneManager->getFileSystem()->createEmptyAttributes();
+      if (l_pAttr != nullptr) {
+        serializeAttributes(l_pAttr);
+        l_pRet->deserializeAttributes(l_pAttr);
+        l_pAttr->drop();
+      }
+
+      return l_pRet;
     }
 
     irr::core::vector3df CRostrumNode::getRostrumPosition(int a_iPosition) {

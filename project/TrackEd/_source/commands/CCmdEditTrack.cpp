@@ -2,6 +2,7 @@
 #include <scenenodes/CStartingGridSceneNode.h>
 #include <scenenodes/CDustbinLight.h>
 #include <animators/CPlaneAnimator.h>
+#include <scenenodes/CRostrumNode.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdMainMenu.h>
@@ -887,6 +888,14 @@ namespace dustbin {
               l_pLight->setNearValue(5.0f);
               l_pLight->setFarValue(1000.0f);
               l_pLight->setFieldOfView(2000.0f);
+            }
+
+            scenenodes::CRostrumNode *l_pRostrum = reinterpret_cast<scenenodes::CRostrumNode *>(m_pSmgr->addSceneNode(scenenodes::g_RostrumNodeName));
+            if (l_pRostrum != nullptr) {
+              l_pRostrum->setPosition(irr::core::vector3df(100.0f, 30.5f, 25.0f));
+              l_pRostrum->setRotation(irr::core::vector3df(0.0f, -45.0f, 0.0f));
+
+              irr::core::aabbox3df l_cBox = l_pRostrum->getBoundingBox();
             }
 
             irr::SEvent l_cEvent;

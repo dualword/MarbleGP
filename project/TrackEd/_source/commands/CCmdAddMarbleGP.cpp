@@ -7,6 +7,7 @@
 #include <scenenodes/CDustbinLight.h>
 #include <scenenodes/CRespawnNode.h>
 #include <scenenodes/CPhysicsNode.h>
+#include <scenenodes/CRostrumNode.h>
 #include <scenenodes/CAiPathNode.h>
 #include <scenenodes/CDustbinId.h>
 
@@ -217,6 +218,11 @@ namespace dustbin {
           }
         }
 
+        {
+          irr::scene::ISceneNode *l_pRostrum = findNode(l_pOldSmgr->getRootSceneNode(), (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RostrumNodeId);
+          if (l_pRostrum != nullptr)
+            l_pRostrum->clone(l_pWorld, l_pSmgr);
+        }
 
         l_pSmgr->saveScene(l_pXmlWriter, l_pFs->getWorkingDirectory());
         l_pSmgr->drop();
