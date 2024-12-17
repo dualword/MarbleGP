@@ -267,6 +267,7 @@ namespace dustbin {
       a_cAttr.addInt     ("previous", m_iPrevious);
       a_cAttr.addInt     ("next"    , m_iNext);
       a_cAttr.addVector3d("normal"  , m_cNormal);
+      a_cAttr.addFloat   ("width"   , m_fWidth);
     }
 
     /**
@@ -279,6 +280,7 @@ namespace dustbin {
       m_iPrevious   = a_cAttr.getAttributeAsInt     ("previous");
       m_iNext       = a_cAttr.getAttributeAsInt     ("next");
       m_cNormal     = a_cAttr.getAttributeAsVector3d("normal");
+      m_fWidth      = a_cAttr.getAttributeAsFloat   ("width");
     }
 
   }

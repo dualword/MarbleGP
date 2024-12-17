@@ -45,7 +45,7 @@ namespace dustbin {
           irr::core::vector3df l_cSide = (l_cDirection.crossProduct(getNormal())).normalize();
 
           if (l_cPos != l_vCurve.back() || getNext() == nullptr || getNext()->getPrevious() != nullptr)
-            l_vBottom.push_back(irr::core::line3df(l_cPos + m_fWidth / 2.0f * l_cSide, l_cPos - m_fWidth / 2.0f * l_cSide));
+            l_vBottom.push_back(irr::core::line3df(l_cPos + l_fWidth * l_cSide, l_cPos - l_fWidth * l_cSide));
           else
             l_vBottom.push_back(getNext()->getStart());
         }
@@ -495,8 +495,9 @@ namespace dustbin {
 
         l_pThis->m_cPosition   = 50.0f * m_vTrack[l_iIndex] + 2.51f * l_cNormal;
         l_pThis->m_cSideVector = l_cSide;
-        l_pThis->m_fWidth      = 0.98f * 25.0f * m_fWidth;
+        l_pThis->m_fWidth      = 25.0f * m_fWidth;
         l_pThis->m_cNormal     = getNormal();
+        l_pThis->m_fFactor     = 0.90f;
 
         if (a_pLast != nullptr) {
           a_pLast->m_vNextSegments.push_back(l_pThis);
@@ -946,15 +947,15 @@ namespace dustbin {
     void CTrackPart_Checkpoint::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
       scenenodes::CAiPathNode::SAiPathSection *l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
 
-      irr::core::vector3df l_cCenter = (m_cStart + m_cEnd) / 2.0f;
       irr::core::vector3df l_cSide   = (m_cStart - m_cEnd).crossProduct(getNormal()).normalize();
 
-      l_pThis->m_cPosition   = 50.0f * (l_cCenter + 0.055f * getNormal());
+      l_pThis->m_cPosition   = 50.0f * (m_cStart + 0.055f * getNormal());
       l_pThis->m_cSideVector = l_cSide;
-      l_pThis->m_fWidth      = 50.0f * m_fWidth / 2.0f;
+      l_pThis->m_fWidth      = 25.0f * m_fWidth;
       l_pThis->m_cNormal     = getNormal();
       l_pThis->m_eType       = scenenodes::CAiPathNode::enSegmentType::Respawn;
       l_pThis->m_iRespawn    = m_pRespawn->getID();
+      l_pThis->m_fFactor     = 0.85f;
 
       if (a_pLast != nullptr) {
         a_pLast->m_vNextSegments.push_back(l_pThis);
@@ -962,6 +963,26 @@ namespace dustbin {
       }
 
       a_pAi->addPathSection(l_pThis);
+
+      a_pLast = l_pThis;
+
+      l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
+
+      l_pThis->m_cPosition   = 50.0f * (m_cEnd + 0.055f * getNormal());
+      l_pThis->m_cSideVector = l_cSide;
+      l_pThis->m_fWidth      = 25.0f * m_fWidth;
+      l_pThis->m_cNormal     = getNormal();
+      l_pThis->m_eType       = scenenodes::CAiPathNode::enSegmentType::Default;
+      l_pThis->m_iRespawn    = m_pRespawn->getID();
+      l_pThis->m_fFactor     = 0.85f;
+
+      if (a_pLast != nullptr) {
+        a_pLast->m_vNextSegments.push_back(l_pThis);
+        l_pThis->m_vPrevSegments.push_back(a_pLast);
+      }
+
+      a_pAi->addPathSection(l_pThis);
+
 
       if (getNext() != nullptr && getNext()->getPrevious() != nullptr) {
         getNext()->addToAiNode(a_pAi, l_pThis);
