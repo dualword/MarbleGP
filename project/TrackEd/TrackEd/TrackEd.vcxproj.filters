@@ -195,9 +195,6 @@
     <ClCompile Include="..\_source\editor\ITrackPart.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
-    <ClCompile Include="..\_include\editor\CTrackParts.cpp">
-      <Filter>Source\editor</Filter>
-    </ClCompile>
     <ClCompile Include="..\_source\animators\CPlaneAnimator.cpp">
       <Filter>Source\animators</Filter>
     </ClCompile>
@@ -221,6 +218,12 @@
     </ClCompile>
     <ClCompile Include="..\_source\commands\CCmdSaveTrackAs.cpp">
       <Filter>Source\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\editor\CTrackPart_Bezier.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\_source\editor\CTrackPart_Checkpoint.cpp">
+      <Filter>Source\editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -350,9 +353,6 @@
     <ClInclude Include="..\_include\editor\ITrackPart.h">
       <Filter>Include\editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\_include\editor\CTrackParts.h">
-      <Filter>Include\editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\_include\animators\CPlaneAnimator.h">
       <Filter>Include\animators</Filter>
     </ClInclude>
@@ -379,6 +379,15 @@
     </ClInclude>
     <ClInclude Include="..\_include\commands\CCmdSaveTrackAs.h">
       <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CTrackPart_Bezier.h">
+      <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CTrackPart_Checkpoint.h">
+      <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CTrackPart_Incline.h">
+      <Filter>Include\editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,9 +11,11 @@
 #include <scenenodes/CAiPathNode.h>
 #include <scenenodes/CDustbinId.h>
 
+#include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_Bezier.h>
+
 #include <commands/CCmdAddMarbleGP.h>
 #include <commands/CCmdEditTrack.h>
-#include <editor/CTrackParts.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 

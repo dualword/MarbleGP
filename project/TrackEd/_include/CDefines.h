@@ -23,4 +23,5 @@ namespace dustbin {
 
   const std::string c_sTypeBezier     = "Bezier";
   const std::string c_sTypeCheckpoint = "Checkpoint";
+  const std::string c_sTypeIncline    = "Incline";
 }

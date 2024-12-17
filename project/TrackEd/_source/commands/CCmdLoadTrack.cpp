@@ -4,8 +4,10 @@
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
-#include <editor/CTrackParts.h>
 #include <IGlobal.h>
+
+#include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_Bezier.h>
 
 namespace dustbin {
   namespace commands {

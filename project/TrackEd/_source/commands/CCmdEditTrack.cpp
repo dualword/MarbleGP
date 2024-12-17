@@ -6,11 +6,13 @@
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdMainMenu.h>
-#include <editor/CTrackParts.h>
 #include <editor/ITrackPart.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 #include <cmath>
+
+#include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_Bezier.h>
 
 namespace dustbin {
 
