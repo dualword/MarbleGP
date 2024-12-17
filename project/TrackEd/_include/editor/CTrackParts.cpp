@@ -373,14 +373,6 @@ namespace dustbin {
     }
 
     /**
-    * Get the end position of this track part
-    * @return the end position of this track part
-    */
-    const irr::core::vector3df &CTrackPart_Bezier::getEndPosition() {
-      return m_vPoints.back();
-    }
-
-    /**
     * Get the direction of the end of this track part
     */
     const irr::core::vector3df CTrackPart_Bezier::getEndDirection() {
@@ -776,14 +768,6 @@ namespace dustbin {
       m_cStart       = a_cAttr.getAttributeAsVector3d("start");
       m_cEnd         = a_cAttr.getAttributeAsVector3d("end");
       m_bRespawnLeft = a_cAttr.getAttributeAsBool    ("respawn_left");
-    }
-
-    /**
-    * Get the end position of this track part
-    * @return the end position of this track part
-    */
-    const irr::core::vector3df &CTrackPart_Checkpoint::getEndPosition() {
-      return m_cEnd;
     }
 
     /**
