@@ -130,24 +130,9 @@ namespace dustbin {
         virtual void deserialize(const irr::io::IAttributes &a_cAttr);
 
         /**
-        * Get the end position of this track part
-        * @return the end position of this track part
-        */
-        virtual const irr::core::vector3df &getEndPosition() = 0;
-
-        /**
         * Get the direction of the end of this track part
         */
         virtual const irr::core::vector3df getEndDirection() = 0;
-
-        /**
-        * Get the next line defining the road to go (one side of the road to the other)
-        * @param a_iIndex the index of the lines
-        * @param a_cPos1 [out] the first position of the line
-        * @param a_cPos2 [out] the second position of the line
-        * @return true if a section line was found, false otherwise
-        */
-        virtual bool getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) = 0;
 
         /**
         * Can a reference point be moved freely in the 2d plane
@@ -227,13 +212,6 @@ namespace dustbin {
         * @return true if so, false otherwise
         */
         virtual bool refPointAdditionAllowed(int a_iIndex) = 0;
-
-        /**
-        * Draw a preview if necessary
-        * @param a_pDrv the Irrlicht video driver
-        */
-        virtual void drawPreview(irr::video::IVideoDriver *a_pDrv) {
-        }
 
         /**
         * Get the start of the part

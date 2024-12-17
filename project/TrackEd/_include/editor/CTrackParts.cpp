@@ -7,6 +7,17 @@
 
 namespace dustbin {
   namespace tracked {
+    std::vector<double> fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious) {
+      std::vector<double> l_vRet;
+
+      for (int i = a_pPrevious == nullptr ? 0 : 1; i < a_iSteps; i++) {
+        l_vRet.push_back((double)i / (double)a_iSteps);
+      }
+
+      l_vRet.push_back(1.0);
+
+      return l_vRet;
+    }
 
 
     CTrackPart_Bezier::CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
@@ -212,18 +223,6 @@ namespace dustbin {
       m_eType = m_vPoints.size() == 2 ? enType::Bezier1 : m_vPoints.size() == 3 ? enType::Bezier2 : enType::Bezier3;
     }
 
-    std::vector<double> CTrackPart_Bezier::fillIndexVector(int a_iSteps) {
-      std::vector<double> l_vRet;
-
-      for (int i = getPrevious() == nullptr ? 0 : 1; i < a_iSteps; i++) {
-        l_vRet.push_back((double)i / (double)a_iSteps);
-      }
-
-      l_vRet.push_back(1.0);
-
-      return l_vRet;
-    }
-
     /**
     * Calculate the points of the curve, road center
     * @param a_cOut the vector to be filled
@@ -248,7 +247,7 @@ namespace dustbin {
 
           if (l_iSteps % 2 != 0) l_iSteps++;
 
-          std::vector<double> l_vIndices = fillIndexVector(l_iSteps);
+          std::vector<double> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
 
           for (auto d: l_vIndices) {
             a_cOut.push_back(irr::core::vector3df((irr::f32)l_cBezier.valueAt(d, 0), 0.0f, (irr::f32)l_cBezier.valueAt(d, 1)));
@@ -263,7 +262,7 @@ namespace dustbin {
 
           int l_iSteps = 32;
 
-          std::vector<double> l_vIndices = fillIndexVector(l_iSteps);
+          std::vector<double> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
 
           for (auto d: l_vIndices) {
             a_cOut.push_back(irr::core::vector3df((irr::f32)l_cBezier.valueAt(d, 0), 0.0f, (irr::f32)l_cBezier.valueAt(d, 1)));
@@ -279,7 +278,7 @@ namespace dustbin {
 
           int l_iSteps = 32;
 
-          std::vector<double> l_vIndices = fillIndexVector(l_iSteps);
+          std::vector<double> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
 
           for (auto d: l_vIndices) {
             a_cOut.push_back(irr::core::vector3df((irr::f32)l_cBezier.valueAt(d, 0), 0.0f, (irr::f32)l_cBezier.valueAt(d, 1)));
@@ -382,72 +381,6 @@ namespace dustbin {
     }
 
     /**
-    * Get the next line defining the road to go (one side of the road to the other)
-    * @param a_iIndex the index of the lines
-    * @param a_cPos1 [out] the first position of the line
-    * @param a_cPos2 [out] the second position of the line
-    * @return true if a section line was found, false otherwise
-    */
-    bool CTrackPart_Bezier::getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) {
-      if (m_vTrack.size() == 0) {
-        std::vector<irr::core::vector3df> l_vCurve;
-        calculateCurve(l_vCurve);
-      }
-
-      if (a_iIndex < (irr::u32)m_vTrack.size()) {
-        irr::core::vector3df l_cDirection = (a_iIndex > 0 ? m_vTrack[a_iIndex - 1] - m_vTrack[a_iIndex] : m_vPoints[0] - m_vPoints[1]).normalize();
-        irr::core::vector3df l_cNormal    = irr::core::vector3df(0.0f, 1.0f, 0.0f);
-        irr::core::vector3df l_cSide      = l_cDirection.crossProduct(l_cNormal).normalize();
-
-        a_cPos1 = m_vTrack[a_iIndex] + m_fWidth / 2.0f * l_cSide;
-        a_cPos2 = m_vTrack[a_iIndex] - m_fWidth / 2.0f * l_cSide;
-
-        return true;
-      }
-      else return false;
-    }
-
-    /**
-    * Draw a preview if necessary
-    * @param a_pDrv the Irrlicht video driver
-    */
-    void CTrackPart_Bezier::drawPreview(irr::video::IVideoDriver *a_pDrv) {
-      std::vector<irr::core::vector3df> l_vCurve;
-      calculateCurve(l_vCurve);
-
-      irr::core::vector3df l_cOld = getPrevious() != nullptr ? getPrevious()->getEndPosition() : m_vPoints.front();
-      irr::core::vector3df l_cSideOld = ((getPrevious() != nullptr ?  getPrevious()->getEndPosition() : m_vPoints.front()).crossProduct(irr::core::vector3df(0.0f, 1.0f, 0.0f))).normalize();
-
-      irr::video::SColor l_cColor = getPrevious() == nullptr ? irr::video::SColor(0xFF, 0xFF, 0x80, 0x80) : irr::video::SColor(0xFF, 0xFF, 0xFF, 0);
-      
-      for (auto l_cPos: l_vCurve) {
-        if (getPrevious() != nullptr || l_cPos != l_vCurve.front()) {
-          irr::core::vector3df l_cSideNew = (l_cOld - l_cPos).crossProduct(irr::core::vector3df(0.0f, 1.0f, 0.0f)).normalize();
-
-          irr::core::triangle3df l_cTriangle = irr::core::triangle3df(
-            50.0f * (l_cPos - m_fWidth / 2.0f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cPos + m_fWidth / 2.0f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cOld + m_fWidth / 2.0f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f)
-          );
-
-          a_pDrv->draw3DTriangle(l_cTriangle, l_cColor);
-
-          l_cTriangle = irr::core::triangle3df(
-            50.0f * (l_cOld + m_fWidth / 2.0f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cOld - m_fWidth / 2.0f * l_cSideOld) + irr::core::vector3df(0.0f, 3.0f, 0.0f),
-            50.0f * (l_cPos - m_fWidth / 2.0f * l_cSideNew) + irr::core::vector3df(0.0f, 3.0f, 0.0f)
-          );
-
-          a_pDrv->draw3DTriangle(l_cTriangle, l_cColor);
-
-          l_cSideOld = l_cSideNew;
-        }
-      
-        l_cOld = l_cPos;
-      }
-    }
-
-    /**
     * Get the direction of the end of this track part
     */
     const irr::core::vector3df CTrackPart_Bezier::getEndDirection() {
@@ -522,17 +455,6 @@ namespace dustbin {
           l_pFirst->m_vPrevSegments.push_back(a_pLast);
         }
       }
-    }
-
-    /**
-    * Handle an event if this part is selected
-    * @param a_cEvent the event to handle
-    * @return true if the event was handled
-    */
-    bool CTrackPart_Bezier::OnEvent(const irr::SEvent &a_cEvent) {
-      bool l_bRet = false;
-
-      return l_bRet;
     }
 
 
@@ -869,17 +791,6 @@ namespace dustbin {
     */
     const irr::core::vector3df CTrackPart_Checkpoint::getEndDirection() {
       return (m_cEnd - m_cStart).normalize();
-    }
-
-    /**
-    * Get the next line defining the road to go (one side of the road to the other)
-    * @param a_iIndex the index of the lines
-    * @param a_cPos1 [out] the first position of the line
-    * @param a_cPos2 [out] the second position of the line
-    * @return true if a section line was found, false otherwise
-    */
-    bool CTrackPart_Checkpoint::getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) {
-      return false;
     }
       
     /**

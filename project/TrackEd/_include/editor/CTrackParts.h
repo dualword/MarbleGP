@@ -27,8 +27,6 @@ namespace dustbin {
 
         std::vector<irr::core::vector3df> m_vTrack;
 
-        std::vector<double> fillIndexVector(int a_iSteps);
-
         /**
         * Calculate the points of the curve, road center
         * @param a_cOut the vector to be filled
@@ -100,30 +98,9 @@ namespace dustbin {
         virtual bool refPointAdditionAllowed(int a_iIndex) override;
 
         /**
-        * Draw a preview if necessary
-        * @param a_pDrv the Irrlicht video driver
-        */
-        virtual void drawPreview(irr::video::IVideoDriver *a_pDrv);
-
-        /**
         * Get the direction of the end of this track part
         */
         virtual const irr::core::vector3df getEndDirection() override;
-
-        /**
-        * Get the end position of this track part
-        * @return the end position of this track part
-        */
-        virtual const irr::core::vector3df &getEndPosition() override;
-
-        /**
-        * Get the next line defining the road to go (one side of the road to the other)
-        * @param a_iIndex the index of the lines
-        * @param a_cPos1 [out] the first position of the line
-        * @param a_cPos2 [out] the second position of the line
-        * @return true if a section line was found, false otherwise
-        */
-        virtual bool getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) override;
 
         /**
         * Get the normal at the end point
@@ -137,13 +114,6 @@ namespace dustbin {
         * @param a_pLast the last AI path section
         */
         virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) override;
-
-        /**
-        * Handle an event if this part is selected
-        * @param a_cEvent the event to handle
-        * @return true if the event was handled
-        */
-        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
     };
 
     /**
@@ -221,24 +191,9 @@ namespace dustbin {
         virtual bool refPointAdditionAllowed(int a_iIndex) override;
 
         /**
-        * Get the end position of this track part
-        * @return the end position of this track part
-        */
-        virtual const irr::core::vector3df &getEndPosition() override;
-
-        /**
         * Get the direction of the end of this track part
         */
         virtual const irr::core::vector3df getEndDirection() override;
-
-        /**
-        * Get the next line defining the road to go (one side of the road to the other)
-        * @param a_iIndex the index of the lines
-        * @param a_cPos1 [out] the first position of the line
-        * @param a_cPos2 [out] the second position of the line
-        * @return true if a section line was found, false otherwise
-        */
-        virtual bool getSectionLine(irr::u32 a_iIndex, irr::core::vector3df &a_cPos1, irr::core::vector3df &a_cPos2) override;
 
         /**
         * Get the part's reference points

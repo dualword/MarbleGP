@@ -402,38 +402,6 @@ namespace dustbin {
     * @param a_pDrv the video driver
     */
     void CCmdEditTrack::draw(irr::video::IVideoDriver *a_pDrv) {
-      // if (m_vParts.size() > 0) {
-      //   irr::core::vector3df l_cOld1;
-      //   irr::core::vector3df l_cOld2;
-      // 
-      //   m_vParts.front()->getSectionLine(0, l_cOld1, l_cOld2);
-      // 
-      //   bool l_bColor = true;
-      // 
-      //   for (auto l_pPart : m_vParts) {
-      //     irr::u32 l_iIndex = 0;
-      // 
-      //     irr::core::vector3df l_cNew1;
-      //     irr::core::vector3df l_cNew2;
-      // 
-      //     while (l_pPart->getSectionLine(l_iIndex, l_cNew1, l_cNew2)) {
-      //       if (l_cOld1 != l_cNew1 && l_cOld2 != l_cNew2) {
-      //         irr::core::triangle3df l_cTriangle = irr::core::triangle3df(50.0f * l_cOld1, 50.0f * l_cOld2, 50.0f * l_cNew1);
-      //         m_pDrv->draw3DTriangle(l_cTriangle, l_pPart == m_vParts.front() ? irr::video::SColor(0xFF, 0xFF, 0x80, 0x80) : l_bColor ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0) : irr::video::SColor(0xFF, 0, 0, 0xFF));
-      // 
-      //         l_cTriangle = irr::core::triangle3df(50.0f * l_cOld2, 50.0f * l_cNew2, 50.0f * l_cNew1);
-      //         m_pDrv->draw3DTriangle(l_cTriangle, l_pPart == m_vParts.front() ? irr::video::SColor(0xFF, 0xFF, 0x80, 0x80) : l_bColor ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0) : irr::video::SColor(0xFF, 0, 0, 0xFF));
-      //       }
-      // 
-      //       l_cOld1 = l_cNew1;
-      //       l_cOld2 = l_cNew2;
-      // 
-      //       l_iIndex++;
-      // 
-      //     }
-      //     l_bColor = !l_bColor;
-      //   }
-      // }
     }
 
     /**
@@ -505,7 +473,7 @@ namespace dustbin {
 
               if (m_vParts.size() > 0) {
                 irr::core::vector3df l_cDir = m_vParts.back()->getEndDirection();
-                irr::core::vector3df l_cEnd = m_vParts.back()->getEndPosition () * 50.0f;
+                irr::core::vector3df l_cEnd = m_vParts.back()->getEnd().getMiddle() * 50.0f;
 
                 if (m_eEditMode == enEditMode::AddReferencePoint) {
                   m_pPickPoint->setPosition(l_cRayCollision);
