@@ -1,6 +1,6 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #pragma once
-#include <editor/CTrackPart_Bezier.h>
+#include <editor/ITrackPart_Bezier.h>
 #include <vector>
 #include <tuple>
 
@@ -11,10 +11,10 @@ namespace dustbin {
     * @author Christian Keimel
     * A track part to go up
     */
-    class CTrackPart_StartRamp : public CTrackPart_Bezier {
+    class CTrackPart_Ramp : public ITrackPart_Bezier {
       public:
-        CTrackPart_StartRamp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
-        virtual ~CTrackPart_StartRamp();
+        CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
+        virtual ~CTrackPart_Ramp();
 
         /**
         * Can a reference point be moved freely in the 2d plane
@@ -27,28 +27,9 @@ namespace dustbin {
         virtual bool canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) override;
 
         /**
-        * Serialize the track part
-        * @param a_cAttr the attributes to serialize the data to
-        */
-        virtual void serialize(irr::io::IAttributes &a_cAttr) const override;
-
-        /**
-        * De-serialize the track part
-        * @param a_cAttr the attributes to read the data from
-        */
-        virtual void deserialize(const irr::io::IAttributes &a_cAttr) override;
-
-        /**
         * This method is called when the reference points of the previous track part have changed
         */
         virtual void updateReferencePoints() override;
-
-        /**
-        * Does this reference point allow addition of new track parts?
-        * @param a_iIndex index of the reference point
-        * @return true if so, false otherwise
-        */
-        virtual bool partAdditionAllowed(int a_iIndex) override;
     };
   }
 }

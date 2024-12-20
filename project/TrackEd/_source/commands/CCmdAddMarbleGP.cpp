@@ -11,8 +11,8 @@
 #include <scenenodes/CAiPathNode.h>
 #include <scenenodes/CDustbinId.h>
 
+#include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
-#include <editor/CTrackPart_Bezier.h>
 
 #include <commands/CCmdAddMarbleGP.h>
 #include <commands/CCmdEditTrack.h>

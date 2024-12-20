@@ -6,8 +6,8 @@
 #include <commands/CCmdEditTrack.h>
 #include <IGlobal.h>
 
+#include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
-#include <editor/CTrackPart_Bezier.h>
 
 namespace dustbin {
   namespace commands {
@@ -37,8 +37,8 @@ namespace dustbin {
             if (l_sNode == L"TrackPart" && l_pReader->getNodeType() == irr::io::EXN_ELEMENT) {
               std::wstring l_sType = l_pReader->getAttributeValueSafe(L"type");
 
-              if (l_sType == L"Bezier") {
-                tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df());
+              if (l_sType == L"FlatSegment") {
+                tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(nullptr, irr::core::vector3df());
                 irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
                 l_pAttr->read(l_pReader);
                 l_pNew->deserialize(*l_pAttr);

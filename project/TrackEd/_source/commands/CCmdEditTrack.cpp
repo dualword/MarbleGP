@@ -11,9 +11,10 @@
 #include <IGlobal.h>
 #include <cmath>
 
+#include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
-#include <editor/CTrackPart_StartRamp.h>
-#include <editor/CTrackPart_Bezier.h>
+#include <editor/ITrackPart_Bezier.h>
+#include <editor/CTrackPart_Ramp.h>
 
 namespace dustbin {
 
@@ -658,9 +659,9 @@ namespace dustbin {
                     tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
 
                     if (l_pPart->partAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
-                      l_vItems.push_back(std::make_tuple(c_sAddSegment   , true));
-                      l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
-                      l_vItems.push_back(std::make_tuple(c_sAddStartRamp , true));
+                      l_vItems.push_back(std::make_tuple(c_sAddFlatSection, true));
+                      l_vItems.push_back(std::make_tuple(c_sAddCheckpoint , true));
+                      l_vItems.push_back(std::make_tuple(c_sAddRamp       , true));
                     }
 
                     if (l_pPart->getPrevious() == nullptr) {
@@ -717,8 +718,8 @@ namespace dustbin {
             if (a_cEvent.GUIEvent.Caller == m_pMenu) {
               std::wstring l_sItem = m_pMenu->getItemText(m_pMenu->getSelectedItem());
 
-              if (l_sItem == c_sAddSegment) {
-                tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(m_vParts.back(), m_vParts.back()->getNormal());
+              if (l_sItem == c_sAddFlatSection) {
+                tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(m_vParts.back(), m_vParts.back()->getNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
                 
@@ -751,8 +752,8 @@ namespace dustbin {
 
                 createTrack();
               }
-              else if (l_sItem == c_sAddStartRamp) {
-                tracked::CTrackPart_StartRamp *l_pNew = new tracked::CTrackPart_StartRamp(m_vParts.back(), m_vParts.back()->getNormal());
+              else if (l_sItem == c_sAddRamp) {
+                tracked::CTrackPart_Ramp *l_pNew = new tracked::CTrackPart_Ramp(m_vParts.back(), m_vParts.back()->getNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
 
@@ -772,7 +773,7 @@ namespace dustbin {
               else if (l_sItem == c_sAddReference) {
                 if (m_pSelected != nullptr) {
                   if (m_mReferencePoints.find(m_pSelected) != m_mReferencePoints.end()) {
-                    tracked::CTrackPart_Bezier *l_pPart = dynamic_cast<tracked::CTrackPart_Bezier *>(std::get<0>(m_mReferencePoints[m_pSelected]));
+                    tracked::ITrackPart_Bezier *l_pPart = dynamic_cast<tracked::ITrackPart_Bezier*>(std::get<0>(m_mReferencePoints[m_pSelected]));
                     if (l_pPart != nullptr && l_pPart->getReferencePoints().size() < 4) {
                       setEditMode(enEditMode::AddReferencePoint);
 
@@ -807,7 +808,7 @@ namespace dustbin {
                   irr::core::vector3df l_cStrDir = -l_pFirst->getEndDirection();
                   irr::core::vector3df l_cStrPos = irr::core::vector3df(0.0f);
 
-                  tracked::CTrackPart_Bezier *l_pNew = new tracked::CTrackPart_Bezier(l_pLast, l_pLast->getNormal());
+                  tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(l_pLast, l_pLast->getNormal());
 
                   std::vector<irr::core::vector3df> l_cRef = {
                     l_cEndPos,
@@ -863,7 +864,7 @@ namespace dustbin {
             m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
             m_pPickPoint->setVisible(false);
 
-            tracked::CTrackPart_Bezier *l_pStart = new tracked::CTrackPart_Bezier(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f));
+            tracked::CTrackPart_FlatSegment *l_pStart = new tracked::CTrackPart_FlatSegment(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f));
             l_pStart->setReferencePoints({ irr::core::vector3df(0.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f, 0.0f, 3.5f) });
 
             m_vParts.push_back(l_pStart);

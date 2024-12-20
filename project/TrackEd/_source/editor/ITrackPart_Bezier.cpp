@@ -1,5 +1,5 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
-#include <editor/CTrackPart_Bezier.h>
+#include <editor/ITrackPart_Bezier.h>
 #include <scenenodes/CDustbinId.h>
 #include <CDefines.h>
 #include <IGlobal.h>
@@ -7,11 +7,11 @@
 
 namespace dustbin {
   namespace tracked {
-    CTrackPart_Bezier::CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      ITrackPart (c_sTypeBezier, a_pPrevious, a_cNormal) {
+    ITrackPart_Bezier::ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
+      ITrackPart (a_sIdentifier, a_pPrevious, a_cNormal) {
     }
 
-    CTrackPart_Bezier::~CTrackPart_Bezier() {
+    ITrackPart_Bezier::~ITrackPart_Bezier() {
     }
 
     /**
@@ -20,7 +20,7 @@ namespace dustbin {
      * @param fStep step number (0..1)
      * @return the next point
      */
-    irr::core::vector3df CTrackPart_Bezier::getBezier1(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
+    irr::core::vector3df ITrackPart_Bezier::getBezier1(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
       return (1 - a_fStep) * a_aPoints[0] + a_fStep * a_aPoints[1];
     }
 
@@ -30,7 +30,7 @@ namespace dustbin {
      * @param fStep step number (0..1)
      * @return the next point
      */
-    irr::core::vector3df CTrackPart_Bezier::getBezier2(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
+    irr::core::vector3df ITrackPart_Bezier::getBezier2(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
       return ((1 - a_fStep) * (1 - a_fStep)) * a_aPoints[0] + 2 * a_fStep * (1 - a_fStep) * a_aPoints[1] + a_fStep * a_fStep * a_aPoints[2];
     }
 
@@ -40,7 +40,7 @@ namespace dustbin {
      * @param fStep step number (0..1)
      * @return the next point
      */
-    irr::core::vector3df CTrackPart_Bezier::getBezier3(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
+    irr::core::vector3df ITrackPart_Bezier::getBezier3(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
       return (-a_aPoints[0] + 3.0f * a_aPoints[1] - 3.0f * a_aPoints[2] + a_aPoints[3]) * a_fStep * a_fStep * a_fStep + (3.0f * a_aPoints[0] - 6.0f * a_aPoints[1] + 3.0f * a_aPoints[2]) * a_fStep * a_fStep + (-3.0f * a_aPoints[0] + 3.0f * a_aPoints[1]) * a_fStep + a_aPoints[0];
     }
 
@@ -50,7 +50,7 @@ namespace dustbin {
     * @param a_pPrevious the previous track part
     * @return a vector with the indices ranging from 0 to 1
     */
-    std::vector<irr::f32> CTrackPart_Bezier::fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious) {
+    std::vector<irr::f32> ITrackPart_Bezier::fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious) {
       std::vector<irr::f32> l_vRet;
 
       for (int i = a_pPrevious == nullptr ? 0 : 1; i < a_iSteps; i++) {
@@ -66,7 +66,7 @@ namespace dustbin {
     * Create the track part
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
-    void CTrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
+    void ITrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
       double l_fLength = calculateCurve();
       l_fLength = std::ceil(l_fLength);
 
@@ -186,32 +186,11 @@ namespace dustbin {
     }
 
     /**
-    * This method is called when the reference points of the previous track part have changed
-    */
-    void CTrackPart_Bezier::updateReferencePoints() {
-      if (m_vPoints.size() >= 2) {
-        ITrackPart *l_pPrevious = getPrevious();
-
-        if (l_pPrevious != nullptr) {
-          std::vector<irr::core::vector3df> l_vRefPoints = getReferencePoints();
-
-          irr::core::vector3df l_cDir = l_pPrevious->getEndDirection();
-          irr::f32 l_fLength = (l_vRefPoints[1] - l_vRefPoints[0]).getLength();
-
-          l_vRefPoints[0] = l_pPrevious->getEnd().getMiddle();
-          l_vRefPoints[1] = l_vRefPoints[0] + (l_fLength * l_cDir.normalize());
-
-          setReferencePoints(l_vRefPoints);
-        }
-      }
-    }
-
-    /**
     * Does this reference point allow addition of new track parts?
     * @param a_iIndex index of the reference point
     * @return true if so, false otherwise
     */
-    bool CTrackPart_Bezier::partAdditionAllowed(int a_iIndex) {
+    bool ITrackPart_Bezier::partAdditionAllowed(int a_iIndex) {
       return a_iIndex == m_vPoints.size() - 1 && getNext() == nullptr;
     }
 
@@ -220,7 +199,7 @@ namespace dustbin {
     * @param a_iIndex index of the reference point
     * @return true if so, false otherwise
     */
-    bool CTrackPart_Bezier::refPointAdditionAllowed(int a_iIndex) {
+    bool ITrackPart_Bezier::refPointAdditionAllowed(int a_iIndex) {
       return a_iIndex == m_vPoints.size() - 1 && m_vPoints.size() < 4 && getPrevious() != nullptr;
     }
 
@@ -228,7 +207,7 @@ namespace dustbin {
     * Serialize the track part
     * @param a_cAttr the attributes to serialize the data to
     */
-    void CTrackPart_Bezier::serialize(irr::io::IAttributes &a_cAttr) const {
+    void ITrackPart_Bezier::serialize(irr::io::IAttributes &a_cAttr) const {
       ITrackPart::serialize(a_cAttr);
 
       a_cAttr.addInt("number_of_points", (irr::s32)m_vPoints.size());
@@ -243,7 +222,7 @@ namespace dustbin {
     * De-serialize the track part
     * @param a_cAttr the attributes to read the data from
     */
-    void CTrackPart_Bezier::deserialize(const irr::io::IAttributes &a_cAttr) {
+    void ITrackPart_Bezier::deserialize(const irr::io::IAttributes &a_cAttr) {
       ITrackPart::deserialize(a_cAttr);
 
       irr::s32 l_iCount = a_cAttr.getAttributeAsInt("number_of_points");
@@ -260,18 +239,19 @@ namespace dustbin {
     * @param a_fStep step number (0..1)
     * @return the next point
     */
-    irr::core::vector3df CTrackPart_Bezier::getBezier(std::vector<irr::core::vector3df> &a_vPoints, irr::f32 a_fStep) {
+    irr::core::vector3df ITrackPart_Bezier::getBezier(std::vector<irr::core::vector3df> &a_vPoints, irr::f32 a_fStep) {
       switch (a_vPoints.size()) {
         case 2: return getBezier1(a_vPoints.data(), a_fStep);
         case 3: return getBezier2(a_vPoints.data(), a_fStep);
         case 4: return getBezier3(a_vPoints.data(), a_fStep);
+        default: return m_vPoints.front();
       }
     }
 
     /**
     * Calculate the points of the curve, road center
     */
-    irr::f32 CTrackPart_Bezier::calculateCurve() {
+    irr::f32 ITrackPart_Bezier::calculateCurve() {
       m_vTrack.clear();
 
       std::vector<irr::f32> l_vIndices = fillIndexVector(32, getPrevious());
@@ -293,7 +273,7 @@ namespace dustbin {
     * Set the trak part's reference points
     * @param a_vPoints a vector with the reference points
     */
-    void CTrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_vPoints) {
+    void ITrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_vPoints) {
       m_vPoints.clear();
 
       m_vPoints.clear();
@@ -313,60 +293,14 @@ namespace dustbin {
     * Get the part's reference points
     * @return a vector with the part's reference points
     */
-    const std::vector<irr::core::vector3df> CTrackPart_Bezier::getReferencePoints() {
+    const std::vector<irr::core::vector3df> ITrackPart_Bezier::getReferencePoints() {
       return m_vPoints;
-    }
-
-    /**
-    * Can a reference point be moved freely in the 2d plane
-    * @param a_iIndex index of the reference point
-    * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
-    * @param a_cPlanePoint [out] The point of the plane the reference point is moved in. Only used if "true" is returned.
-    * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in.
-    * @return true if the reference point can move freely, false otherwise
-    */
-    bool CTrackPart_Bezier::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {
-      if (getPrevious() == nullptr) {
-        a_cLine.start = irr::core::vector3df(0.0f);
-        a_cLine.end   = a_cLine.start;
-
-        return false;
-      }
-      else if (a_iIndex == 1) {
-        a_cLine.start = m_vPoints[0];
-        a_cLine.end   = a_cLine.start + 1000.0f * (m_vPoints[1] - m_vPoints[0]).normalize();
-
-        a_cPlanePoint  = m_vPoints[0];
-        a_cPlaneNormal = getNormal();
-
-        return false;
-      }
-      else if (a_iIndex == 2 || a_iIndex == 3) {
-        a_cPlanePoint  = m_vPoints[a_iIndex];
-        a_cPlaneNormal = getNormal();
-
-        printf("Index: %i, next: %s, next->previous: %s\n", a_iIndex, getNext() == nullptr ? "nullptr" : "ok", getNext() == nullptr ? "" : getNext()->getPrevious() == nullptr ? "nullptr" : "ok");
-        if (a_iIndex == 2 && getNext() != nullptr && getNext()->isStartSegment()) {
-          a_cLine.start = irr::core::vector3df();
-          a_cLine.end   = irr::core::vector3df(0.0f, 0.0f, -1000.0f);
-
-          return false;
-        }
-
-        return true;
-      }
-      else {
-        a_cLine.start = irr::core::vector3df(0.0f);
-        a_cLine.end   = a_cLine.start;
-
-        return false;
-      }
     }
 
     /**
     * Get the direction of the end of this track part
     */
-    const irr::core::vector3df CTrackPart_Bezier::getEndDirection() {
+    const irr::core::vector3df ITrackPart_Bezier::getEndDirection() {
       return (m_vPoints[m_vPoints.size() - 1] - m_vPoints[m_vPoints.size() - 2]).normalize();
     }
 
@@ -374,7 +308,7 @@ namespace dustbin {
     * Get the normal at the end point
     * @return the normal at the end point
     */
-    const irr::core::vector3df &CTrackPart_Bezier::getNormal() {
+    const irr::core::vector3df &ITrackPart_Bezier::getNormal() {
       return getStartNormal();
     }
 
@@ -383,7 +317,7 @@ namespace dustbin {
     * @param a_pAi the AI path node
     * @param a_pLast the last AI path section
     */
-    void CTrackPart_Bezier::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
+    void ITrackPart_Bezier::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
       if (m_vTrack.size() == 0) {
         calculateCurve();
       }

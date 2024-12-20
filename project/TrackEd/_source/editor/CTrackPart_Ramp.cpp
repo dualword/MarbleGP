@@ -1,22 +1,22 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
-#include <editor/CTrackPart_StartRamp.h>
+#include <editor/CTrackPart_Ramp.h>
 #include <scenenodes/CDustbinId.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 
 namespace dustbin {
   namespace tracked {
-    CTrackPart_StartRamp::CTrackPart_StartRamp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      CTrackPart_Bezier(a_pPrevious, a_cNormal) {
+    CTrackPart_Ramp::CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
+      ITrackPart_Bezier(c_sTypeRamp, a_pPrevious, a_cNormal) {
     }
 
-    CTrackPart_StartRamp::~CTrackPart_StartRamp() {
+    CTrackPart_Ramp::~CTrackPart_Ramp() {
     }
 
     /**
     * This method is called when the reference points of the previous track part have changed
     */
-    void CTrackPart_StartRamp::updateReferencePoints() {
+    void CTrackPart_Ramp::updateReferencePoints() {
       if (m_vPoints.size() == 3) {
         ITrackPart *l_pPrevious = getPrevious();
 
@@ -42,45 +42,6 @@ namespace dustbin {
     }
 
     /**
-    * Does this reference point allow addition of new track parts?
-    * @param a_iIndex index of the reference point
-    * @return true if so, false otherwise
-    */
-    bool CTrackPart_StartRamp::partAdditionAllowed(int a_iIndex) {
-      return a_iIndex == m_vPoints.size() - 1 && getNext() == nullptr;
-    }
-
-    /**
-    * Serialize the track part
-    * @param a_cAttr the attributes to serialize the data to
-    */
-    void CTrackPart_StartRamp::serialize(irr::io::IAttributes &a_cAttr) const {
-      ITrackPart::serialize(a_cAttr);
-
-      a_cAttr.addInt("number_of_points", (irr::s32)m_vPoints.size());
-
-      for (int i = 0; i < (int)m_vPoints.size(); i++) {
-        std::string l_sName = "point_" + std::to_string(i);
-        a_cAttr.addVector3d(l_sName.c_str(), m_vPoints[i]);
-      }
-    }
-
-    /**
-    * De-serialize the track part
-    * @param a_cAttr the attributes to read the data from
-    */
-    void CTrackPart_StartRamp::deserialize(const irr::io::IAttributes &a_cAttr) {
-      ITrackPart::deserialize(a_cAttr);
-
-      irr::s32 l_iCount = a_cAttr.getAttributeAsInt("number_of_points");
-
-      for (irr::s32 i = 0; i < l_iCount; i++) {
-        std::string l_sName = "point_" + std::to_string(i);
-        m_vPoints.push_back(a_cAttr.getAttributeAsVector3d(l_sName.c_str()));
-      }
-    }
-
-    /**
     * Can a reference point be moved freely in the 2d plane
     * @param a_iIndex index of the reference point
     * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
@@ -88,7 +49,7 @@ namespace dustbin {
     * @param a_cPlaneNormal [out] The normal of the plane the reference point is moved in.
     * @return true if the reference point can move freely, false otherwise
     */
-    bool CTrackPart_StartRamp::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {
+    bool CTrackPart_Ramp::canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) {
       if (getPrevious() == nullptr) {
         a_cLine.start = irr::core::vector3df(0.0f);
         a_cLine.end   = a_cLine.start;
