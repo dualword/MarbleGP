@@ -67,9 +67,6 @@
     <Filter Include="Source\editor">
       <UniqueIdentifier>{ebd4e6eb-45e5-4613-bcc1-d14ac9b23d4d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Include\bezier">
-      <UniqueIdentifier>{cd68042c-47d4-4396-81da-ef7e89ec39ca}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_source\TrackEd_main.cpp">
@@ -225,6 +222,9 @@
     <ClCompile Include="..\_source\editor\CTrackPart_Checkpoint.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\editor\CTrackPart_StartRamp.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -356,9 +356,6 @@
     <ClInclude Include="..\_include\animators\CPlaneAnimator.h">
       <Filter>Include\animators</Filter>
     </ClInclude>
-    <ClInclude Include="..\_include\bezier\bezier.h">
-      <Filter>Include\bezier</Filter>
-    </ClInclude>
     <ClInclude Include="..\_include\commands\CCmdSaveTrack.h">
       <Filter>Include\commands</Filter>
     </ClInclude>
@@ -386,7 +383,7 @@
     <ClInclude Include="..\_include\editor\CTrackPart_Checkpoint.h">
       <Filter>Include\editor</Filter>
     </ClInclude>
-    <ClInclude Include="..\_include\editor\CTrackPart_Incline.h">
+    <ClInclude Include="..\_include\editor\CTrackPart_StartRamp.h">
       <Filter>Include\editor</Filter>
     </ClInclude>
   </ItemGroup>

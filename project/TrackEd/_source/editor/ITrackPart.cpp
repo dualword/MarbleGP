@@ -4,25 +4,6 @@
 
 namespace dustbin {
   namespace tracked {
-    /**
-    * A little helper functions to fill the indices for the Bezier calculation
-    * @param a_iSteps the number of steps
-    * @param a_pPrevious the previous track part
-    * @return a vector with the indices ranging from 0 to 1
-    */
-    std::vector<double> fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious) {
-      std::vector<double> l_vRet;
-
-      for (int i = a_pPrevious == nullptr ? 0 : 1; i < a_iSteps; i++) {
-        l_vRet.push_back((double)i / (double)a_iSteps);
-      }
-
-      l_vRet.push_back(1.0);
-
-      return l_vRet;
-    }
-
-
     int g_iInternalId = 0;
 
     /**

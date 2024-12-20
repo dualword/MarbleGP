@@ -1,7 +1,6 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <editor/CTrackPart_Checkpoint.h>
 #include <scenenodes/CDustbinId.h>
-#include <bezier/bezier.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 

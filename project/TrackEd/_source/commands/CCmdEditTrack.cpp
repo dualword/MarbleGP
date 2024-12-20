@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_StartRamp.h>
 #include <editor/CTrackPart_Bezier.h>
 
 namespace dustbin {
@@ -657,17 +658,17 @@ namespace dustbin {
                     tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
 
                     if (l_pPart->partAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
-                      l_vItems.push_back(std::make_tuple(c_sAddSegment, true));
+                      l_vItems.push_back(std::make_tuple(c_sAddSegment   , true));
                       l_vItems.push_back(std::make_tuple(c_sAddCheckpoint, true));
+                      l_vItems.push_back(std::make_tuple(c_sAddStartRamp , true));
                     }
 
                     if (l_pPart->getPrevious() == nullptr) {
                       l_vItems.push_back(std::make_tuple(c_sFinishTrack, true));
                     }
 
-
-                    // l_vItems.push_back(std::make_tuple(c_sAddIncline   , true));
-                    // l_vItems.push_back(std::make_tuple(c_sAddDecline   , true));
+                    
+                    // l_vItems.push_back(std::make_tuple(c_sAddRampEnd   , true));
                     // l_vItems.push_back(std::make_tuple(c_sAddJump      , true));
                     // l_vItems.push_back(std::make_tuple(c_sAddGap       , true));
 
@@ -741,6 +742,24 @@ namespace dustbin {
                 std::vector<irr::core::vector3df> l_vRefPoints = {
                   m_vParts.back()->getReferencePoints().back(),
                   m_vParts.back()->getReferencePoints().back() + l_pNew->getWidth() * l_cDirection.normalize()
+                };
+
+                l_pNew->setReferencePoints(l_vRefPoints);
+                m_vParts.push_back(l_pNew);
+
+                addReferencePoints(l_pNew);
+
+                createTrack();
+              }
+              else if (l_sItem == c_sAddStartRamp) {
+                tracked::CTrackPart_StartRamp *l_pNew = new tracked::CTrackPart_StartRamp(m_vParts.back(), m_vParts.back()->getNormal());
+
+                irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
+
+                std::vector<irr::core::vector3df> l_vRefPoints = {
+                  m_vParts.back()->getReferencePoints().back(),
+                  m_vParts.back()->getReferencePoints().back() +        l_pNew->getWidth() * l_cDirection.normalize(),
+                  m_vParts.back()->getReferencePoints().back() + 2.0f * l_pNew->getWidth() * l_cDirection.normalize() + irr::core::vector3df(0.0f, l_pNew->getWidth(), 0.0f)
                 };
 
                 l_pNew->setReferencePoints(l_vRefPoints);

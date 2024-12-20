@@ -1,9 +1,9 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <editor/CTrackPart_Bezier.h>
 #include <scenenodes/CDustbinId.h>
-#include <bezier/bezier.h>
 #include <CDefines.h>
 #include <IGlobal.h>
+#include <cmath>
 
 namespace dustbin {
   namespace tracked {
@@ -15,12 +15,59 @@ namespace dustbin {
     }
 
     /**
+     * Get the next point using the Bezier1 algorithm
+     * @param p array with the two points for the algorithm
+     * @param fStep step number (0..1)
+     * @return the next point
+     */
+    irr::core::vector3df CTrackPart_Bezier::getBezier1(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
+      return (1 - a_fStep) * a_aPoints[0] + a_fStep * a_aPoints[1];
+    }
+
+    /**
+     * Get the next point using the Bezier2 algorithm
+     * @param p array with the three points (start, help, end) for the algorithm
+     * @param fStep step number (0..1)
+     * @return the next point
+     */
+    irr::core::vector3df CTrackPart_Bezier::getBezier2(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
+      return ((1 - a_fStep) * (1 - a_fStep)) * a_aPoints[0] + 2 * a_fStep * (1 - a_fStep) * a_aPoints[1] + a_fStep * a_fStep * a_aPoints[2];
+    }
+
+    /**
+     * Get the next point using the Bezier3 algorithm
+     * @param p array with the four points (start, help1, help2, end) for the algorithm
+     * @param fStep step number (0..1)
+     * @return the next point
+     */
+    irr::core::vector3df CTrackPart_Bezier::getBezier3(irr::core::vector3df a_aPoints[], irr::f32 a_fStep) {
+      return (-a_aPoints[0] + 3.0f * a_aPoints[1] - 3.0f * a_aPoints[2] + a_aPoints[3]) * a_fStep * a_fStep * a_fStep + (3.0f * a_aPoints[0] - 6.0f * a_aPoints[1] + 3.0f * a_aPoints[2]) * a_fStep * a_fStep + (-3.0f * a_aPoints[0] + 3.0f * a_aPoints[1]) * a_fStep + a_aPoints[0];
+    }
+
+    /**
+    * A little helper functions to fill the indices for the Bezier calculation
+    * @param a_iSteps the number of steps
+    * @param a_pPrevious the previous track part
+    * @return a vector with the indices ranging from 0 to 1
+    */
+    std::vector<irr::f32> CTrackPart_Bezier::fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious) {
+      std::vector<irr::f32> l_vRet;
+
+      for (int i = a_pPrevious == nullptr ? 0 : 1; i < a_iSteps; i++) {
+        l_vRet.push_back((irr::f32)i / (irr::f32)a_iSteps);
+      }
+
+      l_vRet.push_back(1.0);
+
+      return l_vRet;
+    }
+
+    /**
     * Create the track part
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
     void CTrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
-      std::vector<irr::core::vector3df> l_vCurve;
-      double l_fLength = calculateCurve(l_vCurve);
+      double l_fLength = calculateCurve();
       l_fLength = std::ceil(l_fLength);
 
       irr::f32 l_fWidth = m_fWidth / 2.0f;
@@ -28,11 +75,11 @@ namespace dustbin {
 
       irr::core::vector3df l_cOld;
 
-      for (auto l_cPos : l_vCurve) {
-        if (l_cPos != l_vCurve.front() || getPrevious() == nullptr) {
+      for (auto l_cPos : m_vTrack) {
+        if (l_cPos != m_vTrack.front() || getPrevious() == nullptr) {
           irr::core::vector3df l_cDirection;
 
-          if (l_cPos != l_vCurve.front()) {
+          if (l_cPos != m_vTrack.front()) {
             l_cDirection = (l_cPos - l_cOld).normalize();
           }
           else {
@@ -41,7 +88,7 @@ namespace dustbin {
 
           irr::core::vector3df l_cSide = (l_cDirection.crossProduct(getNormal())).normalize();
 
-          if (l_cPos != l_vCurve.back() || getNext() == nullptr || getNext()->getPrevious() != nullptr)
+          if (l_cPos != m_vTrack.back() || getNext() == nullptr || getNext()->getPrevious() != nullptr)
             l_vBottom.push_back(irr::core::line3df(l_cPos + l_fWidth * l_cSide, l_cPos - l_fWidth * l_cSide));
           else
             l_vBottom.push_back(getNext()->getStart());
@@ -205,96 +252,54 @@ namespace dustbin {
         std::string l_sName = "point_" + std::to_string(i);
         m_vPoints.push_back(a_cAttr.getAttributeAsVector3d(l_sName.c_str()));
       }
+    }
 
-      m_eType = m_vPoints.size() == 2 ? enType::Bezier1 : m_vPoints.size() == 3 ? enType::Bezier2 : enType::Bezier3;
+    /**
+    * Get the point of the bezier curve
+    * @param a_vPoints vector with the reference points
+    * @param a_fStep step number (0..1)
+    * @return the next point
+    */
+    irr::core::vector3df CTrackPart_Bezier::getBezier(std::vector<irr::core::vector3df> &a_vPoints, irr::f32 a_fStep) {
+      switch (a_vPoints.size()) {
+        case 2: return getBezier1(a_vPoints.data(), a_fStep);
+        case 3: return getBezier2(a_vPoints.data(), a_fStep);
+        case 4: return getBezier3(a_vPoints.data(), a_fStep);
+      }
     }
 
     /**
     * Calculate the points of the curve, road center
-    * @param a_cOut the vector to be filled
     */
-    double CTrackPart_Bezier::calculateCurve(std::vector<irr::core::vector3df> &a_cOut) {
+    irr::f32 CTrackPart_Bezier::calculateCurve() {
       m_vTrack.clear();
 
-      std::vector<bezier::Point> l_vPoints;
+      std::vector<irr::f32> l_vIndices = fillIndexVector(32, getPrevious());
 
-      for (auto l_cPoint : m_vPoints) {
-        l_vPoints.push_back(bezier::Point(l_cPoint.X, l_cPoint.Z));
+      for (auto l_fStep: l_vIndices) {
+        m_vTrack.push_back(getBezier(m_vPoints, l_fStep));
       }
 
-      double l_fRet = 0.0;
+      irr::f32 l_fRet = 0.0f;
 
-      switch (m_eType) {
-      case enType::Bezier1: {
-        bezier::Bezier<1> l_cBezier(l_vPoints);
-
-        l_fRet = l_cBezier.length();
-        int l_iSteps = (int)(l_fRet / m_fWidth);
-
-        if (l_iSteps % 2 != 0) l_iSteps++;
-
-        std::vector<double> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
-
-        for (auto d : l_vIndices) {
-          a_cOut.push_back(irr::core::vector3df((irr::f32)l_cBezier.valueAt(d, 0), 0.0f, (irr::f32)l_cBezier.valueAt(d, 1)));
-          m_vTrack.push_back(a_cOut.back());
-        }
-
-        break;
+      for (std::vector<irr::core::vector3df>::iterator l_itTrack = m_vTrack.begin() + 1; l_itTrack != m_vTrack.end(); l_itTrack++) {
+        l_fRet += (*l_itTrack).getDistanceFrom(*(l_itTrack - 1));
       }
-
-      case enType::Bezier2: {
-        bezier::Bezier<2> l_cBezier(l_vPoints);
-
-        int l_iSteps = 32;
-
-        std::vector<double> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
-
-        for (auto d : l_vIndices) {
-          a_cOut.push_back(irr::core::vector3df((irr::f32)l_cBezier.valueAt(d, 0), 0.0f, (irr::f32)l_cBezier.valueAt(d, 1)));
-          m_vTrack.push_back(a_cOut.back());
-        }
-
-        l_fRet = l_cBezier.length();
-        break;
-      }
-
-      case enType::Bezier3: {
-        bezier::Bezier<3> l_cBezier(l_vPoints);
-
-        int l_iSteps = 32;
-
-        std::vector<double> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
-
-        for (auto d : l_vIndices) {
-          a_cOut.push_back(irr::core::vector3df((irr::f32)l_cBezier.valueAt(d, 0), 0.0f, (irr::f32)l_cBezier.valueAt(d, 1)));
-          m_vTrack.push_back(a_cOut.back());
-        }
-
-        l_fRet = l_cBezier.length();
-        break;
-      }
-      }
-
 
       return l_fRet;
     }
 
     /**
     * Set the trak part's reference points
-    * @param a_cPoints a vector with the reference points
+    * @param a_vPoints a vector with the reference points
     */
-    void CTrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
+    void CTrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_vPoints) {
       m_vPoints.clear();
 
-      m_eType = a_cPoints.size() == 2 ? enType::Bezier1 : a_cPoints.size() == 3 ? enType::Bezier2 : enType::Bezier3;
+      m_vPoints.clear();
 
-      switch (m_eType) {
-      case enType::Bezier1: m_vPoints.push_back(a_cPoints[0]); m_vPoints.push_back(a_cPoints[1]); break;
-      case enType::Bezier2: m_vPoints.push_back(a_cPoints[0]); m_vPoints.push_back(a_cPoints[1]); m_vPoints.push_back(a_cPoints[2]); break;
-      case enType::Bezier3: m_vPoints.push_back(a_cPoints[0]); m_vPoints.push_back(a_cPoints[1]); m_vPoints.push_back(a_cPoints[2]); m_vPoints.push_back(a_cPoints[3]); break;
-      }
-
+      for (auto l_cPoint : a_vPoints)
+        m_vPoints.push_back(l_cPoint);
 
       std::vector<irr::scene::SMeshBuffer *> l_vDummy = std::vector<irr::scene::SMeshBuffer *>();
       bool l_bBlack = true;
@@ -362,16 +367,7 @@ namespace dustbin {
     * Get the direction of the end of this track part
     */
     const irr::core::vector3df CTrackPart_Bezier::getEndDirection() {
-      irr::core::vector3df l_cRet;
-
-      switch (m_eType) {
-      case enType::Bezier1: l_cRet = (m_vPoints[1] - m_vPoints[0]).normalize(); break;
-      default: {
-        l_cRet = (m_vPoints[m_vPoints.size() - 1] - m_vPoints[m_vPoints.size() - 2]).normalize();
-      }
-      }
-
-      return l_cRet;
+      return (m_vPoints[m_vPoints.size() - 1] - m_vPoints[m_vPoints.size() - 2]).normalize();
     }
 
     /**
@@ -389,8 +385,7 @@ namespace dustbin {
     */
     void CTrackPart_Bezier::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
       if (m_vTrack.size() == 0) {
-        std::vector<irr::core::vector3df> l_vCurve;
-        calculateCurve(l_vCurve);
+        calculateCurve();
       }
 
       int l_iIndex = 0;

@@ -12,14 +12,6 @@ namespace dustbin {
   namespace tracked {
     class ITrackPart;
 
-    /**
-    * A little helper functions to fill the indices for the Bezier calculation
-    * @param a_iSteps the number of steps
-    * @param a_pPrevious the previous track part
-    * @return a vector with the indices ranging from 0 to 1
-    */
-    std::vector<double> fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious);
-
     const irr::u32 c_iBufferIdxRoad      =  0;      /**< Index of the road mesh buffer */
     const irr::u32 c_iBufferIdxArrow     =  1;      /**< Index of the arrow road texture */
     const irr::u32 c_iBufferIdxJoin      =  2;      /**< Index of the join road texture */

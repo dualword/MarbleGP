@@ -13,8 +13,8 @@ namespace dustbin {
 
   const std::wstring c_sAddSegment    = L"Add Road Segment";
   const std::wstring c_sAddCheckpoint = L"Add Checkpoint";
-  const std::wstring c_sAddIncline    = L"Add Incline";
-  const std::wstring c_sAddDecline    = L"Add Decline";
+  const std::wstring c_sAddStartRamp  = L"Add Ramp Start";
+  const std::wstring c_sAddEndRamp    = L"Add Ramp End";
   const std::wstring c_sAddJump       = L"Add Jump";
   const std::wstring c_sAddGap        = L"Add Gap";
   const std::wstring c_sFinishTrack   = L"Finish Track";
@@ -23,5 +23,5 @@ namespace dustbin {
 
   const std::string c_sTypeBezier     = "Bezier";
   const std::string c_sTypeCheckpoint = "Checkpoint";
-  const std::string c_sTypeIncline    = "Incline";
+  const std::string c_sTypeStartRamp  = "Start Ramp";
 }

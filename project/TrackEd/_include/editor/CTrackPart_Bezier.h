@@ -12,25 +12,56 @@ namespace dustbin {
     * The interface for using a Bezier curve for the actual track
     */
     class CTrackPart_Bezier : public ITrackPart {
+      private:
+        /**
+         * Get the next point using the Bezier1 algorithm
+         * @param p array with the two points for the algorithm
+         * @param fStep step number (0..1)
+         * @return the next point
+         */
+        irr::core::vector3df getBezier1(irr::core::vector3df a_aPoints[], irr::f32 a_fStep);
+
+        /**
+         * Get the next point using the Bezier2 algorithm
+         * @param p array with the three points (start, help, end) for the algorithm
+         * @param fStep step number (0..1)
+         * @return the next point
+         */
+        irr::core::vector3df getBezier2(irr::core::vector3df a_aPoints[], irr::f32 a_fStep);
+
+        /**
+         * Get the next point using the Bezier3 algorithm
+         * @param p array with the four points (start, help1, help2, end) for the algorithm
+         * @param fStep step number (0..1)
+         * @return the next point
+         */
+        irr::core::vector3df getBezier3(irr::core::vector3df a_aPoints[], irr::f32 a_fStep);
+
       protected:
-        enum class enType {
-          Bezier1,
-          Bezier2,
-          Bezier3
-        };
-
         std::vector<irr::core::vector3df> m_vPoints;
-
-        enType m_eType;   /**< The type of this track part */
-
         std::vector<irr::core::vector3df> m_vTrack;
 
         /**
+        * A little helper functions to fill the indices for the Bezier calculation
+        * @param a_iSteps the number of steps
+        * @param a_pPrevious the previous track part
+        * @return a vector with the indices ranging from 0 to 1
+        */
+        std::vector<irr::f32> fillIndexVector(int a_iSteps, ITrackPart *a_pPrevious);
+
+        /**
+        * Get the point of the bezier curve
+        * @param a_vPoints vector with the reference points
+        * @param a_fStep step number (0..1)
+        * @return the next point
+        */
+        irr::core::vector3df getBezier(std::vector<irr::core::vector3df> &a_vPoints, irr::f32 a_fStep);
+
+        /**
         * Calculate the points of the curve, road center
-        * @param a_cOut the vector to be filled
         * @return the length of the curve
         */
-        double calculateCurve(std::vector<irr::core::vector3df> &a_cOut);
+        irr::f32 calculateCurve();
 
       public:
         CTrackPart_Bezier(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
