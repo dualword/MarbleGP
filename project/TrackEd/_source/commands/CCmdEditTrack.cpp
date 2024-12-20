@@ -659,7 +659,7 @@ namespace dustbin {
                     tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
 
                     if (l_pPart->partAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
-                      l_vItems.push_back(std::make_tuple(c_sAddFlatSection, true));
+                      l_vItems.push_back(std::make_tuple(c_sAddFlatSegment, true));
                       l_vItems.push_back(std::make_tuple(c_sAddCheckpoint , true));
                       l_vItems.push_back(std::make_tuple(c_sAddRamp       , true));
                     }
@@ -718,7 +718,7 @@ namespace dustbin {
             if (a_cEvent.GUIEvent.Caller == m_pMenu) {
               std::wstring l_sItem = m_pMenu->getItemText(m_pMenu->getSelectedItem());
 
-              if (l_sItem == c_sAddFlatSection) {
+              if (l_sItem == c_sAddFlatSegment) {
                 tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(m_vParts.back(), m_vParts.back()->getNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();

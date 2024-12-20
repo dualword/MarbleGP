@@ -11,9 +11,9 @@ namespace dustbin {
   const irr::s32 c_iSceneLoaded        = 34;
   const irr::s32 c_iUpdateShader       = 42;
 
-  const std::wstring c_sAddFlatSection = L"Add Road Segment";
+  const std::wstring c_sAddFlatSegment = L"Add Road Segment";
   const std::wstring c_sAddCheckpoint  = L"Add Checkpoint";
-  const std::wstring c_sAddRamp        = L"Add Start";
+  const std::wstring c_sAddRamp        = L"Add Ramp";
   const std::wstring c_sAddJump        = L"Add Jump";
   const std::wstring c_sAddGap         = L"Add Gap";
   const std::wstring c_sFinishTrack    = L"Finish Track";
