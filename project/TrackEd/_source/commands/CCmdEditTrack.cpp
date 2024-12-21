@@ -360,6 +360,7 @@ namespace dustbin {
 
       bool l_bBlack = true;
 
+      printf("**** Create Track\n");
       for (auto l_pPart: m_vParts) {
         l_pPart->createTrackPart(m_vBuffers, l_bBlack);
       }
@@ -411,7 +412,7 @@ namespace dustbin {
       if (m_eEditMode == enEditMode::MovePointOnLine) {
         a_pDrv->draw3DLine(m_cMoveLine.start, m_cMoveLine.end, irr::video::SColor(0xFF, 0, 0, 0));
       }
-      else if (m_eEditMode == enEditMode::MovePointInPlane) {
+      else if (m_eEditMode == enEditMode::MovePointInPlane || m_eEditMode == enEditMode::AddReferencePoint) {
         if (m_pSelected != nullptr) {
           irr::core::vector3df l_cPoint = m_cMovePoint;
 
