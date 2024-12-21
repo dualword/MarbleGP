@@ -283,6 +283,12 @@ namespace dustbin {
         */
         const std::string &getType();
 
+        /**
+        * Add custom entries to the right-click context menu
+        * @param a_iRefPoint the hovered reference point
+        */
+        virtual std::vector<std::wstring> contextMenuEntries(int a_iRefPoint);
+
         virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv);
     };
   }

@@ -311,5 +311,13 @@ namespace dustbin {
 
     void ITrackPart::drawReferencePoint(irr::video::IVideoDriver *a_pDrv) {
     }
+
+    /**
+    * Add custom entries to the right-click context menu
+    * @param a_iRefPoint the hovered reference point
+    */
+    std::vector<std::wstring> ITrackPart::contextMenuEntries(int a_iRefPoint) {
+      return std::vector<std::wstring>();
+    }
   }
 }

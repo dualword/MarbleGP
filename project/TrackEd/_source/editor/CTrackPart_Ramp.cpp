@@ -124,5 +124,46 @@ namespace dustbin {
         return true;
       }
     }
+
+    /**
+    * Add custom entries to the right-click context menu
+    * @param a_iRefPoint the hovered reference point
+    */
+    std::vector<std::wstring> CTrackPart_Ramp::contextMenuEntries(int a_iRefPoint) {
+      std::vector<std::wstring> l_vRet;
+
+      if (a_iRefPoint == m_vPoints.size() - 1) {
+        l_vRet.push_back(L"Flatten end point");
+      }
+
+      return l_vRet;
+    }
+
+    /**
+    * Handle an event if this part is selected
+    * @param a_cEvent the event to handle
+    * @return true if the event was handled
+    */
+    bool CTrackPart_Ramp::OnEvent(const irr::SEvent &a_cEvent) {
+      bool l_bRet = false;
+
+      if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_MENU_ITEM_SELECTED) {
+
+          if (a_cEvent.GUIEvent.Caller->getType() == irr::gui::EGUIET_CONTEXT_MENU) {
+            irr::gui::IGUIContextMenu *l_pMenu = reinterpret_cast<irr::gui::IGUIContextMenu *>(a_cEvent.GUIEvent.Caller);
+
+            std::wstring l_sItem = l_pMenu->getItemText(l_pMenu->getSelectedItem());
+
+            if (l_sItem == L"Flatten end point") {
+              m_vPoints.back().Y = m_vPoints[m_vPoints.size() - 2].Y;
+              setEndNormal(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+            }
+          }
+        }
+      }
+
+      return l_bRet;
+    }
   }
 }

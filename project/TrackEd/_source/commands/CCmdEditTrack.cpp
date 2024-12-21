@@ -493,6 +493,13 @@ namespace dustbin {
     bool CCmdEditTrack::OnEvent(const irr::SEvent &a_cEvent) {
       bool l_bRet = false;
 
+      {
+        if (m_mReferencePoints.find(m_pSelected) != m_mReferencePoints.end()) {
+          tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pSelected]);
+          l_bRet = l_pPart->OnEvent(a_cEvent);
+        }
+      }
+
       if (!l_bRet) {
         if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
           irr::core::vector2di   l_cMouse = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
@@ -744,21 +751,26 @@ namespace dustbin {
 
                       l_cSize.Width  = 6 * l_cSize.Width / 5;
                       l_cSize.Height = 6 * l_cSize.Height / 5;
+                    }
 
-                      m_pMenu = m_pGui->addContextMenu(
-                        irr::core::recti(
-                          (irr::u32)a_cEvent.MouseInput.X < l_cScreen.Width - l_cSize.Width ? a_cEvent.MouseInput.X : l_cScreen.Width - l_cSize.Width,
-                          (irr::u32)a_cEvent.MouseInput.Y < l_cScreen.Height - l_cSize.Height ? a_cEvent.MouseInput.Y : l_cScreen.Height - l_cSize.Height,
-                          l_cSize.Width,
-                          l_cSize.Height
-                        )
-                      );
+                    m_pMenu = m_pGui->addContextMenu(
+                      irr::core::recti(
+                        (irr::u32)a_cEvent.MouseInput.X < l_cScreen.Width - l_cSize.Width ? a_cEvent.MouseInput.X : l_cScreen.Width - l_cSize.Width,
+                        (irr::u32)a_cEvent.MouseInput.Y < l_cScreen.Height - l_cSize.Height ? a_cEvent.MouseInput.Y : l_cScreen.Height - l_cSize.Height,
+                        l_cSize.Width,
+                        l_cSize.Height
+                      )
+                    );
 
-                      m_pSelected = m_pHover;
+                    m_pSelected = m_pHover;
 
-                      for (auto l_sItem : l_vItems) {
-                        m_pMenu->addItem(std::get<0>(l_sItem).c_str());
-                      }
+                    for (auto l_sItem : l_vItems) {
+                      m_pMenu->addItem(std::get<0>(l_sItem).c_str());
+                    }
+
+                    std::vector<std::wstring> l_vPartItems = l_pPart->contextMenuEntries(std::get<1>(m_mReferencePoints[m_pHover]));
+                    for (auto l_sItem: l_vPartItems) {
+                      m_pMenu->addItem(l_sItem.c_str());
                     }
                   }
                 }

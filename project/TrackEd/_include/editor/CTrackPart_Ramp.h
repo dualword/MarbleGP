@@ -60,6 +60,19 @@ namespace dustbin {
         * @return the side vector of the end of this track part
         */
         virtual irr::core::vector3df getEndSide() const override;
-   };
+ 
+        /**
+        * Add custom entries to the right-click context menu
+        * @param a_iRefPoint the hovered reference point
+        */
+        virtual std::vector<std::wstring> contextMenuEntries(int a_iRefPoint) override;
+
+        /**
+        * Handle an event if this part is selected
+        * @param a_cEvent the event to handle
+        * @return true if the event was handled
+        */
+        virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
+  };
   }
 }
