@@ -37,6 +37,20 @@ namespace dustbin {
          */
         irr::core::vector3df getBezier3(irr::core::vector3df a_aPoints[], irr::f32 a_fStep);
 
+        /**
+        * Get the (normalized) normal vector of a point
+        * @param a_iIndex the point index
+        * @return the (normalized) normal vector of a point
+        */
+        virtual irr::core::vector3df getNormalOfPoint(int a_iIndex) const = 0;
+
+        /**
+        * Get the (normalized) side vector of a point
+        * @param a_iIndex the point index
+        * @return the (normalized) side vector of a point
+        */
+        virtual irr::core::vector3df getSideOfPoint(int a_iIndex) const = 0;
+
       protected:
         std::vector<irr::core::vector3df> m_vPoints;
         std::vector<irr::core::vector3df> m_vTrack;
@@ -117,17 +131,13 @@ namespace dustbin {
         virtual const irr::core::vector3df getEndDirection() override;
 
         /**
-        * Get the normal at the end point
-        * @return the normal at the end point
-        */
-        virtual const irr::core::vector3df &getNormal() override;
-
-        /**
         * Add this track part to the AI path node
         * @param a_pAi the AI path node
         * @param a_pLast the last AI path section
         */
         virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) override;
+
+        virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv) override;
     };
   }
 }

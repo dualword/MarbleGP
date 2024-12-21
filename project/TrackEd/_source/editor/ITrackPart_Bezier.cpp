@@ -67,122 +67,7 @@ namespace dustbin {
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
     void ITrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
-      double l_fLength = calculateCurve();
-      l_fLength = std::ceil(l_fLength);
-
-      irr::f32 l_fWidth = m_fWidth / 2.0f;
-      std::vector<irr::core::line3df> l_vBottom;
-
-      irr::core::vector3df l_cOld;
-
-      for (auto l_cPos : m_vTrack) {
-        if (l_cPos != m_vTrack.front() || getPrevious() == nullptr) {
-          irr::core::vector3df l_cDirection;
-
-          if (l_cPos != m_vTrack.front()) {
-            l_cDirection = (l_cPos - l_cOld).normalize();
-          }
-          else {
-            l_cDirection = (m_vPoints[1] - m_vPoints[0]).normalize();
-          }
-
-          irr::core::vector3df l_cSide = (l_cDirection.crossProduct(getNormal())).normalize();
-
-          if (l_cPos != m_vTrack.back() || getNext() == nullptr || getNext()->getPrevious() != nullptr)
-            l_vBottom.push_back(irr::core::line3df(l_cPos + l_fWidth * l_cSide, l_cPos - l_fWidth * l_cSide));
-          else
-            l_vBottom.push_back(getNext()->getStart());
-        }
-        else {
-          // First segment: take last segment of previous track part
-          l_vBottom.push_back(getPrevious()->getEnd());
-        }
-
-        l_cOld = l_cPos;
-      }
-
-      if (l_vBottom.size() > 0) {
-        setStart(l_vBottom.front());
-        setEnd  (l_vBottom.back ());
-      }
-
-      size_t l_iSteps = l_vBottom.size() - 1;
-
-      double l_fTextureStep = l_fLength / (double)(l_iSteps);
-
-      irr::core::position2df l_aTextureTop[] = {
-        irr::core::position2df(1.0f, 0.0f),
-        irr::core::position2df(0.0f, 0.0f),
-        irr::core::position2df(0.0f, (irr::f32)l_fTextureStep),
-        irr::core::position2df(1.0f, (irr::f32)l_fTextureStep)
-      };
-
-      irr::core::line3df l_cOldLine;
-
-      for (auto &l_cLine : l_vBottom) {
-        if (l_cLine != l_vBottom.front()) {
-          irr::core::vector3df l_aVerts[] = {
-            l_cOldLine.end + 0.05f * getNormal(),
-            l_cOldLine.start + 0.05f * getNormal(),
-            l_cLine   .start + 0.05f * getNormal(),
-            l_cLine   .end + 0.05f * getNormal()
-          };
-
-          if (l_cLine == l_vBottom.back()) {
-            l_aTextureTop[2].Y = std::ceil(l_aTextureTop[2].Y);
-            l_aTextureTop[3].Y = std::ceil(l_aTextureTop[3].Y);
-          }
-
-          if (a_vBuffers.size() > c_iBufferIdxRoad) {
-            addQuadToMeshBuffer(l_aVerts, l_aTextureTop, a_vBuffers[c_iBufferIdxRoad], l_cOldLine == l_vBottom.front(), getNext() != nullptr && getNext()->getPrevious() == nullptr);
-          }
-
-          for (int i = 0; i < 4; i++)
-            l_aTextureTop[i].Y += (irr::f32)l_fTextureStep;
-
-          l_aVerts[0] = l_cOldLine.start;
-          l_aVerts[1] = l_cOldLine.end;
-          l_aVerts[2] = l_cLine   .end;
-          l_aVerts[3] = l_cLine   .start;
-
-          irr::core::position2df l_aTextureBottom[] = {
-            irr::core::position2df(l_aVerts[0].X, l_aVerts[0].Z),
-            irr::core::position2df(l_aVerts[1].X, l_aVerts[1].Z),
-            irr::core::position2df(l_aVerts[2].X, l_aVerts[2].Z),
-            irr::core::position2df(l_aVerts[3].X, l_aVerts[3].Z)
-          };
-
-          if (a_vBuffers.size() > c_iBufferIdxBottom)
-            addQuadToMeshBuffer(l_aVerts, l_aTextureBottom, a_vBuffers[c_iBufferIdxBottom], false, false);
-
-          l_aVerts[0] = l_cOldLine.end + 0.05f * getNormal();
-          l_aVerts[1] = l_cLine   .end + 0.05f * getNormal();
-          l_aVerts[2] = l_cLine   .end;
-          l_aVerts[3] = l_cOldLine.end;
-
-          irr::core::position2df l_aTextureSide[] = {
-            irr::core::position2df(0.0f, 0.0f),
-            irr::core::position2df(1.0f, 0.0f),
-            irr::core::position2df(1.0f, 1.0f),
-            irr::core::position2df(0.0f, 1.0f)
-          };
-
-          if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-            addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
-
-          l_aVerts[1] = l_cOldLine.start + 0.05f * getNormal();
-          l_aVerts[0] = l_cLine   .start + 0.05f * getNormal();
-          l_aVerts[3] = l_cLine   .start;
-          l_aVerts[2] = l_cOldLine.start;
-
-          if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-            addQuadToMeshBuffer(l_aVerts, l_aTextureSide, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false);
-
-          a_bBlack = !a_bBlack;
-        }
-
-        l_cOldLine = l_cLine;
-      }
+      
     }
 
     /**
@@ -254,7 +139,7 @@ namespace dustbin {
     irr::f32 ITrackPart_Bezier::calculateCurve() {
       m_vTrack.clear();
 
-      std::vector<irr::f32> l_vIndices = fillIndexVector(32, getPrevious());
+      std::vector<irr::f32> l_vIndices = fillIndexVector(8, getPrevious());
 
       for (auto l_fStep: l_vIndices) {
         m_vTrack.push_back(getBezier(m_vPoints, l_fStep));
@@ -285,6 +170,11 @@ namespace dustbin {
       bool l_bBlack = true;
       createTrackPart(l_vDummy, l_bBlack);
 
+      setEnd(irr::core::line3df(
+        m_vPoints.back() - m_fWidth * getSideOfPoint(m_vPoints.size() - 1),
+        m_vPoints.back() + m_fWidth * getSideOfPoint(m_vPoints.size() - 1)
+      ));
+
       if (getNext() != nullptr && getNext()->getPrevious() != nullptr)
         getNext()->updateReferencePoints();
     }
@@ -304,12 +194,19 @@ namespace dustbin {
       return (m_vPoints[m_vPoints.size() - 1] - m_vPoints[m_vPoints.size() - 2]).normalize();
     }
 
-    /**
-    * Get the normal at the end point
-    * @return the normal at the end point
-    */
-    const irr::core::vector3df &ITrackPart_Bezier::getNormal() {
-      return getStartNormal();
+    void ITrackPart_Bezier::drawReferencePoint(irr::video::IVideoDriver *a_pDrv) {
+      irr::core::vector3df l_cNormal = getPrevious() != nullptr ? getPrevious()->getEndNormal() : irr::core::vector3df(0.0f, 1.0f, 0.0f);
+
+      if (m_vPoints.size() > 1) {
+        for (size_t i = 0; i < m_vPoints.size() - 1; i++) {
+          a_pDrv->draw3DLine(50.0f * m_vPoints[i], 50.0f * m_vPoints[i + 1], irr::video::SColor(0xFF, 0xFF, 0, 0));
+        }
+
+        for (size_t i = 0; i < m_vPoints.size(); i++) {
+          a_pDrv->draw3DLine(50.0f * m_vPoints[i], 50.0f * m_vPoints[i] + 25.0f * getNormalOfPoint((int)i), irr::video::SColor(0xFF, 0, 0xFF, 0));
+          a_pDrv->draw3DLine(50.0f * m_vPoints[i], 50.0f * m_vPoints[i] + 25.0f * getSideOfPoint  ((int)i), irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF));
+        }
+      }
     }
 
     /**
@@ -336,7 +233,7 @@ namespace dustbin {
         l_pThis->m_cPosition   = 50.0f * m_vTrack[l_iIndex] + 2.51f * l_cNormal;
         l_pThis->m_cSideVector = l_cSide;
         l_pThis->m_fWidth      = 25.0f * m_fWidth;
-        l_pThis->m_cNormal     = getNormal();
+        l_pThis->m_cNormal     = getEndNormal();
         l_pThis->m_fFactor     = 0.90f;
 
         if (a_pLast != nullptr) {

@@ -105,12 +105,6 @@ namespace dustbin {
         virtual bool canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) override;
 
         /**
-        * Get the normal at the end point
-        * @return the normal at the end point
-        */
-        virtual const irr::core::vector3df &getNormal() override;
-
-        /**
         * Add this track part to the AI path node
         * @param a_pAi the AI path node
         * @param a_pLast the last AI path section
@@ -123,6 +117,12 @@ namespace dustbin {
         * @return true if the event was handled
         */
         virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
+
+        /**
+        * Get the side vector of the end of this track part
+        * @return the side vector of the end of this track part
+        */
+        virtual irr::core::vector3df getEndSide() const override;
     };
   }
 }

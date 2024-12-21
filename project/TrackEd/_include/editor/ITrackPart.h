@@ -44,7 +44,8 @@ namespace dustbin {
         ITrackPart *m_pPrevious;  /**< The previous track part (always nullptr for the start part) */
         ITrackPart *m_pNext;      /**< The next track part */
 
-        irr::core::vector3df m_cNormal;   /**< The normal at the start point */
+        irr::core::vector3df m_cNormalStart;    /**< The normal at the start point */
+        irr::core::vector3df m_cNormalEnd;      /**< The normal at the end point */
 
         irr::core::line3df m_cStart;    /**< The start of the part */
         irr::core::line3df m_cEnd;      /**< The end of the part */
@@ -52,7 +53,12 @@ namespace dustbin {
       protected:
         irr::f32 m_fWidth;    /**< The width of this part */
 
-        const irr::core::vector3df &getStartNormal();
+        /**
+        * Set the end normal
+        * @param a_cNormal the new end normal
+        */
+        void setEndNormal(const irr::core::vector3df &a_cNormal);
+
 
         /**
         * Get the index of a vertex in a given mesh buffer
@@ -69,13 +75,15 @@ namespace dustbin {
         * @param a_pBuffer the buffer to be filled
         * @param a_bForceAdd add the first vertices regardless of whether or not the position is already in 
         * @param a_bForceAdd2nd add the second vertices to the mesh buffer regardless of whether or not the position is already in 
+        * @param a_aNormals [out] the normals of the points, must be an array with size 4 or nullptr
         */
         void addQuadToMeshBuffer(
           irr::core::vector3df a_aVertices[4],
           irr::core::position2df a_aTexturePos[4],
           irr::scene::SMeshBuffer *a_pBuffer,
           bool a_bForceAdd,
-          bool a_bForceAdd2nd
+          bool a_bForceAdd2nd,
+          irr::core::vector3df *a_aNormals
         );
 
         /**
@@ -131,8 +139,15 @@ namespace dustbin {
 
         /**
         * Get the direction of the end of this track part
+        * @return the direction of the end of this track part
         */
         virtual const irr::core::vector3df getEndDirection() = 0;
+
+        /**
+        * Get the side vector of the end of this track part
+        * @return the side vector of the end of this track part
+        */
+        virtual irr::core::vector3df getEndSide() const = 0;
 
         /**
         * Can a reference point be moved freely in the 2d plane
@@ -185,7 +200,13 @@ namespace dustbin {
         * Get the normal at the end point
         * @return the normal at the end point
         */
-        virtual const irr::core::vector3df &getNormal() = 0;
+        const irr::core::vector3df &getEndNormal() const;
+
+        /**
+        * Get the normal at the start point
+        * @return the normal at the start point
+        */
+        const irr::core::vector3df &getStartNormal() const;
 
         /**
         * This method is called when the reference points of the previous track part have changed
@@ -217,14 +238,13 @@ namespace dustbin {
         * Get the start of the part
         * @return the start of the part
         */
-        const irr::core::line3df &getStart();
+        const irr::core::line3df &getStart() const;
 
         /**
         * Get the end of the part
         * @return the end of the part
         */
-        const irr::core::line3df &getEnd();
-
+        const irr::core::line3df &getEnd() const;
 
         /**
         * Get the ID of the track part
@@ -262,6 +282,8 @@ namespace dustbin {
         * @return the type ID of this track part
         */
         const std::string &getType();
+
+        virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv);
     };
   }
 }

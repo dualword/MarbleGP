@@ -117,8 +117,6 @@ namespace dustbin {
         }
         l_iIndex++;
       }
-
-      m_cPlane = irr::core::plane3df(irr::core::vector3df(0.0f), irr::core::vector3df(0.0f, 1.0f, 0.0f));
     }
 
     /**
@@ -406,6 +404,60 @@ namespace dustbin {
     * @param a_pDrv the video driver
     */
     void CCmdEditTrack::draw(irr::video::IVideoDriver *a_pDrv) {
+      for (auto l_cPart: m_vParts) {
+        l_cPart->drawReferencePoint(a_pDrv);
+      }
+
+      if (m_eEditMode == enEditMode::MovePointOnLine) {
+        a_pDrv->draw3DLine(m_cMoveLine.start, m_cMoveLine.end, irr::video::SColor(0xFF, 0, 0, 0));
+      }
+      else if (m_eEditMode == enEditMode::MovePointInPlane) {
+        if (m_pSelected != nullptr) {
+          irr::core::vector3df l_cPoint = m_cMovePoint;
+
+          irr::core::vector3df l_cNormal = m_cMovePlane.Normal.normalize();
+
+          irr::core::vector3df v1;
+          irr::core::vector3df v2;
+
+          if (l_cNormal.Y == 1.0f) {
+            v1 = irr::core::vector3df(1.0f, 0.0f, 0.0f);
+            v2 = irr::core::vector3df(0.0f, 0.0f, 1.0f);
+          }
+          else if (l_cNormal.X == 1.0f) {
+            v1 = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+            v2 = irr::core::vector3df(0.0f, 0.0f, 1.0f);
+          }
+          else if (l_cNormal.Z == 1.0f) {
+            v1 = irr::core::vector3df(0.0f, 1.0f, 0.0f);
+            v2 = irr::core::vector3df(1.0f, 0.0f, 0.0f);
+          }
+          else {
+            m_cMovePlane.getIntersectionWithLimitedLine(l_cPoint + irr::core::vector3df(0.0f, 10.0f, 1.0f), l_cPoint + irr::core::vector3df(0.0f, -10.0f, 1.0f), v1);
+            m_cMovePlane.getIntersectionWithLimitedLine(l_cPoint + irr::core::vector3df(1.0f, 10.0f, 0.0f), l_cPoint + irr::core::vector3df(1.0f, -10.0f, 0.0f), v2);
+
+            v1 -= m_cMovePoint;
+            v2 -= m_cMovePoint;
+
+            v1 = v1.normalize();
+            v2 = v2.normalize();
+          }
+
+          for (irr::f32 y = -50.0f; y <= 50.0f; y += 5.0f) {
+            irr::core::vector3df p1 = l_cPoint + y * v1 - 50.0f * v2;
+            irr::core::vector3df p2 = l_cPoint + y * v1 + 50.0f * v2;
+
+            a_pDrv->draw3DLine(p1, p2, irr::video::SColor(0xFF, 0, 0, 0));
+          }
+
+          for (irr::f32 x = -50.0f; x <= 50.0f; x += 5.0f) {
+            irr::core::vector3df p1 = l_cPoint + x * v2 - 50.0f * v1;
+            irr::core::vector3df p2 = l_cPoint + x * v2 + 50.0f * v1;
+
+            a_pDrv->draw3DLine(p1, p2, irr::video::SColor(0xFF, 0, 0, 0));
+          }
+        }
+      }
     }
 
     /**
@@ -455,7 +507,7 @@ namespace dustbin {
 
             irr::core::vector3df l_cRayCollision;
 
-            m_cPlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+            m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
 
             if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
               m_pHover = nullptr;
@@ -499,7 +551,7 @@ namespace dustbin {
             irr::core::vector3df l_cRayCollision;
             m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
 
-            m_pSelected->setPosition(l_cRayCollision + 2.5f * std::get<0>(m_mReferencePoints[m_pSelected])->getNormal());
+            m_pSelected->setPosition(l_cRayCollision + 2.5f * std::get<0>(m_mReferencePoints[m_pSelected])->getEndNormal());
 
             l_bRet = true;
           }
@@ -719,7 +771,7 @@ namespace dustbin {
               std::wstring l_sItem = m_pMenu->getItemText(m_pMenu->getSelectedItem());
 
               if (l_sItem == c_sAddFlatSegment) {
-                tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(m_vParts.back(), m_vParts.back()->getNormal());
+                tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(m_vParts.back(), m_vParts.back()->getEndNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
                 
@@ -736,7 +788,7 @@ namespace dustbin {
                 createTrack();
               }
               else if (l_sItem == c_sAddCheckpoint) {
-                tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(m_vParts.back(), m_vParts.back()->getNormal());
+                tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(m_vParts.back(), m_vParts.back()->getEndNormal());
                 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
                 
@@ -753,7 +805,7 @@ namespace dustbin {
                 createTrack();
               }
               else if (l_sItem == c_sAddRamp) {
-                tracked::CTrackPart_Ramp *l_pNew = new tracked::CTrackPart_Ramp(m_vParts.back(), m_vParts.back()->getNormal());
+                tracked::CTrackPart_Ramp *l_pNew = new tracked::CTrackPart_Ramp(m_vParts.back(), m_vParts.back()->getEndNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
 
@@ -777,7 +829,7 @@ namespace dustbin {
                     if (l_pPart != nullptr && l_pPart->getReferencePoints().size() < 4) {
                       setEditMode(enEditMode::AddReferencePoint);
 
-                      m_cMovePlane = irr::core::plane3df(l_pPart->getReferencePoints().front(), l_pPart->getNormal());
+                      m_cMovePlane = irr::core::plane3df(50.0f * l_pPart->getReferencePoints().front(), l_pPart->getEndNormal());
 
                       for (auto &l_tPoint: m_mReferencePoints) {
                         l_tPoint.first->setVisible(m_pSelected == l_tPoint.first);
@@ -808,7 +860,7 @@ namespace dustbin {
                   irr::core::vector3df l_cStrDir = -l_pFirst->getEndDirection();
                   irr::core::vector3df l_cStrPos = irr::core::vector3df(0.0f);
 
-                  tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(l_pLast, l_pLast->getNormal());
+                  tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(l_pLast, l_pLast->getEndNormal());
 
                   std::vector<irr::core::vector3df> l_cRef = {
                     l_cEndPos,

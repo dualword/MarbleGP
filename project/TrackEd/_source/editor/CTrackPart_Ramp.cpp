@@ -7,10 +7,62 @@
 namespace dustbin {
   namespace tracked {
     CTrackPart_Ramp::CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      ITrackPart_Bezier(c_sTypeRamp, a_pPrevious, a_cNormal) {
+      ITrackPart_Bezier(c_sTypeRamp, a_pPrevious, a_cNormal) 
+    {
+      if (a_pPrevious != nullptr)
+        m_cSide = a_pPrevious->getEndSide();
+      else 
+        m_cSide = irr::core::vector3df(1.0f, 0.0f, 0.0f);
     }
 
     CTrackPart_Ramp::~CTrackPart_Ramp() {
+    }
+
+    /**
+    * Get the (normalized) normal vector of a point
+    * @param a_iIndex the point index
+    * @return the (normalized) normal vector of a point
+    */
+    irr::core::vector3df CTrackPart_Ramp::getNormalOfPoint(int a_iIndex) const {
+      if (a_iIndex == 0) {
+        return getSideOfPoint(0).crossProduct(m_vPoints[0] - m_vPoints[1]).normalize();
+      }
+      else if (a_iIndex == (int)m_vPoints.size() - 1) {
+        return getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex]).normalize();
+      }
+      else {
+        irr::core::vector3df v1 = getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex    ] - m_vPoints[a_iIndex + 1]).normalize();
+        irr::core::vector3df v2 = getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex    ]).normalize();
+
+        return v1.getInterpolated(v2, 0.5);
+      }
+    }
+
+    /**
+    * Get the (normalized) side vector of a point
+    * @param a_iIndex the point index
+    * @return the (normalized) side vector of a point
+    */
+    irr::core::vector3df CTrackPart_Ramp::getSideOfPoint(int a_iIndex) const {
+      // For a ramp segment the side vector does not change
+      return m_cSide;
+    }
+ 
+    /**
+    * Get the side vector of the end of this track part
+    * @return the side vector of the end of this track part
+    */
+    irr::core::vector3df CTrackPart_Ramp::getEndSide() const {
+      return m_cSide;
+    }
+
+    /**
+    * Set the trak part's reference points
+    * @param a_cPoints a vector with the reference points
+    */
+    void CTrackPart_Ramp::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
+      ITrackPart_Bezier::setReferencePoints(a_cPoints);
+      setEndNormal(getNormalOfPoint((int)m_vPoints.size() - 1));
     }
 
     /**
@@ -61,15 +113,13 @@ namespace dustbin {
         a_cLine.end   = a_cLine.start + 1000.0f * (m_vPoints[1] - m_vPoints[0]).normalize();
 
         a_cPlanePoint  = m_vPoints[0];
-        a_cPlaneNormal = getNormal();
+        a_cPlaneNormal = getStartNormal();
 
         return false;
       }
       else {
-        irr::core::vector3df l_cSide = ((m_vPoints[1] - m_vPoints[0]).crossProduct(getNormal())).normalize();
-
         a_cPlanePoint  = m_vPoints[1];
-        a_cPlaneNormal = l_cSide;
+        a_cPlaneNormal = getSideOfPoint(1);
 
         return true;
       }

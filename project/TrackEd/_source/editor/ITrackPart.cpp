@@ -21,7 +21,7 @@ namespace dustbin {
       m_iNext      (-1),
       m_pPrevious  (a_pPrevious),
       m_pNext      (nullptr),
-      m_cNormal    (a_cNormal),
+      m_cNormalStart    (a_cNormal),
       m_fWidth     (0.75f)
     {
       if (m_pPrevious != nullptr) {
@@ -36,8 +36,28 @@ namespace dustbin {
     ITrackPart::~ITrackPart() {
     }
 
-    const irr::core::vector3df &ITrackPart::getStartNormal() {
-      return m_cNormal;
+    /**
+    * Set the end normal
+    * @param a_cNormal the new end normal
+    */
+    void ITrackPart::setEndNormal(const irr::core::vector3df &a_cNormal) {
+      m_cNormalEnd = a_cNormal;
+    }
+
+    /**
+    * Get the normal at the end point
+    * @return the normal at the end point
+    */
+    const irr::core::vector3df &ITrackPart::getEndNormal() const {
+      return m_cNormalEnd;
+    }
+
+    /**
+    * Get the normal at the start point
+    * @return the normal at the start point
+    */
+    const irr::core::vector3df &ITrackPart::getStartNormal() const {
+      return m_cNormalStart;
     }
 
     /**
@@ -118,13 +138,15 @@ namespace dustbin {
     * @param a_pBuffer the buffer to be filled
     * @param a_bForceAdd add the first vertices regardless of whether or not the position is already in bool 
     * @param a_bForceAdd2nd add the second vertices to the mesh buffer regardless of whether or not the position is already in 
+    * @param a_aNormals [out] the normals of the points, must be an array with size 4 or nullptr
     */
     void ITrackPart::addQuadToMeshBuffer(
       irr::core::vector3df a_aVertices[4],
       irr::core::position2df a_aTexturePos[4],
       irr::scene::SMeshBuffer *a_pBuffer,
       bool a_bForceAdd,
-      bool a_bForceAdd2nd)
+      bool a_bForceAdd2nd,
+      irr::core::vector3df *a_aNormals)
     {
       irr::core::triangle3df l_aTriangles[] = {
         irr::core::triangle3df(a_aVertices[0], a_aVertices[1], a_aVertices[2]),
@@ -164,6 +186,10 @@ namespace dustbin {
         else {
           a_pBuffer->Vertices[l_aIndices[i]].Normal = a_pBuffer->Vertices[l_aIndices[i]].Normal.getInterpolated(l_aTriangles[i == 0 || i == 1 ? 0 : 1].getNormal(), 0.5);
         }
+
+        if (a_aNormals != nullptr) {
+          a_aNormals[i] = a_pBuffer->Vertices[l_aIndices[i]].Normal.normalize();
+        }
       }
 
       a_pBuffer->Indices.push_back(l_aIndices[0]);
@@ -196,7 +222,7 @@ namespace dustbin {
     * Get the start of the part
     * @return the start of the part
     */
-    const irr::core::line3df &ITrackPart::getStart() {
+    const irr::core::line3df &ITrackPart::getStart() const {
       return m_cStart;
     }
 
@@ -204,7 +230,7 @@ namespace dustbin {
     * Get the end of the part
     * @return the end of the part
     */
-    const irr::core::line3df &ITrackPart::getEnd() {
+    const irr::core::line3df &ITrackPart::getEnd() const {
       return m_cEnd;
     }
 
@@ -266,7 +292,7 @@ namespace dustbin {
       a_cAttr.addInt     ("id"      , m_iInternalId);
       a_cAttr.addInt     ("previous", m_iPrevious);
       a_cAttr.addInt     ("next"    , m_iNext);
-      a_cAttr.addVector3d("normal"  , m_cNormal);
+      a_cAttr.addVector3d("normal"  , m_cNormalStart);
       a_cAttr.addFloat   ("width"   , m_fWidth);
     }
 
@@ -279,9 +305,11 @@ namespace dustbin {
       m_iInternalId = a_cAttr.getAttributeAsInt     ("id");
       m_iPrevious   = a_cAttr.getAttributeAsInt     ("previous");
       m_iNext       = a_cAttr.getAttributeAsInt     ("next");
-      m_cNormal     = a_cAttr.getAttributeAsVector3d("normal");
+      m_cNormalStart     = a_cAttr.getAttributeAsVector3d("normal");
       m_fWidth      = a_cAttr.getAttributeAsFloat   ("width");
     }
 
+    void ITrackPart::drawReferencePoint(irr::video::IVideoDriver *a_pDrv) {
+    }
   }
 }

@@ -12,6 +12,24 @@ namespace dustbin {
     * A track part to go up
     */
     class CTrackPart_Ramp : public ITrackPart_Bezier {
+      private:
+        irr::core::vector3df m_cSide;   /**< The side vector */
+
+      protected:
+        /**
+        * Get the (normalized) normal vector of a point
+        * @param a_iIndex the point index
+        * @return the (normalized) normal vector of a point
+        */
+        virtual irr::core::vector3df getNormalOfPoint(int a_iIndex) const override;
+
+        /**
+        * Get the (normalized) side vector of a point
+        * @param a_iIndex the point index
+        * @return the (normalized) side vector of a point
+        */
+        virtual irr::core::vector3df getSideOfPoint(int a_iIndex) const override;
+
       public:
         CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~CTrackPart_Ramp();
@@ -30,6 +48,18 @@ namespace dustbin {
         * This method is called when the reference points of the previous track part have changed
         */
         virtual void updateReferencePoints() override;
-    };
+
+        /**
+        * Set the trak part's reference points
+        * @param a_cPoints a vector with the reference points
+        */
+        virtual void setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) override;
+ 
+        /**
+        * Get the side vector of the end of this track part
+        * @return the side vector of the end of this track part
+        */
+        virtual irr::core::vector3df getEndSide() const override;
+   };
   }
 }
