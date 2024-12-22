@@ -53,7 +53,8 @@ namespace dustbin {
       m_fBaseOffset (-1.0f),
       m_fBaseHeight (-1.0f)
     {
-      m_pColMgr = m_pSmgr->getSceneCollisionManager();
+      m_pColMgr    = m_pSmgr->getSceneCollisionManager();
+      m_cZeroPlane = irr::core::plane3df(irr::core::vector3df(0.0f), irr::core::vector3df(0.0f, 1.0f, 0.0f));
     }
         
     CCmdEditTrack::~CCmdEditTrack() {
@@ -513,9 +514,7 @@ namespace dustbin {
 
             irr::scene::ISceneNode *l_pObject = m_pColMgr->getSceneNodeAndCollisionPointFromRay(l_cRay, v, t, 0);
 
-            irr::core::vector3df l_cRayCollision;
-
-            m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+            irr::core::vector3df l_cRayCollision = getRayPlaneCollision(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
 
             if (a_cEvent.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
               m_pHover = nullptr;
@@ -555,10 +554,7 @@ namespace dustbin {
             l_bRet = true;
           }
           else if (m_eEditMode == enEditMode::MovePointInPlane) {
-            irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
-            irr::core::vector3df l_cRayCollision;
-            m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
-
+            irr::core::vector3df l_cRayCollision = getRayPlaneCollision(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
             m_pSelected->setPosition(l_cRayCollision + 2.5f * std::get<0>(m_mReferencePoints[m_pSelected])->getEndNormal());
 
             l_bRet = true;
@@ -591,6 +587,11 @@ namespace dustbin {
 
                     m_cMoveLine.start = 50.0f * m_cMoveLine.start;
                     m_cMoveLine.end   = 50.0f * m_cMoveLine.end;
+
+                    irr::core::vector3df l_cZero;
+                    if (m_cZeroPlane.getIntersectionWithLimitedLine(m_cMoveLine.start, m_cMoveLine.end, l_cZero)) {
+                      m_cMoveLine.end = l_cZero;
+                    }
 
                     m_cMovePlane = irr::core::plane3df(50.0f * l_cPlanePoint, l_cPlaneNormal);
 
@@ -652,9 +653,7 @@ namespace dustbin {
               else printf("Reference point not found!\n");
             }
             else if (m_eEditMode == enEditMode::MovePointInPlane) {
-              irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y), m_pSmgr->getActiveCamera());
-              irr::core::vector3df l_cRayCollision;
-              m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+              irr::core::vector3df l_cRayCollision = getRayPlaneCollision(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
 
               irr::core::vector3df l_cMove = l_cRayCollision - m_cMovePoint;
 
@@ -967,6 +966,38 @@ namespace dustbin {
       }
 
       return l_bRet;
+    }
+
+    /**
+    * Get the correct collision point considering the move and the zero plane
+    * @param a_cMousePos the mouse position to calculate the ray from
+    * @return the ray collision point
+    * @see m_cMovePlane
+    * @see m_cZeroPlane
+    */
+    irr::core::vector3df CCmdEditTrack::getRayPlaneCollision(const irr::core::vector2di &a_cMousePos) {
+      irr::core::line3df l_cRay = m_pColMgr->getRayFromScreenCoordinates(irr::core::vector2di(a_cMousePos.X, a_cMousePos.Y), m_pSmgr->getActiveCamera());
+      irr::core::vector3df l_cRayCollision;
+      m_cMovePlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cRayCollision);
+
+      irr::core::vector3df l_cZeroCollision;
+      m_cZeroPlane.getIntersectionWithLimitedLine(l_cRay.start, l_cRay.end, l_cZeroCollision);
+
+      irr::f32 l_fDist1 = m_pSmgr->getActiveCamera()->getAbsolutePosition().getDistanceFromSQ(l_cZeroCollision);
+      irr::f32 l_fDist2 = m_pSmgr->getActiveCamera()->getAbsolutePosition().getDistanceFromSQ(l_cRayCollision);
+
+      if (l_fDist1 < l_fDist2) {
+          irr::core::vector3df v1, v2;
+
+        if (m_cMovePlane.getIntersectionWithPlane(m_cZeroPlane, v1, v2)) {
+        irr::core::line3df l_cZeroLine = irr::core::line3df(v1 - 1000.0f * v2, v1 + 1000.0f * v2);
+
+          printf("%.2f, %.2f, %.2f --> %.2f, %.2f, %.2f\n", l_cZeroLine.start.X, l_cZeroLine.start.Y, l_cZeroLine.start.Z, l_cZeroLine.end.X, l_cZeroLine.end.Y, l_cZeroLine.end.Z);
+          l_cRayCollision = l_cZeroLine.getClosestPoint(l_cZeroCollision);
+        }
+      }
+
+      return l_cRayCollision;
     }
 
     /**

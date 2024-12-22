@@ -203,6 +203,8 @@ namespace dustbin {
         std::string l_sName = "point_" + std::to_string(i);
         m_vPoints.push_back(a_cAttr.getAttributeAsVector3d(l_sName.c_str()));
       }
+
+      setEndNormal(getNormalOfPoint(l_iCount - 1));
     }
 
     /**

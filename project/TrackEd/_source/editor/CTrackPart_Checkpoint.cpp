@@ -331,6 +331,8 @@ namespace dustbin {
       m_cStart       = a_cAttr.getAttributeAsVector3d("start");
       m_cEnd         = a_cAttr.getAttributeAsVector3d("end");
       m_bRespawnLeft = a_cAttr.getAttributeAsBool    ("respawn_left");
+
+      setEndNormal(a_cAttr.getAttributeAsVector3d("normal"));
     }
 
     /**

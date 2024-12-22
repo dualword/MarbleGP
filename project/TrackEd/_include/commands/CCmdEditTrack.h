@@ -43,6 +43,7 @@ namespace dustbin {
         irr::scene::SMesh          *m_pMesh;        /**< The track's mesh structure */
         irr::core::line3df          m_cMoveLine;    /**< The line to move points along */
         irr::core::plane3df         m_cMovePlane;   /**< The plane to move points in */
+        irr::core::plane3df         m_cZeroPlane;   /**< The plane at Y zero to prevent reference points being set below 0 */
         irr::core::vector3df        m_cMovePoint;   /**< The point which was clicked for moving */
 
         irr::gui::IGUIContextMenu *m_pMenu;       /**< The context menu */
@@ -85,6 +86,15 @@ namespace dustbin {
         * @param a_eEditMode the new edit mode
         */
         void setEditMode(enEditMode a_eMode);
+
+        /**
+        * Get the correct collision point considering the move and the zero plane
+        * @param a_cMousePos the mouse position to calculate the ray from
+        * @return the ray collision point
+        * @see m_cMovePlane
+        * @see m_cZeroPlane
+        */
+        irr::core::vector3df getRayPlaneCollision(const irr::core::vector2di &a_cMousePos);
 
       public:
         CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui, CCmdMainMenu *a_pMainMenu);
