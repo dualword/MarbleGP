@@ -70,6 +70,16 @@ namespace dustbin {
 
         std::map<irr::u32, irr::u32> m_mBufferMap;  /**< A map mapping the defined buffer IDs to the actual IDs of the track mesh */
 
+        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> m_vRoute;   /**< The route to pass the track (0 == point, 1 == normal) */
+
+        std::vector<irr::scene::ISceneNode *> m_vSpeedNodes;    /**< The speed nodes */
+
+        /**
+        * Get the positions of the speed nodes
+        * @return a tuple with the positions (0 == position, 1 == direction)
+        */
+        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getSpeedNodePositions();
+
         /**
         * Build the basement of the track (only done if m_fBaseOffset and m_fBaseHeight are greater than zero)
         */
@@ -137,6 +147,11 @@ namespace dustbin {
         void clearReferencePoints();
 
         /**
+        * Clear the speed nodes
+        */
+        void clearSpeedNodes();
+
+        /**
         * Get the track defining vector
         * @return the track defining vector
         */
@@ -170,6 +185,12 @@ namespace dustbin {
         * @return the index of the buffer in the track mesh, 0xFFFF if the buffer was not added
         */
         irr::u32 getBufferIndex(irr::u32 a_iBuffer);
+
+        /**
+        * Get the speed warning scene nodes
+        * @return a vector with the speed warning scene nodes
+        */
+        const std::vector<irr::scene::ISceneNode *> getSpeedNodes();
     };
   }
 }

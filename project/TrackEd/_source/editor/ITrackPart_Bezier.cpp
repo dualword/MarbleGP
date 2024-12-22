@@ -63,6 +63,23 @@ namespace dustbin {
     }
 
     /**
+    * Get the information on the route for the marbles
+    * @return a vector with positions to pass for the marbles
+    */
+    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> ITrackPart_Bezier::getRoute() {
+      if (m_vTrack.size() == 0)
+        calculateCurve();
+
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+
+      for (size_t i = 0; i < m_vTrack.size(); i++) {
+        l_vRet.push_back(std::make_tuple(m_vTrack[i] + 0.1f * getNormalAtIndex((int)i), getNormalAtIndex((int)i)));
+      }
+
+      return l_vRet;
+    }
+
+    /**
     * Create the track part
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
@@ -339,6 +356,14 @@ namespace dustbin {
 
       int l_iMax = (int)m_vTrack.size() - 4;
 
+      bool l_bIncline = false;
+      bool l_bDecline = false;
+
+      for (size_t i = 1; i < m_vTrack.size(); i++) {
+        if ((m_vTrack[i] - m_vTrack[i - 1]).Y >  0.001f) l_bIncline = true;
+        if ((m_vTrack[i] - m_vTrack[i - 1]).Y < -0.001f) l_bDecline = true;
+      }
+
       while (l_iIndex < l_iMax) {
         irr::core::vector3df l_cDirection = (l_iIndex > 0 ? m_vTrack[l_iIndex - 1] - m_vTrack[l_iIndex] : m_vPoints[0] - m_vPoints[1]).normalize();
         irr::core::vector3df l_cNormal    = irr::core::vector3df(0.0f, 1.0f, 0.0f);
@@ -346,11 +371,28 @@ namespace dustbin {
 
         scenenodes::CAiPathNode::SAiPathSection *l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
 
+        if (m_bFlipVertices)
+          printf("Flip!\n");
+
         l_pThis->m_cPosition   = 50.0f * m_vTrack[l_iIndex] + 2.51f * l_cNormal;
         l_pThis->m_cSideVector = l_cSide;
         l_pThis->m_fWidth      = 25.0f * m_fWidth;
-        l_pThis->m_cNormal     = getEndNormal();
+        l_pThis->m_cNormal     = getNormalAtIndex(l_iIndex);
         l_pThis->m_fFactor     = 0.90f;
+
+        if (l_iIndex >= l_iMax - 2 && l_bIncline) {
+          l_pThis->m_eType = scenenodes::CAiPathNode::enSegmentType::Jump;
+          l_pThis->m_fMinSpeed = 40.0f;
+          l_pThis->m_fMaxSpeed = 55.0f;
+          l_pThis->m_fBestSpeed = 50.0f;
+        }
+
+        if (l_iIndex == 0 && l_bDecline) {
+          l_pThis->m_eType = scenenodes::CAiPathNode::enSegmentType::Jump;
+          l_pThis->m_fMinSpeed = 40.0f;
+          l_pThis->m_fMaxSpeed = 55.0f;
+          l_pThis->m_fBestSpeed = 50.0f;
+        }
 
         if (a_pLast != nullptr) {
           a_pLast->m_vNextSegments.push_back(l_pThis);

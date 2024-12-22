@@ -72,14 +72,24 @@ namespace dustbin {
     }
 
     irr::scene::ISceneNode* CSpeedNode::clone(irr::scene::ISceneNode* a_pNewParent, irr::scene::ISceneManager* a_pNewManager) {
+      ISceneNode::clone(a_pNewParent, a_pNewManager);
+
       if (a_pNewParent  == nullptr) a_pNewParent  = Parent;
       if (a_pNewManager == nullptr) a_pNewManager = SceneManager;
+
 
       CSpeedNode* l_pNew = new CSpeedNode(a_pNewParent, a_pNewManager, getNextSceneNodeId());
 
       l_pNew->m_fMinSpeed  = m_fMinSpeed;
       l_pNew->m_fMaxSpeed  = m_fMaxSpeed;
       l_pNew->m_fBestSpeed = m_fBestSpeed;
+
+      l_pNew->setRotation(getRotation());
+      l_pNew->setPosition(getPosition());
+      l_pNew->setScale(getScale());
+
+      for (auto l_pChild : getChildren())
+        l_pChild->clone(l_pNew, a_pNewManager);
 
       return l_pNew;
     }

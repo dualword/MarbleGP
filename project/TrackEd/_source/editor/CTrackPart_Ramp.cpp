@@ -25,14 +25,14 @@ namespace dustbin {
     */
     irr::core::vector3df CTrackPart_Ramp::getNormalOfPoint(int a_iIndex) const {
       if (a_iIndex == 0) {
-        return getSideOfPoint(0).crossProduct(m_vPoints[0] - m_vPoints[1]).normalize();
+        return (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(0).crossProduct(m_vPoints[0] - m_vPoints[1]).normalize();
       }
       else if (a_iIndex == (int)m_vPoints.size() - 1) {
-        return getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex]).normalize();
+        return (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex]).normalize();
       }
       else {
-        irr::core::vector3df v1 = getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex    ] - m_vPoints[a_iIndex + 1]).normalize();
-        irr::core::vector3df v2 = getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex    ]).normalize();
+        irr::core::vector3df v1 = (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex    ] - m_vPoints[a_iIndex + 1]).normalize();
+        irr::core::vector3df v2 = (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex    ]).normalize();
 
         return v1.getInterpolated(v2, 0.5);
       }
@@ -56,6 +56,21 @@ namespace dustbin {
     irr::core::vector3df CTrackPart_Ramp::getSideAtIndex(int a_iIndex) {
       // For a ramp segment the side vector does not change
       return m_cSide;
+    }
+
+    /**
+    * Get the normal at a specific index of the road
+    * @param a_iIndex the index
+    * @return the normal at the index
+    */
+    irr::core::vector3df CTrackPart_Ramp::getNormalAtIndex(int a_iIndex) {
+      if (m_vTrack.size() == 0)
+        calculateCurve();
+
+      if (a_iIndex == 0)
+        return getStartNormal();
+      else
+        return (m_bFlipVertices ? -1.0f : 1.0f) * (m_vTrack[a_iIndex] - m_vTrack[a_iIndex - 1]).crossProduct(m_cSide).normalize();
     }
  
     /**

@@ -86,6 +86,13 @@ namespace dustbin {
         */
         virtual irr::core::vector3df getSideAtIndex(int a_iIndex) = 0;
 
+        /**
+        * Get the normal at a specific index of the road
+        * @param a_iIndex the index
+        * @return the normal at the index
+        */
+        virtual irr::core::vector3df getNormalAtIndex(int a_iIndex) = 0;
+
       public:
         ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~ITrackPart_Bezier();
@@ -95,6 +102,12 @@ namespace dustbin {
         * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
         */
         virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) override;
+
+        /**
+        * Get the information on the route for the marbles
+        * @return a vector with positions to pass for the marbles
+        */
+        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() override;
 
         /**
         * Set the trak part's reference points

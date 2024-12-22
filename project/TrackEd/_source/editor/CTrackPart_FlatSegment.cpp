@@ -60,6 +60,16 @@ namespace dustbin {
       }
       return irr::core::vector3df(1.0f, 0.0f, 0.0f);
     }
+
+    /**
+    * Get the normal at a specific index of the road
+    * @param a_iIndex the index
+    * @return the normal at the index
+    */
+    irr::core::vector3df CTrackPart_FlatSegment::getNormalAtIndex(int a_iIndex) {
+      // For a flat part the normal always stays the same
+      return getStartNormal();
+    }
  
     /**
     * Get the side vector of the end of this track part

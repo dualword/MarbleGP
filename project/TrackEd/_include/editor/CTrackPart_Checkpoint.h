@@ -53,6 +53,12 @@ namespace dustbin {
         virtual void setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) override;
 
         /**
+        * Get the information on the route for the marbles
+        * @return a vector with positions to pass for the marbles
+        */
+        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() override;
+
+        /**
         * Serialize the track part
         * @param a_cAttr the attributes to serialize the data to
         */

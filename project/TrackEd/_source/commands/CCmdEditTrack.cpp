@@ -6,8 +6,10 @@
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdMainMenu.h>
+#include <scenenodes/CSpeedNode.h>
 #include <editor/ITrackPart.h>
 #include <CDefines.h>
+#include <algorithm>
 #include <IGlobal.h>
 #include <cmath>
 
@@ -79,12 +81,25 @@ namespace dustbin {
     * Clear the reference points before loading a track
     */
     void CCmdEditTrack::clearReferencePoints() {
-      for (auto &l_tPoint: m_mReferencePoints) {
+      for (auto &l_tPoint : m_mReferencePoints) {
         l_tPoint.first->setVisible(false);
         m_pSmgr->addToDeletionQueue(l_tPoint.first);
       }
 
       m_mReferencePoints.clear();
+    }
+
+
+    /**
+    * Clear the speed nodes
+    */
+    void CCmdEditTrack::clearSpeedNodes() {
+      for (auto l_pNode: m_vSpeedNodes) {
+        l_pNode->setVisible(false);
+        m_pSmgr->addToDeletionQueue(l_pNode);
+      }
+
+      m_vSpeedNodes.clear();
     }
 
     /**
@@ -321,9 +336,20 @@ namespace dustbin {
     }
 
     /**
+    * Get the speed warning scene nodes
+    * @return a vector with the speed warning scene nodes
+    */
+    const std::vector<irr::scene::ISceneNode *> CCmdEditTrack::getSpeedNodes() {
+      return m_vSpeedNodes;
+    }
+
+    /**
     * (Re) create the track
     */
     void CCmdEditTrack::createTrack() {
+      clearSpeedNodes();
+      m_vRoute.clear();
+
       // We need some mesh buffers
       while (m_vBuffers.size() < tracked::c_iBufferCount)
         m_vBuffers.push_back(new irr::scene::SMeshBuffer());
@@ -364,6 +390,14 @@ namespace dustbin {
       printf("**** Create Track\n");
       for (auto l_pPart: m_vParts) {
         l_pPart->createTrackPart(m_vBuffers, l_bBlack);
+
+        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pPart->getRoute();
+
+        for (auto &l_cPoint: l_vPartRoute) {
+          if (std::find(m_vRoute.begin(), m_vRoute.end(), l_cPoint) == m_vRoute.end()) {
+            m_vRoute.push_back(l_cPoint);
+          }
+        }
       }
 
       createBasement();
@@ -394,6 +428,45 @@ namespace dustbin {
         m_pTrack->getMesh()->setDirty();
       }
 
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vSpeed = getSpeedNodePositions();
+
+      for (auto &l_tNode: l_vSpeed) {
+        scenenodes::CSpeedNode *l_pNode = reinterpret_cast<scenenodes::CSpeedNode *>(m_pSmgr->addSceneNode(scenenodes::g_SpeedNodeName));
+
+        if (l_pNode != nullptr) {
+          irr::io::IAttributes *l_pAttr = tracked::IGlobal::getInstance()->getFileSystem()->createEmptyAttributes();
+          if (l_pAttr) {
+            l_pNode->serializeAttributes(l_pAttr);
+
+            l_pAttr->setAttribute("minspeed" , 40.0f);
+            l_pAttr->setAttribute("maxspeed" , 55.0f);
+            l_pAttr->setAttribute("bestspeed", 50.0f);
+
+            l_pAttr->drop();
+          }
+
+          m_vSpeedNodes.push_back(l_pNode);
+
+          l_pNode->setRotation(std::get<1>(l_tNode).getHorizontalAngle());
+          l_pNode->setPosition(std::get<0>(l_tNode) + irr::core::vector3df(0.0f, 20.0f, 0.0f));
+
+          for (int i = 0; i < 2; i++) {
+            irr::scene::ISceneNode *l_pChild = m_pSmgr->addMeshSceneNode(
+              m_pSmgr->getMesh("data/objects/speedlimit.3ds"),
+              l_pNode,
+              -1,
+              irr::core::vector3df(i == 0 ? -25.0f : 25.0f, 0.0f, 0.0f),
+              irr::core::vector3df(0.0f),
+              irr::core::vector3df(4.0f)
+            );
+
+            l_pChild->getMaterial(0).Lighting = false;
+            l_pChild->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/speedlimit.png"));
+            l_pChild->getMaterial(1).setTexture(0, m_pDrv->getTexture("data/textures/warning.png"));
+          }
+        }
+      }
+
       irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iUpdateShader;
@@ -402,10 +475,90 @@ namespace dustbin {
     }
 
     /**
+    * Get the positions of the speed nodes
+    * @return a tuple with the positions (0 == position, 1 == direction)
+    */
+    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CCmdEditTrack::getSpeedNodePositions() {
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRoute;
+
+      for (auto l_pPart: m_vParts) {
+        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pPart->getRoute();
+
+        for (auto &l_cPoint: l_vPartRoute) {
+          if (std::find(l_vRoute.begin(), l_vRoute.end(), l_cPoint) == l_vRoute.end()) {
+            l_vRoute.push_back(l_cPoint);
+          }
+        }
+      }
+
+      bool l_bIncline = false;
+      bool l_bDecline = false;
+
+      for (size_t i = 1; i < l_vRoute.size(); i++) {
+        if (!l_bIncline && !l_bDecline) {
+          if (std::get<0>(l_vRoute[i]).Y - std::get<0>(l_vRoute[i - 1]).Y > 0.001f) l_bIncline = true;
+          if (std::get<0>(l_vRoute[i]).Y - std::get<0>(l_vRoute[i - 1]).Y < -0.001f) {
+            if (!l_bDecline) {
+              printf("Speed node decline at %.2f, %.2f, %.2f\n", 50.0f * (std::get<0>(l_vRoute[i])).X, 50.0f * (std::get<0>(l_vRoute[i])).Y, 50.0f * (std::get<0>(l_vRoute[i])).Z);
+              l_vRet.push_back(std::make_tuple(
+                50.0f * std::get<0>(l_vRoute[i]),
+                std::get<0>(l_vRoute[i]) - std::get<0>(l_vRoute[i - 1])
+              ));
+            }
+            l_bDecline = true;
+          }
+        }
+        else {
+          if (std::abs(std::get<0>(l_vRoute[i]).Y - std::get<0>(l_vRoute[i - 1]).Y) < 0.001f) {
+            if (l_bIncline) {
+              printf("Speed node incline at %.2f, %.2f, %.2f\n", 50.0f * (std::get<0>(l_vRoute[i])).X, 50.0f * (std::get<0>(l_vRoute[i])).Y, 50.0f * (std::get<0>(l_vRoute[i])).Z);
+              l_vRet.push_back(std::make_tuple(
+                50.0f * std::get<0>(l_vRoute[i]),
+                std::get<0>(l_vRoute[i]) - std::get<0>(l_vRoute[i - 1])
+              ));
+            }
+
+            l_bIncline = false;
+            l_bDecline = false;
+          }
+        }
+      }
+
+      return l_vRet;
+    }
+
+    /**
     * Let this command draw something (if necessary)
     * @param a_pDrv the video driver
     */
     void CCmdEditTrack::draw(irr::video::IVideoDriver *a_pDrv) {
+      bool l_bIncline = false;
+      bool l_bDecline = false;
+
+      for (size_t i = 1; i < m_vRoute.size(); i++) {
+        if (!l_bIncline && !l_bDecline) {
+          if (std::get<0>(m_vRoute[i]).Y - std::get<0>(m_vRoute[i - 1]).Y >  0.001f) l_bIncline = true;
+          if (std::get<0>(m_vRoute[i]).Y - std::get<0>(m_vRoute[i - 1]).Y < -0.001f) l_bDecline = true;
+        }
+        else {
+          if (std::abs(std::get<0>(m_vRoute[i]).Y - std::get<0>(m_vRoute[i - 1]).Y) < 0.001f) {
+            l_bIncline = false;
+            l_bDecline = false;
+          }
+        }
+
+        a_pDrv->draw3DLine(
+          50.0f * std::get<0>(m_vRoute[i - 1]), 
+          50.0f * std::get<0>(m_vRoute[i    ]), 
+          l_bIncline ? 
+            irr::video::SColor(0xFF, 0xFF, 0, 0) :
+          l_bDecline ?
+            irr::video::SColor(0xFF, 0, 0xFF, 0) :
+            irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
+        );
+      }
+
       for (auto l_cPart: m_vParts) {
         l_cPart->drawReferencePoint(a_pDrv);
       }
@@ -1005,6 +1158,7 @@ namespace dustbin {
     */
     void CCmdEditTrack::clearTrack() {
       clearReferencePoints();
+      clearSpeedNodes();
 
       while (m_vParts.size() > 0) {
         tracked::ITrackPart *p = m_vParts.front();

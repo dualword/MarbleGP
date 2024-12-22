@@ -37,6 +37,13 @@ namespace dustbin {
         */
         virtual irr::core::vector3df getSideAtIndex(int a_iIndex) override;
 
+        /**
+        * Get the normal at a specific index of the road
+        * @param a_iIndex the index
+        * @return the normal at the index
+        */
+        virtual irr::core::vector3df getNormalAtIndex(int a_iIndex) override;
+
       public:
         CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~CTrackPart_Ramp();

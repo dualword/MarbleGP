@@ -231,6 +231,19 @@ namespace dustbin {
     }
 
     /**
+    * Get the information on the route for the marbles
+    * @return a vector with positions to pass for the marbles
+    */
+    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CTrackPart_Checkpoint::getRoute() {
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+
+      l_vRet.push_back(std::make_tuple(m_cStart + 0.1f * getStartNormal(), getStartNormal()));
+      l_vRet.push_back(std::make_tuple(m_cEnd   + 0.1f * getStartNormal(), getStartNormal()));
+
+      return l_vRet;
+    }
+
+    /**
     * Set the trak part's reference points
     * @param a_cPoints a vector with the reference points
     */

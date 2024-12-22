@@ -160,6 +160,12 @@ namespace dustbin {
         virtual bool canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) = 0;
 
         /**
+        * Get the information on the route for the marbles
+        * @return a vector with positions to pass for the marbles
+        */
+        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() = 0;
+
+        /**
         * Get the part's reference points
         * @return a vector with the part's reference points
         */
