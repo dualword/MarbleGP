@@ -97,7 +97,9 @@ namespace dustbin {
         if (i == 0)
           setStart(l_cNew);
 
-        if (i == m_vTrack.size() - 1 && getNext() != nullptr && getNext()->getPrevious() == nullptr) {
+        bool l_bForceAdd2nd = i == m_vTrack.size() - 1 && getNext() != nullptr && getNext()->getPrevious() == nullptr;
+
+        if (l_bForceAdd2nd) {
           l_cNew = getNext()->getStart();
         }
 
@@ -118,7 +120,7 @@ namespace dustbin {
         irr::core::vector3df l_cNormals[4];
       
         if (a_vBuffers.size() > tracked::c_iBufferIdxBottom) {
-          addQuadToMeshBuffer(l_aVertBottom, t, a_vBuffers[tracked::c_iBufferIdxBottom], false, false, l_cNormals);
+          addQuadToMeshBuffer(l_aVertBottom, t, a_vBuffers[tracked::c_iBufferIdxBottom], false, l_bForceAdd2nd, l_cNormals);
         }
       
         irr::core::vector3df l_aVertTop[4];

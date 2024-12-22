@@ -3,6 +3,7 @@
 // https://www.zlib.net/zlib_license.html
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <scenenodes/CStartingGridSceneNode.h>
+#include <animators/CAnimatorFactory.h>
 #include <scenenodes/CCheckpointNode.h>
 #include <scenenodes/CDustbinLight.h>
 #include <scenenodes/CRespawnNode.h>
@@ -42,6 +43,10 @@ namespace dustbin {
         scenenodes::CMarbleGPSceneNodeFactory* l_pFactory = new scenenodes::CMarbleGPSceneNodeFactory(l_pSmgr);
         l_pSmgr->registerSceneNodeFactory(l_pFactory);
         l_pFactory->drop();
+
+        animators::CAnimatorFactory* l_pFactory2 = new animators::CAnimatorFactory(tracked::IGlobal::getInstance()->getDevice());
+        l_pSmgr->registerSceneNodeAnimatorFactory(l_pFactory2);
+        l_pFactory2->drop();
 
         irr::scene::ISceneNode *l_pSkyboxOld = findNode(l_pOldSmgr->getRootSceneNode(), irr::scene::ESNT_SKY_BOX);
 
@@ -163,6 +168,32 @@ namespace dustbin {
                       l_pCheck->deserializeAttributes(l_pAttr);
                       l_pAttr->drop();
                     }
+
+                    irr::scene::ISceneNode *l_pLapCount = l_pSmgr->addMeshSceneNode(
+                      l_pSmgr->getMesh("data/objects/lapcount.3ds"),
+                      l_pCheck,
+                      -1,
+                      irr::core::vector3df(0.0f, 0.585f, 0.0f),
+                      irr::core::vector3df(0.0f),
+                      irr::core::vector3df(0.5f)
+                    );
+
+                    l_pLapCount->getMaterial(0).setTexture(0, l_pSmgr->getVideoDriver()->getTexture("data/textures/checkpoint_white.png"));
+                    l_pLapCount->getMaterial(1).setTexture(0, l_pSmgr->getVideoDriver()->getTexture("data/textures/warning.png"));
+
+                    irr::scene::ISceneNodeAnimator *l_pAnimator = l_pSmgr->createSceneNodeAnimator("MarbleGpTexture", l_pLapCount);
+
+                    if (l_pAnimator != nullptr) {
+                      irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
+                      if (l_pAttr != nullptr) {
+                        l_pLapCount->serializeAttributes(l_pAttr);
+                        l_pAttr->setAttribute("Information", "Lapcount");
+                        l_pAttr->setAttribute("Texture", 0);
+                        l_pAttr->drop();
+                      }
+                    }
+                    l_pAnimator->drop();
+
                     l_pFirst = l_pCheck;
                   }
                   else {
