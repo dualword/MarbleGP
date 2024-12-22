@@ -201,6 +201,13 @@ namespace dustbin {
       a_pBuffer->Indices.push_back(l_aIndices[3]);
     }
 
+    /**
+    * Does this part flip vertices? Necessary for downward ramps
+    * @return true if vertices are flipped
+    */
+    bool ITrackPart::doesFlipVertices() {
+      return false;
+    }
 
     /**
     * Set the start of the part

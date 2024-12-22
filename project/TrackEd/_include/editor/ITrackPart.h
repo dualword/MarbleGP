@@ -290,6 +290,12 @@ namespace dustbin {
         virtual std::vector<std::wstring> contextMenuEntries(int a_iRefPoint);
 
         virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv);
+
+        /**
+        * Does this part flip vertices? Necessary for downward ramps
+        * @return true if vertices are flipped
+        */
+        virtual bool doesFlipVertices();
     };
   }
 }

@@ -181,5 +181,33 @@ namespace dustbin {
 
       return l_bRet;
     }
+
+    /**
+    * De-serialize the track part
+    * @param a_cAttr the attributes to read the data from
+    */
+    void CTrackPart_Ramp::deserialize(const irr::io::IAttributes &a_cAttr) {
+      ITrackPart_Bezier::deserialize(a_cAttr);
+
+      m_bFlipVertices = m_vPoints.front().Y > m_vPoints.back().Y;
+
+      if (m_bFlipVertices) {
+        irr::core::line3df l_cEnd = getEnd();
+
+        irr::core::vector3df v = l_cEnd.start;
+        l_cEnd.start = l_cEnd.end;
+        l_cEnd.end = v;
+        setEnd(l_cEnd);
+      }
+    }
+
+    /**
+    * Does this reference point allow addition of another reference point?
+    * @param a_iIndex index of the reference point
+    * @return true if so, false otherwise
+    */
+    bool CTrackPart_Ramp::refPointAdditionAllowed(int a_iIndex) {
+      return false;
+    }
   }
 }

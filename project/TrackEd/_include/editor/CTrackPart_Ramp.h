@@ -80,6 +80,19 @@ namespace dustbin {
         * @return true if the event was handled
         */
         virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
-  };
+
+        /**
+        * De-serialize the track part
+        * @param a_cAttr the attributes to read the data from
+        */
+        virtual void deserialize(const irr::io::IAttributes &a_cAttr) override;
+
+        /**
+        * Does this reference point allow addition of another reference point?
+        * @param a_iIndex index of the reference point
+        * @return true if so, false otherwise
+        */
+        virtual bool refPointAdditionAllowed(int a_iIndex) override;
+    };
   }
 }
