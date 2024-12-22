@@ -8,6 +8,7 @@
 
 #include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_Ramp.h>
 
 namespace dustbin {
   namespace commands {
@@ -37,17 +38,20 @@ namespace dustbin {
             if (l_sNode == L"TrackPart" && l_pReader->getNodeType() == irr::io::EXN_ELEMENT) {
               std::wstring l_sType = l_pReader->getAttributeValueSafe(L"type");
 
-              if (l_sType == L"FlatSegment") {
-                tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(nullptr, irr::core::vector3df());
-                irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
-                l_pAttr->read(l_pReader);
-                l_pNew->deserialize(*l_pAttr);
-                l_pAttr->drop();
+              tracked::ITrackPart *l_pNew = nullptr;
 
-                a_pEditTrack->addTrackPart(l_pNew);
+              if (l_sType == L"FlatSegment") {
+                l_pNew = new tracked::CTrackPart_FlatSegment(nullptr, irr::core::vector3df());
+              }
+              else if (l_sType == L"Ramp") {
+                l_pNew = new tracked::CTrackPart_Ramp(nullptr, irr::core::vector3df());
               }
               else if (l_sType == L"Checkpoint") {
-                tracked::CTrackPart_Checkpoint *l_pNew = new tracked::CTrackPart_Checkpoint(nullptr, irr::core::vector3df());
+                l_pNew = new tracked::CTrackPart_Checkpoint(nullptr, irr::core::vector3df());
+              }
+              else printf("Unknown track part \"%ls\"\n", l_sType.c_str());
+
+              if (l_pNew != nullptr) {
                 irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
                 l_pAttr->read(l_pReader);
                 l_pNew->deserialize(*l_pAttr);
@@ -55,7 +59,6 @@ namespace dustbin {
 
                 a_pEditTrack->addTrackPart(l_pNew);
               }
-              else printf("Unknown track part \"%ls\"\n", l_sType.c_str());
             }
           }
 

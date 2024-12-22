@@ -153,6 +153,8 @@ namespace dustbin {
       
         l_cOld = l_cNew;
       }
+
+      setEnd(l_cOld);
     }
 
     /**
