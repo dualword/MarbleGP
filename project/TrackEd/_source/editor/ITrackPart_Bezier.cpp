@@ -67,38 +67,15 @@ namespace dustbin {
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
     void ITrackPart_Bezier::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
-      std::vector<irr::core::vector3df> l_vRefLeft;
-      std::vector<irr::core::vector3df> l_vRefRght;
-      
-      for (size_t i = 0; i < m_vPoints.size(); i++) {
-        l_vRefRght.push_back(irr::core::vector3df(m_vPoints[i] - (m_fWidth / 2.0f) * getSideOfPoint((int)i)));
-        l_vRefLeft.push_back(irr::core::vector3df(m_vPoints[i] + (m_fWidth / 2.0f) * getSideOfPoint((int)i)));
-      }
-
-      std::vector<irr::f32> l_vIndices = fillIndexVector(32, nullptr);
-
-      std::vector<irr::core::vector3df> l_vTrackLeft;
-      std::vector<irr::core::vector3df> l_vTrackRght;
-
-      for (auto l_fStep: l_vIndices) {
-        l_vTrackLeft.push_back(getBezier(l_vRefLeft, l_fStep));
-        l_vTrackRght.push_back(getBezier(l_vRefRght, l_fStep));
-      }
-
-      irr::core::vector3df l_cOld[2];
-
-      irr::f32 l_fLength = 0.0f;
-
-      for (size_t i = 1; i < l_vTrackLeft.size() && i < l_vTrackRght.size(); i++) {
-        l_fLength += (l_vTrackLeft[i].getDistanceFrom(l_vTrackLeft[i - 1]) + l_vTrackRght[i].getDistanceFrom(l_vTrackRght[i - 1])) / 2.0f;
-      }
+      irr::f32 l_fLength = calculateCurve();
+      irr::f32 l_fWidth  = m_fWidth / 2.0f;
 
       int l_iSteps = std::max((int)(l_fLength / m_fWidth), 1);
-
-      irr::f32 l_fTextureStep = (irr::f32)l_iSteps / (irr::f32)(l_vTrackLeft.size() - 1);
-
+      
+      irr::f32 l_fTextureStep = (irr::f32)l_iSteps / (irr::f32)(m_vTrack.size() - 1);
+      
       printf("Road Length: %.4f, Texture Count: %i, Texture Step: %.4f\n", l_fLength, l_iSteps, l_fTextureStep);
-
+      
       irr::core::vector2df l_aTextureTop[] = {
         irr::core::vector2df(0.0f, 0.0f),
         irr::core::vector2df(1.0f, 0.0f),
@@ -106,48 +83,52 @@ namespace dustbin {
         irr::core::vector2df(0.0f, l_fTextureStep)
       };
 
-      for (size_t i = 0; i < l_vTrackLeft.size() && i < l_vTrackRght.size(); i++) {
+      irr::core::line3df l_cOld;
+
+      for (size_t i = 0; i < m_vTrack.size(); i++) {
+        irr::core::line3df l_cNew = irr::core::line3df(m_vTrack[i] - l_fWidth * getSideAtIndex((int)i), m_vTrack[i] + l_fWidth * getSideAtIndex((int)i));
+
         if (i > 0) {
           irr::core::vector3df l_aVertBottom[] = {
-            l_cOld[1],
-            l_cOld[0],
-            l_vTrackLeft[i],
-            l_vTrackRght[i]
+            l_cOld.start,
+            l_cOld.end,
+            l_cNew.end,
+            l_cNew.start
           };
-
+      
           irr::core::vector2df t[] = {
             irr::core::vector2df(l_aVertBottom[0].X, l_aVertBottom[0].Z),
             irr::core::vector2df(l_aVertBottom[1].X, l_aVertBottom[1].Z),
             irr::core::vector2df(l_aVertBottom[2].X, l_aVertBottom[2].Z),
             irr::core::vector2df(l_aVertBottom[3].X, l_aVertBottom[3].Z)
           };
-
+      
           irr::core::vector3df l_cNormals[4];
-
+      
           if (a_vBuffers.size() > tracked::c_iBufferIdxBottom) {
             addQuadToMeshBuffer(l_aVertBottom, t, a_vBuffers[tracked::c_iBufferIdxBottom], false, false, l_cNormals);
           }
-
+      
           irr::core::vector3df l_aVertTop[4];
-
+      
           // The normal points downwards so we subtract it to get the road coordinate
           l_aVertTop[0] = l_aVertBottom[1] - 0.05f * l_cNormals[1];
           l_aVertTop[1] = l_aVertBottom[0] - 0.05f * l_cNormals[0];
           l_aVertTop[2] = l_aVertBottom[3] - 0.05f * l_cNormals[3];
           l_aVertTop[3] = l_aVertBottom[2] - 0.05f * l_cNormals[2];
-
+      
           if (a_vBuffers.size() > tracked::c_iBufferIdxRoad) {
             addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[tracked::c_iBufferIdxRoad], true, false, nullptr);
           }
-
+      
           for (int j = 0; j < 4; j++)
             l_aTextureTop[j].Y += l_fTextureStep;
-
-          if (i == l_vTrackLeft.size()) {
+      
+          if (i == m_vTrack.size()) {
             l_aTextureTop[2].Y = (irr::f32)l_iSteps;
             l_aTextureTop[3].Y = (irr::f32)l_iSteps;
           }
-
+      
           for (int j = 0; j < 2; j++) {
             irr::core::vector3df l_cSide[] = {
               l_aVertBottom[j == 0 ? 1 : 3],
@@ -155,23 +136,22 @@ namespace dustbin {
               l_aVertTop   [j == 0 ? 3 : 1],
               l_aVertBottom[j == 0 ? 2 : 0]
             };
-
+      
             irr::core::vector2df l_aTextureSide[] = {
               irr::core::vector2df(0.0f, 0.0f),
               irr::core::vector2df(0.0f, 1.0f),
               irr::core::vector2df(1.0f, 1.0f),
               irr::core::vector2df(1.0f, 0.0f)
             };
-
+      
             if ((a_bBlack && a_vBuffers.size() > tracked::c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > tracked::c_iBufferIdxYellow)) {
               addQuadToMeshBuffer(l_cSide, l_aTextureSide, a_vBuffers[a_bBlack ? tracked::c_iBufferIdxBlack : tracked::c_iBufferIdxYellow], false, false, nullptr);
             }
           }
           a_bBlack = !a_bBlack;
         }
-
-        l_cOld[0] = l_vTrackLeft[i];
-        l_cOld[1] = l_vTrackRght[i];
+      
+        l_cOld = l_cNew;
       }
     }
 
@@ -244,7 +224,13 @@ namespace dustbin {
     irr::f32 ITrackPart_Bezier::calculateCurve() {
       m_vTrack.clear();
 
-      std::vector<irr::f32> l_vIndices = fillIndexVector(8, getPrevious());
+      int l_iSteps = 32;
+
+      if (m_vPoints.size() == 2) {
+        l_iSteps = (int)(std::max(1.0f, m_vPoints[0].getDistanceFrom(m_vPoints[1])));
+      }
+
+      std::vector<irr::f32> l_vIndices = fillIndexVector(l_iSteps, nullptr);
 
       for (auto l_fStep: l_vIndices) {
         m_vTrack.push_back(getBezier(m_vPoints, l_fStep));

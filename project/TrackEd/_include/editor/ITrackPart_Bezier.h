@@ -77,6 +77,13 @@ namespace dustbin {
         */
         irr::f32 calculateCurve();
 
+        /**
+        * Get the side vector at a specific index of the road
+        * @param a_iIndex the index
+        * @return the side vector at the index
+        */
+        virtual irr::core::vector3df getSideAtIndex(int a_iIndex) = 0;
+
       public:
         ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~ITrackPart_Bezier();

@@ -47,6 +47,16 @@ namespace dustbin {
       // For a ramp segment the side vector does not change
       return m_cSide;
     }
+
+    /**
+    * Get the side vector at a specific index of the road
+    * @param a_iIndex the index
+    * @return the side vector at the index
+    */
+    irr::core::vector3df CTrackPart_Ramp::getSideAtIndex(int a_iIndex) {
+      // For a ramp segment the side vector does not change
+      return m_cSide;
+    }
  
     /**
     * Get the side vector of the end of this track part
@@ -158,6 +168,12 @@ namespace dustbin {
             if (l_sItem == L"Flatten end point") {
               m_vPoints.back().Y = m_vPoints[m_vPoints.size() - 2].Y;
               setEndNormal(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+
+              irr::SEvent l_cEvent;
+              l_cEvent.EventType = irr::EET_USER_EVENT;
+              l_cEvent.UserEvent.UserData1 = c_iRecalcTrack;
+              l_cEvent.UserEvent.UserData2 = c_iRecalcTrack;
+              IGlobal::getInstance()->getDevice()->postEventFromUser(l_cEvent);
             }
           }
         }

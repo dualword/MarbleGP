@@ -45,6 +45,21 @@ namespace dustbin {
         return v1.getInterpolated(v2, 0.5);
       }
     }
+
+    /**
+    * Get the side vector at a specific index of the road
+    * @param a_iIndex the index
+    * @return the side vector at the index
+    */
+    irr::core::vector3df CTrackPart_FlatSegment::getSideAtIndex(int a_iIndex) {
+      if (m_vTrack.size() > 0) {
+        irr::core::vector3df l_cNormal    = getNormalOfPoint(0);
+        irr::core::vector3df l_cDirection = (a_iIndex > 0 ? m_vTrack[a_iIndex] - m_vTrack[a_iIndex - 1] : m_vPoints[1] - m_vPoints[0]).normalize();
+
+        return l_cNormal.crossProduct(l_cDirection).normalize();
+      }
+      return irr::core::vector3df(1.0f, 0.0f, 0.0f);
+    }
  
     /**
     * Get the side vector of the end of this track part

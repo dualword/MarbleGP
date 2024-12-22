@@ -30,6 +30,13 @@ namespace dustbin {
         */
         virtual irr::core::vector3df getSideOfPoint(int a_iIndex) const override;
 
+        /**
+        * Get the side vector at a specific index of the road
+        * @param a_iIndex the index
+        * @return the side vector at the index
+        */
+        virtual irr::core::vector3df getSideAtIndex(int a_iIndex) override;
+
       public:
         CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~CTrackPart_Ramp();

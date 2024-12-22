@@ -959,6 +959,10 @@ namespace dustbin {
             l_cEvent.UserEvent.UserData2 = c_iSceneLoaded;
             tracked::IGlobal::getInstance()->getDevice()->postEventFromUser(l_cEvent);
           }
+          else if (a_cEvent.UserEvent.UserData1 == c_iRecalcTrack) {
+            createTrack();
+            updateReferencePoints();
+          }
         }
       }
 
