@@ -442,6 +442,8 @@ namespace dustbin {
             l_pAttr->setAttribute("maxspeed" , 55.0f);
             l_pAttr->setAttribute("bestspeed", 50.0f);
 
+            l_pNode->deserializeAttributes(l_pAttr);
+
             l_pAttr->drop();
           }
 
