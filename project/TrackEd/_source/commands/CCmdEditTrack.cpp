@@ -450,7 +450,7 @@ namespace dustbin {
           m_vSpeedNodes.push_back(l_pNode);
 
           l_pNode->setRotation(std::get<1>(l_tNode).getHorizontalAngle());
-          l_pNode->setPosition(std::get<0>(l_tNode) + irr::core::vector3df(0.0f, 20.0f, 0.0f));
+          l_pNode->setPosition(std::get<0>(l_tNode) + irr::core::vector3df(0.0f, 15.0f, 0.0f));
 
           for (int i = 0; i < 2; i++) {
             irr::scene::ISceneNode *l_pChild = m_pSmgr->addMeshSceneNode(
