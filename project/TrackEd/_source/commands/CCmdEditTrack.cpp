@@ -8,6 +8,7 @@
 #include <commands/CCmdMainMenu.h>
 #include <scenenodes/CSpeedNode.h>
 #include <editor/ITrackPart.h>
+#include <editor/CAiPath.h>
 #include <CDefines.h>
 #include <algorithm>
 #include <IGlobal.h>
@@ -53,7 +54,8 @@ namespace dustbin {
       m_bFinishTrack(false),
       m_bFinished   (false),
       m_fBaseOffset (-1.0f),
-      m_fBaseHeight (-1.0f)
+      m_fBaseHeight (-1.0f),
+      m_pAiPath     (nullptr)
     {
       m_pColMgr    = m_pSmgr->getSceneCollisionManager();
       m_cZeroPlane = irr::core::plane3df(irr::core::vector3df(0.0f), irr::core::vector3df(0.0f, 1.0f, 0.0f));
@@ -348,7 +350,12 @@ namespace dustbin {
     */
     void CCmdEditTrack::createTrack() {
       clearSpeedNodes();
-      m_vRoute.clear();
+      if (m_pAiPath != nullptr) {
+        delete m_pAiPath;
+        m_pAiPath = nullptr;
+      }
+
+      m_pAiPath = new tracked::CAiPath(m_vParts.front());
 
       // We need some mesh buffers
       while (m_vBuffers.size() < tracked::c_iBufferCount)
@@ -390,14 +397,6 @@ namespace dustbin {
       printf("**** Create Track\n");
       for (auto l_pPart: m_vParts) {
         l_pPart->createTrackPart(m_vBuffers, l_bBlack);
-
-        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pPart->getRoute();
-
-        for (auto &l_cPoint: l_vPartRoute) {
-          if (std::find(m_vRoute.begin(), m_vRoute.end(), l_cPoint) == m_vRoute.end()) {
-            m_vRoute.push_back(l_cPoint);
-          }
-        }
       }
 
       createBasement();
@@ -509,6 +508,23 @@ namespace dustbin {
               ));
             }
             l_bDecline = true;
+
+            irr::core::line2df l_cLine = irr::core::line2df(
+              irr::core::vector2df(std::get<0>(l_vRoute[i - 1]).X, std::get<0>(l_vRoute[i - 1]).Z),
+              irr::core::vector2df(std::get<0>(l_vRoute[i    ]).X, std::get<0>(l_vRoute[i    ]).Z)
+            );
+
+            for (size_t j = i + 1; j < l_vRoute.size(); j++) {
+              irr::core::line2df l_cOtherLine = irr::core::line2df(
+                irr::core::vector2df(std::get<0>(l_vRoute[j - 1]).X, std::get<0>(l_vRoute[j - 1]).Z),
+                irr::core::vector2df(std::get<0>(l_vRoute[j    ]).X, std::get<0>(l_vRoute[j    ]).Z)
+              );
+
+              if (!l_cLine.nearlyParallel(l_cOtherLine)) {
+                printf("Decline jump length: %.2f\n", (std::get<0>(l_vRoute[i]) - std::get<0>(l_vRoute[j])).getLength());
+                break;
+              }
+            }
           }
         }
         else {
@@ -535,31 +551,8 @@ namespace dustbin {
     * @param a_pDrv the video driver
     */
     void CCmdEditTrack::draw(irr::video::IVideoDriver *a_pDrv) {
-      bool l_bIncline = false;
-      bool l_bDecline = false;
-
-      for (size_t i = 1; i < m_vRoute.size(); i++) {
-        if (!l_bIncline && !l_bDecline) {
-          if (std::get<0>(m_vRoute[i]).Y - std::get<0>(m_vRoute[i - 1]).Y >  0.001f) l_bIncline = true;
-          if (std::get<0>(m_vRoute[i]).Y - std::get<0>(m_vRoute[i - 1]).Y < -0.001f) l_bDecline = true;
-        }
-        else {
-          if (std::abs(std::get<0>(m_vRoute[i]).Y - std::get<0>(m_vRoute[i - 1]).Y) < 0.001f) {
-            l_bIncline = false;
-            l_bDecline = false;
-          }
-        }
-
-        a_pDrv->draw3DLine(
-          50.0f * std::get<0>(m_vRoute[i - 1]), 
-          50.0f * std::get<0>(m_vRoute[i    ]), 
-          l_bIncline ? 
-            irr::video::SColor(0xFF, 0xFF, 0, 0) :
-          l_bDecline ?
-            irr::video::SColor(0xFF, 0, 0xFF, 0) :
-            irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF)
-        );
-      }
+      if (m_pAiPath != nullptr)
+        m_pAiPath->drawDebugData(a_pDrv, nullptr);
 
       for (auto l_cPart: m_vParts) {
         l_cPart->drawReferencePoint(a_pDrv);

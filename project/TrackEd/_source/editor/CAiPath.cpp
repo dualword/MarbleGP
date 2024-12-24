@@ -1,0 +1,248 @@
+// (w) 2024 by Dustbin::Games / Christian Keimel
+#include <editor/ITrackPart.h>
+#include <editor/CAiPath.h>
+
+namespace dustbin {
+  namespace tracked {
+    CAiPath::CAiPath(tracked::ITrackPart *a_pTrack) {
+      tracked::ITrackPart *l_pStart = a_pTrack;
+
+      // Make sure that we start from the beginning
+      // regardless of which track part was given
+      while (l_pStart->getPrevious() != nullptr)
+        l_pStart = l_pStart->getPrevious();
+
+      do {
+        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pStart->getRoute();
+
+        // Let's fill the member m_vPath
+        for (auto &l_tRoute: l_vPartRoute) {
+          bool l_bAdd = true;
+
+          for (auto &l_cPath: m_vPath) {
+            if (std::get<0>(l_tRoute) == l_cPath.m_cPosition) {
+              l_bAdd = false;
+              break;
+            }
+          }
+
+          if (l_bAdd) {
+            m_vPath.push_back(SAiPath(
+              enPathType::Standard,
+              std::get<0>(l_tRoute),
+              std::get<1>(l_tRoute),
+              std::get<0>(l_tRoute).crossProduct(std::get<1>(l_tRoute)).normalize(),
+              l_pStart->getWidth()
+            ));
+          }
+        }
+
+        l_pStart = l_pStart->getNext();
+      } 
+      while (l_pStart != nullptr && l_pStart->getPrevious() != nullptr);
+
+      // Now let's analyse the path and search for inclines, declines and jumps
+      for (size_t i = 1; i < m_vPath.size(); i++) {
+        if (m_vPath[i].m_cPosition.Y - m_vPath[i - 1].m_cPosition.Y > 0.001) {
+          m_vPath[i].m_eType = enPathType::Incline;
+
+          irr::f32 f1 = m_vPath[i - 1].m_cPosition.Y - m_vPath[i - 2].m_cPosition.Y;
+          irr::f32 f2 = m_vPath[i    ].m_cPosition.Y - m_vPath[i - 1].m_cPosition.Y;
+
+          if (i < m_vPath.size() - 1 && f1 > f2) {
+            m_vPath[i].m_eType = enPathType::Jump;
+          }
+        }
+
+        if (m_vPath[i].m_cPosition.Y - m_vPath[i - 1].m_cPosition.Y < -0.001) {
+          m_vPath[i].m_eType = enPathType::Decline;
+          if (m_vPath[i - 1].m_eType != enPathType::Decline && m_vPath[i - 1].m_eType != enPathType::Jump)
+            m_vPath[i].m_eType = enPathType::Jump;
+        }
+      }
+
+      // Next we check how far a marble can jump if there is a jump
+      for (size_t i = 1; i < m_vPath.size(); i++) {
+        if (m_vPath[i].m_eType == enPathType::Jump) {
+          irr::core::line2df l_cLine = irr::core::line2df(
+            irr::core::vector2df(m_vPath[i - 1].m_cPosition.X, m_vPath[i - 1].m_cPosition.Z),
+            irr::core::vector2df(m_vPath[i    ].m_cPosition.X, m_vPath[i    ].m_cPosition.Z)
+          );
+
+          while (i < m_vPath.size()) {
+            i++;
+
+            irr::core::line2df l_cOther = irr::core::line2df(
+              irr::core::vector2df(m_vPath[i - 1].m_cPosition.X, m_vPath[i - 1].m_cPosition.Z),
+              irr::core::vector2df(m_vPath[i    ].m_cPosition.X, m_vPath[i    ].m_cPosition.Z)
+            );
+
+            if (l_cLine.getAngleWith(l_cOther) < 1.0f) {
+              m_vPath[i].m_eType = enPathType::JumpArea;
+            }
+            else break;
+          }
+        }
+      }
+
+      // Now we guess how fast a marble can jump depending on some data
+      for (size_t i = 0; i < m_vPath.size(); i++) {
+        if (m_vPath[i].m_eType == enPathType::Jump) {
+          std::vector<irr::core::vector3df> l_vBest;
+          irr::core::vector3df l_cEnd;
+
+          for (size_t j = i + 1; j < m_vPath.size(); j++) {
+            if (m_vPath[j].m_eType != enPathType::JumpArea)
+              break;
+            else
+              l_cEnd = 50.0f * m_vPath[j].m_cPosition;
+          }
+
+          irr::f32 l_fVel = 10.0f;
+
+          for (; l_fVel < 150.0f; l_fVel += 5.0f) {
+            irr::core::vector3df l_cPos = 50.0f * m_vPath[i].m_cPosition + irr::core::vector3df(0.0f, 1.0f, 0.0f);
+            irr::core::vector3df l_cDir = l_fVel * (m_vPath[i].m_cPosition - m_vPath[i - 1].m_cPosition).normalize();
+
+            irr::core::vector3df l_cOld;
+
+            std::vector<irr::core::vector3df> l_vThis;
+
+            do {
+              l_vThis.push_back(l_cPos);
+              l_cOld = l_cPos;
+              l_cPos += l_cDir / 120.0f;
+
+              l_cDir.Y -= 12.5f / 120.0f;
+            } 
+            while (l_cEnd.getDistanceFromSQ(l_cPos) < l_cEnd.getDistanceFromSQ(l_cOld));
+
+            irr::f32 l_fDist1 = l_vBest.size() > 0 ? l_vBest.back().getDistanceFromSQ(l_cEnd) : 10000.0f;
+            irr::f32 l_fDist2 = l_vThis.back().getDistanceFromSQ(l_cEnd);
+
+            if (l_vBest.size() == 0 || l_fDist1 > l_fDist2)
+              l_vBest = l_vThis;
+            else {
+              l_fVel -= 10.0f;
+              break;
+            }
+          }
+
+          if (l_vBest.size() > 0)
+            m_vJumpData.push_back(l_vBest);
+
+          m_vPath[i].m_fJumpMinVel  = 10.0f;
+          m_vPath[i].m_fJumpMaxVel  = l_fVel;
+          m_vPath[i].m_fJumpBestVel = 0.8f * l_fVel;
+
+          printf("Jump Vel: %.2f, %.2f, %.2f\n", m_vPath[i].m_fJumpMinVel, m_vPath[i].m_fJumpMaxVel, m_vPath[i].m_fJumpBestVel);
+        }
+      }
+    }
+
+    CAiPath::~CAiPath()  {
+    }
+
+    /**
+    * Get the number of AI path segments
+    * @return the number of AI path segments
+    */
+    size_t CAiPath::getCount() {
+      return m_vPath.size();
+    }
+
+    /**
+    * Get the type of a path segment
+    * @param a_iIndex the index
+    * @return the type of a path segment
+    */
+    CAiPath::enPathType CAiPath::getTypeOfSegment(size_t a_iIndex) {
+      return a_iIndex < m_vPath.size() ? m_vPath[a_iIndex].m_eType : enPathType::None;
+    }
+
+    /**
+    * Get the end position of a segment
+    * @param a_iIndex the index
+    * @return the end position of a segment
+    */
+    const irr::core::vector3df CAiPath::getSegmentPosition(size_t a_iIndex) {
+      return a_iIndex < m_vPath.size() ? m_vPath[a_iIndex].m_cPosition : irr::core::vector3df();
+    }
+
+    /**
+    * Get the normal of a segment
+    * @param a_iIndex the index
+    * @return the normal of a segment
+    */
+    const irr::core::vector3df CAiPath::getSegmentNormal(size_t a_iIndex) {
+      return a_iIndex < m_vPath.size() ? m_vPath[a_iIndex].m_cNormal : irr::core::vector3df();
+    }
+
+    /**
+    * Get the side vector of a segment
+    * @param a_iIndex the index
+    * @return the side vector of a segment
+    */
+    const irr::core::vector3df CAiPath::getSegmentSideVector(size_t a_iIndex) {
+      return a_iIndex < m_vPath.size() ? m_vPath[a_iIndex].m_cSide : irr::core::vector3df();
+    }
+
+    /**
+    * Get the width of a segment
+    * @param a_iIndex the index
+    * @return the width of a segment
+    */
+    irr::f32 CAiPath::getSegmentWidth(size_t a_iIndex) {
+      return a_iIndex < m_vPath.size() ? m_vPath[a_iIndex].m_fWidth : 0.0f;
+    }
+
+    /**
+    * Get the jump parameters of a segment
+    * @param a_iIndex the index
+    * @param a_fMinVel [out] the minimum velocity for the jump
+    * @param a_fMaxVel [out] the maximum velocity for the jump
+    * @param a_fBestVel [out] the best velocity for the jump
+    * @return true if the segment is a jump, false otherwise
+    */
+    bool CAiPath::getJumpParameters(size_t a_iIndex, irr::f32 &a_fMinVel, irr::f32 &a_fMaxVel, irr::f32 &a_fBestVel) {
+      if (a_iIndex < m_vPath.size() && m_vPath[a_iIndex].m_eType == enPathType::Jump) {
+        return true;
+      }
+      else return false;
+    }
+    
+    /**
+    * Draw debug data
+    * @param a_pDrv the video driver
+    * @param a_pGui the GUI environment
+    */
+    void CAiPath::drawDebugData(irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui) {
+      if (m_vPath.size() > 0) {
+        for (size_t i = 0; i < m_vPath.size(); i++) {
+          a_pDrv->draw3DLine(
+            50.0f * m_vPath[i].m_cPosition + 3.0f * m_vPath[i].m_cNormal,
+            i < m_vPath.size() - 1 ? (50.0f * m_vPath[i + 1].m_cPosition + 3.0f * m_vPath[i + 1].m_cNormal) : (50.0f * m_vPath[0].m_cPosition + 3.0f * m_vPath[0].m_cNormal),
+            m_vPath[i].m_eType == enPathType::Standard ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF) :
+            m_vPath[i].m_eType == enPathType::Incline  ? irr::video::SColor(0xFF, 0xFF,    0,    0) :
+            m_vPath[i].m_eType == enPathType::Decline  ? irr::video::SColor(0xFF,    0, 0xFF,    0) :
+            m_vPath[i].m_eType == enPathType::Jump     ? irr::video::SColor(0xFF,    0,    0, 0xFF) :
+            m_vPath[i].m_eType == enPathType::JumpArea ? irr::video::SColor(0xFF,    0,    0,    0) :
+                                                         irr::video::SColor(0xFF, 0xFF,    0, 0xFF)
+          );
+        }
+      }
+
+      for (auto l_cJump: m_vJumpData) {
+        irr::core::vector3df l_cOld;
+
+        for (auto l_cPos: l_cJump) {
+          if (l_cPos != l_cJump.front()) {
+            a_pDrv->draw3DLine(l_cOld, l_cPos, irr::video::SColor(0xFF, 0, 0xFF, 0));
+          }
+
+          l_cOld = l_cPos;
+        }
+      }
+    }
+  }
+}

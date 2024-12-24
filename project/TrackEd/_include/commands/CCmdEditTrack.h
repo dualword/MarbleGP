@@ -8,6 +8,7 @@
 namespace dustbin {
   namespace tracked {
     class ITrackPart;           /**< Forward declaration of the track part interface */
+    class CAiPath;              /**< Forward declaration of the AI path object */
   }
 
   namespace commands {
@@ -70,7 +71,7 @@ namespace dustbin {
 
         std::map<irr::u32, irr::u32> m_mBufferMap;  /**< A map mapping the defined buffer IDs to the actual IDs of the track mesh */
 
-        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> m_vRoute;   /**< The route to pass the track (0 == point, 1 == normal) */
+        tracked::CAiPath *m_pAiPath;
 
         std::vector<irr::scene::ISceneNode *> m_vSpeedNodes;    /**< The speed nodes */
 

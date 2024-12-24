@@ -72,6 +72,7 @@
     <ClCompile Include="..\_source\commands\CCmdSaveTrackAs.cpp" />
     <ClCompile Include="..\_source\commands\CCommandHandler.cpp" />
     <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
+    <ClCompile Include="..\_source\editor\CAiPath.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_FlatSegment.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart_Bezier.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Checkpoint.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="..\_include\commands\CCmdSaveTrackAs.h" />
     <ClInclude Include="..\_include\commands\CCommandHandler.h" />
     <ClInclude Include="..\_include\commands\ICommand.h" />
+    <ClInclude Include="..\_include\editor\CAiPath.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_FlatSegment.h" />
     <ClInclude Include="..\_include\editor\ITrackPart_Bezier.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Checkpoint.h" />

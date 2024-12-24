@@ -228,6 +228,9 @@
     <ClCompile Include="..\_source\editor\CTrackPart_FlatSegment.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\editor\CAiPath.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -390,6 +393,9 @@
       <Filter>Include\editor</Filter>
     </ClInclude>
     <ClInclude Include="..\_include\editor\CTrackPart_FlatSegment.h">
+      <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CAiPath.h">
       <Filter>Include\editor</Filter>
     </ClInclude>
   </ItemGroup>
