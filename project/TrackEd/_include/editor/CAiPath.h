@@ -98,57 +98,6 @@ namespace dustbin {
         virtual ~CAiPath();
 
         /**
-        * Get the number of AI path segments
-        * @return the number of AI path segments
-        */
-        size_t getCount();
-
-        /**
-        * Get the type of a path segment
-        * @param a_iIndex the index
-        * @return the type of a path segment
-        */
-        enPathType getTypeOfSegment(size_t a_iIndex);
-
-        /**
-        * Get the end position of a segment
-        * @param a_iIndex the index
-        * @return the end position of a segment
-        */
-        const irr::core::vector3df getSegmentPosition(size_t a_iIndex);
-
-        /**
-        * Get the normal of a segment
-        * @param a_iIndex the index
-        * @return the normal of a segment
-        */
-        const irr::core::vector3df getSegmentNormal(size_t a_iIndex);
-
-        /**
-        * Get the side vector of a segment
-        * @param a_iIndex the index
-        * @return the side vector of a segment
-        */
-        const irr::core::vector3df getSegmentSideVector(size_t a_iIndex);
-
-        /**
-        * Get the width of a segment
-        * @param a_iIndex the index
-        * @return the width of a segment
-        */
-        irr::f32 getSegmentWidth(size_t a_iIndex);
-
-        /**
-        * Get the jump parameters of a segment
-        * @param a_iIndex the index
-        * @param a_fMinVel [out] the minimum velocity for the jump
-        * @param a_fMaxVel [out] the maximum velocity for the jump
-        * @param a_fBestVel [out] the best velocity for the jump
-        * @return true if the segment is a jump, false otherwise
-        */
-        bool getJumpParameters(size_t a_iIndex, irr::f32 &a_fMinVel, irr::f32 &a_fMaxVel, irr::f32 &a_fBestVel);
-
-        /**
         * Draw debug data
         * @param a_pDrv the video driver
         * @param a_pGui the GUI environment
