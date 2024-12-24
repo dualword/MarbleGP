@@ -463,6 +463,32 @@ namespace dustbin {
     }
 
     /**
+    * Get the number of sections in this track part
+    * @return the number of sections in this track part
+    */
+    int CTrackPart_Checkpoint::getCount() {
+      return 2;
+    }
+
+    /**
+    * Get the side vector at a specific index of the road
+    * @param a_iIndex the index
+    * @return the side vector at the index
+    */
+    irr::core::vector3df CTrackPart_Checkpoint::getSideAtIndex(int a_iIndex) {
+      return getStartNormal().crossProduct(m_cStart);
+    }
+
+    /**
+    * Get the normal at a specific index of the road
+    * @param a_iIndex the index
+    * @return the normal at the index
+    */
+    irr::core::vector3df CTrackPart_Checkpoint::getNormalAtIndex(int a_iIndex) {
+      return getStartNormal();
+    }
+
+    /**
     * Handle an event if this part is selected
     * @param a_cEvent the event to handle
     * @return true if the event was handled

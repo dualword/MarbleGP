@@ -5,6 +5,10 @@
 #include <vector>
 
 namespace dustbin {
+  namespace scenenodes {
+    class CAiPathNode;  /**< Foward declaration of the AI path scene node */
+  }
+
   namespace tracked {
     class ITrackPart;   /**< Forward declaration of the track part */
 
@@ -45,16 +49,19 @@ namespace dustbin {
           irr::f32 m_fJumpMaxVel;   /**< The maximal velocity if this is a jump */
           irr::f32 m_fJumpBestVel;  /**< The best velocity if this is a jump */
 
+          ITrackPart *m_pPart;    /**< The track part this path section comes from */
+
           SAiPath() : 
             m_eType       (enPathType::None),
             m_fWidth      (0.0f),
             m_fJumpMinVel (0.0f),
             m_fJumpMaxVel (0.0f),
-            m_fJumpBestVel(0.0f)
+            m_fJumpBestVel(0.0f),
+            m_pPart       (nullptr)
           {
           }
 
-          SAiPath(enPathType a_eType, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cNormal, const irr::core::vector3df &a_cSide, irr::f32 a_fWidth) :
+          SAiPath(enPathType a_eType, const irr::core::vector3df &a_cPosition, const irr::core::vector3df &a_cNormal, const irr::core::vector3df &a_cSide, irr::f32 a_fWidth, tracked::ITrackPart *a_pPart) :
             m_eType       (a_eType    ),
             m_cPosition   (a_cPosition),
             m_cNormal     (a_cNormal  ),
@@ -62,7 +69,8 @@ namespace dustbin {
             m_fWidth      (a_fWidth   ),
             m_fJumpMinVel (0.0f),
             m_fJumpMaxVel (0.0f),
-            m_fJumpBestVel(0.0f)
+            m_fJumpBestVel(0.0f),
+            m_pPart       (a_pPart)
           {
           }
           
@@ -74,7 +82,8 @@ namespace dustbin {
             m_fWidth      (a_cOther.m_fWidth      ),
             m_fJumpMinVel (a_cOther.m_fJumpMinVel ),
             m_fJumpMaxVel (a_cOther.m_fJumpMaxVel ),
-            m_fJumpBestVel(a_cOther.m_fJumpBestVel)
+            m_fJumpBestVel(a_cOther.m_fJumpBestVel),
+            m_pPart       (a_cOther.m_pPart       )
           {
           }
         }
@@ -145,6 +154,12 @@ namespace dustbin {
         * @param a_pGui the GUI environment
         */
         void drawDebugData(irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui);
+
+        /**
+        * Add the AI data to the scene node storing the data
+        * @param a_pAi the scene node to add the data to
+        */
+        void addAiToNode(scenenodes::CAiPathNode *a_pAi);
     };
   }
 }

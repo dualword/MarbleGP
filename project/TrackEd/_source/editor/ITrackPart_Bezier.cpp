@@ -196,6 +196,17 @@ namespace dustbin {
     }
 
     /**
+    * Get the number of sections in this track part
+    * @return the number of sections in this track part
+    */
+    int ITrackPart_Bezier::getCount() {
+      if (m_vTrack.size() == 0)
+        calculateCurve();
+
+      return (int)m_vTrack.size();
+    }
+
+    /**
     * Does this reference point allow addition of new track parts?
     * @param a_iIndex index of the reference point
     * @return true if so, false otherwise

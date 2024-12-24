@@ -1,4 +1,5 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
+#include <scenenodes/CAiNode.h>
 #include <editor/ITrackPart.h>
 #include <editor/CAiPath.h>
 
@@ -15,12 +16,17 @@ namespace dustbin {
       do {
         std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pStart->getRoute();
 
+        int l_iIndex = 0;
+
         // Let's fill the member m_vPath
         for (auto &l_tRoute: l_vPartRoute) {
           bool l_bAdd = true;
 
           for (auto &l_cPath: m_vPath) {
             if (std::get<0>(l_tRoute) == l_cPath.m_cPosition) {
+              l_cPath.m_pPart  = l_pStart;
+              l_cPath.m_fWidth = l_pStart->getWidth();
+
               l_bAdd = false;
               break;
             }
@@ -30,11 +36,14 @@ namespace dustbin {
             m_vPath.push_back(SAiPath(
               enPathType::Standard,
               std::get<0>(l_tRoute),
-              std::get<1>(l_tRoute),
-              std::get<0>(l_tRoute).crossProduct(std::get<1>(l_tRoute)).normalize(),
-              l_pStart->getWidth()
+              l_pStart->getNormalAtIndex(l_iIndex),
+              l_pStart->getSideAtIndex  (l_iIndex),
+              l_pStart->getWidth(),
+              l_pStart
             ));
           }
+
+          l_iIndex++;
         }
 
         l_pStart = l_pStart->getNext();
@@ -141,6 +150,56 @@ namespace dustbin {
     }
 
     CAiPath::~CAiPath()  {
+    }
+
+    /**
+    * Add the AI data to the scene node storing the data
+    * @param a_pAi the scene node to add the data to
+    */
+    void CAiPath::addAiToNode(scenenodes::CAiPathNode *a_pAi) {
+      scenenodes::CAiPathNode::SAiPathSection *l_pLast  = nullptr;
+      scenenodes::CAiPathNode::SAiPathSection *l_pFirst = nullptr;
+
+      size_t l_iSkip = 4;
+
+
+      for (size_t i = 0; i < m_vPath.size(); i++) {
+        if (l_iSkip >= 4 || m_vPath[i].m_eType == enPathType::Jump || i == m_vPath.size() || (i > 0 && m_vPath[i - 1].m_pPart != m_vPath[i].m_pPart)) {
+          scenenodes::CAiPathNode::SAiPathSection *p = new scenenodes::CAiPathNode::SAiPathSection();
+
+          p->m_cPosition   = m_vPath[i].m_cPosition * 50.0f;
+          p->m_cNormal     = m_vPath[i].m_cNormal;
+          p->m_cSideVector = m_vPath[i].m_cSide.normalize();
+          p->m_fWidth      = m_vPath[i].m_fWidth * 25.0f;
+
+          if (m_vPath[i].m_eType == enPathType::Jump) {
+            p->m_eType      = scenenodes::CAiPathNode::enSegmentType::Jump;
+            p->m_fMinSpeed  = m_vPath[i].m_fJumpMinVel;
+            p->m_fMaxSpeed  = m_vPath[i].m_fJumpMaxVel;
+            p->m_fBestSpeed = m_vPath[i].m_fJumpBestVel;
+          }
+          else p->m_eType = scenenodes::CAiPathNode::enSegmentType::Default;
+
+          if (l_pLast != nullptr) {
+            l_pLast->m_vNextSegments.push_back(p);
+            p->m_vPrevSegments.push_back(l_pLast);
+          }
+
+          if (l_pFirst == nullptr)
+            l_pFirst = p;
+
+          l_pLast = p;
+
+          a_pAi->addPathSection(p);
+          l_iSkip = 0;
+        }
+        else l_iSkip++;
+      }
+
+      if (l_pFirst != nullptr && l_pLast != nullptr) {
+        l_pLast->m_vNextSegments.push_back(l_pFirst);
+        l_pFirst->m_vPrevSegments.push_back(l_pLast);
+      }
     }
 
     /**

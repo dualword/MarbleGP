@@ -302,6 +302,26 @@ namespace dustbin {
         * @return true if vertices are flipped
         */
         virtual bool doesFlipVertices();
+
+        /**
+        * Get the number of sections in this track part
+        * @return the number of sections in this track part
+        */
+        virtual int getCount() = 0;
+
+        /**
+        * Get the side vector at a specific index of the road
+        * @param a_iIndex the index
+        * @return the side vector at the index
+        */
+        virtual irr::core::vector3df getSideAtIndex(int a_iIndex) = 0;
+
+        /**
+        * Get the normal at a specific index of the road
+        * @param a_iIndex the index
+        * @return the normal at the index
+        */
+        virtual irr::core::vector3df getNormalAtIndex(int a_iIndex) = 0;
     };
   }
 }

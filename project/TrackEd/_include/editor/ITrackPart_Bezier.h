@@ -79,20 +79,6 @@ namespace dustbin {
         */
         irr::f32 calculateCurve();
 
-        /**
-        * Get the side vector at a specific index of the road
-        * @param a_iIndex the index
-        * @return the side vector at the index
-        */
-        virtual irr::core::vector3df getSideAtIndex(int a_iIndex) = 0;
-
-        /**
-        * Get the normal at a specific index of the road
-        * @param a_iIndex the index
-        * @return the normal at the index
-        */
-        virtual irr::core::vector3df getNormalAtIndex(int a_iIndex) = 0;
-
       public:
         ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
         virtual ~ITrackPart_Bezier();
@@ -161,6 +147,12 @@ namespace dustbin {
 
         virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv) override;
  
+        /**
+        * Get the number of sections in this track part
+        * @return the number of sections in this track part
+        */
+        virtual int getCount() override;
+
         /**
         * Does this part flip vertices? Necessary for downward ramps
         * @return true if vertices are flipped

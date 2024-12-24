@@ -15,6 +15,7 @@
 
 #include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CAiPath.h>
 
 #include <commands/CCmdAddMarbleGP.h>
 #include <commands/CCmdEditTrack.h>
@@ -240,8 +241,8 @@ namespace dustbin {
         {
           scenenodes::CAiPathNode *l_pAi = reinterpret_cast<scenenodes::CAiPathNode *>(l_pSmgr->addSceneNode(scenenodes::g_AiPathNodeName, l_pWorld));
           if (l_pAi != nullptr) {
-            tracked::ITrackPart *l_pTrack = a_pEditTrack->getTrack().front();
-            l_pTrack->addToAiNode(l_pAi, nullptr);
+            tracked::CAiPath *l_pAiPath = new tracked::CAiPath(a_pEditTrack->getTrack().front());
+            l_pAiPath->addAiToNode(l_pAi);
           }
         }
 
