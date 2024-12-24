@@ -138,13 +138,6 @@ namespace dustbin {
         */
         virtual const irr::core::vector3df getEndDirection() override;
 
-        /**
-        * Add this track part to the AI path node
-        * @param a_pAi the AI path node
-        * @param a_pLast the last AI path section
-        */
-        virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) override;
-
         virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv) override;
  
         /**

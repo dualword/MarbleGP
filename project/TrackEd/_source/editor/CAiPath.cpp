@@ -1,5 +1,5 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
-#include <scenenodes/CAiNode.h>
+#include <scenenodes/CAiPathNode.h>
 #include <editor/ITrackPart.h>
 #include <editor/CAiPath.h>
 

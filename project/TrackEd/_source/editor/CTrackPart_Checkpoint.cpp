@@ -405,64 +405,6 @@ namespace dustbin {
     }
 
     /**
-    * Add this track part to the AI path node
-    * @param a_pAi the AI path node
-    * @param a_pLast the last AI path section
-    */
-    void CTrackPart_Checkpoint::addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) {
-      scenenodes::CAiPathNode::SAiPathSection *l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
-
-      irr::core::vector3df l_cSide   = (m_cStart - m_cEnd).crossProduct(getStartNormal()).normalize();
-
-      l_pThis->m_cPosition   = 50.0f * (m_cStart + 0.055f * getStartNormal());
-      l_pThis->m_cSideVector = l_cSide;
-      l_pThis->m_fWidth      = 25.0f * m_fWidth;
-      l_pThis->m_cNormal     = getStartNormal();
-      l_pThis->m_eType       = scenenodes::CAiPathNode::enSegmentType::Respawn;
-      l_pThis->m_iRespawn    = m_pRespawn->getID();
-      l_pThis->m_fFactor     = 0.85f;
-
-      if (a_pLast != nullptr) {
-        a_pLast->m_vNextSegments.push_back(l_pThis);
-        l_pThis->m_vPrevSegments.push_back(a_pLast);
-      }
-
-      a_pAi->addPathSection(l_pThis);
-
-      a_pLast = l_pThis;
-
-      l_pThis = new scenenodes::CAiPathNode::SAiPathSection();
-
-      l_pThis->m_cPosition   = 50.0f * (m_cEnd + 0.055f * getStartNormal());
-      l_pThis->m_cSideVector = l_cSide;
-      l_pThis->m_fWidth      = 25.0f * m_fWidth;
-      l_pThis->m_cNormal     = getStartNormal();
-      l_pThis->m_eType       = scenenodes::CAiPathNode::enSegmentType::Default;
-      l_pThis->m_iRespawn    = m_pRespawn->getID();
-      l_pThis->m_fFactor     = 0.85f;
-
-      if (a_pLast != nullptr) {
-        a_pLast->m_vNextSegments.push_back(l_pThis);
-        l_pThis->m_vPrevSegments.push_back(a_pLast);
-      }
-
-      a_pAi->addPathSection(l_pThis);
-
-
-      if (getNext() != nullptr && getNext()->getPrevious() != nullptr) {
-        getNext()->addToAiNode(a_pAi, l_pThis);
-      }
-      else if (getNext() != nullptr) {
-        scenenodes::CAiPathNode::SAiPathSection *l_pFirst = a_pAi->getFirstSection();
-
-        if (l_pFirst != nullptr) {
-          l_pThis->m_vNextSegments.push_back(l_pFirst);
-          l_pFirst->m_vPrevSegments.push_back(l_pThis);
-        }
-      }
-    }
-
-    /**
     * Get the number of sections in this track part
     * @return the number of sections in this track part
     */

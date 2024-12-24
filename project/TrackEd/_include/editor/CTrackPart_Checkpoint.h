@@ -111,13 +111,6 @@ namespace dustbin {
         virtual bool canPointMoveFreely(int a_iIndex, irr::core::line3df &a_cLine, irr::core::vector3df &a_cPlanePoint, irr::core::vector3df &a_cPlaneNormal) override;
 
         /**
-        * Add this track part to the AI path node
-        * @param a_pAi the AI path node
-        * @param a_pLast the last AI path section
-        */
-        virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) override;
-
-        /**
         * Handle an event if this part is selected
         * @param a_cEvent the event to handle
         * @return true if the event was handled

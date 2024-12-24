@@ -1,8 +1,6 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #pragma once
 
-#include <scenenodes/CAiPathNode.h>
-
 #include <irrlicht.h>
 #include <string>
 #include <vector>
@@ -225,13 +223,6 @@ namespace dustbin {
         * @return true if so, false otherwise
         */
         virtual bool partAdditionAllowed(int a_iIndex) = 0;
-
-        /**
-        * Add this track part to the AI path node
-        * @param a_pAi the AI path node
-        * @param a_pLast the last AI path section
-        */
-        virtual void addToAiNode(scenenodes::CAiPathNode *a_pAi, scenenodes::CAiPathNode::SAiPathSection *a_pLast) = 0;
 
         /**
         * Does this reference point allow addition of another reference point?
