@@ -1043,8 +1043,6 @@ namespace dustbin {
 
         if (m_cMovePlane.getIntersectionWithPlane(m_cZeroPlane, v1, v2)) {
         irr::core::line3df l_cZeroLine = irr::core::line3df(v1 - 1000.0f * v2, v1 + 1000.0f * v2);
-
-          printf("%.2f, %.2f, %.2f --> %.2f, %.2f, %.2f\n", l_cZeroLine.start.X, l_cZeroLine.start.Y, l_cZeroLine.start.Z, l_cZeroLine.end.X, l_cZeroLine.end.Y, l_cZeroLine.end.Z);
           l_cRayCollision = l_cZeroLine.getClosestPoint(l_cZeroCollision);
         }
       }
