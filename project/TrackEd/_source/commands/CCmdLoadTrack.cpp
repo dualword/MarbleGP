@@ -19,15 +19,25 @@ namespace dustbin {
     CCmdLoadTrack::CCmdLoadTrack(CCmdEditTrack *a_pEditTrack) :
       ICommand("CmdLoadTrack")
     {
-      std::string l_sFileName = tracked::IGlobal::getInstance()->getGlobal("openfile");
+      irr::io::path l_sWorkingDir = tracked::IGlobal::getInstance()->getFileSystem()->getWorkingDirectory();
 
-      l_sFileName = platform::portableSelectFileOpen(L"Dustbin Games Track (*.dbt)\0*.dbt\0All Files (*.*)\0*.*", L".", helpers::s2ws(l_sFileName).c_str());
+      std::string l_sFileName = tracked::IGlobal::getInstance()->getGlobal ("openfile");
+      std::string l_sFolder   = tracked::IGlobal::getInstance()->getSetting("openfolder");
+
+      l_sFileName = platform::portableSelectFileOpen(L"Dustbin Games Track (*.dbt)\0*.dbt\0All Files (*.*)\0*.*", l_sFolder != "" ? helpers::s2ws(l_sFolder).c_str() : L".", helpers::s2ws(l_sFileName).c_str());
 
       tracked::IGlobal::getInstance()->setGlobal("openfile", l_sFileName);
 
+      tracked::IGlobal::getInstance()->getFileSystem()->changeWorkingDirectoryTo(l_sWorkingDir);
+
       if (l_sFileName != "") {
+        if (l_sFileName.find_last_of('\\') != std::string::npos) {
+          std::string l_sFolder = l_sFileName.substr(0, l_sFileName.find_last_of('\\'));
+          tracked::IGlobal::getInstance()->setSetting("openfolder", l_sFolder);
+        }
+
         irr::io::IFileSystem *l_pFs     = tracked::IGlobal::getInstance()->getFileSystem();
-        irr::io::IXMLReader *l_pReader = l_pFs->createXMLReader(l_sFileName.c_str());
+        irr::io::IXMLReader  *l_pReader = l_pFs->createXMLReader(l_sFileName.c_str());
 
         if (l_pReader) {
           a_pEditTrack->clearTrack();

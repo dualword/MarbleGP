@@ -16,14 +16,32 @@ namespace dustbin {
     * @param a_pHandler the command handler
     */
     CCmdSaveTrackAs::CCmdSaveTrackAs(const std::vector<tracked::ITrackPart *> &a_vTrack, CCommandHandler *a_pHandler) : ICommand("CmdSaveTrackAs") {
-      std::string l_sFileName = tracked::IGlobal::getInstance()->getGlobal("openfile");
+      irr::io::path l_sWorkingDir = tracked::IGlobal::getInstance()->getFileSystem()->getWorkingDirectory();
 
-      l_sFileName = platform::portableSelectFileSave(L"Dustbin Games Track (*.dbt)\0*.dbt\0All Files (*.*)\0*.*", L".", helpers::s2ws(l_sFileName).c_str());
+      std::string l_sFileName = tracked::IGlobal::getInstance()->getGlobal ("openfile");
+      std::string l_sFolder   = tracked::IGlobal::getInstance()->getSetting("openfolder");
 
-      tracked::IGlobal::getInstance()->setGlobal("openfile", l_sFileName);
+      l_sFileName = platform::portableSelectFileSave(L"Dustbin Games Track (*.dbt)\0*.dbt\0All Files (*.*)\0*.*", l_sFolder != "" ? helpers::s2ws(l_sFolder).c_str() : L".", helpers::s2ws(l_sFileName).c_str());
 
-      CCmdSaveTrack *l_pCmd = new CCmdSaveTrack(a_vTrack);
-      a_pHandler->addCommand(l_pCmd);
+      tracked::IGlobal::getInstance()->getFileSystem()->changeWorkingDirectoryTo(l_sWorkingDir);
+
+      if (l_sFileName != "") {
+        if (l_sFileName.find_last_of('.') != std::string::npos) {
+          l_sFileName = l_sFileName.substr(0, l_sFileName.find_last_of('.'));
+        }
+
+        l_sFileName += ".dbt";
+
+        if (l_sFileName.find_last_of('\\') != std::string::npos) {
+          std::string l_sFolder = l_sFileName.substr(0, l_sFileName.find_last_of('\\'));
+          tracked::IGlobal::getInstance()->setSetting("openfolder", l_sFolder);
+        }
+
+        tracked::IGlobal::getInstance()->setGlobal("openfile", l_sFileName);
+
+        CCmdSaveTrack *l_pCmd = new CCmdSaveTrack(a_vTrack);
+        a_pHandler->addCommand(l_pCmd);
+      }
     }
 
     CCmdSaveTrackAs::~CCmdSaveTrackAs() {
