@@ -114,15 +114,28 @@ namespace dustbin {
 
       irr::s32 l_iSpace = m_pGui->getSkin()->getFont()->getDimension(L"-").Width;
 
+      irr::core::dimension2du l_cBtnSize;
+
+      irr::core::dimension2du l_cScreen = m_pGui->getVideoDriver()->getScreenSize();
+
       for (int i = 0; i < (int)enMenuItem::Count; i++) {
         std::wstring l_sText = getButtonText((enMenuItem)i);
 
         if (l_sText != L"--") {
-          irr::core::dimension2du l_cBtnSize = m_pGui->getSkin()->getFont()->getDimension(l_sText.c_str());
+          irr::core::dimension2du l_cSize = m_pGui->getSkin()->getFont()->getDimension(l_sText.c_str());
 
-          l_cBtnSize.Width  = 5 * l_cBtnSize.Width / 4;
-          l_cBtnSize.Height = 5 * l_cBtnSize.Height / 4;
+          l_cSize.Width  = 5 * l_cSize.Width  / 4;
+          l_cSize.Height = 5 * l_cSize.Height / 4;
 
+          if (l_cSize.Width  > l_cBtnSize.Width ) l_cBtnSize.Width  = l_cSize.Width;
+          if (l_cSize.Height > l_cBtnSize.Height) l_cBtnSize.Height = l_cSize.Height;
+        }
+      }
+
+      for (int i = 0; i < (int)enMenuItem::Count; i++) {
+        std::wstring l_sText = getButtonText((enMenuItem)i);
+
+        if (l_sText != L"--") {
           irr::gui::IGUIButton *l_pBtn = m_pGui->addButton(
             irr::core::recti(l_cBtnPos, l_cBtnSize),
             m_pGui->getRootGUIElement(),
@@ -137,13 +150,15 @@ namespace dustbin {
 
         if (l_sText == L"--")
           l_cBtnPos.X += 2 * l_iSpace;
+
+        if (l_cBtnPos.X + l_cBtnSize.Width >= l_cScreen.Width) {
+          l_cBtnPos.X = 0;
+          l_cBtnPos.Y += 5 * l_cBtnSize.Height / 4;
+        }
       }
 
       irr::core::dimension2du l_cSize = m_pGui->getSkin()->getFont()->getDimension(L"Edit Mode: This Text is longer than needed.");
-      irr::core::vector2di    l_cPos  = irr::core::vector2di();
-
-      irr::s32 l_iHeight = 5 * l_cSize.Height / 4;
-      l_cPos.Y = l_iHeight;
+      irr::core::vector2di    l_cPos  = irr::core::vector2di(0, l_cBtnPos.Y + 5 * l_cBtnSize.Height / 4);
 
       m_pEditMode = m_pGui->addStaticText(L"Edit Mode: Default", irr::core::recti(l_cPos, l_cSize));
       
