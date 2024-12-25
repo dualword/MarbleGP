@@ -155,6 +155,10 @@ namespace dustbin {
     }
 
     CAiPath::~CAiPath()  {
+      for (auto l_pSign: m_vSpeedIndicators) {
+        l_pSign->setVisible(false);
+        l_pSign->getSceneManager()->addToDeletionQueue(l_pSign);
+      }
     }
 
     /**
