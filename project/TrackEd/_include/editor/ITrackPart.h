@@ -289,12 +289,6 @@ namespace dustbin {
         virtual void drawReferencePoint(irr::video::IVideoDriver *a_pDrv);
 
         /**
-        * Does this part flip vertices? Necessary for downward ramps
-        * @return true if vertices are flipped
-        */
-        virtual bool doesFlipVertices();
-
-        /**
         * Get the number of sections in this track part
         * @return the number of sections in this track part
         */

@@ -55,8 +55,6 @@ namespace dustbin {
         std::vector<irr::core::vector3df> m_vPoints;    /**< The reference points used for the track calculation */
         std::vector<irr::core::vector3df> m_vTrack;     /**< The calculated center of the track */
 
-        bool m_bFlipVertices;   /**< If set to "true" the road vertices are flipped. Necessary for downward ramps */
-
         /**
         * A little helper functions to fill the indices for the Bezier calculation
         * @param a_iSteps the number of steps
@@ -145,12 +143,6 @@ namespace dustbin {
         * @return the number of sections in this track part
         */
         virtual int getCount() override;
-
-        /**
-        * Does this part flip vertices? Necessary for downward ramps
-        * @return true if vertices are flipped
-        */
-        virtual bool doesFlipVertices() override;
    };
   }
 }

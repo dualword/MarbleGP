@@ -8,7 +8,7 @@
 namespace dustbin {
   namespace tracked {
     ITrackPart_Bezier::ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      ITrackPart (a_sIdentifier, a_pPrevious, a_cNormal), m_bFlipVertices(false) {
+      ITrackPart (a_sIdentifier, a_pPrevious, a_cNormal) {
     }
 
     ITrackPart_Bezier::~ITrackPart_Bezier() {
@@ -102,12 +102,6 @@ namespace dustbin {
 
       irr::core::line3df l_cOld = getPrevious() != nullptr ? getPrevious()->getEnd() : irr::core::line3df(m_vPoints[0] + l_fWidth * getSideOfPoint(0), m_vPoints[0] - l_fWidth * getSideOfPoint(0));
 
-      if (getPrevious() != nullptr && getPrevious()->doesFlipVertices() != m_bFlipVertices) {
-        irr::core::vector3df v = l_cOld.end;
-        l_cOld.end = l_cOld.start;
-        l_cOld.start = v;
-      }
-
       for (size_t i = 0; i < m_vTrack.size(); i++) {
         irr::core::line3df l_cNew = irr::core::line3df(m_vTrack[i] - l_fWidth * getSideAtIndex((int)i), m_vTrack[i] + l_fWidth * getSideAtIndex((int)i));
 
@@ -121,10 +115,10 @@ namespace dustbin {
         }
 
         irr::core::vector3df l_aVertBottom[] = {
-          m_bFlipVertices ? l_cOld.end   : l_cOld.start,
-          m_bFlipVertices ? l_cOld.start : l_cOld.end,
-          m_bFlipVertices ? l_cNew.start : l_cNew.end,
-          m_bFlipVertices ? l_cNew.end   : l_cNew.start
+          l_cOld.start,
+          l_cOld.end,
+          l_cNew.end,
+          l_cNew.start
         };
       
         irr::core::vector2df t[] = {
@@ -185,14 +179,6 @@ namespace dustbin {
       }
 
       setEnd(l_cOld);
-    }
-
-    /**
-    * Does this part flip vertices? Necessary for downward ramps
-    * @return true if vertices are flipped
-    */
-    bool ITrackPart_Bezier::doesFlipVertices() {
-      return m_bFlipVertices;
     }
 
     /**

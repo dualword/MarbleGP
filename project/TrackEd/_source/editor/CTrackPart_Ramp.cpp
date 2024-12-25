@@ -25,14 +25,14 @@ namespace dustbin {
     */
     irr::core::vector3df CTrackPart_Ramp::getNormalOfPoint(int a_iIndex) const {
       if (a_iIndex == 0) {
-        return (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(0).crossProduct(m_vPoints[0] - m_vPoints[1]).normalize();
+        return getSideOfPoint(0).crossProduct(m_vPoints[0] - m_vPoints[1]).normalize();
       }
       else if (a_iIndex == (int)m_vPoints.size() - 1) {
-        return (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex]).normalize();
+        return getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex]).normalize();
       }
       else {
-        irr::core::vector3df v1 = (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex    ] - m_vPoints[a_iIndex + 1]).normalize();
-        irr::core::vector3df v2 = (m_bFlipVertices ? -1.0f : 1.0f) * getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex    ]).normalize();
+        irr::core::vector3df v1 = getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex    ] - m_vPoints[a_iIndex + 1]).normalize();
+        irr::core::vector3df v2 = getSideOfPoint(a_iIndex).crossProduct(m_vPoints[a_iIndex - 1] - m_vPoints[a_iIndex    ]).normalize();
 
         return v1.getInterpolated(v2, 0.5);
       }
@@ -70,7 +70,7 @@ namespace dustbin {
       if (a_iIndex == 0)
         return getStartNormal();
       else
-        return (m_bFlipVertices ? -1.0f : 1.0f) * (m_vTrack[a_iIndex] - m_vTrack[a_iIndex - 1]).crossProduct(m_cSide).normalize();
+        return (m_vTrack[a_iIndex] - m_vTrack[a_iIndex - 1]).crossProduct(m_cSide).normalize();
     }
  
     /**
@@ -203,17 +203,6 @@ namespace dustbin {
     */
     void CTrackPart_Ramp::deserialize(const irr::io::IAttributes &a_cAttr) {
       ITrackPart_Bezier::deserialize(a_cAttr);
-
-      m_bFlipVertices = m_vPoints.front().Y > m_vPoints.back().Y;
-
-      if (m_bFlipVertices) {
-        irr::core::line3df l_cEnd = getEnd();
-
-        irr::core::vector3df v = l_cEnd.start;
-        l_cEnd.start = l_cEnd.end;
-        l_cEnd.end = v;
-        setEnd(l_cEnd);
-      }
     }
 
     /**

@@ -202,14 +202,6 @@ namespace dustbin {
     }
 
     /**
-    * Does this part flip vertices? Necessary for downward ramps
-    * @return true if vertices are flipped
-    */
-    bool ITrackPart::doesFlipVertices() {
-      return false;
-    }
-
-    /**
     * Set the start of the part
     * @param a_cStart the start of the part
     */
