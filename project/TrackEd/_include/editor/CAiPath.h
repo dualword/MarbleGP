@@ -49,6 +49,7 @@ namespace dustbin {
           irr::f32 m_fJumpMaxVel;   /**< The maximal velocity if this is a jump */
           irr::f32 m_fJumpBestVel;  /**< The best velocity if this is a jump */
 
+
           ITrackPart *m_pPart;    /**< The track part this path section comes from */
 
           SAiPath() : 
@@ -94,6 +95,8 @@ namespace dustbin {
         std::vector<std::vector<irr::core::vector3df>> m_vJumpData;   /**< Debug data for the jumps */
 
         std::vector<irr::scene::ISceneNode *> m_vSpeedIndicators;   /**< The list of speed indicators */
+
+        bool m_bLapFinished;    /**< Is the lap finished or does it have open ends? */
 
       public:
         CAiPath(tracked::ITrackPart *a_pTrack);

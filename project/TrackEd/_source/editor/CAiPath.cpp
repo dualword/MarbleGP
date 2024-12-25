@@ -6,7 +6,7 @@
 
 namespace dustbin {
   namespace tracked {
-    CAiPath::CAiPath(tracked::ITrackPart *a_pTrack) {
+    CAiPath::CAiPath(tracked::ITrackPart *a_pTrack) : m_bLapFinished(false) {
       tracked::ITrackPart *l_pStart = a_pTrack;
 
       // Make sure that we start from the beginning
@@ -50,6 +50,8 @@ namespace dustbin {
         l_pStart = l_pStart->getNext();
       } 
       while (l_pStart != nullptr && l_pStart->getPrevious() != nullptr);
+
+      m_bLapFinished = l_pStart != nullptr && l_pStart->getPrevious() == nullptr;
 
       // Now let's analyse the path and search for inclines, declines and jumps
       for (size_t i = 1; i < m_vPath.size(); i++) {
@@ -269,16 +271,18 @@ namespace dustbin {
     void CAiPath::drawDebugData(irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui) {
       if (m_vPath.size() > 0) {
         for (size_t i = 0; i < m_vPath.size(); i++) {
-          a_pDrv->draw3DLine(
-            50.0f * m_vPath[i].m_cPosition + 3.0f * m_vPath[i].m_cNormal,
-            i < m_vPath.size() - 1 ? (50.0f * m_vPath[i + 1].m_cPosition + 3.0f * m_vPath[i + 1].m_cNormal) : (50.0f * m_vPath[0].m_cPosition + 3.0f * m_vPath[0].m_cNormal),
-            m_vPath[i].m_eType == enPathType::Standard ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF) :
-            m_vPath[i].m_eType == enPathType::Incline  ? irr::video::SColor(0xFF, 0xFF,    0,    0) :
-            m_vPath[i].m_eType == enPathType::Decline  ? irr::video::SColor(0xFF,    0, 0xFF,    0) :
-            m_vPath[i].m_eType == enPathType::Jump     ? irr::video::SColor(0xFF,    0,    0, 0xFF) :
-            m_vPath[i].m_eType == enPathType::JumpArea ? irr::video::SColor(0xFF,    0,    0,    0) :
-                                                         irr::video::SColor(0xFF, 0xFF,    0, 0xFF)
-          );
+          if (i < m_vPath.size() - 1 || m_bLapFinished) {
+            a_pDrv->draw3DLine(
+              50.0f * m_vPath[i].m_cPosition + 3.0f * m_vPath[i].m_cNormal,
+              i < m_vPath.size() - 1 ? (50.0f * m_vPath[i + 1].m_cPosition + 3.0f * m_vPath[i + 1].m_cNormal) : (50.0f * m_vPath[0].m_cPosition + 3.0f * m_vPath[0].m_cNormal),
+              m_vPath[i].m_eType == enPathType::Standard ? irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF) :
+              m_vPath[i].m_eType == enPathType::Incline  ? irr::video::SColor(0xFF, 0xFF,    0,    0) :
+              m_vPath[i].m_eType == enPathType::Decline  ? irr::video::SColor(0xFF,    0, 0xFF,    0) :
+              m_vPath[i].m_eType == enPathType::Jump     ? irr::video::SColor(0xFF,    0,    0, 0xFF) :
+              m_vPath[i].m_eType == enPathType::JumpArea ? irr::video::SColor(0xFF,    0,    0,    0) :
+                                                           irr::video::SColor(0xFF, 0xFF,    0, 0xFF)
+            );
+            }
         }
       }
 
