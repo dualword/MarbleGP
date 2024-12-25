@@ -52,8 +52,8 @@ namespace dustbin {
         virtual irr::core::vector3df getSideOfPoint(int a_iIndex) const = 0;
 
       protected:
-        std::vector<irr::core::vector3df> m_vPoints;
-        std::vector<irr::core::vector3df> m_vTrack;
+        std::vector<irr::core::vector3df> m_vPoints;    /**< The reference points used for the track calculation */
+        std::vector<irr::core::vector3df> m_vTrack;     /**< The calculated center of the track */
 
         bool m_bFlipVertices;   /**< If set to "true" the road vertices are flipped. Necessary for downward ramps */
 
