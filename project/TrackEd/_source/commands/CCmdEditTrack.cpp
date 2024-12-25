@@ -431,8 +431,7 @@ namespace dustbin {
       }
       else if (m_eEditMode == enEditMode::MovePointInPlane || m_eEditMode == enEditMode::AddReferencePoint) {
         if (m_pSelected != nullptr) {
-          irr::core::vector3df l_cPoint = m_cMovePoint;
-
+          irr::core::vector3df l_cPoint  = m_cMovePoint;
           irr::core::vector3df l_cNormal = m_cMovePlane.Normal.normalize();
 
           irr::core::vector3df v1;
@@ -451,14 +450,51 @@ namespace dustbin {
             v2 = irr::core::vector3df(1.0f, 0.0f, 0.0f);
           }
           else {
-            m_cMovePlane.getIntersectionWithLimitedLine(l_cPoint + irr::core::vector3df(0.0f, 10.0f, 1.0f), l_cPoint + irr::core::vector3df(0.0f, -10.0f, 1.0f), v1);
-            m_cMovePlane.getIntersectionWithLimitedLine(l_cPoint + irr::core::vector3df(1.0f, 10.0f, 0.0f), l_cPoint + irr::core::vector3df(1.0f, -10.0f, 0.0f), v2);
+            irr::f32 s = 1.0f / (l_cNormal.X * l_cNormal.X + l_cNormal.Y * l_cNormal.Y + l_cNormal.Z * l_cNormal.Z);
+            irr::f32 v3x = s * l_cNormal.X;
+            irr::f32 v3y = s * l_cNormal.Y;
+            irr::f32 v3z = s * l_cNormal.Z;
 
-            v1 -= m_cMovePoint;
-            v2 -= m_cMovePoint;
+            // Calculate v1.
+            s = 1.0f / (v3x * v3x + v3z * v3z);
+            irr::f32 v1x = s * v3z;
+            irr::f32 v1y = 0.0f;
+            irr::f32 v1z = s * -v3x;
 
-            v1 = v1.normalize();
-            v2 = v2.normalize();
+            // Calculate v2 as cross product of v3 and v1.
+            // Since v1y is 0, it could be removed from the following calculations. Keeping it for consistency.
+            irr::f32 v2x = v3y * v1z - v3z * v1y;
+            irr::f32 v2y = v3z * v1x - v3x * v1z;
+            irr::f32 v2z = v3x * v1y - v3y * v1x;
+
+            v1 = irr::core::vector3df(0.0f);
+            v2 = irr::core::vector3df(1.0f);
+
+            for (irr::f32 f = 0.0f; f < 180.0f; f += 0.5f) {
+              irr::core::vector3df l_cDummy = irr::core::vector3df(
+                (v1x * cos(f) + v2x * sin(f)),
+                (v1y * cos(f) + v2y * sin(f)),
+                (v1z * cos(f) + v2z * sin(f))          
+              );
+
+              if (l_cDummy.Y > v1.Y)
+                v1 = l_cDummy;
+
+              if (l_cDummy.Y >= 0.0f && l_cDummy.Y < v2.Y)
+                v2 = l_cDummy;
+            }
+
+            // v1 = irr::core::vector3df(
+            //   (v1x * cos(0.0f) + v2x * sin(0.0f)),
+            //   (v1y * cos(0.0f) + v2y * sin(0.0f)),
+            //   (v1z * cos(0.0f) + v2z * sin(0.0f))          
+            // );
+            // 
+            // v2 = irr::core::vector3df(
+            //   (v1x * cos(90.0f) + v2x * sin(90.0f)),
+            //   (v1y * cos(90.0f) + v2y * sin(90.0f)),
+            //   (v1z * cos(90.0f) + v2z * sin(90.0f))
+            // );
           }
 
           for (irr::f32 y = -50.0f; y <= 50.0f; y += 5.0f) {

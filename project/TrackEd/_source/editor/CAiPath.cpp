@@ -82,15 +82,17 @@ namespace dustbin {
           while (i < m_vPath.size()) {
             i++;
 
-            irr::core::line2df l_cOther = irr::core::line2df(
-              irr::core::vector2df(m_vPath[i - 1].m_cPosition.X, m_vPath[i - 1].m_cPosition.Z),
-              irr::core::vector2df(m_vPath[i    ].m_cPosition.X, m_vPath[i    ].m_cPosition.Z)
-            );
+            if (i < m_vPath.size()) {
+              irr::core::line2df l_cOther = irr::core::line2df(
+                irr::core::vector2df(m_vPath[i - 1].m_cPosition.X, m_vPath[i - 1].m_cPosition.Z),
+                irr::core::vector2df(m_vPath[i    ].m_cPosition.X, m_vPath[i    ].m_cPosition.Z)
+              );
 
-            if (l_cLine.getAngleWith(l_cOther) < 1.0f) {
-              m_vPath[i].m_eType = enPathType::JumpArea;
+              if (l_cLine.getAngleWith(l_cOther) < 1.0f) {
+                m_vPath[i].m_eType = enPathType::JumpArea;
+              }
+              else break;
             }
-            else break;
           }
         }
       }
