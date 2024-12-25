@@ -72,7 +72,12 @@ namespace dustbin {
 
       m_pFontMgr = new FontManager();
 
-      irr::gui::IGUIFont *l_pFont = m_pFontMgr->GetTtFont(m_pDrv, m_pFs, "data/fonts/arialmt.ttf", 32);
+      unsigned l_iFontSize = 18;
+      std::string l_sFontSize = getSetting("fontsize");
+      if (l_sFontSize != "")
+        l_iFontSize = std::atoi(l_sFontSize.c_str());
+
+      irr::gui::IGUIFont *l_pFont = m_pFontMgr->GetTtFont(m_pDrv, m_pFs, "data/fonts/arialmt.ttf", l_iFontSize);
       m_pGui->getSkin()->setFont(l_pFont);
 
       scenenodes::CMarbleGPSceneNodeFactory* l_pFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pSmgr);

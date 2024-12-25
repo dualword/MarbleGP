@@ -81,7 +81,7 @@ namespace dustbin {
         case enMenuItem::SaveAs        : return L"Save Track as";
         case enMenuItem::Base          : return L"Create Base";
         case enMenuItem::ExportMesh    : return L"Export as Mesh";
-        case enMenuItem::ExportMarbleGP: return L"Add track to MarbleGP";
+        case enMenuItem::ExportMarbleGP: return L"Add to MarbleGP";
 
         default:
           return L"--";
