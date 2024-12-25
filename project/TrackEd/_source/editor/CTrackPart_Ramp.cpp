@@ -86,7 +86,13 @@ namespace dustbin {
     * @param a_cPoints a vector with the reference points
     */
     void CTrackPart_Ramp::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
-      ITrackPart_Bezier::setReferencePoints(a_cPoints);
+      std::vector<irr::core::vector3df> l_vPoints = a_cPoints;
+
+      if (a_cPoints.size() == 4) {
+        l_vPoints[3].Y = l_vPoints[2].Y;
+      }
+
+      ITrackPart_Bezier::setReferencePoints(l_vPoints);
       setEndNormal(getNormalOfPoint((int)m_vPoints.size() - 1));
     }
 
@@ -94,24 +100,25 @@ namespace dustbin {
     * This method is called when the reference points of the previous track part have changed
     */
     void CTrackPart_Ramp::updateReferencePoints() {
-      if (m_vPoints.size() == 3) {
+      if (m_vPoints.size() == 4) {
         ITrackPart *l_pPrevious = getPrevious();
 
         if (l_pPrevious != nullptr) {
           std::vector<irr::core::vector3df> l_vRefPoints = getReferencePoints();
 
           irr::core::vector3df l_cDir = l_pPrevious->getEndDirection();
-          irr::f32 l_fLength = (l_vRefPoints[1] - l_vRefPoints[0]).getLength();
 
-          irr::f32 l_fDistXZ = irr::core::vector2df(l_vRefPoints[0].X, l_vRefPoints[0].Z).getDistanceFrom(irr::core::vector2df(l_vRefPoints[2].X, l_vRefPoints[2].Z));
+          irr::f32 l_fLength1 = (l_vRefPoints[1] - l_vRefPoints[0]).getLength();
+          irr::f32 l_fLength2 = (irr::core::vector3df(l_vRefPoints[2].X, 0.0f, l_vRefPoints[2].Z) - irr::core::vector3df(l_vRefPoints[1].X, 0.0f, l_vRefPoints[1].Z)).getLength();
+          irr::f32 l_fLength3 = (l_vRefPoints[3] - l_vRefPoints[2]).getLength();
+          irr::f32 l_fDistY   = l_vRefPoints[2].Y - l_vRefPoints[1].Y;
 
           l_vRefPoints[0] = l_pPrevious->getEnd().getMiddle();
-          l_vRefPoints[1] = l_vRefPoints[0] + (l_fLength * l_cDir.normalize());
-          l_vRefPoints[2] = l_vRefPoints[0] + irr::core::vector3df(l_cDir.X, 0.0f, l_cDir.Z) * l_fDistXZ + irr::core::vector3df(0.0f, l_vRefPoints[2].Y, 0.0f);
+          l_vRefPoints[1] = l_vRefPoints[0] + l_fLength1 * l_cDir;
+          l_vRefPoints[2] = l_vRefPoints[1] + l_fLength2 * l_cDir + l_fDistY * irr::core::vector3df(0.0f, 1.0f, 0.0f);
+          l_vRefPoints[3] = l_vRefPoints[2] + l_fLength3 * l_cDir;
 
-          if (l_vRefPoints.size() > 3) {
-            l_vRefPoints[3] = l_vRefPoints[0] + irr::core::vector3df(l_cDir.X, 0.0f, l_cDir.Z) * l_fDistXZ + irr::core::vector3df(0.0f, l_vRefPoints[3].Y, 0.0f);
-          }
+          m_cSide = l_pPrevious->getEndSide();
 
           setReferencePoints(l_vRefPoints);
         }
@@ -142,11 +149,20 @@ namespace dustbin {
 
         return false;
       }
-      else {
+      else if (a_iIndex == 2) {
         a_cPlanePoint  = m_vPoints[1];
         a_cPlaneNormal = getSideOfPoint(1);
 
         return true;
+      }
+      else {
+        a_cLine.start = m_vPoints[2];
+        a_cLine.end   = a_cLine.start + 1000.0f * (m_vPoints[3] - m_vPoints[2]).normalize();
+
+        a_cPlanePoint  = m_vPoints[2];
+        a_cPlaneNormal = getSideOfPoint(2);
+
+        return false;
       }
     }
 

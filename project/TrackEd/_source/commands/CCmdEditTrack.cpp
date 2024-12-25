@@ -872,11 +872,13 @@ namespace dustbin {
                 tracked::CTrackPart_Ramp *l_pNew = new tracked::CTrackPart_Ramp(m_vParts.back(), m_vParts.back()->getEndNormal());
 
                 irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
+                irr::core::vector3df l_cLastPoint = m_vParts.back()->getEnd().getMiddle();
 
                 std::vector<irr::core::vector3df> l_vRefPoints = {
-                  m_vParts.back()->getReferencePoints().back(),
-                  m_vParts.back()->getReferencePoints().back() +        l_pNew->getWidth() * l_cDirection.normalize(),
-                  m_vParts.back()->getReferencePoints().back() + 2.0f * l_pNew->getWidth() * l_cDirection.normalize() + irr::core::vector3df(0.0f, l_pNew->getWidth(), 0.0f)
+                  l_cLastPoint,
+                  l_cLastPoint + 2.0f * m_vParts.back()->getWidth() * l_cDirection,
+                  l_cLastPoint + 2.0f * m_vParts.back()->getWidth() * l_cDirection + m_vParts.back()->getWidth() * irr::core::vector3df(0.0f, 1.0f, 0.0f),
+                  l_cLastPoint + 2.0f * m_vParts.back()->getWidth() * l_cDirection + m_vParts.back()->getWidth() * irr::core::vector3df(0.0f, 1.0f, 0.0f) + 2.0f * m_vParts.back()->getWidth() * l_cDirection
                 };
 
                 l_pNew->setReferencePoints(l_vRefPoints);
