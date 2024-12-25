@@ -1,5 +1,6 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
 #include <scenenodes/CAiPathNode.h>
+#include <scenenodes/CSpeedNode.h>
 #include <editor/ITrackPart.h>
 #include <editor/CAiPath.h>
 
@@ -199,6 +200,62 @@ namespace dustbin {
       if (l_pFirst != nullptr && l_pLast != nullptr) {
         l_pLast->m_vNextSegments.push_back(l_pFirst);
         l_pFirst->m_vPrevSegments.push_back(l_pLast);
+      }
+    }
+
+    /**
+    * Add and initialize the speed indicators before jumps
+    * @param a_pSmgr the Irrlicht scene manager
+    * @param a_pWorld the parent node to add the indicators to
+    */
+    void CAiPath::addSpeedIndicators(irr::scene::ISceneNode *a_pWorld, irr::scene::ISceneManager *a_pSmgr) {
+      for (auto l_pSpeed: m_vSpeedIndicators) {
+        l_pSpeed->setVisible(false);
+        a_pSmgr->addToDeletionQueue(l_pSpeed);
+      }
+      
+      m_vSpeedIndicators.clear();
+
+      for (size_t i = 1; i < m_vPath.size(); i++) {
+        if (m_vPath[i].m_eType == enPathType::Jump) {
+          scenenodes::CSpeedNode *l_pNode = reinterpret_cast<scenenodes::CSpeedNode *>(a_pSmgr->addSceneNode(scenenodes::g_SpeedNodeName, a_pWorld));
+          if (l_pNode != nullptr) {
+            m_vSpeedIndicators.push_back(l_pNode);
+
+            irr::io::IAttributes *l_pAttr = a_pSmgr->getFileSystem()->createEmptyAttributes();
+            if (l_pAttr) {
+              l_pNode->serializeAttributes(l_pAttr);
+
+              l_pAttr->setAttribute("minspeed" , m_vPath[i].m_fJumpMinVel );
+              l_pAttr->setAttribute("maxspeed" , m_vPath[i].m_fJumpMaxVel );
+              l_pAttr->setAttribute("bestspeed", m_vPath[i].m_fJumpBestVel);
+
+              l_pNode->deserializeAttributes(l_pAttr);
+
+              l_pAttr->drop();
+            }
+
+            l_pNode->setRotation((m_vPath[i].m_cPosition - m_vPath[i - 1].m_cPosition).getHorizontalAngle());
+            l_pNode->setPosition(50.0f * m_vPath[i].m_cPosition + irr::core::vector3df(0.0f, 10.0f, 0.0f));
+
+            for (int i = 0; i < 2; i++) {
+              irr::f32 l_fPosX = 50.0f * (3.0f * m_vPath[i].m_fWidth / 5.0f);
+
+              irr::scene::ISceneNode *l_pChild = a_pSmgr->addMeshSceneNode(
+                a_pSmgr->getMesh("data/objects/speedlimit.3ds"),
+                l_pNode,
+                -1,
+                irr::core::vector3df(i == 0 ? -l_fPosX : l_fPosX, 0.0f, 0.0f),
+                irr::core::vector3df(0.0f),
+                irr::core::vector3df(4.0f)
+              );
+
+              l_pChild->getMaterial(0).Lighting = false;
+              l_pChild->getMaterial(0).setTexture(0, a_pSmgr->getVideoDriver()->getTexture("data/textures/speedlimit.png"));
+              l_pChild->getMaterial(1).setTexture(0, a_pSmgr->getVideoDriver()->getTexture("data/textures/warning.png"));
+            }
+          }
+        }
       }
     }
     

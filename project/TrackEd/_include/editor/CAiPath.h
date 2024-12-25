@@ -91,7 +91,9 @@ namespace dustbin {
 
         std::vector<SAiPath> m_vPath;    /**< The AI path */
 
-        std::vector<std::vector<irr::core::vector3df>> m_vJumpData;
+        std::vector<std::vector<irr::core::vector3df>> m_vJumpData;   /**< Debug data for the jumps */
+
+        std::vector<irr::scene::ISceneNode *> m_vSpeedIndicators;   /**< The list of speed indicators */
 
       public:
         CAiPath(tracked::ITrackPart *a_pTrack);
@@ -109,6 +111,13 @@ namespace dustbin {
         * @param a_pAi the scene node to add the data to
         */
         void addAiToNode(scenenodes::CAiPathNode *a_pAi);
+
+        /**
+        * Add and initialize the speed indicators before jumps
+        * @param a_pWorld the parent node to add the indicators to
+        * @param a_pSmgr the Irrlicht scene manager
+        */
+        void addSpeedIndicators(irr::scene::ISceneNode *a_pWorld, irr::scene::ISceneManager *a_pSmgr);
     };
   }
 }

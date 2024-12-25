@@ -243,6 +243,7 @@ namespace dustbin {
           if (l_pAi != nullptr) {
             tracked::CAiPath *l_pAiPath = new tracked::CAiPath(a_pEditTrack->getTrack().front());
             l_pAiPath->addAiToNode(l_pAi);
+            l_pAiPath->addSpeedIndicators(l_pWorld, l_pSmgr);
           }
         }
 
@@ -257,14 +258,6 @@ namespace dustbin {
           irr::scene::ISceneNode *l_pRostrum = findNode(l_pOldSmgr->getRootSceneNode(), (irr::scene::ESCENE_NODE_TYPE)scenenodes::g_RostrumNodeId);
           if (l_pRostrum != nullptr)
             l_pRostrum->clone(l_pWorld, l_pSmgr);
-        }
-
-        {
-          std::vector<irr::scene::ISceneNode *> l_vSpeedNodes = a_pEditTrack->getSpeedNodes();
-
-          for (auto l_pNode: l_vSpeedNodes) {
-            l_pNode->clone(l_pWorld, l_pSmgr);
-          }
         }
 
         l_pSmgr->saveScene(l_pXmlWriter, l_pFs->getWorkingDirectory());

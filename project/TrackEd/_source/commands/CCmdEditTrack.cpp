@@ -91,19 +91,6 @@ namespace dustbin {
       m_mReferencePoints.clear();
     }
 
-
-    /**
-    * Clear the speed nodes
-    */
-    void CCmdEditTrack::clearSpeedNodes() {
-      for (auto l_pNode: m_vSpeedNodes) {
-        l_pNode->setVisible(false);
-        m_pSmgr->addToDeletionQueue(l_pNode);
-      }
-
-      m_vSpeedNodes.clear();
-    }
-
     /**
     * Add the editable reference points of a track part
     * @param a_pPart the track part
@@ -338,18 +325,9 @@ namespace dustbin {
     }
 
     /**
-    * Get the speed warning scene nodes
-    * @return a vector with the speed warning scene nodes
-    */
-    const std::vector<irr::scene::ISceneNode *> CCmdEditTrack::getSpeedNodes() {
-      return m_vSpeedNodes;
-    }
-
-    /**
     * (Re) create the track
     */
     void CCmdEditTrack::createTrack() {
-      clearSpeedNodes();
       if (m_pAiPath != nullptr) {
         delete m_pAiPath;
         m_pAiPath = nullptr;
@@ -427,123 +405,13 @@ namespace dustbin {
         m_pTrack->getMesh()->setDirty();
       }
 
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vSpeed = getSpeedNodePositions();
-
-      for (auto &l_tNode: l_vSpeed) {
-        scenenodes::CSpeedNode *l_pNode = reinterpret_cast<scenenodes::CSpeedNode *>(m_pSmgr->addSceneNode(scenenodes::g_SpeedNodeName));
-
-        if (l_pNode != nullptr) {
-          irr::io::IAttributes *l_pAttr = tracked::IGlobal::getInstance()->getFileSystem()->createEmptyAttributes();
-          if (l_pAttr) {
-            l_pNode->serializeAttributes(l_pAttr);
-
-            l_pAttr->setAttribute("minspeed" , 40.0f);
-            l_pAttr->setAttribute("maxspeed" , 55.0f);
-            l_pAttr->setAttribute("bestspeed", 50.0f);
-
-            l_pNode->deserializeAttributes(l_pAttr);
-
-            l_pAttr->drop();
-          }
-
-          m_vSpeedNodes.push_back(l_pNode);
-
-          l_pNode->setRotation(std::get<1>(l_tNode).getHorizontalAngle());
-          l_pNode->setPosition(std::get<0>(l_tNode) + irr::core::vector3df(0.0f, 15.0f, 0.0f));
-
-          for (int i = 0; i < 2; i++) {
-            irr::scene::ISceneNode *l_pChild = m_pSmgr->addMeshSceneNode(
-              m_pSmgr->getMesh("data/objects/speedlimit.3ds"),
-              l_pNode,
-              -1,
-              irr::core::vector3df(i == 0 ? -25.0f : 25.0f, 0.0f, 0.0f),
-              irr::core::vector3df(0.0f),
-              irr::core::vector3df(4.0f)
-            );
-
-            l_pChild->getMaterial(0).Lighting = false;
-            l_pChild->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/speedlimit.png"));
-            l_pChild->getMaterial(1).setTexture(0, m_pDrv->getTexture("data/textures/warning.png"));
-          }
-        }
-      }
+      m_pAiPath->addSpeedIndicators(m_pWorld, m_pSmgr);
 
       irr::SEvent l_cEvent;
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iUpdateShader;
       l_cEvent.UserEvent.UserData2 = c_iUpdateShader;
       tracked::IGlobal::getInstance()->getDevice()->postEventFromUser(l_cEvent);
-    }
-
-    /**
-    * Get the positions of the speed nodes
-    * @return a tuple with the positions (0 == position, 1 == direction)
-    */
-    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CCmdEditTrack::getSpeedNodePositions() {
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRoute;
-
-      for (auto l_pPart: m_vParts) {
-        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pPart->getRoute();
-
-        for (auto &l_cPoint: l_vPartRoute) {
-          if (std::find(l_vRoute.begin(), l_vRoute.end(), l_cPoint) == l_vRoute.end()) {
-            l_vRoute.push_back(l_cPoint);
-          }
-        }
-      }
-
-      bool l_bIncline = false;
-      bool l_bDecline = false;
-
-      for (size_t i = 1; i < l_vRoute.size(); i++) {
-        if (!l_bIncline && !l_bDecline) {
-          if (std::get<0>(l_vRoute[i]).Y - std::get<0>(l_vRoute[i - 1]).Y > 0.001f) l_bIncline = true;
-          if (std::get<0>(l_vRoute[i]).Y - std::get<0>(l_vRoute[i - 1]).Y < -0.001f) {
-            if (!l_bDecline) {
-              printf("Speed node decline at %.2f, %.2f, %.2f\n", 50.0f * (std::get<0>(l_vRoute[i])).X, 50.0f * (std::get<0>(l_vRoute[i])).Y, 50.0f * (std::get<0>(l_vRoute[i])).Z);
-              l_vRet.push_back(std::make_tuple(
-                50.0f * std::get<0>(l_vRoute[i]),
-                std::get<0>(l_vRoute[i]) - std::get<0>(l_vRoute[i - 1])
-              ));
-            }
-            l_bDecline = true;
-
-            irr::core::line2df l_cLine = irr::core::line2df(
-              irr::core::vector2df(std::get<0>(l_vRoute[i - 1]).X, std::get<0>(l_vRoute[i - 1]).Z),
-              irr::core::vector2df(std::get<0>(l_vRoute[i    ]).X, std::get<0>(l_vRoute[i    ]).Z)
-            );
-
-            for (size_t j = i + 1; j < l_vRoute.size(); j++) {
-              irr::core::line2df l_cOtherLine = irr::core::line2df(
-                irr::core::vector2df(std::get<0>(l_vRoute[j - 1]).X, std::get<0>(l_vRoute[j - 1]).Z),
-                irr::core::vector2df(std::get<0>(l_vRoute[j    ]).X, std::get<0>(l_vRoute[j    ]).Z)
-              );
-
-              if (!l_cLine.nearlyParallel(l_cOtherLine)) {
-                printf("Decline jump length: %.2f\n", (std::get<0>(l_vRoute[i]) - std::get<0>(l_vRoute[j])).getLength());
-                break;
-              }
-            }
-          }
-        }
-        else {
-          if (std::abs(std::get<0>(l_vRoute[i]).Y - std::get<0>(l_vRoute[i - 1]).Y) < 0.001f) {
-            if (l_bIncline) {
-              printf("Speed node incline at %.2f, %.2f, %.2f\n", 50.0f * (std::get<0>(l_vRoute[i])).X, 50.0f * (std::get<0>(l_vRoute[i])).Y, 50.0f * (std::get<0>(l_vRoute[i])).Z);
-              l_vRet.push_back(std::make_tuple(
-                50.0f * std::get<0>(l_vRoute[i]),
-                std::get<0>(l_vRoute[i]) - std::get<0>(l_vRoute[i - 1])
-              ));
-            }
-
-            l_bIncline = false;
-            l_bDecline = false;
-          }
-        }
-      }
-
-      return l_vRet;
     }
 
     /**
@@ -1153,7 +1021,6 @@ namespace dustbin {
     */
     void CCmdEditTrack::clearTrack() {
       clearReferencePoints();
-      clearSpeedNodes();
 
       while (m_vParts.size() > 0) {
         tracked::ITrackPart *p = m_vParts.front();
