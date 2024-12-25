@@ -328,6 +328,9 @@ namespace dustbin {
     * (Re) create the track
     */
     void CCmdEditTrack::createTrack() {
+      if (m_vParts.size() > 0)
+        m_vParts.front()->updateReferencePoints();
+
       if (m_pAiPath != nullptr) {
         delete m_pAiPath;
         m_pAiPath = nullptr;

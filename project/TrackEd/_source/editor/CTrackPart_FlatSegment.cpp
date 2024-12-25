@@ -86,17 +86,17 @@ namespace dustbin {
       if (m_vPoints.size() >= 2) {
         ITrackPart *l_pPrevious = getPrevious();
 
-        if (l_pPrevious != nullptr) {
-          std::vector<irr::core::vector3df> l_vRefPoints = getReferencePoints();
+        std::vector<irr::core::vector3df> l_vRefPoints = getReferencePoints();
 
+        if (l_pPrevious != nullptr) {
           irr::core::vector3df l_cDir = l_pPrevious->getEndDirection();
           irr::f32 l_fLength = (l_vRefPoints[1] - l_vRefPoints[0]).getLength();
 
           l_vRefPoints[0] = l_pPrevious->getEnd().getMiddle();
           l_vRefPoints[1] = l_vRefPoints[0] + (l_fLength * l_cDir.normalize());
-
-          setReferencePoints(l_vRefPoints);
         }
+
+        setReferencePoints(l_vRefPoints);
       }
     }
 
