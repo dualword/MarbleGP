@@ -21,6 +21,7 @@ namespace dustbin {
         irr::gui::IGUIButton         *m_pBtnOk;         /**< The "OK" button */
         irr::gui::IGUIButton         *m_pBtnCancel;     /**< The "Cancel" button */
         irr::scene::ISceneManager    *m_pSmgr;          /**< The scene manager*/
+        irr::gui::IGUITab            *m_pPattern[2];    /**< The pattern for the square-sized thumbnail */
 
         CCmdEditTrack *m_pEditCmd;    /**< The active "edit track" command */
 

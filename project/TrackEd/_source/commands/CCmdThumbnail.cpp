@@ -21,6 +21,9 @@ namespace dustbin {
       m_pEditCmd  (a_pEditCmd),
       m_bFinished (false)
     {
+      m_pPattern[0] = nullptr;
+      m_pPattern[1] = nullptr;
+
       onUiSetupModified();
     }
 
@@ -29,6 +32,13 @@ namespace dustbin {
     }
 
     void CCmdThumbnail::clearUIElements() {
+      for (int i = 0; i < 2; i++)
+        if (m_pPattern[i] != nullptr) {
+          m_pPattern[i]->setVisible(false);
+          m_pGui->addToDeletionQueue(m_pPattern[i]);
+          m_pPattern[i] = nullptr;
+        }
+
       if (m_pBtnOk     != nullptr) { m_pBtnOk    ->setVisible(false); m_pGui->addToDeletionQueue(m_pBtnOk    ); m_pBtnOk     = nullptr; }
       if (m_pBtnCancel != nullptr) { m_pBtnCancel->setVisible(false); m_pGui->addToDeletionQueue(m_pBtnCancel); m_pBtnCancel = nullptr; }
     }
@@ -50,6 +60,24 @@ namespace dustbin {
       clearUIElements();
 
       irr::core::dimension2du l_cSize = m_pGui->getVideoDriver()->getScreenSize();
+
+      if (l_cSize.Width > l_cSize.Height) {
+        irr::u32 l_iOffset = l_cSize.Width - l_cSize.Height;
+
+        m_pPattern[0] = m_pGui->addTab(irr::core::recti(                            0, 0, l_iOffset / 2, l_cSize.Height));
+        m_pPattern[1] = m_pGui->addTab(irr::core::recti(l_cSize.Width - l_iOffset / 2, 0, l_cSize.Width, l_cSize.Height));
+      }
+      else if (l_cSize.Height > l_cSize.Width) {
+        irr::u32 l_iOffset = l_cSize.Height - l_cSize.Width;
+
+        m_pPattern[0] = m_pGui->addTab(irr::core::recti(0,                              0, l_cSize.Width, l_iOffset / 2 ));
+        m_pPattern[1] = m_pGui->addTab(irr::core::recti(0, l_cSize.Height - l_iOffset / 2, l_cSize.Width, l_cSize.Height));
+      }
+
+      for (int i = 0; i < 2; i++) {
+        m_pPattern[i]->setDrawBackground(true);
+        m_pPattern[i]->setBackgroundColor(irr::video::SColor(0xFF, 0, 0, 0));
+      }
 
       irr::core::dimension2du l_cBtn = m_pGui->getSkin()->getFont()->getDimension(L"Cancel");
 
