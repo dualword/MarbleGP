@@ -1112,5 +1112,43 @@ namespace dustbin {
     irr::scene::IMeshSceneNode *CCmdEditTrack::getTrackMesh() {
       return m_pTrack;
     }
+
+    /**
+    * Set the data of the thumbnail camera
+    * @param a_cPos the new position of the thumbnail camera
+    * @param a_cTgt the new target of the thumbnail camera
+    */
+    void CCmdEditTrack::setThumbnailCamera(const irr::core::vector3df &a_cPos, const irr::core::vector3df &a_cTgt) {
+      m_cThumbnailPos = a_cPos;
+      m_cThumbnailTgt = a_cTgt;
+    }
+
+    /**
+    * Get the thumbnail camera parameters
+    * @param a_cPos [out] position of the thumbnail camera
+    * @param a_cTgt [out] target of the thumbnail camera
+    */
+    void CCmdEditTrack::getThumbnailCamera(irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt) {
+      a_cPos = m_cThumbnailPos;
+      a_cTgt = m_cThumbnailTgt;
+    }
+
+    /**
+    * Save the track information
+    * @param a_cAttr the IAttributes to save the information to
+    */
+    void CCmdEditTrack::saveTrackInformation(irr::io::IAttributes &a_cAttr) {
+      a_cAttr.addVector3d("ThumbnailPosition", m_cThumbnailPos);
+      a_cAttr.addVector3d("ThumbnailTarget"  , m_cThumbnailTgt);
+    }
+
+    /**
+    * Load the track information
+    * @param a_cAttr the IAttributes to load the information from
+    */
+    void CCmdEditTrack::loadTrackInformation(irr::io::IAttributes &a_cAttr) {
+      if (a_cAttr.existsAttribute("ThumbnailPosition")) m_cThumbnailPos = a_cAttr.getAttributeAsVector3d("ThumbnailPosition");
+      if (a_cAttr.existsAttribute("ThumbnailTarget"  )) m_cThumbnailTgt = a_cAttr.getAttributeAsVector3d("ThumbnailTarget"  );
+    }
   }
 }

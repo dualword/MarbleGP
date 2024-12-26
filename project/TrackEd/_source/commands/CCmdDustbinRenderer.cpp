@@ -134,6 +134,18 @@ namespace dustbin {
             m_pShader->addLightCamera();
           }
         }
+        else if (a_cEvent.UserEvent.UserData1 == c_iRenderScene) {
+          m_pDrv->beginScene(true, true);
+
+          if (m_pShader != nullptr) {
+            m_pShader->renderScene();
+          }
+          else {
+            m_pSmgr->drawAll();
+          }
+
+          m_pDrv->endScene();
+        }
       }
 
       return l_bRet;

@@ -45,7 +45,13 @@ namespace dustbin {
           while (l_pReader->read()) {
             std::wstring l_sNode = l_pReader->getNodeName();
 
-            if (l_sNode == L"TrackPart" && l_pReader->getNodeType() == irr::io::EXN_ELEMENT) {
+            if (l_sNode == L"TrackInformation" && l_pReader->getNodeType() == irr::io::EXN_ELEMENT) {
+              irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();
+              l_pAttr->read(l_pReader);
+              a_pEditTrack->loadTrackInformation(*l_pAttr);
+              l_pAttr->drop();
+            }
+            else if (l_sNode == L"TrackPart" && l_pReader->getNodeType() == irr::io::EXN_ELEMENT) {
               std::wstring l_sType = l_pReader->getAttributeValueSafe(L"type");
 
               tracked::ITrackPart *l_pNew = nullptr;

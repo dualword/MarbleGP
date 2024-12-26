@@ -8,6 +8,7 @@
 #include <commands/CCmdSaveTrack.h>
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
+#include <commands/CCmdThumbnail.h>
 #include <commands/CCmdMainMenu.h>
 #include <IGlobal.h>
 
@@ -82,7 +83,8 @@ namespace dustbin {
         case enMenuItem::Base          : return L"Create Base";
         case enMenuItem::ExportMesh    : return L"Export as Mesh";
         case enMenuItem::ExportMarbleGP: return L"Add to MarbleGP";
-
+        case enMenuItem::Thumbnail     : return L"Thumbnail";
+        case enMenuItem::TrackName     : return L"Set Track Name";
         default:
           return L"--";
       }
@@ -189,18 +191,18 @@ namespace dustbin {
                 }
                 case enMenuItem::Save: {
                   if (tracked::IGlobal::getInstance()->getGlobal("openfile") == "") {
-                    commands::CCmdSaveTrackAs *l_pCmd = new commands::CCmdSaveTrackAs(m_pEditTrack->getTrack(), m_pHandler);
+                    commands::CCmdSaveTrackAs *l_pCmd = new commands::CCmdSaveTrackAs(m_pEditTrack, m_pHandler);
                     m_pHandler->addCommand(l_pCmd);
                   }
                   else {
-                    commands::CCmdSaveTrack *l_pCmd = new commands::CCmdSaveTrack(m_pEditTrack->getTrack());
+                    commands::CCmdSaveTrack *l_pCmd = new commands::CCmdSaveTrack(m_pEditTrack);
                     m_pHandler->addCommand(l_pCmd);
                   }
                   break;
                 }
 
                 case enMenuItem::SaveAs: {
-                  commands::CCmdSaveTrackAs *l_pCmd = new commands::CCmdSaveTrackAs(m_pEditTrack->getTrack(), m_pHandler);
+                  commands::CCmdSaveTrackAs *l_pCmd = new commands::CCmdSaveTrackAs(m_pEditTrack, m_pHandler);
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }
@@ -217,6 +219,12 @@ namespace dustbin {
 
                 case enMenuItem::ExportMesh: {
                   commands::CCmdExportMesh *l_pCmd = new commands::CCmdExportMesh("testtrack.obj", m_pEditTrack);
+                  m_pHandler->addCommand(l_pCmd);
+                  break;
+                }
+
+                case enMenuItem::Thumbnail: {
+                  commands::CCmdThumbnail *l_pCmd = new commands::CCmdThumbnail(tracked::IGlobal::getInstance()->getSceneManager(), m_pGui, m_pEditTrack);
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }

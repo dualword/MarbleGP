@@ -28,6 +28,8 @@ namespace dustbin {
           Base           = 4,
           ExportMesh     = 5,
           ExportMarbleGP = 6,
+          Thumbnail      = 7,
+          TrackName      = 8,
           Count
         };
 

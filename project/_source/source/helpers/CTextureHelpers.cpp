@@ -540,7 +540,7 @@ namespace dustbin {
           bool l_bVisible = true;
 
           irr::scene::ISceneNode *p = a_pNode;
-          while (p != a_pShader->getSceneManager()->getRootSceneNode() && l_bVisible) {
+          while (p != a_pShader->getSceneManager()->getRootSceneNode() && l_bVisible && p != nullptr) {
             l_bVisible = p->isVisible();
             p = p->getParent();
           }

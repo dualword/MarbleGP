@@ -14,6 +14,7 @@ namespace dustbin {
 
   namespace commands {
     class CCommandHandler;  /**< Forward declaration of the command handler */
+    class CCmdEditTrack;    /**< Forward delcaration of the "edit track" command */
 
     /**
     * @class CCmdSaveTrack
@@ -24,10 +25,10 @@ namespace dustbin {
       public:
         /**
         * The constructor. All work is done here
-        * @param a_vTrack the vector with the track parts to be saved
+        * @param a_pEditCmd the "edit track" command
         * @param a_pHandler the command handler
         */
-        CCmdSaveTrackAs(const std::vector<tracked::ITrackPart *> &a_vTrack, CCommandHandler *a_pHandler);
+        CCmdSaveTrackAs(CCmdEditTrack *a_pEditCmd, CCommandHandler *a_pHandler);
         virtual ~CCmdSaveTrackAs();
 
         /**

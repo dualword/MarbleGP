@@ -17,7 +17,11 @@
 #include <editor/CTrackPart_Checkpoint.h>
 #include <editor/CAiPath.h>
 
+#include <shaders/CDustbinShaderDefines.h>
+#include <commands/CCmdDustbinRenderer.h>
 #include <commands/CCmdAddMarbleGP.h>
+#include <shaders/CDustbinShaders.h>
+#include <helpers/CTextureHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <CDefines.h>
 #include <IGlobal.h>
@@ -261,8 +265,42 @@ namespace dustbin {
         }
 
         l_pSmgr->saveScene(l_pXmlWriter, l_pFs->getWorkingDirectory());
-        l_pSmgr->drop();
         l_pXmlWriter->drop();
+        
+        {
+          irr::video::ITexture *l_pRtt = l_pDrv->addRenderTargetTexture(irr::core::dimension2du(512, 512), "thumbnail");
+          if (l_pRtt != nullptr) {
+            irr::core::vector3df l_cPos;
+            irr::core::vector3df l_cTgt;
+
+            a_pEditTrack->getThumbnailCamera(l_cPos, l_cTgt);
+
+            irr::scene::ICameraSceneNode *l_pOldCam = l_pOldSmgr->getActiveCamera();
+
+            l_pDrv->setRenderTarget(l_pRtt, true, true);
+            irr::scene::ICameraSceneNode *l_pCam = l_pOldSmgr->addCameraSceneNode(l_pSmgr->getRootSceneNode(), l_cPos, l_cTgt);
+            l_pCam->setAspectRatio(1.0f);
+
+            irr::SEvent l_cEvent{};
+            l_cEvent.EventType = irr::EET_USER_EVENT;
+            l_cEvent.UserEvent.UserData1 = c_iRenderScene;
+            l_cEvent.UserEvent.UserData2 = c_iRenderScene;
+
+            tracked::IGlobal::getInstance()->getDevice()->postEventFromUser(l_cEvent);
+
+            l_pDrv->setRenderTarget(nullptr);
+
+            irr::video::IImage *l_pImg = l_pDrv->createImage(l_pRtt, irr::core::vector2di(0, 0), irr::core::dimension2du(512, 512));
+            l_pDrv->writeImageToFile(l_pImg, (l_sFolder + "thumbnail.png").c_str());
+            
+            l_pImg->drop();
+            l_pRtt->drop();
+
+            l_pOldSmgr->setActiveCamera(l_pOldCam);
+          }
+        }
+
+        l_pSmgr->drop();
       }
     }
 

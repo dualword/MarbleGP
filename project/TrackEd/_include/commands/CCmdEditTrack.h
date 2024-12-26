@@ -71,6 +71,9 @@ namespace dustbin {
 
         std::map<irr::u32, irr::u32> m_mBufferMap;  /**< A map mapping the defined buffer IDs to the actual IDs of the track mesh */
 
+        irr::core::vector3df m_cThumbnailPos;   /**< Position of the thumbnail camera */
+        irr::core::vector3df m_cThumbnailTgt;   /**< Target of the thumbnail camera */
+
         tracked::CAiPath *m_pAiPath;
 
         /**
@@ -173,6 +176,32 @@ namespace dustbin {
         * @return the index of the buffer in the track mesh, 0xFFFF if the buffer was not added
         */
         irr::u32 getBufferIndex(irr::u32 a_iBuffer);
+
+        /**
+        * Set the data of the thumbnail camera
+        * @param a_cPos the new position of the thumbnail camera
+        * @param a_cTgt the new target of the thumbnail camera
+        */
+        void setThumbnailCamera(const irr::core::vector3df &a_cPos, const irr::core::vector3df &a_cTgt);
+
+        /**
+        * Get the thumbnail camera parameters
+        * @param a_cPos [out] position of the thumbnail camera
+        * @param a_cTgt [out] target of the thumbnail camera
+        */
+        void getThumbnailCamera(irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt);
+
+        /**
+        * Save the track information
+        * @param a_cAttr the IAttributes to save the information to
+        */
+        void saveTrackInformation(irr::io::IAttributes &a_cAttr);
+
+        /**
+        * Load the track information
+        * @param a_cAttr the IAttributes to load the information from
+        */
+        void loadTrackInformation(irr::io::IAttributes &a_cAttr);
     };
   }
 }

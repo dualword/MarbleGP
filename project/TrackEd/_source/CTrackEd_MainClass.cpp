@@ -116,6 +116,12 @@ namespace dustbin {
     }
 
     CTrackEd_MainClass::~CTrackEd_MainClass() {
+      for (auto l_pCmd: m_vCommands) {
+        delete l_pCmd;
+      }
+
+      m_vCommands.clear();
+
       setSetting("width" , std::to_string(m_pDrv->getScreenSize().Width ));
       setSetting("height", std::to_string(m_pDrv->getScreenSize().Height));
 

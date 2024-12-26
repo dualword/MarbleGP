@@ -12,10 +12,10 @@ namespace dustbin {
   namespace commands {
     /**
     * The constructor. All work is done here
-    * @param a_vTrack the vector with the track parts to be saved
+    * @param a_pEditCmd the "edit track" command
     * @param a_pHandler the command handler
     */
-    CCmdSaveTrackAs::CCmdSaveTrackAs(const std::vector<tracked::ITrackPart *> &a_vTrack, CCommandHandler *a_pHandler) : ICommand("CmdSaveTrackAs") {
+    CCmdSaveTrackAs::CCmdSaveTrackAs(CCmdEditTrack *a_pEditCmd, CCommandHandler *a_pHandler) : ICommand("CmdSaveTrackAs") {
       irr::io::path l_sWorkingDir = tracked::IGlobal::getInstance()->getFileSystem()->getWorkingDirectory();
 
       std::string l_sFileName = tracked::IGlobal::getInstance()->getGlobal ("openfile");
@@ -39,7 +39,7 @@ namespace dustbin {
 
         tracked::IGlobal::getInstance()->setGlobal("openfile", l_sFileName);
 
-        CCmdSaveTrack *l_pCmd = new CCmdSaveTrack(a_vTrack);
+        CCmdSaveTrack *l_pCmd = new CCmdSaveTrack(a_pEditCmd);
         a_pHandler->addCommand(l_pCmd);
       }
     }

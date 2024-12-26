@@ -231,6 +231,9 @@
     <ClCompile Include="..\_source\editor\CAiPath.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdThumbnail.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -397,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="..\_include\editor\CAiPath.h">
       <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdThumbnail.h">
+      <Filter>Include\commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
