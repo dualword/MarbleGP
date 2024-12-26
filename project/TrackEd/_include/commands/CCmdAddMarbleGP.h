@@ -16,7 +16,42 @@ namespace dustbin {
     */
     class CCmdAddMarbleGP : public ICommand {
       private:
-        irr::scene::ISceneNode *findNode(irr::scene::ISceneNode *a_pParent, irr::scene::ESCENE_NODE_TYPE a_eType);
+      irr::io::IFileSystem      *m_pFs;
+      irr::video::IVideoDriver  *m_pDrv;
+      irr::scene::ISceneManager *m_pOldSmgr;
+      irr::scene::ISceneManager *m_pNewSmgr;
+      irr::scene::ISceneNode    *m_pWorld;
+
+      CCmdEditTrack *m_pEditTrack;
+
+      std::string m_sFolder;
+
+      /**
+      * Export the track and add it to the new scene manager
+      */
+      void exportAndPrepareTrack();
+
+      /**
+      * Add the checkpoints to the track
+      */
+      void addCheckpoints();
+
+      /**
+      * Add the AI, light and rostrum scene nodes
+      */
+      void addAiLightAndRostrum();
+
+      /**
+      * Create and save the thumbnail
+      */
+      void createThumbnail();
+
+      /**
+      * Write the info XML file
+      */
+      void createInfoFile();
+
+      irr::scene::ISceneNode *findNode(irr::scene::ISceneNode *a_pParent, irr::scene::ESCENE_NODE_TYPE a_eType);
 
       public:
         /**
