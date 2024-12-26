@@ -17,10 +17,7 @@
 #include <editor/CTrackPart_Checkpoint.h>
 #include <editor/CAiPath.h>
 
-#include <shaders/CDustbinShaderDefines.h>
-#include <commands/CCmdDustbinRenderer.h>
 #include <commands/CCmdAddMarbleGP.h>
-#include <shaders/CDustbinShaders.h>
 #include <helpers/CTextureHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <CDefines.h>
