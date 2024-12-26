@@ -291,7 +291,6 @@ namespace dustbin {
             l_pDrv->writeImageToFile(l_pImg, (l_sFolder + "thumbnail.png").c_str());
             
             l_pImg->drop();
-            l_pRtt->drop();
 
             l_pOldSmgr->setActiveCamera(l_pOldCam);
           }
