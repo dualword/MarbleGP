@@ -9,6 +9,7 @@
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdThumbnail.h>
+#include <commands/CCmdTrackName.h>
 #include <commands/CCmdMainMenu.h>
 #include <IGlobal.h>
 
@@ -225,6 +226,12 @@ namespace dustbin {
 
                 case enMenuItem::Thumbnail: {
                   commands::CCmdThumbnail *l_pCmd = new commands::CCmdThumbnail(tracked::IGlobal::getInstance()->getSceneManager(), m_pGui, m_pEditTrack);
+                  m_pHandler->addCommand(l_pCmd);
+                  break;
+                }
+
+                case enMenuItem::TrackName: {
+                  commands::CCmdTrackName *l_pCmd = new commands::CCmdTrackName(m_pGui, m_pEditTrack);
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }

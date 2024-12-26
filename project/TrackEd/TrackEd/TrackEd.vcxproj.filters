@@ -234,6 +234,9 @@
     <ClCompile Include="..\_source\commands\CCmdThumbnail.cpp">
       <Filter>Source\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\commands\CCmdTrackName.cpp">
+      <Filter>Source\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -402,6 +405,9 @@
       <Filter>Include\editor</Filter>
     </ClInclude>
     <ClInclude Include="..\_include\commands\CCmdThumbnail.h">
+      <Filter>Include\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\commands\CCmdTrackName.h">
       <Filter>Include\commands</Filter>
     </ClInclude>
   </ItemGroup>

@@ -55,7 +55,8 @@ namespace dustbin {
       m_bFinished   (false),
       m_fBaseOffset (-1.0f),
       m_fBaseHeight (-1.0f),
-      m_pAiPath     (nullptr)
+      m_pAiPath     (nullptr),
+      m_sNameOfTrack("Flat: TrackEd Track")
     {
       m_pColMgr    = m_pSmgr->getSceneCollisionManager();
       m_cZeroPlane = irr::core::plane3df(irr::core::vector3df(0.0f), irr::core::vector3df(0.0f, 1.0f, 0.0f));
@@ -1140,6 +1141,8 @@ namespace dustbin {
     void CCmdEditTrack::saveTrackInformation(irr::io::IAttributes &a_cAttr) {
       a_cAttr.addVector3d("ThumbnailPosition", m_cThumbnailPos);
       a_cAttr.addVector3d("ThumbnailTarget"  , m_cThumbnailTgt);
+
+      a_cAttr.addString("TrackName", m_sNameOfTrack.c_str());
     }
 
     /**
@@ -1149,6 +1152,24 @@ namespace dustbin {
     void CCmdEditTrack::loadTrackInformation(irr::io::IAttributes &a_cAttr) {
       if (a_cAttr.existsAttribute("ThumbnailPosition")) m_cThumbnailPos = a_cAttr.getAttributeAsVector3d("ThumbnailPosition");
       if (a_cAttr.existsAttribute("ThumbnailTarget"  )) m_cThumbnailTgt = a_cAttr.getAttributeAsVector3d("ThumbnailTarget"  );
+
+      if (a_cAttr.existsAttribute("TrackName")) m_sNameOfTrack = a_cAttr.getAttributeAsString("TrackName").c_str();
+    }
+
+    /**
+    * Change the name of the track
+    * @param a_sName the new name of the track
+    */
+    void CCmdEditTrack::setTrackName(const std::string &a_sName) {
+      m_sNameOfTrack = a_sName;
+    }
+
+    /**
+    * Get the name of the track
+    * @return the name of the track
+    */
+    const std::string &CCmdEditTrack::getTrackName() {
+      return m_sNameOfTrack;
     }
   }
 }

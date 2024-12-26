@@ -19,6 +19,7 @@
 
 #include <commands/CCmdAddMarbleGP.h>
 #include <helpers/CTextureHelpers.h>
+#include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <CDefines.h>
 #include <IGlobal.h>
@@ -293,6 +294,28 @@ namespace dustbin {
             l_pImg->drop();
 
             l_pOldSmgr->setActiveCamera(l_pOldCam);
+          }
+
+          {
+            irr::io::IXMLWriter *l_pInfo = l_pFs->createXMLWriter((l_sFolder + "info.xml").c_str());
+            if (l_pInfo) {
+              l_pInfo->writeXMLHeader();
+              l_pInfo->writeElement(L"marbles3", false);
+              l_pInfo->writeLineBreak();
+
+              l_pInfo->writeElement(L"position", false);
+              l_pInfo->writeText(L"99");
+              l_pInfo->writeClosingTag(L"position");
+              l_pInfo->writeLineBreak();
+
+              l_pInfo->writeElement(L"name", false);
+              l_pInfo->writeText(helpers::s2ws(a_pEditTrack->getTrackName()).c_str());
+              l_pInfo->writeClosingTag(L"name");
+              l_pInfo->writeLineBreak();
+
+              l_pInfo->writeClosingTag(L"marbles3");
+              l_pInfo->drop();
+            }
           }
         }
 

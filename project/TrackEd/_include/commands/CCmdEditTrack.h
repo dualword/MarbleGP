@@ -65,6 +65,8 @@ namespace dustbin {
         irr::f32 m_fBaseOffset;   /**< Offset of the base to the road */
         irr::f32 m_fBaseHeight;   /**< Height of the side walls of the base */
 
+        std::string m_sNameOfTrack;   /**< The name of the track */
+
         std::vector<tracked::ITrackPart *> m_vParts;    /**< List of all track parts */
 
         std::map<irr::scene::ISceneNode *, std::tuple<tracked::ITrackPart *, int>> m_mReferencePoints;    /**< A map mapping the reference points to the track part (0) and it's point index (1) */
@@ -202,6 +204,18 @@ namespace dustbin {
         * @param a_cAttr the IAttributes to load the information from
         */
         void loadTrackInformation(irr::io::IAttributes &a_cAttr);
+
+        /**
+        * Change the name of the track
+        * @param a_sName the new name of the track
+        */
+        void setTrackName(const std::string &a_sName);
+
+        /**
+        * Get the name of the track
+        * @return the name of the track
+        */
+        const std::string &getTrackName();
     };
   }
 }
