@@ -8,6 +8,7 @@
 #include <commands/CCmdMainMenu.h>
 #include <scenenodes/CSpeedNode.h>
 #include <editor/ITrackPart.h>
+#include <platform/uuid_v4.h>
 #include <editor/CAiPath.h>
 #include <CDefines.h>
 #include <algorithm>
@@ -56,10 +57,13 @@ namespace dustbin {
       m_fBaseOffset (-1.0f),
       m_fBaseHeight (-1.0f),
       m_pAiPath     (nullptr),
-      m_sNameOfTrack("Flat: TrackEd Track")
+      m_sTrackName  ("Flat: TrackEd Track"),
+      m_sTrackUUID  ("")
     {
       m_pColMgr    = m_pSmgr->getSceneCollisionManager();
       m_cZeroPlane = irr::core::plane3df(irr::core::vector3df(0.0f), irr::core::vector3df(0.0f, 1.0f, 0.0f));
+
+      ensureUUID();
     }
         
     CCmdEditTrack::~CCmdEditTrack() {
@@ -1142,7 +1146,25 @@ namespace dustbin {
       a_cAttr.addVector3d("ThumbnailPosition", m_cThumbnailPos);
       a_cAttr.addVector3d("ThumbnailTarget"  , m_cThumbnailTgt);
 
-      a_cAttr.addString("TrackName", m_sNameOfTrack.c_str());
+      a_cAttr.addString("TrackName", m_sTrackName.c_str());
+      a_cAttr.addString("Uuid"     , m_sTrackUUID.c_str());
+    }
+
+    /**
+    * Make sure the track has an UUID assigned
+    */
+    void CCmdEditTrack::ensureUUID() {
+      if (m_sTrackUUID == "") {
+        UUIDv4::UUIDGenerator<std::mt19937_64> l_cGenerator;
+
+        UUIDv4::UUID l_cUuid = l_cGenerator.getUUID();
+        char c[64];
+        memset(c, 0, 64);
+
+        l_cUuid.str(c);
+
+        m_sTrackUUID = c;
+      }
     }
 
     /**
@@ -1153,7 +1175,10 @@ namespace dustbin {
       if (a_cAttr.existsAttribute("ThumbnailPosition")) m_cThumbnailPos = a_cAttr.getAttributeAsVector3d("ThumbnailPosition");
       if (a_cAttr.existsAttribute("ThumbnailTarget"  )) m_cThumbnailTgt = a_cAttr.getAttributeAsVector3d("ThumbnailTarget"  );
 
-      if (a_cAttr.existsAttribute("TrackName")) m_sNameOfTrack = a_cAttr.getAttributeAsString("TrackName").c_str();
+      if (a_cAttr.existsAttribute("TrackName")) m_sTrackName = a_cAttr.getAttributeAsString("TrackName").c_str();
+      if (a_cAttr.existsAttribute("Uuid"     )) m_sTrackUUID = a_cAttr.getAttributeAsString("Uuid"     ).c_str();
+
+      ensureUUID();
     }
 
     /**
@@ -1161,7 +1186,7 @@ namespace dustbin {
     * @param a_sName the new name of the track
     */
     void CCmdEditTrack::setTrackName(const std::string &a_sName) {
-      m_sNameOfTrack = a_sName;
+      m_sTrackName = a_sName;
     }
 
     /**
@@ -1169,7 +1194,7 @@ namespace dustbin {
     * @return the name of the track
     */
     const std::string &CCmdEditTrack::getTrackName() {
-      return m_sNameOfTrack;
+      return m_sTrackName;
     }
   }
 }

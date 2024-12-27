@@ -65,7 +65,8 @@ namespace dustbin {
         irr::f32 m_fBaseOffset;   /**< Offset of the base to the road */
         irr::f32 m_fBaseHeight;   /**< Height of the side walls of the base */
 
-        std::string m_sNameOfTrack;   /**< The name of the track */
+        std::string m_sTrackName;     /**< The name of the track */
+        std::string m_sTrackUUID;     /**< The UUID of the track */
 
         std::vector<tracked::ITrackPart *> m_vParts;    /**< List of all track parts */
 
@@ -103,6 +104,11 @@ namespace dustbin {
         * @see m_cZeroPlane
         */
         irr::core::vector3df getRayPlaneCollision(const irr::core::vector2di &a_cMousePos);
+
+        /**
+        * Make sure the track has an UUID assigned
+        */
+        void ensureUUID();
 
       public:
         CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui, CCmdMainMenu *a_pMainMenu);
