@@ -28,7 +28,7 @@ namespace dustbin {
         int m_iCurrent;
 
         std::vector<dustbin::data::SMarbleGpCup> m_vCups;
-        std::map<std::string, std::string> m_mTrackNames;
+        std::map<std::string, std::tuple<std::string, int>> m_mTrackNames;
 
         irr::ITimer *m_pTimer;
         irr::u32 m_iTime;
@@ -61,7 +61,7 @@ namespace dustbin {
           std::string l_sTrack = std::get<0>(m_vCups[m_iSelectedCup].m_vRaces[m_iCurrent]);
 
           std::wstring s = L"Race " + std::to_wstring(m_iCurrent + 1) + L" of " + std::to_wstring(m_vCups[m_iSelectedCup].m_vRaces.size()) + L": ";
-          s += helpers::s2ws(m_mTrackNames[l_sTrack]) + L" (";
+          s += helpers::s2ws(std::get<0>(m_mTrackNames[l_sTrack])) + L" (";
 
           bool l_bSingleLap = false;
 

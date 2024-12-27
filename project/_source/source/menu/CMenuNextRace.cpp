@@ -65,14 +65,14 @@ namespace dustbin {
           m_sTrack = std::get<0>(*l_cCup.m_vRaces.begin());
           m_iLaps  = l_cCup.m_vRaces.size() > 0 ? std::get<1>(*l_cCup.m_vRaces.begin()) : 0;
 
-          std::map<std::string, std::string> l_mTrackNames = helpers::getTrackNameMap();
+          std::map<std::string, std::tuple<std::string, int>> l_mTrackNames = helpers::getTrackNameMap();
 
           irr::gui::IGUIStaticText *p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
           if (p != nullptr && l_cCup.m_vRaces.size() > 0) {
             std::string l_sName = m_sTrack;
 
             if (l_mTrackNames.find(l_sName) != l_mTrackNames.end())
-              l_sName = l_mTrackNames[l_sName];
+              l_sName = std::get<0>(l_mTrackNames[l_sName]);
 
             p->setText(helpers::s2ws(l_sName).c_str());
           }

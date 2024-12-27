@@ -30,7 +30,7 @@ namespace dustbin {
     * Get the data of all tracks
     * @return a std map with the track folder as key and the corresponding name as value
     */
-    std::map<std::string, std::string> getTrackNameMap();
+    std::map<std::string, std::tuple<std::string, int>> getTrackNameMap();
 
     /**
     * Get the possible AI help options

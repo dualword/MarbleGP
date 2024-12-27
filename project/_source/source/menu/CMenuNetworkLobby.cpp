@@ -76,10 +76,10 @@ namespace dustbin {
 
                 p = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("label_race", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
                 if (p != nullptr) {
-                  std::map<std::string, std::string> l_mTrackNames = helpers::getTrackNameMap();
+                  std::map<std::string, std::tuple<std::string, int>> l_mTrackNames = helpers::getTrackNameMap();
                   std::string l_sTrack = l_pUpdate->gettrack();
                   if (l_mTrackNames.find(l_sTrack) != l_mTrackNames.end())
-                    l_sTrack = l_mTrackNames[l_sTrack];
+                    l_sTrack = std::get<0>(l_mTrackNames[l_sTrack]);
 
                   p->setText(helpers::s2ws(l_sTrack).c_str());
                 }

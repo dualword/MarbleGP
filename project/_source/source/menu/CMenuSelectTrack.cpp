@@ -47,67 +47,18 @@ namespace dustbin {
         network::CGameServer *m_pServer;  /**< The game server */
         network::CGameClient *m_pClient;  /**< The game client */
 
-        std::map<std::string, std::string> m_mTracks;   /**< Map with the track names (key == track identifier) */
+        std::map<std::string, std::tuple<std::string, int>> m_mTracks;   /**< Map with the track names (key == track identifier) */
 
         /**
         * Fill the vector of track names
         */
         void fillTrackNames() {
-          irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile("data/levels/tracks.dat");
+          printf("Bla");
 
-          long l_iSize = l_pFile->getSize();
-          char *s = new char[l_iSize + 1];
-          memset(s, 0, static_cast<size_t>(l_iSize) + 1);
-          l_pFile->read(s, l_iSize);
-          std::vector<std::string> l_vTracks = helpers::splitString(s, '\n');
-          delete []s;
+          std::map<std::string, std::tuple<std::string, int>> l_mTracks = helpers::getTrackNameMap();
 
-          for (std::vector<std::string>::iterator it = l_vTracks.begin(); it != l_vTracks.end(); it++) {
-            std::string l_sTrack = *it;
-            if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
-              l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
-
-            std::string l_sFile = "data/levels/" + l_sTrack + "/track.xml";
-
-            if (m_pFs->existFile(l_sFile.c_str())) {
-              std::string l_sXml = "data/levels/" + l_sTrack + "/info.xml", l_sName = l_sTrack;
-              int l_iPos = 9999;
-
-              if (m_pFs->existFile(l_sXml.c_str())) {
-                irr::io::IXMLReaderUTF8 *l_pXml = m_pFs->createXMLReaderUTF8(l_sXml.c_str());
-                if (l_pXml) {
-                  bool l_bName = false;
-                  bool l_bPos  = false;
-
-                  while (l_pXml->read()) {
-                    std::string l_sNode = l_pXml->getNodeName();
-
-                    if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-                      if (l_sNode == "name")
-                        l_bName = true;
-                      else if (l_sNode == "position")
-                        l_bPos = true;
-                    }
-                    else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
-                      if (l_bName)
-                        l_sName = l_pXml->getNodeData();
-                      else if (l_bPos)
-                        l_iPos = std::atoi(l_pXml->getNodeData());
-                    }
-                    else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-                      if (l_sNode == "name")
-                        l_bName = false;
-                    }
-                  }
-                  l_pXml->drop();
-                }
-              }
-
-              m_vTracks.push_back(std::make_tuple(l_iPos, l_sTrack, l_sName));
-            }
-          }
-
-          l_pFile->drop();
+          for (auto l_tTrack: l_mTracks)
+            m_vTracks.push_back(std::make_tuple(std::get<1>(l_tTrack.second), l_tTrack.first, std::get<0>(l_tTrack.second)));
         }
 
         void updateTrackFilter() {
@@ -313,7 +264,7 @@ namespace dustbin {
                   std::string l_sTrack = m_sTrack;
 
                   if (m_mTracks.find(l_sTrack) != m_mTracks.end()) {
-                    l_sTrack = m_mTracks[l_sTrack];
+                    l_sTrack = std::get<0>(m_mTracks[l_sTrack]);
                   }
 
                   gameclasses::STournament *l_pTournament = m_pState->getGlobal()->getTournament();

@@ -108,8 +108,8 @@ namespace dustbin {
     * Get the data of all tracks
     * @return a std map with the track folder as key and the corresponding name as value
     */
-    std::map<std::string, std::string> getTrackNameMap() {
-      std::map<std::string, std::string> l_mResult;
+    std::map<std::string, std::tuple<std::string, int>> getTrackNameMap() {
+      std::map<std::string, std::tuple<std::string, int>> l_mResult;
 
       irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
 
@@ -125,6 +125,7 @@ namespace dustbin {
 
         for (std::vector<std::string>::iterator it = l_vTracks.begin(); it != l_vTracks.end(); it++) {
           std::string l_sTrack = *it;
+
           if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
             l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
 
@@ -137,6 +138,10 @@ namespace dustbin {
               irr::io::IXMLReaderUTF8 *l_pXml = l_pFs->createXMLReaderUTF8(l_sXml.c_str());
               if (l_pXml) {
                 bool l_bName = false;
+                bool l_bPos  = false;
+
+                std::string l_sTrackName;
+                int l_iTrackPos = 0;
 
                 while (l_pXml->read()) {
                   std::string l_sNode = l_pXml->getNodeName();
@@ -144,15 +149,23 @@ namespace dustbin {
                   if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
                     if (l_sNode == "name")
                       l_bName = true;
+                    else if (l_sNode == "position")
+                      l_bPos = true;
                   }
                   else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
                     if (l_bName)
-                      l_mResult[l_sTrack] = l_pXml->getNodeData();
+                      l_sTrackName = l_pXml->getNodeData();
+                    else if (l_bPos)
+                      l_iTrackPos = std::atoi(l_pXml->getNodeData());
                   }
                   else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
                     if (l_sNode == "name")
                       l_bName = false;
+                    else if (l_sNode == "position")
+                      l_bPos = false;
                   }
+
+                  l_mResult[l_sTrack] = std::make_tuple(l_sTrackName, l_iTrackPos);
                 }
                 l_pXml->drop();
               }

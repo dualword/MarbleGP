@@ -6,6 +6,7 @@
 #include <helpers/CStringHelpers.h>
 #include <threads/CMessageQueue.h>
 #include <helpers/CDataHelpers.h>
+#include <helpers/CDataHelpers.h>
 #include <platform/CPlatform.h>
 #include <json/CIrrJSON.h>
 #include <CGlobal.h>
@@ -13,7 +14,9 @@
 #include <iomanip>
 #include <fstream>
 #include <ctime>
+#include <tuple>
 #include <ios>
+#include <map>
 
 #ifndef _WINDOWS
 #include <sys/socket.h>
@@ -264,15 +267,15 @@ namespace dustbin {
     * @param a_pFs the file system to use
     */
     void CWebServerBase::loadTrackMapping() {
-      std::map<std::string, std::string> l_mTracks = helpers::getTrackNameMap();
+      std::map<std::string, std::tuple<std::string, int>> l_mTracks = helpers::getTrackNameMap();
 
       g_sTrackNames = "{ ";
 
-      for (std::map<std::string, std::string>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
+      for (std::map<std::string, std::tuple<std::string, int>>::iterator l_itName = l_mTracks.begin(); l_itName != l_mTracks.end(); l_itName++) {
         if (l_itName != l_mTracks.begin())
           g_sTrackNames += ", ";
 
-        g_sTrackNames += "\"" + l_itName->first + "\": \"" + l_itName->second + "\"";
+        g_sTrackNames += "\"" + l_itName->first + "\": \"" + std::get<0>(l_itName->second) + "\"";
       }
 
       g_sTrackNames += "}";
@@ -283,35 +286,26 @@ namespace dustbin {
     * @param a_pFs the file system to use
     */
     void CWebServerBase::fillThumbnailMap(irr::io::IFileSystem* a_pFs) {
-      irr::io::IReadFile *l_pFile = a_pFs->createAndOpenFile("data/levels/tracks.dat");
+      
+      std::map<std::string, std::tuple<std::string, int>> l_mTracks = helpers::getTrackNameMap();
 
-      if (l_pFile != nullptr) {
-        long l_iSize = l_pFile->getSize();
-        char *s = new char[l_iSize + 1];
-        memset(s, 0, static_cast<size_t>(l_iSize) + 1);
-        l_pFile->read(s, l_iSize);
-        std::vector<std::string> l_vTracks = helpers::splitString(s, '\n');
-        delete []s;
-        l_pFile->drop();
+      for (auto l_tTrack: l_mTracks) {
+        std::string l_sTrack = l_tTrack.first;
+        if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
+          l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
 
-        for (auto s: l_vTracks) {
-          std::string l_sTrack = s;
-          if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
-            l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
+        std::string l_sPath = "data/levels/" + l_sTrack + "/thumbnail.png";
 
-          std::string l_sPath = "data/levels/" + l_sTrack + "/thumbnail.png";
+        if (a_pFs->existFile(l_sPath.c_str())) {
+          irr::io::IReadFile *l_pFile = a_pFs->createAndOpenFile(l_sPath.c_str());
 
-          if (a_pFs->existFile(l_sPath.c_str())) {
-            l_pFile = a_pFs->createAndOpenFile(l_sPath.c_str());
-
-            if (l_pFile != nullptr) {
-              SWebFileBuffer *p = new SWebFileBuffer();
-              p->m_iSize = l_pFile->getSize();
-              p->m_pBuffer = new char[p->m_iSize];
-              l_pFile->read(p->m_pBuffer, p->m_iSize);
-              l_pFile->drop();
-              g_mTracks[l_sTrack] = p;
-            }
+          if (l_pFile != nullptr) {
+            SWebFileBuffer *p = new SWebFileBuffer();
+            p->m_iSize = l_pFile->getSize();
+            p->m_pBuffer = new char[p->m_iSize];
+            l_pFile->read(p->m_pBuffer, p->m_iSize);
+            l_pFile->drop();
+            g_mTracks[l_sTrack] = p;
           }
         }
       }
