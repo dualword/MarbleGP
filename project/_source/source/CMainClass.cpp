@@ -336,6 +336,10 @@ namespace dustbin {
       printf("Marblegp.dat added: %s\n", b ? "success" : "failed");
     }
 
+    if (m_pFs->addFileArchive(platform::portableGetTrackEdPath().c_str(), true, false, irr::io::EFAT_FOLDER)) {
+      printf("TrackEd folder added.\n");
+    }
+
     m_pDevice->getTimer()->start();
 
     irr::video::SColor l_cColor = m_pGui->getSkin()->getColor(irr::gui::EGDC_HIGH_LIGHT);

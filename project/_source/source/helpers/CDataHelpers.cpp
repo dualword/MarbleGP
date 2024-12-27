@@ -105,6 +105,57 @@ namespace dustbin {
     }
 
     /**
+    * Read the info.xml file for a track
+    * @param a_sFile the file the filename
+    * @param a_pFs the Irrlicht file system
+    * @return a tuple with the information (0 == name, 1 == position)
+    */
+    std::tuple<std::string, int> readTrackInfoXML(const std::string &a_sFile, irr::io::IFileSystem *a_pFs) {
+      std::string l_sXml = a_sFile;
+
+      std::tuple<std::string, int> l_tResult = std::make_tuple("", -1);
+
+      if (a_pFs->existFile(l_sXml.c_str())) {
+        irr::io::IXMLReaderUTF8 *l_pXml = a_pFs->createXMLReaderUTF8(l_sXml.c_str());
+        if (l_pXml) {
+          bool l_bName = false;
+          bool l_bPos  = false;
+
+          std::string l_sTrackName;
+          int l_iTrackPos = 0;
+
+          while (l_pXml->read()) {
+            std::string l_sNode = l_pXml->getNodeName();
+
+            if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
+              if (l_sNode == "name")
+                l_bName = true;
+              else if (l_sNode == "position")
+                l_bPos = true;
+            }
+            else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
+              if (l_bName)
+                l_sTrackName = l_pXml->getNodeData();
+              else if (l_bPos)
+                l_iTrackPos = std::atoi(l_pXml->getNodeData());
+            }
+            else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
+              if (l_sNode == "name")
+                l_bName = false;
+              else if (l_sNode == "position")
+                l_bPos = false;
+            }
+
+            l_tResult = std::make_tuple(l_sTrackName, l_iTrackPos);
+          }
+          l_pXml->drop();
+        }
+      }
+
+      return l_tResult;
+    }
+
+    /**
     * Get the data of all tracks
     * @return a std map with the track folder as key and the corresponding name as value
     */
@@ -129,52 +180,43 @@ namespace dustbin {
           if (l_sTrack.substr(l_sTrack.size() - 1) == "\r")
             l_sTrack = l_sTrack.substr(0, l_sTrack.size() - 1);
 
-          std::string l_sFile = "data/levels/" + l_sTrack + "/track.xml";
+          std::string l_sFile = "data/levels/" + l_sTrack + "/info.xml";
 
           if (l_pFs->existFile(l_sFile.c_str())) {
-            std::string l_sXml = "data/levels/" + l_sTrack + "/info.xml", l_sName = l_sTrack;
+            std::tuple<std::string, int> l_tInfo = readTrackInfoXML(l_sFile, l_pFs);
 
-            if (l_pFs->existFile(l_sXml.c_str())) {
-              irr::io::IXMLReaderUTF8 *l_pXml = l_pFs->createXMLReaderUTF8(l_sXml.c_str());
-              if (l_pXml) {
-                bool l_bName = false;
-                bool l_bPos  = false;
-
-                std::string l_sTrackName;
-                int l_iTrackPos = 0;
-
-                while (l_pXml->read()) {
-                  std::string l_sNode = l_pXml->getNodeName();
-
-                  if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-                    if (l_sNode == "name")
-                      l_bName = true;
-                    else if (l_sNode == "position")
-                      l_bPos = true;
-                  }
-                  else if (l_pXml->getNodeType() == irr::io::EXN_TEXT) {
-                    if (l_bName)
-                      l_sTrackName = l_pXml->getNodeData();
-                    else if (l_bPos)
-                      l_iTrackPos = std::atoi(l_pXml->getNodeData());
-                  }
-                  else if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT_END) {
-                    if (l_sNode == "name")
-                      l_bName = false;
-                    else if (l_sNode == "position")
-                      l_bPos = false;
-                  }
-
-                  l_mResult[l_sTrack] = std::make_tuple(l_sTrackName, l_iTrackPos);
-                }
-                l_pXml->drop();
-              }
-            }
+            if (std::get<0>(l_tInfo) != "")
+              l_mResult[l_sTrack] = l_tInfo;
           }
         }
 
         l_pFile->drop();
       }
+
+      irr::io::path l_sWorkingDir = l_pFs->getWorkingDirectory();
+
+      l_pFs->changeWorkingDirectoryTo((platform::portableGetTrackEdPath() + L"/data/levels").c_str());
+
+      irr::io::IFileList *l_pList = l_pFs->createFileList();
+
+      if (l_pList != nullptr) {
+        for (irr::u32 i = 0; i < l_pList->getFileCount(); i++) {
+          if (l_pList->getFileName(i) != "." && l_pList->getFileName(i) != "..") {
+            std::wstring l_sTrack = platform::portableGetTrackEdPath() + L"/data/levels/" + helpers::s2ws(l_pList->getFileName(i).c_str()) + L"/track.xml";
+            std::wstring l_sInfo  = platform::portableGetTrackEdPath() + L"/data/levels/" + helpers::s2ws(l_pList->getFileName(i).c_str()) + L"/info.xml";
+
+            if (l_pFs->existFile(l_sTrack.c_str()) && l_pFs->existFile(l_sInfo.c_str())) {
+              std::tuple<std::string, int> l_tInfo = readTrackInfoXML(helpers::ws2s(l_sInfo), l_pFs);
+              if (std::get<0>(l_tInfo) != "")
+                l_mResult[l_pList->getFileName(i).c_str()] = l_tInfo;
+            }
+          }
+        }
+        l_pList->drop();
+      }
+
+      l_pFs->changeWorkingDirectoryTo(l_sWorkingDir);
+
       return l_mResult;
     }
 
