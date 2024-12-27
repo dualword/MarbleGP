@@ -142,6 +142,8 @@
     <ClInclude Include="..\_include\IGlobal.h" />
     <ClInclude Include="..\_include\CTrackEd_MainClass.h" />
     <ClInclude Include="..\_include\platform\CTrackEdPlatform.h" />
+    <ClInclude Include="..\_include\platform\endianness.h" />
+    <ClInclude Include="..\_include\platform\uuid_v4.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

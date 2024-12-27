@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <filesystem>
 
 namespace dustbin {
   namespace platform {
@@ -35,6 +36,22 @@ namespace dustbin {
       __time32_t l_iDummy = a_iTime;
       _localtime32_s(&ptm, &l_iDummy);
       std::strftime(a_sBuffer, a_iLen, "%d %b %Y", &ptm);
+    }
+
+    const std::wstring portableGetTrackEdPath() {
+      TCHAR l_sPath     [MAX_PATH],
+            l_sLevelPath[MAX_PATH];
+
+      if (SUCCEEDED(SHGetFolderPath( NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
+        PathAppend(l_sPath, L"\\DustbinGames\\MarbleGP\\TrackEd");
+        std::filesystem::create_directories(l_sPath);
+
+        _tcscpy_s(l_sLevelPath, MAX_PATH, l_sPath);
+        PathAppend(l_sLevelPath, L"\\data\\levels");
+        std::filesystem::create_directories(l_sLevelPath);
+      }
+
+      return l_sPath;
     }
 
     const std::wstring portableGetDataPath() {

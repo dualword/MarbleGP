@@ -1196,5 +1196,13 @@ namespace dustbin {
     const std::string &CCmdEditTrack::getTrackName() {
       return m_sTrackName;
     }
+
+    /**
+    * Get the track's UUID used as name for the export folder
+    * @return the track's UUID
+    */
+    const std::string &CCmdEditTrack::getUUID() {
+      return m_sTrackUUID;
+    }
   }
 }

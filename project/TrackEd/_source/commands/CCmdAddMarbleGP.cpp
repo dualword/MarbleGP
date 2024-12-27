@@ -21,6 +21,8 @@
 #include <helpers/CTextureHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
+#include <platform/CPlatform.h>
+#include <filesystem>
 #include <CDefines.h>
 #include <IGlobal.h>
 
@@ -39,11 +41,12 @@ namespace dustbin {
       m_pWorld    (nullptr),
       m_pEditTrack(a_pEditTrack)
     {
-      m_sFolder = "data/levels/editor/";
+      m_sFolder = helpers::ws2s(platform::portableGetTrackEdPath()) + "/data/levels/" + m_pEditTrack->getUUID();
+      std::filesystem::create_directories(m_sFolder);
 
       printf("Working dir: %s\n", m_pFs->getWorkingDirectory().c_str());
 
-      irr::io::IXMLWriter *l_pXmlWriter = m_pFs->createXMLWriter((m_sFolder + "track.xml").c_str());
+      irr::io::IXMLWriter *l_pXmlWriter = m_pFs->createXMLWriter((m_sFolder + "/track.xml").c_str());
 
       if (l_pXmlWriter) {
         m_pNewSmgr = tracked::IGlobal::getInstance()->getSceneManager()->createNewSceneManager(false);
@@ -97,7 +100,7 @@ namespace dustbin {
       }
 
       irr::scene::ISceneNode *l_pNewTrack = m_pNewSmgr->addMeshSceneNode(
-        m_pNewSmgr->getMesh((m_sFolder + "/track.obj").c_str()),
+        m_pNewSmgr->getMesh(std::string("data/levels/" + m_pEditTrack->getUUID() + "/track.obj").c_str()),
         m_pWorld,
         -1,
         irr::core::vector3df(0.0f),
@@ -312,7 +315,7 @@ namespace dustbin {
         m_pDrv->setRenderTarget(nullptr);
 
         irr::video::IImage *l_pImg = m_pDrv->createImage(l_pRtt, irr::core::vector2di(0, 0), irr::core::dimension2du(512, 512));
-        m_pDrv->writeImageToFile(l_pImg, (m_sFolder + "thumbnail.png").c_str());
+        m_pDrv->writeImageToFile(l_pImg, (m_sFolder + "/thumbnail.png").c_str());
             
         l_pImg->drop();
 
@@ -324,7 +327,7 @@ namespace dustbin {
     * Write the info XML file
     */
     void CCmdAddMarbleGP::createInfoFile() {
-        irr::io::IXMLWriter *l_pInfo = m_pFs->createXMLWriter((m_sFolder + "info.xml").c_str());
+        irr::io::IXMLWriter *l_pInfo = m_pFs->createXMLWriter((m_sFolder + "/info.xml").c_str());
         if (l_pInfo) {
           l_pInfo->writeXMLHeader();
           l_pInfo->writeElement(L"marbles3", false);

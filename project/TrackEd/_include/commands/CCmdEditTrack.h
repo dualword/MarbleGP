@@ -222,6 +222,12 @@ namespace dustbin {
         * @return the name of the track
         */
         const std::string &getTrackName();
+
+        /**
+        * Get the track's UUID used as name for the export folder
+        * @return the track's UUID
+        */
+        const std::string &getUUID();
     };
   }
 }

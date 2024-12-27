@@ -20,5 +20,6 @@ namespace dustbin {
 
     const std::wstring portableGetDataPath   ();
     const std::wstring portableGetTexturePath();
+    const std::wstring portableGetTrackEdPath();
   }
 }

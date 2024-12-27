@@ -70,6 +70,13 @@ namespace dustbin {
 
       printf("Working Directory: \"%s\"\n", m_pFs->getWorkingDirectory().c_str());
 
+      std::string l_sTrackEdPath = helpers::ws2s(platform::portableGetTrackEdPath());
+
+      irr::io::IFileArchive *l_pArchive = nullptr;
+      if (m_pFs->addFileArchive(l_sTrackEdPath.c_str(), true, false, irr::io::EFAT_FOLDER, "", &l_pArchive)) {
+        printf("TrackEd path added.\n");
+      }
+
       m_pFontMgr = new FontManager();
 
       unsigned l_iFontSize = 18;

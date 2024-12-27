@@ -410,5 +410,11 @@
     <ClInclude Include="..\_include\commands\CCmdTrackName.h">
       <Filter>Include\commands</Filter>
     </ClInclude>
+    <ClInclude Include="..\_include\platform\endianness.h">
+      <Filter>Include\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\platform\uuid_v4.h">
+      <Filter>Include\platform</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
