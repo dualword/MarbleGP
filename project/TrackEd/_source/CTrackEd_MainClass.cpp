@@ -3,6 +3,7 @@
 
 #include <scenenodes/CMarbleGPSceneNodeFactory.h>
 #include <animators/CAnimatorFactory.h>
+#include <helpers/CTrackEdHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
 #include <font/font_manager.h>
@@ -26,6 +27,7 @@ namespace dustbin {
       m_pDrv        (nullptr),
       m_pGui        (nullptr),
       m_pFs         (nullptr),
+      m_pArchive    (nullptr),
       m_pFontMgr    (nullptr),
       m_pEditCommand(nullptr),
       m_iWidth      (0),
@@ -73,11 +75,23 @@ namespace dustbin {
 
       printf("Working Directory: \"%s\"\n", m_pFs->getWorkingDirectory().c_str());
 
-      std::string l_sTrackEdPath = helpers::ws2s(platform::portableGetTrackEdPath());
-
-      irr::io::IFileArchive *l_pArchive = nullptr;
-      if (m_pFs->addFileArchive(l_sTrackEdPath.c_str(), true, false, irr::io::EFAT_FOLDER, "", &l_pArchive)) {
+      if (m_pFs->addFileArchive(helpers::ws2s(platform::portableGetTrackEdPath()).c_str(), true, false, irr::io::EFAT_FOLDER, "", &m_pArchive)) {
         printf("TrackEd path added.\n");
+      }
+
+      if (m_pFs->existFile("marblegp.dat")) {
+        std::string l_sTarget = helpers::ws2s(platform::portableGetTrackEdPath() + L"/marblegp.dat");
+
+        if (m_pFs->existFile(l_sTarget.c_str()))
+          std::filesystem::remove(l_sTarget);
+
+        std::filesystem::copy_file("marblegp.dat", l_sTarget);
+
+        if (!m_pFs->addFileArchive(l_sTarget.c_str(), true, false, irr::io::EFAT_ZIP)) {
+          helpers::addLogMessage(L"Failed to laod data file.", irr::ELL_ERROR, 5000);
+        }
+
+        m_pGui->getFileSystem()->changeWorkingDirectoryTo(platform::portableGetTrackEdPath().c_str());
       }
 
       m_pFontMgr = new FontManager();
@@ -351,6 +365,23 @@ namespace dustbin {
       m_pDevice->postEventFromUser(l_cEvent);
 
       m_pSmgr->clear();
+    }
+
+    /**
+    * Handle Irrlicht events
+    * @param a_cEvent the event to handle
+    * @return true if the event was handled
+    */
+    bool CTrackEd_MainClass::OnEvent(const irr::SEvent& a_cEvent) {
+      bool l_bRet = false;
+
+      if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+      }
+
+      if (!l_bRet)
+        l_bRet = CCommandHandler::OnEvent(a_cEvent);
+
+      return l_bRet;
     }
   }
 }

@@ -33,6 +33,13 @@ namespace dustbin {
     * @return the filename without path
     */
     std::wstring extractFileName(const std::string &a_sFile);
+
+    /**
+    * Post a user event
+    * @param a_iUserData1 the user data
+    * @param a_iUserData2 additional user data
+    */
+    void postUserEvent(size_t a_iUserData1, size_t a_iUserData2);
   }
 }
 

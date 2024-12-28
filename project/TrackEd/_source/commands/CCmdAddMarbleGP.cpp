@@ -72,7 +72,7 @@ namespace dustbin {
           addCheckpoints();
           addAiLightAndRostrum();
 
-          m_pNewSmgr->saveScene(l_pXmlWriter, m_pFs->getWorkingDirectory());
+          m_pNewSmgr->saveScene(l_pXmlWriter, platform::portableGetTrackEdPath().c_str());
           l_pXmlWriter->drop();
 
           createThumbnail();
@@ -109,7 +109,7 @@ namespace dustbin {
       }
 
       irr::scene::ISceneNode *l_pNewTrack = m_pNewSmgr->addMeshSceneNode(
-        m_pNewSmgr->getMesh(std::string("data/levels/" + m_pEditTrack->getUUID() + "/track.obj").c_str()),
+        m_pNewSmgr->getMesh(std::string(m_sFolder + "/track.obj").c_str()),
         m_pWorld,
         -1,
         irr::core::vector3df(0.0f),
@@ -321,12 +321,7 @@ namespace dustbin {
         irr::scene::ICameraSceneNode *l_pCam = m_pOldSmgr->addCameraSceneNode(m_pNewSmgr->getRootSceneNode(), l_cPos, l_cTgt);
         l_pCam->setAspectRatio(1.0f);
 
-        irr::SEvent l_cEvent{};
-        l_cEvent.EventType = irr::EET_USER_EVENT;
-        l_cEvent.UserEvent.UserData1 = c_iRenderScene;
-        l_cEvent.UserEvent.UserData2 = c_iRenderScene;
-
-        tracked::IGlobal::getInstance()->getDevice()->postEventFromUser(l_cEvent);
+        helpers::postUserEvent(c_iRenderScene, c_iRenderScene);
 
         m_pDrv->setRenderTarget(nullptr);
 

@@ -76,6 +76,21 @@ namespace dustbin {
 
       return helpers::s2ws(a_sFile);
     }
+
+    /**
+    * Post a user event
+    * @param a_iUserData the user data
+    */
+    void postUserEvent(size_t a_iUserData1, size_t a_iUserData2) {
+      tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
+      if (l_pGlobal != nullptr) {
+        irr::SEvent l_cEvent{};
+        l_cEvent.EventType = irr::EET_USER_EVENT;
+        l_cEvent.UserEvent.UserData1 = a_iUserData1;
+        l_cEvent.UserEvent.UserData2 = a_iUserData2;
+        l_pGlobal->getDevice()->postEventFromUser(l_cEvent);
+      }
+    }
   }
 }
 

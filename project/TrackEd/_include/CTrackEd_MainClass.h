@@ -30,6 +30,7 @@ namespace dustbin {
         irr::gui::IGUIEnvironment *m_pGui;        /**< The Irrlicht GUI environment */
         irr::io::IFileSystem      *m_pFs;         /**< The Irrlicht file system */
         irr::video::SMaterial      m_cMaterial;   /**< The material for the "before end scene" callback */
+        irr::io::IFileArchive     *m_pArchive;    /**< The appdata folder as Irrlicht file archive */
 
         FontManager *m_pFontMgr;    /**< The TTF font manager */
 
@@ -143,6 +144,13 @@ namespace dustbin {
         * @return the active "Edit Track" command
         */
         virtual commands::CCmdEditTrack *getEditTrackCommand() override;
+
+        /**
+        * Handle Irrlicht events
+        * @param a_cEvent the event to handle
+        * @return true if the event was handled
+        */
+        virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
     };
   }
 }
