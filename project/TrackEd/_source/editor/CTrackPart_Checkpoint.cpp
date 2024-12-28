@@ -66,8 +66,8 @@ namespace dustbin {
       irr::core::vector3df l_aRespawn[] = {
         m_bRespawnLeft ? m_cStart - f1 * l_cSide : m_cStart + f2 * l_cSide,
         m_bRespawnLeft ? m_cStart - f2 * l_cSide : m_cStart + f1 * l_cSide,
-        m_bRespawnLeft ? m_cEnd - f2 * l_cSide : m_cEnd + f2 * l_cSide,
-        m_bRespawnLeft ? m_cEnd - f1 * l_cSide : m_cEnd + f2 * l_cSide
+        m_bRespawnLeft ? m_cEnd   - f2 * l_cSide : m_cEnd   + f1 * l_cSide,
+        m_bRespawnLeft ? m_cEnd   - f1 * l_cSide : m_cEnd   + f2 * l_cSide
       };
 
       irr::core::vector3df l_aVertices[] = {
