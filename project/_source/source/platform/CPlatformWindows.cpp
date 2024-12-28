@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <shellapi.h>
 #include <winerror.h>
+#include <filesystem>
+#include <streambuf>
 #include <CGlobal.h>
 #include <shlwapi.h>
 #include <direct.h>
@@ -18,12 +20,10 @@
 #include <codecvt>
 #include <tchar.h>
 #include <fstream>
-#include <streambuf>
 #include <time.h>
 #include <string>
 #include <vector>
 #include <ctime>
-#include <filesystem>
 
 namespace dustbin {
   namespace platform {

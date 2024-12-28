@@ -122,6 +122,7 @@ namespace dustbin {
         return false;
       }
 
+      printf("Track materials: %i\n", l_pTrack->getMaterialCount());
       for (irr::u32 i = 0; i < l_pTrack->getMaterialCount() && i < l_pNewTrack->getMaterialCount(); i++) {
         for (irr::u32 j = 0; j < 8; j++) {
           irr::video::ITexture *l_pTexture = l_pTrack->getMaterial(i).getTexture(j);
