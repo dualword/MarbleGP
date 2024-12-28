@@ -155,6 +155,16 @@ namespace dustbin {
 
       if (m_pDevice->run()) {
         CCommandHandler::run();
+
+        irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
+        if (l_cSize.Width != m_iWidth || l_cSize.Height != m_iHeight) {
+          m_iWidth  = l_cSize.Width;
+          m_iHeight = l_cSize.Height;
+
+          for (auto l_pCmd: m_vCommands) {
+            l_pCmd->onUiSetupModified();
+          }
+        }
       }
       else l_bRet = false;
 
