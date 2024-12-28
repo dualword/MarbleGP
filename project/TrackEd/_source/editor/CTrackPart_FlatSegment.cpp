@@ -7,8 +7,8 @@
 
 namespace dustbin {
   namespace tracked {
-    CTrackPart_FlatSegment::CTrackPart_FlatSegment(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      ITrackPart_Bezier(c_sTypeFlat, a_pPrevious, a_cNormal) 
+    CTrackPart_FlatSegment::CTrackPart_FlatSegment(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, const std::string &a_sIdentifier) :
+      ITrackPart_Bezier(a_sIdentifier == "" ? c_sTypeFlat : a_sIdentifier, a_pPrevious, a_cNormal) 
     {
       setEndNormal(a_cNormal);
     }

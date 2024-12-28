@@ -47,8 +47,6 @@ namespace dustbin {
         irr::core::plane3df         m_cZeroPlane;   /**< The plane at Y zero to prevent reference points being set below 0 */
         irr::core::vector3df        m_cMovePoint;   /**< The point which was clicked for moving */
 
-        irr::gui::IGUIContextMenu *m_pMenu;       /**< The context menu */
-
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< Our scene collision manager */
 
         std::vector<irr::scene::SMeshBuffer *> m_vBuffers;  /**< The mesh buffers of the track */

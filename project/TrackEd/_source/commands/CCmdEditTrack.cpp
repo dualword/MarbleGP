@@ -18,6 +18,7 @@
 #include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
 #include <editor/ITrackPart_Bezier.h>
+#include <editor/CTrackPart_Turn.h>
 #include <editor/CTrackPart_Ramp.h>
 
 namespace dustbin {
@@ -48,7 +49,6 @@ namespace dustbin {
       m_pTrack      (nullptr),
       m_pZeroPlane  (nullptr),
       m_pMesh       (nullptr),
-      m_pMenu       (nullptr),
       m_pColMgr     (nullptr),
       m_pClick      (nullptr),
       m_pMainMenu   (a_pMainMenu),
@@ -668,16 +668,6 @@ namespace dustbin {
                   m_pSelected = m_pHover;
                   m_pSelected->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/green.png"));
                 }
-
-                if (m_pMenu != nullptr) {
-                  irr::gui::IGUIElement *l_pElement = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
-
-                  if (l_pElement != m_pMenu) {
-                    m_pMenu->setVisible(false);
-                    m_pGui->addToDeletionQueue(m_pMenu);
-                    m_pMenu = nullptr;
-                  }
-                }
               }
             }
             else if (m_eEditMode == enEditMode::AddReferencePoint) {
@@ -746,76 +736,65 @@ namespace dustbin {
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_RMOUSE_LEFT_UP) {
             if (m_cDownPoint[1].getDistanceFrom(l_cMouse) < 2) {
-              if (m_pMenu != nullptr) {
-                irr::gui::IGUIElement *l_pElement = m_pGui->getRootGUIElement()->getElementFromPoint(irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y));
+              if (m_pHover != nullptr) {
+                if (m_eEditMode == enEditMode::Default) {
+                  std::vector<std::wstring> l_vItems;
 
-                if (l_pElement != m_pMenu) {
-                  m_pMenu->setVisible(false);
-                  m_pGui->addToDeletionQueue(m_pMenu);
-                  m_pMenu = nullptr;
-                }
-              }
-              else {
-                if (m_pHover != nullptr) {
-                  if (m_eEditMode == enEditMode::Default) {
-                    std::vector<std::tuple<std::wstring, bool>> l_vItems;
+                  tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
 
-                    tracked::ITrackPart *l_pPart = std::get<0>(m_mReferencePoints[m_pHover]);
+                  if (l_pPart->partAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
+                    l_vItems.push_back(c_sAddStraight);
 
-                    if (l_pPart->partAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
-                      l_vItems.push_back(std::make_tuple(c_sAddFlatSegment, true));
-                      l_vItems.push_back(std::make_tuple(c_sAddCheckpoint , true));
-                      l_vItems.push_back(std::make_tuple(c_sAddRamp       , true));
-                    }
+                    l_vItems.push_back(c_sAddTurnLeft);
+                    l_vItems.push_back(c_sAddTurnRight);
 
-                    if (l_pPart->getPrevious() == nullptr) {
-                      l_vItems.push_back(std::make_tuple(c_sFinishTrack, true));
-                    }
+                    l_vItems.push_back(c_sAddFlatSegment);
+                    l_vItems.push_back(c_sAddCheckpoint );
+                    l_vItems.push_back(c_sAddRamp       );
+                  }
 
-                    
-                    // l_vItems.push_back(std::make_tuple(c_sAddRampEnd   , true));
-                    // l_vItems.push_back(std::make_tuple(c_sAddJump      , true));
-                    // l_vItems.push_back(std::make_tuple(c_sAddGap       , true));
+                  if (l_pPart->getPrevious() == nullptr) {
+                    l_vItems.push_back(c_sFinishTrack);
+                  }
 
-                    if (l_pPart->refPointAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
-                      l_vItems.push_back(std::make_tuple(L"----", false));
-                      l_vItems.push_back(std::make_tuple(c_sAddReference, true));
-                    }
+                  if (l_pPart->refPointAdditionAllowed(std::get<1>(m_mReferencePoints[m_pHover]))) {
+                    l_vItems.push_back(c_sAddReference);
+                  }
 
-                    irr::core::dimension2du l_cSize = irr::core::dimension2du(0, 0);
+                  irr::core::dimension2du l_cSize = irr::core::dimension2du(0, 0);
 
-                    irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
+                  irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
-                    for (auto l_sItem : l_vItems) {
-                      irr::core::dimension2du l_cDim = m_pGui->getSkin()->getFont()->getDimension(std::get<0>(l_sItem).c_str());
+                  for (auto l_sItem : l_vItems) {
+                    irr::core::dimension2du l_cDim = m_pGui->getSkin()->getFont()->getDimension(l_sItem.c_str());
 
-                      l_cSize.Height += l_cDim.Height;
-                      if (l_cDim.Width < l_cSize.Width)
-                        l_cDim.Width = l_cSize.Width;
+                    l_cSize.Height += l_cDim.Height;
+                    if (l_cDim.Width > l_cSize.Width)
+                      l_cSize.Width = l_cDim.Width;
+                  }
 
-                      l_cSize.Width  = 6 * l_cSize.Width / 5;
-                      l_cSize.Height = 6 * l_cSize.Height / 5;
-                    }
+                  l_cSize.Width  = 6 * l_cSize.Width / 5;
+                  l_cSize.Height = 6 * l_cSize.Height / 5;
 
-                    m_pMenu = m_pGui->addContextMenu(
-                      irr::core::recti(
+                  irr::gui::IGUIContextMenu *l_pMenu = m_pGui->addContextMenu(
+                    irr::core::recti(
+                      irr::core::vector2di(
                         (irr::u32)a_cEvent.MouseInput.X < l_cScreen.Width - l_cSize.Width ? a_cEvent.MouseInput.X : l_cScreen.Width - l_cSize.Width,
-                        (irr::u32)a_cEvent.MouseInput.Y < l_cScreen.Height - l_cSize.Height ? a_cEvent.MouseInput.Y : l_cScreen.Height - l_cSize.Height,
-                        l_cSize.Width,
-                        l_cSize.Height
-                      )
-                    );
+                        (irr::u32)a_cEvent.MouseInput.Y < l_cScreen.Height - l_cSize.Height ? a_cEvent.MouseInput.Y : l_cScreen.Height - l_cSize.Height
+                      ),
+                      irr::core::dimension2du(l_cSize.Width, l_cSize.Height)
+                    )
+                  );
 
-                    m_pSelected = m_pHover;
+                  m_pSelected = m_pHover;
 
-                    for (auto l_sItem : l_vItems) {
-                      m_pMenu->addItem(std::get<0>(l_sItem).c_str());
-                    }
+                  for (auto l_sItem: l_vItems) {
+                    l_pMenu->addItem(l_sItem.c_str());
+                  }
 
-                    std::vector<std::wstring> l_vPartItems = l_pPart->contextMenuEntries(std::get<1>(m_mReferencePoints[m_pHover]));
-                    for (auto l_sItem: l_vPartItems) {
-                      m_pMenu->addItem(l_sItem.c_str());
-                    }
+                  std::vector<std::wstring> l_vPartItems = l_pPart->contextMenuEntries(std::get<1>(m_mReferencePoints[m_pHover]));
+                  for (auto l_sItem: l_vPartItems) {
+                    l_pMenu->addItem(l_sItem.c_str());
                   }
                 }
               }
@@ -824,8 +803,9 @@ namespace dustbin {
         }
         else if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
           if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_MENU_ITEM_SELECTED) {
-            if (a_cEvent.GUIEvent.Caller == m_pMenu) {
-              std::wstring l_sItem = m_pMenu->getItemText(m_pMenu->getSelectedItem());
+            if (a_cEvent.GUIEvent.Caller->getType() == irr::gui::EGUIET_CONTEXT_MENU) {
+              irr::gui::IGUIContextMenu *l_pMenu = reinterpret_cast<irr::gui::IGUIContextMenu *>(a_cEvent.GUIEvent.Caller);
+              std::wstring l_sItem = l_pMenu->getItemText(l_pMenu->getSelectedItem());
 
               if (l_sItem == c_sAddFlatSegment) {
                 tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(m_vParts.back(), m_vParts.back()->getEndNormal());
@@ -937,10 +917,62 @@ namespace dustbin {
                   createTrack();
                 }
               }
-              else printf("Item Selected: %i (%ls)\n", m_pMenu->getSelectedItem(), l_sItem.c_str());
+              else if (l_sItem == c_sAddTurnLeft || l_sItem == c_sAddTurnRight) {
+                irr::core::vector2di l_cMouse = tracked::IGlobal::getInstance()->getDevice()->getCursorControl()->getPosition();
 
+                irr::gui::IGUIContextMenu *l_pMenu = m_pGui->addContextMenu(irr::core::recti(l_cMouse, irr::core::dimension2du(50, 50)));
 
-              m_pMenu = nullptr;
+                irr::s32 l_iTag = l_sItem == c_sAddTurnLeft ? 0 : 1;
+
+                std::vector<std::wstring> l_sItems = {
+                  c_sAddTurn45,
+                  c_sAddTurn90,
+                  c_sAddTurn135,
+                  c_sAddTurn180,
+                  c_sAddTurnFree
+                };
+
+                for (auto l_sItem: l_sItems) {
+                  l_pMenu->addItem(l_sItem.c_str(), l_iTag);
+                }
+              }
+              else {
+                int l_iTurn = 0;
+
+                std::map<std::wstring, int> l_mTurn = {
+                  { c_sAddTurn45  ,  45 },
+                  { c_sAddTurn90  ,  90 },
+                  { c_sAddTurn135 , 135 },
+                  { c_sAddTurn180 , 180 },
+                  { c_sAddTurnFree, 666 }
+                };
+
+                if (l_mTurn.find(l_sItem) != l_mTurn.end()) {
+                  l_iTurn = l_mTurn[l_sItem];
+                  
+                  if (l_iTurn == 666) {
+                  }
+                  else {
+                    tracked::ITrackPart *l_pNew = new tracked::CTrackPart_Turn(
+                      l_iTurn ==  45 ? tracked::CTrackPart_Turn::enTurnAngle::FourtyFive : 
+                      l_iTurn ==  90 ? tracked::CTrackPart_Turn::enTurnAngle::Ninety : 
+                      l_iTurn == 135 ? tracked::CTrackPart_Turn::enTurnAngle::OneHundred35 :
+                                       tracked::CTrackPart_Turn::enTurnAngle::OneHundred80,
+                      l_pMenu->getItemCommandId(l_pMenu->getSelectedItem()) == 0,
+                      m_vParts.back(),
+                      m_vParts.back()->getEndNormal()
+                    );
+                    m_vParts.push_back(l_pNew);
+                    addReferencePoints(l_pNew);
+                    createTrack();
+                  }
+
+                  l_bRet = true;
+                }
+
+                if (!l_bRet)
+                  printf("Item Selected: %i (%ls)\n", l_pMenu->getSelectedItem(), l_sItem.c_str());
+              }
             }
           }
         }

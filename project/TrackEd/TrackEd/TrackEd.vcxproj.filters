@@ -240,6 +240,9 @@
     <ClCompile Include="..\_source\helpers\CTrackEdHelpers.cpp">
       <Filter>Source\helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\editor\CTrackPart_Turn.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -421,6 +424,9 @@
     </ClInclude>
     <ClInclude Include="..\_include\helpers\CTrackEdHelpers.h">
       <Filter>Include\helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CTrackPart_Turn.h">
+      <Filter>Include\editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

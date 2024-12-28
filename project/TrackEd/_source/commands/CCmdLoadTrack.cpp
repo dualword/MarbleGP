@@ -5,10 +5,12 @@
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
+#include <CDefines.h>
 #include <IGlobal.h>
 
 #include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_Turn.h>
 #include <editor/CTrackPart_Ramp.h>
 
 namespace dustbin {
@@ -57,14 +59,17 @@ namespace dustbin {
 
               tracked::ITrackPart *l_pNew = nullptr;
 
-              if (l_sType == L"FlatSegment") {
+              if (l_sType == helpers::s2ws(c_sTypeFlat)) {
                 l_pNew = new tracked::CTrackPart_FlatSegment(nullptr, irr::core::vector3df());
               }
-              else if (l_sType == L"Ramp") {
+              else if (l_sType == helpers::s2ws(c_sTypeRamp)) {
                 l_pNew = new tracked::CTrackPart_Ramp(nullptr, irr::core::vector3df());
               }
-              else if (l_sType == L"Checkpoint") {
+              else if (l_sType == helpers::s2ws(c_sTypeCheckpoint)) {
                 l_pNew = new tracked::CTrackPart_Checkpoint(nullptr, irr::core::vector3df());
+              }
+              else if (l_sType == helpers::s2ws(c_sTypeTurn)) {
+                l_pNew = new tracked::CTrackPart_Turn(tracked::CTrackPart_Turn::enTurnAngle::FourtyFive, true, nullptr, irr::core::vector3df());
               }
               else printf("Unknown track part \"%ls\"\n", l_sType.c_str());
 

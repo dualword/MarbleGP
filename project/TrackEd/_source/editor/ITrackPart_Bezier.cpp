@@ -292,8 +292,6 @@ namespace dustbin {
     void ITrackPart_Bezier::setReferencePoints(const std::vector<irr::core::vector3df> &a_vPoints) {
       m_vPoints.clear();
 
-      m_vPoints.clear();
-
       for (auto l_cPoint : a_vPoints)
         m_vPoints.push_back(l_cPoint);
 
@@ -306,7 +304,7 @@ namespace dustbin {
         m_vPoints.back() + (m_fWidth / 2.0f) * getSideOfPoint((int)m_vPoints.size() - 1)
       ));
 
-      if (getNext() != nullptr && getNext()->getPrevious() != nullptr)
+      if (getNext() != nullptr)
         getNext()->updateReferencePoints();
     }
 

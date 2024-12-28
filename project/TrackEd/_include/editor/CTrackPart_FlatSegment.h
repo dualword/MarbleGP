@@ -28,7 +28,7 @@ namespace dustbin {
         virtual irr::core::vector3df getSideOfPoint(int a_iIndex) const override;
 
       public:
-        CTrackPart_FlatSegment(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);
+        CTrackPart_FlatSegment(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal, const std::string &a_sIdentifier = "");
         virtual ~CTrackPart_FlatSegment();
 
         /**
