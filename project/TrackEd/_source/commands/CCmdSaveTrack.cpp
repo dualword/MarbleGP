@@ -1,5 +1,6 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
 // This file is licensed under the terms of the ZLib license
+#include <helpers/CTrackEdHelpers.h>
 #include <commands/CCmdSaveTrack.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
@@ -55,7 +56,10 @@ namespace dustbin {
           l_pWriter->writeLineBreak();
 
           l_pWriter->drop();
+          helpers::addLogMessage(L"Track file \"" + helpers::extractFileName(l_sFileName) + L"\" Saved.", irr::ELL_INFORMATION, 3000);
         }
+        else helpers::addLogMessage(L"Error while saving track file.", irr::ELL_ERROR, 3000);
+        
       }
     }
 

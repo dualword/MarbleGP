@@ -1,6 +1,7 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
 // This file is licensed under the terms of the ZLib license
 #include <platform/CTrackEdPlatform.h>
+#include <helpers/CTrackEdHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdLoadTrack.h>
 #include <commands/CCmdEditTrack.h>
@@ -81,6 +82,8 @@ namespace dustbin {
           a_pEditTrack->createTrack();
           a_pEditTrack->updateReferencePoints();
           l_pReader->drop();
+
+          helpers::addLogMessage(L"Track file \"" + helpers::extractFileName(l_sFileName) + L"\" loaded.", irr::ELL_INFORMATION, 8000);
         }
       }
     }

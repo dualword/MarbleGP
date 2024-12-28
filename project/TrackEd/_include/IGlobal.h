@@ -6,6 +6,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace commands {
+    class CCmdEditTrack;    /**< Forward declaration of the "Edit Track" command*/
+  }
+
   namespace tracked {
     /**
     * @class IGlobal
@@ -101,6 +105,12 @@ namespace dustbin {
         * @return the file system
         */
         virtual irr::io::IFileSystem* getFileSystem() = 0;
+
+        /**
+        * Get the active "Edit Track" command
+        * @return the active "Edit Track" command
+        */
+        virtual commands::CCmdEditTrack *getEditTrackCommand() = 0;
     };
   }
 }

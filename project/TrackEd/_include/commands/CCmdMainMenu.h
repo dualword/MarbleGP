@@ -5,6 +5,8 @@
 
 #include <commands/ICommand.h>
 #include <irrlicht.h>
+#include <vector>
+#include <tuple>
 #include <map>
 
 namespace dustbin {
@@ -37,11 +39,16 @@ namespace dustbin {
         CCmdEditTrack   *m_pEditTrack;  /**< The edit track command */
         
         irr::gui::IGUIEnvironment *m_pGui;    /**< The Irrlicht GUI environment */
+        irr::ITimer               *m_pTimer;  /**< The Irrlicht timer */
 
         std::map<enMenuItem, irr::gui::IGUIButton *> m_mButtons;  /**< The buttons of the menu */
 
-        irr::gui::IGUIStaticText  *m_pEditMode;   /**< The "Edit Mode" or information label in the upper left */
-        irr::gui::IGUIStaticText  *m_pWarning;    /**< An edit field showing some warning */
+        irr::gui::IGUIStaticText *m_pEditMode;   /**< The "Edit Mode" or information label in the upper left */
+
+        irr::core::position2di m_cLogPos;   /**< The start position for the log labels */
+
+        /* The log messages (0 == message, 1 == Log Level, 2 == Time to live, 3 == Start time) */
+        std::vector<std::tuple<std::wstring, irr::gui::IGUIStaticText *, irr::ELOG_LEVEL, irr::u32, irr::u32>> m_vLog;
 
         const std::wstring getButtonText(enMenuItem a_eButton);
 
@@ -56,15 +63,12 @@ namespace dustbin {
         void setEditMode(const std::wstring &a_sText);
 
         /**
-        * Set the warning text
-        * @param a_sWarning the new warning text
+        * Add a log message
+        * @param a_sMessage the message
+        * @param a_eLevel the log level
+        * @param a_iTtl the time to live for the message
         */
-        void setWarningText(const std::wstring &a_sWarning);
-
-        /**
-        * Hide the warning label
-        */
-        void hideWarning();
+        void addLogMessage(const std::wstring &a_sMessage, irr::ELOG_LEVEL a_eLevel, irr::u32 a_iTtl);
 
         /**
         * Set the edit track command
@@ -78,6 +82,11 @@ namespace dustbin {
         * @return true if the command is finished and can be removed
         */
         virtual bool isFinished() override;
+
+        /**
+        * This method is called on every frame.
+        */
+        virtual void run() override;
 
         /**
         * Callback method for changes in the UI like modifying

@@ -10,6 +10,7 @@
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdThumbnail.h>
 #include <commands/CCmdTrackName.h>
+#include <helpers/CStringHelpers.h>
 #include <commands/CCmdMainMenu.h>
 #include <IGlobal.h>
 
@@ -20,14 +21,14 @@ namespace dustbin {
       m_pHandler  (a_pHandler),
       m_pEditTrack(nullptr),
       m_pGui      (a_pGui),
-      m_pEditMode (nullptr),
-      m_pWarning  (nullptr)
+      m_pTimer    (tracked::IGlobal::getInstance()->getDevice()->getTimer()),
+      m_pEditMode (nullptr)
     {
       onUiSetupModified();
     }
 
     CCmdMainMenu::~CCmdMainMenu() {
-
+      m_vLog.clear();
     }
 
     /**
@@ -43,19 +44,38 @@ namespace dustbin {
     * Set the warning text
     * @param a_sWarning the new warning text
     */
-    void CCmdMainMenu::setWarningText(const std::wstring &a_sWarning) {
-      if (m_pWarning != nullptr) {
-        m_pWarning->setText(a_sWarning.c_str());
-        m_pWarning->setVisible(true);
-      }
-    }
+    void CCmdMainMenu::addLogMessage(const std::wstring &a_sMessage, irr::ELOG_LEVEL a_eLevel, irr::u32 a_iTtl) {
+      
+      std::string  l_sMessage = helpers::ws2s(a_sMessage);
+      std::wstring l_sMsgLong = a_sMessage;
 
-    /**
-    * Hide the warning label
-    */
-    void CCmdMainMenu::hideWarning() {
-      if (m_pWarning != nullptr)
-        m_pWarning->setVisible(false);
+      irr::core::dimension2du l_cTextSize = m_pGui->getSkin()->getFont()->getDimension(a_sMessage.c_str());
+      irr::core::dimension2du l_cScreen   = m_pGui->getVideoDriver()->getScreenSize();
+
+      while (l_cTextSize.Width > l_cScreen.Width / 5) {
+        l_sMsgLong = l_sMsgLong.substr(0, l_sMessage.size() - 3) + L"..";
+        l_cTextSize = m_pGui->getSkin()->getFont()->getDimension(a_sMessage.c_str());
+      }
+
+      irr::core::position2di l_cPos = (m_vLog.size() > 0 && std::get<1>(m_vLog.back()) != nullptr) ? irr::core::position2di(m_cLogPos.X, std::get<1>(m_vLog.back())->getAbsoluteClippingRect().LowerRightCorner.Y) : m_cLogPos;
+
+      irr::gui::IGUIStaticText *l_pText = m_pGui->addStaticText(l_sMsgLong.c_str(), irr::core::recti(l_cPos, l_cTextSize));
+
+      switch (a_eLevel) {
+        case irr::ELL_WARNING: l_pText->setOverrideColor(irr::video::SColor(0xFF, 0xFF, 0xFF, 0x80)); break;
+        case irr::ELL_ERROR  : l_pText->setOverrideColor(irr::video::SColor(0xFF, 0xFF,    0,    0)); break;
+        default:
+          break;
+      }
+
+      m_vLog.push_back(std::make_tuple(a_sMessage, l_pText, a_eLevel, a_iTtl, m_pTimer->getTime()));
+
+      irr::SEvent a_cEvent;
+      a_cEvent.EventType      = irr::EET_LOG_TEXT_EVENT;
+      a_cEvent.LogEvent.Level = a_eLevel;
+      a_cEvent.LogEvent.Text  = l_sMessage.c_str();
+      tracked::IGlobal::getInstance()->getDevice()->postEventFromUser(a_cEvent);
+
     }
 
     /**
@@ -64,6 +84,44 @@ namespace dustbin {
     */
     void CCmdMainMenu::setEditTrackCommand(CCmdEditTrack *a_pCmd) {
       m_pEditTrack = a_pCmd;
+    }
+
+    /**
+    * This method is called on every frame.
+    */
+    void CCmdMainMenu::run() {
+      if (m_vLog.size() > 0) {
+        irr::u32 l_iTime = m_pTimer->getTime();
+
+        std::vector<std::tuple<std::wstring, irr::gui::IGUIStaticText *, irr::ELOG_LEVEL, irr::u32, irr::u32>>::iterator l_itLog = m_vLog.end();
+        do {
+          l_itLog--;
+
+          irr::u32 l_iTtl = std::get<3>(*l_itLog) + std::get<4>(*l_itLog);
+          if (l_iTtl < l_iTime) {
+            if (std::get<1>(*l_itLog) != nullptr) {
+              std::get<1>(*l_itLog)->setVisible(false);
+
+              irr::s32 l_iHeight = std::get<1>(*l_itLog)->getAbsoluteClippingRect().getHeight();
+
+              for (auto l_tLog2 = l_itLog + 1; l_tLog2 != m_vLog.end(); l_tLog2++) {
+                if (std::get<1>(*l_tLog2) != nullptr) {
+                  std::get<1>(*l_tLog2)->setRelativePosition(std::get<1>(*l_tLog2)->getAbsolutePosition().UpperLeftCorner - irr::core::vector2di(0, l_iHeight));
+                }
+              }
+
+              m_pGui->addToDeletionQueue(std::get<1>(*l_itLog));
+              std::get<1>(*l_itLog) = nullptr;
+
+              m_vLog.erase(l_itLog);
+              l_itLog = m_vLog.end();
+
+              if (m_vLog.size() == 0) break;
+            }
+          }
+        } 
+        while (l_itLog != m_vLog.begin());
+      }
     }
 
     /**
@@ -101,9 +159,12 @@ namespace dustbin {
         m_pGui->addToDeletionQueue(m_pEditMode);
       }
 
-      if (m_pWarning != nullptr) {
-        m_pWarning->setVisible(false);
-        m_pGui->addToDeletionQueue(m_pWarning);
+      for (auto l_tLog: m_vLog) {
+        if (std::get<1>(l_tLog) != nullptr) {
+          std::get<1>(l_tLog)->setVisible(false);
+          m_pGui->addToDeletionQueue(std::get<1>(l_tLog));
+          std::get<1>(l_tLog) = nullptr;
+        }
       }
 
       for (auto l_tButton: m_mButtons) {
@@ -164,12 +225,9 @@ namespace dustbin {
       irr::core::vector2di    l_cPos  = irr::core::vector2di(0, l_cBtnPos.Y + 5 * l_cBtnSize.Height / 4);
 
       m_pEditMode = m_pGui->addStaticText(L"Edit Mode: Default", irr::core::recti(l_cPos, l_cSize));
+      m_cLogPos = irr::core::position2di(l_cPos.X, l_cPos.Y + l_cSize.Height);
       
       l_cPos.Y += 6 * l_cSize.Height / 5;
-
-      m_pWarning = m_pGui->addStaticText(L"Warning Label", irr::core::recti(l_cPos, l_cSize));
-      m_pWarning->setOverrideColor(irr::video::SColor(0xFF, 0x80, 0x20, 0x20));
-      m_pWarning->setVisible(false);
     }
 
     /**

@@ -36,6 +36,8 @@ namespace dustbin {
         std::wstring m_sPathMarbleGP;   /**< The data path of MarbleGP */
         std::wstring m_sPathTrackEd ;   /**< The data path of the track editor */
 
+        commands::CCmdEditTrack *m_pEditCommand;    /**< The "Edit Track" command */
+
         irr::u32 m_iWidth;    /**< Width of the window */
         irr::u32 m_iHeight;   /**< Height of the window */
 
@@ -135,6 +137,12 @@ namespace dustbin {
         * @return the file system
         */
         virtual irr::io::IFileSystem *getFileSystem() override;
+
+        /**
+        * Get the active "Edit Track" command
+        * @return the active "Edit Track" command
+        */
+        virtual commands::CCmdEditTrack *getEditTrackCommand() override;
     };
   }
 }

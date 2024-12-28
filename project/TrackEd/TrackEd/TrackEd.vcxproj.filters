@@ -237,6 +237,9 @@
     <ClCompile Include="..\_source\commands\CCmdTrackName.cpp">
       <Filter>Source\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\helpers\CTrackEdHelpers.cpp">
+      <Filter>Source\helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -415,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="..\_include\platform\uuid_v4.h">
       <Filter>Include\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\helpers\CTrackEdHelpers.h">
+      <Filter>Include\helpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -80,6 +80,7 @@
     <ClCompile Include="..\_source\editor\CTrackPart_Checkpoint.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Ramp.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart.cpp" />
+    <ClCompile Include="..\_source\helpers\CTrackEdHelpers.cpp" />
     <ClCompile Include="..\_source\IGlobal.cpp" />
     <ClCompile Include="..\_source\platform\CTrackEdPlatformWindows.cpp" />
     <ClCompile Include="..\_source\TrackEd_main.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="..\_include\editor\CTrackPart_Checkpoint.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Ramp.h" />
     <ClInclude Include="..\_include\editor\ITrackPart.h" />
+    <ClInclude Include="..\_include\helpers\CTrackEdHelpers.h" />
     <ClInclude Include="..\_include\IGlobal.h" />
     <ClInclude Include="..\_include\CTrackEd_MainClass.h" />
     <ClInclude Include="..\_include\platform\CTrackEdPlatform.h" />

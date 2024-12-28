@@ -19,6 +19,7 @@
 
 #include <commands/CCmdAddMarbleGP.h>
 #include <helpers/CTextureHelpers.h>
+#include <helpers/CTrackEdHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <platform/CPlatform.h>
@@ -51,11 +52,11 @@ namespace dustbin {
       if (l_pXmlWriter) {
         m_pNewSmgr = tracked::IGlobal::getInstance()->getSceneManager()->createNewSceneManager(false);
 
-        scenenodes::CMarbleGPSceneNodeFactory* l_pFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pNewSmgr);
+        scenenodes::CMarbleGPSceneNodeFactory *l_pFactory = new scenenodes::CMarbleGPSceneNodeFactory(m_pNewSmgr);
         m_pNewSmgr->registerSceneNodeFactory(l_pFactory);
         l_pFactory->drop();
 
-        animators::CAnimatorFactory* l_pFactory2 = new animators::CAnimatorFactory(tracked::IGlobal::getInstance()->getDevice());
+        animators::CAnimatorFactory *l_pFactory2 = new animators::CAnimatorFactory(tracked::IGlobal::getInstance()->getDevice());
         m_pNewSmgr->registerSceneNodeAnimatorFactory(l_pFactory2);
         l_pFactory2->drop();
 
@@ -64,7 +65,7 @@ namespace dustbin {
         if (l_pSkyboxOld != nullptr) {
           l_pSkyboxOld->clone(m_pNewSmgr->getRootSceneNode(), m_pNewSmgr);
         }
-        
+
         m_pWorld = m_pNewSmgr->addSceneNode("WorldNode", m_pNewSmgr->getRootSceneNode());
 
         exportAndPrepareTrack();
@@ -78,7 +79,10 @@ namespace dustbin {
         createInfoFile();
 
         m_pNewSmgr->drop();
+
+        helpers::addLogMessage(L"Track added to MarbleGP", irr::ELL_INFORMATION, 3000);
       }
+      else helpers::addLogMessage(L"Error while trying to add track to MarbleGP", irr::ELL_ERROR, 3000);
     }
 
     CCmdAddMarbleGP::~CCmdAddMarbleGP() {
@@ -97,6 +101,10 @@ namespace dustbin {
           l_pFile->drop();
         }
         l_pWriter->drop();
+      }
+      else {
+        helpers::addLogMessage(L"Error trying to export track mesh.", irr::ELL_ERROR, 3000);
+        return;
       }
 
       irr::scene::ISceneNode *l_pNewTrack = m_pNewSmgr->addMeshSceneNode(

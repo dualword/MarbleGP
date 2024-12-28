@@ -491,18 +491,6 @@ namespace dustbin {
               if (l_cDummy.Y >= 0.0f && l_cDummy.Y < v2.Y)
                 v2 = l_cDummy;
             }
-
-            // v1 = irr::core::vector3df(
-            //   (v1x * cos(0.0f) + v2x * sin(0.0f)),
-            //   (v1y * cos(0.0f) + v2y * sin(0.0f)),
-            //   (v1z * cos(0.0f) + v2z * sin(0.0f))          
-            // );
-            // 
-            // v2 = irr::core::vector3df(
-            //   (v1x * cos(90.0f) + v2x * sin(90.0f)),
-            //   (v1y * cos(90.0f) + v2y * sin(90.0f)),
-            //   (v1z * cos(90.0f) + v2z * sin(90.0f))
-            // );
           }
 
           for (irr::f32 y = -50.0f; y <= 50.0f; y += 5.0f) {
@@ -664,7 +652,7 @@ namespace dustbin {
                   }
                   else {
                     if (m_pMainMenu != nullptr) {
-                      m_pMainMenu->setWarningText(L"This point cannot be moved!");
+                      m_pMainMenu->addLogMessage(L"This point cannot be moved!", irr::ELL_ERROR, 2000);
                     }
                   }
                 }
@@ -752,9 +740,6 @@ namespace dustbin {
               m_pSelected = nullptr;
               l_bRet = true;
             }
-
-            if (m_pMainMenu != nullptr)
-              m_pMainMenu->hideWarning();
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN) {
             m_cDownPoint[1] = irr::core::vector2di(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y);
@@ -1203,6 +1188,14 @@ namespace dustbin {
     */
     const std::string &CCmdEditTrack::getUUID() {
       return m_sTrackUUID;
+    }
+
+    /**
+    * Get the main menu
+    * @return the main menu
+    */
+    CCmdMainMenu *CCmdEditTrack::getMainMenu() {
+      return m_pMainMenu;
     }
   }
 }

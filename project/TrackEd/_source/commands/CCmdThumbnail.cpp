@@ -2,6 +2,7 @@
 // This file is licensed under the terms of the ZLib license
 // https://www.zlib.net/zlib_license.html
 
+#include <helpers/CTrackEdHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdThumbnail.h>
 
@@ -105,6 +106,8 @@ namespace dustbin {
 
             m_bFinished = true;
             l_bRet = true;
+
+            helpers::addLogMessage(L"Thumbnail camera saved.", irr::ELL_INFORMATION, 2000);
           }
           else if (a_cEvent.GUIEvent.Caller == m_pBtnCancel) {
             m_bFinished = true;

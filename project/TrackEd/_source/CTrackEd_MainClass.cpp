@@ -20,15 +20,16 @@
 namespace dustbin {
   namespace tracked {
     CTrackEd_MainClass::CTrackEd_MainClass() :
-      IGlobal(),
-      m_pDevice (nullptr),
-      m_pSmgr   (nullptr),
-      m_pDrv    (nullptr),
-      m_pGui    (nullptr),
-      m_pFs     (nullptr),
-      m_pFontMgr(nullptr),
-      m_iWidth  (0),
-      m_iHeight (0)
+      IGlobal       (),
+      m_pDevice     (nullptr),
+      m_pSmgr       (nullptr),
+      m_pDrv        (nullptr),
+      m_pGui        (nullptr),
+      m_pFs         (nullptr),
+      m_pFontMgr    (nullptr),
+      m_pEditCommand(nullptr),
+      m_iWidth      (0),
+      m_iHeight     (0)
     {
       std::wstring l_sPath = dustbin::platform::portableGetDataPath();
 
@@ -63,6 +64,8 @@ namespace dustbin {
       m_pDevice->setWindowCaption(L"Dustbin::Games MarbleGP Track Editor");
       m_pDevice->setEventReceiver(this);
 
+      m_pDevice->getTimer()->start();
+
       m_pSmgr = m_pDevice->getSceneManager  ();
       m_pDrv  = m_pDevice->getVideoDriver   ();
       m_pGui  = m_pDevice->getGUIEnvironment();
@@ -96,15 +99,16 @@ namespace dustbin {
       l_pFactory2->drop();
 
       commands::CCmdMainMenu  *l_pMain = new commands::CCmdMainMenu(this, m_pGui);
-      commands::CCmdEditTrack *l_pEdit = new commands::CCmdEditTrack      (m_pSmgr, m_pDrv, m_pGui, l_pMain);
 
-      l_pMain->setEditTrackCommand(l_pEdit);
+      m_pEditCommand = new commands::CCmdEditTrack      (m_pSmgr, m_pDrv, m_pGui, l_pMain);
+
+      l_pMain->setEditTrackCommand(m_pEditCommand);
 
       addCommand(new commands::CCmdDefaultRenderer(m_pDevice      ));
       addCommand(new commands::CCmdDustbinRenderer(m_pDevice      ));
       addCommand(new commands::CCmdCameraCtrl     (m_pSmgr, m_pGui));
       addCommand(l_pMain);
-      addCommand(l_pEdit);
+      addCommand(m_pEditCommand);
 
       CCommandHandler::run();
 
@@ -250,6 +254,14 @@ namespace dustbin {
     */
     irr::io::IFileSystem *CTrackEd_MainClass::getFileSystem() {
       return m_pFs;
+    }
+
+    /**
+    * Get the active "Edit Track" command
+    * @return the active "Edit Track" command
+    */
+    commands::CCmdEditTrack *CTrackEd_MainClass::getEditTrackCommand() {
+      return m_pEditCommand;
     }
 
     /**

@@ -228,6 +228,12 @@ namespace dustbin {
         * @return the track's UUID
         */
         const std::string &getUUID();
+
+        /**
+        * Get the main menu
+        * @return the main menu
+        */
+        CCmdMainMenu *getMainMenu();
     };
   }
 }
