@@ -68,21 +68,22 @@ namespace dustbin {
 
         m_pWorld = m_pNewSmgr->addSceneNode("WorldNode", m_pNewSmgr->getRootSceneNode());
 
-        exportAndPrepareTrack();
-        addCheckpoints();
-        addAiLightAndRostrum();
+        if (exportAndPrepareTrack()) {
+          addCheckpoints();
+          addAiLightAndRostrum();
 
-        m_pNewSmgr->saveScene(l_pXmlWriter, m_pFs->getWorkingDirectory());
-        l_pXmlWriter->drop();
+          m_pNewSmgr->saveScene(l_pXmlWriter, m_pFs->getWorkingDirectory());
+          l_pXmlWriter->drop();
 
-        createThumbnail();
-        createInfoFile();
+          createThumbnail();
+          createInfoFile();
+
+          helpers::addLogMessage(L"Track added to MarbleGP", irr::ELL_INFORMATION, 5000);
+        }
 
         m_pNewSmgr->drop();
-
-        helpers::addLogMessage(L"Track added to MarbleGP", irr::ELL_INFORMATION, 3000);
       }
-      else helpers::addLogMessage(L"Error while trying to add track to MarbleGP", irr::ELL_ERROR, 3000);
+      else helpers::addLogMessage(L"Error while trying to add track to MarbleGP", irr::ELL_ERROR, 5000);
     }
 
     CCmdAddMarbleGP::~CCmdAddMarbleGP() {
@@ -91,7 +92,7 @@ namespace dustbin {
     /**
     * Export the track and add it to the new scene manager
     */
-    void CCmdAddMarbleGP::exportAndPrepareTrack() {
+    bool CCmdAddMarbleGP::exportAndPrepareTrack() {
       irr::scene::IMeshSceneNode *l_pTrack = m_pEditTrack->getTrackMesh();
       irr::scene::IMeshWriter *l_pWriter = m_pNewSmgr->createMeshWriter(irr::scene::EMWT_OBJ);
       if (l_pWriter) {
@@ -103,8 +104,8 @@ namespace dustbin {
         l_pWriter->drop();
       }
       else {
-        helpers::addLogMessage(L"Error trying to export track mesh.", irr::ELL_ERROR, 3000);
-        return;
+        helpers::addLogMessage(L"Error trying to export track mesh.", irr::ELL_ERROR, 5000);
+        return false;
       }
 
       irr::scene::ISceneNode *l_pNewTrack = m_pNewSmgr->addMeshSceneNode(
@@ -115,6 +116,11 @@ namespace dustbin {
         irr::core::vector3df(0.0f),
         irr::core::vector3df(50.0f)
       );
+
+      if (l_pNewTrack == nullptr) {
+        helpers::addLogMessage(L"Failed to import exported track file.", irr::ELL_ERROR, 5000);
+        return false;
+      }
 
       for (irr::u32 i = 0; i < l_pTrack->getMaterialCount() && i < l_pNewTrack->getMaterialCount(); i++) {
         for (irr::u32 j = 0; j < 8; j++) {
@@ -158,6 +164,8 @@ namespace dustbin {
       if (l_pStart != nullptr) {
         l_pStart->clone(m_pWorld, m_pNewSmgr);
       }
+
+      return true;
     }
 
     /**

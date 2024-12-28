@@ -29,7 +29,7 @@ namespace dustbin {
       /**
       * Export the track and add it to the new scene manager
       */
-      void exportAndPrepareTrack();
+      bool exportAndPrepareTrack();
 
       /**
       * Add the checkpoints to the track

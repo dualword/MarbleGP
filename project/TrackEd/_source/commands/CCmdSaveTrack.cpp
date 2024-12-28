@@ -56,9 +56,9 @@ namespace dustbin {
           l_pWriter->writeLineBreak();
 
           l_pWriter->drop();
-          helpers::addLogMessage(L"Track file \"" + helpers::extractFileName(l_sFileName) + L"\" Saved.", irr::ELL_INFORMATION, 3000);
+          helpers::addLogMessage(L"Track file \"" + helpers::extractFileName(l_sFileName) + L"\" Saved.", irr::ELL_INFORMATION, 5000);
         }
-        else helpers::addLogMessage(L"Error while saving track file.", irr::ELL_ERROR, 3000);
+        else helpers::addLogMessage(L"Error while saving track file.", irr::ELL_ERROR, 5000);
         
       }
     }
