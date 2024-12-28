@@ -87,20 +87,18 @@ namespace dustbin {
       irr::f32 l_fLength = calculateCurve();
       irr::f32 l_fWidth  = m_fWidth / 2.0f;
 
-      int l_iSteps = std::max((int)(l_fLength / m_fWidth), 1);
-      
-      irr::f32 l_fTextureStep = (irr::f32)l_iSteps / (irr::f32)(m_vTrack.size() - 1);
-      
-      printf("Road Length: %.4f, Texture Count: %i, Texture Step: %.4f\n", l_fLength, l_iSteps, l_fTextureStep);
+      int l_iSteps = std::max((int)(l_fLength / m_fWidth) - 1, 1);
       
       irr::core::vector2df l_aTextureTop[] = {
         irr::core::vector2df(0.0f, 0.0f),
         irr::core::vector2df(1.0f, 0.0f),
-        irr::core::vector2df(1.0f, l_fTextureStep),
-        irr::core::vector2df(0.0f, l_fTextureStep)
+        irr::core::vector2df(1.0f, 0.0f),
+        irr::core::vector2df(0.0f, 0.0f)
       };
 
       irr::core::line3df l_cOld = getPrevious() != nullptr ? getPrevious()->getEnd() : irr::core::line3df(m_vPoints[0] + l_fWidth * getSideOfPoint(0), m_vPoints[0] - l_fWidth * getSideOfPoint(0));
+
+      irr::f32 l_fCurrentLength = 0.0f;
 
       for (size_t i = 0; i < m_vTrack.size(); i++) {
         irr::core::line3df l_cNew = irr::core::line3df(m_vTrack[i] - l_fWidth * getSideAtIndex((int)i), m_vTrack[i] + l_fWidth * getSideAtIndex((int)i));
@@ -129,9 +127,9 @@ namespace dustbin {
         };
       
         irr::core::vector3df l_cNormals[4];
-      
+        
         if (a_vBuffers.size() > tracked::c_iBufferIdxBottom) {
-          addQuadToMeshBuffer(l_aVertBottom, t, a_vBuffers[tracked::c_iBufferIdxBottom], false, l_bForceAdd2nd, l_cNormals);
+          addQuadToMeshBuffer(l_aVertBottom, t, a_vBuffers[tracked::c_iBufferIdxBottom], false, false, l_cNormals);
         }
       
         irr::core::vector3df l_aVertTop[4];
@@ -141,18 +139,21 @@ namespace dustbin {
         l_aVertTop[1] = l_aVertBottom[0] - 0.05f * l_cNormals[0];
         l_aVertTop[2] = l_aVertBottom[3] - 0.05f * l_cNormals[3];
         l_aVertTop[3] = l_aVertBottom[2] - 0.05f * l_cNormals[2];
-      
+
+        l_fCurrentLength += (l_cNew.getMiddle() - l_cOld.getMiddle()).getLength();
+
+        l_aTextureTop[2].Y = (irr::f32)l_iSteps * l_fCurrentLength / l_fLength;
+        l_aTextureTop[3].Y = (irr::f32)l_iSteps * l_fCurrentLength / l_fLength;
+
+        if (i == m_vTrack.size() - 1 && getNext() != nullptr && getNext()->getPrevious() == nullptr)
+          printf("Texture: %.2f\n", l_aTextureTop[2].Y);
+
         if (a_vBuffers.size() > tracked::c_iBufferIdxRoad) {
-          addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[tracked::c_iBufferIdxRoad], true, false, nullptr);
+          addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[tracked::c_iBufferIdxRoad], i == 0, l_bForceAdd2nd, nullptr);
         }
-      
-        for (int j = 0; j < 4; j++)
-          l_aTextureTop[j].Y += l_fTextureStep;
-      
-        if (i == m_vTrack.size()) {
-          l_aTextureTop[2].Y = (irr::f32)l_iSteps;
-          l_aTextureTop[3].Y = (irr::f32)l_iSteps;
-        }
+
+        l_aTextureTop[0].Y = l_aTextureTop[2].Y;
+        l_aTextureTop[1].Y = l_aTextureTop[3].Y;
       
         for (int j = 0; j < 2; j++) {
           irr::core::vector3df l_cSide[] = {
@@ -275,7 +276,7 @@ namespace dustbin {
         m_vTrack.push_back(getBezier(m_vPoints, l_fStep));
       }
 
-      irr::f32 l_fRet = 0.0f;
+      irr::f32 l_fRet = getPrevious() == nullptr ? 0.0f : getPrevious()->getEnd().getMiddle().getDistanceFrom(m_vTrack.front());
 
       for (std::vector<irr::core::vector3df>::iterator l_itTrack = m_vTrack.begin() + 1; l_itTrack != m_vTrack.end(); l_itTrack++) {
         l_fRet += (*l_itTrack).getDistanceFrom(*(l_itTrack - 1));
