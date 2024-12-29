@@ -304,7 +304,7 @@ namespace dustbin {
         m_vPoints.back() + (m_fWidth / 2.0f) * getSideOfPoint((int)m_vPoints.size() - 1)
       ));
 
-      if (getNext() != nullptr)
+      if (getNext() != nullptr && getNext()->getPrevious() != nullptr)
         getNext()->updateReferencePoints();
     }
 
