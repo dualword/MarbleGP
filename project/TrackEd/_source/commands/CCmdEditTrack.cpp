@@ -17,6 +17,7 @@
 
 #include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
+#include <editor/CTrackPart_Straight.h>
 #include <editor/ITrackPart_Bezier.h>
 #include <editor/CTrackPart_Turn.h>
 #include <editor/CTrackPart_Ramp.h>
@@ -916,6 +917,23 @@ namespace dustbin {
                   addReferencePoints(l_pNew);
                   createTrack();
                 }
+              }
+              else if (l_sItem == c_sAddStraight) {
+                tracked::CTrackPart_Straight *l_pNew = new tracked::CTrackPart_Straight(m_vParts.back(), m_vParts.back()->getEndNormal());
+
+                irr::core::vector3df l_cDirection = m_vParts.back()->getEndDirection();
+                
+                std::vector<irr::core::vector3df> l_vRefPoints = {
+                  m_vParts.back()->getReferencePoints().back(),
+                  m_vParts.back()->getReferencePoints().back() + 2.5f * l_cDirection.normalize()
+                };
+
+                l_pNew->setReferencePoints(l_vRefPoints);
+                m_vParts.push_back(l_pNew);
+
+                addReferencePoints(l_pNew);
+
+                createTrack();
               }
               else if (l_sItem == c_sAddTurnLeft || l_sItem == c_sAddTurnRight) {
                 irr::core::vector2di l_cMouse = tracked::IGlobal::getInstance()->getDevice()->getCursorControl()->getPosition();

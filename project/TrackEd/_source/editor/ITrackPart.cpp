@@ -300,12 +300,14 @@ namespace dustbin {
     * @param a_cAttr the attributes to read the data from
     */
     void ITrackPart::deserialize(const irr::io::IAttributes& a_cAttr) {
-      m_sType       = a_cAttr.getAttributeAsString  ("type").c_str();
-      m_iInternalId = a_cAttr.getAttributeAsInt     ("id");
-      m_iPrevious   = a_cAttr.getAttributeAsInt     ("previous");
-      m_iNext       = a_cAttr.getAttributeAsInt     ("next");
-      m_cNormalStart     = a_cAttr.getAttributeAsVector3d("normal");
-      m_fWidth      = a_cAttr.getAttributeAsFloat   ("width");
+      m_sType        = a_cAttr.getAttributeAsString  ("type").c_str();
+      m_iInternalId  = a_cAttr.getAttributeAsInt     ("id");
+      m_iPrevious    = a_cAttr.getAttributeAsInt     ("previous");
+      m_iNext        = a_cAttr.getAttributeAsInt     ("next");
+      m_cNormalStart = a_cAttr.getAttributeAsVector3d("normal");
+      m_fWidth       = a_cAttr.getAttributeAsFloat   ("width");
+
+      printf("Previous: %i\n", m_iPrevious);
     }
 
     void ITrackPart::drawReferencePoint(irr::video::IVideoDriver *a_pDrv) {

@@ -20,7 +20,6 @@ namespace dustbin {
   const std::wstring c_sAddGap         = L"Add Gap";
   const std::wstring c_sFinishTrack    = L"Finish Track";
   const std::wstring c_sAddReference   = L"Add Reference Point";
-  const std::wstring c_sFinishSegment  = L"Finish Segment";
   const std::wstring c_sAddStraight    = L"Add Straight";
   const std::wstring c_sAddTurnLeft    = L"Add Left turn";
   const std::wstring c_sAddTurnRight   = L"Add Right turn";
@@ -34,4 +33,5 @@ namespace dustbin {
   const std::string c_sTypeCheckpoint = "Checkpoint";
   const std::string c_sTypeRamp       = "Ramp";
   const std::string c_sTypeTurn       = "Turn";
+  const std::string c_sTypeStraight   = "Straight";
 }
