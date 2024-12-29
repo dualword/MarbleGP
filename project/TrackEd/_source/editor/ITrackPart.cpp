@@ -14,15 +14,15 @@ namespace dustbin {
     * @param a_pColMgr the Irrlicht scene collision manager
     */
     ITrackPart::ITrackPart(const std::string a_sType, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      m_sType      (a_sType),
-      m_bStart     (a_pPrevious == nullptr),
-      m_iInternalId(++g_iInternalId),
-      m_iPrevious  (-1),
-      m_iNext      (-1),
-      m_pPrevious  (a_pPrevious),
-      m_pNext      (nullptr),
-      m_cNormalStart    (a_cNormal),
-      m_fWidth     (0.75f)
+      m_sType       (a_sType),
+      m_bStart      (a_pPrevious == nullptr),
+      m_iInternalId (++g_iInternalId),
+      m_iPrevious   (-1),
+      m_iNext       (-1),
+      m_pPrevious   (a_pPrevious),
+      m_pNext       (nullptr),
+      m_cNormalStart(a_cNormal),
+      m_fWidth      (0.75f)
     {
       if (m_pPrevious != nullptr) {
         m_iPrevious = m_pPrevious->getId();
