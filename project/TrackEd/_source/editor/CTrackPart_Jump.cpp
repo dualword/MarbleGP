@@ -7,22 +7,7 @@ namespace dustbin {
     CTrackPart_Jump::CTrackPart_Jump(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
       ITrackPart_Bezier(c_sTypeJump, a_pPrevious, a_cNormal)
     {
-      irr::core::vector3df l_cDir  = a_pPrevious != nullptr ? a_pPrevious->getEndDirection   () : irr::core::vector3df(0.0f, 0.0f, 1.0f);
-      irr::core::vector3df l_cEnd  = a_pPrevious != nullptr ? a_pPrevious->getEnd().getMiddle() : irr::core::vector3df(0.0f, 0.0f, 0.0f);
-
-      m_cSide = a_pPrevious != nullptr ? a_pPrevious->getEndSide() : irr::core::vector3df(1.0f, 0.0f, 0.0f);
-
-      m_vRamp.push_back(l_cEnd);
-      m_vRamp.push_back(l_cEnd +        getWidth() * l_cDir);
-      m_vRamp.push_back(l_cEnd + 2.0f * getWidth() * l_cDir + 0.5f * getWidth() * irr::core::vector3df(0.0f, 1.0f, 0.0f));
-
-      m_vLand.push_back(l_cEnd + 4.0f * getWidth() * l_cDir);
-      m_vLand.push_back(l_cEnd + 8.0f * getWidth() * l_cDir);
-
-      for (auto l_cPoint : m_vRamp) m_vPoints.push_back(l_cPoint);
-      for (auto l_cPoint : m_vLand) m_vPoints.push_back(l_cPoint);
-
-      setEnd(irr::core::line3df(m_vLand.back() + getWidth() / 2.0f * m_cSide, m_vLand.back() - getWidth() / 2.0f * m_cSide));
+      updateReferencePoints();
     }
 
     CTrackPart_Jump::~CTrackPart_Jump() {
@@ -41,9 +26,12 @@ namespace dustbin {
         calculateCurve(m_vLand, &m_vTrackPoints[1], true)
       };
 
-      irr::core::line3df l_cOld = getPrevious()->getEnd();
+      irr::core::line3df l_cOld = getPrevious() != nullptr ? getPrevious()->getEnd() : irr::core::line3df(m_fWidth / 2.0f, 0.0f, 0.0f, -m_fWidth / 2.0f, 0.0f, 0.0f);
 
       for (int j = 0; j < 2; j++) {
+        if (j == 1)
+          m_vNormals.push_back(irr::core::vector3df(0.0f, 1.0f, 0.0f));
+
         irr::f32 l_fCurrentLength = 0.0f;
 
         int l_iSteps = j == 0 ?std::max((int)(l_aLength[j] / m_fWidth) - 1, 1) : std::max((int)(l_aLength[j] / m_fWidth), 1);
@@ -92,6 +80,9 @@ namespace dustbin {
 
             l_aTextureTop[0].Y = l_aTextureTop[2].Y;
             l_aTextureTop[1].Y = l_aTextureTop[3].Y;
+
+            if (j == 0)
+              m_vNormals.push_back(-l_aNormals[2]);
 
             l_aEnd[0] = l_aVertBottom[3];
             l_aEnd[1] = l_aVertBottom[2];
@@ -154,16 +145,6 @@ namespace dustbin {
     }
 
     /**
-    * Get the information on the route for the marbles
-    * @return a vector with positions to pass for the marbles
-    */
-    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CTrackPart_Jump::getRoute() {
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
-
-      return l_vRet;
-    }
-
-    /**
     * Get the part's reference points
     * @return a vector with the part's reference points
     */
@@ -184,6 +165,30 @@ namespace dustbin {
     * @param a_cPoints a vector with the reference points
     */
     void CTrackPart_Jump::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
+      m_vRamp.clear();
+      m_vLand.clear();
+
+      if (a_cPoints.size() == 5) {
+        m_vRamp.push_back(a_cPoints[0]);
+        m_vRamp.push_back(a_cPoints[1]);
+        m_vRamp.push_back(a_cPoints[2]);
+
+        m_vLand.push_back(a_cPoints[3]);
+        m_vLand.push_back(a_cPoints[4]);
+      }
+
+      std::vector<irr::scene::SMeshBuffer *> l_vDummy = std::vector<irr::scene::SMeshBuffer *>();
+      bool l_bBlack = true;
+      createTrackPart(l_vDummy, l_bBlack);
+
+      setEnd(irr::core::line3df(
+        m_vLand.back() - (m_fWidth / 2.0f) * getSideOfPoint((int)m_vPoints.size() - 1),
+        m_vLand.back() + (m_fWidth / 2.0f) * getSideOfPoint((int)m_vPoints.size() - 1)
+      ));
+
+
+      if (getNext() != nullptr && getNext()->getPrevious() != nullptr)
+        getNext()->updateReferencePoints();
     }
 
     /**
@@ -200,6 +205,18 @@ namespace dustbin {
     */
     void CTrackPart_Jump::deserialize(const irr::io::IAttributes &a_cAttr) {
       ITrackPart_Bezier::deserialize(a_cAttr);
+
+      if (m_vPoints.size() == 5) {
+        m_vRamp.clear();
+        m_vLand.clear();
+
+        m_vRamp.push_back(m_vPoints[0]);
+        m_vRamp.push_back(m_vPoints[1]);
+        m_vRamp.push_back(m_vPoints[2]);
+
+        m_vLand.push_back(m_vPoints[3]);
+        m_vLand.push_back(m_vPoints[4]);
+      }
     }
 
     /**
@@ -254,7 +271,7 @@ namespace dustbin {
     * @return the normal at the index
     */
     irr::core::vector3df CTrackPart_Jump::getNormalAtIndex(int a_iIndex) {
-      return irr::core::vector3df();
+      return a_iIndex >= 0 && a_iIndex < m_vNormals.size() ? m_vNormals[a_iIndex] : irr::core::vector3df(0.0f, 1.0f, 0.0f);
     }
 
     /**
@@ -269,6 +286,25 @@ namespace dustbin {
     * This method is called when the reference points of the previous track part have changed
     */
     void CTrackPart_Jump::updateReferencePoints() {
+      std::vector<irr::core::vector3df> l_vRef;
+
+      irr::core::vector3df l_cDir  = getPrevious() != nullptr ? getPrevious()->getEndDirection   () : irr::core::vector3df(0.0f, 0.0f, 1.0f);
+      irr::core::vector3df l_cEnd  = getPrevious() != nullptr ? getPrevious()->getEnd().getMiddle() : irr::core::vector3df(0.0f, 0.0f, 0.0f);
+
+      m_cSide = getPrevious() != nullptr ? getPrevious()->getEndSide() : irr::core::vector3df(1.0f, 0.0f, 0.0f);
+
+      printf("Previous: %s\n", getPrevious() == nullptr ? "nullptr" : "ok");
+
+      l_vRef.push_back(l_cEnd);
+      l_vRef.push_back(l_cEnd +        getWidth() * l_cDir);
+      l_vRef.push_back(l_cEnd + 2.0f * getWidth() * l_cDir + 0.5f * getWidth() * irr::core::vector3df(0.0f, 1.0f, 0.0f));
+
+      l_vRef.push_back(l_cEnd + 4.0f * getWidth() * l_cDir);
+      l_vRef.push_back(l_cEnd + 8.0f * getWidth() * l_cDir);
+
+      setReferencePoints(l_vRef);
+
+      setEnd(irr::core::line3df(m_vLand.back() + getWidth() / 2.0f * m_cSide, m_vLand.back() - getWidth() / 2.0f * m_cSide));
     }
 
     /**
@@ -290,6 +326,29 @@ namespace dustbin {
     */
     bool CTrackPart_Jump::partAdditionAllowed(int a_iIndex) {
       return a_iIndex == 4;
+    }
+
+    /**
+    * Get the information on the route for the marbles
+    * @return a vector with positions to pass for the marbles
+    */
+    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CTrackPart_Jump::getRoute() {
+      if (m_vTrackPoints[0].size() == 0 || m_vTrackPoints[1].size() == 0) {
+        calculateCurve(m_vRamp, &m_vTrackPoints[0]);
+        calculateCurve(m_vLand, &m_vTrackPoints[1], true);
+     }
+
+      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+
+      for (size_t i = 0; i < m_vTrackPoints[0].size(); i++) {
+        l_vRet.push_back(std::make_tuple(m_vTrackPoints[0][i] + 0.1f * getNormalAtIndex((int)i), getNormalAtIndex((int)i)));
+      }
+
+      for (size_t i = 0; i < m_vTrackPoints[1].size(); i++) {
+        l_vRet.push_back(std::make_tuple(m_vTrackPoints[1][i] + 0.1f * getNormalAtIndex((int)(i + m_vTrackPoints[0].size())), getNormalAtIndex((int)(i + m_vTrackPoints[0].size()))));
+      }
+
+      return l_vRet;
     }
   }
 }

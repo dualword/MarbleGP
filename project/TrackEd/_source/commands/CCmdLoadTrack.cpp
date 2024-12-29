@@ -11,6 +11,7 @@
 #include <editor/CTrackPart_FlatSegment.h>
 #include <editor/CTrackPart_Checkpoint.h>
 #include <editor/CTrackPart_Straight.h>
+#include <editor/CTrackPart_Jump.h>
 #include <editor/CTrackPart_Turn.h>
 #include <editor/CTrackPart_Ramp.h>
 
@@ -74,6 +75,9 @@ namespace dustbin {
               }
               else if (l_sType == helpers::s2ws(c_sTypeStraight)) {
                 l_pNew = new tracked::CTrackPart_Straight(nullptr, irr::core::vector3df());
+              }
+              else if (l_sType == helpers::s2ws(c_sTypeJump)) {
+                l_pNew = new tracked::CTrackPart_Jump(nullptr, irr::core::vector3df());
               }
               else {
                 helpers::addLogMessage(L"Unknown track part \"" + l_sType + L"\".", irr::ELL_ERROR, 5000);

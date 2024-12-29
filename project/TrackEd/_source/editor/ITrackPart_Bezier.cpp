@@ -233,6 +233,8 @@ namespace dustbin {
     void ITrackPart_Bezier::deserialize(const irr::io::IAttributes &a_cAttr) {
       ITrackPart::deserialize(a_cAttr);
 
+      m_vPoints.clear();
+
       irr::s32 l_iCount = a_cAttr.getAttributeAsInt("number_of_points");
 
       for (irr::s32 i = 0; i < l_iCount; i++) {

@@ -18,6 +18,8 @@ namespace dustbin {
 
         std::vector<irr::core::vector3df> m_vTrackPoints[2];  /**< The calculated (center) points of the track */
 
+        std::vector<irr::core::vector3df> m_vNormals;   /**< The normals of the track points */
+
         irr::core::vector3df m_cSide;   /**< The part's side vector */
 
       protected:
@@ -44,12 +46,6 @@ namespace dustbin {
         * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
         */
         virtual void createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) override;
-
-        /**
-        * Get the information on the route for the marbles
-        * @return a vector with positions to pass for the marbles
-        */
-        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() override;
 
         /**
         * Set the trak part's reference points
@@ -123,6 +119,12 @@ namespace dustbin {
         * @return true if so, false otherwise
         */
         virtual bool partAdditionAllowed(int a_iIndex) override;
+
+        /**
+        * Get the information on the route for the marbles
+        * @return a vector with positions to pass for the marbles
+        */
+        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() override;
     };
   }
 }
