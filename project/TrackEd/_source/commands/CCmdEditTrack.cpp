@@ -19,6 +19,7 @@
 #include <editor/CTrackPart_Checkpoint.h>
 #include <editor/CTrackPart_Straight.h>
 #include <editor/ITrackPart_Bezier.h>
+#include <editor/CTrackPart_Jump.h>
 #include <editor/CTrackPart_Turn.h>
 #include <editor/CTrackPart_Ramp.h>
 
@@ -749,9 +750,10 @@ namespace dustbin {
                     l_vItems.push_back(c_sAddTurnLeft);
                     l_vItems.push_back(c_sAddTurnRight);
 
-                    l_vItems.push_back(c_sAddFlatSegment);
                     l_vItems.push_back(c_sAddCheckpoint );
                     l_vItems.push_back(c_sAddRamp       );
+                    l_vItems.push_back(c_sAddJump       );
+                    l_vItems.push_back(c_sAddFlatSegment);
                   }
 
                   if (l_pPart->getPrevious() == nullptr) {
@@ -932,6 +934,13 @@ namespace dustbin {
                 m_vParts.push_back(l_pNew);
 
                 addReferencePoints(l_pNew);
+
+                createTrack();
+              }
+              else if (l_sItem == c_sAddJump) {
+                tracked::CTrackPart_Jump *l_pNew = new tracked::CTrackPart_Jump(m_vParts.back(), m_vParts.back()->getEndNormal());
+                addReferencePoints(l_pNew);
+                m_vParts.push_back(l_pNew);
 
                 createTrack();
               }

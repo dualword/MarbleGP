@@ -58,176 +58,178 @@ namespace dustbin {
     * @param a_vBuffers the vector of irr::scene::SMeshBuffer instances to be filled
     */
     void CTrackPart_Checkpoint::createTrackPart(std::vector<irr::scene::SMeshBuffer *> &a_vBuffers, bool &a_bBlack) {
-      irr::core::vector3df l_cSide = (m_cStart - m_cEnd).crossProduct(getStartNormal()).normalize();
+      if (getPrevious() != nullptr) {
+        irr::core::vector3df l_cSide = (m_cStart - m_cEnd).crossProduct(getStartNormal()).normalize();
 
-      irr::f32 f1 = m_fWidth / 2.0f;
-      irr::f32 f2 = 3.0f * m_fWidth / 2.0f;
+        irr::f32 f1 = m_fWidth / 2.0f;
+        irr::f32 f2 = 3.0f * m_fWidth / 2.0f;
 
-      irr::core::vector3df l_aRespawn[] = {
-        m_bRespawnLeft ? m_cStart - f1 * l_cSide : m_cStart + f2 * l_cSide,
-        m_bRespawnLeft ? m_cStart - f2 * l_cSide : m_cStart + f1 * l_cSide,
-        m_bRespawnLeft ? m_cEnd   - f2 * l_cSide : m_cEnd   + f1 * l_cSide,
-        m_bRespawnLeft ? m_cEnd   - f1 * l_cSide : m_cEnd   + f2 * l_cSide
-      };
+        irr::core::vector3df l_aRespawn[] = {
+          m_bRespawnLeft ? m_cStart - f1 * l_cSide : m_cStart + f2 * l_cSide,
+          m_bRespawnLeft ? m_cStart - f2 * l_cSide : m_cStart + f1 * l_cSide,
+          m_bRespawnLeft ? m_cEnd - f2 * l_cSide : m_cEnd + f1 * l_cSide,
+          m_bRespawnLeft ? m_cEnd - f1 * l_cSide : m_cEnd + f2 * l_cSide
+        };
 
-      irr::core::vector3df l_aVertices[] = {
-        getPrevious()->getEnd().end   + 0.05f * getStartNormal(),  // +0.25
-        getPrevious()->getEnd().start + 0.05f * getStartNormal(),  // -0.25
-        m_cEnd - f1 * l_cSide + 0.05f * getStartNormal(),
-        m_cEnd + f1 * l_cSide + 0.05f * getStartNormal()
-      };
+        irr::core::vector3df l_aVertices[] = {
+          getPrevious()->getEnd().end + 0.05f * getStartNormal(),  // +0.25
+          getPrevious()->getEnd().start + 0.05f * getStartNormal(),  // -0.25
+          m_cEnd - f1 * l_cSide + 0.05f * getStartNormal(),
+          m_cEnd + f1 * l_cSide + 0.05f * getStartNormal()
+        };
 
-      irr::core::position2df l_aTexture[] = {
-        m_bRespawnLeft ? irr::core::position2df(0.0f, 0.0f) : irr::core::position2df(1.0f, 0.0f),
-        m_bRespawnLeft ? irr::core::position2df(1.0f, 0.0f) : irr::core::position2df(0.0f, 0.0f),
-        m_bRespawnLeft ? irr::core::position2df(1.0f, 1.0f) : irr::core::position2df(0.0f, 1.0f),
-        m_bRespawnLeft ? irr::core::position2df(0.0f, 1.0f) : irr::core::position2df(1.0f, 1.0f)
-      };
+        irr::core::position2df l_aTexture[] = {
+          m_bRespawnLeft ? irr::core::position2df(0.0f, 0.0f) : irr::core::position2df(1.0f, 0.0f),
+          m_bRespawnLeft ? irr::core::position2df(1.0f, 0.0f) : irr::core::position2df(0.0f, 0.0f),
+          m_bRespawnLeft ? irr::core::position2df(1.0f, 1.0f) : irr::core::position2df(0.0f, 1.0f),
+          m_bRespawnLeft ? irr::core::position2df(0.0f, 1.0f) : irr::core::position2df(1.0f, 1.0f)
+        };
 
-      if (a_vBuffers.size() > c_iBufferIdxJoin)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin], true, false, nullptr);
+        if (a_vBuffers.size() > c_iBufferIdxJoin)
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxJoin], true, false, nullptr);
 
-      setStart(irr::core::line3df(l_aVertices[0], l_aVertices[1]));
+        setStart(irr::core::line3df(l_aVertices[0], l_aVertices[1]));
 
-      l_aVertices[0] = l_aRespawn[0] + 0.05f * getStartNormal();
-      l_aVertices[1] = l_aRespawn[1] + 0.05f * getStartNormal();
-      l_aVertices[2] = l_aRespawn[2] + 0.05f * getStartNormal();
-      l_aVertices[3] = l_aRespawn[3] + 0.05f * getStartNormal();
+        l_aVertices[0] = l_aRespawn[0] + 0.05f * getStartNormal();
+        l_aVertices[1] = l_aRespawn[1] + 0.05f * getStartNormal();
+        l_aVertices[2] = l_aRespawn[2] + 0.05f * getStartNormal();
+        l_aVertices[3] = l_aRespawn[3] + 0.05f * getStartNormal();
 
-      l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
-      l_aTexture[1].X = 0.0f; l_aTexture[1].Y = 1.0f;
-      l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
-      l_aTexture[3].X = 1.0f; l_aTexture[3].Y = 0.0f;
+        l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
+        l_aTexture[1].X = 0.0f; l_aTexture[1].Y = 1.0f;
+        l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
+        l_aTexture[3].X = 1.0f; l_aTexture[3].Y = 0.0f;
 
-      if (a_vBuffers.size() > c_iBufferIdxRoad)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxRoad], true, false, nullptr);
+        if (a_vBuffers.size() > c_iBufferIdxRoad)
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxRoad], true, false, nullptr);
 
-      l_aVertices[1] = l_aRespawn[0];
-      l_aVertices[0] = l_aRespawn[1];
-      l_aVertices[3] = l_aRespawn[2];
-      l_aVertices[2] = l_aRespawn[3];
+        l_aVertices[1] = l_aRespawn[0];
+        l_aVertices[0] = l_aRespawn[1];
+        l_aVertices[3] = l_aRespawn[2];
+        l_aVertices[2] = l_aRespawn[3];
 
-      l_aTexture[0].X = l_aVertices[0].X; l_aTexture[0].Y = l_aVertices[0].Z;
-      l_aTexture[1].X = l_aVertices[1].X; l_aTexture[1].Y = l_aVertices[1].Z;
-      l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
-      l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
+        l_aTexture[0].X = l_aVertices[0].X; l_aTexture[0].Y = l_aVertices[0].Z;
+        l_aTexture[1].X = l_aVertices[1].X; l_aTexture[1].Y = l_aVertices[1].Z;
+        l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
+        l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
 
-      if (a_vBuffers.size() > c_iBufferIdxBottom)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false, nullptr);
+        if (a_vBuffers.size() > c_iBufferIdxBottom)
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false, nullptr);
 
-      l_aVertices[0] = getPrevious()->getEnd().start;
-      l_aVertices[1] = getPrevious()->getEnd().end;
-      l_aVertices[2] = m_cEnd + f1 * l_cSide;
-      l_aVertices[3] = m_cEnd - f1 * l_cSide;
+        l_aVertices[0] = getPrevious()->getEnd().start;
+        l_aVertices[1] = getPrevious()->getEnd().end;
+        l_aVertices[2] = m_cEnd + f1 * l_cSide;
+        l_aVertices[3] = m_cEnd - f1 * l_cSide;
 
-      l_aTexture[0].X = l_aVertices[0].X; l_aTexture[0].Y = l_aVertices[0].Z;
-      l_aTexture[1].X = l_aVertices[1].X; l_aTexture[1].Y = l_aVertices[1].Z;
-      l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
-      l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
+        l_aTexture[0].X = l_aVertices[0].X; l_aTexture[0].Y = l_aVertices[0].Z;
+        l_aTexture[1].X = l_aVertices[1].X; l_aTexture[1].Y = l_aVertices[1].Z;
+        l_aTexture[2].X = l_aVertices[2].X; l_aTexture[2].Y = l_aVertices[2].Z;
+        l_aTexture[3].X = l_aVertices[3].X; l_aTexture[3].Y = l_aVertices[3].Z;
 
-      setEnd(irr::core::line3df(l_aVertices[3], l_aVertices[2]));
+        setEnd(irr::core::line3df(l_aVertices[3], l_aVertices[2]));
 
-      if (a_vBuffers.size() > c_iBufferIdxBottom)
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false, nullptr);
+        if (a_vBuffers.size() > c_iBufferIdxBottom)
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[c_iBufferIdxBottom], false, false, nullptr);
 
-      l_aVertices[0] = m_bRespawnLeft ? m_cEnd + f1 * l_cSide : m_cStart - f1 * l_cSide;
-      l_aVertices[1] = m_bRespawnLeft ? getPrevious()->getEnd().end : m_cEnd - f1 * l_cSide;
-      l_aVertices[2] = m_bRespawnLeft ? getPrevious()->getEnd().end + 0.05f * getStartNormal() : m_cEnd - f1 * l_cSide + 0.05f * getStartNormal();
-      l_aVertices[3] = m_bRespawnLeft ? m_cEnd + f1 * l_cSide + 0.05f * getStartNormal() : m_cStart - f1 * l_cSide + 0.05f * getStartNormal();
+        l_aVertices[0] = m_bRespawnLeft ? m_cEnd + f1 * l_cSide : m_cStart - f1 * l_cSide;
+        l_aVertices[1] = m_bRespawnLeft ? getPrevious()->getEnd().end : m_cEnd - f1 * l_cSide;
+        l_aVertices[2] = m_bRespawnLeft ? getPrevious()->getEnd().end + 0.05f * getStartNormal() : m_cEnd - f1 * l_cSide + 0.05f * getStartNormal();
+        l_aVertices[3] = m_bRespawnLeft ? m_cEnd + f1 * l_cSide + 0.05f * getStartNormal() : m_cStart - f1 * l_cSide + 0.05f * getStartNormal();
 
-      l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
-      l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
-      l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
-      l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
+        l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
+        l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
+        l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
+        l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false, nullptr);
+        if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false, nullptr);
 
-      l_aVertices[0] = m_bRespawnLeft ? l_aRespawn[1] : l_aRespawn[3];
-      l_aVertices[1] = m_bRespawnLeft ? l_aRespawn[2] : l_aRespawn[0];
-      l_aVertices[3] = m_bRespawnLeft ? l_aRespawn[1] + 0.05f * getStartNormal() : l_aRespawn[3] + 0.05f * getStartNormal();
-      l_aVertices[2] = m_bRespawnLeft ? l_aRespawn[2] + 0.05f * getStartNormal() : l_aRespawn[0] + 0.05f * getStartNormal();
+        l_aVertices[0] = m_bRespawnLeft ? l_aRespawn[1] : l_aRespawn[3];
+        l_aVertices[1] = m_bRespawnLeft ? l_aRespawn[2] : l_aRespawn[0];
+        l_aVertices[3] = m_bRespawnLeft ? l_aRespawn[1] + 0.05f * getStartNormal() : l_aRespawn[3] + 0.05f * getStartNormal();
+        l_aVertices[2] = m_bRespawnLeft ? l_aRespawn[2] + 0.05f * getStartNormal() : l_aRespawn[0] + 0.05f * getStartNormal();
 
-      l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
-      l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
-      l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
-      l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
+        l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
+        l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
+        l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
+        l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxYellow : c_iBufferIdxBlack], false, false, nullptr);
+        if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxYellow : c_iBufferIdxBlack], false, false, nullptr);
 
-      l_aVertices[0] = l_aRespawn[0];
-      l_aVertices[1] = l_aRespawn[1];
-      l_aVertices[2] = l_aRespawn[1] + 0.05f * getStartNormal();
-      l_aVertices[3] = l_aRespawn[0] + 0.05f * getStartNormal();
+        l_aVertices[0] = l_aRespawn[0];
+        l_aVertices[1] = l_aRespawn[1];
+        l_aVertices[2] = l_aRespawn[1] + 0.05f * getStartNormal();
+        l_aVertices[3] = l_aRespawn[0] + 0.05f * getStartNormal();
 
-      l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
-      l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
-      l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
-      l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
+        l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
+        l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
+        l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
+        l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false, nullptr);
+        if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false, nullptr);
 
-      l_aVertices[1] = l_aRespawn[3];
-      l_aVertices[0] = l_aRespawn[2];
-      l_aVertices[3] = l_aRespawn[2] + 0.05f * getStartNormal();
-      l_aVertices[2] = l_aRespawn[3] + 0.05f * getStartNormal();
+        l_aVertices[1] = l_aRespawn[3];
+        l_aVertices[0] = l_aRespawn[2];
+        l_aVertices[3] = l_aRespawn[2] + 0.05f * getStartNormal();
+        l_aVertices[2] = l_aRespawn[3] + 0.05f * getStartNormal();
 
-      l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
-      l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
-      l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
-      l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
+        l_aTexture[0].X = 0.0f; l_aTexture[0].Y = 0.0f;
+        l_aTexture[1].X = 1.0f; l_aTexture[1].Y = 0.0f;
+        l_aTexture[2].X = 1.0f; l_aTexture[2].Y = 1.0f;
+        l_aTexture[3].X = 0.0f; l_aTexture[3].Y = 1.0f;
 
-      if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
-        addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false, nullptr);
+        if ((a_bBlack && a_vBuffers.size() > c_iBufferIdxBlack) || (!a_bBlack && a_vBuffers.size() > c_iBufferIdxYellow))
+          addQuadToMeshBuffer(l_aVertices, l_aTexture, a_vBuffers[a_bBlack ? c_iBufferIdxBlack : c_iBufferIdxYellow], false, false, nullptr);
 
-      tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
+        tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
 
-      if (m_pCheckpoint == nullptr) {
-        m_pCheckpoint = l_pGlobal->getSceneManager()->addMeshSceneNode(
-          l_pGlobal->getSceneManager()->getMesh("data/objects/checkpoint.dae"),
-          l_pGlobal->getSceneManager()->getRootSceneNode(),
-          scenenodes::getNextSceneNodeId(),
-          50.0f * m_cStart + 2.5f * getStartNormal(),
-          (m_cEnd - m_cStart).getHorizontalAngle(),
-          irr::core::vector3df(50.0f * m_fWidth)
-        );
+        if (m_pCheckpoint == nullptr) {
+          m_pCheckpoint = l_pGlobal->getSceneManager()->addMeshSceneNode(
+            l_pGlobal->getSceneManager()->getMesh("data/objects/checkpoint.dae"),
+            l_pGlobal->getSceneManager()->getRootSceneNode(),
+            scenenodes::getNextSceneNodeId(),
+            50.0f * m_cStart + 2.5f * getStartNormal(),
+            (m_cEnd - m_cStart).getHorizontalAngle(),
+            irr::core::vector3df(50.0f * m_fWidth)
+          );
 
-        m_pCheckpoint->getMaterial(0).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/checkpoint_white.png"));
-        m_pCheckpoint->getMaterial(1).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/warning.png"));
-        m_pCheckpoint->getMaterial(2).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/warning.png"));
+          m_pCheckpoint->getMaterial(0).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/checkpoint_white.png"));
+          m_pCheckpoint->getMaterial(1).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/warning.png"));
+          m_pCheckpoint->getMaterial(2).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/warning.png"));
 
-        m_pCheckpoint->getMaterial(0).Lighting = false;
+          m_pCheckpoint->getMaterial(0).Lighting = false;
+        }
+        else {
+          m_pCheckpoint->setPosition(50.0f * m_cStart + 2.5f * getStartNormal());
+          m_pCheckpoint->setRotation((m_cEnd - m_cStart).getHorizontalAngle());
+        }
+
+        l_cSide = (m_cStart - m_cEnd).crossProduct(getStartNormal()).normalize();
+        irr::core::vector3df l_cRspPos = 50.0f * m_cStart + 2.5f * getStartNormal() + (m_bRespawnLeft ? -22.5f * l_cSide + 7.5f * getEndDirection() : 22.5f * l_cSide + 7.5f * getEndDirection());
+        irr::core::vector3df l_cRspAng = (m_cStart - m_cEnd).getHorizontalAngle() + irr::core::vector3df(0.0f, m_bRespawnLeft ? 45.0f : -45.0f, 0.0f);
+
+        if (m_pRespawn == nullptr) {
+          m_pRespawn = l_pGlobal->getSceneManager()->addMeshSceneNode(
+            l_pGlobal->getSceneManager()->getMesh("data/objects/respawn_editor.3ds"),
+            l_pGlobal->getSceneManager()->getRootSceneNode(),
+            scenenodes::getNextSceneNodeId(),
+            l_cRspPos,
+            l_cRspAng,
+            irr::core::vector3df(5.0f)
+          );
+
+          m_pRespawn->getMaterial(0).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/white.png"));
+          m_pRespawn->getMaterial(0).Lighting = false;
+        }
+        else {
+          m_pRespawn->setPosition(l_cRspPos);
+          m_pRespawn->setRotation(l_cRspAng);
+        }
+
+        a_bBlack = !a_bBlack;
       }
-      else {
-        m_pCheckpoint->setPosition(50.0f * m_cStart + 2.5f * getStartNormal());
-        m_pCheckpoint->setRotation((m_cEnd - m_cStart).getHorizontalAngle());
-      }
-
-      l_cSide = (m_cStart - m_cEnd).crossProduct(getStartNormal()).normalize();
-      irr::core::vector3df l_cRspPos = 50.0f * m_cStart + 2.5f * getStartNormal() + (m_bRespawnLeft ? -22.5f * l_cSide + 7.5f * getEndDirection() : 22.5f * l_cSide + 7.5f * getEndDirection());
-      irr::core::vector3df l_cRspAng = (m_cStart - m_cEnd).getHorizontalAngle() + irr::core::vector3df(0.0f, m_bRespawnLeft ? 45.0f : -45.0f, 0.0f);
-
-      if (m_pRespawn == nullptr) {
-        m_pRespawn = l_pGlobal->getSceneManager()->addMeshSceneNode(
-          l_pGlobal->getSceneManager()->getMesh("data/objects/respawn_editor.3ds"),
-          l_pGlobal->getSceneManager()->getRootSceneNode(),
-          scenenodes::getNextSceneNodeId(),
-          l_cRspPos,
-          l_cRspAng,
-          irr::core::vector3df(5.0f)
-        );
-
-        m_pRespawn->getMaterial(0).setTexture(0, l_pGlobal->getVideoDriver()->getTexture("data/textures/white.png"));
-        m_pRespawn->getMaterial(0).Lighting = false;
-      }
-      else {
-        m_pRespawn->setPosition(l_cRspPos);
-        m_pRespawn->setRotation(l_cRspAng);
-      }
-
-      a_bBlack = !a_bBlack;
     }
 
     /**

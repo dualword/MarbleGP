@@ -78,6 +78,7 @@
     <ClCompile Include="..\_source\editor\CAiPath.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_FlatSegment.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Turn.cpp" />
+    <ClCompile Include="..\_source\editor\CTrackPart_Jump.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart_Bezier.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Checkpoint.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Ramp.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\_include\editor\CTrackPart_FlatSegment.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Straight.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Turn.h" />
+    <ClInclude Include="..\_include\editor\CTrackPart_Jump.h" />
     <ClInclude Include="..\_include\editor\ITrackPart_Bezier.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Checkpoint.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Ramp.h" />

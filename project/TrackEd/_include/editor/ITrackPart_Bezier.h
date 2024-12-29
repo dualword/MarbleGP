@@ -12,7 +12,7 @@ namespace dustbin {
     * The interface for using a Bezier curve for the actual track
     */
     class ITrackPart_Bezier : public ITrackPart {
-      private:
+      protected:
         /**
          * Get the next point using the Bezier1 algorithm
          * @param p array with the two points for the algorithm
@@ -51,7 +51,6 @@ namespace dustbin {
         */
         virtual irr::core::vector3df getSideOfPoint(int a_iIndex) const = 0;
 
-      protected:
         std::vector<irr::core::vector3df> m_vPoints;    /**< The reference points used for the track calculation */
         std::vector<irr::core::vector3df> m_vTrack;     /**< The calculated center of the track */
 
@@ -69,13 +68,16 @@ namespace dustbin {
         * @param a_fStep step number (0..1)
         * @return the next point
         */
-        irr::core::vector3df getBezier(std::vector<irr::core::vector3df> &a_vPoints, irr::f32 a_fStep);
+        virtual irr::core::vector3df getBezier(std::vector<irr::core::vector3df> &a_vPoints, irr::f32 a_fStep);
 
         /**
         * Calculate the points of the curve, road center
+        * @param a_vPoints optional vector with the reference points used for calculation. If empty "m_vPoints" will be used
+        * @param a_pTrack optional pointer to a vector which will be filled with the track (if not nullptr, otherwise m_vTrack is filled)
+        * @param a_bFillAll boolean parameter to override skipping the first bezier item
         * @return the length of the curve
         */
-        irr::f32 calculateCurve();
+        irr::f32 calculateCurve(const std::vector<irr::core::vector3df> &a_vPoints = std::vector<irr::core::vector3df>(), std::vector<irr::core::vector3df> *a_pTrack = nullptr, bool a_bFillAll = false);
 
       public:
         ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal);

@@ -260,26 +260,42 @@ namespace dustbin {
 
     /**
     * Calculate the points of the curve, road center
+    * @param a_vPoints optional vector with the reference points used for calculation. If empty "m_vPoints" will be used
+    * @param a_pTrack optional pointer to a vector which will be filled with the track (if not nullptr, otherwise m_vTrack is filled)
+    * @param a_bFillAll boolean parameter to override skipping the first bezier item
+    * @return the length of the curve
     */
-    irr::f32 ITrackPart_Bezier::calculateCurve() {
+    irr::f32 ITrackPart_Bezier::calculateCurve(const std::vector<irr::core::vector3df> &a_vPoints, std::vector<irr::core::vector3df> *a_pTrack, bool a_bFillAll) {
       m_vTrack.clear();
+
+      std::vector<irr::core::vector3df> l_vPoints = a_vPoints.size() == 0 ? m_vPoints : a_vPoints;
 
       int l_iSteps = 32;
 
-      if (m_vPoints.size() == 2) {
-        l_iSteps = (int)(std::max(1.0f, m_vPoints[0].getDistanceFrom(m_vPoints[1])));
+      if (l_vPoints.size() == 2) {
+        l_iSteps = (int)(std::max(1.0f, l_vPoints[0].getDistanceFrom(l_vPoints[1])));
       }
 
-      std::vector<irr::f32> l_vIndices = fillIndexVector(l_iSteps, getPrevious());
+      std::vector<irr::f32> l_vIndices = fillIndexVector(l_iSteps, a_bFillAll ? nullptr : getPrevious());
 
       for (auto l_fStep: l_vIndices) {
-        m_vTrack.push_back(getBezier(m_vPoints, l_fStep));
+        if (a_pTrack == nullptr)
+          m_vTrack.push_back(getBezier(l_vPoints, l_fStep));
+        else
+          (*a_pTrack).push_back(getBezier(l_vPoints, l_fStep));
       }
 
-      irr::f32 l_fRet = getPrevious() == nullptr ? 0.0f : getPrevious()->getEnd().getMiddle().getDistanceFrom(m_vTrack.front());
+      irr::f32 l_fRet = getPrevious() == nullptr ? 0.0f : getPrevious()->getEnd().getMiddle().getDistanceFrom(a_pTrack == nullptr ? m_vTrack.front() : (*a_pTrack).front());
 
-      for (std::vector<irr::core::vector3df>::iterator l_itTrack = m_vTrack.begin() + 1; l_itTrack != m_vTrack.end(); l_itTrack++) {
-        l_fRet += (*l_itTrack).getDistanceFrom(*(l_itTrack - 1));
+      if (a_pTrack == nullptr) {
+        for (std::vector<irr::core::vector3df>::iterator l_itTrack = m_vTrack.begin() + 1; l_itTrack != m_vTrack.end(); l_itTrack++) {
+          l_fRet += (*l_itTrack).getDistanceFrom(*(l_itTrack - 1));
+        }
+      }
+      else {
+        for (std::vector<irr::core::vector3df>::iterator l_itTrack = (*a_pTrack).begin() + 1; l_itTrack != (*a_pTrack).end(); l_itTrack++) {
+          l_fRet += (*l_itTrack).getDistanceFrom(*(l_itTrack - 1));
+        }
       }
 
       return l_fRet;

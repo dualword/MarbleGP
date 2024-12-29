@@ -75,7 +75,9 @@ namespace dustbin {
               else if (l_sType == helpers::s2ws(c_sTypeStraight)) {
                 l_pNew = new tracked::CTrackPart_Straight(nullptr, irr::core::vector3df());
               }
-              else printf("Unknown track part \"%ls\"\n", l_sType.c_str());
+              else {
+                helpers::addLogMessage(L"Unknown track part \"" + l_sType + L"\".", irr::ELL_ERROR, 5000);
+              }
 
               if (l_pNew != nullptr) {
                 irr::io::IAttributes *l_pAttr = l_pFs->createEmptyAttributes();

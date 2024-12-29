@@ -246,6 +246,9 @@
     <ClCompile Include="..\_source\CTrackPart_Straight.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\editor\CTrackPart_Jump.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -432,6 +435,9 @@
       <Filter>Include\editor</Filter>
     </ClInclude>
     <ClInclude Include="..\_include\editor\CTrackPart_Straight.h">
+      <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CTrackPart_Jump.h">
       <Filter>Include\editor</Filter>
     </ClInclude>
   </ItemGroup>

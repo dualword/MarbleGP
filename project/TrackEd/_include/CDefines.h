@@ -34,4 +34,5 @@ namespace dustbin {
   const std::string c_sTypeRamp       = "Ramp";
   const std::string c_sTypeTurn       = "Turn";
   const std::string c_sTypeStraight   = "Straight";
+  const std::string c_sTypeJump       = "Jump";
 }
