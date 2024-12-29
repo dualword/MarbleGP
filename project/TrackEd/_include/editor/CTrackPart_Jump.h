@@ -13,9 +13,6 @@ namespace dustbin {
     */
     class CTrackPart_Jump : public ITrackPart_Bezier {
       private:
-        std::vector<irr::core::vector3df> m_vRamp;    /**< The reference points of the ramp (3) */
-        std::vector<irr::core::vector3df> m_vLand;    /**< The reference points of the landing zone (2) */
-
         std::vector<irr::core::vector3df> m_vTrackPoints[2];  /**< The calculated (center) points of the track */
 
         std::vector<irr::core::vector3df> m_vNormals;   /**< The normals of the track points */
@@ -52,12 +49,6 @@ namespace dustbin {
         * @param a_cPoints a vector with the reference points
         */
         virtual void setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) override;
-
-        /**
-        * Get the part's reference points
-        * @return a vector with the part's reference points
-        */
-        virtual const std::vector<irr::core::vector3df> getReferencePoints() override;
 
         /**
         * Serialize the track part
