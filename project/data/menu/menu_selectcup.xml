@@ -64,21 +64,21 @@
         </custom>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 4, 23, 6, 25" tooltip="The default cup mode: as many laps are played as defined in the cup definition">
-        <attributes>
-          <attribute key="Name" value="cm_0" />
-          <attribute key="Selected" value="0" />
-        </attributes>
-      </element>
-      
-      <element type="DustbinCheckbox" rect="relative: 4, 26, 6, 28" tooltip="Short Cup: Half the number of defined laps, minimum two laps per race">
+      <element type="DustbinCheckbox" rect="relative: 4, 23, 6, 25" tooltip="Short Cup: This cup is made up of short races, minimum of two laps per race">
         <attributes>
           <attribute key="Name" value="cm_3" />
           <attribute key="Selected" value="0" />
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 4, 29, 6, 31" tooltip="Long Cup: Twice as many laps as defined, maximum 30 laps per race">
+      <element type="DustbinCheckbox" rect="relative: 4, 26, 6, 28" tooltip="Medium Cup: The races in this cup have medium length">
+        <attributes>
+          <attribute key="Name" value="cm_0" />
+          <attribute key="Selected" value="0" />
+        </attributes>
+      </element>
+      
+      <element type="DustbinCheckbox" rect="relative: 4, 29, 6, 31" tooltip="Long Cup: If you want spend a lot of time racing, this is the cup for you, maximum 30 laps per race">
         <attributes>
           <attribute key="Name" value="cm_4" />
           <attribute key="Selected" value="0" />
@@ -100,23 +100,23 @@
       </element>
       
       
-      <element type="staticText" rect="relative: 7, 23, 35, 25" tooltip="The default cup mode: as many laps are played as defined in the cup definition">
+      <element type="staticText" rect="relative: 7, 26, 35, 28" tooltip="Medium Cup: The races in this cup have medium length">
         <attributes>
-          <attribute key="Caption" value="Default Mode (Number of Laps as defined)" />
+          <attribute key="Caption" value="Medium Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 7, 26, 35, 28" tooltip="Half the laps of the cup's definition, at least two laps per race">
+      <element type="staticText" rect="relative: 7, 23, 35, 25" tooltip="Short Cup: This cup is made up of short races, minimum of two laps per race">
         <attributes>
-          <attribute key="Caption" value="Short Cup (Half the laps)" />
+          <attribute key="Caption" value="Short Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 7, 29, 35, 31" tooltip="Twice as many laps as defined, maximum of 30 per race">
+      <element type="staticText" rect="relative: 7, 29, 35, 31" tooltip="Long Cup: if you want spend a lot of time racing, this is the cup for you, maximum 30 laps per race">
         <attributes>
-          <attribute key="Caption" value="Long Cup (Twice the laps)" />
+          <attribute key="Caption" value="Long Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>

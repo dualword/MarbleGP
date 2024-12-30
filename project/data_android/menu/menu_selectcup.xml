@@ -64,14 +64,14 @@
         </custom>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 2, 16, 4, 18">
+      <element type="DustbinCheckbox" rect="relative: 16, 16, 18, 18">
         <attributes>
           <attribute key="Name" value="cm_0" />
           <attribute key="Selected" value="0" />
         </attributes>
       </element>
       
-      <element type="DustbinCheckbox" rect="relative: 16, 16, 18, 18">
+      <element type="DustbinCheckbox" rect="relative: 2, 16, 4, 18">
         <attributes>
           <attribute key="Name" value="cm_3" />
           <attribute key="Selected" value="0" />
@@ -100,14 +100,14 @@
       </element>
       
       
-      <element type="staticText" rect="relative: 5, 16, 16, 18" font="small" tooltip="Race the default number of laps">
+      <element type="staticText" rect="relative: 19, 16, 33, 18" font="small" tooltip="The races in this cup have medium length">
         <attributes>
-          <attribute key="Caption" value="Default Cup" />
+          <attribute key="Caption" value="Medium Cup" />
           <attribute key="VTextAlign" value="center" />
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 19, 16, 33, 18" font="small" tooltip="Race the half the number of laps">
+      <element type="staticText" rect="relative: 5, 16, 16, 18" font="small" tooltip="Short Cup: This cup is made up of short races, minimum of two laps per race">
         <attributes>
           <attribute key="Caption" value="Short Cup" />
           <attribute key="VTextAlign" value="center" />
@@ -121,7 +121,7 @@
         </attributes>
       </element>
       
-      <element type="staticText" rect="relative: 19, 20, 33, 22" font="small" tooltip="Race twice as many laps per race">
+      <element type="staticText" rect="relative: 19, 20, 33, 22" font="small" tooltip="If you want spend a lot of time racing, this is the cup for you, maximum 30 laps per race">
         <attributes>
           <attribute key="Caption" value="Long Cup" />
           <attribute key="VTextAlign" value="center" />

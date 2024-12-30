@@ -101,7 +101,7 @@ namespace dustbin {
         }
 
       public:
-        CMenuSelectCup(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_pCups(nullptr), m_pLaps(nullptr), m_iSelectedCup(0), m_iCurrent(0), m_pTimer(nullptr), m_iTime(0), m_iMode(0) {
+        CMenuSelectCup(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : IMenuHandler(a_pDevice, a_pManager, a_pState), m_pCups(nullptr), m_pLaps(nullptr), m_iSelectedCup(0), m_iCurrent(0), m_pTimer(nullptr), m_iTime(0), m_iMode(3) {
           m_pState->getGlobal()->clearGui();
 
           helpers::loadMenuFromXML("data/menu/menu_selectcup.xml", m_pGui->getRootGUIElement(), m_pGui);
@@ -126,7 +126,8 @@ namespace dustbin {
 
           m_pLaps = reinterpret_cast<gui::CSelector *>(helpers::findElementByNameAndType("nolaps", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
-          m_iMode = std::atoi(CGlobal::getInstance()->getSetting("cupmode").c_str());
+          if (CGlobal::getInstance()->getSetting("cupmode") != "")
+            m_iMode = std::atoi(CGlobal::getInstance()->getSetting("cupmode").c_str());
 
           if (m_pLaps != nullptr) {
             std::string l_sLaps = m_pState->getGlobal()->getSetting("laps");
