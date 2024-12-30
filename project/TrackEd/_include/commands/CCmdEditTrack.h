@@ -195,7 +195,7 @@ namespace dustbin {
         * @param a_cPos [out] position of the thumbnail camera
         * @param a_cTgt [out] target of the thumbnail camera
         */
-        void getThumbnailCamera(irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt);
+        void getThumbnailCamera(irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt) const;
 
         /**
         * Save the track information

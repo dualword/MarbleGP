@@ -236,7 +236,7 @@ namespace dustbin {
               m_vPoints.back().Y = m_vPoints[m_vPoints.size() - 2].Y;
               setEndNormal(irr::core::vector3df(0.0f, 1.0f, 0.0f));
 
-              irr::SEvent l_cEvent;
+              irr::SEvent l_cEvent{};
               l_cEvent.EventType = irr::EET_USER_EVENT;
               l_cEvent.UserEvent.UserData1 = c_iRecalcTrack;
               l_cEvent.UserEvent.UserData2 = c_iRecalcTrack;

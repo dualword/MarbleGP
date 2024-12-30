@@ -14,7 +14,7 @@ namespace dustbin {
     * Get the current move mode
     * @return the current move mode
     */
-    CPointMoveManager::enMoveMode CPointMoveManager::getMode() {
+    CPointMoveManager::enMoveMode CPointMoveManager::getMode() const {
       return m_eMode;
     }
 
@@ -29,7 +29,7 @@ namespace dustbin {
     * Get the line the point is moved on
     * @return the line the point is moved on
     */
-    const irr::core::line3df &CPointMoveManager::getMoveLine() {
+    const irr::core::line3df &CPointMoveManager::getMoveLine() const {
       return m_cLine;
     }
 

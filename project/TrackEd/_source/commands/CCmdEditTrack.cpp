@@ -367,7 +367,7 @@ namespace dustbin {
       m_vBuffers[tracked::c_iBufferIdxBottom]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/warning.png"));
 
       m_vBuffers[tracked::c_iBufferIdxYellow]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/yellow.png"));
-      m_vBuffers[tracked::c_iBufferIdxBlack ]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/black.png"));
+      m_vBuffers[tracked::c_iBufferIdxBlack]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/black.png"));
 
       m_vBuffers[tracked::c_iBufferIdxGround]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/ground_back.png"));
       m_vBuffers[tracked::c_iBufferIdxGround]->Material.setTexture(1, m_pSmgr->getVideoDriver()->getTexture("data/textures/hexagon_ground.png"));
@@ -385,7 +385,7 @@ namespace dustbin {
       bool l_bBlack = true;
 
       printf("**** Create Track\n");
-      for (auto l_pPart: m_vParts) {
+      for (auto l_pPart : m_vParts) {
         l_pPart->createTrackPart(m_vBuffers, l_bBlack);
       }
 
@@ -419,7 +419,7 @@ namespace dustbin {
 
       m_pAiPath->addSpeedIndicators(m_pWorld, m_pSmgr);
 
-      irr::SEvent l_cEvent;
+      irr::SEvent l_cEvent{};
       l_cEvent.EventType = irr::EET_USER_EVENT;
       l_cEvent.UserEvent.UserData1 = c_iUpdateShader;
       l_cEvent.UserEvent.UserData2 = c_iUpdateShader;
@@ -748,7 +748,7 @@ namespace dustbin {
 
                   irr::core::dimension2du l_cScreen = m_pDrv->getScreenSize();
 
-                  for (auto l_sItem : l_vItems) {
+                  for (auto &l_sItem : l_vItems) {
                     irr::core::dimension2du l_cDim = m_pGui->getSkin()->getFont()->getDimension(l_sItem.c_str());
 
                     l_cSize.Height += l_cDim.Height;
@@ -771,12 +771,12 @@ namespace dustbin {
 
                   m_pSelected = m_pHover;
 
-                  for (auto l_sItem: l_vItems) {
+                  for (auto &l_sItem: l_vItems) {
                     l_pMenu->addItem(l_sItem.c_str());
                   }
 
                   std::vector<std::wstring> l_vPartItems = l_pPart->contextMenuEntries(std::get<1>(m_mReferencePoints[m_pHover]));
-                  for (auto l_sItem: l_vPartItems) {
+                  for (auto &l_sItem: l_vPartItems) {
                     l_pMenu->addItem(l_sItem.c_str());
                   }
                 }
@@ -939,7 +939,7 @@ namespace dustbin {
                   c_sAddTurnFree
                 };
 
-                for (auto l_sItem: l_sItems) {
+                for (auto &l_sItem: l_sItems) {
                   l_pMenu->addItem(l_sItem.c_str(), l_iTag);
                 }
               }
@@ -1034,11 +1034,9 @@ namespace dustbin {
             if (l_pRostrum != nullptr) {
               l_pRostrum->setPosition(irr::core::vector3df(100.0f, 30.5f, 25.0f));
               l_pRostrum->setRotation(irr::core::vector3df(0.0f, -45.0f, 0.0f));
-
-              irr::core::aabbox3df l_cBox = l_pRostrum->getBoundingBox();
             }
 
-            irr::SEvent l_cEvent;
+            irr::SEvent l_cEvent{};
             l_cEvent.EventType = irr::EET_USER_EVENT;
             l_cEvent.UserEvent.UserData1 = c_iSceneLoaded;
             l_cEvent.UserEvent.UserData2 = c_iSceneLoaded;
@@ -1157,7 +1155,7 @@ namespace dustbin {
     * @param a_cPos [out] position of the thumbnail camera
     * @param a_cTgt [out] target of the thumbnail camera
     */
-    void CCmdEditTrack::getThumbnailCamera(irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt) {
+    void CCmdEditTrack::getThumbnailCamera(irr::core::vector3df &a_cPos, irr::core::vector3df &a_cTgt) const {
       a_cPos = m_cThumbnailPos;
       a_cTgt = m_cThumbnailTgt;
     }

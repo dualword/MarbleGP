@@ -41,7 +41,7 @@ namespace dustbin {
         * Get the current move mode
         * @return the current move mode
         */
-        enMoveMode getMode();
+        enMoveMode getMode() const;
 
         /**
         * End the movement, set m_eMode to enMoveMode::None
@@ -59,7 +59,7 @@ namespace dustbin {
         * Get the line the point is moved on
         * @return the line the point is moved on
         */
-        const irr::core::line3df &getMoveLine();
+        const irr::core::line3df &getMoveLine() const;
 
         /**
         * Get the position and normal of the plane the point is moved on
