@@ -78,6 +78,14 @@ namespace dustbin {
         void setMoveInPlane(const irr::core::vector3df &a_cPoint, const irr::core::position2di &a_cMouse, const irr::core::vector3df &a_cPlanePoint, const irr::core::vector3df &a_cPlaneNormal);
 
         /**
+        * Set to "move in plane" mode and initialze the variables for adding a reference point
+        * @param a_cMouse the position of the mouse
+        * @param a_cPlanePoint the point of the plane to move the point on
+        * @param a_cPlaneNormal the normal of the plane to move the point on
+        */
+        void setMoveInPlane(const irr::core::position2di &a_cMouse, const irr::core::vector3df &a_cPlanePoint, const irr::core::vector3df &a_cPlaneNormal);
+
+        /**
         * Set to "move on line" mode and initialize the variables
         * @param a_cPoint the point to move
         * @param a_cMouse the position of the mouse

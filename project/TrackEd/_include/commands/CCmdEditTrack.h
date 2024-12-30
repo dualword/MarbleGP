@@ -95,15 +95,6 @@ namespace dustbin {
         void setEditMode(enEditMode a_eMode);
 
         /**
-        * Get the correct collision point considering the move and the zero plane
-        * @param a_cMousePos the mouse position to calculate the ray from
-        * @return the ray collision point
-        * @see m_cMovePlane
-        * @see m_cZeroPlane
-        */
-        irr::core::vector3df getRayPlaneCollision(const irr::core::vector2di &a_cMousePos);
-
-        /**
         * Make sure the track has an UUID assigned
         */
         void ensureUUID();
