@@ -252,6 +252,9 @@
     <ClCompile Include="..\_source\editor\CTrackPart_Jump.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\editor\CPointMoveManager.cpp">
+      <Filter>Source\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -445,6 +448,9 @@
     </ClInclude>
     <ClInclude Include="..\_include\data\SAiPath.h">
       <Filter>Include\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\editor\CPointMoveManager.h">
+      <Filter>Include\editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

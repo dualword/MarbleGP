@@ -76,6 +76,7 @@
     <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
     <ClCompile Include="..\_source\CTrackPart_Straight.cpp" />
     <ClCompile Include="..\_source\editor\CAiPath.cpp" />
+    <ClCompile Include="..\_source\editor\CPointMoveManager.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_FlatSegment.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Turn.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_Jump.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="..\_include\commands\ICommand.h" />
     <ClInclude Include="..\_include\data\SAiPath.h" />
     <ClInclude Include="..\_include\editor\CAiPath.h" />
+    <ClInclude Include="..\_include\editor\CPointMoveManager.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_FlatSegment.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Straight.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Turn.h" />

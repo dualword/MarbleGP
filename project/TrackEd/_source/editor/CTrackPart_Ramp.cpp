@@ -118,6 +118,12 @@ namespace dustbin {
           l_vRefPoints[2] = l_vRefPoints[1] + l_fLength2 * l_cDir + l_fDistY * irr::core::vector3df(0.0f, 1.0f, 0.0f);
           l_vRefPoints[3] = l_vRefPoints[2] + l_fLength3 * l_cDir;
 
+          for (int i = 0; i < 4; i++) {
+            if (l_vRefPoints[i].Y < 0.0f) {
+              l_vRefPoints[i].Y = 0.0f;
+            }
+          }
+
           m_cSide = l_pPrevious->getEndSide();
 
           setReferencePoints(l_vRefPoints);

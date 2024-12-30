@@ -274,6 +274,10 @@ namespace dustbin {
         l_cPoints.push_back(l_cPos + l_fDistXZ * l_cDir + (m_vPoints[3].Y - m_vPoints[0].Y) * irr::core::vector3df(0.0f, 1.0f, 0.0f));
         l_cPoints.push_back(l_cPoints.back() + l_cDir * m_vPoints[4].getDistanceFrom(m_vPoints[3]));
 
+        for (auto &l_cPoint : l_cPoints)
+          if (l_cPoint.Y < 0.0f)
+            l_cPoint.Y = 0.0f;
+
         m_cSide = l_pPrevious->getEndSide();
 
         setReferencePoints(l_cPoints);

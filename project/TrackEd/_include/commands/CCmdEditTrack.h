@@ -9,6 +9,7 @@ namespace dustbin {
   namespace tracked {
     class ITrackPart;           /**< Forward declaration of the track part interface */
     class CAiPath;              /**< Forward declaration of the AI path object */
+    class CPointMoveManager;    /**< Forward declaration of the point move manager */
   }
 
   namespace commands {
@@ -42,10 +43,9 @@ namespace dustbin {
         irr::scene::IMeshSceneNode *m_pTrack;       /**< The track's scene node */
         irr::scene::IMeshSceneNode *m_pZeroPlane;   /**< The plane indicating zero Y */
         irr::scene::SMesh          *m_pMesh;        /**< The track's mesh structure */
-        irr::core::line3df          m_cMoveLine;    /**< The line to move points along */
-        irr::core::plane3df         m_cMovePlane;   /**< The plane to move points in */
-        irr::core::plane3df         m_cZeroPlane;   /**< The plane at Y zero to prevent reference points being set below 0 */
         irr::core::vector3df        m_cMovePoint;   /**< The point which was clicked for moving */
+
+        tracked::CPointMoveManager *m_pMoveMgr;     /**< The point move manager */
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< Our scene collision manager */
 
