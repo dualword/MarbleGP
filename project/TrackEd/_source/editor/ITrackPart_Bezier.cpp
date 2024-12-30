@@ -1,6 +1,7 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <editor/ITrackPart_Bezier.h>
 #include <scenenodes/CDustbinId.h>
+#include <data/SAiPath.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 #include <cmath>
@@ -66,14 +67,14 @@ namespace dustbin {
     * Get the information on the route for the marbles
     * @return a vector with positions to pass for the marbles
     */
-    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> ITrackPart_Bezier::getRoute() {
+    std::vector<SAiPath> ITrackPart_Bezier::getAiPathData() {
       if (m_vTrack.size() == 0)
         calculateCurve();
 
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+      std::vector<SAiPath> l_vRet;
 
-      for (size_t i = 0; i < m_vTrack.size(); i++) {
-        l_vRet.push_back(std::make_tuple(m_vTrack[i] + 0.1f * getNormalAtIndex((int)i), getNormalAtIndex((int)i)));
+      for (int i = 0; i < (int)m_vTrack.size(); i += 4) {
+        l_vRet.push_back(SAiPath(enPathType::Standard, m_vTrack[i] + 0.05f * getNormalAtIndex(i), getNormalAtIndex((int)i), getSideAtIndex(i), getWidth(), this));
       }
 
       return l_vRet;

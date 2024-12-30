@@ -56,7 +56,7 @@ namespace dustbin {
         * Get the information on the route for the marbles
         * @return a vector with positions to pass for the marbles
         */
-        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() override;
+        virtual std::vector<SAiPath> getAiPathData() override;
 
         /**
         * Serialize the track part

@@ -90,7 +90,7 @@ namespace dustbin {
 
         /**
         * Callback method for changes in the UI like modifying
-        * font size or resizin window
+        * font size or resizing window
         */
         virtual void onUiSetupModified() override;
 

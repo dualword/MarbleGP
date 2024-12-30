@@ -356,8 +356,8 @@ namespace dustbin {
     * Get the information on the route for the marbles
     * @return a vector with positions to pass for the marbles
     */
-    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CTrackPart_Jump::getRoute() {
-      if (m_vTrackPoints[0].size() == 0 || m_vTrackPoints[1].size() == 0) {
+    std::vector<SAiPath> CTrackPart_Jump::getAiPathData() {
+      if (m_vPoints.size() == 5) {
         std::vector<irr::core::vector3df> l_vRamp;
         std::vector<irr::core::vector3df> l_vLand;
 
@@ -372,15 +372,12 @@ namespace dustbin {
         calculateCurve(l_vLand, &m_vTrackPoints[1], true);
      }
 
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+      std::vector<SAiPath> l_vRet;
 
-      for (size_t i = 0; i < m_vTrackPoints[0].size(); i++) {
-        l_vRet.push_back(std::make_tuple(m_vTrackPoints[0][i] + 0.1f * getNormalAtIndex((int)i), getNormalAtIndex((int)i)));
-      }
-
-      for (size_t i = 0; i < m_vTrackPoints[1].size(); i++) {
-        l_vRet.push_back(std::make_tuple(m_vTrackPoints[1][i] + 0.1f * getNormalAtIndex((int)(i + m_vTrackPoints[0].size())), getNormalAtIndex((int)(i + m_vTrackPoints[0].size()))));
-      }
+      l_vRet.push_back(SAiPath(enPathType::Standard, m_vPoints[0] + 0.05f * getNormalOfPoint(0), getNormalOfPoint(0), getSideOfPoint(0), getWidth(), this));
+      l_vRet.push_back(SAiPath(enPathType::Jump    , m_vPoints[2] + 0.05f * getNormalOfPoint(2), getNormalOfPoint(2), getSideOfPoint(2), getWidth(), this)); l_vRet.back().m_bCalMinVel = true;
+      l_vRet.push_back(SAiPath(enPathType::Standard, m_vPoints[3] + 0.05f * getNormalOfPoint(3), getNormalOfPoint(3), getSideOfPoint(3), getWidth(), this));
+      l_vRet.push_back(SAiPath(enPathType::Standard, m_vPoints[4] + 0.05f * getNormalOfPoint(4), getNormalOfPoint(4), getSideOfPoint(4), getWidth(), this));
 
       return l_vRet;
     }

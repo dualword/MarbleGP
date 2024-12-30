@@ -1,6 +1,7 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #include <editor/CTrackPart_Checkpoint.h>
 #include <scenenodes/CDustbinId.h>
+#include <data/SAiPath.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 
@@ -236,11 +237,11 @@ namespace dustbin {
     * Get the information on the route for the marbles
     * @return a vector with positions to pass for the marbles
     */
-    std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> CTrackPart_Checkpoint::getRoute() {
-      std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vRet;
+    std::vector<SAiPath> CTrackPart_Checkpoint::getAiPathData() {
+      std::vector<SAiPath> l_vRet;
 
-      l_vRet.push_back(std::make_tuple(m_cStart + 0.1f * getStartNormal(), getStartNormal()));
-      l_vRet.push_back(std::make_tuple(m_cEnd   + 0.1f * getStartNormal(), getStartNormal()));
+      l_vRet.push_back(SAiPath(enPathType::Standard, m_cStart + 0.05f * getStartNormal(), getStartNormal(), getEndSide(), getWidth(), this));
+      l_vRet.push_back(SAiPath(enPathType::Standard, m_cEnd   + 0.05f * getStartNormal(), getStartNormal(), getEndSide(), getWidth(), this));
 
       return l_vRet;
     }

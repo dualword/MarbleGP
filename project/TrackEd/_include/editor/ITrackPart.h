@@ -1,15 +1,13 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 #pragma once
 
+#include <data/SAiPath.h>
 #include <irrlicht.h>
 #include <string>
 #include <vector>
 
 namespace dustbin {
-
   namespace tracked {
-    class ITrackPart;
-
     const irr::u32 c_iBufferIdxRoad      =  0;      /**< Index of the road mesh buffer */
     const irr::u32 c_iBufferIdxArrow     =  1;      /**< Index of the arrow road texture */
     const irr::u32 c_iBufferIdxJoin      =  2;      /**< Index of the join road texture */
@@ -161,7 +159,7 @@ namespace dustbin {
         * Get the information on the route for the marbles
         * @return a vector with positions to pass for the marbles
         */
-        virtual std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> getRoute() = 0;
+        virtual std::vector<SAiPath> getAiPathData() = 0;
 
         /**
         * Get the part's reference points

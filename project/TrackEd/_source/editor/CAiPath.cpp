@@ -15,16 +15,16 @@ namespace dustbin {
         l_pStart = l_pStart->getPrevious();
 
       do {
-        std::vector<std::tuple<irr::core::vector3df, irr::core::vector3df>> l_vPartRoute = l_pStart->getRoute();
+        std::vector<SAiPath> l_vPartRoute = l_pStart->getAiPathData();
 
         int l_iIndex = 0;
 
         // Let's fill the member m_vPath
-        for (auto &l_tRoute: l_vPartRoute) {
+        for (auto &l_cRoute: l_vPartRoute) {
           bool l_bAdd = true;
 
           for (auto &l_cPath: m_vPath) {
-            if (std::get<0>(l_tRoute) == l_cPath.m_cPosition) {
+            if (l_cRoute.m_cPosition == l_cPath.m_cPosition) {
               l_cPath.m_pPart  = l_pStart;
               l_cPath.m_fWidth = l_pStart->getWidth();
 
@@ -34,14 +34,7 @@ namespace dustbin {
           }
 
           if (l_bAdd) {
-            m_vPath.push_back(SAiPath(
-              enPathType::Standard,
-              std::get<0>(l_tRoute),
-              l_pStart->getNormalAtIndex(l_iIndex),
-              l_pStart->getSideAtIndex  (l_iIndex),
-              l_pStart->getWidth(),
-              l_pStart
-            ));
+            m_vPath.push_back(SAiPath(l_cRoute));
           }
 
           l_iIndex++;
@@ -52,26 +45,6 @@ namespace dustbin {
       while (l_pStart != nullptr && l_pStart->getPrevious() != nullptr);
 
       m_bLapFinished = l_pStart != nullptr && l_pStart->getPrevious() == nullptr;
-
-      // Now let's analyse the path and search for inclines, declines and jumps
-      for (size_t i = 1; i < m_vPath.size(); i++) {
-        if (m_vPath[i].m_cPosition.Y - m_vPath[i - 1].m_cPosition.Y > 0.001) {
-          m_vPath[i].m_eType = enPathType::Incline;
-
-          irr::f32 f1 = m_vPath[i - 1].m_cPosition.Y - m_vPath[i - 2].m_cPosition.Y;
-          irr::f32 f2 = m_vPath[i    ].m_cPosition.Y - m_vPath[i - 1].m_cPosition.Y;
-
-          if (i < m_vPath.size() - 1 && f1 > f2) {
-            m_vPath[i].m_eType = enPathType::Jump;
-          }
-        }
-
-        if (m_vPath[i].m_cPosition.Y - m_vPath[i - 1].m_cPosition.Y < -0.001) {
-          m_vPath[i].m_eType = enPathType::Decline;
-          if (m_vPath[i - 1].m_eType != enPathType::Decline && m_vPath[i - 1].m_eType != enPathType::Jump)
-            m_vPath[i].m_eType = enPathType::Jump;
-        }
-      }
 
       // Next we check how far a marble can jump if there is a jump
       for (size_t i = 1; i < m_vPath.size(); i++) {
@@ -149,7 +122,52 @@ namespace dustbin {
           m_vPath[i].m_fJumpMaxVel  = l_fVel;
           m_vPath[i].m_fJumpBestVel = 0.8f * l_fVel;
 
-          printf("Jump Vel: %.2f, %.2f, %.2f\n", m_vPath[i].m_fJumpMinVel, m_vPath[i].m_fJumpMaxVel, m_vPath[i].m_fJumpBestVel);
+          printf("Jump max Vel: %.2f, %.2f, %.2f\n", m_vPath[i].m_fJumpMinVel, m_vPath[i].m_fJumpMaxVel, m_vPath[i].m_fJumpBestVel);
+        }
+      }
+
+      // Now we guess the minimal speed (if necessary)
+      for (size_t i = 0; i < m_vPath.size() - 1; i++) {
+        if (m_vPath[i].m_eType == enPathType::Jump && m_vPath[i].m_bCalMinVel) {
+          std::vector<irr::core::vector3df> l_vBest;
+          irr::core::vector3df l_cEnd = 50.0f * m_vPath[i + 1].m_cPosition;
+
+          irr::f32 l_fVel = 10.0f;
+
+          for (; l_fVel < 150.0f; l_fVel += 5.0f) {
+            irr::core::vector3df l_cPos = 50.0f * m_vPath[i].m_cPosition + irr::core::vector3df(0.0f, 1.0f, 0.0f);
+            irr::core::vector3df l_cDir = l_fVel * (m_vPath[i].m_cPosition - m_vPath[i - 1].m_cPosition).normalize();
+
+            irr::core::vector3df l_cOld;
+
+            std::vector<irr::core::vector3df> l_vThis;
+
+            do {
+              l_vThis.push_back(l_cPos);
+              l_cOld = l_cPos;
+              l_cPos += l_cDir / 120.0f;
+
+              l_cDir.Y -= 12.5f / 120.0f;
+            } 
+            while (l_cEnd.getDistanceFromSQ(l_cPos) < l_cEnd.getDistanceFromSQ(l_cOld));
+
+            irr::f32 l_fDist1 = l_vBest.size() > 0 ? l_vBest.back().getDistanceFromSQ(l_cEnd) : 10000.0f;
+            irr::f32 l_fDist2 = l_vThis.back().getDistanceFromSQ(l_cEnd);
+
+            if (l_vBest.size() == 0 || l_fDist1 > l_fDist2)
+              l_vBest = l_vThis;
+            else {
+              l_fVel -= 10.0f;
+              break;
+            }
+          }
+
+          if (l_vBest.size() > 0)
+            m_vJumpData.push_back(l_vBest);
+
+          m_vPath[i].m_fJumpMinVel  = l_fVel;
+
+          printf("Jump min Vel: %.2f, %.2f, %.2f\n", m_vPath[i].m_fJumpMinVel, m_vPath[i].m_fJumpMaxVel, m_vPath[i].m_fJumpBestVel);
         }
       }
     }
@@ -169,40 +187,34 @@ namespace dustbin {
       scenenodes::CAiPathNode::SAiPathSection *l_pLast  = nullptr;
       scenenodes::CAiPathNode::SAiPathSection *l_pFirst = nullptr;
 
-      size_t l_iSkip = 4;
-
 
       for (size_t i = 0; i < m_vPath.size(); i++) {
-        if (l_iSkip >= 4 || m_vPath[i].m_eType == enPathType::Jump || i == m_vPath.size() || (i > 0 && m_vPath[i - 1].m_pPart != m_vPath[i].m_pPart)) {
-          scenenodes::CAiPathNode::SAiPathSection *p = new scenenodes::CAiPathNode::SAiPathSection();
+        scenenodes::CAiPathNode::SAiPathSection *p = new scenenodes::CAiPathNode::SAiPathSection();
 
-          p->m_cPosition   = m_vPath[i].m_cPosition * 50.0f;
-          p->m_cNormal     = m_vPath[i].m_cNormal;
-          p->m_cSideVector = m_vPath[i].m_cSide.normalize();
-          p->m_fWidth      = m_vPath[i].m_fWidth * 25.0f;
+        p->m_cPosition   = m_vPath[i].m_cPosition * 50.0f;
+        p->m_cNormal     = m_vPath[i].m_cNormal;
+        p->m_cSideVector = m_vPath[i].m_cSide.normalize();
+        p->m_fWidth      = m_vPath[i].m_fWidth * 25.0f;
 
-          if (m_vPath[i].m_eType == enPathType::Jump) {
-            p->m_eType      = scenenodes::CAiPathNode::enSegmentType::Jump;
-            p->m_fMinSpeed  = m_vPath[i].m_fJumpMinVel;
-            p->m_fMaxSpeed  = m_vPath[i].m_fJumpMaxVel;
-            p->m_fBestSpeed = m_vPath[i].m_fJumpBestVel;
-          }
-          else p->m_eType = scenenodes::CAiPathNode::enSegmentType::Default;
-
-          if (l_pLast != nullptr) {
-            l_pLast->m_vNextSegments.push_back(p);
-            p->m_vPrevSegments.push_back(l_pLast);
-          }
-
-          if (l_pFirst == nullptr)
-            l_pFirst = p;
-
-          l_pLast = p;
-
-          a_pAi->addPathSection(p);
-          l_iSkip = 0;
+        if (m_vPath[i].m_eType == enPathType::Jump) {
+          p->m_eType      = scenenodes::CAiPathNode::enSegmentType::Jump;
+          p->m_fMinSpeed  = m_vPath[i].m_fJumpMinVel;
+          p->m_fMaxSpeed  = m_vPath[i].m_fJumpMaxVel;
+          p->m_fBestSpeed = m_vPath[i].m_fJumpBestVel;
         }
-        else l_iSkip++;
+        else p->m_eType = scenenodes::CAiPathNode::enSegmentType::Default;
+
+        if (l_pLast != nullptr) {
+          l_pLast->m_vNextSegments.push_back(p);
+          p->m_vPrevSegments.push_back(l_pLast);
+        }
+
+        if (l_pFirst == nullptr)
+          l_pFirst = p;
+
+        l_pLast = p;
+
+        a_pAi->addPathSection(p);
       }
 
       if (l_pFirst != nullptr && l_pLast != nullptr) {
@@ -243,6 +255,7 @@ namespace dustbin {
               l_pAttr->drop();
             }
 
+            l_pNode->fillTextureMaps();
             l_pNode->setRotation((m_vPath[i].m_cPosition - m_vPath[i - 1].m_cPosition).getHorizontalAngle());
             l_pNode->setPosition(50.0f * m_vPath[i].m_cPosition + irr::core::vector3df(0.0f, 10.0f, 0.0f));
 
@@ -262,6 +275,8 @@ namespace dustbin {
               l_pChild->getMaterial(0).setTexture(0, a_pSmgr->getVideoDriver()->getTexture("data/textures/speedlimit.png"));
               l_pChild->getMaterial(1).setTexture(0, a_pSmgr->getVideoDriver()->getTexture("data/textures/warning.png"));
             }
+
+            l_pNode->setMarbleSpeed(l_pNode->getBestSpeed(), 60);
           }
         }
       }

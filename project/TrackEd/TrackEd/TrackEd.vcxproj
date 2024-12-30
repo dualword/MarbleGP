@@ -137,6 +137,7 @@
     <ClInclude Include="..\_include\commands\CCmdTrackName.h" />
     <ClInclude Include="..\_include\commands\CCommandHandler.h" />
     <ClInclude Include="..\_include\commands\ICommand.h" />
+    <ClInclude Include="..\_include\data\SAiPath.h" />
     <ClInclude Include="..\_include\editor\CAiPath.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_FlatSegment.h" />
     <ClInclude Include="..\_include\editor\CTrackPart_Straight.h" />

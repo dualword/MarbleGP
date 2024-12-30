@@ -126,6 +126,36 @@ namespace dustbin {
     }
 
     /**
+    * Get the information on the route for the marbles
+    * @return a vector with positions to pass for the marbles
+    */
+    std::vector<SAiPath> CTrackPart_Ramp::getAiPathData() {
+      std::vector<SAiPath> l_vRet = ITrackPart_Bezier::getAiPathData();
+
+      // Now let's analyse the path and search for inclines, declines and jumps
+      for (size_t i = 2; i < l_vRet.size(); i++) {
+        if (l_vRet[i].m_cPosition.Y - l_vRet[i - 1].m_cPosition.Y > 0.001) {
+          l_vRet[i].m_eType = enPathType::Incline;
+
+          irr::f32 f1 = l_vRet[i - 1].m_cPosition.Y - l_vRet[i - 2].m_cPosition.Y;
+          irr::f32 f2 = l_vRet[i    ].m_cPosition.Y - l_vRet[i - 1].m_cPosition.Y;
+
+          if (i < l_vRet.size() - 1 && f1 > f2) {
+            l_vRet[i].m_eType = enPathType::Jump;
+          }
+        }
+
+        if (l_vRet[i].m_cPosition.Y - l_vRet[i - 1].m_cPosition.Y < -0.001) {
+          l_vRet[i].m_eType = enPathType::Decline;
+          if (l_vRet[i - 1].m_eType != enPathType::Decline && l_vRet[i - 1].m_eType != enPathType::Jump)
+            l_vRet[i].m_eType = enPathType::Jump;
+        }
+      }
+
+      return l_vRet;
+    }
+
+    /**
     * Can a reference point be moved freely in the 2d plane
     * @param a_iIndex index of the reference point
     * @param a_cLine [out] the line in which the point can be moved if false is returned. A line with length of 0 is returned if the point can't move at all. Only used if "false" is returned
