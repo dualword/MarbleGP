@@ -957,6 +957,20 @@ namespace dustbin {
                   l_iTurn = l_mTurn[l_sItem];
                   
                   if (l_iTurn == 666) {
+                    tracked::CTrackPart_FlatSegment *l_pNew = new tracked::CTrackPart_FlatSegment(m_vParts.back(), m_vParts.back()->getEndNormal());
+
+                    tracked::ITrackPart *p = m_vParts.back();
+
+                    std::vector<irr::core::vector3df> l_vRef = {
+                      p->getEnd().getMiddle(),
+                      p->getEnd().getMiddle() + p->getWidth() * 2.0f * p->getEndDirection(),
+                      p->getEnd().getMiddle() + p->getWidth() * 4.0f * p->getEndDirection() + (l_pMenu->getItemCommandId(l_pMenu->getSelectedItem()) == 0 ? -4.0f : 4.0f) * p->getWidth() * p->getEndSide()
+                    };
+
+                    l_pNew->setReferencePoints(l_vRef);
+                    m_vParts.push_back(l_pNew);
+                    addReferencePoints(l_pNew);
+                    createTrack();
                   }
                   else {
                     tracked::ITrackPart *l_pNew = new tracked::CTrackPart_Turn(
