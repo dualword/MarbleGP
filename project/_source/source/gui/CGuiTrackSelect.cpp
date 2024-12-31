@@ -194,7 +194,7 @@ namespace dustbin {
           l_sCategory = l_sCategory.substr(0, l_sCategory.find_first_of(L':'));
         }
         else {
-          l_sCategory = L"";
+          l_sCategory = L"Others";
         }
 
         if (std::find(l_vCategories.begin(), l_vCategories.end(), l_sCategory) == l_vCategories.end())

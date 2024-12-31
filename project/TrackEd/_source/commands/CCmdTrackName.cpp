@@ -69,11 +69,14 @@ namespace dustbin {
       irr::core::dimension2du l_cTotalSize = m_pGui->getSkin()->getFont()->getDimension(L"ThisStringIsLongEnoughForEverythingIHope");
 
       std::wstring l_sName     = helpers::s2ws(m_pEditCmd->getTrackName());
-      std::wstring l_sCategory = L"Flat";
+      std::wstring l_sCategory = L"Others";
 
       if (l_sName.find_first_of(L':') != std::string::npos) {
         l_sCategory = l_sName.substr(0, l_sName.find_first_of(L':'));
         l_sName = l_sName.substr(l_sName.find_first_of(L':') + 1);
+
+        while (l_sName.substr(0, 1) == L" ")
+          l_sName = l_sName.substr(1);
       }
 
       std::wstring l_sCategories[] = {
@@ -84,6 +87,7 @@ namespace dustbin {
         L"Steep",
         L"Complex",
         L"Moving",
+        L"Others",
         L""
       };
 

@@ -69,7 +69,8 @@ namespace dustbin {
             { "loop"   , 3 },
             { "steep"  , 4 },
             { "complex", 5 },
-            { "moving" , 6 }
+            { "moving" , 6 },
+            { "others" , 7 }
           };
 
           if (m_pTrackList != nullptr) {
