@@ -178,13 +178,21 @@ namespace dustbin {
     */
     void CTrackPart_Turn::setReferencePoints(const std::vector<irr::core::vector3df> &a_cPoints) {
       if (m_vPoints.size() >= 2 && a_cPoints.size() >= 2 && m_vPoints[1] != a_cPoints[1]) {
-        m_aDistance[0] = a_cPoints[1].getDistanceFrom(a_cPoints[0]);
+        irr::f32 l_fNewDistance = a_cPoints[1].getDistanceFrom(a_cPoints[0]);
+
+        if (m_vPoints.size() >= 4 && a_cPoints.size() >= 4) {
+          m_aDistance[2] = m_aDistance[2] + (l_fNewDistance - m_aDistance[0]);
+        }
+
+        m_aDistance[0] = l_fNewDistance;
       }
       else if (m_vPoints.size() >= 3 && a_cPoints.size() >= 3 && m_vPoints[2] != a_cPoints[2]) {
         m_aDistance[1] = a_cPoints[2].getDistanceFrom(a_cPoints[1]);
       }
-      else if (m_vPoints.size() >= 4 && a_cPoints.size() >= 4 && m_vPoints[3] != a_cPoints[3]) {
-        m_aDistance[2] = a_cPoints[3].getDistanceFrom(a_cPoints[2]);
+      else if (m_vPoints.size() >= 4 && a_cPoints.size() >= 4) {
+        if (m_vPoints[3] != a_cPoints[3]) {
+          m_aDistance[2] = a_cPoints[3].getDistanceFrom(a_cPoints[2]);
+        }
       }
 
       std::vector<irr::core::vector3df> l_vPoints = calculateReferencePoints();

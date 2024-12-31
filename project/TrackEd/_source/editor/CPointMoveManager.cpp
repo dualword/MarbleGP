@@ -75,8 +75,6 @@ namespace dustbin {
           }
         }
 
-        printf("MoveOnLine: %.2f, %.2f, %.2f\n", l_cRet.X, l_cRet.Y, l_cRet.Z);
-
         return l_cRet;
       }
       else return m_cPointToMove;
