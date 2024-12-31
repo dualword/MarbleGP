@@ -299,7 +299,6 @@ namespace dustbin {
 
         if (l_cPoints[1] != m_vPoints[1]) {
           irr::f32 l_fDist = m_vPoints[1].getDistanceFrom(irr::core::vector3df(m_vPoints[2].X, m_vPoints[1].Y, m_vPoints[2].Z));
-          printf("==> %.2f\n", l_fDist);
 
           irr::core::vector2df l_cDirXZ = irr::core::vector2df(m_vPoints[2].X - m_vPoints[1].X, m_vPoints[2].Z - m_vPoints[1].Z).normalize();
           l_cPoints[2] = irr::core::vector3df(l_cPoints[1].X + l_fDist * l_cDirXZ.X, m_vPoints[2].Y, l_cPoints[1].Z + l_fDist * l_cDirXZ.Y);
