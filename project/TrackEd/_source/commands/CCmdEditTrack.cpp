@@ -3,6 +3,7 @@
 #include <scenenodes/CDustbinLight.h>
 #include <animators/CPlaneAnimator.h>
 #include <editor/CPointMoveManager.h>
+#include <messages/CMessageHelpers.h>
 #include <scenenodes/CRostrumNode.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
@@ -10,6 +11,7 @@
 #include <scenenodes/CSpeedNode.h>
 #include <editor/ITrackPart.h>
 #include <platform/uuid_v4.h>
+#include <data/CMemoryFile.h>
 #include <editor/CAiPath.h>
 #include <CDefines.h>
 #include <algorithm>
@@ -339,6 +341,8 @@ namespace dustbin {
     void CCmdEditTrack::createTrack() {
       if (m_vParts.size() > 0)
         m_vParts.front()->updateReferencePoints();
+      else
+        return;
 
       if (m_pAiPath != nullptr) {
         delete m_pAiPath;
@@ -1002,34 +1006,7 @@ namespace dustbin {
         }
         else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
           if (a_cEvent.UserEvent.UserData1 == c_iStartupFinished) {
-            m_pSmgr->loadScene("data/scenes/skybox.xml");
-
-            m_pWorld = m_pSmgr->addSceneNode("WorldNode", m_pSmgr->getRootSceneNode());
-            dustbin::scenenodes::CStartingGridSceneNode *l_pGrid = reinterpret_cast<dustbin::scenenodes::CStartingGridSceneNode *>(m_pSmgr->addSceneNode("StartingGridScenenode", m_pWorld));
-            l_pGrid->setPosition(irr::core::vector3df(0.0f, 2.5f, 150.0f));
-            l_pGrid->setAngle(180.0f);
-
-            irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
-
-            m_pZeroPlane = m_pSmgr->addMeshSceneNode(
-              l_pPlane, 
-              m_pSmgr->getRootSceneNode(), 
-              -1, 
-              irr::core::vector3df(0.0f),
-              irr::core::vector3df(0.0f),
-              irr::core::vector3df(150.0f, 5.0f, 150.0f)
-            );
-          
-            m_pZeroPlane->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
-            m_pZeroPlane->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-            m_pZeroPlane->getMaterial(0).Lighting = false;
-          
-            m_pZeroPlane->addAnimator(new animators::CPlaneAnimator(m_pZeroPlane));
-
-            m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/box.3ds"));
-            m_pPickPoint->setScale(irr::core::vector3df(1.0f, 5.0f, 1.0f));
-            m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
-            m_pPickPoint->setVisible(false);
+            prepareScene();
 
             tracked::CTrackPart_FlatSegment *l_pStart = new tracked::CTrackPart_FlatSegment(nullptr, irr::core::vector3df(0.0f, 1.0f, 0.0f));
             l_pStart->setReferencePoints({ irr::core::vector3df(0.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f, 0.0f, 3.5f) });
@@ -1037,21 +1014,6 @@ namespace dustbin {
             m_vParts.push_back(l_pStart);
             addReferencePoints(l_pStart);
             createTrack();
-
-            scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(m_pSmgr->addSceneNode(scenenodes::g_DustbinLightName));
-            if (l_pLight != nullptr) {
-              l_pLight->setPosition(irr::core::vector3df(-100.55f, 75.72f, 143.74f));
-              l_pLight->setLightTarget(irr::core::vector3df(0.0f));
-              l_pLight->setNearValue(5.0f);
-              l_pLight->setFarValue(1000.0f);
-              l_pLight->setFieldOfView(2000.0f);
-            }
-
-            scenenodes::CRostrumNode *l_pRostrum = reinterpret_cast<scenenodes::CRostrumNode *>(m_pSmgr->addSceneNode(scenenodes::g_RostrumNodeName));
-            if (l_pRostrum != nullptr) {
-              l_pRostrum->setPosition(irr::core::vector3df(100.0f, 30.5f, 25.0f));
-              l_pRostrum->setRotation(irr::core::vector3df(0.0f, -45.0f, 0.0f));
-            }
 
             irr::SEvent l_cEvent{};
             l_cEvent.EventType = irr::EET_USER_EVENT;
@@ -1063,10 +1025,77 @@ namespace dustbin {
             createTrack();
             updateReferencePoints();
           }
+          else if (a_cEvent.UserEvent.UserData1 == c_iSceneWillBeCleared) {
+            m_pWorld = nullptr;
+            m_pHover = nullptr;
+            m_pTrack = nullptr;
+
+            delete m_pAiPath;
+            m_pAiPath = nullptr;
+
+            clearTrack();
+          }
+          else if (a_cEvent.UserEvent.UserData1 == c_iSceneLoaded) {
+            prepareScene();
+
+            if (m_vParts.size() > 0)
+              m_vParts.front()->updateReferencePoints();
+
+            createTrack();
+          }
         }
       }
 
       return l_bRet;
+    }
+
+    /**
+    * Prepare the scene for editing
+    */
+    void CCmdEditTrack::prepareScene() {
+      m_pSmgr->loadScene("data/scenes/skybox.xml");
+
+      m_pWorld = m_pSmgr->addSceneNode("WorldNode", m_pSmgr->getRootSceneNode());
+      dustbin::scenenodes::CStartingGridSceneNode *l_pGrid = reinterpret_cast<dustbin::scenenodes::CStartingGridSceneNode *>(m_pSmgr->addSceneNode("StartingGridScenenode", m_pWorld));
+      l_pGrid->setPosition(irr::core::vector3df(0.0f, 2.5f, 150.0f));
+      l_pGrid->setAngle(180.0f);
+
+      irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
+
+      m_pZeroPlane = m_pSmgr->addMeshSceneNode(
+        l_pPlane, 
+        m_pSmgr->getRootSceneNode(), 
+        -1, 
+        irr::core::vector3df(0.0f),
+        irr::core::vector3df(0.0f),
+        irr::core::vector3df(150.0f, 5.0f, 150.0f)
+      );
+          
+      m_pZeroPlane->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
+      m_pZeroPlane->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+      m_pZeroPlane->getMaterial(0).Lighting = false;
+          
+      m_pZeroPlane->addAnimator(new animators::CPlaneAnimator(m_pZeroPlane));
+
+      m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/box.3ds"));
+      m_pPickPoint->setScale(irr::core::vector3df(1.0f, 5.0f, 1.0f));
+      m_pPickPoint->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/yellow.png"));
+      m_pPickPoint->setVisible(false);
+
+      scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(m_pSmgr->addSceneNode(scenenodes::g_DustbinLightName));
+      if (l_pLight != nullptr) {
+        l_pLight->setPosition(irr::core::vector3df(-100.55f, 75.72f, 143.74f));
+        l_pLight->setLightTarget(irr::core::vector3df(0.0f));
+        l_pLight->setNearValue(5.0f);
+        l_pLight->setFarValue(1000.0f);
+        l_pLight->setFieldOfView(2000.0f);
+      }
+
+      scenenodes::CRostrumNode *l_pRostrum = reinterpret_cast<scenenodes::CRostrumNode *>(m_pSmgr->addSceneNode(scenenodes::g_RostrumNodeName));
+      if (l_pRostrum != nullptr) {
+        l_pRostrum->setPosition(irr::core::vector3df(100.0f, 30.5f, 25.0f));
+        l_pRostrum->setRotation(irr::core::vector3df(0.0f, -45.0f, 0.0f));
+      }
     }
 
     /**
@@ -1079,6 +1108,15 @@ namespace dustbin {
         tracked::ITrackPart *p = m_vParts.front();
         m_vParts.erase(m_vParts.begin());
         delete p;
+      }
+
+      irr::scene::ISceneNode *l_pDecoration = nullptr;
+
+      for (auto l_pChild: m_pSmgr->getRootSceneNode()->getChildren()) {
+        if (std::string("__DecorationRootNode") == l_pChild->getName()) {
+          m_pSmgr->addToDeletionQueue(l_pChild);
+          break;
+        }
       }
     }
 
@@ -1157,6 +1195,75 @@ namespace dustbin {
 
       a_cAttr.addString("TrackName", m_sTrackName.c_str());
       a_cAttr.addString("Uuid"     , m_sTrackUUID.c_str());
+
+      irr::scene::ISceneNode *l_pDecoration = nullptr;
+
+      for (auto l_pChild: m_pSmgr->getRootSceneNode()->getChildren()) {
+        if (std::string("__DecorationRootNode") == l_pChild->getName()) {
+          l_pDecoration = l_pChild;
+          break;
+        }
+      }
+
+      if (l_pDecoration != nullptr) {
+        data::CMemoryWriteFile *l_pFile = new data::CMemoryWriteFile("__DecorationData");
+        if (l_pFile) {
+          irr::io::IXMLWriter *l_pXml = m_pSmgr->getFileSystem()->createXMLWriter(l_pFile);
+          if (l_pXml) {
+            m_pSmgr->saveScene(l_pXml, ".", nullptr, l_pDecoration);
+            l_pXml->drop();
+          }
+
+          std::string l_sDecoration = messages::base64Encode(l_pFile->getData().data(), l_pFile->getData().size(), false);
+
+          a_cAttr.addString("decoration", l_sDecoration.c_str());
+
+          l_pFile->drop();
+        }
+      }
+    }
+
+    /**
+    * Load the track information
+    * @param a_cAttr the IAttributes to load the information from
+    */
+    void CCmdEditTrack::loadTrackInformation(irr::io::IAttributes &a_cAttr) {
+      if (a_cAttr.existsAttribute("ThumbnailPosition")) m_cThumbnailPos = a_cAttr.getAttributeAsVector3d("ThumbnailPosition");
+      if (a_cAttr.existsAttribute("ThumbnailTarget"  )) m_cThumbnailTgt = a_cAttr.getAttributeAsVector3d("ThumbnailTarget"  );
+
+      if (a_cAttr.existsAttribute("TrackName")) m_sTrackName = a_cAttr.getAttributeAsString("TrackName").c_str();
+      if (a_cAttr.existsAttribute("Uuid"     )) m_sTrackUUID = a_cAttr.getAttributeAsString("Uuid"     ).c_str();
+
+      if (a_cAttr.existsAttribute("decoration")) {
+        irr::scene::ISceneNode *l_pDecoration = m_pSmgr->addEmptySceneNode(m_pSmgr->getRootSceneNode());
+        l_pDecoration->setName("__DecorationRootNode");
+
+        std::string l_sDecoration64 = a_cAttr.getAttributeAsString("decoration").c_str();
+
+        size_t l_iSize = 0;
+
+        unsigned char *l_pDataU = messages::base64_decode(l_sDecoration64.c_str(), l_sDecoration64.size(), &l_iSize);
+
+        if (l_pDataU != nullptr) {
+          std::vector<unsigned char> l_vData;
+          
+          for (size_t i = 0; i < l_iSize; i++) {
+            l_vData.push_back(l_pDataU[i]);
+          }
+
+          irr::scene::ISceneNode *l_pDecoration = m_pSmgr->addEmptySceneNode();
+          l_pDecoration->setName("__DecorationRootNode");
+
+          data::CMemoryReadFile *l_pFile = new data::CMemoryReadFile("___DecorationLoader", l_vData);
+
+          if (l_pFile != nullptr) {
+            m_pSmgr->loadScene(l_pFile, nullptr, l_pDecoration);
+            l_pFile->drop();
+          }
+        }
+      }
+
+      ensureUUID();
     }
 
     /**
@@ -1174,20 +1281,6 @@ namespace dustbin {
 
         m_sTrackUUID = c;
       }
-    }
-
-    /**
-    * Load the track information
-    * @param a_cAttr the IAttributes to load the information from
-    */
-    void CCmdEditTrack::loadTrackInformation(irr::io::IAttributes &a_cAttr) {
-      if (a_cAttr.existsAttribute("ThumbnailPosition")) m_cThumbnailPos = a_cAttr.getAttributeAsVector3d("ThumbnailPosition");
-      if (a_cAttr.existsAttribute("ThumbnailTarget"  )) m_cThumbnailTgt = a_cAttr.getAttributeAsVector3d("ThumbnailTarget"  );
-
-      if (a_cAttr.existsAttribute("TrackName")) m_sTrackName = a_cAttr.getAttributeAsString("TrackName").c_str();
-      if (a_cAttr.existsAttribute("Uuid"     )) m_sTrackUUID = a_cAttr.getAttributeAsString("Uuid"     ).c_str();
-
-      ensureUUID();
     }
 
     /**

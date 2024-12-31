@@ -29,5 +29,7 @@ namespace dustbin {
     * @return a base64 encoded string containing the data
     */
     std::string base64Encode(unsigned char const *a_pData, size_t a_iSize, bool a_bUrl);
+
+    unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length);
   }
 }

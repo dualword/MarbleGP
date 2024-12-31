@@ -4,6 +4,7 @@
 #include <commands/CCommandHandler.h>
 #include <commands/CCmdAddMarbleGP.h>
 #include <commands/CCmdSaveTrackAs.h>
+#include <commands/CCmdDecoration.h>
 #include <commands/CCmdExportMesh.h>
 #include <commands/CCmdSaveTrack.h>
 #include <commands/CCmdLoadTrack.h>
@@ -144,6 +145,7 @@ namespace dustbin {
         case enMenuItem::ExportMarbleGP: return L"Add to MarbleGP";
         case enMenuItem::Thumbnail     : return L"Thumbnail";
         case enMenuItem::TrackName     : return L"Set Track Name";
+        case enMenuItem::Decoration    : return L"Decorations";
         default:
           return L"--";
       }
@@ -290,6 +292,12 @@ namespace dustbin {
 
                 case enMenuItem::TrackName: {
                   commands::CCmdTrackName *l_pCmd = new commands::CCmdTrackName(m_pGui, m_pEditTrack);
+                  m_pHandler->addCommand(l_pCmd);
+                  break;
+                }
+
+                case enMenuItem::Decoration: {
+                  commands::CCmdDecoration *l_pCmd = new commands::CCmdDecoration(tracked::IGlobal::getInstance()->getSceneManager(), m_pGui);
                   m_pHandler->addCommand(l_pCmd);
                   break;
                 }

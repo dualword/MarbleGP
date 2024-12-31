@@ -62,6 +62,7 @@
     <ClCompile Include="..\_source\animators\CPlaneAnimator.cpp" />
     <ClCompile Include="..\_source\commands\CCmdAddMarbleGP.cpp" />
     <ClCompile Include="..\_source\commands\CCmdCameraCtrl.cpp" />
+    <ClCompile Include="..\_source\commands\CCmdDecoration.cpp" />
     <ClCompile Include="..\_source\commands\CCmdDefaultRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdDustbinRenderer.cpp" />
     <ClCompile Include="..\_source\commands\CCmdEditTrack.cpp" />
@@ -75,6 +76,7 @@
     <ClCompile Include="..\_source\commands\CCommandHandler.cpp" />
     <ClCompile Include="..\_source\CTrackEd_MainClass.cpp" />
     <ClCompile Include="..\_source\CTrackPart_Straight.cpp" />
+    <ClCompile Include="..\_source\data\CMemoryFile.cpp" />
     <ClCompile Include="..\_source\editor\CAiPath.cpp" />
     <ClCompile Include="..\_source\editor\CPointMoveManager.cpp" />
     <ClCompile Include="..\_source\editor\CTrackPart_FlatSegment.cpp" />
@@ -99,6 +101,7 @@
     <ClInclude Include="..\..\_source\include\gui\IProgressCallback.h" />
     <ClInclude Include="..\..\_source\include\helpers\CStringHelpers.h" />
     <ClInclude Include="..\..\_source\include\helpers\CTextureHelpers.h" />
+    <ClInclude Include="..\..\_source\include\messages\CMessageHelpers.h" />
     <ClInclude Include="..\..\_source\include\messages\CSerializer64.h" />
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h" />
     <ClInclude Include="..\..\_source\include\scenenodes\CAiPathNode.h" />
@@ -126,6 +129,7 @@
     <ClInclude Include="..\_include\CDefines.h" />
     <ClInclude Include="..\_include\commands\CCmdAddMarbleGP.h" />
     <ClInclude Include="..\_include\commands\CCmdCameraCtrl.h" />
+    <ClInclude Include="..\_include\commands\CCmdDecoration.h" />
     <ClInclude Include="..\_include\commands\CCmdDefaultRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdDustbinRenderer.h" />
     <ClInclude Include="..\_include\commands\CCmdEditTrack.h" />
@@ -138,6 +142,7 @@
     <ClInclude Include="..\_include\commands\CCmdTrackName.h" />
     <ClInclude Include="..\_include\commands\CCommandHandler.h" />
     <ClInclude Include="..\_include\commands\ICommand.h" />
+    <ClInclude Include="..\_include\data\CMemoryFile.h" />
     <ClInclude Include="..\_include\data\SAiPath.h" />
     <ClInclude Include="..\_include\editor\CAiPath.h" />
     <ClInclude Include="..\_include\editor\CPointMoveManager.h" />

@@ -36,6 +36,8 @@ namespace dustbin {
       tracked::IGlobal::getInstance()->getFileSystem()->changeWorkingDirectoryTo(l_sWorkingDir);
 
       if (l_sFileName != "") {
+        tracked::IGlobal::getInstance()->clearScene();
+
         if (l_sFileName.find_last_of('\\') != std::string::npos) {
           std::string l_sFolder = l_sFileName.substr(0, l_sFileName.find_last_of('\\'));
           tracked::IGlobal::getInstance()->setSetting("openfolder", l_sFolder);
@@ -45,8 +47,6 @@ namespace dustbin {
         irr::io::IXMLReader  *l_pReader = l_pFs->createXMLReader(l_sFileName.c_str());
 
         if (l_pReader) {
-          a_pEditTrack->clearTrack();
-
           while (l_pReader->read()) {
             std::wstring l_sNode = l_pReader->getNodeName();
 
@@ -97,6 +97,8 @@ namespace dustbin {
           a_pEditTrack->createTrack();
           a_pEditTrack->updateReferencePoints();
           l_pReader->drop();
+
+          helpers::postUserEvent(c_iSceneLoaded, c_iSceneLoaded);
 
           helpers::addLogMessage(L"Track file \"" + helpers::extractFileName(l_sFileName) + L"\" loaded.", irr::ELL_INFORMATION, 8000);
         }

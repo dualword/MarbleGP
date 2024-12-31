@@ -75,6 +75,8 @@ namespace dustbin {
         irr::core::vector3df m_cThumbnailPos;   /**< Position of the thumbnail camera */
         irr::core::vector3df m_cThumbnailTgt;   /**< Target of the thumbnail camera */
 
+        std::vector<irr::scene::ISceneNode *> m_vDecorations;    /**< A list of decorations */
+
         tracked::CAiPath *m_pAiPath;
 
         /**
@@ -98,6 +100,11 @@ namespace dustbin {
         * Make sure the track has an UUID assigned
         */
         void ensureUUID();
+
+        /**
+        * Prepare the scene for editing
+        */
+        void prepareScene();
 
       public:
         CCmdEditTrack(irr::scene::ISceneManager *a_pSmgr, irr::video::IVideoDriver *a_pDrv, irr::gui::IGUIEnvironment *a_pGui, CCmdMainMenu *a_pMainMenu);

@@ -32,6 +32,7 @@ namespace dustbin {
           ExportMarbleGP = 6,
           Thumbnail      = 7,
           TrackName      = 8,
+          Decoration     = 9,
           Count
         };
 
