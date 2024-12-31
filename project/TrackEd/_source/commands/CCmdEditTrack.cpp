@@ -364,6 +364,10 @@ namespace dustbin {
       m_vBuffers[tracked::c_iBufferIdxJoin]->Material.setTexture(1, m_pSmgr->getVideoDriver()->getTexture("data/textures/hexagon_256.png"));
       m_vBuffers[tracked::c_iBufferIdxJoin]->Material.setTexture(2, m_pSmgr->getVideoDriver()->getTexture("data/textures/join_trans.png"));
 
+      m_vBuffers[tracked::c_iBufferIdxArrow]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/road_back.png"));
+      m_vBuffers[tracked::c_iBufferIdxArrow]->Material.setTexture(1, m_pSmgr->getVideoDriver()->getTexture("data/textures/hexagon_256.png"));
+      m_vBuffers[tracked::c_iBufferIdxArrow]->Material.setTexture(2, m_pSmgr->getVideoDriver()->getTexture("data/textures/arrow_trans.png"));
+
       m_vBuffers[tracked::c_iBufferIdxBottom]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/warning.png"));
 
       m_vBuffers[tracked::c_iBufferIdxYellow]->Material.setTexture(0, m_pSmgr->getVideoDriver()->getTexture("data/textures/yellow.png"));

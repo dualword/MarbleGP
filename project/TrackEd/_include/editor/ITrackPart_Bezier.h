@@ -13,6 +13,8 @@ namespace dustbin {
     */
     class ITrackPart_Bezier : public ITrackPart {
       protected:
+        int m_iRoadBufferIdx;   /**< The index of the mesh buffer for the road */
+
         /**
          * Get the next point using the Bezier1 algorithm
          * @param p array with the two points for the algorithm

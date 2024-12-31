@@ -61,7 +61,7 @@ namespace dustbin {
 
           irr::f32 l_fCurrentLength = 0.0f;
 
-          int l_iSteps = j == 0 ? std::max((int)(l_aLength[j] / m_fWidth) - 1, 1) : std::max((int)(l_aLength[j] / m_fWidth), 1);
+          int l_iSteps = std::max((int)(l_aLength[j] / m_fWidth), 1);
 
           irr::core::vector2df l_aTextureTop[] = {
             irr::core::vector2df(0.0f, 0.0f),
@@ -92,8 +92,8 @@ namespace dustbin {
 
               l_fCurrentLength += (l_cNew.getMiddle() - l_cOld.getMiddle()).getLength();
 
-              l_aTextureTop[2].Y = (irr::f32)l_iSteps * l_fCurrentLength / l_aLength[j];
-              l_aTextureTop[3].Y = (irr::f32)l_iSteps * l_fCurrentLength / l_aLength[j];
+              l_aTextureTop[2].Y = -(irr::f32)l_iSteps * l_fCurrentLength / l_aLength[j];
+              l_aTextureTop[3].Y = -(irr::f32)l_iSteps * l_fCurrentLength / l_aLength[j];
 
               irr::core::vector3df l_aVertTop[] = {
                 l_aVertBottom[1] - 0.05f * l_aNormals[1],
@@ -103,7 +103,7 @@ namespace dustbin {
               };
 
               if (a_vBuffers.size() > tracked::c_iBufferIdxRoad)
-                addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[tracked::c_iBufferIdxRoad], i == 0, false, nullptr);
+                addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[j == 0 ? tracked::c_iBufferIdxArrow : tracked::c_iBufferIdxRoad], i == 0, false, nullptr);
 
               l_aTextureTop[0].Y = l_aTextureTop[2].Y;
               l_aTextureTop[1].Y = l_aTextureTop[3].Y;

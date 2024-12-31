@@ -9,6 +9,8 @@ namespace dustbin {
     CTrackPart_Ramp::CTrackPart_Ramp(ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
       ITrackPart_Bezier(c_sTypeRamp, a_pPrevious, a_cNormal) 
     {
+      m_iRoadBufferIdx = tracked::c_iBufferIdxArrow;
+
       if (a_pPrevious != nullptr)
         m_cSide = a_pPrevious->getEndSide();
       else 

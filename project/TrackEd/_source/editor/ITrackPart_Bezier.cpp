@@ -9,7 +9,7 @@
 namespace dustbin {
   namespace tracked {
     ITrackPart_Bezier::ITrackPart_Bezier(const std::string &a_sIdentifier, ITrackPart *a_pPrevious, const irr::core::vector3df &a_cNormal) :
-      ITrackPart (a_sIdentifier, a_pPrevious, a_cNormal) {
+      ITrackPart (a_sIdentifier, a_pPrevious, a_cNormal), m_iRoadBufferIdx(tracked::c_iBufferIdxRoad) {
     }
 
     ITrackPart_Bezier::~ITrackPart_Bezier() {
@@ -143,14 +143,14 @@ namespace dustbin {
 
         l_fCurrentLength += (l_cNew.getMiddle() - l_cOld.getMiddle()).getLength();
 
-        l_aTextureTop[2].Y = (irr::f32)l_iSteps * l_fCurrentLength / l_fLength;
-        l_aTextureTop[3].Y = (irr::f32)l_iSteps * l_fCurrentLength / l_fLength;
+        l_aTextureTop[2].Y = -(irr::f32)l_iSteps * l_fCurrentLength / l_fLength;
+        l_aTextureTop[3].Y = -(irr::f32)l_iSteps * l_fCurrentLength / l_fLength;
 
         if (i == m_vTrack.size() - 1 && getNext() != nullptr && getNext()->getPrevious() == nullptr)
           printf("Texture: %.2f\n", l_aTextureTop[2].Y);
 
-        if (a_vBuffers.size() > tracked::c_iBufferIdxRoad) {
-          addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[tracked::c_iBufferIdxRoad], i == 0, l_bForceAdd2nd, nullptr);
+        if (a_vBuffers.size() > m_iRoadBufferIdx) {
+          addQuadToMeshBuffer(l_aVertTop, l_aTextureTop, a_vBuffers[m_iRoadBufferIdx], i == 0, l_bForceAdd2nd, nullptr);
         }
 
         l_aTextureTop[0].Y = l_aTextureTop[2].Y;
