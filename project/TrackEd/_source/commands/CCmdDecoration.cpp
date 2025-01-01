@@ -485,7 +485,10 @@ namespace dustbin {
                 irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
                 if (l_pAttr != nullptr) {
-                  m_pSelected->serializeAttributes(l_pAttr);
+                  irr::io::SAttributeReadWriteOptions l_cOptions;
+                  l_cOptions.Flags = irr::io::EARWF_FOR_EDITOR | irr::io::EARWF_USE_RELATIVE_PATHS;
+
+                  m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
 
                   updateAttributeList(l_pAttr, 0, m_aParameters[0]);
 
@@ -526,7 +529,10 @@ namespace dustbin {
                   irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
                   if (l_pAttr != nullptr) {
-                    m_pSelected->serializeAttributes(l_pAttr);
+                    irr::io::SAttributeReadWriteOptions l_cOptions;
+                    l_cOptions.Flags = irr::io::EARWF_FOR_EDITOR | irr::io::EARWF_USE_RELATIVE_PATHS;
+
+                    m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
                     commitTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
                     m_pSelected->deserializeAttributes(l_pAttr);
                     updateNodeInTree(m_pSelected);
@@ -543,7 +549,10 @@ namespace dustbin {
                   irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
                   if (l_pAttr != nullptr) {
-                    m_pSelected->serializeAttributes(l_pAttr);
+                    irr::io::SAttributeReadWriteOptions l_cOptions;
+                    l_cOptions.Flags = irr::io::EARWF_FOR_EDITOR | irr::io::EARWF_USE_RELATIVE_PATHS;
+
+                    m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
                     revertTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
                     l_pAttr->drop();
                   }

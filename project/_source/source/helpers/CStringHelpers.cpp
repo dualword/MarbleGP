@@ -386,5 +386,39 @@ namespace dustbin {
       std::string l_sRet = l_sTime;
       return l_sRet;
     }
+
+    /**
+    * Get the filename of a path
+    * @param a_sPath the path
+    * @return the filename, i.e the last element of the path
+    */
+    std::string getFilename(const std::string &a_sPath) {
+      char l_aDelimiter[] = { '\\', '/', '\0' };
+
+      for (int i = 0; l_aDelimiter[i] != '\0'; i++) {
+        if (a_sPath.find_last_of(l_aDelimiter[i]) != std::string::npos) {
+          return a_sPath.substr(a_sPath.find_last_of(l_aDelimiter[i]) + 1);
+        }
+      }
+
+      return a_sPath;
+    }
+
+    /**
+    * Get the path of a filename
+    * @param a_sFile the filename with path
+    * @return the path, i.e. the input value with the last path component cut off
+    */
+    std::string getFilepath(const std::string &a_sFile) {
+      char l_aDelimiter[] = { '\\', '/', '\0' };
+
+      for (int i = 0; l_aDelimiter[i] != '\0'; i++) {
+        if (a_sFile.find_last_of(l_aDelimiter[i]) != std::string::npos) {
+          return a_sFile.substr(0, a_sFile.find_last_of(l_aDelimiter[i]));
+        }
+      }
+
+      return a_sFile;
+    }
   }
 }

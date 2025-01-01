@@ -71,6 +71,7 @@ namespace dustbin {
         if (exportAndPrepareTrack()) {
           addCheckpoints();
           addAiLightAndRostrum();
+          copyDecoration();
 
           m_pNewSmgr->saveScene(l_pXmlWriter, platform::portableGetTrackEdPath().c_str());
           l_pXmlWriter->drop();
@@ -371,6 +372,97 @@ namespace dustbin {
       }
 
       return nullptr;
+    }
+
+
+    /**
+    * Adjust the nodes of the scene decoration, like
+    * copy models, textures and so on
+    * @param a_pNode the node to be adjusted
+    */
+    void CCmdAddMarbleGP::adjustDecorationNode(irr::scene::ISceneNode *a_pNode) {
+      // A vector to store the textures which are to be assigned after copying the files
+      std::vector<std::tuple<irr::u32, std::string, std::string>> l_vTextures;
+
+      for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++) {
+        irr::io::IAttributes *l_pAttr = m_pDrv->createAttributesFromMaterial(a_pNode->getMaterial(i));
+
+        for (irr::u32 j = 0; j < l_pAttr->getAttributeCount(); j++) { 
+          if (l_pAttr->getAttributeType(j) == irr::io::EAT_TEXTURE) {
+            std::string l_sTexture = l_pAttr->getAttributeAsString(j).c_str();
+
+            if (l_sTexture.substr(0, 2) != "__") {
+              std::string l_sLocal = "data/textures/";
+
+              if (l_sTexture != "" && l_sTexture.substr(0, l_sLocal.size()) != l_sLocal) {
+                std::string l_sFile   = helpers::getFilename(l_sTexture);
+                std::string l_sTarget = m_sFolder + "/" + l_sFile;
+
+                if (std::filesystem::exists(l_sTarget))
+                  std::filesystem::remove(l_sTarget);
+
+                printf("We have an external texture: %s\n", l_sFile.c_str());
+                std::filesystem::copy(l_sTexture, l_sTarget);
+
+                l_vTextures.push_back(std::make_tuple(i, l_pAttr->getAttributeName(j), l_sTarget));
+              }
+            }
+          }
+        }
+      }
+
+      irr::io::IAttributes *l_pAttr = m_pFs->createEmptyAttributes();
+      if (l_pAttr != nullptr) {
+        a_pNode->serializeAttributes(l_pAttr);
+
+        for (irr::u32 i = 0; i < l_pAttr->getAttributeCount(); i++) {
+          std::string l_sName = l_pAttr->getAttributeName(i);
+
+          if (l_pAttr->getAttributeType(i) == irr::io::EAT_STRING && l_sName == "Mesh") {
+            std::string l_sPath  = l_pAttr->getAttributeAsString(i).c_str();
+            std::string l_sLocal = "data/objects/";
+
+            if (l_sPath.substr(0, l_sLocal.size()) != l_sLocal) {
+              std::string l_sFile   = helpers::getFilename(l_sPath);
+              std::string l_sTarget = m_sFolder + "/" + l_sFile;
+
+              if (std::filesystem::exists(l_sTarget))
+                std::filesystem::remove(l_sTarget);
+
+              printf("We have an external mesh: %s.\n", l_sFile.c_str());
+              std::filesystem::copy_file(l_sPath, l_sTarget);
+
+              l_pAttr->setAttribute("Mesh", l_sTarget.c_str());
+
+              a_pNode->deserializeAttributes(l_pAttr);
+            }
+          }
+        }
+        l_pAttr->drop();
+      }
+
+      for (auto l_tTexture: l_vTextures) {
+        irr::io::IAttributes *l_pAttr = m_pDrv->createAttributesFromMaterial(a_pNode->getMaterial(std::get<0>(l_tTexture)));
+        printf("Set %s of material %i to %s\n", std::get<1>(l_tTexture).c_str(), std::get<0>(l_tTexture), std::get<2>(l_tTexture).c_str());
+        irr::video::ITexture *l_pTexture = m_pDrv->getTexture(std::get<2>(l_tTexture).c_str());
+
+        l_pAttr->setAttribute(std::get<1>(l_tTexture).c_str(), l_pTexture, std::get<2>(l_tTexture).c_str());
+        m_pDrv->fillMaterialStructureFromAttributes(a_pNode->getMaterial(std::get<0>(l_tTexture)), l_pAttr);
+      }
+
+      for (auto l_pChild : a_pNode->getChildren())
+        adjustDecorationNode(l_pChild);
+    }
+
+    /**
+    * Copy the decoration objects (if present)
+    */
+    void CCmdAddMarbleGP::copyDecoration() {
+      irr::scene::ISceneNode *l_pRoot = helpers::getDecorationRootNode(m_pOldSmgr->getRootSceneNode(), false);
+
+      if (l_pRoot != nullptr) {
+        adjustDecorationNode(l_pRoot->clone(m_pNewSmgr->getRootSceneNode(), m_pNewSmgr));
+      }
     }
 
     /**

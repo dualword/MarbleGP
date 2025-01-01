@@ -103,5 +103,19 @@ namespace dustbin {
     * @return the string representation of the date as YYYY-MM-DD
     */
     std::string convertTimestamp(irr::u64 a_iTime);
+
+    /**
+    * Get the filename of a path
+    * @param a_sPath the path
+    * @return the filename, i.e the last element of the path
+    */
+    std::string getFilename(const std::string &a_sPath);
+
+    /**
+    * Get the path of a filename
+    * @param a_sFile the filename with path
+    * @return the path, i.e. the input value with the last path component cut off
+    */
+    std::string getFilepath(const std::string &a_sFile);
   }
 }

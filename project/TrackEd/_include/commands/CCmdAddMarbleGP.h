@@ -27,6 +27,18 @@ namespace dustbin {
       std::string m_sFolder;
 
       /**
+      * Adjust the nodes of the scene decoration, like
+      * copy models, textures and so on
+      * @param a_pNode the node to be adjusted
+      */
+      void adjustDecorationNode(irr::scene::ISceneNode *a_pNode);
+
+      /**
+      * Copy the decoration objects (if present)
+      */
+      void copyDecoration();
+
+      /**
       * Export the track and add it to the new scene manager
       */
       bool exportAndPrepareTrack();
