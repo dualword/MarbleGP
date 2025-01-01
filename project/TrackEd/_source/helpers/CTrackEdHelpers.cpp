@@ -91,6 +91,35 @@ namespace dustbin {
         l_pGlobal->getDevice()->postEventFromUser(l_cEvent);
       }
     }
+
+    irr::scene::ISceneNode *findDecoration(irr::scene::ISceneNode *a_pNode) {
+      if (std::string(a_pNode->getName()) == "__DecorationRootNode")
+        return a_pNode;
+
+      for (auto l_pChild: a_pNode->getChildren()) {
+        irr::scene::ISceneNode *p = findDecoration(l_pChild);
+        if (p != nullptr)
+          return p;
+      }
+
+      return nullptr;
+    }
+
+    /**
+    * Find the root node for the decoration elements, add it if not presend
+    * @param a_pRoot the root node taken from the scene manager
+    * @return the decoration root node
+    */
+    irr::scene::ISceneNode *getDecorationRootNode(irr::scene::ISceneNode *a_pRoot, bool a_bAddIfNotFound) {
+      irr::scene::ISceneNode *l_pRet = findDecoration(a_pRoot);
+
+      if (l_pRet == nullptr && a_bAddIfNotFound) {
+        l_pRet = a_pRoot->getSceneManager()->addEmptySceneNode();
+        l_pRet->setName("__DecorationRootNode");
+      }
+
+      return l_pRet;
+    }
   }
 }
 

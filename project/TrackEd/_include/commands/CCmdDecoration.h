@@ -2,6 +2,9 @@
 #pragma once
 
 #include <commands/ICommand.h>
+#include <vector>
+#include <tuple>
+#include <map>
 
 namespace dustbin {
   namespace commands {
@@ -13,20 +16,34 @@ namespace dustbin {
     */
     class CCmdDecoration : public ICommand {
       private:
-        enum class enButtonIDs {
-          Close,
-          Add,
-          Delete
-        };
-
         bool m_bFinished;   /**< Is the command finished? */
 
-        irr::scene::ISceneManager *m_pSmgr;       /**< The scene manager */
-        irr::gui::IGUIEnvironment *m_pGui;        /**< The GUI environment */
-        irr::gui::IGUITab         *m_pBack;       /**< The background */
-        irr::gui::IGUITab         *m_pParent;     /**< The parent of the dialog */
-        irr::gui::IGUIListBox     *m_pList;       /**< The list of decorations */
-        irr::scene::ISceneNode    *m_pNode;       /**< The root scene node for decorations */
+        irr::scene::ISceneManager *m_pSmgr;           /**< The scene manager */
+        irr::gui::IGUIEnvironment *m_pGui;            /**< The GUI environment */
+        irr::scene::ISceneNode    *m_pNode;           /**< The root scene node for decorations */
+        irr::scene::ISceneNode    *m_pSelected;       /**< The node selected in the tree view */
+        irr::gui::IGUIWindow      *m_pDialog;         /**< The dialog window */
+        irr::gui::IGUITreeView    *m_pScene;          /**< The tree view representing the scene */
+        irr::gui::IGUITab         *m_aTabs[2];        /**< The tabs for scene editing */
+        irr::gui::IGUITab         *m_aNodeTabs[3];    /**< The tabs for node stuff */
+        irr::gui::IGUIElement     *m_aParameters[3];  /**< The parent elements for the parameters */
+        irr::gui::IGUITabControl  *m_pTabMain;        /**< The main tab control */
+        irr::gui::IGUITabControl  *m_pTabNode;        /**< The node tab control */
+        irr::gui::IGUIComboBox    *m_pMaterial;       /**< Combobox for material selection */
+
+        std::map<irr::gui::IGUITreeViewNode *, irr::scene::ISceneNode *> m_mNodeMap;  /**< Map mapping tree view nodes to scene nodes */
+
+        /**
+        * Get the type name of a scene node
+        * @param a_pNode the scene node
+        * @return the type name
+        */
+        std::string getTypeName(irr::scene::ISceneNode *a_pNode);
+
+        /**
+        * The list of node attributes (0 == name of the attribute, 1 == Label, 2 == Value Edit, 3 == attribute type)
+        */
+        std::vector<std::tuple<std::string, irr::gui::IGUIStaticText *, irr::gui::IGUIElement *, irr::io::E_ATTRIBUTE_TYPE>> m_vAttributes[3];
 
         /**
         * Find the decoration scene node
@@ -37,8 +54,18 @@ namespace dustbin {
 
         /**
         * Update the list of decoration objects
+        * @param a_pNode the node to add
+        * @param a_pParent the parent tree view node
         */
-        void updateDecorationList();
+        void updateDecorationList(irr::scene::ISceneNode *a_pNode, irr::gui::IGUITreeViewNode *a_pParent);
+
+        /**
+        * Update the attributes with the selected node
+        * @param a_pAttr the attributes to use
+        * @param a_iIndex the tab index (0 == properties, 1 == materials, 2 == animators)
+        * @param a_pParent the parent UI element to add the attributes to
+        */
+        void updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent);
 
       public:
         CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui);
@@ -56,6 +83,12 @@ namespace dustbin {
         * needs to react to user input
         */
         virtual bool OnEvent(const irr::SEvent &a_cEvent) override;
+
+        /**
+        * Callback method for changes in the UI like modifying
+        * font size or resizing window
+        */
+        virtual void onUiSetupModified();
     };
   }
 }

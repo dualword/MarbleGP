@@ -138,6 +138,8 @@ namespace dustbin {
       m_cMaterial.AmbientColor  = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
       m_cMaterial.SpecularColor = irr::video::SColor(0xFF, 0xFF, 0xFF, 0xFF);
       m_cMaterial.Wireframe     = true;
+
+      onUiSetupModified();
     }
 
     CTrackEd_MainClass::~CTrackEd_MainClass() {
@@ -172,17 +174,36 @@ namespace dustbin {
 
         irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
         if (l_cSize.Width != m_iWidth || l_cSize.Height != m_iHeight) {
-          m_iWidth  = l_cSize.Width;
-          m_iHeight = l_cSize.Height;
-
-          for (auto l_pCmd: m_vCommands) {
-            l_pCmd->onUiSetupModified();
-          }
+          onUiSetupModified();
         }
       }
       else l_bRet = false;
 
       return l_bRet;
+    }
+
+    /**
+    * Callback method for changes in the UI like modifying
+    * font size or resizing window
+    */
+    void CTrackEd_MainClass::onUiSetupModified() {
+      irr::core::dimension2du l_cSize = m_pDrv->getScreenSize();
+
+      m_iWidth  = l_cSize.Width;
+      m_iHeight = l_cSize.Height;
+
+      irr::u32 l_iFontHeight = m_pGui->getSkin()->getFont()->getDimension(L"TesTexT").Height;
+
+      m_pGui->getSkin()->setSize (irr::gui::EGDS_WINDOW_BUTTON_WIDTH, l_iFontHeight);
+      m_pGui->getSkin()->setSize (irr::gui::EGDS_SCROLLBAR_SIZE     , l_iFontHeight);
+      m_pGui->getSkin()->setSize (irr::gui::EGDS_MESSAGE_BOX_WIDTH  , l_iFontHeight);
+      m_pGui->getSkin()->setSize (irr::gui::EGDS_MESSAGE_BOX_HEIGHT , l_iFontHeight);
+
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_FACE, irr::video::SColor(255, 255, 255, 255));
+
+      for (auto l_pCmd: m_vCommands) {
+        l_pCmd->onUiSetupModified();
+      }
     }
 
     /**

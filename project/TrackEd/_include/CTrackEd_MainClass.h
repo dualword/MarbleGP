@@ -151,6 +151,12 @@ namespace dustbin {
         * @return true if the event was handled
         */
         virtual bool OnEvent(const irr::SEvent& a_cEvent) override;
+
+        /**
+        * Callback method for changes in the UI like modifying
+        * font size or resizing window
+        */
+        virtual void onUiSetupModified();
     };
   }
 }

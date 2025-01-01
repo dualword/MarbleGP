@@ -40,6 +40,14 @@ namespace dustbin {
     * @param a_iUserData2 additional user data
     */
     void postUserEvent(size_t a_iUserData1, size_t a_iUserData2);
+
+    /**
+    * Find the root node for the decoration elements, add it if not presend
+    * @param a_pRoot the root node taken from the scene manager
+    * @param a_bAddIfNotFound add the decoration node if no match was found?
+    * @return the decoration root node
+    */
+    irr::scene::ISceneNode *getDecorationRootNode(irr::scene::ISceneNode *a_pRoot, bool a_bAddIfNotFound = true);
   }
 }
 

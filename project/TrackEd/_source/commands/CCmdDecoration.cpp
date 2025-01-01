@@ -1,6 +1,8 @@
 // (w) 2024 by Dustbin::Games / Christian Keimel
 #include <platform/CTrackEdPlatform.h>
+#include <gui/CGuiScrollContainer.h>
 #include <commands/CCmdDecoration.h>
+#include <helpers/CTrackEdHelpers.h>
 #include <helpers/CTrackEdHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <CDefines.h>
@@ -13,10 +15,11 @@ namespace dustbin {
       m_bFinished(false),
       m_pSmgr    (a_pSmgr),
       m_pGui     (a_pGui),
-      m_pBack    (nullptr),
-      m_pParent  (nullptr),
-      m_pList    (nullptr),
-      m_pNode    (nullptr)
+      m_pNode    (nullptr),
+      m_pScene   (nullptr),
+      m_pTabMain (nullptr),
+      m_pTabNode (nullptr),
+      m_pMaterial(nullptr)
     {
       m_pNode = getDecorationRoot(m_pSmgr->getRootSceneNode());
 
@@ -25,92 +28,13 @@ namespace dustbin {
         m_pNode->setName("__DecorationRootNode");
       }
 
-      irr::core::dimension2du l_cSize   = m_pGui->getSkin()->getFont()->getDimension(L"ThisTextShouldReallyBeLongEnoughInMyOpinionButIMayBeWrongAsWell");
-      irr::core::dimension2du l_cScreen = m_pSmgr->getVideoDriver()->getScreenSize();
-
-      m_pBack = m_pGui->addTab(irr::core::recti(irr::core::vector2di(0), l_cScreen));
-      m_pBack->setDrawBackground(true);
-      m_pBack->setBackgroundColor(irr::video::SColor(128, 0xFF, 0xFF, 0xFF));
-
-      irr::core::recti l_cDialog = irr::core::recti(
-        irr::core::vector2di(l_cScreen.Width / 2 - l_cSize.Width / 2, l_cScreen.Height / 2 - 20 * l_cSize.Height / 2),
-        irr::core::dimension2du(l_cSize.Width, 20 * l_cSize.Height)
-      );
-
-      m_pParent = m_pGui->addTab(l_cDialog, m_pBack);
-      m_pParent->setDrawBackground(true);
-      m_pParent->setBackgroundColor(irr::video::SColor(255, 255, 255, 255));
-
-      irr::u32 l_iBtnHeight = 5 * l_cSize.Height / 4;
-
-      irr::gui::IGUIStaticText *l_pHead = m_pGui->addStaticText(
-        L"Manage Decoration",
-        irr::core::recti(
-          0,
-          0,
-          l_cDialog.getWidth(),
-          l_iBtnHeight
-        ),
-        false,
-        false,
-        m_pParent
-      );
-
-      l_pHead->setBackgroundColor(irr::video::SColor(255, 224, 224, 224));
-      l_pHead->setDrawBackground(true);
-      l_pHead->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
-
-      m_pList = m_pGui->addListBox(
-        irr::core::recti(
-          0, 
-          l_iBtnHeight,
-          l_cDialog.getWidth (),
-          l_cDialog.getHeight() - 2 * l_iBtnHeight
-        ),
-        m_pParent
-      );
-
-      m_pGui->addButton(
-        irr::core::recti(
-          l_cDialog.getWidth () - l_cSize.Width / 2,
-          l_cDialog.getHeight() - l_iBtnHeight,
-          l_cDialog.getWidth (),
-          l_cDialog.getHeight()
-        ),
-        m_pParent,
-        (irr::s32)enButtonIDs::Close,
-        L"Close"
-      );
-
-      m_pGui->addButton(
-        irr::core::recti(
-          0,
-          l_cDialog.getHeight() - 2 * l_iBtnHeight,
-          l_cDialog.getWidth () / 2,
-          l_cDialog.getHeight() - l_iBtnHeight
-        ),
-        m_pParent,
-        (irr::s32)enButtonIDs::Add,
-        L"Add Decoration"
-      );
-
-      m_pGui->addButton(
-        irr::core::recti(
-          l_cDialog.getWidth () / 2,
-          l_cDialog.getHeight() - 2 * l_iBtnHeight,
-          l_cDialog.getWidth (),
-          l_cDialog.getHeight() - l_iBtnHeight
-        ),
-        m_pParent,
-        (irr::s32)enButtonIDs::Delete,
-        L"Remove Decoration"
-      );
+      onUiSetupModified();
     }
 
     CCmdDecoration::~CCmdDecoration() {
-      if (m_pBack != nullptr) {
-        m_pBack->setVisible(false);
-        m_pGui->addToDeletionQueue(m_pBack);
+      if (m_pDialog != nullptr) {
+        m_pDialog->setVisible(false);
+        m_pGui->addToDeletionQueue(m_pDialog);
       }
     }
 
@@ -120,17 +44,7 @@ namespace dustbin {
     * @return the decoration scene node
     */
     irr::scene::ISceneNode *CCmdDecoration::getDecorationRoot(irr::scene::ISceneNode *a_pNode) {
-      if (std::string("__DecorationRootNode") == a_pNode->getName()) {
-        return a_pNode;
-      }
-
-      for (auto l_pChild: a_pNode->getChildren()) {
-        irr::scene::ISceneNode *p = getDecorationRoot(l_pChild);
-        if (p != nullptr)
-          return p;
-      }
-
-      return nullptr;
+      return helpers::getDecorationRootNode(m_pSmgr->getRootSceneNode());
     }
 
     /**
@@ -143,23 +57,259 @@ namespace dustbin {
     }
 
     /**
-    * Update the list of decoration objects
+    * Get the type name of a scene node
+    * @param a_pNode the scene node
+    * @return the type name
     */
-    void CCmdDecoration::updateDecorationList() {
-      m_pList->clear();
-
-      for (auto l_pChild: m_pNode->getChildren()) {
-        std::wstring l_sName = helpers::s2ws(l_pChild->getName());
-
-        wchar_t l_sDelimiter[] = { L'\\', L'/', L'\0' };
-        for (int i = 0; l_sDelimiter[i] != L'\0'; i++) {
-          if (l_sName.find_last_of(l_sDelimiter[i]) != std::string::npos) {
-            l_sName = l_sName.substr(l_sName.find_last_of(l_sDelimiter[i]) + 1);
-            break;
+    std::string CCmdDecoration::getTypeName(irr::scene::ISceneNode *a_pNode) {
+      irr::u32 l_iIndex = 0;
+      while (true) {
+        irr::scene::ISceneNodeFactory* l_pFactory = m_pSmgr->getSceneNodeFactory(l_iIndex++);
+        if (l_pFactory != nullptr) {
+          const irr::c8* l_sType = l_pFactory->getCreateableSceneNodeTypeName(a_pNode->getType());
+          if (l_sType != nullptr) {
+            return "(" + std::string(l_sType) + ")";
           }
         }
+        else break;
+      }
 
-        m_pList->addItem(l_sName.c_str());
+      return "";
+    }
+
+    /**
+    * Update the list of decoration objects
+    * @param a_pNode the node to add
+    * @param a_pParent the parent tree view node
+    */
+    void CCmdDecoration::updateDecorationList(irr::scene::ISceneNode *a_pNode, irr::gui::IGUITreeViewNode *a_pParent) {
+      std::string l_sName = a_pNode->getName();
+      if (l_sName == "") {
+        l_sName = getTypeName(a_pNode);
+      }
+      
+      irr::gui::IGUITreeViewNode *l_pNew = a_pParent->addChildBack(a_pNode == m_pNode ? L"Root" : helpers::s2ws(l_sName).c_str());
+
+      m_mNodeMap[l_pNew] = a_pNode;
+
+      for (auto l_pChild: a_pNode->getChildren()) {
+        updateDecorationList(l_pChild, l_pNew);
+      }
+    }
+
+    /**
+    * Callback method for changes in the UI like modifying
+    * font size or resizing window
+    */
+    void CCmdDecoration::onUiSetupModified() {
+      if (m_pDialog != nullptr) {
+        m_pDialog->setVisible(false);
+        m_pGui->addToDeletionQueue(m_pDialog);
+        m_pDialog = nullptr;
+      }
+
+      irr::core::dimension2du l_cSize   = m_pGui->getSkin()->getFont()->getDimension(L"ThisTextShouldReallyBeLongEnoughInMyOpinionButIMayBeWrongAsWell");
+      irr::core::dimension2du l_cScreen = m_pSmgr->getVideoDriver()->getScreenSize();
+
+      irr::core::recti l_cDialog = irr::core::recti(
+        irr::core::vector2di(l_cScreen.Width / 2 - l_cSize.Width / 2, l_cScreen.Height / 2 - 20 * l_cSize.Height / 2),
+        irr::core::dimension2du(l_cSize.Width, 30 * l_cSize.Height)
+      );
+
+      irr::u32 l_iBtnHeight = 5 * l_cSize.Height / 4;
+
+      m_pDialog = m_pGui->addWindow(l_cDialog, false, L"Edit Decoration");
+
+      irr::s32 x = (irr::s32)(std::atoi(tracked::IGlobal::getInstance()->getSetting("decoration_x").c_str()));
+      irr::s32 y = (irr::s32)(std::atoi(tracked::IGlobal::getInstance()->getSetting("decoration_y").c_str()));
+
+      m_pDialog->setRelativePosition(irr::core::position2di(x, y));
+
+      irr::core::recti l_cTabRect = irr::core::recti(
+        0,
+        5 * m_pGui->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) / 4,
+        l_cDialog.getWidth(),
+        l_cDialog.getHeight() - 5 * m_pGui->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) / 4
+      );
+
+      m_pTabMain = m_pGui->addTabControl(l_cTabRect, m_pDialog);
+
+      m_aTabs[0] = m_pGui->addTab(m_pTabMain->getRelativePosition(), m_pTabMain);
+      m_aTabs[0]->setText(L"Scene Tree");
+      m_pTabMain->addTab(m_aTabs[0]);
+
+      m_aTabs[1] = m_pGui->addTab(l_cTabRect, m_pTabMain);
+      m_aTabs[1]->setText(L"Node Properties");
+      m_pTabMain->addTab(m_aTabs[1]);
+
+      l_cTabRect = irr::core::recti(
+        0,
+        0,
+        l_cTabRect.getWidth(),
+        l_cTabRect.getHeight() - 5 * m_pGui->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) / 4
+      );
+
+      m_pTabNode = m_pGui->addTabControl(l_cTabRect, m_aTabs[1]);
+      m_pTabNode->setTabVerticalAlignment(irr::gui::EGUIA_LOWERRIGHT);
+
+      irr::core::recti l_cParamRect = irr::core::recti(
+        0,
+        3 * l_iBtnHeight / 2,
+        l_cTabRect.getWidth() - 10,
+        l_cTabRect.getHeight() - 5 - 2 * m_pGui->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH)
+      );
+
+      m_aNodeTabs[0] = m_pGui->addTab(m_pTabNode->getRelativePosition(), m_pTabNode);
+      m_aNodeTabs[0]->setText(L"Properties");
+      m_pTabNode->addTab(m_aNodeTabs[0]);
+
+      m_aParameters[0] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[0], l_cParamRect);
+
+      m_aNodeTabs[1] = m_pGui->addTab(m_pTabNode->getRelativePosition(), m_pTabNode);
+      m_aNodeTabs[1]->setText(L"Materials");
+      m_pTabNode->addTab(m_aNodeTabs[1]);
+
+      m_aParameters[1] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[1], l_cParamRect);
+
+      m_aNodeTabs[2] = m_pGui->addTab(m_pTabNode->getRelativePosition(), m_pTabNode);
+      m_aNodeTabs[2]->setText(L"Animators");
+      m_pTabNode->addTab(m_aNodeTabs[2]);
+
+      m_aParameters[2] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[2], l_cParamRect);
+
+      m_pScene = m_pGui->addTreeView(m_aTabs[0]->getRelativePosition(), m_aTabs[0]);
+
+      m_mNodeMap.clear();
+      updateDecorationList(m_pNode, m_pScene->getRoot());
+    }
+
+    /**
+    * Update the attributes with the selected node
+    * @param a_pAttr the attributes to use
+    * @param a_iIndex the tab index (0 == properties, 1 == materials, 2 == animators)
+    * @param a_pParent the parent UI element to add the attributes to
+    */
+    void CCmdDecoration::updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent) {
+      for (auto l_tAttribute: m_vAttributes[a_iIndex]) {
+        std::get<1>(l_tAttribute)->setVisible(false);
+        std::get<2>(l_tAttribute)->setVisible(false);
+
+        m_pGui->addToDeletionQueue(std::get<1>(l_tAttribute));
+        m_pGui->addToDeletionQueue(std::get<2>(l_tAttribute));
+      }
+
+      m_vAttributes[a_iIndex].clear();
+
+      if (a_pAttr != nullptr) {
+        irr::core::dimension2du l_cSize;
+
+        for (irr::u32 i = 0; i < a_pAttr->getAttributeCount(); i++) {
+          std::string l_sName = a_pAttr->getAttributeName(i);
+
+          irr::core::dimension2du l_cAttributeSize = m_pGui->getSkin()->getFont()->getDimension(helpers::s2ws(l_sName).c_str());
+
+          if (l_cAttributeSize.Width  > l_cSize.Width ) l_cSize.Width  = l_cAttributeSize.Width;
+          if (l_cAttributeSize.Height > l_cSize.Height) l_cSize.Height = l_cAttributeSize.Height;
+        }
+
+        irr::core::position2di  l_cPos = irr::core::position2di(l_cSize.Height / 2, 0);
+
+        for (irr::u32 i = 0; i < a_pAttr->getAttributeCount(); i++) {
+          std::wstring l_sName = helpers::s2ws(a_pAttr->getAttributeName(i));
+
+          irr::gui::IGUIStaticText *p = m_pGui->addStaticText(l_sName.c_str(), irr::core::recti(l_cPos, l_cSize), false, false, a_pParent);
+          p->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
+
+          irr::gui::IGUIElement *l_pEdit = nullptr;
+
+          irr::core::position2di  l_cEditPos  = l_cPos + irr::core::position2di(l_cPos.X + l_cSize.Width, 0);
+          irr::core::dimension2du l_cEditSize = irr::core::dimension2du(a_pParent->getRelativePosition().getWidth() - l_cSize.Width - 2 * l_cSize.Height, l_cSize.Height);
+          irr::core::recti        l_cEditRect = irr::core::recti(l_cEditPos, l_cEditSize);
+
+          switch (a_pAttr->getAttributeType(i)) {
+	          case irr::io::EAT_INT: { 
+              l_pEdit = m_pGui->addSpinBox(std::to_wstring(a_pAttr->getAttributeAsInt(i)).c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+
+	          case irr::io::EAT_FLOAT: { 
+              l_pEdit = m_pGui->addEditBox(std::to_wstring(a_pAttr->getAttributeAsFloat(i)).c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+
+	          case irr::io::EAT_STRING: { 
+              l_pEdit = m_pGui->addEditBox(helpers::s2ws(a_pAttr->getAttributeAsString(i).c_str()).c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+
+	          case irr::io::EAT_BOOL: { 
+              l_pEdit = m_pGui->addCheckBox(a_pAttr->getAttributeAsBool(i), irr::core::recti(l_cEditPos, irr::core::dimension2du(l_cEditSize.Height, l_cEditSize.Height)), a_pParent);
+              break; 
+            }
+	          case irr::io::EAT_ENUM: { 
+              irr::gui::IGUIComboBox *l_pCombo = m_pGui->addComboBox(l_cEditRect, a_pParent);
+
+              irr::scene::quake3::tStringList l_cAttributes;
+
+              a_pAttr->getAttributeEnumerationLiteralsOfEnumeration(i, l_cAttributes);
+              std::string l_sSelected = a_pAttr->getAttributeAsEnumeration(i);
+
+              for (irr::u32 i = 0; i < l_cAttributes.size(); i++) {
+                l_pCombo->addItem(helpers::s2ws(l_cAttributes[i].c_str()).c_str(), i);
+              }
+
+              l_pEdit = l_pCombo;
+              break; 
+            }
+
+	          case irr::io::EAT_COLOR: { break; }
+	          case irr::io::EAT_COLORF: { break; }
+	          case irr::io::EAT_VECTOR3D: { 
+              irr::core::vector3df l_cValue = a_pAttr->getAttributeAsVector3d(i);
+              std::wstring l_sText = std::to_wstring(l_cValue.X) + L", " + std::to_wstring(l_cValue.Y) + L", " + std::to_wstring(l_cValue.Z);
+              l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+	          case irr::io::EAT_POSITION2D: { break; }
+	          case irr::io::EAT_VECTOR2D: { break; }
+	          case irr::io::EAT_RECT: { break; }
+	          case irr::io::EAT_MATRIX: { break; }
+	          case irr::io::EAT_QUATERNION: { break; }
+	          case irr::io::EAT_BBOX: { break; }
+	          case irr::io::EAT_PLANE: { break; }
+	          case irr::io::EAT_TRIANGLE3D: { break; }
+	          case irr::io::EAT_LINE2D: { break; }
+	          case irr::io::EAT_LINE3D: { break; }
+	          case irr::io::EAT_STRINGWARRAY: { break; }
+	          case irr::io::EAT_FLOATARRAY: { break; }
+	          case irr::io::EAT_INTARRAY: { break; }
+	          case irr::io::EAT_BINARY: { break; }
+	          case irr::io::EAT_TEXTURE: { 
+              std::wstring l_sText = helpers::s2ws(a_pAttr->getAttributeAsString(i).c_str());
+
+              wchar_t l_sDelim[] = { L'\\', L'/', L'\0' };
+
+              for (int i = 0; l_sDelim[i] != L'\0'; i++) {
+                if (l_sText.find_last_of(l_sDelim[i]) != std::string::npos) {
+                  l_sText = l_sText.substr(l_sText.find_last_of(l_sDelim[i]) + 1);
+                  break;
+                }
+              }
+
+              l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+	          case irr::io::EAT_USER_POINTER: { break; }
+            case irr::io::EAT_DIMENSION2D: { break; }
+          }
+
+          l_cPos.Y += 5 * l_cSize.Height / 4;
+
+          if (l_pEdit != nullptr) {
+            m_vAttributes[a_iIndex].push_back(std::make_tuple(a_pAttr->getAttributeName(i), p, l_pEdit, a_pAttr->getAttributeType(i)));
+            a_pParent->addChild(l_pEdit);
+          }
+        }
       }
     }
 
@@ -172,52 +322,66 @@ namespace dustbin {
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-          if (a_cEvent.GUIEvent.Caller->getID() == (irr::s32)enButtonIDs::Close) {
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_CLOSED) {
+          if (a_cEvent.GUIEvent.Caller == m_pDialog) {
+            irr::s32 x = m_pDialog->getAbsolutePosition().UpperLeftCorner.X;
+            irr::s32 y = m_pDialog->getAbsolutePosition().UpperLeftCorner.Y;
+
+            tracked::IGlobal::getInstance()->setSetting("decoration_x", std::to_string(x));
+            tracked::IGlobal::getInstance()->setSetting("decoration_y", std::to_string(y));
+
+            m_pDialog   = nullptr;
             m_bFinished = true;
+
+            l_bRet = true;
           }
-          else if (a_cEvent.GUIEvent.Caller->getID() == (irr::s32)enButtonIDs::Add) {
-            tracked::IGlobal *l_pGlobal = tracked::IGlobal::getInstance();
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_TREEVIEW_NODE_SELECT) {
+          if (a_cEvent.GUIEvent.Caller == m_pScene) {
+            irr::gui::IGUITreeViewNode *l_pSelected = m_pScene->getSelected();
+            if (l_pSelected != nullptr) {
+              if (m_mNodeMap.find(l_pSelected) != m_mNodeMap.end()) {
+                m_pSelected = m_mNodeMap[l_pSelected];
 
+                irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
-            std::string l_sFile = platform::portableSelectFileOpen(L"Irrlicht Scene File\0*.xml", helpers::s2ws(l_pGlobal->getSetting("load_decoration_folder")).c_str(), L"");
+                if (l_pAttr != nullptr) {
+                  m_pSelected->serializeAttributes(l_pAttr);
 
-            if (l_sFile != "") {
-              std::string l_sName   = l_sFile;
-              std::string l_sFolder = l_sFile;
+                  updateAttributeList(l_pAttr, 0, m_aParameters[0]);
 
-              char l_sDelimiter[] = { '\\', '/', '\0' };
-
-              for (int i = 0; l_sDelimiter[i] != '\0'; i++) {
-                if (l_sName.find_last_of(l_sDelimiter[i]) != std::string::npos) {
-                  l_sName = l_sName.substr(l_sName.find_last_of(l_sDelimiter[i]) + 1);
+                  l_pAttr->drop();
                 }
 
-                if (l_sFolder.find_last_of(l_sDelimiter[i]) != std::string::npos) {
-                  l_sFolder = l_sFolder.substr(0, l_sFolder.find_last_of(l_sDelimiter[i]));
+                l_pAttr = m_pSmgr->getVideoDriver()->createAttributesFromMaterial(m_pSelected->getMaterial(0));
+
+                if (l_pAttr != nullptr) {
+                  updateAttributeList(l_pAttr, 1, m_aParameters[1]);
+                  l_pAttr->drop();
                 }
               }
-
-              if (l_sName.find_last_of('.') != std::string::npos)
-                l_sName = l_sName.substr(0, l_sName.find_last_of('.'));
-
-              l_pGlobal->setSetting("load_decoration_folder", l_sFolder);
- 
-              irr::scene::ISceneManager *l_pSmgr = m_pSmgr->createNewSceneManager(false);
-              l_pSmgr->loadScene(l_sFile.c_str());
-
-              if (l_pSmgr->getRootSceneNode()->getChildren().size() > 0) {
-                irr::scene::ISceneNode *l_pNode  = *l_pSmgr->getRootSceneNode()->getChildren().begin();
-                irr::scene::ISceneNode *l_pClone = l_pNode->clone(m_pNode, m_pSmgr);
-                l_pClone->setName(l_sFile.c_str());
-              }
-
-              helpers::postUserEvent(c_iUpdateShader     , c_iUpdateShader);
-              helpers::postUserEvent(c_iUpdateDecorations, c_iUpdateDecorations);
-              l_pSmgr->drop();
-
-              updateDecorationList();
             }
           }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_TREEVIEW_NODE_DESELECT) {
+          if (a_cEvent.GUIEvent.Caller == m_pScene) {
+            irr::gui::IGUITreeViewNode *l_pUnSelected = m_pScene->getSelected();
+            if (l_pUnSelected != nullptr) {
+              irr::scene::ISceneNode *l_pNode = reinterpret_cast<irr::scene::ISceneNode *>(l_pUnSelected->getData2());
+              if (l_pNode == m_pSelected) {
+                m_pSelected = nullptr;
+                updateAttributeList(nullptr, 0, nullptr);
+                updateAttributeList(nullptr, 1, nullptr);
+                updateAttributeList(nullptr, 2, nullptr);
+              }
+            }
+          }
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
+        if (a_cEvent.UserEvent.UserData1 == c_iSceneWillBeCleared) {
+          m_bFinished = true;
         }
       }
 

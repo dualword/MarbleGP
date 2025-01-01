@@ -5,6 +5,7 @@
 #include <editor/CPointMoveManager.h>
 #include <messages/CMessageHelpers.h>
 #include <scenenodes/CRostrumNode.h>
+#include <helpers/CTrackEdHelpers.h>
 #include <helpers/CStringHelpers.h>
 #include <commands/CCmdEditTrack.h>
 #include <commands/CCmdMainMenu.h>
@@ -1113,14 +1114,9 @@ namespace dustbin {
         delete p;
       }
 
-      irr::scene::ISceneNode *l_pDecoration = nullptr;
+      irr::scene::ISceneNode *l_pDecoration = helpers::getDecorationRootNode(m_pSmgr->getRootSceneNode(), false);
 
-      for (auto l_pChild: m_pSmgr->getRootSceneNode()->getChildren()) {
-        if (std::string("__DecorationRootNode") == l_pChild->getName()) {
-          m_pSmgr->addToDeletionQueue(l_pChild);
-          break;
-        }
-      }
+      if (l_pDecoration != nullptr) m_pSmgr->addToDeletionQueue(l_pDecoration);
     }
 
     /**
@@ -1199,14 +1195,7 @@ namespace dustbin {
       a_cAttr.addString("TrackName", m_sTrackName.c_str());
       a_cAttr.addString("Uuid"     , m_sTrackUUID.c_str());
 
-      irr::scene::ISceneNode *l_pDecoration = nullptr;
-
-      for (auto l_pChild: m_pSmgr->getRootSceneNode()->getChildren()) {
-        if (std::string("__DecorationRootNode") == l_pChild->getName()) {
-          l_pDecoration = l_pChild;
-          break;
-        }
-      }
+      irr::scene::ISceneNode *l_pDecoration = helpers::getDecorationRootNode(m_pSmgr->getRootSceneNode(), false);
 
       if (l_pDecoration != nullptr) {
         data::CMemoryWriteFile *l_pFile = new data::CMemoryWriteFile("__DecorationData");
@@ -1238,8 +1227,7 @@ namespace dustbin {
       if (a_cAttr.existsAttribute("Uuid"     )) m_sTrackUUID = a_cAttr.getAttributeAsString("Uuid"     ).c_str();
 
       if (a_cAttr.existsAttribute("decoration")) {
-        irr::scene::ISceneNode *l_pDecoration = m_pSmgr->addEmptySceneNode(m_pSmgr->getRootSceneNode());
-        l_pDecoration->setName("__DecorationRootNode");
+        irr::scene::ISceneNode *l_pDecoration = helpers::getDecorationRootNode(m_pSmgr->getRootSceneNode());
 
         std::string l_sDecoration64 = a_cAttr.getAttributeAsString("decoration").c_str();
 
@@ -1254,8 +1242,7 @@ namespace dustbin {
             l_vData.push_back(l_pDataU[i]);
           }
 
-          irr::scene::ISceneNode *l_pDecoration = m_pSmgr->addEmptySceneNode();
-          l_pDecoration->setName("__DecorationRootNode");
+          irr::scene::ISceneNode *l_pDecoration = helpers::getDecorationRootNode(m_pSmgr->getRootSceneNode(), true);
 
           data::CMemoryReadFile *l_pFile = new data::CMemoryReadFile("___DecorationLoader", l_vData);
 
