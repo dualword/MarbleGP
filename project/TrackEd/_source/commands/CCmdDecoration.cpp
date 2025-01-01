@@ -441,6 +441,32 @@ namespace dustbin {
     }
 
     /**
+    * A scene node will be deleted
+    * @param a_pNode the node to be deleted
+    */
+    void CCmdDecoration::deleteNode(irr::scene::ISceneNode *a_pNode) {
+      for (auto l_tTree: m_mNodeMap) {
+        if (l_tTree.second == a_pNode) {
+          l_tTree.first->getParent()->deleteChild(l_tTree.first);
+          m_mNodeMap.erase(l_tTree.first);
+          break;
+        }
+      }
+    }
+
+    /**
+    * A scene node was added
+    * @param a_pNode the new node
+    */
+    void CCmdDecoration::addNode(irr::scene::ISceneNode *a_pNode) {
+      for (auto l_tTree: m_mNodeMap) {
+        if (l_tTree.second == a_pNode->getParent()) {
+          updateDecorationList(a_pNode, l_tTree.first);
+        }
+      }
+    }
+
+    /**
     * The Irrlicht event handler method. Implement it if the command
     * needs to react to user input
     */
@@ -448,7 +474,31 @@ namespace dustbin {
       bool l_bRet = false;
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_MENU_ITEM_SELECTED) {
+          if (a_cEvent.GUIEvent.Caller->getType() == irr::gui::EGUIET_CONTEXT_MENU) {
+            irr::gui::IGUIContextMenu *l_pMenu = reinterpret_cast<irr::gui::IGUIContextMenu *>(a_cEvent.GUIEvent.Caller);
+            std::wstring l_sCaller = l_pMenu->getItemText(l_pMenu->getSelectedItem());
 
+            if (l_sCaller == L"Add Node") { 
+            }
+            else if (l_sCaller == L"Delete Node") {
+              if (m_pSelected != nullptr) {
+                m_pSelected->setVisible(false);
+                deleteNode(m_pSelected);
+                m_pSmgr->addToDeletionQueue(m_pSelected);
+                helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
+                m_pSelected = nullptr;
+              }
+            }
+            else if (l_sCaller == L"Clone Node") {
+              if (m_pSelected != nullptr) {
+                irr::scene::ISceneNode *l_pNew = m_pSelected->clone(m_pSelected->getParent(), m_pSmgr);
+                addNode(l_pNew);
+                helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
+              }
+            }
+          }
+        }
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_CLOSED) {
           if (a_cEvent.GUIEvent.Caller == m_pDialog) {
             irr::s32 x = m_pDialog->getAbsolutePosition().UpperLeftCorner.X;
@@ -537,6 +587,7 @@ namespace dustbin {
                     m_pSelected->deserializeAttributes(l_pAttr);
                     updateNodeInTree(m_pSelected);
                     l_pAttr->drop();
+                    l_bRet = true;
                   }
                 }
               }
@@ -555,9 +606,25 @@ namespace dustbin {
                     m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
                     revertTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
                     l_pAttr->drop();
+                    l_bRet = true;
                   }
                 }
               }
+            }
+          }
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        if (a_cEvent.MouseInput.isRightPressed()) {
+          irr::gui::IGUIElement *l_pHover = m_pGui->getHovered();
+
+          if (l_pHover == m_pScene) {
+            if (m_pScene->getSelected() != nullptr && m_pScene->getSelected() != m_pScene->getRoot()) {
+              irr::gui::IGUIContextMenu *l_pMenu = m_pGui->addContextMenu(irr::core::recti(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y, 5, 5), m_pGui->getRootGUIElement());
+
+              l_pMenu->addItem(L"Add Node");
+              l_pMenu->addItem(L"Delete Node");
+              l_pMenu->addItem(L"Clone Node");
             }
           }
         }

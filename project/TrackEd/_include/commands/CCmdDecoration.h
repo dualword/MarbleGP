@@ -74,6 +74,18 @@ namespace dustbin {
         void updateNodeInTree(irr::scene::ISceneNode *a_pNode);
 
         /**
+        * A scene node will be deleted
+        * @param a_pNode the node to be deleted
+        */
+        void deleteNode(irr::scene::ISceneNode *a_pNode);
+
+        /**
+        * A scene node was added
+        * @param a_pNode the new node
+        */
+        void addNode(irr::scene::ISceneNode *a_pNode);
+
+        /**
         * Commit a text-input value to the attributes
         * @param a_sName name of the attribute
         * @param a_pEdit the edit field to get the value from
