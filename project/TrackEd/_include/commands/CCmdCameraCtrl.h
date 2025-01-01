@@ -20,7 +20,8 @@ namespace dustbin {
         
         bool m_bMouseDown[3];      /**< Is a mouse button pressed down (0 == left, 1 == right, 2 == middle) */
 
-        irr::core::position2di m_cPosition;    /**< The mouse position */
+        irr::core::position2di m_cPosition;     /**< The mouse position */
+        irr::core::vector3df   m_cCamPos;       /**< The camera position */
 
         irr::f64 m_fAngleH;     /**< The horizontal angle */
         irr::f64 m_fAngleV;     /**< The vertical angle */

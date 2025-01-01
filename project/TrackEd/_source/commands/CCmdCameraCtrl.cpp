@@ -20,6 +20,11 @@ namespace dustbin {
       {
         for (int i = 0; i < 3; i++)
           m_bMouseDown[i] = false;
+
+        m_cCamPos = irr::core::vector3df(50.0f, 25.0f, 0.0f);
+
+        m_fAngleH = 270.0f;
+        m_fAngleV = -25.0f;
       }
 
       CCmdCameraCtrl::~CCmdCameraCtrl() {
@@ -51,15 +56,14 @@ namespace dustbin {
 
         if (a_cEvent.EventType == irr::EET_USER_EVENT) {
           if (a_cEvent.UserEvent.UserData1 == c_iSceneWillBeCleared) {
+            m_cCamPos = m_pCamera->getPosition();
+
             m_pCamera = nullptr;
           }
           else if (a_cEvent.UserEvent.UserData1 == c_iSceneLoaded) {
             m_pCamera = m_pSmgr->addCameraSceneNode();
             m_pCamera->setIsDebugObject(true);
-            m_pCamera->setPosition(irr::core::vector3df(50.0f, 25.0f, 0.0f));
-            m_pCamera->setTarget(irr::core::vector3df(0.0f, 5.0f, 0.0f));
-            m_fAngleH = 270.0f;
-            m_fAngleV = -25.0f;
+            m_pCamera->setPosition(m_cCamPos);
             updateCameraTarget();
 
             m_pSmgr->setActiveCamera(m_pCamera);
