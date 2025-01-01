@@ -1060,22 +1060,25 @@ namespace dustbin {
       l_pGrid->setPosition(irr::core::vector3df(0.0f, 2.5f, 150.0f));
       l_pGrid->setAngle(180.0f);
 
-      irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
+      if (m_fBaseHeight == -1 && m_fBaseOffset == -1) {
+        irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
 
-      m_pZeroPlane = m_pSmgr->addMeshSceneNode(
-        l_pPlane, 
-        m_pSmgr->getRootSceneNode(), 
-        -1, 
-        irr::core::vector3df(0.0f),
-        irr::core::vector3df(0.0f),
-        irr::core::vector3df(150.0f, 5.0f, 150.0f)
-      );
-          
-      m_pZeroPlane->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
-      m_pZeroPlane->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-      m_pZeroPlane->getMaterial(0).Lighting = false;
-          
-      m_pZeroPlane->addAnimator(new animators::CPlaneAnimator(m_pZeroPlane));
+        m_pZeroPlane = m_pSmgr->addMeshSceneNode(
+          l_pPlane,
+          m_pSmgr->getRootSceneNode(),
+          -1,
+          irr::core::vector3df(0.0f),
+          irr::core::vector3df(0.0f),
+          irr::core::vector3df(150.0f, 5.0f, 150.0f)
+        );
+
+        m_pZeroPlane->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
+        m_pZeroPlane->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+        m_pZeroPlane->getMaterial(0).Lighting = false;
+
+        m_pZeroPlane->addAnimator(new animators::CPlaneAnimator(m_pZeroPlane));
+      }
+      else m_pZeroPlane = nullptr;
 
       m_pPickPoint = m_pSmgr->addMeshSceneNode(m_pSmgr->getMesh("data/objects/box.3ds"));
       m_pPickPoint->setScale(irr::core::vector3df(1.0f, 5.0f, 1.0f));
