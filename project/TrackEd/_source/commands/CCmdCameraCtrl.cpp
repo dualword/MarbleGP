@@ -21,10 +21,10 @@ namespace dustbin {
         for (int i = 0; i < 3; i++)
           m_bMouseDown[i] = false;
 
-        m_cCamPos = irr::core::vector3df(50.0f, 25.0f, 0.0f);
+        m_cCamPos = irr::core::vector3df(133.0f, 113.0f, 192.0f);
 
-        m_fAngleH = 270.0f;
-        m_fAngleV = -25.0f;
+        m_fAngleH = 242.0f;
+        m_fAngleV = -40.0f;
       }
 
       CCmdCameraCtrl::~CCmdCameraCtrl() {
