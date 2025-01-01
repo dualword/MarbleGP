@@ -34,16 +34,16 @@ namespace dustbin {
         std::map<irr::gui::IGUITreeViewNode *, irr::scene::ISceneNode *> m_mNodeMap;  /**< Map mapping tree view nodes to scene nodes */
 
         /**
+        * The list of node attributes (0 == name of the attribute, 1 == Label, 2 == Value Edit, 3 == attribute type)
+        */
+        std::vector<std::tuple<std::string, irr::gui::IGUIStaticText *, irr::gui::IGUIElement *, irr::io::E_ATTRIBUTE_TYPE>> m_vAttributes[3];
+
+        /**
         * Get the type name of a scene node
         * @param a_pNode the scene node
         * @return the type name
         */
         std::string getTypeName(irr::scene::ISceneNode *a_pNode);
-
-        /**
-        * The list of node attributes (0 == name of the attribute, 1 == Label, 2 == Value Edit, 3 == attribute type)
-        */
-        std::vector<std::tuple<std::string, irr::gui::IGUIStaticText *, irr::gui::IGUIElement *, irr::io::E_ATTRIBUTE_TYPE>> m_vAttributes[3];
 
         /**
         * Find the decoration scene node
@@ -66,6 +66,28 @@ namespace dustbin {
         * @param a_pParent the parent UI element to add the attributes to
         */
         void updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent);
+
+        /**
+        * Update a scene node in the tree
+        * @param a_pNode the node to update
+        */
+        void updateNodeInTree(irr::scene::ISceneNode *a_pNode);
+
+        /**
+        * Commit a text-input value to the attributes
+        * @param a_sName name of the attribute
+        * @param a_pEdit the edit field to get the value from
+        * @param a_pAttr the attributes to modify
+        */
+        void commitTextInputValue(const std::string &a_sName, irr::gui::IGUIEditBox *a_pEdit, irr::io::IAttributes *a_pAttr);
+
+        /**
+        * Commit a text-input value to the attributes
+        * @param a_sName name of the attribute
+        * @param a_pEdit the edit field to get the value from
+        * @param a_pAttr the attributes to modify
+        */
+        void revertTextInputValue(const std::string &a_sName, irr::gui::IGUIEditBox *a_pEdit, irr::io::IAttributes *a_pAttr);
 
       public:
         CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui);

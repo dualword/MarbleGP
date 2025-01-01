@@ -314,6 +314,133 @@ namespace dustbin {
     }
 
     /**
+    * Commit a text-input value to the attributes
+    * @param a_sName name of the attribute
+    * @param a_pEdit the edit field to get the value from
+    * @param a_pAttr the attributes to modify
+    */
+    void CCmdDecoration::commitTextInputValue(const std::string &a_sName, irr::gui::IGUIEditBox *a_pEdit, irr::io::IAttributes *a_pAttr) {
+      if (a_pAttr->existsAttribute(a_sName.c_str())) {
+        switch (a_pAttr->getAttributeType(a_sName.c_str())) {
+	        case irr::io::EAT_INT: { 
+            a_pAttr->setAttribute(a_sName.c_str(), (irr::s32)std::wcstol(a_pEdit->getText(), nullptr, 10));
+            break; 
+          }
+
+	        case irr::io::EAT_FLOAT: { 
+            a_pAttr->setAttribute(a_sName.c_str(), (irr::f32)std::wcstof(a_pEdit->getText(), nullptr));
+            break; 
+          }
+
+	        case irr::io::EAT_STRING: {
+            std::wstring l_sNew = a_pEdit->getText();
+            a_pAttr->setAttribute(a_sName.c_str(), l_sNew.c_str());
+            break; 
+          }
+
+	        case irr::io::EAT_COLOR: { break; }
+	        case irr::io::EAT_COLORF: { break; }
+	        case irr::io::EAT_VECTOR3D: { 
+            std::string l_sValue = helpers::ws2s(a_pEdit->getText());
+
+            std::vector<std::string> l_vValues = helpers::splitString(l_sValue, ',');
+            while (l_vValues.size() < 3)
+              l_vValues.push_back("0.0");
+
+            a_pAttr->setAttribute(a_sName.c_str(), irr::core::vector3df((irr::f32)std::atof(l_vValues[0].c_str()), (irr::f32)std::atof(l_vValues[1].c_str()), (irr::f32)std::atof(l_vValues[2].c_str())));
+            break; 
+          }
+	        case irr::io::EAT_POSITION2D: { break; }
+	        case irr::io::EAT_VECTOR2D: { break; }
+	        case irr::io::EAT_RECT: { break; }
+	        case irr::io::EAT_MATRIX: { break; }
+	        case irr::io::EAT_QUATERNION: { break; }
+	        case irr::io::EAT_BBOX: { break; }
+	        case irr::io::EAT_PLANE: { break; }
+	        case irr::io::EAT_TRIANGLE3D: { break; }
+	        case irr::io::EAT_LINE2D: { break; }
+	        case irr::io::EAT_LINE3D: { break; }
+	        case irr::io::EAT_STRINGWARRAY: { break; }
+	        case irr::io::EAT_FLOATARRAY: { break; }
+	        case irr::io::EAT_INTARRAY: { break; }
+	        case irr::io::EAT_BINARY: { break; }
+	        case irr::io::EAT_TEXTURE: { 
+            break; 
+          }
+	        case irr::io::EAT_USER_POINTER: { break; }
+          case irr::io::EAT_DIMENSION2D: { break; }
+        }
+      }
+    }
+
+
+    /**
+    * Commit a text-input value to the attributes
+    * @param a_sName name of the attribute
+    * @param a_pEdit the edit field to get the value from
+    * @param a_pAttr the attributes to modify
+    */
+    void CCmdDecoration::revertTextInputValue(const std::string &a_sName, irr::gui::IGUIEditBox *a_pEdit, irr::io::IAttributes *a_pAttr) {
+      if (a_pAttr->existsAttribute(a_sName.c_str())) {
+        switch (a_pAttr->getAttributeType(a_sName.c_str())) {
+	        case irr::io::EAT_INT: { 
+            a_pEdit->setText(std::to_wstring(a_pAttr->getAttributeAsInt(a_sName.c_str())).c_str());
+            break; 
+          }
+
+	        case irr::io::EAT_FLOAT: { 
+            a_pEdit->setText(std::to_wstring(a_pAttr->getAttributeAsFloat(a_sName.c_str())).c_str());
+            break; 
+          }
+
+	        case irr::io::EAT_STRING: {
+            a_pEdit->setText(helpers::s2ws(a_pAttr->getAttributeAsString(a_sName.c_str()).c_str()).c_str());
+            break; 
+          }
+
+	        case irr::io::EAT_COLOR: { break; }
+	        case irr::io::EAT_COLORF: { break; }
+	        case irr::io::EAT_VECTOR3D: {
+            irr::core::vector3df v = a_pAttr->getAttributeAsVector3d(a_sName.c_str());
+            a_pEdit->setText((std::to_wstring(v.X) + L", " + std::to_wstring(v.Y) + L", " + std::to_wstring(v.Z)).c_str());
+            break;
+          }
+	        case irr::io::EAT_POSITION2D: { break; }
+	        case irr::io::EAT_VECTOR2D: { break; }
+	        case irr::io::EAT_RECT: { break; }
+	        case irr::io::EAT_MATRIX: { break; }
+	        case irr::io::EAT_QUATERNION: { break; }
+	        case irr::io::EAT_BBOX: { break; }
+	        case irr::io::EAT_PLANE: { break; }
+	        case irr::io::EAT_TRIANGLE3D: { break; }
+	        case irr::io::EAT_LINE2D: { break; }
+	        case irr::io::EAT_LINE3D: { break; }
+	        case irr::io::EAT_STRINGWARRAY: { break; }
+	        case irr::io::EAT_FLOATARRAY: { break; }
+	        case irr::io::EAT_INTARRAY: { break; }
+	        case irr::io::EAT_BINARY: { break; }
+	        case irr::io::EAT_TEXTURE: { 
+            break; 
+          }
+	        case irr::io::EAT_USER_POINTER: { break; }
+          case irr::io::EAT_DIMENSION2D: { break; }
+        }
+      }
+    }
+
+    /**
+    * Update a scene node in the tree
+    * @param a_pNode the node to update
+    */
+    void CCmdDecoration::updateNodeInTree(irr::scene::ISceneNode *a_pNode) {
+      for (auto l_tTree: m_mNodeMap) {
+        if (l_tTree.second == a_pNode) {
+          l_tTree.first->setText(helpers::s2ws(a_pNode->getName()).c_str());
+        }
+      }
+    }
+
+    /**
     * The Irrlicht event handler method. Implement it if the command
     * needs to react to user input
     */
@@ -321,9 +448,8 @@ namespace dustbin {
       bool l_bRet = false;
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
-        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
-        }
-        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_CLOSED) {
+
+        if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_CLOSED) {
           if (a_cEvent.GUIEvent.Caller == m_pDialog) {
             irr::s32 x = m_pDialog->getAbsolutePosition().UpperLeftCorner.X;
             irr::s32 y = m_pDialog->getAbsolutePosition().UpperLeftCorner.Y;
@@ -335,6 +461,18 @@ namespace dustbin {
             m_bFinished = true;
 
             l_bRet = true;
+          }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUS_LOST) {
+
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+          for (int i = 0; i < 3; i++) {
+            for (auto l_tAttribute: m_vAttributes[i]) {
+              if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
+                printf("Checked.\n");
+              }
+            }
           }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_TREEVIEW_NODE_SELECT) {
@@ -374,6 +512,42 @@ namespace dustbin {
                 updateAttributeList(nullptr, 0, nullptr);
                 updateAttributeList(nullptr, 1, nullptr);
                 updateAttributeList(nullptr, 2, nullptr);
+              }
+            }
+          }
+        }
+      }
+      else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        if (m_pGui->getFocus()->getType() == irr::gui::EGUIET_EDIT_BOX && m_pSelected != nullptr) {
+          if (a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_RETURN) {
+            for (int i = 0; i < 3; i++) {
+              for (auto l_tAttribute : m_vAttributes[i]) {
+                if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
+                  irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+
+                  if (l_pAttr != nullptr) {
+                    m_pSelected->serializeAttributes(l_pAttr);
+                    commitTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
+                    m_pSelected->deserializeAttributes(l_pAttr);
+                    updateNodeInTree(m_pSelected);
+                    l_pAttr->drop();
+                  }
+                }
+              }
+            }
+          }
+          else if (a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
+            for (int i = 0; i < 3; i++) {
+              for (auto l_tAttribute : m_vAttributes[i]) {
+                if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
+                  irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+
+                  if (l_pAttr != nullptr) {
+                    m_pSelected->serializeAttributes(l_pAttr);
+                    revertTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
+                    l_pAttr->drop();
+                  }
+                }
               }
             }
           }
