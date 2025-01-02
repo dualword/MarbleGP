@@ -479,7 +479,49 @@ namespace dustbin {
             irr::gui::IGUIContextMenu *l_pMenu = reinterpret_cast<irr::gui::IGUIContextMenu *>(a_cEvent.GUIEvent.Caller);
             std::wstring l_sCaller = l_pMenu->getItemText(l_pMenu->getSelectedItem());
 
-            if (l_sCaller == L"Add Node") { 
+            if (l_sCaller == L"Add Mesh Scene Node") {
+              if (m_pSelected == nullptr) {
+                m_pSelected = m_pNode;
+              }
+
+              irr::io::path l_sDir = m_pGui->getFileSystem()->getWorkingDirectory();
+
+              std::string l_sFile = platform::portableSelectFileOpen(L"All Filed (*.*)\0*.*", helpers::s2ws(tracked::IGlobal::getInstance()->getSetting("meshimport_folder")).c_str(), L"");
+
+              m_pGui->getFileSystem()->changeWorkingDirectoryTo(l_sDir);
+
+              if (l_sFile != "") {
+                tracked::IGlobal::getInstance()->setSetting("meshimport_folder", helpers::getFilepath(l_sFile));
+
+                irr::scene::IMesh *l_pMesh = m_pSmgr->getMesh(l_sFile.c_str());
+                if (l_pMesh != nullptr) {
+                  irr::core::aabbox3df l_cBox = l_pMesh->getBoundingBox();
+                  irr::core::vector3df l_cPos = m_pSmgr->getActiveCamera()->getPosition();
+                  irr::core::vector3df l_cTgt = m_pSmgr->getActiveCamera()->getTarget();
+
+                  l_cTgt = l_cTgt.normalize();
+
+                  l_cTgt *= 2.0f * l_cBox.getExtent().getLength();
+
+                  irr::scene::ISceneNode *l_pNew = m_pSmgr->addMeshSceneNode(l_pMesh, m_pSelected, -1, l_cTgt);
+
+                  if (l_pNew != nullptr) {
+                    l_pNew->setName(helpers::getFilename(l_sFile).c_str());
+                    addNode(l_pNew);
+                  }
+                }
+                else helpers::addLogMessage(L"Unable to load file \"" + helpers::s2ws(l_sFile) + L"\".", irr::ELL_ERROR, 2000);
+              }
+
+              l_bRet = true;
+            }
+            else if (l_sCaller == L"Add Empty Scene Node") {
+              if (m_pSelected == nullptr) {
+                m_pSelected = m_pNode;
+              }
+
+              addNode(m_pSmgr->addEmptySceneNode(m_pSelected));
+              l_bRet = true;
             }
             else if (l_sCaller == L"Delete Node") {
               if (m_pSelected != nullptr) {
@@ -489,6 +531,8 @@ namespace dustbin {
                 helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
                 m_pSelected = nullptr;
               }
+              else helpers::addLogMessage(L"No scene node selected for deletion", irr::ELL_ERROR, 2000);
+              l_bRet = true;
             }
             else if (l_sCaller == L"Clone Node") {
               if (m_pSelected != nullptr) {
@@ -496,6 +540,8 @@ namespace dustbin {
                 addNode(l_pNew);
                 helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
               }
+              else helpers::addLogMessage(L"No scene node to clone selected", irr::ELL_ERROR, 2000);
+              l_bRet = true;
             }
           }
         }
@@ -622,7 +668,8 @@ namespace dustbin {
             if (m_pScene->getSelected() != nullptr && m_pScene->getSelected() != m_pScene->getRoot()) {
               irr::gui::IGUIContextMenu *l_pMenu = m_pGui->addContextMenu(irr::core::recti(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y, 5, 5), m_pGui->getRootGUIElement());
 
-              l_pMenu->addItem(L"Add Node");
+              l_pMenu->addItem(L"Add Mesh Scene Node");
+              l_pMenu->addItem(L"Add Empty Scene Node");
               l_pMenu->addItem(L"Delete Node");
               l_pMenu->addItem(L"Clone Node");
             }

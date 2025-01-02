@@ -1202,7 +1202,7 @@ namespace dustbin {
         if (l_pFile) {
           irr::io::IXMLWriter *l_pXml = m_pSmgr->getFileSystem()->createXMLWriter(l_pFile);
           if (l_pXml) {
-            m_pSmgr->saveScene(l_pXml, ".", nullptr, l_pDecoration);
+            m_pSmgr->saveScene(l_pXml, m_pGui->getFileSystem()->getWorkingDirectory(), nullptr, l_pDecoration);
             l_pXml->drop();
           }
 
