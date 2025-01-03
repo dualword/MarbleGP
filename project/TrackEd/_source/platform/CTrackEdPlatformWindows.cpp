@@ -1,4 +1,5 @@
 /* (w) 2021 - 22 by Dustbin::Games (Christian Keimel) - This file is licensed under the terms of the zlib license */
+#include <afxdlgs.h>
 
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
@@ -166,6 +167,22 @@ namespace dustbin {
       {
         return helpers::ws2s(szFileName);
       }
+    }
+
+    /**
+    * Choose a color with the system dialog
+    * @param a_cColor the start color
+    * @return the newly selected color
+    */
+    irr::video::SColor portableSelectColor(const irr::video::SColor &a_cColor) {
+      CColorDialog l_cDlg = CColorDialog(a_cColor.color);
+
+      if (l_cDlg.DoModal() == IDOK) {
+        COLORREF l_cWinColor = l_cDlg.GetColor();
+
+        return irr::video::SColor(255, (irr::u32)GetRValue(l_cWinColor), (irr::u32)GetGValue(l_cWinColor), (irr::u32)GetBValue(l_cWinColor));
+      }
+      else return a_cColor;
     }
   }
 }

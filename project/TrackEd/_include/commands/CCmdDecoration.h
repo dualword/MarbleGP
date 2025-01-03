@@ -16,6 +16,29 @@ namespace dustbin {
     */
     class CCmdDecoration : public ICommand {
       private:
+        /**
+        * @class CInputLimiter
+        * @author Christian Keimel
+        * This is a helper class which consumes key events
+        * for keys which cannot be entered to an input field
+        */
+        class CInputLimiter {
+          private:
+            std::wstring m_sLimited;    /**< Some defined valid values */
+
+            std::vector<irr::EKEY_CODE> m_vValid;   /**< Some default values which are never consumed */
+
+            irr::gui::IGUIElement *m_pElement;    /**< The GUI element we limit the input for */
+
+          public:
+            CInputLimiter(irr::gui::IGUIElement *a_pElement, irr::io::E_ATTRIBUTE_TYPE a_eType);
+            virtual ~CInputLimiter();
+
+            bool consumeEvent(const irr::SEvent &a_cEvent);
+
+            irr::gui::IGUIElement *getElement();
+        };
+
         bool m_bFinished;   /**< Is the command finished? */
 
         irr::scene::ISceneManager *m_pSmgr;           /**< The scene manager */
@@ -31,6 +54,9 @@ namespace dustbin {
         irr::gui::IGUITabControl  *m_pTabNode;        /**< The node tab control */
         irr::gui::IGUIComboBox    *m_pMaterial;       /**< Combobox for material selection */
         irr::gui::IGUIImage       *m_aTexture[8];     /**< The textures of the selected material */
+        irr::gui::IGUIStaticText  *m_pMeshName;       /**< Static text displaying the mesh name */
+
+        std::vector<CInputLimiter *> m_vLimiters;     /**< The input limiter */
 
         std::map<irr::gui::IGUITreeViewNode *, irr::scene::ISceneNode *> m_mNodeMap;  /**< Map mapping tree view nodes to scene nodes */
 

@@ -10,6 +10,72 @@
 
 namespace dustbin {
   namespace commands {
+    CCmdDecoration::CInputLimiter::CInputLimiter(irr::gui::IGUIElement *a_pElement, irr::io::E_ATTRIBUTE_TYPE a_eType) : m_pElement(a_pElement) {
+      switch (a_eType) {
+	      case irr::io::EAT_INT         : m_sLimited = L"+-0123456789" ; break; 
+	      case irr::io::EAT_FLOAT       : m_sLimited = L"+-0123456789."; break; 
+        case irr::io::EAT_STRING      : break;
+	      case irr::io::EAT_BOOL        : break;
+	      case irr::io::EAT_COLOR       : m_sLimited = L"+-0123456789," ; break;
+	      case irr::io::EAT_COLORF      : m_sLimited = L"+-0123456789.,"; break;
+	      case irr::io::EAT_VECTOR3D    : m_sLimited = L"+-0123456789.,"; break;
+	      case irr::io::EAT_POSITION2D  : m_sLimited = L"+-0123456789," ; break;
+	      case irr::io::EAT_VECTOR2D    : m_sLimited = L"+-0123456789.,"; break;
+	      case irr::io::EAT_RECT        : break;
+	      case irr::io::EAT_MATRIX      : break;
+	      case irr::io::EAT_QUATERNION  : break;
+	      case irr::io::EAT_BBOX        : break;
+	      case irr::io::EAT_PLANE       : break;
+	      case irr::io::EAT_TRIANGLE3D  : break;
+	      case irr::io::EAT_LINE2D      : break;
+	      case irr::io::EAT_LINE3D      : break;
+	      case irr::io::EAT_STRINGWARRAY: break;
+	      case irr::io::EAT_FLOATARRAY  : break;
+	      case irr::io::EAT_INTARRAY    : break;
+	      case irr::io::EAT_BINARY      : break;
+	      case irr::io::EAT_TEXTURE     : break;
+	      case irr::io::EAT_USER_POINTER: break;
+        case irr::io::EAT_DIMENSION2D : m_sLimited = L"+-0123456789,"; break;
+      }
+
+      m_vValid.push_back(irr::KEY_RETURN);
+      m_vValid.push_back(irr::KEY_ESCAPE);
+      m_vValid.push_back(irr::KEY_RIGHT);
+      m_vValid.push_back(irr::KEY_LEFT);
+      m_vValid.push_back(irr::KEY_DOWN);
+      m_vValid.push_back(irr::KEY_UP);
+      m_vValid.push_back(irr::KEY_END);
+      m_vValid.push_back(irr::KEY_BACK);
+      m_vValid.push_back(irr::KEY_HOME);
+      m_vValid.push_back(irr::KEY_SHIFT);
+    }
+
+    CCmdDecoration::CInputLimiter::~CInputLimiter() {
+    }
+
+    bool CCmdDecoration::CInputLimiter::consumeEvent(const irr::SEvent &a_cEvent) {
+      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        // Don't consume keys which are never invalid
+        if (std::find(m_vValid.begin(), m_vValid.end(), a_cEvent.KeyInput.Key) != m_vValid.end())
+          return false;
+
+        if (a_cEvent.KeyInput.Control && a_cEvent.KeyInput.Key == irr::KEY_KEY_A)
+          return false;
+
+        // Only chars not found in the string are valid, i.e. not consumed
+        if (m_sLimited.find_first_of(a_cEvent.KeyInput.Char) == std::string::npos)
+          return true;
+      }
+
+      return false;
+    }
+
+    irr::gui::IGUIElement *CCmdDecoration::CInputLimiter::getElement() {
+      return m_pElement;
+    }
+
+
+
     CCmdDecoration::CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui) :
       ICommand   ("CmdDecoration"),
       m_bFinished(false),
@@ -165,6 +231,11 @@ namespace dustbin {
       m_aNodeTabs[0]->setText(L"Properties");
       m_pTabNode->addTab(m_aNodeTabs[0]);
 
+      m_pMeshName = m_pGui->addStaticText(L"-", irr::core::recti(irr::core::position2di(0, 0), irr::core::dimension2du(l_cParamRect.getWidth(), l_cSize.Height)), false, true, m_aNodeTabs[0]);
+      m_pMeshName->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+      m_pMeshName->setBackgroundColor(irr::video::SColor(224, 192, 192, 224));
+      m_pMeshName->setDrawBackground(true);
+
       m_aParameters[0] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[0], l_cParamRect);
 
       m_aNodeTabs[1] = m_pGui->addTab(m_pTabNode->getRelativePosition(), m_pTabNode);
@@ -251,7 +322,7 @@ namespace dustbin {
 
           switch (a_pAttr->getAttributeType(i)) {
 	          case irr::io::EAT_INT: { 
-              l_pEdit = m_pGui->addSpinBox(std::to_wstring(a_pAttr->getAttributeAsInt(i)).c_str(), l_cEditRect, true, a_pParent);
+              l_pEdit = m_pGui->addEditBox(std::to_wstring(a_pAttr->getAttributeAsInt(i)).c_str(), l_cEditRect, true, a_pParent);
               break; 
             }
 
@@ -285,16 +356,50 @@ namespace dustbin {
               break; 
             }
 
-	          case irr::io::EAT_COLOR: { break; }
-	          case irr::io::EAT_COLORF: { break; }
+	          case irr::io::EAT_COLOR: { 
+              irr::video::SColor l_cColor = a_pAttr->getAttributeAsColor(i);
+
+              wchar_t l_sColor[64];
+              swprintf_s<64>(l_sColor, L"%X", l_cColor.color);
+
+              irr::gui::IGUITab *l_pTab = m_pGui->addTab(l_cEditRect, a_pParent);
+              l_pTab->setBackgroundColor(l_cColor);
+              l_pTab->setDrawBackground(true);
+              l_pTab->setText(l_sColor);
+
+              l_pEdit = l_pTab;
+              break; 
+            }
+	          case irr::io::EAT_COLORF: { 
+              irr::video::SColorf l_cColor = a_pAttr->getAttributeAsColor(i);
+              std::wstring l_sText =
+                std::to_wstring(l_cColor.a) + L", " +
+                std::to_wstring(l_cColor.r) + L", " +
+                std::to_wstring(l_cColor.g) + L", " +
+                std::to_wstring(l_cColor.b) + L", ";
+
+              l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+
 	          case irr::io::EAT_VECTOR3D: { 
               irr::core::vector3df l_cValue = a_pAttr->getAttributeAsVector3d(i);
               std::wstring l_sText = std::to_wstring(l_cValue.X) + L", " + std::to_wstring(l_cValue.Y) + L", " + std::to_wstring(l_cValue.Z);
               l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
               break; 
             }
-	          case irr::io::EAT_POSITION2D: { break; }
-	          case irr::io::EAT_VECTOR2D: { break; }
+	          case irr::io::EAT_POSITION2D: { 
+              irr::core::position2di l_cValue = a_pAttr->getAttributeAsPosition2d(i);
+              std::wstring l_sText = std::to_wstring(l_cValue.X) + L", " + std::to_wstring(l_cValue.Y);
+              l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
+	          case irr::io::EAT_VECTOR2D: { 
+              irr::core::vector2df l_cValue = a_pAttr->getAttributeAsVector2d(i);
+              std::wstring l_sText = std::to_wstring(l_cValue.X) + L", " + std::to_wstring(l_cValue.Y);
+              l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
 	          case irr::io::EAT_RECT: { break; }
 	          case irr::io::EAT_MATRIX: { break; }
 	          case irr::io::EAT_QUATERNION: { break; }
@@ -323,7 +428,12 @@ namespace dustbin {
               break; 
             }
 	          case irr::io::EAT_USER_POINTER: { break; }
-            case irr::io::EAT_DIMENSION2D: { break; }
+            case irr::io::EAT_DIMENSION2D: { 
+              irr::core::dimension2du l_cValue = a_pAttr->getAttributeAsDimension2d(i);
+              std::wstring l_sText = std::to_wstring(l_cValue.Width) + L", " + std::to_wstring(l_cValue.Height);
+              l_pEdit = m_pGui->addEditBox(l_sText.c_str(), l_cEditRect, true, a_pParent);
+              break; 
+            }
           }
 
           l_cPos.Y += 5 * l_cSize.Height / 4;
@@ -408,6 +518,15 @@ namespace dustbin {
             m_pMaterial->addItem(std::to_wstring(i + 1).c_str(), i);
 
           m_pMaterial->setSelected(0);
+        }
+      }
+
+      if (m_pMeshName != nullptr) {
+        if (m_pSelected == nullptr)
+          m_pMeshName->setText(L"--");
+        else {
+          std::string l_sText = std::string(m_pSelected->getName()) + " " + getTypeName(m_pSelected);
+          m_pMeshName->setText(helpers::s2ws(l_sText).c_str());
         }
       }
     }
@@ -547,14 +666,21 @@ namespace dustbin {
     * @param a_pAttr the attributes to commit
     */
     void CCmdDecoration::commitAttributes(irr::io::IAttributes *a_pAttr) {
+      bool l_bSaved = false;
+
       if (m_pSelected != nullptr) {
         if (m_pTabNode->getActiveTab() == 0) {
           m_pSelected->deserializeAttributes(a_pAttr);
+          l_bSaved = true;
         }
         else if (m_pTabNode->getActiveTab() == 1) {
           m_pSmgr->getVideoDriver()->fillMaterialStructureFromAttributes(m_pSelected->getMaterial(m_pMaterial->getItemData(m_pMaterial->getSelected())), a_pAttr);
+          l_bSaved = true;
         }
       }
+
+      if (l_bSaved)
+        helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
     }
 
     /**
@@ -563,6 +689,13 @@ namespace dustbin {
     */
     bool CCmdDecoration::OnEvent(const irr::SEvent &a_cEvent) {
       bool l_bRet = false;
+
+      for (auto l_pLimiter: m_vLimiters) {
+        if (l_pLimiter->consumeEvent(a_cEvent)) {
+          l_bRet = true;
+          break;
+        }
+      }
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
         if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_MENU_ITEM_SELECTED) {
@@ -654,13 +787,56 @@ namespace dustbin {
           }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUS_LOST) {
+          for (int i = 0; i < 3; i++) {
+            for (auto l_tAttribute : m_vAttributes[i]) {
+              if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
+                for (auto l_itLimiter = m_vLimiters.begin(); l_itLimiter != m_vLimiters.end(); l_itLimiter++) {
+                  if ((*l_itLimiter)->getElement() == a_cEvent.GUIEvent.Caller) {
+                    CInputLimiter *p = *l_itLimiter;
+                    m_vLimiters.erase(l_itLimiter);
+                    delete p;
+                    break;
+                  }
+                }
+                printf("Focus lost (%i)\n", (int)m_vLimiters.size());
+              }
+            }
+          }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUSED) {
+          for (int i = 0; i < 3; i++) {
+            for (auto l_tAttribute : m_vAttributes[i]) {
+              if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
+                bool l_bLimit = true;
 
+                for (auto l_pLimiter: m_vLimiters) {
+                  if (l_pLimiter->getElement() == a_cEvent.GUIEvent.Caller) {
+                    l_bLimit = false;
+                    break;
+                  }
+                }
+
+                if (l_bLimit)
+                  m_vLimiters.push_back(new CInputLimiter(a_cEvent.GUIEvent.Caller, std::get<3>(l_tAttribute)));
+
+                printf("Focus gained (%i)\n", (int)m_vLimiters.size());
+                break;
+              }
+            }
+          }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
           for (int i = 0; i < 3; i++) {
             for (auto l_tAttribute: m_vAttributes[i]) {
               if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
-                printf("Checked.\n");
+                irr::io::IAttributes *l_pAttr = getAttributesForEditing();
+
+                if (l_pAttr != nullptr) {
+                  l_pAttr->setAttribute(std::get<0>(l_tAttribute).c_str(), reinterpret_cast<irr::gui::IGUICheckBox *>(a_cEvent.GUIEvent.Caller)->isChecked());
+                  commitAttributes(l_pAttr);
+                  l_pAttr->drop();
+                  l_bRet = true;
+                }
                 l_bRet = true;
               }
             }
@@ -744,7 +920,6 @@ namespace dustbin {
                     commitAttributes(l_pAttr);
 
                     l_pAttr->drop();
-                    helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
                     l_bRet = true;
                   }
                 }
@@ -755,38 +930,40 @@ namespace dustbin {
       }
       else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
         if (m_pGui->getFocus() != nullptr && m_pGui->getFocus()->getType() == irr::gui::EGUIET_EDIT_BOX && m_pSelected != nullptr) {
-          if (a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_RETURN) {
-            for (int i = 0; i < 3; i++) {
-              for (auto l_tAttribute : m_vAttributes[i]) {
-                if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
-                  irr::io::IAttributes *l_pAttr = getAttributesForEditing();
+          if (a_cEvent.KeyInput.PressedDown) {
+            if (a_cEvent.KeyInput.Key == irr::KEY_RETURN) {
+              for (int i = 0; i < 3; i++) {
+                for (auto l_tAttribute : m_vAttributes[i]) {
+                  if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
+                    irr::io::IAttributes *l_pAttr = getAttributesForEditing();
 
-                  if (l_pAttr != nullptr) {
-                    commitTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
-                    commitAttributes(l_pAttr);
+                    if (l_pAttr != nullptr) {
+                      commitTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
+                      commitAttributes(l_pAttr);
 
-                    updateNodeInTree(m_pSelected);
-                    l_pAttr->drop();
-                    l_bRet = true;
+                      updateNodeInTree(m_pSelected);
+                      l_pAttr->drop();
+                      l_bRet = true;
+                    }
                   }
                 }
               }
             }
-          }
-          else if (a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
-            for (int i = 0; i < 3; i++) {
-              for (auto l_tAttribute : m_vAttributes[i]) {
-                if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
-                  irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+            else if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
+              for (int i = 0; i < 3; i++) {
+                for (auto l_tAttribute : m_vAttributes[i]) {
+                  if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
+                    irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
-                  if (l_pAttr != nullptr) {
-                    irr::io::SAttributeReadWriteOptions l_cOptions;
-                    l_cOptions.Flags = irr::io::EARWF_FOR_EDITOR | irr::io::EARWF_USE_RELATIVE_PATHS;
+                    if (l_pAttr != nullptr) {
+                      irr::io::SAttributeReadWriteOptions l_cOptions;
+                      l_cOptions.Flags = irr::io::EARWF_FOR_EDITOR | irr::io::EARWF_USE_RELATIVE_PATHS;
 
-                    m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
-                    revertTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
-                    l_pAttr->drop();
-                    l_bRet = true;
+                      m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
+                      revertTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
+                      l_pAttr->drop();
+                      l_bRet = true;
+                    }
                   }
                 }
               }
@@ -837,6 +1014,25 @@ namespace dustbin {
               }
 
               l_bRet = true;
+            }
+          }
+
+          if (!l_bRet) {
+            for (int i = 0; i < 3; i++) {
+              for (auto l_tAttribute : m_vAttributes[i]) {
+                if (l_pHover == std::get<2>(l_tAttribute) && l_pHover->getType() == irr::gui::EGUIET_TAB && std::get<3>(l_tAttribute) == irr::io::EAT_COLOR) {
+                  irr::io::IAttributes *l_pAttr = getAttributesForEditing();
+
+                  if (l_pAttr != nullptr) {
+                    irr::gui::IGUITab *p = reinterpret_cast<irr::gui::IGUITab *>(l_pHover);
+
+                    irr::video::SColor l_cColor = platform::portableSelectColor(p->getBackgroundColor());
+                    l_pAttr->setAttribute(std::get<0>(l_tAttribute).c_str(), l_cColor);
+                    commitAttributes(l_pAttr);
+                    p->setBackgroundColor(l_cColor);
+                  }
+                }
+              }
             }
           }
         }

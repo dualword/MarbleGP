@@ -1,5 +1,6 @@
 /* (w) 2021 - 22 by Dustbin::Games (Christian Keimel) - This file is licensed under the terms of the zlib license */
 
+#include <irrlicht.h>
 #include <string>
 
 namespace dustbin {
@@ -43,5 +44,12 @@ namespace dustbin {
     * @return the selected file, empty string if the dialog was cancelled
     */
     std::string portableSelectFileSave(const wchar_t* a_sFilter, const wchar_t* a_sFolder, const wchar_t* a_sFileName);
+
+    /**
+    * Choose a color with the system dialog
+    * @param a_cColor the start color
+    * @return the newly selected color
+    */
+    irr::video::SColor portableSelectColor(const irr::video::SColor &a_cColor);
   }
 }
