@@ -30,6 +30,7 @@ namespace dustbin {
         irr::gui::IGUITabControl  *m_pTabMain;        /**< The main tab control */
         irr::gui::IGUITabControl  *m_pTabNode;        /**< The node tab control */
         irr::gui::IGUIComboBox    *m_pMaterial;       /**< Combobox for material selection */
+        irr::gui::IGUIImage       *m_aTexture[8];     /**< The textures of the selected material */
 
         std::map<irr::gui::IGUITreeViewNode *, irr::scene::ISceneNode *> m_mNodeMap;  /**< Map mapping tree view nodes to scene nodes */
 
@@ -60,12 +61,13 @@ namespace dustbin {
         void updateDecorationList(irr::scene::ISceneNode *a_pNode, irr::gui::IGUITreeViewNode *a_pParent);
 
         /**
-        * Update the attributes with the selected node
+        * Update the attribute UI from the given attributes
         * @param a_pAttr the attributes to use
         * @param a_iIndex the tab index (0 == properties, 1 == materials, 2 == animators)
         * @param a_pParent the parent UI element to add the attributes to
+        * @param a_cPos the start position to add the UI element
         */
-        void updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent);
+        void updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent, const irr::core::position2di &a_cPos);
 
         /**
         * Update a scene node in the tree
@@ -100,6 +102,16 @@ namespace dustbin {
         * @param a_pAttr the attributes to modify
         */
         void revertTextInputValue(const std::string &a_sName, irr::gui::IGUIEditBox *a_pEdit, irr::io::IAttributes *a_pAttr);
+
+        /**
+        * Update the material tab
+        */
+        void updateMaterialTab();
+
+        /**
+        * Update the dropdown for the material selection with the data taken from "m_pSelected"
+        */
+        void updateMaterialDropdown();
 
       public:
         CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui);

@@ -90,6 +90,8 @@ namespace dustbin {
       
       irr::gui::IGUITreeViewNode *l_pNew = a_pParent->addChildBack(a_pNode == m_pNode ? L"Root" : helpers::s2ws(l_sName).c_str());
 
+      l_pNew->setExpanded(true);
+
       m_mNodeMap[l_pNew] = a_pNode;
 
       for (auto l_pChild: a_pNode->getChildren()) {
@@ -171,6 +173,27 @@ namespace dustbin {
 
       m_aParameters[1] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[1], l_cParamRect);
 
+      l_cSize = m_pGui->getSkin()->getFont()->getDimension(L" Select Material: ");
+
+      irr::core::position2di l_cPos = irr::core::position2di(0, m_pGui->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) / 2);
+
+      m_pGui->addStaticText(L" Select Material:", irr::core::recti(l_cPos, l_cSize), false, false, m_aNodeTabs[1])->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
+      l_cPos.X += l_cSize.Width;
+
+      irr::s32 l_iSize = m_aParameters[1]->getAbsolutePosition().getWidth() / 4;
+      for (int y = 0; y < 2; y++) {
+        for (int x = 0; x < 4; x++) {
+          int l_iIndex = x + 4 * y;
+
+          irr::core::recti l_cRect = irr::core::recti(l_iSize * x, l_iSize * y, l_iSize * (x + 1), l_iSize * (y + 1));
+
+          m_aTexture[l_iIndex] = m_pGui->addImage(l_cRect, m_aParameters[1]);
+          m_aTexture[l_iIndex]->setScaleImage(true);
+        }
+      }
+
+      m_pMaterial = m_pGui->addComboBox(irr::core::recti(l_cPos, irr::core::dimension2du(l_cParamRect.getWidth() - l_cSize.Width, l_cSize.Height)), m_aNodeTabs[1]);
+
       m_aNodeTabs[2] = m_pGui->addTab(m_pTabNode->getRelativePosition(), m_pTabNode);
       m_aNodeTabs[2]->setText(L"Animators");
       m_pTabNode->addTab(m_aNodeTabs[2]);
@@ -189,7 +212,7 @@ namespace dustbin {
     * @param a_iIndex the tab index (0 == properties, 1 == materials, 2 == animators)
     * @param a_pParent the parent UI element to add the attributes to
     */
-    void CCmdDecoration::updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent) {
+    void CCmdDecoration::updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent, const irr::core::position2di &a_cPos) {
       for (auto l_tAttribute: m_vAttributes[a_iIndex]) {
         std::get<1>(l_tAttribute)->setVisible(false);
         std::get<2>(l_tAttribute)->setVisible(false);
@@ -212,7 +235,7 @@ namespace dustbin {
           if (l_cAttributeSize.Height > l_cSize.Height) l_cSize.Height = l_cAttributeSize.Height;
         }
 
-        irr::core::position2di  l_cPos = irr::core::position2di(l_cSize.Height / 2, 0);
+        irr::core::position2di l_cPos = a_cPos + irr::core::position2di(l_cSize.Height / 2, 0);
 
         for (irr::u32 i = 0; i < a_pAttr->getAttributeCount(); i++) {
           std::wstring l_sName = helpers::s2ws(a_pAttr->getAttributeName(i));
@@ -373,6 +396,39 @@ namespace dustbin {
       }
     }
 
+    /**
+    * Update the dropdown for the material selection with the data taken from "m_pSelected"
+    */
+    void CCmdDecoration::updateMaterialDropdown() {
+      if (m_pMaterial != nullptr) {
+        m_pMaterial->clear();
+
+        if (m_pSelected != nullptr) {
+          for (irr::u32 i = 0; i < m_pSelected->getMaterialCount(); i++)
+            m_pMaterial->addItem(std::to_wstring(i + 1).c_str(), i);
+
+          m_pMaterial->setSelected(0);
+        }
+      }
+    }
+
+    /**
+    * Update the material tab
+    */
+    void CCmdDecoration::updateMaterialTab() {
+      irr::u32 l_iMaterial = m_pMaterial != nullptr ? m_pMaterial->getItemData(m_pMaterial->getSelected()) : 0;
+
+      irr::io::IAttributes *l_pAttr = m_pSmgr->getVideoDriver()->createAttributesFromMaterial(m_pSelected->getMaterial(l_iMaterial));
+
+      if (l_pAttr != nullptr) {
+        irr::s32 l_iSize = m_aParameters[1]->getAbsolutePosition().getWidth() / 4;
+        updateAttributeList(l_pAttr, 1, m_aParameters[1], irr::core::position2di(0, 9 * l_iSize / 4));
+        l_pAttr->drop();
+      }
+
+      for (irr::u32 l_iIndex = 0; l_iIndex < 8; l_iIndex++)
+        m_aTexture[l_iIndex]->setImage(m_pSelected->getMaterial(l_iMaterial).getTexture(l_iIndex));
+    }
 
     /**
     * Commit a text-input value to the attributes
@@ -482,6 +538,7 @@ namespace dustbin {
             if (l_sCaller == L"Add Mesh Scene Node") {
               if (m_pSelected == nullptr) {
                 m_pSelected = m_pNode;
+                updateMaterialDropdown();
               }
 
               irr::io::path l_sDir = m_pGui->getFileSystem()->getWorkingDirectory();
@@ -518,6 +575,7 @@ namespace dustbin {
             else if (l_sCaller == L"Add Empty Scene Node") {
               if (m_pSelected == nullptr) {
                 m_pSelected = m_pNode;
+                updateMaterialDropdown();
               }
 
               addNode(m_pSmgr->addEmptySceneNode(m_pSelected));
@@ -530,6 +588,7 @@ namespace dustbin {
                 m_pSmgr->addToDeletionQueue(m_pSelected);
                 helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
                 m_pSelected = nullptr;
+                updateMaterialDropdown();
               }
               else helpers::addLogMessage(L"No scene node selected for deletion", irr::ELL_ERROR, 2000);
               l_bRet = true;
@@ -567,6 +626,7 @@ namespace dustbin {
             for (auto l_tAttribute: m_vAttributes[i]) {
               if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
                 printf("Checked.\n");
+                l_bRet = true;
               }
             }
           }
@@ -577,6 +637,7 @@ namespace dustbin {
             if (l_pSelected != nullptr) {
               if (m_mNodeMap.find(l_pSelected) != m_mNodeMap.end()) {
                 m_pSelected = m_mNodeMap[l_pSelected];
+                updateMaterialDropdown();
 
                 irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
@@ -586,19 +647,15 @@ namespace dustbin {
 
                   m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
 
-                  updateAttributeList(l_pAttr, 0, m_aParameters[0]);
+                  updateAttributeList(l_pAttr, 0, m_aParameters[0], irr::core::position2di());
 
                   l_pAttr->drop();
                 }
 
-                l_pAttr = m_pSmgr->getVideoDriver()->createAttributesFromMaterial(m_pSelected->getMaterial(0));
-
-                if (l_pAttr != nullptr) {
-                  updateAttributeList(l_pAttr, 1, m_aParameters[1]);
-                  l_pAttr->drop();
-                }
+                updateMaterialTab();
               }
             }
+            l_bRet = true;
           }
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_TREEVIEW_NODE_DESELECT) {
@@ -608,11 +665,20 @@ namespace dustbin {
               irr::scene::ISceneNode *l_pNode = reinterpret_cast<irr::scene::ISceneNode *>(l_pUnSelected->getData2());
               if (l_pNode == m_pSelected) {
                 m_pSelected = nullptr;
-                updateAttributeList(nullptr, 0, nullptr);
-                updateAttributeList(nullptr, 1, nullptr);
-                updateAttributeList(nullptr, 2, nullptr);
+                updateAttributeList(nullptr, 0, nullptr, irr::core::position2di());
+                updateAttributeList(nullptr, 1, nullptr, irr::core::position2di());
+                updateAttributeList(nullptr, 2, nullptr, irr::core::position2di());
+                updateMaterialDropdown();
+
+                l_bRet = true;
               }
             }
+          }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {
+          if (a_cEvent.GUIEvent.Caller == m_pMaterial) {
+            updateMaterialTab();
+            l_bRet = true;
           }
         }
       }
