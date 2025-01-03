@@ -77,9 +77,9 @@ namespace dustbin {
             bool l_bUiHover = m_pGui->getRootGUIElement()->getElementFromPoint(l_cPos) != m_pGui->getRootGUIElement();
 
             switch (a_cEvent.MouseInput.Event) {
-              case irr::EMIE_LMOUSE_PRESSED_DOWN: if (!l_bUiHover) { m_bMouseDown[0] = true; l_bRet = true; m_cPosition = l_cPos; } break;
-              case irr::EMIE_RMOUSE_PRESSED_DOWN: if (!l_bUiHover) { m_bMouseDown[1] = true; l_bRet = true; m_cPosition = l_cPos; } break;
-              case irr::EMIE_MMOUSE_PRESSED_DOWN: if (!l_bUiHover) { m_bMouseDown[2] = true; l_bRet = true; m_cPosition = l_cPos; } break;
+              case irr::EMIE_LMOUSE_PRESSED_DOWN: if (!l_bUiHover) { m_bMouseDown[0] = true; m_cPosition = l_cPos; } break;
+              case irr::EMIE_RMOUSE_PRESSED_DOWN: if (!l_bUiHover) { m_bMouseDown[1] = true; m_cPosition = l_cPos; } break;
+              case irr::EMIE_MMOUSE_PRESSED_DOWN: if (!l_bUiHover) { m_bMouseDown[2] = true; m_cPosition = l_cPos; } break;
 
               case irr::EMIE_LMOUSE_LEFT_UP: if (m_bMouseDown[0]) { m_bMouseDown[0] = false; l_bRet = true; } break;
               case irr::EMIE_RMOUSE_LEFT_UP: if (m_bMouseDown[1]) { m_bMouseDown[1] = false; l_bRet = true; } break;

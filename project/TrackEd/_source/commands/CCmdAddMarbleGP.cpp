@@ -424,17 +424,20 @@ namespace dustbin {
 
             if (l_sPath.substr(0, l_sLocal.size()) != l_sLocal) {
               std::string l_sFile   = helpers::getFilename(l_sPath);
-              std::string l_sTarget = m_sFolder + "/" + l_sFile;
 
-              if (std::filesystem::exists(l_sTarget))
-                std::filesystem::remove(l_sTarget);
+              if (l_sFile != "") {
+                std::string l_sTarget = m_sFolder + "/" + l_sFile;
 
-              printf("We have an external mesh: %s.\n", l_sFile.c_str());
-              std::filesystem::copy_file(l_sPath, l_sTarget);
+                if (std::filesystem::exists(l_sTarget))
+                  std::filesystem::remove(l_sTarget);
 
-              l_pAttr->setAttribute("Mesh", l_sTarget.c_str());
+                printf("We have an external mesh: %s.\n", l_sFile.c_str());
+                std::filesystem::copy_file(l_sPath, l_sTarget);
 
-              a_pNode->deserializeAttributes(l_pAttr);
+                l_pAttr->setAttribute("Mesh", l_sTarget.c_str());
+
+                a_pNode->deserializeAttributes(l_pAttr);
+              }
             }
           }
         }

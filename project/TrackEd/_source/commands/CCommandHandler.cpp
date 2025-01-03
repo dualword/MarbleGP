@@ -109,9 +109,9 @@ namespace dustbin {
             std::vector<ICommand*> l_vFinished;
 
             std::vector<ICommand*>::iterator l_itCmd = m_vCommands.end();
-
             do {
               l_itCmd--;
+
               if ((*l_itCmd)->OnEvent(a_cEvent)) {
                 return true;
               }

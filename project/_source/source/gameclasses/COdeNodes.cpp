@@ -270,12 +270,14 @@ namespace dustbin {
         l_pNode->updateAbsolutePosition();
         irr::core::CMatrix4<irr::f32> l_cMatrix = l_pNode->getAbsoluteTransformation();
 
-        if (m_bStatic) {
-          addMeshBuffer(l_pNode->getMesh()->getMeshBuffer(a_iMaterial), l_cMatrix, l_iIndexV);
-        }
-        else {
-          for (irr::u32 i = 0; i < l_pNode->getMaterialCount(); i++)
-            addMeshBuffer(l_pNode->getMesh()->getMeshBuffer(i), l_cMatrix, l_iIndexV);
+        /*if (l_pNode->getMesh() != nullptr) */{
+          if (m_bStatic) {
+            addMeshBuffer(l_pNode->getMesh()->getMeshBuffer(a_iMaterial), l_cMatrix, l_iIndexV);
+          }
+          else {
+            for (irr::u32 i = 0; i < l_pNode->getMaterialCount(); i++)
+              addMeshBuffer(l_pNode->getMesh()->getMeshBuffer(i), l_cMatrix, l_iIndexV);
+          }
         }
 
         m_cTrimeshData = dGeomTriMeshDataCreate();

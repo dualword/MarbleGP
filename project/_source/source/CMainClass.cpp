@@ -800,7 +800,6 @@ namespace dustbin {
 
     if (a_cEvent.EventType == irr::EET_LOG_TEXT_EVENT) {
       m_vLogMessages.push_back(std::make_tuple(a_cEvent.LogEvent.Level, a_cEvent.LogEvent.Text));
-      l_bRet = true;
     }
     else if (a_cEvent.EventType == irr::EET_USER_EVENT) {
       if (a_cEvent.UserEvent.UserData1 == c_iEventSettingsChanged) {

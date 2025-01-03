@@ -727,17 +727,48 @@ namespace dustbin {
         }
       }
       else if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-        if (a_cEvent.MouseInput.isRightPressed()) {
-          irr::gui::IGUIElement *l_pHover = m_pGui->getHovered();
+        irr::gui::IGUIElement *l_pHover = m_pGui->getHovered();
 
+        if (a_cEvent.MouseInput.Event == irr::EMIE_RMOUSE_LEFT_UP) {
           if (l_pHover == m_pScene) {
-            if (m_pScene->getSelected() != nullptr && m_pScene->getSelected() != m_pScene->getRoot()) {
+            if (m_pScene->getSelected() != nullptr) {
               irr::gui::IGUIContextMenu *l_pMenu = m_pGui->addContextMenu(irr::core::recti(a_cEvent.MouseInput.X, a_cEvent.MouseInput.Y, 5, 5), m_pGui->getRootGUIElement());
 
               l_pMenu->addItem(L"Add Mesh Scene Node");
               l_pMenu->addItem(L"Add Empty Scene Node");
-              l_pMenu->addItem(L"Delete Node");
-              l_pMenu->addItem(L"Clone Node");
+
+              if (m_pScene->getSelected() != m_pScene->getRoot()) {
+                l_pMenu->addItem(L"Delete Node");
+                l_pMenu->addItem(L"Clone Node");
+              }
+            }
+
+            l_bRet = true;
+          }
+        }
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+          for (irr::u32 l_iIndex = 0; l_iIndex < 8; l_iIndex++) {
+            if (l_pHover == m_aTexture[l_iIndex]) {
+              irr::io::path l_sFolder = m_pGui->getFileSystem()->getWorkingDirectory();
+
+              std::wstring l_sImgFolder = helpers::s2ws(tracked::IGlobal::getInstance()->getSetting("texture_folder"));
+
+              std::string l_sFile = platform::portableSelectFileOpen(L"Png Image (*.png)\0*.png\0Jpeg Image (*.jpg)\0*.jpg\0Bitmap Image (*.bmp)\0*.bmp\0", l_sImgFolder.c_str(), L"");
+
+              m_pGui->getFileSystem()->changeWorkingDirectoryTo(l_sFolder);
+
+              if (l_sFile != "") {
+                tracked::IGlobal::getInstance()->setSetting("texture_folder", helpers::getFilepath(l_sFile));
+
+                irr::u32 l_iTexture = m_pMaterial->getItemData(m_pMaterial->getSelected());
+                if (m_pSelected != nullptr && m_pMaterial != nullptr && l_iTexture < m_pSelected->getMaterialCount()) {
+                  m_pSelected->getMaterial(m_pMaterial->getItemData(m_pMaterial->getSelected())).setTexture(l_iIndex, m_pSmgr->getVideoDriver()->getTexture(l_sFile.c_str()));
+                  updateMaterialTab();
+                  break;
+                }
+              }
+
+              l_bRet = true;
             }
           }
         }
