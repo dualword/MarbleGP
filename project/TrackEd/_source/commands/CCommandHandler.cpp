@@ -108,6 +108,9 @@ namespace dustbin {
           if (m_vCommands.size() > 0) {
             std::vector<ICommand*> l_vFinished;
 
+            if (a_cEvent.EventType == irr::EET_GUI_EVENT && a_cEvent.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED)
+              printf(".");
+
             std::vector<ICommand*>::iterator l_itCmd = m_vCommands.end();
             do {
               l_itCmd--;

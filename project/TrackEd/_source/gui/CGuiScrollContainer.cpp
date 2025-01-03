@@ -88,6 +88,9 @@ namespace dustbin {
         }
       }
 
+      if (!l_bRet)
+        IGUIElement::OnEvent(a_cEvent);
+
       return l_bRet;
     }
   }

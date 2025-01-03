@@ -431,7 +431,7 @@ namespace dustbin {
     }
 
     /**
-    * Commit a text-input value to the attributes
+    * Revert a text-input value to the attributes
     * @param a_sName name of the attribute
     * @param a_pEdit the edit field to get the value from
     * @param a_pAttr the attributes to modify
@@ -518,6 +518,41 @@ namespace dustbin {
       for (auto l_tTree: m_mNodeMap) {
         if (l_tTree.second == a_pNode->getParent()) {
           updateDecorationList(a_pNode, l_tTree.first);
+        }
+      }
+    }
+
+    /**
+    * Create and fill an IAttributes object depending on the selected node tab
+    * @return an IAttributes object or nullptr if something wasn't ok
+    */
+    irr::io::IAttributes *CCmdDecoration::getAttributesForEditing() {
+      irr::io::IAttributes *l_pAttr = nullptr;
+
+      if (m_pSelected != nullptr) {
+        if (m_pTabNode->getActiveTab() == 0) {
+          l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+          m_pSelected->serializeAttributes(l_pAttr);
+        }
+        else if (m_pTabNode->getActiveTab() == 1) {
+          l_pAttr = m_pSmgr->getVideoDriver()->createAttributesFromMaterial(m_pSelected->getMaterial(m_pMaterial->getItemData(m_pMaterial->getSelected())));
+        }
+      }
+
+      return l_pAttr;
+    }
+
+    /**
+    * Commit attributes depending on the selected node tab
+    * @param a_pAttr the attributes to commit
+    */
+    void CCmdDecoration::commitAttributes(irr::io::IAttributes *a_pAttr) {
+      if (m_pSelected != nullptr) {
+        if (m_pTabNode->getActiveTab() == 0) {
+          m_pSelected->deserializeAttributes(a_pAttr);
+        }
+        else if (m_pTabNode->getActiveTab() == 1) {
+          m_pSmgr->getVideoDriver()->fillMaterialStructureFromAttributes(m_pSelected->getMaterial(m_pMaterial->getItemData(m_pMaterial->getSelected())), a_pAttr);
         }
       }
     }
@@ -680,23 +715,56 @@ namespace dustbin {
             updateMaterialTab();
             l_bRet = true;
           }
+
+          if (!l_bRet) {
+            for (int i = 0; i < 3; i++) {
+              for (auto l_tAttribute : m_vAttributes[i]) {
+                if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
+                  irr::io::IAttributes *l_pAttr = getAttributesForEditing();
+
+                  if (l_pAttr != nullptr) {
+                    irr::gui::IGUIComboBox *l_pBox = reinterpret_cast<irr::gui::IGUIComboBox *>(a_cEvent.GUIEvent.Caller);
+
+                    std::wstring l_sSelected = l_pBox->getItem(l_pBox->getSelected());
+
+                    std::vector<irr::core::stringc> l_vValues;
+
+                    for (irr::u32 i = 0; i < l_pBox->getItemCount(); i++)
+                      l_vValues.push_back(helpers::ws2s(l_pBox->getItem(i)).c_str());
+
+                    irr::core::array<const irr::c8 *> l_aValues;
+
+                    for (auto l_pItem : l_vValues)
+                      l_aValues.push_back(l_pItem.c_str());
+
+                    l_aValues.push_back(nullptr);
+
+                    l_pAttr->setAttribute(std::get<0>(l_tAttribute).c_str(), helpers::ws2s(l_sSelected).c_str(), l_aValues.pointer());
+
+                    commitAttributes(l_pAttr);
+
+                    l_pAttr->drop();
+                    helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
+                    l_bRet = true;
+                  }
+                }
+              }
+            }
+          }
         }
       }
       else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
-        if (m_pGui->getFocus()->getType() == irr::gui::EGUIET_EDIT_BOX && m_pSelected != nullptr) {
+        if (m_pGui->getFocus() != nullptr && m_pGui->getFocus()->getType() == irr::gui::EGUIET_EDIT_BOX && m_pSelected != nullptr) {
           if (a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_RETURN) {
             for (int i = 0; i < 3; i++) {
               for (auto l_tAttribute : m_vAttributes[i]) {
                 if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
-                  irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+                  irr::io::IAttributes *l_pAttr = getAttributesForEditing();
 
                   if (l_pAttr != nullptr) {
-                    irr::io::SAttributeReadWriteOptions l_cOptions;
-                    l_cOptions.Flags = irr::io::EARWF_FOR_EDITOR | irr::io::EARWF_USE_RELATIVE_PATHS;
-
-                    m_pSelected->serializeAttributes(l_pAttr, &l_cOptions);
                     commitTextInputValue(std::get<0>(l_tAttribute), reinterpret_cast<irr::gui::IGUIEditBox *>(m_pGui->getFocus()), l_pAttr);
-                    m_pSelected->deserializeAttributes(l_pAttr);
+                    commitAttributes(l_pAttr);
+
                     updateNodeInTree(m_pSelected);
                     l_pAttr->drop();
                     l_bRet = true;
@@ -737,7 +805,7 @@ namespace dustbin {
               l_pMenu->addItem(L"Add Mesh Scene Node");
               l_pMenu->addItem(L"Add Empty Scene Node");
 
-              if (m_pScene->getSelected() != m_pScene->getRoot()) {
+              if (m_pSelected != m_pNode) {
                 l_pMenu->addItem(L"Delete Node");
                 l_pMenu->addItem(L"Clone Node");
               }
@@ -746,7 +814,7 @@ namespace dustbin {
             l_bRet = true;
           }
         }
-        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+        else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_DOUBLE_CLICK) {
           for (irr::u32 l_iIndex = 0; l_iIndex < 8; l_iIndex++) {
             if (l_pHover == m_aTexture[l_iIndex]) {
               irr::io::path l_sFolder = m_pGui->getFileSystem()->getWorkingDirectory();

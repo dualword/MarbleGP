@@ -47,6 +47,18 @@ namespace dustbin {
         std::string getTypeName(irr::scene::ISceneNode *a_pNode);
 
         /**
+        * Create and fill an IAttributes object depending on the selected node tab
+        * @return an IAttributes object or nullptr if something wasn't ok
+        */
+        irr::io::IAttributes *getAttributesForEditing();
+
+        /**
+        * Commit attributes depending on the selected node tab
+        * @param a_pAttr the attributes to commit
+        */
+        void commitAttributes(irr::io::IAttributes *a_pAttr);
+
+        /**
         * Find the decoration scene node
         * @param a_pNode the node to check (all children will be checked as well)
         * @return the decoration scene node
