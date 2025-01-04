@@ -92,9 +92,9 @@ namespace dustbin {
     */
     void CPartTranslator::updateMovePositions() {
       irr::core::vector3df l_cDirections[] = {
-        irr::core::vector3df(1.0f,  0.0f, 0.0f),
-        irr::core::vector3df(0.0f, -1.0f, 0.0f),
-        irr::core::vector3df(0.0f,  0.0f, 1.0f)
+        irr::core::vector3df(-1.0f,  0.0f,  0.0f),
+        irr::core::vector3df( 0.0f, -1.0f,  0.0f),
+        irr::core::vector3df( 0.0f,  0.0f, -1.0f)
       };
 
       for (int i = 0; i < 3; i++) {
@@ -129,9 +129,9 @@ namespace dustbin {
                 m_aArrows[m_iMove]->getMaterial(0).setTexture(0, m_pDragging);
 
                 irr::core::vector3df l_aDirections[] = {
-                  irr::core::vector3df(1.0f,  0.0f, 0.0f),
-                  irr::core::vector3df(0.0f, -1.0f, 0.0f),
-                  irr::core::vector3df(0.0f,  0.0f, 1.0f)
+                  irr::core::vector3df(-1.0f,  0.0f,  0.0f),
+                  irr::core::vector3df( 0.0f, -1.0f,  0.0f),
+                  irr::core::vector3df( 0.0f,  0.0f, -1.0f)
                 };
 
                 irr::core::vector3df l_aNormals[] = {
