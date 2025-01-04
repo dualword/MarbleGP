@@ -33,6 +33,8 @@ namespace dustbin {
 
         irr::scene::ISceneCollisionManager *m_pColMgr;    /**< The Irrlicht scene collision manager */
 
+        bool m_bRestrictToZero;   /**< Restrict the movement to Y >= 0.0? */
+
       public:
         CPointMoveManager(irr::scene::ISceneCollisionManager *a_pColMgr);
         virtual ~CPointMoveManager();
@@ -94,6 +96,12 @@ namespace dustbin {
         * @param a_cPlaneNormal the normal of the plane necessary for the calculation
         */
         void setMoveOnLine(const irr::core::vector3df &a_cPoint, const irr::core::position2di &a_cMouse, const irr::core::line3df &a_cLine, const irr::core::vector3df &a_cPlanePoint, const irr::core::vector3df &a_cPlaneNormal);
+
+        /**
+        * Change the flag for the restriction of the position to Y greater zero
+        * @param a_bRestrict the new value
+        */
+        void restrictMovement(bool a_bRestrict);
     };
   }
 }

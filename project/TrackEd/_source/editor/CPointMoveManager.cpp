@@ -3,7 +3,7 @@
 
 namespace dustbin {
   namespace tracked {
-    CPointMoveManager::CPointMoveManager(irr::scene::ISceneCollisionManager *a_pColMgr) : m_eMode(enMoveMode::None), m_pColMgr(a_pColMgr) {
+    CPointMoveManager::CPointMoveManager(irr::scene::ISceneCollisionManager *a_pColMgr) : m_eMode(enMoveMode::None), m_pColMgr(a_pColMgr), m_bRestrictToZero(true) {
       m_cZero = irr::core::plane3df(irr::core::vector3df(0.0f, 0.0f, 0.0f), irr::core::vector3df(0.0f, 1.0f, 0.0f));
     }
 
@@ -58,7 +58,7 @@ namespace dustbin {
       if (m_eMode == enMoveMode::Plane) {
         irr::core::vector3df l_cRet = m_cPointToMove + l_cNewPoint - m_cPointClicked;
 
-        if (l_cRet.Y < 0.0f) {
+        if (m_bRestrictToZero && l_cRet.Y < 0.0f) {
           l_cRet.Y = 0.0f;
         }
 
@@ -70,8 +70,10 @@ namespace dustbin {
         if (l_cRet.Y < 0.0f) {
           irr::core::vector3df l_cNew = l_cRet;
 
-          if (m_cZero.getIntersectionWithLimitedLine(m_cLine.start, m_cLine.end, l_cNew)) {
-            l_cRet = l_cNew;
+          if (m_bRestrictToZero) {
+            if (m_cZero.getIntersectionWithLimitedLine(m_cLine.start, m_cLine.end, l_cNew)) {
+              l_cRet = l_cNew;
+            }
           }
         }
 
@@ -146,6 +148,14 @@ namespace dustbin {
       m_cPlaneNormal = a_cPlaneNormal;
 
       m_eMode = enMoveMode::Line;
+    }
+
+    /**
+    * Change the flag for the restriction of the position to Y greater zero
+    * @param a_bRestrict the new value
+    */
+    void CPointMoveManager::restrictMovement(bool a_bRestrict) {
+      m_bRestrictToZero = a_bRestrict;
     }
   }
 }

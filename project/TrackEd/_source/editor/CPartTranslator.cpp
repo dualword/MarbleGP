@@ -1,5 +1,6 @@
 // (w) 2025 by Dustbin::Games / Christian Keimel
 #include <editor/CPointMoveManager.h>
+#include <helpers/CTrackEdHelpers.h>
 #include <editor/CPartTranslator.h>
 
 #include <string>
@@ -25,6 +26,7 @@ namespace dustbin {
       m_pColMgr = m_pSmgr->getSceneCollisionManager();
 
       m_pMoveMgr = new CPointMoveManager(m_pColMgr);
+      m_pMoveMgr->restrictMovement(false);
 
       m_pDragging = m_pSmgr->getVideoDriver()->getTexture("data/textures/editor_yellow.png");
 
@@ -107,7 +109,6 @@ namespace dustbin {
       if (m_bVisible) {
         if (a_cEvent.EventType == irr::EET_MOUSE_INPUT_EVENT) {
           if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
-            printf("LMouse pressed down\n");
             m_bMouseDown = true;
 
             if (m_pHover != nullptr) {
@@ -156,7 +157,6 @@ namespace dustbin {
             }
           }
           else if (a_cEvent.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
-            printf("LMouse left up\n");
             m_bMouseDown = false;
 
             if (m_pMoveMgr->getMode() != CPointMoveManager::enMoveMode::None) {
@@ -204,6 +204,12 @@ namespace dustbin {
     void CPartTranslator::draw(irr::video::IVideoDriver *a_pDrv, irr::scene::ICameraSceneNode *a_pCamera) {
       if (m_bVisible) {
         if (m_pMoveMgr->getMode() == CPointMoveManager::enMoveMode::Line) {
+          irr::core::vector3df l_cPoint;
+          irr::core::vector3df l_cNormal;
+
+          m_pMoveMgr->getMovePlane(l_cPoint, l_cNormal);
+          helpers::drawPlane3df(a_pDrv, l_cPoint, l_cNormal);
+
           a_pDrv->draw3DLine(m_pMoveMgr->getMoveLine().start, m_pMoveMgr->getMoveLine().end);
         }
 

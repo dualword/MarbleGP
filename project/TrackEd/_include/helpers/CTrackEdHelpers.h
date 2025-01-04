@@ -48,6 +48,14 @@ namespace dustbin {
     * @return the decoration root node
     */
     irr::scene::ISceneNode *getDecorationRootNode(irr::scene::ISceneNode *a_pRoot, bool a_bAddIfNotFound = true);
+
+    /**
+    * Draw a plane for debugging purposes
+    * @param a_pDrv the video driver
+    * @param a_cPoint the plane point
+    * @param a_cNormal the plane normal
+    */
+    void drawPlane3df(irr::video::IVideoDriver *a_pDrv, const irr::core::vector3df &a_cPoint, const irr::core::vector3df &a_cNormal);
   }
 }
 
