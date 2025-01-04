@@ -134,7 +134,6 @@ namespace dustbin {
       m_cLine  = a_cLine;
 
       m_cPointToMove = a_cPoint;
-      printf("Point: %.2f, %.2f, %.2f\n", m_cPointToMove.X, m_cPointToMove.Y, m_cPointToMove.Z);
 
       irr::core::vector3df l_cTemp;
 

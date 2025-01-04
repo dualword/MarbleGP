@@ -7,6 +7,10 @@
 #include <map>
 
 namespace dustbin {
+  namespace tracked {
+    class CPartTranslator;    /**< Forward declaration of the part translator */
+  }
+
   namespace commands {
     /**
     * @class CCmdDecoration
@@ -41,22 +45,24 @@ namespace dustbin {
 
         bool m_bFinished;   /**< Is the command finished? */
 
-        irr::scene::ISceneManager *m_pSmgr;           /**< The scene manager */
-        irr::gui::IGUIEnvironment *m_pGui;            /**< The GUI environment */
-        irr::scene::ISceneNode    *m_pNode;           /**< The root scene node for decorations */
-        irr::scene::ISceneNode    *m_pSelected;       /**< The node selected in the tree view */
-        irr::gui::IGUIWindow      *m_pDialog;         /**< The dialog window */
-        irr::gui::IGUITreeView    *m_pScene;          /**< The tree view representing the scene */
-        irr::gui::IGUITab         *m_aTabs[2];        /**< The tabs for scene editing */
-        irr::gui::IGUITab         *m_aNodeTabs[3];    /**< The tabs for node stuff */
-        irr::gui::IGUIElement     *m_aParameters[3];  /**< The parent elements for the parameters */
-        irr::gui::IGUITabControl  *m_pTabMain;        /**< The main tab control */
-        irr::gui::IGUITabControl  *m_pTabNode;        /**< The node tab control */
-        irr::gui::IGUIComboBox    *m_pMaterial;       /**< Combobox for material selection */
-        irr::gui::IGUIImage       *m_aTexture[8];     /**< The textures of the selected material */
-        irr::gui::IGUIStaticText  *m_pMeshName;       /**< Static text displaying the mesh name */
+        irr::scene::ISceneManager  *m_pSmgr;            /**< The scene manager */
+        irr::gui::IGUIEnvironment  *m_pGui;             /**< The GUI environment */
+        irr::scene::ISceneNode     *m_pNode;            /**< The root scene node for decorations */
+        irr::scene::ISceneNode     *m_pSelected;        /**< The node selected in the tree view */
+        irr::gui::IGUIWindow       *m_pDialog;          /**< The dialog window */
+        irr::gui::IGUITreeView     *m_pScene;           /**< The tree view representing the scene */
+        irr::gui::IGUITab          *m_aTabs[2];         /**< The tabs for scene editing */
+        irr::gui::IGUITab          *m_aNodeTabs[3];     /**< The tabs for node stuff */
+        irr::gui::IGUIElement      *m_aParameters[3];   /**< The parent elements for the parameters */
+        irr::gui::IGUITabControl   *m_pTabMain;         /**< The main tab control */
+        irr::gui::IGUITabControl   *m_pTabNode;         /**< The node tab control */
+        irr::gui::IGUIComboBox     *m_pMaterial;        /**< Combobox for material selection */
+        irr::gui::IGUIImage        *m_aTexture[8];      /**< The textures of the selected material */
+        irr::gui::IGUIStaticText   *m_pMeshName;        /**< Static text displaying the mesh name */
 
-        std::vector<CInputLimiter *> m_vLimiters;     /**< The input limiter */
+        tracked::CPartTranslator *m_pTranslator;    /**< The part translator */
+
+        std::vector<CInputLimiter *> m_vLimiters;     /**< The input limiters */
 
         std::map<irr::gui::IGUITreeViewNode *, irr::scene::ISceneNode *> m_mNodeMap;  /**< Map mapping tree view nodes to scene nodes */
 
@@ -151,6 +157,11 @@ namespace dustbin {
         */
         void updateMaterialDropdown();
 
+        /**
+        * Update the position parameters in the UI
+        */
+        void updatePositionParameters();
+
       public:
         CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui);
         virtual ~CCmdDecoration();
@@ -173,6 +184,12 @@ namespace dustbin {
         * font size or resizing window
         */
         virtual void onUiSetupModified();
+
+        /**
+        * Let this command draw something (if necessary)
+        * @param a_pDrv the video driver
+        */
+        virtual void draw(irr::video::IVideoDriver *a_pDrv) override;
     };
   }
 }

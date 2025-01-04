@@ -4,88 +4,25 @@
 #include <commands/CCmdDecoration.h>
 #include <helpers/CTrackEdHelpers.h>
 #include <helpers/CTrackEdHelpers.h>
+#include <editor/CPartTranslator.h>
 #include <helpers/CStringHelpers.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 
 namespace dustbin {
   namespace commands {
-    CCmdDecoration::CInputLimiter::CInputLimiter(irr::gui::IGUIElement *a_pElement, irr::io::E_ATTRIBUTE_TYPE a_eType) : m_pElement(a_pElement) {
-      switch (a_eType) {
-	      case irr::io::EAT_INT         : m_sLimited = L"+-0123456789" ; break; 
-	      case irr::io::EAT_FLOAT       : m_sLimited = L"+-0123456789."; break; 
-        case irr::io::EAT_STRING      : break;
-	      case irr::io::EAT_BOOL        : break;
-	      case irr::io::EAT_COLOR       : m_sLimited = L"+-0123456789," ; break;
-	      case irr::io::EAT_COLORF      : m_sLimited = L"+-0123456789.,"; break;
-	      case irr::io::EAT_VECTOR3D    : m_sLimited = L"+-0123456789.,"; break;
-	      case irr::io::EAT_POSITION2D  : m_sLimited = L"+-0123456789," ; break;
-	      case irr::io::EAT_VECTOR2D    : m_sLimited = L"+-0123456789.,"; break;
-	      case irr::io::EAT_RECT        : break;
-	      case irr::io::EAT_MATRIX      : break;
-	      case irr::io::EAT_QUATERNION  : break;
-	      case irr::io::EAT_BBOX        : break;
-	      case irr::io::EAT_PLANE       : break;
-	      case irr::io::EAT_TRIANGLE3D  : break;
-	      case irr::io::EAT_LINE2D      : break;
-	      case irr::io::EAT_LINE3D      : break;
-	      case irr::io::EAT_STRINGWARRAY: break;
-	      case irr::io::EAT_FLOATARRAY  : break;
-	      case irr::io::EAT_INTARRAY    : break;
-	      case irr::io::EAT_BINARY      : break;
-	      case irr::io::EAT_TEXTURE     : break;
-	      case irr::io::EAT_USER_POINTER: break;
-        case irr::io::EAT_DIMENSION2D : m_sLimited = L"+-0123456789,"; break;
-      }
-
-      m_vValid.push_back(irr::KEY_RETURN);
-      m_vValid.push_back(irr::KEY_ESCAPE);
-      m_vValid.push_back(irr::KEY_RIGHT);
-      m_vValid.push_back(irr::KEY_LEFT);
-      m_vValid.push_back(irr::KEY_DOWN);
-      m_vValid.push_back(irr::KEY_UP);
-      m_vValid.push_back(irr::KEY_END);
-      m_vValid.push_back(irr::KEY_BACK);
-      m_vValid.push_back(irr::KEY_HOME);
-      m_vValid.push_back(irr::KEY_SHIFT);
-    }
-
-    CCmdDecoration::CInputLimiter::~CInputLimiter() {
-    }
-
-    bool CCmdDecoration::CInputLimiter::consumeEvent(const irr::SEvent &a_cEvent) {
-      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
-        // Don't consume keys which are never invalid
-        if (std::find(m_vValid.begin(), m_vValid.end(), a_cEvent.KeyInput.Key) != m_vValid.end())
-          return false;
-
-        if (a_cEvent.KeyInput.Control && a_cEvent.KeyInput.Key == irr::KEY_KEY_A)
-          return false;
-
-        // Only chars not found in the string are valid, i.e. not consumed
-        if (m_sLimited.find_first_of(a_cEvent.KeyInput.Char) == std::string::npos)
-          return true;
-      }
-
-      return false;
-    }
-
-    irr::gui::IGUIElement *CCmdDecoration::CInputLimiter::getElement() {
-      return m_pElement;
-    }
-
-
-
     CCmdDecoration::CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui) :
-      ICommand   ("CmdDecoration"),
-      m_bFinished(false),
-      m_pSmgr    (a_pSmgr),
-      m_pGui     (a_pGui),
-      m_pNode    (nullptr),
-      m_pScene   (nullptr),
-      m_pTabMain (nullptr),
-      m_pTabNode (nullptr),
-      m_pMaterial(nullptr)
+      ICommand     ("CmdDecoration"),
+      m_bFinished  (false),
+      m_pSmgr      (a_pSmgr),
+      m_pGui       (a_pGui),
+      m_pNode      (nullptr),
+      m_pScene     (nullptr),
+      m_pTabMain   (nullptr),
+      m_pTabNode   (nullptr),
+      m_pMaterial  (nullptr),
+      m_pMeshName  (nullptr),
+      m_pTranslator(nullptr)
     {
       m_pNode = getDecorationRoot(m_pSmgr->getRootSceneNode());
 
@@ -93,6 +30,8 @@ namespace dustbin {
         m_pNode = m_pSmgr->addEmptySceneNode(m_pSmgr->getRootSceneNode());
         m_pNode->setName("__DecorationRootNode");
       }
+
+      m_pTranslator = new tracked::CPartTranslator(m_pSmgr);
 
       onUiSetupModified();
     }
@@ -102,6 +41,8 @@ namespace dustbin {
         m_pDialog->setVisible(false);
         m_pGui->addToDeletionQueue(m_pDialog);
       }
+
+      
     }
 
     /**
@@ -284,7 +225,7 @@ namespace dustbin {
     * @param a_pParent the parent UI element to add the attributes to
     */
     void CCmdDecoration::updateAttributeList(irr::io::IAttributes *a_pAttr, int a_iIndex, irr::gui::IGUIElement *a_pParent, const irr::core::position2di &a_cPos) {
-      for (auto l_tAttribute: m_vAttributes[a_iIndex]) {
+      for (auto &l_tAttribute: m_vAttributes[a_iIndex]) {
         std::get<1>(l_tAttribute)->setVisible(false);
         std::get<2>(l_tAttribute)->setVisible(false);
 
@@ -507,6 +448,25 @@ namespace dustbin {
     }
 
     /**
+    * Update the position parameters in the UI
+    */
+    void CCmdDecoration::updatePositionParameters() {
+      for (auto &l_tAttribute: m_vAttributes[0]) {
+        if (std::get<0>(l_tAttribute) == "Position") {
+          irr::core::vector3df v = m_pSelected->getPosition();
+          printf("%.2f, %.2f, %.2f\n", v.X, v.Y, v.Z);
+          std::wstring l_sText = std::to_wstring(v.X) + L", " + std::to_wstring(v.Y) + L", " + std::to_wstring(v.Z);
+          std::get<2>(l_tAttribute)->setText(l_sText.c_str());
+        }
+        else if (std::get<0>(l_tAttribute) == "Rotation") {
+          irr::core::vector3df v = m_pSelected->getRotation();
+          std::wstring l_sText = std::to_wstring(v.X) + L", " + std::to_wstring(v.Y) + L", " + std::to_wstring(v.Z);
+          std::get<2>(l_tAttribute)->setText(l_sText.c_str());
+        }
+      }
+    }
+
+    /**
     * Update the dropdown for the material selection with the data taken from "m_pSelected"
     */
     void CCmdDecoration::updateMaterialDropdown() {
@@ -529,6 +489,8 @@ namespace dustbin {
           m_pMeshName->setText(helpers::s2ws(l_sText).c_str());
         }
       }
+
+      m_pTranslator->setEditNode(m_pSelected);
     }
 
     /**
@@ -608,7 +570,7 @@ namespace dustbin {
     * @param a_pNode the node to update
     */
     void CCmdDecoration::updateNodeInTree(irr::scene::ISceneNode *a_pNode) {
-      for (auto l_tTree: m_mNodeMap) {
+      for (auto &l_tTree: m_mNodeMap) {
         if (l_tTree.second == a_pNode) {
           l_tTree.first->setText(helpers::s2ws(a_pNode->getName()).c_str());
         }
@@ -620,7 +582,7 @@ namespace dustbin {
     * @param a_pNode the node to be deleted
     */
     void CCmdDecoration::deleteNode(irr::scene::ISceneNode *a_pNode) {
-      for (auto l_tTree: m_mNodeMap) {
+      for (auto &l_tTree: m_mNodeMap) {
         if (l_tTree.second == a_pNode) {
           l_tTree.first->getParent()->deleteChild(l_tTree.first);
           m_mNodeMap.erase(l_tTree.first);
@@ -634,7 +596,7 @@ namespace dustbin {
     * @param a_pNode the new node
     */
     void CCmdDecoration::addNode(irr::scene::ISceneNode *a_pNode) {
-      for (auto l_tTree: m_mNodeMap) {
+      for (auto &l_tTree: m_mNodeMap) {
         if (l_tTree.second == a_pNode->getParent()) {
           updateDecorationList(a_pNode, l_tTree.first);
         }
@@ -659,6 +621,15 @@ namespace dustbin {
       }
 
       return l_pAttr;
+    }
+
+    /**
+    * Let this command draw something (if necessary)
+    * @param a_pDrv the video driver
+    */
+    void CCmdDecoration::draw(irr::video::IVideoDriver *a_pDrv) {
+      if (m_pTranslator != nullptr)
+        m_pTranslator->draw(a_pDrv, m_pSmgr->getActiveCamera());
     }
 
     /**
@@ -692,9 +663,13 @@ namespace dustbin {
 
       for (auto l_pLimiter: m_vLimiters) {
         if (l_pLimiter->consumeEvent(a_cEvent)) {
-          l_bRet = true;
-          break;
+          return true;
         }
+      }
+
+      if (m_pTranslator->OnEvent(a_cEvent)) {
+        updatePositionParameters();
+        return true;
       }
 
       if (a_cEvent.EventType == irr::EET_GUI_EVENT) {
@@ -788,7 +763,7 @@ namespace dustbin {
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUS_LOST) {
           for (int i = 0; i < 3; i++) {
-            for (auto l_tAttribute : m_vAttributes[i]) {
+            for (auto &l_tAttribute : m_vAttributes[i]) {
               if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
                 for (auto l_itLimiter = m_vLimiters.begin(); l_itLimiter != m_vLimiters.end(); l_itLimiter++) {
                   if ((*l_itLimiter)->getElement() == a_cEvent.GUIEvent.Caller) {
@@ -805,7 +780,7 @@ namespace dustbin {
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUSED) {
           for (int i = 0; i < 3; i++) {
-            for (auto l_tAttribute : m_vAttributes[i]) {
+            for (auto &l_tAttribute : m_vAttributes[i]) {
               if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
                 bool l_bLimit = true;
 
@@ -827,7 +802,7 @@ namespace dustbin {
         }
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
           for (int i = 0; i < 3; i++) {
-            for (auto l_tAttribute: m_vAttributes[i]) {
+            for (auto &l_tAttribute: m_vAttributes[i]) {
               if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
                 irr::io::IAttributes *l_pAttr = getAttributesForEditing();
 
@@ -894,7 +869,7 @@ namespace dustbin {
 
           if (!l_bRet) {
             for (int i = 0; i < 3; i++) {
-              for (auto l_tAttribute : m_vAttributes[i]) {
+              for (auto &l_tAttribute : m_vAttributes[i]) {
                 if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
                   irr::io::IAttributes *l_pAttr = getAttributesForEditing();
 
@@ -910,7 +885,7 @@ namespace dustbin {
 
                     irr::core::array<const irr::c8 *> l_aValues;
 
-                    for (auto l_pItem : l_vValues)
+                    for (auto &l_pItem : l_vValues)
                       l_aValues.push_back(l_pItem.c_str());
 
                     l_aValues.push_back(nullptr);
@@ -933,7 +908,7 @@ namespace dustbin {
           if (a_cEvent.KeyInput.PressedDown) {
             if (a_cEvent.KeyInput.Key == irr::KEY_RETURN) {
               for (int i = 0; i < 3; i++) {
-                for (auto l_tAttribute : m_vAttributes[i]) {
+                for (auto &l_tAttribute : m_vAttributes[i]) {
                   if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
                     irr::io::IAttributes *l_pAttr = getAttributesForEditing();
 
@@ -951,7 +926,7 @@ namespace dustbin {
             }
             else if (a_cEvent.KeyInput.Key == irr::KEY_ESCAPE) {
               for (int i = 0; i < 3; i++) {
-                for (auto l_tAttribute : m_vAttributes[i]) {
+                for (auto &l_tAttribute : m_vAttributes[i]) {
                   if (m_pGui->getFocus() == std::get<2>(l_tAttribute)) {
                     irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
@@ -1019,7 +994,7 @@ namespace dustbin {
 
           if (!l_bRet) {
             for (int i = 0; i < 3; i++) {
-              for (auto l_tAttribute : m_vAttributes[i]) {
+              for (auto &l_tAttribute : m_vAttributes[i]) {
                 if (l_pHover == std::get<2>(l_tAttribute) && l_pHover->getType() == irr::gui::EGUIET_TAB && std::get<3>(l_tAttribute) == irr::io::EAT_COLOR) {
                   irr::io::IAttributes *l_pAttr = getAttributesForEditing();
 
@@ -1044,6 +1019,74 @@ namespace dustbin {
       }
 
       return l_bRet;
+    }
+
+
+
+
+
+    CCmdDecoration::CInputLimiter::CInputLimiter(irr::gui::IGUIElement *a_pElement, irr::io::E_ATTRIBUTE_TYPE a_eType) : m_pElement(a_pElement) {
+      switch (a_eType) {
+	      case irr::io::EAT_INT         : m_sLimited = L"+-0123456789" ; break; 
+	      case irr::io::EAT_FLOAT       : m_sLimited = L"+-0123456789."; break; 
+        case irr::io::EAT_STRING      : break;
+	      case irr::io::EAT_BOOL        : break;
+	      case irr::io::EAT_COLOR       : m_sLimited = L"+-0123456789," ; break;
+	      case irr::io::EAT_COLORF      : m_sLimited = L"+-0123456789.,"; break;
+	      case irr::io::EAT_VECTOR3D    : m_sLimited = L"+-0123456789.,"; break;
+	      case irr::io::EAT_POSITION2D  : m_sLimited = L"+-0123456789," ; break;
+	      case irr::io::EAT_VECTOR2D    : m_sLimited = L"+-0123456789.,"; break;
+	      case irr::io::EAT_RECT        : break;
+	      case irr::io::EAT_MATRIX      : break;
+	      case irr::io::EAT_QUATERNION  : break;
+	      case irr::io::EAT_BBOX        : break;
+	      case irr::io::EAT_PLANE       : break;
+	      case irr::io::EAT_TRIANGLE3D  : break;
+	      case irr::io::EAT_LINE2D      : break;
+	      case irr::io::EAT_LINE3D      : break;
+	      case irr::io::EAT_STRINGWARRAY: break;
+	      case irr::io::EAT_FLOATARRAY  : break;
+	      case irr::io::EAT_INTARRAY    : break;
+	      case irr::io::EAT_BINARY      : break;
+	      case irr::io::EAT_TEXTURE     : break;
+	      case irr::io::EAT_USER_POINTER: break;
+        case irr::io::EAT_DIMENSION2D : m_sLimited = L"+-0123456789,"; break;
+      }
+
+      m_vValid.push_back(irr::KEY_RETURN);
+      m_vValid.push_back(irr::KEY_ESCAPE);
+      m_vValid.push_back(irr::KEY_RIGHT);
+      m_vValid.push_back(irr::KEY_LEFT);
+      m_vValid.push_back(irr::KEY_DOWN);
+      m_vValid.push_back(irr::KEY_UP);
+      m_vValid.push_back(irr::KEY_END);
+      m_vValid.push_back(irr::KEY_BACK);
+      m_vValid.push_back(irr::KEY_HOME);
+      m_vValid.push_back(irr::KEY_SHIFT);
+    }
+
+    CCmdDecoration::CInputLimiter::~CInputLimiter() {
+    }
+
+    bool CCmdDecoration::CInputLimiter::consumeEvent(const irr::SEvent &a_cEvent) {
+      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+        // Don't consume keys which are never invalid
+        if (std::find(m_vValid.begin(), m_vValid.end(), a_cEvent.KeyInput.Key) != m_vValid.end())
+          return false;
+
+        if (a_cEvent.KeyInput.Control && a_cEvent.KeyInput.Key == irr::KEY_KEY_A)
+          return false;
+
+        // Only chars not found in the string are valid, i.e. not consumed
+        if (m_sLimited.find_first_of(a_cEvent.KeyInput.Char) == std::string::npos)
+          return true;
+      }
+
+      return false;
+    }
+
+    irr::gui::IGUIElement *CCmdDecoration::CInputLimiter::getElement() {
+      return m_pElement;
     }
   }
 }

@@ -1,0 +1,67 @@
+// (w) 2025 by Dustbin::Games / Christian Keimel
+#pragma once
+
+#include <irrlicht.h>
+
+namespace dustbin {
+  namespace tracked {
+    class CPointMoveManager;    /**< Forward declaration of the point movement manager */
+
+    /**
+    * @class CPartTranslator
+    * @author Christian Keimel
+    * This class manages the movement and rotation of scene nodes
+    */
+    class CPartTranslator {
+      private:
+        irr::scene::ISceneManager          *m_pSmgr;    /**< The scene manager for the movement elements (arrows...) */
+        irr::scene::ISceneNode             *m_pNode;    /**< The node to be modified */
+        irr::scene::ISceneCollisionManager *m_pColMgr;  /**< The scene collision manager */
+
+        irr::core::matrix4 m_cParentMtx;    /**< The absolute transformation matrix of the parent of m_pNode */
+        irr::core::matrix4 m_cInveseMtx;    /**< The inverse of m_cParentMtx */
+
+        irr::scene::ISceneNode *m_aArrows[3];     /**< The arrow nodes for the directional movement */
+
+        irr::scene::IMetaTriangleSelector *m_pSelector;   /**< The triangle selector for the editor meshes */
+
+        irr::scene::ISceneNode *m_pHover;   /**< The hovered scene node */
+        irr::scene::ISceneNode *m_pMove;    /**< The moved scene node */
+        irr::core::vector3df    m_cPoint;   /**< The point on the hovered scene node */
+
+        irr::video::ITexture *m_pOriginal;    /**< The original texture of the dragged scene node */
+        irr::video::ITexture *m_pDragging;    /**< The dragging texture for the dragged scene node */
+
+        CPointMoveManager *m_pMoveMgr;    /**< The point movement manager */
+
+        irr::core::line3df l_cLine;
+
+        bool m_bMouseDown;    /**< Is the left mouse button pressed? */
+        bool m_bVisible;      /**< Is the movement UI visible? */
+
+        /**
+        * Update the position of the move elements
+        */
+        void updateMovePositions();
+
+      public:
+        CPartTranslator(irr::scene::ISceneManager *a_pSmgr);
+        virtual ~CPartTranslator();
+
+        /**
+        * Set the node to edit
+        * @param a_pNode the node to edit
+        */
+        void setEditNode(irr::scene::ISceneNode *a_pNode);
+
+        bool OnEvent(const irr::SEvent &a_cEvent);
+
+        /**
+        * Draw the scene nodes (if necessary)
+        * @param a_pDrv the video driver
+        * @param a_pCamera the active camera in the other scene manager
+        */
+        void draw(irr::video::IVideoDriver *a_pDrv, irr::scene::ICameraSceneNode *a_pCamera);
+    };
+  }
+}
