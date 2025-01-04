@@ -34,7 +34,7 @@ namespace dustbin {
 
         CPointMoveManager *m_pMoveMgr;    /**< The point movement manager */
 
-        irr::core::line3df l_cLine;
+        irr::s32 m_iMove;     /**< The index of what is moved */
 
         bool m_bMouseDown;    /**< Is the left mouse button pressed? */
         bool m_bVisible;      /**< Is the movement UI visible? */

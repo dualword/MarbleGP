@@ -438,7 +438,8 @@ namespace dustbin {
 	        case irr::io::EAT_FLOATARRAY: { break; }
 	        case irr::io::EAT_INTARRAY: { break; }
 	        case irr::io::EAT_BINARY: { break; }
-	        case irr::io::EAT_TEXTURE: { 
+	        case irr::io::EAT_TEXTURE: {
+            a_pAttr->setAttribute(a_sName.c_str(), m_pSmgr->getVideoDriver()->getTexture(helpers::ws2s(a_pEdit->getText()).c_str()));
             break; 
           }
 	        case irr::io::EAT_USER_POINTER: { break; }
@@ -454,7 +455,6 @@ namespace dustbin {
       for (auto &l_tAttribute: m_vAttributes[0]) {
         if (std::get<0>(l_tAttribute) == "Position") {
           irr::core::vector3df v = m_pSelected->getPosition();
-          printf("%.2f, %.2f, %.2f\n", v.X, v.Y, v.Z);
           std::wstring l_sText = std::to_wstring(v.X) + L", " + std::to_wstring(v.Y) + L", " + std::to_wstring(v.Z);
           std::get<2>(l_tAttribute)->setText(l_sText.c_str());
         }
