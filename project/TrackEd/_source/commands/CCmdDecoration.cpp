@@ -8,6 +8,7 @@
 #include <helpers/CStringHelpers.h>
 #include <CDefines.h>
 #include <IGlobal.h>
+#include <algorithm>
 
 namespace dustbin {
   namespace commands {
@@ -21,7 +22,11 @@ namespace dustbin {
       m_pTabMain   (nullptr),
       m_pTabNode   (nullptr),
       m_pMaterial  (nullptr),
+      m_pAnimator  (nullptr),
+      m_pAnimType  (nullptr),
       m_pMeshName  (nullptr),
+      m_pAnimAdd   (nullptr),
+      m_pAnimDel   (nullptr),
       m_pTranslator(nullptr)
     {
       m_pNode = getDecorationRoot(m_pSmgr->getRootSceneNode());
@@ -185,11 +190,11 @@ namespace dustbin {
 
       m_aParameters[1] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[1], l_cParamRect);
 
-      l_cSize = m_pGui->getSkin()->getFont()->getDimension(L" Select Material: ");
+      l_cSize = m_pGui->getSkin()->getFont()->getDimension(L"   Select Material:   ");
 
       irr::core::position2di l_cPos = irr::core::position2di(0, m_pGui->getSkin()->getSize(irr::gui::EGDS_WINDOW_BUTTON_WIDTH) / 2);
 
-      m_pGui->addStaticText(L" Select Material:", irr::core::recti(l_cPos, l_cSize), false, false, m_aNodeTabs[1])->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_CENTER);
+      m_pGui->addStaticText(L"Select Material: ", irr::core::recti(l_cPos, l_cSize), false, false, m_aNodeTabs[1])->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
       l_cPos.X += l_cSize.Width;
 
       irr::s32 l_iSize = m_aParameters[1]->getAbsolutePosition().getWidth() / 4;
@@ -210,6 +215,54 @@ namespace dustbin {
       m_aNodeTabs[2]->setText(L"Animators");
       m_pTabNode->addTab(m_aNodeTabs[2]);
 
+      m_pGui->addStaticText(L"Select Animator: ", irr::core::recti(irr::core::position2di(0, l_cPos.Y), l_cSize), false, false, m_aNodeTabs[2])->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
+      m_pAnimator = m_pGui->addComboBox(irr::core::recti(l_cPos, irr::core::dimension2du(l_cParamRect.getWidth() - l_cSize.Width, l_cSize.Height)), m_aNodeTabs[2]);
+
+      l_cPos.Y += 5 * l_cSize.Height / 4;
+
+      m_pGui->addStaticText(L"Animator Type: ", irr::core::recti(irr::core::position2di(0, l_cPos.Y), l_cSize), false, false, m_aNodeTabs[2])->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
+      m_pAnimType = m_pGui->addComboBox(irr::core::recti(l_cPos, irr::core::dimension2du(l_cParamRect.getWidth() - l_cSize.Width, l_cSize.Height)), m_aNodeTabs[2]);
+
+      irr::u32 l_iIndex = 0;
+      irr::scene::ISceneNodeAnimatorFactory *l_pFactory = nullptr;
+      std::vector<std::string> l_vList;
+
+      do {
+        l_pFactory = m_pSmgr->getSceneNodeAnimatorFactory(l_iIndex);
+
+        if (l_pFactory != nullptr) {
+          for (irr::u32 i = 0; i < l_pFactory->getCreatableSceneNodeAnimatorTypeCount(); i++) {
+            l_vList.push_back(l_pFactory->getCreateableSceneNodeAnimatorTypeName(i));
+          }
+        }
+
+        l_iIndex++;
+      } 
+      while (l_pFactory != nullptr);
+
+      std::sort(l_vList.begin(), l_vList.end());
+
+      for (auto l_sType: l_vList) {
+        m_pAnimType->addItem(helpers::s2ws(l_sType).c_str());
+      }
+
+      l_cPos.Y += 5 * l_cSize.Height / 4;
+
+      m_pAnimAdd = m_pGui->addButton(
+        irr::core::recti(irr::core::vector2di(0, l_cPos.Y), irr::core::dimension2du(l_cParamRect.getWidth() / 2, l_cSize.Height)),
+        m_aNodeTabs[2],
+        -1,
+        L"Add Animator"
+      );
+
+      m_pAnimDel = m_pGui->addButton(
+        irr::core::recti(irr::core::vector2di(l_cParamRect.getWidth() / 2, l_cPos.Y), irr::core::dimension2du(l_cParamRect.getWidth() / 2, l_cSize.Height)),
+        m_aNodeTabs[2],
+        -1,
+        L"Remove Animator"
+      );
+
+      l_cParamRect.UpperLeftCorner.Y = m_pAnimAdd->getRelativePosition().LowerRightCorner.Y;
       m_aParameters[2] = new gui::CGuiScrollContainer(m_pGui, m_aNodeTabs[2], l_cParamRect);
 
       m_pScene = m_pGui->addTreeView(m_aTabs[0]->getRelativePosition(), m_aTabs[0]);
@@ -467,6 +520,22 @@ namespace dustbin {
     }
 
     /**
+    * Update the dropdown for the animator selection
+    */
+    void CCmdDecoration::updateAnimatorDropdown() {
+      if (m_pAnimator != nullptr) {
+        m_pAnimator->clear();
+
+        if (m_pSelected != nullptr) {
+          for (irr::u32 i = 0; i < m_pSelected->getAnimators().size(); i++)
+            m_pAnimator->addItem(std::to_wstring(i + 1).c_str(), i);
+        }
+
+        m_pAnimator->setSelected(m_pAnimator->getItemCount() > 0 ? 0 : -1);
+      }
+    }
+
+    /**
     * Update the dropdown for the material selection with the data taken from "m_pSelected"
     */
     void CCmdDecoration::updateMaterialDropdown() {
@@ -491,6 +560,24 @@ namespace dustbin {
       }
 
       m_pTranslator->setEditNode(m_pSelected);
+    }
+
+    /**
+    * Update the animator tab
+    */
+    void CCmdDecoration::updateAnimatorTab() {
+      irr::io::IAttributes *l_pAttr = nullptr;
+
+      if (m_pSelected != nullptr) {
+        irr::scene::ISceneNodeAnimator *l_pAnimator = getSelectedAnimator();
+        if (l_pAnimator != nullptr) {
+          l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+          l_pAnimator->serializeAttributes(l_pAttr);
+        }
+      }
+
+      irr::s32 l_iOffset = m_pAnimAdd != nullptr ? m_pAnimAdd->getAbsolutePosition().LowerRightCorner.Y + 10 * m_pAnimAdd->getAbsolutePosition().getHeight() / 9 : 0;
+      updateAttributeList(l_pAttr, 2, m_aParameters[2], irr::core::position2di(0, 0));
     }
 
     /**
@@ -618,6 +705,13 @@ namespace dustbin {
         else if (m_pTabNode->getActiveTab() == 1) {
           l_pAttr = m_pSmgr->getVideoDriver()->createAttributesFromMaterial(m_pSelected->getMaterial(m_pMaterial->getItemData(m_pMaterial->getSelected())));
         }
+        else if (m_pTabNode->getActiveTab() == 2) {
+          irr::scene::ISceneNodeAnimator *l_pAnimator = getSelectedAnimator();
+          if (l_pAnimator != nullptr) {
+            l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
+            l_pAnimator->serializeAttributes(l_pAttr);
+          }
+        }
       }
 
       return l_pAttr;
@@ -630,6 +724,30 @@ namespace dustbin {
     void CCmdDecoration::draw(irr::video::IVideoDriver *a_pDrv) {
       if (m_pTranslator != nullptr)
         m_pTranslator->draw(a_pDrv, m_pSmgr->getActiveCamera());
+    }
+
+    /**
+    * Get the selected animator from the selected scene node
+    * @return the selected animator
+    */
+    irr::scene::ISceneNodeAnimator *CCmdDecoration::getSelectedAnimator() {
+      if (m_pSelected != nullptr) {
+        irr::scene::ISceneNodeAnimatorList l_cList = m_pSelected->getAnimators();
+
+        if (l_cList.size() > 0) {
+          irr::u32 l_iIndex = m_pAnimator->getItemData(m_pAnimator->getSelected());
+          irr::scene::ISceneNodeAnimatorList::Iterator l_itAnim = l_cList.begin();
+          while (l_iIndex > 0 && l_itAnim != l_cList.end()) {
+            l_itAnim++;
+            l_iIndex--;
+          }
+
+          if (l_itAnim != l_cList.end())
+            return *l_itAnim;
+        }
+      }
+
+      return nullptr;
     }
 
     /**
@@ -647,6 +765,13 @@ namespace dustbin {
         else if (m_pTabNode->getActiveTab() == 1) {
           m_pSmgr->getVideoDriver()->fillMaterialStructureFromAttributes(m_pSelected->getMaterial(m_pMaterial->getItemData(m_pMaterial->getSelected())), a_pAttr);
           l_bSaved = true;
+        }
+        else if (m_pTabNode->getActiveTab() == 2) {
+          irr::scene::ISceneNodeAnimator *l_pAnimator = getSelectedAnimator();
+
+          if (l_pAnimator != nullptr) {
+            l_pAnimator->deserializeAttributes(a_pAttr);
+          }
         }
       }
 
@@ -682,6 +807,7 @@ namespace dustbin {
               if (m_pSelected == nullptr) {
                 m_pSelected = m_pNode;
                 updateMaterialDropdown();
+                updateAnimatorDropdown();
               }
 
               irr::io::path l_sDir = m_pGui->getFileSystem()->getWorkingDirectory();
@@ -719,6 +845,7 @@ namespace dustbin {
               if (m_pSelected == nullptr) {
                 m_pSelected = m_pNode;
                 updateMaterialDropdown();
+                updateAnimatorDropdown();
               }
 
               addNode(m_pSmgr->addEmptySceneNode(m_pSelected));
@@ -732,6 +859,7 @@ namespace dustbin {
                 helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
                 m_pSelected = nullptr;
                 updateMaterialDropdown();
+                updateAnimatorDropdown();
               }
               else helpers::addLogMessage(L"No scene node selected for deletion", irr::ELL_ERROR, 2000);
               l_bRet = true;
@@ -824,6 +952,7 @@ namespace dustbin {
               if (m_mNodeMap.find(l_pSelected) != m_mNodeMap.end()) {
                 m_pSelected = m_mNodeMap[l_pSelected];
                 updateMaterialDropdown();
+                updateAnimatorDropdown();
 
                 irr::io::IAttributes *l_pAttr = m_pGui->getFileSystem()->createEmptyAttributes();
 
@@ -839,6 +968,7 @@ namespace dustbin {
                 }
 
                 updateMaterialTab();
+                updateAnimatorTab();
               }
             }
             l_bRet = true;
@@ -855,6 +985,7 @@ namespace dustbin {
                 updateAttributeList(nullptr, 1, nullptr, irr::core::position2di());
                 updateAttributeList(nullptr, 2, nullptr, irr::core::position2di());
                 updateMaterialDropdown();
+                updateAnimatorDropdown();
 
                 l_bRet = true;
               }
@@ -864,6 +995,10 @@ namespace dustbin {
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {
           if (a_cEvent.GUIEvent.Caller == m_pMaterial) {
             updateMaterialTab();
+            l_bRet = true;
+          }
+          else if (a_cEvent.GUIEvent.Caller == m_pAnimator) {
+            updateAnimatorTab();
             l_bRet = true;
           }
 
@@ -900,6 +1035,32 @@ namespace dustbin {
                 }
               }
             }
+          }
+        }
+        else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+          if (a_cEvent.GUIEvent.Caller == m_pAnimAdd) {
+            if (m_pSelected != nullptr) {
+              std::string l_sAnimator = helpers::ws2s(m_pAnimType->getItem(m_pAnimType->getSelected()));
+
+              m_pSmgr->createSceneNodeAnimator(l_sAnimator.c_str(), m_pSelected);
+
+              updateAnimatorDropdown();
+              m_pAnimator->setSelected(m_pSelected->getAnimators().size() - 1);
+              updateAnimatorTab();
+
+              l_bRet = true;
+            }
+          }
+          else if (a_cEvent.GUIEvent.Caller == m_pAnimDel) {
+            if (m_pSelected != nullptr) {
+              irr::scene::ISceneNodeAnimator *l_pAnimator = getSelectedAnimator();
+              if (l_pAnimator != nullptr) {
+                m_pSelected->removeAnimator(l_pAnimator);
+                updateAnimatorDropdown();
+                updateAnimatorTab();
+              }
+            }
+            l_bRet = true;
           }
         }
       }
@@ -1063,6 +1224,7 @@ namespace dustbin {
       m_vValid.push_back(irr::KEY_BACK);
       m_vValid.push_back(irr::KEY_HOME);
       m_vValid.push_back(irr::KEY_SHIFT);
+      m_vValid.push_back(irr::KEY_DELETE);
     }
 
     CCmdDecoration::CInputLimiter::~CInputLimiter() {

@@ -57,8 +57,12 @@ namespace dustbin {
         irr::gui::IGUITabControl   *m_pTabMain;         /**< The main tab control */
         irr::gui::IGUITabControl   *m_pTabNode;         /**< The node tab control */
         irr::gui::IGUIComboBox     *m_pMaterial;        /**< Combobox for material selection */
+        irr::gui::IGUIComboBox     *m_pAnimator;        /**< Combobox for animator selection */
+        irr::gui::IGUIComboBox     *m_pAnimType;        /**< Combobox for the type of animator to add */
         irr::gui::IGUIImage        *m_aTexture[8];      /**< The textures of the selected material */
         irr::gui::IGUIStaticText   *m_pMeshName;        /**< Static text displaying the mesh name */
+        irr::gui::IGUIButton       *m_pAnimAdd;         /**< Add an animator to the selected scene node */
+        irr::gui::IGUIButton       *m_pAnimDel;         /**< Remove an animator from the selected scene node */
 
         tracked::CPartTranslator *m_pTranslator;    /**< The part translator */
 
@@ -153,14 +157,30 @@ namespace dustbin {
         void updateMaterialTab();
 
         /**
+        * Update the animator tab
+        */
+        void updateAnimatorTab();
+
+        /**
         * Update the dropdown for the material selection with the data taken from "m_pSelected"
         */
         void updateMaterialDropdown();
 
         /**
+        * Update the dropdown for the animator selection
+        */
+        void updateAnimatorDropdown();
+
+        /**
         * Update the position parameters in the UI
         */
         void updatePositionParameters();
+
+        /**
+        * Get the selected animator from the selected scene node
+        * @return the selected animator
+        */
+        irr::scene::ISceneNodeAnimator *getSelectedAnimator();
 
       public:
         CCmdDecoration(irr::scene::ISceneManager *a_pSmgr, irr::gui::IGUIEnvironment *a_pGui);
