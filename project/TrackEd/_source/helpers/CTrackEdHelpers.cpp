@@ -122,6 +122,45 @@ namespace dustbin {
     }
 
     /**
+    * Find a scene node by it's name
+    * @param a_sName the name to search for
+    * @param a_pNode the node to check (all children will be checked as well)
+    * @return the scene node if found, "nullptr" if no match was found
+    */
+    irr::scene::ISceneNode *findNodeByName(const std::string &a_sName, irr::scene::ISceneNode *a_pNode) {
+      if (a_sName == a_pNode->getName())
+        return a_pNode;
+
+      for (auto l_pChild: a_pNode->getChildren()) {
+        irr::scene::ISceneNode *p = findNodeByName(a_sName, l_pChild);
+        if (p != nullptr)
+          return p;
+      }
+
+      return nullptr;
+    }
+
+    /**
+    * Find a scene node by it's name
+    * @param a_sName the name to search for
+    * @param a_eType the type of the requested node
+    * @param a_pNode the node to check (all children will be checked as well)
+    * @return the scene node if found, "nullptr" if no match was found
+    */
+    irr::scene::ISceneNode *findNodeByNameAndType(const std::string &a_sName, irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pNode) {
+      if (a_sName == a_pNode->getName() && a_eType == a_pNode->getType())
+        return a_pNode;
+
+      for (auto l_pChild: a_pNode->getChildren()) {
+        irr::scene::ISceneNode *p = findNodeByNameAndType(a_sName, a_eType, l_pChild);
+        if (p != nullptr)
+          return p;
+      }
+
+      return nullptr;
+    }
+
+    /**
     * Draw a plane for debugging purposes
     * @param a_pDrv the video driver
     * @param a_cPoint the plane point
@@ -194,7 +233,8 @@ namespace dustbin {
         irr::core::vector3df p2 = a_cPoint + x * v2 + 50.0f * v1;
 
         a_pDrv->draw3DLine(p1, p2, irr::video::SColor(0xFF, 0, 0, 0));
-      }    }
+      }    
+    }
   }
 }
 

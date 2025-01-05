@@ -999,6 +999,13 @@ namespace dustbin {
       l_pGrid->setAngle(180.0f);
 
       if (m_fBaseHeight == -1 && m_fBaseOffset == -1) {
+        irr::scene::ISceneNode *l_pOld = helpers::findNodeByName("__ZeroPlane", m_pSmgr->getRootSceneNode());
+
+        if (l_pOld != nullptr) {
+          l_pOld->setVisible(false);
+          m_pSmgr->addToDeletionQueue(l_pOld);
+        }
+
         irr::scene::IMesh *l_pPlane = m_pSmgr->getMesh("data/objects/plane.3ds");
 
         m_pZeroPlane = m_pSmgr->addMeshSceneNode(
@@ -1013,6 +1020,7 @@ namespace dustbin {
         m_pZeroPlane->getMaterial(0).setTexture(0, m_pDrv->getTexture("data/textures/editor_cross.png"));
         m_pZeroPlane->getMaterial(0).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
         m_pZeroPlane->getMaterial(0).Lighting = false;
+        m_pZeroPlane->setName("__ZeroPlane");
 
         m_pZeroPlane->addAnimator(new animators::CPlaneAnimator(m_pZeroPlane));
       }
@@ -1024,8 +1032,9 @@ namespace dustbin {
       m_pPickPoint->setVisible(false);
 
       scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(m_pSmgr->addSceneNode(scenenodes::g_DustbinLightName));
+
       if (l_pLight != nullptr) {
-        l_pLight->setPosition(irr::core::vector3df(-100.55f, 75.72f, 143.74f));
+        l_pLight->setPosition(irr::core::vector3df(393.0f, 801.0f, -502.0f));
         l_pLight->setLightTarget(irr::core::vector3df(0.0f));
         l_pLight->setNearValue(5.0f);
         l_pLight->setFarValue(1000.0f);

@@ -50,6 +50,23 @@ namespace dustbin {
     irr::scene::ISceneNode *getDecorationRootNode(irr::scene::ISceneNode *a_pRoot, bool a_bAddIfNotFound = true);
 
     /**
+    * Find a scene node by it's name
+    * @param a_sName the name to search for
+    * @param a_pNode the node to check (all children will be checked as well)
+    * @return the scene node if found, "nullptr" if no match was found
+    */
+    irr::scene::ISceneNode *findNodeByName(const std::string &a_sName, irr::scene::ISceneNode *a_pNode);
+
+    /**
+    * Find a scene node by it's name
+    * @param a_sName the name to search for
+    * @param a_eType the type of the requested node
+    * @param a_pNode the node to check (all children will be checked as well)
+    * @return the scene node if found, "nullptr" if no match was found
+    */
+    irr::scene::ISceneNode *findNodeByNameAndType(const std::string &a_sName, irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pNode);
+
+    /**
     * Draw a plane for debugging purposes
     * @param a_pDrv the video driver
     * @param a_cPoint the plane point
