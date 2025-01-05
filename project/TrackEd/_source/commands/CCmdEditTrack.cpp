@@ -426,6 +426,40 @@ namespace dustbin {
         m_pTrack->getMesh()->setDirty();
       }
 
+      for (irr::u32 i = 0; i < m_pTrack->getMesh()->getMeshBufferCount(); i++)
+        m_pTrack->getMesh()->getMeshBuffer(i)->recalculateBoundingBox();
+
+      scenenodes::CDustbinLight *l_pLight = reinterpret_cast<scenenodes::CDustbinLight *>(helpers::findNodeByType((irr::scene::ESCENE_NODE_TYPE)scenenodes::g_DustbinLightId, m_pSmgr->getRootSceneNode()));
+      if (l_pLight != nullptr) {
+        irr::core::aabbox3df l_cBox = m_pTrack->getTransformedBoundingBox();
+
+        l_pLight->setLightTarget(irr::core::vector3df(l_cBox.getCenter().X, 0.0f, l_cBox.getCenter().Z));
+
+        irr::f32 l_fFov = 2000.0f;
+        irr::f32 l_fDst = 2000.0f;
+
+        irr::core::vector3df l_aBox[8];
+        l_cBox.getEdges(l_aBox);
+
+        for (int i = 0; i < 8; i++) {
+          for (int j = 0; j < 8; j++) {
+            if (i != j && l_aBox[i].getDistanceFrom(l_aBox[j]) > l_fFov) {
+              l_fFov = l_aBox[i].getDistanceFrom(l_aBox[j]);
+            }
+          }
+
+          if (l_pLight->getAbsolutePosition().getDistanceFrom(l_aBox[i]) > l_fDst)
+            l_fDst = l_pLight->getAbsolutePosition().getDistanceFrom(l_aBox[i]);
+        }
+
+        l_fFov = 120.0f * l_fFov / 100.0f;
+        l_fDst = 120.0f * l_fDst / 100.0f;
+
+        printf("Field of view: %.2f, distance: %.2f\n", l_fFov, l_fDst);
+        l_pLight->setFieldOfView(l_fFov);
+        l_pLight->setFarValue(l_fDst);
+      }
+      
       m_pAiPath->addSpeedIndicators(m_pWorld, m_pSmgr);
 
       irr::SEvent l_cEvent{};
@@ -967,6 +1001,8 @@ namespace dustbin {
             m_pWorld = nullptr;
             m_pHover = nullptr;
             m_pTrack = nullptr;
+
+            m_pZeroPlane = nullptr;
 
             delete m_pAiPath;
             m_pAiPath = nullptr;

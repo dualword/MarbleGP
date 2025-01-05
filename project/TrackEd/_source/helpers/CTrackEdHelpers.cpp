@@ -141,7 +141,7 @@ namespace dustbin {
     }
 
     /**
-    * Find a scene node by it's name
+    * Find a scene node by it's name and type
     * @param a_sName the name to search for
     * @param a_eType the type of the requested node
     * @param a_pNode the node to check (all children will be checked as well)
@@ -153,6 +153,25 @@ namespace dustbin {
 
       for (auto l_pChild: a_pNode->getChildren()) {
         irr::scene::ISceneNode *p = findNodeByNameAndType(a_sName, a_eType, l_pChild);
+        if (p != nullptr)
+          return p;
+      }
+
+      return nullptr;
+    }
+
+    /**
+    * Find a scene node by it's type
+    * @param a_eType the type of the requested node
+    * @param a_pNode the node to check (all children will be checked as well)
+    * @return the scene node if found, "nullptr" if no match was found
+    */
+    irr::scene::ISceneNode *findNodeByType(irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pNode) {
+      if (a_eType == a_pNode->getType())
+        return a_pNode;
+
+      for (auto l_pChild: a_pNode->getChildren()) {
+        irr::scene::ISceneNode *p = findNodeByType(a_eType, l_pChild);
         if (p != nullptr)
           return p;
       }

@@ -199,8 +199,9 @@ namespace dustbin {
       m_pGui->getSkin()->setSize (irr::gui::EGDS_MESSAGE_BOX_WIDTH  , l_iFontHeight);
       m_pGui->getSkin()->setSize (irr::gui::EGDS_MESSAGE_BOX_HEIGHT , l_iFontHeight);
 
-      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_FACE, irr::video::SColor(255, 255, 255, 255));
-
+      m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_FACE      , irr::video::SColor(255, 255, 255, 255));
+		  m_pGui->getSkin()->setColor(irr::gui::EGDC_3D_HIGH_LIGHT, irr::video::SColor(255, 224, 224, 224));
+		  
       for (auto l_pCmd: m_vCommands) {
         l_pCmd->onUiSetupModified();
       }

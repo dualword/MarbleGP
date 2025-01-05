@@ -58,13 +58,21 @@ namespace dustbin {
     irr::scene::ISceneNode *findNodeByName(const std::string &a_sName, irr::scene::ISceneNode *a_pNode);
 
     /**
-    * Find a scene node by it's name
+    * Find a scene node by it's name and type
     * @param a_sName the name to search for
     * @param a_eType the type of the requested node
     * @param a_pNode the node to check (all children will be checked as well)
     * @return the scene node if found, "nullptr" if no match was found
     */
     irr::scene::ISceneNode *findNodeByNameAndType(const std::string &a_sName, irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pNode);
+
+    /**
+    * Find a scene node by it's type
+    * @param a_eType the type of the requested node
+    * @param a_pNode the node to check (all children will be checked as well)
+    * @return the scene node if found, "nullptr" if no match was found
+    */
+    irr::scene::ISceneNode *findNodeByType(irr::scene::ESCENE_NODE_TYPE a_eType, irr::scene::ISceneNode *a_pNode);
 
     /**
     * Draw a plane for debugging purposes

@@ -202,6 +202,11 @@ namespace dustbin {
         std::wstring l_sText = getButtonText((enMenuItem)i);
 
         if (l_sText != L"--") {
+          if (l_cBtnPos.X + l_cBtnSize.Width >= l_cScreen.Width) {
+            l_cBtnPos.X = 0;
+            l_cBtnPos.Y += 5 * l_cBtnSize.Height / 4;
+          }
+
           irr::gui::IGUIButton *l_pBtn = m_pGui->addButton(
             irr::core::recti(l_cBtnPos, l_cBtnSize),
             m_pGui->getRootGUIElement(),
@@ -216,11 +221,6 @@ namespace dustbin {
 
         if (l_sText == L"--")
           l_cBtnPos.X += 2 * l_iSpace;
-
-        if (l_cBtnPos.X + l_cBtnSize.Width >= l_cScreen.Width) {
-          l_cBtnPos.X = 0;
-          l_cBtnPos.Y += 5 * l_cBtnSize.Height / 4;
-        }
       }
 
       irr::core::dimension2du l_cSize = m_pGui->getSkin()->getFont()->getDimension(L"Edit Mode: This Text is longer than needed.");

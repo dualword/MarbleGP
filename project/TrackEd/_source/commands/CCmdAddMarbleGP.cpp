@@ -383,8 +383,11 @@ namespace dustbin {
     void CCmdAddMarbleGP::adjustDecorationNode(irr::scene::ISceneNode *a_pNode) {
       // A vector to store the textures which are to be assigned after copying the files
       std::vector<std::tuple<irr::u32, std::string, std::string>> l_vTextures;
+      std::map<irr::u32, irr::video::E_MATERIAL_TYPE> l_mTypes;
 
       for (irr::u32 i = 0; i < a_pNode->getMaterialCount(); i++) {
+        l_mTypes[i] = a_pNode->getMaterial(i).MaterialType;
+
         irr::io::IAttributes *l_pAttr = m_pDrv->createAttributesFromMaterial(a_pNode->getMaterial(i));
 
         for (irr::u32 j = 0; j < l_pAttr->getAttributeCount(); j++) { 
@@ -444,7 +447,7 @@ namespace dustbin {
         l_pAttr->drop();
       }
 
-      for (auto l_tTexture: l_vTextures) {
+      for (auto &l_tTexture: l_vTextures) {
         irr::io::IAttributes *l_pAttr = m_pDrv->createAttributesFromMaterial(a_pNode->getMaterial(std::get<0>(l_tTexture)));
         printf("Set %s of material %i to %s\n", std::get<1>(l_tTexture).c_str(), std::get<0>(l_tTexture), std::get<2>(l_tTexture).c_str());
         irr::video::ITexture *l_pTexture = m_pDrv->getTexture(std::get<2>(l_tTexture).c_str());
@@ -453,7 +456,11 @@ namespace dustbin {
         m_pDrv->fillMaterialStructureFromAttributes(a_pNode->getMaterial(std::get<0>(l_tTexture)), l_pAttr);
       }
 
-      for (auto l_pChild : a_pNode->getChildren())
+      for (auto l_tType: l_mTypes) {
+        a_pNode->getMaterial(l_tType.first).MaterialType = l_tType.second;
+      }
+
+      for (auto &l_pChild : a_pNode->getChildren())
         adjustDecorationNode(l_pChild);
     }
 

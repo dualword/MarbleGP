@@ -345,6 +345,9 @@ namespace dustbin {
 
               for (irr::u32 i = 0; i < l_cAttributes.size(); i++) {
                 l_pCombo->addItem(helpers::s2ws(l_cAttributes[i].c_str()).c_str(), i);
+
+                if (l_sSelected == l_cAttributes[i].c_str())
+                  l_pCombo->setSelected(i);
               }
 
               l_pEdit = l_pCombo;
@@ -970,6 +973,7 @@ namespace dustbin {
 
                 updateMaterialTab();
                 updateAnimatorTab();
+                helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
               }
             }
             l_bRet = true;
@@ -996,6 +1000,7 @@ namespace dustbin {
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {
           if (a_cEvent.GUIEvent.Caller == m_pMaterial) {
             updateMaterialTab();
+            helpers::postUserEvent(c_iUpdateShader, c_iUpdateShader);
             l_bRet = true;
           }
           else if (a_cEvent.GUIEvent.Caller == m_pAnimator) {
