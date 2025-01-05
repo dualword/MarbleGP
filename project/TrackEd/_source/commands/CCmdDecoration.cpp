@@ -6,6 +6,7 @@
 #include <helpers/CTrackEdHelpers.h>
 #include <editor/CPartTranslator.h>
 #include <helpers/CStringHelpers.h>
+#include <helpers/CInputLimiter.h>
 #include <CDefines.h>
 #include <IGlobal.h>
 #include <algorithm>
@@ -242,7 +243,7 @@ namespace dustbin {
 
       std::sort(l_vList.begin(), l_vList.end());
 
-      for (auto l_sType: l_vList) {
+      for (auto &l_sType: l_vList) {
         m_pAnimType->addItem(helpers::s2ws(l_sType).c_str());
       }
 
@@ -895,7 +896,7 @@ namespace dustbin {
               if (std::get<2>(l_tAttribute) == a_cEvent.GUIEvent.Caller) {
                 for (auto l_itLimiter = m_vLimiters.begin(); l_itLimiter != m_vLimiters.end(); l_itLimiter++) {
                   if ((*l_itLimiter)->getElement() == a_cEvent.GUIEvent.Caller) {
-                    CInputLimiter *p = *l_itLimiter;
+                    helpers::CInputLimiter *p = *l_itLimiter;
                     m_vLimiters.erase(l_itLimiter);
                     delete p;
                     break;
@@ -920,7 +921,7 @@ namespace dustbin {
                 }
 
                 if (l_bLimit)
-                  m_vLimiters.push_back(new CInputLimiter(a_cEvent.GUIEvent.Caller, std::get<3>(l_tAttribute)));
+                  m_vLimiters.push_back(new helpers::CInputLimiter(a_cEvent.GUIEvent.Caller, std::get<3>(l_tAttribute)));
 
                 printf("Focus gained (%i)\n", (int)m_vLimiters.size());
                 break;
@@ -1180,75 +1181,6 @@ namespace dustbin {
       }
 
       return l_bRet;
-    }
-
-
-
-
-
-    CCmdDecoration::CInputLimiter::CInputLimiter(irr::gui::IGUIElement *a_pElement, irr::io::E_ATTRIBUTE_TYPE a_eType) : m_pElement(a_pElement) {
-      switch (a_eType) {
-	      case irr::io::EAT_INT         : m_sLimited = L"+-0123456789" ; break; 
-	      case irr::io::EAT_FLOAT       : m_sLimited = L"+-0123456789."; break; 
-        case irr::io::EAT_STRING      : break;
-	      case irr::io::EAT_BOOL        : break;
-	      case irr::io::EAT_COLOR       : m_sLimited = L"+-0123456789," ; break;
-	      case irr::io::EAT_COLORF      : m_sLimited = L"+-0123456789.,"; break;
-	      case irr::io::EAT_VECTOR3D    : m_sLimited = L"+-0123456789.,"; break;
-	      case irr::io::EAT_POSITION2D  : m_sLimited = L"+-0123456789," ; break;
-	      case irr::io::EAT_VECTOR2D    : m_sLimited = L"+-0123456789.,"; break;
-	      case irr::io::EAT_RECT        : break;
-	      case irr::io::EAT_MATRIX      : break;
-	      case irr::io::EAT_QUATERNION  : break;
-	      case irr::io::EAT_BBOX        : break;
-	      case irr::io::EAT_PLANE       : break;
-	      case irr::io::EAT_TRIANGLE3D  : break;
-	      case irr::io::EAT_LINE2D      : break;
-	      case irr::io::EAT_LINE3D      : break;
-	      case irr::io::EAT_STRINGWARRAY: break;
-	      case irr::io::EAT_FLOATARRAY  : break;
-	      case irr::io::EAT_INTARRAY    : break;
-	      case irr::io::EAT_BINARY      : break;
-	      case irr::io::EAT_TEXTURE     : break;
-	      case irr::io::EAT_USER_POINTER: break;
-        case irr::io::EAT_DIMENSION2D : m_sLimited = L"+-0123456789,"; break;
-      }
-
-      m_vValid.push_back(irr::KEY_RETURN);
-      m_vValid.push_back(irr::KEY_ESCAPE);
-      m_vValid.push_back(irr::KEY_RIGHT);
-      m_vValid.push_back(irr::KEY_LEFT);
-      m_vValid.push_back(irr::KEY_DOWN);
-      m_vValid.push_back(irr::KEY_UP);
-      m_vValid.push_back(irr::KEY_END);
-      m_vValid.push_back(irr::KEY_BACK);
-      m_vValid.push_back(irr::KEY_HOME);
-      m_vValid.push_back(irr::KEY_SHIFT);
-      m_vValid.push_back(irr::KEY_DELETE);
-    }
-
-    CCmdDecoration::CInputLimiter::~CInputLimiter() {
-    }
-
-    bool CCmdDecoration::CInputLimiter::consumeEvent(const irr::SEvent &a_cEvent) {
-      if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
-        // Don't consume keys which are never invalid
-        if (std::find(m_vValid.begin(), m_vValid.end(), a_cEvent.KeyInput.Key) != m_vValid.end())
-          return false;
-
-        if (a_cEvent.KeyInput.Control && a_cEvent.KeyInput.Key == irr::KEY_KEY_A)
-          return false;
-
-        // Only chars not found in the string are valid, i.e. not consumed
-        if (m_sLimited.find_first_of(a_cEvent.KeyInput.Char) == std::string::npos)
-          return true;
-      }
-
-      return false;
-    }
-
-    irr::gui::IGUIElement *CCmdDecoration::CInputLimiter::getElement() {
-      return m_pElement;
     }
   }
 }

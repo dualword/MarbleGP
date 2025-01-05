@@ -268,6 +268,9 @@
     <ClCompile Include="..\_source\editor\CPartTranslator.cpp">
       <Filter>Source\editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\_source\helpers\CInputLimiter.cpp">
+      <Filter>Source\helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\platform\CPlatform.h">
@@ -479,6 +482,9 @@
     </ClInclude>
     <ClInclude Include="..\_include\editor\CPartTranslator.h">
       <Filter>Include\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\_include\helpers\CInputLimiter.h">
+      <Filter>Include\helpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

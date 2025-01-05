@@ -88,6 +88,7 @@
     <ClCompile Include="..\_source\editor\CTrackPart_Ramp.cpp" />
     <ClCompile Include="..\_source\editor\ITrackPart.cpp" />
     <ClCompile Include="..\_source\gui\CGuiScrollContainer.cpp" />
+    <ClCompile Include="..\_source\helpers\CInputLimiter.cpp" />
     <ClCompile Include="..\_source\helpers\CTrackEdHelpers.cpp" />
     <ClCompile Include="..\_source\IGlobal.cpp" />
     <ClCompile Include="..\_source\platform\CTrackEdPlatformWindows.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="..\_include\editor\CTrackPart_Ramp.h" />
     <ClInclude Include="..\_include\editor\ITrackPart.h" />
     <ClInclude Include="..\_include\gui\CGuiScrollContainer.h" />
+    <ClInclude Include="..\_include\helpers\CInputLimiter.h" />
     <ClInclude Include="..\_include\helpers\CTrackEdHelpers.h" />
     <ClInclude Include="..\_include\IGlobal.h" />
     <ClInclude Include="..\_include\CTrackEd_MainClass.h" />

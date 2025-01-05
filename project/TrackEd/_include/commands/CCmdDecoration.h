@@ -11,6 +11,10 @@ namespace dustbin {
     class CPartTranslator;    /**< Forward declaration of the part translator */
   }
 
+  namespace helpers {
+    class CInputLimiter;    /**< Forward declaration of the text input limiter */
+  }
+
   namespace commands {
     /**
     * @class CCmdDecoration
@@ -20,29 +24,6 @@ namespace dustbin {
     */
     class CCmdDecoration : public ICommand {
       private:
-        /**
-        * @class CInputLimiter
-        * @author Christian Keimel
-        * This is a helper class which consumes key events
-        * for keys which cannot be entered to an input field
-        */
-        class CInputLimiter {
-          private:
-            std::wstring m_sLimited;    /**< Some defined valid values */
-
-            std::vector<irr::EKEY_CODE> m_vValid;   /**< Some default values which are never consumed */
-
-            irr::gui::IGUIElement *m_pElement;    /**< The GUI element we limit the input for */
-
-          public:
-            CInputLimiter(irr::gui::IGUIElement *a_pElement, irr::io::E_ATTRIBUTE_TYPE a_eType);
-            virtual ~CInputLimiter();
-
-            bool consumeEvent(const irr::SEvent &a_cEvent);
-
-            irr::gui::IGUIElement *getElement();
-        };
-
         bool m_bFinished;   /**< Is the command finished? */
 
         irr::scene::ISceneManager  *m_pSmgr;            /**< The scene manager */
@@ -66,7 +47,7 @@ namespace dustbin {
 
         tracked::CPartTranslator *m_pTranslator;    /**< The part translator */
 
-        std::vector<CInputLimiter *> m_vLimiters;     /**< The input limiters */
+        std::vector<helpers::CInputLimiter *> m_vLimiters;     /**< The input limiters */
 
         std::map<irr::gui::IGUITreeViewNode *, irr::scene::ISceneNode *> m_mNodeMap;  /**< Map mapping tree view nodes to scene nodes */
 
