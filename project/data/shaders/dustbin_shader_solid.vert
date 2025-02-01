@@ -13,6 +13,13 @@ varying vec3 vNormal;     // The normal of the vertex
 varying vec4 vShadowPos;  // The position in the shadow map
 varying vec4 vWorldPos;   // The world position
 
+mat3 mat3_emu(mat4 m4) {
+  return mat3(
+      m4[0][0], m4[0][1], m4[0][2],
+      m4[1][0], m4[1][1], m4[1][2],
+      m4[2][0], m4[2][1], m4[2][2]);
+}
+
 void main() 
 {
   gl_Position = mWorldViewProj * gl_Vertex;
@@ -22,7 +29,7 @@ void main()
   vWorldPos  = gl_Vertex;
   
   // Calculate the normal
-  vNormal = mat3(mWorld) * gl_Normal;
+  vNormal = mat3_emu(mWorld) * gl_Normal;
   // gl_Normal = vNormal;
 
   // Update the texture coordinates
