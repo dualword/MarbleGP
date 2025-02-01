@@ -1,5 +1,11 @@
 <ul>
   <li class="parent">
+    <b>2025-02-01 [1.3 Build 262]</b>
+    <ul>
+      <li>This new version fixed a problem which prevented the shaders from being compiled for AMD gfx cards (I hope)</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2024-11-15 [1.3 Build 261]</b>
     <ul>
       <li>Fixed network game option</li>
