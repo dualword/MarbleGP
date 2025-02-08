@@ -93,6 +93,13 @@ namespace dustbin {
 
       std::vector<data::SPlayerData> m_vProfiles;   /**< The player profiles */
 
+      std::vector<std::string> m_vTrackPackTracks;  /**< The tracks loaded from track packs */
+ 
+      /**
+      * Load all available track packs
+      */
+      void loadTrackPacks();
+
 #ifdef _DEBUG 
 
       bool m_bBtnDown;
@@ -415,6 +422,12 @@ namespace dustbin {
       * This method is called when a progress update needs to be reported
       */
       virtual void onProgress() override;
+
+      /**
+      * Get a list of tracks loaded from trackpacks
+      * @return a list of tracks loaded from trackpacks
+      */
+      virtual const std::vector<std::string> getTrackPackTracks() const override;
 
 #ifdef _ANDROID
       /**

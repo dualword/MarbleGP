@@ -349,6 +349,12 @@ namespace dustbin {
       */
       virtual void saveProfiles() = 0;
 
+      /**
+      * Get a list of tracks loaded from trackpacks
+      * @return a list of tracks loaded from trackpacks
+      */
+      virtual const std::vector<std::string> getTrackPackTracks() const = 0;
+
 #ifdef _ANDROID
       /**
       * Get a pointer to the Android app

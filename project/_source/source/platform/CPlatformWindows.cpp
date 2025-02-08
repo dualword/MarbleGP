@@ -54,6 +54,18 @@ namespace dustbin {
       return l_sPath;
     }
 
+    const std::wstring portableGetTrackPackPath() {
+      TCHAR l_sPath     [MAX_PATH],
+            l_sLevelPath[MAX_PATH];
+
+      if (SUCCEEDED(SHGetFolderPath( NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
+        PathAppend(l_sPath, L"\\DustbinGames\\MarbleGP\\TrackPack\\");
+        std::filesystem::create_directories(l_sPath);
+      }
+
+      return l_sPath;
+    }
+
     const std::wstring portableGetDataPath() {
       TCHAR l_sPath       [MAX_PATH],
             l_sDataPath   [MAX_PATH],

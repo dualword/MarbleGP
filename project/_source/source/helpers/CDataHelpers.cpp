@@ -217,6 +217,17 @@ namespace dustbin {
 
       l_pFs->changeWorkingDirectoryTo(l_sWorkingDir);
 
+      std::vector<std::string> l_vTrackPackTracks = CGlobal::getInstance()->getTrackPackTracks();
+
+      for (auto &l_sTrack: l_vTrackPackTracks) {
+        std::string l_sInfoXML = "data/levels/" + l_sTrack + "/info.xml";
+        if (l_pFs->existFile(l_sInfoXML.c_str())) {
+          std::tuple<std::string, int> l_tInfo = readTrackInfoXML(l_sInfoXML, l_pFs);
+          if (std::get<0>(l_tInfo) != "")
+            l_mResult[l_sTrack] = l_tInfo;
+        }
+      }
+
       return l_mResult;
     }
 

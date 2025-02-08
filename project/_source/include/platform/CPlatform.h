@@ -18,8 +18,9 @@ namespace dustbin {
     void consumeBackEvent(bool a_bConsume);
 #endif
 
-    const std::wstring portableGetDataPath   ();
-    const std::wstring portableGetTexturePath();
-    const std::wstring portableGetTrackEdPath();
+    const std::wstring portableGetDataPath     ();
+    const std::wstring portableGetTexturePath  ();
+    const std::wstring portableGetTrackEdPath  ();
+    const std::wstring portableGetTrackPackPath();
   }
 }
