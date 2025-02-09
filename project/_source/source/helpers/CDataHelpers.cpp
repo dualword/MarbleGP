@@ -3,6 +3,7 @@
 #include <messages/CMessageHelpers.h>
 #include <helpers/CTextureHelpers.h>
 #include <shaders/CDustbinShaders.h>
+#include <data/CTrackPackManager.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
@@ -217,20 +218,22 @@ namespace dustbin {
 
       l_pFs->changeWorkingDirectoryTo(l_sWorkingDir);
 
-      std::vector<std::string> l_vTrackPackTracks = CGlobal::getInstance()->getTrackPackTracks();
 
-      for (auto &l_sTrack: l_vTrackPackTracks) {
-        std::string l_sInfoXML = "data/levels/" + l_sTrack + "/info.xml";
-        if (l_pFs->existFile(l_sInfoXML.c_str())) {
-          std::tuple<std::string, int> l_tInfo = readTrackInfoXML(l_sInfoXML, l_pFs);
-          if (std::get<0>(l_tInfo) != "")
-            l_mResult[l_sTrack] = l_tInfo;
+      data::CTrackPackManager *l_pTrackPackMgr = CGlobal::getInstance()->getTrackPackManager();
+
+      if (l_pTrackPackMgr != nullptr) {
+        for (auto &l_tTrack : l_pTrackPackMgr->getTracks()) {
+          std::string l_sInfoXML = "data/levels/" + std::get<1>(l_tTrack) + "/info.xml";
+          if (l_pFs->existFile(l_sInfoXML.c_str())) {
+            std::tuple<std::string, int> l_tInfo = readTrackInfoXML(l_sInfoXML, l_pFs);
+            if (std::get<0>(l_tInfo) != "")
+              l_mResult[std::get<1>(l_tTrack)] = l_tInfo;
+          }
         }
       }
 
       return l_mResult;
     }
-
 
     /**
     * Get the possible AI help options

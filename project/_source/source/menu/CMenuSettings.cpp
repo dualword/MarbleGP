@@ -2,6 +2,7 @@
 #include <controller/CControllerMenu.h>
 #include <gui/CControllerUi_Menu.h>
 #include <helpers/CStringHelpers.h>
+#include <data/CTrackPackManager.h>
 #include <sound/ISoundInterface.h>
 #include <gui/CDustbinCheckbox.h>
 #include <helpers/CDataHelpers.h>
@@ -36,7 +37,13 @@ namespace dustbin {
         gui::CMenuBackground    *m_pSfx;
         gui::CMenuBackground    *m_pMisc;
         gui::CMenuBackground    *m_pLog;
+        gui::CMenuBackground    *m_pTrack;
+        gui::CMenuBackground    *m_pPack;
         gui::CControllerUi_Menu *m_pController;
+
+        data::CTrackPackManager *m_pTrackPackMgr;
+
+        irr::gui::IGUIListBox *m_pTrackPacks;
 
         std::map<std::string, bool[4]> m_mPageVisibility;
 
@@ -85,6 +92,16 @@ namespace dustbin {
 
         void updateCheckboxUI(bool a_bSetting, gui::CDustbinCheckbox* a_pCheckbox) { if (a_pCheckbox != nullptr) a_pCheckbox->setChecked(a_bSetting); else printf("Checkbox is null.\n"); }
 
+        void updateTrackPackList() {
+          if (m_pTrackPacks != nullptr && m_pTrackPackMgr != nullptr) {
+            m_pTrackPacks->clear();
+
+            for (irr::u32 i = 0; i < m_pTrackPackMgr->getTrackPackCount(); i++) {
+              m_pTrackPacks->addItem(helpers::s2ws(m_pTrackPackMgr->getTrackPackName(i)).c_str());
+            }
+          }
+        }
+
         void updateSplitscreenUI() {
           int l_iIndex = 0;
 
@@ -132,11 +149,13 @@ namespace dustbin {
 
       public:
         CMenuSettings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
-          IMenuHandler(a_pDevice, a_pManager, a_pState),
-          m_pResolution (nullptr),
-          m_pSplitScreen(nullptr),
-          m_pController (nullptr),
-          m_iSplitIdx   (-1)
+          IMenuHandler   (a_pDevice, a_pManager, a_pState),
+          m_pResolution  (nullptr),
+          m_pSplitScreen (nullptr),
+          m_pController  (nullptr),
+          m_pTrackPackMgr(nullptr),
+          m_pTrackPacks  (nullptr),
+          m_iSplitIdx    (-1)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -149,16 +168,24 @@ namespace dustbin {
           m_pResolution  = reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23010, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
           m_pSplitScreen = reinterpret_cast<gui::CSelector *>(helpers::findElementByIdAndType(23042, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_SelectorId, m_pGui->getRootGUIElement()));
 
-          m_pGfxG = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23050, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pGfxM = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23051, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pSfx  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23052, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pMisc = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23053, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
-          m_pLog  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(24001, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pTrackPacks   = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_list", irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+          m_pTrackPackMgr = CGlobal::getInstance()->getTrackPackManager();
 
-          m_mHeadLines["gfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("headline_gfx" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["sfx" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("sfx_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["misc"] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("misc_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-          m_mHeadLines["log" ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("log_headline" , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          updateTrackPackList();
+
+          m_pGfxG  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23050, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pGfxM  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23051, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pSfx   = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23052, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pMisc  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(23053, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pLog   = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(24001, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pTrack = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(25000, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+          m_pPack  = reinterpret_cast<gui::CMenuBackground *>(helpers::findElementByIdAndType(25001, (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuBackgroundId, m_pGui->getRootGUIElement()));
+
+          m_mHeadLines["gfx"       ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("headline_gfx"      , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["sfx"       ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("sfx_headline"      , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["misc"      ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("misc_headline"     , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["log"       ] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("log_headline"      , irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+          m_mHeadLines["trackpacks"] = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("trackpack_headline", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
 
           std::string l_sCtrl = m_cSettings.m_sController;
 
@@ -258,11 +285,13 @@ namespace dustbin {
 
             if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
               if (l_sSender == "gfx") {
-                if (m_pGfxG != nullptr) m_pGfxG->setVisible(true);
-                if (m_pGfxM != nullptr) m_pGfxM->setVisible(true);
-                if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
-                if (m_pMisc != nullptr) m_pMisc->setVisible(false);
-                if (m_pLog  != nullptr) m_pLog ->setVisible(false);
+                if (m_pGfxG  != nullptr) m_pGfxG ->setVisible(true);
+                if (m_pGfxM  != nullptr) m_pGfxM ->setVisible(true);
+                if (m_pSfx   != nullptr) m_pSfx  ->setVisible(false);
+                if (m_pMisc  != nullptr) m_pMisc ->setVisible(false);
+                if (m_pLog   != nullptr) m_pLog  ->setVisible(false);
+                if (m_pTrack != nullptr) m_pTrack->setVisible(false);
+                if (m_pPack  != nullptr) m_pPack ->setVisible(false);
 
                 l_bRet = true;
 
@@ -271,11 +300,13 @@ namespace dustbin {
                     it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "sfx") {
-                if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
-                if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
-                if (m_pSfx  != nullptr) m_pSfx ->setVisible(true);
-                if (m_pMisc != nullptr) m_pMisc->setVisible(false);
-                if (m_pLog  != nullptr) m_pLog ->setVisible(false);
+                if (m_pGfxG  != nullptr) m_pGfxG ->setVisible(false);
+                if (m_pGfxM  != nullptr) m_pGfxM ->setVisible(false);
+                if (m_pSfx   != nullptr) m_pSfx  ->setVisible(true);
+                if (m_pMisc  != nullptr) m_pMisc ->setVisible(false);
+                if (m_pLog   != nullptr) m_pLog  ->setVisible(false);
+                if (m_pTrack != nullptr) m_pTrack->setVisible(false);
+                if (m_pPack  != nullptr) m_pPack ->setVisible(false);
 
                 l_bRet = true;
 
@@ -284,11 +315,13 @@ namespace dustbin {
                     it->second->setVisible(l_sSender == it->first);
               }
               else if (l_sSender == "misc") {
-                if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
-                if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
-                if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
-                if (m_pMisc != nullptr) m_pMisc->setVisible(true);
-                if (m_pLog  != nullptr) m_pLog ->setVisible(false);
+                if (m_pGfxG  != nullptr) m_pGfxG ->setVisible(false);
+                if (m_pGfxM  != nullptr) m_pGfxM ->setVisible(false);
+                if (m_pSfx   != nullptr) m_pSfx  ->setVisible(false);
+                if (m_pMisc  != nullptr) m_pMisc ->setVisible(true);
+                if (m_pLog   != nullptr) m_pLog  ->setVisible(false);
+                if (m_pTrack != nullptr) m_pTrack->setVisible(false);
+                if (m_pPack  != nullptr) m_pPack ->setVisible(false);
 
                 l_bRet = true;
                 
@@ -296,12 +329,29 @@ namespace dustbin {
                   if (it->second != nullptr)
                     it->second->setVisible(l_sSender == it->first);
               }
+              else if (l_sSender == "trackpacks") {
+                if (m_pGfxG  != nullptr) m_pGfxG ->setVisible(false);
+                if (m_pGfxM  != nullptr) m_pGfxM ->setVisible(false);
+                if (m_pSfx   != nullptr) m_pSfx  ->setVisible(false);
+                if (m_pMisc  != nullptr) m_pMisc ->setVisible(false);
+                if (m_pLog   != nullptr) m_pLog  ->setVisible(false);
+                if (m_pTrack != nullptr) m_pTrack->setVisible(true);
+                if (m_pPack  != nullptr) m_pPack ->setVisible(true);
+
+                l_bRet = true;
+
+                for (std::map<std::string, irr::gui::IGUIStaticText *>::iterator it = m_mHeadLines.begin(); it != m_mHeadLines.end(); it++)
+                  if (it->second != nullptr)
+                    it->second->setVisible(l_sSender == it->first);
+              }
               else if (l_sSender == "log") {
-                if (m_pGfxG != nullptr) m_pGfxG->setVisible(false);
-                if (m_pGfxM != nullptr) m_pGfxM->setVisible(false);
-                if (m_pSfx  != nullptr) m_pSfx ->setVisible(false);
-                if (m_pMisc != nullptr) m_pMisc->setVisible(false);
-                if (m_pLog  != nullptr) m_pLog ->setVisible(true);
+                if (m_pGfxG  != nullptr) m_pGfxG ->setVisible(false);
+                if (m_pGfxM  != nullptr) m_pGfxM ->setVisible(false);
+                if (m_pSfx   != nullptr) m_pSfx  ->setVisible(false);
+                if (m_pMisc  != nullptr) m_pMisc ->setVisible(false);
+                if (m_pLog   != nullptr) m_pLog  ->setVisible(true);
+                if (m_pTrack != nullptr) m_pTrack->setVisible(false);
+                if (m_pPack  != nullptr) m_pPack ->setVisible(false);
 
                 l_bRet = true;
 
@@ -354,6 +404,40 @@ namespace dustbin {
                 printf("Auto-detect GFX Settings...\n");
                 m_pManager->pushToMenuStack("menu_settings");
                 createMenu("menu_detectgfx", m_pDevice, m_pManager, m_pState);
+              }
+              else if (l_sSender == "trackpack_remove") {
+                irr::gui::IGUIListBox *l_pPacks = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_list", irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+                if (l_pPacks != nullptr && l_pPacks->getSelected() >= 0) {
+                  std::string l_sToRemove = helpers::ws2s(l_pPacks->getListItem(l_pPacks->getSelected()));
+                  printf("Remove track pack \"%s\"\n", l_sToRemove.c_str());
+
+                  irr::gui::IGUIStaticText *l_pLabel  = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("confirmDialog_text", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                  irr::gui::IGUITab        *l_pDialog = reinterpret_cast<irr::gui::IGUITab        *>(helpers::findElementByNameAndType("confirmDialog"     , irr::gui::EGUIET_TAB        , m_pGui->getRootGUIElement()));
+
+                  if (l_pLabel != nullptr && l_pDialog != nullptr) {
+                    std::wstring l_sMessage = L"Do you want to delete the TrackPack \"" + helpers::s2ws(l_sToRemove) + L"\"? This cannot be undone.";
+                    l_pLabel->setText(l_sMessage.c_str());
+                    l_pDialog->setVisible(true);
+                  }
+                }
+              }
+              else if (l_sSender == "MenuBtn_No") {
+                irr::gui::IGUITab *l_pDialog = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("confirmDialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                if (l_pDialog != nullptr)
+                  l_pDialog->setVisible(false);
+              }
+              else if (l_sSender == "MenuBtn_Yes") {
+                irr::gui::IGUITab *l_pDialog = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("confirmDialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                if (l_pDialog != nullptr)
+                  l_pDialog->setVisible(false);
+
+                irr::gui::IGUIListBox *l_pPacks = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_list", irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+                if (l_pPacks != nullptr && l_pPacks->getSelected() >= 0 && m_pTrackPackMgr != nullptr) {
+                  std::string l_sToRemove = helpers::ws2s(l_pPacks->getListItem(l_pPacks->getSelected()));
+                  printf("Remove track pack \"%s\"\n", l_sToRemove.c_str());
+                  m_pTrackPackMgr->deleteTrackPack(l_sToRemove);
+                  updateTrackPackList();
+                }
               }
               else printf("Button clicked (%s, %i, CMenuSettings).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
             }
@@ -444,6 +528,32 @@ namespace dustbin {
               }
               else if (a_cEvent.GUIEvent.Caller->getID() == 23093) {
                 m_cSettings.m_bNoPlayerRace = reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked();
+              }
+            }
+            else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_CHANGED) {
+              if (l_sSender == "trackpack_list" && m_pTrackPackMgr != nullptr) {
+                irr::gui::IGUIListBox *l_pList   = reinterpret_cast<irr::gui::IGUIListBox *>(a_cEvent.GUIEvent.Caller);
+                irr::gui::IGUIListBox *l_pTracks = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_tracklist", irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+
+                irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("trackpack_name", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+                if (l_pList != nullptr && l_pTracks != nullptr && l_pLabel != nullptr && l_pList->getSelected() != -1) {
+                  irr::u32 l_iSelected = (irr::u32)l_pList->getSelected();
+                  l_pTracks->clear();
+
+                  data::CTrackPack *l_pPack = m_pTrackPackMgr->getTrackPack(l_iSelected);
+                  if (l_pPack != nullptr) {
+                    l_pLabel->setText(helpers::s2ws(l_pPack->getName()).c_str());
+
+                    for (irr::u32 i = 0; i < l_pPack->getTrackCount(); i++) {
+                      l_pTracks->addItem(helpers::s2ws(l_pPack->getTrackName(i)).c_str());
+                    }
+                  }
+                  else l_pLabel->setText(L"--");
+                }
+                else 
+                  if (l_pLabel != nullptr)
+                    l_pLabel->setText(L"--");
               }
             }
           }

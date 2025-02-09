@@ -47,6 +47,10 @@ namespace dustbin {
     typedef struct STournament STournament;   /**< Forward declaration of the STournament struct */
   };
 
+  namespace data {
+    class CTrackPackManager;  /**< Forward declaration of the track pack manager */
+  }
+
   // Enum for the font size. The actual size
   // depends on the screen resolution
   enum class enFont {
@@ -350,10 +354,10 @@ namespace dustbin {
       virtual void saveProfiles() = 0;
 
       /**
-      * Get a list of tracks loaded from trackpacks
-      * @return a list of tracks loaded from trackpacks
+      * Get the instance of the track pack manager
+      * @return the instance of the track pack manager
       */
-      virtual const std::vector<std::string> getTrackPackTracks() const = 0;
+      virtual data::CTrackPackManager *getTrackPackManager() = 0;
 
 #ifdef _ANDROID
       /**

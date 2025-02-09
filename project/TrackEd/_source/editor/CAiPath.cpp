@@ -89,7 +89,7 @@ namespace dustbin {
 
           for (; l_fVel < 150.0f; l_fVel += 5.0f) {
             irr::core::vector3df l_cPos = 50.0f * m_vPath[i].m_cPosition + irr::core::vector3df(0.0f, 1.0f, 0.0f);
-            irr::core::vector3df l_cDir = l_fVel * (m_vPath[i].m_cPosition - m_vPath[i - 1].m_cPosition).normalize();
+            irr::core::vector3df l_cDir = l_fVel * (m_vPath[i].m_cPosition - m_vPath[i - 1].m_cPosition + irr::core::vector3df(0.0f, 0.1f, 0.0f)).normalize();
 
             irr::core::vector3df l_cOld;
 

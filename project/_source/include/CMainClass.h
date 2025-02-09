@@ -93,12 +93,7 @@ namespace dustbin {
 
       std::vector<data::SPlayerData> m_vProfiles;   /**< The player profiles */
 
-      std::vector<std::string> m_vTrackPackTracks;  /**< The tracks loaded from track packs */
- 
-      /**
-      * Load all available track packs
-      */
-      void loadTrackPacks();
+      data::CTrackPackManager *m_pTrackPackMgr;   /**< The track pack manager */
 
 #ifdef _DEBUG 
 
@@ -424,10 +419,11 @@ namespace dustbin {
       virtual void onProgress() override;
 
       /**
-      * Get a list of tracks loaded from trackpacks
-      * @return a list of tracks loaded from trackpacks
+      * Get the instance of the track pack manager
+      * @return the instance of the track pack manager
       */
-      virtual const std::vector<std::string> getTrackPackTracks() const override;
+      virtual data::CTrackPackManager *getTrackPackManager() override;
+
 
 #ifdef _ANDROID
       /**

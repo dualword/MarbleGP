@@ -11,6 +11,7 @@
 #include <shaders/CDustbinShaders.h>
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
+#include <data/CTrackPackManager.h>
 #include <sound/ISoundInterface.h>
 #include <helpers/CDataHelpers.h>
 #include <gui/CVirtualKeyboard.h>
@@ -155,7 +156,8 @@ namespace dustbin {
     m_sDeviceName     (""),
     m_pKeyBoard       (nullptr),
     m_pTournament     (nullptr),
-    m_pFontMgr        (nullptr)
+    m_pFontMgr        (nullptr),
+    m_pTrackPackMgr   (nullptr)
 #ifdef _ANDROID
     ,m_pAndroidApp     (a_pApp)
 #endif
@@ -340,7 +342,7 @@ namespace dustbin {
       printf("TrackEd folder added.\n");
     }
 
-    loadTrackPacks();
+    m_pTrackPackMgr = new data::CTrackPackManager(m_pFs);
 
     m_pDevice->getTimer()->start();
 
@@ -1417,6 +1419,14 @@ namespace dustbin {
   }
 
   /**
+  * Get the instance of the track pack manager
+  * @return the instance of the track pack manager
+  */
+  data::CTrackPackManager *CMainClass::getTrackPackManager() {
+    return m_pTrackPackMgr;
+  }
+
+  /**
   * This method is called when a progress update needs to be reported
   * @param a_iProgress the progress ranging from 0 to 100
   * @param a_sMessage the message
@@ -1426,111 +1436,6 @@ namespace dustbin {
     m_pDrv->beginScene(true, true);
     drawNextRaceScreen(1.0f);
     m_pDrv->endScene();
-  }
-
-  /**
-  * Load all available track packs
-  */
-  void CMainClass::loadTrackPacks() {
-    irr::io::path l_sCurrentDir = m_pFs->getWorkingDirectory();
-
-    std::string l_sPath = helpers::ws2s(platform::portableGetTrackPackPath());
-
-    m_pFs->changeWorkingDirectoryTo(l_sPath.c_str());
-    irr::io::IFileList *l_pFiles = m_pFs->createFileList();
-    m_pFs->changeWorkingDirectoryTo(l_sCurrentDir);
-
-    std::string l_sExtension = ".trackpack";
-
-    std::vector<std::string> l_vPacks;
-
-    for (irr::u32 i = 0; i < l_pFiles->getFileCount(); i++) {
-      std::string l_sFile = l_pFiles->getFileName(i).c_str();
-
-      if (l_sFile.size() > l_sExtension.size() && l_sFile.substr(l_sFile.size() - l_sExtension.size()) == l_sExtension) {
-        if (!m_pFs->addFileArchive((helpers::ws2s(platform::portableGetTrackPackPath()) + l_sFile).c_str(), true, false, irr::io::EFAT_ZIP)) {
-          std::wstring l_sMsg = L"Error while trying to load TrackPack \"" + helpers::s2ws(l_sFile) + L"\".";
-          m_pDevice->getLogger()->log(l_sMsg.c_str(), irr::ELL_ERROR);
-        }
-        else l_vPacks.push_back(l_sFile);
-      }
-    }
-
-    for (auto &l_sPack : l_vPacks) {
-      std::string l_sPackName = l_sPack.substr(0, l_sPack.find_last_of('.'));
-      std::string l_sName     = l_sPackName + ".txt";
-      irr::io::IReadFile *l_pFile = m_pFs->createAndOpenFile(l_sName.c_str());
-      if (l_pFile) {
-        char *l_pBuffer = new char[l_pFile->getSize() + 1];
-        memset(l_pBuffer, 0, l_pFile->getSize() + 1);
-        l_pFile->read(l_pBuffer, l_pFile->getSize());
-        l_pFile->drop();
-
-        std::vector<std::string> l_vLines = helpers::splitString(l_pBuffer, '\n');
-
-        bool l_bHeader = false;
-
-        for (auto &l_sLine : l_vLines) {
-          std::string s = helpers::trimString(l_sLine);
-
-          if (!l_bHeader) {
-            std::vector<std::string> l_vHeader = helpers::splitString(s, ':');
-            if (l_vHeader.size() == 2 && l_vHeader[0] == "MarbleGPTrackPack" && l_vHeader[1] == l_sPackName) {
-              std::wstring l_sMsg = L"Loading Dustbin::Games TrackPack \"" + helpers::s2ws(l_sPackName) + L"\".";
-              m_pDevice->getLogger()->log(l_sMsg.c_str(), irr::ELL_INFORMATION);
-              l_bHeader = true;
-            }
-            else {
-              m_pDevice->getLogger()->log(L"Invalid track pack file, skipping.", irr::ELL_ERROR);
-              break;
-            }
-          }
-          else {
-            std::string l_sFolder   = "data/levels/" + s;
-            std::string l_sInfoXML  = l_sFolder + "/info.xml";
-            std::string l_sTrackXML = l_sFolder + "/track.xml";
-
-            if (m_pFs->existFile(l_sInfoXML.c_str()) && m_pFs->existFile(l_sTrackXML.c_str())) {
-              irr::io::IXMLReader *l_pXml = m_pFs->createXMLReader(l_sInfoXML.c_str());
-              if (l_pXml != nullptr) {
-                bool l_bFound[3] = { false, false, false };
-
-                while (l_pXml->read()) {
-                  if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {
-                         if (std::wstring(L"marbles3") == l_pXml->getNodeName()) { l_bFound[0] = true; }
-                    else if (std::wstring(L"position") == l_pXml->getNodeName()) { l_bFound[1] = true; }   
-                    else if (std::wstring(L"name"    ) == l_pXml->getNodeName()) { l_bFound[2] = true; }
-                  }
-                }
-
-                l_pXml->drop();
-
-                if (l_bFound[0] && l_bFound[1] && l_bFound[2]) {
-                  m_pDevice->getLogger()->log(L"Valid track found, adding to list.", irr::ELL_INFORMATION);
-                  m_vTrackPackTracks.push_back(s);
-                }
-                else m_pDevice->getLogger()->log(L"Invalid track data found, skipping", irr::ELL_WARNING);
-              }
-            }
-            else {
-              m_pDevice->getLogger()->log(L"Invalid track structure found.", irr::ELL_ERROR);
-            }
-          }
-        }
-
-        delete[]l_pBuffer;
-      }
-    }
-
-    printf("Tracks loaded.\n");
-  }
-
-  /**
-  * Get a list of tracks loaded from trackpacks
-  * @return a list of tracks loaded from trackpacks
-  */
-  const std::vector<std::string> CMainClass::getTrackPackTracks() const {
-    return m_vTrackPackTracks;
   }
 
   /**

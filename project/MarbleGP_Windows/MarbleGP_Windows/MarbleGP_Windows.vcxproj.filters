@@ -780,6 +780,9 @@
     <ClCompile Include="..\..\_source\source\gamecloud\CGameCloud_None.cpp">
       <Filter>Quelldateien\gamecloud</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\data\CTrackPackManager.cpp">
+      <Filter>Quelldateien\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CMainClass.h">
@@ -1279,6 +1282,9 @@
     </ClInclude>
     <ClInclude Include="..\..\_source\include\gamecloud\gamecloud.h">
       <Filter>Headerdateien\gamecloud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\_source\include\data\CTrackPackManager.h">
+      <Filter>Headerdateien\data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
