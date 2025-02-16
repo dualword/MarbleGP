@@ -173,8 +173,9 @@ namespace dustbin {
     void CTrackPackManager::updateTrackPacks() {
       clearTrackPacks();
 
+      std::string l_sPackDir = helpers::ws2s(platform::portableGetTrackPackPath()).c_str();
       irr::io::path l_sCurrentDir = m_pFs->getWorkingDirectory();
-      m_pFs->changeWorkingDirectoryTo(helpers::ws2s(platform::portableGetTrackPackPath()).c_str());
+      m_pFs->changeWorkingDirectoryTo(l_sPackDir.c_str());
       irr::io::IFileList *l_pPacks = m_pFs->createFileList();
       m_pFs->changeWorkingDirectoryTo(l_sCurrentDir);
 
@@ -183,7 +184,11 @@ namespace dustbin {
       for (irr::u32 i = 0; i < l_pPacks->getFileCount(); i++) {
         std::string l_sFile = l_pPacks->getFileName(i).c_str();
         if (l_sFile.size() > l_sExtension.size() && l_sFile.substr(l_sFile.size() - l_sExtension.size()) == l_sExtension) {
-          m_vArchives.push_back(new CTrackPack(l_sFile, m_pFs));
+          std::wstring l_sMessage;
+          if (verifyTrackPack(l_sPackDir + l_sFile, l_sMessage))
+            m_vArchives.push_back(new CTrackPack(l_sFile, m_pFs));
+          else
+            printf("%ls\n", l_sMessage.c_str());
         }
       }
 
@@ -256,6 +261,58 @@ namespace dustbin {
           return;
         }
       }
+    }
+
+    /**
+    * Verify that the given file is a valid track pack
+    * @param a_sPack file to check
+    * @param a_sMessage output message
+    * @return true if this is a valid trackpack, false otherwise
+    */
+    bool CTrackPackManager::verifyTrackPack(const std::string &a_sPack, std::wstring &a_sMessage) {
+      bool l_bRet = true;
+
+      irr::io::IFileArchive *l_pArchive = nullptr;
+      for (irr::u32 i = 0; i < m_pFs->getArchiveLoaderCount(); i++) {
+        if (m_pFs->getArchiveLoader(i)->isALoadableFileFormat(irr::io::EFAT_ZIP)) {
+          l_pArchive = m_pFs->getArchiveLoader(i)->createArchive(a_sPack.c_str(), true, false);
+          break;
+        }
+      }
+
+      if (l_pArchive == nullptr) {
+        a_sMessage = L"\"" + helpers::s2ws(a_sPack) + L"\" is not a valid track pack archive.";
+        return false;
+      }
+
+      const irr::io::IFileList *l_pFiles = l_pArchive->getFileList();
+
+      if (l_pFiles->getFileCount() == 0) {
+        a_sMessage = L"\"" + helpers::s2ws(a_sPack) + L"\" does not contain any files.";
+        l_bRet = false;
+      }
+
+      if (l_bRet) {
+        printf("\n**** Content of %s\n", a_sPack.c_str());
+
+        for (irr::u32 i = 0; i < l_pFiles->getFileCount(); i++) {
+          std::string l_sFullName = l_pFiles->getFullFileName(i).c_str();
+          if (!l_pFiles->isDirectory(i)) {
+            std::string l_sFolder = "data/levels/";
+
+            if (l_sFullName.substr(0, l_sFolder.size()) != l_sFolder) {
+              a_sMessage = L"Invalid file \"" + helpers::s2ws(l_sFullName) + L"\" found in \"" + helpers::s2ws(a_sPack) + L"\".";
+              l_bRet = false;
+              break;
+            }
+
+            printf("Filename: %s\n", l_sFullName.c_str());
+          }
+        }
+      }
+
+      l_pArchive->drop();
+      return l_bRet;
     }
   }
 }

@@ -115,6 +115,14 @@ namespace dustbin {
         * @param a_sPack the name of the track pack to delete
         */
         void deleteTrackPack(const std::string &a_sPack);
+
+        /**
+        * Verify that the given file is a valid track pack
+        * @param a_sPack file to check
+        * @param a_sMessage output message
+        * @return true if this is a valid trackpack, false otherwise
+        */
+        bool verifyTrackPack(const std::string &a_sPack, std::wstring &a_sMessage);
     };
   }
 }
