@@ -61,7 +61,8 @@
     [ "JointStartMotor"       , "50" ],
     [ "JointSetPosition"      , "51" ],
     [ "UpdateRaceInfo"        , "52" ],
-    [ "FocusChanged"          , "53" ]
+    [ "FocusChanged"          , "53" ],
+    [ "AvailableTrack"        , "54" ]
   ],
   "messages": {
     "ObjectMoved": {
@@ -431,6 +432,12 @@
       "comment": "Tell the game state that the focus has changed",
       "fields": [
         { "name": "focused", "type": "bool", "comment": "true if the game gained focus, false otherwise" }
+      ]
+    },
+    "AvailableTrack": {
+      "comment": "This message is sent by the clients to inform the server about available tracks",
+      "fields": [
+        { "name": "track", "type": "std::string", "comment": "Name of the track" }
       ]
     }
   },

@@ -125,6 +125,37 @@ namespace dustbin {
     }
 
     /**
+    * Remove all tracks from the given map which are not avaiable at all clients
+    * @param a_mMap the map to modify
+    */
+    void CGameServer::condensateTrackMap(std::map<std::string, std::tuple<std::string, int>> &a_mMap) {
+      bool l_bFinished = false;
+
+      printf("Starting track condensation...\n");
+      while (!l_bFinished) {
+        l_bFinished = true;
+
+        for (std::map<std::string, std::tuple<std::string, int>>::iterator it = a_mMap.begin(); it != a_mMap.end(); it++) {
+          bool l_bRemove = false;
+
+          for (auto &l_cClient: m_mPeerTracks) {
+            if (std::find(l_cClient.second.begin(), l_cClient.second.end(), (*it).first) == l_cClient.second.end()) {
+              l_bRemove = true;
+              break;
+            }
+          }
+
+          if (l_bRemove) {
+            printf("Removing track \"%s\" (%s) from server track map.\n", std::get<0>((*it).second).c_str(), ((*it).first).c_str());
+            a_mMap.erase(it);
+            l_bFinished = false;
+            break;
+          }
+        }
+      }
+    }
+
+    /**
     * Handle an event in a subclass
     * @return "true" if the event was handled
     */
@@ -315,6 +346,17 @@ namespace dustbin {
 
           case messages::enMessageIDs::PauseChanged:
             return true;
+
+          case messages::enMessageIDs::AvailableTrack: {
+            messages::CAvailableTrack *p = reinterpret_cast<messages::CAvailableTrack *>(a_pMessage);
+
+            if (m_mPeerTracks.find(a_pPeer) == m_mPeerTracks.end())
+              m_mPeerTracks[a_pPeer] = std::vector<std::string>();
+
+            m_mPeerTracks[a_pPeer].push_back(p->gettrack());
+
+            return true;
+          }
 
           default:
             break;

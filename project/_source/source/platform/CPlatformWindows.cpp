@@ -68,7 +68,11 @@ namespace dustbin {
       TCHAR l_sPath[MAX_PATH];
 
       if (SUCCEEDED(SHGetFolderPath( NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
+#ifndef _DEBUG
         PathAppend(l_sPath, L"\\DustbinGames\\MarbleGP\\TrackPack\\");
+#else
+        PathAppend(l_sPath, L"\\DustbinGames\\MarbleGP_debug\\TrackPack\\");
+#endif
         std::filesystem::create_directories(l_sPath);
       }
 

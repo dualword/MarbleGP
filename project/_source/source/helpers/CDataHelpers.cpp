@@ -1,4 +1,6 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
+#define NOMINMAX
+
 #include <controller/CControllerGame.h>
 #include <messages/CMessageHelpers.h>
 #include <helpers/CTextureHelpers.h>
@@ -7,12 +9,14 @@
 #include <messages/CSerializer64.h>
 #include <helpers/CStringHelpers.h>
 #include <helpers/CDataHelpers.h>
+#include <network/CGameServer.h>
 #include <gameclasses/SPlayer.h>
 #include <platform/CPlatform.h>
 #include <json/CIrrJSON.h>
 #include <irrlicht.h>
 #include <CGlobal.h>
 #include <Defines.h>
+#include <algorithm>
 #include <fstream>
 #include <random>
 
@@ -38,7 +42,7 @@ namespace dustbin {
         l_sBuffer = "<marblegp>\n";
         l_pFile->write(l_sBuffer.c_str(), l_sBuffer.size());
 
-        for (auto l_cProfile : a_vAiPlayers) {
+        for (auto &l_cProfile : a_vAiPlayers) {
           char s[0xFF];
           sprintf(s, "%.2f", std::get<5>(l_cProfile));
           l_sBuffer = "  <ai_player name=\"" + std::get<0>(l_cProfile) + "\" abbreviation=\"" + std::get<1>(l_cProfile) + "\" texture=\"" + std::get<2>(l_cProfile) + "\" class1=\"" + std::to_string(std::get<3>(l_cProfile)) + "\" class2=\"" + std::to_string(std::get<4>(l_cProfile)) + "\" deviation=\"" + s + "\" / >\n";
@@ -232,6 +236,12 @@ namespace dustbin {
         }
       }
 
+      network::CGameServer *l_pServer = CGlobal::getInstance()->getGameServer();
+
+      if (l_pServer != nullptr) {
+        l_pServer->condensateTrackMap(l_mResult);
+      }
+
       return l_mResult;
     }
 
@@ -314,13 +324,13 @@ namespace dustbin {
       irr::io::IReadFile *l_pFile = CGlobal::getInstance()->getFileSystem()->createAndOpenFile("data/icons/icons.txt");
       if (l_pFile != nullptr) {
         char *p = new char[l_pFile->getSize() + 1];
-        memset(p, 0, l_pFile->getSize() + 1);
+        memset(p, 0, (size_t)l_pFile->getSize() + 1);
 
         l_pFile->read(p, l_pFile->getSize());
 
         std::vector<std::string> l_vLines = helpers::splitString(p, '\n');
 
-        for (auto l_sLine : l_vLines) {
+        for (auto &l_sLine : l_vLines) {
           if (l_sLine != "")
             l_vHeight.push_back(std::atoi(l_sLine.c_str()));
         }
@@ -419,7 +429,7 @@ namespace dustbin {
 
       if (l_pFile != nullptr) {
         char *l_pBuffer = new char[l_pFile->getSize() + 1];
-        memset(l_pBuffer, 0, l_pFile->getSize() + 1);
+        memset(l_pBuffer, 0, (size_t)l_pFile->getSize() + 1);
         l_pFile->read(l_pBuffer, l_pFile->getSize());
 
         l_sDummy = l_pBuffer;
@@ -632,7 +642,7 @@ namespace dustbin {
       if (g_vDefaultNames.size() == 0) {
         std::vector<std::string> l_vNames = helpers::readLinesOfFile("data/names.txt");
 
-        for (auto l_sName : l_vNames) {
+        for (auto &l_sName : l_vNames) {
           std::vector<std::string> l_vSplit = helpers::splitString(l_sName, ',');
 
           std::string l_sFirstName = helpers::trimString(l_vSplit.size() > 0 ? l_vSplit[0] : "");

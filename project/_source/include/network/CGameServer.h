@@ -31,6 +31,8 @@ namespace dustbin {
 
         std::vector<ENetPeer *> m_vPeers;
 
+        std::map<ENetPeer *, std::vector<std::string>> m_mPeerTracks;   /**< The list of track available for each peer */
+
         std::vector<int> m_vAvailableSlots;   /**< The available client slots */
 
         std::map<ENetPeer *, std::vector<std::tuple<int, bool>>> m_mAssignedSlots;  /**< The slots that were assigned to a specific peer */
@@ -98,6 +100,12 @@ namespace dustbin {
         * @return the host name
         */
         const std::string &getHostName();
+
+        /**
+        * Remove all tracks from the given map which are not avaiable at all clients
+        * @param a_mMap the map to modify
+        */
+        void condensateTrackMap(std::map<std::string, std::tuple<std::string, int>> &a_mMap);
     };
   }
 }

@@ -3,6 +3,7 @@
 #include <_generated/messages/CMessageFactory.h>
 #include <_generated/messages/CMessages.h>
 #include <messages/CSerializer64.h>
+#include <helpers/CDataHelpers.h>
 #include <gameclasses/SPlayer.h>
 #include <network/CGameClient.h>
 #include <state/CMenuState.h>
@@ -133,6 +134,14 @@ namespace dustbin {
 
             messages::CPlayerListEnd l_cReady;
             sendMessage(a_pPeer, &l_cReady);
+
+            std::map<std::string, std::tuple<std::string, int>> l_mTracks = helpers::getTrackNameMap();
+
+            for (auto &l_tTrack: l_mTracks) {
+              messages::CAvailableTrack p = messages::CAvailableTrack(l_tTrack.first);
+              sendMessage(a_pPeer, &p);
+            }
+
 
             return true;
           }

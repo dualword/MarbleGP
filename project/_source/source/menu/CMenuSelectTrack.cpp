@@ -55,7 +55,7 @@ namespace dustbin {
         void fillTrackNames() {
           std::map<std::string, std::tuple<std::string, int>> l_mTracks = helpers::getTrackNameMap();
 
-          for (auto l_tTrack: l_mTracks)
+          for (auto &l_tTrack: l_mTracks)
             m_vTracks.push_back(std::make_tuple(std::get<1>(l_tTrack.second), l_tTrack.first, std::get<0>(l_tTrack.second)));
         }
 
