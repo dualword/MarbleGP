@@ -9,15 +9,20 @@
 #include <stdio.h>
 #include <locale>
 
+#ifdef _WINDOWS
+#include <Windows.h>
+#endif
+
 namespace dustbin {
   namespace helpers {
+#ifndef _WINDOWS
     /**
     * Convert a string to a wide string
     * @param a_sInput the std::string to convert
     * @return a std::wstring with the content of the input string
     */
     std::wstring s2ws(const std::string& a_sInput) {
-      using convert_typeX = std::codecvt_utf8<wchar_t>;
+      using convert_typeX = std::codecvt_utf8_utf16<wchar_t>;
       std::wstring_convert<convert_typeX, wchar_t> converterX;
       return converterX.from_bytes(a_sInput);
     }
@@ -28,10 +33,53 @@ namespace dustbin {
     * @return a std::string with the content of the input
     */
     std::string ws2s(const std::wstring& a_sInput) {
-      using convert_typeX = std::codecvt_utf8<wchar_t>;
+      using convert_typeX = std::codecvt_utf8_utf16<wchar_t>;
       std::wstring_convert<convert_typeX, wchar_t> converterX;
       return converterX.to_bytes(a_sInput);
     }
+#else
+    std::wstring s2ws(const std::string &a_sInput) {
+	    if (a_sInput.empty()) {
+		    return std::wstring();
+	    }
+
+	    int required = ::MultiByteToWideChar(CP_THREAD_ACP, 0, a_sInput.data(), (int)a_sInput.size(), NULL, 0);
+	    if (0 == required) {
+		    return std::wstring();
+	    }
+
+	    std::wstring str2;
+	    str2.resize(required);
+
+	    int converted = ::MultiByteToWideChar(CP_THREAD_ACP, 0, a_sInput.data(), (int)a_sInput.size(), &str2[0], (int)str2.capacity());
+	    if (0 == converted) {
+		    return std::wstring();
+	    }
+
+	    return str2;
+    }
+
+    std::string ws2s(const std::wstring &a_sInput) {
+	    if (a_sInput.empty()) {
+		    return std::string();
+	    }
+
+	    int required = ::WideCharToMultiByte(CP_THREAD_ACP, 0, a_sInput.data(), (int)a_sInput.size(), NULL, 0, NULL, NULL);
+	    if (0 == required) {
+		    return std::string();
+	    }
+
+	    std::string str2;
+	    str2.resize(required);
+
+	    int converted = ::WideCharToMultiByte(CP_THREAD_ACP, 0, a_sInput.data(), (int)a_sInput.size(), &str2[0], (int)str2.capacity(), NULL, NULL);
+	    if (0 == converted) {
+		    return std::string();
+	    }
+
+	    return str2;
+    }
+#endif
 
     /**
     * Split a string by a delimiter
@@ -54,6 +102,33 @@ namespace dustbin {
         else {
           l_vRet.push_back(l_sInput);
           l_sInput = "";
+        }
+      }
+
+      return l_vRet;
+    }
+
+    /**
+    * Split a string by a delimiter
+    * @param a_sInput the string to split
+    * @param a_cDelimiter the delimiter char to split the string
+    * @return a vector with all the parts of the string, delimiter not included
+    */
+    std::vector<std::wstring> splitWString(const std::wstring a_sInput, const wchar_t a_cDelimiter) {
+      std::vector<std::wstring> l_vRet;
+
+      std::wstring l_sInput = a_sInput;
+
+      while (l_sInput.size() > 0) {
+        size_t l_iPos = l_sInput.find_first_of(a_cDelimiter);
+
+        if (l_iPos != std::string::npos) {
+          l_vRet.push_back(l_sInput.substr(0, l_iPos));
+          l_sInput = l_sInput.substr(l_iPos + 1);
+        }
+        else {
+          l_vRet.push_back(l_sInput);
+          l_sInput = L"";
         }
       }
 
@@ -413,6 +488,40 @@ namespace dustbin {
       char l_aDelimiter[] = { '\\', '/', '\0' };
 
       for (int i = 0; l_aDelimiter[i] != '\0'; i++) {
+        if (a_sFile.find_last_of(l_aDelimiter[i]) != std::string::npos) {
+          return a_sFile.substr(0, a_sFile.find_last_of(l_aDelimiter[i]));
+        }
+      }
+
+      return a_sFile;
+    }
+
+    /**
+    * Get the filename of a path
+    * @param a_sPath the path
+    * @return the filename, i.e the last element of the path
+    */
+    std::wstring getFilenameW(const std::wstring &a_sPath) {
+      wchar_t l_aDelimiter[] = { L'\\', L'/', L'\0' };
+
+      for (int i = 0; l_aDelimiter[i] != L'\0'; i++) {
+        if (a_sPath.find_last_of(l_aDelimiter[i]) != std::string::npos) {
+          return a_sPath.substr(a_sPath.find_last_of(l_aDelimiter[i]) + 1);
+        }
+      }
+
+      return a_sPath;
+    }
+
+    /**
+    * Get the path of a filename
+    * @param a_sFile the filename with path
+    * @return the path, i.e. the input value with the last path component cut off
+    */
+    std::wstring getFilepathW(const std::wstring &a_sFile) {
+      wchar_t l_aDelimiter[] = { L'\\', L'/', L'\0' };
+
+      for (int i = 0; l_aDelimiter[i] != L'\0'; i++) {
         if (a_sFile.find_last_of(l_aDelimiter[i]) != std::string::npos) {
           return a_sFile.substr(0, a_sFile.find_last_of(l_aDelimiter[i]));
         }

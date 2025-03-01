@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 
+#include <helpers/CStringHelpers.h>
 #include <CMainClass.h>
 #include <irrlicht.h>
 #include <filesystem>
@@ -27,6 +28,7 @@
 
 namespace dustbin {
   namespace platform {
+
     void portableItoa(int a_iValue, char *a_sBuffer, int a_iLen) {
       _itoa_s(a_iValue, a_sBuffer, a_iLen, 10);
     }
@@ -54,9 +56,16 @@ namespace dustbin {
       return l_sPath;
     }
 
+    const std::string portableGetDownloadPath() {
+      PWSTR l_sPath = nullptr;
+
+      SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &l_sPath);
+
+      return helpers::ws2s(l_sPath);
+    }
+
     const std::wstring portableGetTrackPackPath() {
-      TCHAR l_sPath     [MAX_PATH],
-            l_sLevelPath[MAX_PATH];
+      TCHAR l_sPath[MAX_PATH];
 
       if (SUCCEEDED(SHGetFolderPath( NULL, CSIDL_APPDATA, NULL, 0, l_sPath))) {
         PathAppend(l_sPath, L"\\DustbinGames\\MarbleGP\\TrackPack\\");

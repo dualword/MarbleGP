@@ -17,6 +17,7 @@
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
 #include <state/IState.h>
+#include <filesystem>
 #include <Defines.h>
 #include <CGlobal.h>
 #include <map>
@@ -51,9 +52,13 @@ namespace dustbin {
 
         std::vector<gui::CMenuBackground *> m_vPages;
 
+        irr::io::IFileList *m_pTpFileList;
+
         int  m_iSplitIdx;
 
         data::SSettings m_cSettings;
+
+        std::map<std::wstring, std::string> m_mTpFiles;
 
         void updateSoundSetting(float& a_fSetting, int a_iLabelId, irr::gui::IGUIScrollBar *a_pScrollbar) {
           if (a_pScrollbar != nullptr) {
@@ -147,6 +152,69 @@ namespace dustbin {
           }
         }
 
+        void updateTrackPackImportList() {
+          irr::gui::IGUIListBox *l_pFiles = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("ImportFileList"  , irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+          irr::gui::IGUIEditBox *l_pPath  = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("ImportPathEdit"  , irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+
+          if (l_pFiles != nullptr && l_pPath != nullptr) {
+            l_pFiles->clear();
+
+            if (m_pTpFileList != nullptr)
+              m_pTpFileList->drop();
+
+
+            std::wstring l_sPath = l_pPath->getText();
+            irr::io::path l_sThis = m_pFs->getWorkingDirectory();
+
+            m_pFs->changeWorkingDirectoryTo(helpers::ws2s(l_sPath).c_str());
+
+            m_pTpFileList = m_pFs->createFileList();
+
+            std::wstring l_sExt = L".trackpack";
+
+            m_mTpFiles.clear();
+
+            for (irr::u32 i = 0; i < m_pTpFileList->getFileCount(); i++) {
+              std::wstring l_sName = helpers::s2ws(m_pTpFileList->getFileName(i).c_str());
+              if (!m_pTpFileList->isDirectory(i) && l_sName.size() > l_sExt.size() && l_sName.substr(l_sName.size() - l_sExt.size()) == l_sExt) {
+                l_pFiles->addItem(l_sName.c_str());
+                m_mTpFiles[l_sName] = m_pTpFileList->getFullFileName(i).c_str();
+              }
+            }
+
+            m_pFs->changeWorkingDirectoryTo(l_sThis);
+          }
+        }
+
+        void updateTrackPackDetails() {
+            if (m_pTrackPackMgr != nullptr) {
+              irr::gui::IGUIListBox *l_pList   = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_list"     , irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+              irr::gui::IGUIListBox *l_pTracks = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_tracklist", irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+
+              irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("trackpack_name", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+
+              if (l_pList != nullptr && l_pTracks != nullptr && l_pLabel != nullptr) {
+                irr::u32 l_iSelected = (irr::u32)l_pList->getSelected();
+                l_pTracks->clear();
+                l_pLabel->setText(L"--");
+
+                if (l_pList->getSelected() != -1) {
+                  data::CTrackPack *l_pPack = m_pTrackPackMgr->getTrackPack(l_iSelected);
+                  if (l_pPack != nullptr) {
+                    l_pLabel->setText(helpers::s2ws(l_pPack->getName()).c_str());
+
+                    for (irr::u32 i = 0; i < l_pPack->getTrackCount(); i++) {
+                      l_pTracks->addItem(helpers::s2ws(l_pPack->getTrackName(i)).c_str());
+                    }
+                  }
+                }
+              }
+              else
+                if (l_pLabel != nullptr)
+                  l_pLabel->setText(L"--");
+            }
+        }
+
       public:
         CMenuSettings(irr::IrrlichtDevice* a_pDevice, IMenuManager* a_pManager, state::IState *a_pState) : 
           IMenuHandler   (a_pDevice, a_pManager, a_pState),
@@ -155,7 +223,8 @@ namespace dustbin {
           m_pController  (nullptr),
           m_pTrackPackMgr(nullptr),
           m_pTrackPacks  (nullptr),
-          m_iSplitIdx    (-1)
+          m_iSplitIdx    (-1),
+          m_pTpFileList  (nullptr)
         {
           m_pState->getGlobal()->clearGui();
 
@@ -421,10 +490,18 @@ namespace dustbin {
                   }
                 }
               }
-              else if (l_sSender == "MenuBtn_No") {
+              else if (l_sSender == "MenuBtn_No" || l_sSender == "OhISeeBtn") {
                 irr::gui::IGUITab *l_pDialog = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("confirmDialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
                 if (l_pDialog != nullptr)
                   l_pDialog->setVisible(false);
+
+                irr::gui::IGUIButton *l_pBtn1   = reinterpret_cast<irr::gui::IGUIButton     *>(helpers::findElementByNameAndType("MenuBtn_Yes", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIButton *l_pBtn2   = reinterpret_cast<irr::gui::IGUIButton     *>(helpers::findElementByNameAndType("MenuBtn_No" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIButton *l_pBtn3   = reinterpret_cast<irr::gui::IGUIButton     *>(helpers::findElementByNameAndType("OhISeeBtn"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+                if (l_pBtn1 != nullptr) l_pBtn1->setVisible(true );
+                if (l_pBtn2 != nullptr) l_pBtn2->setVisible(true );
+                if (l_pBtn3 != nullptr) l_pBtn3->setVisible(false);
               }
               else if (l_sSender == "MenuBtn_Yes") {
                 irr::gui::IGUITab *l_pDialog = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("confirmDialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
@@ -437,6 +514,74 @@ namespace dustbin {
                   printf("Remove track pack \"%s\"\n", l_sToRemove.c_str());
                   m_pTrackPackMgr->deleteTrackPack(l_sToRemove);
                   updateTrackPackList();
+                  updateTrackPackDetails();
+                }
+              }
+              else if (l_sSender == "trackpack_import") {
+                irr::gui::IGUITab     *l_pTab   = reinterpret_cast<irr::gui::IGUITab     *>(helpers::findElementByNameAndType("importFileDialog", irr::gui::EGUIET_TAB     , m_pGui->getRootGUIElement()));
+                irr::gui::IGUIEditBox *l_pPath  = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("ImportPathEdit"  , irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
+                irr::gui::IGUIListBox *l_pFiles = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("ImportFileList"  , irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+                
+                if (l_pTab != nullptr && l_pPath != nullptr && l_pFiles != nullptr) {
+                  l_pTab->setVisible(true);
+                
+                  std::string l_sPath = CGlobal::getInstance()->getSetting("trackpack_importpath");
+                  if (l_sPath == "")
+                    l_sPath = platform::portableGetDownloadPath();
+                
+                  l_pPath->setText(irr::core::stringw(l_sPath.c_str()).c_str());
+                
+                  updateTrackPackImportList();
+                }
+              }
+              else if (l_sSender == "MenuBtnImport") {
+                irr::gui::IGUIListBox *l_pFiles = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("ImportFileList"  , irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+
+                if (l_pFiles != nullptr && l_pFiles->getSelected() >= 0) {
+                  data::CTrackPackManager *l_pTpMgr = CGlobal::getInstance()->getTrackPackManager();
+                  if (l_pTpMgr != nullptr) {
+                    std::wstring l_sPack = l_pFiles->getListItem(l_pFiles->getSelected());
+
+                    if (m_mTpFiles.find(l_sPack) != m_mTpFiles.end()) {
+                      printf("Trackpack: \"%s\"\n", m_mTpFiles[l_sPack].c_str());
+                      std::wstring l_sMessage;
+                      if (!l_pTpMgr->verifyTrackPack(m_mTpFiles[l_sPack], l_sMessage)) {
+                        irr::gui::IGUIStaticText *l_pLabel  = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("confirmDialog_text", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
+                        irr::gui::IGUITab        *l_pDialog = reinterpret_cast<irr::gui::IGUITab        *>(helpers::findElementByNameAndType("confirmDialog"     , irr::gui::EGUIET_TAB        , m_pGui->getRootGUIElement()));
+
+                        irr::gui::IGUIButton *l_pBtn1   = reinterpret_cast<irr::gui::IGUIButton     *>(helpers::findElementByNameAndType("MenuBtn_Yes", (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                        irr::gui::IGUIButton *l_pBtn2   = reinterpret_cast<irr::gui::IGUIButton     *>(helpers::findElementByNameAndType("MenuBtn_No" , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+                        irr::gui::IGUIButton *l_pBtn3   = reinterpret_cast<irr::gui::IGUIButton     *>(helpers::findElementByNameAndType("OhISeeBtn"  , (irr::gui::EGUI_ELEMENT_TYPE)gui::g_MenuButtonId, m_pGui->getRootGUIElement()));
+
+                        if (l_pLabel != nullptr && l_pDialog != nullptr) {
+                          l_pLabel->setText(l_sMessage.c_str());
+                          l_pDialog->setVisible(true);
+
+                          if (l_pBtn1 != nullptr) l_pBtn1->setVisible(false);
+                          if (l_pBtn2 != nullptr) l_pBtn2->setVisible(false);
+                          if (l_pBtn3 != nullptr) l_pBtn3->setVisible(true );
+                        }
+                      }
+                      else {
+                        std::wstring l_sDest = platform::portableGetTrackPackPath() + l_sPack;
+                        std::filesystem::copy_file(m_mTpFiles[l_sPack].c_str(), helpers::ws2s(l_sDest).c_str());
+                        m_pTrackPackMgr->updateTrackPacks();
+                        updateTrackPackList();
+                        updateTrackPackDetails();
+                      }
+                    }
+                  }
+                }
+
+                irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("importFileDialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                if (l_pTab != nullptr) {
+                  l_pTab->setVisible(false);
+                }
+              }
+              else if (l_sSender == "MenuBtnImportCancel") {
+                irr::gui::IGUITab *l_pTab = reinterpret_cast<irr::gui::IGUITab *>(helpers::findElementByNameAndType("importFileDialog", irr::gui::EGUIET_TAB, m_pGui->getRootGUIElement()));
+                if (l_pTab != nullptr) {
+                  l_pTab->setVisible(false);
                 }
               }
               else printf("Button clicked (%s, %i, CMenuSettings).\n", l_sSender.c_str(), a_cEvent.GUIEvent.Caller->getID());
@@ -531,29 +676,36 @@ namespace dustbin {
               }
             }
             else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_CHANGED) {
-              if (l_sSender == "trackpack_list" && m_pTrackPackMgr != nullptr) {
-                irr::gui::IGUIListBox *l_pList   = reinterpret_cast<irr::gui::IGUIListBox *>(a_cEvent.GUIEvent.Caller);
-                irr::gui::IGUIListBox *l_pTracks = reinterpret_cast<irr::gui::IGUIListBox *>(helpers::findElementByNameAndType("trackpack_tracklist", irr::gui::EGUIET_LIST_BOX, m_pGui->getRootGUIElement()));
+              if (l_sSender == "trackpack_list") {
+                updateTrackPackDetails();
+              }
+            }
+            else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_LISTBOX_SELECTED_AGAIN) {
+              if (l_sSender == "ImportFileList") {
+                irr::gui::IGUIListBox *l_pBox  = reinterpret_cast<irr::gui::IGUIListBox *>(a_cEvent.GUIEvent.Caller);
+                irr::gui::IGUIEditBox *l_pPath = reinterpret_cast<irr::gui::IGUIEditBox *>(helpers::findElementByNameAndType("ImportPathEdit", irr::gui::EGUIET_EDIT_BOX, m_pGui->getRootGUIElement()));
 
-                irr::gui::IGUIStaticText *l_pLabel = reinterpret_cast<irr::gui::IGUIStaticText *>(helpers::findElementByNameAndType("trackpack_name", irr::gui::EGUIET_STATIC_TEXT, m_pGui->getRootGUIElement()));
-
-                if (l_pList != nullptr && l_pTracks != nullptr && l_pLabel != nullptr && l_pList->getSelected() != -1) {
-                  irr::u32 l_iSelected = (irr::u32)l_pList->getSelected();
-                  l_pTracks->clear();
-
-                  data::CTrackPack *l_pPack = m_pTrackPackMgr->getTrackPack(l_iSelected);
-                  if (l_pPack != nullptr) {
-                    l_pLabel->setText(helpers::s2ws(l_pPack->getName()).c_str());
-
-                    for (irr::u32 i = 0; i < l_pPack->getTrackCount(); i++) {
-                      l_pTracks->addItem(helpers::s2ws(l_pPack->getTrackName(i)).c_str());
-                    }
+                if (l_pBox->getSelected() >= 0 && l_pPath != nullptr) {
+                  std::wstring l_sFile = l_pBox->getListItem(l_pBox->getSelected());
+                  printf("==> %ls\n", l_sFile.c_str());
+                  irr::io::path l_sPath = helpers::ws2s(std::wstring(l_pPath->getText()) + L"/" + l_sFile).c_str();
+                  if (std::filesystem::is_directory(l_sPath.c_str())) {
+                    m_pFs->flattenFilename(l_sPath);
+                    l_pPath->setText(helpers::s2ws(l_sPath.c_str()).c_str());
+                    updateTrackPackImportList();
                   }
-                  else l_pLabel->setText(L"--");
                 }
-                else 
-                  if (l_pLabel != nullptr)
-                    l_pLabel->setText(L"--");
+              }
+            }
+          }
+          else if (a_cEvent.EventType == irr::EET_KEY_INPUT_EVENT) {
+            if (a_cEvent.KeyInput.PressedDown && a_cEvent.KeyInput.Key == irr::KEY_RETURN) {
+              irr::gui::IGUIElement *l_pFocus = m_pGui->getFocus();
+              if (l_pFocus != nullptr && std::string("ImportPathEdit") == l_pFocus->getName()) {
+                irr::io::path l_sNewPath = irr::io::path(reinterpret_cast<irr::gui::IGUIEditBox *>(l_pFocus)->getText());
+                if (std::filesystem::is_directory(l_sNewPath.c_str())) {
+                  m_pFs->flattenFilename(l_sNewPath);
+                }
               }
             }
           }

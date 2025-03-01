@@ -391,6 +391,16 @@ namespace dustbin {
     // Set the "regular" font size for the resolution to be the default font size
     m_pGui->getSkin()->setFont(getFont(enFont::Regular, m_pDrv->getScreenSize()));
 
+    irr::core::dimension2du l_cSize = m_pGui->getSkin()->getFont()->getDimension(L"Test234");
+
+    m_pGui->getSkin()->setSize(irr::gui::EGDS_BUTTON_HEIGHT       , l_cSize.Height); 
+    m_pGui->getSkin()->setSize(irr::gui::EGDS_BUTTON_WIDTH        , l_cSize.Width ); 
+    m_pGui->getSkin()->setSize(irr::gui::EGDS_CHECK_BOX_WIDTH     , l_cSize.Height); 
+    m_pGui->getSkin()->setSize (irr::gui::EGDS_WINDOW_BUTTON_WIDTH, l_cSize.Height); 
+    m_pGui->getSkin()->setSize (irr::gui::EGDS_SCROLLBAR_SIZE     , l_cSize.Height);
+    m_pGui->getSkin()->setSize (irr::gui::EGDS_MESSAGE_BOX_WIDTH  , l_cSize.Height);
+    m_pGui->getSkin()->setSize (irr::gui::EGDS_MESSAGE_BOX_HEIGHT , l_cSize.Height);
+
     gui::CGuiItemFactory* l_pGuiFactory = new gui::CGuiItemFactory(m_pGui);
     m_pGui->registerGUIElementFactory(l_pGuiFactory);
     l_pGuiFactory->drop();

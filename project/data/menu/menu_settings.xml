@@ -44,11 +44,20 @@
     </attributes>
   </element>
   
-  <element type="MenuButton" rect="center: 19, -19, 35, -16" font="big" tooltip="Show the application log">
+  <element type="MenuButton" rect="center: 19, -19, 35, -16" font="big" tooltip="Manage track packs">
+    <attributes>
+      <attribute key="Name" value="trackpacks" />
+      <attribute key="Id" value="23003" />
+      <attribute key="Caption" value="TrackPacks" />
+      <attribute key="AllZLayers" value="true" />
+    </attributes>
+  </element>
+  
+  <element type="MenuButton" rect="lowermiddle: 12, -4, 35, 0" font="big" tooltip="Show the application log">
     <attributes>
       <attribute key="Name" value="log" />
       <attribute key="Id" value="24000" />
-      <attribute key="Caption" value="Log" />
+      <attribute key="Caption" value="Show Log" />
       <attribute key="AllZLayers" value="true" />
     </attributes>
   </element>
@@ -268,6 +277,108 @@
       <attribute key="VTextAlign" value="center" />
       <attribute key="Visible" value="false" />
     </attributes>
+  </element>
+  
+  <element type="staticText" rect="center: -35, -15, 35, -12" font="big">
+    <attributes>
+      <attribute key="Name" value="trackpack_headline" />
+      <attribute key="Caption" value="TrackPack Management" />
+      <attribute key="HTextAlign" value="center" />
+      <attribute key="VTextAlign" value="center" />
+      <attribute key="Visible" value="false" />
+    </attributes>
+  </element>
+  
+  <element type="MenuBackground" rect="center: -35, -11, 0, 22">
+    <attributes>
+      <attribute key="Name" value="trackpack_tab" />
+      <attribute key="UseOverrideColor" value="true" />
+      <attribute key="OverrideColor" value="192, 255, 255, 192" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Id" value="25000" />
+      <attribute key="ZLayer" value="2" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="center: -33, -10, -2, -8">
+        <attributes>
+          <attribute key="Caption" value="Installed TrackPacks" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="listBox" rect="center: -33, -7, -2, 13">
+        <attributes>
+          <attribute key="Name" value="trackpack_list" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -33, 14, -2, 17">
+        <attributes>
+          <attribute key="Name" value="trackpack_remove" />
+          <attribute key="Caption" value="Remove Trackpack" />
+        </attributes>
+      </element>
+      
+      <element type="MenuButton" rect="center: -33, 18, -2, 21">
+        <attributes>
+          <attribute key="Name" value="trackpack_import" />
+          <attribute key="Caption" value="Import Trackpack" />
+        </attributes>
+      </element>
+    </children>
+  </element>
+  
+  <element type="MenuBackground" rect="center: 1, -11, 35, 22">
+    <attributes>
+      <attribute key="Name" value="trackpack_tab2" />
+      <attribute key="UseOverrideColor" value="true" />
+      <attribute key="OverrideColor" value="192, 255, 255, 192" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Id" value="25001" />
+      <attribute key="ZLayer" value="2" />
+    </attributes>
+    
+    <children>
+      <element type="staticText" rect="center: 1, -10, 35, -8">
+        <attributes>
+          <attribute key="Caption" value="TrackPacks Details" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 3, -6, 11, -4">
+        <attributes>
+          <attribute key="Caption" value="Name: " />
+          <attribute key="HTextAlign" value="lowerRight" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 12, -6, 35, -4">
+        <attributes>
+          <attribute key="Caption" value="--" />
+          <attribute key="VTextAlign" value="center" />
+          <attribute key="Name" value="trackpack_name" />
+        </attributes>
+      </element>
+      
+      <element type="staticText" rect="center: 1, -2, 35, 0">
+        <attributes>
+          <attribute key="Caption" value="Tracks in TrackPack" />
+          <attribute key="HTextAlign" value="center" />
+          <attribute key="VTextAlign" value="center" />
+        </attributes>
+      </element>
+      
+      <element type="listBox" rect="center: 3, 1, 32, 21">
+        <attributes>
+          <attribute key="Name" value="trackpack_tracklist" />
+        </attributes>
+      </element>
+    </children>
   </element>
   
   <element type="MenuBackground" rect="center: -35, -11, 35, 22">
@@ -546,5 +657,120 @@
     <custom>
       <attribute key="Cancel" value="true" />
     </custom>
+  </element>
+  
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Name" value="confirmDialog" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -20, -15, 20, 15">
+        <attributes>
+          <attribute key="Name" value="ConfirmDelete" />
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="99" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="center: -19, -14, 19, 12" font="big">
+            <attributes>
+              <attribute key="Name" value="confirmDialog_text" />
+              <attribute key="Background" value="true" />
+              <attribute key="Caption" value="This is a text" />
+              <attribute key="HTextAlign" value="center" />
+              <attribute key="VTextAlign" value="center" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: -5, 11, 7, 14" tooltip="Delete the selected trackpack">
+            <attributes>
+              <attribute key="Name" value="MenuBtn_Yes" />
+              <attribute key="Id" value="12345" />
+              <attribute key="Caption" value="Yes" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: 8, 11, 19, 14" tooltip="Do not remove the selected trackpack">
+            <attributes>
+              <attribute key="Name" value="MenuBtn_No" />
+              <attribute key="Id" value="12345" />
+              <attribute key="Caption" value="No" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: 5, 11, 19, 14" tooltip="Do not remove the selected trackpack">
+            <attributes>
+              <attribute key="Name" value="OhISeeBtn" />
+              <attribute key="Caption" value="Oh, I see" />
+              <attribute key="Visible" value="false" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+    </children>
+  </element>
+  
+  <element type="tab" rect="fillwindow">
+    <attributes>
+      <attribute key="DrawBackground" value="true" />
+      <attribute key="BackColor" value="96, 200, 200, 200" />
+      <attribute key="Visible" value="false" />
+      <attribute key="Name" value="importFileDialog" />
+    </attributes>
+    
+    <children>
+      <element type="MenuBackground" rect="center: -30, -20, 30, 20">
+        <attributes>
+          <attribute key="Name" value="importFileBackground" />
+          <attribute key="UseOverrideColor" value="true" />
+          <attribute key="OverrideColor" value="232, 239, 239, 255" />
+          <attribute key="ZLayer" value="99" />
+        </attributes>
+        
+        <children>
+          <element type="staticText" rect="center: -29, -19, -16, -17">
+            <attributes>
+              <attribute key="Caption" value="Import Folder: " />
+              <attribute key="VTextAlign" value="center" />
+              <attribute key="HTextAlign" value="lowerRight" />
+            </attributes>
+          </element>
+          
+          <element type="editBox" rect="center: -15, -19, 29, -17">
+            <attributes>
+              <attribute key="Name" value="ImportPathEdit" />
+              <attribute key="Enabled" value="false" />
+            </attributes>
+          </element>
+          
+          <element type="listBox" rect="center: -29, -16, 29, 14">
+            <attributes>
+              <attribute key="Name" value="ImportFileList" />
+            </attributes>
+          </element>
+        
+          <element type="MenuButton" rect="center: 6, 15, 17, 19" tooltip="Import the selected trackpack">
+            <attributes>
+              <attribute key="Name" value="MenuBtnImport" />
+              <attribute key="Id" value="12345" />
+              <attribute key="Caption" value="Import" />
+            </attributes>
+          </element>
+          
+          <element type="MenuButton" rect="center: 18, 15, 29, 19" tooltip="Cancel the import dialog">
+            <attributes>
+              <attribute key="Name" value="MenuBtnImportCancel" />
+              <attribute key="Id" value="12345" />
+              <attribute key="Caption" value="Cancel" />
+            </attributes>
+          </element>
+        </children>
+      </element>
+    </children>
   </element>
 </dialog>
