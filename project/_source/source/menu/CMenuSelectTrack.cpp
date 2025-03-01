@@ -53,8 +53,6 @@ namespace dustbin {
         * Fill the vector of track names
         */
         void fillTrackNames() {
-          printf("Bla");
-
           std::map<std::string, std::tuple<std::string, int>> l_mTracks = helpers::getTrackNameMap();
 
           for (auto l_tTrack: l_mTracks)
