@@ -146,7 +146,7 @@ def CreateMessages(a_Data, a_Static):
     l_Header.write("        // Getters\n")
     
     for l_Field in l_Message["fields"]:
-      l_Header.write("        " + CreateParameter(l_Field, a_Static) + "get" + l_Field["name"] + "();")
+      l_Header.write("        " + CreateParameter(l_Field, a_Static) + "get" + l_Field["name"] + "() const;")
       
       if "comment" in l_Field:
         l_Header.write("  /**< Get the m_" + l_Field["name"] + " field of the message */")
@@ -234,7 +234,7 @@ def CreateMessages(a_Data, a_Static):
     l_Source.write("    C" + l_MessageName + "::~C" + l_MessageName + "() {\n    }\n\n")
     
     for l_Field in l_Message["fields"]:
-      l_Source.write("    " + CreateParameter(l_Field, a_Static) + "C" + l_MessageName + "::get" + l_Field["name"] + "() {\n")
+      l_Source.write("    " + CreateParameter(l_Field, a_Static) + "C" + l_MessageName + "::get" + l_Field["name"] + "() const {\n")
       if l_Field["type"] != "bool":
         l_Source.write("      return m_" + l_Field["name"] + ";\n")
       else:
