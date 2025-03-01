@@ -27,7 +27,7 @@ namespace dustbin {
          * Retrieve the message ID of this message
          * @return the ID of the message (internally a 16 bit unsigned integer)
          */
-        virtual enMessageIDs getMessageId() = 0;
+        virtual enMessageIDs getMessageId() const = 0;
         
         /**
          * Clone this message
@@ -39,7 +39,7 @@ namespace dustbin {
          * Serialize the message using the serializer
          * @param a_pSerializer the serializer which will be filled with the message content
          */
-        virtual void serialize(ISerializer *a_pSerializer) = 0;
+        virtual void serialize(ISerializer *a_pSerializer) const = 0;
     };
   } // namespace messages
 }   // namespace dustbin

@@ -155,9 +155,9 @@ def CreateMessages(a_Data, a_Static):
     
     l_Header.write("\n")
     l_Header.write("        // Methods inherited from dustbin::messages::IMessage\n")
-    l_Header.write("        virtual enMessageIDs getMessageId();\n")
+    l_Header.write("        virtual enMessageIDs getMessageId() const;\n")
     l_Header.write("        virtual IMessage *clone();\n")
-    l_Header.write("        virtual void serialize(ISerializer *a_pSerializer);\n")
+    l_Header.write("        virtual void serialize(ISerializer *a_pSerializer) const;\n")
     
     l_Header.write("    };\n\n")
     
@@ -242,7 +242,7 @@ def CreateMessages(a_Data, a_Static):
         
       l_Source.write("    }\n\n")
       
-    l_Source.write("    void C" + l_MessageName + "::serialize(ISerializer *a_pSerializer) {\n")
+    l_Source.write("    void C" + l_MessageName + "::serialize(ISerializer *a_pSerializer) const {\n")
     l_Source.write("      a_pSerializer->addU16((irr::u16)enMessageIDs::" + l_MessageName + ");\n\n")
       
     for l_Field in l_Message["fields"]:
@@ -273,7 +273,7 @@ def CreateMessages(a_Data, a_Static):
     l_Source.write("      return new C" + l_MessageName + "(this);\n")
     l_Source.write("    }\n\n")
     
-    l_Source.write("    enMessageIDs C" + l_MessageName + "::getMessageId() {\n")
+    l_Source.write("    enMessageIDs C" + l_MessageName + "::getMessageId() const {\n")
     l_Source.write("      return enMessageIDs::" + l_MessageName + ";\n")
     l_Source.write("    }\n\n")
     
