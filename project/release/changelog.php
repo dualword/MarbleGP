@@ -1,5 +1,11 @@
 <ul>
   <li class="parent">
+    <b>2025-03-02 [1.3 Build 263]</b>
+    <ul>
+      <li>MarbleGP does now support Track Packs. This feature allows users to exchange tracks created using the not yet available Track Editor which is in developement</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2025-02-01 [1.3 Build 262]</b>
     <ul>
       <li>This new version fixed a problem which prevented the shaders from being compiled for AMD gfx cards (I hope)</li>

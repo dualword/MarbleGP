@@ -592,6 +592,9 @@
     <ClCompile Include="..\..\_source\source\gamecloud\CGameCloud_Steam.cpp">
       <Filter>Source Files\gamecloud</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\_source\source\data\CTrackPackManager.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\_source\include\CGlobal.h">

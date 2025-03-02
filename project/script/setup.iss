@@ -8,7 +8,7 @@
 
 [Setup]
 AppName=MarbleGP
-AppVersion=1.3 Build 262
+AppVersion=1.3 Build 263
 WizardStyle=modern
 DefaultDirName={autopf}\DustbinGames\MarbleGP
 DefaultGroupName=DustbinGames\MarbleGP
