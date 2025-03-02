@@ -181,18 +181,21 @@ namespace dustbin {
 
       std::string l_sExtension = ".trackpack";
 
-      for (irr::u32 i = 0; i < l_pPacks->getFileCount(); i++) {
-        std::string l_sFile = l_pPacks->getFileName(i).c_str();
-        if (l_sFile.size() > l_sExtension.size() && l_sFile.substr(l_sFile.size() - l_sExtension.size()) == l_sExtension) {
-          std::wstring l_sMessage;
-          if (verifyTrackPack(l_sPackDir + l_sFile, l_sMessage))
-            m_vArchives.push_back(new CTrackPack(l_sFile, m_pFs));
-          else
-            printf("%ls\n", l_sMessage.c_str());
-        }
-      }
+      if (l_pPacks != nullptr) {
+          for (irr::u32 i = 0; i < l_pPacks->getFileCount(); i++) {
+              std::string l_sFile = l_pPacks->getFileName(i).c_str();
+              if (l_sFile.size() > l_sExtension.size() &&
+                  l_sFile.substr(l_sFile.size() - l_sExtension.size()) == l_sExtension) {
+                  std::wstring l_sMessage;
+                  if (verifyTrackPack(l_sPackDir + l_sFile, l_sMessage))
+                      m_vArchives.push_back(new CTrackPack(l_sFile, m_pFs));
+                  else
+                      printf("%ls\n", l_sMessage.c_str());
+              }
+          }
 
-      l_pPacks->drop();
+          l_pPacks->drop();
+      }
     }
 
     /**

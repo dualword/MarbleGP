@@ -18,6 +18,7 @@ file(GLOB_RECURSE src
         )
 file(APPEND ../../_source/source/helpers/CMedalHelpers.cpp)
 file(APPEND ../../_source/source/gamecloud/CGameCloud_None.cpp)
+file(APPEND ../../_source/source/data/CTrackPackManager.cpp)
 
 list(REMOVE_ITEM src ../../_source/source/main_windows.cpp)
 list(REMOVE_ITEM src ../../_source/source/platform/CPlatformLinux.cpp)

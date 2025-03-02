@@ -42,6 +42,23 @@ namespace dustbin {
 
       return l_sPath;
     }
+    const std::wstring portableGetTrackEdPath  () {
+        std::wstring l_sPath = portableGetDataPath() + L"tracked/";
+        std::string l_sCmd = std::string("mkdir -p ") + helpers::ws2s(l_sPath);
+        system(l_sCmd.c_str());
+        return l_sPath;
+    }
+
+    const std::wstring portableGetTrackPackPath() {
+        std::wstring l_sPath = portableGetDataPath() + L"trackpack/";
+        std::string l_sCmd = std::string("mkdir -p ") + helpers::ws2s(l_sPath);
+        system(l_sCmd.c_str());
+        return l_sPath;
+    }
+
+    const std::string portableGetDownloadPath () {
+        return "";
+    }
 
     void preventScreenSaver() {
     }
