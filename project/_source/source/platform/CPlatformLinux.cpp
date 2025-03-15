@@ -33,11 +33,8 @@ namespace dustbin {
     }
 
     const std::wstring portableGetDataPath() {
-      std::wstring l_sRet = L"";
-      
-      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
-      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/.local/DustbinGames/MarbleGP/");
-      
+      std::string l_sPath = getenv("HOME");
+      l_sPath += "/.local/share/DustbinGames/MarbleGP/";
       std::filesystem::create_directories(l_sPath.c_str());
       
       return helpers::s2ws(l_sPath.c_str());
@@ -56,36 +53,24 @@ namespace dustbin {
     }
     
     const std::wstring portableGetTrackEdPath() {
-      std::wstring l_sRet = L"";
-      
-      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
-      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/.local/DustbinGames/MarbleGP/TrackEd/");
-      
+      std::wstring l_sPath = portableGetDataPath() + L"TrackEd/";
       std::filesystem::create_directories(l_sPath.c_str());
       
-      return helpers::s2ws(l_sPath.c_str());
+      return l_sPath;
     }
     
     const std::wstring portableGetTrackPackPath() {
-      std::wstring l_sRet = L"";
-      
-      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
-      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/.local/DustbinGames/MarbleGP/TrackPack/");
-      
+      std::wstring l_sPath = portableGetDataPath() + L"TrackPack/";
       std::filesystem::create_directories(l_sPath.c_str());
       
-      return helpers::s2ws(l_sPath.c_str());
+      return l_sPath;
     }
 
     const std::string portableGetDownloadPath() {
-      std::wstring l_sRet = L"";
+      std::string l_sPath = getenv("HOME");
+      l_sPath += "/Downloads/";
       
-      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
-      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/Downloads/");
-      
-      std::filesystem::create_directories(l_sPath.c_str());
-      
-      return l_sPath.c_str();
+      return l_sPath;
     }
     
     void saveSettings() {

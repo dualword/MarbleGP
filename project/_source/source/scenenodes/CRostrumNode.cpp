@@ -7,12 +7,14 @@ namespace dustbin {
   namespace scenenodes {
     CRostrumNode::CRostrumNode(irr::scene::ISceneNode* a_pParent, irr::scene::ISceneManager* a_pMgr, irr::s32 a_iId) : ISceneNode(a_pParent != nullptr ? a_pParent : a_pMgr->getRootSceneNode(), a_pMgr, a_iId) {
       setScale(irr::core::vector3df(15.0f));
+      setVisible(true);
 
       irr::scene::IAnimatedMesh *l_pMesh = a_pMgr->getMesh("data/objects/rostrum.3ds");
 
       if (l_pMesh) {
         irr::scene::IMeshSceneNode *l_pNode = a_pMgr->addMeshSceneNode(l_pMesh->getMesh(0), this, -1);
         l_pNode->setIsDebugObject(true);
+        l_pNode->setVisible(true);
 
         for (int i = 0; i < (int)l_pNode->getMaterialCount(); i++) {
           l_pNode->getMaterial(i).EmissiveColor = irr::video::SColor(0xFF, 0xA0, 0xA0, 0xA0);
