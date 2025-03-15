@@ -29,7 +29,7 @@
 
 namespace dustbin {
   namespace menu {
-#ifdef _WINDOWS
+#if defined(_WINDOWS) || defined(_RASPI)
     const int c_iMaxProfiles = 8;
 #else
     const int c_iMaxProfiles = 4;

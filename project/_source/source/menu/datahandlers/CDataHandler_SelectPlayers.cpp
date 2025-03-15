@@ -43,7 +43,7 @@ namespace dustbin {
         else if (a_cEvent.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
           if (l_sCaller == "PlayerSelect") {
 
-#ifdef _ANDROID
+#if defined(_ANDROID) || defined(_RASPI)
             if (reinterpret_cast<gui::CDustbinCheckbox *>(a_cEvent.GUIEvent.Caller)->isChecked()) {
               std::vector<irr::gui::IGUIElement *> l_vPlayers;
 
