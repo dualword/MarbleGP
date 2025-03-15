@@ -1,13 +1,16 @@
 // (w) 2021 by Dustbin::Games / Christian Keimel
 
-#ifdef _LINUX
+#ifdef _RASPI
 
 #include <helpers/CStringHelpers.h>
 #include <platform/CPlatform.h>
+#include <filesystem>
+#include <CGlobal.h>
 #include <stdlib.h>
 #include <cstring>
 #include <codecvt>
 #include <stdio.h>
+#include <fstream>
 #include <locale>
 #include <ctime>
 
@@ -30,20 +33,70 @@ namespace dustbin {
     }
 
     const std::wstring portableGetDataPath() {
-      return L"./";
+      std::wstring l_sRet = L"";
+      
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/.local/DustbinGames/MarbleGP/");
+      
+      std::filesystem::create_directories(l_sPath.c_str());
+      
+      return helpers::s2ws(l_sPath.c_str());
     }
 
     const std::wstring portableGetTexturePath() {
       std::wstring l_sPath = portableGetDataPath();
-      l_sPath += L"/data/textures/";
+      l_sPath += L"data/textures/";
 
-      std::string l_sCmd = std::string("mkdir -p ") + helpers::ws2s(l_sPath);
-      system(l_sCmd.c_str());
+      std::filesystem::create_directories(l_sPath.c_str());
 
       return l_sPath;
     }
 
     void preventScreenSaver() {
+    }
+    
+    const std::wstring portableGetTrackEdPath() {
+      std::wstring l_sRet = L"";
+      
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/.local/DustbinGames/MarbleGP/TrackEd/");
+      
+      std::filesystem::create_directories(l_sPath.c_str());
+      
+      return helpers::s2ws(l_sPath.c_str());
+    }
+    
+    const std::wstring portableGetTrackPackPath() {
+      std::wstring l_sRet = L"";
+      
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/.local/DustbinGames/MarbleGP/TrackPack/");
+      
+      std::filesystem::create_directories(l_sPath.c_str());
+      
+      return helpers::s2ws(l_sPath.c_str());
+    }
+
+    const std::string portableGetDownloadPath() {
+      std::wstring l_sRet = L"";
+      
+      irr::io::IFileSystem *l_pFs = CGlobal::getInstance()->getFileSystem();
+      irr::io::path l_sPath = l_pFs->getAbsolutePath("~/Downloads/");
+      
+      std::filesystem::create_directories(l_sPath.c_str());
+      
+      return l_sPath.c_str();
+    }
+    
+    void saveSettings() {
+      std::string l_sFile = helpers::ws2s(portableGetDataPath()) + "MarbleGP_Setup.xml";
+      
+      std::ofstream l_cFile(l_sFile);
+      l_cFile << CGlobal::getInstance()->getSettings();
+      l_cFile.close();
+    }
+    
+    void consumeBackEvent(bool a_bConsume) {
     }
   }
 }

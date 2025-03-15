@@ -1388,8 +1388,8 @@ namespace dustbin {
     std::wstring l_sData = l_sPath + L"profile_data.txt";
     std::wstring l_sCtrl = l_sPath + L"profile_ctrl.txt";
 
-    std::ofstream l_cData = std::ofstream(l_sData, std::ios::out);
-    std::ofstream l_cCtrl = std::ofstream(l_sCtrl, std::ios::out);
+    std::ofstream l_cData = std::ofstream(helpers::ws2s(l_sData), std::ios::out);
+    std::ofstream l_cCtrl = std::ofstream(helpers::ws2s(l_sCtrl), std::ios::out);
 
     if (!l_cData.is_open()) {
       printf("Cannot open profile file for writing.\n");

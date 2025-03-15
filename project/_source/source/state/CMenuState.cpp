@@ -52,7 +52,7 @@ namespace dustbin {
         m_pGlobal->setGlobal("FirstStart", "false");
         clearMenuStack();
         pushToMenuStack("menu_intro");
-#ifndef _ANDROID
+#if !defined(_ANDROID) or !defined(_RASPI)
         pushToMenuStack("menu_detectgfx");
 #endif
       }

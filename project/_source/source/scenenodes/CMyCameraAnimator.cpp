@@ -1,6 +1,6 @@
 // (w) 2020 - 2024 by Dustbin::Games / Christian Keimel
 
-#ifdef _WINDOWS
+#if defined _WINDOWS or defined _RASPI
 
 #include <scenenodes/CMyCameraAnimator.h>
 #include <messages/CSerializer64.h>

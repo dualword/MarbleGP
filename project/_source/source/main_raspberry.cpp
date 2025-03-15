@@ -1,4 +1,4 @@
-#ifdef _RASPBERRY
+#ifdef _RASPI
 
 #include <irrlicht.h>
 #include <state/IState.h>
@@ -44,6 +44,14 @@ int main(int argc, char *argv[]) {
 
     l_pMainClass = new dustbin::CMainClass(l_sSettings);
 
+    if (l_sSettings != "") {
+      irr::s32 l_iWidth  = l_pMainClass->getSettingData().m_iResolutionW;
+      irr::s32 l_iHeight = l_pMainClass->getSettingData().m_iResolutionH;
+
+      l_cDim.Width  = l_iWidth;
+      l_cDim.Height = l_iHeight;
+    }
+    
     irr::SIrrlichtCreationParameters l_cParams;
     l_cParams.DriverType       = irr::video::EDT_OGLES2;
     l_cParams.Fullscreen       = true;

@@ -616,7 +616,7 @@ namespace dustbin {
       m_fJumpFact = (irr::f32)(std::rand() % 100) / 100.0f;
 
       if (m_pDebugDiceRTT != nullptr && m_pFont != nullptr) {
-#ifdef _ANDROID
+#if defined _ANDROID || defined _RASPI
         std::wstring s = std::to_wstring(m_fJumpFact);
 #else
         wchar_t s[0xFF];
@@ -624,7 +624,7 @@ namespace dustbin {
 #endif
 
         drawDebugDice(L"Jump Speed Factor", 
-#ifdef _ANDROID
+#if defined _ANDROID || defined _RASPI
           s.c_str(),
 #else
           s, 
