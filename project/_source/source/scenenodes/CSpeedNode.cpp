@@ -38,8 +38,7 @@ namespace dustbin {
     }
 
     void CSpeedNode::OnRegisterSceneNode() {
-      if (IsVisible)
-        SceneManager->registerNodeForRendering(this);
+      SceneManager->registerNodeForRendering(this);
 
       ISceneNode::OnRegisterSceneNode();
     }
@@ -67,6 +66,8 @@ namespace dustbin {
       m_fMinSpeed  = a_pIn->getAttributeAsFloat("minspeed");
       m_fMaxSpeed  = a_pIn->getAttributeAsFloat("maxspeed");
       m_fBestSpeed = a_pIn->getAttributeAsFloat("bestspeed");
+
+      IsVisible = true;
 
       sceneNodeIdUsed(getID());
     }
