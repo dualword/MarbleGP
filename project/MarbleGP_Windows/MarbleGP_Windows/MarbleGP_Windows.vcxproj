@@ -535,7 +535,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\..\..\libs\enet-master\include;..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-trunk\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\..\..\libs\irrlicht-trunk\include;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\..\..\libs\irrlicht-trunk\lib\Win64-visualStudio\Release;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
