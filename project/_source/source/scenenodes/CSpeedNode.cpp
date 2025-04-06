@@ -39,11 +39,11 @@ namespace dustbin {
 
     void CSpeedNode::OnRegisterSceneNode() {
       SceneManager->registerNodeForRendering(this);
-
-      ISceneNode::OnRegisterSceneNode();
     }
 
     void CSpeedNode::render() {
+      for (irr::core::list<irr::scene::ISceneNode *>::ConstIterator it = Children.begin(); it != Children.end(); it++)
+        (*it)->render();
     }
 
     const irr::core::aabbox3d<irr::f32>& CSpeedNode::getBoundingBox() const {
