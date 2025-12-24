@@ -211,6 +211,48 @@ namespace dustbin {
             return std::wcstol(p1->m_sNumber.c_str(), nullptr, 10) < std::wcstol(p2->m_sNumber.c_str(), nullptr, 10);
           });
 
+          for (int i = 0; i < 7; i++) {
+            std::string s = "";
+          
+            switch (i) {
+              case 0: s = "Rollg"  ; break;
+              case 1: s = "Loris" ; break;
+              case 2: s = "Ralf" ; break;
+              case 3: s = "Rlbrts"; break;
+              case 4: s = "Sndro"  ; break;
+              case 5: s = "Kazto"; break;
+              case 6: s = "Dirk" ; break;
+            }
+          
+            for (std::vector<gameclasses::SPlayer *>::iterator it = l_pTournament->m_vPlayers.begin(); it != l_pTournament->m_vPlayers.end(); it++) {
+              if ((*it)->m_sShortName == s) {
+                gameclasses::SPlayer *p = *it;
+                l_pTournament->m_vPlayers.erase(it);
+          
+                if (i < 3)
+                  l_pTournament->m_vPlayers.insert(l_pTournament->m_vPlayers.begin(), p);
+                else
+                  l_pTournament->m_vPlayers.push_back(p);
+          
+                break;
+              }
+            }
+          }
+
+          int bla = 1;
+          for (std::vector<gameclasses::SPlayer *>::iterator it = l_pTournament->m_vPlayers.begin(); it != l_pTournament->m_vPlayers.end(); it++) {
+            (*it)->m_sNumber = std::to_wstring(bla);
+
+            std::string s = (*it)->m_sTexture;
+            size_t l_iPos = s.find("&number=");
+            if (l_iPos != std::string::npos) {
+              s = s.substr(0, l_iPos) + "&number=" + std::to_string(bla);
+            }
+            (*it)->m_sTexture = s;
+
+            bla++;
+          }
+
           std::vector<gameclasses::SPlayer *>::iterator l_itPlr = l_pTournament->m_vPlayers.begin();
 
           for (int i = 1; i <= 16; i++) {

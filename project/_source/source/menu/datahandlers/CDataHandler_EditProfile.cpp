@@ -5,6 +5,7 @@
 #include <helpers/CDataHelpers.h>
 #include <helpers/CMenuLoader.h>
 #include <gui/CReactiveLabel.h>
+#include <platform/CPlatform.h>
 #include <gui/CGuiImageList.h>
 #include <gui/CMenuButton.h>
 #include <gui/CSelector.h>
@@ -269,6 +270,56 @@ namespace dustbin {
           else if (l_sCaller == "BtnConfirmNo") {
             setElementVisibility("YesNoDialog", false);
             m_bConfirmDelete = false;
+            l_bRet = true;
+          }
+          else if (l_sCaller == "EditProfile_CustomTexture") {
+            irr::gui::IGUIListBox *l_pTextures = reinterpret_cast<irr::gui::IGUIListBox *>(findElement("Import_FileList", irr::gui::EGUIET_LIST_BOX));
+
+            if (l_pTextures != nullptr) {
+              setElementVisibility("EditProfile_TextureImport", true);
+
+              irr::io::path l_sCwd = m_pFs->getWorkingDirectory();
+
+              std::string l_sDownload = platform::portableGetDownloadPath();
+              m_pFs->changeWorkingDirectoryTo(l_sDownload.c_str());
+
+              irr::io::IFileList *l_pList = m_pFs->createFileList();
+
+              if (l_pList != nullptr) {
+                for (irr::u32 i = 0; i < l_pList->getFileCount(); i++) {
+                  std::string l_sName = l_pList->getFileName(i).c_str();
+                  if (l_sName.length() > 4) {
+                    std::string l_sExt = l_sName.substr(l_sName.length() - 4);
+                    if (l_sExt == ".png") {
+                      l_pTextures->addItem(helpers::s2ws(l_sName).c_str());
+                    }
+                  }
+                }
+                l_pList->drop();
+              }
+
+              m_pFs->changeWorkingDirectoryTo(l_sCwd.c_str());
+            }
+            l_bRet = true;
+          }
+          else if (l_sCaller == "EditProfile_SelectImport") {
+            irr::gui::IGUIListBox *l_pTextures = reinterpret_cast<irr::gui::IGUIListBox *>(findElement("Import_FileList", irr::gui::EGUIET_LIST_BOX));
+
+            if (l_pTextures != nullptr) {
+              if (l_pTextures->getSelected() >= 0) {
+                std::string l_sSelected = platform::portableGetDownloadPath() + "/" + helpers::ws2s(l_pTextures->getListItem(l_pTextures->getSelected()));
+
+                if (m_pFs->existFile(l_sSelected.c_str())) {
+                  modifyTextureParameter("pattern", l_sSelected);
+                  updateMarbleTexture(m_cEditProfile.m_sTexture);
+
+                  setElementVisibility("EditProfile_TextureImport", false);
+                }
+              }
+            }
+          }
+          else if (l_sCaller == "EditProfile_ImportTextureClose" || l_sCaller == "EditProfile_CancelImport") {
+            setElementVisibility("EditProfile_TextureImport", false);
             l_bRet = true;
           }
           else {
@@ -799,6 +850,28 @@ namespace dustbin {
 
         if (l_pXml) {
           std::vector<gui::CGuiImageList::SListImage> l_vPatterns;
+
+          irr::io::path l_sPath = m_pFs->getWorkingDirectory();
+
+          std::string l_sUserData = helpers::ws2s(platform::portableGetDataPath()) + "data/patterns";
+
+          m_pFs->changeWorkingDirectoryTo(l_sUserData.c_str());
+
+          irr::io::IFileList *l_pList = m_pFs->createFileList();
+          if (l_pList != nullptr) {
+            for (irr::u32 i = 0; i < l_pList->getFileCount(); i++) {
+              std::string l_sName = l_pList->getFileName(i).c_str();
+              if (l_sName.length() > 4) {
+                std::string l_sExt = l_sName.substr(l_sName.length() - 4);
+                if (l_sExt == ".png") {
+                  l_vPatterns.push_back(gui::CGuiImageList::SListImage(l_sUserData + "/" + l_sName, l_sName, l_sName, -1));
+                }
+              }
+            }
+            l_pList->drop();
+          }
+
+          m_pFs->changeWorkingDirectoryTo(l_sPath);
 
           while (l_pXml->read()) {
             if (l_pXml->getNodeType() == irr::io::EXN_ELEMENT) {

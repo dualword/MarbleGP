@@ -56,7 +56,7 @@ namespace dustbin {
         }
         else {
           if (a_sType == "file") {
-            l_mParameters["file"] = l_sInput;
+            l_mParameters["file"] = l_sPart;
           }
           else {
             std::string s = std::string("Invalid texture string \"") + a_sInput + "\" (" + l_sPart + ")";
@@ -159,13 +159,21 @@ namespace dustbin {
     std::vector<std::string> getTexturePatterns() {
       std::vector<std::string> l_vReturn;
 
-      irr::io::IXMLReaderUTF8 *l_pXml = 
+      irr::io::IFileSystem *l_pFs =
 #ifndef _TRACKED
-        CGlobal::getInstance()->getFileSystem()
+        CGlobal::getInstance()->getFileSystem();
 #else
-        tracked::IGlobal::getInstance()->getFileSystem()
+        tracked::IGlobal::getInstance()->getFileSystem();
 #endif
-        ->createXMLReaderUTF8("data/patterns/patterns.xml");
+
+      irr::io::path l_sCwd = l_pFs->getWorkingDirectory();
+
+      std::string l_sPath = helpers::ws2s(platform::portableGetDataPath());
+      l_pFs->changeWorkingDirectoryTo(l_sPath.c_str());
+
+      l_pFs->changeWorkingDirectoryTo(l_sCwd);
+
+      irr::io::IXMLReaderUTF8 *l_pXml = l_pFs->createXMLReaderUTF8("data/patterns/patterns.xml");
 
       if (l_pXml) {
         while (l_pXml->read()) {
@@ -193,6 +201,8 @@ namespace dustbin {
 
         l_pXml->drop();
       }
+
+      
 
       return l_vReturn;
     }
@@ -393,6 +403,17 @@ namespace dustbin {
             std::string l_sFilePattern = std::string("data/patterns/") + l_sPattern;
             std::string l_sFileTop     = std::string("data/textures/texture_top.png");
 
+            bool l_bColorPattern = false;
+
+            if (a_pFs->existFile(l_sPattern.c_str())) {
+              l_sFilePattern = l_sPattern;
+              l_bColorPattern = true;
+            }
+            else if (!a_pFs->existFile(l_sFilePattern.c_str())) {
+              l_sFilePattern = helpers::ws2s(platform::portableGetDataPath()) + "data/patterns/" + l_sPattern;
+            }
+            
+
 #ifndef _TRACKED
             if (!a_pFs->existFile(l_sFilePattern.c_str())) {
               CGlobal::getInstance()->setGlobal("ERROR_MESSAGE", std::string("Cannot find texture pattern \"") + l_sPattern + "\".");
@@ -422,9 +443,17 @@ namespace dustbin {
               a_pDrv->removeTexture(l_pNumber);
             }
 
-            irr::video::ITexture* l_pTop = adjustTextureForMarble(l_sFileTop, l_cColorRing, a_pDrv);
+            irr::video::ITexture *l_pTop = adjustTextureForMarble(l_sFileTop, l_cColorRing, a_pDrv);
             a_pDrv->draw2DImage(l_pTop, l_aDestRect[0], irr::core::recti(0, 0, 255, 127), nullptr, nullptr, true);
-            irr::video::ITexture*l_pPattern = adjustTextureForMarble(l_sFilePattern, l_cColorPattern, a_pDrv);
+            irr::video::ITexture *l_pPattern = nullptr;
+            
+            if (l_bColorPattern) {
+              l_pPattern = a_pDrv->getTexture(l_sFilePattern.c_str());
+            }
+            else {
+              l_pPattern = adjustTextureForMarble(l_sFilePattern, l_cColorPattern, a_pDrv);
+            }
+
             a_pDrv->draw2DImage(l_pPattern, l_aDestRect[1], irr::core::recti(0, 0, 256, 128), nullptr, nullptr, true);
 
             a_pDrv->setRenderTarget(0, false, false);
