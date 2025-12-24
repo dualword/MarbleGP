@@ -10,7 +10,7 @@
     </attributes>
     
     <children>
-      <element type="MenuBackground" rect="relative: 33, 9, 63, 34">
+      <element type="MenuBackground" rect="relative: 33, 9, 63, 40">
         <attributes>
           <attribute key="UseOverrideColor" value="true" />
           <attribute key="OverrideColor" value="232, 239, 239, 255" />
@@ -70,6 +70,13 @@
             <attributes>
               <attribute key="Name" value="EditProfile_PattrnBack" />
               <attribute key="Caption" value="Pattern Background Color" />
+            </attributes>
+          </element>          
+          
+          <element type="MenuButton" rect="relative: 1, 27, 29, 29" tooltip="Import a custom texture">
+            <attributes>
+              <attribute key="Name" value="EditProfile_CustomTexture" />
+              <attribute key="Caption" value="Import Custom Texture" />
             </attributes>
           </element>          
         </children>

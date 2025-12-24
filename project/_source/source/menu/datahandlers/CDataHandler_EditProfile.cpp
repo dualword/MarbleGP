@@ -277,6 +277,7 @@ namespace dustbin {
 
             if (l_pTextures != nullptr) {
               setElementVisibility("EditProfile_TextureImport", true);
+              l_pTextures->clear();
 
               irr::io::path l_sCwd = m_pFs->getWorkingDirectory();
 
@@ -310,6 +311,18 @@ namespace dustbin {
                 std::string l_sSelected = platform::portableGetDownloadPath() + "/" + helpers::ws2s(l_pTextures->getListItem(l_pTextures->getSelected()));
 
                 if (m_pFs->existFile(l_sSelected.c_str())) {
+                  irr::video::ITexture *l_pImport = m_pDrv->getTexture(l_sSelected.c_str());
+                  if (l_pImport != nullptr) {
+                    std::string l_sNewPath = helpers::ws2s(platform::portableGetDataPath() + L"data/textures/" + l_pTextures->getListItem(l_pTextures->getSelected()));
+                    irr::video::IImage *l_pImg = m_pDrv->createImage(l_pImport, irr::core::vector2di(0, 0), l_pImport->getSize());
+                    if (l_pImg != nullptr) {
+                      if (m_pDrv->writeImageToFile(l_pImg, l_sNewPath.c_str())) {
+                        l_sSelected = l_sNewPath;
+                      }
+                      l_pImg->drop();
+                    }
+                  }
+
                   modifyTextureParameter("pattern", l_sSelected);
                   updateMarbleTexture(m_cEditProfile.m_sTexture);
 
