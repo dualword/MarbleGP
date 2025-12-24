@@ -523,7 +523,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\mystuff\projects\libs\SteamWorks\sdk\public\steam;D:\mystuff\projects\libs\enet-master\include;..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\MyStuff\projects\libs\enet-master\include;D:\mystuff\projects\libs\SteamWorks\sdk\public\steam;D:\mystuff\projects\libs\enet-master\include;..\..\libs\lua-5.4.4\src;C:\Program Files (x86)\Visual Leak Detector\include;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin\win64;D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin;..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mtd;..\..\libs\Irrlicht\lib\debug;C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -532,7 +532,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\mystuff\projects\libs\SteamWorks\sdk\public\steam;..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\MyStuff\projects\libs\enet-master\include;D:\mystuff\projects\libs\SteamWorks\sdk\public\steam;..\..\libs\lua-5.4.4\src;..\..\..\..\libs\irrKlang-64bit-1.6.0\include;..\..\..\..\libs\ode-0.14\include;..\..\..\..\libs\irrlicht-1.9\include;..\..\_source\include\xeffects;..\..\_source\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin\win64;D:\mystuff\projects\libs\SteamWorks\sdk\redistributable_bin;..\..\..\..\libs\irrKlang-pro-1.6.0\irrKlang-lib-1.6.0-vs2017_x64_mt;..\..\libs\irrlicht\lib\release;$(LibraryPath)</LibraryPath>
     <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>

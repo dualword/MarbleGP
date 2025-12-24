@@ -1,5 +1,11 @@
 <ul>
   <li class="parent">
+    <b>2025-12-24 [1.3 Build 264]</b>
+    <ul>
+      <li>Players do now have the option to import custom textures (.png files with a size of 256x128) which are only used locally</li>
+    </ul>
+  </li>
+  <li class="parent">
     <b>2025-03-02 [1.3 Build 263]</b>
     <ul>
       <li>MarbleGP does now support Track Packs. This feature allows users to exchange tracks created using the not yet available Track Editor which is in developement</li>
